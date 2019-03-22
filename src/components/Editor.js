@@ -38,7 +38,7 @@ class Editor extends Component {
                         <Col className="child">
                             <Form.Group className="rightGroup">
                             <Button variant="outline-light"><FontAwesomeIcon icon={faNetworkWired} /> Commit to network</Button>
-                            <Button variant="outline-light"><FontAwesomeIcon icon={faExchangeAlt} /> Show diff {this.props.datasetId} </Button>
+                            <Button variant="outline-light"><FontAwesomeIcon icon={faExchangeAlt} /> Show diff</Button>
                             </Form.Group>
                         </Col>
                     </Row>
