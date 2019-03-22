@@ -1,0 +1,83 @@
+.left {
+    display: block;
+    margin-left: 0;
+    width: 50px;
+}
+
+.right {
+    display: block;
+    float: right;
+}
+
+button {
+    margin-left: 5px;
+}
+
+.margined-top {
+    margin-top: 20px;
+}
+
+.editor {
+    height: auto;
+    margin-top: 20px;
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.3);
+    text-align: left !important;
+}
+
+.leftAligned {
+    margin-left: 0;
+    float: left;
+    text-align: left;
+}
+
+.rightAligned {
+    margin-right: 0;
+    float: right;
+    text-align: right;
+}
+
+.options {
+    height: 80px;
+    background-image: linear-gradient(to right top, #007bff, #0088ff, #0094ff, #009fff, #00aaff);
+    margin-bottom: 20px;
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.3);
+}
+
+.options .child {
+    margin-top: 17px;
+}
+
+.options .child button {
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0);
+}
+
+.snapshotInput {
+    width: 200px;
+    display: inline-block;
+}
+
+.snapshotButton {
+    margin-top: -5px;
+}
+
+button {
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.3);
+}
+
+.CodeMirror {
+    height: 700px;
+}
+
+.round {
+    border-radius: 90%;
+}
+
+.floating-btn {
+    position: absolute;
+    left: 10px;
+    top: 17px;
+}
+
+.noshadow {
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0);
+}

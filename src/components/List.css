@@ -1,0 +1,50 @@
+.searchGroup {
+    text-align: left;
+}
+
+.deviceGroup tr:hover {
+    cursor: pointer;
+}
+
+.listPage {
+    margin-top: 20px;
+}
+
+.deviceGroup button {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.scrollWrapper {
+    overflow: auto;
+    max-height: 700px;
+}
+
+.leftAligned {
+    text-align: left;
+}
+
+.leftAligned button {
+    margin-left: 0;
+}
+
+.rightAligned {
+    text-align: right;
+}
+
+.rightAligned button {
+    margin-right: 0;
+}
+
+.clickable:hover {
+    cursor: pointer;
+}
+
+.form-control {
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0);
+}
+
+.hilit {
+    color: rgb(255, 126, 87) !important;
+    font-weight: bold;
+}
