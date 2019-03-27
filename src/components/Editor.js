@@ -5,8 +5,9 @@ import 'codemirror/lib/codemirror.css'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFolderPlus, faNetworkWired, faExchangeAlt, faSave, faSync, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
-import CodeMirror from 'react-codemirror'
 import 'codemirror/mode/javascript/javascript'
+import {CONFIG, OPER} from "./constants";
+import UniConfig from "./UniConfig";
 
 class Editor extends Component {
     constructor(props) {
@@ -14,7 +15,7 @@ class Editor extends Component {
         library.add(faFolderPlus, faNetworkWired, faArrowLeft);
         this.state= {
             leftEditor: '',
-            rightEditor: ''
+            rightEditor: '',
         }
     }
 
@@ -22,7 +23,23 @@ class Editor extends Component {
         window.location.href = where;
     }
 
+    componentDidMount() {
+        //pass device name cmp will mount
+        fetch(CONFIG)
+            .then(response => response.text())
+            .then(leftEditor =>  this.setState({leftEditor}));
+
+        fetch(OPER)
+            .then(response => response.text())
+            .then(rightEditor => this.setState({rightEditor}));
+
+
+
+    }
+
     render(){
+
+        console.log(this.state.leftEditor);
         return(
             <div className='editorWrap'>
             <header className="options">
@@ -30,13 +47,13 @@ class Editor extends Component {
                 <Container>
                     <Row>
                         <Col className="child">
-                            <Form.Group className="leftGroup">
+                            <Form.Group className="leftAligned">
                             <Form.Control className="snapshotInput" placeholder="Choose a snapshot" type="text"></Form.Control>
                             <Button className="snapshotButton" variant="outline-light"><FontAwesomeIcon icon={faFolderPlus} /> Create snapshot</Button>
                             </Form.Group>
                         </Col>
                         <Col className="child">
-                            <Form.Group className="rightGroup">
+                            <Form.Group className="rightAligned">
                             <Button variant="outline-light"><FontAwesomeIcon icon={faNetworkWired} /> Commit to network</Button>
                             <Button variant="outline-light"><FontAwesomeIcon icon={faExchangeAlt} /> Show diff</Button>
                             </Form.Group>
@@ -45,35 +62,9 @@ class Editor extends Component {
                 </Container>
             </header>
             <Container className="margined-top">
-                
-                <Row>
-                    <Col className="leftAligned">
-                        <h4>Config <Badge variant="danger">Edited</Badge></h4>
-                    </Col>
-                    <Col className="rightAligned">
-                        <Button variant="outline-primary">Refresh</Button>
-                        <Button><FontAwesomeIcon icon={faSave} /> Save</Button>
-                    </Col>
-                    <Col className="leftAligned">
-                        <h4>Operational</h4>
-                    </Col>
-                    <Col className="rightAligned">
-                        <Button variant="outline-primary">Refresh</Button>
-                        <Button><FontAwesomeIcon icon={faSync} /> Sync w/ network</Button>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <Form.Group>
-                            <CodeMirror className="editor" value={this.state.leftEditor} options={{lineNumbers: true, direction: 'ltr', lineWrapping: true, mode:{name: 'javascript', json: true}}} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                    <Form.Group>
-                            <CodeMirror className="editor" value={this.state.rightEditor} options={{lineNumbers: true, direction: 'ltr', lineWrapping: true, mode:{name: 'javascript', json: true}}} /> 
-                        </Form.Group>
-                    </Col>
-                </Row>
+                <div className="editor">
+                    <UniConfig/>
+                </div>
             </Container>
             </div>
         )

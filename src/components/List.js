@@ -114,8 +114,7 @@ class List extends Component {
                     <td className={highlight ? this.calculateHighlight(i, 2) : ''}>{dataset[i][2]}</td>
                     <td className={highlight ? this.calculateHighlight(i, 3) : ''}>{dataset[i][3]}</td>
                     <td className={highlight ? this.calculateHighlight(i, 4) : ''}>{dataset[i][4]}</td>
-                </tr>
-            )
+                </tr>)
         }
         return output
     }
