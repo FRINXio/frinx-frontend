@@ -123,11 +123,11 @@ class List extends Component {
         return(
             <div className='listPage'>
                 <Container>
-                    <FormGroup className="deviceGroup leftAligned">
+                    <FormGroup className="deviceGroup leftAligned1">
                         <Button variant="outline-primary"><FontAwesomeIcon icon={faPlusCircle} /> Mount CLI Device</Button>
                         <Button variant="outline-danger"><FontAwesomeIcon icon={faMinusCircle} /> Remove CLI Device</Button>
                     </FormGroup>
-                    <FormGroup className="deviceGroup rightAligned">
+                    <FormGroup className="deviceGroup rightAligned1">
                         <Button variant="primary"><FontAwesomeIcon icon={faSync} /> Refresh</Button>
                     </FormGroup>
                     <FormGroup className="searchGroup">

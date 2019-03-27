@@ -68,13 +68,11 @@ button {
 }
 
 .leftAligned {
-    margin-left: 27%;
     float: left;
     text-align: left;
 }
 
 .rightAligned {
-    margin-right: 27%;
     float: right;
     text-align: right;
 }

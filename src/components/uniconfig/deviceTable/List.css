@@ -20,19 +20,21 @@
     max-height: 700px;
 }
 
-.leftAligned {
+.leftAligned1 {
     text-align: left;
+    float: left;
 }
 
-.leftAligned button {
+.leftAligned1 button {
     margin-left: 0;
 }
 
-.rightAligned {
+.rightAligned1 {
     text-align: right;
+    float: right;
 }
 
-.rightAligned button {
+.rightAligned1 button {
     margin-right: 0;
 }
 
