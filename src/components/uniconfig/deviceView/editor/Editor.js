@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Button } from 'react-bootstrap';
-import '../../../../node_modules/react-gh-like-diff/lib/diff2html.css'
+import '../../../../../node_modules/react-gh-like-diff/lib/diff2html.css'
 
 class Editor extends Component {
     constructor(props) {

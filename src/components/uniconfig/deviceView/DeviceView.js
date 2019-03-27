@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import { ReactGhLikeDiff } from 'react-gh-like-diff';
 import { CONFIG, OPER } from '../../constants';
-import Editor from "./Editor";
+import Editor from "./editor/Editor";
 import './DeviceView.css'
 import {Button, Col, Container, Dropdown, Form, Row} from "react-bootstrap";
+import DropdownMenu from "./dropdownMenu/DropdownMenu";
 
 const defaultOptions = {
     originalFileName: 'Operational',
@@ -148,7 +149,7 @@ class DeviceView extends Component {
                                             Load Snapshot
                                         </Dropdown.Toggle>
 
-                                        <Dropdown.Menu>
+                                        <Dropdown.Menu as={DropdownMenu}>
                                             {this.state.snapshots.map(function (item, i) {
                                                 return <Dropdown.Item key={i}>{item}</Dropdown.Item>
                                             })}
