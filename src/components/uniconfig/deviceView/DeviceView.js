@@ -3,7 +3,7 @@ import { ReactGhLikeDiff } from 'react-gh-like-diff';
 import { CONFIG, OPER } from '../../constants';
 import Editor from "./Editor";
 import './DeviceView.css'
-import {Button, Col, Container, Form, Row} from "react-bootstrap";
+import {Button, Col, Container, Dropdown, Form, Row} from "react-bootstrap";
 
 const defaultOptions = {
     originalFileName: 'Operational',
@@ -23,6 +23,7 @@ class DeviceView extends Component {
         this.state = {
             config: '{}',
             operational: '{}',
+            snapshots: ["snapshot1","snapshot2"],
             showDiff: false,
             creatingSnap: false,
             syncing: false,
@@ -107,8 +108,6 @@ class DeviceView extends Component {
         let configJSON = JSON.stringify(JSON.parse(this.state.config), null, 2);
         let operationalJSON = JSON.stringify(JSON.parse(this.state.operational), null, 2);
 
-        console.log(configJSON);
-        console.log(operationalJSON);
 
         const operational = () => (
             <div>
@@ -116,6 +115,7 @@ class DeviceView extends Component {
                     <h2 style={{display: "inline-block", marginTop: "5px"}}>Operational</h2>
                     <div style={{float: "right"}}>
                         <Button className="btn btn-primary" style={{marginRight: '5px'}}
+                                disabled={this.state.syncing}
                                 onClick={this.syncFromNetwork.bind(this)}>
                             <i className={this.state.syncing ? "fas fa-sync fa-spin" : "fas fa-sync"}/>
                             &nbsp;&nbsp;{this.state.syncing ? "Synchronizing..." : "Sync from network"}
@@ -143,15 +143,23 @@ class DeviceView extends Component {
                     <Container>
                         <Row>
                             <Col className="child">
-                                <Form.Group className="leftAligned">
-                                    <Form.Control className="snapshotInput" placeholder="Choose a snapshot" type="text"/>
-                                    <Button className="snapshotButton" variant="outline-light"> Create snapshot</Button>
-                                </Form.Group>
+                                    <Dropdown className="leftAligned" >
+                                        <Dropdown.Toggle variant="light" id="dropdown-basic">
+                                            Load Snapshot
+                                        </Dropdown.Toggle>
+
+                                        <Dropdown.Menu>
+                                            {this.state.snapshots.map(function (item, i) {
+                                                return <Dropdown.Item key={i}>{item}</Dropdown.Item>
+                                            })}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                    <Button className="leftAligned" variant="outline-light"> Create snapshot</Button>
                             </Col>
                             <Col className="child">
                                 <Form.Group className="rightAligned">
-                                    <Button variant="outline-light"> Commit to network</Button>
-                                    <Button variant="outline-light"> Show diff</Button>
+                                    <Button variant="outline-light" onClick={this.commitToNetwork.bind(this)}>Commit to network</Button>
+                                    <Button variant="outline-light" onClick={this.showDiff.bind(this)}>Show diff</Button>
                                 </Form.Group>
                             </Col>
                         </Row>
