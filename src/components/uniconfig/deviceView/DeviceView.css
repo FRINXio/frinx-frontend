@@ -12,11 +12,21 @@
 .config {
     width: 49%;
     float: left;
+    padding: 20px;
+    max-width: 700px;
+    -moz-box-shadow: 0 0 3px #ccc;
+    -webkit-box-shadow: 0 0 3px #ccc;
+    box-shadow: 0 0 3px #ccc;
 }
 
 .operational {
     width: 49%;
     float: right;
+    padding: 20px;
+    max-width: 700px;
+    -moz-box-shadow: 0 0 3px #ccc;
+    -webkit-box-shadow: 0 0 3px #ccc;
+    box-shadow: 0 0 3px #ccc;
 }
 
 button {
@@ -29,11 +39,10 @@ button {
 
 /* outer container of conf and oper */
 .editor {
-    height: auto;
-    margin-top: 40px;
-    box-shadow: 0px 2px 50px 0px rgba(0,0,0,0.3);
     text-align: left !important;
-    background: rgba(0, 0, 0, 0.03);
+    margin-top: 40px;
+    margin-left: 13%;
+    margin-right: 13%;
 }
 
 .editingPre {
@@ -53,18 +62,19 @@ button {
     border-collapse: collapse;
     font-family: "Menlo", "Consolas", monospace;
     font-size: 13px;
-    background: rgba(0, 0, 0, 0.03);
+    background: rgba(77, 77, 77, 0.03);
+    border: 1px solid #c5c5c5;
 
 }
 
 .leftAligned {
-    margin-left: 0;
+    margin-left: 27%;
     float: left;
     text-align: left;
 }
 
 .rightAligned {
-    margin-right: 0;
+    margin-right: 27%;
     float: right;
     text-align: right;
 }

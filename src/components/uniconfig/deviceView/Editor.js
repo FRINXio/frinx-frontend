@@ -102,7 +102,7 @@ class Editor extends Component {
         <div>
             <h2 style={{display: "inline-block", marginTop: "5px"}}>{this.props.title}</h2>
             <div style={{float: "right"}}>
-                <Button className="btn btn-default" onClick={(e) => this.editJSONswitch(e, 2)}
+                <Button className="btn btn-light" onClick={(e) => this.editJSONswitch(e, 2)}
                         style={{display: this.state.editingJSON ? 'inline-block' : 'none'}}>
                     Cancel
                 </Button>
@@ -111,7 +111,7 @@ class Editor extends Component {
                     {this.state.editingJSON ? <i className="fas fa-save"/> : <i className="fas fa-pen"/> }
                     &nbsp;&nbsp;{this.state.editingJSON ? 'Save' : 'Edit'}
                 </Button>
-                <Button className="btn btn-default" onClick={() => this.props.refreshConfig()}
+                <Button className="btn btn-light" onClick={() => this.props.refreshConfig()}
                         style={{marginLeft: '5px'}}>
                     Refresh
                 </Button>

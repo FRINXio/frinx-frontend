@@ -140,7 +140,6 @@ class DeviceView extends Component {
             <div>
                 <header className="options">
                     <Button className="round floating-btn noshadow" onClick={() => {this.redirect(window.location.protocol + "//" + window.location.href.split('/')[2])}} variant="outline-light">></Button>
-                    <Container>
                         <Row>
                             <Col className="child">
                                 <Form.Group className="leftAligned">
@@ -155,12 +154,9 @@ class DeviceView extends Component {
                                 </Form.Group>
                             </Col>
                         </Row>
-                    </Container>
                 </header>
 
-                <Container className="margined-top">
                     <div className="editor">
-
                         <div className="uniconfig">
                             <div className="config">
                                 { this.state.initializing ?
@@ -179,10 +175,7 @@ class DeviceView extends Component {
                                 }
                             </div>
                         </div>
-
-
                     </div>
-                </Container>
             </div>
 
 
