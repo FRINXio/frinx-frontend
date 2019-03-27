@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {Button } from 'react-bootstrap';
-import '../../node_modules/react-gh-like-diff/lib/diff2html.css'
+import '../../../../node_modules/react-gh-like-diff/lib/diff2html.css'
 
-class JSONField extends Component {
+class Editor extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -138,7 +138,7 @@ class JSONField extends Component {
                             </span>
                         </div>
 
-                        <pre id="jsoneditUniconfig" ref={elem => this.editor = elem}
+                        <pre id="editorWrapper" ref={elem => this.editor = elem}
                                  className={this.state.editingJSON ? 'editingPre' : ''}
                                  contentEditable={this.state.editingJSON}
                                  dangerouslySetInnerHTML= {{ __html: this.state.wfs }}
@@ -150,4 +150,4 @@ class JSONField extends Component {
     };
 }
 
-export default JSONField;
+export default Editor;

@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import { ReactGhLikeDiff } from 'react-gh-like-diff';
-import { CONFIG, OPER } from './constants';
-import JSONField from "./JSONField";
-import { Button } from "react-bootstrap";
+import { CONFIG, OPER } from '../../constants';
+import Editor from "./Editor";
+import './DeviceView.css'
+import {Button, Col, Container, Form, Row} from "react-bootstrap";
 
 const defaultOptions = {
     originalFileName: 'Operational',
@@ -15,8 +16,7 @@ const defaultOptions = {
     matchingMaxComparisons: 2500
 };
 
-
-class UniConfig extends Component {
+class DeviceView extends Component {
     constructor(props) {
         super(props);
 
@@ -28,6 +28,10 @@ class UniConfig extends Component {
             syncing: false,
             initializing: true
         }
+    }
+
+    redirect(where) {
+        window.location.href = where;
     }
 
     componentDidMount() {
@@ -125,39 +129,67 @@ class UniConfig extends Component {
                         current={configJSON}
                     />
                     :
-                    <JSONField title="" editable={false} updateDiff={this.getEditedConfig.bind(this)}
+                    <Editor title="" editable={false} updateDiff={this.getEditedConfig.bind(this)}
                             wfs={JSON.parse(operationalJSON)}/>
                 }
             </div>
         );
 
         return (
-            <div className="uniconfig">
+
+            <div>
+                <header className="options">
+                    <Button className="round floating-btn noshadow" onClick={() => {this.redirect(window.location.protocol + "//" + window.location.href.split('/')[2])}} variant="outline-light">></Button>
+                    <Container>
+                        <Row>
+                            <Col className="child">
+                                <Form.Group className="leftAligned">
+                                    <Form.Control className="snapshotInput" placeholder="Choose a snapshot" type="text"/>
+                                    <Button className="snapshotButton" variant="outline-light"> Create snapshot</Button>
+                                </Form.Group>
+                            </Col>
+                            <Col className="child">
+                                <Form.Group className="rightAligned">
+                                    <Button variant="outline-light"> Commit to network</Button>
+                                    <Button variant="outline-light"> Show diff</Button>
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                    </Container>
+                </header>
+
+                <Container className="margined-top">
+                    <div className="editor">
+
+                        <div className="uniconfig">
+                            <div className="config">
+                                { this.state.initializing ?
+                                    <i className="fas fa-sync fa-spin fa-8x" style={{margin: '40%', color: 'lightblue'}}/>
+                                    :
+                                    <Editor title="Configurational" editable={true}
+                                            getEditedConfig={this.getEditedConfig.bind(this)} wfs={JSON.parse(configJSON)}
+                                            refreshConfig={this.refreshConfig.bind(this)}/>
+                                }
+                            </div>
+                            <div className="operational">
+                                { this.state.initializing ?
+                                    <i className="fas fa-sync fa-spin fa-8x" style={{margin: '40%', color: 'lightblue'}}/>
+                                    :
+                                    operational()
+                                }
+                            </div>
+                        </div>
 
 
-                    <div className="config">
-                            { this.state.initializing ?
-                                <i className="fas fa-sync fa-spin fa-8x" style={{margin: '40%', color: 'lightblue'}}/>
-                                :
-                                <JSONField title="Configurational" editable={true}
-                                getEditedConfig={this.getEditedConfig.bind(this)} wfs={JSON.parse(configJSON)}
-                                refreshConfig={this.refreshConfig.bind(this)}/>
-                            }
                     </div>
-
-                    <div className="operational">
-                            { this.state.initializing ?
-                                <i className="fas fa-sync fa-spin fa-8x" style={{margin: '40%', color: 'lightblue'}}/>
-                                :
-                                operational()
-                            }
-                    </div>
-
+                </Container>
             </div>
+
+
 
 
       );
     }
 }
 
-export default UniConfig;
+export default DeviceView;
