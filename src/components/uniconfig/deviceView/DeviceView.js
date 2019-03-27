@@ -3,7 +3,7 @@ import { ReactGhLikeDiff } from 'react-gh-like-diff';
 import { CONFIG, OPER } from '../../constants';
 import Editor from "./editor/Editor";
 import './DeviceView.css'
-import {Button, Col, Container, Dropdown, Form, Row} from "react-bootstrap";
+import {Badge, Button, Col, Container, Dropdown, Form, Row} from "react-bootstrap";
 import DropdownMenu from "./dropdownMenu/DropdownMenu";
 
 const defaultOptions = {
@@ -140,13 +140,15 @@ class DeviceView extends Component {
 
             <div>
                 <header className="options">
-                    <Button className="round floating-btn noshadow" onClick={() => {this.redirect(window.location.protocol + "//" + window.location.href.split('/')[2])}} variant="outline-light">></Button>
+                    <Button className="round floating-btn noshadow" onClick={() => {
+                        this.redirect(window.location.protocol + "//" + window.location.href.split('/')[2])
+                    }} variant="outline-light"><i className="fas fa-chevron-left"/></Button>
                     <Container>
                         <Row>
                             <Col className="child">
                                     <Dropdown className="leftAligned" >
                                         <Dropdown.Toggle variant="light" id="dropdown-basic">
-                                            Load Snapshot
+                                            <i className="fas fa-file-download"/>&nbsp;&nbsp;Load Snapshot
                                         </Dropdown.Toggle>
 
                                         <Dropdown.Menu as={DropdownMenu}>
@@ -155,12 +157,18 @@ class DeviceView extends Component {
                                             })}
                                         </Dropdown.Menu>
                                     </Dropdown>
-                                    <Button className="leftAligned" variant="outline-light"> Create snapshot</Button>
+                                <Button className="leftAligned" variant="outline-light">
+                                    <i className="fas fa-folder-plus"/>&nbsp;&nbsp;Create snapshot</Button>
+                            </Col>
+                            <Col className="child">
+                                <h2><Badge variant="primary"> IOS-XR</Badge></h2>
                             </Col>
                             <Col className="child">
                                 <Form.Group className="rightAligned">
-                                    <Button variant="outline-light" onClick={this.commitToNetwork.bind(this)}>Commit to network</Button>
-                                    <Button variant="outline-light" onClick={this.showDiff.bind(this)}>Show diff</Button>
+                                    <Button variant="outline-light" onClick={this.commitToNetwork.bind(this)}>
+                                        <i className="fas fa-network-wired"/>&nbsp;&nbsp;Commit to network</Button>
+                                    <Button variant={this.state.showDiff ? "light" : "outline-light"} onClick={this.showDiff.bind(this)}>
+                                        <i className="fas fa-exchange-alt"/>&nbsp;&nbsp;{this.state.showDiff ? 'Hide Diff' : 'Show Diff'}</Button>
                                 </Form.Group>
                             </Col>
                         </Row>
