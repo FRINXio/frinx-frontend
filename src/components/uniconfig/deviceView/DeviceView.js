@@ -5,6 +5,7 @@ import Editor from "./editor/Editor";
 import './DeviceView.css'
 import {Badge, Button, Col, Container, Dropdown, Form, Row} from "react-bootstrap";
 import DropdownMenu from "./dropdownMenu/DropdownMenu";
+import SnapshotModal from "./snapshotModal/SnapshotModal";
 
 const defaultOptions = {
     originalFileName: 'Operational',
@@ -157,7 +158,8 @@ class DeviceView extends Component {
                                             })}
                                         </Dropdown.Menu>
                                     </Dropdown>
-                                <Button className="leftAligned" variant="outline-light">
+                                <Button className="leftAligned" variant="outline-light"
+                                        onClick={this.createSnapshot.bind(this)}>
                                     <i className="fas fa-folder-plus"/>&nbsp;&nbsp;Create snapshot</Button>
                             </Col>
                             <Col className="child">
@@ -174,6 +176,8 @@ class DeviceView extends Component {
                         </Row>
                     </Container>
                 </header>
+
+                {this.state.creatingSnap ? <SnapshotModal/> : null }
 
                     <div className="editor">
                         <div className="uniconfig">
