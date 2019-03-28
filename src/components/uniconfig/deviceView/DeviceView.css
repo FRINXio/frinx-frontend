@@ -17,6 +17,10 @@
     box-shadow: 0px 2px 20px 0px rgba(0,0,0,0.1);
 }
 
+.container-props {
+    width: 1280px;
+}
+
 .operational {
     width: 49%;
     float: right;
@@ -37,8 +41,6 @@ button {
 .editor {
     text-align: left !important;
     margin-top: 40px;
-    margin-left: 13%;
-    margin-right: 13%;
 }
 
 .editingPre {

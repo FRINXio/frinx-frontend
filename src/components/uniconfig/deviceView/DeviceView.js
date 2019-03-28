@@ -144,8 +144,8 @@ class DeviceView extends Component {
                     <Button className="round floating-btn noshadow" onClick={() => {
                         this.redirect(window.location.protocol + "//" + window.location.href.split('/')[2])
                     }} variant="outline-light"><i className="fas fa-chevron-left"/></Button>
-                    <Container>
-                        <Row>
+                    <Container fluid className="container-props">
+                        <Row >
                             <Col className="child">
                                     <Dropdown className="leftAligned" >
                                         <Dropdown.Toggle variant="light" id="dropdown-basic">
@@ -162,15 +162,19 @@ class DeviceView extends Component {
                                         onClick={this.createSnapshot.bind(this)}>
                                     <i className="fas fa-folder-plus"/>&nbsp;&nbsp;Create snapshot</Button>
                             </Col>
-                            <Col className="child">
+                            <Col md={2} className="child">
                                 <h2><Badge variant="primary"> IOS-XR</Badge></h2>
                             </Col>
                             <Col className="child">
                                 <Form.Group className="rightAligned">
+                                    <Button variant={this.state.showDiff ? "light" : "outline-light"}
+                                            onClick={this.showDiff.bind(this)}>
+                                        <i className="fas fa-exchange-alt"/>&nbsp;&nbsp;{this.state.showDiff ? 'Hide Diff' : 'Show Diff'}
+                                    </Button>
+                                    <Button variant="outline-light">
+                                        <i className="fas fa-play"/>&nbsp;&nbsp;Dry run</Button>
                                     <Button variant="outline-light" onClick={this.commitToNetwork.bind(this)}>
                                         <i className="fas fa-network-wired"/>&nbsp;&nbsp;Commit to network</Button>
-                                    <Button variant={this.state.showDiff ? "light" : "outline-light"} onClick={this.showDiff.bind(this)}>
-                                        <i className="fas fa-exchange-alt"/>&nbsp;&nbsp;{this.state.showDiff ? 'Hide Diff' : 'Show Diff'}</Button>
                                 </Form.Group>
                             </Col>
                         </Row>
@@ -179,26 +183,31 @@ class DeviceView extends Component {
 
                 {this.state.creatingSnap ? <SnapshotModal/> : null }
 
+                <Container fluid className="container-props">
                     <div className="editor">
                         <div className="uniconfig">
                             <div className="config">
-                                { this.state.initializing ?
-                                    <i className="fas fa-sync fa-spin fa-8x" style={{margin: '40%', color: 'lightblue'}}/>
+                                {this.state.initializing ?
+                                    <i className="fas fa-sync fa-spin fa-8x"
+                                       style={{margin: '40%', color: 'lightblue'}}/>
                                     :
                                     <Editor title="Configurational" editable={true}
-                                            getEditedConfig={this.getEditedConfig.bind(this)} wfs={JSON.parse(configJSON)}
+                                            getEditedConfig={this.getEditedConfig.bind(this)}
+                                            wfs={JSON.parse(configJSON)}
                                             refreshConfig={this.refreshConfig.bind(this)}/>
                                 }
                             </div>
                             <div className="operational">
-                                { this.state.initializing ?
-                                    <i className="fas fa-sync fa-spin fa-8x" style={{margin: '40%', color: 'lightblue'}}/>
+                                {this.state.initializing ?
+                                    <i className="fas fa-sync fa-spin fa-8x"
+                                       style={{margin: '40%', color: 'lightblue'}}/>
                                     :
                                     operational()
                                 }
                             </div>
                         </div>
                     </div>
+                </Container>
             </div>
 
 
