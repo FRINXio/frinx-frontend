@@ -108,15 +108,17 @@ class List extends Component {
         }
         for(let i = 0; i < dataset.length; i++){
             output.push(
-                <tr>
+                <tr key={`row-${i}`}>
                     <td className=''><Form.Check type="checkbox" id={`checkbox-${i}`}/></td>
                     <td className={highlight ? this.calculateHighlight(i, 0) : ''}>{dataset[i][0]}</td>
                     <td className={highlight ? this.calculateHighlight(i, 1) : ''}>{dataset[i][1]}</td>
-                    <td className={highlight ? this.calculateHighlight(i, 2) : ''}>{dataset[i][2]}</td>
+                    <td className={highlight ? this.calculateHighlight(i, 2) : ''}>{dataset[i][2]}
+                        &nbsp;&nbsp;<i className="fas fa-sync-alt fa-xs clickable"/></td>
                     <td className={highlight ? this.calculateHighlight(i, 3) : ''}>{dataset[i][3]}</td>
                     <td><Button variant="outline-info" onClick={() => {
                         this.redirect(this.url_template + dataset[i][0])
-                    }} size="sm"><i className="fas fa-cog"/></Button></td>
+                    }} size="sm"><i className="fas fa-cog"/></Button>
+                    </td>
                 </tr>)
         }
         return output
