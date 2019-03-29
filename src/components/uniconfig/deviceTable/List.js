@@ -4,6 +4,7 @@ import './List.css'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSync, faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons'
+import MountModal from "./mountModal/MountModal";
 
 class List extends Component {
     constructor(props) {
@@ -39,8 +40,10 @@ class List extends Component {
                 ["26", "71.120.204.15", "Active", "CentOS", "ZZZZZ"],
             ],
             table: [],
-            highlight: []
-        }
+            highlight: [],
+            selectedDevices: [],
+            mountModal: false
+        };
         library.add(faSync);
         this.table = React.createRef();
         this.onEditSearch = this.onEditSearch.bind(this)
@@ -95,6 +98,12 @@ class List extends Component {
         window.location.href = where;
     }
 
+    showMountModal(){
+        this.setState({
+            mountModal: true,
+        })
+    }
+
     repeat(){
         let output = [];
         let highlight;
@@ -129,7 +138,7 @@ class List extends Component {
             <div className='listPage'>
                 <Container>
                     <FormGroup className="deviceGroup leftAligned1">
-                        <Button variant="outline-primary"><FontAwesomeIcon icon={faPlusCircle} /> Mount CLI Device</Button>
+                        <Button variant="outline-primary" onClick={this.showMountModal.bind(this)}><FontAwesomeIcon icon={faPlusCircle} /> Mount CLI Device</Button>
                         <Button variant="outline-danger"><FontAwesomeIcon icon={faMinusCircle} /> Remove CLI Device</Button>
                     </FormGroup>
                     <FormGroup className="deviceGroup rightAligned1">
@@ -138,6 +147,9 @@ class List extends Component {
                     <FormGroup className="searchGroup">
                         <Form.Control value={this.state.keywords} onChange={this.onEditSearch} placeholder="Search by keyword."/>
                     </FormGroup>
+
+                    <MountModal show={this.state.mountModal}/>
+
                     <div className="scrollWrapper">
                         <Table ref={this.table} striped hover size="sm">
                             <thead>
