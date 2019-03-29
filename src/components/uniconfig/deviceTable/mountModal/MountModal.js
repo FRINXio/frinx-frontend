@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import {Button, Form, Modal, Row, Col} from "react-bootstrap";
-import { mountFormTemplate } from "../../../constants";
+import {Button, Form, Modal, Row, Col, Tabs, Tab} from "react-bootstrap";
+import { mountCliTemplate, mountNetconfTemplate } from "../../../constants";
 
 
 class MountModal extends Component {
@@ -12,8 +12,10 @@ class MountModal extends Component {
 
         this.state = {
             show: this.props.show,
-            mountForm: JSON.parse("[" + mountFormTemplate + "]"),
-            mountingDevice: false
+            mountCliForm: JSON.parse("[" + mountCliTemplate + "]"),
+            mountNetconfForm: JSON.parse("[" + mountNetconfTemplate + "]"),
+            mountingDevice: false,
+            mountType: ""
         };
     }
 
@@ -25,12 +27,18 @@ class MountModal extends Component {
 
     componentDidMount() {
         this.setState({
-            mountForm: JSON.parse("[" + mountFormTemplate + "]")
+            mountCliForm: JSON.parse("[" + mountCliTemplate + "]")
         });
     }
 
     mountDevice() {
-        console.log(document.getElementById('mountInput-port').value);
+        console.log(document.getElementById(`mount${this.state.mountType}Input-port`).value);
+    }
+
+    changeMountType(which) {
+        this.setState({
+            mountType: which
+        })
     }
 
 
@@ -40,28 +48,51 @@ class MountModal extends Component {
 
     render() {
         return (
-            <Modal show={this.state.show} onHide={this.handleClose} >
+            <Modal size="lg" show={this.state.show} onHide={this.handleClose} >
                 <Modal.Header>
                     <Modal.Title>Mount Device</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Row>
-                            {Object.entries(this.state.mountForm[0]).map((function (item, i) {
-                                return (
-                                    <Col sm={6}>
-                                        <Form.Group controlId={`mountInput-${item[0].split(":").pop()}`}>
-                                            <Form.Label>{item[0].split(":").pop()}</Form.Label>
-                                            <Form.Control type="input" defaultValue={item[1]}/>
-                                            <Form.Text className="text-muted">
-                                                Some description.
-                                            </Form.Text>
-                                        </Form.Group>
-                                    </Col>
-                                )
-                            }))}
-                        </Row>
-                    </Form>
+                <Modal.Body style={{padding: "30px"}}>
+                    <Tabs onSelect={this.changeMountType.bind(this)} style={{marginBottom: "20px"}} defaultActiveKey="Cli" id="mountTabs">
+                        <Tab eventKey="Cli" title="CLI">
+                            <Form>
+                                <Row>
+                                    {Object.entries(this.state.mountCliForm[0]).map((function (item, i) {
+                                        return (
+                                            <Col sm={6}>
+                                                <Form.Group controlId={`mountCliInput-${item[0].split(":").pop()}`}>
+                                                    <Form.Label>{item[0].split(":").pop()}</Form.Label>
+                                                    <Form.Control type="input" defaultValue={item[1]}/>
+                                                    <Form.Text className="text-muted">
+                                                        Some description.
+                                                    </Form.Text>
+                                                </Form.Group>
+                                            </Col>
+                                        )
+                                    }))}
+                                </Row>
+                            </Form>
+                        </Tab>
+                        <Tab eventKey="Netconf" title="Netconf">
+                            <Form>
+                                <Row>
+                                    {Object.entries(this.state.mountNetconfForm[0]).map((function (item, i) {
+                                        return (
+                                            <Col sm={6}>
+                                                <Form.Group controlId={`mountNetconfInput-${item[0].split(":").pop()}`}>
+                                                    <Form.Label>{item[0].split(":").pop()}</Form.Label>
+                                                    <Form.Control type="input" defaultValue={item[1]}/>
+                                                    <Form.Text className="text-muted">
+                                                        Some description.
+                                                    </Form.Text>
+                                                </Form.Group>
+                                            </Col>
+                                        )
+                                    }))}
+                                </Row>
+                            </Form>
+                        </Tab>
+                    </Tabs>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="primary" onClick={this.mountDevice.bind(this)}>
