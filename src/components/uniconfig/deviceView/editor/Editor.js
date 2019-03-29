@@ -47,7 +47,9 @@ class Editor extends Component {
 
     editJSONswitch(e, which) {
         let parseErr = null;
-        this.state.isNotParsable = false;
+        this.setState({
+            isNotParsable: false
+        });
         if(which === 1) {
             if(this.state.editingJSON) {
                 try {

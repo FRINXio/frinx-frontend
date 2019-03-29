@@ -3,10 +3,6 @@ import { Alert } from "react-bootstrap";
 
 
 class CustomAlerts extends Component {
-    constructor(props, context) {
-        super(props, context);
-
-    }
 
     componentDidMount() {
         console.log(this.props)

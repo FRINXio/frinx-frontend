@@ -5,14 +5,14 @@ import DeviceView from './components/uniconfig/deviceView/DeviceView'
 
 class App extends Component {
   render() {
-      if(window.location.pathname.split("/")[1] == 'edit') {
+      if(window.location.pathname.split("/")[1] === 'edit') {
         return (
           <div className="App">
             <DeviceView datasetId={window.location.pathname.split("/")[2]} />
           </div>
         )
       } else {
-        if(window.location.pathname != "/") {
+        if(window.location.pathname !== "/") {
           window.location.pathname = "/"
         }
         return (

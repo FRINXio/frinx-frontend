@@ -62,13 +62,13 @@ class List extends Component {
         let toBeRendered = [];
         let toBeHighlited = [];
         let query = this.state.keywords.toUpperCase();
-        if(!query == ""){
+        if(query !== ""){
             const rows = this.state.data;
             for(let i = 0; i < rows.length; i++){
                 for(let y = 0; y < rows[i].length; y++){
-                    if(rows[i][y].toUpperCase().indexOf(query) != -1){
-                        toBeRendered.push(rows[i])
-                        toBeHighlited.push(y)
+                    if(rows[i][y].toUpperCase().indexOf(query) !== -1){
+                        toBeRendered.push(rows[i]);
+                        toBeHighlited.push(y);
                         break
                     }
                 }
@@ -84,7 +84,7 @@ class List extends Component {
     }
 
     calculateHighlight(i, y) {
-        if(this.state.highlight[i] == y) {
+        if(this.state.highlight[i] === y) {
             return 'hilit'
         } else {
             return ''
@@ -96,14 +96,14 @@ class List extends Component {
     }
 
     repeat(){
-        let output = []
-        let highlight
-        let dataset
-        if(this.state.keywords == ""){
-            dataset = this.state.data
+        let output = [];
+        let highlight;
+        let dataset;
+        if(this.state.keywords === ""){
+            dataset = this.state.data;
             highlight = false
         } else {
-            dataset = this.state.table
+            dataset = this.state.table;
             highlight = true
         }
         for(let i = 0; i < dataset.length; i++){
@@ -131,7 +131,7 @@ class List extends Component {
                         <Button variant="primary"><FontAwesomeIcon icon={faSync} /> Refresh</Button>
                     </FormGroup>
                     <FormGroup className="searchGroup">
-                        <Form.Control value={this.state.keywords} onChange={this.onEditSearch} placeholder="Search by keyword."></Form.Control>
+                        <Form.Control value={this.state.keywords} onChange={this.onEditSearch} placeholder="Search by keyword."/>
                     </FormGroup>
                     <div className="scrollWrapper">
                         <Table ref={this.table} striped hover size="sm">
