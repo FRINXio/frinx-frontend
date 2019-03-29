@@ -6,6 +6,7 @@ import './DeviceView.css'
 import {Badge, Button, Col, Container, Dropdown, Form, Row} from "react-bootstrap";
 import DropdownMenu from "./dropdownMenu/DropdownMenu";
 import SnapshotModal from "./snapshotModal/SnapshotModal";
+import CustomAlerts from "../customAlerts/CustomAlerts";
 
 const defaultOptions = {
     originalFileName: 'Operational',
@@ -29,7 +30,8 @@ class DeviceView extends Component {
             showDiff: false,
             creatingSnap: false,
             syncing: false,
-            initializing: true
+            initializing: true,
+            alertType: null
         }
     }
 
@@ -69,6 +71,13 @@ class DeviceView extends Component {
         this.setState({
             operational: this.state.config,
         });
+
+        //if successful then
+        this.setState({
+            alertType: "commitSuccess"
+        })
+        setTimeout( () => this.setState({alertType: null}), 3000);
+
     }
 
     syncFromNetwork(){
@@ -105,11 +114,11 @@ class DeviceView extends Component {
         })
     }
 
+
     render() {
 
         let configJSON = JSON.stringify(JSON.parse(this.state.config), null, 2);
         let operationalJSON = JSON.stringify(JSON.parse(this.state.operational), null, 2);
-
 
         const operational = () => (
             <div>
@@ -182,6 +191,7 @@ class DeviceView extends Component {
                 </header>
 
                 {this.state.creatingSnap ? <SnapshotModal/> : null }
+                {this.state.alertType ? <CustomAlerts alertType={this.state.alertType}/> : null}
 
                 <Container fluid className="container-props">
                     <div className="editor">
