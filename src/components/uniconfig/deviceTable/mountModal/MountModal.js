@@ -15,7 +15,7 @@ class MountModal extends Component {
             mountCliForm: JSON.parse("[" + mountCliTemplate + "]"),
             mountNetconfForm: JSON.parse("[" + mountNetconfTemplate + "]"),
             mountingDevice: false,
-            mountType: ""
+            mountType: "Cli"
         };
     }
 
@@ -32,15 +32,44 @@ class MountModal extends Component {
     }
 
     mountDevice() {
-        console.log(document.getElementById(`mount${this.state.mountType}Input-port`).value);
+        let payload = {};
+        let data = {};
+        let mountType = this.state.mountType;
+
+       Object.keys(this.state.mountCliForm[0]).map(function (item, i) {
+           let targetField = item.split(":").pop();
+           data[item] = document.getElementById(`mount${mountType}Input-${targetField}`).value
+       });
+
+        payload["network-topology:node"] = data;
+        payload = JSON.stringify(payload);
+        console.log(payload)
+
+        //Make a request to ODL
+        let xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+
+        xhr.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                console.log(this.responseText);
+            }
+        });
+
+        xhr.open("PUT", "http://localhost:8181/restconf/config/network-topology:network-topology/topology/cli/node/xr5");
+        xhr.setRequestHeader("Authorization", "Basic YWRtaW46YWRtaW4=");
+        xhr.setRequestHeader("Accept", "application/json");
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("cache-control", "no-cache");
+
+        xhr.send(payload);
     }
+
 
     changeMountType(which) {
         this.setState({
             mountType: which
         })
     }
-
 
     handleClose() {
         this.setState({ show: false });
