@@ -25,27 +25,31 @@ class MountModal extends Component {
         })
     }
 
-    componentDidMount() {
-        this.setState({
-            mountCliForm: JSON.parse("[" + mountCliTemplate + "]")
-        });
-    }
-
     mountDevice() {
         let payload = {};
         let data = {};
         let mountType = this.state.mountType;
 
-       Object.keys(this.state.mountCliForm[0]).map(function (item, i) {
-           let targetField = item.split(":").pop();
-           data[item] = document.getElementById(`mount${mountType}Input-${targetField}`).value
-       });
+        if (mountType === "Cli") {
+            Object.keys(this.state.mountCliForm[0]).map(function (item, i) {
+                let targetField = item.split(":").pop();
+                data[item] = document.getElementById(`mount${mountType}Input-${targetField}`).value;
+                return data[item];
+            });
+        } else {
+            Object.keys(this.state.mountNetconfForm[0]).map(function (item, i) {
+                let targetField = item.split(":").pop();
+                data[item] = document.getElementById(`mount${mountType}Input-${targetField}`).value;
+                return data[item];
+            });
+        }
 
         payload["network-topology:node"] = data;
         payload = JSON.stringify(payload);
         console.log(payload)
 
-        //Make a request to ODL
+        //TODO Make a request to ODL
+
         let xhr = new XMLHttpRequest();
         xhr.withCredentials = true;
 
