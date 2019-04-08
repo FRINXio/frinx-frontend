@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {Button, Form, Modal, Row, Col, Tabs, Tab} from "react-bootstrap";
 import { mountCliTemplate, mountNetconfTemplate } from "../../../constants";
+//import http from '../../../../../server/HttpServerSide';
 
 
 class MountModal extends Component {
@@ -50,22 +51,7 @@ class MountModal extends Component {
 
         //TODO Make a request to ODL
 
-        let xhr = new XMLHttpRequest();
-        xhr.withCredentials = true;
-
-        xhr.addEventListener("readystatechange", function () {
-            if (this.readyState === 4) {
-                console.log(this.responseText);
-            }
-        });
-
-        xhr.open("PUT", "http://localhost:8181/restconf/config/network-topology:network-topology/topology/cli/node/xr5");
-        xhr.setRequestHeader("Authorization", "Basic YWRtaW46YWRtaW4=");
-        xhr.setRequestHeader("Accept", "application/json");
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.setRequestHeader("cache-control", "no-cache");
-
-        xhr.send(payload);
+        //http.get("http://localhost:3001/api/getstatus");
     }
 
 
