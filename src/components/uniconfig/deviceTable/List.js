@@ -11,34 +11,7 @@ class List extends Component {
         super(props);
         this.state = {
             keywords: "",
-            data: [
-                ["1", "205.206.198.246", "Active", "Debian", "AAAAA"],
-                ["2", "19.109.166.144", "Active", "Debian", "BBBBB"],
-                ["3", "169.82.108.167", "Active", "Debian", "CCCCC"],
-                ["4", "88.250.45.87", "Active", "Debian", "DDDDD"],
-                ["5", "90.201.129.182", "Active", "Debian", "EEEEE"],
-                ["6", "7.195.255.207", "Active", "Debian", "FFFFF"],
-                ["7", "143.233.31.217", "Active", "Debian", "GGGGG"],
-                ["8", "147.255.159.169", "Active", "Debian", "HHHHH"],
-                ["9", "82.238.134.189", "Active", "FreeBSD", "IIIII"],
-                ["10", "106.246.233.249", "Active", "FreeBSD", "JJJJJ"],
-                ["11", "163.96.42.127", "Active", "FreeBSD", "KKKKK"],
-                ["12", "5.33.224.128", "Active", "FreeBSD", "LLLLL"],
-                ["13", "254.40.106.77", "Active", "FreeBSD", "MMMMM"],
-                ["14", "137.70.62.219", "Active", "FreeBSD", "NNNNN"],
-                ["15", "134.103.47.57", "Active", "FreeBSD", "OOOOO"],
-                ["16", "82.245.12.43", "Active", "CentOS", "PPPPP"],
-                ["17", "71.112.249.226", "Active", "CentOS", "QQQQQ"],
-                ["18", "104.211.22.220", "Disabled", "CentOS", "RRRRR"],
-                ["19", "203.79.246.234", "Disabled", "CentOS", "SSSSS"],
-                ["20", "199.134.150.131", "Disabled", "CentOS", "TTTTT"],
-                ["21", "29.212.91.0", "Active", "CentOS", "UUUUU"],
-                ["22", "122.237.249.208", "Active", "CentOS", "VVVVV"],
-                ["23", "236.25.125.122", "Disabled", "CentOS", "WWWWW"],
-                ["24", "209.21.69.204", "Active", "CentOS", "XXXXX"],
-                ["25", "5.146.88.200", "Active", "CentOS", "YYYYY"],
-                ["26", "71.120.204.15", "Active", "CentOS", "ZZZZZ"],
-            ],
+            data: [],
             table: [],
             highlight: [],
             selectedDevices: [],
@@ -46,8 +19,9 @@ class List extends Component {
         };
         library.add(faSync);
         this.table = React.createRef();
-        this.onEditSearch = this.onEditSearch.bind(this)
-        this.redirect = this.redirect.bind(this)
+        this.onEditSearch = this.onEditSearch.bind(this);
+        this.redirect = this.redirect.bind(this);
+        this.addDevice = this.addDevice.bind(this);
         this.url_template = window.location.protocol + "//" + window.location.href.split('/')[2] + "/edit/"
     }
 
@@ -59,6 +33,25 @@ class List extends Component {
         this.setState({keywords: event.target.value}, () =>{
             this.search()
         })
+    }
+
+    addDevice(device) {
+        console.log(device);
+        let node_id = device["node-id"];
+        let ip_address = device["cli-topology:host"];
+        let status = device["cli-topology:connection-status"];
+        let entry = [ node_id, ip_address, status];
+
+        let newData = this.state.data;
+        console.log(newData);
+        newData.push(entry);
+        console.log(newData);
+
+        this.setState({
+            data: newData
+        })
+
+        console.log(this.state.data)
     }
 
     search() {
@@ -138,8 +131,8 @@ class List extends Component {
             <div className='listPage'>
                 <Container>
                     <FormGroup className="deviceGroup leftAligned1">
-                        <Button variant="outline-primary" onClick={this.showMountModal.bind(this)}><FontAwesomeIcon icon={faPlusCircle} /> Mount CLI Device</Button>
-                        <Button variant="outline-danger"><FontAwesomeIcon icon={faMinusCircle} /> Remove CLI Device</Button>
+                        <Button variant="outline-primary" onClick={this.showMountModal.bind(this)}><FontAwesomeIcon icon={faPlusCircle} /> Mount Device</Button>
+                        <Button variant="outline-danger"><FontAwesomeIcon icon={faMinusCircle} /> Remove Device</Button>
                     </FormGroup>
                     <FormGroup className="deviceGroup rightAligned1">
                         <Button variant="primary"><FontAwesomeIcon icon={faSync} /> Refresh</Button>
@@ -148,7 +141,7 @@ class List extends Component {
                         <Form.Control value={this.state.keywords} onChange={this.onEditSearch} placeholder="Search by keyword."/>
                     </FormGroup>
 
-                    <MountModal show={this.state.mountModal}/>
+                    <MountModal addDevice={this.addDevice} show={this.state.mountModal}/>
 
                     <div className="scrollWrapper">
                         <Table ref={this.table} striped hover size="sm">

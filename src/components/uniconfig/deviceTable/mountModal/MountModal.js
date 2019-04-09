@@ -15,7 +15,6 @@ class MountModal extends Component {
             show: this.props.show,
             mountCliForm: JSON.parse("[" + mountCliTemplate + "]"),
             mountNetconfForm: JSON.parse("[" + mountNetconfTemplate + "]"),
-            mountingDevice: false,
             mountType: "Cli",
             connectionStatus: null,
             timeout: null
@@ -57,10 +56,8 @@ class MountModal extends Component {
         let node = Object.values(payload["network-topology:node"])[0];
 
 
-        this.setState({mountingDevice: true});
         http.put("/api/odl/mount/" + topology + "/" + node, payload).then(res => {
             console.log(res);
-            this.setState({mountingDevice: false});
         }).then(() => {
             this.getConnectionStatus(topology,node);
         })
@@ -77,7 +74,10 @@ class MountModal extends Component {
 
             console.log(connectionStatus);
             this.setState({connectionStatus: connectionStatus});
-            if(connectionStatus !== "connected") {
+            if(connectionStatus === "connected") {
+                this.props.addDevice(res.node[0]);
+            }
+            else {
                 this.setState(
                     {timeout: setTimeout(this.getConnectionStatus.bind(this,topology, node), 3000)
                     })
@@ -86,10 +86,14 @@ class MountModal extends Component {
         });
     }
 
+    addDeviceToTable() {
+
+    }
+
     changeMountType(which) {
         this.setState({
             mountType: which,
-            mountingDevice: false,
+            deviceMounted: false,
             connectionStatus: null
         });
         clearTimeout(this.state.timeout);
@@ -97,7 +101,7 @@ class MountModal extends Component {
 
     handleClose() {
         this.setState({ show: false });
-        this.setState({ mountingDevice: false, connectionStatus: null});
+        this.setState({ deviceMounted: false, connectionStatus: null});
         clearTimeout(this.state.timeout);
     }
 
