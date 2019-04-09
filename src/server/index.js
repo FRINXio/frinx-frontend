@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const pino = require('express-pino-logger')();
-const odlAPI = require('../src/api/odl');
+const odlAPI = require('../api/odl');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -9,7 +9,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
 app.use(express.static('public'));
-app.use('/api/odl', odlAPI);
+app.use('/api/odl', bodyParser.json(), odlAPI);
 
 let server = app.listen(process.env.NODE_PORT || 3001, process.env.NODE_HOST || "localhost", function () {
     let host = server.address().address;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import {Button, Form, Modal, Row, Col, Tabs, Tab} from "react-bootstrap";
+import {Button, Form, Modal, Row, Col, Tabs, Tab, Alert, Badge} from "react-bootstrap";
 import { mountCliTemplate, mountNetconfTemplate } from "../../../constants";
-//import http from '../../../../../server/HttpServerSide';
+const http = require('../../../../server/HttpServerSide').HttpClient;
 
 
 class MountModal extends Component {
@@ -16,8 +16,9 @@ class MountModal extends Component {
             mountCliForm: JSON.parse("[" + mountCliTemplate + "]"),
             mountNetconfForm: JSON.parse("[" + mountNetconfTemplate + "]"),
             mountingDevice: false,
-            mountType: "Cli"
-        };
+            mountType: "Cli",
+            connectionStatus: null,
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -34,6 +35,8 @@ class MountModal extends Component {
         if (mountType === "Cli") {
             Object.keys(this.state.mountCliForm[0]).map(function (item, i) {
                 let targetField = item.split(":").pop();
+                if( item === 'cli-topology:device-type') {
+                }
                 data[item] = document.getElementById(`mount${mountType}Input-${targetField}`).value;
                 return data[item];
             });
@@ -46,14 +49,31 @@ class MountModal extends Component {
         }
 
         payload["network-topology:node"] = data;
-        payload = JSON.stringify(payload);
-        console.log(payload)
+        let topology = Object.keys(payload["network-topology:node"])[4].split(":")[0].split("-")[0];
+        let node = Object.values(payload["network-topology:node"])[0];
 
-        //TODO Make a request to ODL
 
-        //http.get("http://localhost:3001/api/getstatus");
+        this.setState({mountingDevice: true});
+        http.put("/api/odl/mount/" + topology + "/" + node, payload).then(res => {
+            console.log(res);
+            this.setState({mountingDevice: false});
+        }).then(() => {
+            this.getConnectionStatus(topology,node);
+        })
+
     }
 
+    getConnectionStatus(topology, node) {
+        http.get("/api/odl/get/status/" + topology + "/" + node).then(res => {
+            let connectionStatus = res.node[0]["cli-topology:connection-status"];
+            console.log(connectionStatus);
+            this.setState({connectionStatus: connectionStatus});
+            if(connectionStatus !== "connected") {
+                setTimeout(this.getConnectionStatus.bind(this,topology, node), 3000);
+            }
+
+        });
+    }
 
     changeMountType(which) {
         this.setState({
