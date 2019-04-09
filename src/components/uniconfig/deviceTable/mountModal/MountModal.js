@@ -79,8 +79,11 @@ class MountModal extends Component {
 
     changeMountType(which) {
         this.setState({
-            mountType: which
-        })
+            mountType: which,
+            mountingDevice: false,
+            connectionStatus: null
+        });
+        clearTimeout(this.state.timeout);
     }
 
     handleClose() {
