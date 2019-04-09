@@ -25,4 +25,6 @@ router.get('/get/status/:topology/:node', async (req, res, next) => {
     }
 });
 
+//TODO get all nodes connected when mounting device table
+
 module.exports = router;

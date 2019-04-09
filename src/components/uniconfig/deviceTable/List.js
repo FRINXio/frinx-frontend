@@ -11,7 +11,10 @@ class List extends Component {
         super(props);
         this.state = {
             keywords: "",
-            data: [],
+            data: [
+                ["1", "205.206.198.246", "Active", "Debian", "AAAAA"],
+                ["2", "19.109.166.144", "Active", "Debian", "BBBBB"],
+            ],
             table: [],
             highlight: [],
             selectedDevices: [],

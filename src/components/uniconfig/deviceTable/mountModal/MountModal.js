@@ -86,23 +86,19 @@ class MountModal extends Component {
         });
     }
 
-    addDeviceToTable() {
-
-    }
-
     changeMountType(which) {
         this.setState({
             mountType: which,
             deviceMounted: false,
             connectionStatus: null
         });
-        clearTimeout(this.state.timeout);
+        //clearTimeout(this.state.timeout);
     }
 
     handleClose() {
         this.setState({ show: false });
         this.setState({ deviceMounted: false, connectionStatus: null});
-        clearTimeout(this.state.timeout);
+        //clearTimeout(this.state.timeout);
     }
 
     render() {
