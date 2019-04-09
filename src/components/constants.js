@@ -3,8 +3,8 @@ export const CONFIG = 'http://www.json-generator.com/api/json/get/cgfQfXbVAi?ind
 export const OPER = 'http://www.json-generator.com/api/json/get/cgfQfXbVAi?indent=2';
 
 export const mountNetconfTemplate = JSON.stringify( {
-    "node-id": "xr5",
-    "netconf-node-topology:host": "192.168.1.215",
+    "node-id": "xr6",
+    "netconf-node-topology:host": "192.168.1.213",
     "netconf-node-topology:port": 830,
     "netconf-node-topology:keepalive-delay": 0,
     "netconf-node-topology:tcp-only": false,

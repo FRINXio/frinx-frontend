@@ -51,6 +51,9 @@ class MountModal extends Component {
 
         payload["network-topology:node"] = data;
         let topology = Object.keys(payload["network-topology:node"])[4].split(":")[0].split("-")[0];
+        if(topology === "netconf") {
+            topology = "topology-netconf";
+        }
         let node = Object.values(payload["network-topology:node"])[0];
 
 
@@ -65,7 +68,13 @@ class MountModal extends Component {
 
     getConnectionStatus(topology, node) {
         http.get("/api/odl/get/status/" + topology + "/" + node).then(res => {
-            let connectionStatus = res.node[0]["cli-topology:connection-status"];
+            let connectionStatus = null;
+            if(topology === "topology-netconf") {
+                connectionStatus = Object.values(res.node[0])[4] || Object.values(res.node[0])[1];
+            } else {
+                connectionStatus = Object.values(res.node[0])[1];
+            }
+
             console.log(connectionStatus);
             this.setState({connectionStatus: connectionStatus});
             if(connectionStatus !== "connected") {

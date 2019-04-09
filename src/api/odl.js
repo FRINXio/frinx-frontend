@@ -16,7 +16,6 @@ router.put('/mount/:topology/:node', async (req, res, next) => {
     }
 });
 
-//xhr.open("GET", "http://localhost:8181/restconf/operational/network-topology:network-topology/topology/cli/node/xr5");
 router.get('/get/status/:topology/:node', async (req, res, next) => {
     try {
         const result = await http.get(odlOperURL + "/" + req.params.topology + "/node/" + req.params.node, authToken);
