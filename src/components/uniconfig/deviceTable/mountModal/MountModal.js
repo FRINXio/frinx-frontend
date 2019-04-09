@@ -138,10 +138,27 @@ class MountModal extends Component {
                     </Tabs>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Badge variant={this.state.connectionStatus === "connecting" ? "primary" : "success" }>{this.state.connectionStatus}</Badge>
-                    <Button variant="primary" onClick={this.mountDevice.bind(this)}>
-                        {this.state.mountingDevice ? (<i className="fas fa-spinner fa-spin"/>) : null}
-                        {this.state.mountingDevice ? "    Mounting..." : "Mount Device"}
+                           <Button variant={this.state.connectionStatus === null ?
+                               "primary" :
+                               this.state.connectionStatus === "connecting" ?
+                                   "info" :
+                                   this.state.connectionStatus === "connected" ?
+                                       "success" : "danger"}
+                            onClick={this.mountDevice.bind(this)}>
+                               {this.state.connectionStatus === null ?
+                                   null :
+                                   this.state.connectionStatus === "connecting" ?
+                                       <i className="fas fa-spinner fa-spin"/> :
+                                       this.state.connectionStatus === "connected" ?
+                                           <i className="fas fa-check-circle"/> :
+                                           <i className="fas fa-exclamation-circle"/>}
+                               &nbsp;&nbsp;
+                        {this.state.connectionStatus === null ?
+                            "Mount Device" :
+                            this.state.connectionStatus === "connecting" ?
+                                "Connecting" :
+                                this.state.connectionStatus === "connected" ?
+                                    "Connected" : "Something went wrong"}
                     </Button>
                     <Button variant="secondary" onClick={this.handleClose}>
                         Close
