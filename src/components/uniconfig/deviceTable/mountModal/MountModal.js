@@ -134,6 +134,7 @@ class MountModal extends Component {
                     </Tabs>
                 </Modal.Body>
                 <Modal.Footer>
+                    <Badge variant={this.state.connectionStatus === "connecting" ? "primary" : "success" }>{this.state.connectionStatus}</Badge>
                     <Button variant="primary" onClick={this.mountDevice.bind(this)}>
                         {this.state.mountingDevice ? (<i className="fas fa-spinner fa-spin"/>) : null}
                         {this.state.mountingDevice ? "    Mounting..." : "Mount Device"}
