@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Button, Form, Modal, Row, Col, Tabs, Tab, Alert, Badge} from "react-bootstrap";
+import {Button, Form, Modal, Row, Col, Tabs, Tab } from "react-bootstrap";
 import { mountCliTemplate, mountNetconfTemplate } from "../../../constants";
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
@@ -64,7 +64,7 @@ class MountModal extends Component {
     }
 
     getConnectionStatus(topology, node) {
-        http.get("/api/odl/get/status/" + topology + "/" + node).then(res => {
+        http.get("/api/odl/get/oper/status/" + topology + "/" + node).then(res => {
             let connectionStatus = null;
             if(topology === "topology-netconf") {
                 connectionStatus = Object.values(res.node[0])[4] || Object.values(res.node[0])[1];

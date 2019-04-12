@@ -5,16 +5,14 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSync, faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons'
 import MountModal from "./mountModal/MountModal";
+const http = require('../../../server/HttpServerSide').HttpClient;
 
 class List extends Component {
     constructor(props) {
         super(props);
         this.state = {
             keywords: "",
-            data: [
-                ["1", "205.206.198.246", "Active", "Debian", "AAAAA"],
-                ["2", "19.109.166.144", "Active", "Debian", "BBBBB"],
-            ],
+            data: [],
             table: [],
             highlight: [],
             selectedDevices: [],
@@ -29,7 +27,20 @@ class List extends Component {
     }
 
     componentWillMount() {
-        this.search()
+        this.search();
+    }
+
+    componentDidMount() {
+        http.get('/api/odl/get/oper/all/status/cli').then(res => {
+            let topologies = Object.keys(res);
+            let topology = Object.keys(res[Object.keys(res)]);
+            let topology_id = res[topologies][topology]["topology-id"];
+            let nodes = res[topologies][topology]["node"];
+
+            nodes.map(device => {
+                return this.addDevice(device, topology_id)
+            })
+        })
     }
 
     onEditSearch(event){
@@ -38,32 +49,36 @@ class List extends Component {
         })
     }
 
-    addDevice(device, topology) {
-        console.log(device);
-        console.log(topology);
-        let node_id, ip_address, status;
+    async addDevice(device, topology) {
+        let node_id, ip_address, status, os_version;
 
-        if(topology === "cli"){
+        if (topology === "cli") {
             node_id = device["node-id"];
             ip_address = device["cli-topology:host"];
             status = device["cli-topology:connection-status"];
+            os_version = await http.get('/api/odl/get/conf/status/' + topology + "/" + node_id).then(res => {
+                os_version = res["node"]["0"]["cli-topology:device-type"];
+                os_version = os_version + " / " + res["node"]["0"]["cli-topology:device-version"];
+                return os_version;
+            })
         } else {
             node_id = device["node-id"];
             ip_address = device["netconf-node-topology:host"];
             status = device["netconf-node-topology:connection-status"];
+            os_version = "netconf"
         }
 
-        let entry = [ node_id, ip_address, status];
+        let entry = [node_id, ip_address, status, os_version];
         let mounted = false;
         let newData = this.state.data;
 
-        for(let i = 0; i < newData.length; i++){
-            if(newData[i].includes(ip_address)){
+        for (let i = 0; i < newData.length; i++) {
+            if (newData[i].includes(ip_address)) {
                 mounted = true;
             }
         }
 
-        if(!mounted){
+        if (!mounted) {
             newData.push(entry);
             this.setState({
                 data: newData
