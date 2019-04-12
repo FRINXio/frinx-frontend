@@ -124,11 +124,13 @@ class List extends Component {
         this.state.selectedDevices.map(device => {
             console.log(device);
             if(device["topology"] === "netconf"){
-                http.delete('api/odl/unmount/topology-netconf/' + device["node_id"])
+                return http.delete('api/odl/unmount/topology-netconf/' + device["node_id"])
             } else {
-                http.delete('api/odl/unmount/cli/' + device["node_id"])
+                return http.delete('api/odl/unmount/cli/' + device["node_id"])
             }
-        })
+        });
+
+        window.location.reload();
     }
 
 
