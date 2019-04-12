@@ -75,7 +75,7 @@ class MountModal extends Component {
             console.log(connectionStatus);
             this.setState({connectionStatus: connectionStatus});
             if(connectionStatus === "connected") {
-                this.props.addDevice(res.node[0]);
+                this.props.addDevice(res.node[0], topology);
             }
             else {
                 this.setState(
@@ -96,8 +96,12 @@ class MountModal extends Component {
     }
 
     handleClose() {
-        this.setState({ show: false });
-        this.setState({ deviceMounted: false, connectionStatus: null});
+        this.setState({
+            show: false,
+            mountType: "Cli",
+            deviceMounted: false,
+            connectionStatus: null
+        });
         //clearTimeout(this.state.timeout);
     }
 

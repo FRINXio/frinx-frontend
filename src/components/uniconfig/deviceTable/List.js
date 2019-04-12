@@ -38,11 +38,21 @@ class List extends Component {
         })
     }
 
-    addDevice(device) {
+    addDevice(device, topology) {
         console.log(device);
-        let node_id = device["node-id"];
-        let ip_address = device["cli-topology:host"];
-        let status = device["cli-topology:connection-status"];
+        console.log(topology);
+        let node_id, ip_address, status;
+
+        if(topology === "cli"){
+            node_id = device["node-id"];
+            ip_address = device["cli-topology:host"];
+            status = device["cli-topology:connection-status"];
+        } else {
+            node_id = device["node-id"];
+            ip_address = device["netconf-node-topology:host"];
+            status = device["netconf-node-topology:connection-status"];
+        }
+
         let entry = [ node_id, ip_address, status];
         let mounted = false;
         let newData = this.state.data;
