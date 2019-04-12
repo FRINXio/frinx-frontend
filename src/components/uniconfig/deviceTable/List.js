@@ -73,7 +73,7 @@ class List extends Component {
         let newData = this.state.data;
 
         for (let i = 0; i < newData.length; i++) {
-            if (newData[i].includes(ip_address)) {
+            if (newData[i].includes(ip_address) && newData[i].includes(os_version)) {
                 mounted = true;
             }
         }
