@@ -74,15 +74,13 @@ class MountModal extends Component {
 
             console.log(connectionStatus);
             this.setState({connectionStatus: connectionStatus});
-            if(connectionStatus === "connected") {
-                this.props.addDevice(res.node[0], topology);
-            }
-            else {
+            this.props.addDevice(res.node[0], topology);
+
+            if(connectionStatus !== "connected") {
                 this.setState(
                     {timeout: setTimeout(this.getConnectionStatus.bind(this,topology, node), 3000)
                     })
-            }
-
+             }
         });
     }
 
@@ -92,7 +90,7 @@ class MountModal extends Component {
             deviceMounted: false,
             connectionStatus: null
         });
-        //clearTimeout(this.state.timeout);
+        clearTimeout(this.state.timeout);
     }
 
     handleClose() {
@@ -102,7 +100,7 @@ class MountModal extends Component {
             deviceMounted: false,
             connectionStatus: null
         });
-        //clearTimeout(this.state.timeout);
+        clearTimeout(this.state.timeout);
     }
 
     render() {

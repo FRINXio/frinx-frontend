@@ -41,6 +41,7 @@ class List extends Component {
     }
 
     async addDevice(device, topology) {
+        console.log(device);
         let node_id, ip_address, status, os_version;
 
         if (topology === "cli") {
@@ -64,7 +65,7 @@ class List extends Component {
         let newData = this.state.data;
 
         for (let i = 0; i < newData.length; i++) {
-            if (newData[i].includes(ip_address) && newData[i].includes(os_version)) {
+            if ((newData[i].includes(ip_address) && newData[i].includes(os_version)) || (newData[i].includes(node_id) && newData[i].includes(os_version))) {
                 mounted = true;
             }
         }
