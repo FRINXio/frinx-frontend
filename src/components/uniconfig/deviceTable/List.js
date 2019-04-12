@@ -44,17 +44,21 @@ class List extends Component {
         let ip_address = device["cli-topology:host"];
         let status = device["cli-topology:connection-status"];
         let entry = [ node_id, ip_address, status];
-
+        let mounted = false;
         let newData = this.state.data;
-        console.log(newData);
-        newData.push(entry);
-        console.log(newData);
 
-        this.setState({
-            data: newData
-        })
+        for(let i = 0; i < newData.length; i++){
+            if(newData[i].includes(ip_address)){
+                mounted = true;
+            }
+        }
 
-        console.log(this.state.data)
+        if(!mounted){
+            newData.push(entry);
+            this.setState({
+                data: newData
+            })
+        }
     }
 
     search() {
