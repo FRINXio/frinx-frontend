@@ -12,7 +12,7 @@ class MountModal extends Component {
         this.handleClose = this.handleClose.bind(this);
 
         this.state = {
-            show: this.props.show,
+            show: false,
             mountCliForm: JSON.parse("[" + mountCliTemplate + "]"),
             mountNetconfForm: JSON.parse("[" + mountNetconfTemplate + "]"),
             mountType: "Cli",

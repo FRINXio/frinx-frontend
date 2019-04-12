@@ -31,31 +31,7 @@ class List extends Component {
     }
 
     componentDidMount() {
-        http.get('/api/odl/get/oper/all/status/cli').then(res => {
-            let topologies = Object.keys(res);
-            let topology = Object.keys(res[Object.keys(res)]);
-            let topology_id = res[topologies][topology]["topology-id"];
-            let nodes = res[topologies][topology]["node"];
-
-            if (nodes) {
-                nodes.map(device => {
-                    return this.addDevice(device, topology_id)
-                })
-            }
-        });
-
-        http.get('/api/odl/get/oper/all/status/topology-netconf').then(res => {
-            let topologies = Object.keys(res);
-            let topology = Object.keys(res[Object.keys(res)]);
-            let topology_id = res[topologies][topology]["topology-id"];
-            let nodes = res[topologies][topology]["node"];
-
-            if (nodes) {
-                nodes.map(device => {
-                    return this.addDevice(device, topology_id)
-                })
-            }
-        })
+        this.getAllDevices();
     }
 
     onEditSearch(event){
@@ -63,7 +39,6 @@ class List extends Component {
             this.search()
         })
     }
-
 
     async addDevice(device, topology) {
         let node_id, ip_address, status, os_version;
@@ -122,18 +97,42 @@ class List extends Component {
 
     removeDevices() {
         this.state.selectedDevices.map(device => {
-            console.log(device);
             if(device["topology"] === "netconf"){
                 return http.delete('api/odl/unmount/topology-netconf/' + device["node_id"])
             } else {
                 return http.delete('api/odl/unmount/cli/' + device["node_id"])
             }
         });
-
-        window.location.reload();
     }
 
+    getAllDevices() {
+        this.setState({data: [], mountModal: false});
+        http.get('/api/odl/get/oper/all/status/cli').then(res => {
+            let topologies = Object.keys(res);
+            let topology = Object.keys(res[Object.keys(res)]);
+            let topology_id = res[topologies][topology]["topology-id"];
+            let nodes = res[topologies][topology]["node"];
 
+            if (nodes) {
+                nodes.map(device => {
+                    return this.addDevice(device, topology_id)
+                })
+            }
+        });
+
+        http.get('/api/odl/get/oper/all/status/topology-netconf').then(res => {
+            let topologies = Object.keys(res);
+            let topology = Object.keys(res[Object.keys(res)]);
+            let topology_id = res[topologies][topology]["topology-id"];
+            let nodes = res[topologies][topology]["node"];
+
+            if (nodes) {
+                nodes.map(device => {
+                    return this.addDevice(device, topology_id)
+                })
+            }
+        })
+    }
 
     search() {
         let toBeRendered = [];
@@ -216,7 +215,7 @@ class List extends Component {
                         <Button variant="outline-danger" onClick={this.removeDevices.bind(this)} ><FontAwesomeIcon icon={faMinusCircle} /> Unmount Devices</Button>
                     </FormGroup>
                     <FormGroup className="deviceGroup rightAligned1">
-                        <Button variant="primary"><FontAwesomeIcon icon={faSync} /> Refresh</Button>
+                        <Button variant="primary" onClick={this.getAllDevices.bind(this)}><FontAwesomeIcon icon={faSync} /> Refresh</Button>
                     </FormGroup>
                     <FormGroup className="searchGroup">
                         <Form.Control value={this.state.keywords} onChange={this.onEditSearch} placeholder="Search by keyword."/>
