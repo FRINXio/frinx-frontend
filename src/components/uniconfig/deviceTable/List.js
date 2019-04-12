@@ -37,9 +37,11 @@ class List extends Component {
             let topology_id = res[topologies][topology]["topology-id"];
             let nodes = res[topologies][topology]["node"];
 
-            nodes.map(device => {
-                return this.addDevice(device, topology_id)
-            })
+            if (nodes) {
+                nodes.map(device => {
+                    return this.addDevice(device, topology_id)
+                })
+            }
         });
 
         http.get('/api/odl/get/oper/all/status/topology-netconf').then(res => {
@@ -49,11 +51,12 @@ class List extends Component {
             let topology_id = res[topologies][topology]["topology-id"];
             let nodes = res[topologies][topology]["node"];
 
-            nodes.map(device => {
-                return this.addDevice(device, topology_id)
-            })
+            if (nodes) {
+                nodes.map(device => {
+                    return this.addDevice(device, topology_id)
+                })
+            }
         })
-
     }
 
     onEditSearch(event){

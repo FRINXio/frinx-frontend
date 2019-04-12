@@ -30,6 +30,24 @@ const HttpClient = {
             });
         }),
 
+    delete: (path, token) =>
+        new Promise((resolve, reject) => {
+            console.log(path);
+
+            const req = request.delete(path).accept('application/json');
+            if (token) {
+                req.set('Authorization', token);
+                console.log(getUrl(path));
+            }
+            req.end((err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res.body);
+                }
+            });
+        }),
+
     post: (path, data, token) =>
         new Promise((resolve, reject) => {
             const req = request.post(getUrl(path), data).set('Content-Type', 'application/json');
