@@ -40,7 +40,20 @@ class List extends Component {
             nodes.map(device => {
                 return this.addDevice(device, topology_id)
             })
+        });
+
+        http.get('/api/odl/get/oper/all/status/topology-netconf').then(res => {
+            console.log(res);
+            let topologies = Object.keys(res);
+            let topology = Object.keys(res[Object.keys(res)]);
+            let topology_id = res[topologies][topology]["topology-id"];
+            let nodes = res[topologies][topology]["node"];
+
+            nodes.map(device => {
+                return this.addDevice(device, topology_id)
+            })
         })
+
     }
 
     onEditSearch(event){
@@ -48,6 +61,7 @@ class List extends Component {
             this.search()
         })
     }
+
 
     async addDevice(device, topology) {
         let node_id, ip_address, status, os_version;
