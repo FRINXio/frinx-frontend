@@ -34,6 +34,15 @@ router.get('/get/conf/status/:topology/:node', async (req, res, next) => {
     }
 });
 
+router.get('/get/oper/status/:topology/:node', async (req, res, next) => {
+    try {
+        const result = await http.get(odlOperURL + "/" + req.params.topology + "/node/" + req.params.node, authToken);
+        res.status(200).send(result);
+    } catch (e) {
+        next(e);
+    }
+});
+
 router.get('/get/oper/all/status/:topology', async (req, res, next) => {
     let result = null;
     try {

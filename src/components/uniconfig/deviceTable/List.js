@@ -45,7 +45,6 @@ class List extends Component {
         });
 
         http.get('/api/odl/get/oper/all/status/topology-netconf').then(res => {
-            console.log(res);
             let topologies = Object.keys(res);
             let topology = Object.keys(res[Object.keys(res)]);
             let topology_id = res[topologies][topology]["topology-id"];
@@ -103,6 +102,37 @@ class List extends Component {
         }
     }
 
+    onDeviceSelect(e){
+        let checkboxID = e.target.id.split("-").pop();
+        let row = document.getElementById(`row-${checkboxID}`);
+        let node_id = row.querySelector("#node_id").innerText;
+        let topology = row.querySelector("#topology").innerText;
+
+        if(e.target.checked){
+            this.state.selectedDevices.push({id: checkboxID, topology: topology, node_id: node_id});
+        } else {
+            for (let key in this.state.selectedDevices) {
+                let id = this.state.selectedDevices[key].id;
+                if (id !== e.target.id) {
+                    this.state.selectedDevices.splice(key, 1);
+                }
+            }
+        }
+    }
+
+    removeDevices() {
+        this.state.selectedDevices.map(device => {
+            console.log(device);
+            if(device["topology"] === "netconf"){
+                http.delete('api/odl/unmount/topology-netconf/' + device["node_id"])
+            } else {
+                http.delete('api/odl/unmount/cli/' + device["node_id"])
+            }
+        })
+    }
+
+
+
     search() {
         let toBeRendered = [];
         let toBeHighlited = [];
@@ -159,13 +189,13 @@ class List extends Component {
         }
         for(let i = 0; i < dataset.length; i++){
             output.push(
-                <tr key={`row-${i}`}>
-                    <td className=''><Form.Check type="checkbox" id={`checkbox-${i}`}/></td>
-                    <td className={highlight ? this.calculateHighlight(i, 0) : ''}>{dataset[i][0]}</td>
+                <tr key={`row-${i}`} id={`row-${i}`}>
+                    <td className=''><Form.Check type="checkbox" onChange={(e) => this.onDeviceSelect(e)} id={`chb-${i}`}/></td>
+                    <td id="node_id" className={highlight ? this.calculateHighlight(i, 0) : ''}>{dataset[i][0]}</td>
                     <td className={highlight ? this.calculateHighlight(i, 1) : ''}>{dataset[i][1]}</td>
                     <td className={highlight ? this.calculateHighlight(i, 2) : ''}>{dataset[i][2]}
                         &nbsp;&nbsp;<i className="fas fa-sync-alt fa-xs clickable"/></td>
-                    <td className={highlight ? this.calculateHighlight(i, 3) : ''}>{dataset[i][3]}</td>
+                    <td id="topology" className={highlight ? this.calculateHighlight(i, 3) : ''}>{dataset[i][3]}</td>
                     <td><Button variant="outline-info" onClick={() => {
                         this.redirect(this.url_template + dataset[i][0])
                     }} size="sm"><i className="fas fa-cog"/></Button>
@@ -181,7 +211,7 @@ class List extends Component {
                 <Container>
                     <FormGroup className="deviceGroup leftAligned1">
                         <Button variant="outline-primary" onClick={this.showMountModal.bind(this)}><FontAwesomeIcon icon={faPlusCircle} /> Mount Device</Button>
-                        <Button variant="outline-danger"><FontAwesomeIcon icon={faMinusCircle} /> Remove Device</Button>
+                        <Button variant="outline-danger" onClick={this.removeDevices.bind(this)} ><FontAwesomeIcon icon={faMinusCircle} /> Unmount Devices</Button>
                     </FormGroup>
                     <FormGroup className="deviceGroup rightAligned1">
                         <Button variant="primary"><FontAwesomeIcon icon={faSync} /> Refresh</Button>
