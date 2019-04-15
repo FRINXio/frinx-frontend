@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
-import { Table, Container, Button, Form, FormGroup } from 'react-bootstrap'
+import React, {Component} from 'react';
+import {Button, Container, Form, FormGroup, Table} from 'react-bootstrap'
 import './List.css'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSync, faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons'
+import {library} from '@fortawesome/fontawesome-svg-core'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faMinusCircle, faPlusCircle, faSync} from '@fortawesome/free-solid-svg-icons'
 import MountModal from "./mountModal/MountModal";
+
 const http = require('../../../server/HttpServerSide').HttpClient;
 
 class List extends Component {
@@ -40,8 +41,7 @@ class List extends Component {
         })
     }
 
-    async addDevice(device, topology) {
-        console.log(device);
+    async parseDevice(device, topology){
         let node_id, ip_address, status, os_version;
 
         if (topology === "cli") {
@@ -60,22 +60,30 @@ class List extends Component {
             os_version = "netconf"
         }
 
-        let entry = [node_id, ip_address, status, os_version];
-        let mounted = false;
+        return [node_id, ip_address, status, os_version];
+    }
+
+    async addDevice(device, topology) {
+
+        let entry = await this.parseDevice(device, topology);
+        let updated = false;
         let newData = this.state.data;
 
-        for (let i = 0; i < newData.length; i++) {
-            if ((newData[i].includes(ip_address) && newData[i].includes(os_version)) || (newData[i].includes(node_id) && newData[i].includes(os_version))) {
-                mounted = true;
+        newData.map((device, i) => {
+            if (device[0] === entry[0]) {
+                newData[i] = entry;
+                updated = true;
             }
+            return updated;
+        });
+
+        if(!updated){
+            newData.push(entry);
         }
 
-        if (!mounted) {
-            newData.push(entry);
-            this.setState({
-                data: newData
-            })
-        }
+        this.setState({
+            data: newData
+        })
     }
 
     onDeviceSelect(e){
@@ -96,6 +104,40 @@ class List extends Component {
         }
     }
 
+    onDeviceRefresh(e) {
+        console.log(e.target);
+        let refreshBtnID = e.target.id.split("-").pop();
+        let row = document.getElementById(`row-${refreshBtnID}`);
+        let node_id = row.querySelector("#node_id").innerText;
+        let topology = row.querySelector("#topology").innerText;
+        let updatedData = this.state.data;
+
+        if(topology === "netconf"){
+            topology = "topology-netconf"
+        } else {
+            topology = "cli"
+        }
+
+        this.state.data.map((device, i) => {
+            if(device[0] === node_id){
+                http.get("/api/odl/get/oper/status/" + topology + "/" + node_id).then(res => {
+                    let status = "";
+                    if(topology === "netconf"){
+                        status = res.node[0]["netconf-node-topology:connection-status"];
+                    } else {
+                        status = res.node[0]["cli-topology:connection-status"];
+                    }
+                    console.log(status);
+
+
+                })
+            }
+        });
+
+
+
+    }
+
     removeDevices() {
         this.state.selectedDevices.map(device => {
             if(device["topology"] === "netconf"){
@@ -104,6 +146,8 @@ class List extends Component {
                 return http.delete('api/odl/unmount/cli/' + device["node_id"])
             }
         });
+        this.setState({selectedDevices: []});
+        setTimeout(this.getAllDevices.bind(this), 300);
     }
 
     getAllDevices() {
@@ -196,7 +240,7 @@ class List extends Component {
                     <td id="node_id" className={highlight ? this.calculateHighlight(i, 0) : ''}>{dataset[i][0]}</td>
                     <td className={highlight ? this.calculateHighlight(i, 1) : ''}>{dataset[i][1]}</td>
                     <td className={highlight ? this.calculateHighlight(i, 2) : ''}>{dataset[i][2]}
-                        &nbsp;&nbsp;<i className="fas fa-sync-alt fa-xs clickable"/></td>
+                        &nbsp;&nbsp;<i id={`refreshBtn-${i}`} onClick={(e) => this.onDeviceRefresh(e)} className="fas fa-sync-alt fa-xs clickable"/></td>
                     <td id="topology" className={highlight ? this.calculateHighlight(i, 3) : ''}>{dataset[i][3]}</td>
                     <td><Button variant="outline-info" onClick={() => {
                         this.redirect(this.url_template + dataset[i][0])
