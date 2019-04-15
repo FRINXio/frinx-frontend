@@ -5,6 +5,7 @@ import {library} from '@fortawesome/fontawesome-svg-core'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faMinusCircle, faPlusCircle, faSync} from '@fortawesome/free-solid-svg-icons'
 import MountModal from "./mountModal/MountModal";
+import DetailModal from "./detailModal/DetailModal";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -17,14 +18,17 @@ class List extends Component {
             table: [],
             highlight: [],
             selectedDevices: [],
-            mountModal: false
+            deviceDetails: [],
+            mountModal: false,
+            detailModal: false
         };
         library.add(faSync);
         this.table = React.createRef();
         this.onEditSearch = this.onEditSearch.bind(this);
         this.redirect = this.redirect.bind(this);
-        this.addDevice = this.addDevice.bind(this);
+        this.addDeviceEntry = this.addDeviceEntry.bind(this);
         this.showMountModal = this.showMountModal.bind(this);
+        this.showDetailModal = this.showDetailModal.bind(this);
         this.url_template = window.location.protocol + "//" + window.location.href.split('/')[2] + "/edit/"
     }
 
@@ -33,7 +37,7 @@ class List extends Component {
     }
 
     componentDidMount() {
-        this.getAllDevices();
+        this.refreshAllDeviceEntries();
     }
 
     onEditSearch(event){
@@ -42,34 +46,31 @@ class List extends Component {
         })
     }
 
-    async parseDevice(device, topology){
-        let node_id, ip_address, status, os_version;
+    async getDeviceEntry(node_id, topology){
+        let os_version;
+        let device_object = await this.getDeviceObject(node_id, topology);
 
+        //append os/version from conf
         if (topology === "cli") {
-            node_id = device["node-id"];
-            ip_address = device["cli-topology:host"];
-            status = device["cli-topology:connection-status"];
             os_version = await http.get('/api/odl/get/conf/status/' + topology + "/" + node_id).then(res => {
                 os_version = res["node"]["0"]["cli-topology:device-type"];
                 os_version = os_version + " / " + res["node"]["0"]["cli-topology:device-version"];
                 return os_version;
             })
         } else {
-            node_id = device["node-id"];
-            ip_address = device["netconf-node-topology:host"];
-            status = device["netconf-node-topology:connection-status"];
             os_version = "netconf"
         }
 
-        return [node_id, ip_address, status, os_version];
+        return [device_object.node_id, device_object.host, device_object.status, os_version];
     }
 
-    async addDevice(device, topology) {
+    async addDeviceEntry(node_id, topology) {
 
-        let entry = await this.parseDevice(device, topology);
+        let entry = await this.getDeviceEntry(node_id, topology);
         let updated = false;
         let newData = this.state.data;
 
+        //check if entry already exists -> update
         newData.map((device, i) => {
             if (device[0] === entry[0]) {
                 newData[i] = entry;
@@ -89,9 +90,8 @@ class List extends Component {
 
     onDeviceSelect(e){
         let checkboxID = e.target.id.split("-").pop();
-        let row = document.getElementById(`row-${checkboxID}`);
-        let node_id = row.querySelector("#node_id").innerText;
-        let topology = row.querySelector("#topology").innerText;
+        let node_id = document.querySelector(`#node_id-${checkboxID}`).innerText;
+        let topology = document.querySelector(`#topology-${checkboxID}`).innerText;
 
         if(e.target.checked){
             this.state.selectedDevices.push({id: checkboxID, topology: topology, node_id: node_id});
@@ -114,23 +114,16 @@ class List extends Component {
         }, 1000);
 
         let refreshBtnIdx = e.target.id.split("-").pop();
-        let row = document.getElementById(`row-${refreshBtnIdx}`);
-        let node_id = row.querySelector("#node_id").innerText;
-        let topology = row.querySelector("#topology").innerText;
+        let node_id = document.querySelector(`#node_id-${refreshBtnIdx}`).innerText;
+        let topology = document.querySelector(`#topology-${refreshBtnIdx}`).innerText;
         let updatedData = this.state.data;
 
-
-        if(topology === "netconf"){
-            topology = "topology-netconf"
-        } else {
-            topology = "cli"
-        }
+        topology = topology === "netconf" ? "topology-netconf" : "cli";
 
         updatedData.map((device, i) => {
-            if(device[0] === node_id){
-                http.get("/api/odl/get/oper/status/" + topology + "/" + node_id).then(res => {
-                    return this.addDevice(res.node[0], topology)
-                })
+            if (device[0] === node_id) {
+                return this.addDeviceEntry(node_id, topology)
+
             }
             return true;
         });
@@ -146,10 +139,10 @@ class List extends Component {
             }
         });
         this.setState({selectedDevices: []});
-        setTimeout(this.getAllDevices.bind(this), 300);
+        setTimeout(this.refreshAllDeviceEntries.bind(this), 300);
     }
 
-    getAllDevices() {
+    refreshAllDeviceEntries() {
         this.setState({data: [], mountModal: false});
         http.get('/api/odl/get/oper/all/status/cli').then(res => {
             let topologies = Object.keys(res);
@@ -159,7 +152,8 @@ class List extends Component {
 
             if (nodes) {
                 nodes.map(device => {
-                    return this.addDevice(device, topology_id)
+                    let node_id = device["node-id"];
+                    return this.addDeviceEntry(node_id, topology_id)
                 })
             }
         });
@@ -172,7 +166,8 @@ class List extends Component {
 
             if (nodes) {
                 nodes.map(device => {
-                    return this.addDevice(device, topology_id)
+                    let node_id = device["node-id"];
+                    return this.addDeviceEntry(node_id, topology_id)
                 })
             }
         })
@@ -221,6 +216,53 @@ class List extends Component {
         })
     }
 
+    showDetailModal() {
+        this.setState({
+            detailModal: !this.state.detailModal,
+        })
+    }
+
+    getDeviceObject(node_id, topology) {
+        let topology_obj = topology === "cli" ? "cli-topology" : "netconf-node-topology";
+
+        return http.get("/api/odl/get/oper/status/" + topology + "/" + node_id).then(res => {
+            let device = res.node[0];
+
+            let node_id = device["node-id"];
+            let host = device[`${topology_obj}:host`];
+            let a_cap = device[`${topology_obj}:available-capabilities`];
+            let u_cap = device[`${topology_obj}:unavailable-capabilities`] || [];
+            let status = device[`${topology_obj}:connection-status`];
+            let port = device[`${topology_obj}:port`];
+            let err_patterns = device[`${topology_obj}:default-error-patterns`] || [];
+            let commit_patterns = device[`${topology_obj}:default-commit-error-patterns`] || [];
+
+            return {
+                node_id: node_id,
+                host: host,
+                a_cap: a_cap,
+                u_cap: u_cap,
+                status: status,
+                port: port,
+                err_patterns: err_patterns,
+                commit_patterns: commit_patterns
+            };
+        })
+    }
+
+
+    getDeviceDetails(e) {
+
+        let row_idx = e.target.id.split("-").pop();
+        let node_id = document.querySelector(`#node_id-${row_idx}`).innerText;
+        let topology = document.querySelector(`#topology-${row_idx}`).innerText;
+        topology = topology === "netconf" ? "topology-netconf" : "cli";
+
+        this.getDeviceObject(node_id, topology);
+        console.log(topology);
+        this.showDetailModal();
+    }
+
     repeat(){
         let output = [];
         let highlight;
@@ -236,14 +278,15 @@ class List extends Component {
             output.push(
                 <tr key={`row-${i}`} id={`row-${i}`}>
                     <td className=''><Form.Check type="checkbox" onChange={(e) => this.onDeviceSelect(e)} id={`chb-${i}`}/></td>
-                    <td id="node_id" className={highlight ? this.calculateHighlight(i, 0) : ''}>{dataset[i][0]}</td>
+                    <td id={`node_id-${i}`} onClick={(e) => this.getDeviceDetails(e)}
+                        className={highlight ? this.calculateHighlight(i, 0) + "clickable" : 'clickable btn-outline-primary'}>{dataset[i][0]}</td>
                     <td className={highlight ? this.calculateHighlight(i, 1) : ''}>{dataset[i][1]}</td>
-                    <td style={dataset[i][2] === "connected" ? {color: "green"} : {color: "lightblue"}}
+                    <td style={dataset[i][2] === "connected" ? {color: "#007bff"} : {color: "lightblue"}}
                         className={highlight ? this.calculateHighlight(i, 2) : ''}>{dataset[i][2]}
                         &nbsp;&nbsp;<i id={`refreshBtn-${i}`} onClick={(e) => this.onDeviceRefresh(e)}
-                                      style={{color: "#17a2b8"}} className="fas fa-sync-alt fa-md clickable"/></td>
-                    <td id="topology" className={highlight ? this.calculateHighlight(i, 3) : ''}>{dataset[i][3]}</td>
-                    <td><Button variant="outline-info" onClick={() => {
+                                      style={{color: "#007bff"}} className="fas fa-sync-alt fa-xs clickable"/></td>
+                    <td id={`topology-${i}`} className={highlight ? this.calculateHighlight(i, 3) : ''}>{dataset[i][3]}</td>
+                    <td><Button variant="outline-primary" onClick={() => {
                         this.redirect(this.url_template + dataset[i][0])
                     }} size="sm"><i className="fas fa-cog"/></Button>
                     </td>
@@ -261,13 +304,14 @@ class List extends Component {
                         <Button variant="outline-danger" onClick={this.removeDevices.bind(this)} ><FontAwesomeIcon icon={faMinusCircle} /> Unmount Devices</Button>
                     </FormGroup>
                     <FormGroup className="deviceGroup rightAligned1">
-                        <Button variant="primary" onClick={this.getAllDevices.bind(this)}><FontAwesomeIcon icon={faSync} /> Refresh</Button>
+                        <Button variant="primary" onClick={this.refreshAllDeviceEntries.bind(this)}><FontAwesomeIcon icon={faSync} /> Refresh</Button>
                     </FormGroup>
                     <FormGroup className="searchGroup">
                         <Form.Control value={this.state.keywords} onChange={this.onEditSearch} placeholder="Search by keyword."/>
                     </FormGroup>
 
-                    <MountModal addDevice={this.addDevice} modalHandler={this.showMountModal} show={this.state.mountModal}/>
+                    <MountModal addDeviceEntry={this.addDeviceEntry} modalHandler={this.showMountModal} show={this.state.mountModal}/>
+                    <DetailModal modalHandler={this.showDetailModal} show={this.state.detailModal}/>
 
                     <div className="scrollWrapper">
                         <Table ref={this.table} striped hover size="sm">

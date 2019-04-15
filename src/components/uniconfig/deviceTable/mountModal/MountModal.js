@@ -74,7 +74,7 @@ class MountModal extends Component {
 
             console.log(connectionStatus);
             this.setState({connectionStatus: connectionStatus});
-            this.props.addDevice(res.node[0], topology);
+            this.props.addDeviceEntry(node, topology);
 
             if(connectionStatus !== "connected") {
                 this.setState(
