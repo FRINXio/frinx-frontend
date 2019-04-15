@@ -24,6 +24,7 @@ class List extends Component {
         this.onEditSearch = this.onEditSearch.bind(this);
         this.redirect = this.redirect.bind(this);
         this.addDevice = this.addDevice.bind(this);
+        this.showMountModal = this.showMountModal.bind(this);
         this.url_template = window.location.protocol + "//" + window.location.href.split('/')[2] + "/edit/"
     }
 
@@ -105,7 +106,6 @@ class List extends Component {
     }
 
     onDeviceRefresh(e) {
-        console.log(e.target);
         let refreshBtnID = e.target.id.split("-").pop();
         let row = document.getElementById(`row-${refreshBtnID}`);
         let node_id = row.querySelector("#node_id").innerText;
@@ -118,23 +118,14 @@ class List extends Component {
             topology = "cli"
         }
 
-        this.state.data.map((device, i) => {
+        updatedData.map((device, i) => {
             if(device[0] === node_id){
                 http.get("/api/odl/get/oper/status/" + topology + "/" + node_id).then(res => {
-                    let status = "";
-                    if(topology === "netconf"){
-                        status = res.node[0]["netconf-node-topology:connection-status"];
-                    } else {
-                        status = res.node[0]["cli-topology:connection-status"];
-                    }
-                    console.log(status);
-
-
+                    return this.addDevice(res.node[0], topology)
                 })
             }
+            return true;
         });
-
-
 
     }
 
@@ -218,7 +209,7 @@ class List extends Component {
 
     showMountModal(){
         this.setState({
-            mountModal: true,
+            mountModal: !this.state.mountModal,
         })
     }
 
@@ -266,7 +257,7 @@ class List extends Component {
                         <Form.Control value={this.state.keywords} onChange={this.onEditSearch} placeholder="Search by keyword."/>
                     </FormGroup>
 
-                    <MountModal addDevice={this.addDevice} show={this.state.mountModal}/>
+                    <MountModal addDevice={this.addDevice} modalHandler={this.showMountModal} show={this.state.mountModal}/>
 
                     <div className="scrollWrapper">
                         <Table ref={this.table} striped hover size="sm">

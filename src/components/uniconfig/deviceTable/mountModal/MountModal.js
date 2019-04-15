@@ -23,7 +23,7 @@ class MountModal extends Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            show: nextProps.show
+            show: nextProps.show,
         })
     }
 
@@ -100,6 +100,7 @@ class MountModal extends Component {
             deviceMounted: false,
             connectionStatus: null
         });
+        this.props.modalHandler();
         clearTimeout(this.state.timeout);
     }
 
