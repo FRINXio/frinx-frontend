@@ -106,11 +106,19 @@ class List extends Component {
     }
 
     onDeviceRefresh(e) {
-        let refreshBtnID = e.target.id.split("-").pop();
-        let row = document.getElementById(`row-${refreshBtnID}`);
+
+        let refreshBtnID = e.target.id;
+        document.getElementById(refreshBtnID).classList.add('fa-spin');
+        setTimeout(() => {
+            document.getElementById(refreshBtnID).classList.remove('fa-spin')
+        }, 1000);
+
+        let refreshBtnIdx = e.target.id.split("-").pop();
+        let row = document.getElementById(`row-${refreshBtnIdx}`);
         let node_id = row.querySelector("#node_id").innerText;
         let topology = row.querySelector("#topology").innerText;
         let updatedData = this.state.data;
+
 
         if(topology === "netconf"){
             topology = "topology-netconf"
@@ -230,8 +238,10 @@ class List extends Component {
                     <td className=''><Form.Check type="checkbox" onChange={(e) => this.onDeviceSelect(e)} id={`chb-${i}`}/></td>
                     <td id="node_id" className={highlight ? this.calculateHighlight(i, 0) : ''}>{dataset[i][0]}</td>
                     <td className={highlight ? this.calculateHighlight(i, 1) : ''}>{dataset[i][1]}</td>
-                    <td className={highlight ? this.calculateHighlight(i, 2) : ''}>{dataset[i][2]}
-                        &nbsp;&nbsp;<i id={`refreshBtn-${i}`} onClick={(e) => this.onDeviceRefresh(e)} className="fas fa-sync-alt fa-xs clickable"/></td>
+                    <td style={dataset[i][2] === "connected" ? {color: "green"} : {color: "lightblue"}}
+                        className={highlight ? this.calculateHighlight(i, 2) : ''}>{dataset[i][2]}
+                        &nbsp;&nbsp;<i id={`refreshBtn-${i}`} onClick={(e) => this.onDeviceRefresh(e)}
+                                      style={{color: "#17a2b8"}} className="fas fa-sync-alt fa-md clickable"/></td>
                     <td id="topology" className={highlight ? this.calculateHighlight(i, 3) : ''}>{dataset[i][3]}</td>
                     <td><Button variant="outline-info" onClick={() => {
                         this.redirect(this.url_template + dataset[i][0])
