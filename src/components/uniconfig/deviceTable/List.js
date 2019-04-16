@@ -245,7 +245,8 @@ class List extends Component {
                 status: status,
                 port: port,
                 err_patterns: err_patterns,
-                commit_patterns: commit_patterns
+                commit_patterns: commit_patterns,
+                topology: topology
             };
         })
     }

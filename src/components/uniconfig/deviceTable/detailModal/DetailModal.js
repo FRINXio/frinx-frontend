@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import {Button, Modal, Row, Col, Tab, Nav, InputGroup, FormControl, Table, Spinner} from "react-bootstrap";
 import './DetailModal.css';
 
-class MountModal extends Component {
+class DetailModal extends Component {
 
     constructor(props, context) {
         super(props, context);
 
         this.handleClose = this.handleClose.bind(this);
-
         this.state = {
             show: false,
             deviceDetails: {}
@@ -38,8 +37,6 @@ class MountModal extends Component {
         a_cap = a_cap['available-capability'] || [];
         u_cap = u_cap['unavailable-capability'] || [];
         error_patterns = error_patterns["error-pattern"] || [];
-        console.log(device);
-        console.log(u_cap);
 
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose} >
@@ -152,4 +149,4 @@ class MountModal extends Component {
     }
 }
 
-export default MountModal;
+export default DetailModal;
