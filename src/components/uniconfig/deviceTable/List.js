@@ -282,7 +282,7 @@ class List extends Component {
                 <tr key={`row-${i}`} id={`row-${i}`}>
                     <td className=''><Form.Check type="checkbox" onChange={(e) => this.onDeviceSelect(e)} id={`chb-${i}`}/></td>
                     <td id={`node_id-${i}`} onClick={(e) => this.getDeviceDetails(e)}
-                        className={highlight ? this.calculateHighlight(i, 0) + "clickable" : 'clickable btn-outline-primary'}>{dataset[i][0]}</td>
+                        className={highlight ? this.calculateHighlight(i, 0) + ' clickable btn-outline-primary' : 'clickable btn-outline-primary'}>{dataset[i][0]}</td>
                     <td className={highlight ? this.calculateHighlight(i, 1) : ''}>{dataset[i][1]}</td>
                     <td style={dataset[i][2] === "connected" ? {color: "#007bff"} : {color: "lightblue"}}
                         className={highlight ? this.calculateHighlight(i, 2) : ''}>{dataset[i][2]}
