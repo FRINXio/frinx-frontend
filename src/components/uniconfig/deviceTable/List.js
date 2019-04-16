@@ -237,17 +237,27 @@ class List extends Component {
             let err_patterns = device[`${topology_obj}:default-error-patterns`] || [];
             let commit_patterns = device[`${topology_obj}:default-commit-error-patterns`] || [];
 
-            return {
-                node_id: node_id,
-                host: host,
-                a_cap: a_cap,
-                u_cap: u_cap,
-                status: status,
-                port: port,
-                err_patterns: err_patterns,
-                commit_patterns: commit_patterns,
-                topology: topology
-            };
+            return http.get("/api/odl/get/conf/status/" + topology + "/" + node_id).then(res => {
+                let device = res.node[0];
+                let transport_type = device[`${topology_obj}:transport-type`] || device[`${topology_obj}:tcp-only`];
+                transport_type = transport_type ? "tcp" : "tcp/ssh";
+                let protocol = topology_obj.split("-")[0];
+
+                return {
+                    node_id: node_id,
+                    host: host,
+                    a_cap: a_cap,
+                    u_cap: u_cap,
+                    status: status,
+                    port: port,
+                    err_patterns: err_patterns,
+                    commit_patterns: commit_patterns,
+                    topology: topology,
+                    transport_type: transport_type,
+                    protocol: protocol
+                };
+            });
+
         })
     }
 

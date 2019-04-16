@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Button, Modal, Row, Col, Tab, Nav, InputGroup, FormControl, Table, Spinner} from "react-bootstrap";
+import {Button, Modal, Row, Col, Tab, Nav, InputGroup, FormControl, Table } from "react-bootstrap";
 import './DetailModal.css';
 
 class DetailModal extends Component {
@@ -69,7 +69,8 @@ class DetailModal extends Component {
                             <Col sm={7}>
                                 <Tab.Content>
                                     <Tab.Pane eventKey="first">
-                                        {[["Node ID:","node_id"], ["Host:", "host"], ["Port:", "port"], ["Status:", "status"]]
+                                        {[["Node ID:", "node_id"], ["Host:", "host"], ["Port:", "port"],
+                                            ["Transport-type:", "transport_type"], ["Protocol:", "protocol"], ["Status:", "status"]]
                                             .map((label, i) => {
                                             return (
                                             <InputGroup className="mb-3">
