@@ -27,6 +27,7 @@ class DeviceView extends Component {
         this.state = {
             config: '{}',
             operational: '{}',
+            device: null,
             snapshots: ["snapshot1","snapshot2"],
             showDiff: false,
             creatingSnap: false,
@@ -41,8 +42,9 @@ class DeviceView extends Component {
     }
 
     componentDidMount() {
-        let device = window.location.href.split("/").pop();
-        this.fetchData(device);
+        this.setState({
+            device: window.location.href.split("/").pop()
+        }, () => this.fetchData(this.state.device));
     }
 
     fetchData(device){
@@ -84,19 +86,21 @@ class DeviceView extends Component {
         //if successful then
         this.setState({
             alertType: "commitSuccess"
-        })
+        });
         setTimeout( () => this.setState({alertType: null}), 3000);
 
     }
 
     syncFromNetwork(){
         this.setState({syncing: true});
-        fetch(OPER)
-            .then(response => response.text())
-            .then(operational => this.setState({operational}))
-            .then(() => {
-                this.setState({syncing: false});
+        http.get('/api/odl/get/oper/uniconfig/' + this.state.device).then(res => {
+            console.log(res);
+            this.setState({
+                operational: JSON.stringify(res),
+                initializing: false,
+                syncing: false,
             })
+        });
     }
 
     refreshConfig(){
