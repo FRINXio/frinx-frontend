@@ -53,16 +53,16 @@ class DetailModal extends Component {
                                         <Nav.Link eventKey="first">Basic</Nav.Link>
                                     </Nav.Item>
                                     <Nav.Item>
-                                        <Nav.Link eventKey="second">Commit Patterns</Nav.Link>
+                                        <Nav.Link eventKey="second">Available capabilities</Nav.Link>
+                                    </Nav.Item>
+                                    <Nav.Item style={{marginBottom: "30px"}}>
+                                        <Nav.Link eventKey="third">Unavailable capabilities</Nav.Link>
                                     </Nav.Item>
                                     <Nav.Item>
-                                        <Nav.Link eventKey="third">Error Patterns</Nav.Link>
+                                        <Nav.Link disabled={error_patterns.length === 0} eventKey="fourth">Commit error patterns</Nav.Link>
                                     </Nav.Item>
                                     <Nav.Item>
-                                        <Nav.Link eventKey="fourth">Available Capabilities</Nav.Link>
-                                    </Nav.Item>
-                                    <Nav.Item>
-                                        <Nav.Link eventKey="fifth">Unavailable Capabilities</Nav.Link>
+                                        <Nav.Link disabled={error_patterns.length === 0} eventKey="fifth">Error patterns</Nav.Link>
                                     </Nav.Item>
                                 </Nav>
                             </Col>
@@ -85,27 +85,7 @@ class DetailModal extends Component {
                                             )
                                         })}
                                     </Tab.Pane>
-                                    <Tab.Pane eventKey="second">
-                                        <Table className="details-table" striped bordered hover >
-                                            <thead><tr><th>Commit patterns</th></tr></thead>
-                                            <tbody>
-                                            {Object.values(commit_patterns).map(pattern => {
-                                                return <tr><td>{pattern}</td></tr>
-                                            })}
-                                            </tbody>
-                                        </Table>
-                                    </Tab.Pane>
-                                    <Tab.Pane eventKey="third">
-                                        <Table className="details-table" striped bordered hover >
-                                            <thead><tr><th>Error patterns</th></tr></thead>
-                                            <tbody>
-                                            {error_patterns.map(pattern => {
-                                                return <tr><td>{pattern}</td></tr>
-                                            })}
-                                            </tbody>
-                                        </Table>
-                                    </Tab.Pane>
-                                    <Tab.Pane eventKey="fourth" >
+                                    <Tab.Pane eventKey="second" >
                                         <Table className="details-table" style={{display: "block"}} striped bordered hover >
                                             <thead><tr><th>Available capabilities</th></tr></thead>
                                             <tbody>
@@ -119,7 +99,7 @@ class DetailModal extends Component {
                                             </tbody>
                                         </Table>
                                     </Tab.Pane>
-                                    <Tab.Pane eventKey="fifth" >
+                                    <Tab.Pane eventKey="third" >
                                         <Table className="details-table" style={{display: "block"}} striped bordered hover >
                                             <thead><tr><th>Unavailable capabilities</th></tr></thead>
                                             <tbody>
@@ -129,6 +109,26 @@ class DetailModal extends Component {
                                                 } else {
                                                     return <tr><td>{cap}</td></tr>
                                                 }
+                                            })}
+                                            </tbody>
+                                        </Table>
+                                    </Tab.Pane>
+                                    <Tab.Pane eventKey="fourth">
+                                        <Table className="details-table" striped bordered hover >
+                                            <thead><tr><th>Commit patterns</th></tr></thead>
+                                            <tbody>
+                                            {Object.values(commit_patterns).map(pattern => {
+                                                return <tr><td>{pattern}</td></tr>
+                                            })}
+                                            </tbody>
+                                        </Table>
+                                    </Tab.Pane>
+                                    <Tab.Pane eventKey="fifth">
+                                        <Table className="details-table" striped bordered hover >
+                                            <thead><tr><th>Error patterns</th></tr></thead>
+                                            <tbody>
+                                            {error_patterns.map(pattern => {
+                                                return <tr><td>{pattern}</td></tr>
                                             })}
                                             </tbody>
                                         </Table>
