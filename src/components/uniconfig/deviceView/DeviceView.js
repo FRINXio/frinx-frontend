@@ -7,6 +7,7 @@ import {Badge, Button, Col, Container, Dropdown, Form, Row} from "react-bootstra
 import DropdownMenu from "./dropdownMenu/DropdownMenu";
 import SnapshotModal from "./snapshotModal/SnapshotModal";
 import CustomAlerts from "../customAlerts/CustomAlerts";
+const http = require('../../../server/HttpServerSide').HttpClient;
 
 const defaultOptions = {
     originalFileName: 'Operational',
@@ -40,19 +41,27 @@ class DeviceView extends Component {
     }
 
     componentDidMount() {
-        setTimeout( this.fetchData.bind(this), 500);
+        let device = window.location.href.split("/").pop();
+        this.fetchData(device);
     }
 
-    fetchData(){
-        //pass device name cmp will mount
-        fetch(CONFIG)
-            .then(response => response.text())
-            .then(config => this.setState({config}));
+    fetchData(device){
 
-        fetch(OPER)
-            .then(response => response.text())
-            .then(operational => this.setState({operational}));
-        this.setState({initializing: false})
+        http.get('/api/odl/get/conf/uniconfig/' + device).then(res => {
+            console.log(res);
+            this.setState({
+                config: JSON.stringify(res),
+                initializing: false
+            })
+        });
+
+        http.get('/api/odl/get/oper/uniconfig/' + device).then(res => {
+            console.log(res);
+            this.setState({
+                operational: JSON.stringify(res),
+                initializing: false
+            })
+        });
     }
 
     getEditedConfig(newData) {
