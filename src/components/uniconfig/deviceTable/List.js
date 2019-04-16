@@ -251,15 +251,17 @@ class List extends Component {
     }
 
 
-    getDeviceDetails(e) {
+    async getDeviceDetails(e) {
 
         let row_idx = e.target.id.split("-").pop();
         let node_id = document.querySelector(`#node_id-${row_idx}`).innerText;
         let topology = document.querySelector(`#topology-${row_idx}`).innerText;
         topology = topology === "netconf" ? "topology-netconf" : "cli";
+        let deviceObject = await this.getDeviceObject(node_id, topology);
+        this.setState({
+            deviceDetails: deviceObject,
+        });
 
-        this.getDeviceObject(node_id, topology);
-        console.log(topology);
         this.showDetailModal();
     }
 
@@ -311,7 +313,7 @@ class List extends Component {
                     </FormGroup>
 
                     <MountModal addDeviceEntry={this.addDeviceEntry} modalHandler={this.showMountModal} show={this.state.mountModal}/>
-                    <DetailModal modalHandler={this.showDetailModal} show={this.state.detailModal}/>
+                    <DetailModal deviceDetails={this.state.deviceDetails} modalHandler={this.showDetailModal} show={this.state.detailModal}/>
 
                     <div className="scrollWrapper">
                         <Table ref={this.table} striped hover size="sm">
