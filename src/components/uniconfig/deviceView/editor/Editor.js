@@ -131,7 +131,7 @@ class Editor extends Component {
                         <div className="d2h-file-header">
                             <span className="d2h-file-name-wrapper">
                                 <i className="fas fa-file-alt"/>
-                                <span>&nbsp;&nbsp;Datastore of IOS-XR</span>
+                                <span>&nbsp;&nbsp;Datastore of {this.props.deviceName}</span>
                                 <span className="d2h-tag d2h-changed d2h-changed-tag"
                                       style={{ display: this.state.modified ? 'inline-block' : 'none' }}>MODIFIED</span>
                                 <div style={{marginLeft: "10px", display: this.state.isNotParsable ? "block" : "none"}}

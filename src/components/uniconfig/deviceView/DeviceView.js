@@ -153,7 +153,7 @@ class DeviceView extends Component {
                         current={configJSON}
                     />
                     :
-                    <Editor title="" editable={false} updateDiff={this.getEditedConfig.bind(this)}
+                    <Editor title="" deviceName={this.state.device} editable={false} updateDiff={this.getEditedConfig.bind(this)}
                             wfs={JSON.parse(operationalJSON)}/>
                 }
             </div>
@@ -185,7 +185,7 @@ class DeviceView extends Component {
                                     <i className="fas fa-folder-plus"/>&nbsp;&nbsp;Create snapshot</Button>
                             </Col>
                             <Col md={2} className="child">
-                                <h2><Badge variant="primary"> IOS-XR</Badge></h2>
+                                <h2><Badge variant="primary"> {this.state.device}</Badge></h2>
                             </Col>
                             <Col className="child">
                                 <Form.Group className="rightAligned">
@@ -214,7 +214,7 @@ class DeviceView extends Component {
                                     <i className="fas fa-sync fa-spin fa-8x"
                                        style={{margin: '40%', color: 'lightblue'}}/>
                                     :
-                                    <Editor title="Configurational" editable={true}
+                                    <Editor title="Configurational" editable={true} deviceName={this.state.device}
                                             getEditedConfig={this.getEditedConfig.bind(this)}
                                             wfs={JSON.parse(configJSON)}
                                             refreshConfig={this.refreshConfig.bind(this)}/>
