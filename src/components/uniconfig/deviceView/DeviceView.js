@@ -104,9 +104,12 @@ class DeviceView extends Component {
     }
 
     refreshConfig(){
-        fetch(CONFIG)
-            .then(response => response.text())
-            .then(config => this.setState({config}));
+        http.get('/api/odl/get/conf/uniconfig/' + this.state.device).then(res => {
+            console.log(res);
+            this.setState({
+                config: JSON.stringify(res),
+            })
+        });
     }
 
     loadSnapshot(snapshot){
