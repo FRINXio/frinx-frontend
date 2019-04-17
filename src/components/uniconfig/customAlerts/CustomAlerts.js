@@ -23,9 +23,22 @@ class CustomAlerts extends Component {
                             New snapshot was created.
                         </Alert>
                     );
+                case 'dryrun200':
+                    return (
+                        <Alert variant="success">
+                            Dry-run was successful.
+                        </Alert>
+                    );
+                case 'dryrun500':
+                    return (
+                        <Alert variant="success">
+                            Dry-run failed.
+                        </Alert>
+                    );
                 default:
                     return null;
             }
+
         }
 
         return (

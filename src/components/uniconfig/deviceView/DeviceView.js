@@ -91,6 +91,28 @@ class DeviceView extends Component {
 
     }
 
+    dryRun() {
+        let data = JSON.parse(this.state.config);
+        http.put('/api/odl/put/conf/uniconfig/' + this.state.device, data).then(res => {
+            console.log("PUT status: "+ res.body.status);
+
+            if (res.body.status === 200) {
+                let target = JSON.parse(JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}}));
+                http.post('/api/odl/post/operations/dryrun/', target).then(res => {
+                    console.log(res);
+                    console.log(res.body.text);
+
+                    this.setState({
+                        alertType: `dryrun${res.body.status}`
+                    });
+
+                    setTimeout( () => this.setState({alertType: null}), 2000);
+
+                })
+            }
+        });
+    }
+
     syncFromNetwork(){
         this.setState({syncing: true});
         http.get('/api/odl/get/oper/uniconfig/' + this.state.device).then(res => {
@@ -196,7 +218,7 @@ class DeviceView extends Component {
                                             onClick={this.showDiff.bind(this)}>
                                         <i className="fas fa-exchange-alt"/>&nbsp;&nbsp;{this.state.showDiff ? 'Hide Diff' : 'Show Diff'}
                                     </Button>
-                                    <Button variant="outline-light">
+                                    <Button variant="outline-light" onClick={this.dryRun.bind(this)}>
                                         <i className="fas fa-play"/>&nbsp;&nbsp;Dry run</Button>
                                     <Button variant="outline-light" onClick={this.commitToNetwork.bind(this)}>
                                         <i className="fas fa-network-wired"/>&nbsp;&nbsp;Commit to network</Button>

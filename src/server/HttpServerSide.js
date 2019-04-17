@@ -43,7 +43,9 @@ const HttpClient = {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(res.body);
+                    if (res) {
+                        resolve(res);
+                    }
                 }
             });
         }),
@@ -78,9 +80,7 @@ const HttpClient = {
                     console.error('Error on post! ' + res);
                     reject(err);
                 } else {
-                    if (res.body) {
-                        resolve(res.body);
-                    } else {
+                    if (res) {
                         resolve(res);
                     }
                 }
