@@ -108,4 +108,13 @@ router.post('/post/operations/dryrun', async (req, res, next) => {
     }
 });
 
+router.post('/post/operations/commit', async (req, res, next) => {
+    try {
+        const result = await http.post(odlOperationsURL + "/uniconfig-manager:commit", req.body, authToken);
+        res.status(200).send(result);
+    } catch (e) {
+        next(e);
+    }
+});
+
 module.exports = router;
