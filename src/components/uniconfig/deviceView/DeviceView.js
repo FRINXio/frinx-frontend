@@ -3,7 +3,7 @@ import { ReactGhLikeDiff } from 'react-gh-like-diff';
 import { CONFIG, OPER } from '../../constants';
 import Editor from "./editor/Editor";
 import './DeviceView.css'
-import {Badge, Button, Col, Container, Dropdown, Form, Row} from "react-bootstrap";
+import {Badge, Button, Col, Container, Dropdown, Form, Row, Spinner} from "react-bootstrap";
 import DropdownMenu from "./dropdownMenu/DropdownMenu";
 import SnapshotModal from "./snapshotModal/SnapshotModal";
 import CustomAlerts from "../customAlerts/CustomAlerts";
@@ -33,7 +33,8 @@ class DeviceView extends Component {
             creatingSnap: false,
             syncing: false,
             initializing: true,
-            alertType: null
+            alertType: null,
+            commiting: false
         }
     }
 
@@ -79,16 +80,17 @@ class DeviceView extends Component {
     }
 
     commitToNetwork(){
-        this.setState({
-            operational: this.state.config,
-        });
 
-        //if successful then
-        this.setState({
-            alertType: "commitSuccess"
+        this.setState({commiting: true});
+        let target = JSON.parse(JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}}));
+        http.post('/api/odl/post/operations/commit/', target).then(res => {
+            this.setState({
+                alertType: `commit${res.body.status}`,
+                commiting: false
+            });
+            setTimeout( () => this.setState({alertType: null}), 3000);
+            this.syncFromNetwork();
         });
-        setTimeout( () => this.setState({alertType: null}), 3000);
-
     }
 
     dryRun() {
@@ -221,7 +223,8 @@ class DeviceView extends Component {
                                     <Button variant="outline-light" onClick={this.dryRun.bind(this)}>
                                         <i className="fas fa-play"/>&nbsp;&nbsp;Dry run</Button>
                                     <Button variant="outline-light" onClick={this.commitToNetwork.bind(this)}>
-                                        <i className="fas fa-network-wired"/>&nbsp;&nbsp;Commit to network</Button>
+                                        {this.state.commiting ? <Spinner size="sm" animation="border"/> : <i className="fas fa-network-wired"/>}
+                                        &nbsp;&nbsp;Commit to network</Button>
                                 </Form.Group>
                             </Col>
                         </Row>

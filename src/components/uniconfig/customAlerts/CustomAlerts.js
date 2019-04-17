@@ -11,10 +11,16 @@ class CustomAlerts extends Component {
     render() {
         function showAlert(alertType) {
             switch (alertType) {
-                case 'commitSuccess':
+                case 'commit200':
                     return (
                         <Alert variant="success">
                             Commit to network was successful.
+                        </Alert>
+                    );
+                case 'commit500':
+                    return (
+                        <Alert variant="success">
+                            Commit to network failed.
                         </Alert>
                     );
                 case 'snapCreated':
