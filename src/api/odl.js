@@ -5,6 +5,7 @@ const router = new Router();
 const odlBaseURL = "http://localhost:8181";
 const odlConfigURL = odlBaseURL + "/restconf/config/network-topology:network-topology/topology";
 const odlOperURL = odlBaseURL + "/restconf/operational/network-topology:network-topology/topology";
+const odlOperationsURL = odlBaseURL + "/restconf/operations";
 const authToken = "Basic YWRtaW46YWRtaW4=";
 
 router.put('/mount/:topology/:node', async (req, res, next) => {
@@ -98,5 +99,13 @@ router.put('/put/conf/uniconfig/:node', async (req, res, next) => {
     }
 });
 
+router.post('/post/operations/dryrun', async (req, res, next) => {
+    try {
+        const result = await http.post(odlOperationsURL + "/dryrun-manager:dryrun-commit", req.body, authToken);
+        res.status(200).send(result);
+    } catch (e) {
+        next(e);
+    }
+});
 
 module.exports = router;
