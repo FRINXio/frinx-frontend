@@ -121,7 +121,7 @@ class MountModal extends Component {
                                 <Row>
                                     {Object.entries(this.state.mountCliForm[0]).map((function (item, i) {
                                         return (
-                                            <Col sm={6}>
+                                            <Col sm={6} key={`col1-${i}`}>
                                                 <Form.Group controlId={`mountCliInput-${item[0].split(":").pop()}`}>
                                                     <Form.Label>{item[0].split(":").pop()}</Form.Label>
                                                     <Form.Control type="input" defaultValue={item[1]}/>
@@ -140,7 +140,7 @@ class MountModal extends Component {
                                 <Row>
                                     {Object.entries(this.state.mountNetconfForm[0]).map((function (item, i) {
                                         return (
-                                            <Col sm={6}>
+                                            <Col sm={6} key={`col2-${i}`}>
                                                 <Form.Group controlId={`mountNetconfInput-${item[0].split(":").pop()}`}>
                                                     <Form.Label>{item[0].split(":").pop()}</Form.Label>
                                                     <Form.Control type="input" defaultValue={item[1]}/>

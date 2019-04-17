@@ -73,7 +73,7 @@ class DetailModal extends Component {
                                             ["Transport-type:", "transport_type"], ["Protocol:", "protocol"], ["Status:", "status"]]
                                             .map((label, i) => {
                                             return (
-                                            <InputGroup className="mb-3">
+                                            <InputGroup className="mb-3" key={`inputGroup${i}`}>
                                                 <InputGroup.Prepend>
                                                     <InputGroup.Text id={`label${i}`}><b>{label[0]}</b></InputGroup.Text>
                                                 </InputGroup.Prepend>
