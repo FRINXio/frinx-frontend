@@ -9,7 +9,8 @@ export const mountNetconfTemplate = JSON.stringify( {
     "netconf-node-topology:keepalive-delay": 0,
     "netconf-node-topology:tcp-only": false,
     "netconf-node-topology:username": "cisco",
-    "netconf-node-topology:password": "cisco"
+    "netconf-node-topology:password": "cisco",
+    "netconf-node-topology:dry-run-journal-size": 180
 });
 
 export const mountCliTemplate = JSON.stringify( {
