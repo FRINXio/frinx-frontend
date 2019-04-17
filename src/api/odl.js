@@ -89,6 +89,14 @@ router.get('/get/oper/uniconfig/:node', async (req, res, next) => {
     }
 });
 
+router.put('/put/conf/uniconfig/:node', async (req, res, next) => {
+    try {
+        const result = await http.put(odlConfigURL + "/uniconfig/node/" + req.params.node + "/frinx-uniconfig-topology:configuration", req.body, authToken);
+        res.status(200).send(result);
+    } catch (e) {
+        next(e);
+    }
+});
 
 
 module.exports = router;
