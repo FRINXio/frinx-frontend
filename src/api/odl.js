@@ -117,4 +117,13 @@ router.post('/post/operations/commit', async (req, res, next) => {
     }
 });
 
+router.post('/post/operations/snapshot', async (req, res, next) => {
+    try {
+        const result = await http.post(odlOperationsURL + "/snapshot-manager:create-snapshot", req.body, authToken);
+        res.status(200).send(result);
+    } catch (e) {
+        next(e);
+    }
+});
+
 module.exports = router;
