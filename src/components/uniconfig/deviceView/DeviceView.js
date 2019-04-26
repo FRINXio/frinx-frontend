@@ -2,10 +2,11 @@ import React, {Component} from 'react';
 import { ReactGhLikeDiff } from 'react-gh-like-diff';
 import Editor from "./editor/Editor";
 import './DeviceView.css'
-import {Badge, Button, Col, Container, Dropdown, Form, Row, Spinner} from "react-bootstrap";
+import {Badge, Button, Col, Container, Dropdown, Form, Modal, Row, Spinner, Tab, Tabs} from "react-bootstrap";
 import DropdownMenu from "./dropdownMenu/DropdownMenu";
 import SnapshotModal from "./snapshotModal/SnapshotModal";
 import CustomAlerts from "../customAlerts/CustomAlerts";
+import ConsoleModal from "./consoleModal/ConsoleModal";
 const http = require('../../../server/HttpServerSide').HttpClient;
 
 const defaultOptions = {
@@ -33,7 +34,10 @@ class DeviceView extends Component {
             syncing: false,
             initializing: true,
             alertType: null,
-            commiting: false
+            commiting: false,
+            showConsole: false,
+            console: "",
+            operation: ""
         }
     }
 
@@ -102,9 +106,10 @@ class DeviceView extends Component {
                 http.post('/api/odl/post/operations/dryrun/', target).then(res => {
                     console.log(res);
                     console.log(res.body.text);
-
                     this.setState({
-                        alertType: `dryrun${res.body.status}`
+                        alertType: `dryrun${res.body.status}`,
+                        console: res.body.text,
+                        operation: "Dry-run"
                     });
 
                     setTimeout( () => this.setState({alertType: null}), 2000);
@@ -153,6 +158,11 @@ class DeviceView extends Component {
         })
     }
 
+    consoleHandler() {
+        this.setState({
+            showConsole: !this.state.showConsole
+        })
+    }
 
     render() {
 
@@ -194,7 +204,7 @@ class DeviceView extends Component {
                     }} variant="outline-light"><i className="fas fa-chevron-left"/></Button>
                     <Container fluid className="container-props">
                         <Row >
-                            <Col className="child">
+                            <Col md={5} className="child">
                                     <Dropdown className="leftAligned" >
                                         <Dropdown.Toggle variant="light" id="dropdown-basic">
                                             <i className="fas fa-file-download"/>&nbsp;&nbsp;Load Snapshot
@@ -211,9 +221,9 @@ class DeviceView extends Component {
                                     <i className="fas fa-folder-plus"/>&nbsp;&nbsp;Create snapshot</Button>
                             </Col>
                             <Col md={2} className="child">
-                                <h2><Badge variant="primary"> {this.state.device}</Badge></h2>
+                                <h2><Badge onClick={this.consoleHandler.bind(this)} variant="primary"> {this.state.device}</Badge></h2>
                             </Col>
-                            <Col className="child">
+                            <Col md={5} className="child">
                                 <Form.Group className="rightAligned">
                                     <Button variant={this.state.showDiff ? "light" : "outline-light"}
                                             onClick={this.showDiff.bind(this)}>
@@ -232,6 +242,9 @@ class DeviceView extends Component {
 
                 {this.state.creatingSnap ? <SnapshotModal snapHandler={this.createSnapshot.bind(this)} device={this.state.device}/> : null }
                 {this.state.alertType ? <CustomAlerts alertType={this.state.alertType}/> : null}
+                {this.state.showConsole ? <ConsoleModal consoleHandler={this.consoleHandler.bind(this)}
+                                                        content={this.state.console}
+                                                        operation={this.state.operation}/> : null }
 
                 <Container fluid className="container-props">
                     <div className="editor">
