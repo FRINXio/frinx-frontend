@@ -105,14 +105,16 @@ class DeviceView extends Component {
                 let target = JSON.parse(JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}}));
                 http.post('/api/odl/post/operations/dryrun/', target).then(res => {
                     console.log(res);
-                    console.log(res.body.text);
                     this.setState({
                         alertType: `dryrun${res.body.status}`,
                         console: res.body.text,
                         operation: "Dry-run"
                     });
-
-                    setTimeout( () => this.setState({alertType: null}), 2000);
+                    document.getElementById("consoleButton").classList.add("button--animate");
+                    setTimeout( () => {
+                        this.setState({alertType: null});
+                        document.getElementById("consoleButton").classList.remove("button--animate")
+                    }, 2000);
 
                 })
             }
@@ -221,7 +223,7 @@ class DeviceView extends Component {
                                     <i className="fas fa-folder-plus"/>&nbsp;&nbsp;Create snapshot</Button>
                             </Col>
                             <Col md={2} className="child">
-                                <h2><Badge onClick={this.consoleHandler.bind(this)} variant="primary"> {this.state.device}</Badge></h2>
+                                <Badge id="consoleButton" className="button--moema clickable button--size-s" onClick={this.consoleHandler.bind(this)}> {this.state.device}</Badge>
                             </Col>
                             <Col md={5} className="child">
                                 <Form.Group className="rightAligned">
