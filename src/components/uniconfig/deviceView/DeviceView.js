@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { ReactGhLikeDiff } from 'react-gh-like-diff';
-import { CONFIG, OPER } from '../../constants';
 import Editor from "./editor/Editor";
 import './DeviceView.css'
 import {Badge, Button, Col, Container, Dropdown, Form, Row, Spinner} from "react-bootstrap";

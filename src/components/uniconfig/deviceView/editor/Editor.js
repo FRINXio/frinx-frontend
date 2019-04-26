@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {Button } from 'react-bootstrap';
-import '../../../../../node_modules/react-gh-like-diff/lib/diff2html.css'
+import '../../../../../node_modules/react-gh-like-diff/lib/diff2html.css';
+import Highlight from 'react-highlight.js'
 
 class Editor extends Component {
     constructor(props) {
@@ -68,8 +69,6 @@ class Editor extends Component {
             } else {
                this.editor.focus();
             }
-        } else {
-            this.editor.innerHTML = this.state.wfs;
         }
         if(parseErr == null) {
             this.setState({
@@ -141,11 +140,13 @@ class Editor extends Component {
                         </div>
 
                         <pre id="editorWrapper" ref={elem => this.editor = elem}
-                                 className={this.state.editingJSON ? 'editingPre' : ''}
                                  contentEditable={this.state.editingJSON}
-                                 dangerouslySetInnerHTML= {{ __html: this.state.wfs }}
-                                 onClick={this.onClick.bind(this)}
-                                 onKeyUp={this.onKeyPress.bind(this)}>
+                                 onClick={this.onClick.bind(this)}>
+                            <code>
+                                 <Highlight language={"json"}>
+                                    {this.state.wfs}
+                                 </Highlight>
+                            </code>
                         </pre>
             </div>
         )

@@ -15,6 +15,7 @@
     "react-codemirror": "^1.0.0",
     "react-dom": "^16.8.4",
     "react-gh-like-diff": "^1.0.5",
+    "react-highlight.js": "^1.0.7",
     "react-scripts": "2.1.8",
     "superagent": "^5.0.2"
   },
