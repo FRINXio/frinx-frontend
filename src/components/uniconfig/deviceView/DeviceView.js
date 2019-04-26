@@ -230,7 +230,7 @@ class DeviceView extends Component {
                     </Container>
                 </header>
 
-                {this.state.creatingSnap ? <SnapshotModal/> : null }
+                {this.state.creatingSnap ? <SnapshotModal snapHandler={this.createSnapshot.bind(this)} device={this.state.device}/> : null }
                 {this.state.alertType ? <CustomAlerts alertType={this.state.alertType}/> : null}
 
                 <Container fluid className="container-props">
