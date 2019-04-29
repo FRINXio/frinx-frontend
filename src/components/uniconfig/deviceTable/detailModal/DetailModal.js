@@ -89,11 +89,11 @@ class DetailModal extends Component {
                                         <Table className="details-table" style={{display: "block"}} striped bordered hover >
                                             <thead><tr><th>Available capabilities</th></tr></thead>
                                             <tbody>
-                                            {Object.values(a_cap).map(cap => {
+                                            {Object.values(a_cap).map((cap,i) => {
                                              if(cap["capability"]){
-                                                 return <tr><td>{cap["capability"]}</td></tr>
+                                                 return <tr key={`tr${i}`}><td>{cap["capability"]}</td></tr>
                                              } else {
-                                                 return <tr><td>{cap}</td></tr>
+                                                 return <tr key={`tr${i}`}><td>{cap}</td></tr>
                                              }
                                             })}
                                             </tbody>
@@ -103,11 +103,11 @@ class DetailModal extends Component {
                                         <Table className="details-table" style={{display: "block"}} striped bordered hover >
                                             <thead><tr><th>Unavailable capabilities</th></tr></thead>
                                             <tbody>
-                                            {Object.values(u_cap).map(cap => {
+                                            {Object.values(u_cap).map((cap,i) => {
                                                 if(cap["capability"]){
-                                                    return <tr><td>{cap["capability"]}</td></tr>
+                                                    return <tr key={`tr${i}`}><td>{cap["capability"]}</td></tr>
                                                 } else {
-                                                    return <tr><td>{cap}</td></tr>
+                                                    return <tr key={`tr${i}`}><td>{cap}</td></tr>
                                                 }
                                             })}
                                             </tbody>
@@ -117,8 +117,8 @@ class DetailModal extends Component {
                                         <Table className="details-table" striped bordered hover >
                                             <thead><tr><th>Commit patterns</th></tr></thead>
                                             <tbody>
-                                            {Object.values(commit_patterns).map(pattern => {
-                                                return <tr><td>{pattern}</td></tr>
+                                            {Object.values(commit_patterns).map((pattern,i) => {
+                                                return <tr key={`tr${i}`}><td>{pattern}</td></tr>
                                             })}
                                             </tbody>
                                         </Table>
@@ -127,8 +127,8 @@ class DetailModal extends Component {
                                         <Table className="details-table" striped bordered hover >
                                             <thead><tr><th>Error patterns</th></tr></thead>
                                             <tbody>
-                                            {error_patterns.map(pattern => {
-                                                return <tr><td>{pattern}</td></tr>
+                                            {error_patterns.map((pattern,i) => {
+                                                return <tr key={`tr${i}`}><td>{pattern}</td></tr>
                                             })}
                                             </tbody>
                                         </Table>
