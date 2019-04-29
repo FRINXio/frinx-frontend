@@ -89,9 +89,11 @@ class DeviceView extends Component {
         http.post('/api/odl/post/operations/commit/', target).then(res => {
             this.setState({
                 alertType: `commit${res.body.status}`,
-                commiting: false
+                commiting: false,
+                console: res.body.text,
+                operation: "Commit to Network"
             });
-            setTimeout( () => this.setState({alertType: null}), 3000);
+            this.animateConsole();
             this.syncFromNetwork();
         });
     }
@@ -110,15 +112,18 @@ class DeviceView extends Component {
                         console: res.body.text,
                         operation: "Dry-run"
                     });
-                    document.getElementById("consoleButton").classList.add("button--animate");
-                    setTimeout( () => {
-                        this.setState({alertType: null});
-                        document.getElementById("consoleButton").classList.remove("button--animate")
-                    }, 2000);
-
+                    this.animateConsole();
                 })
             }
         });
+    }
+
+    animateConsole() {
+        document.getElementById("consoleButton").classList.add("button--animate");
+        setTimeout( () => {
+            this.setState({alertType: null});
+            document.getElementById("consoleButton").classList.remove("button--animate")
+        }, 2000);
     }
 
     syncFromNetwork(){
@@ -154,9 +159,13 @@ class DeviceView extends Component {
     loadSnapshot(snapshotId){
         let snapshotName = this.state.snapshots[snapshotId]["topology-id"];
         http.get('/api/odl/get/conf/snapshots/' + snapshotName + '/' + this.state.device).then(res => {
+            console.log(res);
             this.setState({
-                config: JSON.stringify(res, null, 2)
-            })
+                config: JSON.stringify(res, null, 2),
+                console: JSON.stringify(res),
+                operation: "Load Snapshot"
+            });
+            this.animateConsole();
         })
     }
 
