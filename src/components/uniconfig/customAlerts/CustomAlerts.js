@@ -4,10 +4,6 @@ import { Alert } from "react-bootstrap";
 
 class CustomAlerts extends Component {
 
-    componentDidMount() {
-        console.log(this.props)
-    }
-
     render() {
         function showAlert(alertType) {
             switch (alertType) {

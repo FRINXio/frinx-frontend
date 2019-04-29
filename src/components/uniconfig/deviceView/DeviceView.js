@@ -54,7 +54,6 @@ class DeviceView extends Component {
     fetchData(device){
 
         http.get('/api/odl/get/conf/uniconfig/' + device).then(res => {
-            console.log(res);
             this.setState({
                 config: JSON.stringify(res),
                 initializing: false
@@ -62,7 +61,6 @@ class DeviceView extends Component {
         });
 
         http.get('/api/odl/get/oper/uniconfig/' + device).then(res => {
-            console.log(res);
             this.setState({
                 operational: JSON.stringify(res),
                 initializing: false
@@ -101,12 +99,9 @@ class DeviceView extends Component {
     dryRun() {
         let data = JSON.parse(this.state.config);
         http.put('/api/odl/put/conf/uniconfig/' + this.state.device, data).then(res => {
-            console.log("PUT status: "+ res.body.status);
-
             if (res.body.status === 200) {
                 let target = JSON.parse(JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}}));
                 http.post('/api/odl/post/operations/dryrun/', target).then(res => {
-                    console.log(res);
                     this.setState({
                         alertType: `dryrun${res.body.status}`,
                         console: res.body.text,
@@ -129,7 +124,6 @@ class DeviceView extends Component {
     syncFromNetwork(){
         this.setState({syncing: true});
         http.get('/api/odl/get/oper/uniconfig/' + this.state.device).then(res => {
-            console.log(res);
             this.setState({
                 operational: JSON.stringify(res),
                 initializing: false,
@@ -140,7 +134,6 @@ class DeviceView extends Component {
 
     refreshConfig(){
         http.get('/api/odl/get/conf/uniconfig/' + this.state.device).then(res => {
-            console.log(res);
             this.setState({
                 config: JSON.stringify(res),
             })
@@ -149,7 +142,6 @@ class DeviceView extends Component {
 
     getSnapshots(){
         http.get('/api/odl/get/conf/snapshots/' + this.state.device).then(res => {
-            console.log(res);
             this.setState({
                 snapshots: res
             })
@@ -159,7 +151,6 @@ class DeviceView extends Component {
     loadSnapshot(snapshotId){
         let snapshotName = this.state.snapshots[snapshotId]["topology-id"];
         http.get('/api/odl/get/conf/snapshots/' + snapshotName + '/' + this.state.device).then(res => {
-            console.log(res);
             this.setState({
                 config: JSON.stringify(res, null, 2),
                 console: JSON.stringify(res),
