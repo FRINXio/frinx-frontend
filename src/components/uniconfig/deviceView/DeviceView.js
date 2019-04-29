@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { ReactGhLikeDiff } from 'react-gh-like-diff';
 import Editor from "./editor/Editor";
 import './DeviceView.css'
-import {Badge, Button, Col, Container, Dropdown, Form, Modal, Row, Spinner, Tab, Tabs} from "react-bootstrap";
+import {Badge, Button, Col, Container, Dropdown, Form, Row, Spinner } from "react-bootstrap";
 import DropdownMenu from "./dropdownMenu/DropdownMenu";
 import SnapshotModal from "./snapshotModal/SnapshotModal";
 import CustomAlerts from "../customAlerts/CustomAlerts";
@@ -142,16 +142,22 @@ class DeviceView extends Component {
         });
     }
 
-    loadSnapshot(snapshot){
-        if(snapshot.length < 1){
-            this.refreshConfig();
-        } else {
+    getSnapshots(){
+        http.get('/api/odl/get/conf/snapshots/' + this.state.device).then(res => {
+            console.log(res);
             this.setState({
-                config: JSON.stringify(snapshot, null, 2),
-            });
-        }
+                snapshots: res
+            })
+        })
+    }
 
-        //if snapshot == null load config from device
+    loadSnapshot(snapshotId){
+        let snapshotName = this.state.snapshots[snapshotId]["topology-id"];
+        http.get('/api/odl/get/conf/snapshots/' + snapshotName + '/' + this.state.device).then(res => {
+            this.setState({
+                config: JSON.stringify(res, null, 2)
+            })
+        })
     }
 
     createSnapshot(){
@@ -198,7 +204,6 @@ class DeviceView extends Component {
         );
 
         return (
-
             <div>
                 <header className="options">
                     <Button className="round floating-btn noshadow" onClick={() => {
@@ -207,14 +212,14 @@ class DeviceView extends Component {
                     <Container fluid className="container-props">
                         <Row >
                             <Col md={5} className="child">
-                                    <Dropdown className="leftAligned" >
+                                    <Dropdown onClick={this.getSnapshots.bind(this)} className="leftAligned" >
                                         <Dropdown.Toggle variant="light" id="dropdown-basic">
                                             <i className="fas fa-file-download"/>&nbsp;&nbsp;Load Snapshot
                                         </Dropdown.Toggle>
 
                                         <Dropdown.Menu as={DropdownMenu}>
-                                            {this.state.snapshots.map(function (item, i) {
-                                                return <Dropdown.Item key={i}>{item}</Dropdown.Item>
+                                            {this.state.snapshots.map((item, i) => {
+                                                return <Dropdown.Item onClick={() => this.loadSnapshot(i)} key={i}>{item["topology-id"]}</Dropdown.Item>
                                             })}
                                         </Dropdown.Menu>
                                     </Dropdown>

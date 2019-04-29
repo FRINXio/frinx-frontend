@@ -126,12 +126,21 @@ router.post('/post/operations/snapshot', async (req, res, next) => {
     }
 });
 
-router.get('/get/conf/snapshots', async (req, res, next) => {
+router.get('/get/conf/snapshots/:node', async (req, res, next) => {
     try {
         const result = await http.get( odlBaseURL + "/restconf/config/network-topology:network-topology", authToken);
         let topologies = ["cli", "uniconfig", "topology-netconf", "unitopo"];
-        let snapshots = result["network-topology"]["topology"].filter((topology,i) => !topologies.includes( topology["topology-id"]) );
+        let snapshots = result["network-topology"]["topology"].filter((topology) => topology["node"]["0"]["node-id"] === req.params.node && !topologies.includes( topology["topology-id"]) );
         res.status(200).send(snapshots);
+    } catch (e) {
+        next(e);
+    }
+});
+
+router.get('/get/conf/snapshots/:name/:node', async (req, res, next) => {
+    try {
+        const result = await http.get(odlConfigURL + "/" + req.params.name + "/node/" + req.params.node + "/frinx-uniconfig-topology:configuration/", authToken);
+        res.status(200).send(result);
     } catch (e) {
         next(e);
     }
