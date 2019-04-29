@@ -120,9 +120,9 @@ class MountModal extends Component {
                                             <Col sm={6} key={`col1-${i}`}>
                                                 <Form.Group controlId={`mountCliInput-${item[0].split(":").pop()}`}>
                                                     <Form.Label>{item[0].split(":").pop()}</Form.Label>
-                                                    <Form.Control type="input" defaultValue={item[1]}/>
+                                                    <Form.Control type="input" defaultValue={item[1][0]}/>
                                                     <Form.Text className="text-muted">
-                                                        Some description.
+                                                        {item[1][1]}
                                                     </Form.Text>
                                                 </Form.Group>
                                             </Col>
@@ -139,9 +139,9 @@ class MountModal extends Component {
                                             <Col sm={6} key={`col2-${i}`}>
                                                 <Form.Group controlId={`mountNetconfInput-${item[0].split(":").pop()}`}>
                                                     <Form.Label>{item[0].split(":").pop()}</Form.Label>
-                                                    <Form.Control type="input" defaultValue={item[1]}/>
+                                                    <Form.Control type="input" defaultValue={item[1][0]}/>
                                                     <Form.Text className="text-muted">
-                                                        Some description.
+                                                        {item[1][1]}
                                                     </Form.Text>
                                                 </Form.Group>
                                             </Col>
