@@ -12,7 +12,7 @@ Installs all dependencies.
 
 #### `npm run server`
 Runs the server providing API to communicate with ODL. <br>
-Server is running on [http://localhost:3000](http://localhost:3000)
+Server is running on [http://localhost:3001](http://localhost:3001)
 
 #### `npm run start`
 Runs the app UI in the development mode.<br>
