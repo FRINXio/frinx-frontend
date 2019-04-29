@@ -36,6 +36,7 @@ class DeviceView extends Component {
             alertType: null,
             commiting: false,
             showConsole: false,
+            deletingSnaps: false,
             console: "",
             operation: ""
         }
@@ -149,15 +150,23 @@ class DeviceView extends Component {
     }
 
     loadSnapshot(snapshotId){
+        //deleting snapshot
         let snapshotName = this.state.snapshots[snapshotId]["topology-id"];
-        http.get('/api/odl/get/conf/snapshots/' + snapshotName + '/' + this.state.device).then(res => {
-            this.setState({
-                config: JSON.stringify(res, null, 2),
-                console: JSON.stringify(res),
-                operation: "Load Snapshot"
-            });
-            this.animateConsole();
-        })
+        if (this.state.deletingSnaps) {
+            let target = JSON.parse(JSON.stringify({"input": {"name": snapshotName } } ) );
+            http.post('/api/odl/post/conf/snapshots/delete', target).then(res => {
+                console.log(res);
+            })
+        } else {
+            http.get('/api/odl/get/conf/snapshots/' + snapshotName + '/' + this.state.device).then(res => {
+                this.setState({
+                    config: JSON.stringify(res, null, 2),
+                    console: JSON.stringify(res),
+                    operation: "Load Snapshot"
+                });
+                this.animateConsole();
+            })
+        }
     }
 
     createSnapshot(){
@@ -219,8 +228,16 @@ class DeviceView extends Component {
 
                                         <Dropdown.Menu as={DropdownMenu}>
                                             {this.state.snapshots.map((item, i) => {
-                                                return <Dropdown.Item onClick={() => this.loadSnapshot(i)} key={i}>{item["topology-id"]}</Dropdown.Item>
+                                                return <Dropdown.Item onClick={() => this.loadSnapshot(i)} key={i}>{item["topology-id"]}
+                                                        {this.state.deletingSnaps ? <i className="fas fa-minus" style={{float: "right"}}/> : null}
+                                                </Dropdown.Item>
                                             })}
+                                            <Dropdown.Divider />
+                                                <Button onClick={() => this.setState({deletingSnaps: !this.state.deletingSnaps})}
+                                                        variant={this.state.deletingSnaps ? "danger" : "outline-danger"} style={{marginLeft: "20px", marginBottom: "-15px"}}>
+                                                    <i className="fas fa-trash" style={{marginRight: "10px"}}/>
+                                                    Toggle deleting
+                                                </Button>
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 <Button className="leftAligned" variant="outline-light"

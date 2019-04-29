@@ -146,5 +146,14 @@ router.get('/get/conf/snapshots/:name/:node', async (req, res, next) => {
     }
 });
 
+router.post('/post/conf/snapshots/delete', async (req, res, next) => {
+    try {
+        const result = await http.post(odlOperationsURL + "/snapshot-manager:delete-snapshot", req.body, authToken);
+        res.status(200).send(result);
+    } catch (e) {
+        next(e);
+    }
+});
+
 
 module.exports = router;
