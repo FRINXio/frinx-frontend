@@ -59,11 +59,7 @@ class MountModal extends Component {
         http.put("/api/odl/mount/" + topology + "/" + node, payload).then(res => {
             console.log(res);
         }).then(() => {
-            if(topology === "netconf"){
-                setTimeout(() => this.getConnectionStatus(topology,node), 300);
-            } else {
-                this.getConnectionStatus(topology,node);
-            }
+            setTimeout(() => this.getConnectionStatus(topology, node), 300);
         })
     }
 
