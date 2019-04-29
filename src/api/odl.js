@@ -126,4 +126,16 @@ router.post('/post/operations/snapshot', async (req, res, next) => {
     }
 });
 
+router.get('/get/conf/snapshots', async (req, res, next) => {
+    try {
+        const result = await http.get( odlBaseURL + "/restconf/config/network-topology:network-topology", authToken);
+        let topologies = ["cli", "uniconfig", "topology-netconf", "unitopo"];
+        let snapshots = result["network-topology"]["topology"].filter((topology,i) => !topologies.includes( topology["topology-id"]) );
+        res.status(200).send(snapshots);
+    } catch (e) {
+        next(e);
+    }
+});
+
+
 module.exports = router;
