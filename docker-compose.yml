@@ -1,0 +1,16 @@
+# docker-compose.yml
+
+version: '3.4'
+
+services:
+  uniconfig-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ODL_HOST=${ODL_HOST}
+    command: npm run dev
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app

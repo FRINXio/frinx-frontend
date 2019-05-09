@@ -2,7 +2,7 @@ const Router = require('express');
 const http = require('../server/HttpServerSide').HttpClient;
 
 const router = new Router();
-const odlBaseURL = "http://localhost:8181";
+const odlBaseURL = process.env.ODL_HOST;
 const odlConfigURL = odlBaseURL + "/restconf/config/network-topology:network-topology/topology";
 const odlOperURL = odlBaseURL + "/restconf/operational/network-topology:network-topology/topology";
 const odlOperationsURL = odlBaseURL + "/restconf/operations";
