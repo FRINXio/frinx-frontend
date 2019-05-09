@@ -2,22 +2,22 @@
 
 ## Installation 
 
-### Requirements: 
-* Nodejs: `sudo apt install nodejs npm`
+#### Requirements
+* [Docker](https://www.docker.com/)
+* [Docker Compose](https://github.com/docker/compose)
+
+#### `sudo ./install.sh [--odl]` <br>
+Creates docker container with installation of UniConfig-UI. <br>
+##### Options: <br>
+* `--odl / -o` - Sets ODL host address with following format: `http://${address}:${port}`, 
+
+## Startup
 
 In the project directory, run: 
 
-#### `sudo npm install`
-Installs all dependencies.
+#### `sudo ./startup.sh [--odl]` <br>
+Starts the UniConfig-UI container using ODL host defined at installation (if --odl option is not used).
+#### Options: <br>
+* `--odl / -o` - Sets ODL host address with following format: `http://${address}:${port}`
 
-#### `npm run server`
-Runs the server providing API to communicate with ODL. <br>
-Server is running on [http://localhost:3001](http://localhost:3001)
-
-#### `npm run start`
-Runs the app UI in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-#### `run-p dev` (Optional)  
-Runs server and UI at once.
-  * Requirements: `npm install node-env-run --save-dev`
+Alternatively, ODL host can be set in `./env` file located in project directory. 
