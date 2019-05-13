@@ -130,7 +130,7 @@ class Editor extends Component {
                         <div className="d2h-file-header">
                             <span className="d2h-file-name-wrapper">
                                 <i className="fas fa-file-alt"/>
-                                <span>&nbsp;&nbsp;{this.props.editable ? "Intended Configuration (ODL config data store of " : "Actual Configuration (ODL operational data store of " } {this.props.deviceName})</span>
+                                <span>&nbsp;&nbsp;{this.props.editable ? "ODL config data store of " : "ODL operational data store of " } {this.props.deviceName}</span>
                                 <span className="d2h-tag d2h-changed d2h-changed-tag"
                                       style={{ display: this.state.modified ? 'inline-block' : 'none' }}>MODIFIED</span>
                                 <div style={{marginLeft: "10px", display: this.state.isNotParsable ? "block" : "none"}}

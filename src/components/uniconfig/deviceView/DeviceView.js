@@ -189,7 +189,7 @@ class DeviceView extends Component {
         const operational = () => (
             <div>
                 <div>
-                    <h2 style={{display: "inline-block", marginTop: "5px"}}>Operational</h2>
+                    <h2 style={{display: "inline-block", marginTop: "5px"}}>Actual Configuration</h2>
                     <div style={{float: "right"}}>
                         <Button className="btn btn-primary" style={{marginRight: '5px'}}
                                 disabled={this.state.syncing}
@@ -278,7 +278,7 @@ class DeviceView extends Component {
                                     <i className="fas fa-sync fa-spin fa-8x"
                                        style={{margin: '40%', color: 'lightblue'}}/>
                                     :
-                                    <Editor title="Configurational" editable={true} deviceName={this.state.device}
+                                    <Editor title="Intended Configuration" editable={true} deviceName={this.state.device}
                                             getEditedConfig={this.getEditedConfig.bind(this)}
                                             wfs={JSON.parse(configJSON)}
                                             refreshConfig={this.refreshConfig.bind(this)}/>
