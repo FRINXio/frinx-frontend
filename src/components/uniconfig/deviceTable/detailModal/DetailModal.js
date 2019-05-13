@@ -38,6 +38,17 @@ class DetailModal extends Component {
         u_cap = u_cap['unavailable-capability'] || [];
         error_patterns = error_patterns["error-pattern"] || [];
 
+        let labelPattern = [["Node ID:", "node_id"], ["Host:", "host"], ["Port:", "port"],
+            ["Transport-type:", "transport_type"], ["Protocol:", "protocol"], ["Status:", "status"]];
+
+        if (device["transport_type"] === false) {
+            labelPattern[3][0] = "Tcp-only:";
+        }
+        console.log(device["connected_message"]);
+        if (device["connected_message"]) {
+            labelPattern.push(["Connected message:","connected_message"])
+        }
+
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose} >
                 <Modal.Header>
@@ -69,9 +80,7 @@ class DetailModal extends Component {
                             <Col sm={7}>
                                 <Tab.Content>
                                     <Tab.Pane eventKey="first">
-                                        {[["Node ID:", "node_id"], ["Host:", "host"], ["Port:", "port"],
-                                            ["Transport-type:", "transport_type"], ["Protocol:", "protocol"], ["Status:", "status"]]
-                                            .map((label, i) => {
+                                        {labelPattern.map((label, i) => {
                                             return (
                                             <InputGroup className="mb-3" key={`inputGroup${i}`}>
                                                 <InputGroup.Prepend>

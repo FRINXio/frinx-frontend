@@ -231,16 +231,16 @@ class List extends Component {
             let node_id = device["node-id"];
             let host = device[`${topology_obj}:host`];
             let a_cap = device[`${topology_obj}:available-capabilities`];
-            let u_cap = device[`${topology_obj}:unavailable-capabilities`] || [];
+            let u_cap = device[`${topology_obj}:unavailable-capabilities`] || null;
             let status = device[`${topology_obj}:connection-status`];
             let port = device[`${topology_obj}:port`];
-            let err_patterns = device[`${topology_obj}:default-error-patterns`] || [];
-            let commit_patterns = device[`${topology_obj}:default-commit-error-patterns`] || [];
+            let err_patterns = device[`${topology_obj}:default-error-patterns`] || null;
+            let commit_patterns = device[`${topology_obj}:default-commit-error-patterns`] || null;
+            let connected_message = device[`${topology_obj}:connected-message`] || null;
 
             return http.get("/api/odl/get/conf/status/" + topology + "/" + node_id).then(res => {
                 let device = res.node[0];
                 let transport_type = device[`${topology_obj}:transport-type`] || device[`${topology_obj}:tcp-only`];
-                transport_type = transport_type ? "tcp" : "tcp/ssh";
                 let protocol = topology_obj.split("-")[0];
 
                 return {
@@ -254,7 +254,8 @@ class List extends Component {
                     commit_patterns: commit_patterns,
                     topology: topology,
                     transport_type: transport_type,
-                    protocol: protocol
+                    protocol: protocol,
+                    connected_message: connected_message
                 };
             });
 
