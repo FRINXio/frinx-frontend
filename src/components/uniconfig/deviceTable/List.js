@@ -181,7 +181,7 @@ class List extends Component {
             const rows = this.state.data;
             for(let i = 0; i < rows.length; i++){
                 for(let y = 0; y < rows[i].length; y++){
-                    if(rows[i][y].toUpperCase().indexOf(query) !== -1){
+                    if(rows[i][y] && rows[i][y].toUpperCase().indexOf(query) !== -1){
                         toBeRendered.push(rows[i]);
                         toBeHighlited.push(y);
                         break

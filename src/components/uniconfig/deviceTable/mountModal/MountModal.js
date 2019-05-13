@@ -65,9 +65,7 @@ class MountModal extends Component {
 
     getConnectionStatus(topology, node) {
         http.get("/api/odl/get/oper/status/" + topology + "/" + node).then(res => {
-            console.log(res);
             let connectionStatus = null;
-            console.log("yeet");
             if(topology === "topology-netconf") {
                 connectionStatus = Object.values(res.node[0])[4] || Object.values(res.node[0])[2];
             } else {
