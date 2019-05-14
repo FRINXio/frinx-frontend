@@ -69,7 +69,17 @@ class DeviceView extends Component {
         });
     }
 
-    getEditedConfig(newData) {
+    updateConfig(newData) {
+        let data = JSON.parse(JSON.stringify(newData, null, 2));
+        http.put('/api/odl/put/conf/uniconfig/' + this.state.device, data).then(res => {
+            this.setState({
+                alertType: `putConfig${res.body.status}`,
+                console: JSON.stringify(res.body, null, 2),
+                operation: "Update Config"
+            });
+            this.animateConsole();
+        });
+
         this.setState({
             config: JSON.stringify(newData, null, 2),
         })
@@ -98,20 +108,15 @@ class DeviceView extends Component {
     }
 
     dryRun() {
-        let data = JSON.parse(this.state.config);
-        http.put('/api/odl/put/conf/uniconfig/' + this.state.device, data).then(res => {
-            if (res.body.status === 200) {
-                let target = JSON.parse(JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}}));
-                http.post('/api/odl/post/operations/dryrun/', target).then(res => {
-                    this.setState({
-                        alertType: `dryrun${res.body.status}`,
-                        console: res.body.text,
-                        operation: "Dry-run"
-                    });
-                    this.animateConsole();
-                })
-            }
-        });
+        let target = JSON.parse(JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}}));
+        http.post('/api/odl/post/operations/dryrun/', target).then(res => {
+            this.setState({
+                alertType: `dryrun${res.body.status}`,
+                console: res.body.text,
+                operation: "Dry-run"
+            });
+            this.animateConsole();
+        })
     }
 
     animateConsole() {
@@ -206,7 +211,7 @@ class DeviceView extends Component {
                         current={configJSON}
                     />
                     :
-                    <Editor title="" deviceName={this.state.device} editable={false} updateDiff={this.getEditedConfig.bind(this)}
+                    <Editor title="" deviceName={this.state.device} editable={false} updateDiff={this.updateConfig.bind(this)}
                             wfs={JSON.parse(operationalJSON)}/>
                 }
             </div>
@@ -279,7 +284,7 @@ class DeviceView extends Component {
                                        style={{margin: '40%', color: 'lightblue'}}/>
                                     :
                                     <Editor title="Intended Configuration" editable={true} deviceName={this.state.device}
-                                            getEditedConfig={this.getEditedConfig.bind(this)}
+                                            updateConfig={this.updateConfig.bind(this)}
                                             wfs={JSON.parse(configJSON)}
                                             refreshConfig={this.refreshConfig.bind(this)}/>
                                 }

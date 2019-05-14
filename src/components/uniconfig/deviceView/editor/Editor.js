@@ -62,7 +62,8 @@ class Editor extends Component {
                     this.setState({wfs: this.editor.innerText});
                     let toBeSent = JSON.parse(this.editor.innerText);
 
-                    this.props.getEditedConfig(toBeSent);
+                    //save new config and commit to conf
+                    this.props.updateConfig(toBeSent);
                 } else {
                     this.setState({isNotParsable : true});
                 }
