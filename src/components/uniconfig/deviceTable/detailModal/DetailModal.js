@@ -44,7 +44,7 @@ class DetailModal extends Component {
         if (device["transport_type"] === false) {
             labelPattern[3][0] = "Tcp-only:";
         }
-        console.log(device["connected_message"]);
+
         if (device["connected_message"]) {
             labelPattern.push(["Connected message:","connected_message"])
         }

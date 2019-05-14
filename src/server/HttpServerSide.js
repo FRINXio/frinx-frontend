@@ -14,7 +14,6 @@ const HttpClient = {
 
     get: (path, token) =>
         new Promise((resolve, reject) => {
-            console.log(path);
 
             const req = request.get(getUrl(path)).accept('application/json');
             if (token) {
@@ -23,7 +22,12 @@ const HttpClient = {
             }
             req.end((err, res) => {
                 if (err) {
-                    reject(err);
+                    if (res.error){
+                        resolve(res.error.status);
+                        console.log(res.error.message);
+                    } else {
+                        reject(err);
+                    }
                 } else {
                     resolve(res.body);
                 }
@@ -32,7 +36,6 @@ const HttpClient = {
 
     delete: (path, token) =>
         new Promise((resolve, reject) => {
-            console.log(path);
 
             const req = request.delete(path).accept('application/json');
             if (token) {
