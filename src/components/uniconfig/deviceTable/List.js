@@ -145,30 +145,34 @@ class List extends Component {
     refreshAllDeviceEntries() {
         this.setState({data: [], mountModal: false});
         http.get('/api/odl/get/oper/all/status/cli').then(res => {
-            let topologies = Object.keys(res);
-            let topology = Object.keys(res[Object.keys(res)]);
-            let topology_id = res[topologies][topology]["topology-id"];
-            let nodes = res[topologies][topology]["node"];
+            if (res !== 404) {
+                let topologies = Object.keys(res);
+                let topology = Object.keys(res[Object.keys(res)]);
+                let topology_id = res[topologies][topology]["topology-id"];
+                let nodes = res[topologies][topology]["node"];
 
-            if (nodes) {
-                nodes.map(device => {
-                    let node_id = device["node-id"];
-                    return this.addDeviceEntry(node_id, topology_id)
-                })
+                if (nodes) {
+                    nodes.map(device => {
+                        let node_id = device["node-id"];
+                        return this.addDeviceEntry(node_id, topology_id)
+                    })
+                }
             }
         });
 
         http.get('/api/odl/get/oper/all/status/topology-netconf').then(res => {
-            let topologies = Object.keys(res);
-            let topology = Object.keys(res[Object.keys(res)]);
-            let topology_id = res[topologies][topology]["topology-id"];
-            let nodes = res[topologies][topology]["node"];
+            if (res !== 404) {
+                let topologies = Object.keys(res);
+                let topology = Object.keys(res[Object.keys(res)]);
+                let topology_id = res[topologies][topology]["topology-id"];
+                let nodes = res[topologies][topology]["node"];
 
-            if (nodes) {
-                nodes.map(device => {
-                    let node_id = device["node-id"];
-                    return this.addDeviceEntry(node_id, topology_id)
-                })
+                if (nodes) {
+                    nodes.map(device => {
+                        let node_id = device["node-id"];
+                        return this.addDeviceEntry(node_id, topology_id)
+                    })
+                }
             }
         })
     }
