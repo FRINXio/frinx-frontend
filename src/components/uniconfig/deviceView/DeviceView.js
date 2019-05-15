@@ -170,13 +170,21 @@ class DeviceView extends Component {
                 console.log(res);
             })
         } else {
-            http.get('/api/odl/get/conf/snapshots/' + snapshotName + '/' + this.state.device).then(res => {
-                this.setState({
-                    config: JSON.stringify(res, null, 2),
-                    console: JSON.stringify(res),
-                    operation: "Load Snapshot"
-                });
-                this.animateConsole();
+            let target = JSON.stringify({
+                "input": {
+                    "name": snapshotName,
+                    "target-nodes": {"node": [this.state.device]}
+                }
+            });
+            http.post('/api/odl/post/operations/replacesnapshot', target).then(res_first => {
+                http.get('/api/odl/get/conf/snapshots/' + snapshotName + '/' + this.state.device).then(res => {
+                    this.setState({
+                        config: JSON.stringify(res, null, 2),
+                        console: JSON.stringify(res_first.body),
+                        operation: "Replace-Config-With-Snapshot"
+                    });
+                    this.animateConsole();
+                })
             })
         }
     }
