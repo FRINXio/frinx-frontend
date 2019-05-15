@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Button, Form, Modal, Row, Col, Tabs, Tab } from "react-bootstrap";
+import {Button, Form, Modal, Row, Col, Tabs, Tab, InputGroup} from "react-bootstrap";
 import { mountCliTemplate, mountNetconfTemplate } from "../../../constants";
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
@@ -17,7 +17,8 @@ class MountModal extends Component {
             mountNetconfForm: JSON.parse("[" + mountNetconfTemplate + "]"),
             mountType: "Cli",
             connectionStatus: null,
-            timeout: null
+            timeout: null,
+            showPass: false
         }
     }
 
@@ -121,16 +122,40 @@ class MountModal extends Component {
                                     {Object.entries(this.state.mountCliForm[0]).map((function (item, i) {
                                         return (
                                             <Col sm={6} key={`col1-${i}`}>
-                                                <Form.Group controlId={`mountCliInput-${item[0].split(":").pop()}`}>
-                                                    <Form.Label>{item[0].split(":").pop()}</Form.Label>
-                                                    <Form.Control type="input" defaultValue={item[1][0]}/>
-                                                    <Form.Text className="text-muted">
-                                                        {item[1][1]}
-                                                    </Form.Text>
-                                                </Form.Group>
+                                                    {item[0].split(":").pop() === "password" ? (
+                                                        <Form.Group
+                                                            controlId={`mountCliInput-${item[0].split(":").pop()}`}>
+                                                            <Form.Label>{item[0].split(":").pop()}</Form.Label>
+                                                            <InputGroup>
+                                                                <InputGroup.Append style={{width: "40px"}} className="clickable" onClick={() => this.setState({showPass: !this.state.showPass})}>
+                                                                    <InputGroup.Text>
+                                                                        <i className={this.state.showPass ? "fas fa-eye-slash" : "fas fa-eye"}/>
+                                                                    </InputGroup.Text>
+                                                                </InputGroup.Append>
+                                                                <Form.Control
+                                                                    type={this.state.showPass ? "input" : "password"}
+                                                                    autoComplete="password"
+                                                                    defaultValue={item[1][0]}/>
+                                                            </InputGroup>
+                                                            <Form.Text className="text-muted">
+                                                                {item[1][1]}
+                                                            </Form.Text>
+                                                        </Form.Group>
+                                                    ) : (
+                                                        <Form.Group
+                                                            controlId={`mountCliInput-${item[0].split(":").pop()}`}>
+                                                            <Form.Label>{item[0].split(":").pop()}</Form.Label>
+                                                            <Form.Control
+                                                                type="input"
+                                                                defaultValue={item[1][0]}/>
+                                                            <Form.Text className="text-muted">
+                                                                {item[1][1]}
+                                                            </Form.Text>
+                                                        </Form.Group>
+                                                    )}
                                             </Col>
                                         )
-                                    }))}
+                                    }).bind(this))}
                                 </Row>
                             </Form>
                         </Tab>
