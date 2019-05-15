@@ -129,13 +129,20 @@ class DeviceView extends Component {
 
     syncFromNetwork(){
         this.setState({syncing: true});
-        http.get('/api/odl/get/oper/uniconfig/' + this.state.device).then(res => {
-            this.setState({
-                operational: JSON.stringify(res),
-                initializing: false,
-                syncing: false,
-            })
-        });
+        let target = JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}});
+
+        http.post('/api/odl/post/operations/syncfromnetwork', target).then((res_first) => {
+            http.get('/api/odl/get/oper/uniconfig/' + this.state.device).then(res => {
+                this.setState({
+                    operational: JSON.stringify(res),
+                    initializing: false,
+                    syncing: false,
+                    console: res_first.body.text,
+                    operation: "Sync-from-network"
+                });
+                this.animateConsole()
+            });
+        })
     }
 
     refreshConfig(){
