@@ -35,7 +35,7 @@ EOF
 if [ -z "$ODL" ]; then
     echo "\e[35mUsing ${ODL_HOST_DEFAULT}\e[0m"
   else
-    sed -i 's,.*ODL_HOST=.*,ODL_HOST='"$ODL"',' ./.env
+    sed -i 's,.*ODL_HOST=.*,ODL_HOST='"http://""$ODL"',' ./.env
     echo "\e[35mUsing ODL at host: '$ODL'\e[0m"
 fi
 
