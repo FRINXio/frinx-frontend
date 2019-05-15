@@ -145,7 +145,7 @@ class List extends Component {
     refreshAllDeviceEntries() {
         this.setState({data: [], mountModal: false});
         http.get('/api/odl/get/oper/all/status/cli').then(res => {
-            if (res !== 404) {
+            if (res !== 404 && res !== 500) {
                 let topologies = Object.keys(res);
                 let topology = Object.keys(res[Object.keys(res)]);
                 let topology_id = res[topologies][topology]["topology-id"];
@@ -161,7 +161,8 @@ class List extends Component {
         });
 
         http.get('/api/odl/get/oper/all/status/topology-netconf').then(res => {
-            if (res !== 404) {
+            if (res !== 404 && res !== 500) {
+                console.log(res);
                 let topologies = Object.keys(res);
                 let topology = Object.keys(res[Object.keys(res)]);
                 let topology_id = res[topologies][topology]["topology-id"];
