@@ -8,7 +8,7 @@ COPY /src /app/src
 COPY ["package.json", "package-lock.json*", "./"]
 
 # Building modules
-RUN npm install --silent --production && mv node_modules ../
+RUN npm install --silent && mv node_modules ../
 
 # Expose PORT 3000 on virtual machine
 EXPOSE 3000
