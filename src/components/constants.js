@@ -21,5 +21,6 @@ export const mountCliTemplate = JSON.stringify( {
     "cli-topology:password": ["cisco","Password credential"],
     "node-extension:reconcile": [false,""],
     "cli-topology:journal-size": [150,""],
+    "cli-topology:dry-run-journal-size": [150,""]
 });
 
