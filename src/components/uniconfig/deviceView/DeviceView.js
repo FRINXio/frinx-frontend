@@ -155,9 +155,11 @@ class DeviceView extends Component {
 
     getSnapshots(){
         http.get('/api/odl/get/conf/snapshots/' + this.state.device).then(res => {
-            this.setState({
-                snapshots: res
-            })
+            if(res !== 500) {
+                this.setState({
+                    snapshots: res
+                })
+            }
         })
     }
 
