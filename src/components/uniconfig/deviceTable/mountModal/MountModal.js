@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Button, Form, Modal, Row, Col, Tabs, Tab, InputGroup, ButtonGroup} from "react-bootstrap";
-import { mountCliTemplate, mountCliTemplateAdv, mountNetconfTemplate } from "../../../constants";
+import {mountCliTemplate, mountCliTemplateAdv, mountNetconfTemplate, mountNetconfTemplateAdv} from "../../../constants";
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
 
@@ -16,6 +16,7 @@ class MountModal extends Component {
             mountCliForm: JSON.parse("[" + mountCliTemplate + "]"),
             mountCliFormAdv: JSON.parse("[" + mountCliTemplateAdv + "]"),
             mountNetconfForm: JSON.parse("[" + mountNetconfTemplate + "]"),
+            mountNetconfFormAdv: JSON.parse("[" + mountNetconfTemplateAdv + "]"),
             mountType: "Cli",
             connectionStatus: null,
             timeout: null,
@@ -51,9 +52,13 @@ class MountModal extends Component {
                 return data[item];
             });
         } else {
-            Object.keys(this.state.mountNetconfForm[0]).map(function (item, i) {
-                let targetField = item.split(":").pop();
-                data[item] = document.getElementById(`mount${mountType}Input-${targetField}`).value;
+            Object.entries(this.state.mountNetconfForm[0]).map(item => {
+                data[item[0]] = item[1][0];
+
+                Object.entries(this.state.mountNetconfFormAdv[0]).map(item => {
+                    data[item[0]] = item[1][0];
+                    return data[item];
+                });
                 return data[item];
             });
         }
@@ -65,6 +70,7 @@ class MountModal extends Component {
         }
         let node = Object.values(payload["network-topology:node"])[0];
 
+        console.log(payload);
         http.put("/api/odl/mount/" + topology + "/" + node, payload).then(res => {
             console.log(res);
         }).then(() => {
@@ -130,9 +136,17 @@ class MountModal extends Component {
 
     render() {
 
-        let formToDisplay = this.state.mountCliForm[0];
-        if (this.state.isAdv) {
-            formToDisplay = this.state.mountCliFormAdv[0];
+        let formToDisplay = [];
+        if (this.state.mountType === "Cli") {
+            formToDisplay = this.state.mountCliForm[0];
+            if (this.state.isAdv) {
+                formToDisplay = this.state.mountCliFormAdv[0];
+            }
+        } else {
+            formToDisplay = this.state.mountNetconfForm[0];
+            if (this.state.isAdv) {
+                formToDisplay = this.state.mountNetconfFormAdv[0];
+            }
         }
 
         return (
@@ -146,7 +160,7 @@ class MountModal extends Component {
                             <ButtonGroup style={{marginBottom: "20px"}} size="sm" className="d-flex">
                                 <Button onClick={() => this.setState({isAdv: false})}
                                         active={this.state.isAdv ? null : "active"} className="noshadow"
-                                        variant="outline-primary"><i className="fas fa-cog"></i>&nbsp;&nbsp;Basic</Button>
+                                        variant="outline-primary"><i className="fas fa-cog"/>&nbsp;&nbsp;Basic</Button>
                                 <Button onClick={() => this.setState({isAdv: true})}
                                         active={this.state.isAdv ? "active" : null} className="noshadow"
                                         variant="outline-primary"><i className="fas fa-cogs"/>&nbsp;&nbsp;Advanced</Button>
@@ -199,22 +213,31 @@ class MountModal extends Component {
 
                         </Tab>
                         <Tab eventKey="Netconf" title="Netconf">
+                            <ButtonGroup style={{marginBottom: "20px"}} size="sm" className="d-flex">
+                                <Button onClick={() => this.setState({isAdv: false})}
+                                        active={this.state.isAdv ? null : "active"} className="noshadow"
+                                        variant="outline-primary"><i className="fas fa-cog"/>&nbsp;&nbsp;Basic</Button>
+                                <Button onClick={() => this.setState({isAdv: true})}
+                                        active={this.state.isAdv ? "active" : null} className="noshadow"
+                                        variant="outline-primary"><i className="fas fa-cogs"/>&nbsp;&nbsp;Advanced</Button>
+                            </ButtonGroup>
                             <Form>
                                 <Row>
-                                    {Object.entries(this.state.mountNetconfForm[0]).map((function (item, i) {
+                                    {Object.entries(formToDisplay).map((function (item, i) {
                                         return (
                                             <Col sm={6} key={`col2-${i}`}>
                                                 <Form.Group controlId={`mountNetconfInput-${item[0].split(":").pop()}`}>
                                                     <Form.Label>{item[0].split(":").pop()}</Form.Label>
                                                     <Form.Control type="input"
-                                                                  defaultValue={item[1][0]} />
+                                                                  onChange={(e) => this.handleInput(e,i,formToDisplay)}
+                                                                  value={item[1][0]}/>
                                                     <Form.Text className="text-muted">
                                                         {item[1][1]}
                                                     </Form.Text>
                                                 </Form.Group>
                                             </Col>
                                         )
-                                    }))}
+                                    }).bind(this))}
                                 </Row>
                             </Form>
                         </Tab>

@@ -3,10 +3,14 @@ export const mountNetconfTemplate = JSON.stringify( {
     "node-id": ["xr6","Unique identifier of device across all systems"],
     "netconf-node-topology:host": ["192.168.1.213","IP or hostname of the management endpoint on a device"],
     "netconf-node-topology:port": [830,"TCP port of the management endpoint of a device"],
-    "netconf-node-topology:keepalive-delay": [0,""],
-    "netconf-node-topology:tcp-only": [false,""],
     "netconf-node-topology:username": ["cisco","Username credential"],
     "netconf-node-topology:password": ["cisco","Password credential"],
+});
+
+export const mountNetconfTemplateAdv = JSON.stringify({
+    "netconf-node-topology:tcp-only": [false,""],
+    "netconf-node-topology:keepalive-delay": [0,""],
+    "node-extension:reconcile": [false,""],
     "netconf-node-topology:dry-run-journal-size": [180,""],
 });
 
