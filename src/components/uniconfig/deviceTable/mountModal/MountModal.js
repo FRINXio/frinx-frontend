@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import {Button, Form, Modal, Row, Col, Tabs, Tab, InputGroup} from "react-bootstrap";
-import { mountCliTemplate, mountNetconfTemplate } from "../../../constants";
+import {Button, Form, Modal, Row, Col, Tabs, Tab, InputGroup, ButtonGroup} from "react-bootstrap";
+import { mountCliTemplate, mountCliTemplateAdv, mountNetconfTemplate } from "../../../constants";
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
 
@@ -12,13 +12,15 @@ class MountModal extends Component {
         this.handleClose = this.handleClose.bind(this);
 
         this.state = {
-            show: false,
+            show: this.props.show,
             mountCliForm: JSON.parse("[" + mountCliTemplate + "]"),
+            mountCliFormAdv: JSON.parse("[" + mountCliTemplateAdv + "]"),
             mountNetconfForm: JSON.parse("[" + mountNetconfTemplate + "]"),
             mountType: "Cli",
             connectionStatus: null,
             timeout: null,
-            showPass: false
+            showPass: false,
+            isAdv: false,
         }
     }
 
@@ -28,17 +30,24 @@ class MountModal extends Component {
         })
     }
 
+    handleClose() {
+        this.props.modalHandler();
+        clearTimeout(this.state.timeout);
+    }
+
     mountDevice() {
         let payload = {};
         let data = {};
         let mountType = this.state.mountType;
 
         if (mountType === "Cli") {
-            Object.keys(this.state.mountCliForm[0]).map(function (item, i) {
-                let targetField = item.split(":").pop();
-                if( item === 'cli-topology:device-type') {
-                }
-                data[item] = document.getElementById(`mount${mountType}Input-${targetField}`).value;
+            Object.entries(this.state.mountCliForm[0]).map(item => {
+                data[item[0]] = item[1][0];
+
+                Object.entries(this.state.mountCliFormAdv[0]).map(item => {
+                    data[item[0]] = item[1][0];
+                    return data[item];
+                });
                 return data[item];
             });
         } else {
@@ -55,7 +64,6 @@ class MountModal extends Component {
             topology = "topology-netconf";
         }
         let node = Object.values(payload["network-topology:node"])[0];
-
 
         http.put("/api/odl/mount/" + topology + "/" + node, payload).then(res => {
             console.log(res);
@@ -97,18 +105,36 @@ class MountModal extends Component {
         clearTimeout(this.state.timeout);
     }
 
-    handleClose() {
-        this.setState({
-            show: false,
-            mountType: "Cli",
-            deviceMounted: false,
-            connectionStatus: null
+    handleInput(e, i, formToDisplay) {
+        Object.values(formToDisplay).map( (item,idx) => {
+            if (idx === i) {
+                item[0] = e.target.value
+            }
+            return null;
         });
-        this.props.modalHandler();
-        clearTimeout(this.state.timeout);
+
+        if (this.state.isAdv) {
+            let updatedForm = {...this.state.mountCliFormAdv};
+            updatedForm[0] = formToDisplay;
+            this.setState({
+                mountCliFormAdv: updatedForm
+            })
+        } else {
+            let updatedForm = {...this.state.mountCliForm};
+            updatedForm[0] = formToDisplay;
+            this.setState({
+                mountCliForm: updatedForm
+            })
+        }
     }
 
     render() {
+
+        let formToDisplay = this.state.mountCliForm[0];
+        if (this.state.isAdv) {
+            formToDisplay = this.state.mountCliFormAdv[0];
+        }
+
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose} >
                 <Modal.Header>
@@ -117,9 +143,18 @@ class MountModal extends Component {
                 <Modal.Body style={{padding: "30px"}}>
                     <Tabs onSelect={this.changeMountType.bind(this)} style={{marginBottom: "20px"}} defaultActiveKey="Cli" id="mountTabs">
                         <Tab eventKey="Cli" title="CLI">
+                            <ButtonGroup style={{marginBottom: "20px"}} size="sm" className="d-flex">
+                                <Button onClick={() => this.setState({isAdv: false})}
+                                        active={this.state.isAdv ? null : "active"} className="noshadow"
+                                        variant="outline-primary"><i className="fas fa-cog"></i>&nbsp;&nbsp;Basic</Button>
+                                <Button onClick={() => this.setState({isAdv: true})}
+                                        active={this.state.isAdv ? "active" : null} className="noshadow"
+                                        variant="outline-primary"><i className="fas fa-cogs"/>&nbsp;&nbsp;Advanced</Button>
+                            </ButtonGroup>
+
                             <Form>
                                 <Row>
-                                    {Object.entries(this.state.mountCliForm[0]).map((function (item, i) {
+                                    {Object.entries(formToDisplay).map((function (item, i) {
                                         return (
                                             <Col sm={6} key={`col1-${i}`}>
                                                     {item[0].split(":").pop() === "password" ? (
@@ -135,7 +170,8 @@ class MountModal extends Component {
                                                                 <Form.Control
                                                                     type={this.state.showPass ? "input" : "password"}
                                                                     autoComplete="password"
-                                                                    defaultValue={item[1][0]}/>
+                                                                    onChange={(e) => this.handleInput(e,i,formToDisplay)}
+                                                                    value={item[1][0]}/>
                                                             </InputGroup>
                                                             <Form.Text className="text-muted">
                                                                 {item[1][1]}
@@ -147,7 +183,8 @@ class MountModal extends Component {
                                                             <Form.Label>{item[0].split(":").pop()}</Form.Label>
                                                             <Form.Control
                                                                 type="input"
-                                                                defaultValue={item[1][0]}/>
+                                                                onChange={(e) => this.handleInput(e,i,formToDisplay)}
+                                                                value={item[1][0]}/>
                                                             <Form.Text className="text-muted">
                                                                 {item[1][1]}
                                                             </Form.Text>
@@ -158,6 +195,8 @@ class MountModal extends Component {
                                     }).bind(this))}
                                 </Row>
                             </Form>
+
+
                         </Tab>
                         <Tab eventKey="Netconf" title="Netconf">
                             <Form>
@@ -167,7 +206,8 @@ class MountModal extends Component {
                                             <Col sm={6} key={`col2-${i}`}>
                                                 <Form.Group controlId={`mountNetconfInput-${item[0].split(":").pop()}`}>
                                                     <Form.Label>{item[0].split(":").pop()}</Form.Label>
-                                                    <Form.Control type="input" defaultValue={item[1][0]}/>
+                                                    <Form.Control type="input"
+                                                                  defaultValue={item[1][0]} />
                                                     <Form.Text className="text-muted">
                                                         {item[1][1]}
                                                     </Form.Text>

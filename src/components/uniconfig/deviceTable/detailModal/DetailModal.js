@@ -9,8 +9,8 @@ class DetailModal extends Component {
 
         this.handleClose = this.handleClose.bind(this);
         this.state = {
-            show: false,
-            deviceDetails: {}
+            show: this.props.show,
+            deviceDetails: this.props.deviceDetails
         }
     }
 
@@ -22,9 +22,6 @@ class DetailModal extends Component {
     }
 
     handleClose() {
-        this.setState({
-            show: false,
-        });
         this.props.modalHandler();
     }
 

@@ -314,6 +314,10 @@ class List extends Component {
     }
 
     render(){
+
+        let mountModal = this.state.mountModal ? <MountModal addDeviceEntry={this.addDeviceEntry} modalHandler={this.showMountModal} show={this.state.mountModal}/> : null;
+        let detailModal = this.state.detailModal ? <DetailModal deviceDetails={this.state.deviceDetails} modalHandler={this.showDetailModal} show={this.state.detailModal}/> : null;
+
         return(
             <div className='listPage'>
                 <Container>
@@ -328,8 +332,8 @@ class List extends Component {
                         <Form.Control value={this.state.keywords} onChange={this.onEditSearch} placeholder="Search by keyword."/>
                     </FormGroup>
 
-                    <MountModal addDeviceEntry={this.addDeviceEntry} modalHandler={this.showMountModal} show={this.state.mountModal}/>
-                    <DetailModal deviceDetails={this.state.deviceDetails} modalHandler={this.showDetailModal} show={this.state.detailModal}/>
+                    { mountModal }
+                    { detailModal }
 
                     <div className="scrollWrapper">
                         <Table ref={this.table} striped hover size="sm">

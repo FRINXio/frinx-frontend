@@ -19,8 +19,12 @@ export const mountCliTemplate = JSON.stringify( {
     "cli-topology:device-version": ["*","Version of device or device OS e.g. 15.2"],
     "cli-topology:username": ["cisco","Username credential"],
     "cli-topology:password": ["cisco","Password credential"],
-    "node-extension:reconcile": [false,""],
-    "cli-topology:journal-size": [150,""],
-    "cli-topology:dry-run-journal-size": [150,""]
 });
 
+export const mountCliTemplateAdv = JSON.stringify({
+    "node-extension:reconcile": [false,""],
+    "cli-topology:journal-size": [150,""],
+    "cli-topology:dry-run-journal-size": [150,""],
+    "cli-topology:keepalive-delay" : [45,""],
+    "cli-topology:keepalive-timeout" : [45,""]
+});
