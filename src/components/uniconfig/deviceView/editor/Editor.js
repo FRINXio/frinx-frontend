@@ -109,10 +109,12 @@ class Editor extends Component {
                     {this.state.editingJSON ? <i className="fas fa-save"/> : <i className="fas fa-pen"/> }
                     &nbsp;&nbsp;{this.state.editingJSON ? 'Save' : 'Edit'}
                 </Button>
-                <Button className="btn btn-light" onClick={ this.state.editingJSON ? (e) => this.editJSONswitch(e, 2) : () => this.props.refreshConfig()}
-                        style={{marginLeft: '5px'}}>
-                    &nbsp;&nbsp;{this.state.editingJSON ? 'Cancel' : 'Refresh'}
-                </Button>
+                {this.props.editable === "cap" ? null :
+                    <Button className="btn btn-light" onClick={ this.state.editingJSON ? (e) => this.editJSONswitch(e, 2) : () => this.props.refreshConfig()}
+                            style={{marginLeft: '5px'}}>
+                        &nbsp;&nbsp;{this.state.editingJSON ? 'Cancel' : 'Refresh'}
+                    </Button>
+                }
             </div>
         </div>
     );
@@ -127,7 +129,7 @@ class Editor extends Component {
                         <div className="d2h-file-header">
                             <span className="d2h-file-name-wrapper">
                                 <i className="fas fa-file-alt"/>
-                                <span>&nbsp;&nbsp;{this.props.editable ? "ODL config data store of " : "ODL operational data store of " } {this.props.deviceName}</span>
+                                <span>&nbsp;&nbsp;{this.props.editable === "cap" ? "Capabilities" : this.props.editable ? "ODL config data store of " :  "ODL operational data store of " } {this.props.deviceName}</span>
                                 <span className="d2h-tag d2h-changed d2h-changed-tag"
                                       style={{ display: this.state.modified ? 'inline-block' : 'none' }}>MODIFIED</span>
                                 <div style={{marginLeft: "10px", display: this.state.isNotParsable ? "block" : "none"}}

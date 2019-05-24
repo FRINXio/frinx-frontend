@@ -4,8 +4,12 @@ import {
     mountCliTemplate, mountCliTemplateAdv,
     mountNetconfTemplate, mountNetconfTemplateAdv,
     mountCliTemplateLazyOFF, mountCliTemplateLazyON,
-    mountCliTemplateDryRunON, mountCliTemplateDryRunOFF, mountNetconfTemplateDryRunOFF, mountNetconfTemplateDryRunON
+    mountCliTemplateDryRunOFF, mountCliTemplateDryRunON,
+    mountNetconfTemplateDryRunOFF, mountNetconfTemplateDryRunON,
+    mountNetconfTemplateOverrideOFF, mountNetconfTemplateOverrideON,
+    mountNetconfTemplateCapabilities
 } from "../../../constants";
+import CapModal from "./capModal/CapModal";
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
 
@@ -22,10 +26,12 @@ class MountModal extends Component {
             mountCliFormAdv: {...JSON.parse("[" + mountCliTemplateAdv + "]")[0], ...JSON.parse("[" + mountCliTemplateLazyOFF + "]")[0]},
             mountNetconfForm: JSON.parse("[" + mountNetconfTemplate + "]")[0],
             mountNetconfFormAdv: JSON.parse("[" + mountNetconfTemplateAdv + "]")[0],
+            mountNetconfFormCaps: JSON.parse("[" + mountNetconfTemplateCapabilities + "]")[0],
             mountType: "Cli",
             connectionStatus: null,
             timeout: null,
             showPass: false,
+            showCapModal: false,
             isAdv: false,
             activeToggles: []
         }
@@ -67,6 +73,10 @@ class MountModal extends Component {
                 });
                 return data[item];
             });
+            //append overridden capabilities
+            if (this.state.activeToggles.includes(0)){
+               data = {...data, ...this.state.mountNetconfFormCaps}
+            }
         }
 
         payload["network-topology:node"] = data;
@@ -76,7 +86,7 @@ class MountModal extends Component {
         }
         let node = Object.values(payload["network-topology:node"])[0];
 
-        console.log(payload);
+        console.log(JSON.stringify(payload, null, 2));
         http.put("/api/odl/mount/" + topology + "/" + node, payload).then(res => {
             console.log(res);
         }).then(() => {
@@ -147,7 +157,7 @@ class MountModal extends Component {
         let topologyForm = null;
         let topologyState = null;
         let valueToFormArrCLI = [[mountCliTemplateLazyOFF, mountCliTemplateLazyON], [mountCliTemplateDryRunOFF, mountCliTemplateDryRunON]];
-        let valueToFormArrNETCONF = [[ ], [mountNetconfTemplateDryRunOFF, mountNetconfTemplateDryRunON]];
+        let valueToFormArrNETCONF = [[mountNetconfTemplateOverrideOFF, mountNetconfTemplateOverrideON], [mountNetconfTemplateDryRunOFF, mountNetconfTemplateDryRunON]];
 
         if(this.state.mountType === "Cli"){
             valueToFormArr = valueToFormArrCLI;
@@ -188,6 +198,21 @@ class MountModal extends Component {
         }
     }
 
+    showCapModal() {
+            this.setState({
+                showCapModal: !this.state.showCapModal,
+            })
+    }
+
+    getUpdatedCaps(data) {
+        console.log(data);
+        this.setState({
+            mountNetconfFormCaps: data,
+        }, () => console.log(this.state.mountNetconfFormCaps) );
+
+
+    }
+
     render() {
 
         let formToDisplay = [];
@@ -202,6 +227,11 @@ class MountModal extends Component {
                 formToDisplay = this.state.mountNetconfFormAdv;
             }
         }
+
+        let capModal = this.state.showCapModal ?
+            <CapModal getUpdatedCaps={this.getUpdatedCaps.bind(this)}
+                      caps={this.state.mountNetconfFormCaps}
+                      modalHandler={this.showCapModal.bind(this)} show={this.state.showCapModal}/> : null;
 
         const settingsGroup = () => {
             return (
@@ -242,7 +272,6 @@ class MountModal extends Component {
                         <Button onClick={() => this.handleToggle(0)}
                                 style={{width: "50%"}}
                                 active={this.state.activeToggles.includes(0) ? "active" : null} className="noshadow"
-                                disabled
                                 variant="outline-info">Override capabilities</Button>
                         <Button onClick={() => this.handleToggle(1)}
                                 style={{width: "50%"}}
@@ -272,6 +301,29 @@ class MountModal extends Component {
                     </InputGroup>
                     <Form.Text className="text-muted">
                         {item[1][1]}
+                    </Form.Text>
+                </Form.Group>
+            )
+        };
+
+        const capabilitiesField = (item, i, type) => {
+            return (
+                <Form.Group
+                    controlId={`mount${type}Input-${item[0].split(":").pop()}`}>
+                    <Form.Label>{item[0].split(":").pop()}</Form.Label>
+                    <InputGroup>
+                        <InputGroup.Append style={{width: "40px"}} className="clickable" onClick={this.showCapModal.bind(this)}>
+                            <InputGroup.Text>
+                                <i className="fas fa-plus-circle"/>
+                            </InputGroup.Text>
+                        </InputGroup.Append>
+                        <Form.Control
+                            type="input"
+                            disabled
+                            value={item[1][0]}/>
+                    </InputGroup>
+                    <Form.Text className="text-muted">
+                        &nbsp;&nbsp;<i className="fas fa-chevron-up"/>&nbsp;&nbsp;{item[1][1]}
                     </Form.Text>
                 </Form.Group>
             )
@@ -356,6 +408,9 @@ class MountModal extends Component {
                                                 {item[0].split(":").pop() === "password" ?
                                                     passwordField(item, i, "netconf")
                                                     :
+                                                    item[0].split(":").pop() === "override" ?
+                                                    capabilitiesField(item, i, "netconf")
+                                                    :
                                                     inputField(item, i, "netconf")}
                                             </Col>
                                         )
@@ -371,6 +426,8 @@ class MountModal extends Component {
                         Close
                     </Button>
                 </Modal.Footer>
+
+                {capModal}
             </Modal>
         );
     }

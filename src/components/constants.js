@@ -16,11 +16,22 @@ export const mountNetconfTemplateAdv = JSON.stringify({
 export const mountNetconfTemplateDryRunOFF = JSON.stringify({
 });
 
-
 export const mountNetconfTemplateDryRunON = JSON.stringify({
     "netconf-node-topology:dry-run-journal-size": [180,""],
 });
 
+export const mountNetconfTemplateOverrideON = JSON.stringify({
+    "netconf-node-topology:override": [true,"Select capabilities"]
+});
+
+export const mountNetconfTemplateOverrideOFF = JSON.stringify({
+});
+
+export const mountNetconfTemplateCapabilities = JSON.stringify({
+    "netconf-node-topology:yang-module-capabilities": {
+        "capability": []
+    }
+});
 
 export const mountCliTemplate = JSON.stringify( {
     "network-topology:node-id": ["xr5","Unique identifier of device across all systems"],
