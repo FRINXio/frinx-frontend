@@ -33,6 +33,7 @@ class MountModal extends Component {
             showPass: false,
             showCapModal: false,
             isAdv: false,
+            isSsh: true,
             activeToggles: []
         }
     }
@@ -208,7 +209,19 @@ class MountModal extends Component {
         console.log(data);
         this.setState({
             mountNetconfFormCaps: data,
-        },);
+        });
+    }
+
+    changeTransportType(i,formToDisplay) {
+        let type = {
+            target: {
+                value: this.state.isSsh ? "telnet" : "ssh"
+            }
+        };
+        this.setState({
+            isSsh: !this.state.isSsh
+        });
+        this.handleInput(type, i, formToDisplay)
     }
 
     render() {
@@ -277,6 +290,29 @@ class MountModal extends Component {
                                 variant="outline-info">Dry-run</Button>
                     </ButtonGroup>
                     : null
+            )
+        };
+
+        const transportField = (item, i, type) => {
+            return (
+                <Form.Group
+                    controlId={`mount${type}Input-${item[0].split(":").pop()}`}>
+                    <Form.Label>{item[0].split(":").pop()}</Form.Label>
+                    <InputGroup>
+                        <InputGroup.Append style={{width: "40px"}} className="clickable" onClick={() => this.changeTransportType(i,formToDisplay)}>
+                            <InputGroup.Text>
+                                <i className="fas fa-chevron-down"/>
+                            </InputGroup.Text>
+                        </InputGroup.Append>
+                        <Form.Control
+                            type="input"
+                            onChange={(e) => this.handleInput(e,i,formToDisplay)}
+                            value={ this.state.isSsh ? "ssh" : item[1][0]}/>
+                    </InputGroup>
+                    <Form.Text className="text-muted">
+                        {item[1][1]}
+                    </Form.Text>
+                </Form.Group>
             )
         };
 
@@ -387,7 +423,10 @@ class MountModal extends Component {
                                             <Col sm={6} key={`col1-${i}`}>
                                                 {item[0].split(":").pop() === "password" ?
                                                     passwordField(item, i, "cli")
-                                                    :
+                                                        :
+                                                    item[0].split(":").pop() === "transport-type" ?
+                                                    transportField(item, i, "cli")
+                                                        :
                                                     inputField(item, i, "cli")}
                                             </Col>
                                         )
