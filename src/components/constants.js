@@ -10,9 +10,17 @@ export const mountNetconfTemplate = JSON.stringify( {
 export const mountNetconfTemplateAdv = JSON.stringify({
     "netconf-node-topology:tcp-only": [false,""],
     "netconf-node-topology:keepalive-delay": [0,""],
-    "node-extension:reconcile": [false,""],
+    "node-extension:reconcile": [false,""]
+});
+
+export const mountNetconfTemplateDryRunOFF = JSON.stringify({
+});
+
+
+export const mountNetconfTemplateDryRunON = JSON.stringify({
     "netconf-node-topology:dry-run-journal-size": [180,""],
 });
+
 
 export const mountCliTemplate = JSON.stringify( {
     "network-topology:node-id": ["xr5","Unique identifier of device across all systems"],

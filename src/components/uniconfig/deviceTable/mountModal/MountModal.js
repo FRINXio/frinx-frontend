@@ -4,7 +4,7 @@ import {
     mountCliTemplate, mountCliTemplateAdv,
     mountNetconfTemplate, mountNetconfTemplateAdv,
     mountCliTemplateLazyOFF, mountCliTemplateLazyON,
-    mountCliTemplateDryRunON, mountCliTemplateDryRunOFF
+    mountCliTemplateDryRunON, mountCliTemplateDryRunOFF, mountNetconfTemplateDryRunOFF, mountNetconfTemplateDryRunON
 } from "../../../constants";
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
@@ -109,10 +109,15 @@ class MountModal extends Component {
     }
 
     changeMountType(which) {
+        //turn off toggles
+        this.state.activeToggles.forEach(value => {
+            this.handleToggle(value);
+        });
         this.setState({
             mountType: which,
             deviceMounted: false,
-            connectionStatus: null
+            connectionStatus: null,
+            isAdv: false
         });
         clearTimeout(this.state.timeout);
     }
@@ -138,7 +143,21 @@ class MountModal extends Component {
 
     handleToggle(value) {
 
-        let valueToFormArr = [[mountCliTemplateLazyOFF, mountCliTemplateLazyON], [mountCliTemplateDryRunOFF, mountCliTemplateDryRunON]];
+        let valueToFormArr = [];
+        let topologyForm = null;
+        let topologyState = null;
+        let valueToFormArrCLI = [[mountCliTemplateLazyOFF, mountCliTemplateLazyON], [mountCliTemplateDryRunOFF, mountCliTemplateDryRunON]];
+        let valueToFormArrNETCONF = [[ ], [mountNetconfTemplateDryRunOFF, mountNetconfTemplateDryRunON]];
+
+        if(this.state.mountType === "Cli"){
+            valueToFormArr = valueToFormArrCLI;
+            topologyForm = "mountCliFormAdv";
+            topologyState = this.state.mountCliFormAdv;
+        } else {
+            valueToFormArr = valueToFormArrNETCONF;
+            topologyForm = "mountNetconfFormAdv";
+            topologyState = this.state.mountNetconfFormAdv;
+        }
 
         if (this.state.activeToggles.includes(value)) {
             let updatedArr = [...this.state.activeToggles];
@@ -146,28 +165,26 @@ class MountModal extends Component {
 
             //removing ON/OFF data instead of overwriting for persistence of existing data
             Object.keys(JSON.parse("[" + valueToFormArr[value][1] + "]")[0]).filter(key => {
-                if (key in this.state.mountCliFormAdv) {
-                    return delete this.state.mountCliFormAdv[key];
+                if (key in topologyState) {
+                    return delete topologyState[key];
                 }
                 return null;
             });
             this.setState({
                 activeToggles: updatedArr,
-                mountCliFormAdv: {...this.state.mountCliFormAdv, ...JSON.parse("[" + valueToFormArr[value][0] + "]")[0]},
+                [topologyForm]: {...topologyState, ...JSON.parse("[" + valueToFormArr[value][0] + "]")[0]},
             });
-
         } else {
             Object.keys(JSON.parse("[" + valueToFormArr[value][0] + "]")[0]).filter(key => {
-                if (key in this.state.mountCliFormAdv) {
-                    return delete this.state.mountCliFormAdv[key];
+                if (key in topologyState) {
+                    return delete topologyState[key];
                 }
                 return null;
             });
             this.setState({
                 activeToggles: [...this.state.activeToggles, value],
-                mountCliFormAdv: {...this.state.mountCliFormAdv, ...JSON.parse("[" + valueToFormArr[value][1] + "]")[0]},
+                [topologyForm]: {...topologyState, ...JSON.parse("[" + valueToFormArr[value][1] + "]")[0]},
             });
-
         }
     }
 
@@ -201,7 +218,7 @@ class MountModal extends Component {
             )
         };
 
-        const toggleGroup = () => {
+        const toggleGroupCli = () => {
             return (
                 this.state.isAdv ?
                     <ButtonGroup style={{marginBottom: "20px"}} size="sm" className="d-flex">
@@ -209,6 +226,24 @@ class MountModal extends Component {
                                 style={{width: "50%"}}
                                 active={this.state.activeToggles.includes(0) ? "active" : null} className="noshadow"
                                 variant="outline-info">Lazy Connection</Button>
+                        <Button onClick={() => this.handleToggle(1)}
+                                style={{width: "50%"}}
+                                active={this.state.activeToggles.includes(1) ? "active" : null} className="noshadow"
+                                variant="outline-info">Dry-run</Button>
+                    </ButtonGroup>
+                    : null
+            )
+        };
+
+        const toggleGroupNetconf = () => {
+            return (
+                this.state.isAdv ?
+                    <ButtonGroup style={{marginBottom: "20px"}} size="sm" className="d-flex">
+                        <Button onClick={() => this.handleToggle(0)}
+                                style={{width: "50%"}}
+                                active={this.state.activeToggles.includes(0) ? "active" : null} className="noshadow"
+                                disabled
+                                variant="outline-info">Override capabilities</Button>
                         <Button onClick={() => this.handleToggle(1)}
                                 style={{width: "50%"}}
                                 active={this.state.activeToggles.includes(1) ? "active" : null} className="noshadow"
@@ -294,7 +329,7 @@ class MountModal extends Component {
                     <Tabs onSelect={this.changeMountType.bind(this)} style={{marginBottom: "20px"}} defaultActiveKey="Cli" id="mountTabs">
                         <Tab eventKey="Cli" title="CLI">
                             {settingsGroup()}
-                            {toggleGroup()}
+                            {toggleGroupCli()}
                             <Form>
                                 <Row>
                                     {Object.entries(formToDisplay).map((function (item, i) {
@@ -312,6 +347,7 @@ class MountModal extends Component {
                         </Tab>
                         <Tab eventKey="Netconf" title="Netconf">
                             {settingsGroup()}
+                            {toggleGroupNetconf()}
                             <Form>
                                 <Row>
                                     {Object.entries(formToDisplay).map((function (item, i) {
