@@ -28,7 +28,23 @@ export const mountCliTemplate = JSON.stringify( {
 export const mountCliTemplateAdv = JSON.stringify({
     "node-extension:reconcile": [false,""],
     "cli-topology:journal-size": [150,""],
+});
+
+export const mountCliTemplateDryRunOFF = JSON.stringify({
+});
+
+
+export const mountCliTemplateDryRunON = JSON.stringify({
     "cli-topology:dry-run-journal-size": [150,""],
+});
+
+export const mountCliTemplateLazyOFF = JSON.stringify({
     "cli-topology:keepalive-delay" : [45,""],
     "cli-topology:keepalive-timeout" : [45,""]
+});
+
+export const mountCliTemplateLazyON = JSON.stringify({
+    "cli-topology:command-timeout": [60,""],
+    "cli-topology:connection-lazy-timeout": [60,""],
+    "cli-topology:connection-establish-timeout": [60,""]
 });

@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import {Button, Form, Modal, Row, Col, Tabs, Tab, InputGroup, ButtonGroup} from "react-bootstrap";
-import {mountCliTemplate, mountCliTemplateAdv, mountNetconfTemplate, mountNetconfTemplateAdv} from "../../../constants";
+import {
+    mountCliTemplate, mountCliTemplateAdv,
+    mountNetconfTemplate, mountNetconfTemplateAdv,
+    mountCliTemplateLazyOFF, mountCliTemplateLazyON,
+    mountCliTemplateDryRunON, mountCliTemplateDryRunOFF
+} from "../../../constants";
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
 
@@ -13,15 +18,16 @@ class MountModal extends Component {
 
         this.state = {
             show: this.props.show,
-            mountCliForm: JSON.parse("[" + mountCliTemplate + "]"),
-            mountCliFormAdv: JSON.parse("[" + mountCliTemplateAdv + "]"),
-            mountNetconfForm: JSON.parse("[" + mountNetconfTemplate + "]"),
-            mountNetconfFormAdv: JSON.parse("[" + mountNetconfTemplateAdv + "]"),
+            mountCliForm: JSON.parse("[" + mountCliTemplate + "]")[0],
+            mountCliFormAdv: {...JSON.parse("[" + mountCliTemplateAdv + "]")[0], ...JSON.parse("[" + mountCliTemplateLazyOFF + "]")[0]},
+            mountNetconfForm: JSON.parse("[" + mountNetconfTemplate + "]")[0],
+            mountNetconfFormAdv: JSON.parse("[" + mountNetconfTemplateAdv + "]")[0],
             mountType: "Cli",
             connectionStatus: null,
             timeout: null,
             showPass: false,
             isAdv: false,
+            activeToggles: []
         }
     }
 
@@ -42,20 +48,20 @@ class MountModal extends Component {
         let mountType = this.state.mountType;
 
         if (mountType === "Cli") {
-            Object.entries(this.state.mountCliForm[0]).map(item => {
+            Object.entries(this.state.mountCliForm).map(item => {
                 data[item[0]] = item[1][0];
 
-                Object.entries(this.state.mountCliFormAdv[0]).map(item => {
+                Object.entries(this.state.mountCliFormAdv).map(item => {
                     data[item[0]] = item[1][0];
                     return data[item];
                 });
                 return data[item];
             });
         } else {
-            Object.entries(this.state.mountNetconfForm[0]).map(item => {
+            Object.entries(this.state.mountNetconfForm).map(item => {
                 data[item[0]] = item[1][0];
 
-                Object.entries(this.state.mountNetconfFormAdv[0]).map(item => {
+                Object.entries(this.state.mountNetconfFormAdv).map(item => {
                     data[item[0]] = item[1][0];
                     return data[item];
                 });
@@ -120,17 +126,48 @@ class MountModal extends Component {
         });
 
         if (this.state.isAdv) {
-            let updatedForm = {...this.state.mountCliFormAdv};
-            updatedForm[0] = formToDisplay;
             this.setState({
-                mountCliFormAdv: updatedForm
+                mountCliFormAdv: formToDisplay
             })
         } else {
-            let updatedForm = {...this.state.mountCliForm};
-            updatedForm[0] = formToDisplay;
             this.setState({
-                mountCliForm: updatedForm
+                mountCliForm: formToDisplay
             })
+        }
+    }
+
+    handleToggle(value) {
+
+        let valueToFormArr = [[mountCliTemplateLazyOFF, mountCliTemplateLazyON], [mountCliTemplateDryRunOFF, mountCliTemplateDryRunON]];
+
+        if (this.state.activeToggles.includes(value)) {
+            let updatedArr = [...this.state.activeToggles];
+            updatedArr.splice(updatedArr.indexOf(value), 1);
+
+            //removing ON/OFF data instead of overwriting for persistence of existing data
+            Object.keys(JSON.parse("[" + valueToFormArr[value][1] + "]")[0]).filter(key => {
+                if (key in this.state.mountCliFormAdv) {
+                    return delete this.state.mountCliFormAdv[key];
+                }
+                return null;
+            });
+            this.setState({
+                activeToggles: updatedArr,
+                mountCliFormAdv: {...this.state.mountCliFormAdv, ...JSON.parse("[" + valueToFormArr[value][0] + "]")[0]},
+            });
+
+        } else {
+            Object.keys(JSON.parse("[" + valueToFormArr[value][0] + "]")[0]).filter(key => {
+                if (key in this.state.mountCliFormAdv) {
+                    return delete this.state.mountCliFormAdv[key];
+                }
+                return null;
+            });
+            this.setState({
+                activeToggles: [...this.state.activeToggles, value],
+                mountCliFormAdv: {...this.state.mountCliFormAdv, ...JSON.parse("[" + valueToFormArr[value][1] + "]")[0]},
+            });
+
         }
     }
 
@@ -138,16 +175,115 @@ class MountModal extends Component {
 
         let formToDisplay = [];
         if (this.state.mountType === "Cli") {
-            formToDisplay = this.state.mountCliForm[0];
+            formToDisplay = this.state.mountCliForm;
             if (this.state.isAdv) {
-                formToDisplay = this.state.mountCliFormAdv[0];
+                formToDisplay = this.state.mountCliFormAdv;
             }
         } else {
-            formToDisplay = this.state.mountNetconfForm[0];
+            formToDisplay = this.state.mountNetconfForm;
             if (this.state.isAdv) {
-                formToDisplay = this.state.mountNetconfFormAdv[0];
+                formToDisplay = this.state.mountNetconfFormAdv;
             }
         }
+
+        const settingsGroup = () => {
+            return (
+                <ButtonGroup style={{marginBottom: "20px"}} size="sm" className="d-flex">
+                    <Button onClick={() => this.setState({isAdv: false})}
+                            style={{width: "50%"}}
+                            active={this.state.isAdv ? null : "active"} className="noshadow"
+                            variant="outline-primary"><i className="fas fa-cog"/>&nbsp;&nbsp;Basic</Button>
+                    <Button onClick={() => this.setState({isAdv: true})}
+                            style={{width: "50%"}}
+                            active={this.state.isAdv ? "active" : null} className="noshadow"
+                            variant="outline-primary"><i className="fas fa-cogs"/>&nbsp;&nbsp;Advanced</Button>
+                </ButtonGroup>
+            )
+        };
+
+        const toggleGroup = () => {
+            return (
+                this.state.isAdv ?
+                    <ButtonGroup style={{marginBottom: "20px"}} size="sm" className="d-flex">
+                        <Button onClick={() => this.handleToggle(0)}
+                                style={{width: "50%"}}
+                                active={this.state.activeToggles.includes(0) ? "active" : null} className="noshadow"
+                                variant="outline-info">Lazy Connection</Button>
+                        <Button onClick={() => this.handleToggle(1)}
+                                style={{width: "50%"}}
+                                active={this.state.activeToggles.includes(1) ? "active" : null} className="noshadow"
+                                variant="outline-info">Dry-run</Button>
+                    </ButtonGroup>
+                    : null
+            )
+        };
+
+        const passwordField = (item, i, type) => {
+            return (
+                <Form.Group
+                    controlId={`mount${type}Input-${item[0].split(":").pop()}`}>
+                    <Form.Label>{item[0].split(":").pop()}</Form.Label>
+                    <InputGroup>
+                        <InputGroup.Append style={{width: "40px"}} className="clickable" onClick={() => this.setState({showPass: !this.state.showPass})}>
+                            <InputGroup.Text>
+                                <i className={this.state.showPass ? "fas fa-eye-slash" : "fas fa-eye"}/>
+                            </InputGroup.Text>
+                        </InputGroup.Append>
+                        <Form.Control
+                            type={this.state.showPass ? "input" : "password"}
+                            autoComplete="password"
+                            onChange={(e) => this.handleInput(e,i,formToDisplay)}
+                            value={item[1][0]}/>
+                    </InputGroup>
+                    <Form.Text className="text-muted">
+                        {item[1][1]}
+                    </Form.Text>
+                </Form.Group>
+            )
+        };
+
+        const inputField = (item, i, type) => {
+            return (
+                <Form.Group
+                    controlId={`mount${type}Input-${item[0].split(":").pop()}`}>
+                    <Form.Label>{item[0].split(":").pop()}</Form.Label>
+                    <Form.Control
+                        type="input"
+                        onChange={(e) => this.handleInput(e,i,formToDisplay)}
+                        value={item[1][0]}/>
+                    <Form.Text className="text-muted">
+                        {item[1][1]}
+                    </Form.Text>
+                </Form.Group>
+            )
+        };
+
+        const connectionBtn = () => {
+            return (
+                <Button variant={this.state.connectionStatus === null ?
+                    "primary" :
+                    this.state.connectionStatus === "connecting" ?
+                        "info" :
+                        this.state.connectionStatus === "connected" ?
+                            "success" : "danger"}
+                        onClick={this.mountDevice.bind(this)}>
+                    {this.state.connectionStatus === null ?
+                        null :
+                        this.state.connectionStatus === "connecting" ?
+                            <i className="fas fa-spinner fa-spin"/> :
+                            this.state.connectionStatus === "connected" ?
+                                <i className="fas fa-check-circle"/> :
+                                <i className="fas fa-exclamation-circle"/>}
+                    &nbsp;&nbsp;
+                    {this.state.connectionStatus === null ?
+                        "Mount Device" :
+                        this.state.connectionStatus === "connecting" ?
+                            "Connecting" :
+                            this.state.connectionStatus === "connected" ?
+                                "Connected" : "Something went wrong"}
+                </Button>
+            )
+        };
 
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose} >
@@ -157,115 +293,44 @@ class MountModal extends Component {
                 <Modal.Body style={{padding: "30px"}}>
                     <Tabs onSelect={this.changeMountType.bind(this)} style={{marginBottom: "20px"}} defaultActiveKey="Cli" id="mountTabs">
                         <Tab eventKey="Cli" title="CLI">
-                            <ButtonGroup style={{marginBottom: "20px"}} size="sm" className="d-flex">
-                                <Button onClick={() => this.setState({isAdv: false})}
-                                        active={this.state.isAdv ? null : "active"} className="noshadow"
-                                        variant="outline-primary"><i className="fas fa-cog"/>&nbsp;&nbsp;Basic</Button>
-                                <Button onClick={() => this.setState({isAdv: true})}
-                                        active={this.state.isAdv ? "active" : null} className="noshadow"
-                                        variant="outline-primary"><i className="fas fa-cogs"/>&nbsp;&nbsp;Advanced</Button>
-                            </ButtonGroup>
-
+                            {settingsGroup()}
+                            {toggleGroup()}
                             <Form>
                                 <Row>
                                     {Object.entries(formToDisplay).map((function (item, i) {
                                         return (
                                             <Col sm={6} key={`col1-${i}`}>
-                                                    {item[0].split(":").pop() === "password" ? (
-                                                        <Form.Group
-                                                            controlId={`mountCliInput-${item[0].split(":").pop()}`}>
-                                                            <Form.Label>{item[0].split(":").pop()}</Form.Label>
-                                                            <InputGroup>
-                                                                <InputGroup.Append style={{width: "40px"}} className="clickable" onClick={() => this.setState({showPass: !this.state.showPass})}>
-                                                                    <InputGroup.Text>
-                                                                        <i className={this.state.showPass ? "fas fa-eye-slash" : "fas fa-eye"}/>
-                                                                    </InputGroup.Text>
-                                                                </InputGroup.Append>
-                                                                <Form.Control
-                                                                    type={this.state.showPass ? "input" : "password"}
-                                                                    autoComplete="password"
-                                                                    onChange={(e) => this.handleInput(e,i,formToDisplay)}
-                                                                    value={item[1][0]}/>
-                                                            </InputGroup>
-                                                            <Form.Text className="text-muted">
-                                                                {item[1][1]}
-                                                            </Form.Text>
-                                                        </Form.Group>
-                                                    ) : (
-                                                        <Form.Group
-                                                            controlId={`mountCliInput-${item[0].split(":").pop()}`}>
-                                                            <Form.Label>{item[0].split(":").pop()}</Form.Label>
-                                                            <Form.Control
-                                                                type="input"
-                                                                onChange={(e) => this.handleInput(e,i,formToDisplay)}
-                                                                value={item[1][0]}/>
-                                                            <Form.Text className="text-muted">
-                                                                {item[1][1]}
-                                                            </Form.Text>
-                                                        </Form.Group>
-                                                    )}
+                                                {item[0].split(":").pop() === "password" ?
+                                                    passwordField(item, i, "cli")
+                                                    :
+                                                    inputField(item, i, "cli")}
                                             </Col>
                                         )
-                                    }).bind(this))}
+                                    }))}
                                 </Row>
                             </Form>
-
-
                         </Tab>
                         <Tab eventKey="Netconf" title="Netconf">
-                            <ButtonGroup style={{marginBottom: "20px"}} size="sm" className="d-flex">
-                                <Button onClick={() => this.setState({isAdv: false})}
-                                        active={this.state.isAdv ? null : "active"} className="noshadow"
-                                        variant="outline-primary"><i className="fas fa-cog"/>&nbsp;&nbsp;Basic</Button>
-                                <Button onClick={() => this.setState({isAdv: true})}
-                                        active={this.state.isAdv ? "active" : null} className="noshadow"
-                                        variant="outline-primary"><i className="fas fa-cogs"/>&nbsp;&nbsp;Advanced</Button>
-                            </ButtonGroup>
+                            {settingsGroup()}
                             <Form>
                                 <Row>
                                     {Object.entries(formToDisplay).map((function (item, i) {
                                         return (
-                                            <Col sm={6} key={`col2-${i}`}>
-                                                <Form.Group controlId={`mountNetconfInput-${item[0].split(":").pop()}`}>
-                                                    <Form.Label>{item[0].split(":").pop()}</Form.Label>
-                                                    <Form.Control type="input"
-                                                                  onChange={(e) => this.handleInput(e,i,formToDisplay)}
-                                                                  value={item[1][0]}/>
-                                                    <Form.Text className="text-muted">
-                                                        {item[1][1]}
-                                                    </Form.Text>
-                                                </Form.Group>
+                                            <Col sm={6} key={`col1-${i}`}>
+                                                {item[0].split(":").pop() === "password" ?
+                                                    passwordField(item, i, "netconf")
+                                                    :
+                                                    inputField(item, i, "netconf")}
                                             </Col>
                                         )
-                                    }).bind(this))}
+                                    }))}
                                 </Row>
                             </Form>
                         </Tab>
                     </Tabs>
                 </Modal.Body>
                 <Modal.Footer>
-                           <Button variant={this.state.connectionStatus === null ?
-                               "primary" :
-                               this.state.connectionStatus === "connecting" ?
-                                   "info" :
-                                   this.state.connectionStatus === "connected" ?
-                                       "success" : "danger"}
-                            onClick={this.mountDevice.bind(this)}>
-                               {this.state.connectionStatus === null ?
-                                   null :
-                                   this.state.connectionStatus === "connecting" ?
-                                       <i className="fas fa-spinner fa-spin"/> :
-                                       this.state.connectionStatus === "connected" ?
-                                           <i className="fas fa-check-circle"/> :
-                                           <i className="fas fa-exclamation-circle"/>}
-                               &nbsp;&nbsp;
-                        {this.state.connectionStatus === null ?
-                            "Mount Device" :
-                            this.state.connectionStatus === "connecting" ?
-                                "Connecting" :
-                                this.state.connectionStatus === "connected" ?
-                                    "Connected" : "Something went wrong"}
-                    </Button>
+                    {connectionBtn()}
                     <Button variant="secondary" onClick={this.handleClose}>
                         Close
                     </Button>
