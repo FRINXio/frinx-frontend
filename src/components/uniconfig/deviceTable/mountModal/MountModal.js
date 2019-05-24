@@ -119,15 +119,15 @@ class MountModal extends Component {
     }
 
     changeMountType(which) {
-        //turn off toggles
-        this.state.activeToggles.forEach(value => {
-            this.handleToggle(value);
-        });
+        //reset forms and turn off settings
         this.setState({
             mountType: which,
             deviceMounted: false,
             connectionStatus: null,
-            isAdv: false
+            isAdv: false,
+            activeToggles: [],
+            mountCliFormAdv: {...JSON.parse("[" + mountCliTemplateAdv + "]")[0], ...JSON.parse("[" + mountCliTemplateLazyOFF + "]")[0]},
+            mountNetconfFormAdv: JSON.parse("[" + mountNetconfTemplateAdv + "]")[0],
         });
         clearTimeout(this.state.timeout);
     }
@@ -208,9 +208,7 @@ class MountModal extends Component {
         console.log(data);
         this.setState({
             mountNetconfFormCaps: data,
-        }, () => console.log(this.state.mountNetconfFormCaps) );
-
-
+        },);
     }
 
     render() {
