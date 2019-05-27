@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import {Button, Form, Modal, Row, Col, Tabs, Tab, InputGroup, ButtonGroup} from "react-bootstrap";
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
 import {
     mountCliTemplate, mountCliTemplateAdv,
     mountNetconfTemplate, mountNetconfTemplateAdv,
@@ -22,11 +24,13 @@ class MountModal extends Component {
 
         this.state = {
             show: this.props.show,
-            mountCliForm: JSON.parse("[" + mountCliTemplate + "]")[0],
-            mountCliFormAdv: {...JSON.parse("[" + mountCliTemplateAdv + "]")[0], ...JSON.parse("[" + mountCliTemplateLazyOFF + "]")[0]},
-            mountNetconfForm: JSON.parse("[" + mountNetconfTemplate + "]")[0],
-            mountNetconfFormAdv: JSON.parse("[" + mountNetconfTemplateAdv + "]")[0],
-            mountNetconfFormCaps: JSON.parse("[" + mountNetconfTemplateCapabilities + "]")[0],
+            mountCliForm: [],
+            mountCliFormAdv: [],
+            mountNetconfForm: [],
+            mountNetconfFormAdv: [],
+            mountNetconfFormCaps: [],
+            deviceTypeVersion: {},
+            deviceType: null,
             mountType: "Cli",
             connectionStatus: null,
             timeout: null,
@@ -36,6 +40,18 @@ class MountModal extends Component {
             isSsh: true,
             activeToggles: []
         }
+    }
+
+    componentWillMount() {
+        this.setState({
+            mountCliForm: JSON.parse("[" + mountCliTemplate + "]")[0],
+            mountCliFormAdv: {...JSON.parse("[" + mountCliTemplateAdv + "]")[0], ...JSON.parse("[" + mountCliTemplateLazyOFF + "]")[0]},
+            mountNetconfForm: JSON.parse("[" + mountNetconfTemplate + "]")[0],
+            mountNetconfFormAdv: JSON.parse("[" + mountNetconfTemplateAdv + "]")[0],
+            mountNetconfFormCaps: JSON.parse("[" + mountNetconfTemplateCapabilities + "]")[0],
+            deviceType: JSON.parse("[" + mountCliTemplate + "]")[0]["cli-topology:device-type"][0]
+        });
+        this.getSupportedDevices();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -75,7 +91,7 @@ class MountModal extends Component {
                 return data[item];
             });
             //append overridden capabilities
-            if (this.state.activeToggles.includes(0)){
+            if (this.state.activeToggles.includes(0)) {
                data = {...data, ...this.state.mountNetconfFormCaps}
             }
         }
@@ -119,6 +135,14 @@ class MountModal extends Component {
         });
     }
 
+    getSupportedDevices() {
+        http.get('/api/odl/get/oper/registry/cli-devices/').then(res => {
+            let objArray = Object.values(Object.entries(res)[0][1]);
+            objArray = [...objArray[0]];
+            this.setState({deviceTypeVersion: objArray})
+        });
+    }
+
     changeMountType(which) {
         //reset forms and turn off settings
         this.setState({
@@ -133,10 +157,17 @@ class MountModal extends Component {
         clearTimeout(this.state.timeout);
     }
 
-    handleInput(e, i, formToDisplay) {
+    handleInput(e, i, formToDisplay, which) {
         Object.values(formToDisplay).map( (item,idx) => {
             if (idx === i) {
-                item[0] = e.target.value
+                if(e.target){
+                    item[0] = e.target.value;
+                } else {
+                    item[0] = e.value;
+                    if (which === "type") {
+                        this.setState({deviceType: e.value});
+                    }
+                }
             }
             return null;
         });
@@ -212,18 +243,6 @@ class MountModal extends Component {
         });
     }
 
-    changeTransportType(i,formToDisplay) {
-        let type = {
-            target: {
-                value: this.state.isSsh ? "telnet" : "ssh"
-            }
-        };
-        this.setState({
-            isSsh: !this.state.isSsh
-        });
-        this.handleInput(type, i, formToDisplay)
-    }
-
     render() {
 
         let formToDisplay = [];
@@ -294,21 +313,43 @@ class MountModal extends Component {
         };
 
         const transportField = (item, i, type) => {
+            const options = [{ value: 'ssh', label: 'ssh' }, { value: 'telnet', label: 'telnet' },];
             return (
                 <Form.Group
                     controlId={`mount${type}Input-${item[0].split(":").pop()}`}>
                     <Form.Label>{item[0].split(":").pop()}</Form.Label>
-                    <InputGroup>
-                        <InputGroup.Append style={{width: "40px"}} className="clickable" onClick={() => this.changeTransportType(i,formToDisplay)}>
-                            <InputGroup.Text>
-                                <i className="fas fa-chevron-down"/>
-                            </InputGroup.Text>
-                        </InputGroup.Append>
-                        <Form.Control
-                            type="input"
-                            onChange={(e) => this.handleInput(e,i,formToDisplay)}
-                            value={ this.state.isSsh ? "ssh" : item[1][0]}/>
-                    </InputGroup>
+                    <Dropdown options={options} onChange={(e) => {
+                        this.handleInput(e, i, formToDisplay);
+                        this.setState({isSsh: !this.state.isSsh})
+                    }} value={this.state.isSsh ? "ssh" : "telnet"}/>
+                    <Form.Text className="text-muted">
+                        {item[1][1]}
+                    </Form.Text>
+                </Form.Group>
+            )
+        };
+
+        const deviceTypeVersionField = (item, i, type, which) => {
+            let options = [];
+            if (which === "type") {
+                Object.values(this.state.deviceTypeVersion).map(obj => {
+                    options.push({value: obj["device-type"], label: obj["device-type"]})
+                });
+            } else {
+                Object.values(this.state.deviceTypeVersion).map(obj => {
+                    if(obj["device-type"] === this.state.deviceType) {
+                       return options.push({value: obj["device-version"], label: obj["device-version"]})
+                    }
+                    return null;
+                });
+            }
+            options = Array.from(new Set(options.map(JSON.stringify))).map(JSON.parse);
+            return (
+                <Form.Group
+                    controlId={`mount${type}Input-${item[0].split(":").pop()}`}>
+                    <Form.Label>{item[0].split(":").pop()}</Form.Label>
+                    <Dropdown options={options} onChange={(e) =>
+                        this.handleInput(e, i, formToDisplay, which)} value={item[1][0]}/>
                     <Form.Text className="text-muted">
                         {item[1][1]}
                     </Form.Text>
@@ -379,6 +420,18 @@ class MountModal extends Component {
             )
         };
 
+        const whichField = (item, i, type) => {
+            let id = item[0].split(":").pop();
+            switch (id) {
+                case "password": return passwordField(item, i, type);
+                case "transport-type": return transportField(item, i, type);
+                case "override": return capabilitiesField(item, i, type);
+                case "device-type": return deviceTypeVersionField(item, i, type, "type");
+                case "device-version": return deviceTypeVersionField(item, i, type, "version");
+                default: return inputField(item, i , type);
+            }
+        };
+
         const connectionBtn = () => {
             return (
                 <Button variant={this.state.connectionStatus === null ?
@@ -421,13 +474,7 @@ class MountModal extends Component {
                                     {Object.entries(formToDisplay).map((function (item, i) {
                                         return (
                                             <Col sm={6} key={`col1-${i}`}>
-                                                {item[0].split(":").pop() === "password" ?
-                                                    passwordField(item, i, "cli")
-                                                        :
-                                                    item[0].split(":").pop() === "transport-type" ?
-                                                    transportField(item, i, "cli")
-                                                        :
-                                                    inputField(item, i, "cli")}
+                                                {whichField(item, i, "cli")}
                                             </Col>
                                         )
                                     }))}
@@ -442,13 +489,7 @@ class MountModal extends Component {
                                     {Object.entries(formToDisplay).map((function (item, i) {
                                         return (
                                             <Col sm={6} key={`col1-${i}`}>
-                                                {item[0].split(":").pop() === "password" ?
-                                                    passwordField(item, i, "netconf")
-                                                    :
-                                                    item[0].split(":").pop() === "override" ?
-                                                    capabilitiesField(item, i, "netconf")
-                                                    :
-                                                    inputField(item, i, "netconf")}
+                                                {whichField(item, i, "netconf")}
                                             </Col>
                                         )
                                     }))}

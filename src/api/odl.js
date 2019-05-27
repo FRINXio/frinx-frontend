@@ -90,6 +90,15 @@ router.get('/get/oper/uniconfig/:node', async (req, res, next) => {
     }
 });
 
+router.get('/get/oper/registry/cli-devices', async (req, res, next) => {
+    try {
+        const result = await http.get(odlBaseURL + "/restconf/operational/cli-translate-registry:available-cli-device-translations/?depth=2", authToken);
+        res.status(200).send(result);
+    } catch (e) {
+        next(e);
+    }
+});
+
 router.put('/put/conf/uniconfig/:node', async (req, res, next) => {
     try {
         const result = await http.put(odlConfigURL + "/uniconfig/node/" + req.params.node + "/frinx-uniconfig-topology:configuration", req.body, authToken);
