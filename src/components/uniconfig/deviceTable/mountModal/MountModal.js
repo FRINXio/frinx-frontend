@@ -43,6 +43,8 @@ class MountModal extends Component {
     }
 
     componentWillMount() {
+        this.getPredefinedForm();
+
         this.setState({
             mountCliForm: JSON.parse("[" + mountCliTemplate + "]")[0],
             mountCliFormAdv: {...JSON.parse("[" + mountCliTemplateAdv + "]")[0], ...JSON.parse("[" + mountCliTemplateLazyOFF + "]")[0]},
@@ -63,6 +65,43 @@ class MountModal extends Component {
     handleClose() {
         this.props.modalHandler();
         clearTimeout(this.state.timeout);
+    }
+
+    getPredefinedForm() {
+        if (this.props.device.length === 1) {
+            let device = this.props.device[0]["node_id"];
+            let topology = "cli";
+            if (this.props.device[0]["topology"] === "netconf") {
+                topology = "topology-netconf";
+                this.setState({mountType: "Netconf"})
+            }
+
+            http.get("/api/odl/get/conf/status/" + topology + "/" + device).then(res => {
+                let values = Object.entries(res["node"][0]);
+                let mountForm = topology === "cli" ?
+                    JSON.parse("[" + mountCliTemplate + "]")[0] : JSON.parse("[" + mountNetconfTemplate + "]")[0];
+                Object.entries(mountForm).map(field => {
+                    values.forEach(value => {
+                        if (field[0].split(":").pop() === value[0].split(":").pop()) {
+                           console.log("match");
+                            mountForm[field[0]][0] = value[1];
+                        }
+                    });
+                    return null;
+                });
+
+                if (topology === "cli") {
+                    this.setState({
+                        mountCliForm: mountForm
+                    })
+                } else {
+                    this.setState({
+                        mountNetconfForm: mountForm,
+                        mountType: "Netconf"
+                    })
+                }
+            })
+        }
     }
 
     mountDevice() {
@@ -333,12 +372,12 @@ class MountModal extends Component {
             let options = [];
             if (which === "type") {
                 Object.values(this.state.deviceTypeVersion).map(obj => {
-                    options.push({value: obj["device-type"], label: obj["device-type"]})
+                    return options.push({value: obj["device-type"], label: obj["device-type"]})
                 });
             } else {
                 Object.values(this.state.deviceTypeVersion).map(obj => {
-                    if(obj["device-type"] === this.state.deviceType) {
-                       return options.push({value: obj["device-version"], label: obj["device-version"]})
+                    if (obj["device-type"] === this.state.deviceType) {
+                        return options.push({value: obj["device-version"], label: obj["device-version"]})
                     }
                     return null;
                 });
@@ -465,7 +504,7 @@ class MountModal extends Component {
                     <Modal.Title>Mount Device</Modal.Title>
                 </Modal.Header>
                 <Modal.Body style={{padding: "30px"}}>
-                    <Tabs onSelect={this.changeMountType.bind(this)} style={{marginBottom: "20px"}} defaultActiveKey="Cli" id="mountTabs">
+                    <Tabs onSelect={this.changeMountType.bind(this)} style={{marginBottom: "20px"}} defaultActiveKey={this.state.mountType} id="mountTabs">
                         <Tab eventKey="Cli" title="CLI">
                             {settingsGroup()}
                             {toggleGroupCli()}

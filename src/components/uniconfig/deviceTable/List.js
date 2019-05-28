@@ -315,7 +315,7 @@ class List extends Component {
 
     render(){
 
-        let mountModal = this.state.mountModal ? <MountModal addDeviceEntry={this.addDeviceEntry} modalHandler={this.showMountModal} show={this.state.mountModal}/> : null;
+        let mountModal = this.state.mountModal ? <MountModal addDeviceEntry={this.addDeviceEntry} modalHandler={this.showMountModal} show={this.state.mountModal} device={this.state.selectedDevices}/> : null;
         let detailModal = this.state.detailModal ? <DetailModal deviceDetails={this.state.deviceDetails} modalHandler={this.showDetailModal} show={this.state.detailModal}/> : null;
 
         return(
