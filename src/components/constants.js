@@ -33,10 +33,50 @@ export const mountNetconfTemplateCapabilities = JSON.stringify({
     }
 });
 
+export const netconfXRwhitelist = JSON.stringify({
+    "direct-unit-matcher": [
+        {
+            "name": "xr",
+            "capability-regex-matcher": [".*Cisco.*", ".*cisco.*", ".*openconfig.*", ".*ietf.*"]
+        }
+    ]
+});
+
+export const netconfXRblacklist = JSON.stringify({
+    "blacklisted-read": {
+        "matcher-ref": "xr",
+        "paths": {
+            "path": [
+                "interfaces", "vlans"
+            ]
+        }
+    }
+});
+
+export const netconfJUNOSwhitelist = JSON.stringify({
+    "direct-unit-matcher": [
+        {
+            "name": "junos",
+            "capability-regex-matcher": [".*juniper.*", ".*ietf.*"]
+        }
+    ]
+});
+
+export const netconfJUNOSblacklist = JSON.stringify({
+    "blacklisted-read": {
+        "matcher-ref": "junos",
+        "paths": {
+            "path": [
+                "interfaces", "vlans"
+            ]
+        }
+    }
+});
+
 export const mountCliTemplate = JSON.stringify( {
     "network-topology:node-id": ["xr5","Unique identifier of device across all systems"],
     "cli-topology:host": ["192.168.1.215","IP or hostname of the management endpoint on a device"],
-    "cli-topology:port": ["22","TCP port of the management endpoint of a device"],
+    "cli-topology:port": ["22","TCP port s the management endpoint of a device"],
     "cli-topology:transport-type": ["ssh","CLI management transport protocol e.g. tcp or ssh"],
     "cli-topology:device-type": ["ios xr","Type of device or device IOS e.g. ios, ios xr"],
     "cli-topology:device-version": ["*","Version of device or device OS e.g. 15.2"],
@@ -51,7 +91,6 @@ export const mountCliTemplateAdv = JSON.stringify({
 
 export const mountCliTemplateDryRunOFF = JSON.stringify({
 });
-
 
 export const mountCliTemplateDryRunON = JSON.stringify({
     "cli-topology:dry-run-journal-size": [150,""],

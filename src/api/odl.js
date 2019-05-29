@@ -184,5 +184,23 @@ router.post('/post/conf/snapshots/delete', async (req, res, next) => {
     }
 });
 
+router.put('/put/conf/native/whitelist/:node', async (req, res, next) => {
+    try {
+        const result = await http.put(odlBaseURL + "/restconf/config/direct-unit-matcher:direct-unit-matchers/direct-unit-matcher/" + req.params.node, req.body, authToken);
+        res.status(200).send(result);
+    } catch (e) {
+        next(e);
+    }
+});
+
+router.put('/put/conf/native/blacklist/:node', async (req, res, next) => {
+    try {
+        const result = await http.put(odlBaseURL + "/restconf/config/uniconfig-manager:blacklisted-reads/blacklisted-read/" + req.params.node, req.body, authToken);
+        res.status(200).send(result);
+    } catch (e) {
+        next(e);
+    }
+});
+
 
 module.exports = router;

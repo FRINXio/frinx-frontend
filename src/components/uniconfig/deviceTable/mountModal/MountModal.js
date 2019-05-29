@@ -3,13 +3,23 @@ import {Button, Form, Modal, Row, Col, Tabs, Tab, InputGroup, ButtonGroup} from 
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import {
-    mountCliTemplate, mountCliTemplateAdv,
-    mountNetconfTemplate, mountNetconfTemplateAdv,
-    mountCliTemplateLazyOFF, mountCliTemplateLazyON,
-    mountCliTemplateDryRunOFF, mountCliTemplateDryRunON,
-    mountNetconfTemplateDryRunOFF, mountNetconfTemplateDryRunON,
-    mountNetconfTemplateOverrideOFF, mountNetconfTemplateOverrideON,
-    mountNetconfTemplateCapabilities
+    mountCliTemplate,
+    mountCliTemplateAdv,
+    mountNetconfTemplate,
+    mountNetconfTemplateAdv,
+    mountCliTemplateLazyOFF,
+    mountCliTemplateLazyON,
+    mountCliTemplateDryRunOFF,
+    mountCliTemplateDryRunON,
+    mountNetconfTemplateDryRunOFF,
+    mountNetconfTemplateDryRunON,
+    mountNetconfTemplateOverrideOFF,
+    mountNetconfTemplateOverrideON,
+    mountNetconfTemplateCapabilities,
+    netconfXRwhitelist,
+    netconfJUNOSwhitelist,
+    netconfXRblacklist,
+    netconfJUNOSblacklist
 } from "../../../constants";
 import CapModal from "./capModal/CapModal";
 const http = require('../../../../server/HttpServerSide').HttpClient;
@@ -29,16 +39,21 @@ class MountModal extends Component {
             mountNetconfForm: [],
             mountNetconfFormAdv: [],
             mountNetconfFormCaps: [],
+            whitelist: {},
+            blacklist: {},
+            enableBlacklist: false,
             deviceTypeVersion: {},
             deviceType: null,
             mountType: "Cli",
+            nativeUc: false,
+            nativeDevice: "XR",
             connectionStatus: null,
             timeout: null,
             showPass: false,
             showCapModal: false,
             isAdv: false,
             isSsh: true,
-            activeToggles: []
+            activeToggles: [],
         }
     }
 
@@ -51,7 +66,9 @@ class MountModal extends Component {
             mountNetconfForm: JSON.parse("[" + mountNetconfTemplate + "]")[0],
             mountNetconfFormAdv: JSON.parse("[" + mountNetconfTemplateAdv + "]")[0],
             mountNetconfFormCaps: JSON.parse("[" + mountNetconfTemplateCapabilities + "]")[0],
-            deviceType: JSON.parse("[" + mountCliTemplate + "]")[0]["cli-topology:device-type"][0]
+            deviceType: JSON.parse("[" + mountCliTemplate + "]")[0]["cli-topology:device-type"][0],
+            whitelist: this.state.nativeDevice === "XR" ? JSON.parse(netconfXRwhitelist) : JSON.parse(netconfJUNOSwhitelist),
+            blacklist: this.state.nativeDevice === "XR" ? JSON.parse(netconfXRblacklist) : JSON.parse(netconfJUNOSblacklist)
         });
         this.getSupportedDevices();
     }
@@ -83,7 +100,6 @@ class MountModal extends Component {
                 Object.entries(mountForm).map(field => {
                     values.forEach(value => {
                         if (field[0].split(":").pop() === value[0].split(":").pop()) {
-                           console.log("match");
                             mountForm[field[0]][0] = value[1];
                         }
                     });
@@ -91,8 +107,7 @@ class MountModal extends Component {
                 });
 
                 if (topology === "cli") {
-                    this.setState({
-                        mountCliForm: mountForm
+                    this.setState({mountCliForm: mountForm
                     })
                 } else {
                     this.setState({
@@ -104,10 +119,11 @@ class MountModal extends Component {
         }
     }
 
-    mountDevice() {
+    async parsePayload() {
         let payload = {};
         let data = {};
         let mountType = this.state.mountType;
+        let listingRes = false;
 
         if (mountType === "Cli") {
             Object.entries(this.state.mountCliForm).map(item => {
@@ -133,15 +149,48 @@ class MountModal extends Component {
             if (this.state.activeToggles.includes(0)) {
                data = {...data, ...this.state.mountNetconfFormCaps}
             }
+            //if uniconfig native, send blacklist and whitelist first
+            if (this.state.nativeUc) {
+                listingRes = await this.sendLists()
+            }
         }
 
         payload["network-topology:node"] = data;
         let topology = Object.keys(payload["network-topology:node"])[4].split(":")[0].split("-")[0];
-        if(topology === "netconf") {
+        if (topology === "netconf") {
             topology = "topology-netconf";
         }
         let node = Object.values(payload["network-topology:node"])[0];
 
+        if (this.state.nativeUc) {
+            if (listingRes) {
+                this.mountDevice(node, payload, topology)
+            }
+        } else {
+            this.mountDevice(node, payload, topology)
+        }
+    }
+
+    async sendLists() {
+        this.setState({
+            connectionStatus: "Sending Whitelist ..."
+        });
+        let target = this.state.nativeDevice.toLowerCase();
+        return http.put("/api/odl/put/conf/native/whitelist/" + target, this.state.whitelist).then( res => {
+            if (this.state.enableBlacklist) {
+                this.setState({
+                    connectionStatus: "Sending Blacklist ..."
+                });
+                return http.put("/api/odl/put/conf/native/blacklist/" + target, this.state.blacklist).then(res2 => {
+                    return res2.body.status === 200;
+                })
+            } else {
+                return res.body.status === 200;
+            }
+        });
+    }
+
+    mountDevice(node, payload, topology) {
         console.log(JSON.stringify(payload, null, 2));
         http.put("/api/odl/mount/" + topology + "/" + node, payload).then(res => {
             console.log(res);
@@ -220,6 +269,71 @@ class MountModal extends Component {
                 mountCliForm: formToDisplay
             })
         }
+    }
+
+    handleNative(e, list) {
+        if (list === "whitelist") {
+            let updated = this.state.whitelist;
+            updated["direct-unit-matcher"]["0"]["capability-regex-matcher"] =  e.target.value;
+            this.setState({
+                whitelist: updated
+            })
+        } else {
+            let updated = this.state.blacklist;
+            updated["blacklisted-read"].paths.path =  e.target.value;
+            this.setState({
+                blacklist: updated
+            })
+        }
+    }
+
+    showNativeSettings() {
+        let options = ["XR", "Junos"];
+        let whitelistArr = this.state.nativeDevice === "Junos" ? JSON.parse(netconfXRwhitelist) : JSON.parse(netconfJUNOSwhitelist);
+        let blacklistArr = this.state.nativeDevice === "Junos" ? JSON.parse(netconfXRblacklist) : JSON.parse(netconfJUNOSblacklist);
+
+        return (
+                <Form style={{marginTop: "20px"}}>
+                    <Form.Label><b>UniConfig Native Settings</b></Form.Label>
+                    <hr/>
+                    <Row>
+                        <Col>
+                            <Form.Label>Device</Form.Label>
+                            <Dropdown options={options} onChange={() =>
+                                this.setState({
+                                    nativeDevice: this.state.nativeDevice === "XR" ? "Junos" : "XR",
+                                    whitelist: whitelistArr,
+                                    blacklist: blacklistArr
+                                })}
+                                      value={this.state.nativeDevice}/>
+                            <Form.Text className="text-muted">
+                                Select device
+                            </Form.Text>
+                        </Col>
+                        <Col>
+                            <Form.Label>Whitelist</Form.Label>
+                            <Form.Control type="input" onChange={(e) => this.handleNative(e, "whitelist")} value={this.state.whitelist["direct-unit-matcher"]["0"]["capability-regex-matcher"]}/>
+                            <Form.Text className="text-muted">
+                                Whitelisted strings
+                            </Form.Text>
+                        </Col>
+                        <Col>
+                            <Form.Label>Blacklist</Form.Label>
+                            <InputGroup>
+                                <InputGroup.Append style={{width: "40px"}} >
+                                    <InputGroup.Text>
+                                        <input className="clickable" type="checkbox" onClick={() => this.setState({enableBlacklist: !this.state.enableBlacklist})}/>
+                                    </InputGroup.Text>
+                                </InputGroup.Append>
+                                <Form.Control disabled={!this.state.enableBlacklist} type="input"  onChange={(e) => this.handleNative(e, "blacklist")} value={this.state.blacklist["blacklisted-read"].paths.path}/>
+                            </InputGroup>
+                            <Form.Text className="text-muted">
+                                Blacklisted things
+                            </Form.Text>
+                        </Col>
+                    </Row>
+                </Form>
+        )
     }
 
     handleToggle(value) {
@@ -346,6 +460,10 @@ class MountModal extends Component {
                                 style={{width: "50%"}}
                                 active={this.state.activeToggles.includes(1) ? "active" : null} className="noshadow"
                                 variant="outline-info">Dry-run</Button>
+                        <Button onClick={() => this.setState({nativeUc: !this.state.nativeUc})}
+                                style={{width: "50%"}}
+                                active={this.state.nativeUc ? "active" : null} className="noshadow"
+                                variant="outline-info">UniConfig Native</Button>
                     </ButtonGroup>
                     : null
             )
@@ -475,25 +593,21 @@ class MountModal extends Component {
             return (
                 <Button variant={this.state.connectionStatus === null ?
                     "primary" :
-                    this.state.connectionStatus === "connecting" ?
+                    this.state.connectionStatus === "connecting" || this.state.connectionStatus.startsWith("Sending") ?
                         "info" :
                         this.state.connectionStatus === "connected" ?
                             "success" : "danger"}
-                        onClick={this.mountDevice.bind(this)}>
+                        onClick={this.parsePayload.bind(this)}>
                     {this.state.connectionStatus === null ?
                         null :
-                        this.state.connectionStatus === "connecting" ?
+                        this.state.connectionStatus === "connecting" || this.state.connectionStatus.startsWith("Sending") ?
                             <i className="fas fa-spinner fa-spin"/> :
                             this.state.connectionStatus === "connected" ?
                                 <i className="fas fa-check-circle"/> :
                                 <i className="fas fa-exclamation-circle"/>}
                     &nbsp;&nbsp;
                     {this.state.connectionStatus === null ?
-                        "Mount Device" :
-                        this.state.connectionStatus === "connecting" ?
-                            "Connecting" :
-                            this.state.connectionStatus === "connected" ?
-                                "Connected" : "Something went wrong"}
+                        "Mount Device" : this.state.connectionStatus.charAt(0).toUpperCase() + this.state.connectionStatus.slice(1)}
                 </Button>
             )
         };
@@ -534,6 +648,9 @@ class MountModal extends Component {
                                     }))}
                                 </Row>
                             </Form>
+
+                            {this.state.nativeUc && this.state.isAdv ? this.showNativeSettings() : null}
+
                         </Tab>
                     </Tabs>
                 </Modal.Body>
