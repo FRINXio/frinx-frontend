@@ -50,3 +50,12 @@
     color: rgb(255, 126, 87) !important;
     font-weight: bold;
 }
+
+.pages {
+    color: #007bff;
+}
+
+.pages:hover {
+    color: #0322ff;
+    cursor: pointer;
+}
