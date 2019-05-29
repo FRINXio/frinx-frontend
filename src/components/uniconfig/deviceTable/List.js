@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Container, Form, FormGroup, Table} from 'react-bootstrap'
+import {Button, Col, Container, Form, FormGroup, Row, Table} from 'react-bootstrap'
 import './List.css'
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
@@ -20,7 +20,10 @@ class List extends Component {
             selectedDevices: [],
             deviceDetails: [],
             mountModal: false,
-            detailModal: false
+            detailModal: false,
+            defaultPages: 20,
+            pagesCount: 1,
+            viewedPage: 1
         };
         library.add(faSync);
         this.table = React.createRef();
@@ -82,9 +85,10 @@ class List extends Component {
         if(!updated){
             newData.push(entry);
         }
-
+        let pages = ~~(newData.length / this.state.defaultPages) + 1;
         this.setState({
-            data: newData
+            data: newData,
+            pagesCount: pages
         })
     }
 
@@ -195,10 +199,12 @@ class List extends Component {
         } else {
             toBeRendered = this.state.data;
         }
+        let pages = toBeRendered.length === 0 ? 0 : ~~(toBeRendered.length / this.state.defaultPages) + 1;
 
         this.setState({
             table: toBeRendered,
-            highlight: toBeHighlited
+            highlight: toBeHighlited,
+            pagesCount : pages
         })
     }
 
@@ -285,6 +291,8 @@ class List extends Component {
         let output = [];
         let highlight;
         let dataset;
+        let defaultPages = this.state.defaultPages;
+        let viewedPage = this.state.viewedPage;
         if(this.state.keywords === ""){
             dataset = this.state.data;
             highlight = false
@@ -293,24 +301,66 @@ class List extends Component {
             highlight = true
         }
         for(let i = 0; i < dataset.length; i++){
-            output.push(
-                <tr key={`row-${i}`} id={`row-${i}`}>
-                    <td className=''><Form.Check type="checkbox" onChange={(e) => this.onDeviceSelect(e)} id={`chb-${i}`}/></td>
-                    <td id={`node_id-${i}`} onClick={(e) => this.getDeviceDetails(e)}
-                        className={highlight ? this.calculateHighlight(i, 0) + ' clickable btn-outline-primary' : 'clickable btn-outline-primary'}>{dataset[i][0]}</td>
-                    <td className={highlight ? this.calculateHighlight(i, 1) : ''}>{dataset[i][1]}</td>
-                    <td style={dataset[i][2] === "connected" ? {color: "#007bff"} : {color: "lightblue"}}
-                        className={highlight ? this.calculateHighlight(i, 2) : ''}>{dataset[i][2]}
-                        &nbsp;&nbsp;<i id={`refreshBtn-${i}`} onClick={(e) => this.onDeviceRefresh(e)}
-                                      style={{color: "#007bff"}} className="fas fa-sync-alt fa-xs clickable"/></td>
-                    <td id={`topology-${i}`} className={highlight ? this.calculateHighlight(i, 3) : ''}>{dataset[i][3]}</td>
-                    <td><Button variant="outline-primary" onClick={() => {
-                        this.redirect(this.url_template + dataset[i][0])
-                    }} size="sm"><i className="fas fa-cog"/></Button>
-                    </td>
-                </tr>)
+            if(i >= (viewedPage-1) * defaultPages && i < viewedPage * defaultPages) {
+                output.push(
+                    <tr key={`row-${i}`} id={`row-${i}`}>
+                        <td className=''><Form.Check type="checkbox" onChange={(e) => this.onDeviceSelect(e)} id={`chb-${i}`}/></td>
+                        <td id={`node_id-${i}`} onClick={(e) => this.getDeviceDetails(e)}
+                            className={highlight ? this.calculateHighlight(i, 0) + ' clickable btn-outline-primary' : 'clickable btn-outline-primary'}>{dataset[i][0]}</td>
+                        <td className={highlight ? this.calculateHighlight(i, 1) : ''}>{dataset[i][1]}</td>
+                        <td style={dataset[i][2] === "connected" ? {color: "#007bff"} : {color: "lightblue"}}
+                            className={highlight ? this.calculateHighlight(i, 2) : ''}>{dataset[i][2]}
+                            &nbsp;&nbsp;<i id={`refreshBtn-${i}`} onClick={(e) => this.onDeviceRefresh(e)}
+                                           style={{color: "#007bff"}} className="fas fa-sync-alt fa-xs clickable"/></td>
+                        <td id={`topology-${i}`} className={highlight ? this.calculateHighlight(i, 3) : ''}>{dataset[i][3]}</td>
+                        <td><Button variant="outline-primary" onClick={() => {
+                            this.redirect(this.url_template + dataset[i][0])
+                        }} size="sm"><i className="fas fa-cog"/></Button>
+                        </td>
+                    </tr>)
+            }
         }
         return output
+    }
+
+    setPages(){
+        let output = [];
+        let viewedPage = this.state.viewedPage;
+        let pagesCount = this.state.pagesCount;
+        output.push(
+            <i key={`page-left`} className={viewedPage !== 1 && pagesCount !== 0 ? "pages fas fa-angle-left" : " fas fa-angle-left"}
+               onClick={(e) => {
+                   if(viewedPage !== 1 && pagesCount !== 0)
+                       this.setState({
+                           viewedPage : viewedPage - 1
+                       })
+               }}
+            />
+        );
+        for(let i = 1; i <= pagesCount; i++){
+            if( i >= viewedPage - 2 && i <= viewedPage + 2) {
+                output.push(
+                    <i key={`page-${i}`} className={viewedPage === i ? "" : "pages"}
+                       onClick={(e) =>
+                           this.setState({
+                               viewedPage: i
+                           })
+                       }
+                    > {i} </i>
+                )
+            }
+        }
+        output.push(
+            <i key={`page-right`} className={viewedPage !== pagesCount && pagesCount !== 0 ? "pages fas fa-angle-right" : " fas fa-angle-right"}
+               onClick={(e) => {
+                   if(viewedPage !== pagesCount && pagesCount !== 0)
+                       this.setState({
+                           viewedPage : viewedPage + 1
+                       })
+               }}
+            />
+        );
+        return output;
     }
 
     render(){
@@ -352,6 +402,44 @@ class List extends Component {
                             </tbody>
                         </Table>
                     </div>
+                </Container>
+                <Container>
+                    <Row>
+                        <Col sm={2} style={{textAlign: "left"}}>
+                            <i className={this.state.defaultPages === 20 ? "": "pages"}
+                               onClick={(e) => {
+                                   let data = this.state.keywords === "" ? this.state.data : this.state.table;
+                                   this.setState({
+                                   defaultPages : 20,
+                                   pagesCount: data.length === 0 ? 0 : ~~(this.state.data.length / 20) + 1,
+                                   viewedPage: 1
+
+                               })}}
+                            >20 </i>
+                            <i className={this.state.defaultPages === 50 ? "": "pages"}
+                               onClick={(e) => {
+                                   let data = this.state.keywords === "" ? this.state.data : this.state.table;
+                                   this.setState({
+                                   defaultPages : 50,
+                                   pagesCount: data.length === 0 ? 0 : ~~(this.state.data.length / 50) + 1,
+                                   viewedPage: 1
+                               })}}
+                            >50 </i>
+                            <i className={this.state.defaultPages === 100 ? "": "pages"}
+                               onClick={(e) => {
+                                   let data = this.state.keywords === "" ? this.state.data : this.state.table;
+                                   this.setState({
+                                   defaultPages : 100,
+                                   pagesCount: data.length === 0 ? 0 : ~~(this.state.data.length / 100) + 1,
+                                   viewedPage: 1 })}}
+                            >100 </i>
+                        </Col>
+                        <Col sm={8}>
+                        </Col>
+                        <Col sm={2} style={{textAlign: "right"}}>
+                            {this.setPages()}
+                        </Col>
+                    </Row>
                 </Container>
             </div>
         )
