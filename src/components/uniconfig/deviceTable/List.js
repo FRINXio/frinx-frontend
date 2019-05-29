@@ -328,7 +328,7 @@ class List extends Component {
         let viewedPage = this.state.viewedPage;
         let pagesCount = this.state.pagesCount;
         output.push(
-            <i className={viewedPage !== 1 && pagesCount !== 0 ? "pages fas fa-angle-left" : " fas fa-angle-left"}
+            <i key={`page-left`} className={viewedPage !== 1 && pagesCount !== 0 ? "pages fas fa-angle-left" : " fas fa-angle-left"}
                onClick={(e) => {
                    if(viewedPage !== 1 && pagesCount !== 0)
                        this.setState({
@@ -340,7 +340,7 @@ class List extends Component {
         for(let i = 1; i <= pagesCount; i++){
             if( i >= viewedPage - 2 && i <= viewedPage + 2) {
                 output.push(
-                    <i className={viewedPage === i ? "" : "pages"}
+                    <i key={`page-${i}`} className={viewedPage === i ? "" : "pages"}
                        onClick={(e) =>
                            this.setState({
                                viewedPage: i
@@ -351,7 +351,7 @@ class List extends Component {
             }
         }
         output.push(
-            <i className={viewedPage !== pagesCount && pagesCount !== 0 ? "pages fas fa-angle-right" : " fas fa-angle-right"}
+            <i key={`page-right`} className={viewedPage !== pagesCount && pagesCount !== 0 ? "pages fas fa-angle-right" : " fas fa-angle-right"}
                onClick={(e) => {
                    if(viewedPage !== pagesCount && pagesCount !== 0)
                        this.setState({
