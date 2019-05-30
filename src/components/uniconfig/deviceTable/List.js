@@ -28,11 +28,9 @@ class List extends Component {
         library.add(faSync);
         this.table = React.createRef();
         this.onEditSearch = this.onEditSearch.bind(this);
-        this.redirect = this.redirect.bind(this);
         this.addDeviceEntry = this.addDeviceEntry.bind(this);
         this.showMountModal = this.showMountModal.bind(this);
         this.showDetailModal = this.showDetailModal.bind(this);
-        this.url_template = window.location.protocol + "//" + window.location.href.split('/')[2] + "/edit/"
     }
 
     componentWillMount() {
@@ -216,10 +214,6 @@ class List extends Component {
         }
     }
 
-    redirect(where) {
-        window.location.href = where;
-    }
-
     showMountModal(){
         this.setState({
             mountModal: !this.state.mountModal,
@@ -314,7 +308,7 @@ class List extends Component {
                                            style={{color: "#007bff"}} className="fas fa-sync-alt fa-xs clickable"/></td>
                         <td id={`topology-${i}`} className={highlight ? this.calculateHighlight(i, 3) : ''}>{dataset[i][3]}</td>
                         <td><Button variant="outline-primary" onClick={() => {
-                            this.redirect(this.url_template + dataset[i][0])
+                            this.props.history.push("/devices/edit/" + dataset[i][0]);
                         }} size="sm"><i className="fas fa-cog"/></Button>
                         </td>
                     </tr>)

@@ -42,10 +42,6 @@ class DeviceView extends Component {
         }
     }
 
-    redirect(where) {
-        window.location.href = where;
-    }
-
     componentDidMount() {
         this.setState({
             device: window.location.href.split("/").pop()
@@ -238,7 +234,7 @@ class DeviceView extends Component {
             <div>
                 <header className="options">
                     <Button className="round floating-btn noshadow" onClick={() => {
-                        this.redirect(window.location.protocol + "//" + window.location.href.split('/')[2])
+                        this.props.history.push('/devices')
                     }} variant="outline-light"><i className="fas fa-chevron-left"/></Button>
                     <Container fluid className="container-props">
                         <Row >

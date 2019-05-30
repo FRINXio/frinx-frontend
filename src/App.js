@@ -1,27 +1,29 @@
 import React, { Component } from 'react';
 import './App.css';
-import List from './components/uniconfig/deviceTable/List'
-import DeviceView from './components/uniconfig/deviceView/DeviceView'
+import Dashboard from "./components/dashboard/Dashboard";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import List from "./components/uniconfig/deviceTable/List";
+import DeviceView from "./components/uniconfig/deviceView/DeviceView";
+
+const routing = (
+    <Router>
+            <Switch>
+                <Route exact path="/" component={Dashboard} />
+                <Route exact path="/devices" component={List} />
+                <Route path="/devices/edit/:id" component={DeviceView} />
+            </Switch>
+    </Router>
+);
 
 class App extends Component {
-  render() {
-      if(window.location.pathname.split("/")[1] === 'edit') {
+
+    render() {
         return (
-          <div className="App">
-            <DeviceView datasetId={window.location.pathname.split("/")[2]} />
-          </div>
+            <div className="App">
+                {routing}
+            </div>
         )
-      } else {
-        if(window.location.pathname !== "/") {
-          window.location.pathname = "/"
-        }
-        return (
-          <div className="App">
-            <List />
-          </div>
-        )
-      }
-  }
+    }
 }
 
 export default App;
