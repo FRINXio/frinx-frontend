@@ -70,6 +70,9 @@ class Editor extends Component {
             } else {
                this.editor.focus();
             }
+        } else {
+            this.setState({wfs: this.editor.innerText});
+            this.props.refreshConfig()
         }
         if(parseErr == null) {
             this.setState({
