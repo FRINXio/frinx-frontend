@@ -78,9 +78,10 @@ button {
 
 .options {
     height: 80px;
-    background-image: linear-gradient(to right top, #007bff, #0088ff, #0094ff, #009fff, #00aaff);
+    background: linear-gradient(-90deg, rgba(0, 149, 255, 0.91) 0%, rgb(0, 93, 167) 100%);
+    /*background-image: linear-gradient(to right top, #007bff, #0088ff, #0094ff, #009fff, #00aaff);*/
     margin-bottom: 20px;
-    box-shadow: 0px 2px 15px 0px rgba(0,0,0,0.3);
+    box-shadow: 0px 8px 10px 0px rgba(0,0,0,0.1);
 
 }
 
@@ -107,8 +108,8 @@ button {
 
 .floating-btn {
     position: absolute;
-    left: 10px;
-    top: 17px;
+    left: 30px;
+    margin-top: 20px;
 }
 
 .noshadow {

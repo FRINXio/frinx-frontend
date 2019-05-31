@@ -1,0 +1,35 @@
+.navbarHeader {
+    height: 70px;
+    color: white;
+    background: linear-gradient(-90deg, rgba(0, 149, 255, 0.91) 0%, rgb(0, 93, 167) 100%);
+}
+
+.navbar-text {
+    color: white !important;
+}
+
+.navbarHeader img {
+    height: 50px;
+}
+
+.nav-linkHeader {
+    color: white !important;
+    margin-left: 20px;
+    margin-right: 20px;
+    height: 40px;
+    width: 40px;
+    background-color: #054DA2;
+    border-radius: 90%;
+    text-align: center;
+    font-size: 100%;
+    transition: 0.25s;
+}
+
+.nav-linkHeader:hover {
+    background-color: rgb(0, 48, 102);
+    transition: 0.25s;
+}
+
+.navbar-brand {
+    margin-left: 20px;
+}
