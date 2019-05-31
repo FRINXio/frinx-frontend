@@ -7,6 +7,7 @@ import DropdownMenu from "./dropdownMenu/DropdownMenu";
 import SnapshotModal from "./snapshotModal/SnapshotModal";
 import CustomAlerts from "../customAlerts/CustomAlerts";
 import ConsoleModal from "./consoleModal/ConsoleModal";
+import {parseResponse} from "./ResponseParser";
 const http = require('../../../server/HttpServerSide').HttpClient;
 
 const defaultOptions = {
@@ -34,6 +35,7 @@ class DeviceView extends Component {
             syncing: false,
             initializing: true,
             alertType: null,
+            showAlert: false,
             commiting: false,
             showConsole: false,
             deletingSnaps: false,
@@ -107,8 +109,9 @@ class DeviceView extends Component {
         let target = JSON.parse(JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}}));
         http.post('/api/odl/post/operations/dryrun/', target).then(res => {
             this.setState({
-                alertType: `dryrun${res.body.status}`,
-                console: res.body.text,
+                alertType: parseResponse("dryrun", res.body.text),
+                showAlert: true,
+                console: JSON.stringify(parseResponse("dryrun", res.body.text).configuration),
                 operation: "Dry-run"
             });
             this.animateConsole();
@@ -118,7 +121,6 @@ class DeviceView extends Component {
     animateConsole() {
         document.getElementById("consoleButton").classList.add("button--animate");
         setTimeout( () => {
-            this.setState({alertType: null});
             document.getElementById("consoleButton").classList.remove("button--animate")
         }, 2000);
     }
@@ -196,6 +198,12 @@ class DeviceView extends Component {
     consoleHandler() {
         this.setState({
             showConsole: !this.state.showConsole
+        })
+    }
+
+    alertHandler() {
+        this.setState({
+            showAlert: !this.state.showAlert
         })
     }
 
@@ -283,7 +291,7 @@ class DeviceView extends Component {
                 </header>
 
                 {this.state.creatingSnap ? <SnapshotModal snapHandler={this.createSnapshot.bind(this)} device={this.state.device}/> : null }
-                {this.state.alertType ? <CustomAlerts alertType={this.state.alertType}/> : null}
+                {this.state.showAlert ? <CustomAlerts alertHandler={this.alertHandler.bind(this)} alertType={this.state.alertType}/> : null }
                 {this.state.showConsole ? <ConsoleModal consoleHandler={this.consoleHandler.bind(this)}
                                                         content={this.state.console}
                                                         operation={this.state.operation}/> : null }

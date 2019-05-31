@@ -1,12 +1,20 @@
 import React, { Component } from 'react';
-import { Alert } from "react-bootstrap";
+import {Alert} from "react-bootstrap";
 
 
 class CustomAlerts extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            show: true
+        }
+    }
 
     render() {
+        const handleDismiss = () => this.props.alertHandler();
+
         function showAlert(alertType) {
-            switch (alertType) {
+            switch (alertType.type) {
                 case 'commit200':
                     return (
                         <Alert variant="success">
@@ -25,18 +33,21 @@ class CustomAlerts extends Component {
                             New snapshot was created.
                         </Alert>
                     );
-                case 'dryrun200':
+                case 'dryrun': {
                     return (
-                        <Alert variant="success">
-                            Dry-run was successful.
+                        <Alert onClick={handleDismiss} variant={alertType.overallStatus === "complete" ? "success" : "danger" }>
+                            <b>DRY-RUN {alertType.overallStatus.toUpperCase()}:&nbsp;&nbsp;</b>
+                            {alertType.overallStatus === "fail" ?
+                                alertType.errorMessage
+                                :
+                                alertType.nodeStatus ?
+                                "Node-status: " + alertType.nodeStatus
+                                    : null
+                            }&nbsp;&nbsp;&nbsp;&nbsp;
+                            <i className="fas fa-times clickable" onClick={handleDismiss}/>
                         </Alert>
                     );
-                case 'dryrun500':
-                    return (
-                        <Alert variant="success">
-                            Dry-run failed.
-                        </Alert>
-                    );
+                }
                 default:
                     return null;
             }
@@ -44,9 +55,10 @@ class CustomAlerts extends Component {
         }
 
         return (
-            showAlert(this.props.alertType)
+            this.state.show ? showAlert(this.props.alertType) : null
         );
     }
+
 }
 
 export default CustomAlerts;

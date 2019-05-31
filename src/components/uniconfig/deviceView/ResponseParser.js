@@ -1,0 +1,24 @@
+export function parseResponse(type, body) {
+
+    let bodyJSON = JSON.parse(body);
+
+    switch (type) {
+        case "dryrun": return parseDryRun(type, bodyJSON);
+        default: break;
+    }
+}
+
+function parseDryRun(type, bodyJSON) {
+
+    let {overallStatus, configuration, nodeStatus, errorMessage, errorType} = "";
+    overallStatus = bodyJSON["output"]["overall-configuration-status"];
+
+    if (bodyJSON["output"]["node-config-results"]) {
+        nodeStatus = bodyJSON["output"]["node-config-results"]["node-config-result"]["0"]["configuration-status"];
+        errorMessage = bodyJSON["output"]["node-config-results"]["node-config-result"]["0"]["error-message"];
+        errorType = bodyJSON["output"]["node-config-results"]["node-config-result"]["0"]["error-type"];
+        configuration = bodyJSON["output"]["node-config-results"]["node-config-result"]["0"]["configuration"];
+
+    }
+    return {type, overallStatus, nodeStatus, errorMessage, errorType, configuration}
+}
