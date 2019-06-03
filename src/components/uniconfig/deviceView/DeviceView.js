@@ -214,26 +214,35 @@ class DeviceView extends Component {
 
         const operational = () => (
             <div>
-                <div>
-                    <h2 style={{display: "inline-block", marginTop: "5px"}}>Actual Configuration</h2>
-                    <div style={{float: "right"}}>
-                        <Button className="btn btn-primary" style={{marginRight: '5px'}}
-                                disabled={this.state.syncing}
-                                onClick={this.syncFromNetwork.bind(this)}>
-                            <i className={this.state.syncing ? "fas fa-sync fa-spin" : "fas fa-sync"}/>
-                            &nbsp;&nbsp;{this.state.syncing ? "Synchronizing..." : "Sync from network"}
-                        </Button>
-                    </div>
-                </div>
-                {this.state.showDiff ?
-                    <ReactGhLikeDiff
-                        options={defaultOptions}
-                        past={operationalJSON}
-                        current={configJSON}
-                    />
+                {this.state.initializing ?
+                    <i className="fas fa-sync fa-spin fa-8x"
+                       style={{margin: '40%', color: 'lightblue'}}/>
                     :
-                    <Editor title="" deviceName={this.state.device} editable={false} updateDiff={this.updateConfig.bind(this)}
-                            wfs={JSON.parse(operationalJSON)}/>
+                    this.state.showDiff ?
+                        <ReactGhLikeDiff
+                            options={defaultOptions}
+                            past={operationalJSON}
+                            current={configJSON}
+                        />
+                        :
+                        <Editor title="Actual Configuration" deviceName={this.state.device} editable={false}
+                                syncFromNetwork={this.syncFromNetwork.bind(this)}
+                                syncing={this.state.syncing}
+                                inputJSON={operationalJSON}/>
+                }
+            </div>
+        );
+
+        const config = () => (
+            <div>
+                {this.state.initializing ?
+                    <i className="fas fa-sync fa-spin fa-8x"
+                       style={{margin: '40%', color: 'lightblue'}}/>
+                    :
+                    <Editor title="Intended Configuration" editable={true} deviceName={this.state.device}
+                            updateConfig={this.updateConfig.bind(this)}
+                            inputJSON={configJSON}
+                            refreshConfig={this.refreshConfig.bind(this)}/>
                 }
             </div>
         );
@@ -298,34 +307,15 @@ class DeviceView extends Component {
 
                 <Container fluid className="container-props">
                     <div className="editor">
-                        <div className="uniconfig">
-                            <div className="config">
-                                {this.state.initializing ?
-                                    <i className="fas fa-sync fa-spin fa-8x"
-                                       style={{margin: '40%', color: 'lightblue'}}/>
-                                    :
-                                    <Editor title="Intended Configuration" editable={true} deviceName={this.state.device}
-                                            updateConfig={this.updateConfig.bind(this)}
-                                            wfs={JSON.parse(configJSON)}
-                                            refreshConfig={this.refreshConfig.bind(this)}/>
-                                }
-                            </div>
-                            <div className="operational">
-                                {this.state.initializing ?
-                                    <i className="fas fa-sync fa-spin fa-8x"
-                                       style={{margin: '40%', color: 'lightblue'}}/>
-                                    :
-                                    operational()
-                                }
-                            </div>
+                        <div className="config">
+                            {config()}
+                        </div>
+                        <div className="operational">
+                            {operational()}
                         </div>
                     </div>
                 </Container>
             </div>
-
-
-
-
       );
     }
 }

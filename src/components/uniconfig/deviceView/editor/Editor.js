@@ -1,134 +1,112 @@
 import React, { Component } from 'react';
 import {Button } from 'react-bootstrap';
 import '../../../../../node_modules/react-gh-like-diff/lib/diff2html.css';
-import Highlight from 'react-highlight.js'
+import CodeMirror from 'react-codemirror'
+import '../DeviceView.css'
+import './Codemirror.css'
+require('codemirror/mode/javascript/javascript');
+
 
 class Editor extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            editingJSON: false,
             modified: false,
-            updatedJSON: {},
-            wfs: this.convertToString(this.props.wfs),
+            inputJSON: this.props.inputJSON,
+            prevJSON: this.props.inputJSON,
             isNotParsable: false,
         };
-        this.editJSONswitch = this.editJSONswitch.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
+        this.cm.codeMirror.setValue(nextProps.inputJSON);
         this.setState({
-            wfs: this.convertToString(nextProps.wfs)
+            inputJSON: nextProps.inputJSON,
+            prevJSON: nextProps.inputJSON
         })
     }
 
-    convertToString(object) {
-        object = this.updateObject(object, "\r\n");
-        this.setState({
-            updatedJSON: object
-        });
-        return JSON.stringify(object, null, 2);
-    }
-
-    updateObject(object, search) {
-        if (object) {
-            Object.keys(object).forEach((k) => {
-                if (object[k] && typeof object[k] === 'object') {
-                    return this.updateObject(object[k], search)
-                }
-                if (typeof object[k] === 'string') {
-                    if (object[k].includes(search)) {
-                        object[k] = "<span class='editable-string' title='Click to edit'/" + object[k] + '>';
-                    }
-                }
-            });
-            return object;
-        }
-    }
-
-    editJSONswitch(e, which) {
-        let parseErr = null;
-        this.setState({
-            isNotParsable: false
-        });
-        if(which === 1) {
-            if(this.state.editingJSON) {
-                try {
-                    JSON.parse(this.editor.innerText);
-                } catch(e) {
-                    parseErr = e;
-                }
-                if(parseErr == null) {
-                    this.setState({wfs: this.editor.innerText});
-                    let toBeSent = JSON.parse(this.editor.innerText);
-
-                    //save new config and commit to conf
-                    this.props.updateConfig(toBeSent);
-                } else {
-                    this.setState({isNotParsable : true});
-                }
-            } else {
-               this.editor.focus();
-            }
-        } else {
-            this.setState({wfs: this.editor.innerText});
-            this.props.refreshConfig()
-        }
-        if(parseErr == null) {
+    updateJson(newCode) {
+        this.checkSyntax(newCode);
+        if (!this.state.isNotParsable) {
+            this.checkModified(newCode);
             this.setState({
-                editingJSON: !this.state.editingJSON
+                inputJSON: newCode
             });
         }
     }
 
-    onClick(e) {
-        var element = e.target;
-        if (element.className === 'editable-string') {
-            this.openPopup(element);
+    checkModified(newCode) {
+        this.setState({
+            modified: this.state.prevJSON !== newCode,
+        });
+    }
+
+    checkSyntax(newCode) {
+        try {
+            this.setState({isNotParsable: false});
+            JSON.parse(newCode);
+        } catch (e) {
+            this.setState({
+                isNotParsable: true
+            })
         }
     }
 
-    onKeyPress(e) {
-        this.checkIfModified();
+    refresh() {
+        this.setState({
+            modified: false
+        });
+        this.props.refreshConfig();
     }
 
-    checkIfModified() {
-        var current = this.editor.innerHTML.replace(/"/g, "'");
-        var original = this.state.wfs.replace(/"/g, "'");
-
-        if (current === original) {
-            this.setState({modified: false})
-        } else {
-            this.setState({modified: true})
+    sendConfig() {
+        if (!this.state.isNotParsable) {
+            this.props.updateConfig(JSON.parse(this.state.inputJSON));
+            this.setState({
+                modified: false,
+                prevJSON: this.state.inputJSON
+            })
         }
     }
 
-    renderButtons = () => (
+    renderHeaders = () => (
         <div>
-            <h2 style={{display: "inline-block", marginTop: "5px"}}>{this.props.title}</h2>
-            <div style={{float: "right"}}>
-                <Button className="btn btn-primary" onClick={(e) => this.editJSONswitch(e, 1)}
-                        style={{marginLeft: '5px'}}>
-                    {this.state.editingJSON ? <i className="fas fa-save"/> : <i className="fas fa-pen"/> }
-                    &nbsp;&nbsp;{this.state.editingJSON ? 'Save' : 'Edit'}
-                </Button>
-                {this.props.editable === "cap" ? null :
-                    <Button className="btn btn-light" onClick={ this.state.editingJSON ? (e) => this.editJSONswitch(e, 2) : () => this.props.refreshConfig()}
-                            style={{marginLeft: '5px'}}>
-                        &nbsp;&nbsp;{this.state.editingJSON ? 'Cancel' : 'Refresh'}
-                    </Button>
-                }
-            </div>
+            {this.props.editable ?
+                <div>
+                    <h2 style={{display: "inline-block", marginTop: "5px"}}>{this.props.title}</h2>
+                    <div style={{float: "right"}}>
+                        <Button className="btn btn-primary" onClick={this.sendConfig.bind(this)} style={{marginLeft: '5px'}}>
+                            <i className="fas fa-save"/>&nbsp;&nbsp;Save</Button>
+                        {this.props.editable === "cap" ? null :
+                            <Button className="btn btn-light" onClick={this.refresh.bind(this)}
+                                    style={{marginLeft: '5px'}}>
+                                &nbsp;&nbsp;{this.state.modified ? "Cancel" : "Refresh"}
+                            </Button>
+                        }
+                    </div>
+                </div>
+                :
+                <div>
+                    <h2 style={{display: "inline-block", marginTop: "5px"}}>{this.props.title}</h2>
+                    <div style={{float: "right"}}>
+                        <Button className="btn btn-primary" style={{marginRight: '5px'}}
+                                disabled={this.props.syncing}
+                                onClick={this.props.syncFromNetwork}>
+                            <i className={this.props.syncing ? "fas fa-sync fa-spin" : "fas fa-sync"}/>
+                            &nbsp;&nbsp;{this.props.syncing ? "Synchronizing..." : "Sync from network"}
+                        </Button>
+                    </div>
+                </div>
+
+            }
         </div>
     );
-
 
     render() {
         return(
             <div>
-
-                {this.props.editable ? this.renderButtons() : null}
-
+                {this.renderHeaders()}
                         <div className="d2h-file-header">
                             <span className="d2h-file-name-wrapper">
                                 <i className="fas fa-file-alt"/>
@@ -136,20 +114,14 @@ class Editor extends Component {
                                 <span className="d2h-tag d2h-changed d2h-changed-tag"
                                       style={{ display: this.state.modified ? 'inline-block' : 'none' }}>MODIFIED</span>
                                 <div style={{marginLeft: "10px", display: this.state.isNotParsable ? "block" : "none"}}
-                                     className="alert-warning" role="alert">{this.state.isNotParsable ? "Could not parse JSON. Is the syntax correct?" : ""}
+                                     className="alert-warning" role="alert">{this.state.isNotParsable ? "Could not parse JSON. Check syntax." : ""}
                                 </div>
                             </span>
                         </div>
 
-                        <pre id="editorWrapper" ref={elem => this.editor = elem}
-                                 contentEditable={this.state.editingJSON}
-                                 onClick={this.onClick.bind(this)}>
-                            <code>
-                                 <Highlight language={"json"}>
-                                    {this.state.wfs}
-                                 </Highlight>
-                            </code>
-                        </pre>
+                <CodeMirror ref={el => this.cm = el} value={this.state.inputJSON}
+                            onChange={this.updateJson.bind(this)}
+                            options={{mode: 'application/ld+json', lineNumbers: true, readOnly: !this.props.editable}}/>
             </div>
         )
     };
