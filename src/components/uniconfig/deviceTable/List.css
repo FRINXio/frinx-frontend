@@ -51,6 +51,19 @@
     font-weight: bold;
 }
 
+input[type='checkbox'] {
+    -webkit-appearance:none;
+    width: 17px;
+    height: 17px;
+    background: white;
+    border: 1px solid #868988;
+    border-radius: 15px;
+    cursor: pointer;
+}
+input[type='checkbox']:checked {
+    background: #0093FF;
+}
+
 .pages {
     color: #007bff;
 }

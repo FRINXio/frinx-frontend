@@ -307,7 +307,7 @@ class List extends Component {
                             &nbsp;&nbsp;<i id={`refreshBtn-${i}`} onClick={(e) => this.onDeviceRefresh(e)}
                                            style={{color: "#007bff"}} className="fas fa-sync-alt fa-xs clickable"/></td>
                         <td id={`topology-${i}`} className={highlight ? this.calculateHighlight(i, 3) : ''}>{dataset[i][3]}</td>
-                        <td><Button variant="outline-primary" onClick={() => {
+                        <td><Button className="noshadow" variant="outline-primary" onClick={() => {
                             this.props.history.push("/devices/edit/" + dataset[i][0]);
                         }} size="sm"><i className="fas fa-cog"/></Button>
                         </td>
