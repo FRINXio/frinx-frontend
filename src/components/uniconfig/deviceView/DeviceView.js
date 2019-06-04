@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { ReactGhLikeDiff } from 'react-gh-like-diff';
 import Editor from "./editor/Editor";
 import './DeviceView.css'
-import {Badge, Button, Col, Container, Dropdown, Form, Row, Spinner } from "react-bootstrap";
+import {Badge, Button, ButtonGroup, Col, Container, Dropdown, Form, Row, Spinner} from "react-bootstrap";
 import DropdownMenu from "./dropdownMenu/DropdownMenu";
 import SnapshotModal from "./snapshotModal/SnapshotModal";
 import CustomAlerts from "../customAlerts/CustomAlerts";
@@ -89,11 +89,21 @@ class DeviceView extends Component {
         });
     }
 
+    getCalculatedDiff() {
+        let target = JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}});
+        http.post('/api/odl/post/operations/calculate-diff/', target).then(res => {
+            this.setState({
+                console: res.body.text,
+                operation: "Calculated Diff"
+            });
+            this.animateConsole();
+        })
+    }
+
     commitToNetwork(){
         this.setState({commiting: true});
         let target = JSON.parse(JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}}));
         http.post('/api/odl/post/operations/commit/', target).then(res => {
-            console.log(res);
             this.setState({
                 alertType: parseResponse("commit", res.body.text),
                 showAlert: true,
@@ -293,10 +303,15 @@ class DeviceView extends Component {
                             </Col>
                             <Col md={5} className="child">
                                 <Form.Group className="rightAligned">
-                                    <Button variant={this.state.showDiff ? "light" : "outline-light"}
-                                            onClick={this.showDiff.bind(this)}>
-                                        <i className="fas fa-exchange-alt"/>&nbsp;&nbsp;{this.state.showDiff ? 'Hide Diff' : 'Show Diff'}
-                                    </Button>
+                                    <Dropdown as={ButtonGroup}>
+                                        <Button variant={this.state.showDiff ? "light" : "outline-light"} onClick={this.showDiff.bind(this)}>
+                                            <i className="fas fa-exchange-alt"/>&nbsp;&nbsp;{this.state.showDiff ? 'Hide Diff' : 'Show Diff'}
+                                        </Button>
+                                        <Dropdown.Toggle split variant="outline-light" id="dropdown-split-basic" />
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item onClick={this.getCalculatedDiff.bind(this)}>Get calculated diff</Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                     <Button variant="outline-light" onClick={this.dryRun.bind(this)}>
                                         <i className="fas fa-play"/>&nbsp;&nbsp;Dry run</Button>
                                     <Button variant="outline-light" onClick={this.commitToNetwork.bind(this)}>

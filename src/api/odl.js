@@ -44,6 +44,15 @@ router.get('/get/oper/status/:topology/:node', async (req, res, next) => {
     }
 });
 
+router.post('/post/operations/calculate-diff', async (req, res, next) => {
+    try {
+        const result = await http.post(odlOperationsURL + "/uniconfig-manager:calculate-diff", req.body, authToken);
+        res.status(200).send(result);
+    } catch (e) {
+        next(e);
+    }
+});
+
 router.get('/get/oper/all/status/:topology', async (req, res, next) => {
     let result = null;
     try {
