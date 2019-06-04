@@ -12,7 +12,8 @@ class SnapshotModal extends Component {
 
         this.state = {
             show: true,
-            savingSnapshot: 0,
+            snapshotStatus: 0,
+            errorMsg: "",
             device: this.props.device,
             snapshotName: ""
         };
@@ -30,8 +31,6 @@ class SnapshotModal extends Component {
         this.setState({
             snapshotName: name
         });
-
-        console.log(this.state.snapshotName);
     }
 
     handleClose() {
@@ -51,23 +50,17 @@ class SnapshotModal extends Component {
                     }
                 }
         }));
-
-        this.setState({
-            savingSnapshot: 1
-        });
         http.post('/api/odl/post/operations/snapshot', target).then( res => {
-            console.log(res);
             this.setState({
-                savingSnapshot: res.body.status
+                snapshotStatus: JSON.parse(res.body.text)["output"]["result"],
+                errorMsg: JSON.parse(res.body.text)["output"]["error-message"]
             });
         });
 
     }
 
     render() {
-
         return (
-
             <Modal show={this.state.show} onHide={this.handleClose} >
                 <Modal.Header>
                     <Modal.Title>Create New Snapshot</Modal.Title>
@@ -81,13 +74,14 @@ class SnapshotModal extends Component {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
+                    <p style={{fontSize: "15px", maxWidth: "50%"}}> {this.state.errorMsg}</p>
                     <Button variant="secondary" onClick={this.handleClose}>
                         Close
                     </Button>
-                    <Button variant={this.state.savingSnapshot === 1 ? "info" : this.state.savingSnapshot === 200 ? "success" : "primary" } onClick={this.handleSave}>
-                        {this.state.savingSnapshot === 1 ? (<i className="fas fa-spinner fa-spin"/>) : this.state.savingSnapshot === 200 ? <i className="fas fa-check-circle"/> : null }
+                    <Button variant={this.state.snapshotStatus === "complete" ? "success" : this.state.snapshotStatus === "fail" ? "danger" : "primary" } onClick={this.handleSave}>
+                        {this.state.snapshotStatus === "complete" ? <i className="fas fa-check-circle"/> : null }
                         &nbsp;&nbsp;
-                        {this.state.savingSnapshot === 1 ? "Saving..." : this.state.savingSnapshot === 200 ? "Saved" : "Save Snapshot"}
+                        {this.state.snapshotStatus === "complete" ? "Saved" : "Save Snapshot"}
                     </Button>
                 </Modal.Footer>
             </Modal>
