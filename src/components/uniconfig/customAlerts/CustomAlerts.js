@@ -48,6 +48,16 @@ class CustomAlerts extends Component {
                         </Alert>
                     );
                 }
+                case 'sync': {
+                    return (
+                        <Alert onClick={handleDismiss} variant={alertType.status !== "error" ? "success" : "danger" }>
+                            <b>SYNC-FROM-NETWORK :&nbsp;&nbsp;</b>
+                            {alertType.nodeId ? alertType.nodeId + " " + alertType.status : alertType.status}
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <i className="fas fa-times clickable" onClick={handleDismiss}/>
+                        </Alert>
+                    );
+                }
                 default:
                     return null;
             }

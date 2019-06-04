@@ -132,6 +132,8 @@ class DeviceView extends Component {
         http.post('/api/odl/post/operations/syncfromnetwork', target).then((res_first) => {
             http.get('/api/odl/get/oper/uniconfig/' + this.state.device).then(res => {
                 this.setState({
+                    alertType: parseResponse("sync", res_first.body.text),
+                    showAlert: true,
                     operational: JSON.stringify(res),
                     initializing: false,
                     syncing: false,
