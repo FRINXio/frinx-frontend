@@ -122,7 +122,7 @@ class DeviceView extends Component {
         document.getElementById("consoleButton").classList.add("button--animate");
         setTimeout( () => {
             document.getElementById("consoleButton").classList.remove("button--animate")
-        }, 2000);
+        }, 500);
     }
 
     syncFromNetwork(){
