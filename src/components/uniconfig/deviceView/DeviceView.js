@@ -90,18 +90,23 @@ class DeviceView extends Component {
     }
 
     commitToNetwork(){
-
         this.setState({commiting: true});
         let target = JSON.parse(JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}}));
         http.post('/api/odl/post/operations/commit/', target).then(res => {
+            console.log(res);
             this.setState({
-                alertType: `commit${res.body.status}`,
+                alertType: parseResponse("commit", res.body.text),
+                showAlert: true,
                 commiting: false,
                 console: res.body.text,
                 operation: "Commit to Network"
             });
             this.animateConsole();
-            this.syncFromNetwork();
+            http.get('/api/odl/get/oper/uniconfig/' + this.state.device).then(res => {
+                this.setState({
+                    operational: JSON.stringify(res),
+                });
+            });
         });
     }
 

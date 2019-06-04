@@ -21,12 +21,21 @@ class CustomAlerts extends Component {
                             Commit to network was successful.
                         </Alert>
                     );
-                case 'commit500':
+                case 'commit': {
                     return (
-                        <Alert variant="success">
-                            Commit to network failed.
+                        <Alert onClick={handleDismiss} variant={alertType.overallStatus === "complete" ? "success" : "danger" }>
+                            <b>COMMIT-TO-NETWORK {alertType.overallStatus.toUpperCase()}:&nbsp;&nbsp;</b>
+                            {alertType.overallStatus === "fail" ?
+                                alertType.errorMessage
+                                :
+                                alertType.nodeStatus ?
+                                    "Node-status: " + alertType.nodeStatus
+                                    : null
+                            }&nbsp;&nbsp;&nbsp;&nbsp;
+                            <i className="fas fa-times clickable" onClick={handleDismiss}/>
                         </Alert>
                     );
+                }
                 case 'snapCreated':
                     return (
                         <Alert variant="success">
