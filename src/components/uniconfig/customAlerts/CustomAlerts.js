@@ -36,12 +36,16 @@ class CustomAlerts extends Component {
                         </Alert>
                     );
                 }
-                case 'snapCreated':
+                case 'replacesnap': {
                     return (
-                        <Alert variant="success">
-                            New snapshot was created.
+                        <Alert onClick={handleDismiss} variant={alertType.status === "complete" ? "success" : "danger" }>
+                            <b>REPLACE-CONFIG-WITH-SNAPSHOT:&nbsp;&nbsp;</b>
+                            {alertType.status}
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <i className="fas fa-times clickable" onClick={handleDismiss}/>
                         </Alert>
                     );
+                }
                 case 'dryrun': {
                     return (
                         <Alert onClick={handleDismiss} variant={alertType.overallStatus === "complete" ? "success" : "danger" }>

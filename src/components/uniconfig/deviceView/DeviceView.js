@@ -186,6 +186,8 @@ class DeviceView extends Component {
             http.post('/api/odl/post/operations/replacesnapshot', target).then(res_first => {
                 http.get('/api/odl/get/conf/snapshots/' + snapshotName + '/' + this.state.device).then(res => {
                     this.setState({
+                        alertType: parseResponse("replacesnap", res_first.body.text),
+                        showAlert: true,
                         config: JSON.stringify(res, null, 2),
                         console: JSON.stringify(res_first.body),
                         operation: "Replace-Config-With-Snapshot"
