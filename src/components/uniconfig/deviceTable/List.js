@@ -370,7 +370,7 @@ class List extends Component {
                         <Button variant="outline-danger" onClick={this.removeDevices.bind(this)} ><FontAwesomeIcon icon={faMinusCircle} /> Unmount Devices</Button>
                     </FormGroup>
                     <FormGroup className="deviceGroup rightAligned1">
-                        <Button variant="primary" onClick={this.refreshAllDeviceEntries.bind(this)}><FontAwesomeIcon icon={faSync} /> Refresh</Button>
+                        <Button variant="primary gradientBtn" onClick={this.refreshAllDeviceEntries.bind(this)}><FontAwesomeIcon icon={faSync} /> Refresh</Button>
                     </FormGroup>
                     <FormGroup className="searchGroup">
                         <Form.Control value={this.state.keywords} onChange={this.onEditSearch} placeholder="Search by keyword."/>

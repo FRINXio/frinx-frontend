@@ -19,6 +19,10 @@
   color: white;
 }
 
+.gradientBtn {
+  background: linear-gradient(-120deg, rgb(0, 147, 255) 0%, rgb(0, 118, 203) 100%)
+}
+
 .App-link {
   color: #61dafb;
 }

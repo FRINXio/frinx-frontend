@@ -76,7 +76,7 @@ class Editor extends Component {
                 <div>
                     <h2 style={{display: "inline-block", marginTop: "5px"}}>{this.props.title}</h2>
                     <div style={{float: "right"}}>
-                        <Button className="btn btn-primary" onClick={this.sendConfig.bind(this)} style={{marginLeft: '5px'}}>
+                        <Button className="btn btn-primary gradientBtn" onClick={this.sendConfig.bind(this)} style={{marginLeft: '5px'}}>
                             <i className="fas fa-save"/>&nbsp;&nbsp;Save</Button>
                         {this.props.editable === "cap" ? null :
                             <Button className="btn btn-light" onClick={this.refresh.bind(this)}
@@ -90,7 +90,7 @@ class Editor extends Component {
                 <div>
                     <h2 style={{display: "inline-block", marginTop: "5px"}}>{this.props.title}</h2>
                     <div style={{float: "right"}}>
-                        <Button className="btn btn-primary" style={{marginRight: '5px'}}
+                        <Button className="btn btn-primary gradientBtn" style={{marginRight: '5px'}}
                                 disabled={this.props.syncing}
                                 onClick={this.props.syncFromNetwork}>
                             <i className={this.props.syncing ? "fas fa-sync fa-spin" : "fas fa-sync"}/>
