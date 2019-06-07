@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {Button, Form, Modal, Row, Col, Tabs, Tab, InputGroup, ButtonGroup} from "react-bootstrap";
 import Dropdown from 'react-dropdown';
+import './MountModal.css'
 import 'react-dropdown/style.css';
 import {
     mountCliTemplate,
@@ -224,11 +225,15 @@ class MountModal extends Component {
     }
 
     getSupportedDevices() {
-        http.get('/api/odl/get/oper/registry/cli-devices/').then(res => {
-            let objArray = Object.values(Object.entries(res)[0][1]);
-            objArray = [...objArray[0]];
-            this.setState({deviceTypeVersion: objArray})
-        });
+        try {
+            http.get('/api/odl/get/oper/registry/cli-devices/').then(res => {
+                let objArray = Object.values(Object.entries(res)[0][1]);
+                objArray = [...objArray[0]];
+                this.setState({deviceTypeVersion: objArray})
+            });
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     changeMountType(which) {
