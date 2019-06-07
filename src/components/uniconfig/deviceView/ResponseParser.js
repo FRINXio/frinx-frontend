@@ -7,6 +7,7 @@ export function parseResponse(type, body) {
         case "sync": return parseSync(type, bodyJSON);
         case "commit": return parseCommit(type, bodyJSON);
         case "replacesnap": return parseReplaceSnap(type, bodyJSON);
+        case "replaceconf": return parseReplaceConf(type, bodyJSON);
         default: break;
     }
 }
@@ -54,6 +55,14 @@ function parseCommit(type, bodyJSON) {
 }
 
 function parseReplaceSnap(type, bodyJSON) {
+    let status = "";
+    if (bodyJSON["output"]) {
+        status = bodyJSON["output"]["result"];
+    }
+    return {type, status}
+}
+
+function parseReplaceConf(type, bodyJSON) {
     let status = "";
     if (bodyJSON["output"]) {
         status = bodyJSON["output"]["result"];

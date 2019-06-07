@@ -168,6 +168,21 @@ class DeviceView extends Component {
         });
     }
 
+    replaceConfig() {
+        let target = JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}});
+        http.post('/api/odl/post/operations/replace-config-with-operational', target).then(res => {
+            console.log(res);
+            this.refreshConfig();
+            this.setState({
+                alertType: parseResponse("replaceconf", res.body.text),
+                showAlert: true,
+                console: res.body.text,
+                operation: "Replace-config-with-operational"
+            });
+            this.animateConsole()
+        })
+    }
+
     getSnapshots(){
         http.get('/api/odl/get/conf/snapshots/' + this.state.device).then(res => {
             if(res !== 500) {
@@ -260,8 +275,9 @@ class DeviceView extends Component {
                     :
                     <Editor title="Intended Configuration" editable={true} deviceName={this.state.device}
                             updateConfig={this.updateConfig.bind(this)}
-                            inputJSON={configJSON}
-                            refreshConfig={this.refreshConfig.bind(this)}/>
+                            replaceConfig={this.replaceConfig.bind(this)}
+                            refreshConfig={this.refreshConfig.bind(this)}
+                            inputJSON={configJSON}/>
                 }
             </div>
         );

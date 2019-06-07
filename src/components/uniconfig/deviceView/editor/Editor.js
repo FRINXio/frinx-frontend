@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Button } from 'react-bootstrap';
+import {Button, ButtonGroup, Dropdown} from 'react-bootstrap';
 import '../../../../../node_modules/react-gh-like-diff/lib/diff2html.css';
 import CodeMirror from 'react-codemirror'
 import '../DeviceView.css'
@@ -79,10 +79,19 @@ class Editor extends Component {
                         <Button className="btn btn-primary gradientBtn" onClick={this.sendConfig.bind(this)} style={{marginLeft: '5px'}}>
                             <i className="fas fa-save"/>&nbsp;&nbsp;Save</Button>
                         {this.props.editable === "cap" ? null :
-                            <Button className="btn btn-light" onClick={this.refresh.bind(this)}
-                                    style={{marginLeft: '5px'}}>
-                                &nbsp;&nbsp;{this.state.modified ? "Cancel" : "Refresh"}
-                            </Button>
+
+                            <Dropdown as={ButtonGroup}>
+                                <Button className="btn btn-light" onClick={this.refresh.bind(this)} style={{marginLeft: '5px'}}>
+                                    &nbsp;&nbsp;{this.state.modified ? "Cancel" : "Refresh"}
+                                </Button>
+                                {!this.state.modified ?
+                                    <div>
+                                    <Dropdown.Toggle split variant="btn btn-light" id="dropdown-split-basic" />
+                                    <Dropdown.Menu>
+                                    <Dropdown.Item onClick={this.props.replaceConfig}>Replace with Operational</Dropdown.Item>
+                                    </Dropdown.Menu>
+                                    </div> : null}
+                            </Dropdown>
                         }
                     </div>
                 </div>

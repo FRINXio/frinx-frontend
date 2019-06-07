@@ -144,6 +144,15 @@ router.post('/post/operations/snapshot', async (req, res, next) => {
     }
 });
 
+router.post('/post/operations/replace-config-with-operational', async (req, res, next) => {
+    try {
+        const result = await http.post(odlOperationsURL + "/uniconfig-manager:replace-config-with-operational", req.body, authToken);
+        res.status(200).send(result);
+    } catch (e) {
+        next(e);
+    }
+});
+
 router.post('/post/operations/replacesnapshot', async (req, res, next) => {
     try {
         const result = await http.post(odlOperationsURL + "/snapshot-manager:replace-config-with-snapshot", req.body, authToken);

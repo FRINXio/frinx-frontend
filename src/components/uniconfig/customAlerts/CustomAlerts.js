@@ -46,6 +46,16 @@ class CustomAlerts extends Component {
                         </Alert>
                     );
                 }
+                case 'replaceconf': {
+                    return (
+                        <Alert onClick={handleDismiss} variant={alertType.status === "complete" ? "success" : "danger" }>
+                            <b>REPLACE-CONFIG-WITH-OPERATIONAL:&nbsp;&nbsp;</b>
+                            {alertType.status}
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <i className="fas fa-times clickable" onClick={handleDismiss}/>
+                        </Alert>
+                    );
+                }
                 case 'dryrun': {
                     return (
                         <Alert onClick={handleDismiss} variant={alertType.overallStatus === "complete" ? "success" : "danger" }>
