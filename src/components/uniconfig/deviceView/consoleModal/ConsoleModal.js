@@ -38,10 +38,12 @@ class ConsoleModal extends Component {
                     <Modal.Title>Console output of {this.state.operation}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <code>
-                        <Highlight language={"json"}>
+                    <code style={{fontSize: "20px"}}>
+                        <pre>
+                        <Highlight language="json">
                             {JSON.stringify(JSON.parse(content), null, 2)}
                         </Highlight>
+                    </pre>
                     </code>
                 </Modal.Body>
                 <Modal.Footer>
