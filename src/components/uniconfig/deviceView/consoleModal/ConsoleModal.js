@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Button } from "react-bootstrap";
+import {Modal, Button, ListGroup} from "react-bootstrap";
 import Highlight from "react-highlight.js";
 
 class ConsoleModal extends Component {
@@ -27,6 +27,17 @@ class ConsoleModal extends Component {
         this.props.consoleHandler()
     }
 
+    parseDryRun() {
+        let output = this.state.content;
+        if (output) {
+            output = output.substring(1, output.length - 1);
+            output = output.split('\\n').map(i => {
+                return i !== "" ? <ListGroup.Item>{i}</ListGroup.Item> : ""
+            });
+        }
+        return output;
+    }
+
     render() {
 
         let content = this.state.content || "{}";
@@ -38,11 +49,17 @@ class ConsoleModal extends Component {
                     <Modal.Title>Console output of {this.state.operation}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <code>
-                        <Highlight language={"json"}>
-                            {JSON.stringify(JSON.parse(content), null, 2)}
-                        </Highlight>
-                    </code>
+
+                    {this.state.operation === "Dry-run"
+                        ? <ListGroup>
+                            {this.parseDryRun()}
+                            </ListGroup>
+                        : <code>
+                            <Highlight language={"json"}>
+                                {JSON.stringify(JSON.parse(content), null, 2)}
+                            </Highlight>
+                        </code>
+                    }
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={this.handleClose}>
