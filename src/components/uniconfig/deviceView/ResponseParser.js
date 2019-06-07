@@ -26,16 +26,18 @@ function parseDryRun(type, bodyJSON) {
 }
 
 function parseSync(type, bodyJSON) {
-    let {nodeId, status} = "";
+    let {nodeId, status, errorMessage} = "";
     if (bodyJSON["output"]["node-sync-status-results"]["node-sync-status-result"]){
         nodeId = bodyJSON["output"]["node-sync-status-results"]["node-sync-status-result"][0]["nodeId"];
-        status = "updated with changes"
+        status = "updated with changes";
+        errorMessage =  bodyJSON["output"]["node-sync-status-results"]["node-sync-status-result"][0]["error-message"];
     } else if (bodyJSON["output"]["node-sync-status-results"]) {
         status = "without changes"
     } else {
         status = "error"
     }
-    return {type, nodeId, status}
+    console.log(errorMessage);
+    return {type, nodeId, status, errorMessage}
 }
 
 function parseCommit(type, bodyJSON) {
