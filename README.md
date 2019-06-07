@@ -6,18 +6,12 @@
 * [Docker](https://www.docker.com/)
 * [Docker Compose](https://github.com/docker/compose)
 
-#### `sudo ./install.sh [--odl]` <br>
+#### `docker-compose build --build-arg "ODL=<ip>:8181" uniconfig-ui` <br>
 Creates docker container with installation of UniConfig-UI. <br>
-##### Options: <br>
-* `--odl / -o` - Sets ODL host address with following format: `address:port`, 
 
-## Startup
-
+## Startup <br>
 In the project directory, run: 
 
-#### `sudo ./startup.sh [--odl]` <br>
-Starts the UniConfig-UI container using ODL host defined at installation (if --odl option is not used).
-#### Options: <br>
-* `--odl / -o` - Sets ODL host address with following format: `address:port`
+#### `docker-compose up uniconfig-ui` <br>
+Starts the UniConfig-UI container using ODL host defined at installation.
 
-Alternatively, ODL host can be set in `./env` file located in project directory. 

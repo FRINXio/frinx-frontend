@@ -53,7 +53,7 @@ class List extends Component {
 
         //append os/version from conf
         if (topology === "cli") {
-            os_version = await http.get('/api/odl/get/conf/status/' + topology + "/" + node_id).then(res => {
+            os_version = await http.get('/api/odl/conf/status/' + topology + "/" + node_id).then(res => {
                 os_version = res["node"]["0"]["cli-topology:device-type"];
                 os_version = os_version + " / " + res["node"]["0"]["cli-topology:device-version"];
                 return os_version;
@@ -146,7 +146,7 @@ class List extends Component {
 
     refreshAllDeviceEntries() {
         this.setState({data: [], mountModal: false});
-        http.get('/api/odl/get/oper/all/status/cli').then(res => {
+        http.get('/api/odl/oper/all/status/cli').then(res => {
            try {
                let topologies = Object.keys(res);
                let topology = Object.keys(res[Object.keys(res)]);
@@ -165,7 +165,7 @@ class List extends Component {
 
         });
 
-        http.get('/api/odl/get/oper/all/status/topology-netconf').then(res => {
+        http.get('/api/odl/oper/all/status/topology-netconf').then(res => {
             try {
                 let topologies = Object.keys(res);
                 let topology = Object.keys(res[Object.keys(res)]);
@@ -233,7 +233,7 @@ class List extends Component {
 
     getDeviceObject(node_id, topology) {
         let topology_obj = topology === "cli" ? "cli-topology" : "netconf-node-topology";
-        return http.get("/api/odl/get/oper/status/" + topology + "/" + node_id).then(res => {
+        return http.get("/api/odl/oper/status/" + topology + "/" + node_id).then(res => {
             try {
                 let device = res.node[0];
                 let node_id = device["node-id"];
@@ -246,7 +246,7 @@ class List extends Component {
                 let commit_patterns = device[`${topology_obj}:default-commit-error-patterns`] || null;
                 let connected_message = device[`${topology_obj}:connected-message`] || null;
 
-                return http.get("/api/odl/get/conf/status/" + topology + "/" + node_id).then(res => {
+                return http.get("/api/odl/conf/status/" + topology + "/" + node_id).then(res => {
                     let device = res.node[0];
                     let transport_type = device[`${topology_obj}:transport-type`] || device[`${topology_obj}:tcp-only`];
                     let protocol = topology_obj.split("-")[0];

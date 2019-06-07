@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Modal, Button, ListGroup} from "react-bootstrap";
+import { Modal, Button, ListGroup } from "react-bootstrap";
 import Highlight from "react-highlight.js";
 
 class ConsoleModal extends Component {
@@ -49,15 +49,16 @@ class ConsoleModal extends Component {
                     <Modal.Title>Console output of {this.state.operation}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-
                     {this.state.operation === "Dry-run"
                         ? <ListGroup>
                             {this.parseDryRun()}
-                            </ListGroup>
-                        : <code>
-                            <Highlight language={"json"}>
-                                {JSON.stringify(JSON.parse(content), null, 2)}
-                            </Highlight>
+                        </ListGroup>
+                        : <code style={{fontSize: "20px"}}>
+                            <pre>
+                                <Highlight language="json">
+                                    {JSON.stringify(JSON.parse(content), null, 2)}
+                                </Highlight>
+                            </pre>
                         </code>
                     }
                 </Modal.Body>
