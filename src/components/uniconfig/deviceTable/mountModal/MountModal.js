@@ -94,7 +94,7 @@ class MountModal extends Component {
                 this.setState({mountType: "Netconf"})
             }
 
-            http.get("/api/odl/get/conf/status/" + topology + "/" + device).then(res => {
+            http.get("/api/odl/conf/status/" + topology + "/" + device).then(res => {
                 try {
                     let values = Object.entries(res["node"][0]);
                     let mountForm = topology === "cli" ?
@@ -182,12 +182,12 @@ class MountModal extends Component {
             connectionStatus: "Sending Whitelist ..."
         });
         let target = this.state.nativeDevice.toLowerCase();
-        return http.put("/api/odl/put/conf/native/whitelist/" + target, this.state.whitelist).then( res => {
+        return http.put("/api/odl/conf/native/whitelist/" + target, this.state.whitelist).then( res => {
             if (this.state.enableBlacklist) {
                 this.setState({
                     connectionStatus: "Sending Blacklist ..."
                 });
-                return http.put("/api/odl/put/conf/native/blacklist/" + target, this.state.blacklist).then(res2 => {
+                return http.put("/api/odl/conf/native/blacklist/" + target, this.state.blacklist).then(res2 => {
                     return res2.body.status === 200;
                 })
             } else {
@@ -206,7 +206,7 @@ class MountModal extends Component {
     }
 
     getConnectionStatus(topology, node) {
-        http.get("/api/odl/get/oper/status/" + topology + "/" + node).then(res => {
+        http.get("/api/odl/oper/status/" + topology + "/" + node).then(res => {
             let connectionStatus = res;
             if (res === 404) {
                 connectionStatus = "connecting";
@@ -230,7 +230,7 @@ class MountModal extends Component {
     }
 
     getSupportedDevices() {
-        http.get('/api/odl/get/oper/registry/cli-devices/').then(res => {
+        http.get('/api/odl/oper/registry/cli-devices/').then(res => {
             try {
                 let objArray = Object.values(Object.entries(res)[0][1]);
                 objArray = [...objArray[0]];

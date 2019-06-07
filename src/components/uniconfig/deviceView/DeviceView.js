@@ -52,14 +52,14 @@ class DeviceView extends Component {
 
     fetchData(device){
 
-        http.get('/api/odl/get/conf/uniconfig/' + device).then(res => {
+        http.get('/api/odl/conf/uniconfig/' + device).then(res => {
             this.setState({
                 config: JSON.stringify(res),
                 initializing: false
             })
         });
 
-        http.get('/api/odl/get/oper/uniconfig/' + device).then(res => {
+        http.get('/api/odl/oper/uniconfig/' + device).then(res => {
             this.setState({
                 operational: JSON.stringify(res),
                 initializing: false
@@ -69,7 +69,7 @@ class DeviceView extends Component {
 
     updateConfig(newData) {
         let data = JSON.parse(JSON.stringify(newData, null, 2));
-        http.put('/api/odl/put/conf/uniconfig/' + this.state.device, data).then(res => {
+        http.put('/api/odl/conf/uniconfig/' + this.state.device, data).then(res => {
             this.setState({
                 alertType: `putConfig${res.body.status}`,
                 console: JSON.stringify(res.body, null, 2),
@@ -91,7 +91,7 @@ class DeviceView extends Component {
 
     getCalculatedDiff() {
         let target = JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}});
-        http.post('/api/odl/post/operations/calculate-diff/', target).then(res => {
+        http.post('/api/odl/operations/calculate-diff/', target).then(res => {
             this.setState({
                 console: res.body.text,
                 operation: "Calculated Diff"
@@ -103,7 +103,7 @@ class DeviceView extends Component {
     commitToNetwork(){
         this.setState({commiting: true});
         let target = JSON.parse(JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}}));
-        http.post('/api/odl/post/operations/commit/', target).then(res => {
+        http.post('/api/odl/operations/commit/', target).then(res => {
             this.setState({
                 alertType: parseResponse("commit", res.body.text),
                 showAlert: true,
@@ -112,7 +112,7 @@ class DeviceView extends Component {
                 operation: "Commit to Network"
             });
             this.animateConsole();
-            http.get('/api/odl/get/oper/uniconfig/' + this.state.device).then(res => {
+            http.get('/api/odl/oper/uniconfig/' + this.state.device).then(res => {
                 this.setState({
                     operational: JSON.stringify(res),
                 });
@@ -122,7 +122,7 @@ class DeviceView extends Component {
 
     dryRun() {
         let target = JSON.parse(JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}}));
-        http.post('/api/odl/post/operations/dryrun/', target).then(res => {
+        http.post('/api/odl/operations/dry-run/', target).then(res => {
             this.setState({
                 alertType: parseResponse("dryrun", res.body.text),
                 showAlert: true,
@@ -144,8 +144,8 @@ class DeviceView extends Component {
         this.setState({syncing: true});
         let target = JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}});
 
-        http.post('/api/odl/post/operations/syncfromnetwork', target).then((res_first) => {
-            http.get('/api/odl/get/oper/uniconfig/' + this.state.device).then(res => {
+        http.post('/api/odl/operations/sync-from-network', target).then((res_first) => {
+            http.get('/api/odl/oper/uniconfig/' + this.state.device).then(res => {
                 this.setState({
                     alertType: parseResponse("sync", res_first.body.text),
                     showAlert: true,
@@ -161,7 +161,7 @@ class DeviceView extends Component {
     }
 
     refreshConfig(){
-        http.get('/api/odl/get/conf/uniconfig/' + this.state.device).then(res => {
+        http.get('/api/odl/conf/uniconfig/' + this.state.device).then(res => {
             this.setState({
                 config: JSON.stringify(res),
             })
@@ -170,7 +170,7 @@ class DeviceView extends Component {
 
     replaceConfig() {
         let target = JSON.stringify({"input": {"target-nodes": {"node": [this.state.device]}}});
-        http.post('/api/odl/post/operations/replace-config-with-operational', target).then(res => {
+        http.post('/api/odl/operations/replace-config-with-operational', target).then(res => {
             console.log(res);
             this.refreshConfig();
             this.setState({
@@ -184,7 +184,7 @@ class DeviceView extends Component {
     }
 
     getSnapshots(){
-        http.get('/api/odl/get/conf/snapshots/' + this.state.device).then(res => {
+        http.get('/api/odl/conf/snapshots/' + this.state.device).then(res => {
             if(res !== 500) {
                 this.setState({
                     snapshots: res
@@ -198,7 +198,7 @@ class DeviceView extends Component {
         let snapshotName = this.state.snapshots[snapshotId]["topology-id"];
         if (this.state.deletingSnaps) {
             let target = JSON.parse(JSON.stringify({"input": {"name": snapshotName } } ) );
-            http.post('/api/odl/post/conf/snapshots/delete', target).then(res => {
+            http.post('/api/odl/conf/snapshots/delete-snapshot', target).then(res => {
                 console.log(res);
             })
         } else {
@@ -208,8 +208,8 @@ class DeviceView extends Component {
                     "target-nodes": {"node": [this.state.device]}
                 }
             });
-            http.post('/api/odl/post/operations/replacesnapshot', target).then(res_first => {
-                http.get('/api/odl/get/conf/snapshots/' + snapshotName + '/' + this.state.device).then(res => {
+            http.post('/api/odl/operations/replace-config-with-snapshot', target).then(res_first => {
+                http.get('/api/odl/conf/snapshots/' + snapshotName + '/' + this.state.device).then(res => {
                     this.setState({
                         alertType: parseResponse("replacesnap", res_first.body.text),
                         showAlert: true,
