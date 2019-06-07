@@ -6,7 +6,7 @@
 * [Docker](https://www.docker.com/)
 * [Docker Compose](https://github.com/docker/compose)
 
-#### `docker-compose build --build-arg "ODL=<ip>:8080" uniconfig-ui` <br>
+#### `docker-compose build --build-arg "ODL=<ip>:8181" uniconfig-ui` <br>
 Creates docker container with installation of UniConfig-UI. <br>
 
 ## Startup <br>
