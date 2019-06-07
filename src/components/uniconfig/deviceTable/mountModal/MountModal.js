@@ -448,11 +448,11 @@ class MountModal extends Component {
                         <Button onClick={() => this.handleToggle(0)}
                                 style={{width: "50%"}}
                                 active={this.state.activeToggles.includes(0) ? "active" : null} className="noshadow"
-                                variant="outline-info">Lazy Connection</Button>
+                                variant="outline-info-toggle">Lazy Connection</Button>
                         <Button onClick={() => this.handleToggle(1)}
                                 style={{width: "50%"}}
                                 active={this.state.activeToggles.includes(1) ? "active" : null} className="noshadow"
-                                variant="outline-info">Dry-run</Button>
+                                variant="outline-info-toggle">Dry-run</Button>
                     </ButtonGroup>
                     : null
             )
@@ -465,15 +465,15 @@ class MountModal extends Component {
                         <Button onClick={() => this.handleToggle(0)}
                                 style={{width: "50%"}}
                                 active={this.state.activeToggles.includes(0) ? "active" : null} className="noshadow"
-                                variant="outline-info">Override capabilities</Button>
+                                variant="outline-info-toggle">Override capabilities</Button>
                         <Button onClick={() => this.handleToggle(1)}
                                 style={{width: "50%"}}
                                 active={this.state.activeToggles.includes(1) ? "active" : null} className="noshadow"
-                                variant="outline-info">Dry-run</Button>
+                                variant="outline-info-toggle">Dry-run</Button>
                         <Button onClick={() => this.setState({nativeUc: !this.state.nativeUc})}
                                 style={{width: "50%"}}
                                 active={this.state.nativeUc ? "active" : null} className="noshadow"
-                                variant="outline-info">UniConfig Native</Button>
+                                variant="outline-info-toggle">UniConfig Native</Button>
                     </ButtonGroup>
                     : null
             )
