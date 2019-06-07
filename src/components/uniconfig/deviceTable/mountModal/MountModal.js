@@ -95,26 +95,31 @@ class MountModal extends Component {
             }
 
             http.get("/api/odl/get/conf/status/" + topology + "/" + device).then(res => {
-                let values = Object.entries(res["node"][0]);
-                let mountForm = topology === "cli" ?
-                    JSON.parse("[" + mountCliTemplate + "]")[0] : JSON.parse("[" + mountNetconfTemplate + "]")[0];
-                Object.entries(mountForm).map(field => {
-                    values.forEach(value => {
-                        if (field[0].split(":").pop() === value[0].split(":").pop()) {
-                            mountForm[field[0]][0] = value[1];
-                        }
+                try {
+                    let values = Object.entries(res["node"][0]);
+                    let mountForm = topology === "cli" ?
+                        JSON.parse("[" + mountCliTemplate + "]")[0] : JSON.parse("[" + mountNetconfTemplate + "]")[0];
+                    Object.entries(mountForm).map(field => {
+                        values.forEach(value => {
+                            if (field[0].split(":").pop() === value[0].split(":").pop()) {
+                                mountForm[field[0]][0] = value[1];
+                            }
+                        });
+                        return null;
                     });
-                    return null;
-                });
 
-                if (topology === "cli") {
-                    this.setState({mountCliForm: mountForm
-                    })
-                } else {
-                    this.setState({
-                        mountNetconfForm: mountForm,
-                        mountType: "Netconf"
-                    })
+                    if (topology === "cli") {
+                        this.setState({
+                            mountCliForm: mountForm
+                        })
+                    } else {
+                        this.setState({
+                            mountNetconfForm: mountForm,
+                            mountType: "Netconf"
+                        })
+                    }
+                } catch (e) {
+                    console.log(e)
                 }
             })
         }
@@ -225,15 +230,15 @@ class MountModal extends Component {
     }
 
     getSupportedDevices() {
-        try {
-            http.get('/api/odl/get/oper/registry/cli-devices/').then(res => {
+        http.get('/api/odl/get/oper/registry/cli-devices/').then(res => {
+            try {
                 let objArray = Object.values(Object.entries(res)[0][1]);
                 objArray = [...objArray[0]];
                 this.setState({deviceTypeVersion: objArray})
-            });
-        } catch (e) {
-            console.log(e);
-        }
+            } catch (e) {
+                console.log(e);
+            }
+        });
     }
 
     changeMountType(which) {

@@ -36,7 +36,6 @@ function parseSync(type, bodyJSON) {
     } else {
         status = "error"
     }
-    console.log(errorMessage);
     return {type, nodeId, status, errorMessage}
 }
 
