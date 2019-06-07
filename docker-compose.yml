@@ -9,7 +9,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - ODL=odl:8080
+        - ODL=odl:8181
     command: npm run dev
     ports:
       - 3000:3000
