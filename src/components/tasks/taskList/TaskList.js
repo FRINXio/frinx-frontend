@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Col, Container, Form, FormGroup, Row, Table} from 'react-bootstrap'
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {faSync} from '@fortawesome/free-solid-svg-icons'
+import './TaskList.css'
 const http = require('../../../server/HttpServerSide').HttpClient;
 
 class TaskList extends Component {
@@ -168,7 +169,7 @@ class TaskList extends Component {
                                 <th>Retry Logic</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="tasktable">
                             {this.repeat()}
                             </tbody>
                         </Table>
