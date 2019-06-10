@@ -2,10 +2,6 @@
     text-align: left;
 }
 
-.deviceGroup tr:hover {
-    cursor: pointer;
-}
-
 .listPage {
     margin-top: 20px;
 }
@@ -25,25 +21,13 @@
     float: left;
 }
 
-.leftAligned1 button {
-    margin-left: 0;
-}
-
 .rightAligned1 {
     text-align: right;
     float: right;
 }
 
-.rightAligned1 button {
-    margin-right: 0;
-}
-
 .clickable:hover {
     cursor: pointer;
-}
-
-.form-control {
-    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0);
 }
 
 .hilit {

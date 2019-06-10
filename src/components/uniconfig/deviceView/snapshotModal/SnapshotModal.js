@@ -50,7 +50,7 @@ class SnapshotModal extends Component {
                     }
                 }
         }));
-        http.post('/api/odl/post/operations/snapshot', target).then( res => {
+        http.post('/api/odl/operations/create-snapshot', target).then( res => {
             this.setState({
                 snapshotStatus: JSON.parse(res.body.text)["output"]["result"],
                 errorMsg: JSON.parse(res.body.text)["output"]["error-message"]
