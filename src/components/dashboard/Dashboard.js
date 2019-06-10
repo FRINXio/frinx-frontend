@@ -18,7 +18,8 @@ class Dashboard extends Component {
                                style={{background: 'linear-gradient'}}/>
                     </Col>
                     <Col>
-                        <Panel title='Tasks' desc="Manage tasks." icon={faTasks} style={{background: 'linear-gradient'}}/>
+                        <Panel title='Tasks' desc="Manage tasks." icon={faTasks}
+                               style={{background: 'linear-gradient'}} link='/tasks'/>
                     </Col>
                     <Col>
                         <Panel title='UniConfig UI' desc="Manage network device configurations."
