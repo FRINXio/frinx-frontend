@@ -130,7 +130,10 @@ class DeviceView extends Component {
                 operation: "Dry-run"
             });
             this.animateConsole();
-        })
+            if (!this.state.alertType["errorMessage"] && this.state.console) {
+                this.consoleHandler();
+            }
+        });
     }
 
     animateConsole() {
