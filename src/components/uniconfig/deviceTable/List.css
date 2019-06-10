@@ -72,3 +72,8 @@ input[type='checkbox']:checked {
     color: #0322ff;
     cursor: pointer;
 }
+
+.tableHeader:hover {
+    box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
