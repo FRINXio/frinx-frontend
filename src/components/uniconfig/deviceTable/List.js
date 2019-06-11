@@ -365,7 +365,7 @@ class List extends Component {
         return output;
     }
 
-    sort(e, i){
+    sort(i){
         let dataset;
         let sort = this.state.sort;
         this.state.keywords === "" ?  dataset = this.state.data : dataset = this.state.table;
@@ -374,15 +374,10 @@ class List extends Component {
         } else {
             dataset.sort((a, b) => (a[i] <= b[i]) ? 1 : ((b[i] < a[i]) ? -1 : 0));
         }
-        this.state.keywords === ""
-            ? this.setState({
-                data: dataset,
-                sort: !sort
-            })
-            : this.setState({
-                table: dataset,
-                sort: !sort
-            })
+        this.setState({
+            [this.state.keywords === "" ? "data" : "table"]: dataset,
+            sort: !sort
+        });
     }
 
     render(){
@@ -412,10 +407,10 @@ class List extends Component {
                             <thead>
                                 <tr>
                                     <th>Select</th>
-                                    <th className="tableHeader" onClick={(e) => this.sort(e,0)}>Node ID</th>
-                                    <th className="tableHeader" onClick={(e) => this.sort(e,1)}>IP address</th>
-                                    <th className="tableHeader" onClick={(e) => this.sort(e,2)}>Status</th>
-                                    <th className="tableHeader" onClick={(e) => this.sort(e,3)}>OS/Version</th>
+                                    <th className="tableHeader" onClick={() => this.sort(0)}>Node ID</th>
+                                    <th className="tableHeader" onClick={() => this.sort(1)}>IP address</th>
+                                    <th className="tableHeader" onClick={() => this.sort(2)}>Status</th>
+                                    <th className="tableHeader" onClick={() => this.sort(3)}>OS/Version</th>
                                     <th>Config</th>
                                 </tr>
                             </thead>
