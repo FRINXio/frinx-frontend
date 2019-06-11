@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import {Button, ButtonGroup, Dropdown} from 'react-bootstrap';
 import '../../../../../node_modules/react-gh-like-diff/lib/diff2html.css';
 import CodeMirror from 'react-codemirror'
+import 'codemirror/addon/fold/foldcode'
+import 'codemirror/addon/fold/foldgutter'
+import 'codemirror/addon/fold/foldgutter.css'
+import 'codemirror/addon/fold/brace-fold'
 import '../DeviceView.css'
 import './Codemirror.css'
 require('codemirror/mode/javascript/javascript');
@@ -130,7 +134,9 @@ class Editor extends Component {
 
                 <CodeMirror ref={el => this.cm = el} value={this.state.inputJSON}
                             onChange={this.updateJson.bind(this)}
-                            options={{mode: 'application/ld+json', lineNumbers: true, readOnly: !this.props.editable}}/>
+                            options={{mode: 'application/ld+json', lineNumbers: true, readOnly: !this.props.editable,
+                                foldGutter: true, gutters:["CodeMirror-linenumbers", "CodeMirror-foldgutter"]}
+                            }/>
             </div>
         )
     };
