@@ -1,24 +1,13 @@
 const request = require('superagent');
 
-function getUrl(path) {
-    if (path.startsWith('http')) {
-        return path;
-    }
-    return process.env.REACT_APP_WEBSITE_HOSTNAME
-        ? `http://${process.env.REACT_APP_WEBSITE_HOSTNAME}${path}`
-        : `http://localhost:${process.env.REACT_APP_PORT}${path}`;
-}
-
-
 const HttpClient = {
 
     get: (path, token) =>
         new Promise((resolve, reject) => {
 
-            const req = request.get(getUrl(path)).accept('application/json');
+            const req = request.get(path).accept('application/json');
             if (token) {
                 req.set('Authorization', token);
-                console.log(getUrl(path));
             }
             req.end((err, res) => {
                 if (err) {
@@ -40,7 +29,6 @@ const HttpClient = {
             const req = request.delete(path).accept('application/json');
             if (token) {
                 req.set('Authorization', token);
-                console.log(getUrl(path));
             }
             req.end((err, res) => {
                 if (err) {
@@ -55,7 +43,8 @@ const HttpClient = {
 
     post: (path, data, token) =>
         new Promise((resolve, reject) => {
-            const req = request.post(getUrl(path), data).set('Content-Type', 'application/json');
+
+            const req = request.post(path, data).set('Content-Type', 'application/json');
             if (token) {
                 req.set('Authorization', token);
             }
