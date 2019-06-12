@@ -17,4 +17,13 @@ router.get('/metadata/taskdef', async (req, res, next) => {
     }
 });
 
+router.get('/metadata/workflow', async (req, res, next) => {
+    try {
+        const result = await http.get(baseURLMeta + 'workflow', req.token);
+        res.status(200).send({ result });
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;
