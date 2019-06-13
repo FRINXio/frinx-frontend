@@ -3,6 +3,7 @@ import {Accordion, Button, Card, Col, Container, Form, Row, Table} from 'react-b
 import {Typeahead} from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './WorkflowList.css'
+import DefinitionModal from "../definitonModal/DefinitionModal";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -18,7 +19,9 @@ class WorkflowList extends Component {
             defaultPages: 20,
             pagesCount: 1,
             viewedPage: 1,
-            activeRow: null
+            activeRow: null,
+            activeWf: null,
+            defModal: false
         };
         this.table = React.createRef();
         this.onEditSearch = this.onEditSearch.bind(this);
@@ -103,8 +106,9 @@ class WorkflowList extends Component {
     changeActiveRow(i) {
         this.getLabels();
         this.setState({
-            activeRow: this.state.activeRow === i ? null : i
-        });
+            activeRow: this.state.activeRow === i ? null : i,
+            activeWf: document.querySelector(`#wf${i}`).innerText
+    });
     }
 
     repeat() {
@@ -125,13 +129,13 @@ class WorkflowList extends Component {
                 output.push(
                     <div className="wfRow" key={i}>
                         <Accordion.Toggle onClick={this.changeActiveRow.bind(this,i)} className="clickable" as={Card.Header} variant="link" eventKey={i}>
-                            <p className={highlight ? this.calculateHighlight(i)  : ''}>{dataset[i]["name"]+" / "+dataset[i]["version"]}</p>
+                            <p id={`wf${i}`} className={highlight ? this.calculateHighlight(i)  : ''}>{dataset[i]["name"]+" / "+dataset[i]["version"]}</p>
                         </Accordion.Toggle>
                         <Accordion.Collapse eventKey={i}>
                             <Card.Body style={{padding: "0px"}}>
                                 <div style={{background: "linear-gradient(-120deg, rgb(0, 147, 255) 0%, rgb(0, 118, 203) 100%)", padding: "15px", marginBottom: "10px"}}>
                                     <Button variant="outline-light noshadow">Input</Button>
-                                    <Button variant="outline-light noshadow">Definition</Button>
+                                    <Button variant="outline-light noshadow" onClick={this.showDefinitionModal.bind(this,i)}>Definition</Button>
                                     <Button variant="outline-light noshadow">Diagram</Button>
                                 </div>
                                 <div className="accordBody">
@@ -205,9 +209,21 @@ class WorkflowList extends Component {
         return [...new Set([].concat(...labelsArr))];
     }
 
+    showDefinitionModal() {
+        this.setState({
+            defModal: !this.state.defModal
+        })
+    }
+
     render(){
+
+        let definitionModal = this.state.defModal ?
+            <DefinitionModal wf={this.state.activeWf} modalHandler={this.showDefinitionModal.bind(this)}
+                             show={this.state.defModal}/> : null;
+
         return(
             <div className='listPage'>
+                {definitionModal}
                 <Container style={{textAlign: "left"}}>
                     <h1 style={{margin: "20px"}}><i style={{color: 'grey'}} className="fas fa-cogs"/>&nbsp;&nbsp;Workflows</h1><hr/>
                     <Row>

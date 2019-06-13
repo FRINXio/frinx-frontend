@@ -26,4 +26,16 @@ router.get('/metadata/workflow', async (req, res, next) => {
     }
 });
 
+router.get('/metadata/workflow/:name/:version', async (req, res, next) => {
+    try {
+        const result = await http.get(
+            baseURLMeta + 'workflow/' + req.params.name + '?version=' + req.params.version,
+            req.token
+        );
+        res.status(200).send({ result });
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;
