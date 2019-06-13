@@ -68,7 +68,6 @@ class TaskList extends Component {
     }
 
     calculateHighlight(i, y) {
-        console.log(this.state.highlight);
         if(this.state.highlight[i] === y) {
             return 'hilit'
         } else {

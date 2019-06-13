@@ -18,7 +18,7 @@
     box-shadow: 0px 2px 20px 0px rgba(0,0,0,0.1);
 }
 
-button {
+.options button {
     margin-left: 5px;
 }
 
@@ -56,7 +56,7 @@ button {
     box-shadow: 0px 2px 5px 0px rgba(0,0,0,0);
 }
 
-button {
+.editor button {
     box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.3);
 }
 

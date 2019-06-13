@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {Button, Accordion, Card, Col, Container, Form, FormGroup, Row, Table} from 'react-bootstrap'
-import {library} from '@fortawesome/fontawesome-svg-core'
-import {faSync} from '@fortawesome/free-solid-svg-icons'
+import {Accordion, Button, Card, Col, Container, Form, Row, Table} from 'react-bootstrap'
+import {Typeahead} from 'react-bootstrap-typeahead';
+import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './WorkflowList.css'
+
 const http = require('../../../server/HttpServerSide').HttpClient;
 
 class WorkflowList extends Component {
@@ -10,6 +11,7 @@ class WorkflowList extends Component {
         super(props);
         this.state = {
             keywords: "",
+            labels: [],
             data: [],
             table: [],
             highlight: [],
@@ -18,7 +20,6 @@ class WorkflowList extends Component {
             viewedPage: 1,
             activeRow: null
         };
-        library.add(faSync);
         this.table = React.createRef();
         this.onEditSearch = this.onEditSearch.bind(this);
     }
@@ -29,56 +30,82 @@ class WorkflowList extends Component {
 
     componentDidMount() {
         http.get('/api/conductor/metadata/workflow').then(res => {
-            console.log(res);
-            this.setState({
-                data: res.result
-            })
+            try {
+                console.log(res.result);
+                this.setState({
+                    data: res.result
+                })
+            } catch(e) {
+                console.log(e);
+            }
         })
     }
 
-    onEditSearch(event){
+    onEditSearch(event) {
         this.setState({keywords: event.target.value}, () =>{
             this.search()
         })
+    }
+
+    onLabelSearch(event) {
+        this.setState({labels: event}, () =>{
+            this.searchLabel()
+        })
+    }
+
+    searchLabel() {
+        let toBeRendered = [];
+        const rows = this.state.keywords !== "" ? this.state.table : this.state.data;
+        for (let i = 0; i < rows.length; i++) {
+            if (rows[i]["description"]) {
+                let tags = rows[i]["description"].split("-").pop().replace(/\s/g, "").split(",");
+                if (this.state.labels.every(elem => tags.indexOf(elem) > -1)) {
+                    toBeRendered.push(rows[i]);
+                }
+            }
+        }
+        let pages = toBeRendered.length === 0 ? 0 : ~~(toBeRendered.length / this.state.defaultPages) + 1;
+        this.setState({
+            table: toBeRendered,
+            pagesCount: pages
+        });
+        return null;
     }
 
     search() {
         let toBeRendered = [];
         let toBeHighlited = [];
         let query = this.state.keywords.toUpperCase();
-        if(query !== ""){
-            const rows = this.state.data;
-            for(let i = 0; i < rows.length; i++){
-                for(let y = 1; y < Object.values(rows[i]).length; y++){
-                    if(Object.values(rows[i])[y] && Object.values(rows[i])[y].toString().toUpperCase().indexOf(query) !== -1){
-                        toBeRendered.push(rows[i]);
-                        toBeHighlited.push(Object.keys(rows[i])[y]);
-                        break
-                    }
+        if (query !== "") {
+            const rows = this.state.table.length > 0 ? this.state.table : this.state.data;
+            for (let i = 0; i < rows.length; i++) {
+                if (rows[i]["name"] && rows[i]["name"].toString().toUpperCase().indexOf(query) !== -1) {
+                    toBeRendered.push(rows[i]);
+                    toBeHighlited.push(i);
                 }
             }
         } else {
-            toBeRendered = this.state.data;
+            this.searchLabel();
+            return;
         }
         let pages = toBeRendered.length === 0 ? 0 : ~~(toBeRendered.length / this.state.defaultPages) + 1;
 
         this.setState({
             table: toBeRendered,
             highlight: toBeHighlited,
-            pagesCount : pages
+            pagesCount: pages
         })
     }
 
-    calculateHighlight(i, y) {
-        console.log(this.state.highlight);
-        if(this.state.highlight[i] === y) {
+    calculateHighlight(i) {
+        if (this.state.highlight[i] !== null) {
             return 'hilit'
-        } else {
-            return ''
         }
+        return ''
     }
 
     changeActiveRow(i) {
+        this.getLabels();
         this.setState({
             activeRow: this.state.activeRow === i ? null : i
         });
@@ -90,7 +117,7 @@ class WorkflowList extends Component {
         let dataset;
         let defaultPages = this.state.defaultPages;
         let viewedPage = this.state.viewedPage;
-        if (this.state.keywords === "") {
+        if (this.state.keywords === "" && this.state.labels.length < 1) {
             dataset = this.state.data;
             highlight = false
         } else {
@@ -100,9 +127,9 @@ class WorkflowList extends Component {
         for (let i = 0; i < dataset.length; i++) {
             if (i >= (viewedPage - 1) * defaultPages && i < viewedPage * defaultPages) {
                 output.push(
-                    <div key={i}>
+                    <div className="wfRow" key={i}>
                         <Accordion.Toggle onClick={this.changeActiveRow.bind(this,i)} className="clickable" as={Card.Header} variant="link" eventKey={i}>
-                            <p className={highlight ? this.calculateHighlight(i, "name")  : ''}>{dataset[i]["name"]}</p>
+                            <p className={highlight ? this.calculateHighlight(i)  : ''}>{dataset[i]["name"]}</p>
                         </Accordion.Toggle>
                         <Accordion.Collapse eventKey={i}>
                             <Card.Body style={{padding: "0px"}}>
@@ -111,14 +138,12 @@ class WorkflowList extends Component {
                                     <Button variant="outline-light noshadow">Definition</Button>
                                     <Button variant="outline-light noshadow">Diagram</Button>
                                 </div>
-                                <p className={highlight ? this.calculateHighlight(i, "tasks")  : ''}>
-                                    <b>Tasks</b><br/>
-                                    {JSON.stringify(dataset[i]["tasks"].map(task => {return task.name}))}
-                                </p>
-                                <p className={highlight ? this.calculateHighlight(i, "inputParameters")  : ''}>
-                                    <b>{dataset[i]["inputParameters"] ? "Input Parameters" : null}</b><br/>
-                                    {JSON.stringify(dataset[i]["inputParameters"])}
-                                </p>
+                                <div className="accordBody">
+                                <b>Tasks</b><br/>
+                                    <p>{JSON.stringify(dataset[i]["tasks"].map(task => {return task.name}))}</p>
+                                <b>{dataset[i]["inputParameters"] ? "Input Parameters" : null}</b><br/>
+                                    <p>{JSON.stringify(dataset[i]["inputParameters"])}</p>
+                                </div>
                             </Card.Body>
                         </Accordion.Collapse>
                     </div>
@@ -168,14 +193,42 @@ class WorkflowList extends Component {
         return output;
     }
 
+    getLabels() {
+        let labelsArr = [];
+        this.state.data.map(wf => {
+            let str = wf["description"].substring(wf["description"].indexOf("-") + 1);
+            if (str === wf["description"]) {
+                str = null;
+            }
+            if (str) {
+                str = str.replace(/\s/g, "");
+                labelsArr = labelsArr.concat(str.split(","));
+            }
+            return null;
+        });
+        return [...new Set([].concat(...labelsArr))];
+    }
+
     render(){
         return(
             <div className='listPage'>
-                <Container>
-                    <h1 style={{margin: "20px"}} className="leftAligned"><i style={{color: 'grey'}} className="fas fa-tasks"/>&nbsp;&nbsp;Workflows</h1>
-                    <FormGroup className="searchGroup">
-                        <Form.Control value={this.state.keywords} onChange={this.onEditSearch} placeholder="Search by keyword."/>
-                    </FormGroup>
+                <Container style={{textAlign: "left"}}>
+                    <h1 style={{margin: "20px"}}><i style={{color: 'grey'}} className="fas fa-cogs"/>&nbsp;&nbsp;Workflows</h1><hr/>
+                    <Row>
+                        <Col>
+                            <Typeahead
+                                selected={this.state.labels}
+                                onChange={this.onLabelSearch.bind(this)} clearButton
+                                labelKey="name" multiple options={this.getLabels()}
+                                placeholder="Search by label."/>
+                        </Col>
+                        <Col>
+                            <Form.Group>
+                                <Form.Control value={this.state.keywords} onChange={this.onEditSearch}
+                                              placeholder="Search by keyword."/>
+                            </Form.Group>
+                        </Col>
+                    </Row>
                     <div className="scrollWrapper">
                         <Table ref={this.table}>
                             <thead>
