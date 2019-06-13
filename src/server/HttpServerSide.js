@@ -11,7 +11,7 @@ const HttpClient = {
             }
             req.end((err, res) => {
                 if (err) {
-                    if (res.error){
+                    if (res && res.error){
                         resolve(res.error.status);
                         console.log(res.error.message);
                     } else {

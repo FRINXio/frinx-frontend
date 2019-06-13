@@ -29,7 +29,7 @@ class TaskList extends Component {
     componentDidMount() {
         http.get('/api/conductor/metadata/taskdef').then(res => {
             this.setState({
-                data: res.result
+                data: res.result || []
             })
         })
     }

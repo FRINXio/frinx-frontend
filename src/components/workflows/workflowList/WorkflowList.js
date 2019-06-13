@@ -30,14 +30,9 @@ class WorkflowList extends Component {
 
     componentDidMount() {
         http.get('/api/conductor/metadata/workflow').then(res => {
-            try {
-                console.log(res.result);
-                this.setState({
-                    data: res.result
-                })
-            } catch(e) {
-                console.log(e);
-            }
+            this.setState({
+                data: res.result || []
+            })
         })
     }
 
