@@ -30,6 +30,7 @@ class WorkflowList extends Component {
 
     componentDidMount() {
         http.get('/api/conductor/metadata/workflow').then(res => {
+            console.log(res.result)
             this.setState({
                 data: res.result || []
             })
@@ -124,7 +125,7 @@ class WorkflowList extends Component {
                 output.push(
                     <div className="wfRow" key={i}>
                         <Accordion.Toggle onClick={this.changeActiveRow.bind(this,i)} className="clickable" as={Card.Header} variant="link" eventKey={i}>
-                            <p className={highlight ? this.calculateHighlight(i)  : ''}>{dataset[i]["name"]}</p>
+                            <p className={highlight ? this.calculateHighlight(i)  : ''}>{dataset[i]["name"]+" / "+dataset[i]["version"]}</p>
                         </Accordion.Toggle>
                         <Accordion.Collapse eventKey={i}>
                             <Card.Body style={{padding: "0px"}}>
