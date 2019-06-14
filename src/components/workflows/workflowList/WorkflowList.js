@@ -4,6 +4,7 @@ import {Typeahead} from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './WorkflowList.css'
 import DefinitionModal from "../definitonModal/DefinitionModal";
+import InputModal from "../inputModal/InputModal";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -134,7 +135,7 @@ class WorkflowList extends Component {
                         <Accordion.Collapse eventKey={i}>
                             <Card.Body style={{padding: "0px"}}>
                                 <div style={{background: "linear-gradient(-120deg, rgb(0, 147, 255) 0%, rgb(0, 118, 203) 100%)", padding: "15px", marginBottom: "10px"}}>
-                                    <Button variant="outline-light noshadow">Input</Button>
+                                    <Button variant="outline-light noshadow" onClick={this.showInputModal.bind(this,i)}>Input</Button>
                                     <Button variant="outline-light noshadow" onClick={this.showDefinitionModal.bind(this,i)}>Definition</Button>
                                     <Button variant="outline-light noshadow">Diagram</Button>
                                 </div>
@@ -215,15 +216,26 @@ class WorkflowList extends Component {
         })
     }
 
+    showInputModal() {
+        this.setState({
+            inputModal: !this.state.inputModal
+        })
+    }
+
     render(){
 
         let definitionModal = this.state.defModal ?
             <DefinitionModal wf={this.state.activeWf} modalHandler={this.showDefinitionModal.bind(this)}
                              show={this.state.defModal}/> : null;
 
+        let inputModal = this.state.inputModal ?
+            <InputModal wf={this.state.activeWf} modalHandler={this.showInputModal.bind(this)}
+                             show={this.state.inputModal}/> : null;
+
         return(
             <div className='listPage'>
                 {definitionModal}
+                {inputModal}
                 <Container style={{textAlign: "left"}}>
                     <h1 style={{margin: "20px"}}><i style={{color: 'grey'}} className="fas fa-cogs"/>&nbsp;&nbsp;Workflows</h1><hr/>
                     <Row>
