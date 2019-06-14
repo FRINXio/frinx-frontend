@@ -30,11 +30,6 @@
     cursor: pointer;
 }
 
-.hilit {
-    color: rgb(255, 126, 87) !important;
-    font-weight: bold;
-}
-
 input[type='checkbox'] {
     -webkit-appearance:none;
     width: 17px;

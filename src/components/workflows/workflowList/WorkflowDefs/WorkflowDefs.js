@@ -186,6 +186,7 @@ class WorkflowDefs extends Component {
              <Row>
                  <Col>
                      <Typeahead
+                         id="typeaheadDefs"
                          selected={this.state.labels}
                          onChange={this.onLabelSearch.bind(this)} clearButton
                          labelKey="name" multiple options={this.getLabels()}
@@ -206,9 +207,9 @@ class WorkflowDefs extends Component {
                      </tr>
                      </thead>
                      <tbody>
-                     <Accordion activeKey={this.state.activeRow}>
-                         {this.repeat()}
-                     </Accordion>
+                         <Accordion activeKey={this.state.activeRow}>
+                             {this.repeat()}
+                         </Accordion>
                      </tbody>
                  </Table>
              </div>
