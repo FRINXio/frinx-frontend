@@ -1,5 +1,5 @@
 .navbarHeader {
-    height: 70px;
+    height: 50px;
     color: white;
     background: linear-gradient(-90deg, rgba(0, 149, 255, 0.91) 0%, rgb(0, 93, 167) 100%);
 }
@@ -9,7 +9,7 @@
 }
 
 .navbarHeader img {
-    height: 50px;
+    height: 30px;
 }
 
 .nav-linkHeader {
