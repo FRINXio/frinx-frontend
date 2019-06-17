@@ -26,7 +26,7 @@ class WorkflowExec extends Component {
     componentDidMount() {
         http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
             this.setState({
-                data: res.result.hits || []
+                data: res.result ? res.result.hits : []
             })
         })
     }
