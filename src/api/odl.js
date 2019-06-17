@@ -21,7 +21,7 @@ router.put('/mount/:topology/:node', async (req, res, next) => {
 
 router.delete('/unmount/:topology/:node', async (req, res, next) => {
     try {
-        const result = await http.delete(odlConfigURL + "/" + req.params.topology + "/node/" + req.params.node, authToken);
+        const result = await http.delete(odlConfigURL + "/" + req.params.topology + "/node/" + req.params.node, req.body, authToken);
         res.status(200).send(result);
     } catch (e) {
         next(e);

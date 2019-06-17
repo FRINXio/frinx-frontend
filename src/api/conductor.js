@@ -82,6 +82,15 @@ router.get('/executions', async (req, res, next) => {
     }
 });
 
+router.delete('/bulk/terminate', async (req, res, next) => {
+    try {
+        const result = await http.delete(baseURLWorkflow + "bulk/terminate", req.body, req.token);
+        res.status(200).send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
 
 
 module.exports = router;

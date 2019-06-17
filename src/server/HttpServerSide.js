@@ -23,15 +23,16 @@ const HttpClient = {
             });
         }),
 
-    delete: (path, token) =>
+    delete: (path, data, token) =>
         new Promise((resolve, reject) => {
 
-            const req = request.delete(path).accept('application/json');
+            const req = request.delete(path, data).accept('application/json');
             if (token) {
                 req.set('Authorization', token);
             }
             req.end((err, res) => {
                 if (err) {
+                    resolve(err);
                     reject(err);
                 } else {
                     if (res) {
