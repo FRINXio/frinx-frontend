@@ -19,7 +19,8 @@
     "react-highlight.js": "^1.0.7",
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
-    "superagent": "^5.0.2"
+    "superagent": "^5.0.2",
+    "unescape-js": "^1.1.1"
   },
   "scripts": {
     "start": "react-scripts start",
