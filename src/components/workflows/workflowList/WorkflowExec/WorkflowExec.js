@@ -134,6 +134,17 @@ class WorkflowExec extends Component {
         });
     }
 
+    selectAllWfs() {
+        let dataset = (this.state.keywords === "" && this.state.labels.length < 1) ? this.state.data : this.state.table;
+        let wfIds = [];
+        dataset.map(entry => {
+            if (!this.state.selectedWfs.includes(entry["workflowId"])){
+                wfIds.push(entry["workflowId"])
+            }
+        });
+        this.setState({selectedWfs: wfIds})
+    }
+
     timeoutStatus() {
         setTimeout(() => this.setState({opSuccess: null}), 1000)
     }
@@ -271,10 +282,12 @@ class WorkflowExec extends Component {
                                                    className="fas fa-times-circle fa-2x"/> : null}
                                         </h5>
                                         <p>
-                                            <Button size="sm" onClick={() => {
-                                                this.setState({selectedWfs: []})
-                                            }} variant="outline-secondary" style={{marginRight: "10px"}}>Uncheck
-                                                all</Button>
+                                            <Button size="sm" onClick={this.state.selectedWfs.length > 0 ?
+                                                () => {this.setState({selectedWfs: []})} :
+                                                        this.selectAllWfs.bind(this)}
+                                                    variant="outline-secondary" style={{marginRight: "10px"}}>
+                                                {this.state.selectedWfs.length > 0 ? "Uncheck all" : "Check all"}
+                                            </Button>
                                             Select workflows from table below
                                         </p>
                                     </Col>
