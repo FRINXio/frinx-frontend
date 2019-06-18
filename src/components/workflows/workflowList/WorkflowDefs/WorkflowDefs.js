@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {Accordion, Button, Card, Col, Form, Row, Table} from 'react-bootstrap'
 import {Typeahead} from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
@@ -16,7 +16,6 @@ class WorkflowDefs extends Component {
             labels: [],
             data: [],
             table: [],
-            highlight: [],
             activeRow: null,
             activeWf: null,
             defModal: false
@@ -68,14 +67,12 @@ class WorkflowDefs extends Component {
 
     search() {
         let toBeRendered = [];
-        let toBeHighlited = [];
         let query = this.state.keywords.toUpperCase();
         if (query !== "") {
             const rows = this.state.table.length > 0 ? this.state.table : this.state.data;
             for (let i = 0; i < rows.length; i++) {
                 if (rows[i]["name"] && rows[i]["name"].toString().toUpperCase().indexOf(query) !== -1) {
                     toBeRendered.push(rows[i]);
-                    toBeHighlited.push(i);
                 }
             }
         } else {
@@ -84,15 +81,7 @@ class WorkflowDefs extends Component {
         }
         this.setState({
             table: toBeRendered,
-            highlight: toBeHighlited,
         })
-    }
-
-    calculateHighlight(i) {
-        if (this.state.highlight[i] !== null) {
-            return 'hilit'
-        }
-        return ''
     }
 
     changeActiveRow(i) {
@@ -105,20 +94,17 @@ class WorkflowDefs extends Component {
 
     repeat() {
         let output = [];
-        let highlight;
         let dataset;
         if (this.state.keywords === "" && this.state.labels.length < 1) {
             dataset = this.state.data;
-            highlight = false
         } else {
             dataset = this.state.table;
-            highlight = true
         }
         for (let i = 0; i < dataset.length; i++) {
             output.push(
                 <div className="wfRow" key={i}>
-                    <Accordion.Toggle onClick={this.changeActiveRow.bind(this,i)} className="clickable" as={Card.Header} variant="link" eventKey={i}>
-                        <p id={`wf${i}`} className={highlight ? this.calculateHighlight(i)  : ''}>{dataset[i]["name"]+" / "+dataset[i]["version"]}</p>
+                    <Accordion.Toggle id={`wf${i}`} onClick={this.changeActiveRow.bind(this,i)} className="clickable" as={Card.Header} variant="link" eventKey={i}>
+                        {dataset[i]["name"]+" / "+dataset[i]["version"]}
                     </Accordion.Toggle>
                     <Accordion.Collapse eventKey={i}>
                         <Card.Body style={{padding: "0px"}}>
