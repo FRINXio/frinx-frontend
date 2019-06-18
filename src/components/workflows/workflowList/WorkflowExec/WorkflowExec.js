@@ -240,6 +240,7 @@ class WorkflowExec extends Component {
     }
 
     render(){
+        let wfsCount = this.repeat().length;
 
         return (
             <div>
@@ -249,7 +250,8 @@ class WorkflowExec extends Component {
                             onClick={() => this.setState({bulkProcess: this.state.bulkProcess === "0" ? null : "0"})}
                             className="clickable"
                             as={Card.Header} eventKey="0">
-                            Bulk Processing (click to expand)
+                            Bulk Processing (click to expand)&nbsp;&nbsp;<i className="fas fa-ellipsis-h"/>&nbsp;&nbsp;
+                            Displaying <b>{wfsCount}</b> workflows
                             <i style={{float: "right", marginTop: "5px"}}
                                className={this.state.bulkProcess ? "fas fa-chevron-up" : "fas fa-chevron-down"}/>
                         </Accordion.Toggle>
