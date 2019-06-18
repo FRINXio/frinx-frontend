@@ -3,7 +3,6 @@ import {Accordion, Button, Card, Col, Form, Row, Spinner, Table} from 'react-boo
 import {Typeahead} from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './WorkflowExec.css'
-const request = require('superagent');
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
 class WorkflowExec extends Component {
@@ -208,10 +207,11 @@ class WorkflowExec extends Component {
         let deletedWfs = [];
         this.setState({processing: true});
         this.state.selectedWfs.map(wf => {
-            http.delete('/api/conductor/workflow/' + wf).then(res => {
+            http.delete('/api/conductor/workflow/' + wf).then(() => {
                 deletedWfs.push(wf);
                 console.log(deletedWfs.length);
-            })
+            });
+            return null;
         });
         this.checkDeleted(deletedWfs);
     }
@@ -312,7 +312,7 @@ class WorkflowExec extends Component {
                         </Form.Group>
                     </Col>
                 </Row>
-                <div className="scrollWrapper">
+                <div className="execTableWrapper">
                     <Table ref={this.table} striped hover size="sm">
                         <thead>
                         <tr>
@@ -323,7 +323,7 @@ class WorkflowExec extends Component {
                             <th>End Time</th>
                         </tr>
                         </thead>
-                        <tbody className="exectable">
+                        <tbody className="execTableRows">
                             {this.repeat()}
                         </tbody>
                     </Table>
