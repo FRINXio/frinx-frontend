@@ -3,6 +3,8 @@ import {Col, Container, Form, FormGroup, Row, Table} from 'react-bootstrap'
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {faSync} from '@fortawesome/free-solid-svg-icons'
 import './TaskList.css'
+import PageSelect from "../../common/PageSelect";
+import PageCount from "../../common/PageCount";
 const http = require('../../../server/HttpServerSide').HttpClient;
 
 class TaskList extends Component {
@@ -29,7 +31,8 @@ class TaskList extends Component {
     componentDidMount() {
         http.get('/api/conductor/metadata/taskdef').then(res => {
             this.setState({
-                data: res.result || []
+                data: res.result || [],
+                pagesCount: ~~(res.result.length / this.state.defaultPages) + 1
             })
         })
     }
@@ -106,44 +109,18 @@ class TaskList extends Component {
         return output
     }
 
-    setPages(){
-        let output = [];
-        let viewedPage = this.state.viewedPage;
-        let pagesCount = this.state.pagesCount;
-        output.push(
-            <i key={`page-left`} className={viewedPage !== 1 && pagesCount !== 0 ? "pages fas fa-angle-left" : " fas fa-angle-left"}
-               onClick={(e) => {
-                   if(viewedPage !== 1 && pagesCount !== 0)
-                       this.setState({
-                           viewedPage : viewedPage - 1
-                       })
-               }}
-            />
-        );
-        for(let i = 1; i <= pagesCount; i++){
-            if( i >= viewedPage - 2 && i <= viewedPage + 2) {
-                output.push(
-                    <i key={`page-${i}`} className={viewedPage === i ? "" : "pages"}
-                       onClick={(e) =>
-                           this.setState({
-                               viewedPage: i
-                           })
-                       }
-                    > {i} </i>
-                )
-            }
-        }
-        output.push(
-            <i key={`page-right`} className={viewedPage !== pagesCount && pagesCount !== 0 ? "pages fas fa-angle-right" : " fas fa-angle-right"}
-               onClick={(e) => {
-                   if(viewedPage !== pagesCount && pagesCount !== 0)
-                       this.setState({
-                           viewedPage : viewedPage + 1
-                       })
-               }}
-            />
-        );
-        return output;
+    setCountPages(defaultPages, pagesCount){
+        this.setState({
+            defaultPages : defaultPages,
+            pagesCount: pagesCount,
+            viewedPage: 1
+        })
+    }
+
+    setViewPage(page){
+        this.setState({
+            viewedPage: page
+        })
     }
 
     render(){
@@ -174,41 +151,16 @@ class TaskList extends Component {
                         </Table>
                     </div>
                 </Container>
-                <Container>
+                <Container style={{marginTop: "5px"}}>
                     <Row>
-                        <Col sm={2} style={{textAlign: "left"}}>
-                            <i className={this.state.defaultPages === 20 ? "": "pages"}
-                               onClick={(e) => {
-                                   let data = this.state.keywords === "" ? this.state.data : this.state.table;
-                                   this.setState({
-                                       defaultPages : 20,
-                                       pagesCount: data.length === 0 ? 0 : ~~(this.state.data.length / 20) + 1,
-                                       viewedPage: 1
-
-                                   })}}
-                            >20 </i>
-                            <i className={this.state.defaultPages === 50 ? "": "pages"}
-                               onClick={(e) => {
-                                   let data = this.state.keywords === "" ? this.state.data : this.state.table;
-                                   this.setState({
-                                       defaultPages : 50,
-                                       pagesCount: data.length === 0 ? 0 : ~~(this.state.data.length / 50) + 1,
-                                       viewedPage: 1
-                                   })}}
-                            >50 </i>
-                            <i className={this.state.defaultPages === 100 ? "": "pages"}
-                               onClick={(e) => {
-                                   let data = this.state.keywords === "" ? this.state.data : this.state.table;
-                                   this.setState({
-                                       defaultPages : 100,
-                                       pagesCount: data.length === 0 ? 0 : ~~(this.state.data.length / 100) + 1,
-                                       viewedPage: 1 })}}
-                            >100 </i>
+                        <Col sm={2}>
+                            <PageCount data={this.state.keywords === "" ? this.state.data : this.state.table}
+                                       defaultPages={this.state.defaultPages}
+                                       handler={this.setCountPages.bind(this)}/>
                         </Col>
-                        <Col sm={8}>
-                        </Col>
-                        <Col sm={2} style={{textAlign: "right"}}>
-                            {this.setPages()}
+                        <Col sm={8}/>
+                        <Col sm={2}>
+                            <PageSelect viewedPage={this.state.viewedPage} count={this.state.pagesCount} handler={this.setViewPage.bind(this)}/>
                         </Col>
                     </Row>
                 </Container>
