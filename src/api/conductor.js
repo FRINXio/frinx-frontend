@@ -91,6 +91,42 @@ router.delete('/bulk/terminate', async (req, res, next) => {
     }
 });
 
+router.put('/bulk/pause', async (req, res, next) => {
+    try {
+        const result = await http.put(baseURLWorkflow + "bulk/pause", req.body, req.token);
+        res.status(200).send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.put('/bulk/resume', async (req, res, next) => {
+    try {
+        const result = await http.put(baseURLWorkflow + "bulk/resume", req.body, req.token);
+        res.status(200).send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.post('/bulk/retry', async (req, res, next) => {
+    try {
+        const result = await http.post(baseURLWorkflow + "bulk/retry", req.body, req.token);
+        res.status(200).send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.post('/bulk/restart', async (req, res, next) => {
+    try {
+        const result = await http.post(baseURLWorkflow + "bulk/restart", req.body, req.token);
+        res.status(200).send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
 
 
 module.exports = router;

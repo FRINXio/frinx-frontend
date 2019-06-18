@@ -140,20 +140,92 @@ class WorkflowExec extends Component {
 
     terminateWfs() {
         this.setState({processing: true});
-            http.delete('/api/conductor/bulk/terminate', this.state.selectedWfs).then(res => {
-                this.setState({
-                    processing: false,
-                    selectedWfs: [],
-                    opSuccess: res.body.status === 200
-                });
-                http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
-                    this.setState({
-                        data: res.result ? res.result.hits : [],
-                        table: res.result ? res.result.hits : []
-                    }, () => this.search());
-                });
-                this.timeoutStatus();
+        http.delete('/api/conductor/bulk/terminate', this.state.selectedWfs).then(res => {
+            this.setState({
+                processing: false,
+                selectedWfs: [],
+                opSuccess: res.body.status === 200
             });
+            http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
+                this.setState({
+                    data: res.result ? res.result.hits : [],
+                    table: res.result ? res.result.hits : []
+                }, () => this.search());
+            });
+            this.timeoutStatus();
+        });
+    }
+
+    pauseWfs() {
+        this.setState({processing: true});
+        http.put('/api/conductor/bulk/pause', this.state.selectedWfs).then(res => {
+            this.setState({
+                processing: false,
+                selectedWfs: [],
+                opSuccess: res.body.status === 200
+            });
+            http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
+                this.setState({
+                    data: res.result ? res.result.hits : [],
+                    table: res.result ? res.result.hits : []
+                }, () => this.search());
+            });
+            this.timeoutStatus();
+        })
+    }
+
+    resumeWfs() {
+        this.setState({processing: true});
+        http.put('/api/conductor/bulk/resume', this.state.selectedWfs).then(res => {
+            this.setState({
+                processing: false,
+                selectedWfs: [],
+                opSuccess: res.body.status === 200
+            });
+            http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
+                this.setState({
+                    data: res.result ? res.result.hits : [],
+                    table: res.result ? res.result.hits : []
+                }, () => this.search());
+            });
+            this.timeoutStatus();
+        })
+    }
+
+    retryWfs() {
+        this.setState({processing: true});
+        http.post('/api/conductor/bulk/retry', this.state.selectedWfs).then(res => {
+            this.setState({
+                processing: false,
+                selectedWfs: [],
+                opSuccess: res.body.status === 200
+            });
+            http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
+                this.setState({
+                    data: res.result ? res.result.hits : [],
+                    table: res.result ? res.result.hits : []
+                }, () => this.search());
+            });
+            this.timeoutStatus();
+        })
+    }
+
+    restartWfs() {
+        this.setState({processing: true});
+        http.post('/api/conductor/bulk/restart', this.state.selectedWfs).then(res => {
+            this.setState({
+                processing: false,
+                selectedWfs: [],
+                opSuccess: res.body.status === 200
+            });
+            http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
+                this.setState({
+                    data: res.result ? res.result.hits : [],
+                    table: res.result ? res.result.hits : []
+                }, () => this.search());
+            });
+            this.timeoutStatus();
+        })
     }
 
     render(){
@@ -194,11 +266,16 @@ class WorkflowExec extends Component {
                                         </p>
                                     </Col>
                                     <Col>
-                                        <Button variant="outline-primary">Pause</Button>
-                                        <Button variant="outline-primary" style={{marginLeft: "5px"}}>Resume</Button>
-                                        <Button variant="outline-primary" style={{marginLeft: "5px"}}>Retry</Button>
-                                        <Button variant="outline-primary" style={{marginLeft: "5px"}}>Restart</Button>
-                                        <Button variant="outline-danger" onClick={this.terminateWfs.bind(this)} style={{marginLeft: "5px"}}>Terminate</Button>
+                                        <Button variant="outline-primary"
+                                                onClick={this.pauseWfs.bind(this)}>Pause</Button>
+                                        <Button variant="outline-primary" onClick={this.resumeWfs.bind(this)}
+                                                style={{marginLeft: "5px"}}>Resume</Button>
+                                        <Button variant="outline-primary" onClick={this.retryWfs.bind(this)}
+                                                style={{marginLeft: "5px"}}>Retry</Button>
+                                        <Button variant="outline-primary" onClick={this.restartWfs.bind(this)}
+                                                style={{marginLeft: "5px"}}>Restart</Button>
+                                        <Button variant="outline-danger" onClick={this.terminateWfs.bind(this)}
+                                                style={{marginLeft: "5px"}}>Terminate</Button>
                                         <Button variant="outline-secondary" style={{marginLeft: "5px"}}>Delete</Button>
                                     </Col>
                                 </Row>
