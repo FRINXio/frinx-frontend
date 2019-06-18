@@ -114,10 +114,10 @@ class WorkflowDefs extends Component {
                                 <Button variant="outline-light noshadow">Diagram</Button>
                             </div>
                             <div className="accordBody">
+                                <b>{dataset[i]["description"] ? "Description" : null}</b><br/>
+                                <p>{JSON.stringify(dataset[i]["description"]+1).split("-")[0].substr(1)}</p>
                                 <b>Tasks</b><br/>
                                 <p>{JSON.stringify(dataset[i]["tasks"].map(task => {return task.name}))}</p>
-                                <b>{dataset[i]["inputParameters"] ? "Input Parameters" : null}</b><br/>
-                                <p>{JSON.stringify(dataset[i]["inputParameters"])}</p>
                             </div>
                         </Card.Body>
                     </Accordion.Collapse>
