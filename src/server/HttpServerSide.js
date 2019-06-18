@@ -26,7 +26,7 @@ const HttpClient = {
     delete: (path, data, token) =>
         new Promise((resolve, reject) => {
 
-            const req = request.delete(path, data).accept('application/json');
+            const req = request.delete(path, data).accept('application/json').query('archiveWorkflow=false');
             if (token) {
                 req.set('Authorization', token);
             }

@@ -127,6 +127,15 @@ router.post('/bulk/restart', async (req, res, next) => {
     }
 });
 
+router.delete('/workflow/:workflowId', async (req, res, next) => {
+    try {
+        const result = await http.delete(baseURLWorkflow + req.params.workflowId + '/remove', req.body, req.token);
+        res.status(200).send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
 
 
 module.exports = router;

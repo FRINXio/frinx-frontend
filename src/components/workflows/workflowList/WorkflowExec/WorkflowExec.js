@@ -3,6 +3,7 @@ import {Accordion, Button, Card, Col, Form, Row, Spinner, Table} from 'react-boo
 import {Typeahead} from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './WorkflowExec.css'
+const request = require('superagent');
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
 class WorkflowExec extends Component {
@@ -146,12 +147,7 @@ class WorkflowExec extends Component {
                 selectedWfs: [],
                 opSuccess: res.body.status === 200
             });
-            http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
-                this.setState({
-                    data: res.result ? res.result.hits : [],
-                    table: res.result ? res.result.hits : []
-                }, () => this.search());
-            });
+            this.refreshTable();
             this.timeoutStatus();
         });
     }
@@ -164,12 +160,7 @@ class WorkflowExec extends Component {
                 selectedWfs: [],
                 opSuccess: res.body.status === 200
             });
-            http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
-                this.setState({
-                    data: res.result ? res.result.hits : [],
-                    table: res.result ? res.result.hits : []
-                }, () => this.search());
-            });
+            this.refreshTable();
             this.timeoutStatus();
         })
     }
@@ -182,12 +173,7 @@ class WorkflowExec extends Component {
                 selectedWfs: [],
                 opSuccess: res.body.status === 200
             });
-            http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
-                this.setState({
-                    data: res.result ? res.result.hits : [],
-                    table: res.result ? res.result.hits : []
-                }, () => this.search());
-            });
+            this.refreshTable();
             this.timeoutStatus();
         })
     }
@@ -200,12 +186,7 @@ class WorkflowExec extends Component {
                 selectedWfs: [],
                 opSuccess: res.body.status === 200
             });
-            http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
-                this.setState({
-                    data: res.result ? res.result.hits : [],
-                    table: res.result ? res.result.hits : []
-                }, () => this.search());
-            });
+            this.refreshTable();
             this.timeoutStatus();
         })
     }
@@ -218,14 +199,44 @@ class WorkflowExec extends Component {
                 selectedWfs: [],
                 opSuccess: res.body.status === 200
             });
-            http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
-                this.setState({
-                    data: res.result ? res.result.hits : [],
-                    table: res.result ? res.result.hits : []
-                }, () => this.search());
-            });
+            this.refreshTable();
             this.timeoutStatus();
         })
+    }
+
+    deleteWfs() {
+        let deletedWfs = [];
+        this.setState({processing: true});
+        this.state.selectedWfs.map(wf => {
+            http.delete('/api/conductor/workflow/' + wf).then(res => {
+                deletedWfs.push(wf);
+                console.log(deletedWfs.length);
+            })
+        });
+        this.checkDeleted(deletedWfs);
+    }
+
+    checkDeleted(deletedWfs) {
+        if (deletedWfs.length === this.state.selectedWfs.length) {
+            this.setState({
+                selectedWfs: [],
+                processing: false,
+                opSuccess: true
+            });
+            this.refreshTable();
+            this.timeoutStatus();
+        } else {
+            setTimeout(this.checkDeleted.bind(this,deletedWfs), 200);
+        }
+    }
+
+    refreshTable() {
+        http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
+            this.setState({
+                data: res.result ? res.result.hits : [],
+                table: res.result ? res.result.hits : []
+            }, () => this.search());
+        });
     }
 
     render(){
@@ -276,7 +287,8 @@ class WorkflowExec extends Component {
                                                 style={{marginLeft: "5px"}}>Restart</Button>
                                         <Button variant="outline-danger" onClick={this.terminateWfs.bind(this)}
                                                 style={{marginLeft: "5px"}}>Terminate</Button>
-                                        <Button variant="outline-secondary" style={{marginLeft: "5px"}}>Delete</Button>
+                                        <Button variant="outline-secondary" onClick={this.deleteWfs.bind(this)}
+                                                style={{marginLeft: "5px"}}>Delete</Button>
                                     </Col>
                                 </Row>
                             </Card.Body>
