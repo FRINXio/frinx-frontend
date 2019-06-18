@@ -30,7 +30,7 @@ class WorkflowExec extends Component {
     componentDidMount() {
         http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
             this.setState({
-                data: res.result ? res.result.hits : []
+                data: res.result ? (res.result.hits ? res.result.hits : []) : []
             })
         })
     }
@@ -93,7 +93,7 @@ class WorkflowExec extends Component {
     repeat() {
         let output = [];
         let highlight;
-        let dataset;
+        let dataset = [];
         if (this.state.keywords === "" && this.state.labels.length < 1) {
             dataset = this.state.data;
             highlight = false
@@ -220,7 +220,6 @@ class WorkflowExec extends Component {
         this.state.selectedWfs.map(wf => {
             http.delete('/api/conductor/workflow/' + wf).then(() => {
                 deletedWfs.push(wf);
-                console.log(deletedWfs.length);
             });
             return null;
         });
@@ -244,8 +243,8 @@ class WorkflowExec extends Component {
     refreshTable() {
         http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
             this.setState({
-                data: res.result ? res.result.hits : [],
-                table: res.result ? res.result.hits : []
+                data: res.result ? (res.result.hits ? res.result.hits : []) : [],
+                table: res.result ? (res.result.hits ? res.result.hits : []) : [],
             }, () => this.search());
         });
     }
