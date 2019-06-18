@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import unescapeJs from "unescape-js";
+import Button from "react-bootstrap/Button";
 
 class UnescapeButton extends Component {
     constructor(props) {
@@ -26,9 +27,9 @@ class UnescapeButton extends Component {
 
     render() {
         return(
-            <button onClick={(e) => this.doUnescape()} className={"btn btn-default  " + (this.props.medium ? 'btn-unescape-med' : "btn-xs")}>
+            <Button onClick={(e) => this.doUnescape()}>
                 {this.state.isUnescaped ? 'Escape' : 'Unescape'}
-            </button>
+            </Button>
         )
     }
 }

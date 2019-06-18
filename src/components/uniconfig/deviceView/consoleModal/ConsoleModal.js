@@ -54,7 +54,6 @@ class ConsoleModal extends Component {
                             {this.parseDryRun()}
                         </ListGroup>
                         : <code style={{fontSize: "20px"}}>
-                            <UnescapeButton target='content' />
                             <pre id='content' style={{marginTop: "20px"}}>
                                 <Highlight language="json">
                                     {JSON.stringify(JSON.parse(content), null, 2)}
@@ -64,6 +63,7 @@ class ConsoleModal extends Component {
                     }
                 </Modal.Body>
                 <Modal.Footer>
+                    <UnescapeButton target='content'/>
                     <Button variant="secondary" onClick={this.handleClose}>
                         Close
                     </Button>
