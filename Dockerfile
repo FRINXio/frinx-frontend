@@ -2,6 +2,7 @@
 FROM node:8.9-alpine
 
 ARG ODL
+ARG WF_SERVER
 
 # Create a work directory and copy dependency files.
 COPY ["package.json", "package-lock.json*", "/tmp/"]
@@ -14,6 +15,8 @@ WORKDIR /app
 COPY . /app
 
 RUN sed -i 's,.*ODL_HOST=.*,ODL_HOST='"http://""${ODL}"',' ./.env
+RUN sed -i 's,.*WF_SERVER=.*,WF_SERVER='"http://""${WF_SERVER}/api/"',' ./.env
 
-# Expose PORT 3000 on virtual machine
 EXPOSE 3000
+
+CMD ["npm","run","dev"]

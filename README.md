@@ -3,15 +3,14 @@
 ## Installation 
 
 #### Requirements
-* [Docker](https://www.docker.com/)
-* [Docker Compose](https://github.com/docker/compose)
+* [Docker](https://www.docker.com/)   
 
-#### `docker-compose build --build-arg "ODL=<ip>:8181" uniconfig-ui` <br>
+In the project directory, run: 
+#### `docker build --build-arg "ODL=<ip>:8181" --build-arg "WF_SERVER=<ip>:8080" -t uniconfig-ui .` <br>
 Creates docker container with installation of UniConfig-UI. <br>
 
 ## Startup <br>
 In the project directory, run: 
 
-#### `docker-compose up uniconfig-ui` <br>
-Starts the UniConfig-UI container using ODL host defined at installation.
-
+#### `docker run -d -p 3000:3000 uniconfig-ui` <br>
+Starts the UniConfig-UI container using ODL/WF_SERVER host defined at installation.
