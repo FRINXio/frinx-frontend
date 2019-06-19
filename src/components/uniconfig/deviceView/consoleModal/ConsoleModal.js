@@ -63,7 +63,7 @@ class ConsoleModal extends Component {
                     }
                 </Modal.Body>
                 <Modal.Footer>
-                    <UnescapeButton target='content'/>
+                    {this.state.operation === "Calculated Diff" ? <UnescapeButton target='content'/> : ""}
                     <Button variant="secondary" onClick={this.handleClose}>
                         Close
                     </Button>
