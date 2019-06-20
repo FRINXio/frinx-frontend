@@ -136,6 +136,22 @@ router.delete('/workflow/:workflowId', async (req, res, next) => {
     }
 });
 
+router.get('/id/:workflowId', async (req, res, next) => {
+    try {
+        const result = await http.get(baseURLWorkflow + req.params.workflowId + '?includeTasks=true', req.token);
+        let meta = result.workflowDefinition;
+        if (!meta) {
+            meta = await http.get(
+                baseURLMeta + 'workflow/' + result.workflowType + '?version=' + result.version,
+                req.token
+            );
+        }
+        res.status(200).send({ result, meta });
+    } catch (err) {
+        next(err);
+    }
+});
+
 
 
 module.exports = router;

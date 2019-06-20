@@ -3,6 +3,8 @@ import {Accordion, Button, Card, Col, Form, Row, Spinner, Table} from 'react-boo
 import {Typeahead} from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './WorkflowExec.css'
+import InputModal from "../../inputModal/InputModal";
+import DetailsModal from "./DetailsModal/DetailsModal";
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
 class WorkflowExec extends Component {
@@ -17,7 +19,9 @@ class WorkflowExec extends Component {
             bulkProcess: null,
             selectedWfs: [],
             processing: false,
-            opSuccess: null
+            opSuccess: null,
+            detailsModal: false,
+            wfId: {}
         };
         this.table = React.createRef();
         this.onEditSearch = this.onEditSearch.bind(this);
@@ -103,11 +107,13 @@ class WorkflowExec extends Component {
         }
         for (let i = 0; i < dataset.length; i++) {
             output.push(
-                <tr key={`row-${i}`} id={`row-${i}`} className="clickable">
+                <tr key={`row-${i}`} id={`row-${i}`}>
                     <td><Form.Check checked={this.state.selectedWfs.includes(dataset[i]["workflowId"])}
                                     onChange={(e) => this.selectWf(e)} style={{marginLeft: "20px"}} id={`chb-${i}`}/>
                     </td>
-                    <td className={highlight ? this.calculateHighlight(i) : ''}>{dataset[i]["workflowType"]} / {dataset[i]["version"]}</td>
+                    <td onClick={this.showDetailsModal.bind(this,i)}
+                        className={highlight ? this.calculateHighlight(i) + ' clickable' : 'clickable'}>
+                        {dataset[i]["workflowType"]} / {dataset[i]["version"]}</td>
                     <td className={highlight ? this.calculateHighlight(i) : ''}>{dataset[i]["status"]}</td>
                     <td className={highlight ? this.calculateHighlight(i) : ''}>{dataset[i]["startTime"]}</td>
                     <td className={highlight ? this.calculateHighlight(i) : ''}>{dataset[i]["endTime"]}</td>
@@ -249,11 +255,27 @@ class WorkflowExec extends Component {
         });
     }
 
+    showDetailsModal(i) {
+        let dataset = (this.state.keywords === "" && this.state.labels.length < 1) ? this.state.data : this.state.table;
+        let wfId = i !== undefined ? dataset[i]["workflowId"] : null;
+        console.log(wfId)
+
+        this.setState({
+            detailsModal: !this.state.detailsModal,
+            wfId: wfId
+        })
+    }
+
     render(){
         let wfsCount = this.repeat().length;
 
+        let detailsModal = this.state.detailsModal ?
+            <DetailsModal wfId={this.state.wfId} modalHandler={this.showDetailsModal.bind(this)}
+                        show={this.state.detailsModal}/> : null;
+
         return (
             <div>
+                {detailsModal}
                 <Accordion activeKey={this.state.bulkProcess} style={{marginBottom: "20px"}}>
                     <Card>
                         <Accordion.Toggle
