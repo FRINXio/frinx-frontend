@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Modal, Button, ListGroup } from "react-bootstrap";
 import Highlight from "react-highlight.js";
+import UnescapeButton from "./UnescapeButton";
 
 class ConsoleModal extends Component {
     constructor(props, context) {
@@ -41,7 +42,6 @@ class ConsoleModal extends Component {
     render() {
 
         let content = this.state.content || "{}";
-
         return (
 
             <Modal size="lg" show={this.state.show} onHide={this.handleClose} >
@@ -54,7 +54,7 @@ class ConsoleModal extends Component {
                             {this.parseDryRun()}
                         </ListGroup>
                         : <code style={{fontSize: "20px"}}>
-                            <pre>
+                            <pre id='content' style={{marginTop: "20px"}}>
                                 <Highlight language="json">
                                     {JSON.stringify(JSON.parse(content), null, 2)}
                                 </Highlight>
@@ -63,6 +63,7 @@ class ConsoleModal extends Component {
                     }
                 </Modal.Body>
                 <Modal.Footer>
+                    {this.state.operation === "Calculated Diff" ? <UnescapeButton target='content'/> : ""}
                     <Button variant="secondary" onClick={this.handleClose}>
                         Close
                     </Button>
