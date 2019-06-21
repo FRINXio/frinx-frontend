@@ -198,20 +198,22 @@ class DetailsModal extends Component {
         );
 
         const taskTable = () => (
-            <Table ref={this.table} striped bordered hover>
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Task Type</th>
-                    <th>Task Ref. Name</th>
-                    <th>Start/End Time</th>
-                    <th>Status</th>
-                </tr>
-                </thead>
-                <tbody>
-                {this.taskTableData()}
-                </tbody>
-            </Table>
+            <div className="heightWrapper">
+                <Table ref={this.table} striped bordered hover>
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Task Type</th>
+                        <th>Task Ref. Name</th>
+                        <th>Start/End Time</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {this.taskTableData()}
+                    </tbody>
+                </Table>
+            </div>
         );
 
         const inputOutput = () => (
@@ -221,7 +223,7 @@ class DetailsModal extends Component {
                                                      className="clp far fa-clipboard clickable"
                                                      data-clipboard-target="#wfinput"/></h4>
                     <code>
-                        <pre id="wfinput" className="codeWrapper">
+                        <pre id="wfinput" className="heightWrapper">
                             <Highlight language="json">
                                 {JSON.stringify(this.state.result.input, null, 2)}
                             </Highlight>
@@ -233,7 +235,7 @@ class DetailsModal extends Component {
                                                       className="clp far fa-clipboard clickable"
                                                       data-clipboard-target="#wfoutput"/></h4>
                     <code>
-                        <pre id="wfoutput" className="codeWrapper">
+                        <pre id="wfoutput" className="heightWrapper">
                             <Highlight language="json">
                                 {JSON.stringify(this.state.result.output, null, 2)}
                             </Highlight>
@@ -249,7 +251,7 @@ class DetailsModal extends Component {
                                                 className="clp far fa-clipboard clickable"
                                                 data-clipboard-target="#json"/></h4>
                 <code>
-                    <pre id="json" className="codeWrapper">
+                    <pre id="json" className="heightWrapper">
                         <Highlight language="json">
                             {JSON.stringify(this.state.result, null, 2)}
                         </Highlight>
@@ -309,17 +311,17 @@ class DetailsModal extends Component {
                         </Accordion.Collapse>
                     </Accordion>
 
-                    <Tabs onSelect={(e) => this.setState({activeTab: e})} style={{marginBottom: "20px"}} id="detailTabs">
-                        <Tab eventKey="taskDetails" title="Task Details">
+                    <Tabs className="heightWrapper" onSelect={(e) => this.setState({activeTab: e})} style={{marginBottom: "20px"}} id="detailTabs">
+                        <Tab mountOnEnter eventKey="taskDetails" title="Task Details">
                             {taskTable()}
                         </Tab>
-                        <Tab eventKey="inputOutput" title="Input/Output">
+                        <Tab mountOnEnter eventKey="inputOutput" title="Input/Output">
                             {inputOutput()}
                         </Tab>
-                        <Tab eventKey="json" title="JSON">
+                        <Tab mountOnEnter eventKey="json" title="JSON">
                             {wfJson()}
                         </Tab>
-                        <Tab eventKey="editRerun" title="Edit & Rerun">
+                        <Tab mountOnEnter eventKey="editRerun" title="Edit & Rerun">
                             <h4>Edit & Rerun Workflow&nbsp;&nbsp;<i className="clp far fa-play-circle"/></h4>
                             <div style={{padding: "20px"}}>
                                 <Form>
