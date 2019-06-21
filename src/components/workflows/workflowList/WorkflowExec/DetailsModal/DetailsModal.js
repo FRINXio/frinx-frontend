@@ -118,6 +118,21 @@ class DetailsModal extends Component {
             </Row>
         );
 
+        const wfJson = () => (
+            <div>
+                <h4>Workflow JSON&nbsp;&nbsp;<i title="copy to clipboard"
+                                                className="clp far fa-clipboard clickable"
+                                                data-clipboard-target="#json"/></h4>
+                <code>
+                    <pre id="json" className="codeWrapper">
+                        <Highlight language="json">
+                            {JSON.stringify(this.state.result, null, 2)}
+                        </Highlight>
+                     </pre>
+                </code>
+            </div>
+        );
+
         return (
             <Modal dialogClassName="modalWider" show={this.state.show} onHide={this.handleClose}>
                 <Modal.Header>
@@ -183,8 +198,8 @@ class DetailsModal extends Component {
                         <Tab eventKey="inputOutput" title="Input/Output">
                             {inputOutput()}
                         </Tab>
-                        <Tab eventKey="def" disabled title="Definition">
-
+                        <Tab eventKey="json" title="JSON">
+                            {wfJson()}
                         </Tab>
                         <Tab eventKey="editRerun" disabled title="Edit & Rerun">
 
