@@ -14,3 +14,5 @@ In the project directory, run:
 
 #### `docker run -d -p 3000:3000 uniconfig-ui` <br>
 Starts the UniConfig-UI container using ODL/WF_SERVER host defined at installation.
+
+Open web browser with URL `http://localhost:3000/`
