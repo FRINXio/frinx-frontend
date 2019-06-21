@@ -2,3 +2,8 @@
     width: 60%;
     max-width: 60%;
 }
+
+.codeWrapper {
+    max-height: 300px;
+    overflow: auto;
+}

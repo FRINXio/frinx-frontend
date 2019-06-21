@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import {Modal, Button, Form, Row, Col, Tabs, Tab, Table, Accordion, Card, ButtonGroup} from "react-bootstrap";
+import {Modal, Button, Row, Col, Tabs, Tab, Table, Accordion, Card, ButtonGroup} from "react-bootstrap";
 import moment from 'moment';
+import Clipboard from 'clipboard';
+import Highlight from "react-highlight.js";
 import './DetailsModal.css'
 const http = require('../../../../../server/HttpServerSide').HttpClient;
 
+new Clipboard('.clp');
 
 class DetailsModal extends Component {
     constructor(props, context) {
@@ -68,6 +71,53 @@ class DetailsModal extends Component {
     }
 
     render() {
+
+        const taskTable = () => (
+            <Table ref={this.table} striped bordered hover>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Task Type</th>
+                    <th>Task Ref. Name</th>
+                    <th>Start/End Time</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {this.taskTableData()}
+                </tbody>
+            </Table>
+        );
+
+        const inputOutput = () => (
+            <Row>
+                <Col>
+                    <h4>Workflow Input&nbsp;&nbsp;<i title="copy to clipboard"
+                                                     className="clp far fa-clipboard clickable"
+                                                     data-clipboard-target="#wfinput"/></h4>
+                    <code>
+                        <pre id="wfinput" className="codeWrapper">
+                            <Highlight language="json">
+                                {JSON.stringify(this.state.result.input, null, 2)}
+                            </Highlight>
+                        </pre>
+                    </code>
+                </Col>
+                <Col>
+                    <h4>Workflow Output&nbsp;&nbsp;<i title="copy to clipboard"
+                                                      className="clp far fa-clipboard clickable"
+                                                      data-clipboard-target="#wfoutput"/></h4>
+                    <code>
+                        <pre id="wfoutput" className="codeWrapper">
+                            <Highlight language="json">
+                                {JSON.stringify(this.state.result.output, null, 2)}
+                            </Highlight>
+                        </pre>
+                    </code>
+                </Col>
+            </Row>
+        );
+
         return (
             <Modal dialogClassName="modalWider" show={this.state.show} onHide={this.handleClose}>
                 <Modal.Header>
@@ -128,23 +178,10 @@ class DetailsModal extends Component {
 
                     <Tabs style={{marginBottom: "20px"}} id="detailTabs">
                         <Tab eventKey="taskDetails" title="Task Details">
-                            <Table ref={this.table} striped bordered hover>
-                                <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Task Type</th>
-                                    <th>Task Ref. Name</th>
-                                    <th>Start/End Time</th>
-                                    <th>Status</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {this.taskTableData()}
-                                </tbody>
-                            </Table>
+                            {taskTable()}
                         </Tab>
-                        <Tab eventKey="inputOutput" disabled title="Input/Output">
-
+                        <Tab eventKey="inputOutput" title="Input/Output">
+                            {inputOutput()}
                         </Tab>
                         <Tab eventKey="def" disabled title="Definition">
 
