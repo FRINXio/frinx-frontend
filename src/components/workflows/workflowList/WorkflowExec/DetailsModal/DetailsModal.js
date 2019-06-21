@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Modal, Button, Row, Col, Tabs, Tab, Table, Accordion, Card, ButtonGroup} from "react-bootstrap";
+import {Modal, Button, Row, Col, Tabs, Tab, Table, Accordion, Card, ButtonGroup, Form} from "react-bootstrap";
 import moment from 'moment';
 import Clipboard from 'clipboard';
 import Highlight from "react-highlight.js";
@@ -17,7 +17,10 @@ class DetailsModal extends Component {
         this.state = {
             show: true,
             meta: {},
-            result: {}
+            result: {},
+            input: {},
+            activeTab: null,
+            status: "Execute"
         };
     }
 
@@ -26,14 +29,35 @@ class DetailsModal extends Component {
             console.log(res);
             this.setState({
                 meta: res.meta,
-                result: res.result
+                result: res.result,
+                input: res.result.input || {}
             })
         })
     }
 
     handleClose() {
+        this.props.refreshTable();
         this.setState({ show: false });
         this.props.modalHandler()
+    }
+
+    executeWorkflow() {
+        this.setState({ status: "Executing..."});
+        http.post('/api/conductor/workflow/' + this.state.meta.name, JSON.stringify(this.state.input)).then(res => {
+            console.log(res);
+            this.setState({
+                status: res.statusText
+            });
+            setTimeout(() => this.setState({status: "Execute"}), 1000);
+        })
+    }
+
+    handleInput(e,i) {
+        let wfForm = this.state.input;
+        wfForm[Object.keys(wfForm)[i]] = e.target.value;
+        this.setState({
+            input: wfForm
+        })
     }
 
     formatDate(dt) {
@@ -57,7 +81,6 @@ class DetailsModal extends Component {
         let dataset = this.state.result.tasks || [];
 
         return dataset.map((row,i) => {
-            console.log(row["taskReferenceName"]);
             return (
             <tr key={`row-${i}`} id={`row-${i}`} className="clickable">
                 <td>{row["seq"]}</td>
@@ -71,6 +94,44 @@ class DetailsModal extends Component {
     }
 
     render() {
+
+        const headerInfo = () => (
+            <div className="headerInfo">
+                <Row>
+                    <Col md="auto">
+                        <div>
+                            <b>Total Time (sec)</b><br/>
+                            {this.execTime(this.state.result.endTime, this.state.result.startTime)}
+                        </div>
+                    </Col>
+                    <Col md="auto">
+                        <div>
+                            <b>Start Time</b><br/>
+                            {this.formatDate(this.state.result.startTime)}
+                        </div>
+                    </Col>
+                    <Col md="auto">
+                        <div>
+                            <b>End Time</b><br/>
+                            {this.formatDate(this.state.result.endTime)}
+                        </div>
+                    </Col>
+                    <Col md="auto">
+                        <div>
+                            <b>Status</b><br/>
+                            {this.state.result.status}
+                        </div>
+                    </Col>
+                    <Col>
+                        <ButtonGroup style={{float: "right"}}>
+                            <Button disabled variant="outline-light">Terminate</Button>
+                            <Button disabled variant="outline-light">Restart</Button>
+                            <Button disabled variant="outline-light">Retry</Button>
+                        </ButtonGroup>
+                    </Col>
+                </Row>
+            </div>
+        );
 
         const taskTable = () => (
             <Table ref={this.table} striped bordered hover>
@@ -133,6 +194,36 @@ class DetailsModal extends Component {
             </div>
         );
 
+        const editRerurn = () => {
+            let input = this.state.input || [];
+            let iPam = this.state.meta.inputParameters || [];
+
+            let labels = Object.keys(input);
+            let values = Object.values(input);
+            let descs = iPam.map(param => {
+                return param.match(/\[(.*?)]/)[1];
+            });
+
+            return labels.map((label,i) => {
+                return (
+                    <Col sm={6} key={`col1-${i}`}>
+                        <Form.Group>
+                            <Form.Label>{label}</Form.Label>
+                            <Form.Control
+                                type="input"
+                                placeholder="Enter the input"
+                                onChange={(e) => this.handleInput(e,i)}
+                                defaultValue={values[i]}/>
+                            <Form.Text className="text-muted">
+                                {descs[i]}
+                            </Form.Text>
+                        </Form.Group>
+                    </Col>
+                )
+            })
+
+        };
+
         return (
             <Modal dialogClassName="modalWider" show={this.state.show} onHide={this.handleClose}>
                 <Modal.Header>
@@ -147,51 +238,12 @@ class DetailsModal extends Component {
                         </Accordion.Toggle>
                         <Accordion.Collapse >
                             <Card.Body style={{padding: "0px"}}>
-                                <div style={{
-                                    background: "linear-gradient(-120deg, rgb(0, 147, 255) 0%, rgb(0, 118, 203) 100%)",
-                                    padding: "15px",
-                                    marginBottom: "10px"}}>
-                                    <Row>
-                                        <Col md="auto">
-                                            <div style={{color: "white"}}>
-                                                <b>Total Time (sec)</b><br/>
-                                                {this.execTime(this.state.result.endTime, this.state.result.startTime)}
-                                            </div>
-                                        </Col>
-                                        <Col md="auto">
-                                            <div style={{color: "white"}}>
-                                                <b>Start Time</b><br/>
-                                                {this.formatDate(this.state.result.startTime)}
-                                            </div>
-                                        </Col>
-                                        <Col md="auto">
-                                            <div style={{color: "white"}}>
-                                                <b>End Time</b><br/>
-                                                {this.formatDate(this.state.result.endTime)}
-                                            </div>
-                                        </Col>
-                                        <Col md="auto">
-                                            <div style={{color: "white"}}>
-                                                <b>Status</b><br/>
-                                                {this.state.result.status}
-                                            </div>
-                                        </Col>
-                                        <Col>
-                                            <ButtonGroup style={{float: "right"}}>
-                                                <Button disabled variant="outline-light">Terminate</Button>
-                                                <Button disabled variant="outline-light">Restart</Button>
-                                                <Button disabled variant="outline-light">Retry</Button>
-                                            </ButtonGroup>
-                                        </Col>
-                                    </Row>
-                                </div>
-
-
+                                {headerInfo()}
                             </Card.Body>
                         </Accordion.Collapse>
                     </Accordion>
 
-                    <Tabs style={{marginBottom: "20px"}} id="detailTabs">
+                    <Tabs onSelect={(e) => this.setState({activeTab: e})} style={{marginBottom: "20px"}} id="detailTabs">
                         <Tab eventKey="taskDetails" title="Task Details">
                             {taskTable()}
                         </Tab>
@@ -201,8 +253,15 @@ class DetailsModal extends Component {
                         <Tab eventKey="json" title="JSON">
                             {wfJson()}
                         </Tab>
-                        <Tab eventKey="editRerun" disabled title="Edit & Rerun">
-
+                        <Tab eventKey="editRerun" title="Edit & Rerun">
+                            <h4>Edit & Rerun Workflow&nbsp;&nbsp;<i className="clp far fa-play-circle"/></h4>
+                            <div style={{padding: "20px"}}>
+                                <Form>
+                                    <Row>
+                                        {editRerurn()}
+                                    </Row>
+                                </Form>
+                            </div>
                         </Tab>
                         <Tab eventKey="execFlow" disabled title="Execution Flow">
 
@@ -210,6 +269,13 @@ class DetailsModal extends Component {
                     </Tabs>
                 </Modal.Body>
                 <Modal.Footer>
+                    {this.state.activeTab === "editRerun" ?
+                        <Button variant={
+                            this.state.status === "OK" ? "success" :
+                                this.state.status === "Executing..." ? "info" :
+                                    this.state.status === "Execute" ? "primary" : "danger"}
+                                onClick={this.executeWorkflow.bind(this)}>{this.state.status}</Button>
+                        : null}
                     <Button variant="secondary" onClick={this.handleClose}>
                         Close
                     </Button>

@@ -271,7 +271,7 @@ class WorkflowExec extends Component {
 
         let detailsModal = this.state.detailsModal ?
             <DetailsModal wfId={this.state.wfId} modalHandler={this.showDetailsModal.bind(this)}
-                        show={this.state.detailsModal}/> : null;
+                        refreshTable={this.refreshTable.bind(this)} show={this.state.detailsModal}/> : null;
 
         return (
             <div>

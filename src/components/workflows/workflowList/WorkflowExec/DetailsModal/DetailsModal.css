@@ -7,3 +7,13 @@
     max-height: 400px;
     overflow: auto;
 }
+
+.headerInfo {
+    background: linear-gradient(-120deg, rgb(0, 147, 255) 0%, rgb(0, 118, 203) 100%);
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+.headerInfo div {
+    color: white;
+}
