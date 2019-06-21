@@ -18,6 +18,7 @@ class DetailsModal extends Component {
             show: true,
             meta: {},
             result: {},
+            wfId: "",
             input: {},
             activeTab: null,
             status: "Execute"
@@ -34,7 +35,8 @@ class DetailsModal extends Component {
             this.setState({
                 meta: res.meta,
                 result: res.result,
-                input: res.result.input || {}
+                input: res.result.input || {},
+                wfId : res.result.workflowId
             })
         })
     }
@@ -97,7 +99,69 @@ class DetailsModal extends Component {
         });
     }
 
+    terminateWfs() {
+        http.delete('/api/conductor/bulk/terminate', [this.state.wfId]).then(() => {
+            this.getData();
+        });
+    }
+
+    pauseWfs() {
+        http.put('/api/conductor/bulk/pause', [this.state.wfId]).then(() => {
+            this.getData();
+        })
+    }
+
+    resumeWfs() {
+        http.put('/api/conductor/bulk/resume', [this.state.wfId]).then(() => {
+            this.getData();
+        })
+    }
+
+    retryWfs() {
+        http.post('/api/conductor/bulk/retry', [this.state.wfId]).then(() => {
+            this.getData();
+        })
+    }
+
+    restartWfs() {
+        http.post('/api/conductor/bulk/restart', [this.state.wfId]).then(() => {
+            this.getData();
+        })
+    }
+
     render() {
+
+        const actionButtons = (status) => {
+            switch (status) {
+                case "FAILED":
+                case "TERMINATED":
+                    return (
+                        <ButtonGroup style={{float: "right"}}>
+                            <Button onClick={this.restartWfs.bind(this)} variant="outline-light"><i
+                                className="fas fa-redo"/>&nbsp;&nbsp;Restart</Button>
+                            <Button onClick={this.retryWfs.bind(this)} variant="outline-light"><i
+                                className="fas fa-history"/>&nbsp;&nbsp;Retry</Button>
+                        </ButtonGroup>
+                    );
+                case "RUNNING":
+                    return (
+                        <ButtonGroup style={{float: "right"}}>
+                            <Button onClick={this.terminateWfs.bind(this)} variant="outline-light"><i
+                                className="fas fa-times"/>&nbsp;&nbsp;Terminate</Button>
+                            <Button onClick={this.pauseWfs.bind(this)} variant="outline-light"><i
+                                className="fas fa-pause"/>&nbsp;&nbsp;Pause</Button>
+                        </ButtonGroup>
+                    );
+                case "PAUSED":
+                    return (
+                        <ButtonGroup style={{float: "right"}}>
+                            <Button onClick={this.resumeWfs.bind(this)} variant="outline-light"><i
+                                className="fas fa-play"/>&nbsp;&nbsp;Resume</Button>
+                        </ButtonGroup>
+                    );
+                default: break;
+            }
+        };
 
         const headerInfo = () => (
             <div className="headerInfo">
@@ -127,11 +191,7 @@ class DetailsModal extends Component {
                         </div>
                     </Col>
                     <Col>
-                        <ButtonGroup style={{float: "right"}}>
-                            <Button disabled variant="outline-light">Terminate</Button>
-                            <Button disabled variant="outline-light">Restart</Button>
-                            <Button disabled variant="outline-light">Retry</Button>
-                        </ButtonGroup>
+                        {actionButtons(this.state.result.status)}
                     </Col>
                 </Row>
             </div>

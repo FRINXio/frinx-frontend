@@ -3,7 +3,6 @@ import {Accordion, Button, Card, Col, Form, Row, Spinner, Table} from 'react-boo
 import {Typeahead} from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './WorkflowExec.css'
-import InputModal from "../../inputModal/InputModal";
 import DetailsModal from "./DetailsModal/DetailsModal";
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
@@ -147,6 +146,7 @@ class WorkflowExec extends Component {
             if (!this.state.selectedWfs.includes(entry["workflowId"])){
                 wfIds.push(entry["workflowId"])
             }
+            return null;
         });
         this.setState({selectedWfs: wfIds})
     }
