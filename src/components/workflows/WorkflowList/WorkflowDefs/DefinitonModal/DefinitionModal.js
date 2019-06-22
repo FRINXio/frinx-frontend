@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Modal, Button } from "react-bootstrap";
 import Highlight from "react-highlight.js";
-const http = require('../../../server/HttpServerSide').HttpClient;
+const http = require('../../../../../server/HttpServerSide').HttpClient;
 
 
 class DefinitionModal extends Component {
