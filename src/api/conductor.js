@@ -40,8 +40,7 @@ router.get('/metadata/workflow/:name/:version', async (req, res, next) => {
 
 router.put('/metadata', async (req, res, next) => {
     try {
-        let workflowDesc = req.body;
-        const result = await http.put(baseURLMeta + 'workflow/', workflowDesc);
+        const result = await http.put(baseURLMeta + 'workflow/', req.body);
         res.status(200).send(result);
     } catch (err) {
         next(err);

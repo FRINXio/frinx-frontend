@@ -18,8 +18,7 @@ class WorkflowDefs extends Component {
             table: [],
             activeRow: null,
             activeWf: null,
-            defModal: false,
-            loading: false
+            defModal: false
         };
         this.table = React.createRef();
         this.onEditSearch = this.onEditSearch.bind(this);
@@ -94,13 +93,11 @@ class WorkflowDefs extends Component {
     }
 
     updateFavourite(data) {
-        this.setState({
-            loading: true
-        });
         data.description = data.description.includes(", FAVOURITE")
             ? data.description.replace(", FAVOURITE","")
             : data.description += ", FAVOURITE";
-        http.put('/api/conductor/metadata/', [data]).then(() => window.location.reload());
+        http.put('/api/conductor/metadata/', [data]).then(res => {
+        });
     }
 
     repeat() {
@@ -201,9 +198,6 @@ class WorkflowDefs extends Component {
                      </Form.Group>
                  </Col>
              </Row>
-             <div className={this.state.loading?"loading":""}>
-                 <i className={this.state.loading?"fa fa-spinner fa-pulse fa-5x fa-fw":""}/>
-             </div>
              <div className="scrollWrapper">
                  <Table ref={this.table}>
                      <thead>

@@ -10,14 +10,3 @@
 .wfRow .accordBody {
     margin: 20px;
 }
-
-.loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: linear-gradient(-90deg, rgba(0, 149, 255, 0.91) 0%, rgb(0, 93, 167) 100%);
-    padding:10px;
-    border: 1px solid #dddddd;
-    color: white;
-}
