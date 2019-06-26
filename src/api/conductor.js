@@ -42,7 +42,7 @@ router.put('/metadata', async (req, res, next) => {
     try {
         let workflowDesc = req.body;
         const result = await http.put(baseURLMeta + 'workflow/', workflowDesc);
-        res.status(204);
+        res.status(200).send(result);
     } catch (err) {
         next(err);
     }
