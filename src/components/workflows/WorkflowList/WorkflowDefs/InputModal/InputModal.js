@@ -78,7 +78,7 @@ class InputModal extends Component {
                     tmpDesc[i] = tmpDesc[i][0].match(/[^[\]"]+/);
                     tmpValue[i] = tmpValue[i][0].match(/[^[\]"]+/);
                     descs[i] = tmpDesc[i][0];
-                    values[i] = tmpValue[i][0];
+                    values[i] = tmpValue[i] ? tmpValue[i][0] : null;
                 }
             } else {
                 descs[i] = null;
