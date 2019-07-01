@@ -96,8 +96,7 @@ class WorkflowDefs extends Component {
         data.description = data.description.includes(", FAVOURITE")
             ? data.description.replace(", FAVOURITE","")
             : data.description += ", FAVOURITE";
-        http.put('/api/conductor/metadata/', [data]).then(res => {
-        });
+        http.put('/api/conductor/metadata/', [data]);
     }
 
     repeat() {
