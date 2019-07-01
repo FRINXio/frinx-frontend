@@ -31,7 +31,6 @@ class DetailsModal extends Component {
 
     getData() {
         http.get('/api/conductor/id/' + this.props.wfId).then(res => {
-            console.log(res);
             this.setState({
                 meta: res.meta,
                 result: res.result,
@@ -260,7 +259,7 @@ class DetailsModal extends Component {
             </div>
         );
 
-        const editRerurn = () => {
+        const editRerun = () => {
             let input = this.state.input || [];
             let iPam = this.state.meta.inputParameters || [];
 
@@ -326,7 +325,7 @@ class DetailsModal extends Component {
                             <div style={{padding: "20px"}}>
                                 <Form>
                                     <Row>
-                                        {editRerurn()}
+                                        {editRerun()}
                                     </Row>
                                 </Form>
                             </div>

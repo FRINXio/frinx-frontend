@@ -26,7 +26,8 @@ class List extends Component {
             defaultPages: 20,
             pagesCount: 1,
             viewedPage: 1,
-            sort: false
+            sort: false,
+            sortCategory: 0
         };
         library.add(faSync);
         this.table = React.createRef();
@@ -293,6 +294,15 @@ class List extends Component {
         this.showDetailModal();
     }
 
+    sort(data, i){
+        if (this.state.sort) {
+            data.sort((a, b) => (a[i] > b[i]) ? 1 : ((b[i] > a[i]) ? -1 : 0));
+        } else {
+            data.sort((a, b) => (a[i] <= b[i]) ? 1 : ((b[i] <= a[i]) ? -1 : 0));
+        }
+        return data;
+    }
+
     repeat(){
         let output = [];
         let highlight;
@@ -306,6 +316,7 @@ class List extends Component {
             dataset = this.state.table;
             highlight = true
         }
+        dataset = this.sort(dataset, this.state.sortCategory);
         for(let i = 0; i < dataset.length; i++){
             if(i >= (viewedPage-1) * defaultPages && i < viewedPage * defaultPages) {
                 output.push(
@@ -329,18 +340,14 @@ class List extends Component {
         return output
     }
 
-    sort(i){
+    columnSort(i){
         let dataset;
-        let sort = this.state.sort;
         this.state.keywords === "" ?  dataset = this.state.data : dataset = this.state.table;
-        if (sort) {
-            dataset.sort((a, b) => (a[i] > b[i]) ? 1 : ((b[i] > a[i]) ? -1 : 0));
-        } else {
-            dataset.sort((a, b) => (a[i] <= b[i]) ? 1 : ((b[i] < a[i]) ? -1 : 0));
-        }
+        dataset = this.sort(dataset, i);
         this.setState({
             [this.state.keywords === "" ? "data" : "table"]: dataset,
-            sort: !sort
+            sort: !this.state.sort,
+            sortCategory: i
         });
     }
 
@@ -385,10 +392,10 @@ class List extends Component {
                             <thead>
                                 <tr>
                                     <th>Select</th>
-                                    <th className="tableHeader" onClick={() => this.sort(0)}>Node ID</th>
-                                    <th className="tableHeader" onClick={() => this.sort(1)}>IP address</th>
-                                    <th className="tableHeader" onClick={() => this.sort(2)}>Status</th>
-                                    <th className="tableHeader" onClick={() => this.sort(3)}>OS/Version</th>
+                                    <th className="tableHeader" onClick={() => this.columnSort(0)}>Node ID</th>
+                                    <th className="tableHeader" onClick={() => this.columnSort(1)}>IP address</th>
+                                    <th className="tableHeader" onClick={() => this.columnSort(2)}>Status</th>
+                                    <th className="tableHeader" onClick={() => this.columnSort(3)}>OS/Version</th>
                                     <th>Config</th>
                                 </tr>
                             </thead>

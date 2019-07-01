@@ -20,8 +20,11 @@
     "react-dropdown": "^1.6.4",
     "react-gh-like-diff": "^1.0.5",
     "react-highlight.js": "^1.0.7",
+    "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
+    "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0",
     "superagent": "^5.0.2",
     "unescape-js": "^1.1.1"
   },

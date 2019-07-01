@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Modal, Button, Form, Row, Col} from "react-bootstrap";
-const http = require('../../../server/HttpServerSide').HttpClient;
+const http = require('../../../../../server/HttpServerSide').HttpClient;
 
 
 class InputModal extends Component {

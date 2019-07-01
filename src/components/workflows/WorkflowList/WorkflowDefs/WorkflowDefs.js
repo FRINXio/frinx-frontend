@@ -3,8 +3,8 @@ import {Accordion, Button, Card, Col, Form, Row, Table} from 'react-bootstrap'
 import {Typeahead} from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './WorkflowDefs.css'
-import DefinitionModal from "../../definitonModal/DefinitionModal";
-import InputModal from "../../inputModal/InputModal";
+import DefinitionModal from "./DefinitonModal/DefinitionModal";
+import InputModal from "./InputModal/InputModal";
 
 const http = require('../../../../server/HttpServerSide').HttpClient;
 

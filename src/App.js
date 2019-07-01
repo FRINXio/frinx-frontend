@@ -6,7 +6,7 @@ import List from "./components/uniconfig/deviceTable/List";
 import DeviceView from "./components/uniconfig/deviceView/DeviceView";
 import Header from "./components/header/Header";
 import TaskList from "./components/tasks/taskList/TaskList";
-import WorkflowList from "./components/workflows/workflowList/WorkflowList";
+import WorkflowList from "./components/workflows/WorkflowList/WorkflowList";
 
 const routing = (
     <Router>
