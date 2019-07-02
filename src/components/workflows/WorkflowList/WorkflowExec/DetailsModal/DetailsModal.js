@@ -22,12 +22,18 @@ class DetailsModal extends Component {
             wfId: "",
             input: {},
             activeTab: null,
-            status: "Execute"
+            status: "Execute",
+            timeout: null
         };
     }
 
     componentDidMount() {
-        this.getData()
+        this.getData();
+
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this.state.timeout);
     }
 
     getData() {
@@ -38,8 +44,14 @@ class DetailsModal extends Component {
                 subworkflows: res.subworkflows,
                 input: res.result.input || {},
                 wfId : res.result.workflowId
-            })
-        })
+            });
+
+            if (this.state.result.status === 'RUNNING') {
+                this.setState({
+                    timeout: setTimeout(() => this.getData(), 2000)
+                })
+            }
+        });
     }
 
     handleClose() {

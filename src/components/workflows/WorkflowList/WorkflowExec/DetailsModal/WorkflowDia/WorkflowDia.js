@@ -12,7 +12,6 @@ class WorkflowDia extends Component {
     }
 
     static getGraphState(props) {
-        console.log(props);
         const wfe2graph = new Workflow2Graph();
         const subwfs = defaultTo({})(props.subworkflows);
         const wfe = defaultTo({tasks: []})(props.wfe);
