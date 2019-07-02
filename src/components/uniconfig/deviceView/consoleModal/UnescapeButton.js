@@ -27,7 +27,7 @@ class UnescapeButton extends Component {
 
     render() {
         return(
-            <Button onClick={(e) => this.doUnescape()}>
+            <Button size={this.props.size} onClick={(e) => this.doUnescape()}>
                 {this.state.isUnescaped ? 'Escape' : 'Unescape'}
             </Button>
         )

@@ -4,6 +4,7 @@ import moment from 'moment';
 import Clipboard from 'clipboard';
 import Highlight from "react-highlight.js";
 import './DetailsModal.css'
+import WorkflowDia from "./WorkflowDia/WorkflowDia";
 const http = require('../../../../../server/HttpServerSide').HttpClient;
 
 new Clipboard('.clp');
@@ -34,6 +35,7 @@ class DetailsModal extends Component {
             this.setState({
                 meta: res.meta,
                 result: res.result,
+                subworkflows: res.subworkflows,
                 input: res.result.input || {},
                 wfId : res.result.workflowId
             })
@@ -223,7 +225,7 @@ class DetailsModal extends Component {
                                                      data-clipboard-target="#wfinput"/></h4>
                     <code>
                         <pre id="wfinput" className="heightWrapper">
-                            <Highlight language="json">
+                            <Highlight children={""} language="json">
                                 {JSON.stringify(this.state.result.input, null, 2)}
                             </Highlight>
                         </pre>
@@ -330,8 +332,8 @@ class DetailsModal extends Component {
                                 </Form>
                             </div>
                         </Tab>
-                        <Tab eventKey="execFlow" disabled title="Execution Flow">
-
+                        <Tab eventKey="execFlow" mountOnEnter title="Execution Flow">
+                            <WorkflowDia meta={this.state.meta} wfe={this.state.result} subworkflows={this.state.subworkflows}/>
                         </Tab>
                     </Tabs>
                 </Modal.Body>

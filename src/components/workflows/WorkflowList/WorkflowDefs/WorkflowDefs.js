@@ -98,6 +98,13 @@ class WorkflowDefs extends Component {
         });
     }
 
+    updateFavourite(data) {
+        data.description = data.description.includes(", FAVOURITE")
+            ? data.description.replace(", FAVOURITE","")
+            : data.description += ", FAVOURITE";
+        http.put('/api/conductor/metadata/', [data]);
+    }
+
     setCountPages(defaultPages, pagesCount){
         this.setState({
             defaultPages : defaultPages,
@@ -142,6 +149,12 @@ class WorkflowDefs extends Component {
                                     <Button variant="outline-light noshadow"
                                             onClick={this.showDefinitionModal.bind(this, i)}>Definition</Button>
                                     <Button variant="outline-light noshadow">Diagram</Button>
+                                    <Button variant="outline-light noshadow"
+                                            onClick={this.updateFavourite.bind(this, dataset[i])}>
+                                        <i className={dataset[i]["description"].includes("FAVOURITE") ? 'fa fa-star' : 'far fa-star'}
+                                           style={{cursor: 'pointer'}}
+                                        />
+                                    </Button>
                                 </div>
                                 <div className="accordBody">
                                     <b>{dataset[i]["description"] ? "Description" : null}</b><br/>
