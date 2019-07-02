@@ -32,7 +32,7 @@ class TaskList extends Component {
         http.get('/api/conductor/metadata/taskdef').then(res => {
             this.setState({
                 data: res.result || [],
-                pagesCount: ~~(res.result.length / this.state.defaultPages) + 1
+                pagesCount: res.result ? ~~(res.result.length / this.state.defaultPages) + 1 : 0
             })
         })
     }

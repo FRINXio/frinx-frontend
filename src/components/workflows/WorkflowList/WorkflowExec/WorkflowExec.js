@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Col, Form, Row, Table} from 'react-bootstrap'
+import {Col, Container, Form, Row, Table} from 'react-bootstrap'
 import {Typeahead} from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './WorkflowExec.css'
@@ -7,6 +7,8 @@ import DetailsModal from "./DetailsModal/DetailsModal";
 import WorkflowBulk from "./WorkflowBulk/WorkflowBulk";
 import * as searchActions from "../../../../store/actions/searchExecs";
 import {connect} from "react-redux";
+import PageCount from "../../../common/PageCount";
+import PageSelect from "../../../common/PageSelect";
 
 class WorkflowExec extends Component {
     constructor(props) {
@@ -14,7 +16,10 @@ class WorkflowExec extends Component {
         this.state = {
             selectedWfs: [],
             detailsModal: false,
-            wfId: {}
+            wfId: {},
+            defaultPages: 20,
+            pagesCount: 1,
+            viewedPage: 1
         };
         this.table = React.createRef();
     }
@@ -23,9 +28,38 @@ class WorkflowExec extends Component {
         this.props.fetchNewData();
     }
 
+    componentDidMount() {
+        console.log(this.props.searchReducer.data.length);
+        this.setState({
+            pagesCount: this.props.searchReducer.data
+                ? ~~(this.props.searchReducer.data.length / this.state.defaultPages) + 1
+                : 0
+        });
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+
+    }
+
+    setCountPages(defaultPages, pagesCount){
+        this.setState({
+            defaultPages : defaultPages,
+            pagesCount: pagesCount,
+            viewedPage: 1
+        })
+    }
+
+    setViewPage(page){
+        this.setState({
+            viewedPage: page
+        })
+    }
+
     repeat() {
         let output = [];
         let dataset = [];
+        let defaultPages = this.state.defaultPages;
+        let viewedPage = this.state.viewedPage;
         let {data, table, query, label } = this.props.searchReducer;
 
         if (query === "" && label.length < 1) {
@@ -34,19 +68,22 @@ class WorkflowExec extends Component {
             dataset = table
         }
         for (let i = 0; i < dataset.length; i++) {
-            output.push(
-                <tr key={`row-${i}`} id={`row-${i}`}>
-                    <td><Form.Check checked={this.state.selectedWfs.includes(dataset[i]["workflowId"])}
-                                    onChange={(e) => this.selectWf(e)} style={{marginLeft: "20px"}} id={`chb-${i}`}/>
-                    </td>
-                    <td onClick={this.showDetailsModal.bind(this,i)} className='clickable'>
-                        {dataset[i]["workflowType"]} / {dataset[i]["version"]}
-                    </td>
-                    <td>{dataset[i]["status"]}</td>
-                    <td>{dataset[i]["startTime"]}</td>
-                    <td>{dataset[i]["endTime"]}</td>
-                </tr>
-            )
+            if (i >= (viewedPage - 1) * defaultPages && i < viewedPage * defaultPages) {
+                output.push(
+                    <tr key={`row-${i}`} id={`row-${i}`}>
+                        <td><Form.Check checked={this.state.selectedWfs.includes(dataset[i]["workflowId"])}
+                                        onChange={(e) => this.selectWf(e)} style={{marginLeft: "20px"}}
+                                        id={`chb-${i}`}/>
+                        </td>
+                        <td onClick={this.showDetailsModal.bind(this, i)} className='clickable'>
+                            {dataset[i]["workflowType"]} / {dataset[i]["version"]}
+                        </td>
+                        <td>{dataset[i]["status"]}</td>
+                        <td>{dataset[i]["startTime"]}</td>
+                        <td>{dataset[i]["endTime"]}</td>
+                    </tr>
+                )
+            }
         }
         return output
     }
@@ -144,6 +181,21 @@ class WorkflowExec extends Component {
                         </tbody>
                     </Table>
                 </div>
+                <Container style={{marginTop: "5px"}}>
+                    <Row>
+                        <Col sm={2}>
+                            <PageCount data={this.props.searchReducer.query === "" && this.props.searchReducer.label.length < 1
+                                ? this.props.searchReducer.data
+                                : this.props.searchReducer.table}
+                                       defaultPages={this.state.defaultPages}
+                                       handler={this.setCountPages.bind(this)}/>
+                        </Col>
+                        <Col sm={8}/>
+                        <Col sm={2}>
+                            <PageSelect viewedPage={this.state.viewedPage} count={this.state.pagesCount} handler={this.setViewPage.bind(this)}/>
+                        </Col>
+                    </Row>
+                </Container>
             </div>
         )
     }
