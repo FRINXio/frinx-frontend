@@ -307,8 +307,6 @@ class DetailsModal extends Component {
             <Modal dialogClassName="modalWider" show={this.state.show} onHide={this.handleClose}>
                 <Modal.Header>
                     <Modal.Title>Details of {this.state.meta.name}</Modal.Title>
-                    <Button variant="outline-primary" onClick={this.getData.bind(this)}><i
-                        className="fas fa-cloud-download-alt"/>&nbsp;&nbsp;Refresh data</Button>
                 </Modal.Header>
                 <Modal.Body>
                     <Accordion>
