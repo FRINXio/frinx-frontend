@@ -60,10 +60,12 @@ export const updateByQuery = (query) => {
         let {data, table, label} = getState().searchReducer;
         let toBeUpdated = [];
         query = query.toUpperCase();
+
         if (query !== "") {
             const rows = (table.length > 0 && label.length > 0) ? table : data;
             for (let i = 0; i < rows.length; i++) {
-                if (rows[i]["workflowType"] && rows[i]["workflowType"].toString().toUpperCase().indexOf(query) !== -1) {
+                if ((rows[i]["workflowType"] && rows[i]["workflowType"].toString().toUpperCase().indexOf(query) !== -1)
+                    || rows[i]["workflowId"].toUpperCase() === query) {
                     toBeUpdated.push(rows[i]);
                 }
             }

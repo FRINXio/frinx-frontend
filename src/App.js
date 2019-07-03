@@ -15,7 +15,8 @@ const routing = (
                 <Route exact path="/devices" component={List} />
                 <Route path="/devices/edit/:id" component={DeviceView} />
                 <Route path="/tasks" component={TaskList} />
-                <Route path="/workflows" component={WorkflowList} />
+                <Route exact path="/workflows/:type" component={WorkflowList} />
+                <Route exact path="/workflows/:type/:wfid" component={WorkflowList} />
             </Switch>
     </Router>
 );

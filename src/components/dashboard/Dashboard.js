@@ -15,7 +15,7 @@ class Dashboard extends Component {
                     </Col>
                     <Col>
                         <Panel title='Workflows' desc="Create, organize and execute workflows." icon={faCogs}
-                               style={{background: 'linear-gradient'}} link='/workflows' />
+                               style={{background: 'linear-gradient'}} link='/workflows/defs' />
                     </Col>
                     <Col>
                         <Panel title='Tasks' desc="Manage tasks." icon={faTasks}
