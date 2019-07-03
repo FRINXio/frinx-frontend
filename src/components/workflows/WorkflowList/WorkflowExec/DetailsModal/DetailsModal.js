@@ -64,7 +64,6 @@ class DetailsModal extends Component {
     executeWorkflow() {
         this.setState({ status: "Executing..."});
         http.post('/api/conductor/workflow/' + this.state.meta.name, JSON.stringify(this.state.input)).then(res => {
-            console.log(res);
             this.setState({
                 status: res.statusText
             });
@@ -335,7 +334,7 @@ class DetailsModal extends Component {
                         <Tab mountOnEnter eventKey="json" title="JSON">
                             {wfJson()}
                         </Tab>
-                        <Tab mountOnEnter eventKey="editRerun" title="Edit & Rerun">
+                        <Tab disabled={this.state.result.status === "RUNNING"} mountOnEnter eventKey="editRerun" title="Edit & Rerun">
                             <h4>Edit & Rerun Workflow&nbsp;&nbsp;<i className="clp far fa-play-circle"/></h4>
                             <div style={{padding: "20px"}}>
                                 <Form>
@@ -351,6 +350,7 @@ class DetailsModal extends Component {
                     </Tabs>
                 </Modal.Body>
                 <Modal.Footer>
+                    <a style={{float: "left", marginRight: "50px"}} href={`/workflows/exec/${this.state.wfIdRerun}`}>{this.state.wfIdRerun}</a>
                     {this.state.activeTab === "editRerun" ?
                         <Button variant={
                             this.state.status === "OK" ? "success" :
