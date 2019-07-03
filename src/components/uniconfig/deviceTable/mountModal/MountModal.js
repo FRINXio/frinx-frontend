@@ -212,9 +212,9 @@ class MountModal extends Component {
                 connectionStatus = "connecting";
             } else {
                 if (topology === "topology-netconf") {
-                    connectionStatus = Object.values(res.node[0])[4] || Object.values(res.node[0])[2];
+                    connectionStatus = res.node[0]["netconf-node-topology:connection-status"];
                 } else if (topology === "cli") {
-                    connectionStatus = Object.values(res.node[0])[1];
+                    connectionStatus = res.node[0]["cli-topology:connection-status"];
                 }
                 this.props.addDeviceEntry(node, topology);
             }
