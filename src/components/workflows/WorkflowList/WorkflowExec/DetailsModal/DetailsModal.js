@@ -5,6 +5,7 @@ import Clipboard from 'clipboard';
 import Highlight from "react-highlight.js";
 import './DetailsModal.css'
 import WorkflowDia from "./WorkflowDia/WorkflowDia";
+import UnescapeButton from "../../../../uniconfig/deviceView/consoleModal/UnescapeButton";
 const http = require('../../../../../server/HttpServerSide').HttpClient;
 
 new Clipboard('.clp');
@@ -234,7 +235,8 @@ class DetailsModal extends Component {
                 <Col>
                     <h4>Workflow Input&nbsp;&nbsp;<i title="copy to clipboard"
                                                      className="clp far fa-clipboard clickable"
-                                                     data-clipboard-target="#wfinput"/></h4>
+                                                     data-clipboard-target="#wfinput"/>
+                        &nbsp;&nbsp;<UnescapeButton size="sm" target="wfinput"/></h4>
                     <code>
                         <pre id="wfinput" className="heightWrapper">
                             <Highlight children={""} language="json">
@@ -246,7 +248,8 @@ class DetailsModal extends Component {
                 <Col>
                     <h4>Workflow Output&nbsp;&nbsp;<i title="copy to clipboard"
                                                       className="clp far fa-clipboard clickable"
-                                                      data-clipboard-target="#wfoutput"/></h4>
+                                                      data-clipboard-target="#wfoutput"/>
+                        &nbsp;&nbsp;<UnescapeButton size="sm" target="wfoutput"/></h4>
                     <code>
                         <pre id="wfoutput" className="heightWrapper">
                             <Highlight language="json">
