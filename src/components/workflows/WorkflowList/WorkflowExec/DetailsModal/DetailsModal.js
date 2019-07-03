@@ -212,7 +212,7 @@ class DetailsModal extends Component {
 
         const taskTable = () => (
             <div className="heightWrapper">
-                <Table ref={this.table} striped bordered hover>
+                <Table className="tasktable" ref={this.table} size="sm" striped bordered hover>
                     <thead>
                     <tr>
                         <th>#</th>
