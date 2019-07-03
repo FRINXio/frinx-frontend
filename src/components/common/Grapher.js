@@ -278,17 +278,23 @@ class Grapher extends Component {
                     {showNodeDetails()}
                 </div>
                 <Col>
-                    <div style={{marginLeft: "auto", marginRight: "auto", width: "30%"}}>
+                    <div style={ this.props.def ? null : {marginLeft: "auto", marginRight: "auto", width: "30%"}}>
                         <svg ref={this.setSvgRef}>
                             <g transform="translate(20,20)"/>
                         </svg>
                     </div>
                 </Col>
-                <Col>
-                    <div style={{margin: "auto", display: this.state.showSubGraph ? '' : 'none'}}>
-                        {this.getSubGraph()}
-                    </div>
-                </Col>
+
+                {this.props.def ? null :
+                    <Col>
+                        <div style={this.props.def ? null : {
+                            margin: "auto",
+                            display: this.state.showSubGraph ? '' : 'none'
+                        }}>
+                            {this.getSubGraph()}
+                        </div>
+                    </Col>
+                }
             </Row>
         );
     }

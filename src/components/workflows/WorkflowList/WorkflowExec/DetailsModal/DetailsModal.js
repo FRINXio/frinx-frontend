@@ -22,12 +22,18 @@ class DetailsModal extends Component {
             wfId: "",
             input: {},
             activeTab: null,
-            status: "Execute"
+            status: "Execute",
+            timeout: null
         };
     }
 
     componentDidMount() {
-        this.getData()
+        this.getData();
+
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this.state.timeout);
     }
 
     getData() {
@@ -38,8 +44,14 @@ class DetailsModal extends Component {
                 subworkflows: res.subworkflows,
                 input: res.result.input || {},
                 wfId : res.result.workflowId
-            })
-        })
+            });
+
+            if (this.state.result.status === 'RUNNING') {
+                this.setState({
+                    timeout: setTimeout(() => this.getData(), 2000)
+                })
+            }
+        });
     }
 
     handleClose() {
@@ -295,8 +307,6 @@ class DetailsModal extends Component {
             <Modal dialogClassName="modalWider" show={this.state.show} onHide={this.handleClose}>
                 <Modal.Header>
                     <Modal.Title>Details of {this.state.meta.name}</Modal.Title>
-                    <Button variant="outline-primary" onClick={this.getData.bind(this)}><i
-                        className="fas fa-cloud-download-alt"/>&nbsp;&nbsp;Refresh data</Button>
                 </Modal.Header>
                 <Modal.Body>
                     <Accordion>

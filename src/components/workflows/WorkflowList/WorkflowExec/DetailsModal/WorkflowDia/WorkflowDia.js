@@ -12,7 +12,6 @@ class WorkflowDia extends Component {
     }
 
     static getGraphState(props) {
-        console.log(props);
         const wfe2graph = new Workflow2Graph();
         const subwfs = defaultTo({})(props.subworkflows);
         const wfe = defaultTo({tasks: []})(props.wfe);
@@ -38,20 +37,24 @@ class WorkflowDia extends Component {
 
         return (
             <div>
-                <Row style={{textAlign: "center"}}>
-                    <Col>
-                        <h4>Main Workflow</h4>
-                    </Col>
-                    <Col>
-                        <h2>Execution Flow</h2>
-                    </Col>
-                    <Col>
-                        <h4>Subworkflow</h4>
-                    </Col>
-                </Row>
-                <hr/>
+                {!this.props.def ?
+                    <div>
+                    <Row style={{textAlign: "center"}}>
+                        <Col>
+                            <h4>Main Workflow</h4>
+                        </Col>
+                        <Col>
+                            <h2>Execution Flow</h2>
+                        </Col>
+                        <Col>
+                            <h4>Subworkflow</h4>
+                        </Col>
+                    </Row>
+                    <hr/>
+                    </div> : null
+                }
 
-                <Grapher edges={edges} vertices={vertices} layout="TD-auto" innerGraph={subworkflows}/>
+                <Grapher def={this.props.def} edges={edges} vertices={vertices} layout="TD-auto" innerGraph={subworkflows}/>
             </div>
         );
     }

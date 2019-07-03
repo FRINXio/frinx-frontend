@@ -5,6 +5,7 @@ import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './WorkflowDefs.css'
 import DefinitionModal from "./DefinitonModal/DefinitionModal";
 import InputModal from "./InputModal/InputModal";
+import DiagramModal from "./DiagramModal/DiagramModal";
 import PageCount from "../../../common/PageCount";
 import PageSelect from "../../../common/PageSelect";
 
@@ -21,6 +22,7 @@ class WorkflowDefs extends Component {
             activeRow: null,
             activeWf: null,
             defModal: false,
+            diagramModal: false,
             defaultPages: 20,
             pagesCount: 1,
             viewedPage: 1
@@ -145,10 +147,11 @@ class WorkflowDefs extends Component {
                                     marginBottom: "10px"
                                 }}>
                                     <Button variant="outline-light noshadow"
-                                            onClick={this.showInputModal.bind(this, i)}>Input</Button>
+                                            onClick={this.showInputModal.bind(this)}>Input</Button>
                                     <Button variant="outline-light noshadow"
-                                            onClick={this.showDefinitionModal.bind(this, i)}>Definition</Button>
-                                    <Button variant="outline-light noshadow">Diagram</Button>
+                                            onClick={this.showDefinitionModal.bind(this)}>Definition</Button>
+                                    <Button variant="outline-light noshadow"
+                                            onClick={this.showDiagramModal.bind(this)}>Diagram</Button>
                                     <Button variant="outline-light noshadow"
                                             onClick={this.updateFavourite.bind(this, dataset[i])}>
                                         <i className={dataset[i]["description"].includes("FAVOURITE") ? 'fa fa-star' : 'far fa-star'}
@@ -201,6 +204,13 @@ class WorkflowDefs extends Component {
         })
     }
 
+    showDiagramModal() {
+        this.setState({
+            diagramModal: !this.state.diagramModal
+        })
+    }
+
+
     render(){
 
         let definitionModal = this.state.defModal ?
@@ -211,10 +221,15 @@ class WorkflowDefs extends Component {
             <InputModal wf={this.state.activeWf} modalHandler={this.showInputModal.bind(this)}
                         show={this.state.inputModal}/> : null;
 
+        let diagramModal = this.state.diagramModal ?
+            <DiagramModal wf={this.state.activeWf} modalHandler={this.showDiagramModal.bind(this)}
+                          show={this.state.diagramModal}/> : null;
+
         return (
          <div>
              {definitionModal}
              {inputModal}
+             {diagramModal}
              <Row>
                  <Col>
                      <Typeahead
