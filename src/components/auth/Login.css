@@ -1,0 +1,124 @@
+.accessPanel {
+    margin-top: 90px;
+    box-shadow: 0px 8px 27px -9px rgba(0,0,0,0.75);
+    border-radius: 10px;
+}
+
+.logo {
+    opacity: 0.5;
+    width: 180px;
+    margin-top: 30px;
+    transition: 0.25s opacity;
+}
+
+.logo:hover {
+    cursor: pointer;
+    opacity: 0.75;
+    transition: 0.25s opacity;
+}
+
+.loginWindow {
+    margin-top: 30px;
+    text-align: center;
+}
+
+h1 {
+    padding-bottom: 10px;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.registerWindow {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.text-muted {
+    text-align: left;
+    font-size: 17px;
+}
+
+.btn {
+    width: 100%;
+}
+
+.btn-default {
+    background-color: #d5d5d5;
+}
+
+.smallText {
+    color: #0071C1;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.btn-margin {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.notice {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: #7c7c7c;
+}
+
+.notice a {
+    color: #416f88;
+}
+
+.gradientBg {
+    background: rgba(40,98,207,1);
+    background: linear-gradient(324deg, rgba(81,215,255,1) 0%, rgba(40,98,207,1) 100%);
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    color: white;
+}
+
+.whiteBg {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.pretty-feild {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.pretty-feild input,
+.pretty-feild .input-group-text {
+    transition: 0.5s background;
+    margin-top: 10px;
+    outline: none;
+    background-color: #ececec;
+    color:#525252;
+    padding: 10px;
+    border: none;
+}
+.pretty-feild input {
+    width: 300px;
+}
+.btn {
+    width: 300px;
+}
+.paddedFeild {
+    padding-left: calc(50% - 167px);
+}
+.paddedButton {
+    margin-top: 25px;
+    background-color: #3890e2;
+    border: 1px solid #3890e2;
+}
+.focusedInput input,
+.focusedInput .input-group-text {
+    background-color: #d8d8d8 !important;
+    transition: 0.25s background;
+}
+.hidden {
+    visibility: hidden;
+}
+.wrongLogin {
+    color: firebrick;
+}

@@ -7,10 +7,14 @@ import DeviceView from "./components/uniconfig/deviceView/DeviceView";
 import Header from "./components/header/Header";
 import TaskList from "./components/tasks/taskList/TaskList";
 import WorkflowList from "./components/workflows/WorkflowList/WorkflowList";
+import Login from "./components/auth/Login";
+import Registration from "./components/auth/Registration";
 
 const routing = (
     <Router>
             <Switch>
+                <Route exact path="/login" component={Login}/>
+                <Route exact path="/registration" component={Registration}/>
                 <Route exact path="/" component={Dashboard} />
                 <Route exact path="/devices" component={List} />
                 <Route path="/devices/edit/:id" component={DeviceView} />
