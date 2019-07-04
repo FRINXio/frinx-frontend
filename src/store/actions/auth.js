@@ -2,6 +2,7 @@ export const AUTH_START = "AUTH_START";
 export const AUTH_SUCCESS = "AUTH_SUCCESS";
 export const AUTH_FAIL  = "AUTH_FAIL";
 export const SWITCH_AUTH = "SWITCH_AUTH";
+export const AUTH_LOGOUT = "AUTH_LOGOUT";
 
 const http = require('../../server/HttpServerSide').HttpClient;
 
@@ -22,6 +23,18 @@ export const switchAuth = () => {
     return {type: SWITCH_AUTH}
 };
 
+export const checkAuthTimeout = (expirationTime) => {
+    return dispatch => {
+        setTimeout(() => {
+            dispatch(logout())
+        }, expirationTime*1000)
+    }
+};
+
+export const logout = () => {
+    return {type: AUTH_LOGOUT}
+};
+
 export const auth = (email, password, isSignup) => {
     return dispatch => {
         dispatch(authStart());
@@ -36,7 +49,9 @@ export const auth = (email, password, isSignup) => {
         }
         http.post(url, JSON.stringify(authData))
             .then(res => {
-                dispatch(authSuccess(res.body))
+                console.log(res);
+                dispatch(authSuccess(res.body));
+                dispatch(checkAuthTimeout(res.body.expiresIn))
             })
             .catch(err => {
                 dispatch(authFail(err))

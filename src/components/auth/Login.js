@@ -45,7 +45,7 @@ class Login extends Component {
 
     render(){
 
-        let {error} = this.props.authReducer;
+        let {error, loading} = this.props.authReducer;
         let errorMsg = error ? error.response.body.error.message : null;
 
         return(
@@ -74,9 +74,10 @@ class Login extends Component {
                             <div style={{marginTop: "20px"}} className={ error ? 'wrongLogin' : 'hidden'}>
                                 <FontAwesomeIcon icon={faTimes} /> {errorMsg}
                             </div>
-                        <Button variant="primary" onClick={this.login} style={{width: "334px"}} className="paddedButton">
-                            Sign in
-                        </Button>
+                            <Button variant="primary" disabled={loading} onClick={this.login} style={{width: "334px"}} className="paddedButton">
+                                {loading ? <i className="fas fa-spinner fa-spin"/> : null }
+                                {loading ? " Authenticating..." : "Sign In"}
+                            </Button>
                             <br/>
                         <Button variant="primary" onClick={this.props.logIn} style={{width: "334px"}} className="paddedButton">
                             Sign in using Facebook

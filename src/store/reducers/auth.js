@@ -1,12 +1,10 @@
 
-import {AUTH_FAIL, AUTH_START, AUTH_SUCCESS, SWITCH_AUTH} from "../actions/auth";
+import {AUTH_FAIL, AUTH_LOGOUT, AUTH_START, AUTH_SUCCESS, SWITCH_AUTH} from "../actions/auth";
 
 const initialState = {
     error: null,
     loading: false,
-    authData: {},
-    token: null,
-    userId: null,
+    authData: {}
 };
 
 const reducer = (state = initialState, action) => {
@@ -24,6 +22,9 @@ const reducer = (state = initialState, action) => {
         }
         case SWITCH_AUTH: {
             return {...state, error: null}
+        }
+        case AUTH_LOGOUT: {
+            return {...state, error: null, authData: {} }
         }
         default: break;
     }

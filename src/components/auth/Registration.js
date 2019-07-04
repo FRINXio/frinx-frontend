@@ -47,7 +47,7 @@ class Registration extends Component {
 
     render(){
 
-        let {error} = this.props.authReducer;
+        let {error, loading} = this.props.authReducer;
         let errorMsg = error ? error.response.body.error.message : null;
 
         return(
@@ -87,8 +87,9 @@ class Registration extends Component {
                                 <div style={{marginTop: "20px"}} className={ error ? 'wrongLogin' : 'hidden'}>
                                     <FontAwesomeIcon icon={faTimes} /> {errorMsg}
                                 </div>
-                                <Button variant="primary" onClick={this.register} className="paddedButton" style={{width: "334px"}}>
-                                    Sign up
+                                <Button variant="primary" disabled={loading} onClick={this.register} style={{width: "334px"}} className="paddedButton">
+                                    {loading ? <i className="fas fa-spinner fa-spin"/> : null }
+                                    {loading ? " Signing up..." : "Sign Up"}
                                 </Button>
                             </div>
                             <br />
