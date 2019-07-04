@@ -8,11 +8,12 @@ import {combineReducers, createStore, applyMiddleware, compose} from "redux";
 import thunk from 'redux-thunk';
 import bulkReducer from './store/reducers/bulk';
 import searchReducer from './store/reducers/searchExecs'
+import authReducer from './store/reducers/auth'
 import {Provider} from "react-redux";
 
 
 const rootReducer = combineReducers({
-    bulkReducer, searchReducer
+    bulkReducer, searchReducer, authReducer
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
