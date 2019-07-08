@@ -5,21 +5,19 @@ import { Navbar, Nav } from 'react-bootstrap';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import {NavLink, withRouter} from "react-router-dom";
 
 class Header extends Component {
     constructor(props) {
         super(props);
         library.add(faSignOutAlt);
-        this.state = {
-            username: this.props.username,
-        }
     }
 
     logOut() {
-        window.location.href = "http://"+window.location.hostname+":3000";
+       this.props.history.push('/logout');
     }
 
-    getGreeting(){
+    getGreeting() {
         let d = new Date();
         let time = d.getHours();
 
@@ -34,17 +32,17 @@ class Header extends Component {
         }
     }
 
-    render(){
+    render() {
         return (
             <Navbar className="navbarHeader">
-                <Navbar.Brand><a href={"http://"+window.location.hostname+":3000"}><img alt='' src={logo}/></a></Navbar.Brand>
+                <Navbar.Brand><NavLink to='/'><img alt='' src={logo}/></NavLink></Navbar.Brand>
                 <Navbar.Toggle />
                 <Navbar.Collapse className="justify-content-end">
                     <Navbar.Text style={{textAlign: 'right'}}>
-                        {this.getGreeting()}, <b>{this.state.username}</b><br />
+                        {this.getGreeting()}, <b>{this.props.email}</b><br />
                     </Navbar.Text>
                     <Nav>
-                        <Nav.Link className="nav-linkHeader" href="#" onClick={this.logOut}><FontAwesomeIcon icon="sign-out-alt" /></Nav.Link>
+                        <Nav.Link className="nav-linkHeader" onClick={this.logOut.bind(this)}><FontAwesomeIcon icon="sign-out-alt" /></Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
@@ -52,4 +50,4 @@ class Header extends Component {
     }
 }
 
-export default Header;
+export default withRouter(Header);
