@@ -56,7 +56,7 @@ class Registration extends Component {
                 <div className="accessPanel">
                     <Row>
                         <Col className="logoBg" xs="4">
-                            <div className="registerWindow">
+                            <div>
                                 <a href="https://frinx.io"><img className="logo" alt="Logo" src={logoWhite}/></a>
                             </div>
                         </Col>
@@ -84,15 +84,14 @@ class Registration extends Component {
                                         </InputGroup>
                                     </Form>
                                 </center>
-                                <div style={{marginTop: "20px"}} className={ error ? 'wrongLogin' : 'hidden'}>
-                                    <FontAwesomeIcon icon={faTimes} /> {errorMsg}
-                                </div>
-                                <Button variant="primary" disabled={loading} onClick={this.register} style={{width: "334px"}} className="paddedButton">
+                                <Button variant="primary" disabled={loading} onClick={this.register} style={{width: "334px", marginTop: "15px"}} className="gradientBtn">
                                     {loading ? <i className="fas fa-spinner fa-spin"/> : null }
                                     {loading ? " Signing up..." : "Sign Up"}
                                 </Button>
+                                <div style={{marginTop: "20px"}} className={ error ? 'wrongLogin' : 'hidden'}>
+                                    <FontAwesomeIcon icon={faTimes} /> {errorMsg}
+                                </div>
                             </div>
-                            <br />
                             <br />
                         </Col>
                         <Col className="whiteBg" xs="1"/>

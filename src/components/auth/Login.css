@@ -6,8 +6,6 @@
 
 .logo {
     opacity: 0.5;
-    width: 180px;
-    margin-top: 30px;
     transition: 0.25s opacity;
 }
 
@@ -85,9 +83,8 @@
     padding-left: calc(50% - 167px);
 }
 .paddedButton {
-    margin-top: 25px;
-    background-color: #3890e2;
-    border: 1px solid #3890e2;
+    margin-top: 5px;
+    width: 332px
 }
 .focusedInput input,
 .focusedInput .input-group-text {
@@ -99,4 +96,33 @@
 }
 .wrongLogin {
     color: firebrick;
+}
+
+.hr-text {
+    line-height: 1em;
+    position: relative;
+    outline: 0;
+    border: 0;
+    color: black;
+    text-align: center;
+    height: 1.5em;
+    opacity: .5;
+}
+.hr-text:before {
+    content: '';
+    background: linear-gradient(to right, transparent, #818078, transparent);
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+}
+.hr-text:after {
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    padding: 0 .5em;
+    line-height: 1.5em;
+    color: #818078;
+    background-color: #fcfcfa;
 }

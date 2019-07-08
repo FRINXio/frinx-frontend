@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './Login.css';
-import {Button, Col, Container, Form, InputGroup, Row} from 'react-bootstrap';
+import {Button, Carousel, Col, Container, Form, InputGroup, Row} from 'react-bootstrap';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faLock, faUser, faTimes, faEnvelope} from '@fortawesome/free-solid-svg-icons';
@@ -54,8 +54,15 @@ class Login extends Component {
                 <Row>
                     <Col className="whiteBg" xs="7">
                         <div className="loginWindow">
-                        <h1>Sign in</h1>
+                        <h1>Sign in with</h1>
+                            <Button disabled variant="outline-primary" className="paddedButton">
+                                <i className="fab fa-google"/> &nbsp;&nbsp;Sign-in with Google
+                            </Button>
+                            <Button disabled variant="outline-dark" style={{marginBottom: "15px"}} className="paddedButton">
+                                <i className="fab fa-github"/> &nbsp;&nbsp;Sign-in with Github
+                            </Button>
                         <center>
+                            <hr className="hr-text" data-content="or sign in with your account"/>
                             <Form onSubmit={this.logIn}>
                                 <InputGroup className={!this.state.activeUsername ? "input-user pretty-feild paddedFeild" : "input-user pretty-feild paddedFeild focusedInput"}>
                                     <InputGroup.Prepend>
@@ -71,34 +78,55 @@ class Login extends Component {
                                 </InputGroup>
                             </Form>
                         </center>
-                            <div style={{marginTop: "20px"}} className={ error ? 'wrongLogin' : 'hidden'}>
-                                <FontAwesomeIcon icon={faTimes} /> {errorMsg}
-                            </div>
-                            <Button variant="primary" disabled={loading} onClick={this.login} style={{width: "334px"}} className="paddedButton">
+                            <Button variant="info" disabled={loading} onClick={this.login} style={{width: "334px", marginTop: "15px"}} className="gradientBtn">
                                 {loading ? <i className="fas fa-spinner fa-spin"/> : null }
                                 {loading ? " Authenticating..." : "Sign In"}
                             </Button>
+                            <div style={{marginTop: "20px"}} className={ error ? 'wrongLogin' : 'hidden'}>
+                                <FontAwesomeIcon icon={faTimes} /> {errorMsg}
+                            </div>
                             <br/>
-                        <Button variant="primary" onClick={this.props.logIn} style={{width: "334px"}} className="paddedButton">
-                            Sign in using Facebook
-                        </Button>
                         </div>
-                        <br />
                         <br />
                     </Col>
                     <Col className="gradientBg" xs="5">
                         <div className="registerWindow">
-                        <h1>Sign up</h1>
-                        Don't have an account yet? You can:<br />
-                        <Button style={{margin: "5px"}} variant="outline-light" type="submit">
-                            Sign up using Facebook
-                        </Button><br />
-                        or<br />
-                        <Button style={{marginTop: "5px"}} variant="outline-light" onClick={this.redirectToRegister}>
-                            Register as a new user
-                        </Button>
-                        <br />
-                        <a href="https://frinx.io"><img className="logo" alt="Logo" src={logoWhite}/></a>
+
+                            <h1>Sign up</h1>
+                            Don't have an account yet?<br />
+                            <Button style={{marginTop: "5px"}} variant="outline-light" onClick={this.redirectToRegister}>
+                                Register as a new user
+                            </Button>
+                            <br/>
+                            <br/>
+                            <Carousel indicators={false} style={{minHeight: "300px"}}>
+                                <Carousel.Item>
+                                    <i style={{marginTop: "25%", color: "black"}}
+                                       className="logo fas fa-info-circle fa-9x"/>
+                                    <Carousel.Caption>
+                                        <h3><a style={{color: "white"}}
+                                               href="https://frinx.io/frinx-odl-distribution-incons">FRINX UNICONFIG™
+                                            ODL</a>
+                                        </h3>
+                                        <p>
+                                            <br/><i className="fas fa-check"/> Curated and tested.
+                                            <br/><i className="fas fa-check"/> Production Support.
+                                            <br/><i className="fas fa-check"/> FRINX components and modules.
+                                        </p>
+                                    </Carousel.Caption>
+                                </Carousel.Item>
+                                <Carousel.Item>
+                                    <a href="https://frinx.io">
+                                        <img className="logo" alt="Logo" src={logoWhite}/>
+                                    </a>
+                                </Carousel.Item>
+                                <Carousel.Item>
+                                    <a href="https://github.com/FRINXio">
+                                        <img className="logo" style={{marginTop: "20%"}} alt="Logo"
+                                             src="https://pngimg.com/uploads/github/github_PNG15.png"/>
+                                    </a>
+                                </Carousel.Item>
+                            </Carousel>
                         </div>
                     </Col>
                 </Row>
