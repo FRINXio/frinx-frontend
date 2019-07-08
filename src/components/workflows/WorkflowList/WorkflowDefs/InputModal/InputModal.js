@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {Modal, Button, Form, Row, Col} from "react-bootstrap";
-import {Link, withRouter} from "react-router-dom";
 const http = require('../../../../../server/HttpServerSide').HttpClient;
 
 
@@ -183,4 +182,4 @@ class InputModal extends Component {
     }
 }
 
-export default withRouter(InputModal);
+export default InputModal;
