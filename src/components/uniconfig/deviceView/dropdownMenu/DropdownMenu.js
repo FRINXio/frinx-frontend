@@ -35,9 +35,12 @@ class DropdownMenu extends Component {
                     value={value}
                 />
                 <ul className="list-unstyled">
-                    {React.Children.toArray(children).filter(
-                        child =>
-                            !value || child.props.children.toLowerCase().startsWith(value),
+                    {React.Children.toArray(children).filter( child => {
+                            if (value === '' || typeof child.props.children === "object")
+                                if (Array.isArray(child.props.children) && typeof child.props.children[0] === "string")
+                                    return child.props.children[0].startsWith(value);
+                            return true;
+                        }
                     )}
                 </ul>
             </div>
