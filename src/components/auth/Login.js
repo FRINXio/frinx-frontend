@@ -90,11 +90,11 @@ class Login extends Component {
                         <div className="registerWindow">
                         <h1>Sign up</h1>
                         Don't have an account yet? You can:<br />
-                        <Button className="btn-margin" variant="outline-light" type="submit">
+                        <Button style={{margin: "5px"}} variant="outline-light" type="submit">
                             Sign up using Facebook
                         </Button><br />
                         or<br />
-                        <Button className="btn-margin" variant="outline-light" onClick={this.redirectToRegister}>
+                        <Button style={{marginTop: "5px"}} variant="outline-light" onClick={this.redirectToRegister}>
                             Register as a new user
                         </Button>
                         <br />
