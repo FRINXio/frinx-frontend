@@ -41,6 +41,7 @@ class App extends Component {
                     <Route exact path="/workflows/:type/:wfid" component={WorkflowList} />
                     <Route path="/logout" component={Logout}/>
                     <Redirect exact from="/login" to="/"/>
+                    <Redirect exact from="/registration" to="/"/>
                 </Switch>
             )
         }
