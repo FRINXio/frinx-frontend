@@ -226,6 +226,10 @@ class DeviceView extends Component {
         }
     }
 
+    parseSnapshot(name) {
+        return name ? name.replace(this.state.device + "_" ,"") : name;
+    }
+
     createSnapshot(){
         this.setState({
             creatingSnap: !this.state.creatingSnap,
@@ -301,7 +305,7 @@ class DeviceView extends Component {
 
                                         <Dropdown.Menu as={DropdownMenu}>
                                             {this.state.snapshots.map((item, i) => {
-                                                return <Dropdown.Item onClick={() => this.loadSnapshot(i)} key={i}>{item["topology-id"]}
+                                                return <Dropdown.Item onClick={() => this.loadSnapshot(i)} key={i}>{this.parseSnapshot(item["topology-id"])}
                                                         {this.state.deletingSnaps ? <i className="fas fa-minus" style={{float: "right"}}/> : null}
                                                 </Dropdown.Item>
                                             })}
