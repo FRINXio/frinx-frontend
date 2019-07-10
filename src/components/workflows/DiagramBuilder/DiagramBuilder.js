@@ -1,13 +1,19 @@
 import React, {Component} from "react";
-import * as _ from "lodash";
-import { TrayWidget } from "./TrayWidget";
-import { TrayItemWidget } from "./TrayItemWidget";
-import { DefaultNodeModel, DiagramWidget } from "storm-react-diagrams";
-import WidgetHeader from "./WidgetHeader";
+import { SideMenu } from "./SideMenu";
+import {DiagramWidget} from "storm-react-diagrams";
+import ControlsHeader from "./ControlsHeader";
 import {Application} from "./Application";
+import {CircleStartNodeModel} from "./NodeModels/StartNode/CircleStartNodeModel";
+import {CircleEndNodeModel} from "./NodeModels/EndNode/CircleEndNodeModel";
+import {DefaultNodeModel} from "./NodeModels/DefaultNodeModel/DefaultNodeModel";
+import SubwfModal from "./SubwfModal/SubwfModal";
 
-import './style.css'
+import * as _ from "lodash";
+
 import './DiagramBuilder.css'
+import * as builderActions from "../../../store/actions/builder";
+import {connect} from "react-redux";
+import {createMountAndCheckExample, getWfInputs} from "./builder-utils";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -16,6 +22,21 @@ class DiagramBuilder extends Component {
         super(props);
         this.state = {
             wfs: [],
+            showSubWfModal: false,
+            modalInputs: null,
+            finalWf: {
+                updateTime: 1563176250520,
+                name: "Mount_and_check",
+                description: "test",
+                version: 1,
+                tasks: [],
+                outputParameters: {
+                    mount: "${check_mounted.output.mount}",
+                },
+                schemaVersion: 2,
+                restartable: true,
+                workflowStatusListenerEnabled: false
+            },
             app: new Application()
         };
     }
@@ -23,80 +44,90 @@ class DiagramBuilder extends Component {
     componentDidMount() {
         http.get('/api/conductor/metadata/workflow').then(res => {
             this.setState({
-                wfs: res.result || []
-            })
+                wfs: res.result || [],
+            });
+            this.props.storeWorkflows(res.result)
+        });
+    }
+
+    //mock
+    createExampleWf() {
+        let nodes = createMountAndCheckExample(this.state.app, this.props);
+
+        console.log(nodes);
+
+        _.values(nodes).forEach(node => {
+            setTimeout(() => this.addEventListeners(node), 100);
+        });
+
+        this.forceUpdate();
+    }
+
+    subwfModalHandler() {
+        this.setState({
+            showSubWfModal: !this.state.showSubWfModal
         })
     }
 
-    getWfInputs(wf) {
-        let taskArray = wf.tasks;
-        let inputParams = [];
-        let inputParameters = {};
+    saveNodeInputsHandler(savedInputs) {
+        let nodes = this.state.app.getDiagramEngine().getDiagramModel().getNodes();
 
-        taskArray.forEach(task => {
-            if (task !== undefined) {
-                if (task.inputParameters) {
-                    inputParams.push(task.inputParameters)
-                }
+        _.values(nodes).forEach(node => {
+            if (node.name === savedInputs.subWorkflowParam.name) {
+                node.inputs = savedInputs;
+                console.log(node);
             }
         });
-
-        for (let i = 0; i < inputParams.length; i++) {
-            inputParameters = {...inputParameters, ...inputParams[i]}
-        }
-
-        return inputParameters;
     }
 
-    renderWfList() {
-        let wfList = [];
+    addEventListeners(node) {
+        let nodeList = document.getElementsByClassName("srd-default-node__title");
 
-        this.state.wfs.map((wf, i) => {
+        let doubleClick = () => {
+            this.setState({
+                showSubWfModal: true,
+                modalInputs: node.inputs
+            });
+        };
 
-            let wfObject = {
-                name: "",
-                taskReferenceName: "",
-                inputParameters: this.getWfInputs(wf),
-                type: "SUB_WORKFLOW",
-                subWorkflowParam: {
-                    name: wf.name,
-                    version: 1
-                },
-                optional: false
-
-            };
-
-            return (
-                wfList.push(<TrayItemWidget id={`wf${i}`}
-                                            model={{type: "in/out", wfObject, name: wf.name}}
-                                            name={wf.name} color="#0095FF"/>)
-            )
+        //TODO handle duplicating of eventListeners of same nodes
+        Array.from(nodeList).forEach(nodeElem => {
+            if (node.name === nodeElem.textContent) {
+                nodeElem.addEventListener('dblclick', doubleClick, false)
+            }
         });
-        return wfList;
     }
 
     onDropHandler(e) {
         let data = JSON.parse(e.dataTransfer.getData("storm-diagram-node"));
         let node = null;
-        console.log(data);
 
         switch (data.type) {
             case "in":
-                node = new DefaultNodeModel(data.name, "rgb(192,255,0)");
+                node = new DefaultNodeModel(data.name, "rgb(192,255,0)", data.wfObject);
                 node.addInPort("In");
                 break;
             case "in/out":
-                node = new DefaultNodeModel(data.name, "rgb(169,74,255)");
+                node = new DefaultNodeModel(data.name, "rgb(169,74,255)", data.wfObject);
                 node.addInPort("In");
                 node.addOutPort("Out");
                 break;
             case "out":
-                node = new DefaultNodeModel(data.name, "rgb(0,192,255)");
+                node = new DefaultNodeModel(data.name, "rgb(0,192,255)", data.wfObject);
                 node.addOutPort("Out");
+                break;
+            case "start":
+                node = new CircleStartNodeModel(data.name );
+                node.addOutPort("Out");
+                break;
+            case "end":
+                node = new CircleEndNodeModel(data.name );
+                node.addInPort("In");
                 break;
             default:
                 break
         }
+
 
         let points = this.state.app.getDiagramEngine().getRelativeMousePoint(e);
         node.x = points.x;
@@ -105,18 +136,53 @@ class DiagramBuilder extends Component {
             .getDiagramEngine()
             .getDiagramModel()
             .addNode(node);
+
         this.forceUpdate();
+        setTimeout(() => this.addEventListeners(node), 100)
+
+    }
+
+    parseDiagramToJSON() {
+
+        let links = this.state.app.getDiagramEngine().getDiagramModel().getLinks();
+        let prevWf = null;
+        let tasks = [];
+
+        //find first
+        _.values(links).forEach(link => {
+            if (link.sourcePort.type === "start") {
+                prevWf = link.targetPort.parent;
+                tasks.push(link.targetPort.parent.inputs);
+
+            }
+        });
+
+        //TODO fork, join, decide ...
+        _.values(links).forEach(link => {
+            if (link.sourcePort.parent === prevWf && link.targetPort.type !== "end") {
+                prevWf = link.targetPort.parent;
+                tasks.push(link.targetPort.parent.inputs);
+            }
+        });
+
+        let finalWf = {...this.state.finalWf};
+        finalWf.tasks = tasks;
+        this.setState({finalWf});
     }
 
     render() {
+
+        let subWfModal = this.state.showSubWfModal ?
+            <SubwfModal modalHandler={this.subwfModalHandler.bind(this)} inputs={this.state.modalInputs}
+                        saveInputs={this.saveNodeInputsHandler.bind(this)}/> : null;
+
         return (
             <div className="body">
+                {subWfModal}
                 <div className="builder-header"/>
-                <WidgetHeader/>
+                <ControlsHeader executeWf={this.parseDiagramToJSON.bind(this)} createWf={this.createExampleWf.bind(this)}/>
                 <div className="content">
-                    <TrayWidget>
-                        {this.renderWfList()}
-                    </TrayWidget>
+                    <SideMenu show={this.props.sidebarShown} category={this.props.category} workflows={this.props.workflows} functional={this.props.functional}/>
                     <div
                         className="diagram-layer"
                         onDrop={(e) => this.onDropHandler(e)}
@@ -131,4 +197,19 @@ class DiagramBuilder extends Component {
     }
 }
 
-export default DiagramBuilder;
+const mapStateToProps = state => {
+    return {
+        workflows: state.buildReducer.workflows,
+        functional: state.buildReducer.functional,
+        sidebarShown: state.buildReducer.sidebarShown,
+        category: state.buildReducer.category
+    }
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        storeWorkflows: (wfList) => dispatch(builderActions.storeWorkflows(wfList))
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(DiagramBuilder);

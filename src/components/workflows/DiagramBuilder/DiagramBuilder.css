@@ -3,6 +3,60 @@
     min-height: 5vh
 }
 
+.body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.body .header {
+    background: #0087e9;
+    color: white;
+    font-family: Helvetica, Arial, serif;
+    padding: 15px;
+    -webkit-box-shadow: 4px -1px 23px -12px rgba(0,0,0,0.7);
+    -moz-box-shadow: 4px -1px 23px -12px rgba(0,0,0,0.7);
+    box-shadow: 4px -1px 23px -12px rgba(0,0,0,0.7);
+}
+
+.body .header > * {
+    align-self: center;
+}
+
+.body .content {
+    display: flex;
+    flex-grow: 1;
+}
+
+.body .content .diagram-layer {
+    position: relative;
+    flex-grow: 1;
+}
+
+.body .content .tray {
+    position: absolute;
+    background: white;
+    width: 500px;
+    height: 84vh;
+    overflow: scroll;
+    text-align: left;
+    z-index: 10;
+}
+
+.body .content .tray .tray-item {
+    color: #070707;
+    background: white;
+    font-family: Helvetica, Arial, serif;
+    font-size: 14px;
+    padding: 10px;
+    margin: 10px 10px 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    overflow: hidden;
+}
+
+
 .srd-diagram {
     position: relative;
     flex-grow: 1;
@@ -12,8 +66,7 @@
 }
 
 .srd-demo-canvas {
-    height: 100%;
-    min-height: 700px;
+    height: 84vh;
     background-color: #3c3c3c !important;
     background-image: linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent);
     background-size: 50px 50px;

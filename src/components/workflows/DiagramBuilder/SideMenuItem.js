@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 
-export class TrayItemWidget extends Component {
+export class SideMenuItem extends Component {
     constructor(props) {
         super(props);
         this.state = {};
