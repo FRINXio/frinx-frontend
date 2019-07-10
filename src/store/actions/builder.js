@@ -3,6 +3,7 @@ export const UPDATE_BUILDER_QUERY = 'UPDATE_BUILDER_QUERY';
 export const UPDATE_SEARCH_CATEGORY = 'UPDATE_TYPE';
 export const UPDATE_WORKFLOWS = 'UPDATE_WORKFLOWS';
 export const UPDATE_SIDEBAR = 'UPDATE_SIDEBAR';
+export const UPDATE_FINAL_WORKFLOW = 'UPDATE_FINAL_WORKFLOW';
 
 export const storeWorkflows = (originalWorkflows) => {
     return {type: STORE_WORKFLOWS, originalWorkflows, workflows: originalWorkflows}
@@ -22,6 +23,10 @@ export const updateWorkflows = (workflows) => {
 
 export const updateSidebar = () => {
     return {type: UPDATE_SIDEBAR}
+};
+
+export const updateFinalWorkflow = (finalWorkflow) => {
+    return {type: UPDATE_FINAL_WORKFLOW, finalWorkflow}
 };
 
 export const requestUpdateByQuery = (query) => {
