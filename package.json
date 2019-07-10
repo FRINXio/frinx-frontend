@@ -29,6 +29,7 @@
     "react-scripts": "2.1.8",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
+    "storm-react-diagrams": "^5.2.1",
     "superagent": "^5.0.2",
     "unescape-js": "^1.1.1"
   },
