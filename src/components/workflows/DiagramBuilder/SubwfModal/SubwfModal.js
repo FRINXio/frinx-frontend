@@ -28,7 +28,8 @@ class SubwfModal extends Component {
 
     handleSave() {
         this.setState({show: false});
-        this.props.saveInputs(this.state.inputs)
+        this.props.saveInputs(this.state.inputs);
+        this.props.modalHandler()
     }
 
     handleInput(e, item, entry) {

@@ -168,6 +168,8 @@ class DiagramBuilder extends Component {
         let finalWf = {...this.state.finalWf};
         finalWf.tasks = tasks;
         this.setState({finalWf});
+        console.log(JSON.stringify(finalWf, null, 2))
+        return finalWf;
     }
 
     render() {
@@ -180,7 +182,7 @@ class DiagramBuilder extends Component {
             <div className="body">
                 {subWfModal}
                 <div className="builder-header"/>
-                <ControlsHeader executeWf={this.parseDiagramToJSON.bind(this)} createWf={this.createExampleWf.bind(this)}/>
+                <ControlsHeader parseWftoJSON={this.parseDiagramToJSON.bind(this)} createWf={this.createExampleWf.bind(this)}/>
                 <div className="content">
                     <SideMenu show={this.props.sidebarShown} category={this.props.category} workflows={this.props.workflows} functional={this.props.functional}/>
                     <div

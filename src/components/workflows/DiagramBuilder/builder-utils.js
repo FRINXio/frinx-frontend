@@ -60,21 +60,21 @@ export const createMountAndCheckExample = (app, props) => {
 
     let start = new CircleStartNodeModel("Start");
     let startPort = start.addOutPort("Out");
-    start.setPosition(150, 100);
+    start.setPosition(700, 100);
 
     let node1 = new DefaultNodeModel("Mount_cli_device","rgb(169,74,255)", wf1 );
     let node1InPort = node1.addInPort("In");
     let node1OutPort = node1.addOutPort("Out");
-    node1.setPosition(150, 250);
+    node1.setPosition(700, 250);
 
     let node2 = new DefaultNodeModel("Check_connection_cli_device","rgb(169,74,255)", wf2 );
     let node2InPort = node2.addInPort("In");
     let node2OutPort = node2.addOutPort("Out");
-    node2.setPosition(150, 350);
+    node2.setPosition(700, 350);
 
     let end = new CircleEndNodeModel("End");
     let endPort = end.addInPort("In");
-    end.setPosition(150, 450);
+    end.setPosition(700, 450);
 
     let link1 = startPort.link(node1InPort);
     let link2 = node1OutPort.link(node2InPort);

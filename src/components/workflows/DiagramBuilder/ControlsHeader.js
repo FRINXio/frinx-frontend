@@ -38,8 +38,10 @@ class ControlsHeader extends Component {
                             </InputGroup>
                         </Col>
                         <Col>
-                            <Button style={{float: "right"}} variant="outline-light" onClick={this.props.createWf}>Create sample Wf</Button>
-                            <Button style={{float: "right"}} variant="outline-light" onClick={this.props.executeWf}>Execute</Button>
+                            <div className="right-controls">
+                                <Button variant="outline-light" onClick={this.props.createWf}>Create sample workflow</Button>
+                                <Button variant="outline-light" onClick={this.props.parseWftoJSON}>See JSON</Button>
+                            </div>
                         </Col>
                     </Row>
                 </Container>
