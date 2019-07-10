@@ -13,7 +13,7 @@ import * as _ from "lodash";
 import './DiagramBuilder.css'
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
-import {createMountAndCheckExample, getWfInputs} from "./builder-utils";
+import {createMountAndCheckExample} from "./builder-utils";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -21,31 +21,14 @@ class DiagramBuilder extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            wfs: [],
             showSubWfModal: false,
             modalInputs: null,
-            finalWf: {
-                updateTime: 1563176250520,
-                name: "Mount_and_check",
-                description: "test",
-                version: 1,
-                tasks: [],
-                outputParameters: {
-                    mount: "${check_mounted.output.mount}",
-                },
-                schemaVersion: 2,
-                restartable: true,
-                workflowStatusListenerEnabled: false
-            },
             app: new Application()
         };
     }
 
     componentDidMount() {
         http.get('/api/conductor/metadata/workflow').then(res => {
-            this.setState({
-                wfs: res.result || [],
-            });
             this.props.storeWorkflows(res.result)
         });
     }
@@ -53,8 +36,6 @@ class DiagramBuilder extends Component {
     //mock
     createExampleWf() {
         let nodes = createMountAndCheckExample(this.state.app, this.props);
-
-        console.log(nodes);
 
         _.values(nodes).forEach(node => {
             setTimeout(() => this.addEventListeners(node), 100);
@@ -75,7 +56,6 @@ class DiagramBuilder extends Component {
         _.values(nodes).forEach(node => {
             if (node.name === savedInputs.subWorkflowParam.name) {
                 node.inputs = savedInputs;
-                console.log(node);
             }
         });
     }
@@ -165,10 +145,10 @@ class DiagramBuilder extends Component {
             }
         });
 
-        let finalWf = {...this.state.finalWf};
+        let finalWf = {...this.props.finalWorkflow};
         finalWf.tasks = tasks;
-        this.setState({finalWf});
-        console.log(JSON.stringify(finalWf, null, 2))
+        this.props.updateFinalWorkflow(finalWf);
+
         return finalWf;
     }
 
@@ -182,9 +162,11 @@ class DiagramBuilder extends Component {
             <div className="body">
                 {subWfModal}
                 <div className="builder-header"/>
-                <ControlsHeader parseWftoJSON={this.parseDiagramToJSON.bind(this)} createWf={this.createExampleWf.bind(this)}/>
+                <ControlsHeader parseWftoJSON={this.parseDiagramToJSON.bind(this)}
+                                createWf={this.createExampleWf.bind(this)}/>
                 <div className="content">
-                    <SideMenu show={this.props.sidebarShown} category={this.props.category} workflows={this.props.workflows} functional={this.props.functional}/>
+                    <SideMenu show={this.props.sidebarShown} category={this.props.category}
+                              workflows={this.props.workflows} functional={this.props.functional}/>
                     <div
                         className="diagram-layer"
                         onDrop={(e) => this.onDropHandler(e)}
@@ -204,13 +186,15 @@ const mapStateToProps = state => {
         workflows: state.buildReducer.workflows,
         functional: state.buildReducer.functional,
         sidebarShown: state.buildReducer.sidebarShown,
-        category: state.buildReducer.category
+        category: state.buildReducer.category,
+        finalWorkflow: state.buildReducer.finalWorkflow
     }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        storeWorkflows: (wfList) => dispatch(builderActions.storeWorkflows(wfList))
+        storeWorkflows: (wfList) => dispatch(builderActions.storeWorkflows(wfList)),
+        updateFinalWorkflow: (finalWorkflow) => dispatch(builderActions.updateFinalWorkflow(finalWorkflow))
     }
 };
 

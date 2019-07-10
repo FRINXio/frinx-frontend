@@ -16,6 +16,7 @@ class SubwfModal extends Component {
     }
 
     componentDidMount() {
+        console.log(this.props.inputs)
         this.setState({
             inputs: this.props.inputs
         })
@@ -74,7 +75,7 @@ class SubwfModal extends Component {
                     <Form>
                         <Row>
                             {Object.entries(this.state.inputs).map(((item, i) => {
-                                if (item[0] === "inputParameters" || item[0] === "subWorkflowParam") {
+                                if (item[0] === "inputParameters") {
                                     return Object.entries(item[1]).map((entry, i) => {
                                         return (
                                             <Col sm={6} key={`col1-${i}`}>
@@ -88,7 +89,7 @@ class SubwfModal extends Component {
                                             </Col>
                                         )
                                     })
-                                } else {
+                                } else if (item[0] !== "type" && item[0] !== "optional" && item[0] !== "subWorkflowParam"){
                                     return (
                                         <Col sm={6} key={`col2-${i}`}>
                                             <Form.Group>
@@ -101,6 +102,7 @@ class SubwfModal extends Component {
                                         </Col>
                                     )
                                 }
+                                return null;
                             }))}
                         </Row>
                     </Form>
