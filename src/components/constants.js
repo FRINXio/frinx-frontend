@@ -27,49 +27,22 @@ export const mountNetconfTemplateOverrideON = JSON.stringify({
 export const mountNetconfTemplateOverrideOFF = JSON.stringify({
 });
 
+export const mountNetconfTemplateUnativeON = JSON.stringify({
+    "uniconfig-config:uniconfig-native-enabled": [true,""]
+});
+
+export const mountNetconfTemplateUnativeOFF = JSON.stringify({
+});
+
 export const mountNetconfTemplateCapabilities = JSON.stringify({
     "netconf-node-topology:yang-module-capabilities": {
         "capability": []
     }
 });
 
-export const netconfXRwhitelist = JSON.stringify({
-    "direct-unit-matcher": [
-        {
-            "name": "xr",
-            "capability-regex-matcher": [".*Cisco.*", ".*cisco.*", ".*openconfig.*", ".*ietf.*"]
-        }
-    ]
-});
-
-export const netconfXRblacklist = JSON.stringify({
-    "blacklisted-read": {
-        "matcher-ref": "xr",
-        "paths": {
-            "path": [
-                "interfaces", "vlans"
-            ]
-        }
-    }
-});
-
-export const netconfJUNOSwhitelist = JSON.stringify({
-    "direct-unit-matcher": [
-        {
-            "name": "junos",
-            "capability-regex-matcher": [".*juniper.*", ".*ietf.*"]
-        }
-    ]
-});
-
-export const netconfJUNOSblacklist = JSON.stringify({
-    "blacklisted-read": {
-        "matcher-ref": "junos",
-        "paths": {
-            "path": [
-                "interfaces", "vlans"
-            ]
-        }
+export const uniconfigBlacklist = JSON.stringify({
+    "uniconfig-config:blacklist": {
+        "uniconfig-config:path": ["openconfig-interfaces:interfaces", "ietf-interfaces:interfaces", "openconfig-vlan:vlans", "openconfig-routing-policy:routing-policy"]
     }
 });
 
