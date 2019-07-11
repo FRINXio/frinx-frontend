@@ -42,7 +42,7 @@ export const mountNetconfTemplateCapabilities = JSON.stringify({
 
 export const uniconfigBlacklist = JSON.stringify({
     "uniconfig-config:blacklist": {
-        "uniconfig-config:path": ["openconfig-interfaces:interfaces", "openconfig-vlan:vlans"]
+        "uniconfig-config:path": ["openconfig-interfaces:interfaces", "ietf-interfaces:interfaces", "openconfig-vlan:vlans", "openconfig-routing-policy:routing-policy"]
     }
 });
 
