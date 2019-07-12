@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Modal, Button, Row, Col, Tabs, Tab, Table, Accordion, Card, ButtonGroup, Form} from "react-bootstrap";
+import {Modal, Dropdown, Button, Row, Col, Tabs, Tab, Table, Accordion, Card, ButtonGroup, Form} from "react-bootstrap";
 import moment from 'moment';
 import Clipboard from 'clipboard';
 import Highlight from "react-highlight.js";
@@ -24,7 +24,8 @@ class DetailsModal extends Component {
             input: {},
             activeTab: null,
             status: "Execute",
-            timeout: null
+            timeout: null,
+            parentWfId: "",
         };
     }
 
@@ -44,7 +45,8 @@ class DetailsModal extends Component {
                 result: res.result,
                 subworkflows: res.subworkflows,
                 input: res.result.input || {},
-                wfId : res.result.workflowId
+                wfId : res.result.workflowId,
+                parentWfId: res.result.parentWorkflowId || "",
             });
 
             if (this.state.result.status === 'RUNNING') {
@@ -58,7 +60,7 @@ class DetailsModal extends Component {
     handleClose() {
         this.props.refreshTable();
         this.setState({ show: false });
-        this.props.modalHandler()
+        this.props.modalHandler();
     }
 
     executeWorkflow() {
@@ -140,6 +142,10 @@ class DetailsModal extends Component {
         http.post('/api/conductor/bulk/restart', [this.state.wfId]).then(() => {
             this.getData();
         })
+    }
+
+    redirect() {
+
     }
 
     render() {
@@ -305,10 +311,40 @@ class DetailsModal extends Component {
 
         };
 
+        const parentWorkflowButton = () => {
+            if (this.state.parentWfId) {
+                return (
+                    <Button href={`/workflows/exec/${this.state.parentWfId}`}>Parent</Button>
+                )
+            }
+        };
+
+        const childWorkflows = () => {
+            if (this.state.subworkflows && Object.keys(this.state.subworkflows).length) {
+                return (
+                    <Dropdown>
+                        <Dropdown.Toggle>Childs</Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            {Object.keys(this.state.subworkflows).map((item, i) => {
+                                return <Dropdown.Item
+                                    href={`/workflows/exec/${this.state.subworkflows[item].wfe.workflowId}`} key={i}>
+                                    {item}
+                                </Dropdown.Item>
+                            })}
+                        </Dropdown.Menu>
+                    </Dropdown>
+                )
+            }
+        };
+
         return (
             <Modal dialogClassName="modalWider" show={this.state.show} onHide={this.handleClose}>
                 <Modal.Header>
                     <Modal.Title>Details of {this.state.meta.name}</Modal.Title>
+                    <span>
+                        {parentWorkflowButton()}
+                        {childWorkflows()}
+                    </span>
                 </Modal.Header>
                 <Modal.Body>
                     <Accordion>

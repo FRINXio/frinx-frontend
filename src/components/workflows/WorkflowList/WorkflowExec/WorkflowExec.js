@@ -14,7 +14,8 @@ class WorkflowExec extends Component {
         this.state = {
             selectedWfs: [],
             detailsModal: false,
-            wfId: {}
+            wfId: {},
+            closeDetails: true
         };
         this.table = React.createRef();
     }
@@ -27,14 +28,11 @@ class WorkflowExec extends Component {
     }
 
     repeat() {
-        let output = [];
-        let dataset = [];
         let {data, table, query, label } = this.props.searchReducer;
-
-        if (query === "" && label.length < 1) {
-            dataset = data
-        } else {
-            dataset = table
+        let output = [];
+        let dataset = (query === "" && label < 1) ? data : table;
+        if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails) {
+            this.showDetailsModal(0);
         }
         for (let i = 0; i < dataset.length; i++) {
             output.push(
@@ -97,7 +95,8 @@ class WorkflowExec extends Component {
 
         this.setState({
             detailsModal: !this.state.detailsModal,
-            wfId: wfId
+            wfId: wfId,
+            closeDetails: !this.state.detailsModal
         })
     }
 
