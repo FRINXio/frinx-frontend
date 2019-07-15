@@ -27,6 +27,20 @@ class WorkflowExec extends Component {
         this.props.fetchNewData();
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.query !== prevProps.query) {
+            this.setState({
+                wfId: this.props.query,
+                detailsModal: false,
+                closeDetails: true
+            });
+            if (this.props.query) {
+                this.props.updateByQuery(this.props.query);
+            }
+            this.props.fetchNewData();
+        }
+    }
+
     repeat() {
         let {data, table, query, label } = this.props.searchReducer;
         let output = [];

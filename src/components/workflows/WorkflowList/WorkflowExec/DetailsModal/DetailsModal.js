@@ -6,6 +6,7 @@ import Highlight from "react-highlight.js";
 import './DetailsModal.css'
 import WorkflowDia from "./WorkflowDia/WorkflowDia";
 import UnescapeButton from "../../../../uniconfig/deviceView/consoleModal/UnescapeButton";
+import {withRouter} from "react-router-dom";
 const http = require('../../../../../server/HttpServerSide').HttpClient;
 
 new Clipboard('.clp');
@@ -314,7 +315,8 @@ class DetailsModal extends Component {
         const parentWorkflowButton = () => {
             if (this.state.parentWfId) {
                 return (
-                    <Button href={`/workflows/exec/${this.state.parentWfId}`}>Parent</Button>
+                    <Button style={{margin: "2px", display: "inline"}}
+                            onClick={() => this.props.history.push(`/workflows/exec/${this.state.parentWfId}`)}>Parent</Button>
                 )
             }
         };
@@ -322,12 +324,12 @@ class DetailsModal extends Component {
         const childWorkflows = () => {
             if (this.state.subworkflows && Object.keys(this.state.subworkflows).length) {
                 return (
-                    <Dropdown>
+                    <Dropdown style={{margin: "2px", display: "inline"}}>
                         <Dropdown.Toggle>Childs</Dropdown.Toggle>
                         <Dropdown.Menu>
                             {Object.keys(this.state.subworkflows).map((item, i) => {
                                 return <Dropdown.Item
-                                    href={`/workflows/exec/${this.state.subworkflows[item].wfe.workflowId}`} key={i}>
+                                    onClick={() => this.props.history.push(`/workflows/exec/${this.state.subworkflows[item].wfe.workflowId}`)} key={i}>
                                     {item}
                                 </Dropdown.Item>
                             })}
@@ -341,10 +343,10 @@ class DetailsModal extends Component {
             <Modal dialogClassName="modalWider" show={this.state.show} onHide={this.handleClose}>
                 <Modal.Header>
                     <Modal.Title>Details of {this.state.meta.name}</Modal.Title>
-                    <span>
+                    <div>
                         {parentWorkflowButton()}
                         {childWorkflows()}
-                    </span>
+                    </div>
                 </Modal.Header>
                 <Modal.Body>
                     <Accordion>
@@ -403,4 +405,4 @@ class DetailsModal extends Component {
     }
 }
 
-export default DetailsModal;
+export default withRouter(DetailsModal);
