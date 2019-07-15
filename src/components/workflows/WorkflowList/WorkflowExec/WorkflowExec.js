@@ -39,15 +39,17 @@ class WorkflowExec extends Component {
             }
             this.props.fetchNewData();
         }
+        let {data, table, query, label } = this.props.searchReducer;
+        let dataset = (query === "" && label < 1) ? data : table;
+        if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails) {
+            this.showDetailsModal(0);
+        }
     }
 
     repeat() {
         let {data, table, query, label } = this.props.searchReducer;
         let output = [];
         let dataset = (query === "" && label < 1) ? data : table;
-        if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails) {
-            this.showDetailsModal(0);
-        }
         for (let i = 0; i < dataset.length; i++) {
             output.push(
                 <tr key={`row-${i}`} id={`row-${i}`}>
