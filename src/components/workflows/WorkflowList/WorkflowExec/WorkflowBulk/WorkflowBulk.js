@@ -66,6 +66,14 @@ class WorkflowBulk extends Component {
                                         </Button>
                                         Select workflows from table below
                                     </p>
+                                    <p>
+                                        <Button size="sm" onClick={this.props.selectHierarchy}
+                                                variant={this.props.showHierarchy ? "secondary" : "outline-secondary"}
+                                                style={{marginRight: "10px"}}>
+                                            {this.props.showHierarchy ? "All Workflows" : "Hierarchy"}
+                                        </Button>
+                                        Workflow view
+                                    </p>
                                 </Col>
                                 <Col>
                                     <Button variant="outline-primary" value="pause"

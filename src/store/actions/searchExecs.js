@@ -29,6 +29,22 @@ export const fetchNewData = () => {
     }
 };
 
+export const fetchParentWorkflows = () => {
+    return (dispatch, getState) => {
+        http.get('/api/conductor/workflow/tasks').then(res => {
+            let allData = res.result ? (res.result.results ? res.result.results : []) : [];
+            const table = res.result ? (res.result.results ? res.result.results : []) : [];
+            const data = allData.filter(wfs => wfs.taskType === 'SUB_WORKFLOW');
+            const {label, query} = getState().searchReducer;
+            dispatch(receiveNewData(data, table));
+            if (label.length > 0 || query !== "") {
+                dispatch(updateByLabel(label));
+                dispatch(updateByQuery(query));
+            }
+        });
+    }
+};
+
 export const receiveNewData = (data, table) => {
     return {type: RECEIVE_NEW_DATA, data, table}
 };

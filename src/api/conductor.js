@@ -230,6 +230,14 @@ router.get('/id/:workflowId', async (req, res, next) => {
     }
 });
 
+router.get('/workflow/tasks', async (req, res, next) => {
+    try {
+        const result = await http.get(baseURLTask + 'search?size=1000' , req.token);
+        res.status(200).send({result});
+    } catch (err) {
+        next(err);
+    }
+});
 
 
 module.exports = router;

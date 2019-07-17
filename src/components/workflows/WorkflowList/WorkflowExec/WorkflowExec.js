@@ -15,7 +15,9 @@ class WorkflowExec extends Component {
             selectedWfs: [],
             detailsModal: false,
             wfId: {},
-            closeDetails: true
+            parentWfs: [],
+            closeDetails: true,
+            allData: this.props.query
         };
         this.table = React.createRef();
     }
@@ -24,12 +26,13 @@ class WorkflowExec extends Component {
         if (this.props.query) {
             this.props.updateByQuery(this.props.query);
         }
-        this.props.fetchNewData();
+        this.state.allData ? this.props.fetchNewData() : this.props.fetchParentWorkflows(this.state.parentWfs);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.query !== prevProps.query) {
             this.setState({
+                allData: this.props.query,
                 wfId: this.props.query,
                 detailsModal: false,
                 closeDetails: true
@@ -37,13 +40,23 @@ class WorkflowExec extends Component {
             if (this.props.query) {
                 this.props.updateByQuery(this.props.query);
             }
-            this.props.fetchNewData();
         }
+        this.state.allData ? this.props.fetchNewData() : this.props.fetchParentWorkflows(this.state.parentWfs);
         let {data, table, query, label } = this.props.searchReducer;
         let dataset = (query === "" && label < 1) ? data : table;
         if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails) {
             this.showDetailsModal(0);
         }
+    }
+
+    showChildWorkflows(wfId) {
+        let openParents = this.state.parentWfs;
+        openParents.filter(wfs => wfs.startTime === wfId.startTime).length
+            ? openParents = openParents.filter(wfs => wfs.startTime !== wfId.startTime)
+            : openParents.push(wfId);
+        this.setState({
+            parentWfs: openParents
+        })
     }
 
     repeat() {
@@ -56,6 +69,9 @@ class WorkflowExec extends Component {
                     <td><Form.Check checked={this.state.selectedWfs.includes(dataset[i]["workflowId"])}
                                     onChange={(e) => this.selectWf(e)} style={{marginLeft: "20px"}} id={`chb-${i}`}/>
                     </td>
+                    {this.state.allData ? null : <td className='clickable' style={{textAlign: 'center'}} onClick={this.showChildWorkflows.bind(this, dataset[i])}>
+                        {this.state.parentWfs.filter(e => e.startTime === dataset[i].startTime).length ? <i className="fas fa-minus"/> : <i className="fas fa-plus"/>}
+                    </td>}
                     <td onClick={this.showDetailsModal.bind(this,i)} className='clickable'>
                         {dataset[i]["workflowType"]} / {dataset[i]["version"]}
                     </td>
@@ -66,6 +82,12 @@ class WorkflowExec extends Component {
             )
         }
         return output
+    }
+
+    selectHierarchy() {
+        this.setState({
+            allData: !this.state.allData
+        })
     }
 
     selectWf(e) {
@@ -120,13 +142,14 @@ class WorkflowExec extends Component {
 
         let detailsModal = this.state.detailsModal ?
             <DetailsModal wfId={this.state.wfId} modalHandler={this.showDetailsModal.bind(this)}
-                        refreshTable={this.props.fetchNewData} show={this.state.detailsModal}/> : null;
+                        refreshTable={this.state.allData ? this.props.fetchNewData : this.props.fetchParentWorkflows} show={this.state.detailsModal}/> : null;
 
         return (
             <div>
                 {detailsModal}
                 <WorkflowBulk wfsCount={this.repeat().length} selectedWfs={this.state.selectedWfs}
-                              selectAllWfs={this.selectAllWfs.bind(this)}/>
+                              selectAllWfs={this.selectAllWfs.bind(this)} showHierarchy={this.state.allData}
+                              selectHierarchy={this.selectHierarchy.bind(this)}/>
 
                 <hr style={{marginTop: "-20px"}}/>
                 <Row>
@@ -151,6 +174,7 @@ class WorkflowExec extends Component {
                         <thead>
                         <tr>
                             <th> </th>
+                            {this.state.allData ? null : <th>Childs</th>}
                             <th>Name/Version</th>
                             <th>Status</th>
                             <th>Start Time</th>
@@ -178,7 +202,8 @@ const mapDispatchToProps = dispatch => {
     return {
         updateByQuery: (query) => dispatch(searchActions.updateByQuery(query)),
         updateByLabel: (label) => dispatch(searchActions.updateByLabel(label)),
-        fetchNewData: () => dispatch(searchActions.fetchNewData())
+        fetchNewData: () => dispatch(searchActions.fetchNewData()),
+        fetchParentWorkflows : () => dispatch(searchActions.fetchParentWorkflows())
     }
 };
 
