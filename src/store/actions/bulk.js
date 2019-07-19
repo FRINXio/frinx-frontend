@@ -1,9 +1,11 @@
 import {fetchNewData} from "./searchExecs";
+import {round} from "lodash/math";
 
 export const REQUEST_BULK_OPERATION = "REQUEST_BULK_OPERATION";
 export const RECEIVE_BULK_OPERATION_RESPONSE = "RECEIVE_BULK_OPERATION_RESPONSE";
 export const FAIL_BULK_OPERATION = "FAIL_BULK_OPERATION";
 export const RESET_BULK_OPERATION_RESULT = "RESET_BULK_OPERATION_RESULT";
+export const UPDATE_LOADING_BAR = "UPDATE_LOADING_BAR";
 
 const http = require('../../server/HttpServerSide').HttpClient;
 
@@ -31,13 +33,15 @@ export const resetBulkOperationResult = () => {
     return {type: RESET_BULK_OPERATION_RESULT}
 };
 
+export const updateLoadingBar = (percentage) => {
+    return {type: UPDATE_LOADING_BAR, percentage}
+};
+
 export const checkDeleted = (deletedWfs, workflows) => {
-    if (deletedWfs.length === workflows.length) {
-        return dispatch => {
+    return dispatch => {
+        if (deletedWfs.length === workflows.length) {
             dispatch(receiveBulkOperationResponse(deletedWfs, {}))
-        }
-    } else {
-        return dispatch => {
+        } else {
             setTimeout(() => dispatch(checkDeleted(deletedWfs, workflows)), 200);
         }
     }
@@ -75,6 +79,7 @@ export const performBulkOperation = (operation, workflows) => {
                     workflows.map(wf => {
                         http.delete('/api/conductor/workflow/' + wf).then(() => {
                             deletedWfs.push(wf);
+                            dispatch(updateLoadingBar(round(deletedWfs.length/workflows.length*100)));
                         });
                         return null;
                     });

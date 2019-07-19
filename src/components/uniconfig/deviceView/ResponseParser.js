@@ -20,7 +20,9 @@ function parseDryRun(type, bodyJSON) {
         nodeStatus = bodyJSON["output"]["node-config-results"]["node-config-result"]["0"]["configuration-status"];
         errorMessage = bodyJSON["output"]["node-config-results"]["node-config-result"]["0"]["error-message"];
         errorType = bodyJSON["output"]["node-config-results"]["node-config-result"]["0"]["error-type"];
-        configuration = bodyJSON["output"]["node-config-results"]["node-config-result"]["0"]["configuration"];
+        configuration = bodyJSON["output"]["node-config-results"]["node-config-result"]["0"]["cli-configuration"]
+            ? bodyJSON["output"]["node-config-results"]["node-config-result"]["0"]["cli-configuration"]
+            : bodyJSON["output"]["node-config-results"]["node-config-result"]["0"]["configuration"];
 
     }
     return {type, overallStatus, nodeStatus, errorMessage, errorType, configuration}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Accordion, Button, Card, Col, Row, Spinner} from "react-bootstrap";
+import {Accordion, Button, Card, Col, ProgressBar, Row, Spinner} from "react-bootstrap";
 import * as bulkActions from "../../../../../store/actions/bulk";
 import {connect} from "react-redux";
 import {isEmpty} from "codemirror/src/util/misc";
@@ -27,6 +27,8 @@ class WorkflowBulk extends Component {
     render() {
 
         let {selectedWfs, bulkReducer, wfsCount} = this.props;
+
+        const progressInstance = <ProgressBar max={100} now={bulkReducer.loading} label={`${bulkReducer.loading}%`} />;
 
         return (
 
@@ -83,6 +85,11 @@ class WorkflowBulk extends Component {
                                     <Button variant="outline-secondary" value="delete"
                                             onClick={(e) => this.performOperation(e)}
                                             style={{marginLeft: "5px"}}>Delete</Button>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    {bulkReducer.loading === 0 ? null : progressInstance}
                                 </Col>
                             </Row>
                         </Card.Body>

@@ -25,6 +25,9 @@ class WorkflowExec extends Component {
     }
 
     componentWillMount() {
+        if (this.props.query) {
+            this.props.updateByQuery(this.props.query);
+        }
         this.props.fetchNewData();
     }
 

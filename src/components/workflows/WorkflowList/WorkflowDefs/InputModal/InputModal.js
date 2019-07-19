@@ -14,7 +14,8 @@ class InputModal extends Component {
             def: "{}",
             workflowForm: [],
             wfdesc: "",
-            status: "Execute"
+            status: "Execute",
+            wfId: null
         };
     }
 
@@ -114,7 +115,8 @@ class InputModal extends Component {
         http.post('/api/conductor/workflow/' + this.state.name, JSON.stringify(payload)).then(res => {
             console.log(res);
             this.setState({
-                status: res.statusText
+                status: res.statusText,
+                wfId: res.body.text
             });
             this.timeoutBtn();
         })
@@ -159,6 +161,7 @@ class InputModal extends Component {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
+                    <a style={{float: "left", marginRight: "50px"}} href={`/workflows/exec/${this.state.wfId}`}>{this.state.wfId}</a>
                     <Button
                         variant={
                             this.state.status === "OK" ? "success" :

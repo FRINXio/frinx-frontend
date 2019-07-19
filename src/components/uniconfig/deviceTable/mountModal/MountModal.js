@@ -17,10 +17,9 @@ import {
     mountNetconfTemplateOverrideOFF,
     mountNetconfTemplateOverrideON,
     mountNetconfTemplateCapabilities,
-    netconfXRwhitelist,
-    netconfJUNOSwhitelist,
-    netconfXRblacklist,
-    netconfJUNOSblacklist
+    mountNetconfTemplateUnativeON,
+    mountNetconfTemplateUnativeOFF,
+    uniconfigBlacklist
 } from "../../../constants";
 import CapModal from "./capModal/CapModal";
 const http = require('../../../../server/HttpServerSide').HttpClient;
@@ -40,13 +39,11 @@ class MountModal extends Component {
             mountNetconfForm: [],
             mountNetconfFormAdv: [],
             mountNetconfFormCaps: [],
-            whitelist: {},
             blacklist: {},
             enableBlacklist: false,
             deviceTypeVersion: {},
             deviceType: null,
             mountType: "Cli",
-            nativeUc: false,
             nativeDevice: "XR",
             connectionStatus: null,
             timeout: null,
@@ -68,8 +65,7 @@ class MountModal extends Component {
             mountNetconfFormAdv: JSON.parse("[" + mountNetconfTemplateAdv + "]")[0],
             mountNetconfFormCaps: JSON.parse("[" + mountNetconfTemplateCapabilities + "]")[0],
             deviceType: JSON.parse("[" + mountCliTemplate + "]")[0]["cli-topology:device-type"][0],
-            whitelist: this.state.nativeDevice === "XR" ? JSON.parse(netconfXRwhitelist) : JSON.parse(netconfJUNOSwhitelist),
-            blacklist: this.state.nativeDevice === "XR" ? JSON.parse(netconfXRblacklist) : JSON.parse(netconfJUNOSblacklist)
+            blacklist: JSON.parse(uniconfigBlacklist)
         });
         this.getSupportedDevices();
     }
@@ -129,7 +125,6 @@ class MountModal extends Component {
         let payload = {};
         let data = {};
         let mountType = this.state.mountType;
-        let listingRes = false;
 
         if (mountType === "Cli") {
             Object.entries(this.state.mountCliForm).map(item => {
@@ -146,7 +141,7 @@ class MountModal extends Component {
                 data[item[0]] = item[1][0];
 
                 Object.entries(this.state.mountNetconfFormAdv).map(item => {
-                    data[item[0]] = item[1][0];
+                    Array.isArray(item[1]) ? data[item[0]] = item[1][0] : data[item[0]] = item[1];
                     return data[item];
                 });
                 return data[item];
@@ -155,45 +150,13 @@ class MountModal extends Component {
             if (this.state.activeToggles.includes(0)) {
                data = {...data, ...this.state.mountNetconfFormCaps}
             }
-            //if uniconfig native, send blacklist and whitelist first
-            if (this.state.nativeUc) {
-                listingRes = await this.sendLists()
-            }
         }
-
         payload["network-topology:node"] = data;
-        let topology = Object.keys(payload["network-topology:node"])[4].split(":")[0].split("-")[0];
-        if (topology === "netconf") {
-            topology = "topology-netconf";
-        }
+        let topology = Object.keys(payload["network-topology:node"]).some((name) => { return name.indexOf("netconf") >= 0})
+            ? "topology-netconf" : "cli";
         let node = Object.values(payload["network-topology:node"])[0];
 
-        if (this.state.nativeUc) {
-            if (listingRes) {
-                this.mountDevice(node, payload, topology)
-            }
-        } else {
-            this.mountDevice(node, payload, topology)
-        }
-    }
-
-    async sendLists() {
-        this.setState({
-            connectionStatus: "Sending Whitelist ..."
-        });
-        let target = this.state.nativeDevice.toLowerCase();
-        return http.put("/api/odl/conf/native/whitelist/" + target, this.state.whitelist).then( res => {
-            if (this.state.enableBlacklist) {
-                this.setState({
-                    connectionStatus: "Sending Blacklist ..."
-                });
-                return http.put("/api/odl/conf/native/blacklist/" + target, this.state.blacklist).then(res2 => {
-                    return res2.body.status === 200;
-                })
-            } else {
-                return res.body.status === 200;
-            }
-        });
+        this.mountDevice(node, payload, topology)
     }
 
     mountDevice(node, payload, topology) {
@@ -212,9 +175,9 @@ class MountModal extends Component {
                 connectionStatus = "connecting";
             } else {
                 if (topology === "topology-netconf") {
-                    connectionStatus = Object.values(res.node[0])[4] || Object.values(res.node[0])[2];
+                    connectionStatus = res.node[0]["netconf-node-topology:connection-status"];
                 } else if (topology === "cli") {
-                    connectionStatus = Object.values(res.node[0])[1];
+                    connectionStatus = res.node[0]["cli-topology:connection-status"];
                 }
                 this.props.addDeviceEntry(node, topology);
             }
@@ -281,64 +244,50 @@ class MountModal extends Component {
         }
     }
 
-    handleNative(e, list) {
-        if (list === "whitelist") {
-            let updated = this.state.whitelist;
-            updated["direct-unit-matcher"]["0"]["capability-regex-matcher"] =  e.target.value;
-            this.setState({
-                whitelist: updated
-            })
+    handleNative(e) {
+        let updated = this.state.blacklist;
+        updated["uniconfig-config:blacklist"]["uniconfig-config:path"] =  new Array(e.target.value);
+        this.setState({
+            blacklist: updated
+        })
+    }
+
+    handleBlacklist() {
+        if(this.state.enableBlacklist) {
+            let topologyState = this.state.mountNetconfFormAdv;
+            Object.keys(this.state.blacklist).filter(key => {
+                if (key in topologyState) {
+                    return delete topologyState[key];
+                }
+                return null;
+            });
+            this.setState({mountNetconfFormAdv: topologyState});
         } else {
-            let updated = this.state.blacklist;
-            updated["blacklisted-read"].paths.path =  e.target.value;
-            this.setState({
-                blacklist: updated
-            })
+            this.setState({mountNetconfFormAdv: {...this.state.mountNetconfFormAdv, ...this.state.blacklist}});
         }
+        this.setState({
+            enableBlacklist: !this.state.enableBlacklist,
+        });
     }
 
     showNativeSettings() {
-        let options = ["XR", "Junos"];
-        let whitelistArr = this.state.nativeDevice === "Junos" ? JSON.parse(netconfXRwhitelist) : JSON.parse(netconfJUNOSwhitelist);
-        let blacklistArr = this.state.nativeDevice === "Junos" ? JSON.parse(netconfXRblacklist) : JSON.parse(netconfJUNOSblacklist);
-
         return (
                 <Form style={{marginTop: "20px"}}>
                     <Form.Label><b>UniConfig Native Settings</b></Form.Label>
                     <hr/>
                     <Row>
                         <Col>
-                            <Form.Label>Device</Form.Label>
-                            <Dropdown options={options} onChange={() =>
-                                this.setState({
-                                    nativeDevice: this.state.nativeDevice === "XR" ? "Junos" : "XR",
-                                    whitelist: whitelistArr,
-                                    blacklist: blacklistArr
-                                })}
-                                      value={this.state.nativeDevice}/>
-                            <Form.Text className="text-muted">
-                                Select device
-                            </Form.Text>
-                        </Col>
-                        <Col>
-                            <Form.Label>Whitelist</Form.Label>
-                            <Form.Control type="input" onChange={(e) => this.handleNative(e, "whitelist")} value={this.state.whitelist["direct-unit-matcher"]["0"]["capability-regex-matcher"]}/>
-                            <Form.Text className="text-muted">
-                                Whitelisted strings
-                            </Form.Text>
-                        </Col>
-                        <Col>
                             <Form.Label>Blacklist</Form.Label>
                             <InputGroup>
                                 <InputGroup.Append style={{width: "40px"}} >
                                     <InputGroup.Text>
-                                        <input className="clickable" type="checkbox" onClick={() => this.setState({enableBlacklist: !this.state.enableBlacklist})}/>
+                                        <input className="clickable" type="checkbox" onClick={this.handleBlacklist.bind(this)}/>
                                     </InputGroup.Text>
                                 </InputGroup.Append>
-                                <Form.Control disabled={!this.state.enableBlacklist} type="input"  onChange={(e) => this.handleNative(e, "blacklist")} value={this.state.blacklist["blacklisted-read"].paths.path}/>
+                                <Form.Control disabled={!this.state.enableBlacklist} type="input"  onChange={(e) => this.handleNative(e)} value={this.state.blacklist["uniconfig-config:blacklist"]["uniconfig-config:path"]}/>
                             </InputGroup>
                             <Form.Text className="text-muted">
-                                Blacklisted things
+                                List of blacklisted root paths that should not be read from the device
                             </Form.Text>
                         </Col>
                     </Row>
@@ -352,7 +301,7 @@ class MountModal extends Component {
         let topologyForm = null;
         let topologyState = null;
         let valueToFormArrCLI = [[mountCliTemplateLazyOFF, mountCliTemplateLazyON], [mountCliTemplateDryRunOFF, mountCliTemplateDryRunON]];
-        let valueToFormArrNETCONF = [[mountNetconfTemplateOverrideOFF, mountNetconfTemplateOverrideON], [mountNetconfTemplateDryRunOFF, mountNetconfTemplateDryRunON]];
+        let valueToFormArrNETCONF = [[mountNetconfTemplateOverrideOFF, mountNetconfTemplateOverrideON], [mountNetconfTemplateDryRunOFF, mountNetconfTemplateDryRunON], [mountNetconfTemplateUnativeOFF, mountNetconfTemplateUnativeON]];
 
         if(this.state.mountType === "Cli"){
             valueToFormArr = valueToFormArrCLI;
@@ -470,9 +419,9 @@ class MountModal extends Component {
                                 style={{width: "50%"}}
                                 active={this.state.activeToggles.includes(1) ? "active" : null} className="noshadow"
                                 variant="outline-info-toggle">Dry-run</Button>
-                        <Button onClick={() => this.setState({nativeUc: !this.state.nativeUc})}
+                        <Button onClick={() => this.handleToggle(2)}
                                 style={{width: "50%"}}
-                                active={this.state.nativeUc ? "active" : null} className="noshadow"
+                                active={this.state.activeToggles.includes(2) ? "active" : null} className="noshadow"
                                 variant="outline-info-toggle">UniConfig Native</Button>
                     </ButtonGroup>
                     : null
@@ -572,7 +521,7 @@ class MountModal extends Component {
         };
 
         const inputField = (item, i, type) => {
-            return (
+            return Array.isArray(item[1]) ? (
                 <Form.Group
                     controlId={`mount${type}Input-${item[0].split(":").pop()}`}>
                     <Form.Label>{item[0].split(":").pop()}</Form.Label>
@@ -584,7 +533,7 @@ class MountModal extends Component {
                         {item[1][1]}
                     </Form.Text>
                 </Form.Group>
-            )
+            ) : ""
         };
 
         const whichField = (item, i, type) => {
@@ -659,7 +608,7 @@ class MountModal extends Component {
                                 </Row>
                             </Form>
 
-                            {this.state.nativeUc && this.state.isAdv ? this.showNativeSettings() : null}
+                            {this.state.activeToggles.includes(2)  && this.state.isAdv ? this.showNativeSettings() : null}
 
                         </Tab>
                     </Tabs>

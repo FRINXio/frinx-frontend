@@ -44,7 +44,7 @@ class SnapshotModal extends Component {
         let target = JSON.parse(JSON.stringify({
             "input":
                 {
-                    "name": name,
+                    "name": this.state.device + "_" + name,
                     "target-nodes": {
                         "node": [this.state.device]
                     }

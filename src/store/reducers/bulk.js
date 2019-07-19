@@ -2,7 +2,7 @@ import {
     REQUEST_BULK_OPERATION,
     RECEIVE_BULK_OPERATION_RESPONSE,
     FAIL_BULK_OPERATION,
-    RESET_BULK_OPERATION_RESULT
+    RESET_BULK_OPERATION_RESULT, UPDATE_LOADING_BAR
 } from '../actions/bulk';
 
 const initialState = {
@@ -13,7 +13,8 @@ const initialState = {
     data: [],
     table: [],
     query: "",
-    label: []
+    label: [],
+    loading: 0
 };
 
 const reducer = (state = initialState, action) => {
@@ -32,7 +33,11 @@ const reducer = (state = initialState, action) => {
             return {...state, isFetching: false, error};
         }
         case RESET_BULK_OPERATION_RESULT: {
-            return {...state, successfulResults: [], errorResults: []};
+            return {...state, successfulResults: [], errorResults: [], loading: 0};
+        }
+        case UPDATE_LOADING_BAR: {
+            const {percentage} = action;
+            return {...state, loading: percentage}
         }
         default: break;
     }
