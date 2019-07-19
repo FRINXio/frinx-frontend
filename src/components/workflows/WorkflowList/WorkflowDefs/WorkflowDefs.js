@@ -143,17 +143,19 @@ class WorkflowDefs extends Component {
 
     getLabels() {
         let labelsArr = [];
-        this.state.data.map(wf => {
-            let str = wf["description"].substring(wf["description"].indexOf("-") + 1);
-            if (str === wf["description"]) {
-                str = null;
-            }
-            if (str) {
-                str = str.replace(/\s/g, "");
-                labelsArr = labelsArr.concat(str.split(","));
-            }
-            return null;
-        });
+        if (this.state.data.length) {
+            this.state.data.map(wf => {
+                let str = wf["description"].substring(wf["description"].indexOf("-") + 1);
+                if (str === wf["description"]) {
+                    str = null;
+                }
+                if (str) {
+                    str = str.replace(/\s/g, "");
+                    labelsArr = labelsArr.concat(str.split(","));
+                }
+                return null;
+            });
+        }
         return [...new Set([].concat(...labelsArr))];
     }
 

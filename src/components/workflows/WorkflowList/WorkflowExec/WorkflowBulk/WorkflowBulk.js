@@ -70,7 +70,7 @@ class WorkflowBulk extends Component {
                                         <Button size="sm" onClick={this.props.selectHierarchy}
                                                 variant={this.props.showHierarchy ? "secondary" : "outline-secondary"}
                                                 style={{marginRight: "10px"}}>
-                                            {this.props.showHierarchy ? "All Workflows" : "Hierarchy"}
+                                            {this.props.showHierarchy ? "Hierarchy" : "All Workflows"}
                                         </Button>
                                         Workflow view
                                     </p>
