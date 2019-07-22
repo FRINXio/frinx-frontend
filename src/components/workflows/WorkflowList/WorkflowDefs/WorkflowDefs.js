@@ -37,9 +37,10 @@ class WorkflowDefs extends Component {
 
     componentDidMount() {
         http.get('/api/conductor/metadata/workflow').then(res => {
+            let size = ~~(res.result.length / this.state.defaultPages);
             this.setState({
                 data: res.result || [],
-                pagesCount: res.result ? ~~(res.result.length / this.state.defaultPages) + 1 : 0
+                pagesCount: res.result.length % this.state.defaultPages ? ++size : size
             })
         })
     }

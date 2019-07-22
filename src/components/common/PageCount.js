@@ -15,21 +15,24 @@ class PageCount extends Component {
                 <Pagination.Item active={this.props.defaultPages === 20}
                                  onClick={(e) => {
                                      let data = this.props.data;
-                                     let pagesCount = data.length === 0 ? 0 : ~~(data.length / 20) + 1;
+                                     let size =  ~~(data.length / 20);
+                                     let pagesCount = data.length === 0 ? 0 : data.length % 20 ? ++size : size;
                                      this.props.handler(20, pagesCount);
                                      }}
                 >20 </Pagination.Item>
                 <Pagination.Item active={this.props.defaultPages === 50}
                                  onClick={(e) => {
                                      let data = this.props.data;
-                                     let pagesCount = data.length === 0 ? 0 : ~~(data.length / 50) + 1;
+                                     let size =  ~~(data.length / 50);
+                                     let pagesCount = data.length === 0 ? 0 : data.length % 50 ? ++size : size;
                                      this.props.handler(50, pagesCount);
                                  }}
                 >50 </Pagination.Item>
                 <Pagination.Item active={this.props.defaultPages === 100}
                                  onClick={(e) => {
                                      let data = this.props.data;
-                                     let pagesCount = data.length === 0 ? 0 : ~~(data.length / 100) + 1;
+                                     let size =  ~~(data.length / 100);
+                                     let pagesCount = data.length === 0 ? 0 : data.length % 100 ? ++size : size;
                                      this.props.handler(100, pagesCount);
                                  }}
                 >100 </Pagination.Item>

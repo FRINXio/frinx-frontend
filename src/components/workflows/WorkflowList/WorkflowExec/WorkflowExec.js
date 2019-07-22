@@ -19,7 +19,8 @@ class WorkflowExec extends Component {
             wfId: {},
             defaultPages: 20,
             pagesCount: 1,
-            viewedPage: 1
+            viewedPage: 1,
+            datasetLength: 0
         };
         this.table = React.createRef();
     }
@@ -31,17 +32,16 @@ class WorkflowExec extends Component {
         this.props.fetchNewData();
     }
 
-    componentDidMount() {
-        console.log(this.props.searchReducer.data.length);
-        this.setState({
-            pagesCount: this.props.searchReducer.data
-                ? ~~(this.props.searchReducer.data.length / this.state.defaultPages) + 1
-                : 0
-        });
-    }
-
     componentDidUpdate(prevProps, prevState, snapshot) {
-
+        let {data, table, query, label } = this.props.searchReducer;
+        let dataset = (query === "" && label < 1) ? data : table;
+        if (dataset.length !== this.state.datasetLength) {
+            let size =  ~~(dataset.length / this.state.defaultPages);
+            this.setState({
+                pagesCount:  dataset.length % this.state.defaultPages ? ++size : size,
+                datasetLength: dataset.length
+            });
+        }
     }
 
     setCountPages(defaultPages, pagesCount){

@@ -88,7 +88,8 @@ class List extends Component {
         if(!updated){
             newData.push(entry);
         }
-        let pages = ~~(newData.length / this.state.defaultPages) + 1;
+        let size = ~~(newData.length / this.state.defaultPages);
+        let pages = newData.length % this.state.defaultPages? ++size : size;
 
         this.setState({
             data: newData,
@@ -209,7 +210,8 @@ class List extends Component {
         } else {
             toBeRendered = this.state.data;
         }
-        let pages = toBeRendered.length === 0 ? 0 : ~~(toBeRendered.length / this.state.defaultPages) + 1;
+        let size = ~~(toBeRendered.length / this.state.defaultPages);
+        let pages = toBeRendered.length ? toBeRendered.length % this.state.defaultPages? ++size : size : 0;
 
         this.setState({
             table: toBeRendered,
