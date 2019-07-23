@@ -32,14 +32,11 @@ class ControlsHeader extends Component {
     }
 
     saveAndExecute() {
-        //this.props.updateFinalWorkflow();
         let workflowDef = [this.props.finalWorkflow];
         http.put('/api/conductor/metadata', workflowDef).then(res => {
             this.setState({saveExecuteError: false});
-            console.log(res);
         }).catch(err => {
             this.setState({saveExecuteError: true});
-            console.log(err);
         })
     }
 

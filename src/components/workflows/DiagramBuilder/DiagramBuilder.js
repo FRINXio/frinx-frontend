@@ -64,6 +64,7 @@ class DiagramBuilder extends Component {
         let nodeList = document.getElementsByClassName("srd-default-node__title");
 
         let doubleClick = () => {
+            node.setSelected(false);
             this.setState({
                 showSubWfModal: true,
                 modalInputs: node.inputs
