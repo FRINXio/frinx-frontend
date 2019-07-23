@@ -59,7 +59,7 @@ class ControlsHeader extends Component {
                               show={this.state.defModal}/> : null;
 
         let executeAndSaveModal = this.state.generalInfoModal ?
-            <GeneralInfoModal definition={this.props.parseWftoJSON}
+            <GeneralInfoModal definition={this.props.finalWorkflow}
                               modalHandler={this.showGeneralInfoModal.bind(this)}
                               saveInputs={this.props.updateFinalWorkflow} show={this.state.generalInfoModal}
                               lockWorkflowName={this.props.lockWorkflowName} isWfNameLocked={this.props.isWfNameLocked}/> : null;

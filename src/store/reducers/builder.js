@@ -1,11 +1,25 @@
 import {
-    LOCK_WORKFLOW_NAME,
+    LOCK_WORKFLOW_NAME, RESET_TO_DEFAULT_WORKFLOW,
     STORE_WORKFLOWS, SWITCH_SMART_ROUTING,
     UPDATE_BUILDER_QUERY, UPDATE_FINAL_WORKFLOW,
     UPDATE_SEARCH_CATEGORY,
     UPDATE_SIDEBAR,
     UPDATE_WORKFLOWS
 } from "../actions/builder";
+
+const finalWorkflowTemplate = {
+    updateTime: 1563176250520,
+    name: "",
+    description: "",
+    version: 1,
+    tasks: [],
+    outputParameters: {
+        mount: "${check_mounted.output.mount}",
+    },
+    schemaVersion: 2,
+    restartable: true,
+    workflowStatusListenerEnabled: false
+};
 
 const initialState = {
     workflows: [],
@@ -39,11 +53,19 @@ const reducer = (state = initialState, action) => {
         }
         case STORE_WORKFLOWS: {
             const {originalWorkflows, workflows} = action;
-            return {...state, originalWorkflows, workflows, workflowNameLock: false}
+            return {
+                ...state,
+                originalWorkflows,
+                workflows,
+                workflowNameLock: false
+            }
         }
         case UPDATE_WORKFLOWS: {
             const {workflows} = action;
             return {...state, workflows}
+        }
+        case RESET_TO_DEFAULT_WORKFLOW: {
+            return {...state, finalWorkflow: finalWorkflowTemplate}
         }
         case UPDATE_SEARCH_CATEGORY: {
             const {category} = action;

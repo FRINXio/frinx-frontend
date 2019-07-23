@@ -27,6 +27,10 @@ class DiagramBuilder extends Component {
         };
     }
 
+    componentWillMount() {
+        this.props.resetToDefaultWorkflow();
+    }
+
     componentDidMount() {
         http.get('/api/conductor/metadata/workflow').then(res => {
             this.props.storeWorkflows(res.result)
@@ -196,7 +200,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         storeWorkflows: (wfList) => dispatch(builderActions.storeWorkflows(wfList)),
-        updateFinalWorkflow: (finalWorkflow) => dispatch(builderActions.updateFinalWorkflow(finalWorkflow))
+        updateFinalWorkflow: (finalWorkflow) => dispatch(builderActions.updateFinalWorkflow(finalWorkflow)),
+        resetToDefaultWorkflow: () => dispatch(builderActions.resetToDefaultWorkflow())
     }
 };
 

@@ -11,7 +11,7 @@ class GeneralInfoModal extends Component {
 
         this.state = {
             show: true,
-            finalWf: this.props.definition()
+            finalWf: this.props.definition
         };
     }
 
