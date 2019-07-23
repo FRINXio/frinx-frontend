@@ -16,7 +16,6 @@ class SubwfModal extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props.inputs)
         this.setState({
             inputs: this.props.inputs
         })

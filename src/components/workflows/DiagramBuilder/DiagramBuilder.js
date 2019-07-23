@@ -174,7 +174,7 @@ class DiagramBuilder extends Component {
                         onDragOver={event => {
                             event.preventDefault();
                         }}>
-                        <DiagramWidget className="srd-demo-canvas" diagramEngine={this.state.app.getDiagramEngine()} />
+                        <DiagramWidget className="srd-demo-canvas" smartRouting={this.props.smartRouting} diagramEngine={this.state.app.getDiagramEngine()} />
                     </div>
                 </div>
             </div>
@@ -188,7 +188,8 @@ const mapStateToProps = state => {
         functional: state.buildReducer.functional,
         sidebarShown: state.buildReducer.sidebarShown,
         category: state.buildReducer.category,
-        finalWorkflow: state.buildReducer.finalWorkflow
+        finalWorkflow: state.buildReducer.finalWorkflow,
+        smartRouting: state.buildReducer.switchSmartRouting
     }
 };
 

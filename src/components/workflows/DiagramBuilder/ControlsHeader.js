@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Button, Col, Container, Dropdown, Form, InputGroup, Row} from "react-bootstrap";
+import {Badge, Button, Col, Container, Dropdown, Form, InputGroup, Row} from "react-bootstrap";
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import WorkflowDefModal from "./WorkflowDefModal/WorkflowDefModal";
@@ -16,6 +16,18 @@ class ControlsHeader extends Component {
             generalInfoModal: true,
             saveExecuteError: null
         }
+    }
+
+    keyBindings(e) {
+        // CTRL + S
+        if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) && e.keyCode === 83) {
+            e.preventDefault();
+            this.saveAndExecute()
+        }
+    }
+
+    componentWillMount() {
+        document.addEventListener("keydown", this.keyBindings.bind(this), false)
     }
 
     showDefinitionModal() {
@@ -58,7 +70,7 @@ class ControlsHeader extends Component {
                 {executeAndSaveModal}
                 <Container fluid>
                     <Row>
-                        <Col sm={6}>
+                        <Col md={4}>
                             <InputGroup style={{marginLeft: "-20px"}}>
                                 <InputGroup.Append>
                                     <Form.Control value={this.props.query}
@@ -85,18 +97,23 @@ class ControlsHeader extends Component {
                                 </Button>
                             </InputGroup>
                         </Col>
-                        <Col>
+                        <Col style={{position: "absolute", marginLeft: "28%"}}>
+                            <h4 style={{float: "left", lineHeight: 0, marginTop: "5px"}}><Badge variant="light">{this.props.finalWorkflow.name}</Badge></h4>
+                        </Col>
+                        <Col md>
                             <div className="right-controls">
+                                <Button disabled variant={this.props.smartRouting ? "light" : "outline-light"} onClick={this.props.switchSmartRouting}>
+                                    <i className="fas fa-ruler-combined"/></Button>
                                 <Button variant="outline-light" onClick={this.props.createWf}>
-                                    <i className="fas fa-vial"/>&nbsp;&nbsp;Create sample workflow</Button>
+                                    <i className="fas fa-vial"/></Button>
                                 <Button variant="outline-light" onClick={this.showDefinitionModal.bind(this)}>
-                                    <i className="fas fa-file-export"/>&nbsp;&nbsp;Export to JSON</Button>
+                                    <i className="fas fa-file-export"/></Button>
                                 <Button variant="outline-light" onClick={this.showGeneralInfoModal.bind(this)}>
                                     <i className="fas fa-edit"/>&nbsp;&nbsp;Edit general</Button>
                                 <Button
                                     variant={this.state.saveExecuteError ? "danger" : "outline-light"}
                                     onClick={this.saveAndExecute.bind(this)}>
-                                    <i className="fas fa-save"/>&nbsp;&nbsp;Save & Execute
+                                    <i className="fas fa-save"/>&nbsp;&nbsp;Save & Execute (CTRL + S)
                                 </Button>
                             </div>
                         </Col>
@@ -115,7 +132,8 @@ const mapStateToProps = state => {
         category: state.buildReducer.category,
         sidebarShown: state.buildReducer.sidebarShown,
         finalWorkflow: state.buildReducer.finalWorkflow,
-        isWfNameLocked: state.buildReducer.workflowNameLock
+        isWfNameLocked: state.buildReducer.workflowNameLock,
+        smartRouting: state.buildReducer.switchSmartRouting
     }
 };
 
@@ -125,7 +143,8 @@ const mapDispatchToProps = dispatch => {
         updateCategory: (category) => dispatch(builderActions.updateCategory(category)),
         updateSidebar: () => dispatch(builderActions.updateSidebar()),
         updateFinalWorkflow: (finalWf) => dispatch(builderActions.updateFinalWorkflow(finalWf)),
-        lockWorkflowName: () => dispatch(builderActions.lockWorkflowName())
+        lockWorkflowName: () => dispatch(builderActions.lockWorkflowName()),
+        switchSmartRouting: () => dispatch(builderActions.switchSmartRouting())
     }
 };
 

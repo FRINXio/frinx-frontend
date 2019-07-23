@@ -5,6 +5,7 @@ export const UPDATE_WORKFLOWS = 'UPDATE_WORKFLOWS';
 export const UPDATE_SIDEBAR = 'UPDATE_SIDEBAR';
 export const UPDATE_FINAL_WORKFLOW = 'UPDATE_FINAL_WORKFLOW';
 export const LOCK_WORKFLOW_NAME = 'LOCK_WORKFLOW_NAME';
+export const SWITCH_SMART_ROUTING = 'SWITCH_SMART_ROUTING';
 
 export const storeWorkflows = (originalWorkflows) => {
     return {type: STORE_WORKFLOWS, originalWorkflows, workflows: originalWorkflows}
@@ -16,6 +17,10 @@ export const updateQuery = (query) => {
 
 export const lockWorkflowName = () => {
     return {type: LOCK_WORKFLOW_NAME}
+};
+
+export const switchSmartRouting = () => {
+  return {type: SWITCH_SMART_ROUTING}
 };
 
 export const updateCategory = (category) => {

@@ -1,6 +1,6 @@
 import {
     LOCK_WORKFLOW_NAME,
-    STORE_WORKFLOWS,
+    STORE_WORKFLOWS, SWITCH_SMART_ROUTING,
     UPDATE_BUILDER_QUERY, UPDATE_FINAL_WORKFLOW,
     UPDATE_SEARCH_CATEGORY,
     UPDATE_SIDEBAR,
@@ -15,6 +15,7 @@ const initialState = {
     category: "Workflows",
     sidebarShown: true,
     workflowNameLock: false,
+    switchSmartRouting: false,
     finalWorkflow: {
         updateTime: 1563176250520,
         name: "",
@@ -50,6 +51,10 @@ const reducer = (state = initialState, action) => {
         }
         case LOCK_WORKFLOW_NAME: {
             return {...state, workflowNameLock: true}
+        }
+        case SWITCH_SMART_ROUTING: {
+            const {switchSmartRouting} = state;
+            return {...state, switchSmartRouting: !switchSmartRouting}
         }
         case UPDATE_SIDEBAR: {
             const {sidebarShown} = state;
