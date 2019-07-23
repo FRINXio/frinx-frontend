@@ -56,8 +56,10 @@ class DetailsModal extends Component {
     }
 
     handleClose() {
-        this.props.refreshTable();
-        this.setState({ show: false });
+        if (this.props.fromBuilder) {
+            this.props.refreshTable();
+        }
+        this.setState({show: false});
         this.props.modalHandler()
     }
 

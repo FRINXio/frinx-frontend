@@ -1,5 +1,5 @@
 import {
-    LOCK_WORKFLOW_NAME, RESET_TO_DEFAULT_WORKFLOW,
+    LOCK_WORKFLOW_NAME, RESET_TO_DEFAULT_WORKFLOW, STORE_WORKFLOW_ID,
     STORE_WORKFLOWS, SWITCH_SMART_ROUTING,
     UPDATE_BUILDER_QUERY, UPDATE_FINAL_WORKFLOW,
     UPDATE_SEARCH_CATEGORY,
@@ -30,6 +30,7 @@ const initialState = {
     sidebarShown: true,
     workflowNameLock: false,
     switchSmartRouting: false,
+    executedWfId: null,
     finalWorkflow: {
         updateTime: 1563176250520,
         name: "",
@@ -66,6 +67,10 @@ const reducer = (state = initialState, action) => {
         }
         case RESET_TO_DEFAULT_WORKFLOW: {
             return {...state, finalWorkflow: finalWorkflowTemplate}
+        }
+        case STORE_WORKFLOW_ID: {
+            const {executedWfId} = action;
+            return {...state, executedWfId}
         }
         case UPDATE_SEARCH_CATEGORY: {
             const {category} = action;

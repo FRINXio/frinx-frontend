@@ -4,6 +4,8 @@ import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import WorkflowDefModal from "./WorkflowDefModal/WorkflowDefModal";
 import GeneralInfoModal from "./GeneralInfoModal/GeneralInfoModal";
+import DetailsModal from "../WorkflowList/WorkflowExec/DetailsModal/DetailsModal";
+import InputModal from "../WorkflowList/WorkflowDefs/InputModal/InputModal";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -14,6 +16,8 @@ class ControlsHeader extends Component {
         this.state = {
             defModal: false,
             generalInfoModal: true,
+            inputModal: false,
+            detailsModal: false,
             saveExecuteError: null
         }
     }
@@ -43,10 +47,26 @@ class ControlsHeader extends Component {
         })
     }
 
+    showDetailsModal() {
+        this.setState({
+            detailsModal: !this.state.detailsModal
+        })
+    }
+
+    showInputModal() {
+        if (this.state.inputModal) {
+            this.showDetailsModal()
+        }
+        this.setState({
+            inputModal: !this.state.inputModal
+        });
+    }
+
     saveAndExecute() {
         let workflowDef = [this.props.finalWorkflow];
         http.put('/api/conductor/metadata', workflowDef).then(res => {
             this.setState({saveExecuteError: false});
+            this.showInputModal();
         }).catch(err => {
             this.setState({saveExecuteError: true});
         })
@@ -64,8 +84,18 @@ class ControlsHeader extends Component {
                               saveInputs={this.props.updateFinalWorkflow} show={this.state.generalInfoModal}
                               lockWorkflowName={this.props.lockWorkflowName} isWfNameLocked={this.props.isWfNameLocked}/> : null;
 
+        let detailsModal = this.state.detailsModal ?
+            <DetailsModal wfId={this.props.workflowId} modalHandler={this.showDetailsModal.bind(this)}
+                          show={this.state.detailsModal} fromBuilder/> : null;
+
+        let inputModal = this.state.inputModal ?
+            <InputModal wf={this.props.finalWorkflow.name + " / " + this.props.finalWorkflow.version} modalHandler={this.showInputModal.bind(this)}
+                        show={this.state.inputModal} fromBuilder/> : null;
+
         return (
             <div className="header">
+                {inputModal}
+                {detailsModal}
                 {definitionModal}
                 {executeAndSaveModal}
                 <Container fluid>
@@ -133,7 +163,8 @@ const mapStateToProps = state => {
         sidebarShown: state.buildReducer.sidebarShown,
         finalWorkflow: state.buildReducer.finalWorkflow,
         isWfNameLocked: state.buildReducer.workflowNameLock,
-        smartRouting: state.buildReducer.switchSmartRouting
+        smartRouting: state.buildReducer.switchSmartRouting,
+        workflowId: state.buildReducer.executedWfId
     }
 };
 

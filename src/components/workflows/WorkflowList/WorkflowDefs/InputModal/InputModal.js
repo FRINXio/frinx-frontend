@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import {Modal, Button, Form, Row, Col} from "react-bootstrap";
+import {connect} from "react-redux";
+import * as builderActions from "../../../../../store/actions/builder";
 const http = require('../../../../../server/HttpServerSide').HttpClient;
 
 
@@ -119,8 +121,13 @@ class InputModal extends Component {
                 status: res.statusText,
                 wfId: res.body.text
             });
+            this.props.storeWorkflowId(res.body.text);
             this.timeoutBtn();
-        })
+
+            if (this.props.fromBuilder) {
+                this.handleClose()
+            }
+        });
     }
 
     timeoutBtn() {
@@ -183,4 +190,10 @@ class InputModal extends Component {
     }
 }
 
-export default InputModal;
+const mapDispatchToProps = dispatch => {
+    return {
+        storeWorkflowId: (id) => dispatch(builderActions.storeWorkflowId(id))
+    }
+};
+
+export default connect(null, mapDispatchToProps)(InputModal);
