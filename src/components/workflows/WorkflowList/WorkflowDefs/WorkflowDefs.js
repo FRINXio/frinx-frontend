@@ -21,6 +21,7 @@ class WorkflowDefs extends Component {
             activeWf: null,
             defModal: false,
             diagramModal: false,
+            update: false
         };
         this.table = React.createRef();
         this.onEditSearch = this.onEditSearch.bind(this);
@@ -36,6 +37,17 @@ class WorkflowDefs extends Component {
                 data: res.result || []
             })
         })
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.state.update) {
+            http.get('/api/conductor/metadata/workflow').then(res => {
+                this.setState({
+                    data: res.result || [],
+                    update: !this.state.update
+                })
+            })
+        }
     }
 
     onEditSearch(event) {
@@ -99,6 +111,9 @@ class WorkflowDefs extends Component {
             ? data.description.replace(", FAVOURITE","")
             : data.description += ", FAVOURITE";
         http.put('/api/conductor/metadata/', [data]);
+        this.setState({
+            update: !this.state.update
+        })
     }
 
     repeat() {
