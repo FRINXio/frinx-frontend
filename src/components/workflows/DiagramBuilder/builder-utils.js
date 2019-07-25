@@ -59,7 +59,6 @@ export const createMountAndCheckExample = (app, props) => {
     });
 
     let start = new CircleStartNodeModel("Start");
-    let startPort = start.addOutPort("Out");
     start.setPosition(700, 100);
 
     let node1 = new DefaultNodeModel("Mount_cli_device","rgb(169,74,255)", wf1 );
@@ -73,14 +72,14 @@ export const createMountAndCheckExample = (app, props) => {
     node2.setPosition(700, 350);
 
     let end = new CircleEndNodeModel("End");
-    let endPort = end.addInPort("In");
     end.setPosition(700, 450);
 
-    let link1 = startPort.link(node1InPort);
+    let link1 = node1InPort.link(start.getPort("bottom"));
     let link2 = node1OutPort.link(node2InPort);
-    let link3 = node2OutPort.link(endPort);
+    let link3 = node2OutPort.link(end.getPort("top"));
 
     activeModel.addAll(start, end, node1, node2, link1, link2, link3);
+    console.log(activeModel.getLinks());
 
     return app.getDiagramEngine().getDiagramModel().getNodes();
 };

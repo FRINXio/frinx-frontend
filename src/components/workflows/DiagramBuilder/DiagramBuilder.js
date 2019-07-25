@@ -14,6 +14,7 @@ import './DiagramBuilder.css'
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import {createMountAndCheckExample} from "./builder-utils";
+import {ForkNodeModel} from "./NodeModels/ForkNode/ForkNodeModel";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -102,12 +103,13 @@ class DiagramBuilder extends Component {
                 node.addOutPort("Out");
                 break;
             case "start":
-                node = new CircleStartNodeModel(data.name );
-                node.addOutPort("Out");
+                node = new CircleStartNodeModel(data.name);
                 break;
             case "end":
-                node = new CircleEndNodeModel(data.name );
-                node.addInPort("In");
+                node = new CircleEndNodeModel(data.name);
+                break;
+            case "fork":
+                node = new ForkNodeModel(data.name);
                 break;
             default:
                 break
@@ -132,12 +134,11 @@ class DiagramBuilder extends Component {
         let prevWf = null;
         let tasks = [];
 
-        //find first
+        //find first (! won't work if user connects node -> start )
         _.values(links).forEach(link => {
             if (link.sourcePort.type === "start") {
                 prevWf = link.targetPort.parent;
                 tasks.push(link.targetPort.parent.inputs);
-
             }
         });
 
