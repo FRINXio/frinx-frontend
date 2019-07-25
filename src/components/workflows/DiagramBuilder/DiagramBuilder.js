@@ -37,6 +37,18 @@ class DiagramBuilder extends Component {
         http.get('/api/conductor/metadata/workflow').then(res => {
             this.props.storeWorkflows(res.result)
         });
+        this.putDefaultsOnCanvas();
+    }
+
+    putDefaultsOnCanvas() {
+        let diagramEngine = this.state.app.getDiagramEngine();
+        let activeModel = diagramEngine.getDiagramModel();
+
+        diagramEngine.setDiagramModel(activeModel);
+
+        let start = new CircleStartNodeModel("Start");
+        start.setPosition(900, 100);
+        activeModel.addAll(start);
     }
 
     //mock
