@@ -123,8 +123,7 @@ class DiagramBuilder extends Component {
             .addNode(node);
 
         this.forceUpdate();
-        setTimeout(() => this.addEventListeners(node), 100)
-
+        setTimeout(() => this.addEventListeners(node), 100);
     }
 
     parseDiagramToJSON() {

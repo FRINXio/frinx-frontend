@@ -63,8 +63,8 @@ class ControlsHeader extends Component {
     }
 
     saveAndExecute() {
-        let workflowDef = [this.props.finalWorkflow];
-        http.put('/api/conductor/metadata', workflowDef).then(res => {
+        this.props.parseWftoJSON();
+        http.put('/api/conductor/metadata', [this.props.finalWorkflow]).then(res => {
             this.setState({saveExecuteError: false});
             this.showInputModal();
         }).catch(err => {
