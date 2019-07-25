@@ -20,7 +20,7 @@ class WorkflowDefs extends Component {
             activeRow: null,
             activeWf: null,
             defModal: false,
-            diagramModal: false,
+            diagramModal: false
         };
         this.table = React.createRef();
         this.onEditSearch = this.onEditSearch.bind(this);
@@ -98,7 +98,13 @@ class WorkflowDefs extends Component {
         data.description = data.description.includes(", FAVOURITE")
             ? data.description.replace(", FAVOURITE","")
             : data.description += ", FAVOURITE";
-        http.put('/api/conductor/metadata/', [data]);
+        http.put('/api/conductor/metadata/', [data]).then( response => {
+            http.get('/api/conductor/metadata/workflow').then(res => {
+                this.setState({
+                    data: res.result || [],
+                })
+            })
+        });
     }
 
     repeat() {
