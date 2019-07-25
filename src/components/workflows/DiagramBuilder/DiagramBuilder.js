@@ -15,6 +15,7 @@ import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import {createMountAndCheckExample} from "./builder-utils";
 import {ForkNodeModel} from "./NodeModels/ForkNode/ForkNodeModel";
+import {JoinNodeModel} from "./NodeModels/JoinNode/JoinNodeModel";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -110,6 +111,9 @@ class DiagramBuilder extends Component {
                 break;
             case "fork":
                 node = new ForkNodeModel(data.name);
+                break;
+            case "join":
+                node = new JoinNodeModel(data.name);
                 break;
             default:
                 break

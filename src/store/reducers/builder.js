@@ -23,7 +23,7 @@ const finalWorkflowTemplate = {
 
 const initialState = {
     workflows: [],
-    functional: ["start", "end", "fork"],
+    functional: ["start", "end", "fork", "join"],
     originalWorkflows: [],
     query: "",
     category: "Workflows",
