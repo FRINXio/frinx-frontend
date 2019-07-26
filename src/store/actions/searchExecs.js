@@ -87,7 +87,6 @@ export const fetchParentWorkflows = () => {
         http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
             let allData = res.result ? (res.result.hits ? res.result.hits : []) : [];
             let parents = []; let child = [];
-            //TODO iterate for 5 wfs
             let separatedWfs = [];
             let chunk = 5;
             for (let i = 0,j = allData.length; i < j; i +=chunk) {
@@ -112,8 +111,8 @@ export const fetchParentWorkflows = () => {
             });
             const {label, query} = getState().searchReducer;
             if (label.length > 0 || query !== "") {
-                dispatch(updateByLabel(label));
-                dispatch(updateByQuery(query));
+                dispatch(updateHierarchicalDataByLabel(label));
+                dispatch(updateHierarchicalDataByQuery(query));
             }
         });
     }
@@ -184,4 +183,28 @@ export const updateHierarchicalDataByQuery = (query) => {
 
 export const updateHierarchicalResults = (parentsTable, childTable) => {
     return {type: UPDATE_HIERARCHY_RESULTS, parentsTable, childTable}
+};
+
+//TODO add logic for labels and querry
+export const updateParents = (children) => {
+    return (dispatch, getState) => {
+        let {parents, child} = getState().searchReducer;
+        parents.forEach((wfs, i) => {
+            if (children.some(e => e.parentWorkflowId === wfs.workflowId)) {
+                let showchildren = children.filter(wf => wf.parentWorkflowId === wfs["workflowId"]);
+                showchildren.forEach((wf, index) => parents.splice(index + 1 + i, 0, wf));
+            }
+        });
+        dispatch(receiveParentData(parents, child, parents, child));
+    }
+};
+
+export const deleteParents = (children) => {
+    return (dispatch, getState) => {
+        let {parents, child} = getState().searchReducer;
+        children.forEach(wfs  => {
+            parents = parents.filter(p => p.workflowId !== wfs.workflowId);
+        });
+        dispatch(receiveParentData(parents, child, parents, child));
+    }
 };
