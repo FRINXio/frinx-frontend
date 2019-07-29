@@ -25,7 +25,8 @@ class WorkflowExec extends Component {
 
     componentWillMount() {
         if (this.props.query) {
-            this.state.allData ? this.props.updateByQuery(this.props.query)
+            this.state.allData
+                ? this.props.updateByQuery(this.props.query)
                 : this.props.update.updateHierarchicalByQuery(this.props.query);
         }
         this.state.allData ? this.props.fetchNewData() : this.props.fetchParentWorkflows();
@@ -44,18 +45,20 @@ class WorkflowExec extends Component {
             }
         }
         let {data, table, query, label, parents } = this.props.searchReducer;
+        let dataset = (query === "" && label < 1) ? data : table;
+        if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails) {
+            this.showDetailsModal(dataset[0].workflowId);
+        }
         if (prevState.allData !== this.state.allData || this.props.query !== prevProps.query ) {
             if (this.state.allData) {
                 if (data.length < 1)
                     this.props.fetchNewData()
             } else {
-                if (parents.length < 1)
+                if (parents.length < 1) {
                     this.props.fetchParentWorkflows();
+                    this.setState({openParentWfs: []})
+                }
             }
-        }
-        let dataset = (query === "" && label < 1) ? data : table;
-        if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails) {
-            this.showDetailsModal(0);
         }
     }
 
@@ -88,9 +91,9 @@ class WorkflowExec extends Component {
             ? (query === "" && label < 1) ? data : table
             : (query === "" && label < 1) ? parents : parentsTable;
         for (let i = 0; i < dataset.length; i++) {
-            if (dataset[i]["workflowType"]) {
-                output.push(<tr key={`row-${i}`} id={`row-${i}`}
-                                className={this.state.showChildren.some(wf => wf.workflowId === dataset[i]["workflowId"]) && !this.state.allData ? "childWf" : null }>
+            output.push(
+                <tr key={`row-${i}`} id={`row-${i}`}
+                    className={this.state.showChildren.some(wf => wf.workflowId === dataset[i]["workflowId"]) && !this.state.allData ? "childWf" : null }>
                     <td><Form.Check checked={this.state.selectedWfs.includes(dataset[i]["workflowId"])}
                                     onChange={(e) => this.selectWf(e)} style={{marginLeft: "20px"}}
                                     id={`chb-${i}`}/>
@@ -103,17 +106,18 @@ class WorkflowExec extends Component {
                                     ? <i className="fas fa-minus"/> : <i className="fas fa-plus"/>
                                 : null
                             }
-                        </td>}
+                        </td>
+                    }
                     <td onClick={this.showDetailsModal.bind(this, dataset[i]["workflowId"])} className='clickable'>
                         {dataset[i]["workflowType"]} / {dataset[i]["version"]}
                     </td>
                     <td>{dataset[i]["status"]}</td>
                     <td>{dataset[i]["startTime"]}</td>
                     <td>{dataset[i]["endTime"]}</td>
-                </tr>);
-            }
+                </tr>
+            );
         }
-        return output
+        return output;
     }
 
     selectHierarchy() {

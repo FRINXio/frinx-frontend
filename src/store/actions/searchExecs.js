@@ -185,26 +185,31 @@ export const updateHierarchicalResults = (parentsTable, childTable) => {
     return {type: UPDATE_HIERARCHY_RESULTS, parentsTable, childTable}
 };
 
-//TODO add logic for labels and querry
 export const updateParents = (children) => {
     return (dispatch, getState) => {
-        let {parents, child} = getState().searchReducer;
-        parents.forEach((wfs, i) => {
+        let {query, label, parents, child, parentsTable} = getState().searchReducer;
+        let dataset = (query === "" && label < 1) ? parents : parentsTable;
+        dataset.forEach((wfs, i) => {
             if (children.some(e => e.parentWorkflowId === wfs.workflowId)) {
                 let showchildren = children.filter(wf => wf.parentWorkflowId === wfs["workflowId"]);
-                showchildren.forEach((wf, index) => parents.splice(index + 1 + i, 0, wf));
+                showchildren.forEach((wf, index) => dataset.splice(index + 1 + i, 0, wf));
             }
         });
-        dispatch(receiveParentData(parents, child, parents, child));
+        (query === "" && label < 1)
+            ? dispatch(receiveParentData(dataset, child, parentsTable, child))
+            : dispatch(receiveParentData(parents, child, dataset, child));
     }
 };
 
 export const deleteParents = (children) => {
     return (dispatch, getState) => {
-        let {parents, child} = getState().searchReducer;
+        let {query, label, parents, child, parentsTable} = getState().searchReducer;
+        let dataset = (query === "" && label < 1) ? parents : parentsTable;
         children.forEach(wfs  => {
-            parents = parents.filter(p => p.workflowId !== wfs.workflowId);
+            dataset = dataset.filter(p => p.workflowId !== wfs.workflowId);
         });
-        dispatch(receiveParentData(parents, child, parents, child));
+        (query === "" && label < 1)
+            ? dispatch(receiveParentData(dataset, child, parentsTable, child))
+            : dispatch(receiveParentData(parents, child, dataset, child));
     }
 };
