@@ -148,21 +148,20 @@ class DiagramBuilder extends Component {
     parseDiagramToJSON() {
 
         let links = this.state.app.getDiagramEngine().getDiagramModel().getLinks();
-        let currentWf = null;
+        let parentNode = null;
         let tasks = [];
 
-        //find first (! won't work if user connects node -> start )
+        //find root (! won't work if user connects node -> start )
         _.values(links).forEach(link => {
             if (link.sourcePort.type === "start") {
-                currentWf = link.targetPort.parent;
-                tasks.push(currentWf.inputs);
+                parentNode = link.sourcePort.parent;
             }
         });
 
         _.values(links).forEach(link => {
-            if (link.sourcePort.parent === currentWf && link.targetPort.type !== "end") {
+            if (link.sourcePort.parent === parentNode && link.targetPort.type !== "end") {
 
-                if(link.targetPort.type === "fork") {
+                if (link.targetPort.type === "fork") {
                     let forkNode = link.targetPort.getNode();
                     let joinNode = null;
                     let forkTasks = [];
@@ -200,11 +199,11 @@ class DiagramBuilder extends Component {
 
                     tasks.push(forkNode.inputs);
                     tasks.push(joinNode.inputs);
-                    currentWf = joinNode;  // make joinNode the last so forkTasks doesnt get duplicated
+                    parentNode = joinNode;  // make joinNode the last so forkTasks doesnt get duplicated
 
                 } else {
-                    currentWf = link.targetPort.parent;
-                    tasks.push(currentWf.inputs);
+                    parentNode = link.targetPort.parent;
+                    tasks.push(parentNode.inputs);
                 }
             }
         });
