@@ -68,11 +68,11 @@ class DiagramBuilder extends Component {
         })
     }
 
-    saveNodeInputsHandler(savedInputs) {
+    saveNodeInputsHandler(savedInputs, id) {
         let nodes = this.state.app.getDiagramEngine().getDiagramModel().getNodes();
 
         _.values(nodes).forEach(node => {
-            if (node.name === savedInputs.subWorkflowParam.name) {
+            if (node.id === id) {
                 node.inputs = savedInputs;
             }
         });
@@ -85,7 +85,7 @@ class DiagramBuilder extends Component {
             node.setSelected(false);
             this.setState({
                 showSubWfModal: true,
-                modalInputs: node.inputs
+                modalInputs: {inputs: node.inputs, id: node.id}
             });
         };
 

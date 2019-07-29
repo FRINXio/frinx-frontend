@@ -11,13 +11,13 @@ class SubwfModal extends Component {
 
         this.state = {
             show: true,
-            inputs: {}
+            inputs: {},
         };
     }
 
     componentDidMount() {
         this.setState({
-            inputs: this.props.inputs
+            inputs: this.props.inputs.inputs,
         })
     }
 
@@ -28,7 +28,7 @@ class SubwfModal extends Component {
 
     handleSave() {
         this.setState({show: false});
-        this.props.saveInputs(this.state.inputs);
+        this.props.saveInputs(this.state.inputs, this.props.inputs.id);
         this.props.modalHandler()
     }
 
