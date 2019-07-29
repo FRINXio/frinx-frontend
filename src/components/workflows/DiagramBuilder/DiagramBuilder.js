@@ -122,10 +122,11 @@ class DiagramBuilder extends Component {
                 node = new CircleEndNodeModel(data.name);
                 break;
             case "fork":
-                node = new ForkNodeModel(data.name);
+                console.log(data);
+                node = new ForkNodeModel(data.wfObject.name, null, data.wfObject);
                 break;
             case "join":
-                node = new JoinNodeModel(data.name);
+                node = new JoinNodeModel(data.wfObject.name, null, data.wfObject);
                 break;
             default:
                 break
@@ -147,22 +148,64 @@ class DiagramBuilder extends Component {
     parseDiagramToJSON() {
 
         let links = this.state.app.getDiagramEngine().getDiagramModel().getLinks();
-        let prevWf = null;
+        let currentWf = null;
         let tasks = [];
 
         //find first (! won't work if user connects node -> start )
         _.values(links).forEach(link => {
             if (link.sourcePort.type === "start") {
-                prevWf = link.targetPort.parent;
-                tasks.push(link.targetPort.parent.inputs);
+                currentWf = link.targetPort.parent;
+                tasks.push(currentWf.inputs);
             }
         });
 
-        //TODO fork, join, decide ...
         _.values(links).forEach(link => {
-            if (link.sourcePort.parent === prevWf && link.targetPort.type !== "end") {
-                prevWf = link.targetPort.parent;
-                tasks.push(link.targetPort.parent.inputs);
+            if (link.sourcePort.parent === currentWf && link.targetPort.type !== "end") {
+
+                if(link.targetPort.type === "fork") {
+                    let forkNode = link.targetPort.getNode();
+                    let joinNode = null;
+                    let forkTasks = [];
+                    let joinOn = [];
+                    let forkBranches = forkNode.ports.bottom.links;
+
+                    //for each branch chain tasks
+                    _.values(forkBranches).forEach(link => {
+                        let tmpBranch = [];
+                        let parent = link.targetPort.getNode();
+                        let current = link.targetPort.getNode();
+
+                        //iterate trought tasks in branch
+                        while (current && current.type !== "join") {
+                            tmpBranch.push(current.inputs);
+                            _.values(current.getPorts()).forEach(port => {
+                                if (port.label === "Out") {
+                                    parent = current;
+                                    if (_.values(port.links).length > 0) { // if any ports
+                                        current = _.values(port.links)[0].targetPort.getNode(); // traverse to child
+                                        if (current.type === "join") { // if child = join, add last task ref to joinOn
+                                            joinOn.push(parent.inputs.taskReferenceName);
+                                            joinNode = current;
+                                        }
+                                    } else {
+                                        current = null;
+                                    }
+                                }
+                            });
+                        }
+                        forkTasks.push(tmpBranch);
+                    });
+                    forkNode.inputs.forkTasks = forkTasks;
+                    joinNode.inputs.joinOn = joinOn;
+
+                    tasks.push(forkNode.inputs);
+                    tasks.push(joinNode.inputs);
+                    currentWf = joinNode;  // make joinNode the last so forkTasks doesnt get duplicated
+
+                } else {
+                    currentWf = link.targetPort.parent;
+                    tasks.push(currentWf.inputs);
+                }
             }
         });
 

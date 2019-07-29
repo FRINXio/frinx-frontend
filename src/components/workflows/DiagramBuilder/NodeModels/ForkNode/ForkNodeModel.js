@@ -9,11 +9,13 @@ export class ForkNodeModel extends NodeModel {
     name: string;
     color: string;
     ports: { [s: string]: DefaultPortModel };
+    inputs: {};
 
-    constructor(name: string = "Untitled", color: string = "rgb(0,192,255)") {
+    constructor(name: string = "Untitled", color: string = "rgb(0,192,255)", inputs: {}) {
         super("fork");
         this.name = name;
         this.color = color;
+        this.inputs = inputs;
 
         this.addPort(new ForkNodePortModel("top"));
         this.addPort(new ForkNodePortModel("bottom"));
@@ -30,5 +32,9 @@ export class ForkNodeModel extends NodeModel {
             name: this.name,
             color: this.color
         });
+    }
+
+    getInputs() {
+        return this.inputs;
     }
 }

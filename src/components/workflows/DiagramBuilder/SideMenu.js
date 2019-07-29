@@ -9,10 +9,39 @@ export class SideMenu extends Component {
 
         if (this.props.category === "Functional") {
             this.props.functional.map((func, i) => {
-                return (
-                    wfList.push(<SideMenuItem id={`functionalNode${i}`} model={{type: func}}
-                                              name={func.toUpperCase()} color="#0095FF"/>)
-                )
+                if (func === "fork") {
+                    let wfObject = {
+                        name: "forkTask",
+                        taskReferenceName: "forkTaskRef",
+                        type: "FORK_JOIN",
+                        forkTasks: [],
+                        optional: false,
+                        startDelay: 0
+                    };
+                    return (
+                        wfList.push(<SideMenuItem id={`functionalNode${i}`} model={{type: func, wfObject}}
+                                                  name={func.toUpperCase()} color="#0095FF"/>)
+                    )
+                }
+                if (func === "join") {
+                    let wfObject = {
+                        name: "joinTask",
+                        taskReferenceName: "joinTaskRef",
+                        type: "JOIN",
+                        joinOn: [],
+                        optional: false,
+                        startDelay: 0
+                    };
+                    return (
+                        wfList.push(<SideMenuItem id={`functionalNode${i}`} model={{type: func, wfObject}}
+                                                  name={func.toUpperCase()} color="#0095FF"/>)
+                    )
+                } else {
+                    return (
+                        wfList.push(<SideMenuItem id={`functionalNode${i}`} model={{type: func}}
+                                                  name={func.toUpperCase()} color="#0095FF"/>)
+                    )
+                }
             });
             return wfList;
         }
@@ -27,19 +56,12 @@ export class SideMenu extends Component {
                     name: wf.name,
                     version: 1
                 },
-                optional: false
-
+                optional: false,
+                startDelay: 0
             };
             return (
                 wfList.push(<SideMenuItem id={`wf${i}`} model={{type: "in/out", wfObject, name: wf.name}}
                                           name={wf.name} color="#0095FF"/>)
-            )
-        });
-
-        this.props.functional.map((func, i) => {
-            return (
-                wfList.push(<SideMenuItem id={`functionalNode${i}`} model={{type: func}}
-                                          name={func.toUpperCase()} color="#0095FF"/>)
             )
         });
 
