@@ -12,6 +12,7 @@ import Registration from "./components/auth/Registration";
 import {connect} from "react-redux";
 import Logout from "./components/auth/Logout";
 import * as authActions from './store/actions/auth';
+import KibanaFrame from "./components/dashboard/KibanaFrame";
 
 
 class App extends Component {
@@ -39,6 +40,7 @@ class App extends Component {
                     <Route path="/tasks" component={TaskList}/>
                     <Route exact path="/workflows/:type" component={WorkflowList}/>
                     <Route exact path="/workflows/:type/:wfid" component={WorkflowList} />
+                    <Route exact path="/inventory" component={KibanaFrame}/>
                     <Route path="/logout" component={Logout}/>
                     <Redirect exact from="/login" to="/"/>
                     <Redirect exact from="/registration" to="/"/>

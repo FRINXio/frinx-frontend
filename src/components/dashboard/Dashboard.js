@@ -29,7 +29,7 @@ class Dashboard extends Component {
                 <Row>
                     <Col>
                         <Panel title='Inventory' desc="Create, view and organize assets." icon={faBoxOpen}
-                               style={{background: 'linear-gradient'}} />
+                               style={{background: 'linear-gradient'}} link="/inventory" />
                     </Col>
                     <Col>
                         <Panel title='Logs' desc="View system logs." icon={faLayerGroup}
