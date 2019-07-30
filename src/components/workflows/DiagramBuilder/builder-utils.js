@@ -79,7 +79,6 @@ export const createMountAndCheckExample = (app, props) => {
     let link3 = node2OutPort.link(end.getPort("top"));
 
     activeModel.addAll(start, end, node1, node2, link1, link2, link3);
-    console.log(activeModel.getLinks());
 
     return app.getDiagramEngine().getDiagramModel().getNodes();
 };

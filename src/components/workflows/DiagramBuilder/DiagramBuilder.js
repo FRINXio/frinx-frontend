@@ -16,6 +16,7 @@ import {connect} from "react-redux";
 import {createMountAndCheckExample} from "./builder-utils";
 import {ForkNodeModel} from "./NodeModels/ForkNode/ForkNodeModel";
 import {JoinNodeModel} from "./NodeModels/JoinNode/JoinNodeModel";
+import {Toolkit} from "storm-react-diagrams";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -31,6 +32,7 @@ class DiagramBuilder extends Component {
 
     componentWillMount() {
         this.props.resetToDefaultWorkflow();
+        document.addEventListener('dblclick', this.doubleClickListener.bind(this))
     }
 
     componentDidMount() {
@@ -38,6 +40,24 @@ class DiagramBuilder extends Component {
             this.props.storeWorkflows(res.result)
         });
         this.putDefaultsOnCanvas();
+    }
+
+    doubleClickListener(event) {
+        let diagramEngine = this.state.app.getDiagramEngine();
+        let diagramModel = diagramEngine.getDiagramModel();
+        let element = Toolkit.closest(event.target, ".node[data-nodeid]");
+        let node = null;
+
+        if (element) {
+            node = diagramModel.getNode(element.getAttribute("data-nodeid"));
+            if (node.type !== "start" && node.type !== "end") {
+                node.setSelected(false);
+                this.setState({
+                    showSubWfModal: true,
+                    modalInputs: {inputs: node.inputs, id: node.id}
+                });
+            }
+        }
     }
 
     putDefaultsOnCanvas() {
@@ -53,12 +73,7 @@ class DiagramBuilder extends Component {
 
     //mock
     createExampleWf() {
-        let nodes = createMountAndCheckExample(this.state.app, this.props);
-
-        _.values(nodes).forEach(node => {
-            setTimeout(() => this.addEventListeners(node), 100);
-        });
-
+        createMountAndCheckExample(this.state.app, this.props);
         this.forceUpdate();
     }
 
@@ -74,25 +89,6 @@ class DiagramBuilder extends Component {
         _.values(nodes).forEach(node => {
             if (node.id === id) {
                 node.inputs = savedInputs;
-            }
-        });
-    }
-
-    addEventListeners(node) {
-        let nodeList = document.getElementsByClassName("srd-default-node__title");
-
-        let doubleClick = () => {
-            node.setSelected(false);
-            this.setState({
-                showSubWfModal: true,
-                modalInputs: {inputs: node.inputs, id: node.id}
-            });
-        };
-
-        //TODO handle duplicating of eventListeners of same nodes
-        Array.from(nodeList).forEach(nodeElem => {
-            if (node.name === nodeElem.textContent) {
-                nodeElem.addEventListener('dblclick', doubleClick, false)
             }
         });
     }
@@ -132,7 +128,6 @@ class DiagramBuilder extends Component {
                 break
         }
 
-
         let points = this.state.app.getDiagramEngine().getRelativeMousePoint(e);
         node.x = points.x;
         node.y = points.y;
@@ -142,7 +137,6 @@ class DiagramBuilder extends Component {
             .addNode(node);
 
         this.forceUpdate();
-        setTimeout(() => this.addEventListeners(node), 100);
     }
 
     parseDiagramToJSON() {
