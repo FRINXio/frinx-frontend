@@ -13,7 +13,7 @@ import * as _ from "lodash";
 import './DiagramBuilder.css'
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
-import {createMountAndCheckExample} from "./builder-utils";
+import {createMountAndCheckExample, createSampleBatchInventoryRetrievalExample} from "./builder-utils";
 import {ForkNodeModel} from "./NodeModels/ForkNode/ForkNodeModel";
 import {JoinNodeModel} from "./NodeModels/JoinNode/JoinNodeModel";
 import {Toolkit} from "storm-react-diagrams";
@@ -73,7 +73,8 @@ class DiagramBuilder extends Component {
 
     //mock
     createExampleWf() {
-        createMountAndCheckExample(this.state.app, this.props);
+        //createMountAndCheckExample(this.state.app, this.props);
+        createSampleBatchInventoryRetrievalExample(this.state.app, this.props);
         this.forceUpdate();
     }
 
@@ -94,6 +95,7 @@ class DiagramBuilder extends Component {
     }
 
     onDropHandler(e) {
+        console.log(document.getElementsByClassName("tray"));
         let data = JSON.parse(e.dataTransfer.getData("storm-diagram-node"));
         let node = null;
 
@@ -160,7 +162,7 @@ class DiagramBuilder extends Component {
                     let joinNode = null;
                     let forkTasks = [];
                     let joinOn = [];
-                    let forkBranches = forkNode.ports.bottom.links;
+                    let forkBranches = forkNode.ports.right.links;
 
                     //for each branch chain tasks
                     _.values(forkBranches).forEach(link => {

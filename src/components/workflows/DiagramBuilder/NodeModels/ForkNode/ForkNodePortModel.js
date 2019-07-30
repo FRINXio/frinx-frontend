@@ -4,7 +4,7 @@ import { LinkModel, DiagramEngine, PortModel, DefaultLinkModel } from "storm-rea
 export class ForkNodePortModel extends PortModel {
     position: string | "top" | "bottom" | "left" | "right";
 
-    constructor(pos: string = "bottom") {
+    constructor(pos: string = "left") {
         super(pos, "fork");
         this.position = pos;
     }

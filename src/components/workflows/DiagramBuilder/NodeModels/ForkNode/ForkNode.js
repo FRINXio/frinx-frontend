@@ -37,12 +37,15 @@ export class ForkNode extends React.Component {
           </g>
         `
                     }}/>
-                <div style={{position: "absolute", zIndex: 10, left: this.state.size / 2 - 8, top: 0}}>
-                    <PortWidget name="top" node={this.props.node} />
+
+                <div style={{position: "absolute", zIndex: 10, top: this.state.size / 2 - 8}}>
+                    <PortWidget name="left" node={this.props.node} />
                 </div>
-                <div style={{position: "absolute", zIndex: 10, left: this.state.size / 2 - 8, top: this.state.size - 16}}>
-                    <PortWidget name="bottom" node={this.props.node} />
+
+                <div style={{position: "absolute", zIndex: 10, left: this.state.size - 16, top: this.state.size / 2 - 8}}>
+                    <PortWidget name="right" node={this.props.node} />
                 </div>
+
             </div>
         );
     }

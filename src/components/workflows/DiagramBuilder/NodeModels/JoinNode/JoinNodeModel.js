@@ -17,8 +17,8 @@ export class JoinNodeModel extends NodeModel {
         this.color = color;
         this.inputs = inputs;
 
-        this.addPort(new JoinNodePortModel("top"));
-        this.addPort(new JoinNodePortModel("bottom"));
+        this.addPort(new JoinNodePortModel("left"));
+        this.addPort(new JoinNodePortModel("right"));
     }
 
     deSerialize(object, engine: DiagramEngine) {
