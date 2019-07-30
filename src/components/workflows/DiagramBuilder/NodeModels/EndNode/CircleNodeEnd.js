@@ -17,8 +17,8 @@ export class CircleNodeEnd extends React.Component {
                         <text x="36" y="56" >End</text>
                     </g>
                 </svg>
-                <div style={{position: "absolute", zIndex: 10, left: 50 - 8, top: 10}}>
-                    <PortWidget name="top" node={this.props.node} />
+                <div style={{position: "absolute", zIndex: 10, left: 9, top: 45}}>
+                    <PortWidget name="left" node={this.props.node} />
                 </div>
             </div>
         );

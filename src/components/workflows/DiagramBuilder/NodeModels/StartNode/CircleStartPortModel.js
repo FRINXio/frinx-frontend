@@ -4,7 +4,7 @@ import { LinkModel, DiagramEngine, PortModel, DefaultLinkModel } from "storm-rea
 export class CircleStartPortModel extends PortModel {
     position: string | "top" | "bottom" | "left" | "right";
 
-    constructor(pos: string = "bottom") {
+    constructor(pos: string = "right") {
         super(pos, "start");
         this.position = pos;
     }

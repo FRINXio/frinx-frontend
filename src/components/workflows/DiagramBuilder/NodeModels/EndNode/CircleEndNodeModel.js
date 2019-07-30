@@ -15,7 +15,7 @@ export class CircleEndNodeModel extends NodeModel {
         this.name = name;
         this.color = color;
 
-        this.addPort(new CircleEndPortModel("top"));
+        this.addPort(new CircleEndPortModel("left"));
     }
 
     deSerialize(object, engine: DiagramEngine) {
