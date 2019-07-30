@@ -59,7 +59,6 @@ class DetailsModal extends Component {
     }
 
     handleClose() {
-        this.props.refreshTable();
         this.setState({ show: false });
         this.props.modalHandler();
     }
@@ -325,7 +324,7 @@ class DetailsModal extends Component {
             if (this.state.subworkflows && Object.keys(this.state.subworkflows).length) {
                 return (
                     <Dropdown style={{margin: "2px", display: "inline"}}>
-                        <Dropdown.Toggle>Childs</Dropdown.Toggle>
+                        <Dropdown.Toggle>Children</Dropdown.Toggle>
                         <Dropdown.Menu>
                             {Object.keys(this.state.subworkflows).map((item, i) => {
                                 return <Dropdown.Item
