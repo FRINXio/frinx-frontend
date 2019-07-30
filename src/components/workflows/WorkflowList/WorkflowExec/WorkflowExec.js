@@ -56,7 +56,10 @@ class WorkflowExec extends Component {
             } else {
                 if (parents.length < 1) {
                     this.props.fetchParentWorkflows();
-                    this.setState({openParentWfs: []})
+                    this.setState({
+                        openParentWfs: [],
+                        showChildren: []
+                    })
                 }
             }
         }
@@ -83,6 +86,24 @@ class WorkflowExec extends Component {
         })
     }
 
+    indent(wf, i) {
+        if (wf[i].parentWorkflowId) {
+            let layers = 0;
+            if (this.state.showChildren.some(child => child.workflowId === wf[i].parentWorkflowId)) {
+                let parent = wf[i];
+                while (parent.parentWorkflowId) {
+                    layers++;
+                    parent = wf[wf.findIndex(id => id.workflowId === parent.parentWorkflowId)];
+                    if (layers > 10)
+                        break;
+                }
+                return layers*6+'px';
+            }
+            return '6px';
+        }
+        return '0px';
+    }
+
     repeat() {
         let {data, table, query, label, parents, parentsTable, child} = this.props.searchReducer;
         let parentsId = child ? child.map(wf => wf.parentWorkflowId) : [];
@@ -100,7 +121,7 @@ class WorkflowExec extends Component {
                     </td>
                     {this.state.allData
                         ? null
-                        : <td className='clickable' style={{textAlign: 'center'}} onClick={this.showChildrenWorkflows.bind(this, dataset[i])}>
+                        : <td className='clickable' onClick={this.showChildrenWorkflows.bind(this, dataset[i])} style={{textIndent: this.indent(dataset,i)}}>
                             {parentsId.includes(dataset[i]["workflowId"])
                                 ? this.state.openParentWfs.filter(wf => wf["startTime"] === dataset[i]["startTime"]).length
                                     ? <i className="fas fa-minus"/> : <i className="fas fa-plus"/>
@@ -108,7 +129,9 @@ class WorkflowExec extends Component {
                             }
                         </td>
                     }
-                    <td onClick={this.showDetailsModal.bind(this, dataset[i]["workflowId"])} className='clickable'>
+                    <td onClick={this.showDetailsModal.bind(this, dataset[i]["workflowId"])} className='clickable'
+                        style={{textIndent: this.indent(dataset,i), whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}
+                        title={dataset[i]["workflowType"]+ " / " + dataset[i]["version"]}>
                         {dataset[i]["workflowType"]} / {dataset[i]["version"]}
                     </td>
                     <td>{dataset[i]["status"]}</td>
