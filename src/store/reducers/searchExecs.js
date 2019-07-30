@@ -1,8 +1,10 @@
 import {
     UPDATE_SEARCH_RESULTS,
     RECEIVE_NEW_DATA,
+    HIERARCHY_NEW_DATA,
     UPDATE_QUERY,
-    UPDATE_LABEL
+    UPDATE_LABEL,
+    UPDATE_HIERARCHY_RESULTS
 } from '../actions/searchExecs';
 
 const initialState = {
@@ -10,7 +12,11 @@ const initialState = {
     data: [],
     table: [],
     query: "",
-    label: []
+    label: [],
+    parents: [],
+    child: [],
+    parentsTable: [],
+    childTable: []
 };
 
 const reducer = (state = initialState, action) => {
@@ -28,9 +34,17 @@ const reducer = (state = initialState, action) => {
             const {data, table} = action;
             return {...state, isFetching: false, data, table}
         }
+        case HIERARCHY_NEW_DATA: {
+            const {parents, child, parentsTable, childTable} = action;
+            return {...state, isFetching: false, parents, child, parentsTable, childTable}
+        }
         case UPDATE_SEARCH_RESULTS: {
             const {table} = action;
             return {...state, table}
+        }
+        case UPDATE_HIERARCHY_RESULTS: {
+            const {parentsTable, childTable} = action;
+            return {...state, parentsTable, childTable}
         }
         default: break;
     }
