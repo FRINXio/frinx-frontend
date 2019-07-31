@@ -192,6 +192,7 @@ export const updateParents = (children) => {
         dataset.forEach((wfs, i) => {
             if (children.some(e => e.parentWorkflowId === wfs.workflowId)) {
                 let showchildren = children.filter(wf => wf.parentWorkflowId === wfs["workflowId"]);
+                showchildren.sort((a,b) => {return new Date(a.startTime) - new Date(b.startTime)});
                 showchildren.forEach((wf, index) => dataset.splice(index + 1 + i, 0, wf));
             }
         });

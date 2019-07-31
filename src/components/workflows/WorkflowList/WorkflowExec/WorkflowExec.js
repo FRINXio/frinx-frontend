@@ -29,7 +29,8 @@ class WorkflowExec extends Component {
                 ? this.props.updateByQuery(this.props.query)
                 : this.props.update.updateHierarchicalByQuery(this.props.query);
         }
-        this.state.allData ? this.props.fetchNewData() : this.props.fetchParentWorkflows();
+        this.props.fetchNewData();
+        this.props.fetchParentWorkflows();
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -72,6 +73,8 @@ class WorkflowExec extends Component {
         let showChildren = this.state.showChildren;
         let openParents = this.state.openParentWfs;
         if (openParents.filter(wfs => wfs.startTime === workflow.startTime).length) {
+            let closeParents = openParents.filter(wf => wf.parentWorkflowId === workflow.workflowId);
+            closeParents.forEach(open => this.showChildrenWorkflows(open));
             this.props.deleteParents(showChildren.filter(wf => wf.parentWorkflowId === workflow.workflowId));
             openParents = openParents.filter(wfs => wfs.startTime !== workflow.startTime);
             showChildren = showChildren.filter(wf => wf.parentWorkflowId !== workflow.workflowId);
