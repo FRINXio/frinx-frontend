@@ -19,29 +19,17 @@ export class JoinNode extends React.Component {
                              `
           <g id="Layer_1">
           </g>
-          <g id="Layer_2">
-            <polygon fill="purple" stroke="#000000" stroke-width="3" stroke-miterlimit="10" points="10,` +
-                             this.state.size / 2 +
-                             ` ` +
-                             this.state.size / 2 +
-                             `,10 ` +
-                             (this.state.size - 10) +
-                             `,` +
-                             this.state.size / 2 +
-                             ` ` +
-                             this.state.size / 2 +
-                             `,` +
-                             (this.state.size - 10) +
-                             ` "/>
-                <text x="28" y="45" fill="white" font-size="13px" >join</text>
+          <g id="Layer_2">                                                                  
+           <polygon fill="purple" stroke="#000000" stroke-width="3" stroke-miterlimit="10" points="50 15,15 15,15 65,50 65,65 40"/>
+                <text x="26" y="45" fill="white" font-size="13px" >join</text>
           </g>
         `
                      }}/>
-                <div style={{position: "absolute", zIndex: 10, top: this.state.size / 2 - 8}}>
+                <div style={{position: "absolute", zIndex: 10, left: 5, top: this.state.size / 2 - 8}}>
                     <PortWidget name="left" node={this.props.node} />
                 </div>
 
-                <div style={{position: "absolute", zIndex: 10, left: this.state.size - 16, top: this.state.size / 2 - 8}}>
+                <div style={{position: "absolute", zIndex: 10, left: this.state.size - 23, top: this.state.size / 2 - 8}}>
                     <PortWidget name="right" node={this.props.node} />
                 </div>
             </div>

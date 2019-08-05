@@ -20,29 +20,17 @@ export class ForkNode extends React.Component {
           <g id="Layer_1">
           </g>
           <g id="Layer_2">
-            <polygon fill="purple" stroke="#000000" stroke-width="3" stroke-miterlimit="10" points="10,` +
-                            this.state.size / 2 +
-                            ` ` +
-                            this.state.size / 2 +
-                            `,10 ` +
-                            (this.state.size - 10) +
-                            `,` +
-                            this.state.size / 2 +
-                            ` ` +
-                            this.state.size / 2 +
-                            `,` +
-                            (this.state.size - 10) +
-                            ` "/>
-                <text x="28" y="45" fill="white" font-size="13px" >fork</text>
+            <polygon fill="purple" stroke="#000000" stroke-width="3" stroke-miterlimit="10" points="30 65,65 65,65 15,30 15,15 40"/>
+                <text x="32" y="45" fill="white" font-size="13px" >fork</text>
           </g>
         `
                     }}/>
 
-                <div style={{position: "absolute", zIndex: 10, top: this.state.size / 2 - 8}}>
+                <div style={{position: "absolute", zIndex: 10, left: 7, top: this.state.size / 2 - 8}}>
                     <PortWidget name="left" node={this.props.node} />
                 </div>
 
-                <div style={{position: "absolute", zIndex: 10, left: this.state.size - 16, top: this.state.size / 2 - 8}}>
+                <div style={{position: "absolute", zIndex: 10, left: this.state.size - 18, top: this.state.size / 2 - 8}}>
                     <PortWidget name="right" node={this.props.node} />
                 </div>
 
