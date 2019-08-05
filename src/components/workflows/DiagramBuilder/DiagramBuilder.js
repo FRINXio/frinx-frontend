@@ -73,9 +73,8 @@ class DiagramBuilder extends Component {
 
     //mock
     createExampleWf() {
-        //createMountAndCheckExample(this.state.app, this.props);
         createSampleBatchInventoryRetrievalExample(this.state.app, this.props);
-        this.forceUpdate();
+        this.props.updateSidebar();
     }
 
     subwfModalHandler() {
@@ -255,7 +254,8 @@ const mapDispatchToProps = dispatch => {
     return {
         storeWorkflows: (wfList) => dispatch(builderActions.storeWorkflows(wfList)),
         updateFinalWorkflow: (finalWorkflow) => dispatch(builderActions.updateFinalWorkflow(finalWorkflow)),
-        resetToDefaultWorkflow: () => dispatch(builderActions.resetToDefaultWorkflow())
+        resetToDefaultWorkflow: () => dispatch(builderActions.resetToDefaultWorkflow()),
+        updateSidebar: () => dispatch(builderActions.updateSidebar())
     }
 };
 
