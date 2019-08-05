@@ -36,7 +36,7 @@ class WorkflowExec extends Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.query !== prevProps.query) {
             this.setState({
-                allData: this.props.query,
+                allData: true,
                 wfId: this.props.query,
                 detailsModal: false,
                 closeDetails: true
@@ -65,6 +65,7 @@ class WorkflowExec extends Component {
             }
         }
     }
+
     update(openParents, showChildren) {
         this.setState({
             openParentWfs: openParents,

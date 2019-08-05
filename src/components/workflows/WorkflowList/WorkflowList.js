@@ -27,7 +27,7 @@ class WorkflowList extends Component {
                     <Tab eventKey="defs" title="Definitions">
                         <WorkflowDefs/>
                     </Tab>
-                    <Tab mountOnEnter eventKey="exec" title="Executed">
+                    <Tab mountOnEnter unmountOnExit eventKey="exec" title="Executed">
                         <WorkflowExec query={query}/>
                     </Tab>
                     <Tab eventKey="contact" title="Scheduled" disabled>
