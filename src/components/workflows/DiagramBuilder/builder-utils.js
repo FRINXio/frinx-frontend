@@ -3,9 +3,7 @@ import {DefaultNodeModel} from "./NodeModels/DefaultNodeModel/DefaultNodeModel";
 import {CircleEndNodeModel} from "./NodeModels/EndNode/CircleEndNodeModel";
 import * as _ from "lodash";
 import {ForkNodeModel} from "./NodeModels/ForkNode/ForkNodeModel";
-import {JoinNode} from "./NodeModels/JoinNode/JoinNode";
 import {JoinNodeModel} from "./NodeModels/JoinNode/JoinNodeModel";
-import {ForkNode} from "./NodeModels/ForkNode/ForkNode";
 
 export const getWfInputs = (wf) => {
     let taskArray = wf.tasks;
@@ -167,77 +165,77 @@ export const createSampleBatchInventoryRetrievalExample = (app, props) => {
     let start = new CircleStartNodeModel("Start");
     start.setPosition(700, 122);
 
-    let fork1 = new ForkNodeModel("fork", null, forkObject);
+    let fork1 = new ForkNodeModel("fork", null, {...forkObject, taskReferenceName: "fork_mount"});
     fork1.setPosition(start.x + 150, 135);
     let fork1Left = fork1.getPort("left");
     let fork1Right = fork1.getPort("right");
 
-    let mount1 = new DefaultNodeModel("Mount_and_check","rgb(169,74,255)", wf1 );
+    let mount1 = new DefaultNodeModel("Mount_and_check","rgb(169,74,255)", {...wf1, taskReferenceName: "mount1"});
     let mount1InPort = mount1.addInPort("In");
     let mount1OutPort = mount1.addOutPort("Out");
     mount1.setPosition(fork1.x + 200, 70);
 
-    let mount2 = new DefaultNodeModel("Mount_and_check","rgb(169,74,255)", wf1 );
+    let mount2 = new DefaultNodeModel("Mount_and_check","rgb(169,74,255)", {...wf1, taskReferenceName: "mount2"});
     let mount2InPort = mount2.addInPort("In");
     let mount2OutPort = mount2.addOutPort("Out");
     mount2.setPosition(fork1.x + 200, 135);
 
-    let mount3 = new DefaultNodeModel("Mount_and_check","rgb(169,74,255)", wf1 );
+    let mount3 = new DefaultNodeModel("Mount_and_check","rgb(169,74,255)", {...wf1, taskReferenceName: "mount3"});
     let mount3InPort = mount3.addInPort("In");
     let mount3OutPort = mount3.addOutPort("Out");
     mount3.setPosition(fork1.x + 200, 200);
 
-    let join1 = new JoinNodeModel("join", null, joinObject);
+    let join1 = new JoinNodeModel("join", null, {...joinObject, taskReferenceName: "join_mount"});
     join1.setPosition(mount2.x + 200, 135);
     let join1Left = join1.getPort("left");
     let join1Right = join1.getPort("right");
 
-    let fork2 = new ForkNodeModel("fork", null, forkObject);
+    let fork2 = new ForkNodeModel("fork", null, {...forkObject, taskReferenceName: "fork_read"});
     fork2.setPosition(join1.x + 120, 135);
     let fork2Left = fork2.getPort("left");
     let fork2Right = fork2.getPort("right");
 
-    let read1 = new DefaultNodeModel("Read_structured_device_data_in_unified","rgb(169,74,255)", wf1 );
+    let read1 = new DefaultNodeModel("Read_structured_device_data_in_unified","rgb(169,74,255)", {...wf2, taskReferenceName: "read1"});
     let read1InPort = read1.addInPort("In");
     let read1OutPort = read1.addOutPort("Out");
     read1.setPosition(fork2.x + 200, 70);
 
-    let read2 = new DefaultNodeModel("Read_structured_device_data_in_unified","rgb(169,74,255)", wf2 );
+    let read2 = new DefaultNodeModel("Read_structured_device_data_in_unified","rgb(169,74,255)", {...wf2, taskReferenceName: "read2"});
     let read2InPort = read2.addInPort("In");
     let read2OutPort = read2.addOutPort("Out");
     read2.setPosition(fork2.x + 200, 135);
 
-    let read3 = new DefaultNodeModel("Read_structured_device_data_in_unified","rgb(169,74,255)", wf2 );
+    let read3 = new DefaultNodeModel("Read_structured_device_data_in_unified","rgb(169,74,255)", {...wf2, taskReferenceName: "read3"});
     let read3InPort = read3.addInPort("In");
     let read3OutPort = read3.addOutPort("Out");
     read3.setPosition(fork2.x + 200, 200);
 
-    let join2 = new JoinNodeModel("join", null, joinObject);
+    let join2 = new JoinNodeModel("join", null, {...joinObject, taskReferenceName: "join_read"});
     join2.setPosition(read2.x + 300, 135);
     let join2Left = join2.getPort("left");
     let join2Right = join2.getPort("right");
 
-    let fork3 = new ForkNodeModel("join", null, forkObject);
+    let fork3 = new ForkNodeModel("join", null, {...forkObject, taskReferenceName: "fork_unmount"});
     fork3.setPosition(join2.x + 120, 135);
     let fork3Left = fork3.getPort("left");
     let fork3Right = fork3.getPort("right");
 
-    let unmount1 = new DefaultNodeModel("Unmount_cli_device","rgb(169,74,255)", wf3 );
+    let unmount1 = new DefaultNodeModel("Unmount_cli_device","rgb(169,74,255)", {...wf3, taskReferenceName: "unmount1"});
     let unmount1InPort = unmount1.addInPort("In");
     let unmount1OutPort = unmount1.addOutPort("Out");
     unmount1.setPosition(fork3.x + 200, 70);
 
-    let unmount2 = new DefaultNodeModel("Unmount_cli_device","rgb(169,74,255)", wf3 );
+    let unmount2 = new DefaultNodeModel("Unmount_cli_device","rgb(169,74,255)", {...wf3, taskReferenceName: "unmount2"} );
     let unmount2InPort = unmount2.addInPort("In");
     let unmount2OutPort = unmount2.addOutPort("Out");
     unmount2.setPosition(fork3.x + 200, 135);
 
-    let unmount3 = new DefaultNodeModel("Unmount_cli_device","rgb(169,74,255)", wf3 );
+    let unmount3 = new DefaultNodeModel("Unmount_cli_device","rgb(169,74,255)", {...wf3, taskReferenceName: "unmount3"} );
     let unmount3InPort = unmount3.addInPort("In");
     let unmount3OutPort = unmount3.addOutPort("Out");
     unmount3.setPosition(fork3.x + 200, 200);
 
-    let join3 = new JoinNodeModel("join", null, joinObject);
+    let join3 = new JoinNodeModel("join", null, {...joinObject, taskReferenceName: "join_unmount"});
     join3.setPosition(unmount2.x + 200, 135);
     let join3Left = join3.getPort("left");
     let join3Right = join3.getPort("right");
