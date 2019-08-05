@@ -66,6 +66,9 @@ class SubwfModal extends Component {
     }
 
     render() {
+
+        let hiddenParams = ["type", "optional", "subWorkflowParam", "joinOn", "forkTasks"];
+
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose}>  <Modal.Header>
                 <Modal.Title>Edit task inputs</Modal.Title>
@@ -88,7 +91,7 @@ class SubwfModal extends Component {
                                             </Col>
                                         )
                                     })
-                                } else if (item[0] !== "type" && item[0] !== "optional" && item[0] !== "subWorkflowParam"){
+                                } else if (!hiddenParams.includes(item[0])){
                                     return (
                                         <Col sm={6} key={`col2-${i}`}>
                                             <Form.Group>
