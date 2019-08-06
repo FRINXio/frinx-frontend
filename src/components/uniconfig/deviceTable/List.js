@@ -59,9 +59,11 @@ class List extends Component {
         //append os/version from conf
         if (topology === "cli") {
             os_version = await http.get('/api/odl/conf/status/' + topology + "/" + node_id).then(res => {
-                os_version = res["node"]["0"]["cli-topology:device-type"];
-                os_version = os_version + " / " + res["node"]["0"]["cli-topology:device-version"];
-                return os_version;
+                if (res["node"]["0"]) {
+                    os_version = res["node"]["0"]["cli-topology:device-type"];
+                    os_version = os_version + " / " + res["node"]["0"]["cli-topology:device-version"];
+                    return os_version;
+                }
             })
         } else {
             os_version = "netconf"
@@ -242,37 +244,39 @@ class List extends Component {
         let topology_obj = topology === "cli" ? "cli-topology" : "netconf-node-topology";
         return http.get("/api/odl/oper/status/" + topology + "/" + node_id).then(res => {
             try {
-                let device = res.node[0];
-                let node_id = device["node-id"];
-                let host = device[`${topology_obj}:host`];
-                let a_cap = device[`${topology_obj}:available-capabilities`];
-                let u_cap = device[`${topology_obj}:unavailable-capabilities`] || null;
-                let status = device[`${topology_obj}:connection-status`];
-                let port = device[`${topology_obj}:port`];
-                let err_patterns = device[`${topology_obj}:default-error-patterns`] || null;
-                let commit_patterns = device[`${topology_obj}:default-commit-error-patterns`] || null;
-                let connected_message = device[`${topology_obj}:connected-message`] || null;
-
-                return http.get("/api/odl/conf/status/" + topology + "/" + node_id).then(res => {
+                if (res.node[0]) {
                     let device = res.node[0];
-                    let transport_type = device[`${topology_obj}:transport-type`] || device[`${topology_obj}:tcp-only`];
-                    let protocol = topology_obj.split("-")[0];
+                    let node_id = device["node-id"];
+                    let host = device[`${topology_obj}:host`];
+                    let a_cap = device[`${topology_obj}:available-capabilities`];
+                    let u_cap = device[`${topology_obj}:unavailable-capabilities`] || null;
+                    let status = device[`${topology_obj}:connection-status`];
+                    let port = device[`${topology_obj}:port`];
+                    let err_patterns = device[`${topology_obj}:default-error-patterns`] || null;
+                    let commit_patterns = device[`${topology_obj}:default-commit-error-patterns`] || null;
+                    let connected_message = device[`${topology_obj}:connected-message`] || null;
 
-                    return {
-                        node_id: node_id,
-                        host: host,
-                        a_cap: a_cap,
-                        u_cap: u_cap,
-                        status: status,
-                        port: port,
-                        err_patterns: err_patterns,
-                        commit_patterns: commit_patterns,
-                        topology: topology,
-                        transport_type: transport_type,
-                        protocol: protocol,
-                        connected_message: connected_message
-                    };
-                });
+                    return http.get("/api/odl/conf/status/" + topology + "/" + node_id).then(res => {
+                        let device = res.node[0];
+                        let transport_type = device[`${topology_obj}:transport-type`] || device[`${topology_obj}:tcp-only`];
+                        let protocol = topology_obj.split("-")[0];
+
+                        return {
+                            node_id: node_id,
+                            host: host,
+                            a_cap: a_cap,
+                            u_cap: u_cap,
+                            status: status,
+                            port: port,
+                            err_patterns: err_patterns,
+                            commit_patterns: commit_patterns,
+                            topology: topology,
+                            transport_type: transport_type,
+                            protocol: protocol,
+                            connected_message: connected_message
+                        };
+                    });
+                }
             } catch (e) {
                 console.log(e);
             }
