@@ -246,7 +246,9 @@ class MountModal extends Component {
 
     handleNative(e) {
         let updated = this.state.blacklist;
-        updated["uniconfig-config:blacklist"]["uniconfig-config:path"] =  new Array(e.target.value);
+        let models = e.target.value;
+        models = models.replace(/ /g,'').split(",");
+        updated["uniconfig-config:blacklist"]["uniconfig-config:path"] = models;
         this.setState({
             blacklist: updated
         })
@@ -284,7 +286,7 @@ class MountModal extends Component {
                                         <input className="clickable" type="checkbox" onClick={this.handleBlacklist.bind(this)}/>
                                     </InputGroup.Text>
                                 </InputGroup.Append>
-                                <Form.Control disabled={!this.state.enableBlacklist} type="input"  onChange={(e) => this.handleNative(e)} value={this.state.blacklist["uniconfig-config:blacklist"]["uniconfig-config:path"]}/>
+                                <Form.Control disabled={!this.state.enableBlacklist} type="input"  onChange={(e) => this.handleNative(e)} defaultValue={this.state.blacklist["uniconfig-config:blacklist"]["uniconfig-config:path"]}/>
                             </InputGroup>
                             <Form.Text className="text-muted">
                                 List of blacklisted root paths that should not be read from the device
