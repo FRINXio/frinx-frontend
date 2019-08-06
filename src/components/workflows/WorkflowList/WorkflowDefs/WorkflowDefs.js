@@ -128,7 +128,7 @@ class WorkflowDefs extends Component {
                                 <Button variant="outline-light noshadow" onClick={this.showDefinitionModal.bind(this)}>Definition</Button>
                                 <Button variant="outline-light noshadow" onClick={this.showDiagramModal.bind(this)}>Diagram</Button>
                                 <Button variant="outline-light noshadow" onClick={this.updateFavourite.bind(this,dataset[i])}>
-                                    <i className={dataset[i]["description"].includes("FAVOURITE") ? 'fa fa-star' : 'far fa-star'}
+                                    <i className={dataset[i]["description"] ? (dataset[i]["description"].includes("FAVOURITE") ? 'fa fa-star' : 'far fa-star') : "far fa-star"}
                                        style={{ cursor: 'pointer'}}
                                     />
                                 </Button>
@@ -151,7 +151,7 @@ class WorkflowDefs extends Component {
         let labelsArr = [];
         if (this.state.data.length) {
             this.state.data.map(wf => {
-                let str = wf["description"].substring(wf["description"].indexOf("-") + 1);
+                let str = wf["description"] ? wf["description"].substring(wf["description"].indexOf("-") + 1) : null;
                 if (str === wf["description"]) {
                     str = null;
                 }
