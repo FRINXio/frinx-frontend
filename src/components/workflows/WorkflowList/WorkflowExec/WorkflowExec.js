@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Col, Form, Row, Table} from 'react-bootstrap'
+import {Col, Container, Form, Row, Table} from 'react-bootstrap'
 import {Typeahead} from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './WorkflowExec.css'
@@ -7,6 +7,8 @@ import DetailsModal from "./DetailsModal/DetailsModal";
 import WorkflowBulk from "./WorkflowBulk/WorkflowBulk";
 import * as searchActions from "../../../../store/actions/searchExecs";
 import {connect} from "react-redux";
+import PageCount from "../../../common/PageCount";
+import PageSelect from "../../../common/PageSelect";
 
 class WorkflowExec extends Component {
     constructor(props) {
@@ -18,7 +20,11 @@ class WorkflowExec extends Component {
             openParentWfs: [],
             closeDetails: true,
             allData: true,
-            showChildren: []
+            showChildren: [],
+            defaultPages: 20,
+            pagesCount: 1,
+            viewedPage: 1,
+            datasetLength: 0
         };
         this.table = React.createRef();
     }
@@ -45,10 +51,19 @@ class WorkflowExec extends Component {
                 this.props.updateByQuery(this.props.query);
             }
         }
-        let {data, table, query, label, parents } = this.props.searchReducer;
-        let dataset = (query === "" && label < 1) ? data : table;
+        let {data, table, query, label, parents, parentsTable } = this.props.searchReducer;
+        let dataset = this.state.allData
+            ? (query === "" && label < 1) ? data : table
+            : (query === "" && label < 1) ? parents : parentsTable;
         if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails) {
             this.showDetailsModal(dataset[0].workflowId);
+        }
+        if (dataset.length !== this.state.datasetLength) {
+            let size =  ~~(dataset.length / this.state.defaultPages);
+            this.setState({
+                pagesCount:  dataset.length % this.state.defaultPages ? ++size : size,
+                datasetLength: dataset.length
+            });
         }
         if (prevState.allData !== this.state.allData || this.props.query !== prevProps.query ) {
             if (this.state.allData) {
@@ -113,6 +128,20 @@ class WorkflowExec extends Component {
         return '0px';
     }
 
+    setCountPages(defaultPages, pagesCount){
+        this.setState({
+            defaultPages : defaultPages,
+            pagesCount: pagesCount,
+            viewedPage: 1
+        })
+    }
+
+    setViewPage(page){
+        this.setState({
+            viewedPage: page
+        })
+    }
+
     repeat() {
         let {data, table, query, label, parents, parentsTable, child} = this.props.searchReducer;
         let parentsId = child ? child.map(wf => wf.parentWorkflowId) : [];
@@ -120,34 +149,45 @@ class WorkflowExec extends Component {
         let dataset = this.state.allData
             ? (query === "" && label < 1) ? data : table
             : (query === "" && label < 1) ? parents : parentsTable;
+        let defaultPages = this.state.defaultPages;
+        let viewedPage = this.state.viewedPage;
         for (let i = 0; i < dataset.length; i++) {
-            output.push(
-                <tr key={`row-${i}`} id={`row-${i}`}
-                    className={this.state.showChildren.some(wf => wf.workflowId === dataset[i]["workflowId"]) && !this.state.allData ? "childWf" : null }>
-                    <td><Form.Check checked={this.state.selectedWfs.includes(dataset[i]["workflowId"])}
-                                    onChange={(e) => this.selectWf(e)} style={{marginLeft: "20px"}}
-                                    id={`chb-${i}`}/>
-                    </td>
-                    {this.state.allData
-                        ? null
-                        : <td className='clickable' onClick={this.showChildrenWorkflows.bind(this, dataset[i], null, null)} style={{textIndent: this.indent(dataset,i)}}>
-                            {parentsId.includes(dataset[i]["workflowId"])
-                                ? this.state.openParentWfs.filter(wf => wf["startTime"] === dataset[i]["startTime"]).length
-                                    ? <i className="fas fa-minus"/> : <i className="fas fa-plus"/>
-                                : null
-                            }
+            if (i >= (viewedPage - 1) * defaultPages && i < viewedPage * defaultPages) {
+                output.push(
+                    <tr key={`row-${i}`} id={`row-${i}`}
+                        className={this.state.showChildren.some(wf => wf.workflowId === dataset[i]["workflowId"]) && !this.state.allData ? "childWf" : null}>
+                        <td><Form.Check checked={this.state.selectedWfs.includes(dataset[i]["workflowId"])}
+                                        onChange={(e) => this.selectWf(e)} style={{marginLeft: "20px"}}
+                                        id={`chb-${i}`}/>
                         </td>
-                    }
-                    <td onClick={this.showDetailsModal.bind(this, dataset[i]["workflowId"])} className='clickable'
-                        style={{textIndent: this.indent(dataset,i), whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}
-                        title={dataset[i]["workflowType"]+ " / " + dataset[i]["version"]}>
-                        {dataset[i]["workflowType"]} / {dataset[i]["version"]}
-                    </td>
-                    <td>{dataset[i]["status"]}</td>
-                    <td>{dataset[i]["startTime"]}</td>
-                    <td>{dataset[i]["endTime"]}</td>
-                </tr>
-            );
+                        {this.state.allData
+                            ? null
+                            : <td className='clickable'
+                                  onClick={this.showChildrenWorkflows.bind(this, dataset[i], null, null)}
+                                  style={{textIndent: this.indent(dataset, i)}}>
+                                {parentsId.includes(dataset[i]["workflowId"])
+                                    ? this.state.openParentWfs.filter(wf => wf["startTime"] === dataset[i]["startTime"]).length
+                                        ? <i className="fas fa-minus"/> : <i className="fas fa-plus"/>
+                                    : null
+                                }
+                            </td>
+                        }
+                        <td onClick={this.showDetailsModal.bind(this, dataset[i]["workflowId"])} className='clickable'
+                            style={{
+                                textIndent: this.indent(dataset, i),
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis"
+                            }}
+                            title={dataset[i]["workflowType"] + " / " + dataset[i]["version"]}>
+                            {dataset[i]["workflowType"]} / {dataset[i]["version"]}
+                        </td>
+                        <td>{dataset[i]["status"]}</td>
+                        <td>{dataset[i]["startTime"]}</td>
+                        <td>{dataset[i]["endTime"]}</td>
+                    </tr>
+                );
+            }
         }
         return output;
     }
@@ -261,6 +301,21 @@ class WorkflowExec extends Component {
                         </tbody>
                     </Table>
                 </div>
+                <Container style={{marginTop: "5px"}}>
+                    <Row>
+                        <Col sm={2}>
+                            <PageCount data={this.props.searchReducer.query === "" && this.props.searchReducer.label.length < 1
+                                ? this.props.searchReducer.data
+                                : this.props.searchReducer.table}
+                                       defaultPages={this.state.defaultPages}
+                                       handler={this.setCountPages.bind(this)}/>
+                        </Col>
+                        <Col sm={8}/>
+                        <Col sm={2}>
+                            <PageSelect viewedPage={this.state.viewedPage} count={this.state.pagesCount} handler={this.setViewPage.bind(this)}/>
+                        </Col>
+                    </Row>
+                </Container>
             </div>
         )
     }
