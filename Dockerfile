@@ -3,6 +3,7 @@ FROM node:8.9-alpine
 
 ARG ODL
 ARG WF_SERVER
+ARG REACT_APP_LOGIN_ENABLED
 
 # Create a work directory and copy dependency files.
 COPY ["package.json", "package-lock.json*", "/tmp/"]
@@ -16,6 +17,7 @@ COPY . /app
 
 RUN sed -i 's,.*ODL_HOST=.*,ODL_HOST='"http://""${ODL}"',' ./.env
 RUN sed -i 's,.*WF_SERVER=.*,WF_SERVER='"http://""${WF_SERVER}/api/"',' ./.env
+RUN sed -i 's,.*REACT_APP_LOGIN_ENABLED=.*,REACT_APP_LOGIN_ENABLED='\""${REACT_APP_LOGIN_ENABLED}\""',' ./.env
 
 EXPOSE 3000
 
