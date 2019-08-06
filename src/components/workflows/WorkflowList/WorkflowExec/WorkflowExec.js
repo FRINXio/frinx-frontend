@@ -152,10 +152,8 @@ class WorkflowExec extends Component {
         return output;
     }
 
-    selectHierarchy() {
-        this.setState({
-            allData: !this.state.allData
-        })
+    selectWfView() {
+        this.setState({ allData: !this.state.allData })
     }
 
     selectWf(e) {
@@ -219,8 +217,8 @@ class WorkflowExec extends Component {
             <div>
                 {detailsModal}
                 <WorkflowBulk wfsCount={this.repeat().length} selectedWfs={this.state.selectedWfs}
-                              selectAllWfs={this.selectAllWfs.bind(this)} showHierarchy={this.state.allData}
-                              selectHierarchy={this.selectHierarchy.bind(this)}/>
+                              selectAllWfs={this.selectAllWfs.bind(this)} wfView={this.state.allData}
+                              selectWfView={this.selectWfView.bind(this)}/>
 
                 <hr style={{marginTop: "-20px"}}/>
                 <Row>

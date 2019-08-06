@@ -27,7 +27,7 @@ class WorkflowBulk extends Component {
 
     render() {
 
-        let {selectedWfs, bulkReducer, wfsCount} = this.props;
+        let {selectedWfs, bulkReducer, wfsCount, wfView} = this.props;
 
         const progressInstance = <ProgressBar max={100} now={bulkReducer.loading} label={`${bulkReducer.loading}%`} />;
 
@@ -69,8 +69,7 @@ class WorkflowBulk extends Component {
                                     </p>
                                     <p>
                                         <ButtonToolbar>
-                                            <ToggleButtonGroup type="radio" defaultValue={1} name="Workflow view"
-                                                               onChange={this.props.selectHierarchy}>
+                                            <ToggleButtonGroup type="radio" value={wfView ? 1 : 2} name="Workflow view" onChange={this.props.selectWfView}>
                                                 <ToggleButton size="sm" variant="outline-secondary" value={1}>Flat</ToggleButton>
                                                 <ToggleButton size="sm" variant="outline-secondary" value={2}>Hierarchy</ToggleButton>
                                             </ToggleButtonGroup>&nbsp;&nbsp;workflow view
