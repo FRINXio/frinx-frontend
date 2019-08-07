@@ -52,8 +52,7 @@ class WorkflowExec extends Component {
         }
         if (prevState.allData !== this.state.allData || this.props.query !== prevProps.query ) {
             if (this.state.allData) {
-                if (data.length < 1)
-                    this.props.fetchNewData()
+                this.props.fetchNewData();
             } else {
                 if (parents.length < 1) {
                     this.props.fetchParentWorkflows();
