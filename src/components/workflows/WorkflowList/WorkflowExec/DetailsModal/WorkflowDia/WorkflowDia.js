@@ -41,13 +41,7 @@ class WorkflowDia extends Component {
                     <div>
                     <Row style={{textAlign: "center"}}>
                         <Col>
-                            <h4>Main Workflow</h4>
-                        </Col>
-                        <Col>
                             <h2>Execution Flow</h2>
-                        </Col>
-                        <Col>
-                            <h4>Subworkflow</h4>
                         </Col>
                     </Row>
                     <hr/>
