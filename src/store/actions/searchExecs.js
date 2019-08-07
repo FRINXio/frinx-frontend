@@ -86,6 +86,7 @@ export const fetchParentWorkflows = () => {
     return (dispatch, getState) => {
         http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
             let allData = res.result ? (res.result.hits ? res.result.hits : []) : [];
+            allData.sort((a,b) => {return new Date(a.startTime) - new Date(b.startTime)});
             let parents = []; let child = [];
             let separatedWfs = [];
             let chunk = 5;
@@ -192,6 +193,7 @@ export const updateParents = (children) => {
         dataset.forEach((wfs, i) => {
             if (children.some(e => e.parentWorkflowId === wfs.workflowId)) {
                 let showchildren = children.filter(wf => wf.parentWorkflowId === wfs["workflowId"]);
+                showchildren.sort((a,b) => {return new Date(a.startTime) - new Date(b.startTime)});
                 showchildren.forEach((wf, index) => dataset.splice(index + 1 + i, 0, wf));
             }
         });

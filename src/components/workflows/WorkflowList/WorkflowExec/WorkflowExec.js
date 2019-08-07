@@ -27,15 +27,17 @@ class WorkflowExec extends Component {
         if (this.props.query) {
             this.state.allData
                 ? this.props.updateByQuery(this.props.query)
-                : this.props.update.updateHierarchicalByQuery(this.props.query);
+                : this.props.updateHierarchicalByQuery(this.props.query);
         }
-        this.state.allData ? this.props.fetchNewData() : this.props.fetchParentWorkflows();
+        this.state.allData
+            ? this.props.fetchNewData()
+            : this.props.fetchParentWorkflows();
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.query !== prevProps.query) {
             this.setState({
-                allData: this.props.query,
+                allData: true,
                 wfId: this.props.query,
                 detailsModal: false,
                 closeDetails: true
@@ -51,8 +53,7 @@ class WorkflowExec extends Component {
         }
         if (prevState.allData !== this.state.allData || this.props.query !== prevProps.query ) {
             if (this.state.allData) {
-                if (data.length < 1)
-                    this.props.fetchNewData()
+                this.props.fetchNewData();
             } else {
                 if (parents.length < 1) {
                     this.props.fetchParentWorkflows();
@@ -65,25 +66,37 @@ class WorkflowExec extends Component {
         }
     }
 
-    showChildrenWorkflows(workflow) {
-        let {query, label, child, childTable} = this.props.searchReducer;
-        let childrenDataset = (query === "" && label < 1) ? child : childTable;
-        childrenDataset.forEach((wf, index) => wf.index = index);
-        let showChildren = this.state.showChildren;
-        let openParents = this.state.openParentWfs;
-        if (openParents.filter(wfs => wfs.startTime === workflow.startTime).length) {
-            this.props.deleteParents(showChildren.filter(wf => wf.parentWorkflowId === workflow.workflowId));
-            openParents = openParents.filter(wfs => wfs.startTime !== workflow.startTime);
-            showChildren = showChildren.filter(wf => wf.parentWorkflowId !== workflow.workflowId);
-        } else {
-            openParents.push(workflow);
-            showChildren = showChildren.concat(childrenDataset.filter(wf => wf.parentWorkflowId === workflow.workflowId));
-            this.props.updateParents(showChildren.filter(wf => wf.parentWorkflowId === workflow.workflowId));
-        }
+    componentWillUnmount() {
+        this.props.updateByQuery("");
+    }
+
+    update(openParents, showChildren) {
         this.setState({
             openParentWfs: openParents,
             showChildren: showChildren
         })
+    }
+
+    showChildrenWorkflows(workflow, closeParentWfs, closeChildWfs) {
+        let {query, label, child, childTable} = this.props.searchReducer;
+        let childrenDataset = (query === "" && label < 1) ? child : childTable;
+        childrenDataset.forEach((wf, index) => wf.index = index);
+        let showChildren = closeChildWfs ? closeChildWfs : this.state.showChildren;
+        let openParents = closeParentWfs ? closeParentWfs : this.state.openParentWfs;
+        if (openParents.filter(wfs => wfs.startTime === workflow.startTime).length) {
+            let closeParents = openParents.filter(wf => wf.parentWorkflowId === workflow.workflowId);
+            this.props.deleteParents(showChildren.filter(wf => wf.parentWorkflowId === workflow.workflowId));
+            openParents = openParents.filter(wfs => wfs.startTime !== workflow.startTime);
+            showChildren = showChildren.filter(wf => wf.parentWorkflowId !== workflow.workflowId);
+            closeParents.length
+                ? closeParents.forEach(open => this.showChildrenWorkflows(open, openParents, showChildren))
+                : this.update(openParents, showChildren)
+        } else {
+            openParents.push(workflow);
+            showChildren = showChildren.concat(childrenDataset.filter(wf => wf.parentWorkflowId === workflow.workflowId));
+            this.props.updateParents(showChildren.filter(wf => wf.parentWorkflowId === workflow.workflowId));
+            this.update(openParents, showChildren);
+        }
     }
 
     indent(wf, i) {
@@ -121,7 +134,7 @@ class WorkflowExec extends Component {
                     </td>
                     {this.state.allData
                         ? null
-                        : <td className='clickable' onClick={this.showChildrenWorkflows.bind(this, dataset[i])} style={{textIndent: this.indent(dataset,i)}}>
+                        : <td className='clickable' onClick={this.showChildrenWorkflows.bind(this, dataset[i], null, null)} style={{textIndent: this.indent(dataset,i)}}>
                             {parentsId.includes(dataset[i]["workflowId"])
                                 ? this.state.openParentWfs.filter(wf => wf["startTime"] === dataset[i]["startTime"]).length
                                     ? <i className="fas fa-minus"/> : <i className="fas fa-plus"/>
@@ -143,10 +156,8 @@ class WorkflowExec extends Component {
         return output;
     }
 
-    selectHierarchy() {
-        this.setState({
-            allData: !this.state.allData
-        })
+    selectWfView() {
+        this.setState({ allData: !this.state.allData })
     }
 
     selectWf(e) {
@@ -210,8 +221,8 @@ class WorkflowExec extends Component {
             <div>
                 {detailsModal}
                 <WorkflowBulk wfsCount={this.repeat().length} selectedWfs={this.state.selectedWfs}
-                              selectAllWfs={this.selectAllWfs.bind(this)} showHierarchy={this.state.allData}
-                              selectHierarchy={this.selectHierarchy.bind(this)}/>
+                              selectAllWfs={this.selectAllWfs.bind(this)} wfView={this.state.allData}
+                              selectWfView={this.selectWfView.bind(this)}/>
 
                 <hr style={{marginTop: "-20px"}}/>
                 <Row>
