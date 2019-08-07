@@ -29,8 +29,9 @@ class WorkflowExec extends Component {
                 ? this.props.updateByQuery(this.props.query)
                 : this.props.updateHierarchicalByQuery(this.props.query);
         }
-        this.props.fetchNewData();
-        this.props.fetchParentWorkflows();
+        this.state.allData
+            ? this.props.fetchNewData()
+            : this.props.fetchParentWorkflows();
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
