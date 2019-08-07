@@ -66,6 +66,10 @@ class WorkflowExec extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.props.updateByQuery("");
+    }
+
     update(openParents, showChildren) {
         this.setState({
             openParentWfs: openParents,

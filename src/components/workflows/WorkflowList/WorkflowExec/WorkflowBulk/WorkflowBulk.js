@@ -67,15 +67,12 @@ class WorkflowBulk extends Component {
                                         </Button>
                                         Select workflows from table below
                                     </p>
-                                    <p>
-                                        <ButtonToolbar>
-                                            <ToggleButtonGroup type="radio" value={wfView ? 1 : 2} name="Workflow view" onChange={this.props.selectWfView}>
-                                                <ToggleButton size="sm" variant="outline-secondary" value={1}>Flat</ToggleButton>
-                                                <ToggleButton size="sm" variant="outline-secondary" value={2}>Hierarchy</ToggleButton>
-                                            </ToggleButtonGroup>&nbsp;&nbsp;workflow view
-                                        </ButtonToolbar>
-
-                                    </p>
+                                    <ButtonToolbar>
+                                        <ToggleButtonGroup type="radio" value={wfView ? 1 : 2} name="Workflow view" onChange={this.props.selectWfView}>
+                                            <ToggleButton size="sm" variant="outline-secondary" value={1}>Flat</ToggleButton>
+                                            <ToggleButton size="sm" variant="outline-secondary" value={2}>Hierarchy</ToggleButton>
+                                        </ToggleButtonGroup>&nbsp;&nbsp;workflow view
+                                    </ButtonToolbar>
                                 </Col>
                                 <Col>
                                     <Button variant="outline-primary" value="pause"
