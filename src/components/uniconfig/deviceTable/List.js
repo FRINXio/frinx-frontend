@@ -191,7 +191,8 @@ class List extends Component {
             } catch (e) {
                 console.log(e);
             }
-        })
+        });
+        this.search();
     }
 
     search() {
