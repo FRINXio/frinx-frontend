@@ -282,11 +282,9 @@ class MountModal extends Component {
                             <Form.Label>Blacklist</Form.Label>
                             <InputGroup>
                                 <InputGroup.Append style={{width: "40px"}} >
-                                    <InputGroup.Text>
-                                        <input className="clickable" type="checkbox" onClick={this.handleBlacklist.bind(this)}/>
-                                    </InputGroup.Text>
+                                    <InputGroup.Checkbox checked={this.state.enableBlacklist} onChange={this.handleBlacklist.bind(this)}/>
                                 </InputGroup.Append>
-                                <Form.Control disabled={!this.state.enableBlacklist} type="input"  onChange={(e) => this.handleNative(e)} defaultValue={this.state.blacklist["uniconfig-config:blacklist"]["uniconfig-config:path"]}/>
+                                <Form.Control disabled={!this.state.enableBlacklist} type="input" onChange={(e) => this.handleNative(e)} defaultValue={this.state.blacklist["uniconfig-config:blacklist"]["uniconfig-config:path"]}/>
                             </InputGroup>
                             <Form.Text className="text-muted">
                                 List of blacklisted root paths that should not be read from the device
