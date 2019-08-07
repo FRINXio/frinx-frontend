@@ -70,8 +70,8 @@ class List extends Component {
         } else {
             os_version = "netconf"
         }
-
-        return [device_object.node_id, device_object.host, device_object.status, os_version];
+        if (device_object)
+            return [device_object.node_id, device_object.host, device_object.status, os_version];
     }
 
     async addDeviceEntry(node_id, topology) {
@@ -82,14 +82,14 @@ class List extends Component {
 
         //check if entry already exists -> update
         newData.map((device, i) => {
-            if (device[0] === entry[0]) {
+            if (entry && device[0] === entry[0]) {
                 newData[i] = entry;
                 updated = true;
             }
             return updated;
         });
 
-        if(!updated){
+        if (entry && !updated){
             newData.push(entry);
         }
         let pages = ~~(newData.length / this.state.defaultPages) + 1;
@@ -259,25 +259,28 @@ class List extends Component {
                 let connected_message = device[`${topology_obj}:connected-message`] || null;
 
                 return http.get("/api/odl/conf/status/" + topology + "/" + node_id).then(res => {
-                    let device = res.node[0];
-                    let transport_type = device[`${topology_obj}:transport-type`] || device[`${topology_obj}:tcp-only`];
-                    let protocol = topology_obj.split("-")[0];
+                    try {
+                        let device = res.node[0];
+                        let transport_type = device[`${topology_obj}:transport-type`] || device[`${topology_obj}:tcp-only`];
+                        let protocol = topology_obj.split("-")[0];
 
-                    return {
-                        node_id: node_id,
-                        host: host,
-                        a_cap: a_cap,
-                        u_cap: u_cap,
-                        status: status,
-                        port: port,
-                        err_patterns: err_patterns,
-                        commit_patterns: commit_patterns,
-                        topology: topology,
-                        transport_type: transport_type,
-                        protocol: protocol,
-                        connected_message: connected_message
-                    };
-
+                        return {
+                            node_id: node_id,
+                            host: host,
+                            a_cap: a_cap,
+                            u_cap: u_cap,
+                            status: status,
+                            port: port,
+                            err_patterns: err_patterns,
+                            commit_patterns: commit_patterns,
+                            topology: topology,
+                            transport_type: transport_type,
+                            protocol: protocol,
+                            connected_message: connected_message
+                        };
+                    } catch (e) {
+                        console.log(e);
+                    }
                 });
             } catch (e) {
                 console.log(e);
