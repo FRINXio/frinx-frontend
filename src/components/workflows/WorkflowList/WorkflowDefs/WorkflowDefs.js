@@ -39,13 +39,21 @@ class WorkflowDefs extends Component {
     }
 
     onEditSearch(event) {
-        this.setState({keywords: event.target.value}, () =>{
+        this.setState({
+            keywords: event.target.value,
+            activeWf: null,
+            activeRow: null
+        }, () => {
             this.search()
         })
     }
 
     onLabelSearch(event) {
-        this.setState({labels: event}, () =>{
+        this.setState({
+            labels: event,
+            activeWf: null,
+            activeRow: null
+        }, () => {
             this.searchLabel()
         })
     }
