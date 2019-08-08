@@ -182,10 +182,10 @@ class WorkflowExec extends Component {
     }
 
     selectAllWfs() {
-        const {query, label, data, table, parents, parentsTable} = this.props.searchReducer;
+        const {query, label, data, table, parents, parentsTable, child, childTable } = this.props.searchReducer;
         let dataset = this.state.allData
             ? (query === "" && label < 1) ? data : table
-            : (query === "" && label < 1) ? parents : parentsTable;
+            : (query === "" && label < 1) ? parents.concat(child) : parentsTable.concat(childTable);
         let wfIds = [];
 
         if (this.state.selectedWfs.length > 0) {
