@@ -67,6 +67,7 @@ class WorkflowExec extends Component {
     }
 
     componentWillUnmount() {
+        this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
         this.props.updateByQuery("");
     }
 
