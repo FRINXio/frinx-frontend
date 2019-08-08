@@ -76,14 +76,18 @@ class WorkflowDefs extends Component {
                 }
             }
         }
+        let size = ~~(toBeRendered.length / this.state.defaultPages);
         this.setState({
             table: toBeRendered,
+            pagesCount: toBeRendered.length % this.state.defaultPages ? ++size : size,
+            viewedPage: 1
         });
         return null;
     }
 
     search() {
         let toBeRendered = [];
+
         let query = this.state.keywords.toUpperCase();
         if (query !== "") {
             const rows = this.state.table.length > 0 ? this.state.table : this.state.data;
@@ -96,8 +100,11 @@ class WorkflowDefs extends Component {
             this.searchLabel();
             return;
         }
+        let size = ~~(toBeRendered.length / this.state.defaultPages);
         this.setState({
             table: toBeRendered,
+            pagesCount: toBeRendered.length % this.state.defaultPages ? ++size : size,
+            viewedPage: 1
         })
     }
 
@@ -138,14 +145,9 @@ class WorkflowDefs extends Component {
 
     repeat() {
         let output = [];
-        let dataset;
         let defaultPages = this.state.defaultPages;
         let viewedPage = this.state.viewedPage;
-        if (this.state.keywords === "" && this.state.labels.length < 1) {
-            dataset = this.state.data;
-        } else {
-            dataset = this.state.table;
-        }
+        let dataset = this.state.keywords === "" && this.state.labels.length < 1 ? this.state.data : this.state.table;
         for (let i = 0; i < dataset.length; i++) {
             if (i >= (viewedPage - 1) * defaultPages && i < viewedPage * defaultPages) {
                 output.push(
