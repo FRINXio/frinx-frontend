@@ -6,7 +6,7 @@
 * [Docker](https://www.docker.com/)   
 
 In the project directory, run: 
-#### `docker build --build-arg "ODL=<ip>:8181" --build-arg "WF_SERVER=<ip>:8080" -t uniconfig-ui .` <br>
+#### `docker build --build-arg "ODL=<ip>:8181" --build-arg "WF_SERVER=<ip>:8080" --build-arg "REACT_APP_LOGIN_ENABLED=true" -t uniconfig-ui .` <br>
 Creates docker container with installation of UniConfig-UI. <br>
 
 ## Startup <br>

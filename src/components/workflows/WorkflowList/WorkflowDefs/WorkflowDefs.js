@@ -46,13 +46,21 @@ class WorkflowDefs extends Component {
     }
 
     onEditSearch(event) {
-        this.setState({keywords: event.target.value}, () =>{
+        this.setState({
+            keywords: event.target.value,
+            activeWf: null,
+            activeRow: null
+        }, () => {
             this.search()
         })
     }
 
     onLabelSearch(event) {
-        this.setState({labels: event}, () =>{
+        this.setState({
+            labels: event,
+            activeWf: null,
+            activeRow: null
+        }, () => {
             this.searchLabel()
         })
     }
@@ -187,7 +195,7 @@ class WorkflowDefs extends Component {
         let labelsArr = [];
         if (this.state.data.length) {
             this.state.data.map(wf => {
-                let str = wf["description"].substring(wf["description"].indexOf("-") + 1);
+                let str = wf["description"] ? wf["description"].substring(wf["description"].indexOf("-") + 1) : null;
                 if (str === wf["description"]) {
                     str = null;
                 }

@@ -35,8 +35,9 @@ class WorkflowExec extends Component {
                 ? this.props.updateByQuery(this.props.query)
                 : this.props.updateHierarchicalByQuery(this.props.query);
         }
-        this.props.fetchNewData();
-        this.props.fetchParentWorkflows();
+        this.state.allData
+            ? this.props.fetchNewData()
+            : this.props.fetchParentWorkflows();
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -67,8 +68,7 @@ class WorkflowExec extends Component {
         }
         if (prevState.allData !== this.state.allData || this.props.query !== prevProps.query ) {
             if (this.state.allData) {
-                if (data.length < 1)
-                    this.props.fetchNewData()
+                this.props.fetchNewData();
             } else {
                 if (parents.length < 1) {
                     this.props.fetchParentWorkflows();
@@ -79,6 +79,10 @@ class WorkflowExec extends Component {
                 }
             }
         }
+    }
+
+    componentWillUnmount() {
+        this.props.updateByQuery("");
     }
 
     update(openParents, showChildren) {
@@ -192,10 +196,8 @@ class WorkflowExec extends Component {
         return output;
     }
 
-    selectHierarchy() {
-        this.setState({
-            allData: !this.state.allData
-        })
+    selectWfView() {
+        this.setState({ allData: !this.state.allData })
     }
 
     selectWf(e) {
@@ -259,8 +261,8 @@ class WorkflowExec extends Component {
             <div>
                 {detailsModal}
                 <WorkflowBulk wfsCount={this.repeat().length} selectedWfs={this.state.selectedWfs}
-                              selectAllWfs={this.selectAllWfs.bind(this)} showHierarchy={this.state.allData}
-                              selectHierarchy={this.selectHierarchy.bind(this)}/>
+                              selectAllWfs={this.selectAllWfs.bind(this)} wfView={this.state.allData}
+                              selectWfView={this.selectWfView.bind(this)}/>
 
                 <hr style={{marginTop: "-20px"}}/>
                 <Row>
