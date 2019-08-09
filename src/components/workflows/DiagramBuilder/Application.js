@@ -8,6 +8,8 @@ import {ForkNodeFactory} from "./NodeModels/ForkNode/ForkNodeFactory";
 import {ForkNodePortModel} from "./NodeModels/ForkNode/ForkNodePortModel";
 import {JoinNodePortModel} from "./NodeModels/JoinNode/JoinNodePortModel";
 import {JoinNodeFactory} from "./NodeModels/JoinNode/JoinNodeFactory";
+import {DecisionNodePortModel} from "./NodeModels/DecisionNode/DecisionNodePortModel";
+import {DecisionNodeFactory} from "./NodeModels/DecisionNode/DecisionNodeFactory";
 
 export class Application {
 
@@ -22,12 +24,14 @@ export class Application {
         this.diagramEngine.registerPortFactory(new SimplePortFactory("end", config => new CircleEndPortModel()));
         this.diagramEngine.registerPortFactory(new SimplePortFactory("fork", config => new ForkNodePortModel()));
         this.diagramEngine.registerPortFactory(new SimplePortFactory("join", config => new JoinNodePortModel()));
+        this.diagramEngine.registerPortFactory(new SimplePortFactory("decision", config => new DecisionNodePortModel()));
 
 
         this.diagramEngine.registerNodeFactory(new CircleStartNodeFactory());
         this.diagramEngine.registerNodeFactory(new CircleEndNodeFactory());
         this.diagramEngine.registerNodeFactory(new ForkNodeFactory());
         this.diagramEngine.registerNodeFactory(new JoinNodeFactory());
+        this.diagramEngine.registerNodeFactory(new DecisionNodeFactory());
 
     }
 

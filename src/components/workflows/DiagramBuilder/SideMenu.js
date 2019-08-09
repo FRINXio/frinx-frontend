@@ -36,7 +36,28 @@ export class SideMenu extends Component {
                         wfList.push(<SideMenuItem id={`functionalNode${i}`} model={{type: func, wfObject}}
                                                   name={func.toUpperCase()} color="#0095FF"/>)
                     )
-                } else {
+                } if (func === "decision") {
+                    let wfObject = {
+                        name: "",
+                        taskReferenceName: "",
+                        inputParameters: {
+                            case_value_param: ""
+                        },
+                        type: "DECISION",
+                        caseValueParam: "case_value_param",
+                        decisionCases: {
+                            fail: [],
+                            complete: []
+                        },
+                        optional: false,
+                        startDelay: 0
+                    };
+                    return (
+                        wfList.push(<SideMenuItem id={`functionalNode${i}`} model={{type: func, wfObject}}
+                                                  name={func.toUpperCase()} color="#0095FF"/>)
+                    )
+                }
+                else {
                     return (
                         wfList.push(<SideMenuItem id={`functionalNode${i}`} model={{type: func}}
                                                   name={func.toUpperCase()} color="#0095FF"/>)

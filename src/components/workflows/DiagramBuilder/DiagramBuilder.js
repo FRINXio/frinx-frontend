@@ -13,10 +13,16 @@ import * as _ from "lodash";
 import './DiagramBuilder.css'
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
-import {createMountAndCheckExample, createSampleBatchInventoryRetrievalExample} from "./builder-utils";
+import {
+    createMountAndCheckExample,
+    createSampleBatchInventoryRetrievalExample, getFirstNode,
+    handleDecideNode,
+    handleForkNode
+} from "./builder-utils";
 import {ForkNodeModel} from "./NodeModels/ForkNode/ForkNodeModel";
 import {JoinNodeModel} from "./NodeModels/JoinNode/JoinNodeModel";
 import {Toolkit} from "storm-react-diagrams";
+import {DecisionNodeModel} from "./NodeModels/DecisionNode/DecisionNodeModel";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -94,7 +100,6 @@ class DiagramBuilder extends Component {
     }
 
     onDropHandler(e) {
-        console.log(document.getElementsByClassName("tray"));
         let data = JSON.parse(e.dataTransfer.getData("storm-diagram-node"));
         let node = null;
 
@@ -119,11 +124,13 @@ class DiagramBuilder extends Component {
                 node = new CircleEndNodeModel(data.name);
                 break;
             case "fork":
-                console.log(data);
                 node = new ForkNodeModel(data.wfObject.name, null, data.wfObject);
                 break;
             case "join":
                 node = new JoinNodeModel(data.wfObject.name, null, data.wfObject);
+                break;
+            case "decision":
+                node = new DecisionNodeModel(data.wfObject.name, null, data.wfObject);
                 break;
             default:
                 break
@@ -141,68 +148,35 @@ class DiagramBuilder extends Component {
     }
 
     parseDiagramToJSON() {
-
         let links = this.state.app.getDiagramEngine().getDiagramModel().getLinks();
-        let parentNode = null;
+        let parentNode = getFirstNode(links);
         let tasks = [];
 
-        //find root (! won't work if user connects node -> start )
-        _.values(links).forEach(link => {
-            if (link.sourcePort.type === "start") {
-                parentNode = link.sourcePort.parent;
-            }
-        });
-
+        // handle regular/system nodes
         _.values(links).forEach(link => {
             if (link.sourcePort.parent === parentNode && link.targetPort.type !== "end") {
-
-                if (link.targetPort.type === "fork") {
-                    let forkNode = link.targetPort.getNode();
-                    let joinNode = null;
-                    let forkTasks = [];
-                    let joinOn = [];
-                    let forkBranches = forkNode.ports.right.links;
-
-                    //for each branch chain tasks
-                    _.values(forkBranches).forEach(link => {
-                        let tmpBranch = [];
-                        let parent = link.targetPort.getNode();
-                        let current = link.targetPort.getNode();
-
-                        //iterate trought tasks in branch
-                        while (current && current.type !== "join") {
-                            tmpBranch.push(current.inputs);
-                            _.values(current.getPorts()).forEach(port => {
-                                if (port.label === "Out") {
-                                    parent = current;
-                                    if (_.values(port.links).length > 0) { // if any ports
-                                        current = _.values(port.links)[0].targetPort.getNode(); // traverse to child
-                                        if (current.type === "join") { // if child = join, add last task ref to joinOn
-                                            joinOn.push(parent.inputs.taskReferenceName);
-                                            joinNode = current;
-                                        }
-                                    } else {
-                                        current = null;
-                                    }
-                                }
-                            });
+                switch (link.targetPort.type) {
+                    case "fork":
+                        let {forkNode, joinNode} = handleForkNode(link.targetPort.getNode());
+                        tasks.push(forkNode.inputs, joinNode.inputs);
+                        parentNode = joinNode;
+                        break;
+                    case "decision":
+                        let {decideNode, firstNeutralNode} = handleDecideNode(link.targetPort.getNode());
+                        tasks.push(decideNode.inputs);
+                        if (firstNeutralNode) {
+                            tasks.push(firstNeutralNode.inputs)
                         }
-                        forkTasks.push(tmpBranch);
-                    });
-                    forkNode.inputs.forkTasks = forkTasks;
-                    joinNode.inputs.joinOn = joinOn;
-
-                    tasks.push(forkNode.inputs);
-                    tasks.push(joinNode.inputs);
-                    parentNode = joinNode;  // make joinNode the last so forkTasks doesnt get duplicated
-
-                } else {
-                    parentNode = link.targetPort.parent;
-                    tasks.push(parentNode.inputs);
+                        break;
+                    default:
+                        parentNode = link.targetPort.parent;
+                        tasks.push(parentNode.inputs);
+                        break;
                 }
             }
         });
 
+        // update JSON
         let finalWf = {...this.props.finalWorkflow};
         finalWf.tasks = tasks;
         this.props.updateFinalWorkflow(finalWf);

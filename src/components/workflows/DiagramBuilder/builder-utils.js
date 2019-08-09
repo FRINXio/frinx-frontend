@@ -25,6 +25,123 @@ export const getWfInputs = (wf) => {
     return inputParameters;
 };
 
+export const getLinksArray = (type, node) => {
+    let linksArray = [];
+    _.values(node.ports).forEach(port => {
+        if (type === "in") {
+            if (port.in) {
+                linksArray = _.values(port.links);
+            }
+        } else if (type === "out") {
+            if (!port.in) {
+                linksArray = _.values(port.links);
+            }
+        }
+    });
+    return linksArray;
+};
+
+export const getFirstNode = (links) => {
+    let parentNode = null;
+    _.values(links).forEach(link => {
+        if (link.sourcePort.type === "start") {
+            parentNode = link.sourcePort.parent;
+        }
+    });
+    return parentNode;
+};
+
+export const handleForkNode = (forkNode) => {
+    let joinNode = null;
+    let forkTasks = [];
+    let joinOn = [];
+    let forkBranches = forkNode.ports.right.links;
+
+    //for each branch chain tasks
+    _.values(forkBranches).forEach(link => {
+        let tmpBranch = [];
+        let parent = link.targetPort.getNode();
+        let current = link.targetPort.getNode();
+
+        //iterate trough tasks in each branch till join node
+        while (current && current.type !== "join") {
+            tmpBranch.push(current.inputs);
+            let outputLinks = getLinksArray("out", current);
+            parent = current;
+            if (outputLinks.length > 0) {
+                current = outputLinks[0].targetPort.getNode();
+                switch (current.type) {
+                    case "join":
+                        joinOn.push(parent.inputs.taskReferenceName);
+                        joinNode = current;
+                        break;
+                    case "fork":
+                        handleForkNode(current);
+                        break;
+                    case "decision":
+                        let {decideNode, firstNeutralNode} = handleDecideNode(current);
+                        tmpBranch.push(decideNode.inputs);
+                        current = firstNeutralNode;
+                        break;
+                    default: break;
+                }
+            } else {
+                current = null;
+            }
+        }
+        forkTasks.push(tmpBranch);
+    });
+
+    forkNode.inputs.forkTasks = forkTasks;
+    joinNode.inputs.joinOn = joinOn;
+
+    return {forkNode, joinNode}
+};
+
+export const handleDecideNode = (decideNode) => {
+    let completeBranchLink = _.values(decideNode.ports.completePort.links)[0];
+    let failBranchLink = _.values(decideNode.ports.failPort.links)[0];
+    let neutralBranchLink = _.values(decideNode.ports.neutralPort.links)[0];
+    let firstNeutralNode = null;
+
+    [completeBranchLink, failBranchLink].forEach( (branch, i) => {
+        if (branch) {
+            let branchArray = [];
+            let currentNode = branch.targetPort.getNode();
+            let inputLinks = getLinksArray("in", currentNode);
+            let outputLink = getLinksArray("out", currentNode)[0];
+
+            while ((inputLinks.length === 1 || currentNode.type === "join") && outputLink) {
+                switch (currentNode.type) {
+                    case "fork":
+                        let {forkNode, joinNode} = handleForkNode(currentNode);
+                        branchArray.push(forkNode.inputs, joinNode.inputs);
+                        currentNode = joinNode;
+                        break;
+                    case "decision":
+                        handleDecideNode(currentNode);
+                        break;
+                    default:
+                        branchArray.push(currentNode.inputs);
+                        currentNode = outputLink.targetPort.getNode();
+                        break;
+                }
+                inputLinks = getLinksArray("in", currentNode);
+                outputLink = getLinksArray("out", currentNode)[0];
+            }
+            switch (i) {
+                case 0: decideNode.inputs.decisionCases.complete = branchArray; break;
+                case 1: decideNode.inputs.decisionCases.fail = branchArray; break;
+                default: break
+            }
+        }
+    });
+    if (neutralBranchLink) {
+        firstNeutralNode = neutralBranchLink.targetPort.getNode();
+    }
+    return {decideNode, firstNeutralNode}
+};
+
 export const createMountAndCheckExample = (app, props) => {
     let diagramEngine = app.getDiagramEngine();
     let activeModel = diagramEngine.getDiagramModel();
