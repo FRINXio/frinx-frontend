@@ -148,40 +148,44 @@ class DiagramBuilder extends Component {
     }
 
     parseDiagramToJSON() {
-        let links = this.state.app.getDiagramEngine().getDiagramModel().getLinks();
-        let parentNode = getFirstNode(links);
-        let tasks = [];
+        try {
+            let links = this.state.app.getDiagramEngine().getDiagramModel().getLinks();
+            let parentNode = getFirstNode(links);
+            let tasks = [];
 
-        // handle regular/system nodes
-        _.values(links).forEach(link => {
-            if (link.sourcePort.parent === parentNode && link.targetPort.type !== "end") {
-                switch (link.targetPort.type) {
-                    case "fork":
-                        let {forkNode, joinNode} = handleForkNode(link.targetPort.getNode());
-                        tasks.push(forkNode.inputs, joinNode.inputs);
-                        parentNode = joinNode;
-                        break;
-                    case "decision":
-                        let {decideNode, firstNeutralNode} = handleDecideNode(link.targetPort.getNode());
-                        tasks.push(decideNode.inputs);
-                        if (firstNeutralNode) {
-                            tasks.push(firstNeutralNode.inputs)
-                        }
-                        break;
-                    default:
-                        parentNode = link.targetPort.parent;
-                        tasks.push(parentNode.inputs);
-                        break;
+            // handle regular/system nodes
+            _.values(links).forEach(link => {
+                if (link.sourcePort.parent === parentNode && link.targetPort.type !== "end") {
+                    switch (link.targetPort.type) {
+                        case "fork":
+                            let {forkNode, joinNode} = handleForkNode(link.targetPort.getNode());
+                            tasks.push(forkNode.inputs, joinNode.inputs);
+                            parentNode = joinNode;
+                            break;
+                        case "decision":
+                            let {decideNode, firstNeutralNode} = handleDecideNode(link.targetPort.getNode());
+                            tasks.push(decideNode.inputs);
+                            if (firstNeutralNode) {
+                                tasks.push(firstNeutralNode.inputs)
+                            }
+                            break;
+                        default:
+                            parentNode = link.targetPort.parent;
+                            tasks.push(parentNode.inputs);
+                            break;
+                    }
                 }
-            }
-        });
+            });
 
-        // update JSON
-        let finalWf = {...this.props.finalWorkflow};
-        finalWf.tasks = tasks;
-        this.props.updateFinalWorkflow(finalWf);
+            // update JSON
+            let finalWf = {...this.props.finalWorkflow};
+            finalWf.tasks = tasks;
+            this.props.updateFinalWorkflow(finalWf);
 
-        return finalWf;
+            return finalWf;
+        } catch (e) {
+            console.log("COULD NOT PARSE", e)
+        }
     }
 
     render() {
