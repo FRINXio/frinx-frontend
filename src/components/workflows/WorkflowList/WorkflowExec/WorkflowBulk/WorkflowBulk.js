@@ -23,6 +23,7 @@ class WorkflowBulk extends Component {
 
         let operation = e.target.value;
         performBulkOperation(operation, selectedWfs);
+        this.props.bulkOperation();
         this.props.selectAllWfs();
     }
 

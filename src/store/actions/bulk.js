@@ -18,7 +18,6 @@ export const receiveBulkOperationResponse = (successfulResults, errorResults) =>
     return (dispatch, getState) => {
         dispatch(storeResponse(successfulResults, errorResults));
         const {isFlat} = getState().bulkReducer;
-        console.log(isFlat);
         isFlat ? dispatch(fetchNewData()) : dispatch(fetchParentWorkflows());
         setTimeout(() => dispatch(resetBulkOperationResult()), 2000)
     }

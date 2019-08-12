@@ -93,23 +93,25 @@ export const fetchParentWorkflows = () => {
             for (let i = 0,j = allData.length; i < j; i +=chunk) {
                 separatedWfs.push(allData.slice(i,i + chunk));
             }
-            separatedWfs.forEach( async wfsChunk => {
-                let wfs = async function (sepWfs) {
-                    return await Promise.all(
-                        sepWfs.map(wf => http.get('/api/conductor/id/' + wf.workflowId))
-                    );
-                };
-                let responses = await wfs(wfsChunk);
-                for (let i = 0; i < responses.length; i++) {
-                    if (responses[i].result.parentWorkflowId) {
-                        wfsChunk[i]["parentWorkflowId"] = responses[i].result.parentWorkflowId;
-                        child.push(wfsChunk[i]);
-                    } else {
-                        parents.push(wfsChunk[i]);
+            separatedWfs.length
+                ? separatedWfs.forEach( async wfsChunk => {
+                    let wfs = async function (sepWfs) {
+                        return await Promise.all(
+                            sepWfs.map(wf => http.get('/api/conductor/id/' + wf.workflowId))
+                        );
+                    };
+                    let responses = await wfs(wfsChunk);
+                    for (let i = 0; i < responses.length; i++) {
+                        if (responses[i].result.parentWorkflowId) {
+                            wfsChunk[i]["parentWorkflowId"] = responses[i].result.parentWorkflowId;
+                            child.push(wfsChunk[i]);
+                        } else {
+                            parents.push(wfsChunk[i]);
+                        }
+                        dispatch(receiveParentData(parents, child, parents, child));
                     }
-                    dispatch(receiveParentData(parents, child, parents, child));
-                }
-            });
+                })
+                : dispatch(receiveParentData(parents, child, parents, child));
             const {label, query} = getState().searchReducer;
             if (label.length > 0 || query !== "") {
                 dispatch(updateHierarchicalDataByLabel(label));

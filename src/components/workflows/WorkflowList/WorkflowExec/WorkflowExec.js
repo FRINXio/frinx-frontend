@@ -67,8 +67,7 @@ class WorkflowExec extends Component {
     }
 
     componentWillUnmount() {
-        this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
-        this.props.updateByQuery("");
+        this.clearView();
     }
 
     update(openParents, showChildren) {
@@ -184,9 +183,12 @@ class WorkflowExec extends Component {
 
     selectAllWfs() {
         const {query, label, data, table, parents, parentsTable, child, childTable } = this.props.searchReducer;
+        let hiddenChildren = (query === "" && label < 1)
+            ? child.filter((obj) => !this.state.showChildren.some((obj2) => obj.startTime === obj2.startTime))
+            : childTable.filter((obj) => !this.state.showChildren.some((obj2) => obj.startTime === obj2.startTime));
         let dataset = this.state.allData
             ? (query === "" && label < 1) ? data : table
-            : (query === "" && label < 1) ? parents.concat(child) : parentsTable.concat(childTable);
+            : (query === "" && label < 1) ? parents.concat(hiddenChildren) : parentsTable.concat(hiddenChildren);
         let wfIds = [];
 
         if (this.state.selectedWfs.length > 0) {
@@ -212,6 +214,11 @@ class WorkflowExec extends Component {
         })
     }
 
+    clearView() {
+        this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
+        this.props.updateByQuery("");
+    }
+
     render(){
 
         let detailsModal = this.state.detailsModal ?
@@ -223,7 +230,7 @@ class WorkflowExec extends Component {
                 {detailsModal}
                 <WorkflowBulk wfsCount={this.repeat().length} selectedWfs={this.state.selectedWfs}
                               selectAllWfs={this.selectAllWfs.bind(this)} wfView={this.state.allData}
-                              selectWfView={this.selectWfView.bind(this)}/>
+                              selectWfView={this.selectWfView.bind(this)} bulkOperation={this.clearView.bind(this) }/>
 
                 <hr style={{marginTop: "-20px"}}/>
                 <Row>
