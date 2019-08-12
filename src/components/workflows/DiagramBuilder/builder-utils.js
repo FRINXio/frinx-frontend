@@ -28,7 +28,7 @@ export const getWfInputs = (wf) => {
 export const getLinksArray = (type, node) => {
     let linksArray = [];
     _.values(node.ports).forEach(port => {
-        if (type === "in") {
+        if (type === "in" || type === "inputPort") {
             if (port.in) {
                 linksArray = _.values(port.links);
             }
@@ -64,29 +64,36 @@ export const handleForkNode = (forkNode) => {
         let current = link.targetPort.getNode();
 
         //iterate trough tasks in each branch till join node
-        while (current && current.type !== "join") {
-            tmpBranch.push(current.inputs);
+        while (current) {
             let outputLinks = getLinksArray("out", current);
-            parent = current;
-            if (outputLinks.length > 0) {
-                current = outputLinks[0].targetPort.getNode();
-                switch (current.type) {
-                    case "join":
-                        joinOn.push(parent.inputs.taskReferenceName);
-                        joinNode = current;
-                        break;
-                    case "fork":
-                        handleForkNode(current);
-                        break;
-                    case "decision":
-                        let {decideNode, firstNeutralNode} = handleDecideNode(current);
-                        tmpBranch.push(decideNode.inputs);
-                        current = firstNeutralNode;
-                        break;
-                    default: break;
-                }
-            } else {
-                current = null;
+            switch (current.type) {
+                case "join":
+                    joinOn.push(parent.inputs.taskReferenceName);
+                    joinNode = current;
+                    current = null;
+                    break;
+                case "fork":
+                    let innerForkNode = handleForkNode(current).forkNode;
+                    let innerJoinNode = handleForkNode(current).joinNode;
+                    let innerJoinOutLinks = getLinksArray("out", innerJoinNode);
+                    tmpBranch.push(innerForkNode.inputs, innerJoinNode.inputs);
+                    parent = innerJoinNode;
+                    current = innerJoinOutLinks[0].targetPort.getNode();
+                    break;
+                case "decision":
+                    let {decideNode, firstNeutralNode} = handleDecideNode(current);
+                    tmpBranch.push(decideNode.inputs);
+                    current = firstNeutralNode;
+                    break;
+                default:
+                    tmpBranch.push(current.inputs);
+                    parent = current;
+                    if (outputLinks.length > 0) {
+                        current = outputLinks[0].targetPort.getNode();
+                    } else {
+                        current = null;
+                    }
+                    break;
             }
         }
         forkTasks.push(tmpBranch);
@@ -111,7 +118,7 @@ export const handleDecideNode = (decideNode) => {
             let inputLinks = getLinksArray("in", currentNode);
             let outputLink = getLinksArray("out", currentNode)[0];
 
-            while ((inputLinks.length === 1 || currentNode.type === "join") && outputLink) {
+            while ((inputLinks.length === 1 || currentNode.type === "join" || currentNode.type === "decision") && outputLink) {
                 switch (currentNode.type) {
                     case "fork":
                         let {forkNode, joinNode} = handleForkNode(currentNode);
@@ -119,7 +126,12 @@ export const handleDecideNode = (decideNode) => {
                         currentNode = joinNode;
                         break;
                     case "decision":
-                        handleDecideNode(currentNode);
+                        let innerDecideNode = handleDecideNode(currentNode).decideNode;
+                        let innerFirstNeutralNode = handleDecideNode(currentNode).firstNeutralNode;
+                        let innerFirstNeutralLinks = getLinksArray("out", innerFirstNeutralNode);
+                        branchArray.push(innerDecideNode.inputs);
+                        branchArray.push(innerFirstNeutralNode.inputs);
+                        currentNode = innerFirstNeutralLinks[0].targetPort.getNode();
                         break;
                     default:
                         branchArray.push(currentNode.inputs);
