@@ -141,9 +141,12 @@ export const handleDecideNode = (decideNode) => {
                 inputLinks = getLinksArray("in", currentNode);
                 outputLink = getLinksArray("out", currentNode)[0];
             }
+
+            let casesValues = Object.keys(decideNode.inputs.decisionCases);
+
             switch (i) {
-                case 0: decideNode.inputs.decisionCases.complete = branchArray; break;
-                case 1: decideNode.inputs.decisionCases.fail = branchArray; break;
+                case 0: decideNode.inputs.decisionCases[casesValues[1]] = branchArray; break;
+                case 1: decideNode.inputs.decisionCases[casesValues[0]] = branchArray; break;
                 default: break
             }
         }

@@ -32,19 +32,19 @@ class SubwfModal extends Component {
         this.props.modalHandler()
     }
 
-    handleInput(e, item, entry) {
+    handleInput(e, item, entry, i) {
         let inputs = {...this.state.inputs};
 
         if (item[0] === "inputParameters") {
-          let inputParameters = inputs.inputParameters;
-          inputs = {
-              ...inputs,
-              inputParameters: {
-                  ...inputParameters,
-                  [entry[0]]: e.target.value
-              }
-          };
-      } else if (item[0] === "subWorkflowParam") {
+            let inputParameters = inputs.inputParameters;
+            inputs = {
+                ...inputs,
+                inputParameters: {
+                    ...inputParameters,
+                    [entry[0]]: e.target.value
+                }
+            };
+        } else if (item[0] === "subWorkflowParam") {
             let subWorkflowParam = inputs.subWorkflowParam;
             inputs = {
                 ...inputs,
@@ -53,6 +53,24 @@ class SubwfModal extends Component {
                     [entry[0]]: e.target.value
                 }
             };
+        } else if (item[0] === "decisionCases") {
+            let decisionCases = {...inputs.decisionCases};
+            let keyNames = Object.keys(decisionCases);
+            let trueCase = decisionCases[keyNames[1]] || [];
+            let falseCase = decisionCases[keyNames[0]] || [];
+
+            if (i === 0) {
+                decisionCases = {
+                    [e.target.value]: falseCase,
+                    [keyNames[1]]: trueCase
+                }
+            } else {
+                decisionCases = {
+                    [keyNames[0]]: falseCase,
+                    [e.target.value]: trueCase
+                }
+            }
+            inputs.decisionCases = decisionCases;
         } else {
             inputs = {
                 ...inputs,
@@ -87,6 +105,21 @@ class SubwfModal extends Component {
                                                         type="input"
                                                         onChange={(e) => this.handleInput(e, item, entry)}
                                                         value={entry[1]}/>
+                                                </Form.Group>
+                                            </Col>
+                                        )
+                                    })
+                                }
+                                if (item[0] === "decisionCases") {
+                                    return Object.entries(item[1]).map((entry, i) => {
+                                        return (
+                                            <Col sm={6} key={`col1-${i}`}>
+                                                <Form.Group>
+                                                    <Form.Label>decision case #{i}</Form.Label>
+                                                    <Form.Control
+                                                        type="input"
+                                                        onChange={(e) => this.handleInput(e, item, entry, i)}
+                                                        value={entry[0]}/>
                                                 </Form.Group>
                                             </Col>
                                         )

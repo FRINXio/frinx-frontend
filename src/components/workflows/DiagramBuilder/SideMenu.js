@@ -46,8 +46,8 @@ export class SideMenu extends Component {
                         type: "DECISION",
                         caseValueParam: "case_value_param",
                         decisionCases: {
-                            fail: [],
-                            complete: []
+                            false: [],
+                            true: []
                         },
                         optional: false,
                         startDelay: 0
