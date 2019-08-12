@@ -166,7 +166,8 @@ class DiagramBuilder extends Component {
                             let {decideNode, firstNeutralNode} = handleDecideNode(link.targetPort.getNode());
                             tasks.push(decideNode.inputs);
                             if (firstNeutralNode) {
-                                tasks.push(firstNeutralNode.inputs)
+                                tasks.push(firstNeutralNode.inputs);
+                                parentNode = firstNeutralNode;
                             }
                             break;
                         default:
