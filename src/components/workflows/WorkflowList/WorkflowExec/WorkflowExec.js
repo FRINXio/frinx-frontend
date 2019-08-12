@@ -81,6 +81,7 @@ class WorkflowExec extends Component {
         let {query, label, child, childTable} = this.props.searchReducer;
         let childrenDataset = (query === "" && label < 1) ? child : childTable;
         childrenDataset.forEach((wf, index) => wf.index = index);
+
         let showChildren = closeChildWfs ? closeChildWfs : this.state.showChildren;
         let openParents = closeParentWfs ? closeParentWfs : this.state.openParentWfs;
         if (openParents.filter(wfs => wfs.startTime === workflow.startTime).length) {
@@ -217,6 +218,7 @@ class WorkflowExec extends Component {
     clearView() {
         this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
         this.props.updateByQuery("");
+        this.update([],[]);
     }
 
     render(){
