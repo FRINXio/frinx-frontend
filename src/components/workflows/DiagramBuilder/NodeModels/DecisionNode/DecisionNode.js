@@ -18,8 +18,6 @@ export class DecisionNode extends React.Component {
                          __html:
                              `
           <g id="Layer_1">
-          </g>
-          <g id="Layer_2">
             <polygon fill="purple" stroke="#000000" stroke-width="3" stroke-miterlimit="10" points="10,` +
                              this.state.size / 2 +
                              ` ` +
@@ -34,6 +32,10 @@ export class DecisionNode extends React.Component {
                              (this.state.size - 10) +
                              ` "/>
                 <text x="20" y="45" fill="white" font-size="13px" >decide</text>
+                <text x="55" y="15" fill="red" font-size="13px" >0</text>
+                <text x="55" y="73" fill="chartreuse" font-size="13px" >1</text>
+          </g>
+           <g id="Layer_2">
           </g>
         `
                      }}/>
