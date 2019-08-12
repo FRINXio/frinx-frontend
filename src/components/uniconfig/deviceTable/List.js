@@ -304,11 +304,9 @@ class List extends Component {
     }
 
     sort(data, i){
-        if (this.state.sort) {
-            data.sort((a, b) => (a[i] > b[i]) ? 1 : ((b[i] > a[i]) ? -1 : 0));
-        } else {
-            data.sort((a, b) => (a[i] <= b[i]) ? 1 : ((b[i] <= a[i]) ? -1 : 0));
-        }
+        this.state.sort
+            ? data.sort((a, b) => (a[i] > b[i]) ? 1 : ((b[i] > a[i]) ? -1 : 0))
+            : data.sort((a, b) => (a[i] < b[i]) ? 1 : ((b[i] < a[i]) ? -1 : 0));
         return data;
     }
 
