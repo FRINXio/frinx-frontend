@@ -18,7 +18,8 @@ class ControlsHeader extends Component {
             generalInfoModal: true,
             inputModal: false,
             detailsModal: false,
-            saveExecuteError: null
+            saveExecuteError: null,
+            exampleList: ["Create P2P L2VPN in uniconfig", "Sample Batch inventory retrieval workflow", "Mount and check"]
         }
     }
 
@@ -122,7 +123,7 @@ class ControlsHeader extends Component {
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 </InputGroup.Append>
-                                <Button onClick={() => this.props.updateSidebar()} style={{marginLeft: "5%", borderRadius: "50%"}} variant="outline-light">
+                                <Button onClick={() => this.props.updateSidebar(!this.props.sidebarShown)} style={{marginLeft: "5%", borderRadius: "50%"}} variant="outline-light">
                                     {this.props.sidebarShown ? <i className="fas fa-chevron-left"/> : <i className="fas fa-chevron-right"/>}
                                 </Button>
                             </InputGroup>
@@ -132,10 +133,6 @@ class ControlsHeader extends Component {
                         </Col>
                         <Col md>
                             <div className="right-controls">
-                                <Button disabled variant={this.props.smartRouting ? "light" : "outline-light"} onClick={this.props.switchSmartRouting}>
-                                    <i className="fas fa-ruler-combined"/></Button>
-                                <Button variant="outline-light" onClick={this.props.createWf}>
-                                    <i className="fas fa-vial"/></Button>
                                 <Button variant="outline-light" onClick={this.showDefinitionModal.bind(this)}>
                                     <i className="fas fa-file-export"/></Button>
                                 <Button variant="outline-light" onClick={this.showGeneralInfoModal.bind(this)}>
@@ -145,6 +142,21 @@ class ControlsHeader extends Component {
                                     onClick={this.saveAndExecute.bind(this)}>
                                     <i className="fas fa-save"/>&nbsp;&nbsp;Save & Execute (CTRL + S)
                                 </Button>
+                                <Dropdown>
+                                    <Dropdown.Toggle variant="outline-light" id="dropdown-basic">
+                                        <i className="fas fa-vial"/>
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu>
+                                        {this.state.exampleList.map((wf,i) => {
+                                            return (
+                                                <Dropdown.Item
+                                                    onClick={() => this.props.createWf(i)}>
+                                                    {this.state.exampleList[i]}
+                                                </Dropdown.Item>
+                                            )
+                                        })}
+                                    </Dropdown.Menu>
+                                </Dropdown>
                             </div>
                         </Col>
                     </Row>
@@ -172,7 +184,7 @@ const mapDispatchToProps = dispatch => {
     return {
         updateQuery: (query) => dispatch(builderActions.requestUpdateByQuery(query)),
         updateCategory: (category) => dispatch(builderActions.updateCategory(category)),
-        updateSidebar: () => dispatch(builderActions.updateSidebar()),
+        updateSidebar: (isShown) => dispatch(builderActions.updateSidebar(isShown)),
         updateFinalWorkflow: (finalWf) => dispatch(builderActions.updateFinalWorkflow(finalWf)),
         lockWorkflowName: () => dispatch(builderActions.lockWorkflowName()),
         switchSmartRouting: () => dispatch(builderActions.switchSmartRouting())

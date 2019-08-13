@@ -84,8 +84,8 @@ const reducer = (state = initialState, action) => {
             return {...state, switchSmartRouting: !switchSmartRouting}
         }
         case UPDATE_SIDEBAR: {
-            const {sidebarShown} = state;
-            return {...state, sidebarShown: !sidebarShown }
+            const {sidebarShown} = action;
+            return {...state, sidebarShown}
         }
         case UPDATE_FINAL_WORKFLOW: {
             let {finalWorkflow} = action;

@@ -14,6 +14,7 @@ import './DiagramBuilder.css'
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import {
+    create_L2VPN_P2P_OC_Uniconfig_Example_Workflow,
     createMountAndCheckExample,
     createSampleBatchInventoryRetrievalExample, getFirstNode,
     handleDecideNode,
@@ -78,9 +79,15 @@ class DiagramBuilder extends Component {
     }
 
     //mock
-    createExampleWf() {
-        createSampleBatchInventoryRetrievalExample(this.state.app, this.props);
-        this.props.updateSidebar();
+    createExampleWf(i) {
+        let exampleArray = [
+            create_L2VPN_P2P_OC_Uniconfig_Example_Workflow,
+            createSampleBatchInventoryRetrievalExample,
+            createMountAndCheckExample,
+        ];
+        exampleArray[i](this.state.app, this.props);
+        this.props.updateSidebar(false);
+        this.forceUpdate();
     }
 
     subwfModalHandler() {
@@ -234,7 +241,7 @@ const mapDispatchToProps = dispatch => {
         storeWorkflows: (wfList) => dispatch(builderActions.storeWorkflows(wfList)),
         updateFinalWorkflow: (finalWorkflow) => dispatch(builderActions.updateFinalWorkflow(finalWorkflow)),
         resetToDefaultWorkflow: () => dispatch(builderActions.resetToDefaultWorkflow()),
-        updateSidebar: () => dispatch(builderActions.updateSidebar())
+        updateSidebar: (isShown) => dispatch(builderActions.updateSidebar(isShown))
     }
 };
 

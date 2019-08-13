@@ -41,8 +41,8 @@ export const updateWorkflows = (workflows) => {
     return {type: UPDATE_WORKFLOWS, workflows}
 };
 
-export const updateSidebar = () => {
-    return {type: UPDATE_SIDEBAR}
+export const updateSidebar = (sidebarShown) => {
+    return {type: UPDATE_SIDEBAR, sidebarShown}
 };
 
 export const updateFinalWorkflow = (finalWorkflow) => {
