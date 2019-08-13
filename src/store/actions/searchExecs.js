@@ -1,3 +1,5 @@
+import {sortBy} from "lodash";
+
 export const RECEIVE_NEW_DATA = "RECEIVE_NEW_DATA";
 export const HIERARCHY_NEW_DATA = "HIERARCHY_NEW_DATA";
 export const UPDATE_SEARCH_RESULTS = "UPDATE_SEARCH_RESULTS";
@@ -86,7 +88,6 @@ export const fetchParentWorkflows = () => {
     return (dispatch, getState) => {
         http.get('/api/conductor/executions/?q=&h=&freeText=&start=0').then(res => {
             let allData = res.result ? (res.result.hits ? res.result.hits : []) : [];
-            allData.sort((a,b) => {return new Date(a.startTime) - new Date(b.startTime)});
             let parents = []; let child = [];
             let separatedWfs = [];
             let chunk = 5;
@@ -108,6 +109,7 @@ export const fetchParentWorkflows = () => {
                         } else {
                             parents.push(wfsChunk[i]);
                         }
+                        parents = sortBy(parents, wf => new Date (wf.startTime)).reverse();
                         dispatch(receiveParentData(parents, child, parents, child));
                     }
                 })
@@ -129,22 +131,21 @@ export const updateHierarchicalDataByLabel = (label) => {
     return (dispatch, getState) => {
         dispatch(updateLabel(label));
         let {parents, parentsTable, child, childTable, query} = getState().searchReducer;
-        let updatedParents = [];
+        let updatedParents = (parentsTable.length > 0 && query !== "") ? parentsTable : parents;
         let updatedChild = [];
 
         if (label !== undefined) {
-            const parentsrows = (parentsTable.length > 0 && query !== "") ? parentsTable : parents;
-            for (let i = 0; i < parentsrows.length; i++) {
-                if (parentsrows[i]["status"] === label) {
-                    updatedParents.push(parentsrows[i]);
+            const childRows = (childTable.length > 0 && query !== "") ? childTable : child;
+            for (let i = 0; i < childRows.length; i++) {
+                if (childRows[i]["status"] === label) {
+                    updatedChild.push(childRows[i]);
+                    let parent = childRows.find(wf => wf.workflowId === childRows[i]["parentWorkflowId"]);
+                    if (parent && !updatedChild.find(wf => wf.startTime === parent.startTime)) {
+                        updatedChild.push(parent);
+                    }
                 }
             }
-            const childrows = (childTable.length > 0 && query !== "") ? childTable : child;
-            for (let i = 0; i < childrows.length; i++) {
-                if (childrows[i]["status"] === label) {
-                    updatedChild.push(childrows[i]);
-                }
-            }
+            updatedChild = [...new Set(updatedChild)];
         } else {
             dispatch(updateHierarchicalDataByQuery(query));
             return;
@@ -157,18 +158,11 @@ export const updateHierarchicalDataByQuery = (query) => {
     return (dispatch, getState) => {
         dispatch(updateQuery(query));
         let {parents, parentsTable, child, childTable, label} = getState().searchReducer;
-        let updatedParents = [];
+        let updatedParents = (parentsTable.length > 0 && label.length > 0) ? parentsTable : parents;
         let updatedChild = [];
         query = query.toUpperCase();
 
         if (query !== "") {
-            const parentsrows = (parentsTable.length > 0 && label.length > 0) ? parentsTable : parents;
-            for (let i = 0; i < parentsrows.length; i++) {
-                if ((parentsrows[i]["workflowType"] && parentsrows[i]["workflowType"].toString().toUpperCase().indexOf(query) !== -1)
-                    || parentsrows[i]["workflowId"].toUpperCase() === query) {
-                    updatedParents.push(parentsrows[i]);
-                }
-            }
             const childrows = (childTable.length > 0 && label.length > 0) ? childTable : child;
             for (let i = 0; i < childrows.length; i++) {
                 if ((childrows[i]["workflowType"] && childrows[i]["workflowType"].toString().toUpperCase().indexOf(query) !== -1)
@@ -190,30 +184,30 @@ export const updateHierarchicalResults = (parentsTable, childTable) => {
 
 export const updateParents = (children) => {
     return (dispatch, getState) => {
-        let {query, label, parents, child, parentsTable} = getState().searchReducer;
+        let {query, label, parents, child, parentsTable, childTable} = getState().searchReducer;
         let dataset = (query === "" && label < 1) ? parents : parentsTable;
         dataset.forEach((wfs, i) => {
             if (children.some(e => e.parentWorkflowId === wfs.workflowId)) {
-                let showchildren = children.filter(wf => wf.parentWorkflowId === wfs["workflowId"]);
-                showchildren.sort((a,b) => {return new Date(a.startTime) - new Date(b.startTime)});
-                showchildren.forEach((wf, index) => dataset.splice(index + 1 + i, 0, wf));
+                let unfoldChildren = children.filter(wf => wf.parentWorkflowId === wfs["workflowId"]);
+                unfoldChildren = sortBy(unfoldChildren, wf => new Date (wf.startTime));
+                unfoldChildren.forEach((wf, index) => dataset.splice(index + 1 + i, 0, wf));
             }
         });
         (query === "" && label < 1)
             ? dispatch(receiveParentData(dataset, child, parentsTable, child))
-            : dispatch(receiveParentData(parents, child, dataset, child));
+            : dispatch(receiveParentData(dataset, child, dataset, childTable));
     }
 };
 
 export const deleteParents = (children) => {
     return (dispatch, getState) => {
-        let {query, label, parents, child, parentsTable} = getState().searchReducer;
+        let {query, label, parents, child, parentsTable, childTable} = getState().searchReducer;
         let dataset = (query === "" && label < 1) ? parents : parentsTable;
         children.forEach(wfs  => {
             dataset = dataset.filter(p => p.workflowId !== wfs.workflowId);
         });
         (query === "" && label < 1)
             ? dispatch(receiveParentData(dataset, child, parentsTable, child))
-            : dispatch(receiveParentData(parents, child, dataset, child));
+            : dispatch(receiveParentData(dataset, child, dataset, childTable));
     }
 };

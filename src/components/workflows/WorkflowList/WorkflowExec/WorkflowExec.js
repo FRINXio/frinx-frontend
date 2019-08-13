@@ -79,11 +79,15 @@ class WorkflowExec extends Component {
 
     showChildrenWorkflows(workflow, closeParentWfs, closeChildWfs) {
         let {query, label, child, childTable} = this.props.searchReducer;
+
         let childrenDataset = (query === "" && label < 1) ? child : childTable;
-        childrenDataset.forEach((wf, index) => wf.index = index);
+        if (childrenDataset.length) {
+            childrenDataset.forEach((wf, index) => wf.index = index);
+        }
 
         let showChildren = closeChildWfs ? closeChildWfs : this.state.showChildren;
         let openParents = closeParentWfs ? closeParentWfs : this.state.openParentWfs;
+
         if (openParents.filter(wfs => wfs.startTime === workflow.startTime).length) {
             let closeParents = openParents.filter(wf => wf.parentWorkflowId === workflow.workflowId);
             this.props.deleteParents(showChildren.filter(wf => wf.parentWorkflowId === workflow.workflowId));
@@ -119,8 +123,9 @@ class WorkflowExec extends Component {
     }
 
     repeat() {
-        let {data, table, query, label, parents, parentsTable, child} = this.props.searchReducer;
-        let parentsId = child ? child.map(wf => wf.parentWorkflowId) : [];
+        let {data, table, query, label, parents, parentsTable, child, childTable} = this.props.searchReducer;
+        let childSet = (query === "" && label < 1) ? child : childTable;
+        let parentsId = childSet ? childSet.map(wf => wf.parentWorkflowId) : [];
         let output = [];
         let dataset = this.state.allData
             ? (query === "" && label < 1) ? data : table
@@ -218,7 +223,18 @@ class WorkflowExec extends Component {
     clearView() {
         this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
         this.props.updateByQuery("");
+        this.props.updateByLabel("");
         this.update([],[]);
+    }
+
+    changeLabels(e) {
+        if (this.state.allData) {
+            this.props.updateByLabel(e[0]);
+        } else {
+            this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
+            this.props.updateHierarchicalByLabel(e[0]);
+            this.update([],[]);
+        }
     }
 
     render(){
@@ -240,9 +256,7 @@ class WorkflowExec extends Component {
                         <Typeahead
                             id="typeaheadExec"
                             selected={this.props.searchReducer.labels}
-                            clearButton onChange={(e) => this.state.allData
-                            ? this.props.updateByLabel(e[0])
-                            : this.props.updateHierarchicalByLabel(e[0])}
+                            clearButton onChange={(e) => this.changeLabels(e)}
                             labelKey="name" options={["RUNNING", "COMPLETED", "FAILED", "TIMED_OUT", "TERMINATED", "PAUSED"]}
                             placeholder="Search by status."/>
                     </Col>
