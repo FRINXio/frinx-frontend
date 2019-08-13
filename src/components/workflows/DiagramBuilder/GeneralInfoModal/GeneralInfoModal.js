@@ -11,7 +11,8 @@ class GeneralInfoModal extends Component {
 
         this.state = {
             show: true,
-            finalWf: this.props.definition
+            finalWf: this.props.definition,
+            customParam: ""
         };
     }
 
@@ -61,9 +62,31 @@ class GeneralInfoModal extends Component {
         });
     }
 
+    handeCustomParam() {
+        let finalWf = {...this.state.finalWf};
+        let param = this.state.customParam;
+        let outputParameters = finalWf.outputParameters;
+
+        finalWf = {
+            ...finalWf,
+            outputParameters: {
+                ...outputParameters,
+                [param]: "provide path"
+            }
+        };
+
+        this.setState({
+            finalWf: finalWf,
+            customParam: ""
+        });
+    }
+
     render() {
 
         let isNameLocked = this.props.isWfNameLocked;
+        let outputParameters = [];
+
+        console.log(outputParameters);
 
         return (
             <Modal size="lg" show={this.state.show} onHide={isNameLocked ? this.handleClose : () => false}>
@@ -75,20 +98,8 @@ class GeneralInfoModal extends Component {
                         <Row>
                             {Object.entries(this.state.finalWf).map(((item, i) => {
                                 if (item[0] === "outputParameters") {
-                                    return Object.entries(item[1]).map((entry, i) => {
-                                        return (
-                                            <Col sm={6} key={`col1-${i}`}>
-                                                <Form.Group>
-                                                    <Form.Label><b>Output parameter:</b> {entry[0]}</Form.Label>
-                                                    <Form.Control
-                                                        type="input"
-                                                        onChange={(e) => this.handleInput(e, item, entry)}
-                                                        value={entry[1]}/>
-                                                </Form.Group>
-                                            </Col>
-                                        )
-                                    })
-                                } if (item[0] === "name") {
+                                    outputParameters.push(item);
+                                } else if (item[0] === "name") {
                                     return (
                                         <Col sm={6} key={`col2-${i}`}>
                                             <Form.Group>
@@ -126,6 +137,33 @@ class GeneralInfoModal extends Component {
                                 }
                                 return null;
                             }))}
+                        </Row>
+                        <hr className="hr-text" data-content="add custom output parameters"/>
+                        <Row>
+                            <InputGroup style={{padding: "0px 190px 20px 190px"}}>
+                                <Form.Control value={this.state.customParam}
+                                              onChange={(e) => this.setState({customParam: e.target.value})}
+                                              placeholder="Add new output parameter name"/>
+                                <InputGroup.Append>
+                                    <Button variant="outline-primary" onClick={this.handeCustomParam.bind(this)}>Add</Button>
+                                </InputGroup.Append>
+                            </InputGroup>
+                        </Row>
+                        <hr className="hr-text" data-content="output parameters"/>
+                        <Row>
+                            {Object.entries(outputParameters[0][1]).map((entry, i) => {
+                                return (
+                                    <Col sm={6} key={`col4-${i}`}>
+                                        <Form.Group>
+                                            <Form.Label>{entry[0]}</Form.Label>
+                                            <Form.Control
+                                                type="input"
+                                                onChange={(e) => this.handleInput(e, ["outputParameters", null], entry)}
+                                                value={entry[1]}/>
+                                        </Form.Group>
+                                    </Col>
+                                )
+                            })}
                         </Row>
                         <Button type="submit" style={{width: "100%", marginTop: "20px"}} variant="primary">Save</Button>
                     </Form>

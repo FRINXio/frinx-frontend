@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import {Modal, Button, Form, Row, Col, InputGroup, Dropdown} from "react-bootstrap";
-import Highlight from "react-highlight.js";
+import {Modal, Button, Form, Row, Col, InputGroup} from "react-bootstrap";
 
 class SubwfModal extends Component {
     constructor(props, context) {
@@ -176,10 +175,9 @@ class SubwfModal extends Component {
                         </Row>
                         <Row>
                             <label style={{paddingLeft: "15px"}}>template</label>
-
                             {template}
                         </Row>
-                        <hr className="hr-text" data-content="add custom parameters"/>
+                        <hr className="hr-text" data-content="add custom input parameters"/>
                         <Row>
                             <InputGroup style={{padding: "0px 190px 10px 190px"}}>
                                 <Form.Control value={this.state.customParam}
