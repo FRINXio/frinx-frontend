@@ -227,6 +227,16 @@ class WorkflowExec extends Component {
         this.update([],[]);
     }
 
+    changeQuery(e) {
+        if (this.state.allData) {
+            this.props.updateByQuery(e.target.value)
+        } else {
+            this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
+            this.props.updateHierarchicalByQuery(e.target.value);
+            this.update([],[]);
+        }
+    }
+
     changeLabels(e) {
         if (this.state.allData) {
             this.props.updateByLabel(e[0]);
@@ -263,9 +273,7 @@ class WorkflowExec extends Component {
                     <Col>
                         <Form.Group>
                             <Form.Control value={this.props.searchReducer.query}
-                                          onChange={(e) => this.state.allData
-                                              ? this.props.updateByQuery(e.target.value)
-                                              : this.props.updateHierarchicalByQuery(e.target.value)}
+                                          onChange={(e) => this.changeQuery(e)}
                                           placeholder="Search by keyword."/>
                         </Form.Group>
                     </Col>

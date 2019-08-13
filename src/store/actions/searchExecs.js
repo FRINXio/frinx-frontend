@@ -131,7 +131,7 @@ export const updateHierarchicalDataByLabel = (label) => {
     return (dispatch, getState) => {
         dispatch(updateLabel(label));
         let {parents, parentsTable, child, childTable, query} = getState().searchReducer;
-        let updatedParents = (parentsTable.length > 0 && query !== "") ? parentsTable : parents;
+        let updatedParents = [];
         let updatedChild = [];
 
         if (label !== undefined) {
@@ -146,6 +146,13 @@ export const updateHierarchicalDataByLabel = (label) => {
                 }
             }
             updatedChild = [...new Set(updatedChild)];
+            const parentRows = (parentsTable.length > 0 && query !== "") ? parentsTable : parents;
+            for (let i = 0; i < parentRows.length; i++) {
+                if (parentRows[i]["status"] === label
+                    || updatedChild.find(wf => wf.parentWorkflowId === parentRows[i]["workflowId"])) {
+                    updatedParents.push(parentRows[i]);
+                }
+            }
         } else {
             dispatch(updateHierarchicalDataByQuery(query));
             return;
@@ -158,16 +165,29 @@ export const updateHierarchicalDataByQuery = (query) => {
     return (dispatch, getState) => {
         dispatch(updateQuery(query));
         let {parents, parentsTable, child, childTable, label} = getState().searchReducer;
-        let updatedParents = (parentsTable.length > 0 && label.length > 0) ? parentsTable : parents;
+        let updatedParents = [];
         let updatedChild = [];
         query = query.toUpperCase();
 
         if (query !== "") {
-            const childrows = (childTable.length > 0 && label.length > 0) ? childTable : child;
-            for (let i = 0; i < childrows.length; i++) {
-                if ((childrows[i]["workflowType"] && childrows[i]["workflowType"].toString().toUpperCase().indexOf(query) !== -1)
-                    || childrows[i]["workflowId"].toUpperCase() === query) {
-                    updatedChild.push(childrows[i]);
+            const childRows = (childTable.length > 0 && label.length > 0) ? childTable : child;
+            for (let i = 0; i < childRows.length; i++) {
+                if ((childRows[i]["workflowType"] && childRows[i]["workflowType"].toString().toUpperCase().indexOf(query) !== -1)
+                    || childRows[i]["workflowId"].toUpperCase() === query) {
+                    updatedChild.push(childRows[i]);
+                    let parent = childRows.find(wf => wf.workflowId === childRows[i]["parentWorkflowId"]);
+                    if (parent && !updatedChild.find(wf => wf.startTime === parent.startTime)) {
+                        updatedChild.push(parent);
+                    }
+                }
+            }
+            updatedChild = [...new Set(updatedChild)];
+            const parentRows = (parentsTable.length > 0 && query !== "") ? parentsTable : parents;
+            for (let i = 0; i < parentRows.length; i++) {
+                if ((parentRows[i]["workflowType"] && parentRows[i]["workflowType"].toString().toUpperCase().indexOf(query) !== -1)
+                    || parentRows[i]["workflowId"].toUpperCase() === query
+                    || updatedChild.find(wf => wf.parentWorkflowId === parentRows[i]["workflowId"])) {
+                    updatedParents.push(parentRows[i]);
                 }
             }
         } else {
@@ -194,8 +214,8 @@ export const updateParents = (children) => {
             }
         });
         (query === "" && label < 1)
-            ? dispatch(receiveParentData(dataset, child, parentsTable, child))
-            : dispatch(receiveParentData(dataset, child, dataset, childTable));
+            ? dispatch(receiveParentData(dataset, child, parents, child))
+            : dispatch(receiveParentData(parents, child, dataset, childTable));
     }
 };
 
@@ -207,7 +227,7 @@ export const deleteParents = (children) => {
             dataset = dataset.filter(p => p.workflowId !== wfs.workflowId);
         });
         (query === "" && label < 1)
-            ? dispatch(receiveParentData(dataset, child, parentsTable, child))
-            : dispatch(receiveParentData(dataset, child, dataset, childTable));
+            ? dispatch(receiveParentData(dataset, child, parents, child))
+            : dispatch(receiveParentData(parents, child, dataset, childTable));
     }
 };
