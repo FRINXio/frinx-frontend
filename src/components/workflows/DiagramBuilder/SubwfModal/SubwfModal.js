@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import {Modal, Button, Form, Row, Col} from "react-bootstrap";
+import {Modal, Button, Form, Row, Col, InputGroup, Dropdown} from "react-bootstrap";
+import Highlight from "react-highlight.js";
 
 class SubwfModal extends Component {
     constructor(props, context) {
@@ -12,6 +13,7 @@ class SubwfModal extends Component {
         this.state = {
             show: true,
             inputs: {},
+            customParam: ""
         };
     }
 
@@ -30,6 +32,25 @@ class SubwfModal extends Component {
         this.setState({show: false});
         this.props.saveInputs(this.state.inputs, this.props.inputs.id);
         this.props.modalHandler()
+    }
+
+    handeCustomParam() {
+        let inputs = {...this.state.inputs};
+        let param = this.state.customParam;
+
+        let inputParameters = inputs.inputParameters;
+        inputs = {
+            ...inputs,
+            inputParameters: {
+                ...inputParameters,
+                [param]: "${workflow.input." + param + "}"
+            }
+        };
+
+        this.setState({
+            inputs: inputs,
+            customParam: ""
+        });
     }
 
     handleInput(e, item, entry, i) {
@@ -86,6 +107,7 @@ class SubwfModal extends Component {
     render() {
 
         let hiddenParams = ["type", "optional", "subWorkflowParam", "joinOn", "forkTasks"];
+        let template = null;
 
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose}>  <Modal.Header>
@@ -97,17 +119,29 @@ class SubwfModal extends Component {
                             {Object.entries(this.state.inputs).map(((item, i) => {
                                 if (item[0] === "inputParameters") {
                                     return Object.entries(item[1]).map((entry, i) => {
-                                        return (
-                                            <Col sm={6} key={`col1-${i}`}>
-                                                <Form.Group>
-                                                    <Form.Label>{entry[0]}</Form.Label>
+                                        if (entry[0] === "template") {
+                                            template = (
+                                                <InputGroup size="sm" style={{paddingLeft: "15px", paddingRight: "15px", minHeight: "200px"}}>
                                                     <Form.Control
+                                                        as="textarea"
                                                         type="input"
                                                         onChange={(e) => this.handleInput(e, item, entry)}
                                                         value={entry[1]}/>
-                                                </Form.Group>
-                                            </Col>
-                                        )
+                                                </InputGroup>
+                                            )
+                                        } else {
+                                            return (
+                                                <Col sm={6} key={`col1-${i}`}>
+                                                    <Form.Group>
+                                                        <Form.Label>{entry[0]}</Form.Label>
+                                                        <Form.Control
+                                                            type="input"
+                                                            onChange={(e) => this.handleInput(e, item, entry)}
+                                                            value={entry[1]}/>
+                                                    </Form.Group>
+                                                </Col>
+                                            )
+                                        }
                                     })
                                 }
                                 if (item[0] === "decisionCases") {
@@ -124,7 +158,7 @@ class SubwfModal extends Component {
                                             </Col>
                                         )
                                     })
-                                } else if (!hiddenParams.includes(item[0])){
+                                } else if (!hiddenParams.includes(item[0])) {
                                     return (
                                         <Col sm={6} key={`col2-${i}`}>
                                             <Form.Group>
@@ -139,6 +173,22 @@ class SubwfModal extends Component {
                                 }
                                 return null;
                             }))}
+                        </Row>
+                        <Row>
+                            <label style={{paddingLeft: "15px"}}>template</label>
+
+                            {template}
+                        </Row>
+                        <hr className="hr-text" data-content="add custom parameters"/>
+                        <Row>
+                            <InputGroup style={{padding: "0px 190px 10px 190px"}}>
+                                <Form.Control value={this.state.customParam}
+                                              onChange={(e) => this.setState({customParam: e.target.value})}
+                                              placeholder="Add new parameter name"/>
+                                <InputGroup.Append>
+                                    <Button variant="outline-primary" onClick={this.handeCustomParam.bind(this)}>Add</Button>
+                                </InputGroup.Append>
+                            </InputGroup>
                         </Row>
                     </Form>
                 </Modal.Body>

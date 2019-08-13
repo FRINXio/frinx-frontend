@@ -452,8 +452,8 @@ export const create_L2VPN_P2P_OC_Uniconfig_Example_Workflow = (app, props) => {
                 name: wf.name,
                 taskReferenceName: wf.name.toLowerCase() + "_ref" + i,
                 inputParameters: getWfInputs(wf),
-                type: "SUB_WORKFLOW",
-                subWorkflowParam: {name: wf.name, version: 1},
+                type: "SIMPLE",
+                startDelay: 0,
                 optional: false
             })
         }
@@ -480,7 +480,7 @@ export const create_L2VPN_P2P_OC_Uniconfig_Example_Workflow = (app, props) => {
     let start = new CircleStartNodeModel("Start");
     start.setPosition(700, 118);
 
-    let sync = new DefaultNodeModel("UNICONFIG_sync_from_network","rgb(169,74,255)", wfs[2]);
+    let sync = new DefaultNodeModel("UNICONFIG_sync_from_network","rgb(169,74,255)", wfs[3]);
     let syncInPort = sync.addInPort("In");
     let syncOutPort = sync.addOutPort("Out");
     sync.setPosition(start.x + 180, 135);
