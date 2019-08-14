@@ -8,7 +8,6 @@ import {
 } from "../actions/builder";
 
 const finalWorkflowTemplate = {
-    updateTime: 1563176250520,
     name: "",
     description: "",
     version: 1,
@@ -31,7 +30,6 @@ const initialState = {
     switchSmartRouting: false,
     executedWfId: null,
     finalWorkflow: {
-        updateTime: 1563176250520,
         name: "",
         description: "",
         version: 1,

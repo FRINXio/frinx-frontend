@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import {Modal, Button, Form, Row, Col, InputGroup} from "react-bootstrap";
+import {workflowDescriptions} from "../../../constants";
+import * as _ from "lodash";
 
 class GeneralInfoModal extends Component {
     constructor(props, context) {
@@ -88,6 +90,7 @@ class GeneralInfoModal extends Component {
 
         let isNameLocked = this.props.isWfNameLocked;
         let outputParameters = [];
+        let hiddenParams = ["schemaVersion", "workflowStatusListenerEnabled", "tasks"];
 
         return (
             <Modal size="lg" show={this.state.show} onHide={isNameLocked ? this.handleClose : () => false}>
@@ -118,20 +121,24 @@ class GeneralInfoModal extends Component {
                                                     onChange={(e) => this.handleInput(e, item, item)}
                                                     value={item[1]}/>
                                                 </InputGroup>
+                                                    <Form.Text className="text-muted">
+                                                        {workflowDescriptions[item[0]]}
+                                                    </Form.Text>
                                             </Form.Group>
                                         </Col>
                                     )
-                                } else if (item[0] !== "tasks") {
+                                } else if (!hiddenParams.includes(item[0])) {
                                     return (
                                         <Col sm={6} key={`col2-${i}`}>
                                             <Form.Group>
-                                                <Form.Label>{item[0] === "name" ? "*name (required)" : item[0]}</Form.Label>
-
-                                                    <Form.Control
-                                                        type="input"
-                                                        onChange={(e) => this.handleInput(e, item, item)}
-                                                        value={item[1]}/>
-
+                                                <Form.Label>{item[0]}</Form.Label>
+                                                <Form.Control
+                                                    type="input"
+                                                    onChange={(e) => this.handleInput(e, item, item)}
+                                                    value={item[1]}/>
+                                                <Form.Text className="text-muted">
+                                                    {workflowDescriptions[item[0]]}
+                                                </Form.Text>
                                             </Form.Group>
                                         </Col>
                                     )
@@ -142,7 +149,7 @@ class GeneralInfoModal extends Component {
                         <hr className="hr-text" data-content="add custom output parameters"/>
                         <Row>
                             <Form onSubmit={this.handeCustomParam.bind(this)}>
-                                <InputGroup style={{padding: "0px 190px 20px 190px"}}>
+                                <InputGroup style={{padding: "10px 215px 10px"}}>
                                     <Form.Control value={this.state.customParam}
                                                   onChange={(e) => this.setState({customParam: e.target.value})}
                                                   placeholder="Add new output parameter name"/>
@@ -152,7 +159,7 @@ class GeneralInfoModal extends Component {
                                 </InputGroup>
                             </Form>
                         </Row>
-                        <hr className="hr-text" data-content="output parameters"/>
+                        <hr className="hr-text" data-content="existing output parameters"/>
                         <Row>
                             {Object.entries(outputParameters[0][1]).map((entry, i) => {
                                 return (

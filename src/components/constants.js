@@ -106,3 +106,15 @@ export const mountCliTemplateLazyON = JSON.stringify({
     "cli-topology:connection-lazy-timeout": [60,""],
     "cli-topology:connection-establish-timeout": [60,""]
 });
+
+export const workflowDescriptions = {
+    name: "name of the workflow",
+    description: "description of the workflow (optional)",
+    version: "numeric field used to identify the version of the schema (use incrementing numbers)",
+    tasks: [],
+    outputParameters: {
+    },
+    schemaVersion: "current Conductor Schema version, schemaVersion 1 is discontinued",
+    restartable: "boolean flag to allow workflow restarts",
+    workflowStatusListenerEnabled: "ff true, every workflow that gets terminated or completed will send a notification"
+};
