@@ -1,6 +1,7 @@
-import {fetchNewData} from "./searchExecs";
+import {fetchNewData, fetchParentWorkflows} from "./searchExecs";
 import {round} from "lodash/math";
 
+export const IS_FLAT = "IS_FLAT";
 export const REQUEST_BULK_OPERATION = "REQUEST_BULK_OPERATION";
 export const RECEIVE_BULK_OPERATION_RESPONSE = "RECEIVE_BULK_OPERATION_RESPONSE";
 export const FAIL_BULK_OPERATION = "FAIL_BULK_OPERATION";
@@ -14,9 +15,10 @@ export const requestBulkOperation = () => {
 };
 
 export const receiveBulkOperationResponse = (successfulResults, errorResults) => {
-    return dispatch => {
+    return (dispatch, getState) => {
         dispatch(storeResponse(successfulResults, errorResults));
-        dispatch(fetchNewData());
+        const {isFlat} = getState().bulkReducer;
+        isFlat ? dispatch(fetchNewData()) : dispatch(fetchParentWorkflows());
         setTimeout(() => dispatch(resetBulkOperationResult()), 2000)
     }
 };
@@ -92,4 +94,8 @@ export const performBulkOperation = (operation, workflows) => {
             dispatch(failBulkOperation(e.message));
         }
     };
+};
+
+export const setView = (isFlat) => {
+    return {type: IS_FLAT, isFlat}
 };
