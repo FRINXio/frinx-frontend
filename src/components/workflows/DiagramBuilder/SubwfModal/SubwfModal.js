@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {Modal, Button, Form, Row, Col, InputGroup} from "react-bootstrap";
 
 class SubwfModal extends Component {
@@ -27,13 +27,18 @@ class SubwfModal extends Component {
         this.props.modalHandler()
     }
 
-    handleSave() {
-        this.setState({show: false});
-        this.props.saveInputs(this.state.inputs, this.props.inputs.id);
-        this.props.modalHandler()
+    handleSave(e) {
+        if (e.key === "Enter") {
+            this.setState({show: false});
+            this.props.saveInputs(this.state.inputs, this.props.inputs.id);
+            this.props.modalHandler()
+        }
     }
 
-    handeCustomParam() {
+    handeCustomParam(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
         let inputs = {...this.state.inputs};
         let param = this.state.customParam;
 
@@ -109,18 +114,23 @@ class SubwfModal extends Component {
         let template = null;
 
         return (
-            <Modal size="lg" show={this.state.show} onHide={this.handleClose}>  <Modal.Header>
-                <Modal.Title>Edit task inputs</Modal.Title>
-            </Modal.Header>
+            <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
+                <Modal.Header>
+                    <Modal.Title>Edit task inputs</Modal.Title>
+                </Modal.Header>
                 <Modal.Body style={{padding: "30px"}}>
-                    <Form>
+                    <Form onKeyPress={this.handleSave}>
                         <Row>
                             {Object.entries(this.state.inputs).map(((item, i) => {
                                 if (item[0] === "inputParameters") {
                                     return Object.entries(item[1]).map((entry, i) => {
                                         if (entry[0] === "template") {
                                             template = (
-                                                <InputGroup size="sm" style={{paddingLeft: "15px", paddingRight: "15px", minHeight: "200px"}}>
+                                                <InputGroup size="sm" style={{
+                                                    paddingLeft: "15px",
+                                                    paddingRight: "15px",
+                                                    minHeight: "200px"
+                                                }}>
                                                     <Form.Control
                                                         as="textarea"
                                                         type="input"
@@ -177,21 +187,23 @@ class SubwfModal extends Component {
                             <label style={{paddingLeft: "15px"}}>template</label>
                             {template}
                         </Row>
-                        <hr className="hr-text" data-content="add custom input parameters"/>
-                        <Row>
+                    </Form>
+                    <hr className="hr-text" data-content="add custom input parameters"/>
+                    <Row>
+                        <Form onSubmit={this.handeCustomParam.bind(this)}>
                             <InputGroup style={{padding: "0px 190px 10px 190px"}}>
                                 <Form.Control value={this.state.customParam}
                                               onChange={(e) => this.setState({customParam: e.target.value})}
                                               placeholder="Add new parameter name"/>
                                 <InputGroup.Append>
-                                    <Button variant="outline-primary" onClick={this.handeCustomParam.bind(this)}>Add</Button>
+                                    <Button type="submit" variant="outline-primary">Add</Button>
                                 </InputGroup.Append>
                             </InputGroup>
-                        </Row>
-                    </Form>
+                        </Form>
+                    </Row>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" onClick={this.handleSave}>Save</Button>
+                    <Button variant="primary" onClick={this.handleSave({e: {key: "Enter"}})}>Save</Button>
                     <Button variant="secondary" onClick={this.handleClose}>
                         Close
                     </Button>

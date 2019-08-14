@@ -62,7 +62,10 @@ class GeneralInfoModal extends Component {
         });
     }
 
-    handeCustomParam() {
+    handeCustomParam(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
         let finalWf = {...this.state.finalWf};
         let param = this.state.customParam;
         let outputParameters = finalWf.outputParameters;
@@ -85,8 +88,6 @@ class GeneralInfoModal extends Component {
 
         let isNameLocked = this.props.isWfNameLocked;
         let outputParameters = [];
-
-        console.log(outputParameters);
 
         return (
             <Modal size="lg" show={this.state.show} onHide={isNameLocked ? this.handleClose : () => false}>
@@ -146,8 +147,7 @@ class GeneralInfoModal extends Component {
                                                   onChange={(e) => this.setState({customParam: e.target.value})}
                                                   placeholder="Add new output parameter name"/>
                                     <InputGroup.Append>
-                                        <Button variant="outline-primary"
-                                                onClick={this.handeCustomParam.bind(this)}>Add</Button>
+                                        <Button variant="outline-primary" type="submit">Add</Button>
                                     </InputGroup.Append>
                                 </InputGroup>
                             </Form>
