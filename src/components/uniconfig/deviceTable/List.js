@@ -419,7 +419,7 @@ class List extends Component {
                 <Container style={{marginTop: "5px"}}>
                     <Row>
                         <Col sm={2}>
-                            <PageCount data={this.state.keywords === "" ? this.state.data : this.state.table}
+                            <PageCount dataSize={this.state.keywords === "" ? this.state.data.length : this.state.table.length}
                                        defaultPages={this.state.defaultPages}
                                        handler={this.setCountPages.bind(this)}/>
                         </Col>

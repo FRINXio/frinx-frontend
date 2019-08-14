@@ -84,11 +84,15 @@ router.get('/executions', async (req, res, next) => {
         if (!isNaN(req.query.start)) {
             start = req.query.start;
         }
+        let size = 1000;
+        if (req.query.size !== 'undefined' && req.query.size !== '') {
+            size = req.query.size;
+        }
 
         let query = req.query.q;
 
         //TODO query wfs in batch of 100 for better performance
-        const url = baseURLWorkflow + 'search?size=1000&sort=startTime:DESC&freeText=' + encodeURIComponent(freeText.join(' AND ')) + '&start=' + start + '&query=' +
+        const url = baseURLWorkflow + 'search?size=' + size + '&sort=startTime:DESC&freeText=' + encodeURIComponent(freeText.join(' AND ')) + '&start=' + start + '&query=' +
             encodeURIComponent(query);
         const result = await http.get(url, req.token);
         const hits = result.results;
