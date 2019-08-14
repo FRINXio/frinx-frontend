@@ -140,14 +140,17 @@ class GeneralInfoModal extends Component {
                         </Row>
                         <hr className="hr-text" data-content="add custom output parameters"/>
                         <Row>
-                            <InputGroup style={{padding: "0px 190px 20px 190px"}}>
-                                <Form.Control value={this.state.customParam}
-                                              onChange={(e) => this.setState({customParam: e.target.value})}
-                                              placeholder="Add new output parameter name"/>
-                                <InputGroup.Append>
-                                    <Button variant="outline-primary" onClick={this.handeCustomParam.bind(this)}>Add</Button>
-                                </InputGroup.Append>
-                            </InputGroup>
+                            <Form onSubmit={this.handeCustomParam.bind(this)}>
+                                <InputGroup style={{padding: "0px 190px 20px 190px"}}>
+                                    <Form.Control value={this.state.customParam}
+                                                  onChange={(e) => this.setState({customParam: e.target.value})}
+                                                  placeholder="Add new output parameter name"/>
+                                    <InputGroup.Append>
+                                        <Button variant="outline-primary"
+                                                onClick={this.handeCustomParam.bind(this)}>Add</Button>
+                                    </InputGroup.Append>
+                                </InputGroup>
+                            </Form>
                         </Row>
                         <hr className="hr-text" data-content="output parameters"/>
                         <Row>
