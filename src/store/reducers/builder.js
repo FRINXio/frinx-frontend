@@ -14,7 +14,6 @@ const finalWorkflowTemplate = {
     version: 1,
     tasks: [],
     outputParameters: {
-        mount: "${check_mounted.output.mount}",
     },
     schemaVersion: 2,
     restartable: true,
@@ -38,7 +37,6 @@ const initialState = {
         version: 1,
         tasks: [],
         outputParameters: {
-            mount: "${check_mounted.output.mount}",
         },
         schemaVersion: 2,
         restartable: true,
