@@ -70,6 +70,14 @@ class WorkflowExec extends Component {
         this.clearView();
     }
 
+    clearView() {
+        this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
+        this.props.updateByQuery("");
+        this.props.updateByLabel("");
+        this._typeahead.clear();
+        this.update([],[]);
+    }
+
     update(openParents, showChildren) {
         this.setState({
             openParentWfs: openParents,
@@ -163,6 +171,7 @@ class WorkflowExec extends Component {
     }
 
     selectWfView() {
+        this.clearView();
         this.setState({ allData: !this.state.allData })
     }
 
@@ -220,13 +229,6 @@ class WorkflowExec extends Component {
         })
     }
 
-    clearView() {
-        this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
-        this.props.updateByQuery("");
-        this.props.updateByLabel("");
-        this.update([],[]);
-    }
-
     changeQuery(e) {
         if (this.state.allData) {
             this.props.updateByQuery(e.target.value)
@@ -268,7 +270,7 @@ class WorkflowExec extends Component {
                             selected={this.props.searchReducer.labels}
                             clearButton onChange={(e) => this.changeLabels(e)}
                             labelKey="name" options={["RUNNING", "COMPLETED", "FAILED", "TIMED_OUT", "TERMINATED", "PAUSED"]}
-                            placeholder="Search by status."/>
+                            placeholder="Search by status." ref={(ref) => this._typeahead = ref}/>
                     </Col>
                     <Col>
                         <Form.Group>
