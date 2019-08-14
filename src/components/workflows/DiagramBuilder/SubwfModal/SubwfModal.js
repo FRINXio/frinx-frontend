@@ -29,7 +29,7 @@ class SubwfModal extends Component {
     }
 
     handleSave(e) {
-        if (e.key === "Enter") {
+        if (e.key === "Enter" || e === "Enter") {
             this.setState({show: false});
             this.props.saveInputs(this.state.inputs, this.props.inputs.id);
             this.props.modalHandler()
@@ -212,7 +212,7 @@ class SubwfModal extends Component {
                     </Row>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" onClick={this.handleSave({e: {key: "Enter"}})}>Save</Button>
+                    <Button variant="primary" onClick={() => this.handleSave("Enter")}>Save</Button>
                     <Button variant="secondary" onClick={this.handleClose}>
                         Close
                     </Button>
