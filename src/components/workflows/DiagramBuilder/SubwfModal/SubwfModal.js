@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Modal, Button, Form, Row, Col, InputGroup} from "react-bootstrap";
+import {taskDescriptions, workflowDescriptions} from "../../../constants";
 
 class SubwfModal extends Component {
     constructor(props, context) {
@@ -110,7 +111,8 @@ class SubwfModal extends Component {
 
     render() {
 
-        let hiddenParams = ["type", "optional", "subWorkflowParam", "joinOn", "forkTasks"];
+        let hiddenParams = ["type", "subWorkflowParam", "joinOn", "forkTasks"];
+        let generalParameters = [];
         let template = null;
 
         return (
@@ -120,6 +122,10 @@ class SubwfModal extends Component {
                 </Modal.Header>
                 <Modal.Body style={{padding: "30px"}}>
                     <Form onKeyPress={this.handleSave}>
+                        <Row>
+                            {generalParameters}
+                        </Row>
+                        <hr className="hr-text" data-content="input parameters"/>
                         <Row>
                             {Object.entries(this.state.inputs).map(((item, i) => {
                                 if (item[0] === "inputParameters") {
@@ -168,7 +174,7 @@ class SubwfModal extends Component {
                                         )
                                     })
                                 } else if (!hiddenParams.includes(item[0])) {
-                                    return (
+                                    generalParameters.push(
                                         <Col sm={6} key={`col2-${i}`}>
                                             <Form.Group>
                                                 <Form.Label>{item[0]}</Form.Label>
@@ -176,6 +182,9 @@ class SubwfModal extends Component {
                                                     type="input"
                                                     onChange={(e) => this.handleInput(e, item, item)}
                                                     value={item[1]}/>
+                                                <Form.Text className="text-muted">
+                                                    {taskDescriptions[item[0]]}
+                                                </Form.Text>
                                             </Form.Group>
                                         </Col>
                                     )
@@ -191,7 +200,7 @@ class SubwfModal extends Component {
                     <hr className="hr-text" data-content="add custom input parameters"/>
                     <Row>
                         <Form onSubmit={this.handeCustomParam.bind(this)}>
-                            <InputGroup style={{padding: "0px 190px 10px 190px"}}>
+                            <InputGroup style={{padding: "10px 215px 10px"}}>
                                 <Form.Control value={this.state.customParam}
                                               onChange={(e) => this.setState({customParam: e.target.value})}
                                               placeholder="Add new parameter name"/>

@@ -146,7 +146,7 @@ class GeneralInfoModal extends Component {
                                 return null;
                             }))}
                         </Row>
-                        <hr className="hr-text" data-content="add custom output parameters"/>
+                        <hr className="hr-text" data-content="add custom output parameters (optional)"/>
                         <Row>
                             <Form onSubmit={this.handeCustomParam.bind(this)}>
                                 <InputGroup style={{padding: "10px 215px 10px"}}>

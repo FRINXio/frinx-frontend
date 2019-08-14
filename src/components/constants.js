@@ -1,3 +1,4 @@
+import {getWfInputs} from "./workflows/DiagramBuilder/builder-utils";
 
 export const mountNetconfTemplate = JSON.stringify( {
     "node-id": ["xr6","Unique identifier of device across all systems"],
@@ -117,4 +118,11 @@ export const workflowDescriptions = {
     schemaVersion: "current Conductor Schema version, schemaVersion 1 is discontinued",
     restartable: "boolean flag to allow workflow restarts",
     workflowStatusListenerEnabled: "ff true, every workflow that gets terminated or completed will send a notification"
+};
+
+export const taskDescriptions = {
+    name: "name of the task",
+    taskReferenceName: "alias used to refer the task within the workflow (MUST be unique within workflow)",
+    optional: "when set to true - workflow continues even if the task fails.",
+    startDelay: "time period before task executes"
 };
