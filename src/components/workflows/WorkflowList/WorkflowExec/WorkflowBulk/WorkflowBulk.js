@@ -10,7 +10,6 @@ class WorkflowBulk extends Component {
         super(props);
         this.state = {
             showBulk: null,
-            wfView: 0
         }
     }
 
@@ -30,9 +29,6 @@ class WorkflowBulk extends Component {
     changeView() {
         this.props.setView(!this.props.wfView);
         this.props.selectWfView();
-        this.setState({
-            wfView: this.state.wfView ? 0 : 1
-        })
     }
 
     render() {
@@ -78,7 +74,7 @@ class WorkflowBulk extends Component {
                                         Select workflows from table below
                                     </p>
                                     <ButtonToolbar>
-                                        <ToggleButtonGroup type="radio" value={this.state.wfView} name="Workflow view" onChange={this.changeView.bind(this)}>
+                                        <ToggleButtonGroup type="radio" value={this.props.wfView ? 0 : 1} name="Workflow view" onChange={this.changeView.bind(this)}>
                                             <ToggleButton size="sm" variant="outline-secondary" value={0}>Flat</ToggleButton>
                                             <ToggleButton size="sm" variant="outline-secondary" value={1}>Hierarchy</ToggleButton>
                                         </ToggleButtonGroup>&nbsp;&nbsp;workflow view

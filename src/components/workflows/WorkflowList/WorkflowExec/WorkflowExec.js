@@ -48,7 +48,8 @@ class WorkflowExec extends Component {
         }
         let {data, table, query, label, parents } = this.props.searchReducer;
         let dataset = (query === "" && label < 1) ? data : table;
-        if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails) {
+        if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails
+            && this.props.query) {
             this.showDetailsModal(dataset[0].workflowId);
         }
         if (prevState.allData !== this.state.allData || this.props.query !== prevProps.query ) {
