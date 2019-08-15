@@ -9,7 +9,7 @@ class WorkflowBulk extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            showBulk: null
+            showBulk: null,
         }
     }
 
@@ -22,12 +22,18 @@ class WorkflowBulk extends Component {
 
         let operation = e.target.value;
         performBulkOperation(operation, selectedWfs);
+        this.props.bulkOperation();
         this.props.selectAllWfs();
+    }
+
+    changeView() {
+        this.props.setView(!this.props.wfView);
+        this.props.selectWfView();
     }
 
     render() {
 
-        let {selectedWfs, bulkReducer, wfsCount, wfView} = this.props;
+        let {selectedWfs, bulkReducer, wfsCount} = this.props;
 
         const progressInstance = <ProgressBar max={100} now={bulkReducer.loading} label={`${bulkReducer.loading}%`} />;
 
@@ -68,9 +74,9 @@ class WorkflowBulk extends Component {
                                         Select workflows from table below
                                     </p>
                                     <ButtonToolbar>
-                                        <ToggleButtonGroup type="radio" value={wfView ? 1 : 2} name="Workflow view" onChange={this.props.selectWfView}>
-                                            <ToggleButton size="sm" variant="outline-secondary" value={1}>Flat</ToggleButton>
-                                            <ToggleButton size="sm" variant="outline-secondary" value={2}>Hierarchy</ToggleButton>
+                                        <ToggleButtonGroup type="radio" value={this.props.wfView ? 0 : 1} name="Workflow view" onChange={this.changeView.bind(this)}>
+                                            <ToggleButton size="sm" variant="outline-secondary" value={0}>Flat</ToggleButton>
+                                            <ToggleButton size="sm" variant="outline-secondary" value={1}>Hierarchy</ToggleButton>
                                         </ToggleButtonGroup>&nbsp;&nbsp;workflow view
                                     </ButtonToolbar>
                                 </Col>
@@ -116,6 +122,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         performBulkOperation: (operation, wfs) => dispatch(bulkActions.performBulkOperation(operation, wfs)),
+        setView: (value) => dispatch(bulkActions.setView(value))
     }
 };
 

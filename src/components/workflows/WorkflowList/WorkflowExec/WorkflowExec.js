@@ -48,7 +48,8 @@ class WorkflowExec extends Component {
         }
         let {data, table, query, label, parents } = this.props.searchReducer;
         let dataset = (query === "" && label < 1) ? data : table;
-        if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails) {
+        if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails
+            && this.props.query) {
             this.showDetailsModal(dataset[0].workflowId);
         }
         if (prevState.allData !== this.state.allData || this.props.query !== prevProps.query ) {
@@ -67,7 +68,15 @@ class WorkflowExec extends Component {
     }
 
     componentWillUnmount() {
+        this.clearView();
+    }
+
+    clearView() {
+        this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
         this.props.updateByQuery("");
+        this.props.updateByLabel("");
+        this._typeahead.clear();
+        this.update([],[]);
     }
 
     update(openParents, showChildren) {
@@ -79,10 +88,15 @@ class WorkflowExec extends Component {
 
     showChildrenWorkflows(workflow, closeParentWfs, closeChildWfs) {
         let {query, label, child, childTable} = this.props.searchReducer;
+
         let childrenDataset = (query === "" && label < 1) ? child : childTable;
-        childrenDataset.forEach((wf, index) => wf.index = index);
+        if (childrenDataset.length) {
+            childrenDataset.forEach((wf, index) => wf.index = index);
+        }
+
         let showChildren = closeChildWfs ? closeChildWfs : this.state.showChildren;
         let openParents = closeParentWfs ? closeParentWfs : this.state.openParentWfs;
+
         if (openParents.filter(wfs => wfs.startTime === workflow.startTime).length) {
             let closeParents = openParents.filter(wf => wf.parentWorkflowId === workflow.workflowId);
             this.props.deleteParents(showChildren.filter(wf => wf.parentWorkflowId === workflow.workflowId));
@@ -118,8 +132,9 @@ class WorkflowExec extends Component {
     }
 
     repeat() {
-        let {data, table, query, label, parents, parentsTable, child} = this.props.searchReducer;
-        let parentsId = child ? child.map(wf => wf.parentWorkflowId) : [];
+        let {data, table, query, label, parents, parentsTable, child, childTable} = this.props.searchReducer;
+        let childSet = (query === "" && label < 1) ? child : childTable;
+        let parentsId = childSet ? childSet.map(wf => wf.parentWorkflowId) : [];
         let output = [];
         let dataset = this.state.allData
             ? (query === "" && label < 1) ? data : table
@@ -157,6 +172,7 @@ class WorkflowExec extends Component {
     }
 
     selectWfView() {
+        this.clearView();
         this.setState({ allData: !this.state.allData })
     }
 
@@ -182,10 +198,13 @@ class WorkflowExec extends Component {
     }
 
     selectAllWfs() {
-        const {query, label, data, table, parents, parentsTable} = this.props.searchReducer;
+        const {query, label, data, table, parents, parentsTable, child, childTable } = this.props.searchReducer;
+        let hiddenChildren = (query === "" && label < 1)
+            ? child.filter((obj) => !this.state.showChildren.some((obj2) => obj.startTime === obj2.startTime))
+            : childTable.filter((obj) => !this.state.showChildren.some((obj2) => obj.startTime === obj2.startTime));
         let dataset = this.state.allData
             ? (query === "" && label < 1) ? data : table
-            : (query === "" && label < 1) ? parents : parentsTable;
+            : (query === "" && label < 1) ? parents.concat(hiddenChildren) : parentsTable.concat(hiddenChildren);
         let wfIds = [];
 
         if (this.state.selectedWfs.length > 0) {
@@ -211,6 +230,26 @@ class WorkflowExec extends Component {
         })
     }
 
+    changeQuery(e) {
+        if (this.state.allData) {
+            this.props.updateByQuery(e.target.value)
+        } else {
+            this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
+            this.props.updateHierarchicalByQuery(e.target.value);
+            this.update([],[]);
+        }
+    }
+
+    changeLabels(e) {
+        if (this.state.allData) {
+            this.props.updateByLabel(e[0]);
+        } else {
+            this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
+            this.props.updateHierarchicalByLabel(e[0]);
+            this.update([],[]);
+        }
+    }
+
     render(){
 
         let detailsModal = this.state.detailsModal ?
@@ -222,7 +261,7 @@ class WorkflowExec extends Component {
                 {detailsModal}
                 <WorkflowBulk wfsCount={this.repeat().length} selectedWfs={this.state.selectedWfs}
                               selectAllWfs={this.selectAllWfs.bind(this)} wfView={this.state.allData}
-                              selectWfView={this.selectWfView.bind(this)}/>
+                              selectWfView={this.selectWfView.bind(this)} bulkOperation={this.clearView.bind(this) }/>
 
                 <hr style={{marginTop: "-20px"}}/>
                 <Row>
@@ -230,18 +269,14 @@ class WorkflowExec extends Component {
                         <Typeahead
                             id="typeaheadExec"
                             selected={this.props.searchReducer.labels}
-                            clearButton onChange={(e) => this.state.allData
-                            ? this.props.updateByLabel(e[0])
-                            : this.props.updateHierarchicalByLabel(e[0])}
+                            clearButton onChange={(e) => this.changeLabels(e)}
                             labelKey="name" options={["RUNNING", "COMPLETED", "FAILED", "TIMED_OUT", "TERMINATED", "PAUSED"]}
-                            placeholder="Search by status."/>
+                            placeholder="Search by status." ref={(ref) => this._typeahead = ref}/>
                     </Col>
                     <Col>
                         <Form.Group>
                             <Form.Control value={this.props.searchReducer.query}
-                                          onChange={(e) => this.state.allData
-                                              ? this.props.updateByQuery(e.target.value)
-                                              : this.props.updateHierarchicalByQuery(e.target.value)}
+                                          onChange={(e) => this.changeQuery(e)}
                                           placeholder="Search by keyword."/>
                         </Form.Group>
                     </Col>
