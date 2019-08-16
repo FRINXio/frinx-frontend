@@ -117,11 +117,11 @@ class List extends Component {
     }
 
     onDeviceRefresh(e) {
-
         let refreshBtnID = e.target.id;
-        document.getElementById(refreshBtnID).classList.add('fa-spin');
+        let refreshBtnElem = document.getElementById(refreshBtnID);
+        refreshBtnElem.classList.add('fa-spin');
         setTimeout(() => {
-            document.getElementById(refreshBtnID).classList.remove('fa-spin')
+            refreshBtnElem.classList.remove('fa-spin')
         }, 1000);
 
         let refreshBtnIdx = e.target.id.split("-").pop();
@@ -138,7 +138,6 @@ class List extends Component {
             }
             return true;
         });
-
     }
 
     removeDevices() {
@@ -392,7 +391,7 @@ class List extends Component {
                                     <th>Config</th>
                                 </tr>
                             </thead>
-                            <tbody>   
+                            <tbody>
                                 {this.repeat()}
                             </tbody>
                         </Table>
