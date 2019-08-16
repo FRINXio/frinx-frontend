@@ -113,7 +113,7 @@ class SubwfModal extends Component {
 
         let hiddenParams = ["type", "subWorkflowParam", "joinOn", "forkTasks"];
         let generalParameters = [];
-        let template = null;
+        let textFieldParams = [];
 
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
@@ -130,19 +130,22 @@ class SubwfModal extends Component {
                             {Object.entries(this.state.inputs).map(((item, i) => {
                                 if (item[0] === "inputParameters") {
                                     return Object.entries(item[1]).map((entry, i) => {
-                                        if (entry[0] === "template") {
-                                            template = (
-                                                <InputGroup size="sm" style={{
-                                                    paddingLeft: "15px",
-                                                    paddingRight: "15px",
-                                                    minHeight: "200px"
-                                                }}>
-                                                    <Form.Control
-                                                        as="textarea"
-                                                        type="input"
-                                                        onChange={(e) => this.handleInput(e, item, entry)}
-                                                        value={entry[1]}/>
-                                                </InputGroup>
+                                        if (entry[0].includes("template") || entry[0] === "uri") {
+                                            textFieldParams.push (
+                                                <Col sm={12} key={`col1-${i}`}>
+                                                    <Form.Group>
+                                                        <Form.Label>{entry[0]}</Form.Label>
+                                                        <InputGroup size="sm" style={{
+                                                            minHeight: "200px"
+                                                        }}>
+                                                            <Form.Control
+                                                                as="textarea"
+                                                                type="input"
+                                                                onChange={(e) => this.handleInput(e, item, entry)}
+                                                                value={entry[1]}/>
+                                                        </InputGroup>
+                                                    </Form.Group>
+                                                </Col>
                                             )
                                         } else {
                                             return (
@@ -193,8 +196,7 @@ class SubwfModal extends Component {
                             }))}
                         </Row>
                         <Row>
-                            <label style={{paddingLeft: "15px"}}>template</label>
-                            {template}
+                            {textFieldParams}
                         </Row>
                     </Form>
                     <hr className="hr-text" data-content="add custom input parameters"/>
