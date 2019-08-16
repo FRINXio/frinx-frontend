@@ -105,7 +105,9 @@ class InputModal extends Component {
         })
     }
 
-    executeWorkflow() {
+    executeWorkflow(e) {
+        e.preventDefault();
+
         let {labels, values } = this.state.workflowForm;
         let payload = {};
 
@@ -146,7 +148,7 @@ class InputModal extends Component {
                     <h4>{this.state.name}</h4>
                     <p className="text-muted">{this.state.wfdesc}</p>
                     <hr/>
-                    <Form>
+                    <Form onSubmit={this.executeWorkflow.bind(this)}>
                         <Row>
                             {labels.map((item, i) => {
                                 return (
