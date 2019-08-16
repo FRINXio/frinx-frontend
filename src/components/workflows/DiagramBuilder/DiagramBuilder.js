@@ -39,10 +39,11 @@ class DiagramBuilder extends Component {
 
     componentWillMount() {
         this.props.resetToDefaultWorkflow();
-        document.addEventListener('dblclick', this.doubleClickListener.bind(this))
     }
 
     componentDidMount() {
+        document.addEventListener('dblclick', this.doubleClickListener.bind(this));
+
         http.get('/api/conductor/metadata/workflow').then(res => {
             this.props.storeWorkflows(res.result)
         });
@@ -57,7 +58,7 @@ class DiagramBuilder extends Component {
 
         if (element) {
             node = diagramModel.getNode(element.getAttribute("data-nodeid"));
-            if (node.type !== "start" && node.type !== "end") {
+            if (node && node.type !== "start" && node.type !== "end") {
                 node.setSelected(false);
                 this.setState({
                     showSubWfModal: true,
