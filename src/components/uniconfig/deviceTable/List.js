@@ -18,7 +18,6 @@ class List extends Component {
             keywords: "",
             data: [],
             table: [],
-            highlight: [],
             selectedDevices: [],
             deviceDetails: [],
             mountModal: false,
@@ -198,16 +197,14 @@ class List extends Component {
 
     search() {
         let toBeRendered = [];
-        let toBeHighlited = [];
         let query = this.state.keywords.toUpperCase();
-        if(query !== ""){
+        if (query !== ""){
             const rows = this.state.data;
             console.log(rows);
             for(let i = 0; i < rows.length; i++){
                 for(let y = 0; y < rows[i].length; y++){
                     if(rows[i][y] && rows[i][y].toUpperCase().indexOf(query) !== -1){
                         toBeRendered.push(rows[i]);
-                        toBeHighlited.push(y);
                         break
                     }
                 }
@@ -220,17 +217,8 @@ class List extends Component {
 
         this.setState({
             table: toBeRendered,
-            highlight: toBeHighlited,
             pagesCount : pages
         })
-    }
-
-    calculateHighlight(i, y) {
-        if(this.state.highlight[i] === y) {
-            return 'hilit'
-        } else {
-            return ''
-        }
     }
 
     showMountModal(){
@@ -306,27 +294,25 @@ class List extends Component {
     }
 
     sort(data, i){
-        if (this.state.sort) {
-            data.sort((a, b) => (a[i] > b[i]) ? 1 : ((b[i] > a[i]) ? -1 : 0));
-        } else {
-            data.sort((a, b) => (a[i] <= b[i]) ? 1 : ((b[i] <= a[i]) ? -1 : 0));
-        }
+        this.state.sort
+            ? data.sort((a, b) => {
+                let x = a[i].toUpperCase();
+                let y = b[i].toUpperCase();
+                return (x > y) ? 1 : ((y > x) ? -1 : 0)
+            })
+            : data.sort((a, b) => {
+                let x = a[i].toUpperCase();
+                let y = b[i].toUpperCase();
+                return (x < y) ? 1 : ((y < x) ? -1 : 0)
+            });
         return data;
     }
 
     repeat(){
         let output = [];
-        let highlight;
-        let dataset;
         let defaultPages = this.state.defaultPages;
         let viewedPage = this.state.viewedPage;
-        if(this.state.keywords === ""){
-            dataset = this.state.data;
-            highlight = false
-        } else {
-            dataset = this.state.table;
-            highlight = true
-        }
+        let dataset = this.state.keywords === "" ?this.state.data : this.state.table;
         dataset = this.sort(dataset, this.state.sortCategory);
         for(let i = 0; i < dataset.length; i++){
             if(i >= (viewedPage-1) * defaultPages && i < viewedPage * defaultPages) {
@@ -334,13 +320,12 @@ class List extends Component {
                     <tr key={`row-${i}`} id={`row-${i}`}>
                         <td className=''><Form.Check type="checkbox" onChange={(e) => this.onDeviceSelect(e)} id={`chb-${i}`}/></td>
                         <td id={`node_id-${i}`} onClick={(e) => this.getDeviceDetails(e)}
-                            className={highlight ? this.calculateHighlight(i, 0) + ' clickable btn-outline-primary' : 'clickable btn-outline-primary'}>{dataset[i][0]}</td>
-                        <td className={highlight ? this.calculateHighlight(i, 1) : ''}>{dataset[i][1]}</td>
-                        <td style={dataset[i][2] === "connected" ? {color: "#007bff"} : {color: "lightblue"}}
-                            className={highlight ? this.calculateHighlight(i, 2) : ''}>{dataset[i][2]}
+                            className={'clickable btn-outline-primary'}>{dataset[i][0]}</td>
+                        <td>{dataset[i][1]}</td>
+                        <td style={dataset[i][2] === "connected" ? {color: "#007bff"} : {color: "lightblue"}}>{dataset[i][2]}
                             &nbsp;&nbsp;<i id={`refreshBtn-${i}`} onClick={(e) => this.onDeviceRefresh(e)}
                                            style={{color: "#007bff"}} className="fas fa-sync-alt fa-xs clickable"/></td>
-                        <td id={`topology-${i}`} className={highlight ? this.calculateHighlight(i, 3) : ''}>{dataset[i][3]}</td>
+                        <td id={`topology-${i}`}>{dataset[i][3]}</td>
                         <td><Button className="noshadow" variant="outline-primary" onClick={() => {
                             this.props.history.push("/devices/edit/" + dataset[i][0]);
                         }} size="sm"><i className="fas fa-cog"/></Button>
@@ -352,8 +337,7 @@ class List extends Component {
     }
 
     columnSort(i){
-        let dataset;
-        this.state.keywords === "" ?  dataset = this.state.data : dataset = this.state.table;
+        let dataset = this.state.keywords === "" ? this.state.data : this.state.table;
         dataset = this.sort(dataset, i);
         this.setState({
             [this.state.keywords === "" ? "data" : "table"]: dataset,

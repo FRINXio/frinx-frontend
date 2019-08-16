@@ -78,7 +78,7 @@ export const fetchParentWorkflows = (viewedPage, defaultPages) => {
                 })
                 : dispatch(receiveParentData(parents, child, parents, child));
             const {label, query} = getState().searchReducer;
-            if (label.length > 0 || query !== "") {
+            if (label.length || query !== "") {
                 dispatch(updateHierarchicalDataByLabel(label));
                 dispatch(updateHierarchicalDataByQuery(query));
             }
@@ -98,7 +98,7 @@ export const updateHierarchicalDataByLabel = (label) => {
         let updatedChild = [];
 
         if (label !== undefined) {
-            const childRows = (childTable.length > 0 && query !== "") ? childTable : child;
+            const childRows = (childTable.length && query !== "") ? childTable : child;
             for (let i = 0; i < childRows.length; i++) {
                 if (childRows[i]["status"] === label) {
                     updatedChild.push(childRows[i]);
@@ -109,7 +109,7 @@ export const updateHierarchicalDataByLabel = (label) => {
                 }
             }
             updatedChild = [...new Set(updatedChild)];
-            const parentRows = (parentsTable.length > 0 && query !== "") ? parentsTable : parents;
+            const parentRows = (parentsTable.length && query !== "") ? parentsTable : parents;
             for (let i = 0; i < parentRows.length; i++) {
                 if (parentRows[i]["status"] === label
                     || updatedChild.find(wf => wf.parentWorkflowId === parentRows[i]["workflowId"])) {
@@ -130,10 +130,11 @@ export const updateHierarchicalDataByQuery = (query) => {
         let {parents, parentsTable, child, childTable, label} = getState().searchReducer;
         let updatedParents = [];
         let updatedChild = [];
+        let finalParentsUpdated = [];
         query = query.toUpperCase();
 
         if (query !== "") {
-            const childRows = (childTable.length > 0 && label.length > 0) ? childTable : child;
+            const childRows = (childTable.length && label.length) ? childTable : child;
             for (let i = 0; i < childRows.length; i++) {
                 if ((childRows[i]["workflowType"] && childRows[i]["workflowType"].toString().toUpperCase().indexOf(query) !== -1)
                     || childRows[i]["workflowId"].toUpperCase() === query) {
@@ -145,7 +146,7 @@ export const updateHierarchicalDataByQuery = (query) => {
                 }
             }
             updatedChild = [...new Set(updatedChild)];
-            const parentRows = (parentsTable.length > 0 && query !== "") ? parentsTable : parents;
+            const parentRows = (parentsTable.length && query !== "") ? parentsTable : parents;
             for (let i = 0; i < parentRows.length; i++) {
                 if ((parentRows[i]["workflowType"] && parentRows[i]["workflowType"].toString().toUpperCase().indexOf(query) !== -1)
                     || parentRows[i]["workflowId"].toUpperCase() === query
@@ -153,11 +154,19 @@ export const updateHierarchicalDataByQuery = (query) => {
                     updatedParents.push(parentRows[i]);
                 }
             }
+            if (label.length) {
+                updatedParents.forEach(workflow => {
+                    if (workflow["status"] === label)
+                        finalParentsUpdated.push(workflow);
+                });
+            } else {
+                finalParentsUpdated = updatedParents;
+            }
         } else {
             dispatch(updateHierarchicalDataByLabel(label));
             return;
         }
-        dispatch(updateHierarchicalResults(updatedParents, updatedChild));
+        dispatch(updateHierarchicalResults(finalParentsUpdated, updatedChild));
     }
 };
 

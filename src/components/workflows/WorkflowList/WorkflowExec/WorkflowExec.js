@@ -54,7 +54,8 @@ class WorkflowExec extends Component {
         }
         let {data, query, label, parents, parentsTable, size} = this.props.searchReducer;
         let dataset = this.state.allData ? data : (query === "" && label < 1) ? parents : parentsTable;
-        if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails) {
+        if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails
+            && this.props.query) {
             this.showDetailsModal(dataset[0].workflowId);
         }
         if (size !== this.state.datasetLength) {
@@ -81,6 +82,14 @@ class WorkflowExec extends Component {
 
     componentWillUnmount() {
         this.clearView();
+    }
+
+    clearView() {
+        this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
+        this.props.updateByQuery("");
+        this.props.updateByLabel("");
+        this._typeahead.clear();
+        this.update([],[]);
     }
 
     update(openParents, showChildren) {
@@ -208,6 +217,7 @@ class WorkflowExec extends Component {
     }
 
     selectWfView() {
+        this.clearView();
         this.setState({
             allData: !this.state.allData,
             viewedPage: 1
@@ -266,13 +276,6 @@ class WorkflowExec extends Component {
         })
     }
 
-    clearView() {
-        this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
-        this.props.updateByQuery("");
-        this.props.updateByLabel("");
-        this.update([],[]);
-    }
-
     changeQuery(e) {
         if (this.state.allData) {
             this.props.updateByQuery(e.target.value);
@@ -322,7 +325,7 @@ class WorkflowExec extends Component {
                             selected={this.props.searchReducer.labels}
                             clearButton onChange={(e) => this.changeLabels(e)}
                             labelKey="name" options={["RUNNING", "COMPLETED", "FAILED", "TIMED_OUT", "TERMINATED", "PAUSED"]}
-                            placeholder="Search by status."/>
+                            placeholder="Search by status." ref={(ref) => this._typeahead = ref}/>
                     </Col>
                     <Col>
                         <Form.Group>
