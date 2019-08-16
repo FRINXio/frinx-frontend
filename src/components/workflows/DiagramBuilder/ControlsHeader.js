@@ -40,6 +40,10 @@ class ControlsHeader extends Component {
         document.addEventListener('click', this.handleClickInside, true);
     }
 
+    componentWillUnmount() {
+        document.removeEventListener('click', this.handleClickInside, true);
+    }
+
     handleClickInside = event => {
         const domNode = ReactDOM.findDOMNode(this);
 
