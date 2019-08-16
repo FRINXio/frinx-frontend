@@ -130,13 +130,13 @@ class SubwfModal extends Component {
                             {Object.entries(this.state.inputs).map(((item, i) => {
                                 if (item[0] === "inputParameters") {
                                     return Object.entries(item[1]).map((entry, i) => {
-                                        if (entry[0].includes("template") || entry[0] === "uri") {
+                                        if (entry[0].includes("template") || entry[0].includes("uri")) {
                                             textFieldParams.push (
                                                 <Col sm={12} key={`col1-${i}`}>
                                                     <Form.Group>
                                                         <Form.Label>{entry[0]}</Form.Label>
                                                         <InputGroup size="sm" style={{
-                                                            minHeight: "200px"
+                                                            minHeight: entry[0] === "template" ? "200px" : "60px"
                                                         }}>
                                                             <Form.Control
                                                                 as="textarea"
