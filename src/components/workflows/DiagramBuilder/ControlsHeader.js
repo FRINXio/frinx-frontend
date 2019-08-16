@@ -1,4 +1,5 @@
-import React, {Component} from 'react'
+import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
 import {Badge, Button, Col, Container, Dropdown, Form, InputGroup, Row} from "react-bootstrap";
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
@@ -33,6 +34,20 @@ class ControlsHeader extends Component {
 
     componentWillMount() {
         document.addEventListener("keydown", this.keyBindings.bind(this), false)
+    }
+
+    componentDidMount() {
+        document.addEventListener('click', this.handleClickInside, true);
+    }
+
+    handleClickInside = event => {
+        const domNode = ReactDOM.findDOMNode(this);
+
+        // workaround to prevent deleting nodes while typing
+        if (domNode && domNode.contains(event.target)) {
+            this.props.app.getDiagramEngine().getDiagramModel()
+                .clearSelection()
+        }
     }
 
     showDefinitionModal() {

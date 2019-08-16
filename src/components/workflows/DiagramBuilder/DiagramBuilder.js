@@ -207,7 +207,8 @@ class DiagramBuilder extends Component {
                 {subWfModal}
                 <div className="builder-header"/>
                 <ControlsHeader parseWftoJSON={this.parseDiagramToJSON.bind(this)}
-                                createWf={this.createExampleWf.bind(this)}/>
+                                createWf={this.createExampleWf.bind(this)}
+                                app={this.state.app}/>
                 <div className="content">
                     <SideMenu show={this.props.sidebarShown} category={this.props.category}
                               workflows={this.props.workflows} functional={this.props.functional}/>
