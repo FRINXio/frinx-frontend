@@ -91,7 +91,6 @@ router.get('/executions', async (req, res, next) => {
 
         let query = req.query.q;
 
-        //TODO query wfs in batch of 100 for better performance
         const url = baseURLWorkflow + 'search?size=' + size + '&sort=startTime:DESC&freeText=' + encodeURIComponent(freeText.join(' AND ')) + '&start=' + start + '&query=' +
             encodeURIComponent(query);
         const result = await http.get(url, req.token);
@@ -229,6 +228,48 @@ router.get('/id/:workflowId', async (req, res, next) => {
         });
 
         res.status(200).send({ result, meta, subworkflows: subworkflows });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/hierarchical', async (req, res, next) => {
+    try {
+        let size = 1000;
+        if (req.query.size !== 'undefined' && req.query.size !== '') {
+            size = req.query.size;
+        }
+
+        const url = baseURLWorkflow + 'search?size=' + size + '&sort=startTime:DESC&freeText=*&start=0&query=';
+        const result = await http.get(url, req.token);
+        let allData = result.results;
+        let parents = [];
+        let children = [];
+        let separatedWfs = [];
+        let chunk = 5;
+
+        for (let i = 0, j = allData.length; i < j; i += chunk) {
+            separatedWfs.push(allData.slice(i, i + chunk));
+        }
+
+        for (let i = 0; i < separatedWfs.length; i++) {
+            let wfs = async function (sepWfs) {
+                return await Promise.all(
+                    sepWfs.map(wf => http.get(baseURLWorkflow + wf.workflowId + '?includeTasks=false', req.token))
+                );
+            };
+
+            let responses = await wfs(separatedWfs[i]);
+            for (let j = 0; j < responses.length; j++) {
+                if (responses[j].parentWorkflowId) {
+                    separatedWfs[i][j]["parentWorkflowId"] = responses[j].parentWorkflowId;
+                    children.push(separatedWfs[i][j]);
+                } else {
+                    parents.push(separatedWfs[i][j]);
+                }
+            }
+        }
+        res.status(200).send({ parents, children });
     } catch (err) {
         next(err);
     }

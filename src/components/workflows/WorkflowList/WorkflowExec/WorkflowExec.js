@@ -52,12 +52,14 @@ class WorkflowExec extends Component {
                 this.props.updateByQuery(this.props.query);
             }
         }
+
         let {data, query, label, parents, parentsTable, size} = this.props.searchReducer;
         let dataset = this.state.allData ? data : (query === "" && label < 1) ? parents : parentsTable;
         if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails
             && this.props.query) {
-            this.showDetailsModal(dataset[0].workflowId);
+            this.showDetailsModal(this.props.query);
         }
+
         if (size !== this.state.datasetLength) {
             let pagesCount =  ~~(size / this.state.defaultPages);
             this.setState({
@@ -65,12 +67,13 @@ class WorkflowExec extends Component {
                 datasetLength: size
             });
         }
+
         if (prevState.allData !== this.state.allData || this.props.query !== prevProps.query ) {
             if (this.state.allData) {
-                this.props.fetchNewData();
+                this.props.fetchNewData(this.state.viewedPage, this.state.defaultPages);
             } else {
                 if (parents.length < 1) {
-                    this.props.fetchParentWorkflows();
+                    this.props.fetchParentWorkflows(this.state.viewedPage, this.state.defaultPages);
                     this.setState({
                         openParentWfs: [],
                         showChildren: []
@@ -173,10 +176,7 @@ class WorkflowExec extends Component {
         let output = [];
         let dataset = this.state.allData ? data
             : (query === "" && label < 1) ? parents : parentsTable;
-        let defaultPages = this.state.defaultPages;
-        let viewedPage = this.state.viewedPage;
         for (let i = 0; i < dataset.length; i++) {
-            if (this.state.allData || (i >= (viewedPage - 1) * defaultPages && i < viewedPage * defaultPages)) {
                 output.push(
                     <tr key={`row-${i}`} id={`row-${i}`}
                         className={this.state.showChildren.some(wf => wf.workflowId === dataset[i]["workflowId"]) && !this.state.allData ? "childWf" : null}>
@@ -211,7 +211,6 @@ class WorkflowExec extends Component {
                         <td>{dataset[i]["endTime"]}</td>
                     </tr>
                 );
-            }
         }
         return output;
     }
@@ -268,7 +267,6 @@ class WorkflowExec extends Component {
 
     showDetailsModal(workflowId) {
         let wfId = workflowId !== undefined ? workflowId : null;
-
         this.setState({
             detailsModal: !this.state.detailsModal,
             wfId: wfId,

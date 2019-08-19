@@ -46,37 +46,13 @@ export const receiveNewData = (data) => {
 export const fetchParentWorkflows = (viewedPage, defaultPages) => {
     return (dispatch, getState) => {
         let page = (viewedPage - 1) * defaultPages;
-        http.get('/api/conductor/executions/?q=&h=&freeText=&start=0&size=').then(res => {
-            let allData = res.result ? (res.result.hits ? res.result.hits : []) : [];
-
-            let parents = []; let child = [];
-            let separatedWfs = [];
-            let chunk = 5;
-            for (let i = 0,j = allData.length; i < j; i +=chunk) {
-                separatedWfs.push(allData.slice(i, i + chunk));
-            }
-            separatedWfs.length
-                ? separatedWfs.forEach( async wfsChunk => {
-                    let wfs = async function (sepWfs) {
-                        return await Promise.all(
-                            sepWfs.map(wf => http.get('/api/conductor/id/' + wf.workflowId))
-                        );
-                    };
-                    let responses = await wfs(wfsChunk);
-                    for (let i = 0; i < responses.length; i++) {
-                        if (responses[i].result.parentWorkflowId) {
-                            wfsChunk[i]["parentWorkflowId"] = responses[i].result.parentWorkflowId;
-                            child.push(wfsChunk[i]);
-                        } else {
-                            parents.push(wfsChunk[i]);
-                        }
-                        if (parents.length)
-                            dispatch(updateSize(parents.length));
-                        parents = sortBy(parents, wf => new Date (wf.startTime)).reverse();
-                        dispatch(receiveParentData(parents, child, [], []));
-                    }
-                })
-                : dispatch(receiveParentData(parents, child, parents, child));
+        http.get('/api/conductor/hierarchical/?start=' + page + '&size=' + defaultPages * 10).then(res => {
+            let parents = res.parents ? res.parents : [];
+            let children = res.children ? res.children : [];
+            if (parents.length)
+                dispatch(updateSize(parents.length));
+            parents = sortBy(parents, wf => new Date(wf.startTime)).reverse();
+            dispatch(receiveParentData(parents, children, parents, children));
             const {label, query} = getState().searchReducer;
             if (label.length || query !== "") {
                 dispatch(updateHierarchicalDataByLabel(label));
