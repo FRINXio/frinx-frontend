@@ -49,8 +49,12 @@ class DetailModal extends Component {
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose} >
                 <Modal.Header>
-                    <Modal.Title><i style={{color: this.state.deviceDetails.status === "connected" ? "#007bff" : "lightblue"}} className="fas fa-circle"/>
-                        &nbsp;&nbsp;Details of {device.node_id} ({device.host})</Modal.Title>
+                    <Modal.Title><i
+                        style={{color: this.state.deviceDetails ?
+                                (this.state.deviceDetails.status === "connected" ? "#007bff" : "lightblue") : "lightblue"}}
+                        className="fas fa-circle"/>
+                        &nbsp;&nbsp;Details of {device.node_id} ({device.host})
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body style={{padding: "30px"}}>
                     <Tab.Container id="left-tabs-example" defaultActiveKey="first">
