@@ -16,7 +16,6 @@ const baseURLTask = baseURL + 'tasks/';
 
 router.get('/metadata/taskdef', async (req, res, next) => {
     try {
-        console.log(res);
         const result = await http.get(baseURLMeta + 'taskdefs', req.token);
         res.status(200).send({ result });
     } catch (err) {
@@ -229,5 +228,25 @@ router.get('/id/:workflowId', async (req, res, next) => {
         next(err);
     }
 });
+
+router.get('/queue/data', async (req, res, next) => {
+    try {
+        const sizes = await http.get(baseURLTask + 'queue/all', req.token);
+        const polldata = await http.get(baseURLTask + 'queue/polldata/all', req.token);
+        polldata.forEach(pd => {
+            var qname = pd.queueName;
+
+            if (pd.domain != null) {
+                qname = pd.domain + ':' + qname;
+            }
+            pd.qsize = sizes[qname];
+        });
+        console.log(polldata);
+        res.status(200).send({ polldata });
+    } catch (err) {
+        next(err);
+    }
+});
+
 
 module.exports = router;
