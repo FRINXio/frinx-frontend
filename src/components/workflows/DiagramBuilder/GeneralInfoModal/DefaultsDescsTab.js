@@ -38,7 +38,14 @@ class DefaultsDescsTab extends Component {
     }
 
     render() {
+
         let inputParametersKeys = Object.keys(getWfInputs(this.state.finalWf)) || [];
+        let existingInputParameters = this.state.finalWf.inputParameters;
+
+        existingInputParameters.forEach(param => {
+            inputParametersKeys.push(param.match(/^(.*?)\[/)[1])
+        });
+
         let currentDescription = this.getDescriptionAndDefault(this.state.selectedParam)[0];
         let currentDefault = this.getDescriptionAndDefault(this.state.selectedParam)[1];
         let noInputParams = inputParametersKeys.length < 1;
