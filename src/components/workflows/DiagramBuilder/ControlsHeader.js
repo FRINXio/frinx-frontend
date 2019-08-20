@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import {Badge, Button, Col, Container, Dropdown, DropdownButton, Form, InputGroup, Row} from "react-bootstrap";
+import {Badge, Button, Col, Container, Dropdown, Form, InputGroup, Row} from "react-bootstrap";
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import WorkflowDefModal from "./WorkflowDefModal/WorkflowDefModal";
@@ -173,8 +173,6 @@ class ControlsHeader extends Component {
                         </Col>
                     </Row>
                 </Container>
-
-
             </div>
         )
     }

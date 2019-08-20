@@ -24,7 +24,10 @@ class GeneralInfoModal extends Component {
     }
 
     handleSave() {
+        console.log("saving");
         this.setState({show: false});
+
+        console.log(this.state.finalWf);
         this.props.saveInputs(this.state.finalWf);
         this.props.lockWorkflowName();
         this.props.modalHandler()
@@ -114,6 +117,23 @@ class GeneralInfoModal extends Component {
         });
     }
 
+    deleteDefaultAndDesc(selectedParam) {
+        let finalWf = {...this.state.finalWf};
+        let inputParameters = this.state.finalWf.inputParameters || [];
+
+        inputParameters.forEach((param,i) => {
+            if (param.match(/^(.*?)\[/)[1] === selectedParam) {
+                inputParameters.splice(i,1)
+            }
+        });
+
+        finalWf = {...finalWf, inputParameters};
+
+        this.setState({
+            finalWf: finalWf,
+        });
+    }
+
     render() {
         let isNameLocked = this.props.isWfNameLocked;
 
@@ -135,7 +155,7 @@ class GeneralInfoModal extends Component {
                                                  handleCustomParam={this.handleCustomParam.bind(this)}/>
                             </Tab>
                             <Tab eventKey={3} title="Defaults & description">
-                                <DefaultsDescsTab finalWf={this.state.finalWf}
+                                <DefaultsDescsTab finalWf={this.state.finalWf} deleteParam={this.deleteDefaultAndDesc.bind(this)}
                                                   handleCustomDefaultAndDesc={this.handleCustomDefaultAndDesc.bind(this)}/>
                             </Tab>
                         </Tabs>

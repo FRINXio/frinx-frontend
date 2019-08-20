@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import {Col, Form} from "react-bootstrap";
+import {Button, Col, Form, InputGroup} from "react-bootstrap";
 import {getWfInputs} from "../builder-utils";
+import _ from 'lodash'
 
 class DefaultsDescsTab extends Component {
     constructor(props, context) {
@@ -46,6 +47,8 @@ class DefaultsDescsTab extends Component {
             inputParametersKeys.push(param.match(/^(.*?)\[/)[1])
         });
 
+        inputParametersKeys = _.uniq(inputParametersKeys);
+
         let currentDescription = this.getDescriptionAndDefault(this.state.selectedParam)[0];
         let currentDefault = this.getDescriptionAndDefault(this.state.selectedParam)[1];
         let noInputParams = inputParametersKeys.length < 1;
@@ -54,10 +57,19 @@ class DefaultsDescsTab extends Component {
             <div>
                 <Form>
                     <Form.Group>
-                        <Form.Label>Input parameter name</Form.Label>
+                        <Form.Label>Available input parameters</Form.Label>
+                        <InputGroup>
                         <Form.Control disabled={noInputParams} onClick={(e) => this.changeSelected(e)} as="select">
                             {inputParametersKeys.map(param => <option>{param}</option>)}
                         </Form.Control>
+                            <InputGroup.Append>
+                                <Button disabled={noInputParams}
+                                        title="delete parameter's default and description"
+                                        onClick={() => this.props.deleteParam(this.state.selectedParam)}
+                                        variant="outline-danger"><i
+                                    className="fas fa-times"/></Button>
+                            </InputGroup.Append>
+                        </InputGroup>
                     </Form.Group>
                     <Form.Row>
                         <Col>
