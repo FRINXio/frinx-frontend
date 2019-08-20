@@ -58,7 +58,7 @@ class DefaultsDescsTab extends Component {
                             <Form.Control placeholder="default value"
                                           disabled={noInputParams}
                                           value={currentDefault}
-                                          onChange={(e) => this.props.handleCustomDefault(
+                                          onChange={(e) => this.props.handleCustomDefaultAndDesc(
                                               this.state.selectedParam,
                                               e.target.value,
                                               currentDescription)}/>
@@ -68,7 +68,7 @@ class DefaultsDescsTab extends Component {
                             <Form.Control placeholder="description"
                                           disabled={noInputParams}
                                           value={currentDescription}
-                                          onChange={(e) => this.props.handleCustomDefault(
+                                          onChange={(e) => this.props.handleCustomDefaultAndDesc(
                                               this.state.selectedParam,
                                               currentDefault,
                                               e.target.value)}/>

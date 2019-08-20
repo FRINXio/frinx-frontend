@@ -16,7 +16,7 @@ import {connect} from "react-redux";
 import {
     create_L2VPN_P2P_OC_Uniconfig_Example_Workflow,
     createMountAndCheckExample,
-    createSampleBatchInventoryRetrievalExample, getFirstNode,
+    createSampleBatchInventoryRetrievalExample, getFirstNode, getWfInputs,
     handleDecideNode,
     handleForkNode
 } from "./builder-utils";
@@ -186,9 +186,16 @@ class DiagramBuilder extends Component {
                 }
             });
 
-            // update JSON
             let finalWf = {...this.props.finalWorkflow};
+
+            // handle input params
+            if (Object.keys(getWfInputs(finalWf)).length < 1) {
+                finalWf.inputParameters = [];
+            }
+
+            // handle tasks
             finalWf.tasks = tasks;
+
             this.props.updateFinalWorkflow(finalWf);
 
             return finalWf;

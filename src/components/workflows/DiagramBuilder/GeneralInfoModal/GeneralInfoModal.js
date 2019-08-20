@@ -87,7 +87,7 @@ class GeneralInfoModal extends Component {
         });
     }
 
-    handleCustomDefault(param, defaultValue, description) {
+    handleCustomDefaultAndDesc(param, defaultValue, description) {
         let finalWf = {...this.state.finalWf};
         let inputParameters = finalWf.inputParameters || [];
         // eslint-disable-next-line no-useless-concat
@@ -136,7 +136,7 @@ class GeneralInfoModal extends Component {
                             </Tab>
                             <Tab eventKey={3} title="Defaults & description">
                                 <DefaultsDescsTab finalWf={this.state.finalWf}
-                                                  handleCustomDefault={this.handleCustomDefault.bind(this)}/>
+                                                  handleCustomDefaultAndDesc={this.handleCustomDefaultAndDesc.bind(this)}/>
                             </Tab>
                         </Tabs>
                         <Button type="submit" style={{width: "100%", marginTop: "20px"}} variant="primary">Save</Button>
