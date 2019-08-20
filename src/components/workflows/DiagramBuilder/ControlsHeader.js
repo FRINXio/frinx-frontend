@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import {Badge, Button, Col, Container, Dropdown, Form, InputGroup, Row} from "react-bootstrap";
+import {Badge, Button, Col, Container, Dropdown, DropdownButton, Form, InputGroup, Row} from "react-bootstrap";
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import WorkflowDefModal from "./WorkflowDefModal/WorkflowDefModal";
@@ -123,33 +123,23 @@ class ControlsHeader extends Component {
                 {executeAndSaveModal}
                 <Container fluid>
                     <Row>
-                        <Col md={4}>
-                            <InputGroup style={{marginLeft: "-20px"}}>
-                                <InputGroup.Append>
+                            <InputGroup style={{width: "490px", marginLeft: "-5px"}}>
+                                <InputGroup.Prepend>
+                                    <InputGroup.Text className="clickable" onClick={() => this.props.updateSidebar(!this.props.sidebarShown)}>
+                                        {this.props.sidebarShown ? <i className="fas fa-chevron-left"/> : <i className="fas fa-chevron-right"/>}
+                                    </InputGroup.Text>
+                                </InputGroup.Prepend>
                                     <Form.Control value={this.props.query}
                                                   onChange={(e) => this.props.updateQuery(e.target.value)}
                                                   placeholder={`Search for ${this.props.category.toLowerCase()}.`} />
+                                <InputGroup.Append>
                                     <InputGroup.Text>
-                                        <i className="fas fa-search"/>
+                                        <i className="fas fa-search"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <i className="fas fa-chevron-down clickable"
+                                           onClick={() => this.props.updateCategory(this.props.category === "Functional" ? "Workflows" : "Functional")}/>
                                     </InputGroup.Text>
-
-                                    <Dropdown style={{marginLeft: "10px"}}>
-                                        <Dropdown.Toggle variant="outline-light" id="dropdown-basic">
-                                            {this.props.category}
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu>
-                                            <Dropdown.Item
-                                                onClick={() => this.props.updateCategory(this.props.category === "Functional" ? "Workflows" : "Functional")}>
-                                                {this.props.category === "Functional" ? "Workflows" : "Functional"}
-                                            </Dropdown.Item>
-                                        </Dropdown.Menu>
-                                    </Dropdown>
                                 </InputGroup.Append>
-                                <Button onClick={() => this.props.updateSidebar(!this.props.sidebarShown)} style={{marginLeft: "5%", borderRadius: "50%"}} variant="outline-light">
-                                    {this.props.sidebarShown ? <i className="fas fa-chevron-left"/> : <i className="fas fa-chevron-right"/>}
-                                </Button>
                             </InputGroup>
-                        </Col>
                         <Col style={{position: "absolute", marginLeft: "28%"}}>
                             <h4 style={{float: "left", lineHeight: 0, marginTop: "5px"}}><Badge variant="light">{this.props.finalWorkflow.name}</Badge></h4>
                         </Col>
