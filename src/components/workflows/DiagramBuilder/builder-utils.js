@@ -13,7 +13,15 @@ export const getWfInputs = (wf) => {
 
     taskArray.forEach(task => {
         if (task !== undefined) {
-            if (task.inputParameters) {
+            let nonSystemTask = fn(task, "inputParameters");
+
+            if (_.isArray(nonSystemTask)) {
+                nonSystemTask.forEach(el => {
+                    if (el.inputParameters) {
+                        inputParams.push(el.inputParameters)
+                    }
+                })
+            } else if (nonSystemTask.inputParameters) {
                 inputParams.push(task.inputParameters)
             }
         }
@@ -25,6 +33,16 @@ export const getWfInputs = (wf) => {
 
     return inputParameters;
 };
+
+// function to get nested key (inputParameters) from system tasks
+function fn(obj, key) {
+    if (_.has(obj, key))
+        return obj;
+
+    return _.flatten(_.map(obj, function(v) {
+        return typeof v == "object" ? fn(v, key) : [];
+    }), true);
+}
 
 export const getLinksArray = (type, node) => {
     let linksArray = [];
@@ -216,7 +234,7 @@ export const createMountAndCheckExample = (app, props) => {
     let end = new CircleEndNodeModel("End");
     end.setPosition(node2.x + 250, 120);
 
-    let link1 = node1InPort.link(start.getPort("right"));
+    let link1 = start.getPort("right").link(node1InPort);
     let link2 = node1OutPort.link(node2InPort);
     let link3 = node2OutPort.link(end.getPort("left"));
 
