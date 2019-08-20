@@ -62,6 +62,9 @@ class ControlsHeader extends Component {
     }
 
     showGeneralInfoModal() {
+        if (this.props.isWfNameLocked && this.state.generalInfoModal === false) {
+            this.props.parseWftoJSON()
+        }
         this.setState({
             generalInfoModal: !this.state.generalInfoModal
         })

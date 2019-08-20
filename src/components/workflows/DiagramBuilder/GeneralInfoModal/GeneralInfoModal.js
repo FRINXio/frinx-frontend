@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import {Modal, Button, Form, Row, Col, InputGroup} from "react-bootstrap";
-import {workflowDescriptions} from "../../../constants";
-import * as _ from "lodash";
+import {Modal, Button, Form, Tab, Tabs} from "react-bootstrap";
+import DefaultsDescsTab from "./DefaultsDescsTab";
+import OutputParamsTab from "./OutputParamsTab";
+import GeneralParamsTab from "./GeneralParamsTab";
 
 class GeneralInfoModal extends Component {
     constructor(props, context) {
@@ -13,8 +14,7 @@ class GeneralInfoModal extends Component {
 
         this.state = {
             show: true,
-            finalWf: this.props.definition,
-            customParam: ""
+            finalWf: this.props.definition
         };
     }
 
@@ -40,36 +40,38 @@ class GeneralInfoModal extends Component {
         }
     };
 
-    handleInput(e, item, entry) {
+    handleInput(e, entry) {
         let finalWf = {...this.state.finalWf};
 
-        if (item[0] === "outputParameters") {
-            let outputParameters = finalWf.outputParameters;
-            finalWf = {
-                ...finalWf,
-                outputParameters: {
-                    ...outputParameters,
-                    [entry[0]]: e.target.value
-                }
-            };
-        } else {
-            finalWf = {
-                ...finalWf,
-                [entry[0]]: e.target.value
-            }
-        }
+        finalWf = {
+            ...finalWf,
+            [entry[0]]: e.target.value
+        };
 
         this.setState({
             finalWf: finalWf
         });
     }
 
-    handeCustomParam(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
+    handleOutputParam(e, entry) {
         let finalWf = {...this.state.finalWf};
-        let param = this.state.customParam;
+        let outputParameters = finalWf.outputParameters;
+
+        finalWf = {
+            ...finalWf,
+            outputParameters: {
+                ...outputParameters,
+                [entry[0]]: e.target.value
+            }
+        };
+
+        this.setState({
+            finalWf: finalWf
+        });
+    }
+
+    handleCustomParam(param) {
+        let finalWf = {...this.state.finalWf};
         let outputParameters = finalWf.outputParameters;
 
         finalWf = {
@@ -82,15 +84,38 @@ class GeneralInfoModal extends Component {
 
         this.setState({
             finalWf: finalWf,
-            customParam: ""
+        });
+    }
+
+    handleCustomDefault(param, defaultValue, description) {
+        let finalWf = {...this.state.finalWf};
+        let inputParameters = finalWf.inputParameters || [];
+        // eslint-disable-next-line no-useless-concat
+        let entry = `${param}` + `[${description}]` + `[${defaultValue}]`;
+        let isUnique = true;
+
+        if (inputParameters.length > 0) {
+            inputParameters.forEach((elem, i) => {
+                if (elem.startsWith(param)) {
+                    inputParameters[i] = entry;
+                    return isUnique = false;
+                }
+            });
+        }
+
+        if (isUnique) {
+            inputParameters.push(entry);
+        }
+
+        finalWf = {...finalWf, inputParameters};
+
+        this.setState({
+            finalWf: finalWf,
         });
     }
 
     render() {
-
         let isNameLocked = this.props.isWfNameLocked;
-        let outputParameters = [];
-        let hiddenParams = ["schemaVersion", "workflowStatusListenerEnabled", "tasks"];
 
         return (
             <Modal size="lg" show={this.state.show} onHide={isNameLocked ? this.handleClose : () => false}>
@@ -99,82 +124,21 @@ class GeneralInfoModal extends Component {
                 </Modal.Header>
                 <Modal.Body style={{padding: "30px"}}>
                     <Form onSubmit={this.handleSubmit}>
-                        <Row>
-                            {Object.entries(this.state.finalWf).map(((item, i) => {
-                                if (item[0] === "outputParameters") {
-                                    outputParameters.push(item);
-                                } else if (item[0] === "name") {
-                                    return (
-                                        <Col sm={6} key={`col2-${i}`}>
-                                            <Form.Group>
-                                                <Form.Label>{item[0]}</Form.Label>
-                                                <InputGroup>
-                                                    {isNameLocked ?
-                                                        <InputGroup.Prepend>
-                                                            <InputGroup.Text><i className="fas fa-lock"/></InputGroup.Text>
-                                                        </InputGroup.Prepend> : null
-                                                    }
-                                                <Form.Control
-                                                    required
-                                                    disabled={isNameLocked}
-                                                    type="input"
-                                                    onChange={(e) => this.handleInput(e, item, item)}
-                                                    value={item[1]}/>
-                                                </InputGroup>
-                                                    <Form.Text className="text-muted">
-                                                        {workflowDescriptions[item[0]]}
-                                                    </Form.Text>
-                                            </Form.Group>
-                                        </Col>
-                                    )
-                                } else if (!hiddenParams.includes(item[0])) {
-                                    return (
-                                        <Col sm={6} key={`col2-${i}`}>
-                                            <Form.Group>
-                                                <Form.Label>{item[0]}</Form.Label>
-                                                <Form.Control
-                                                    type="input"
-                                                    onChange={(e) => this.handleInput(e, item, item)}
-                                                    value={item[1]}/>
-                                                <Form.Text className="text-muted">
-                                                    {workflowDescriptions[item[0]]}
-                                                </Form.Text>
-                                            </Form.Group>
-                                        </Col>
-                                    )
-                                }
-                                return null;
-                            }))}
-                        </Row>
-                        <hr className="hr-text" data-content="add custom output parameters (optional)"/>
-                        <Row>
-                            <Form onSubmit={this.handeCustomParam.bind(this)}>
-                                <InputGroup style={{padding: "10px 215px 10px"}}>
-                                    <Form.Control value={this.state.customParam}
-                                                  onChange={(e) => this.setState({customParam: e.target.value})}
-                                                  placeholder="Add new output parameter name"/>
-                                    <InputGroup.Append>
-                                        <Button variant="outline-primary" type="submit">Add</Button>
-                                    </InputGroup.Append>
-                                </InputGroup>
-                            </Form>
-                        </Row>
-                        <hr className="hr-text" data-content="existing output parameters"/>
-                        <Row>
-                            {Object.entries(outputParameters[0][1]).map((entry, i) => {
-                                return (
-                                    <Col sm={6} key={`col4-${i}`}>
-                                        <Form.Group>
-                                            <Form.Label>{entry[0]}</Form.Label>
-                                            <Form.Control
-                                                type="input"
-                                                onChange={(e) => this.handleInput(e, ["outputParameters", null], entry)}
-                                                value={entry[1]}/>
-                                        </Form.Group>
-                                    </Col>
-                                )
-                            })}
-                        </Row>
+                        <Tabs style={{marginBottom: "20px"}}>
+                            <Tab eventKey={1} title="General">
+                                <GeneralParamsTab finalWf={this.state.finalWf} handleInput={this.handleInput}
+                                                  isWfNameLocked={isNameLocked}/>
+                            </Tab>
+                            <Tab eventKey={2} title="Output parameters">
+                                <OutputParamsTab finalWf={this.state.finalWf} handleSubmit={this.handleSubmit}
+                                                 handleOutputParam={this.handleOutputParam.bind(this)}
+                                                 handleCustomParam={this.handleCustomParam.bind(this)}/>
+                            </Tab>
+                            <Tab eventKey={3} title="Defaults & description">
+                                <DefaultsDescsTab finalWf={this.state.finalWf}
+                                                  handleCustomDefault={this.handleCustomDefault.bind(this)}/>
+                            </Tab>
+                        </Tabs>
                         <Button type="submit" style={{width: "100%", marginTop: "20px"}} variant="primary">Save</Button>
                     </Form>
                 </Modal.Body>

@@ -12,8 +12,8 @@ const finalWorkflowTemplate = {
     description: "",
     version: 1,
     tasks: [],
-    outputParameters: {
-    },
+    outputParameters: {},
+    inputParameters: [],
     schemaVersion: 2,
     restartable: true,
     workflowStatusListenerEnabled: false
@@ -34,8 +34,8 @@ const initialState = {
         description: "",
         version: 1,
         tasks: [],
-        outputParameters: {
-        },
+        outputParameters: {},
+        inputParameters: [],
         schemaVersion: 2,
         restartable: true,
         workflowStatusListenerEnabled: false
