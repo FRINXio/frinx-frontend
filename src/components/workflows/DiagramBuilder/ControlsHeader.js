@@ -101,18 +101,21 @@ class ControlsHeader extends Component {
             <WorkflowDefModal definition={this.props.finalWorkflow} modalHandler={this.showDefinitionModal.bind(this)}
                               show={this.state.defModal}/> : null;
 
-        let executeAndSaveModal = this.state.generalInfoModal ?
+        let generalInfoModal = this.state.generalInfoModal ?
             <GeneralInfoModal definition={this.props.finalWorkflow}
+                              workflows={this.props.workflows}
                               modalHandler={this.showGeneralInfoModal.bind(this)}
                               saveInputs={this.props.updateFinalWorkflow} show={this.state.generalInfoModal}
-                              lockWorkflowName={this.props.lockWorkflowName} isWfNameLocked={this.props.isWfNameLocked}/> : null;
+                              lockWorkflowName={this.props.lockWorkflowName}
+                              isWfNameLocked={this.props.isWfNameLocked}/> : null;
 
         let detailsModal = this.state.detailsModal ?
             <DetailsModal wfId={this.props.workflowId} modalHandler={this.showDetailsModal.bind(this)}
                           show={this.state.detailsModal} fromBuilder/> : null;
 
         let inputModal = this.state.inputModal ?
-            <InputModal wf={this.props.finalWorkflow.name + " / " + this.props.finalWorkflow.version} modalHandler={this.showInputModal.bind(this)}
+            <InputModal wf={this.props.finalWorkflow.name + " / " + this.props.finalWorkflow.version}
+                        modalHandler={this.showInputModal.bind(this)}
                         show={this.state.inputModal} fromBuilder/> : null;
 
         return (
@@ -120,7 +123,7 @@ class ControlsHeader extends Component {
                 {inputModal}
                 {detailsModal}
                 {definitionModal}
-                {executeAndSaveModal}
+                {generalInfoModal}
                 <Container fluid>
                     <Row>
                             <InputGroup style={{width: "490px", marginLeft: "-5px"}}>
@@ -186,7 +189,8 @@ const mapStateToProps = state => {
         finalWorkflow: state.buildReducer.finalWorkflow,
         isWfNameLocked: state.buildReducer.workflowNameLock,
         smartRouting: state.buildReducer.switchSmartRouting,
-        workflowId: state.buildReducer.executedWfId
+        workflowId: state.buildReducer.executedWfId,
+        workflows: state.buildReducer.workflows,
     }
 };
 

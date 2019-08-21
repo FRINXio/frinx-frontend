@@ -11,10 +11,12 @@ class GeneralInfoModal extends Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleInput = this.handleInput.bind(this);
         this.handleSave = this.handleSave.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
 
         this.state = {
             show: true,
-            finalWf: this.props.definition
+            finalWf: this.props.definition,
+            isWfNameValid: false
         };
     }
 
@@ -24,36 +26,46 @@ class GeneralInfoModal extends Component {
     }
 
     handleSave() {
-        console.log("saving");
         this.setState({show: false});
-
-        console.log(this.state.finalWf);
         this.props.saveInputs(this.state.finalWf);
         this.props.lockWorkflowName();
         this.props.modalHandler()
     }
 
-    handleSubmit = event => {
-        const form = event.currentTarget;
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        } else {
+    handleSubmit(e) {
+        if (this.props.isWfNameLocked || this.state.isWfNameValid) {
             this.handleSave();
+        } else {
+            e.preventDefault();
+            e.stopPropagation();
         }
-    };
+    }
 
-    handleInput(e, entry) {
+    handleInput(value, key) {
         let finalWf = {...this.state.finalWf};
+
+        if (key === "name") {
+            this.validateWorkflowName(value);
+        }
 
         finalWf = {
             ...finalWf,
-            [entry[0]]: e.target.value
+            [key]: value
         };
 
         this.setState({
             finalWf: finalWf
         });
+    }
+
+    validateWorkflowName(name) {
+        let isValid = name.length >= 1;
+        this.props.workflows.forEach(wf => {
+            if (wf.name === name) {
+                isValid = false
+            }
+        });
+        this.setState({isWfNameValid: isValid});
     }
 
     handleOutputParam(e, entry) {
@@ -160,6 +172,7 @@ class GeneralInfoModal extends Component {
                         <Tabs style={{marginBottom: "20px"}}>
                             <Tab eventKey={1} title="General">
                                 <GeneralParamsTab finalWf={this.state.finalWf} handleInput={this.handleInput}
+                                                  isWfNameValid={this.state.isWfNameValid}
                                                   isWfNameLocked={isNameLocked}/>
                             </Tab>
                             <Tab eventKey={2} title="Output parameters">
