@@ -65,7 +65,7 @@ class DefaultsDescsTab extends Component {
                             <InputGroup.Append>
                                 <Button disabled={noInputParams}
                                         title="delete parameter's default and description"
-                                        onClick={() => this.props.deleteParam(this.state.selectedParam)}
+                                        onClick={() => this.props.deleteDefaultAndDesc(this.state.selectedParam)}
                                         variant="outline-danger"><i
                                     className="fas fa-times"/></Button>
                             </InputGroup.Append>

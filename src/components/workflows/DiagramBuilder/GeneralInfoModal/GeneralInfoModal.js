@@ -134,6 +134,19 @@ class GeneralInfoModal extends Component {
         });
     }
 
+    deleteOutputParam(selectedParam) {
+        let finalWf = {...this.state.finalWf};
+        let outputParameters = this.state.finalWf.outputParameters || [];
+
+        delete outputParameters[selectedParam];
+
+        finalWf = {...finalWf, outputParameters};
+
+        this.setState({
+            finalWf: finalWf,
+        });
+    }
+
     render() {
         let isNameLocked = this.props.isWfNameLocked;
 
@@ -152,10 +165,12 @@ class GeneralInfoModal extends Component {
                             <Tab eventKey={2} title="Output parameters">
                                 <OutputParamsTab finalWf={this.state.finalWf} handleSubmit={this.handleSubmit}
                                                  handleOutputParam={this.handleOutputParam.bind(this)}
-                                                 handleCustomParam={this.handleCustomParam.bind(this)}/>
+                                                 handleCustomParam={this.handleCustomParam.bind(this)}
+                                                 deleteOutputParam={this.deleteOutputParam.bind(this)}/>
                             </Tab>
                             <Tab eventKey={3} title="Defaults & description">
-                                <DefaultsDescsTab finalWf={this.state.finalWf} deleteParam={this.deleteDefaultAndDesc.bind(this)}
+                                <DefaultsDescsTab finalWf={this.state.finalWf}
+                                                  deleteDefaultAndDesc={this.deleteDefaultAndDesc.bind(this)}
                                                   handleCustomDefaultAndDesc={this.handleCustomDefaultAndDesc.bind(this)}/>
                             </Tab>
                         </Tabs>

@@ -65,7 +65,11 @@ class OutputParamsTab extends Component {
                             return (
                                 <Col sm={6} key={`col4-${i}`}>
                                     <Form.Group>
-                                        <Form.Label>{key[0]}</Form.Label>
+                                        <Form.Label>
+                                            {key[0]}&nbsp;&nbsp;
+                                            <i className="fas fa-times clickable" style={{color: "red"}}
+                                               onClick={() => this.props.deleteOutputParam(key[0])}/>
+                                        </Form.Label>
                                         <Form.Control
                                             type="input"
                                             onChange={(e) => this.props.handleOutputParam(e, key)}
