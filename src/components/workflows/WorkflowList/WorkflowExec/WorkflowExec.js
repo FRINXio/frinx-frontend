@@ -30,11 +30,8 @@ class WorkflowExec extends Component {
     }
 
     componentWillMount() {
-        if (this.props.query) {
-            this.state.allData
-                ? this.props.updateByQuery(this.props.query)
-                : this.props.updateHierarchicalByQuery(this.props.query);
-        }
+        if (this.props.query)
+            this.props.updateByQuery(this.props.query);
         this.state.allData
             ? this.props.fetchNewData(this.state.viewedPage, this.state.defaultPages)
             : this.props.fetchParentWorkflows(this.state.viewedPage, this.state.defaultPages);
@@ -53,8 +50,8 @@ class WorkflowExec extends Component {
             }
         }
 
-        let {data, query, label, parents, parentsTable, size} = this.props.searchReducer;
-        let dataset = this.state.allData ? data : (query === "" && label < 1) ? parents : parentsTable;
+        let {data, query, parents, size} = this.props.searchReducer;
+        let dataset = this.state.allData ? data : parents;
         if (dataset.length === 1 && query !== "" && !this.state.detailsModal && this.state.closeDetails
             && this.props.query) {
             this.showDetailsModal(this.props.query);
@@ -72,13 +69,8 @@ class WorkflowExec extends Component {
             if (this.state.allData) {
                 this.props.fetchNewData(this.state.viewedPage, this.state.defaultPages);
             } else {
-                if (parents.length < 1) {
-                    this.props.fetchParentWorkflows(this.state.viewedPage, this.state.defaultPages);
-                    this.setState({
-                        openParentWfs: [],
-                        showChildren: []
-                    })
-                }
+                this.props.fetchParentWorkflows(this.state.viewedPage, this.state.defaultPages);
+                this.update([],[]);
             }
         }
     }
@@ -103,9 +95,7 @@ class WorkflowExec extends Component {
     }
 
     showChildrenWorkflows(workflow, closeParentWfs, closeChildWfs) {
-        let {query, label, child, childTable} = this.props.searchReducer;
-
-        let childrenDataset = (query === "" && label < 1) ? child : childTable;
+        let childrenDataset = this.props.searchReducer.children;
         if (childrenDataset.length) {
             childrenDataset.forEach((wf, index) => wf.index = index);
         }
@@ -162,20 +152,20 @@ class WorkflowExec extends Component {
     }
 
     setViewPage(page) {
-        if (this.state.allData)
-            this.props.fetchNewData(page, this.state.defaultPages);
+        this.state.allData
+            ? this.props.fetchNewData(page, this.state.defaultPages)
+            : this.props.fetchParentWorkflows(page, this.state.defaultPages);
         this.setState({
             viewedPage: page
         })
     }
 
     repeat() {
-        let {data, query, label, parents, parentsTable, child, childTable} = this.props.searchReducer;
-        let childSet = (query === "" && label < 1) ? child : childTable;
+        let {data, parents, children} = this.props.searchReducer;
+        let childSet = children;
         let parentsId = childSet ? childSet.map(wf => wf.parentWorkflowId) : [];
         let output = [];
-        let dataset = this.state.allData ? data
-            : (query === "" && label < 1) ? parents : parentsTable;
+        let dataset = this.state.allData ? data : parents;
         for (let i = 0; i < dataset.length; i++) {
                 output.push(
                     <tr key={`row-${i}`} id={`row-${i}`}
@@ -217,6 +207,7 @@ class WorkflowExec extends Component {
 
     selectWfView() {
         this.clearView();
+        this.props.updateSize(1);
         this.setState({
             allData: !this.state.allData,
             viewedPage: 1
@@ -224,8 +215,8 @@ class WorkflowExec extends Component {
     }
 
     selectWf(e) {
-        const {query, label, data, parents, parentsTable} = this.props.searchReducer;
-        let dataset = this.state.allData ? data : (query === "" && label < 1) ? parents : parentsTable;
+        const {data, parents} = this.props.searchReducer;
+        let dataset = this.state.allData ? data : parents;
         let rowNum = e.target.id.split("-")[1];
 
         let wfIds = this.state.selectedWfs;
@@ -243,13 +234,9 @@ class WorkflowExec extends Component {
     }
 
     selectAllWfs() {
-        const {query, label, data, table, parents, parentsTable, child, childTable } = this.props.searchReducer;
-        let hiddenChildren = (query === "" && label < 1)
-            ? child.filter((obj) => !this.state.showChildren.some((obj2) => obj.startTime === obj2.startTime))
-            : childTable.filter((obj) => !this.state.showChildren.some((obj2) => obj.startTime === obj2.startTime));
-        let dataset = this.state.allData
-            ? (query === "" && label < 1) ? data : table
-            : (query === "" && label < 1) ? parents.concat(hiddenChildren) : parentsTable.concat(hiddenChildren);
+        const {data, parents, children} = this.props.searchReducer;
+        let hiddenChildren = children.filter((obj) => !this.state.showChildren.some((obj2) => obj.startTime === obj2.startTime));
+        let dataset = this.state.allData ? data : parents.concat(hiddenChildren);
         let wfIds = [];
 
         if (this.state.selectedWfs.length > 0) {
@@ -275,13 +262,14 @@ class WorkflowExec extends Component {
     }
 
     changeQuery(e) {
+        this.props.updateByQuery(e.target.value);
         if (this.state.allData) {
-            this.props.updateByQuery(e.target.value);
             this.props.fetchNewData(1, this.state.defaultPages);
         } else {
+            this.props.updateSize(1);
             this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
-            this.props.updateHierarchicalByQuery(e.target.value);
             this.update([],[]);
+            this.props.fetchParentWorkflows(1, this.state.defaultPages);
         }
         this.setState({
             viewedPage: 1
@@ -289,13 +277,14 @@ class WorkflowExec extends Component {
     }
 
     changeLabels(e) {
+        this.props.updateByLabel(e[0]);
         if (this.state.allData) {
-            this.props.updateByLabel(e[0]);
             this.props.fetchNewData(1, this.state.defaultPages);
         } else {
+            this.props.updateSize(1);
             this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
-            this.props.updateHierarchicalByLabel(e[0]);
             this.update([],[]);
+            this.props.fetchParentWorkflows(1, this.state.defaultPages);
         }
         this.setState({
             viewedPage: 1
@@ -359,7 +348,8 @@ class WorkflowExec extends Component {
                         </Col>
                         <Col sm={8}/>
                         <Col sm={2}>
-                            <PageSelect viewedPage={this.state.viewedPage} count={this.state.pagesCount} handler={this.setViewPage.bind(this)}/>
+                            <PageSelect viewedPage={this.state.viewedPage} count={this.state.pagesCount}
+                                        indent={1} handler={this.setViewPage.bind(this)}/>
                         </Col>
                     </Row>
                 </Container>
@@ -379,12 +369,11 @@ const mapDispatchToProps = dispatch => {
     return {
         updateByQuery: (query) => dispatch(searchActions.updateQuery(query)),
         updateByLabel: (label) => dispatch(searchActions.updateLabel(label)),
-        updateHierarchicalByQuery: (query) => dispatch(searchActions.updateHierarchicalDataByQuery(query)),
-        updateHierarchicalByLabel: (label) => dispatch(searchActions.updateHierarchicalDataByLabel(label)),
         fetchNewData: (viewedPage, defaultPages) => dispatch(searchActions.fetchNewData(viewedPage, defaultPages)),
         fetchParentWorkflows : (viewedPage, defaultPages) => dispatch(searchActions.fetchParentWorkflows(viewedPage, defaultPages)),
         updateParents: (children) => dispatch(searchActions.updateParents(children)),
-        deleteParents: (children) => dispatch(searchActions.deleteParents(children))
+        deleteParents: (children) => dispatch(searchActions.deleteParents(children)),
+        updateSize: (size) =>dispatch(searchActions.updateSize(size))
     }
 };
 

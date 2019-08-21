@@ -240,36 +240,80 @@ router.get('/hierarchical', async (req, res, next) => {
             size = req.query.size;
         }
 
-        const url = baseURLWorkflow + 'search?size=' + size + '&sort=startTime:DESC&freeText=*&start=0&query=';
-        const result = await http.get(url, req.token);
-        let allData = result.results;
+        let count = 0;
+        let start = 0;
+        if (!isNaN(req.query.start)) {
+            start = req.query.start;
+            count = Number(start);
+        }
+
+        let freeText = [];
+        if (req.query.freeText !== '') {
+            freeText.push(req.query.freeText);
+        } else {
+            freeText.push('*');
+        }
+
         let parents = [];
         let children = [];
-        let separatedWfs = [];
-        let chunk = 5;
 
-        for (let i = 0, j = allData.length; i < j; i += chunk) {
-            separatedWfs.push(allData.slice(i, i + chunk));
-        }
+        let hits = 0;
+        while (parents.length <= size) {
 
-        for (let i = 0; i < separatedWfs.length; i++) {
-            let wfs = async function (sepWfs) {
-                return await Promise.all(
-                    sepWfs.map(wf => http.get(baseURLWorkflow + wf.workflowId + '?includeTasks=false', req.token))
-                );
-            };
+            const url = baseURLWorkflow + 'search?size=' + size * 10 + '&sort=startTime:DESC&freeText=' + encodeURIComponent(freeText.join(' AND '))
+                + '&start=' + start + '&query=';
+            const result = await http.get(url, req.token);
+            let allData = result.results ? result.results : [];
+            hits = result.totalHits ? result.totalHits : 0;
 
-            let responses = await wfs(separatedWfs[i]);
-            for (let j = 0; j < responses.length; j++) {
-                if (responses[j].parentWorkflowId) {
-                    separatedWfs[i][j]["parentWorkflowId"] = responses[j].parentWorkflowId;
-                    children.push(separatedWfs[i][j]);
-                } else {
-                    parents.push(separatedWfs[i][j]);
+            let separatedWfs = [];
+            let chunk = 5;
+
+            for (let i = 0, j = allData.length; i < j; i += chunk) {
+                separatedWfs.push(allData.slice(i, i + chunk));
+            }
+
+            for (let i = 0; i < separatedWfs.length; i++) {
+                let wfs = async function (sepWfs) {
+                    return await Promise.all(
+                        sepWfs.map(wf => http.get(baseURLWorkflow + wf.workflowId + '?includeTasks=false', req.token))
+                    );
+                };
+
+                let responses = await wfs(separatedWfs[i]);
+                for (let j = 0; j < responses.length; j++) {
+                    if (responses[j].parentWorkflowId) {
+                        separatedWfs[i][j]["parentWorkflowId"] = responses[j].parentWorkflowId;
+                        children.push(separatedWfs[i][j]);
+                    } else {
+                        parents.push(separatedWfs[i][j]);
+                    }
+                    if (parents.length === size) {
+                        break;
+                    }
+                }
+                count += responses.length;
+                if (parents.length >= size)
+                    break;
+
+            }
+            if (req.query.freeText !== '') {
+                for (let i = 0; i < children.length; i++) {
+                    const parent = await http.get(baseURLWorkflow + children[i].parentWorkflowId + '?includeTasks=false', req.token);
+                    parent.startTime = new Date(parent.startTime);
+                    parent.endTime = new Date(parent.endTime);
+                    if (parent.parentWorkflowId && !children.find(wf => wf.workflowId === parent.workflowId))
+                        children.push(parent);
+                    if (!parent.parentWorkflowId && !parents.find(wf => wf.workflowId === parent.workflowId))
+                        parents.push(parent);
                 }
             }
+            start = Number(start) + size * 10;
+            if (Number(start) >= hits) {
+                break;
+            }
         }
-        res.status(200).send({ parents, children });
+        res.status(200).send({ parents, children, count, hits });
     } catch (err) {
         next(err);
     }
