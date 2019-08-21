@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import {Modal, Button, Form, Row, Col, InputGroup} from "react-bootstrap";
-import {taskDescriptions, workflowDescriptions} from "../../../constants";
+import {Modal, Button, Form, Row, Col, InputGroup, Tab, Tabs} from "react-bootstrap";
+import {taskDescriptions} from "../../../constants";
 
 class SubwfModal extends Component {
     constructor(props, context) {
@@ -111,8 +111,7 @@ class SubwfModal extends Component {
 
     render() {
 
-        let hiddenParams = ["type", "subWorkflowParam", "joinOn", "forkTasks"];
-        let generalParameters = [];
+        let notGeneral = ["type", "subWorkflowParam", "joinOn", "forkTasks", "inputParameters"];
         let textFieldParams = [];
 
         return (
@@ -121,97 +120,106 @@ class SubwfModal extends Component {
                     <Modal.Title>Edit task inputs</Modal.Title>
                 </Modal.Header>
                 <Modal.Body style={{padding: "30px"}}>
-                    <Form onKeyPress={this.handleSave}>
-                        <Row>
-                            {generalParameters}
-                        </Row>
-                        <hr className="hr-text" data-content="input parameters"/>
-                        <Row>
-                            {Object.entries(this.state.inputs).map(((item, i) => {
-                                if (item[0] === "inputParameters") {
-                                    return Object.entries(item[1]).map((entry, i) => {
-                                        if (entry[0].includes("template") || entry[0].includes("uri")) {
-                                            textFieldParams.push (
-                                                <Col sm={12} key={`col1-${i}`}>
-                                                    <Form.Group>
-                                                        <Form.Label>{entry[0]}</Form.Label>
-                                                        <InputGroup size="sm" style={{
-                                                            minHeight: entry[0] === "template" ? "200px" : "60px"
-                                                        }}>
-                                                            <Form.Control
-                                                                as="textarea"
-                                                                type="input"
-                                                                onChange={(e) => this.handleInput(e, item, entry)}
-                                                                value={entry[1]}/>
-                                                        </InputGroup>
-                                                    </Form.Group>
-                                                </Col>
-                                            )
-                                        } else {
+                    <Tabs style={{marginBottom: "20px"}}>
+                        <Tab eventKey={1} title="General">
+                            <Form onKeyPress={this.handleSave}>
+                                <Row>
+                                    {Object.entries(this.state.inputs).map((item, i) => {
+                                        if (!notGeneral.includes(item[0]) && item[0] !== "decisionCases") {
                                             return (
-                                                <Col sm={6} key={`col1-${i}`}>
+                                                <Col sm={6} key={`col2-${i}`}>
                                                     <Form.Group>
-                                                        <Form.Label>{entry[0]}</Form.Label>
+                                                        <Form.Label>{item[0]}</Form.Label>
                                                         <Form.Control
                                                             type="input"
-                                                            onChange={(e) => this.handleInput(e, item, entry)}
-                                                            value={entry[1]}/>
+                                                            onChange={(e) => this.handleInput(e, item, item)}
+                                                            value={item[1]}/>
+                                                        <Form.Text className="text-muted">
+                                                            {taskDescriptions[item[0]]}
+                                                        </Form.Text>
                                                     </Form.Group>
                                                 </Col>
                                             )
+                                        } else if (item[0] === "decisionCases") {
+                                            return Object.entries(item[1]).map((entry, i) => {
+                                                return (
+                                                    <Col sm={6} key={`col1-${i}`}>
+                                                        <Form.Group>
+                                                            <Form.Label>decision case #{i}</Form.Label>
+                                                            <Form.Control
+                                                                type="input"
+                                                                onChange={(e) => this.handleInput(e, item, entry, i)}
+                                                                value={entry[0]}/>
+                                                        </Form.Group>
+                                                    </Col>
+                                                )
+                                            })
                                         }
-                                    })
-                                }
-                                if (item[0] === "decisionCases") {
-                                    return Object.entries(item[1]).map((entry, i) => {
-                                        return (
-                                            <Col sm={6} key={`col1-${i}`}>
-                                                <Form.Group>
-                                                    <Form.Label>decision case #{i}</Form.Label>
-                                                    <Form.Control
-                                                        type="input"
-                                                        onChange={(e) => this.handleInput(e, item, entry, i)}
-                                                        value={entry[0]}/>
-                                                </Form.Group>
-                                            </Col>
-                                        )
-                                    })
-                                } else if (!hiddenParams.includes(item[0])) {
-                                    generalParameters.push(
-                                        <Col sm={6} key={`col2-${i}`}>
-                                            <Form.Group>
-                                                <Form.Label>{item[0]}</Form.Label>
-                                                <Form.Control
-                                                    type="input"
-                                                    onChange={(e) => this.handleInput(e, item, item)}
-                                                    value={item[1]}/>
-                                                <Form.Text className="text-muted">
-                                                    {taskDescriptions[item[0]]}
-                                                </Form.Text>
-                                            </Form.Group>
-                                        </Col>
-                                    )
-                                }
-                                return null;
-                            }))}
-                        </Row>
-                        <Row>
-                            {textFieldParams}
-                        </Row>
-                    </Form>
-                    <hr className="hr-text" data-content="add custom input parameters"/>
-                    <Row>
-                        <Form onSubmit={this.handeCustomParam.bind(this)}>
-                            <InputGroup style={{padding: "10px 215px 10px"}}>
-                                <Form.Control value={this.state.customParam}
-                                              onChange={(e) => this.setState({customParam: e.target.value})}
-                                              placeholder="Add new parameter name"/>
-                                <InputGroup.Append>
-                                    <Button type="submit" variant="outline-primary">Add</Button>
-                                </InputGroup.Append>
-                            </InputGroup>
-                        </Form>
-                    </Row>
+                                        return null;
+                                    })}
+                                </Row>
+                            </Form>
+                        </Tab>
+                        <Tab eventKey={2} title="Input parameters">
+                            <Row>
+                                <Form onSubmit={this.handeCustomParam.bind(this)}>
+                                    <InputGroup style={{padding: "10px 215px 10px"}}>
+                                        <Form.Control value={this.state.customParam}
+                                                      onChange={(e) => this.setState({customParam: e.target.value})}
+                                                      placeholder="Add new parameter name"/>
+                                        <InputGroup.Append>
+                                            <Button type="submit" variant="outline-primary">Add</Button>
+                                        </InputGroup.Append>
+                                    </InputGroup>
+                                </Form>
+                            </Row>
+                            <hr className="hr-text" data-content="Existing input parameters"/>
+                            <Form onKeyPress={this.handleSave}>
+                                <Row>
+                                    {Object.entries(this.state.inputs).map(item => {
+                                        if (item[0] === "inputParameters") {
+                                            return Object.entries(item[1]).map((entry, i) => {
+                                                if (entry[0].includes("template") || entry[0].includes("uri")) {
+                                                    textFieldParams.push(
+                                                        <Col sm={12} key={`col1-${i}`}>
+                                                            <Form.Group>
+                                                                <Form.Label>{entry[0]}</Form.Label>
+                                                                <InputGroup size="sm" style={{
+                                                                    minHeight: entry[0] === "template" ? "200px" : "60px"
+                                                                }}>
+                                                                    <Form.Control
+                                                                        as="textarea"
+                                                                        type="input"
+                                                                        onChange={(e) => this.handleInput(e, item, entry)}
+                                                                        value={entry[1]}/>
+                                                                </InputGroup>
+                                                            </Form.Group>
+                                                        </Col>
+                                                    )
+                                                } else {
+                                                    return (
+                                                        <Col sm={6} key={`col1-${i}`}>
+                                                            <Form.Group>
+                                                                <Form.Label>{entry[0]}</Form.Label>
+                                                                <Form.Control
+                                                                    type="input"
+                                                                    onChange={(e) => this.handleInput(e, item, entry)}
+                                                                    value={entry[1]}/>
+                                                            </Form.Group>
+                                                        </Col>
+                                                    )
+                                                }
+                                            })
+                                        }
+                                        return null;
+                                    })}
+                                </Row>
+                                <Row>
+                                    {textFieldParams}
+                                </Row>
+                            </Form>
+                        </Tab>
+                    </Tabs>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="primary" onClick={() => this.handleSave("Enter")}>Save</Button>
