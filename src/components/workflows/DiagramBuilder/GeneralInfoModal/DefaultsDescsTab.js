@@ -57,11 +57,13 @@ class DefaultsDescsTab extends Component {
             <div>
                 <Form>
                     <Form.Group>
-                        <Form.Label>Available input parameters</Form.Label>
                         <InputGroup>
-                        <Form.Control disabled={noInputParams} onClick={(e) => this.changeSelected(e)} as="select">
-                            {inputParametersKeys.map(param => <option>{param}</option>)}
-                        </Form.Control>
+                            <InputGroup.Prepend>
+                                <InputGroup.Text>Available input parameters:</InputGroup.Text>
+                            </InputGroup.Prepend>
+                            <Form.Control disabled={noInputParams} onClick={(e) => this.changeSelected(e)} as="select">
+                                {inputParametersKeys.map(param => <option>{param}</option>)}
+                            </Form.Control>
                             <InputGroup.Append>
                                 <Button disabled={noInputParams}
                                         title="delete parameter's default and description"
