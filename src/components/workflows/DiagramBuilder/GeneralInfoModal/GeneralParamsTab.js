@@ -127,14 +127,18 @@ class GeneralParamsTab extends Component {
                             return (
                                 <Col sm={6} key={`col3-${i}`}>
                                     <Form.Group>
-                                        <Form.Label>{item[0]}</Form.Label>
-                                        <Form.Control
-                                            type="input"
-                                            onChange={(e) => this.props.handleInput(e.target.value, item[0])}
-                                            value={item[1]}/>
-                                        <Form.Text className="text-muted">
-                                            {workflowDescriptions[item[0]]}
-                                        </Form.Text>
+                                        <InputGroup>
+                                            <InputGroup.Prepend>
+                                                <InputGroup.Text>{item[0]}:</InputGroup.Text>
+                                            </InputGroup.Prepend>
+                                            <Form.Control
+                                                type="input"
+                                                onChange={(e) => this.props.handleInput(e.target.value, item[0])}
+                                                value={item[1]}/>
+                                            <Form.Text className="text-muted">
+                                                {workflowDescriptions[item[0]]}
+                                            </Form.Text>
+                                        </InputGroup>
                                     </Form.Group>
                                 </Col>
                             )
