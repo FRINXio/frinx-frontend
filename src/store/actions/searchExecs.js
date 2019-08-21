@@ -65,7 +65,7 @@ export const fetchParentWorkflows = (viewedPage, defaultPages) => {
             let children = res.children ? res.children : [];
             if ((res.count < res.hits) && (typeof checkedWfs[page] === undefined || checkedWfs.length === 1)) {
                 checkedWfs.push(res.count);
-                dispatch(updateSize(size + parents.length + 1));
+                dispatch(updateSize(size + parents.length));
             }
             dispatch(checkedWorkflows(checkedWfs));
             parents = sortBy(parents, wf => new Date(wf.startTime)).reverse();

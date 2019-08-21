@@ -141,6 +141,8 @@ class WorkflowExec extends Component {
         if (this.state.allData) {
             this.props.fetchNewData(1, defaultPages)
         } else {
+            this.props.updateSize(1);
+            this.props.checkedWorkflows([0]);
             this.props.fetchParentWorkflows(1, defaultPages);
             this.clearView();
         }
@@ -373,7 +375,8 @@ const mapDispatchToProps = dispatch => {
         fetchParentWorkflows : (viewedPage, defaultPages) => dispatch(searchActions.fetchParentWorkflows(viewedPage, defaultPages)),
         updateParents: (children) => dispatch(searchActions.updateParents(children)),
         deleteParents: (children) => dispatch(searchActions.deleteParents(children)),
-        updateSize: (size) =>dispatch(searchActions.updateSize(size))
+        updateSize: (size) => dispatch(searchActions.updateSize(size)),
+        checkedWorkflows : (checkedWfs) =>  dispatch(searchActions.checkedWorkflows(checkedWfs))
     }
 };
 
