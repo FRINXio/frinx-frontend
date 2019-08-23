@@ -29,11 +29,9 @@ class SubwfModal extends Component {
     }
 
     handleSave(e) {
-        if (e.key === "Enter" || e === "Enter") {
-            this.setState({show: false});
-            this.props.saveInputs(this.state.inputs, this.props.inputs.id);
-            this.props.modalHandler()
-        }
+        this.setState({show: false});
+        this.props.saveInputs(this.state.inputs, this.props.inputs.id);
+        this.props.modalHandler()
     }
 
     handeCustomParam(e) {
@@ -184,7 +182,7 @@ class SubwfModal extends Component {
                                 </Form>
                             </Row>
                             <hr className="hr-text" data-content="Existing input parameters"/>
-                            <Form onKeyPress={this.handleSave}>
+                            <Form>
                                 <Row>
                                     {Object.entries(this.state.inputs).map(item => {
                                         if (item[0] === "inputParameters") {
@@ -240,7 +238,7 @@ class SubwfModal extends Component {
                     </Tabs>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" onClick={() => this.handleSave("Enter")}>Save</Button>
+                    <Button variant="primary" onClick={this.handleSave}>Save</Button>
                     <Button variant="secondary" onClick={this.handleClose}>
                         Close
                     </Button>
