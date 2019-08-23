@@ -63,11 +63,21 @@ class SubwfModal extends Component {
 
         if (item[0] === "inputParameters") {
             let inputParameters = inputs.inputParameters;
+            let value = e.target.value;
+
+            if (entry[0] === "template") {
+                try {
+                    value = JSON.parse(e.target.value)
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+
             inputs = {
                 ...inputs,
                 inputParameters: {
                     ...inputParameters,
-                    [entry[0]]: entry[0] === "template" ? JSON.parse(e.target.value) : e.target.value
+                    [entry[0]]: value
                 }
             };
         } else if (item[0] === "subWorkflowParam") {
@@ -180,9 +190,13 @@ class SubwfModal extends Component {
                                         if (item[0] === "inputParameters") {
                                             return Object.entries(item[1]).map((entry, i) => {
                                                 if (entry[0].includes("template") || entry[0].includes("uri")) {
+                                                    let value = entry[1];
 
-                                                    let value = entry[0].includes("template") ?
-                                                        JSON.stringify(entry[1], null, 5) : entry[1];
+                                                    if (entry[0].includes("template")) {
+                                                        if (typeof entry[1] === 'object') {
+                                                            value = JSON.stringify(entry[1], null, 5);
+                                                        }
+                                                    }
 
                                                     textFieldParams.push(
                                                         <Col sm={12} key={`col1-${i}`}>
