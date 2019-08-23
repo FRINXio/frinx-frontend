@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {SideMenuItem} from "./SideMenuItem";
-import {getWfInputs} from "./builder-utils";
+import {getWfInputs, getWfInputsRegex} from "./builder-utils";
 
 export class SideMenu extends Component {
 
@@ -67,11 +67,13 @@ export class SideMenu extends Component {
             return wfList;
         }
 
+
+
         this.props.workflows.map((wf, i) => {
             let wfObject = {
                 name: "",
                 taskReferenceName: "",
-                inputParameters: getWfInputs(wf),
+                inputParameters: getWfInputsRegex(wf),
                 type: "SUB_WORKFLOW",
                 subWorkflowParam: {
                     name: wf.name,

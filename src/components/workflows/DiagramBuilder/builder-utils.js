@@ -6,6 +6,24 @@ import {ForkNodeModel} from "./NodeModels/ForkNode/ForkNodeModel";
 import {JoinNodeModel} from "./NodeModels/JoinNode/JoinNodeModel";
 import {DecisionNodeModel} from "./NodeModels/DecisionNode/DecisionNodeModel";
 
+export const getWfInputsRegex = (wf) => {
+    let def = JSON.stringify(wf);
+    let matchArray = def.match(/\workflow.input([\w.])+}/igm);
+    let inputsArray = [];
+    let inputParameters = {};
+
+    if (matchArray) {
+        let sortedArray =  matchArray.join().match(/[^.]+(?=})/igm);
+        inputsArray = [...new Set(sortedArray)];
+    }
+
+    inputsArray.forEach(el => {
+        inputParameters[el] = "${workflow.input." + el + "}"
+    });
+
+    return inputParameters;
+};
+
 export const getWfInputs = (wf) => {
     let taskArray = wf.tasks;
     let inputParams = [];
