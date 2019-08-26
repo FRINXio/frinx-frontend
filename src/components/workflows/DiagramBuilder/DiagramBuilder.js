@@ -173,7 +173,7 @@ class DiagramBuilder extends Component {
                         case "decision":
                             let {decideNode, firstNeutralNode} = handleDecideNode(link.targetPort.getNode());
                             tasks.push(decideNode.inputs);
-                            if (firstNeutralNode) {
+                            if (firstNeutralNode && firstNeutralNode.inputs) {
                                 tasks.push(firstNeutralNode.inputs);
                                 parentNode = firstNeutralNode;
                             }

@@ -167,8 +167,12 @@ export const handleDecideNode = (decideNode) => {
                         let innerFirstNeutralNode = handleDecideNode(currentNode).firstNeutralNode;
                         let innerFirstNeutralLinks = getLinksArray("out", innerFirstNeutralNode);
                         branchArray.push(innerDecideNode.inputs);
-                        branchArray.push(innerFirstNeutralNode.inputs);
+
+                        if (innerFirstNeutralNode && innerFirstNeutralNode.inputs) {
+                            branchArray.push(innerFirstNeutralNode.inputs);
+                        }
                         currentNode = innerFirstNeutralLinks[0].targetPort.getNode();
+
                         break;
                     default:
                         branchArray.push(currentNode.inputs);
