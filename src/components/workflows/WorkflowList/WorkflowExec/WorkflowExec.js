@@ -24,7 +24,8 @@ class WorkflowExec extends Component {
             defaultPages: 20,
             pagesCount: 1,
             viewedPage: 1,
-            datasetLength: 0
+            datasetLength: 0,
+            timeout: 0
         };
         this.table = React.createRef();
     }
@@ -265,14 +266,20 @@ class WorkflowExec extends Component {
 
     changeQuery(e) {
         this.props.updateByQuery(e.target.value);
-        if (this.state.allData) {
-            this.props.fetchNewData(1, this.state.defaultPages);
-        } else {
-            this.props.updateSize(1);
-            this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
-            this.update([],[]);
-            this.props.fetchParentWorkflows(1, this.state.defaultPages);
-        }
+        if (this.timeout)
+            clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+            if (this.state.allData) {
+                this.props.fetchNewData(1, this.state.defaultPages);
+            } else {
+                this.props.updateSize(1);
+                this.props.checkedWorkflows([0]);
+                this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
+                this.update([],[]);
+                this.props.fetchParentWorkflows(1, this.state.defaultPages);
+            }
+        }, 300);
+
         this.setState({
             viewedPage: 1
         });
@@ -284,6 +291,7 @@ class WorkflowExec extends Component {
             this.props.fetchNewData(1, this.state.defaultPages);
         } else {
             this.props.updateSize(1);
+            this.props.checkedWorkflows([0]);
             this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
             this.update([],[]);
             this.props.fetchParentWorkflows(1, this.state.defaultPages);

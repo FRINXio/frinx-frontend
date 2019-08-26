@@ -63,7 +63,7 @@ export const fetchParentWorkflows = (viewedPage, defaultPages) => {
         http.get('/api/conductor/hierarchical/?freeText='+ q +'&start=' + checkedWfs[page] + '&size=' + defaultPages).then(res => {
             let parents = res.parents ? res.parents : [];
             let children = res.children ? res.children : [];
-            if ((res.count < res.hits) && (typeof checkedWfs[page] === undefined || checkedWfs.length === 1)) {
+            if ((res.count < res.hits) && (typeof checkedWfs[viewedPage] === "undefined" || checkedWfs.length === 1)) {
                 checkedWfs.push(res.count);
                 dispatch(updateSize(size + parents.length));
             }
