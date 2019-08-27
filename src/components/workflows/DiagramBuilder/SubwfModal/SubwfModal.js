@@ -24,19 +24,26 @@ class SubwfModal extends Component {
 
     componentDidMount() {
         let wfInputs = this.props.inputs.inputs;
-        let {name, version} = wfInputs.subWorkflowParam;
 
         this.setState({
             inputs: wfInputs,
-            name: name,
-            version: version,
+            name: this.props.inputs.inputs.name
         });
 
-        http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
+        if (wfInputs.subWorkflowParam) {
+            let {name, version} = wfInputs.subWorkflowParam;
+
             this.setState({
-                inputParameters: res.result.inputParameters,
-            })
-        });
+                name: name,
+                version: version,
+            });
+
+            http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
+                this.setState({
+                    inputParameters: res.result.inputParameters,
+                })
+            });
+        }
     }
 
     handleClose() {
