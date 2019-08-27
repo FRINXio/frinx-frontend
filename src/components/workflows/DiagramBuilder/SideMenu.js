@@ -38,8 +38,8 @@ export class SideMenu extends Component {
                     )
                 } if (func === "decision") {
                     let wfObject = {
-                        name: "",
-                        taskReferenceName: "",
+                        name: "decisionTask",
+                        taskReferenceName: "decisionTaskRef",
                         inputParameters: {
                             case_value_param: ""
                         },
@@ -67,12 +67,11 @@ export class SideMenu extends Component {
             return wfList;
         }
 
-
-
         this.props.workflows.map((wf, i) => {
             let wfObject = {
-                name: "",
-                taskReferenceName: "",
+                name: wf.name,
+                taskReferenceName: wf.name.toLowerCase().trim()
+                    + "_ref_" + Math.random().toString(36).toUpperCase().substr(2, 4),
                 inputParameters: getWfInputsRegex(wf),
                 type: "SUB_WORKFLOW",
                 subWorkflowParam: {
