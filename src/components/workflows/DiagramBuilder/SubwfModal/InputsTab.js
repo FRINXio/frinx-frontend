@@ -18,7 +18,7 @@ class InputsTab extends Component {
     }
 
     getDescriptionAndDefault(selectedParam) {
-        let inputParameters = this.state.inputParameters || [];
+        let inputParameters = this.props.inputParameters || [];
         let result = [];
 
         inputParameters.forEach(param => {
