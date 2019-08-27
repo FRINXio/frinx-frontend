@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Button, Col, Form, InputGroup} from "react-bootstrap";
-import {getWfInputs} from "../builder-utils";
+import {getWfInputs, getWfInputsRegex} from "../builder-utils";
 import _ from 'lodash'
 
 class DefaultsDescsTab extends Component {
@@ -39,8 +39,7 @@ class DefaultsDescsTab extends Component {
     }
 
     render() {
-
-        let inputParametersKeys = Object.keys(getWfInputs(this.state.finalWf)) || [];
+        let inputParametersKeys = Object.keys(getWfInputsRegex(this.state.finalWf)) || [];
         let existingInputParameters = this.state.finalWf.inputParameters;
 
         existingInputParameters.forEach(param => {
