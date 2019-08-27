@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {Modal, Button, Form, Row, Col, InputGroup, Tab, Tabs} from "react-bootstrap";
 import {taskDescriptions} from "../../../constants";
 
+const http = require('../../../../server/HttpServerSide').HttpClient;
+
 class SubwfModal extends Component {
     constructor(props, context) {
         super(props, context);
@@ -13,14 +15,28 @@ class SubwfModal extends Component {
         this.state = {
             show: true,
             inputs: {},
+            inputParameters: [],
+            name: "",
+            version: "",
             customParam: ""
         };
     }
 
     componentDidMount() {
+        let wfInputs = this.props.inputs.inputs;
+        let {name, version} = wfInputs.subWorkflowParam;
+
         this.setState({
-            inputs: this.props.inputs.inputs,
-        })
+            inputs: wfInputs,
+            name: name,
+            version: version,
+        });
+
+        http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
+            this.setState({
+                inputParameters: res.result.inputParameters,
+            })
+        });
     }
 
     handleClose() {
@@ -119,6 +135,21 @@ class SubwfModal extends Component {
         });
     }
 
+    getDescriptionAndDefault(selectedParam) {
+        let inputParameters = this.state.inputParameters || [];
+        let result = [];
+
+        inputParameters.forEach(param => {
+            if (param.match(/^(.*?)\[/)[1] === selectedParam) {
+                param.match(/\[(.*?)]/g).map(group => {
+                    result.push(group.replace(/[\[\]']+/g,''))
+                });
+            }
+        });
+
+        return result.length > 0 ? result : ['','']
+    }
+
     render() {
 
         let notGeneral = ["type", "subWorkflowParam", "joinOn", "forkTasks", "inputParameters"];
@@ -127,7 +158,7 @@ class SubwfModal extends Component {
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
                 <Modal.Header>
-                    <Modal.Title>Edit task inputs</Modal.Title>
+                    <Modal.Title style={{fontSize: "20px"}}>{this.state.name} / {this.state.version}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body style={{padding: "30px"}}>
                     <Tabs style={{marginBottom: "20px"}}>
@@ -211,6 +242,9 @@ class SubwfModal extends Component {
                                                                         onChange={(e) => this.handleInput(e, item, entry)}
                                                                         value={value}/>
                                                                 </InputGroup>
+                                                                <Form.Text className="text-muted">
+                                                                    {this.getDescriptionAndDefault(entry[0])[0]}
+                                                                </Form.Text>
                                                             </Form.Group>
                                                         </Col>
                                                     )
@@ -223,6 +257,9 @@ class SubwfModal extends Component {
                                                                     type="input"
                                                                     onChange={(e) => this.handleInput(e, item, entry)}
                                                                     value={entry[1]}/>
+                                                                <Form.Text className="text-muted">
+                                                                    {this.getDescriptionAndDefault(entry[0])[0]}
+                                                                </Form.Text>
                                                             </Form.Group>
                                                         </Col>
                                                     )
