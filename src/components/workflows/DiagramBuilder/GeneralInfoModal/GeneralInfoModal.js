@@ -3,7 +3,6 @@ import {Modal, Button, Form, Tab, Tabs, ButtonGroup} from "react-bootstrap";
 import DefaultsDescsTab from "./DefaultsDescsTab";
 import OutputParamsTab from "./OutputParamsTab";
 import GeneralParamsTab from "./GeneralParamsTab";
-import {withRouter} from "react-router-dom";
 
 class GeneralInfoModal extends Component {
     constructor(props, context) {
