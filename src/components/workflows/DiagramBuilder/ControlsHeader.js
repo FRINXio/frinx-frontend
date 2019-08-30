@@ -44,6 +44,7 @@ class ControlsHeader extends Component {
 
     componentWillUnmount() {
         document.removeEventListener('click', this.handleClickInside, true);
+        this.props.updateQuery("")
     }
 
     handleClickInside = event => {
