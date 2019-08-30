@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import {Modal, Button, Form, Tab, Tabs} from "react-bootstrap";
+import {Modal, Button, Form, Tab, Tabs, ButtonGroup} from "react-bootstrap";
 import DefaultsDescsTab from "./DefaultsDescsTab";
 import OutputParamsTab from "./OutputParamsTab";
 import GeneralParamsTab from "./GeneralParamsTab";
+import {withRouter} from "react-router-dom";
 
 class GeneralInfoModal extends Component {
     constructor(props, context) {
@@ -187,7 +188,11 @@ class GeneralInfoModal extends Component {
                                                   handleCustomDefaultAndDesc={this.handleCustomDefaultAndDesc.bind(this)}/>
                             </Tab>
                         </Tabs>
-                        <Button type="submit" style={{width: "100%", marginTop: "20px"}} variant="primary">Save</Button>
+                        <ButtonGroup style={{width: "100%", marginTop: "20px"}}>
+                            {!isNameLocked ? <Button variant="outline-secondary"
+                                                    onClick={this.props.redirectOnExit}>Cancel</Button> : null}
+                            <Button type="submit" variant="primary">Save</Button>
+                        </ButtonGroup>
                     </Form>
                 </Modal.Body>
             </Modal>

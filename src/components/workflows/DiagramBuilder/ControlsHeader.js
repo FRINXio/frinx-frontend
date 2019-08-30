@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import {Badge, Button, Col, Container, Dropdown, Form, InputGroup, Row} from "react-bootstrap";
+import {Badge, Button, Col, Container, Dropdown, Form, InputGroup, Modal, Row} from "react-bootstrap";
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import WorkflowDefModal from "./WorkflowDefModal/WorkflowDefModal";
 import GeneralInfoModal from "./GeneralInfoModal/GeneralInfoModal";
 import DetailsModal from "../WorkflowList/WorkflowExec/DetailsModal/DetailsModal";
 import InputModal from "../WorkflowList/WorkflowDefs/InputModal/InputModal";
+import {withRouter} from "react-router-dom";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -19,6 +20,7 @@ class ControlsHeader extends Component {
             generalInfoModal: true,
             inputModal: false,
             detailsModal: false,
+            exitModal: false,
             saveExecuteError: null,
             exampleList: ["Create P2P L2VPN in uniconfig", "Sample Batch inventory retrieval workflow", "Mount and check"]
         }
@@ -95,6 +97,10 @@ class ControlsHeader extends Component {
         })
     }
 
+    redirectOnExit() {
+        this.props.history.push('/workflows/defs');
+    }
+
     render() {
 
         let definitionModal = this.state.defModal ?
@@ -107,7 +113,8 @@ class ControlsHeader extends Component {
                               modalHandler={this.showGeneralInfoModal.bind(this)}
                               saveInputs={this.props.updateFinalWorkflow} show={this.state.generalInfoModal}
                               lockWorkflowName={this.props.lockWorkflowName}
-                              isWfNameLocked={this.props.isWfNameLocked}/> : null;
+                              isWfNameLocked={this.props.isWfNameLocked}
+                              redirectOnExit={this.redirectOnExit.bind(this)}/> : null;
 
         let detailsModal = this.state.detailsModal ?
             <DetailsModal wfId={this.props.workflowId} modalHandler={this.showDetailsModal.bind(this)}
@@ -118,12 +125,25 @@ class ControlsHeader extends Component {
                         modalHandler={this.showInputModal.bind(this)}
                         show={this.state.inputModal} fromBuilder/> : null;
 
+        let exitModal = this.state.exitModal ?
+            <Modal show={this.state.exitModal}>
+                <Modal.Header>
+                    <Modal.Title>Do you want to exit builder?</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>All changes will be lost.</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="outline-primary" onClick={() => this.setState({exitModal: false})}>Cancel</Button>
+                    <Button variant="danger" onClick={this.redirectOnExit.bind(this)}>Exit</Button>
+                </Modal.Footer>
+            </Modal> : null;
+
         return (
             <div className="header">
                 {inputModal}
                 {detailsModal}
                 {definitionModal}
                 {generalInfoModal}
+                {exitModal}
                 <Container fluid>
                     <Row>
                             <InputGroup style={{width: "490px", marginLeft: "-5px"}}>
@@ -148,6 +168,8 @@ class ControlsHeader extends Component {
                         </Col>
                         <Col md>
                             <div className="right-controls">
+                                <Button variant="outline-light" onClick={() => this.setState({exitModal: true})}>
+                                    Exit</Button>
                                 <Button variant="outline-light" onClick={this.showDefinitionModal.bind(this)}>
                                     <i className="fas fa-file-export"/></Button>
                                 <Button variant="outline-light" onClick={this.showGeneralInfoModal.bind(this)}>
@@ -205,4 +227,4 @@ const mapDispatchToProps = dispatch => {
     }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ControlsHeader)
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ControlsHeader))
