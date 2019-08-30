@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Form, Row, Col, InputGroup} from "react-bootstrap";
+import UnescapeButton from "../../../uniconfig/deviceView/consoleModal/UnescapeButton";
 
 class InputsTab extends Component {
     constructor(props, context) {
@@ -78,11 +79,15 @@ class InputsTab extends Component {
                                         textFieldParams.push(
                                             <Col sm={12} key={`col1-${i}`}>
                                                 <Form.Group>
-                                                    <Form.Label>{entry[0]}</Form.Label>
+                                                    <Form.Label>{entry[0]}<i title="copy to clipboard"
+                                                                             className="btn fa fa-clipboard"
+                                                                             data-clipboard-target={"#textfield" + i}/>
+                                                    </Form.Label>
                                                     <InputGroup size="sm" style={{
                                                         minHeight: entry[0] === "template" ? "200px" : "60px"
                                                     }}>
                                                         <Form.Control
+                                                            id={"textfield" + i}
                                                             as="textarea"
                                                             type="input"
                                                             onChange={(e) => this.props.handleInput(e.target.value, item[0], entry)}
