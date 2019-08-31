@@ -63,9 +63,11 @@ const functionalTaks = (props) => {
 
 const tasks = (props) => {
 
-    let tasks = props.workflows || [];
+    let workflows = props.workflows || [];
+    let tasks = [];
 
-    tasks.map((wf, i) => {
+    workflows.map((wf, i) => {
+        console.log(wf);
         let wfObject = {
             name: wf.name,
             taskReferenceName: wf.name.toLowerCase().trim()
@@ -79,11 +81,11 @@ const tasks = (props) => {
             optional: false,
             startDelay: 0
         };
-        return (
-            tasks.push(<SideMenuItem id={`wf${i}`} model={{type: "in/out", wfObject, name: wf.name}}
-                                      name={wf.name} color="#0095FF"/>)
-        )
+        return tasks.push(<SideMenuItem id={`wf${i}`} model={{type: "in/out", wfObject, name: wf.name}}
+                                 name={wf.name} color="#0095FF"/>)
     });
+
+    return tasks;
 };
 
 const SideMenu = (props) => (
