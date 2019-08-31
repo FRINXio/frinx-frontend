@@ -45,7 +45,7 @@ class DiagramBuilder extends Component {
         document.addEventListener('dblclick', this.doubleClickListener.bind(this));
 
         http.get('/api/conductor/metadata/workflow').then(res => {
-            this.props.storeWorkflows(res.result)
+            this.props.storeWorkflows(res.result || [])
         });
         this.putDefaultsOnCanvas();
     }

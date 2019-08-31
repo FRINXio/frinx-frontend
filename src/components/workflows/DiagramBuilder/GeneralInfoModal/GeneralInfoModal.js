@@ -60,7 +60,9 @@ class GeneralInfoModal extends Component {
 
     validateWorkflowName(name) {
         let isValid = name.length >= 1;
-        this.props.workflows.forEach(wf => {
+        let workflows = this.props.workflows || [];
+
+        workflows.forEach(wf => {
             if (wf.name === name) {
                 isValid = false
             }

@@ -20,7 +20,7 @@ const functionalTaks = (props) => {
             functionalTasks.push(<SideMenuItem id={`functionalNode${i}`} model={{type: func, wfObject}}
                                       name={func.toUpperCase()} color="#0095FF"/>)
         }
-        if (func === "join") {
+        else if (func === "join") {
             let wfObject = {
                 name: "joinTask",
                 taskReferenceName: "joinTaskRef",
@@ -33,7 +33,7 @@ const functionalTaks = (props) => {
             functionalTasks.push(<SideMenuItem id={`functionalNode${i}`} model={{type: func, wfObject}}
                                       name={func.toUpperCase()} color="#0095FF"/>)
         }
-        if (func === "decision") {
+        else if (func === "decision") {
             let wfObject = {
                 name: "decisionTask",
                 taskReferenceName: "decisionTaskRef",

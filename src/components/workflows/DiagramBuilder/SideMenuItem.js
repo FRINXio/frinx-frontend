@@ -1,11 +1,11 @@
 import React from "react";
 
-const SideMenuItem = () => (
+const SideMenuItem = (props) => (
     <div
         draggable={true} onDragStart={e => {
-        e.dataTransfer.setData("storm-diagram-node", JSON.stringify(this.props.model));
+        e.dataTransfer.setData("storm-diagram-node", JSON.stringify(props.model));
     }} className="tray-item">
-        {this.props.name}
+        {props.name}
     </div>
 );
 
