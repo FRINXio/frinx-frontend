@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { SideMenu } from "./SideMenu";
+import SideMenu from "./SideMenu";
 import {DiagramWidget} from "storm-react-diagrams";
 import ControlsHeader from "./ControlsHeader";
 import {Application} from "./Application";

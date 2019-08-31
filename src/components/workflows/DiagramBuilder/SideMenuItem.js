@@ -1,22 +1,12 @@
-import React, {Component} from "react";
+import React from "react";
 
-export class SideMenuItem extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
-    }
+const SideMenuItem = () => (
+    <div
+        draggable={true} onDragStart={e => {
+        e.dataTransfer.setData("storm-diagram-node", JSON.stringify(this.props.model));
+    }} className="tray-item">
+        {this.props.name}
+    </div>
+);
 
-    render() {
-        return (
-            <div
-                draggable={true}
-                onDragStart={event => {
-                    event.dataTransfer.setData("storm-diagram-node", JSON.stringify(this.props.model));
-                }}
-                className="tray-item"
-            >
-                {this.props.name}
-            </div>
-        );
-    }
-}
+export default SideMenuItem
