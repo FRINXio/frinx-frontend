@@ -67,7 +67,6 @@ const tasks = (props) => {
     let tasks = [];
 
     workflows.map((wf, i) => {
-        console.log(wf);
         let wfObject = {
             name: wf.name,
             taskReferenceName: wf.name.toLowerCase().trim()

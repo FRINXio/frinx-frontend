@@ -8,6 +8,7 @@ import GeneralInfoModal from "./GeneralInfoModal/GeneralInfoModal";
 import DetailsModal from "../WorkflowList/WorkflowExec/DetailsModal/DetailsModal";
 import InputModal from "../WorkflowList/WorkflowDefs/InputModal/InputModal";
 import {withRouter} from "react-router-dom";
+import {DiagramModel} from "storm-react-diagrams";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -34,12 +35,9 @@ class ControlsHeader extends Component {
         }
     }
 
-    componentWillMount() {
-        document.addEventListener("keydown", this.keyBindings.bind(this), false)
-    }
-
     componentDidMount() {
         document.addEventListener('click', this.handleClickInside, true);
+        document.addEventListener("keydown", this.keyBindings.bind(this), false)
     }
 
     componentWillUnmount() {
