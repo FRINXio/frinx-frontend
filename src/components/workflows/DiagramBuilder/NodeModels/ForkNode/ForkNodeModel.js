@@ -15,7 +15,7 @@ export class ForkNodeModel extends NodeModel {
         super("fork");
         this.name = name;
         this.color = color;
-        this.inputs = inputs;
+        super.extras = {inputs: inputs};
 
         this.addPort(new ForkNodePortModel("left"));
         this.addPort(new ForkNodePortModel("right"));

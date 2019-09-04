@@ -5,6 +5,9 @@ import * as _ from "lodash";
 import {ForkNodeModel} from "./NodeModels/ForkNode/ForkNodeModel";
 import {JoinNodeModel} from "./NodeModels/JoinNode/JoinNodeModel";
 import {DecisionNodeModel} from "./NodeModels/DecisionNode/DecisionNodeModel";
+import {DiagramModel} from "storm-react-diagrams";
+
+const http = require('../../../server/HttpServerSide').HttpClient;
 
 export const getWfInputsRegex = (wf) => {
     let def = JSON.stringify(wf);
@@ -105,7 +108,7 @@ export const handleForkNode = (forkNode) => {
             let outputLinks = getLinksArray("out", current);
             switch (current.type) {
                 case "join":
-                    joinOn.push(parent.inputs.taskReferenceName);
+                    joinOn.push(parent.extras.inputs.taskReferenceName);
                     joinNode = current;
                     current = null;
                     break;
@@ -113,17 +116,17 @@ export const handleForkNode = (forkNode) => {
                     let innerForkNode = handleForkNode(current).forkNode;
                     let innerJoinNode = handleForkNode(current).joinNode;
                     let innerJoinOutLinks = getLinksArray("out", innerJoinNode);
-                    tmpBranch.push(innerForkNode.inputs, innerJoinNode.inputs);
+                    tmpBranch.push(innerForkNode.extras.inputs, innerJoinNode.extras.inputs);
                     parent = innerJoinNode;
                     current = innerJoinOutLinks[0].targetPort.getNode();
                     break;
                 case "decision":
                     let {decideNode, firstNeutralNode} = handleDecideNode(current);
-                    tmpBranch.push(decideNode.inputs);
+                    tmpBranch.push(decideNode.extras.inputs);
                     current = firstNeutralNode;
                     break;
                 default:
-                    tmpBranch.push(current.inputs);
+                    tmpBranch.push(current.extras.inputs);
                     parent = current;
                     if (outputLinks.length > 0) {
                         current = outputLinks[0].targetPort.getNode();
@@ -136,8 +139,8 @@ export const handleForkNode = (forkNode) => {
         forkTasks.push(tmpBranch);
     });
 
-    forkNode.inputs.forkTasks = forkTasks;
-    joinNode.inputs.joinOn = joinOn;
+    forkNode.extras.inputs.forkTasks = forkTasks;
+    joinNode.extras.inputs.joinOn = joinOn;
 
     return {forkNode, joinNode}
 };
@@ -159,23 +162,23 @@ export const handleDecideNode = (decideNode) => {
                 switch (currentNode.type) {
                     case "fork":
                         let {forkNode, joinNode} = handleForkNode(currentNode);
-                        branchArray.push(forkNode.inputs, joinNode.inputs);
+                        branchArray.push(forkNode.extras.inputs, joinNode.extras.inputs);
                         currentNode = joinNode;
                         break;
                     case "decision":
                         let innerDecideNode = handleDecideNode(currentNode).decideNode;
                         let innerFirstNeutralNode = handleDecideNode(currentNode).firstNeutralNode;
                         let innerFirstNeutralLinks = getLinksArray("out", innerFirstNeutralNode);
-                        branchArray.push(innerDecideNode.inputs);
+                        branchArray.push(innerDecideNode.extras.inputs);
 
-                        if (innerFirstNeutralNode && innerFirstNeutralNode.inputs) {
-                            branchArray.push(innerFirstNeutralNode.inputs);
+                        if (innerFirstNeutralNode && innerFirstNeutralNode.extras.inputs) {
+                            branchArray.push(innerFirstNeutralNode.extras.inputs);
                         }
                         currentNode = innerFirstNeutralLinks[0].targetPort.getNode();
 
                         break;
                     default:
-                        branchArray.push(currentNode.inputs);
+                        branchArray.push(currentNode.extras.inputs);
                         currentNode = outputLink.targetPort.getNode();
                         break;
                 }
@@ -183,11 +186,11 @@ export const handleDecideNode = (decideNode) => {
                 outputLink = getLinksArray("out", currentNode)[0];
             }
 
-            let casesValues = Object.keys(decideNode.inputs.decisionCases);
+            let casesValues = Object.keys(decideNode.extras.inputs.decisionCases);
 
             switch (i) {
-                case 0: decideNode.inputs.decisionCases[casesValues[1]] = branchArray; break;
-                case 1: decideNode.inputs.decisionCases[casesValues[0]] = branchArray; break;
+                case 0: decideNode.extras.inputs.decisionCases[casesValues[1]] = branchArray; break;
+                case 1: decideNode.extras.inputs.decisionCases[casesValues[0]] = branchArray; break;
                 default: break
             }
         }
@@ -196,6 +199,143 @@ export const handleDecideNode = (decideNode) => {
         firstNeutralNode = neutralBranchLink.targetPort.getNode();
     }
     return {decideNode, firstNeutralNode}
+};
+
+export const clearCanvas = (diagramEngine) => {
+
+    let activeModel = diagramEngine.getDiagramModel();
+    diagramEngine.setDiagramModel(activeModel);
+
+    _.values(activeModel.getNodes()).forEach(node => {
+        activeModel.removeNode(node);
+    });
+
+    _.values(activeModel.getLinks()).forEach(link => {
+        activeModel.removeLink(link);
+    });
+};
+
+///////////// SERIALIZATION /////////////////////
+
+export const get_workflow_subworkflows = (workflowDef) => {
+    let subWorkflows = [];
+    let name = "";
+    let version = "";
+
+    workflowDef.tasks.forEach(task => {
+        let subWorkflowParam = fn(task, "subWorkflowParam");
+
+        if (task.subWorkflowParam) {
+            name = task.subWorkflowParam.name;
+            version = task.subWorkflowParam.version;
+        } else if (subWorkflowParam) {
+            subWorkflowParam.forEach(nestedTask => {
+                name = nestedTask.subWorkflowParam.name;
+                version = nestedTask.subWorkflowParam.version;
+            })
+        }
+        subWorkflows.push({name, version});
+    });
+
+    return _.uniqWith(subWorkflows, _.isEqual);
+};
+
+export const place_defaultNode = (task, i, posX, posY) => {
+    let node = new DefaultNodeModel(task.name,"rgb(34,144,255)", task);
+    node.addInPort("In");
+    node.addOutPort("Out");
+    node.setPosition(posX, posY);
+    return node;
+};
+
+export const place_forkNode = (task, i, posX, posY) => {
+    let node = new ForkNodeModel(task.name,"rgb(28,123,255)", task);
+    node.setPosition(posX, posY);
+    return node;
+};
+
+export const place_joinNode = (task, i, posX, posY) => {
+    let node = new JoinNodeModel(task.name,"rgb(28,123,255)", task);
+    node.setPosition(posX, posY);
+    return node;
+};
+
+let handleTask = (task, i, nodes, branchNum) => {
+    switch(task.type) {
+        case "SUB_WORKFLOW": {
+            let posX = i === 0 ? 1400 : nodes[i-1].x + 200;
+            let posY = 100 * branchNum;
+
+            nodes.push(place_defaultNode(task, i , posX, posY));
+            break;
+        }
+        case "FORK_JOIN": {
+            let branchCount = task.forkTasks.length;
+
+            let posX = i === 0 ? 1400 : nodes[i-1].x + 200;
+            let posY = 100 * branchCount / 2;
+
+            if (branchNum) {
+                posY = branchNum === 0 ? 0 : 50 * branchNum;
+            }
+
+            nodes.push(place_forkNode(task, i, posX, posY));
+
+            task.forkTasks.forEach((branch, branchNum) => {
+                branch.forEach((branchTask, k) => {
+                    handleTask(branchTask, i+1+k, nodes, branchNum +1);
+                })
+            });
+            break;
+        }
+        case "JOIN": {
+            let posX = i === 0 ? 1400 : nodes[i-1].x + 200;
+            let posY = 100;
+
+            if (branchNum) {
+                posY = branchNum === 0 ? 0 : 50 * branchNum;
+            }
+
+            nodes.push(place_joinNode(task, i, posX, posY));
+            break;
+        }
+        default: {
+            let posX = i === 0 ? 1400 : nodes[i-1].x + 200;
+            let posY = 100;
+            nodes.push(place_defaultNode(task, i , posX, posY));
+            break;
+        }
+    }
+};
+
+// in case subworkflow is not found in DB
+export const transform_seq_workflow_to_diagram = (name, version, props) => {
+
+    let diagramEngine = props.app.getDiagramEngine();
+    let diagramModel = diagramEngine.getDiagramModel();
+
+    clearCanvas(diagramEngine);
+
+    http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
+        let nodes = [];
+        let links = [];
+
+        // create nodes + append inputs
+        res.result.tasks.forEach((task,i) => {
+            handleTask(task, i, nodes)
+
+        });
+
+        // // create links
+        // nodes.forEach((node, i) => {
+        //     if (i < nodes.length - 1) {
+        //         links.push(node.getOutPorts()[0].link(nodes[i + 1].getInPorts()[0]));
+        //     }
+        // });
+
+        diagramModel.addAll(...nodes);
+        setTimeout(() => diagramEngine.repaintCanvas(), 10);
+    })
 };
 
 export const createMountAndCheckExample = (app, props) => {

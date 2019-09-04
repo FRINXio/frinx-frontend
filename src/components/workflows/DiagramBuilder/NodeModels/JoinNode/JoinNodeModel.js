@@ -15,7 +15,7 @@ export class JoinNodeModel extends NodeModel {
         super("join");
         this.name = name;
         this.color = color;
-        this.inputs = inputs;
+        super.extras = {inputs: inputs};
 
         this.addPort(new JoinNodePortModel("left"));
         this.addPort(new JoinNodePortModel("right"));

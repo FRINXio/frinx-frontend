@@ -62,7 +62,7 @@ class DiagramBuilder extends Component {
                 node.setSelected(false);
                 this.setState({
                     showSubWfModal: true,
-                    modalInputs: {inputs: node.inputs, id: node.id}
+                    modalInputs: {inputs: node.extras.inputs, id: node.id}
                 });
             }
         }
@@ -102,7 +102,7 @@ class DiagramBuilder extends Component {
 
         _.values(nodes).forEach(node => {
             if (node.id === id) {
-                node.inputs = savedInputs;
+                node.extras.inputs = savedInputs;
             }
         });
     }
@@ -167,20 +167,20 @@ class DiagramBuilder extends Component {
                     switch (link.targetPort.type) {
                         case "fork":
                             let {forkNode, joinNode} = handleForkNode(link.targetPort.getNode());
-                            tasks.push(forkNode.inputs, joinNode.inputs);
+                            tasks.push(forkNode.extras.inputs, joinNode.extras.inputs);
                             parentNode = joinNode;
                             break;
                         case "decision":
                             let {decideNode, firstNeutralNode} = handleDecideNode(link.targetPort.getNode());
-                            tasks.push(decideNode.inputs);
-                            if (firstNeutralNode && firstNeutralNode.inputs) {
-                                tasks.push(firstNeutralNode.inputs);
+                            tasks.push(decideNode.extras.inputs);
+                            if (firstNeutralNode && firstNeutralNode.extras.inputs) {
+                                tasks.push(firstNeutralNode.extras.inputs);
                                 parentNode = firstNeutralNode;
                             }
                             break;
                         default:
                             parentNode = link.targetPort.parent;
-                            tasks.push(parentNode.inputs);
+                            tasks.push(parentNode.extras.inputs);
                             break;
                     }
                 }

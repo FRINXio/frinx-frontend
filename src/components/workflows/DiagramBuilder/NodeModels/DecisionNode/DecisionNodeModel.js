@@ -15,7 +15,7 @@ export class DecisionNodeModel extends NodeModel {
         super("decision");
         this.name = name;
         this.color = color;
-        this.inputs = inputs;
+        super.extras = {inputs: inputs};
 
         this.addPort(new DecisionNodePortModel("left", "inputPort"));
         this.addPort(new DecisionNodePortModel("right", "neutralPort"));

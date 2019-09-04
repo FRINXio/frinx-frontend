@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import {Badge, Button, Col, Container, Dropdown, Form, InputGroup, Modal, Row} from "react-bootstrap";
+import {Button, Col, Container, Dropdown, Form, InputGroup, Modal, Row} from "react-bootstrap";
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import WorkflowDefModal from "./WorkflowDefModal/WorkflowDefModal";
@@ -8,7 +8,10 @@ import GeneralInfoModal from "./GeneralInfoModal/GeneralInfoModal";
 import DetailsModal from "../WorkflowList/WorkflowExec/DetailsModal/DetailsModal";
 import InputModal from "../WorkflowList/WorkflowDefs/InputModal/InputModal";
 import {withRouter} from "react-router-dom";
-import {DiagramModel} from "storm-react-diagrams";
+import {
+    get_workflow_subworkflows,
+    transform_seq_workflow_to_diagram
+} from "./builder-utils";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -162,8 +165,19 @@ class ControlsHeader extends Component {
                                     </InputGroup.Text>
                                 </InputGroup.Append>
                             </InputGroup>
-                        <Col style={{position: "absolute", marginLeft: "28%"}}>
-                            <h4 style={{float: "left", lineHeight: 0, marginTop: "5px"}}><Badge variant="light">{this.props.finalWorkflow.name}</Badge></h4>
+                        <Col md>
+                            <Dropdown>
+                                <Dropdown.Toggle variant="light" id="dropdown-basic">
+                                    {this.props.finalWorkflow.name}
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    {get_workflow_subworkflows(this.props.finalWorkflow).map(wf => (
+                                        <Dropdown.Item onClick={() => transform_seq_workflow_to_diagram(wf.name, wf.version, this.props)}>
+                                            {wf.name + " / " + wf.version}
+                                        </Dropdown.Item>
+                                    ))}
+                                </Dropdown.Menu>
+                            </Dropdown>
                         </Col>
                         <Col md>
                             <div className="right-controls">

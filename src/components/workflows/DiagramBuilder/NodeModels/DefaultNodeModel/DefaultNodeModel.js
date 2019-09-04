@@ -11,7 +11,7 @@ export class DefaultNodeModel extends NodeModel {
         super("default");
         this.name = name;
         this.color = color;
-        this.inputs = inputs;
+        super.extras = {inputs: inputs};
     }
 
     addInPort(label: string): DefaultPortModel {
