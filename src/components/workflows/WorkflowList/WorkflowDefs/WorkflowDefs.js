@@ -33,7 +33,7 @@ class WorkflowDefs extends Component {
     componentDidMount() {
         http.get('/api/conductor/metadata/workflow').then(res => {
             this.setState({
-                data: res.result || []
+                data: res.result.sort((a,b) => (a["name"] > b["name"]) ? 1 : ((b["name"] > a["name"]) ? -1 : 0)) || []
             })
         })
     }
