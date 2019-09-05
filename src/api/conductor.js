@@ -258,8 +258,7 @@ router.get('/hierarchical', async (req, res, next) => {
         let children = [];
 
         let hits = 0;
-        while (parents.length <= size) {
-
+        while (parents.length < size) {
             const url = baseURLWorkflow + 'search?size=' + size * 10 + '&sort=startTime:DESC&freeText=' + encodeURIComponent(freeText.join(' AND '))
                 + '&start=' + start + '&query=';
             const result = await http.get(url, req.token);
@@ -279,7 +278,7 @@ router.get('/hierarchical', async (req, res, next) => {
                         sepWfs.map(wf => http.get(baseURLWorkflow + wf.workflowId + '?includeTasks=false', req.token))
                     );
                 };
-
+                let checked = 0;
                 let responses = await wfs(separatedWfs[i]);
                 for (let j = 0; j < responses.length; j++) {
                     if (responses[j].parentWorkflowId) {
@@ -287,15 +286,16 @@ router.get('/hierarchical', async (req, res, next) => {
                         children.push(separatedWfs[i][j]);
                     } else {
                         parents.push(separatedWfs[i][j]);
+                        if (parents.length === size) {
+                            checked = j+1;
+                            break;
+                        }
                     }
-                    if (parents.length === size) {
-                        break;
-                    }
+                    checked = j+1;
                 }
-                count += responses.length;
+                count += checked;
                 if (parents.length >= size)
                     break;
-
             }
             if (req.query.freeText !== '') {
                 for (let i = 0; i < children.length; i++) {
@@ -309,9 +309,8 @@ router.get('/hierarchical', async (req, res, next) => {
                 }
             }
             start = Number(start) + size * 10;
-            if (Number(start) >= hits) {
+            if (Number(start) >= hits)
                 break;
-            }
         }
         res.status(200).send({ parents, children, count, hits });
     } catch (err) {

@@ -59,7 +59,6 @@ export const fetchParentWorkflows = (viewedPage, defaultPages) => {
                 q += "AND";
             q += "(status:" + label + ")";
         }
-
         http.get('/api/conductor/hierarchical/?freeText='+ q +'&start=' + checkedWfs[page] + '&size=' + defaultPages).then(res => {
             let parents = res.parents ? res.parents : [];
             let children = res.children ? res.children : [];

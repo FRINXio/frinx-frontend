@@ -266,18 +266,18 @@ class WorkflowExec extends Component {
 
     changeQuery(e) {
         this.props.updateByQuery(e.target.value);
+        if (!this.state.allData) {
+            this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
+            this.update([],[]);
+            this.props.updateSize(1);
+            this.props.checkedWorkflows([0]);
+        }
         if (this.timeout)
             clearTimeout(this.timeout);
         this.timeout = setTimeout(() => {
-            if (this.state.allData) {
-                this.props.fetchNewData(1, this.state.defaultPages);
-            } else {
-                this.props.updateSize(1);
-                this.props.checkedWorkflows([0]);
-                this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
-                this.update([],[]);
-                this.props.fetchParentWorkflows(1, this.state.defaultPages);
-            }
+            this.state.allData
+                ? this.props.fetchNewData(1, this.state.defaultPages)
+                : this.props.fetchParentWorkflows(1, this.state.defaultPages);
         }, 300);
 
         this.setState({
@@ -290,10 +290,10 @@ class WorkflowExec extends Component {
         if (this.state.allData) {
             this.props.fetchNewData(1, this.state.defaultPages);
         } else {
-            this.props.updateSize(1);
-            this.props.checkedWorkflows([0]);
             this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
             this.update([],[]);
+            this.props.updateSize(1);
+            this.props.checkedWorkflows([0]);
             this.props.fetchParentWorkflows(1, this.state.defaultPages);
         }
         this.setState({
