@@ -80,9 +80,12 @@ class WorkflowDefs extends Component {
         let index = labels.findIndex(label => label === "FAVOURITE");
         index > -1 ? labels.splice(index, 1) : labels.push("FAVOURITE");
         this.setState({
-            labels: labels
-        });
-        this.searchLabel();
+            labels: labels,
+            activeWf: null,
+            activeRow: null
+        }, () => {
+            this.searchLabel()
+        })
     }
 
     search() {
