@@ -49,6 +49,7 @@ class WorkflowDefs extends Component {
     }
 
     onLabelSearch(event) {
+        console.log(event);
         this.setState({
             labels: event,
             activeWf: null,
@@ -73,6 +74,16 @@ class WorkflowDefs extends Component {
             table: toBeRendered,
         });
         return null;
+    }
+
+    searchFavourites() {
+        let labels = this.state.labels;
+        let index = labels.findIndex(label => label === "FAVOURITE");
+        index > -1 ? labels.splice(index, 1) : labels.push("FAVOURITE");
+        this.setState({
+            labels: labels
+        });
+        this.searchLabel();
     }
 
     search() {
@@ -212,6 +223,11 @@ class WorkflowDefs extends Component {
              {inputModal}
              {diagramModal}
              <Row>
+                 <Button style={{marginBottom: "15px", marginLeft: "15px"}} onClick={this.searchFavourites.bind(this)} title="Favourites">
+                     <i className={this.state.labels.length ? (this.state.labels.includes("FAVOURITE") ? 'fa fa-star' : 'far fa-star') : "far fa-star"}
+                        style={{ cursor: 'pointer'}}
+                     />
+                 </Button>
                  <Col>
                      <Typeahead
                          id="typeaheadDefs"
