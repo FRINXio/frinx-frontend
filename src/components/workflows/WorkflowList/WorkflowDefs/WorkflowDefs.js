@@ -49,7 +49,6 @@ class WorkflowDefs extends Component {
     }
 
     onLabelSearch(event) {
-        console.log(event);
         this.setState({
             labels: event,
             activeWf: null,
