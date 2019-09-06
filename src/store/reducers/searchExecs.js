@@ -1,22 +1,21 @@
 import {
-    UPDATE_SEARCH_RESULTS,
     RECEIVE_NEW_DATA,
     HIERARCHY_NEW_DATA,
     UPDATE_QUERY,
     UPDATE_LABEL,
-    UPDATE_HIERARCHY_RESULTS
+    DATA_SIZE,
+    CHECKED_WORKFLOWS
 } from '../actions/searchExecs';
 
 const initialState = {
     isFetching: false,
     data: [],
-    table: [],
     query: "",
     label: [],
     parents: [],
-    child: [],
-    parentsTable: [],
-    childTable: []
+    children: [],
+    size: 0,
+    checkedWfs: [0]
 };
 
 const reducer = (state = initialState, action) => {
@@ -31,20 +30,20 @@ const reducer = (state = initialState, action) => {
             return {...state, query}
         }
         case RECEIVE_NEW_DATA: {
-            const {data, table} = action;
-            return {...state, isFetching: false, data, table}
+            const {data} = action;
+            return {...state, isFetching: false, data}
         }
         case HIERARCHY_NEW_DATA: {
-            const {parents, child, parentsTable, childTable} = action;
-            return {...state, isFetching: false, parents, child, parentsTable, childTable}
+            const {parents, children} = action;
+            return {...state, isFetching: false, parents, children}
         }
-        case UPDATE_SEARCH_RESULTS: {
-            const {table} = action;
-            return {...state, table}
+        case DATA_SIZE: {
+            const {size} = action;
+            return {...state, size}
         }
-        case UPDATE_HIERARCHY_RESULTS: {
-            const {parentsTable, childTable} = action;
-            return {...state, parentsTable, childTable}
+        case CHECKED_WORKFLOWS: {
+            const {checkedWfs} = action;
+            return {...state, checkedWfs}
         }
         default: break;
     }

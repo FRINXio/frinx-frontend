@@ -30,9 +30,10 @@ class TaskList extends Component {
 
     componentDidMount() {
         http.get('/api/conductor/metadata/taskdef').then(res => {
+            let size = ~~(res.result.length / this.state.defaultPages);
             this.setState({
                 data: res.result || [],
-                pagesCount: ~~(res.result.length / this.state.defaultPages) + 1
+                pagesCount: res.result ? res.result.length % this.state.defaultPages ? ++size : size : 0
             })
         })
     }
@@ -61,7 +62,8 @@ class TaskList extends Component {
         } else {
             toBeRendered = this.state.data;
         }
-        let pages = toBeRendered.length === 0 ? 0 : ~~(toBeRendered.length / this.state.defaultPages) + 1;
+        let size = ~~(toBeRendered.length / this.state.defaultPages);
+        let pages = toBeRendered.length ? toBeRendered.length % this.state.defaultPages? ++size : size : 0;
 
         this.setState({
             table: toBeRendered,
@@ -154,7 +156,7 @@ class TaskList extends Component {
                 <Container style={{marginTop: "5px"}}>
                     <Row>
                         <Col sm={2}>
-                            <PageCount data={this.state.keywords === "" ? this.state.data : this.state.table}
+                            <PageCount dataSize={this.state.keywords === "" ? this.state.data.length : this.state.table.length}
                                        defaultPages={this.state.defaultPages}
                                        handler={this.setCountPages.bind(this)}/>
                         </Col>
