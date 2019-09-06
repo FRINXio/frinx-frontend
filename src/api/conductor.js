@@ -241,7 +241,6 @@ router.get('/queue/data', async (req, res, next) => {
             }
             pd.qsize = sizes[qname];
         });
-        console.log(polldata);
         res.status(200).send({ polldata });
     } catch (err) {
         next(err);

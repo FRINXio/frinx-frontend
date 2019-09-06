@@ -30,9 +30,10 @@ class TaskList extends Component {
 
     componentDidMount() {
         http.get('/api/conductor/metadata/taskdef').then(res => {
+            let size = ~~(res.result.length / this.state.defaultPages);
             this.setState({
                 data: res.result || [],
-                pagesCount: ~~(res.result.length / this.state.defaultPages) + 1
+                pagesCount: res.result ? res.result.length % this.state.defaultPages ? ++size : size : 0
             })
         })
     }
@@ -80,17 +81,10 @@ class TaskList extends Component {
 
     repeat() {
         let output = [];
-        let highlight;
-        let dataset;
+        let highlight = "" === !this.state.keywords;
+        let dataset = this.state.keywords === "" ? this.state.data : this.state.table;
         let defaultPages = this.state.defaultPages;
         let viewedPage = this.state.viewedPage;
-        if (this.state.keywords === "") {
-            dataset = this.state.data;
-            highlight = false
-        } else {
-            dataset = this.state.table;
-            highlight = true
-        }
         for (let i = 0; i < dataset.length; i++) {
             if (i >= (viewedPage - 1) * defaultPages && i < viewedPage * defaultPages) {
                 output.push(
