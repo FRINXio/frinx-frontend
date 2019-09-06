@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Col, Container, Form, Row, Table} from 'react-bootstrap'
+import {Button, Col, Container, Form, Row, Table} from 'react-bootstrap'
 import {Typeahead} from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './WorkflowExec.css'
@@ -44,7 +44,8 @@ class WorkflowExec extends Component {
                 allData: true,
                 wfId: this.props.query,
                 detailsModal: false,
-                closeDetails: true
+                closeDetails: true,
+                viewedPage: 1
             });
             if (this.props.query) {
                 this.props.updateByQuery(this.props.query);
@@ -145,7 +146,8 @@ class WorkflowExec extends Component {
             this.props.updateSize(1);
             this.props.checkedWorkflows([0]);
             this.props.fetchParentWorkflows(1, defaultPages);
-            this.clearView();
+            this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
+            this.update([],[]);
         }
         this.setState({
             defaultPages : defaultPages,
@@ -265,7 +267,7 @@ class WorkflowExec extends Component {
     }
 
     changeQuery(e) {
-        this.props.updateByQuery(e.target.value);
+        this.props.updateByQuery(e);
         if (!this.state.allData) {
             this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
             this.update([],[]);
@@ -327,10 +329,13 @@ class WorkflowExec extends Component {
                     <Col>
                         <Form.Group>
                             <Form.Control value={this.props.searchReducer.query}
-                                          onChange={(e) => this.changeQuery(e)}
+                                          onChange={(e) => this.changeQuery(e.target.value)}
                                           placeholder="Search by keyword."/>
                         </Form.Group>
                     </Col>
+                    <Button className="primary" style={{marginBottom: "15px", marginRight: "15px"}} onClick={this.changeQuery.bind(this, "")}>
+                        <i className="fas fa-times"/>
+                    </Button>
                 </Row>
                 <div className="execTableWrapper">
                     <Table ref={this.table} striped={this.state.allData} hover size="sm">
