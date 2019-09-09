@@ -169,11 +169,15 @@ class WorkflowDefs extends Component {
             if (i >= (viewedPage - 1) * defaultPages && i < viewedPage * defaultPages) {
                 const labels = () => {
                     let labels = [];
-                    let str = dataset[i]["description"] ? dataset[i]["description"].substring(dataset[i]["description"].indexOf("-") + 1) : null;
-                    let wfLabels = str.replace(/\s/g, "").split(",");
-                    wfLabels.forEach(label => labels.push(
-                        <div className="wfLabel">{label}</div>
-                    ));
+                    if (dataset[i]["description"]) {
+                        let str = dataset[i]["description"].substring(dataset[i]["description"].indexOf("-") + 1);
+                        let wfLabels = str.replace(/\s/g, "").split(",");
+                        wfLabels.forEach(label => {
+                            if (label !== "")
+                                labels.push(
+                                    <div className="wfLabel">{label}</div>
+                                )});
+                    }
                     return labels;
                 };
                 output.push(
