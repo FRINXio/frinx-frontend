@@ -130,9 +130,13 @@ class WorkflowDefs extends Component {
     }
 
     updateFavourite(data) {
-        data.description = data.description.includes(", FAVOURITE")
-            ? data.description.replace(", FAVOURITE","")
-            : data.description += ", FAVOURITE";
+        if (data.description) {
+            data.description = data.description.includes(", FAVOURITE")
+                ? data.description.replace(", FAVOURITE", "")
+                : data.description += ", FAVOURITE";
+        } else {
+            data.description = "-, FAVOURITE"
+        }
         http.put('/api/conductor/metadata/', [data]).then( response => {
             http.get('/api/conductor/metadata/workflow').then(res => {
                 this.setState({
@@ -182,12 +186,11 @@ class WorkflowDefs extends Component {
                                             onClick={this.showDefinitionModal.bind(this)}>Definition</Button>
                                     <Button variant="outline-light noshadow"
                                             onClick={this.showDiagramModal.bind(this)}>Diagram</Button>
-                                    <Button variant="outline-light noshadow"
-                                            onClick={this.updateFavourite.bind(this, dataset[i])}>
-                                        <i className={dataset[i]["description"].includes("FAVOURITE") ? 'fa fa-star' : 'far fa-star'}
-                                           style={{cursor: 'pointer'}}
-                                        />
+                                    <Button variant="outline-light noshadow" onClick={this.updateFavourite.bind(this, dataset[i])}>
+                                        <i className={dataset[i]["description"] && dataset[i]["description"].includes("FAVOURITE") ? 'fa fa-star' : 'far fa-star'}
+                                           style={{cursor: 'pointer'}}/>
                                     </Button>
+
                                 </div>
                                 <div className="accordBody">
                                     <b>{dataset[i]["description"] ? "Description" : null}</b><br/>
