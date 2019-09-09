@@ -25,7 +25,7 @@ class InputModal extends Component {
         http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
             this.setState({
                 def: JSON.stringify(res.result, null, 2),
-                wfdesc: res.result["description"].split("-")[0],
+                wfdesc: res.result["description"] ? res.result["description"].split("-")[0] : "",
                 name: res.result["name"]
             }, () => this.getWorkflowInputDetails())
         });

@@ -18,7 +18,6 @@ class List extends Component {
             keywords: "",
             data: [],
             table: [],
-            highlight: [],
             selectedDevices: [],
             deviceDetails: [],
             mountModal: false,
@@ -59,15 +58,19 @@ class List extends Component {
         //append os/version from conf
         if (topology === "cli") {
             os_version = await http.get('/api/odl/conf/status/' + topology + "/" + node_id).then(res => {
-                os_version = res["node"]["0"]["cli-topology:device-type"];
-                os_version = os_version + " / " + res["node"]["0"]["cli-topology:device-version"];
-                return os_version;
+                try {
+                    os_version = res["node"]["0"]["cli-topology:device-type"];
+                    os_version = os_version + " / " + res["node"]["0"]["cli-topology:device-version"];
+                    return os_version;
+                } catch (e) {
+                    console.log(e);
+                }
             })
         } else {
             os_version = "netconf"
         }
-
-        return [device_object.node_id, device_object.host, device_object.status, os_version];
+        if (device_object)
+            return [device_object.node_id, device_object.host, device_object.status, os_version];
     }
 
     async addDeviceEntry(node_id, topology) {
@@ -78,17 +81,18 @@ class List extends Component {
 
         //check if entry already exists -> update
         newData.map((device, i) => {
-            if (device[0] === entry[0]) {
+            if (entry && device[0] === entry[0]) {
                 newData[i] = entry;
                 updated = true;
             }
             return updated;
         });
 
-        if(!updated){
+        if (entry && !updated){
             newData.push(entry);
         }
-        let pages = ~~(newData.length / this.state.defaultPages) + 1;
+        let size = ~~(newData.length / this.state.defaultPages);
+        let pages = newData.length % this.state.defaultPages? ++size : size;
 
         this.setState({
             data: newData,
@@ -114,11 +118,11 @@ class List extends Component {
     }
 
     onDeviceRefresh(e) {
-
         let refreshBtnID = e.target.id;
-        document.getElementById(refreshBtnID).classList.add('fa-spin');
+        let refreshBtnElem = document.getElementById(refreshBtnID);
+        refreshBtnElem.classList.add('fa-spin');
         setTimeout(() => {
-            document.getElementById(refreshBtnID).classList.remove('fa-spin')
+            refreshBtnElem.classList.remove('fa-spin')
         }, 1000);
 
         let refreshBtnIdx = e.target.id.split("-").pop();
@@ -135,7 +139,6 @@ class List extends Component {
             }
             return true;
         });
-
     }
 
     removeDevices() {
@@ -187,21 +190,20 @@ class List extends Component {
             } catch (e) {
                 console.log(e);
             }
-        })
+        });
+        this.search();
     }
 
     search() {
         let toBeRendered = [];
-        let toBeHighlited = [];
         let query = this.state.keywords.toUpperCase();
-        if(query !== ""){
+        if (query !== ""){
             const rows = this.state.data;
             console.log(rows);
             for(let i = 0; i < rows.length; i++){
                 for(let y = 0; y < rows[i].length; y++){
                     if(rows[i][y] && rows[i][y].toUpperCase().indexOf(query) !== -1){
                         toBeRendered.push(rows[i]);
-                        toBeHighlited.push(y);
                         break
                     }
                 }
@@ -209,21 +211,13 @@ class List extends Component {
         } else {
             toBeRendered = this.state.data;
         }
-        let pages = toBeRendered.length === 0 ? 0 : ~~(toBeRendered.length / this.state.defaultPages) + 1;
+        let size = ~~(toBeRendered.length / this.state.defaultPages);
+        let pages = toBeRendered.length ? toBeRendered.length % this.state.defaultPages? ++size : size : 0;
 
         this.setState({
             table: toBeRendered,
-            highlight: toBeHighlited,
             pagesCount : pages
         })
-    }
-
-    calculateHighlight(i, y) {
-        if(this.state.highlight[i] === y) {
-            return 'hilit'
-        } else {
-            return ''
-        }
     }
 
     showMountModal(){
@@ -254,24 +248,28 @@ class List extends Component {
                 let connected_message = device[`${topology_obj}:connected-message`] || null;
 
                 return http.get("/api/odl/conf/status/" + topology + "/" + node_id).then(res => {
-                    let device = res.node[0];
-                    let transport_type = device[`${topology_obj}:transport-type`] || device[`${topology_obj}:tcp-only`];
-                    let protocol = topology_obj.split("-")[0];
+                    try {
+                        let device = res.node[0];
+                        let transport_type = device[`${topology_obj}:transport-type`] || device[`${topology_obj}:tcp-only`];
+                        let protocol = topology_obj.split("-")[0];
 
-                    return {
-                        node_id: node_id,
-                        host: host,
-                        a_cap: a_cap,
-                        u_cap: u_cap,
-                        status: status,
-                        port: port,
-                        err_patterns: err_patterns,
-                        commit_patterns: commit_patterns,
-                        topology: topology,
-                        transport_type: transport_type,
-                        protocol: protocol,
-                        connected_message: connected_message
-                    };
+                        return {
+                            node_id: node_id,
+                            host: host,
+                            a_cap: a_cap,
+                            u_cap: u_cap,
+                            status: status,
+                            port: port,
+                            err_patterns: err_patterns,
+                            commit_patterns: commit_patterns,
+                            topology: topology,
+                            transport_type: transport_type,
+                            protocol: protocol,
+                            connected_message: connected_message
+                        };
+                    } catch (e) {
+                        console.log(e);
+                    }
                 });
             } catch (e) {
                 console.log(e);
@@ -295,27 +293,25 @@ class List extends Component {
     }
 
     sort(data, i){
-        if (this.state.sort) {
-            data.sort((a, b) => (a[i] > b[i]) ? 1 : ((b[i] > a[i]) ? -1 : 0));
-        } else {
-            data.sort((a, b) => (a[i] <= b[i]) ? 1 : ((b[i] <= a[i]) ? -1 : 0));
-        }
+        this.state.sort
+            ? data.sort((a, b) => {
+                let x = a[i].toUpperCase();
+                let y = b[i].toUpperCase();
+                return (x > y) ? 1 : ((y > x) ? -1 : 0)
+            })
+            : data.sort((a, b) => {
+                let x = a[i].toUpperCase();
+                let y = b[i].toUpperCase();
+                return (x < y) ? 1 : ((y < x) ? -1 : 0)
+            });
         return data;
     }
 
     repeat(){
         let output = [];
-        let highlight;
-        let dataset;
         let defaultPages = this.state.defaultPages;
         let viewedPage = this.state.viewedPage;
-        if(this.state.keywords === ""){
-            dataset = this.state.data;
-            highlight = false
-        } else {
-            dataset = this.state.table;
-            highlight = true
-        }
+        let dataset = this.state.keywords === "" ?this.state.data : this.state.table;
         dataset = this.sort(dataset, this.state.sortCategory);
         for(let i = 0; i < dataset.length; i++){
             if(i >= (viewedPage-1) * defaultPages && i < viewedPage * defaultPages) {
@@ -323,13 +319,12 @@ class List extends Component {
                     <tr key={`row-${i}`} id={`row-${i}`}>
                         <td className=''><Form.Check type="checkbox" onChange={(e) => this.onDeviceSelect(e)} id={`chb-${i}`}/></td>
                         <td id={`node_id-${i}`} onClick={(e) => this.getDeviceDetails(e)}
-                            className={highlight ? this.calculateHighlight(i, 0) + ' clickable btn-outline-primary' : 'clickable btn-outline-primary'}>{dataset[i][0]}</td>
-                        <td className={highlight ? this.calculateHighlight(i, 1) : ''}>{dataset[i][1]}</td>
-                        <td style={dataset[i][2] === "connected" ? {color: "#007bff"} : {color: "lightblue"}}
-                            className={highlight ? this.calculateHighlight(i, 2) : ''}>{dataset[i][2]}
+                            className={'clickable btn-outline-primary'}>{dataset[i][0]}</td>
+                        <td>{dataset[i][1]}</td>
+                        <td style={dataset[i][2] === "connected" ? {color: "#007bff"} : {color: "lightblue"}}>{dataset[i][2]}
                             &nbsp;&nbsp;<i id={`refreshBtn-${i}`} onClick={(e) => this.onDeviceRefresh(e)}
                                            style={{color: "#007bff"}} className="fas fa-sync-alt fa-xs clickable"/></td>
-                        <td id={`topology-${i}`} className={highlight ? this.calculateHighlight(i, 3) : ''}>{dataset[i][3]}</td>
+                        <td id={`topology-${i}`}>{dataset[i][3]}</td>
                         <td><Button className="noshadow" variant="outline-primary" onClick={() => {
                             this.props.history.push("/devices/edit/" + dataset[i][0]);
                         }} size="sm"><i className="fas fa-cog"/></Button>
@@ -341,8 +336,7 @@ class List extends Component {
     }
 
     columnSort(i){
-        let dataset;
-        this.state.keywords === "" ?  dataset = this.state.data : dataset = this.state.table;
+        let dataset = this.state.keywords === "" ? this.state.data : this.state.table;
         dataset = this.sort(dataset, i);
         this.setState({
             [this.state.keywords === "" ? "data" : "table"]: dataset,
@@ -399,7 +393,7 @@ class List extends Component {
                                     <th>Config</th>
                                 </tr>
                             </thead>
-                            <tbody>   
+                            <tbody>
                                 {this.repeat()}
                             </tbody>
                         </Table>
@@ -408,7 +402,7 @@ class List extends Component {
                 <Container style={{marginTop: "5px"}}>
                     <Row>
                         <Col sm={2}>
-                            <PageCount data={this.state.keywords === "" ? this.state.data : this.state.table}
+                            <PageCount dataSize={this.state.keywords === "" ? this.state.data.length : this.state.table.length}
                                        defaultPages={this.state.defaultPages}
                                        handler={this.setCountPages.bind(this)}/>
                         </Col>

@@ -30,14 +30,18 @@ function parseDryRun(type, bodyJSON) {
 
 function parseSync(type, bodyJSON) {
     let {nodeId, status, errorMessage} = "";
-    if (bodyJSON["output"]["node-sync-status-results"]["node-sync-status-result"]){
-        nodeId = bodyJSON["output"]["node-sync-status-results"]["node-sync-status-result"][0]["nodeId"];
-        status = "updated with changes";
-        errorMessage =  bodyJSON["output"]["node-sync-status-results"]["node-sync-status-result"][0]["error-message"];
-    } else if (bodyJSON["output"]["node-sync-status-results"]) {
-        status = "without changes"
-    } else {
-        status = "error"
+
+    try {
+        if (bodyJSON["output"]["node-sync-results"]["node-sync-result"]) {
+            nodeId = bodyJSON["output"]["node-sync-results"]["node-sync-result"][0]["node-id"];
+            status = "completed";
+            errorMessage = bodyJSON["output"]["node-sync-results"]["node-sync-result"][0]["error-message"];
+        } else {
+            status = "error"
+        }
+    } catch(e) {
+        status = "error";
+        console.log(e);
     }
     return {type, nodeId, status, errorMessage}
 }
