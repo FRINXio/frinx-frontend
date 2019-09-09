@@ -19,7 +19,7 @@ class Dashboard extends Component {
                     </Col>
                     <Col>
                         <Panel title='Tasks' desc="Manage tasks." icon={faTasks}
-                               style={{background: 'linear-gradient'}} link='/tasks'/>
+                               style={{background: 'linear-gradient'}} link='/tasks/defs'/>
                     </Col>
                     <Col>
                         <Panel title='Inventory & Logs' desc="Create, view and organize assets. View system logs." icon={faBoxOpen}
