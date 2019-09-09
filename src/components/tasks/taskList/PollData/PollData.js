@@ -1,8 +1,10 @@
 import React from 'react';
-import {Row, Form, Col, Table} from 'react-bootstrap'
+import {Row, Form, Col, Table, Container} from 'react-bootstrap'
 import moment from "moment";
 import {connect} from "react-redux";
 import './PollData.css'
+import PageCount from "../../../common/PageCount";
+import PageSelect from "../../../common/PageSelect";
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
 class PollData extends React.Component {
@@ -11,19 +13,24 @@ class PollData extends React.Component {
         super(props);
         this.state = {
             queueData: [],
+            table: [],
             sorted : false,
-            search : ''
+            search : '',
+            defaultPages: 20,
+            pagesCount: 1,
+            viewedPage: 1
         };
         this.table = React.createRef();
     }
 
     componentWillMount() {
-        http.get('/api/conductor/queue/data')
-            .then(data =>
-                this.setState({
-                    queueData: data.polldata,
-                })
-            );
+        http.get('/api/conductor/queue/data').then(data => {
+            let size = ~~(data.polldata.length / this.state.defaultPages);
+            this.setState({
+                queueData: data.polldata,
+                pagesCount: data.polldata ? data.polldata.length % this.state.defaultPages ? ++size : size : 0
+            });
+        })
     }
 
     componentWillReceiveProps({ queueData }) {
@@ -57,37 +64,56 @@ class PollData extends React.Component {
         this.setState({queueData : sortedArray });
     }
 
+    search(e) {
+        let dataset = this.state.queueData.filter(item => {
+            return item["queueName"].toString().toLowerCase().includes(e.target.value.toString().toLowerCase()) ||
+                item["workerId"].toString().toLowerCase().includes(e.target.value.toString().toLowerCase());
+        });
+        let size = ~~(dataset.length / this.state.defaultPages);
+        this.setState({
+            table: dataset,
+            viewedPage: 1,
+            pagesCount: dataset ? dataset.length % this.state.defaultPages ? ++size : size : 0,
+            search: e.target.value
+        })
+    }
+
     repeat() {
         let output = [];
-        let dataset = [];
-        let currentArray = [];
+        let dataset = this.state.search !== "" ? this.state.table : this.state.queueData;
+        let defaultPages = this.state.defaultPages;
+        let viewedPage = this.state.viewedPage;
 
-        if(this.state.search !== "") {
-            currentArray = this.state.queueData;
-            dataset = currentArray.filter(item => {
-                return item["queueName"].toString().toLowerCase().includes(this.state.search.toString().toLowerCase()) ||
-                    item["workerId"].toString().toLowerCase().includes(this.state.search.toString().toLowerCase());
-            });
-        } else {
-            dataset = this.state.queueData;
-        }
         for(let i = 0; i < dataset.length; i++) {
-            output.push(
-                     <tr key={`row-${i}`} id={`row-${i}`}>
+            if (i >= (viewedPage - 1) * defaultPages && i < viewedPage * defaultPages) {
+                output.push(
+                    <tr key={`row-${i}`} id={`row-${i}`}>
                         <td>{dataset[i]["queueName"]}</td>
                         <td>{dataset[i]["qsize"]}</td>
-                         <td>{moment(dataset[i]["lastPollTime"]).fromNow()}</td>
+                        <td>{moment(dataset[i]["lastPollTime"]).fromNow()}</td>
                         <td>{dataset[i]["workerId"]}</td>
                     </tr>
-            );
+                );
+            }
         }
         return output;
     }
 
-    render() {
-        let output = this.repeat();
-        output = output.length === 0 ? <tr><td/><td colSpan="2">Please wait for data</td><td/></tr> : output;
+    setCountPages(defaultPages, pagesCount){
+        this.setState({
+            defaultPages : defaultPages,
+            pagesCount: pagesCount,
+            viewedPage: 1
+        })
+    }
 
+    setViewPage(page){
+        this.setState({
+            viewedPage: page
+        })
+    }
+
+    render() {
         return (
             <div>
             <Row>
@@ -95,7 +121,7 @@ class PollData extends React.Component {
                 <Col>
                     <Form.Group className="searchGroup">
                         <Form.Control value = {this.state.search}
-                                      onChange={(e) => {this.setState({search: e.target.value})}}
+                                      onChange={(e) => this.search(e)}
                                       placeholder="Search"/>
                     </Form.Group>
                 </Col>
@@ -104,17 +130,30 @@ class PollData extends React.Component {
                 <Table ref={this.table}  striped hover size="sm">
                     <thead>
                     <tr>
-                        <th onClick={ () => this.sortArray('queueName')}>Name (Domain)</th>
-                        <th onClick={ () => this.sortArray('qsize')}>Size</th>
-                        <th onClick={ () => this.sortArray('lastPollTime')}>Last Poll Time</th>
-                        <th onClick={ () => this.sortArray('workerId')}>Last Polled By</th>
+                        <th className="clickable" onClick={() => this.sortArray('queueName')}>Name (Domain)</th>
+                        <th className="clickable" onClick={() => this.sortArray('qsize')}>Size</th>
+                        <th className="clickable" onClick={() => this.sortArray('lastPollTime')}>Last Poll Time</th>
+                        <th className="clickable" onClick={() => this.sortArray('workerId')}>Last Polled By</th>
                     </tr>
                     </thead>
                         <tbody className="polltable">
-                            {output}
+                            {this.repeat()}
                         </tbody>
                 </Table>
             </div>
+                <Container style={{marginTop: "5px"}}>
+                    <Row>
+                        <Col sm={2}>
+                            <PageCount dataSize={this.state.search !== "" ? this.state.table.length : this.state.queueData.length}
+                                       defaultPages={this.state.defaultPages}
+                                       handler={this.setCountPages.bind(this)}/>
+                        </Col>
+                        <Col sm={8}/>
+                        <Col sm={2}>
+                            <PageSelect viewedPage={this.state.viewedPage} count={this.state.pagesCount} handler={this.setViewPage.bind(this)}/>
+                        </Col>
+                    </Row>
+                </Container>
             </div>
         );
     }
