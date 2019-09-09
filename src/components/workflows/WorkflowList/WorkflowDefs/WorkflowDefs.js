@@ -167,11 +167,25 @@ class WorkflowDefs extends Component {
         let dataset = this.state.keywords === "" && this.state.labels.length < 1 ? this.state.data : this.state.table;
         for (let i = 0; i < dataset.length; i++) {
             if (i >= (viewedPage - 1) * defaultPages && i < viewedPage * defaultPages) {
+                const labels = () => {
+                    let labels = [];
+                    if (dataset[i]["description"]) {
+                        let str = dataset[i]["description"].substring(dataset[i]["description"].indexOf("-") + 1);
+                        let wfLabels = str.replace(/\s/g, "").split(",");
+                        wfLabels.forEach(label => {
+                            if (label !== "")
+                                labels.push(
+                                    <div className="wfLabel">{label}</div>
+                                )});
+                    }
+                    return labels;
+                };
                 output.push(
                     <div className="wfRow" key={i}>
                         <Accordion.Toggle id={`wf${i}`} onClick={this.changeActiveRow.bind(this, i)}
                                           className="clickable" as={Card.Header} variant="link" eventKey={i}>
                             {dataset[i]["name"] + " / " + dataset[i]["version"]}
+                            {labels()}
                         </Accordion.Toggle>
                         <Accordion.Collapse eventKey={i}>
                             <Card.Body style={{padding: "0px"}}>
