@@ -123,9 +123,10 @@ class WorkflowDefs extends Component {
 
     changeActiveRow(i) {
         this.getLabels();
+        let dataset = this.state.keywords === "" && this.state.labels.length < 1 ? this.state.data : this.state.table;
         this.setState({
             activeRow: this.state.activeRow === i ? null : i,
-            activeWf: document.querySelector(`#wf${i}`).innerText
+            activeWf: dataset[i]["name"] + " / " + dataset[i]["version"]
         });
     }
 
@@ -140,7 +141,7 @@ class WorkflowDefs extends Component {
         http.put('/api/conductor/metadata/', [data]).then( response => {
             http.get('/api/conductor/metadata/workflow').then(res => {
                 this.setState({
-                    data: res.result || [],
+                    data: res.result.sort((a,b) => (a["name"] > b["name"]) ? 1 : ((b["name"] > a["name"]) ? -1 : 0)) || [],
                 })
             })
         });
