@@ -25,7 +25,8 @@ class WorkflowExec extends Component {
             pagesCount: 1,
             viewedPage: 1,
             datasetLength: 0,
-            timeout: 0
+            timeout: 0,
+            sort: [2, 2, 2]
         };
         this.table = React.createRef();
     }
@@ -165,12 +166,36 @@ class WorkflowExec extends Component {
         })
     }
 
+    dynamicSort(property) {
+        let sortOrder = 1;
+        if(property[0] === "-") {
+            sortOrder = -1;
+            property = property.substr(1);
+        }
+        return (a, b) => {
+            if (!a["parentWorkflowId"]) {
+                return (sortOrder === -1)
+                    ? b[property].localeCompare(a[property])
+                    : a[property].localeCompare(b[property])
+            }
+        }
+    }
+
     repeat() {
         let {data, parents, children} = this.props.searchReducer;
         let childSet = children;
         let parentsId = childSet ? childSet.map(wf => wf.parentWorkflowId) : [];
         let output = [];
         let dataset = this.state.allData ? data : parents;
+        let sort = this.state.sort;
+        for (let i = 0; i < sort.length; i++) {
+            if(i === 0 && sort[i] !== 2)
+                dataset = dataset.sort(this.dynamicSort(sort[i] ? "-workflowType" : "workflowType"));
+            if(i === 1 && sort[i] !== 2)
+                dataset = dataset.sort(this.dynamicSort(sort[i] ? "-startTime": "startTime"));
+            if(i === 2 && sort[i] !== 2)
+                dataset = dataset.sort(this.dynamicSort(sort[i] ?"-endTime": "endTime"));
+        }
         for (let i = 0; i < dataset.length; i++) {
                 output.push(
                     <tr key={`row-${i}`} id={`row-${i}`}
@@ -215,7 +240,8 @@ class WorkflowExec extends Component {
         this.props.updateSize(1);
         this.setState({
             allData: !this.state.allData,
-            viewedPage: 1
+            viewedPage: 1,
+            sort: [2, 2, 2]
         })
     }
 
@@ -303,6 +329,22 @@ class WorkflowExec extends Component {
         });
     }
 
+    sortWf(number) {
+        let sort = this.state.sort;
+        for (let i = 0; i < sort.length; i++) {
+            i === number
+                ? sort[i] = sort[i] === 2 ? 0 : sort[i] === 0 ? 1 : 0
+                : sort[i] = 2
+        }
+        if (!this.state.allData) {
+            this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
+            this.update([],[]);
+        }
+        this.setState({
+            sort: sort
+        })
+    }
+
     render(){
 
         let detailsModal = this.state.detailsModal ?
@@ -343,10 +385,13 @@ class WorkflowExec extends Component {
                         <tr>
                             <th> </th>
                             {this.state.allData ? null : <th>Children</th>}
-                            <th>Name/Version</th>
+                            <th onClick={this.sortWf.bind(this, 0)} className="clickable">Name/Version
+                                {this.state.sort[0] !== 2 ? <i className={this.state.sort[0] ? "fas fa-sort-up" : "fas fa-sort-down"}/>: null}</th>
                             <th>Status</th>
-                            <th>Start Time</th>
-                            <th>End Time</th>
+                            <th onClick={this.sortWf.bind(this, 1)} className="clickable">Start Time
+                                {this.state.sort[1] !== 2 ? <i className={this.state.sort[1] ? "fas fa-sort-up" : "fas fa-sort-down"}/>: null}</th>
+                            <th onClick={this.sortWf.bind(this, 2)} className="clickable">End Time
+                                {this.state.sort[2] !== 2 ? <i className={this.state.sort[2] ? "fas fa-sort-up" : "fas fa-sort-down"}/>: null}</th>
                         </tr>
                         </thead>
                         <tbody className="execTableRows">
