@@ -162,19 +162,20 @@ class WorkflowExec extends Component {
             ? this.props.fetchNewData(page, this.state.defaultPages)
             : this.props.fetchParentWorkflows(page, this.state.defaultPages);
         this.setState({
-            viewedPage: page
+            viewedPage: page,
+            sort: [2, 2, 2]
         })
     }
 
     dynamicSort(property) {
-        let sortOrder = 1;
+        let sortOrder = true;
         if(property[0] === "-") {
-            sortOrder = -1;
+            sortOrder = false;
             property = property.substr(1);
         }
         return (a, b) => {
-            if (!a["parentWorkflowId"]) {
-                return (sortOrder === -1)
+            if (!a["parentWorkflowId"] && !b["parentWorkflowId"]) {
+                return (!sortOrder)
                     ? b[property].localeCompare(a[property])
                     : a[property].localeCompare(b[property])
             }
@@ -309,7 +310,8 @@ class WorkflowExec extends Component {
         }, 300);
 
         this.setState({
-            viewedPage: 1
+            viewedPage: 1,
+            sort: [2, 2, 2]
         });
     }
 
@@ -325,7 +327,8 @@ class WorkflowExec extends Component {
             this.props.fetchParentWorkflows(1, this.state.defaultPages);
         }
         this.setState({
-            viewedPage: 1
+            viewedPage: 1,
+            sort: [2, 2, 2]
         });
     }
 
@@ -385,13 +388,13 @@ class WorkflowExec extends Component {
                         <tr>
                             <th> </th>
                             {this.state.allData ? null : <th>Children</th>}
-                            <th onClick={this.sortWf.bind(this, 0)} className="clickable">Name/Version
+                            <th onClick={this.sortWf.bind(this, 0)} className="clickable">Name/Version &nbsp;
                                 {this.state.sort[0] !== 2 ? <i className={this.state.sort[0] ? "fas fa-sort-up" : "fas fa-sort-down"}/>: null}</th>
                             <th>Status</th>
-                            <th onClick={this.sortWf.bind(this, 1)} className="clickable">Start Time
-                                {this.state.sort[1] !== 2 ? <i className={this.state.sort[1] ? "fas fa-sort-up" : "fas fa-sort-down"}/>: null}</th>
-                            <th onClick={this.sortWf.bind(this, 2)} className="clickable">End Time
-                                {this.state.sort[2] !== 2 ? <i className={this.state.sort[2] ? "fas fa-sort-up" : "fas fa-sort-down"}/>: null}</th>
+                            <th onClick={this.sortWf.bind(this, 1)} className="clickable">Start Time &nbsp;
+                                {this.state.sort[1] !== 2 ? <i className={this.state.sort[1] ? "fas fa-sort-down" : "fas fa-sort-up"}/>: null}</th>
+                            <th onClick={this.sortWf.bind(this, 2)} className="clickable">End Time &nbsp;
+                                {this.state.sort[2] !== 2 ? <i className={this.state.sort[2] ? "fas fa-sort-down" : "fas fa-sort-up"}/>: null}</th>
                         </tr>
                         </thead>
                         <tbody className="execTableRows">
