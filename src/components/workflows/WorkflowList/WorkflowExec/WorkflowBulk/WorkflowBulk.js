@@ -21,7 +21,7 @@ class WorkflowBulk extends Component {
         }
 
         let operation = e.target.value;
-        performBulkOperation(operation, selectedWfs);
+        performBulkOperation(operation, selectedWfs, this.props.pageCount);
         this.props.bulkOperation();
         this.props.selectAllWfs();
     }
@@ -121,7 +121,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        performBulkOperation: (operation, wfs) => dispatch(bulkActions.performBulkOperation(operation, wfs)),
+        performBulkOperation: (operation, wfs, defaultPages) => dispatch(bulkActions.performBulkOperation(operation, wfs, defaultPages)),
         setView: (value) => dispatch(bulkActions.setView(value))
     }
 };

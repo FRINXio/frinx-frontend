@@ -14,11 +14,11 @@ export const requestBulkOperation = () => {
     return {type: REQUEST_BULK_OPERATION}
 };
 
-export const receiveBulkOperationResponse = (successfulResults, errorResults) => {
+export const receiveBulkOperationResponse = (successfulResults, errorResults, defaultPages) => {
     return (dispatch, getState) => {
         dispatch(storeResponse(successfulResults, errorResults));
         const {isFlat} = getState().bulkReducer;
-        isFlat ? dispatch(fetchNewData()) : dispatch(fetchParentWorkflows());
+        isFlat ? dispatch(fetchNewData(1, defaultPages)) : dispatch(fetchParentWorkflows(1, defaultPages));
         setTimeout(() => dispatch(resetBulkOperationResult()), 2000)
     }
 };
@@ -39,17 +39,17 @@ export const updateLoadingBar = (percentage) => {
     return {type: UPDATE_LOADING_BAR, percentage}
 };
 
-export const checkDeleted = (deletedWfs, workflows) => {
+export const checkDeleted = (deletedWfs, workflows, defaultPages) => {
     return dispatch => {
         if (deletedWfs.length === workflows.length) {
-            dispatch(receiveBulkOperationResponse(deletedWfs, {}))
+            dispatch(receiveBulkOperationResponse(deletedWfs, {}, defaultPages))
         } else {
-            setTimeout(() => dispatch(checkDeleted(deletedWfs, workflows)), 200);
+            setTimeout(() => dispatch(checkDeleted(deletedWfs, workflows, defaultPages)), 200);
         }
     }
 };
 
-export const performBulkOperation = (operation, workflows) => {
+export const performBulkOperation = (operation, workflows, defaultPages) => {
     const url = `/api/conductor/bulk/${operation}`;
     let deletedWfs = [];
 
@@ -61,20 +61,20 @@ export const performBulkOperation = (operation, workflows) => {
                 case "restart":
                     http.post(url, workflows).then(res => {
                         const {bulkSuccessfulResults, bulkErrorResults} = res.body.text ? JSON.parse(res.body.text) : [];
-                        dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults))
+                        dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages))
                     });
                     break;
                 case "pause":
                 case "resume":
                     http.put(url, workflows).then(res => {
                         const {bulkSuccessfulResults, bulkErrorResults} = res.body.text ? JSON.parse(res.body.text) : [];
-                        dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults))
+                        dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages))
                     });
                     break;
                 case "terminate":
                     http.delete(url, workflows).then(res => {
                         const {bulkSuccessfulResults, bulkErrorResults} = res.body.text ? JSON.parse(res.body.text) : [];
-                        dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults))
+                        dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages))
                     });
                     break;
                 case "delete":
@@ -85,7 +85,7 @@ export const performBulkOperation = (operation, workflows) => {
                         });
                         return null;
                     });
-                    dispatch(checkDeleted(deletedWfs, workflows));
+                    dispatch(checkDeleted(deletedWfs, workflows, defaultPages));
                     break;
                 default:
                     dispatch(failBulkOperation("Invalid operation requested."))

@@ -354,7 +354,7 @@ class WorkflowExec extends Component {
         return (
             <div>
                 {detailsModal}
-                <WorkflowBulk wfsCount={this.repeat().length} selectedWfs={this.state.selectedWfs}
+                <WorkflowBulk wfsCount={this.repeat().length} selectedWfs={this.state.selectedWfs} pageCount={this.state.defaultPages}
                               selectAllWfs={this.selectAllWfs.bind(this)} wfView={this.state.allData}
                               selectWfView={this.selectWfView.bind(this)} bulkOperation={this.clearView.bind(this) }/>
 
