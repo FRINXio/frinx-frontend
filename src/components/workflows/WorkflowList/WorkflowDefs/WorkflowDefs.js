@@ -123,9 +123,10 @@ class WorkflowDefs extends Component {
 
     changeActiveRow(i) {
         this.getLabels();
+        let dataset = this.state.keywords === "" && this.state.labels.length < 1 ? this.state.data : this.state.table;
         this.setState({
             activeRow: this.state.activeRow === i ? null : i,
-            activeWf: document.querySelector(`#wf${i}`).innerText
+            activeWf: dataset[i]["name"] + " / " + dataset[i]["version"]
         });
     }
 
