@@ -70,6 +70,7 @@ class WorkflowExec extends Component {
             if (this.state.allData) {
                 this.props.fetchNewData(this.state.viewedPage, this.state.defaultPages);
             } else {
+                this.props.checkedWorkflows([0]);
                 this.props.fetchParentWorkflows(this.state.viewedPage, this.state.defaultPages);
                 this.update([],[]);
             }
