@@ -156,9 +156,13 @@ class WorkflowExec extends Component {
     }
 
     setViewPage(page) {
-        this.state.allData
-            ? this.props.fetchNewData(page, this.state.defaultPages)
-            : this.props.fetchParentWorkflows(page, this.state.defaultPages);
+        if (this.state.allData) {
+            this.props.fetchNewData(page, this.state.defaultPages);
+        } else {
+            this.props.fetchParentWorkflows(page, this.state.defaultPages);
+            this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
+            this.update([],[]);
+        }
         this.setState({
             viewedPage: page
         })
