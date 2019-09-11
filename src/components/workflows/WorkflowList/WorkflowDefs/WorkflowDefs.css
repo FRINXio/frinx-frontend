@@ -12,7 +12,6 @@
 }
 
 .wfLabel {
-    background-color: rgba(0, 149, 255, 0.91);
     border-radius: 10px;
     padding: .275rem .5rem;
     margin-left: 5px;
@@ -20,9 +19,4 @@
     display: inline-grid;
     font-weight: 400;
     font-size: 13px;
-}
-
-.wfLabel:hover {
-    background-color: white;
-    color: black;
 }
