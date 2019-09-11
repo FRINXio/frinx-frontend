@@ -92,8 +92,6 @@ export const updateParents = (child) => {
                 unfoldChildren.forEach((wf, index) => dataset.splice(index + 1 + i, 0, wf));
             }
         });
-        if (dataset.length)
-            dispatch(updateSize(dataset.length));
         dispatch(receiveHierarchicalData(dataset, children));
     }
 };
@@ -105,8 +103,6 @@ export const deleteParents = (childs) => {
         childs.forEach(wfs  => {
             dataset = dataset.filter(p => p.workflowId !== wfs.workflowId);
         });
-        if (dataset.length)
-            dispatch(updateSize(dataset.length));
         dispatch(receiveHierarchicalData(dataset, children));
     }
 };

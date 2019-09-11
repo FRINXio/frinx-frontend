@@ -70,6 +70,7 @@ class WorkflowExec extends Component {
             if (this.state.allData) {
                 this.props.fetchNewData(this.state.viewedPage, this.state.defaultPages);
             } else {
+                this.props.checkedWorkflows([0]);
                 this.props.fetchParentWorkflows(this.state.viewedPage, this.state.defaultPages);
                 this.update([],[]);
             }
@@ -155,9 +156,13 @@ class WorkflowExec extends Component {
     }
 
     setViewPage(page) {
-        this.state.allData
-            ? this.props.fetchNewData(page, this.state.defaultPages)
-            : this.props.fetchParentWorkflows(page, this.state.defaultPages);
+        if (this.state.allData) {
+            this.props.fetchNewData(page, this.state.defaultPages);
+        } else {
+            this.props.fetchParentWorkflows(page, this.state.defaultPages);
+            this.state.openParentWfs.forEach(parent => this.showChildrenWorkflows(parent, null, null));
+            this.update([],[]);
+        }
         this.setState({
             viewedPage: page
         })
