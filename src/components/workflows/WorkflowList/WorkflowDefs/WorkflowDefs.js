@@ -171,7 +171,9 @@ class WorkflowDefs extends Component {
                 const labels = () => {
                     let labels = [];
                     if (dataset[i]["description"]) {
-                        let str = dataset[i]["description"].substring(dataset[i]["description"].indexOf("-") + 1);
+                        let str = dataset[i]["description"].indexOf("-") !== -1
+                            ? dataset[i]["description"].substring(dataset[i]["description"].indexOf("-") + 1)
+                            : "";
                         let wfLabels = str.replace(/\s/g, "").split(",");
                         wfLabels.forEach(label => {
                             if (label !== "")

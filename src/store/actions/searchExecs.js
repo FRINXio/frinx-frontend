@@ -34,9 +34,8 @@ export const fetchNewData = (viewedPage, defaultPages) => {
         }
         let page = (viewedPage - 1) * defaultPages;
         http.get('/api/conductor/executions/?q=&h=&freeText='+ q +'&start='+ page +'&size=' + defaultPages).then(res => {
-            if (res.result.totalHits)
-                dispatch(updateSize(res.result.totalHits));
             const data = res.result ? (res.result.hits ? res.result.hits : []) : [];
+            dispatch(updateSize(res.result.totalHits));
             dispatch(receiveNewData(data));
         });
     }
