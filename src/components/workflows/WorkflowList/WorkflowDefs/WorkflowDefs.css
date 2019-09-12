@@ -13,10 +13,17 @@
 
 .wfLabel {
     border-radius: 10px;
-    padding: .275rem .5rem;
-    margin-left: 5px;
+    padding: .15rem .375rem;
+    margin-right: 5px;
     color: #ffffff;
     display: inline-grid;
     font-weight: 400;
+    font-size: 11px;
+}
+
+.wfDef {
+    padding: .5rem 0.55rem .25rem;
+}
+.description {
     font-size: 13px;
 }

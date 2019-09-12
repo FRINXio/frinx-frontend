@@ -8,6 +8,7 @@ import InputModal from "./InputModal/InputModal";
 import DiagramModal from "./DiagramModal/DiagramModal";
 import PageCount from "../../../common/PageCount";
 import PageSelect from "../../../common/PageSelect";
+import {wfLabelsColor} from "../../../constants";
 
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
@@ -42,23 +43,21 @@ class WorkflowDefs extends Component {
             if (res.result) {
                 let size = ~~(res.result.length / this.state.defaultPages);
                 let labelsArr = [];
-                let dataset = res.result.sort((a,b) => (a["name"] > b["name"]) ? 1 : ((b["name"] > a["name"]) ? -1 : 0)) || [];
-                dataset.map(wf => {
-                    let str = wf["description"] ? wf["description"].substring(wf["description"].indexOf("-") + 1) : null;
-                    if (str === wf["description"]) {
-                        str = null;
-                    }
-                    if (str) {
+                let dataset = res.result.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)) || [];
+                dataset.map(({description}) => {
+                    let str = description && description.match(/-(,|) [A-Z].*/g)
+                        ? description.substring(description.indexOf("-") + 1) : "";
+                    if (str !== "") {
                         str = str.replace(/\s/g, "");
                         labelsArr = labelsArr.concat(str.split(","));
                     }
                     return null;
                 });
                 let allLabels = [...new Set([].concat(...labelsArr))];
+                allLabels = allLabels.sort((a,b) => (a > b) ? 1 : ((b > a) ? -1 : 0));
                 let labelsColors = [];
-                let colorNumber = ~~(16777215 / allLabels.length);
                 for (let i = 0; i < allLabels.length; i++)
-                    labelsColors[i] = colorNumber * i;
+                    labelsColors.push(wfLabelsColor[i]);
                 this.setState({
                     data: dataset,
                     pagesCount: res.result.length % this.state.defaultPages ? ++size : size,
@@ -155,6 +154,8 @@ class WorkflowDefs extends Component {
 
     updateFavourite(data) {
         if (data.description) {
+            if (!data.description.match(/-$/g))
+                data.description += '-';
             data.description = data.description.includes(", FAVOURITE")
                 ? data.description.replace(", FAVOURITE", "")
                 : data.description += ", FAVOURITE";
@@ -164,7 +165,7 @@ class WorkflowDefs extends Component {
         http.put('/api/conductor/metadata/', [data]).then( response => {
             http.get('/api/conductor/metadata/workflow').then(res => {
                 this.setState({
-                    data: res.result.sort((a,b) => (a["name"] > b["name"]) ? 1 : ((b["name"] > a["name"]) ? -1 : 0)) || [],
+                    data: res.result.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)) || [],
                 })
             })
         });
@@ -184,6 +185,25 @@ class WorkflowDefs extends Component {
         })
     }
 
+    createLabels = ({description}) => {
+        let labels = [];
+        let str =  description && description.match(/-(,|) [A-Z].*/g)
+            ? description.substring(description.indexOf("-") + 1) : "";
+        let wfLabels = str.replace(/\s/g, "").split(",");
+        wfLabels.forEach(label => {
+            if (label !== "") {
+                let index = this.state.allLabels.findIndex(lab => lab === label);
+                let color = index >= wfLabelsColor.length
+                    ? this.state.labelsColors[0]
+                    : this.state.labelsColors[index];
+                labels.push(
+                    <div style={{backgroundColor: color}} className="wfLabel" onClick={this.onLabelSearch.bind(this, [label])}>{label}</div>
+                )
+            }
+        });
+        return labels;
+    };
+
     repeat() {
         let output = [];
         let defaultPages = this.state.defaultPages;
@@ -191,31 +211,18 @@ class WorkflowDefs extends Component {
         let dataset = this.state.keywords === "" && this.state.labels.length < 1 ? this.state.data : this.state.table;
         for (let i = 0; i < dataset.length; i++) {
             if (i >= (viewedPage - 1) * defaultPages && i < viewedPage * defaultPages) {
-                const labels = () => {
-                    let labels = [];
-                    if (dataset[i]["description"]) {
-                        let str = dataset[i]["description"].substring(dataset[i]["description"].indexOf("-") + 1);
-                        let wfLabels = str.replace(/\s/g, "").split(",");
-                        wfLabels.forEach(label => {
-                            let index = this.state.allLabels.findIndex(lab => lab === label);
-                            index = index === -1 ? 1 : index;
-                            let offset = "";
-                            for (let i = 0; i < 6-this.state.labelsColors[index].toString(16).length;i++)
-                                offset += "0";
-                            let color = "#"+offset+this.state.labelsColors[index].toString(16);
-                            labels.push(
-                                <div style={{backgroundColor: color}} className="wfLabel">{label}</div>
-                            )
-                        });
-                    }
-                    return labels;
-                };
                 output.push(
                     <div className="wfRow" key={i}>
                         <Accordion.Toggle id={`wf${i}`} onClick={this.changeActiveRow.bind(this, i)}
-                                          className="clickable" as={Card.Header} variant="link" eventKey={i}>
-                            {dataset[i]["name"] + " / " + dataset[i]["version"]}
-                            {labels()}
+                                          className="clickable wfDef" as={Card.Header} variant="link" eventKey={i}>
+                            <b>{dataset[i]["name"] + " / " + dataset[i]["version"]}</b>
+                            <br/>
+                            {dataset[i]["description"]
+                                ? <div className="description">
+                                    {dataset[i]["description"].split("-")[0]}
+                                    {this.createLabels(dataset[i])}
+                                </div>
+                                : null}
                         </Accordion.Toggle>
                         <Accordion.Collapse eventKey={i}>
                             <Card.Body style={{padding: "0px"}}>
@@ -234,11 +241,8 @@ class WorkflowDefs extends Component {
                                         <i className={dataset[i]["description"] && dataset[i]["description"].includes("FAVOURITE") ? 'fa fa-star' : 'far fa-star'}
                                            style={{cursor: 'pointer'}}/>
                                     </Button>
-
                                 </div>
                                 <div className="accordBody">
-                                    <b>{dataset[i]["description"] ? "Description" : null}</b><br/>
-                                    <p>{JSON.stringify(dataset[i]["description"] + 1).split("-")[0].substr(1)}</p>
                                     <b>Tasks</b><br/>
                                     <p>{JSON.stringify(dataset[i]["tasks"].map(task => {
                                         return task.name
