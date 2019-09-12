@@ -11,3 +11,7 @@
 .childWf {
     background-color: #cdcdcd;
 }
+
+.clickable:hover {
+    cursor: pointer;
+}
