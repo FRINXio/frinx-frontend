@@ -103,7 +103,7 @@ class WorkflowDefs extends Component {
 
         let query = this.state.keywords.toUpperCase();
         if (query !== "") {
-            let rows = this.state.data;
+            let rows = this.state.table.length > 0 ? this.state.table : this.state.data;
             let queryWords = query.split(" ");
             for (let i = 0; i < queryWords.length; i++) {
                 for (let j = 0; j < rows.length; j++)

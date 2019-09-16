@@ -383,7 +383,8 @@ class WorkflowExec extends Component {
                                           placeholder="Search by keyword."/>
                         </Form.Group>
                     </Col>
-                    <Button className="primary" style={{marginBottom: "15px", marginRight: "15px"}} onClick={this.changeQuery.bind(this, "")}>
+                    <Button className="primary" style={{marginBottom: "15px", marginRight: "15px"}}
+                            onClick={() => { this.changeLabels([]); this._typeahead.clear(); this.changeQuery("");}}>
                         <i className="fas fa-times"/>
                     </Button>
                 </Row>
