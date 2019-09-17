@@ -27,8 +27,7 @@ class WorkflowDefs extends Component {
             defaultPages: 20,
             pagesCount: 1,
             viewedPage: 1,
-            allLabels: [],
-            labelsColors: []
+            allLabels: []
         };
         this.table = React.createRef();
         this.onEditSearch = this.onEditSearch.bind(this);
@@ -42,30 +41,31 @@ class WorkflowDefs extends Component {
         http.get('/api/conductor/metadata/workflow').then(res => {
             if (res.result) {
                 let size = ~~(res.result.length / this.state.defaultPages);
-                let labelsArr = [];
                 let dataset = res.result.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)) || [];
-                dataset.map(({description}) => {
-                    let str = description && description.match(/-(,|) [A-Z].*/g)
-                        ? description.substring(description.indexOf("-") + 1) : "";
-                    if (str !== "") {
-                        str = str.replace(/\s/g, "");
-                        labelsArr = labelsArr.concat(str.split(","));
-                    }
-                    return null;
-                });
-                let allLabels = [...new Set([].concat(...labelsArr))];
-                allLabels = allLabels.sort((a,b) => (a > b) ? 1 : ((b > a) ? -1 : 0));
-                let labelsColors = [];
-                for (let i = 0; i < allLabels.length; i++)
-                    labelsColors.push(wfLabelsColor[i]);
+                let allLabels = this.getLabels(dataset);
                 this.setState({
                     data: dataset,
                     pagesCount: res.result.length % this.state.defaultPages ? ++size : size,
                     allLabels: allLabels,
-                    labelsColors: labelsColors
                 })
             }
         })
+    }
+
+    getLabels(dataset) {
+        let labelsArr = [];
+        dataset.map(({description}) => {
+            let str = description && description.match(/-(,|) [A-Z].*/g)
+                ? description.substring(description.indexOf("-") + 1) : "";
+            if (str !== "") {
+                str = str.replace(/\s/g, "");
+                labelsArr = labelsArr.concat(str.split(","));
+            }
+            return null;
+        });
+        let allLabels = [...new Set([].concat(...labelsArr))];
+        console.log(allLabels.filter((e) => {return e !== ""}).sort((a, b) => (a > b) ? 1 : ((b > a) ? -1 : 0)));
+        return allLabels.filter((e) => {return e !== ""}).sort((a, b) => (a > b) ? 1 : ((b > a) ? -1 : 0));
     }
 
     onEditSearch(event) {
@@ -154,18 +154,22 @@ class WorkflowDefs extends Component {
 
     updateFavourite(data) {
         if (data.description) {
-            if (!data.description.match(/-$/g))
-                data.description += '-';
+            if (!data.description.match(/-(| )[A-Z]*/g))
+                data.description += ' -';
             data.description = data.description.includes(", FAVOURITE")
                 ? data.description.replace(", FAVOURITE", "")
                 : data.description += ", FAVOURITE";
         } else {
             data.description = "-, FAVOURITE"
         }
+        console.log(data.description)
         http.put('/api/conductor/metadata/', [data]).then( response => {
             http.get('/api/conductor/metadata/workflow').then(res => {
+                let dataset = res.result.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)) || [];
+                let allLabels = this.getLabels(dataset);
                 this.setState({
-                    data: res.result.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)) || [],
+                    data: dataset,
+                    allLabels: allLabels
                 })
             })
         });
@@ -194,10 +198,14 @@ class WorkflowDefs extends Component {
             if (label !== "") {
                 let index = this.state.allLabels.findIndex(lab => lab === label);
                 let color = index >= wfLabelsColor.length
-                    ? this.state.labelsColors[0]
-                    : this.state.labelsColors[index];
+                    ? wfLabelsColor[0]
+                    : wfLabelsColor[index];
+                let newLabels = (this.state.labels.findIndex(lbl => lbl === label) < 0) ? [...this.state.labels, label] : this.state.labels;
                 labels.push(
-                    <div style={{backgroundColor: color}} className="wfLabel" onClick={this.onLabelSearch.bind(this, [label])}>{label}</div>
+                    <div style={{backgroundColor: color}} className="wfLabel" onClick={(e) => {
+                        e.stopPropagation(); this.onLabelSearch(newLabels)}}>
+                        {label}
+                    </div>
                 )
             }
         });
@@ -333,13 +341,14 @@ class WorkflowDefs extends Component {
              <Container style={{marginTop: "5px"}}>
                  <Row>
                      <Col sm={2}>
-                         <PageCount dataSize={this.state.keywords === "" ? this.state.data.length : this.state.table.length}
+                         <PageCount dataSize={this.state.keywords === "" || this.state.table.length > 0 ? this.state.table.length : this.state.data.length}
                                     defaultPages={this.state.defaultPages}
                                     handler={this.setCountPages.bind(this)}/>
                      </Col>
                      <Col sm={8}/>
                      <Col sm={2}>
-                         <PageSelect viewedPage={this.state.viewedPage} count={this.state.pagesCount} handler={this.setViewPage.bind(this)}/>
+                         <PageSelect viewedPage={this.state.viewedPage} count={this.state.pagesCount}
+                                     handler={this.setViewPage.bind(this)}/>
                      </Col>
                  </Row>
              </Container>
