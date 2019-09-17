@@ -64,7 +64,6 @@ class WorkflowDefs extends Component {
             return null;
         });
         let allLabels = [...new Set([].concat(...labelsArr))];
-        console.log(allLabels.filter((e) => {return e !== ""}).sort((a, b) => (a > b) ? 1 : ((b > a) ? -1 : 0)));
         return allLabels.filter((e) => {return e !== ""}).sort((a, b) => (a > b) ? 1 : ((b > a) ? -1 : 0));
     }
 
@@ -162,7 +161,6 @@ class WorkflowDefs extends Component {
         } else {
             data.description = "-, FAVOURITE"
         }
-        console.log(data.description)
         http.put('/api/conductor/metadata/', [data]).then( response => {
             http.get('/api/conductor/metadata/workflow').then(res => {
                 let dataset = res.result.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)) || [];
