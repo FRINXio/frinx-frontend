@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Button, Form, Modal, Row, Col, Tabs, Tab, InputGroup, ButtonGroup} from "react-bootstrap";
+import {Button, Form, Modal, Row, Col, Tabs, Tab, InputGroup, ButtonGroup, ToggleButtonGroup, ToggleButton} from "react-bootstrap";
 import Dropdown from 'react-dropdown';
 import './MountModal.css'
 import 'react-dropdown/style.css';
@@ -224,7 +224,7 @@ class MountModal extends Component {
                 if(e.target){
                     item[0] = e.target.value;
                 } else {
-                    item[0] = e.value;
+                    item[0] = e.value ? e.value : e;
                     if (which === "type") {
                         this.setState({deviceType: e.value});
                     }
@@ -536,6 +536,25 @@ class MountModal extends Component {
             ) : ""
         };
 
+        const booleanField = (item, i, type) => {
+            return (
+                <Form.Group
+                    controlId={`mount${type}Input-${item[0].split(":").pop()}`}>
+                    <Form.Label>{item[0].split(":").pop()}</Form.Label>
+                    <ButtonGroup className="d-flex">
+                        <ToggleButtonGroup type="radio" value={item[1][0]} name="booleanField"
+                                           onChange={(e) => this.handleInput(e,i,formToDisplay)}>
+                            <ToggleButton variant="outline-primary" value={false}>false</ToggleButton>
+                            <ToggleButton variant="outline-primary" value={true}>true</ToggleButton>
+                        </ToggleButtonGroup>
+                    </ButtonGroup>
+                    <Form.Text className="text-muted">
+                        {item[1][1]}
+                    </Form.Text>
+                </Form.Group>
+            )
+        };
+
         const whichField = (item, i, type) => {
             let id = item[0].split(":").pop();
             switch (id) {
@@ -544,6 +563,8 @@ class MountModal extends Component {
                 case "override": return capabilitiesField(item, i, type);
                 case "device-type": return deviceTypeVersionField(item, i, type, "type");
                 case "device-version": return deviceTypeVersionField(item, i, type, "version");
+                case "reconcile": return booleanField(item, i, type);
+                case "tcp-only": return booleanField(item, i, type);
                 default: return inputField(item, i , type);
             }
         };
