@@ -35,3 +35,23 @@
     -webkit-text-security:disc;
     -mox-text-security:disc;
 }
+
+.info {
+    font-size: 15px;
+    padding: 2px 5px 2px;
+    margin-left: 5px;
+    margin-bottom: 0;
+    display: inline-block;
+    float: right;
+}
+.fadeInInfo {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.5s linear;
+}
+
+.fadeOutInfo{
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 0.5s, opacity 0.5s linear;
+}
