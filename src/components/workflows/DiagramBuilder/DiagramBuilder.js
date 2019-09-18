@@ -14,9 +14,7 @@ import './DiagramBuilder.css'
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import {
-    create_L2VPN_P2P_OC_Uniconfig_Example_Workflow,
-    createMountAndCheckExample,
-    createSampleBatchInventoryRetrievalExample, getFirstNode, getWfInputs,
+    getFirstNode, getWfInputs,
     handleDecideNode,
     handleForkNode
 } from "./builder-utils";
@@ -79,18 +77,6 @@ class DiagramBuilder extends Component {
         activeModel.addAll(start);
     }
 
-    //mock
-    createExampleWf(i) {
-        let exampleArray = [
-            create_L2VPN_P2P_OC_Uniconfig_Example_Workflow,
-            createSampleBatchInventoryRetrievalExample,
-            createMountAndCheckExample,
-        ];
-        exampleArray[i](this.state.app, this.props);
-        this.props.updateSidebar(false);
-        this.forceUpdate();
-    }
-
     subwfModalHandler() {
         this.setState({
             showSubWfModal: !this.state.showSubWfModal
@@ -132,13 +118,13 @@ class DiagramBuilder extends Component {
                 node = new CircleEndNodeModel(data.name);
                 break;
             case "fork":
-                node = new ForkNodeModel(data.wfObject.name, null, data.wfObject);
+                node = new ForkNodeModel(data.wfObject.name, "rgb(108,49,160)", data.wfObject);
                 break;
             case "join":
-                node = new JoinNodeModel(data.wfObject.name, null, data.wfObject);
+                node = new JoinNodeModel(data.wfObject.name, "rgb(108,49,160)", data.wfObject);
                 break;
             case "decision":
-                node = new DecisionNodeModel(data.wfObject.name, null, data.wfObject);
+                node = new DecisionNodeModel(data.wfObject.name, "rgb(108,49,160)", data.wfObject);
                 break;
             default:
                 break
@@ -162,29 +148,35 @@ class DiagramBuilder extends Component {
             let tasks = [];
 
             // handle regular/system nodes
-            _.values(links).forEach(link => {
-                if (link.sourcePort.parent === parentNode && link.targetPort.type !== "end") {
-                    switch (link.targetPort.type) {
-                        case "fork":
-                            let {forkNode, joinNode} = handleForkNode(link.targetPort.getNode());
-                            tasks.push(forkNode.extras.inputs, joinNode.extras.inputs);
-                            parentNode = joinNode;
-                            break;
-                        case "decision":
-                            let {decideNode, firstNeutralNode} = handleDecideNode(link.targetPort.getNode());
-                            tasks.push(decideNode.extras.inputs);
-                            if (firstNeutralNode && firstNeutralNode.extras.inputs) {
-                                tasks.push(firstNeutralNode.extras.inputs);
-                                parentNode = firstNeutralNode;
-                            }
-                            break;
-                        default:
-                            parentNode = link.targetPort.parent;
-                            tasks.push(parentNode.extras.inputs);
-                            break;
+            while (parentNode.type !== "end" ) {
+                _.values(links).forEach(link => {
+                    console.log("PARENT", parentNode);
+                    console.log("link", link);
+                    if (link.sourcePort.parent === parentNode) {
+                        console.log("TARGET", link.targetPort.type);
+
+                        switch (link.targetPort.type) {
+                            case "fork":
+                                let {forkNode, joinNode} = handleForkNode(link.targetPort.getNode());
+                                tasks.push(forkNode.extras.inputs, joinNode.extras.inputs);
+                                parentNode = joinNode;
+                                break;
+                            case "decision":
+                                let {decideNode, firstNeutralNode} = handleDecideNode(link.targetPort.getNode());
+                                tasks.push(decideNode.extras.inputs);
+                                if (firstNeutralNode && firstNeutralNode.extras.inputs) {
+                                    tasks.push(firstNeutralNode.extras.inputs);
+                                    parentNode = firstNeutralNode;
+                                }
+                                break;
+                            default:
+                                parentNode = link.targetPort.parent;
+                                tasks.push(parentNode.extras.inputs);
+                                break;
+                        }
                     }
-                }
-            });
+                });
+            }
 
             let finalWf = {...this.props.finalWorkflow};
 
@@ -193,6 +185,7 @@ class DiagramBuilder extends Component {
                 finalWf.inputParameters = [];
             }
 
+            console.log("tasks",tasks)
             // handle tasks
             finalWf.tasks = tasks;
 
@@ -214,9 +207,7 @@ class DiagramBuilder extends Component {
             <div className="body">
                 {subWfModal}
                 <div className="builder-header"/>
-                <ControlsHeader parseWftoJSON={this.parseDiagramToJSON.bind(this)}
-                                createWf={this.createExampleWf.bind(this)}
-                                app={this.state.app}/>
+                <ControlsHeader parseWftoJSON={this.parseDiagramToJSON.bind(this)} app={this.state.app}/>
                 <div className="content">
                     <SideMenu show={this.props.sidebarShown} category={this.props.category}
                               workflows={this.props.workflows} functional={this.props.functional}/>

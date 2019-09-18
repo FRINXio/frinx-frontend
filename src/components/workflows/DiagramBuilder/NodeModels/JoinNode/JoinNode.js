@@ -20,7 +20,7 @@ export class JoinNode extends React.Component {
           <g id="Layer_1">
           </g>
           <g id="Layer_2">                                                                  
-           <polygon fill="purple" stroke="#000000" stroke-width="3" stroke-miterlimit="10" points="50 15,15 15,15 65,50 65,65 40"/>
+           <polygon fill="${this.props.node.color}" stroke="#000000" stroke-width="3" stroke-miterlimit="10" points="50 15,15 15,15 65,50 65,65 40"/>
                 <text x="26" y="45" fill="white" font-size="13px" >join</text>
           </g>
         `

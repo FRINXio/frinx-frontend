@@ -11,6 +11,7 @@ export class ForkNode extends React.Component {
     }
 
     render() {
+        console.log(this.props)
         return (
             <div className={"fork-node"} style={{position: "relative", width: this.state.size, height: this.state.size}}>
                 <svg width={this.state.size} height={this.state.size}
@@ -20,7 +21,7 @@ export class ForkNode extends React.Component {
           <g id="Layer_1">
           </g>
           <g id="Layer_2">
-            <polygon fill="purple" stroke="#000000" stroke-width="3" stroke-miterlimit="10" points="30 65,65 65,65 15,30 15,15 40"/>
+            <polygon fill="${this.props.node.color}" stroke="#000000" stroke-width="3" stroke-miterlimit="10" points="30 65,65 65,65 15,30 15,15 40"/>
                 <text x="32" y="45" fill="white" font-size="13px" >fork</text>
           </g>
         `

@@ -5,7 +5,6 @@ import * as _ from "lodash";
 import {ForkNodeModel} from "./NodeModels/ForkNode/ForkNodeModel";
 import {JoinNodeModel} from "./NodeModels/JoinNode/JoinNodeModel";
 import {DecisionNodeModel} from "./NodeModels/DecisionNode/DecisionNodeModel";
-import {DiagramModel} from "storm-react-diagrams";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -240,72 +239,195 @@ export const get_workflow_subworkflows = (workflowDef) => {
     return _.uniqWith(subWorkflows, _.isEqual);
 };
 
-export const place_defaultNode = (task, i, posX, posY) => {
-    let node = new DefaultNodeModel(task.name,"rgb(34,144,255)", task);
+export const place_defaultNode = (task, posX, posY) => {
+    let color = task.type === "SUB_WORKFLOW" ? "rgb(34,144,255)" : "rgb(134,210,255)"
+    let node = new DefaultNodeModel(task.name,color, task);
     node.addInPort("In");
     node.addOutPort("Out");
     node.setPosition(posX, posY);
     return node;
 };
 
-export const place_forkNode = (task, i, posX, posY) => {
-    let node = new ForkNodeModel(task.name,"rgb(28,123,255)", task);
+export const place_forkNode = (task, posX, posY) => {
+    let node = new ForkNodeModel(task.name,"rgb(11,60,139)", task);
     node.setPosition(posX, posY);
     return node;
 };
 
-export const place_joinNode = (task, i, posX, posY) => {
-    let node = new JoinNodeModel(task.name,"rgb(28,123,255)", task);
+export const place_joinNode = (task, posX, posY) => {
+    let node = new JoinNodeModel(task.name,"rgb(11,60,139)", task);
     node.setPosition(posX, posY);
     return node;
 };
 
-let handleTask = (task, i, nodes, branchNum) => {
+export const find_mostRightNode = (nodes) => {
+    let max = 0;
+    nodes.forEach(node => {
+        if (node.x > max) {
+            max = node.x
+        }
+    });
+    return max;
+};
+
+let handleTask = (task, nodes, branchNum = 1, forkNode, branchPosX, branchPosY = 100, forkDepth = 1) => {
+
     switch(task.type) {
         case "SUB_WORKFLOW": {
-            let posX = i === 0 ? 1400 : nodes[i-1].x + 200;
-            let posY = 100 * branchNum;
+            let posX = nodes.length === 0 ? 700 : find_mostRightNode(nodes) + 200;
+            let posY = branchPosY;
 
-            nodes.push(place_defaultNode(task, i , posX, posY));
+            if (branchPosX) {
+                posX = branchPosX
+            }
+
+            let node = place_defaultNode(task, posX, posY);
+            nodes.push(node);
             break;
         }
         case "FORK_JOIN": {
+            let posX = nodes.length === 0 ? 700 : find_mostRightNode(nodes) + 200;
+            let posY = branchPosY;
             let branchCount = task.forkTasks.length;
+            let branchMargin = 100;
 
-            let posX = i === 0 ? 1400 : nodes[i-1].x + 200;
-            let posY = 100 * branchCount / 2;
+            // branches size in parallel - the deeper the fork node, the smaller the spread and margin is
+            let branchSpread = (branchCount*47 + (branchCount-1)*branchMargin) / forkDepth; //branches size in parallel
 
-            if (branchNum) {
-                posY = branchNum === 0 ? 0 : 50 * branchNum;
+            if (branchPosX) {
+                posX = branchPosX
             }
 
-            nodes.push(place_forkNode(task, i, posX, posY));
+            let node = place_forkNode(task, posX, posY);
+            nodes.push(node);
 
             task.forkTasks.forEach((branch, branchNum) => {
                 branch.forEach((branchTask, k) => {
-                    handleTask(branchTask, i+1+k, nodes, branchNum +1);
+                    let branchPosX = branchTask.type === "JOIN" ? find_mostRightNode(nodes) + 200 : posX + 200 + k*200;
+                    handleTask(branchTask, nodes, branchNum, node, branchPosX, posY+30 - (branchSpread/2) + (branchMargin + 47)*branchNum/forkDepth, forkDepth + 1);
                 })
             });
             break;
         }
         case "JOIN": {
-            let posX = i === 0 ? 1400 : nodes[i-1].x + 200;
-            let posY = 100;
+            let posX = find_mostRightNode(nodes) + 200;
+            let posY = branchPosY;
 
-            if (branchNum) {
-                posY = branchNum === 0 ? 0 : 50 * branchNum;
+            if (branchPosX) {
+                posX = branchPosX
             }
 
-            nodes.push(place_joinNode(task, i, posX, posY));
+            let node = place_joinNode(task, posX, posY);
+            nodes.push(node);
+
             break;
         }
         default: {
-            let posX = i === 0 ? 1400 : nodes[i-1].x + 200;
-            let posY = 100;
-            nodes.push(place_defaultNode(task, i , posX, posY));
+            let posX = nodes.length === 0 ? 700 : find_mostRightNode(nodes) + 200;
+            let posY = branchPosY;
+
+            if (branchPosX) {
+                posX = branchPosX
+            }
+
+            nodes.push(place_defaultNode(task, posX, posY));
             break;
         }
     }
+};
+
+export const createLinks_remaining_nodes = (nodes, tasks, links) => {
+    nodes.forEach((node,i) => {
+        _.values(node.ports).forEach(port => {
+            if ( (port.in || port.name === "left") && _.isEmpty(port.links) ) {
+                if (i !== 0) {
+                    if (node.type === "default") {
+                        if (nodes[i-1].type === "default") {
+                            links.push(nodes[i-1].getOutPorts()[0].link(node.getInPorts()[0]))
+                        }
+                        if (nodes[i-1].type === "join") {
+                            links.push(nodes[i-1].getPort("right").link(node.getInPorts()[0]))
+                        }
+                    }
+                    if (node.type === "fork" || node.type === "join") {
+                        if (nodes[i-1].type === "default") {
+                            links.push(nodes[i-1].getOutPorts()[0].link(node.getPort("left")))
+                        }
+                        if (nodes[i-1].type === "join") {
+                            links.push(nodes[i-1].getPort("right").link(node.getInPorts()[0]))
+                        }
+                    }
+                }
+            }
+        });
+    })
+};
+
+export const createLinks_fork_join_nodes = (nodes, tasks, links) => {
+    nodes.forEach(node => {
+        if (node.type === "fork") {
+            let forkTasks = node.extras.inputs.forkTasks;
+            let firstInBranch = [];
+            let lastInBranch = [];
+
+            // find first and last nodes in branches
+            forkTasks.forEach(branch => {
+                branch.forEach((branchTask, i) => {
+                    if (i === 0) {
+                        nodes.forEach(node => {
+                            if (node.extras.inputs.taskReferenceName === branchTask.taskReferenceName) {
+                                firstInBranch.push(node)
+                            }
+                        })
+                    }
+                    if (i === branch.length - 1) {
+                        nodes.forEach(node => {
+                            if (node.extras.inputs.taskReferenceName === branchTask.taskReferenceName) {
+                                lastInBranch.push(node)
+                            }
+                        })
+                    }
+                })
+            });
+
+            // connect fork -> first nodes
+            firstInBranch.forEach(firstNode => {
+                // TODO decision
+                if (firstNode.type === "fork") {
+                    links.push(node.getPort("right").link(firstNode.getPort("left")))
+                } else {
+                    links.push(node.getPort("right").link(firstNode.getInPorts()[0]))
+                }
+
+            });
+
+            // find join node pair for fork node
+            let joinNodes = fn(tasks, "joinOn");
+            let joinNodePair = null;
+            joinNodes.forEach(joinNode => {
+                if (joinNode.joinOn.includes(lastInBranch[0].extras.inputs.taskReferenceName)) {
+                    nodes.forEach(node => {
+                        if (node.extras.inputs.taskReferenceName === joinNode.taskReferenceName) {
+                            joinNodePair = node;
+                        }
+                    })
+                }
+            });
+
+            if (joinNodePair) {
+                // connect last nodes -> join
+                lastInBranch.forEach(lastNode => {
+                    if (lastNode.type === "join") {
+                        links.push(lastNode.getPort("right").link(joinNodePair.getPort("left")))
+                    } else {
+                        links.push(lastNode.getOutPorts()[0].link(joinNodePair.getPort("left")))
+                    }
+                });
+            }
+
+        }
+
+    })
 };
 
 // in case subworkflow is not found in DB
@@ -317,486 +439,20 @@ export const transform_seq_workflow_to_diagram = (name, version, props) => {
     clearCanvas(diagramEngine);
 
     http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
+        let tasks = res.result.tasks;
         let nodes = [];
         let links = [];
 
         // create nodes + append inputs
-        res.result.tasks.forEach((task,i) => {
-            handleTask(task, i, nodes)
-
+        tasks.forEach((task) => {
+            handleTask(task, nodes, links)
         });
 
-        // // create links
-        // nodes.forEach((node, i) => {
-        //     if (i < nodes.length - 1) {
-        //         links.push(node.getOutPorts()[0].link(nodes[i + 1].getInPorts()[0]));
-        //     }
-        // });
+        // link nodes together
+        createLinks_fork_join_nodes(nodes, tasks, links);
+        createLinks_remaining_nodes(nodes, tasks, links);
 
-        diagramModel.addAll(...nodes);
+        diagramModel.addAll(...nodes, ...links);
         setTimeout(() => diagramEngine.repaintCanvas(), 10);
     })
 };
-
-export const createMountAndCheckExample = (app, props) => {
-    let diagramEngine = app.getDiagramEngine();
-    let activeModel = diagramEngine.getDiagramModel();
-
-    diagramEngine.setDiagramModel(activeModel);
-    _.values(activeModel.getNodes()).forEach(node => {
-        activeModel.removeNode(node);
-    });
-
-    _.values(activeModel.getLinks()).forEach(link => {
-        activeModel.removeLink(link);
-    });
-
-    let wf1 = {}, wf2 = {};
-    props.workflows.forEach(wf => {
-        if (wf.name === "Mount_cli_device") {
-            wf1 = {
-                name: "",
-                taskReferenceName: "",
-                inputParameters: getWfInputs(wf),
-                type: "SUB_WORKFLOW",
-                subWorkflowParam: {
-                    name: wf.name,
-                    version: 1
-                },
-                optional: false
-            };
-        } else if (wf.name === "Check_connection_cli_device") {
-            wf2 = {
-                name: "",
-                taskReferenceName: "",
-                inputParameters: getWfInputs(wf),
-                type: "SUB_WORKFLOW",
-                subWorkflowParam: {
-                    name: wf.name,
-                    version: 1
-                },
-                optional: false
-            };
-        }
-    });
-
-    let start = new CircleStartNodeModel("Start");
-    start.setPosition(700, 120);
-
-    let node1 = new DefaultNodeModel("Mount_cli_device","rgb(169,74,255)", wf1 );
-    let node1InPort = node1.addInPort("In");
-    let node1OutPort = node1.addOutPort("Out");
-    node1.setPosition(start.x + 200, 100);
-
-    let node2 = new DefaultNodeModel("Check_connection_cli_device","rgb(169,74,255)", wf2 );
-    let node2InPort = node2.addInPort("In");
-    let node2OutPort = node2.addOutPort("Out");
-    node2.setPosition(node1.x + 200, 100);
-
-    let end = new CircleEndNodeModel("End");
-    end.setPosition(node2.x + 250, 120);
-
-    let link1 = start.getPort("right").link(node1InPort);
-    let link2 = node1OutPort.link(node2InPort);
-    let link3 = node2OutPort.link(end.getPort("left"));
-
-    activeModel.setZoomLevel(100);
-    activeModel.setOffsetX(0);
-    activeModel.setOffsetY(0);
-
-    activeModel.addAll(start, end, node1, node2, link1, link2, link3);
-    setTimeout(() => diagramEngine.repaintCanvas(), 10);
-
-    return app.getDiagramEngine().getDiagramModel().getNodes();
-};
-
-export const createSampleBatchInventoryRetrievalExample = (app, props) => {
-    let diagramEngine = app.getDiagramEngine();
-    let activeModel = diagramEngine.getDiagramModel();
-
-    diagramEngine.setDiagramModel(activeModel);
-    _.values(activeModel.getNodes()).forEach(node => {
-        activeModel.removeNode(node);
-    });
-
-    _.values(activeModel.getLinks()).forEach(link => {
-        activeModel.removeLink(link);
-    });
-
-    let wf1 = {}, wf2 = {}, wf3 = {};
-    props.workflows.forEach(wf => {
-        if (wf.name === "Mount_and_check") {
-            wf1 = {
-                name: "sub_mount",
-                taskReferenceName: "",
-                inputParameters: getWfInputs(wf),
-                type: "SUB_WORKFLOW",
-                subWorkflowParam: {
-                    name: wf.name,
-                    version: 1
-                },
-                optional: false
-            };
-        } if (wf.name === "Read_structured_device_data_in_unified") {
-            wf2 = {
-                name: "sub_read",
-                taskReferenceName: "",
-                inputParameters: getWfInputs(wf),
-                type: "SUB_WORKFLOW",
-                subWorkflowParam: {
-                    name: wf.name,
-                    version: 1
-                },
-                optional: false
-            };
-        } if (wf.name === "Unmount_cli_device") {
-            wf3 = {
-                name: "sub_unmount",
-                taskReferenceName: "",
-                inputParameters: getWfInputs(wf),
-                type: "SUB_WORKFLOW",
-                subWorkflowParam: {
-                    name: wf.name,
-                    version: 1
-                },
-                optional: false
-            };
-        }
-
-    });
-
-    let forkObject = {
-        name: "forkTask",
-        taskReferenceName: "forkTaskRef",
-        type: "FORK_JOIN",
-        forkTasks: [],
-        optional: false,
-        startDelay: 0
-    };
-
-    let joinObject = {
-        name: "joinTask",
-        taskReferenceName: "joinTaskRef",
-        type: "JOIN",
-        joinOn: [],
-        optional: false,
-        startDelay: 0
-    };
-
-    let start = new CircleStartNodeModel("Start");
-    start.setPosition(700, 122);
-
-    let fork1 = new ForkNodeModel("fork", null, {...forkObject, taskReferenceName: "fork_mount"});
-    fork1.setPosition(start.x + 150, 135);
-    let fork1Left = fork1.getPort("left");
-    let fork1Right = fork1.getPort("right");
-
-    let mount1 = new DefaultNodeModel("Mount_and_check","rgb(169,74,255)", {...wf1, taskReferenceName: "mount1"});
-    let mount1InPort = mount1.addInPort("In");
-    let mount1OutPort = mount1.addOutPort("Out");
-    mount1.setPosition(fork1.x + 200, 70);
-
-    let mount2 = new DefaultNodeModel("Mount_and_check","rgb(169,74,255)", {...wf1, taskReferenceName: "mount2"});
-    let mount2InPort = mount2.addInPort("In");
-    let mount2OutPort = mount2.addOutPort("Out");
-    mount2.setPosition(fork1.x + 200, 135);
-
-    let mount3 = new DefaultNodeModel("Mount_and_check","rgb(169,74,255)", {...wf1, taskReferenceName: "mount3"});
-    let mount3InPort = mount3.addInPort("In");
-    let mount3OutPort = mount3.addOutPort("Out");
-    mount3.setPosition(fork1.x + 200, 200);
-
-    let join1 = new JoinNodeModel("join", null, {...joinObject, taskReferenceName: "join_mount"});
-    join1.setPosition(mount2.x + 200, 135);
-    let join1Left = join1.getPort("left");
-    let join1Right = join1.getPort("right");
-
-    let fork2 = new ForkNodeModel("fork", null, {...forkObject, taskReferenceName: "fork_read"});
-    fork2.setPosition(join1.x + 120, 135);
-    let fork2Left = fork2.getPort("left");
-    let fork2Right = fork2.getPort("right");
-
-    let read1 = new DefaultNodeModel("Read_structured_device_data_in_unified","rgb(169,74,255)", {...wf2, taskReferenceName: "read1"});
-    let read1InPort = read1.addInPort("In");
-    let read1OutPort = read1.addOutPort("Out");
-    read1.setPosition(fork2.x + 200, 70);
-
-    let read2 = new DefaultNodeModel("Read_structured_device_data_in_unified","rgb(169,74,255)", {...wf2, taskReferenceName: "read2"});
-    let read2InPort = read2.addInPort("In");
-    let read2OutPort = read2.addOutPort("Out");
-    read2.setPosition(fork2.x + 200, 135);
-
-    let read3 = new DefaultNodeModel("Read_structured_device_data_in_unified","rgb(169,74,255)", {...wf2, taskReferenceName: "read3"});
-    let read3InPort = read3.addInPort("In");
-    let read3OutPort = read3.addOutPort("Out");
-    read3.setPosition(fork2.x + 200, 200);
-
-    let join2 = new JoinNodeModel("join", null, {...joinObject, taskReferenceName: "join_read"});
-    join2.setPosition(read2.x + 300, 135);
-    let join2Left = join2.getPort("left");
-    let join2Right = join2.getPort("right");
-
-    let fork3 = new ForkNodeModel("join", null, {...forkObject, taskReferenceName: "fork_unmount"});
-    fork3.setPosition(join2.x + 120, 135);
-    let fork3Left = fork3.getPort("left");
-    let fork3Right = fork3.getPort("right");
-
-    let unmount1 = new DefaultNodeModel("Unmount_cli_device","rgb(169,74,255)", {...wf3, taskReferenceName: "unmount1"});
-    let unmount1InPort = unmount1.addInPort("In");
-    let unmount1OutPort = unmount1.addOutPort("Out");
-    unmount1.setPosition(fork3.x + 200, 70);
-
-    let unmount2 = new DefaultNodeModel("Unmount_cli_device","rgb(169,74,255)", {...wf3, taskReferenceName: "unmount2"} );
-    let unmount2InPort = unmount2.addInPort("In");
-    let unmount2OutPort = unmount2.addOutPort("Out");
-    unmount2.setPosition(fork3.x + 200, 135);
-
-    let unmount3 = new DefaultNodeModel("Unmount_cli_device","rgb(169,74,255)", {...wf3, taskReferenceName: "unmount3"} );
-    let unmount3InPort = unmount3.addInPort("In");
-    let unmount3OutPort = unmount3.addOutPort("Out");
-    unmount3.setPosition(fork3.x + 200, 200);
-
-    let join3 = new JoinNodeModel("join", null, {...joinObject, taskReferenceName: "join_unmount"});
-    join3.setPosition(unmount2.x + 200, 135);
-    let join3Left = join3.getPort("left");
-    let join3Right = join3.getPort("right");
-
-    let end = new CircleEndNodeModel("End");
-    end.setPosition(join3.x + 150, 122);
-
-
-    let link1 = start.getPort("right").link(fork1Left);
-
-    let link2 = fork1Right.link(mount1InPort);
-    let link3 = fork1Right.link(mount2InPort);
-    let link4 = fork1Right.link(mount3InPort);
-
-    let link5 = mount1OutPort.link(join1Left);
-    let link6 = mount2OutPort.link(join1Left);
-    let link7 = mount3OutPort.link(join1Left);
-
-    let link8 = join1Right.link(fork2Left);
-
-    let link9 = fork2Right.link(read1InPort);
-    let link10 = fork2Right.link(read2InPort);
-    let link11 = fork2Right.link(read3InPort);
-
-    let link12 = read1OutPort.link(join2Left);
-    let link13 = read2OutPort.link(join2Left);
-    let link14 = read3OutPort.link(join2Left);
-
-    let link15 = join2Right.link(fork3Left);
-
-    let link16 = fork3Right.link(unmount1InPort);
-    let link17 = fork3Right.link(unmount2InPort);
-    let link18 = fork3Right.link(unmount3InPort);
-
-    let link19 = unmount1OutPort.link(join3Left);
-    let link20 = unmount2OutPort.link(join3Left);
-    let link21 = unmount3OutPort.link(join3Left);
-
-    let link22 = join3Right.link(end.getPort("left"));
-
-    activeModel.addAll(link1, link2, link3, link4, link5, link6, link7, link8, link9, link10, link11, link12, link13, link14, link15, link16, link17, link18, link19, link20, link21, link22);
-    activeModel.addAll(start, mount1, mount2, mount3, fork1, join1, fork2, read1, read2, read3, join2, fork3, unmount1, unmount2, unmount3, join3, end);
-
-    activeModel.setZoomLevel(95);
-    activeModel.setOffsetX(-630);
-    activeModel.setOffsetY(200);
-
-    setTimeout(() => diagramEngine.repaintCanvas(), 10);
-
-    return app.getDiagramEngine().getDiagramModel().getNodes();
-};
-
-export const create_L2VPN_P2P_OC_Uniconfig_Example_Workflow = (app, props) => {
-    let diagramEngine = app.getDiagramEngine();
-    let activeModel = diagramEngine.getDiagramModel();
-
-    diagramEngine.setDiagramModel(activeModel);
-    _.values(activeModel.getNodes()).forEach(node => {
-        activeModel.removeNode(node);
-    });
-
-    _.values(activeModel.getLinks()).forEach(link => {
-        activeModel.removeLink(link);
-    });
-
-    let wfs = [];
-    let wfNames = ["UNICONFIG_sync_from_network", "UNICONFIG_replace_config_with_oper",
-        "UNICONFIG_write_structured_device_data", "UNICONFIG_commit", "Read_journal_cli_device"];
-
-    props.workflows.forEach((wf,i) => {
-        if (wfNames.includes(wf.name)) {
-            wfs.push({
-                name: wf.name,
-                taskReferenceName: wf.name.toLowerCase() + "_ref" + i,
-                inputParameters: getWfInputs(wf),
-                type: "SIMPLE",
-                startDelay: 0,
-                optional: false
-            })
-        }
-    });
-
-    let decideObject = {
-        name: "decide_task",
-        taskReferenceName: "decide1",
-        inputParameters: {
-            case_value_param: "${UNICONFIG_commit.output.response_body.output.overall-configuration-status}"
-        },
-        type: "DECISION",
-        caseValueParam: "case_value_param",
-        decisionCases: {
-            fail: [],
-            complete: []
-        },
-        optional: false,
-        startDelay: 0
-    };
-
-    console.log(wfs);
-
-    let start = new CircleStartNodeModel("Start");
-    start.setPosition(700, 118);
-
-    let sync = new DefaultNodeModel("UNICONFIG_sync_from_network","rgb(169,74,255)", wfs[3]);
-    let syncInPort = sync.addInPort("In");
-    let syncOutPort = sync.addOutPort("Out");
-    sync.setPosition(start.x + 180, 135);
-
-    let replace = new DefaultNodeModel("UNICONFIG_replace_config_with_oper","rgb(169,74,255)", wfs[1]);
-    let replaceInPort = replace.addInPort("In");
-    let replaceOutPort = replace.addOutPort("Out");
-    replace.setPosition(sync.x + 280, 135);
-
-    let write1_obj = {
-            name: "UNICONFIG_write_structured_device_data",
-            taskReferenceName: "UNICONFIG_write_structured_device_data_on_first_node",
-            inputParameters: {
-                node01: "${workflow.input.node01}",
-                id: "${workflow.input.node01}",
-                interface01: "${workflow.input.interface01}",
-                VCID: "${workflow.input.vcid}",
-                uri: "/frinx-openconfig-network-instance:network-instances/network-instance/conn1233",
-                template: "{\r\n      \"frinx-openconfig-network-instance:network-instance\": [\r\n        {\r\n          \"name\": \"conn1233\",\r\n          \"config\": {\r\n            \"name\": \"conn1233\",\r\n            \"type\": \"frinx-openconfig-network-instance-types:L2P2P\"\r\n          },\r\n          \"connection-points\": {\r\n            \"connection-point\": [\r\n              {\r\n                \"connection-point-id\": \"1\",\r\n                \"config\": {\r\n                  \"connection-point-id\": \"1\"\r\n                },\r\n                \"endpoints\": {\r\n                  \"endpoint\": [\r\n                    {\r\n                      \"endpoint-id\": \"default\",\r\n                      \"config\": {\r\n                        \"endpoint-id\": \"default\",\r\n                        \"precedence\": 0,\r\n                        \"type\": \"frinx-openconfig-network-instance-types:LOCAL\"\r\n                      },\r\n                      \"local\": {\r\n                        \"config\": {\r\n                          \"interface\": \"${workflow.input.interface01}\"\r\n                        }\r\n                      }\r\n                    }\r\n                  ]\r\n                }\r\n              },\r\n              {\r\n                \"connection-point-id\": \"2\",\r\n                \"config\": {\r\n                  \"connection-point-id\": \"2\"\r\n                },\r\n                \"endpoints\": {\r\n                  \"endpoint\": [\r\n                    {\r\n                      \"endpoint-id\": \"default\",\r\n                      \"config\": {\r\n                        \"endpoint-id\": \"default\",\r\n                        \"precedence\": 0,\r\n                        \"type\": \"frinx-openconfig-network-instance-types:REMOTE\"\r\n                      },\r\n                      \"remote\": {\r\n                        \"config\": {\r\n                          \"remote-system\": \"8.8.8.8\",\r\n                          \"virtual-circuit-identifier\": ${workflow.input.vcid}\r\n                        }\r\n                      }\r\n                    }\r\n                  ]\r\n                }\r\n              }\r\n            ]\r\n          }\r\n        }\r\n      ]\r\n    \r\n  }",
-                params: "{}"
-            },
-            type: "SIMPLE",
-            startDelay: 0,
-            optional: false
-        };
-
-    let write2_obj = {
-            name: "UNICONFIG_write_structured_device_data",
-            taskReferenceName: "UNICONFIG_write_structured_device_data_on_second_node",
-            inputParameters: {
-                node02: "${workflow.input.node02}",
-                id: "${workflow.input.node02}",
-                interface02: "${workflow.input.interface02}",
-                uri: "/frinx-openconfig-network-instance:network-instances/network-instance/conn1233",
-                template: "{\r\n      \"frinx-openconfig-network-instance:network-instance\": [\r\n        {\r\n          \"name\": \"conn1233\",\r\n          \"config\": {\r\n            \"name\": \"conn1233\",\r\n            \"type\": \"frinx-openconfig-network-instance-types:L2P2P\"\r\n          },\r\n          \"connection-points\": {\r\n            \"connection-point\": [\r\n              {\r\n                \"connection-point-id\": \"1\",\r\n                \"config\": {\r\n                  \"connection-point-id\": \"1\"\r\n                },\r\n                \"endpoints\": {\r\n                  \"endpoint\": [\r\n                    {\r\n                      \"endpoint-id\": \"default\",\r\n                      \"config\": {\r\n                        \"endpoint-id\": \"default\",\r\n                        \"precedence\": 0,\r\n                        \"type\": \"frinx-openconfig-network-instance-types:LOCAL\"\r\n                      },\r\n                      \"local\": {\r\n                        \"config\": {\r\n                          \"interface\": \"${workflow.input.interface02}\"\r\n                        }\r\n                      }\r\n                    }\r\n                  ]\r\n                }\r\n              },\r\n              {\r\n                \"connection-point-id\": \"2\",\r\n                \"config\": {\r\n                  \"connection-point-id\": \"2\"\r\n                },\r\n                \"endpoints\": {\r\n                  \"endpoint\": [\r\n                    {\r\n                      \"endpoint-id\": \"default\",\r\n                      \"config\": {\r\n                        \"endpoint-id\": \"default\",\r\n                        \"precedence\": 0,\r\n                        \"type\": \"frinx-openconfig-network-instance-types:REMOTE\"\r\n                      },\r\n                      \"remote\": {\r\n                        \"config\": {\r\n                          \"remote-system\": \"7.7.7.7\",\r\n                          \"virtual-circuit-identifier\": ${workflow.input.vcid}\r\n                        }\r\n                      }\r\n                    }\r\n                  ]\r\n                }\r\n              }\r\n            ]\r\n          }\r\n        }\r\n      ]\r\n    \r\n  }",
-                params: "{}"
-            },
-            type: "SIMPLE",
-            startDelay: 0,
-            optional: false
-        };
-
-    let write1 = new DefaultNodeModel("UNICONFIG_write_structured_device_data","rgb(169,74,255)", write1_obj);
-    let writeInPort = write1.addInPort("In");
-    let writeOutPort = write1.addOutPort("Out");
-    write1.setPosition(replace.x + 280, 135);
-
-    let write2 = new DefaultNodeModel("UNICONFIG_write_structured_device_data", "rgb(169,74,255)", write2_obj);
-    let write2Left = write2.addInPort("In");
-    let write2Right = write2.addOutPort("Out");
-    write2.setPosition(write1.x + 300, 135);
-
-    let commit = new DefaultNodeModel("UNICONFIG_commit", "rgb(169,74,255)", wfs[0]);
-    let commitLeft = commit.addInPort("In");
-    let commitRight = commit.addOutPort("Out");
-    commit.setPosition(write2.x + 300, 135);
-
-    let decide = new DecisionNodeModel("decision",null, decideObject);
-    let decideLeft = decide.getPort("inputPort");
-    let decideRight = decide.getPort("neutralPort");
-    let decideTop = decide.getPort("failPort");
-    let decideBottom = decide.getPort("completePort");
-    decide.setPosition(commit.x + 200, 135);
-
-    let http_generic1 = {
-        name: "http_get_generic",
-        taskReferenceName: "http_get_generic_instance_fail",
-        inputParameters: {
-            http_request: {
-                uri: "https://hooks.slack.com/services/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",
-                method: "POST",
-                contentType: "application/json",
-                body: "{\"text\":\"The configuration attempt on ${workflow.input.node01} and ${workflow.input.node02} failed and the configurations on both nodes have been reverted back to the state before the configuration attempt.\"}",
-                connectionTimeOut: "3600",
-                readTimeOut: "3600"
-            }
-        },
-        type: "HTTP",
-        startDelay: 0,
-        optional: false
-    };
-
-    let http1 = new DefaultNodeModel("http_get_generic","rgb(169,74,255)", http_generic1);
-    let http1InPort = http1.addInPort("In");
-    let http1OutPort = http1.addOutPort("Out");
-    http1.setPosition(decide.x + 110, 20);
-
-    let http2 = new DefaultNodeModel("http_get_generic","rgb(169,74,255)",
-        {...http_generic1, taskReferenceName: "http_get_generic_instance_complete",
-            body: "{\"text\":\"Nodes ${workflow.input.node01} and ${workflow.input.node02} were successfully configured with an L2VPN service !\"}"});
-    let http2InPort = http2.addInPort("In");
-    let http2OutPort = http2.addOutPort("Out");
-    http2.setPosition(decide.x + 110, 270);
-
-    let getcli1 = new DefaultNodeModel("Read_journal_cli_device","rgb(169,74,255)", {...wfs[2], inputParameters: {id: "${workflow.input.node01}"}});
-    let getcli1InPort = getcli1.addInPort("In");
-    let getcli1OutPort = getcli1.addOutPort("Out");
-    getcli1.setPosition(http2.x + 250, 135);
-
-    let getcli2 = new DefaultNodeModel("Read_journal_cli_device","rgb(169,74,255)", {...wfs[2], inputParameters: {id: "${workflow.input.node02}"}});
-    let getcli2InPort = getcli2.addInPort("In");
-    let getcli2OutPort = getcli2.addOutPort("Out");
-    getcli2.setPosition(getcli1.x + 200, 135);
-
-    let end = new CircleEndNodeModel("End");
-    end.setPosition(getcli2.x + 150, 118);
-
-
-    let link1 = start.getPort("right").link(syncInPort);
-
-    let link2 = syncOutPort.link(replaceInPort);
-    let link3 = replaceOutPort.link(writeInPort);
-    let link4 = writeOutPort.link(write2Left);
-
-    let link5 = write2Right.link(commitLeft);
-    let link6 = commitRight.link(decideLeft);
-
-    let link7 = decideTop.link(http1InPort);
-    let link8 = decideBottom.link(http2InPort);
-    let link9 = decideRight.link(getcli1InPort);
-
-    let link10 = http1OutPort.link(getcli1InPort);
-    let link11 = http2OutPort.link(getcli1InPort);
-
-    let link12 = getcli1OutPort.link(getcli2InPort);
-    let link13 = getcli2OutPort.link(end.getPort("left"));
-
-    activeModel.addAll(link1, link2, link3, link4, link5, link6, link7, link8, link9, link10, link11, link12, link13);
-    activeModel.addAll(start, sync, replace, write1, write2, commit, decide, http1, http2, getcli1, getcli2, end);
-
-    activeModel.setZoomLevel(78);
-    activeModel.setOffsetX(-520);
-    activeModel.setOffsetY(200);
-
-    setTimeout(() => diagramEngine.repaintCanvas(), 10);
-
-    return app.getDiagramEngine().getDiagramModel().getNodes();
-};
-

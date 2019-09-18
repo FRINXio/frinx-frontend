@@ -8,10 +8,7 @@ import GeneralInfoModal from "./GeneralInfoModal/GeneralInfoModal";
 import DetailsModal from "../WorkflowList/WorkflowExec/DetailsModal/DetailsModal";
 import InputModal from "../WorkflowList/WorkflowDefs/InputModal/InputModal";
 import {withRouter} from "react-router-dom";
-import {
-    get_workflow_subworkflows,
-    transform_seq_workflow_to_diagram
-} from "./builder-utils";
+import {get_workflow_subworkflows, transform_seq_workflow_to_diagram} from "./builder-utils";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -25,8 +22,7 @@ class ControlsHeader extends Component {
             inputModal: false,
             detailsModal: false,
             exitModal: false,
-            saveExecuteError: null,
-            exampleList: ["Create P2P L2VPN in uniconfig", "Sample Batch inventory retrieval workflow", "Mount and check"]
+            saveExecuteError: null
         }
     }
 
@@ -192,21 +188,6 @@ class ControlsHeader extends Component {
                                     onClick={this.saveAndExecute.bind(this)}>
                                     <i className="fas fa-save"/>&nbsp;&nbsp;Save & Execute (CTRL + S)
                                 </Button>
-                                <Dropdown>
-                                    <Dropdown.Toggle variant="outline-light" id="dropdown-basic">
-                                        <i className="fas fa-vial"/>
-                                    </Dropdown.Toggle>
-                                    <Dropdown.Menu>
-                                        {this.state.exampleList.map((wf,i) => {
-                                            return (
-                                                <Dropdown.Item
-                                                    onClick={() => this.props.createWf(i)}>
-                                                    {this.state.exampleList[i]}
-                                                </Dropdown.Item>
-                                            )
-                                        })}
-                                    </Dropdown.Menu>
-                                </Dropdown>
                             </div>
                         </Col>
                     </Row>

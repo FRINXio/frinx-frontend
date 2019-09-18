@@ -18,7 +18,7 @@ export class DecisionNode extends React.Component {
                          __html:
                              `
           <g id="Layer_1">
-            <polygon fill="purple" stroke="#000000" stroke-width="3" stroke-miterlimit="10" points="10,` +
+            <polygon fill="${this.props.node.color}" stroke="#000000" stroke-width="3" stroke-miterlimit="10" points="10,` +
                              this.state.size / 2 +
                              ` ` +
                              this.state.size / 2 +
