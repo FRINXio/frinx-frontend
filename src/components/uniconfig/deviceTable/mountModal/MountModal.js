@@ -541,12 +541,13 @@ class MountModal extends Component {
                 <Form.Group
                     controlId={`mount${type}Input-${item[0].split(":").pop()}`}>
                     <Form.Label>{item[0].split(":").pop()}</Form.Label>
-                    <ButtonGroup className="d-flex">
-                        <ToggleButtonGroup type="radio" value={item[1][0]} name="booleanField"
-                                           onChange={(e) => this.handleInput(e,i,formToDisplay)}>
-                            <ToggleButton variant="outline-primary" value={false}>false</ToggleButton>
-                            <ToggleButton variant="outline-primary" value={true}>true</ToggleButton>
-                        </ToggleButtonGroup>
+                    <ButtonGroup style={{marginBottom: "20px"}} className="d-flex">
+                        <Button onClick={() => this.handleInput(false,i,formToDisplay)}
+                                style={{width: "50%"}} active={item[1][0] ? null : "active" }
+                                className="noshadow" variant="outline-primary">false</Button>
+                        <Button onClick={() => this.handleInput(true,i,formToDisplay)}
+                                style={{width: "50%"}} active={item[1][0] ? "active" : null }
+                                className="noshadow" variant="outline-primary">true</Button>
                     </ButtonGroup>
                     <Form.Text className="text-muted">
                         {item[1][1]}
