@@ -496,8 +496,8 @@ class MountModal extends Component {
                             </InputGroup.Text>
                         </InputGroup.Append>
                         <Form.Control
-                            type={this.state.showPass ? "input" : "password"}
-                            autoComplete="password"
+                            type="input"
+                            className={this.state.showPass ? null : "password"}
                             onChange={(e) => this.handleInput(e,i,formToDisplay)}
                             value={item[1][0]}/>
                     </InputGroup>

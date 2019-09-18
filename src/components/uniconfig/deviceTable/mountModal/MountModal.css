@@ -30,6 +30,12 @@
     box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.5);
 }
 
+.password {
+    text-security:disc;
+    -webkit-text-security:disc;
+    -mox-text-security:disc;
+}
+
 .info {
     font-size: 15px;
     padding: 2px 5px 2px;

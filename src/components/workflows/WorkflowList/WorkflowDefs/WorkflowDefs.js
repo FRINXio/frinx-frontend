@@ -103,12 +103,17 @@ class WorkflowDefs extends Component {
 
         let query = this.state.keywords.toUpperCase();
         if (query !== "") {
-            const rows = this.state.table.length > 0 ? this.state.table : this.state.data;
-            for (let i = 0; i < rows.length; i++) {
-                if (rows[i]["name"] && rows[i]["name"].toString().toUpperCase().indexOf(query) !== -1) {
-                    toBeRendered.push(rows[i]);
-                }
+            let rows = this.state.table.length > 0 ? this.state.table : this.state.data;
+            let queryWords = query.split(" ");
+            for (let i = 0; i < queryWords.length; i++) {
+                for (let j = 0; j < rows.length; j++)
+                    if (rows[j]["name"] && (rows[j]["name"].toString().toUpperCase().indexOf(queryWords[i]) !== -1
+                        || rows[j]["name"].toString().toUpperCase().replace(/_/gi, " ").indexOf(queryWords[i]) !== -1))
+                        toBeRendered.push(rows[j]);
+                rows = toBeRendered;
+                toBeRendered = [];
             }
+            toBeRendered = rows
         } else {
             this.searchLabel();
             return;
