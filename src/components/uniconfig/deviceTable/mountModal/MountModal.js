@@ -215,6 +215,7 @@ class MountModal extends Component {
             activeToggles: [],
             mountCliFormAdv: {...JSON.parse("[" + mountCliTemplateAdv + "]")[0], ...JSON.parse("[" + mountCliTemplateLazyOFF + "]")[0]},
             mountNetconfFormAdv: JSON.parse("[" + mountNetconfTemplateAdv + "]")[0],
+            enableBlacklist: false
         });
         clearTimeout(this.state.timeout);
     }
@@ -248,7 +249,7 @@ class MountModal extends Component {
     handleNative(e) {
         let updated = this.state.blacklist;
         let models = e.target.value;
-        models = models.replace(/"/g,'').replace(/ /g,'').split(",").filter((e) => {return e !== ""});
+        models = models.replace(/"/g,'').replace(/\n/g,'').replace(/ /g,'').split(",").filter((e) => {return e !== ""});
         models = [...new Set(models)];
         updated["uniconfig-config:blacklist"]["uniconfig-config:path"] = models;
         this.setState({
