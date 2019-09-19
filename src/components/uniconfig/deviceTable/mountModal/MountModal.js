@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Button, Form, Modal, Row, Col, Tabs, Tab, InputGroup, ButtonGroup} from "react-bootstrap";
+import {Button, Form, Modal, Row, Col, Tabs, Tab, InputGroup, ButtonGroup, Alert} from "react-bootstrap";
 import Dropdown from 'react-dropdown';
 import './MountModal.css'
 import 'react-dropdown/style.css';
@@ -52,6 +52,7 @@ class MountModal extends Component {
             isAdv: false,
             isSsh: true,
             activeToggles: [],
+            blacklistInfo: false
         }
     }
 
@@ -214,6 +215,7 @@ class MountModal extends Component {
             activeToggles: [],
             mountCliFormAdv: {...JSON.parse("[" + mountCliTemplateAdv + "]")[0], ...JSON.parse("[" + mountCliTemplateLazyOFF + "]")[0]},
             mountNetconfFormAdv: JSON.parse("[" + mountNetconfTemplateAdv + "]")[0],
+            enableBlacklist: false
         });
         clearTimeout(this.state.timeout);
     }
@@ -224,7 +226,7 @@ class MountModal extends Component {
                 if(e.target){
                     item[0] = e.target.value;
                 } else {
-                    item[0] = e.value;
+                    item[0] = e.value ? e.value : e;
                     if (which === "type") {
                         this.setState({deviceType: e.value});
                     }
@@ -247,10 +249,11 @@ class MountModal extends Component {
     handleNative(e) {
         let updated = this.state.blacklist;
         let models = e.target.value;
-        models = models.replace(/ /g,'').split(",");
+        models = models.replace(/"/g,'').replace(/\n/g,'').replace(/ /g,'').split(",").filter((e) => {return e !== ""});
+        models = [...new Set(models)];
         updated["uniconfig-config:blacklist"]["uniconfig-config:path"] = models;
         this.setState({
-            blacklist: updated
+            blacklist: updated,
         })
     }
 
@@ -279,12 +282,20 @@ class MountModal extends Component {
                     <hr/>
                     <Row>
                         <Col>
-                            <Form.Label>Blacklist</Form.Label>
+                            <Form.Label>Blacklist&nbsp;&nbsp;
+                                <i style={{color: "rgba(0, 149, 255, 0.91)"}} className="clickable fas fa-info-circle"
+                                   onMouseEnter={() => this.setState({blacklistInfo: true})}
+                                   onMouseLeave={() => this.setState({blacklistInfo: false})}/>
+                                <Alert variant="info" className={this.state.blacklistInfo ? "info fadeInInfo" : "info fadeOutInfo"}>
+                                    Please use comma (",") to separate models
+                                </Alert>
+                            </Form.Label>
                             <InputGroup>
                                 <InputGroup.Append style={{width: "40px"}} >
                                     <InputGroup.Checkbox checked={this.state.enableBlacklist} onChange={this.handleBlacklist.bind(this)}/>
                                 </InputGroup.Append>
-                                <Form.Control disabled={!this.state.enableBlacklist} type="input" onChange={(e) => this.handleNative(e)} defaultValue={this.state.blacklist["uniconfig-config:blacklist"]["uniconfig-config:path"]}/>
+                                <Form.Control disabled={!this.state.enableBlacklist} as="textarea" rows={2}
+                                              onChange={(e) => this.handleNative(e)} defaultValue={this.state.blacklist["uniconfig-config:blacklist"]["uniconfig-config:path"]}/>
                             </InputGroup>
                             <Form.Text className="text-muted">
                                 List of blacklisted root paths that should not be read from the device
@@ -485,8 +496,8 @@ class MountModal extends Component {
                             </InputGroup.Text>
                         </InputGroup.Append>
                         <Form.Control
-                            type={this.state.showPass ? "input" : "password"}
-                            autoComplete="password"
+                            type="input"
+                            className={this.state.showPass ? null : "password"}
                             onChange={(e) => this.handleInput(e,i,formToDisplay)}
                             value={item[1][0]}/>
                     </InputGroup>
@@ -536,6 +547,26 @@ class MountModal extends Component {
             ) : ""
         };
 
+        const booleanField = (item, i, type) => {
+            return (
+                <Form.Group
+                    controlId={`mount${type}Input-${item[0].split(":").pop()}`}>
+                    <Form.Label>{item[0].split(":").pop()}</Form.Label>
+                    <ButtonGroup style={{marginBottom: "20px"}} className="d-flex">
+                        <Button onClick={() => this.handleInput(false,i,formToDisplay)}
+                                style={{width: "50%"}} active={item[1][0] ? null : "active" }
+                                className="noshadow" variant="outline-primary">false</Button>
+                        <Button onClick={() => this.handleInput(true,i,formToDisplay)}
+                                style={{width: "50%"}} active={item[1][0] ? "active" : null }
+                                className="noshadow" variant="outline-primary">true</Button>
+                    </ButtonGroup>
+                    <Form.Text className="text-muted">
+                        {item[1][1]}
+                    </Form.Text>
+                </Form.Group>
+            )
+        };
+
         const whichField = (item, i, type) => {
             let id = item[0].split(":").pop();
             switch (id) {
@@ -544,6 +575,8 @@ class MountModal extends Component {
                 case "override": return capabilitiesField(item, i, type);
                 case "device-type": return deviceTypeVersionField(item, i, type, "type");
                 case "device-version": return deviceTypeVersionField(item, i, type, "version");
+                case "reconcile": return booleanField(item, i, type);
+                case "tcp-only": return booleanField(item, i, type);
                 default: return inputField(item, i , type);
             }
         };
