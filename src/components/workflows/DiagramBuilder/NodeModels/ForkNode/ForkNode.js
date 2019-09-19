@@ -11,7 +11,6 @@ export class ForkNode extends React.Component {
     }
 
     render() {
-        console.log(this.props)
         return (
             <div className={"fork-node"} style={{position: "relative", width: this.state.size, height: this.state.size}}>
                 <svg width={this.state.size} height={this.state.size}

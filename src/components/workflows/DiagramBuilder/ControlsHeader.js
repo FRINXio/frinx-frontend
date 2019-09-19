@@ -35,7 +35,7 @@ class ControlsHeader extends Component {
     }
 
     componentDidMount() {
-        document.addEventListener('click', this.handleClickInside, true);
+        document.addEventListener('click', this.handleClickInside.bind(this), true);
         document.addEventListener("keydown", this.keyBindings.bind(this), false)
     }
 
@@ -44,7 +44,7 @@ class ControlsHeader extends Component {
         this.props.updateQuery("")
     }
 
-    handleClickInside = event => {
+    handleClickInside(event) {
         const domNode = ReactDOM.findDOMNode(this);
 
         // workaround to prevent deleting nodes while typing
@@ -144,23 +144,25 @@ class ControlsHeader extends Component {
                 {exitModal}
                 <Container fluid>
                     <Row>
-                            <InputGroup style={{width: "490px", marginLeft: "-5px"}}>
-                                <InputGroup.Prepend>
-                                    <InputGroup.Text className="clickable" onClick={() => this.props.updateSidebar(!this.props.sidebarShown)}>
-                                        {this.props.sidebarShown ? <i className="fas fa-chevron-left"/> : <i className="fas fa-chevron-right"/>}
-                                    </InputGroup.Text>
-                                </InputGroup.Prepend>
-                                    <Form.Control value={this.props.query}
-                                                  onChange={(e) => this.props.updateQuery(e.target.value)}
-                                                  placeholder={`Search for ${this.props.category.toLowerCase()}.`} />
-                                <InputGroup.Append>
-                                    <InputGroup.Text>
-                                        <i className="fas fa-search"/>&nbsp;&nbsp;&nbsp;&nbsp;
-                                        <i className="fas fa-chevron-down clickable"
-                                           onClick={() => this.props.updateCategory(this.props.category === "Functional" ? "Workflows" : "Functional")}/>
-                                    </InputGroup.Text>
-                                </InputGroup.Append>
-                            </InputGroup>
+                        <InputGroup style={{width: "490px", marginLeft: "-5px"}}>
+                            <InputGroup.Prepend>
+                                <InputGroup.Text className="clickable"
+                                                 onClick={() => this.props.updateSidebar(!this.props.sidebarShown)}>
+                                    {this.props.sidebarShown ? <i className="fas fa-chevron-left"/> :
+                                        <i className="fas fa-chevron-right"/>}
+                                </InputGroup.Text>
+                            </InputGroup.Prepend>
+                            <Form.Control value={this.props.query}
+                                          onChange={(e) => this.props.updateQuery(e.target.value)}
+                                          placeholder={`Search for ${this.props.category.toLowerCase()}.`}/>
+                            <InputGroup.Append>
+                                <InputGroup.Text>
+                                    <i className="fas fa-search"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <i className="fas fa-chevron-down clickable"
+                                       onClick={() => this.props.updateCategory(this.props.category === "Functional" ? "Workflows" : "Functional")}/>
+                                </InputGroup.Text>
+                            </InputGroup.Append>
+                        </InputGroup>
                         <Col md>
                             <Dropdown>
                                 <Dropdown.Toggle variant="light" id="dropdown-basic">
@@ -168,7 +170,8 @@ class ControlsHeader extends Component {
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
                                     {get_workflow_subworkflows(this.props.finalWorkflow).map(wf => (
-                                        <Dropdown.Item onClick={() => transform_seq_workflow_to_diagram(wf.name, wf.version, this.props)}>
+                                        <Dropdown.Item
+                                            onClick={() => transform_seq_workflow_to_diagram(wf.name, wf.version, this.props)}>
                                             {wf.name + " / " + wf.version}
                                         </Dropdown.Item>
                                     ))}

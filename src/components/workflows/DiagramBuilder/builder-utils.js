@@ -1,10 +1,7 @@
-import {CircleStartNodeModel} from "./NodeModels/StartNode/CircleStartNodeModel";
 import {DefaultNodeModel} from "./NodeModels/DefaultNodeModel/DefaultNodeModel";
-import {CircleEndNodeModel} from "./NodeModels/EndNode/CircleEndNodeModel";
-import * as _ from "lodash";
 import {ForkNodeModel} from "./NodeModels/ForkNode/ForkNodeModel";
 import {JoinNodeModel} from "./NodeModels/JoinNode/JoinNodeModel";
-import {DecisionNodeModel} from "./NodeModels/DecisionNode/DecisionNodeModel";
+import * as _ from "lodash";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -80,14 +77,22 @@ export const getLinksArray = (type, node) => {
     return linksArray;
 };
 
-export const getFirstNode = (links) => {
-    let parentNode = null;
-    _.values(links).forEach(link => {
+export const getStartNode = (links) => {
+    for (let i = 0; i < _.values(links).length; i++) {
+        let link = _.values(links)[i];
         if (link.sourcePort.type === "start") {
-            parentNode = link.sourcePort.parent;
+            return link.sourcePort.parent;
         }
-    });
-    return parentNode;
+    }
+};
+
+export const getEndNode = (links) => {
+    for (let i = 0; i < _.values(links).length; i++) {
+        let link = _.values(links)[i];
+        if (link.targetPort.type === "end") {
+            return link.targetPort.parent;
+        }
+    }
 };
 
 export const handleForkNode = (forkNode) => {
@@ -354,7 +359,7 @@ export const createLinks_remaining_nodes = (nodes, tasks, links) => {
                             links.push(nodes[i-1].getOutPorts()[0].link(node.getPort("left")))
                         }
                         if (nodes[i-1].type === "join") {
-                            links.push(nodes[i-1].getPort("right").link(node.getInPorts()[0]))
+                            links.push(nodes[i-1].getPort("right").link(node.getPort("left")))
                         }
                     }
                 }

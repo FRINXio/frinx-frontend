@@ -14,7 +14,9 @@ import './DiagramBuilder.css'
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import {
-    getFirstNode, getWfInputs,
+    getEndNode,
+    getStartNode,
+    getWfInputs,
     handleDecideNode,
     handleForkNode
 } from "./builder-utils";
@@ -73,8 +75,11 @@ class DiagramBuilder extends Component {
         diagramEngine.setDiagramModel(activeModel);
 
         let start = new CircleStartNodeModel("Start");
+        let end = new CircleEndNodeModel("End");
+
         start.setPosition(900, 100);
-        activeModel.addAll(start);
+        end.setPosition(1200, 100);
+        activeModel.addAll(start, end);
     }
 
     subwfModalHandler() {
@@ -144,17 +149,25 @@ class DiagramBuilder extends Component {
     parseDiagramToJSON() {
         try {
             let links = this.state.app.getDiagramEngine().getDiagramModel().getLinks();
-            let parentNode = getFirstNode(links);
+            let parentNode = getStartNode(links);
+            let endNode = getEndNode(links);
+            let linksArray = _.values(links);
             let tasks = [];
 
-            // handle regular/system nodes
-            while (parentNode.type !== "end" ) {
-                _.values(links).forEach(link => {
-                    console.log("PARENT", parentNode);
-                    console.log("link", link);
-                    if (link.sourcePort.parent === parentNode) {
-                        console.log("TARGET", link.targetPort.type);
+            // check if end
+            // TODO connect to alerts
+            if (!parentNode) {
+                return console.log("Start node missing.")
+            }
+            if (!endNode) {
+                return console.log("End node missing.")
+            }
 
+            while (parentNode.type !== "end") {
+                for (let i = 0; i < linksArray.length; i++) {
+                    let link = linksArray[i];
+
+                    if (link.sourcePort.parent === parentNode) {
                         switch (link.targetPort.type) {
                             case "fork":
                                 let {forkNode, joinNode} = handleForkNode(link.targetPort.getNode());
@@ -169,13 +182,16 @@ class DiagramBuilder extends Component {
                                     parentNode = firstNeutralNode;
                                 }
                                 break;
+                            case "end":
+                                parentNode = link.targetPort.parent;
+                                break;
                             default:
                                 parentNode = link.targetPort.parent;
                                 tasks.push(parentNode.extras.inputs);
                                 break;
                         }
                     }
-                });
+                }
             }
 
             let finalWf = {...this.props.finalWorkflow};
@@ -185,7 +201,6 @@ class DiagramBuilder extends Component {
                 finalWf.inputParameters = [];
             }
 
-            console.log("tasks",tasks)
             // handle tasks
             finalWf.tasks = tasks;
 
@@ -217,7 +232,8 @@ class DiagramBuilder extends Component {
                         onDragOver={event => {
                             event.preventDefault();
                         }}>
-                        <DiagramWidget className="srd-demo-canvas" smartRouting={this.props.smartRouting} diagramEngine={this.state.app.getDiagramEngine()} />
+                        <DiagramWidget className="srd-demo-canvas" smartRouting={this.props.smartRouting}
+                                       diagramEngine={this.state.app.getDiagramEngine()}/>
                     </div>
                 </div>
             </div>
