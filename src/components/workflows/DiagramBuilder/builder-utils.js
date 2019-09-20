@@ -2,6 +2,7 @@ import {DefaultNodeModel} from "./NodeModels/DefaultNodeModel/DefaultNodeModel";
 import {ForkNodeModel} from "./NodeModels/ForkNode/ForkNodeModel";
 import {JoinNodeModel} from "./NodeModels/JoinNode/JoinNodeModel";
 import * as _ from "lodash";
+import {DecisionNodeModel} from "./NodeModels/DecisionNode/DecisionNodeModel";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -12,7 +13,7 @@ export const getWfInputsRegex = (wf) => {
     let inputParameters = {};
 
     if (matchArray) {
-        let sortedArray =  matchArray.join().match(/[^.]+(?=})/igm);
+        let sortedArray = matchArray.join().match(/[^.]+(?=})/igm);
         inputsArray = [...new Set(sortedArray)];
     }
 
@@ -56,7 +57,7 @@ function fn(obj, key) {
     if (_.has(obj, key))
         return obj;
 
-    return _.flatten(_.map(obj, function(v) {
+    return _.flatten(_.map(obj, function (v) {
         return typeof v == "object" ? fn(v, key) : [];
     }), true);
 }
@@ -65,11 +66,11 @@ export const getLinksArray = (type, node) => {
     let linksArray = [];
     _.values(node.ports).forEach(port => {
         if (type === "in" || type === "inputPort") {
-            if (port.in) {
+            if (port.in || port.name === "left") {
                 linksArray = _.values(port.links);
             }
         } else if (type === "out") {
-            if (!port.in) {
+            if (!port.in || port.name === "right") {
                 linksArray = _.values(port.links);
             }
         }
@@ -155,7 +156,7 @@ export const handleDecideNode = (decideNode) => {
     let neutralBranchLink = _.values(decideNode.ports.neutralPort.links)[0];
     let firstNeutralNode = null;
 
-    [completeBranchLink, failBranchLink].forEach( (branch, i) => {
+    [completeBranchLink, failBranchLink].forEach((branch, i) => {
         if (branch) {
             let branchArray = [];
             let currentNode = branch.targetPort.getNode();
@@ -167,7 +168,7 @@ export const handleDecideNode = (decideNode) => {
                     case "fork":
                         let {forkNode, joinNode} = handleForkNode(currentNode);
                         branchArray.push(forkNode.extras.inputs, joinNode.extras.inputs);
-                        currentNode = joinNode;
+                        currentNode = getLinksArray("out",  joinNode)[0].targetPort.getNode();
                         break;
                     case "decision":
                         let innerDecideNode = handleDecideNode(currentNode).decideNode;
@@ -179,7 +180,6 @@ export const handleDecideNode = (decideNode) => {
                             branchArray.push(innerFirstNeutralNode.extras.inputs);
                         }
                         currentNode = innerFirstNeutralLinks[0].targetPort.getNode();
-
                         break;
                     default:
                         branchArray.push(currentNode.extras.inputs);
@@ -193,9 +193,14 @@ export const handleDecideNode = (decideNode) => {
             let casesValues = Object.keys(decideNode.extras.inputs.decisionCases);
 
             switch (i) {
-                case 0: decideNode.extras.inputs.decisionCases[casesValues[1]] = branchArray; break;
-                case 1: decideNode.extras.inputs.decisionCases[casesValues[0]] = branchArray; break;
-                default: break
+                case 0:
+                    decideNode.extras.inputs.decisionCases[casesValues[1]] = branchArray;
+                    break;
+                case 1:
+                    decideNode.extras.inputs.decisionCases[casesValues[0]] = branchArray;
+                    break;
+                default:
+                    break
             }
         }
     });
@@ -246,7 +251,7 @@ export const get_workflow_subworkflows = (workflowDef) => {
 
 export const place_defaultNode = (task, posX, posY) => {
     let color = task.type === "SUB_WORKFLOW" ? "rgb(34,144,255)" : "rgb(134,210,255)"
-    let node = new DefaultNodeModel(task.name,color, task);
+    let node = new DefaultNodeModel(task.name, color, task);
     node.addInPort("In");
     node.addOutPort("Out");
     node.setPosition(posX, posY);
@@ -254,13 +259,19 @@ export const place_defaultNode = (task, posX, posY) => {
 };
 
 export const place_forkNode = (task, posX, posY) => {
-    let node = new ForkNodeModel(task.name,"rgb(11,60,139)", task);
+    let node = new ForkNodeModel(task.name, "rgb(11,60,139)", task);
     node.setPosition(posX, posY);
     return node;
 };
 
 export const place_joinNode = (task, posX, posY) => {
-    let node = new JoinNodeModel(task.name,"rgb(11,60,139)", task);
+    let node = new JoinNodeModel(task.name, "rgb(11,60,139)", task);
+    node.setPosition(posX, posY);
+    return node;
+};
+
+export const place_decisionNode = (task, posX, posY) => {
+    let node = new DecisionNodeModel(task.name, "rgb(11,60,139)", task);
     node.setPosition(posX, posY);
     return node;
 };
@@ -275,9 +286,9 @@ export const find_mostRightNode = (nodes) => {
     return max;
 };
 
-let handleTask = (task, nodes, branchNum = 1, forkNode, branchPosX, branchPosY = 100, forkDepth = 1) => {
+export const handleTask = (task, nodes, branchNum = 1, forkNode, branchPosX, branchPosY = 100, forkDepth = 1) => {
 
-    switch(task.type) {
+    switch (task.type) {
         case "SUB_WORKFLOW": {
             let posX = nodes.length === 0 ? 700 : find_mostRightNode(nodes) + 200;
             let posY = branchPosY;
@@ -297,7 +308,7 @@ let handleTask = (task, nodes, branchNum = 1, forkNode, branchPosX, branchPosY =
             let branchMargin = 100;
 
             // branches size in parallel - the deeper the fork node, the smaller the spread and margin is
-            let branchSpread = (branchCount*47 + (branchCount-1)*branchMargin) / forkDepth; //branches size in parallel
+            let branchSpread = (branchCount * 47 + (branchCount - 1) * branchMargin) / forkDepth; //branches size in parallel
 
             if (branchPosX) {
                 posX = branchPosX
@@ -308,8 +319,8 @@ let handleTask = (task, nodes, branchNum = 1, forkNode, branchPosX, branchPosY =
 
             task.forkTasks.forEach((branch, branchNum) => {
                 branch.forEach((branchTask, k) => {
-                    let branchPosX = branchTask.type === "JOIN" ? find_mostRightNode(nodes) + 200 : posX + 200 + k*200;
-                    handleTask(branchTask, nodes, branchNum, node, branchPosX, posY+30 - (branchSpread/2) + (branchMargin + 47)*branchNum/forkDepth, forkDepth + 1);
+                    let branchPosX = branchTask.type === "JOIN" ? find_mostRightNode(nodes) + 200 : posX + 200 + k * 200;
+                    handleTask(branchTask, nodes, branchNum, node, branchPosX, posY + 30 - (branchSpread / 2) + (branchMargin + 47) * branchNum / forkDepth, forkDepth + 1);
                 })
             });
             break;
@@ -327,6 +338,30 @@ let handleTask = (task, nodes, branchNum = 1, forkNode, branchPosX, branchPosY =
 
             break;
         }
+        case "DECISION": {
+            let posX = nodes.length === 0 ? 700 : find_mostRightNode(nodes) + 200;
+            let posY = branchPosY;
+            let caseCount = _.values(task.decisionCases).length;
+            let branchMargin = 100;
+
+            // branches size in parallel - the deeper the fork node, the smaller the spread and margin is
+            let branchSpread = (caseCount * 47 + (caseCount - 1) * branchMargin) / forkDepth; //branches size in parallel
+
+            if (branchPosX) {
+                posX = branchPosX
+            }
+
+            let node = place_decisionNode(task, posX, posY);
+            nodes.push(node);
+
+            _.values(task.decisionCases).forEach((caseBranch, caseNum) => {
+                caseBranch.forEach((branchTask, k) => {
+                    let branchPosX = branchTask.type === "JOIN" ? find_mostRightNode(nodes) + 200 : posX + 200 + k * 200;
+                    handleTask(branchTask, nodes, caseNum, node, branchPosX, posY + 30 - (branchSpread / 2) + (branchMargin + 47) * caseNum / forkDepth, forkDepth + 1);
+                })
+            });
+            break;
+        }
         default: {
             let posX = nodes.length === 0 ? 700 : find_mostRightNode(nodes) + 200;
             let posY = branchPosY;
@@ -342,24 +377,32 @@ let handleTask = (task, nodes, branchNum = 1, forkNode, branchPosX, branchPosY =
 };
 
 export const createLinks_remaining_nodes = (nodes, tasks, links) => {
-    nodes.forEach((node,i) => {
+    nodes.forEach((node, i) => {
         _.values(node.ports).forEach(port => {
-            if ( (port.in || port.name === "left") && _.isEmpty(port.links) ) {
+            if ((port.in || port.name === "left" || port.name === "inputPort") && _.isEmpty(port.links)) {
                 if (i !== 0) {
                     if (node.type === "default") {
-                        if (nodes[i-1].type === "default") {
-                            links.push(nodes[i-1].getOutPorts()[0].link(node.getInPorts()[0]))
+                        if (nodes[i - 1].type === "default") {
+                            links.push(nodes[i - 1].getOutPorts()[0].link(node.getInPorts()[0]))
                         }
-                        if (nodes[i-1].type === "join") {
-                            links.push(nodes[i-1].getPort("right").link(node.getInPorts()[0]))
+                        if (nodes[i - 1].type === "join") {
+                            links.push(nodes[i - 1].getPort("right").link(node.getInPorts()[0]))
                         }
                     }
                     if (node.type === "fork" || node.type === "join") {
-                        if (nodes[i-1].type === "default") {
-                            links.push(nodes[i-1].getOutPorts()[0].link(node.getPort("left")))
+                        if (nodes[i - 1].type === "default") {
+                            links.push(nodes[i - 1].getOutPorts()[0].link(node.getPort("left")))
                         }
-                        if (nodes[i-1].type === "join") {
-                            links.push(nodes[i-1].getPort("right").link(node.getPort("left")))
+                        if (nodes[i - 1].type === "join") {
+                            links.push(nodes[i - 1].getPort("right").link(node.getPort("left")))
+                        }
+                    }
+                    if (node.type === "decision") {
+                        if (nodes[i - 1].type === "default") {
+                            links.push(nodes[i - 1].getOutPorts()[0].link(node.getPort("inputPort")))
+                        }
+                        if (nodes[i - 1].type === "join") {
+                            links.push(nodes[i - 1].getPort("right").link(node.getPort("inputPort")))
                         }
                     }
                 }
@@ -397,8 +440,9 @@ export const createLinks_fork_join_nodes = (nodes, tasks, links) => {
 
             // connect fork -> first nodes
             firstInBranch.forEach(firstNode => {
-                // TODO decision
-                if (firstNode.type === "fork") {
+                if (firstNode.type === "decision") {
+                    links.push(node.getPort("right").link(firstNode.getPort("inputPort")))
+                } else if (firstNode.type === "fork") {
                     links.push(node.getPort("right").link(firstNode.getPort("left")))
                 } else {
                     links.push(node.getPort("right").link(firstNode.getInPorts()[0]))
@@ -435,6 +479,103 @@ export const createLinks_fork_join_nodes = (nodes, tasks, links) => {
     })
 };
 
+export const createLinks_decision_nodes = (nodes, tasks, links) => {
+    nodes.forEach(node => {
+        if (node.type === "decision") {
+            let decisionCases = _.values(node.extras.inputs.decisionCases);
+            let firstInBranch = [];
+            let lastInBranch = [];
+
+            // find first and last nodes in branches
+            decisionCases.forEach(branch => {
+                branch.forEach((branchTask, i) => {
+                    if (i === 0) {
+                        nodes.forEach(node => {
+                            if (node.extras.inputs.taskReferenceName === branchTask.taskReferenceName) {
+                                firstInBranch.push(node)
+                            }
+                        })
+                    }
+                    if (i === branch.length - 1) {
+                        nodes.forEach(node => {
+                            if (node.extras.inputs.taskReferenceName === branchTask.taskReferenceName) {
+                                lastInBranch.push(node)
+                            }
+                        })
+                    }
+                })
+            });
+
+            // find neutral node (first node after decision block)
+            let decisionCaseTasksCount = 0;
+            let decisionCaseTasksArray = [];
+            let neutralNode = null;
+
+            decisionCases.forEach(branch => {
+                branch.forEach(task => {
+                    if (task.type === "FORK_JOIN") {
+                        decisionCaseTasksArray.push(task);
+                        decisionCaseTasksArray.push(...fn(task.forkTasks, "name"))
+                    } else {
+                        decisionCaseTasksArray.push(task)
+                    }
+                });
+            });
+
+            decisionCaseTasksCount = decisionCaseTasksArray.length;
+
+            nodes.forEach((node, i) => {
+                if (node.type === "decision") {
+                    neutralNode = nodes[i + decisionCaseTasksCount + 1]
+                }
+            });
+
+            // connect decision -> first nodes
+            firstInBranch.forEach((firstNode, k) => {
+                if (firstNode.type === "fork") {
+                    links.push(node.getPort(k === 0 ? "failPort" : "completePort").link(firstNode.getPort("left")))
+                } else if (firstNode.type === "decision") {
+                    links.push(node.getPort(k === 0 ? "failPort" : "completePort").link(firstNode.getPort("inputPort")))
+                } else {
+                    links.push(node.getPort(k === 0 ? "failPort" : "completePort").link(firstNode.getInPorts()[0]))
+                }
+            });
+
+            // connect last nodes -> neutral node
+            if (neutralNode) {
+                lastInBranch.forEach(lastNode => {
+                    if (lastNode.type === "join") {
+                        if (neutralNode.type === "fork") {
+                            links.push(lastNode.getPort("right").link(neutralNode.getPort("left")))
+                        } else if (neutralNode.type === "decision") {
+                            links.push(lastNode.getPort("right").link(neutralNode.getPort("inputPort")))
+                        } else {
+                            links.push(lastNode.getPort("right").link(neutralNode.getInPorts()[0]))
+                        }
+                    } else {
+                        if (neutralNode.type === "fork") {
+                            links.push(lastNode.getOutPorts()[0].link(neutralNode.getPort("left")))
+                        } else if (neutralNode.type === "decision") {
+                            links.push(lastNode.getOutPorts()[0].link(neutralNode.getPort("inputPort")))
+                        } else {
+                            links.push(lastNode.getOutPorts()[0].link(neutralNode.getInPorts()[0]))
+                        }
+                    }
+                });
+
+                // connect neutral port -> neutral node
+                if (neutralNode.type === "fork") {
+                    links.push(node.getPort("neutralPort").link(neutralNode.getPort("left")))
+                } else if (neutralNode.type === "decision") {
+                    links.push(node.getPort("neutralPort").link(neutralNode.getPort("inputPort")))
+                } else {
+                    links.push(node.getPort("neutralPort").link(neutralNode.getInPorts()[0]))
+                }
+            }
+        }
+    })
+};
+
 // in case subworkflow is not found in DB
 export const transform_seq_workflow_to_diagram = (name, version, props) => {
 
@@ -455,6 +596,7 @@ export const transform_seq_workflow_to_diagram = (name, version, props) => {
 
         // link nodes together
         createLinks_fork_join_nodes(nodes, tasks, links);
+        createLinks_decision_nodes(nodes, tasks, links);
         createLinks_remaining_nodes(nodes, tasks, links);
 
         diagramModel.addAll(...nodes, ...links);

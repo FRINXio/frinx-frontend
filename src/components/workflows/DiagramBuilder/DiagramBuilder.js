@@ -177,9 +177,13 @@ class DiagramBuilder extends Component {
                             case "decision":
                                 let {decideNode, firstNeutralNode} = handleDecideNode(link.targetPort.getNode());
                                 tasks.push(decideNode.extras.inputs);
-                                if (firstNeutralNode && firstNeutralNode.extras.inputs) {
-                                    tasks.push(firstNeutralNode.extras.inputs);
+                                if (firstNeutralNode) {
+                                    if (firstNeutralNode.extras.inputs) {
+                                        tasks.push(firstNeutralNode.extras.inputs);
+                                    }
                                     parentNode = firstNeutralNode;
+                                } else {
+                                    return console.log("Default decision route is missing.")
                                 }
                                 break;
                             case "end":
