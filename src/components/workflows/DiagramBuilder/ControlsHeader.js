@@ -8,7 +8,8 @@ import GeneralInfoModal from "./GeneralInfoModal/GeneralInfoModal";
 import DetailsModal from "../WorkflowList/WorkflowExec/DetailsModal/DetailsModal";
 import InputModal from "../WorkflowList/WorkflowDefs/InputModal/InputModal";
 import {withRouter} from "react-router-dom";
-import {get_workflow_subworkflows, transform_seq_workflow_to_diagram} from "./builder-utils";
+import {get_workflow_subworkflows, getLinksArray, linkNodes, transform_workflow_to_diagram} from "./builder-utils";
+import {DefaultNodeModel} from "./NodeModels/DefaultNodeModel/DefaultNodeModel";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -46,11 +47,13 @@ class ControlsHeader extends Component {
 
     handleClickInside(event) {
         const domNode = ReactDOM.findDOMNode(this);
+        const expandBtn = document.getElementById("expand");
 
         // workaround to prevent deleting nodes while typing
-        if (domNode && domNode.contains(event.target)) {
+        if (domNode && domNode.contains(event.target) && !expandBtn.contains(event.target)) {
             this.props.app.getDiagramEngine().getDiagramModel()
-                .clearSelection()
+                .clearSelection();
+            setTimeout(() =>  this.props.app.getDiagramEngine().repaintCanvas(), 10);
         }
     }
 
@@ -97,6 +100,50 @@ class ControlsHeader extends Component {
 
     redirectOnExit() {
         this.props.history.push('/workflows/defs');
+    }
+
+    expandNodeToWorkflow() {
+        const diagramModel = this.props.app.getDiagramEngine().getDiagramModel();
+        let selectedNodes = diagramModel.getSelectedItems();
+
+        selectedNodes = selectedNodes.filter(item => {
+            return item.getType() === "default"
+        });
+
+        selectedNodes.forEach(selectedNode => {
+
+            if (!selectedNode.extras.inputs.subWorkflowParam) {
+                return new Error("Simple task can't be expanded.")
+            }
+
+            const {name, version} = selectedNode.extras.inputs.subWorkflowParam;
+            const {x, y} = selectedNode;
+
+            const inputLink = getLinksArray("in", selectedNode)[0];
+            const outputLink = getLinksArray("out", selectedNode)[0];
+
+            const inputLinkParent = inputLink.sourcePort.getNode();
+            const outputLinkParent = outputLink.targetPort.getNode();
+
+            transform_workflow_to_diagram(name, version, {x, y}, this.props).then(expandedNodes => {
+
+                selectedNode.remove();
+                diagramModel.removeNode(selectedNode);
+                diagramModel.removeLink(inputLink);
+                diagramModel.removeLink(outputLink);
+
+                let firstNode = expandedNodes[0];
+                let lastNode = expandedNodes[expandedNodes.length - 1];
+
+                diagramModel.addAll(linkNodes(inputLinkParent,firstNode), linkNodes(lastNode, outputLinkParent));
+                this.props.app.getDiagramEngine().setDiagramModel(diagramModel);
+                setTimeout(() => this.props.app.getDiagramEngine().repaintCanvas(), 10);
+                this.forceUpdate()
+            }).catch(e => {
+                console.log(e)
+            })
+
+        });
     }
 
     render() {
@@ -164,14 +211,14 @@ class ControlsHeader extends Component {
                             </InputGroup.Append>
                         </InputGroup>
                         <Col md>
-                            <Dropdown>
+                            <Dropdown style={{float: "left"}}>
                                 <Dropdown.Toggle variant="light" id="dropdown-basic">
                                     {this.props.finalWorkflow.name}
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
                                     {get_workflow_subworkflows(this.props.finalWorkflow).map(wf => (
                                         <Dropdown.Item
-                                            onClick={() => transform_seq_workflow_to_diagram(wf.name, wf.version, this.props)}>
+                                            onClick={() => transform_workflow_to_diagram(wf.name, wf.version, this.props)}>
                                             {wf.name + " / " + wf.version}
                                         </Dropdown.Item>
                                     ))}
@@ -191,6 +238,8 @@ class ControlsHeader extends Component {
                                     onClick={this.saveAndExecute.bind(this)}>
                                     <i className="fas fa-save"/>&nbsp;&nbsp;Save & Execute (CTRL + S)
                                 </Button>
+                                <Button id="expand" variant="outline-light" onClick={this.expandNodeToWorkflow.bind(this)}>
+                                    <i className="fas fa-expand"/>&nbsp;&nbsp;Expand</Button>
                             </div>
                         </Col>
                     </Row>
