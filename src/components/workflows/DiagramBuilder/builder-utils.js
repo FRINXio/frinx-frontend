@@ -250,7 +250,7 @@ export const get_workflow_subworkflows = (workflowDef) => {
 };
 
 export const place_defaultNode = (task, posX, posY) => {
-    let color = task.type === "SUB_WORKFLOW" ? "rgb(34,144,255)" : "rgb(134,210,255)"
+    let color = task.type === "SUB_WORKFLOW" ? "rgb(34,144,255)" : "rgb(134,210,255)";
     let node = new DefaultNodeModel(task.name, color, task);
     node.addInPort("In");
     node.addOutPort("Out");
@@ -290,7 +290,7 @@ export const handleTask = (task, nodes, branchNum = 1, forkNode, branchPosX, bra
 
     switch (task.type) {
         case "SUB_WORKFLOW": {
-            let posX = nodes.length === 0 ? 700 : find_mostRightNode(nodes) + 200;
+            let posX = nodes.length === 0 ? 700 : find_mostRightNode(nodes) + nodes[nodes.length - 1].name.length * 7 + 30;
             let posY = branchPosY;
 
             if (branchPosX) {
@@ -363,7 +363,7 @@ export const handleTask = (task, nodes, branchNum = 1, forkNode, branchPosX, bra
             break;
         }
         default: {
-            let posX = nodes.length === 0 ? 700 : find_mostRightNode(nodes) + 200;
+            let posX = nodes.length === 0 ? 700 : find_mostRightNode(nodes) + nodes[nodes.length - 1].name.length * 7 + 30;
             let posY = branchPosY;
 
             if (branchPosX) {
