@@ -34,22 +34,23 @@ class ControlsHeader extends Component {
         }
     }
 
-    componentDidMount = () => {
-        document.addEventListener('click', this.handleClickInside, true);
-        document.addEventListener("keydown", this.keyBindings, false)
+    componentDidMount() {
+        document.addEventListener('click', this.handleClickInside.bind(this), true);
+        document.addEventListener("keydown", this.keyBindings.bind(this), false)
     };
 
-    componentWillUnmount = () => {
-        document.removeEventListener('click', this.handleClickInside, true);
+    componentWillUnmount() {
+        document.removeEventListener('click', this.handleClickInside.bind(this), true);
         this.props.updateQuery("")
     };
 
     handleClickInside(event) {
-        const domNode = ReactDOM.findDOMNode(this);
+        //const domNode = ReactDOM.findDOMNode(this);
+        const headerEl = document.getElementById("controls-header");
         const expandBtn = document.getElementById("expand");
 
         // workaround to prevent deleting nodes while typing
-        if (domNode && domNode.contains(event.target) && !expandBtn.contains(event.target)) {
+        if (headerEl && headerEl.contains(event.target) && !expandBtn.contains(event.target)) {
             this.props.app.getDiagramEngine().getDiagramModel()
                 .clearSelection();
             setTimeout(() =>  this.props.app.getDiagramEngine().repaintCanvas(), 10);
@@ -185,7 +186,7 @@ class ControlsHeader extends Component {
             </Modal> : null;
 
         return (
-            <div className="header">
+            <div id="controls-header" className="header">
                 {inputModal}
                 {detailsModal}
                 {definitionModal}
