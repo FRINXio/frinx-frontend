@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import {Badge, Button, Col, Container, Dropdown, Form, InputGroup, Modal, Row} from "react-bootstrap";
+import {Button, Col, Container, Form, InputGroup, Modal, Row} from "react-bootstrap";
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import WorkflowDefModal from "./WorkflowDefModal/WorkflowDefModal";
@@ -8,8 +8,7 @@ import GeneralInfoModal from "./GeneralInfoModal/GeneralInfoModal";
 import DetailsModal from "../WorkflowList/WorkflowExec/DetailsModal/DetailsModal";
 import InputModal from "../WorkflowList/WorkflowDefs/InputModal/InputModal";
 import {withRouter} from "react-router-dom";
-import {get_workflow_subworkflows, getLinksArray, linkNodes, transform_workflow_to_diagram} from "./builder-utils";
-import {DefaultNodeModel} from "./NodeModels/DefaultNodeModel/DefaultNodeModel";
+import {getLinksArray, linkNodes, transform_workflow_to_diagram} from "./builder-utils";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -35,15 +34,15 @@ class ControlsHeader extends Component {
         }
     }
 
-    componentDidMount() {
-        document.addEventListener('click', this.handleClickInside.bind(this), true);
-        document.addEventListener("keydown", this.keyBindings.bind(this), false)
-    }
+    componentDidMount = () => {
+        document.addEventListener('click', this.handleClickInside, true);
+        document.addEventListener("keydown", this.keyBindings, false)
+    };
 
-    componentWillUnmount() {
+    componentWillUnmount = () => {
         document.removeEventListener('click', this.handleClickInside, true);
         this.props.updateQuery("")
-    }
+    };
 
     handleClickInside(event) {
         const domNode = ReactDOM.findDOMNode(this);
