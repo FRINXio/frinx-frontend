@@ -10,14 +10,14 @@ export class CircleNodeEnd extends React.Component {
 
     render() {
         return (
-            <div className={"circle-node"}>
-                <svg width="100" height="100">
+            <div className={"srd-circle-node"}>
+                <svg width="60" height="60">
                     <g>
-                        <circle cx="50" cy="50" r="30" stroke="black" strokeWidth="3" fill="white" />
-                        <text x="36" y="56" >End</text>
+                        <circle cx="30" cy="30" r="30" fill="white"/>
+                        <text x="17" y="35" >End</text>
                     </g>
                 </svg>
-                <div style={{position: "absolute", zIndex: 10, left: 9, top: 45}}>
+                <div style={{position: "absolute", zIndex: 10, left: -10, top: 25}}>
                     <PortWidget name="left" node={this.props.node} />
                 </div>
             </div>

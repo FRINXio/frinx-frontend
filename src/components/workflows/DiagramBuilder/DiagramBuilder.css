@@ -116,7 +116,7 @@
 }
 
 .srd-node--selected > * {
-    border-color: #00c0ff !important
+    border-color: #ffffff !important
 }
 
 .srd-port {
@@ -127,6 +127,11 @@
 
 .srd-port:hover, .srd-port.selected {
     background: #c0ff00
+}
+
+.srd-circle-node {
+    border: solid 3px black;
+    border-radius: 100%;
 }
 
 .srd-default-node {
@@ -218,7 +223,8 @@
 
 .srd-default-link path {
     fill: none;
-    pointer-events: all
+    pointer-events: all;
+    cursor: pointer;
 }
 
 .srd-default-link--path-selected {
