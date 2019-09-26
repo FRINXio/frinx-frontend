@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import {Button, Col, Container, Dropdown, Form, InputGroup, Modal, Row} from "react-bootstrap";
+import {Badge, Button, Col, Container, Dropdown, Form, InputGroup, Modal, Row} from "react-bootstrap";
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import WorkflowDefModal from "./WorkflowDefModal/WorkflowDefModal";
@@ -113,7 +113,7 @@ class ControlsHeader extends Component {
         selectedNodes.forEach(selectedNode => {
 
             if (!selectedNode.extras.inputs.subWorkflowParam) {
-                return new Error("Simple task can't be expanded.")
+                return console.log("Simple task can't be expanded.")
             }
 
             const {name, version} = selectedNode.extras.inputs.subWorkflowParam;
@@ -122,11 +122,14 @@ class ControlsHeader extends Component {
             const inputLink = getLinksArray("in", selectedNode)[0];
             const outputLink = getLinksArray("out", selectedNode)[0];
 
+            if (!inputLink || !outputLink) {
+                return console.log("Node is not connected.")
+            }
+
             const inputLinkParent = inputLink.sourcePort.getNode();
             const outputLinkParent = outputLink.targetPort.getNode();
 
             transform_workflow_to_diagram(name, version, {x, y}, this.props).then(expandedNodes => {
-
                 selectedNode.remove();
                 diagramModel.removeNode(selectedNode);
                 diagramModel.removeLink(inputLink);
@@ -211,21 +214,6 @@ class ControlsHeader extends Component {
                             </InputGroup.Append>
                         </InputGroup>
                         <Col md>
-                            <Dropdown style={{float: "left"}}>
-                                <Dropdown.Toggle variant="light" id="dropdown-basic">
-                                    {this.props.finalWorkflow.name}
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                    {get_workflow_subworkflows(this.props.finalWorkflow).map(wf => (
-                                        <Dropdown.Item
-                                            onClick={() => transform_workflow_to_diagram(wf.name, wf.version, this.props)}>
-                                            {wf.name + " / " + wf.version}
-                                        </Dropdown.Item>
-                                    ))}
-                                </Dropdown.Menu>
-                            </Dropdown>
-                        </Col>
-                        <Col md>
                             <div className="right-controls">
                                 <Button variant="outline-light" onClick={() => this.setState({exitModal: true})}>
                                     Exit</Button>
@@ -236,8 +224,7 @@ class ControlsHeader extends Component {
                                 <Button
                                     variant={this.state.saveExecuteError ? "danger" : "outline-light"}
                                     onClick={this.saveAndExecute.bind(this)}>
-                                    <i className="fas fa-save"/>&nbsp;&nbsp;Save & Execute (CTRL + S)
-                                </Button>
+                                    <i className="fas fa-save"/>&nbsp;&nbsp;Save & Execute</Button>
                                 <Button id="expand" variant="outline-light" onClick={this.expandNodeToWorkflow.bind(this)}>
                                     <i className="fas fa-expand"/>&nbsp;&nbsp;Expand</Button>
                             </div>
