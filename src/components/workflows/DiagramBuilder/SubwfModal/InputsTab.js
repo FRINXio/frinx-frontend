@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Button, Form, Row, Col, InputGroup} from "react-bootstrap";
-import UnescapeButton from "../../../uniconfig/deviceView/consoleModal/UnescapeButton";
 
 class InputsTab extends Component {
     constructor(props, context) {
@@ -25,12 +24,12 @@ class InputsTab extends Component {
         inputParameters.forEach(param => {
             if (param.match(/^(.*?)\[/)[1] === selectedParam) {
                 param.match(/\[(.*?)]/g).map(group => {
-                    result.push(group.replace(/[\[\]']+/g,''))
+                    result.push(group.replace(/[\[\]']+/g, ''))
                 });
             }
         });
 
-        return result.length > 0 ? result : ['','']
+        return result.length > 0 ? result : ['', '']
     }
 
     handleCustomParam(e) {
@@ -43,8 +42,43 @@ class InputsTab extends Component {
         })
     }
 
+    handleTextField(entry, item, i, textFieldParams) {
+        let value = entry[1];
+
+        if (!entry[0].includes("uri")) {
+            if (typeof entry[1] === 'object') {
+                value = JSON.stringify(entry[1], null, 5);
+            }
+        }
+
+        textFieldParams.push(
+            <Col sm={12} key={`colTf-${entry[0]}`}>
+                <Form.Group>
+                    <Form.Label>{entry[0]}<i title="copy to clipboard"
+                                             className="btn fa fa-clipboard"
+                                             data-clipboard-target={"#textfield" + i}/>
+                    </Form.Label>
+                    <InputGroup size="sm" style={{
+                        minHeight: entry[0] === "uri" ? "60px" : "200px"
+                    }}>
+                        <Form.Control
+                            id={"textfield" + i}
+                            as="textarea"
+                            type="input"
+                            onChange={(e) => this.props.handleInput(e.target.value, item, entry)}
+                            value={value}/>
+                    </InputGroup>
+                    <Form.Text className="text-muted">
+                        {this.getDescriptionAndDefault(entry[0])[0]}
+                    </Form.Text>
+                </Form.Group>
+            </Col>
+        )
+    }
+
 
     render() {
+        let textFieldKeywords = ["template", "uri", "body"];
         let textFieldParams = [];
 
         return (
@@ -67,46 +101,37 @@ class InputsTab extends Component {
                         {Object.entries(this.state.inputs).map(item => {
                             if (item[0] === "inputParameters") {
                                 return Object.entries(item[1]).map((entry, i) => {
-                                    if (entry[0].includes("template") || entry[0].includes("uri")) {
-                                        let value = entry[1];
-
-                                        if (entry[0].includes("template")) {
-                                            if (typeof entry[1] === 'object') {
-                                                value = JSON.stringify(entry[1], null, 5);
+                                    if (textFieldKeywords.find(keyword => entry[0].includes(keyword))) {
+                                        this.handleTextField(entry, item, i, textFieldParams)
+                                    } else if (typeof entry[1] === 'object') {
+                                        return Object.entries(entry[1]).map(innerEntry => {
+                                            if (textFieldKeywords.find(keyword => innerEntry[0].includes(keyword))) {
+                                                this.handleTextField(innerEntry, entry, i, textFieldParams);
+                                            } else {
+                                                return (
+                                                    <Col sm={6} key={`col-${innerEntry[0]}`}>
+                                                        <Form.Group>
+                                                            <Form.Label>{innerEntry[0]}</Form.Label>
+                                                            <Form.Control
+                                                                type="input"
+                                                                onChange={(e) => this.props.handleInput(e.target.value, entry, innerEntry)}
+                                                                value={innerEntry[1]}/>
+                                                            <Form.Text className="text-muted">
+                                                                {this.getDescriptionAndDefault(innerEntry[0])[0]}
+                                                            </Form.Text>
+                                                        </Form.Group>
+                                                    </Col>
+                                                )
                                             }
-                                        }
-
-                                        textFieldParams.push(
-                                            <Col sm={12} key={`col1-${i}`}>
-                                                <Form.Group>
-                                                    <Form.Label>{entry[0]}<i title="copy to clipboard"
-                                                                             className="btn fa fa-clipboard"
-                                                                             data-clipboard-target={"#textfield" + i}/>
-                                                    </Form.Label>
-                                                    <InputGroup size="sm" style={{
-                                                        minHeight: entry[0] === "template" ? "200px" : "60px"
-                                                    }}>
-                                                        <Form.Control
-                                                            id={"textfield" + i}
-                                                            as="textarea"
-                                                            type="input"
-                                                            onChange={(e) => this.props.handleInput(e.target.value, item[0], entry)}
-                                                            value={value}/>
-                                                    </InputGroup>
-                                                    <Form.Text className="text-muted">
-                                                        {this.getDescriptionAndDefault(entry[0])[0]}
-                                                    </Form.Text>
-                                                </Form.Group>
-                                            </Col>
-                                        )
+                                        })
                                     } else {
                                         return (
-                                            <Col sm={6} key={`col1-${i}`}>
+                                            <Col sm={6} key={`colDefault-${i}`}>
                                                 <Form.Group>
                                                     <Form.Label>{entry[0]}</Form.Label>
                                                     <Form.Control
                                                         type="input"
-                                                        onChange={(e) => this.props.handleInput(e.target.value, item[0], entry)}
+                                                        onChange={(e) => this.props.handleInput(e.target.value, item, entry)}
                                                         value={entry[1]}/>
                                                     <Form.Text className="text-muted">
                                                         {this.getDescriptionAndDefault(entry[0])[0]}
@@ -117,7 +142,6 @@ class InputsTab extends Component {
                                     }
                                 })
                             }
-                            return null;
                         })}
                     </Row>
                     <Row>

@@ -80,35 +80,57 @@ class SubwfModal extends Component {
 
     handleInput(value, key, entry, i) {
         let inputs = {...this.state.inputs};
+        let objectKeywords = ["template", "body"];
 
-        if (key === "inputParameters") {
-            let inputParameters = inputs.inputParameters;
+        if (key[0] === "inputParameters") {
+            let inputObject = inputs[key[0]];
 
-            if (entry[0] === "template") {
-                try {
-                    value = JSON.parse(value)
-                } catch (e) {
-                    console.log(e);
+            if (typeof key[1] === 'object') {
+                if (objectKeywords.find(e => entry[0].includes(e))) {
+                    try {
+                        value = JSON.parse(value)
+                    } catch (e) {
+                        console.log(e);
+                    }
                 }
             }
 
             inputs = {
                 ...inputs,
-                inputParameters: {
-                    ...inputParameters,
+                [key[0]]: {
+                    ...inputObject,
                     [entry[0]]: value
                 }
             };
-        } else if (key === "subWorkflowParam") {
-            let subWorkflowParam = inputs.subWorkflowParam;
+        } else if (key[0] === "http_request") {
+            let inputObject = inputs.inputParameters[key[0]];
+            let inputParameters = inputs.inputParameters;
+
+            if (typeof key[1] === 'object') {
+                if (objectKeywords.find(e => entry[0].includes(e))) {
+                    try {
+                        value = JSON.parse(value)
+                    } catch (e) {
+                        console.log(e);
+                    }
+                }
+            }
+
+
+
             inputs = {
                 ...inputs,
-                subWorkflowParam: {
-                    ...subWorkflowParam,
-                    [entry[0]]: value
+                inputParameters: {
+                    ...inputParameters,
+                    [key[0]]: {
+                        ...inputObject,
+                        [entry[0]]: value
+                    }
                 }
             };
-        } else if (key === "decisionCases") {
+
+            console.log(inputs);
+        } else if (key[0] === "decisionCases") {
             let decisionCases = {...inputs.decisionCases};
             let keyNames = Object.keys(decisionCases);
             let trueCase = decisionCases[keyNames[1]] || [];
@@ -130,7 +152,7 @@ class SubwfModal extends Component {
             inputs = {
                 ...inputs,
                 [key]: value
-            }
+            };
         }
 
         this.setState({

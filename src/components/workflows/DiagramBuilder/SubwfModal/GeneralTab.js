@@ -103,7 +103,7 @@ class GeneralTab extends Component {
                                                     </InputGroup.Prepend>
                                                     <Form.Control
                                                         type="input"
-                                                        onChange={(e) => this.props.handleInput(e.target.value, item[0])}
+                                                        onChange={(e) => this.props.handleInput(e.target.value, item, null, i)}
                                                         value={entry[0]}/>
                                                 </InputGroup>
                                                 <Form.Text className="text-muted">
