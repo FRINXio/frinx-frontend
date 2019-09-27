@@ -24,6 +24,7 @@ import {ForkNodeModel} from "./NodeModels/ForkNode/ForkNodeModel";
 import {JoinNodeModel} from "./NodeModels/JoinNode/JoinNodeModel";
 import {Toolkit} from "storm-react-diagrams";
 import {DecisionNodeModel} from "./NodeModels/DecisionNode/DecisionNodeModel";
+import CustomAlert from "./CustomAlert";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -48,6 +49,7 @@ class DiagramBuilder extends Component {
             this.props.storeWorkflows(res.result || [])
         });
         this.putDefaultsOnCanvas();
+        this.props.showCustomAlert(true, "primary", "Start to drag & drop tasks from left menu on canvas.")
     }
 
     doubleClickListener(event) {
@@ -102,6 +104,8 @@ class DiagramBuilder extends Component {
         let data = JSON.parse(e.dataTransfer.getData("storm-diagram-node"));
         let node = null;
 
+        this.props.showCustomAlert(false)
+
         switch (data.type) {
             case "in":
                 node = new DefaultNodeModel(data.name, "rgb(192,255,0)", data.wfObject);
@@ -154,13 +158,13 @@ class DiagramBuilder extends Component {
             let linksArray = _.values(links);
             let tasks = [];
 
-            // check if end
-            // TODO connect to alerts
+            this.props.showCustomAlert(false);
+
             if (!parentNode) {
-                return console.log("Start node missing.")
+                return this.props.showCustomAlert(true, "danger", "Start node is not connected.");
             }
             if (!endNode) {
-                return console.log("End node missing.")
+                return this.props.showCustomAlert(true, "danger", "End node is not connected.");
             }
 
             while (parentNode.type !== "end") {
@@ -183,7 +187,7 @@ class DiagramBuilder extends Component {
                                     }
                                     parentNode = firstNeutralNode;
                                 } else {
-                                    return console.log("Default decision route is missing.")
+                                    return this.props.showCustomAlert(true, "danger", "Default decision route is missing.");
                                 }
                                 break;
                             case "end":
@@ -212,7 +216,7 @@ class DiagramBuilder extends Component {
 
             return finalWf;
         } catch (e) {
-            console.log("COULD NOT PARSE", e)
+            return this.props.showCustomAlert(true, "danger", "Could not parse JSON.");
         }
     }
 
@@ -230,12 +234,17 @@ class DiagramBuilder extends Component {
                 <div className="content">
                     <SideMenu show={this.props.sidebarShown} category={this.props.category}
                               workflows={this.props.workflows} functional={this.props.functional}/>
+
                     <div
                         className="diagram-layer"
                         onDrop={(e) => this.onDropHandler(e)}
                         onDragOver={event => {
                             event.preventDefault();
                         }}>
+
+                        <CustomAlert showCustomAlert={this.props.showCustomAlert} show={this.props.customAlert.show}
+                                     msg={this.props.customAlert.msg} alertVariant={this.props.customAlert.variant}/>
+
                         <DiagramWidget className="srd-demo-canvas" smartRouting={this.props.smartRouting}
                                        diagramEngine={this.state.app.getDiagramEngine()}/>
                     </div>
@@ -252,7 +261,8 @@ const mapStateToProps = state => {
         sidebarShown: state.buildReducer.sidebarShown,
         category: state.buildReducer.category,
         finalWorkflow: state.buildReducer.finalWorkflow,
-        smartRouting: state.buildReducer.switchSmartRouting
+        smartRouting: state.buildReducer.switchSmartRouting,
+        customAlert: state.buildReducer.customAlert
     }
 };
 
@@ -261,7 +271,8 @@ const mapDispatchToProps = dispatch => {
         storeWorkflows: (wfList) => dispatch(builderActions.storeWorkflows(wfList)),
         updateFinalWorkflow: (finalWorkflow) => dispatch(builderActions.updateFinalWorkflow(finalWorkflow)),
         resetToDefaultWorkflow: () => dispatch(builderActions.resetToDefaultWorkflow()),
-        updateSidebar: (isShown) => dispatch(builderActions.updateSidebar(isShown))
+        updateSidebar: (isShown) => dispatch(builderActions.updateSidebar(isShown)),
+        showCustomAlert: (show, variant, msg) => dispatch(builderActions.showCustomAlert(show, variant, msg))
     }
 };
 

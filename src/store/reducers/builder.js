@@ -1,5 +1,5 @@
 import {
-    LOCK_WORKFLOW_NAME, RESET_TO_DEFAULT_WORKFLOW, STORE_WORKFLOW_ID,
+    LOCK_WORKFLOW_NAME, RESET_TO_DEFAULT_WORKFLOW, SHOW_CUSTOM_ALERT, STORE_WORKFLOW_ID,
     STORE_WORKFLOWS, SWITCH_SMART_ROUTING,
     UPDATE_BUILDER_QUERY, UPDATE_FINAL_WORKFLOW,
     UPDATE_SEARCH_CATEGORY,
@@ -29,6 +29,11 @@ const initialState = {
     workflowNameLock: false,
     switchSmartRouting: false,
     executedWfId: null,
+    customAlert: {
+        show: false,
+        variant: "danger",
+        msg: ""
+    },
     finalWorkflow: {
         name: "",
         description: "",
@@ -86,6 +91,10 @@ const reducer = (state = initialState, action) => {
         case UPDATE_FINAL_WORKFLOW: {
             let {finalWorkflow} = action;
             return {...state, finalWorkflow}
+        }
+        case SHOW_CUSTOM_ALERT: {
+            let {show, variant, msg} = action;
+            return {...state, customAlert: {show, variant, msg}}
         }
         default: break;
     }

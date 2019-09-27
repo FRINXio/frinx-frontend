@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
 import {Button, Col, Container, Form, InputGroup, Modal, Row} from "react-bootstrap";
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
@@ -45,7 +44,6 @@ class ControlsHeader extends Component {
     };
 
     handleClickInside(event) {
-        //const domNode = ReactDOM.findDOMNode(this);
         const headerEl = document.getElementById("controls-header");
         const expandBtn = document.getElementById("expand");
 
@@ -94,6 +92,11 @@ class ControlsHeader extends Component {
             this.setState({saveExecuteError: false});
             this.showInputModal();
         }).catch(err => {
+            let errObject = JSON.parse(err.response.text);
+            if (errObject.validationErrors) {
+                const {path, message} = errObject.validationErrors[0];
+                this.props.showCustomAlert(true, "danger", path + ':\xa0\xa0\xa0' + message);
+            }
             this.setState({saveExecuteError: true});
         })
     }
@@ -113,7 +116,7 @@ class ControlsHeader extends Component {
         selectedNodes.forEach(selectedNode => {
 
             if (!selectedNode.extras.inputs.subWorkflowParam) {
-                return console.log("Simple task can't be expanded.")
+                return this.props.showCustomAlert(true, "danger", "Simple task can't be expanded.");
             }
 
             const {name, version} = selectedNode.extras.inputs.subWorkflowParam;
@@ -123,7 +126,7 @@ class ControlsHeader extends Component {
             const outputLink = getLinksArray("out", selectedNode)[0];
 
             if (!inputLink || !outputLink) {
-                return console.log("Node is not connected.")
+                return this.props.showCustomAlert(true, "danger", "Selected node is not connected.");
             }
 
             const inputLinkParent = inputLink.sourcePort.getNode();
@@ -256,7 +259,8 @@ const mapDispatchToProps = dispatch => {
         updateSidebar: (isShown) => dispatch(builderActions.updateSidebar(isShown)),
         updateFinalWorkflow: (finalWf) => dispatch(builderActions.updateFinalWorkflow(finalWf)),
         lockWorkflowName: () => dispatch(builderActions.lockWorkflowName()),
-        switchSmartRouting: () => dispatch(builderActions.switchSmartRouting())
+        switchSmartRouting: () => dispatch(builderActions.switchSmartRouting()),
+        showCustomAlert: (show, variant, msg) => dispatch(builderActions.showCustomAlert(show, variant, msg))
     }
 };
 

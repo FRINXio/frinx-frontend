@@ -8,6 +8,7 @@ export const LOCK_WORKFLOW_NAME = 'LOCK_WORKFLOW_NAME';
 export const SWITCH_SMART_ROUTING = 'SWITCH_SMART_ROUTING';
 export const RESET_TO_DEFAULT_WORKFLOW = 'RESET_TO_DEFAULT_WORKFLOW';
 export const STORE_WORKFLOW_ID = 'STORE_WORKFLOW_ID';
+export const SHOW_CUSTOM_ALERT = 'SHOW_CUSTOM_ALERT';
 
 export const storeWorkflows = (originalWorkflows) => {
     return {type: STORE_WORKFLOWS, originalWorkflows, workflows: originalWorkflows}
@@ -15,6 +16,10 @@ export const storeWorkflows = (originalWorkflows) => {
 
 export const updateQuery = (query) => {
     return {type: UPDATE_BUILDER_QUERY, query}
+};
+
+export const showCustomAlert = (show, variant = "danger", msg) => {
+    return {type: SHOW_CUSTOM_ALERT, show, variant, msg}
 };
 
 export const storeWorkflowId = (id) => {
