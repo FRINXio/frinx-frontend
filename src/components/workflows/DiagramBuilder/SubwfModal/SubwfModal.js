@@ -116,8 +116,6 @@ class SubwfModal extends Component {
                 }
             }
 
-
-
             inputs = {
                 ...inputs,
                 inputParameters: {
@@ -129,7 +127,6 @@ class SubwfModal extends Component {
                 }
             };
 
-            console.log(inputs);
         } else if (key[0] === "decisionCases") {
             let decisionCases = {...inputs.decisionCases};
             let keyNames = Object.keys(decisionCases);
