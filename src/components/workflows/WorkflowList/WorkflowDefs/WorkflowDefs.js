@@ -226,14 +226,15 @@ class WorkflowDefs extends Component {
                     <div className="wfRow" key={i}>
                         <Accordion.Toggle id={`wf${i}`} onClick={this.changeActiveRow.bind(this, i)}
                                           className="clickable wfDef" as={Card.Header} variant="link" eventKey={i}>
-                            <b>{dataset[i]["name"] + " / " + dataset[i]["version"]}</b>
+                            <b>{dataset[i]["name"].replace(/_/g, " ")}</b>
                             <br/>
-                            {dataset[i]["description"]
-                                ? <div className="description">
-                                    {dataset[i]["description"].split("-")[0]}
-                                    {this.createLabels(dataset[i])}
-                                </div>
-                                : null}
+                            <div className="description">
+                                {"version " + dataset[i]["version"]+": "}
+                                {dataset[i]["description"]
+                                    ? dataset[i]["description"].split("-")[0]
+                                    : null }
+                                {this.createLabels(dataset[i])}
+                            </div>
                         </Accordion.Toggle>
                         <Accordion.Collapse eventKey={i}>
                             <Card.Body style={{padding: "0px"}}>
