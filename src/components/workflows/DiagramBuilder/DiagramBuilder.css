@@ -51,7 +51,20 @@
     text-align: left;
     z-index: 10;
     animation: slide-in 0.4s ease;
+}
 
+.custom-alert-in {
+    position: absolute;
+    width: 100%;
+    z-index: 9;
+    animation: slide-in 0.4s ease;
+}
+
+.custom-alert-out {
+    position: absolute;
+    width: 100%;
+    z-index: 9;
+    animation: slide-out 0.2s ease;
 }
 
 @keyframes slide-in {
@@ -62,6 +75,18 @@
     100% {
         opacity: 1;
         transform: translateX(0);
+    }
+}
+
+@keyframes slide-out {
+    0% {
+        opacity: 1;
+        transform: translateX(0px);
+    }
+    100% {
+        opacity: 0;
+        display: none;
+        transform: translateX(-300px);
     }
 }
 
