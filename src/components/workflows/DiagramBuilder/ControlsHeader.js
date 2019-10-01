@@ -109,6 +109,8 @@ class ControlsHeader extends Component {
         const diagramModel = this.props.app.getDiagramEngine().getDiagramModel();
         let selectedNodes = diagramModel.getSelectedItems();
 
+        this.props.showCustomAlert(false);
+
         selectedNodes = selectedNodes.filter(item => {
             return item.getType() === "default"
         });

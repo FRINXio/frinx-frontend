@@ -235,15 +235,15 @@ class DiagramBuilder extends Component {
                     <SideMenu show={this.props.sidebarShown} category={this.props.category}
                               workflows={this.props.workflows} functional={this.props.functional}/>
 
+                    <CustomAlert showCustomAlert={this.props.showCustomAlert} show={this.props.customAlert.show}
+                                 msg={this.props.customAlert.msg} alertVariant={this.props.customAlert.variant}/>
+
                     <div
                         className="diagram-layer"
                         onDrop={(e) => this.onDropHandler(e)}
                         onDragOver={event => {
                             event.preventDefault();
                         }}>
-
-                        <CustomAlert showCustomAlert={this.props.showCustomAlert} show={this.props.customAlert.show}
-                                     msg={this.props.customAlert.msg} alertVariant={this.props.customAlert.variant}/>
 
                         <DiagramWidget className="srd-demo-canvas" smartRouting={this.props.smartRouting}
                                        diagramEngine={this.state.app.getDiagramEngine()}/>

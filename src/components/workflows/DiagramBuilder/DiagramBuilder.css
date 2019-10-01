@@ -42,11 +42,27 @@
 .body .content .tray {
     position: absolute;
     background: white;
+    -webkit-box-shadow: 6px 2px 8px 0px rgba(0,0,0,0.49);
+    -moz-box-shadow: 6px 2px 8px 0px rgba(0,0,0,0.49);
+    box-shadow: 6px 2px 8px 0px rgba(0,0,0,0.49);
     width: 500px;
     height: 84vh;
     overflow: scroll;
     text-align: left;
     z-index: 10;
+    animation: slide-in 0.4s ease;
+
+}
+
+@keyframes slide-in {
+    0% {
+        opacity: 0;
+        transform: translateX(-300px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .body .content .tray .tray-item {
