@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Row, Col, Container } from 'react-bootstrap';
 import Panel from './panel/Panel';
-import { faBookOpen, faCogs, faTasks, faLaptopCode, faBoxOpen, faUsers, faLayerGroup} from '@fortawesome/free-solid-svg-icons';
+import { faCogs, faTasks, faLaptopCode, faBoxOpen, faUsers} from '@fortawesome/free-solid-svg-icons';
 
 class Dashboard extends Component {
 
@@ -10,8 +10,8 @@ class Dashboard extends Component {
             <Container>
                 <Row>
                     <Col>
-                        <Panel title='Services' desc="Browse and execute services." icon={faBookOpen}
-                               style={{background: 'linear-gradient'}}/>
+                        <Panel title='UniConfig' desc="Manage network device configurations."
+                               icon={faLaptopCode} style={{background: 'linear-gradient'}} link='/devices'/>
                     </Col>
                     <Col>
                         <Panel title='Workflows' desc="Create, organize and execute workflows." icon={faCogs}
@@ -19,27 +19,21 @@ class Dashboard extends Component {
                     </Col>
                     <Col>
                         <Panel title='Tasks' desc="Manage tasks." icon={faTasks}
-                               style={{background: 'linear-gradient'}} link='/tasks'/>
+                               style={{background: 'linear-gradient'}} link='/tasks/defs'/>
                     </Col>
                     <Col>
-                        <Panel title='UniConfig UI' desc="Manage network device configurations."
-                               icon={faLaptopCode} style={{background: 'linear-gradient'}} link='/devices'/>
+                        <Panel title='Inventory & Logs' desc="Create, view and organize assets. View system logs." icon={faBoxOpen}
+                               style={{background: 'linear-gradient'}} link="/inventory" />
                     </Col>
                 </Row>
                 <Row>
-                    <Col>
-                        <Panel title='Inventory' desc="Create, view and organize assets." icon={faBoxOpen}
-                               style={{background: 'linear-gradient'}} />
-                    </Col>
-                    <Col>
-                        <Panel title='Logs' desc="View system logs." icon={faLayerGroup}
-                               style={{background: 'linear-gradient'}} />
-                    </Col>
+                    <Col/>
+                    <Col/>
+                    <Col/>
                     <Col>
                         <Panel disabled={true} title='User Managment' desc="Manage users and permissions."
                                icon={faUsers} style={{background: 'linear-gradient'}}/>
                     </Col>
-                    <Col></Col>
                 </Row>
             </Container>
         )}

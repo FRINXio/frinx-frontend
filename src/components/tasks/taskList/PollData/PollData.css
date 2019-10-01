@@ -1,0 +1,8 @@
+.polltable {
+    font-size: 14px;
+    text-align: left;
+}
+
+.clickable:hover {
+    cursor: pointer;
+}

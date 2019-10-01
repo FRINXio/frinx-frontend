@@ -33,6 +33,8 @@ class Header extends Component {
     }
 
     render() {
+        let isLogoutDisabled = process.env.REACT_APP_LOGIN_ENABLED === "false";
+
         return (
             <Navbar className="navbarHeader">
                 <Navbar.Brand><NavLink to='/'><img alt='' src={logo}/></NavLink></Navbar.Brand>
@@ -42,7 +44,8 @@ class Header extends Component {
                         {this.getGreeting()}, <b>{this.props.email}</b><br />
                     </Navbar.Text>
                     <Nav>
-                        <Nav.Link className="nav-linkHeader" onClick={this.logOut.bind(this)}><FontAwesomeIcon icon="sign-out-alt" /></Nav.Link>
+                        <Nav.Link disabled={isLogoutDisabled} className="nav-linkHeader"
+                                  onClick={this.logOut.bind(this)}><FontAwesomeIcon icon="sign-out-alt"/></Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>

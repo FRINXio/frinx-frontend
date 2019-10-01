@@ -13,6 +13,7 @@ class PageSelect extends Component {
         let output = [];
         let viewedPage = this.props.viewedPage;
         let pagesCount = this.props.count;
+        let indent = this.props.indent ? this.props.indent : 2;
         output.push(
             <Pagination.Prev key={'prev'} disabled={viewedPage === 1 || pagesCount === 0}
                              onClick={(e) => {
@@ -22,7 +23,7 @@ class PageSelect extends Component {
             />
         );
         for (let i = 1; i <= pagesCount; i++) {
-            if (i >= viewedPage - 2 && i <= viewedPage + 2) {
+            if (i >= viewedPage - indent && i <= viewedPage + indent) {
                 output.push(
                     <Pagination.Item key={i} active={viewedPage === i}
                                      onClick={(e) =>

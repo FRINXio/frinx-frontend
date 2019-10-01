@@ -1,16 +1,21 @@
 import {
-    UPDATE_SEARCH_RESULTS,
     RECEIVE_NEW_DATA,
+    HIERARCHY_NEW_DATA,
     UPDATE_QUERY,
-    UPDATE_LABEL
+    UPDATE_LABEL,
+    DATA_SIZE,
+    CHECKED_WORKFLOWS
 } from '../actions/searchExecs';
 
 const initialState = {
     isFetching: false,
     data: [],
-    table: [],
     query: "",
-    label: []
+    label: [],
+    parents: [],
+    children: [],
+    size: 0,
+    checkedWfs: [0]
 };
 
 const reducer = (state = initialState, action) => {
@@ -25,12 +30,20 @@ const reducer = (state = initialState, action) => {
             return {...state, query}
         }
         case RECEIVE_NEW_DATA: {
-            const {data, table} = action;
-            return {...state, isFetching: false, data, table}
+            const {data} = action;
+            return {...state, isFetching: false, data}
         }
-        case UPDATE_SEARCH_RESULTS: {
-            const {table} = action;
-            return {...state, table}
+        case HIERARCHY_NEW_DATA: {
+            const {parents, children} = action;
+            return {...state, isFetching: false, parents, children}
+        }
+        case DATA_SIZE: {
+            const {size} = action;
+            return {...state, size}
+        }
+        case CHECKED_WORKFLOWS: {
+            const {checkedWfs} = action;
+            return {...state, checkedWfs}
         }
         default: break;
     }

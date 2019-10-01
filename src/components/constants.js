@@ -1,3 +1,4 @@
+
 export const mountNetconfTemplate = JSON.stringify( {
     "node-id": ["xr6","Unique identifier of device across all systems"],
     "netconf-node-topology:host": ["192.168.1.213","IP or hostname of the management endpoint on a device"],
@@ -26,49 +27,22 @@ export const mountNetconfTemplateOverrideON = JSON.stringify({
 export const mountNetconfTemplateOverrideOFF = JSON.stringify({
 });
 
+export const mountNetconfTemplateUnativeON = JSON.stringify({
+    "uniconfig-config:uniconfig-native-enabled": [true,""]
+});
+
+export const mountNetconfTemplateUnativeOFF = JSON.stringify({
+});
+
 export const mountNetconfTemplateCapabilities = JSON.stringify({
     "netconf-node-topology:yang-module-capabilities": {
         "capability": []
     }
 });
 
-export const netconfXRwhitelist = JSON.stringify({
-    "direct-unit-matcher": [
-        {
-            "name": "xr",
-            "capability-regex-matcher": [".*Cisco.*", ".*cisco.*", ".*openconfig.*", ".*ietf.*"]
-        }
-    ]
-});
-
-export const netconfXRblacklist = JSON.stringify({
-    "blacklisted-read": {
-        "matcher-ref": "xr",
-        "paths": {
-            "path": [
-                "interfaces", "vlans"
-            ]
-        }
-    }
-});
-
-export const netconfJUNOSwhitelist = JSON.stringify({
-    "direct-unit-matcher": [
-        {
-            "name": "junos",
-            "capability-regex-matcher": [".*juniper.*", ".*ietf.*"]
-        }
-    ]
-});
-
-export const netconfJUNOSblacklist = JSON.stringify({
-    "blacklisted-read": {
-        "matcher-ref": "junos",
-        "paths": {
-            "path": [
-                "interfaces", "vlans"
-            ]
-        }
+export const uniconfigBlacklist = JSON.stringify({
+    "uniconfig-config:blacklist": {
+        "uniconfig-config:path": ["openconfig-interfaces:interfaces", "ietf-interfaces:interfaces", "openconfig-vlan:vlans", "openconfig-routing-policy:routing-policy"]
     }
 });
 
@@ -105,6 +79,17 @@ export const mountCliTemplateLazyON = JSON.stringify({
     "cli-topology:connection-lazy-timeout": [60,""],
     "cli-topology:connection-establish-timeout": [60,""]
 });
+
+export const wfLabelsColor = [ "#7D6608", "#43ABC9", "#EBC944", "#CD6155",
+    "#F4D03F", "#808B96", "#212F3D", "#4A340C",
+    "#00cd00", "#18b5b5", "#3A48EC", "#EA9D16",
+    "#7D3C98", "#A6ACAF", "#F1948A", "#02d500",
+    "#AF4141", "#EA7616", "#A569BD", "#68386C",
+    "#5A5144", "#6F927D", "#3AEC60", "#EDB152",
+    "#C52F38", "#A3A042", "#249D83", "#0DAA79",
+    "#3A96EC", "#3ADFEC", "#5D6D7E", "#000080",
+    "#229954", "#117864", "#16A085", "#107896",
+];
 
 export const workflowDescriptions = {
     name: "name of the workflow",

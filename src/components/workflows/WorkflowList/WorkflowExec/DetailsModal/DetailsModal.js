@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import {Modal, Button, Row, Col, Tabs, Tab, Table, Accordion, Card, ButtonGroup, Form} from "react-bootstrap";
+import {Modal, Dropdown, Button, Row, Col, Tabs, Tab, Table, Accordion, Card, ButtonGroup, Form} from "react-bootstrap";
 import moment from 'moment';
 import Clipboard from 'clipboard';
 import Highlight from "react-highlight.js";
 import './DetailsModal.css'
 import WorkflowDia from "./WorkflowDia/WorkflowDia";
 import UnescapeButton from "../../../../uniconfig/deviceView/consoleModal/UnescapeButton";
+import {withRouter} from "react-router-dom";
 const http = require('../../../../../server/HttpServerSide').HttpClient;
 
 new Clipboard('.clp');
@@ -24,7 +25,8 @@ class DetailsModal extends Component {
             input: {},
             activeTab: null,
             status: "Execute",
-            timeout: null
+            timeout: null,
+            parentWfId: "",
         };
     }
 
@@ -44,7 +46,8 @@ class DetailsModal extends Component {
                 result: res.result,
                 subworkflows: res.subworkflows,
                 input: res.result.input || {},
-                wfId : res.result.workflowId
+                wfId : res.result.workflowId,
+                parentWfId: res.result.parentWorkflowId || "",
             });
 
             if (this.state.result.status === 'RUNNING') {
@@ -56,11 +59,8 @@ class DetailsModal extends Component {
     }
 
     handleClose() {
-        if (!this.props.fromBuilder) {
-            this.props.refreshTable();
-        }
-        this.setState({show: false});
-        this.props.modalHandler()
+        this.setState({ show: false });
+        this.props.modalHandler();
     }
 
     executeWorkflow() {
@@ -307,10 +307,41 @@ class DetailsModal extends Component {
 
         };
 
+        const parentWorkflowButton = () => {
+            if (this.state.parentWfId) {
+                return (
+                    <Button style={{margin: "2px", display: "inline"}}
+                            onClick={() => this.props.history.push(`/workflows/exec/${this.state.parentWfId}`)}>Parent</Button>
+                )
+            }
+        };
+
+        const childWorkflows = () => {
+            if (this.state.subworkflows && Object.keys(this.state.subworkflows).length) {
+                return (
+                    <Dropdown style={{margin: "2px", display: "inline"}}>
+                        <Dropdown.Toggle>Children</Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            {Object.keys(this.state.subworkflows).map((item, i) => {
+                                return <Dropdown.Item
+                                    onClick={() => this.props.history.push(`/workflows/exec/${this.state.subworkflows[item].wfe.workflowId}`)} key={i}>
+                                    {item}
+                                </Dropdown.Item>
+                            })}
+                        </Dropdown.Menu>
+                    </Dropdown>
+                )
+            }
+        };
+
         return (
             <Modal dialogClassName="modalWider" show={this.state.show} onHide={this.handleClose}>
                 <Modal.Header>
                     <Modal.Title>Details of {this.state.meta.name}</Modal.Title>
+                    <div>
+                        {parentWorkflowButton()}
+                        {childWorkflows()}
+                    </div>
                 </Modal.Header>
                 <Modal.Body>
                     <Accordion>
@@ -369,4 +400,4 @@ class DetailsModal extends Component {
     }
 }
 
-export default DetailsModal;
+export default withRouter(DetailsModal);

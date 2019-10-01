@@ -1,4 +1,5 @@
 import {
+    IS_FLAT,
     REQUEST_BULK_OPERATION,
     RECEIVE_BULK_OPERATION_RESPONSE,
     FAIL_BULK_OPERATION,
@@ -7,6 +8,7 @@ import {
 
 const initialState = {
     isFetching: false,
+    isFlat: true,
     error: null,
     successfulResults: [],
     errorResults: {},
@@ -19,6 +21,10 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
+        case IS_FLAT: {
+            const {isFlat} = action;
+            return {...state, isFlat};
+        }
         case REQUEST_BULK_OPERATION: {
             return {...state, isFetching: true, error: null};
         }

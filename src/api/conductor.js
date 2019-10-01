@@ -16,7 +16,6 @@ const baseURLTask = baseURL + 'tasks/';
 
 router.get('/metadata/taskdef', async (req, res, next) => {
     try {
-        console.log(res);
         const result = await http.get(baseURLMeta + 'taskdefs', req.token);
         res.status(200).send({ result });
     } catch (err) {
@@ -85,11 +84,14 @@ router.get('/executions', async (req, res, next) => {
         if (!isNaN(req.query.start)) {
             start = req.query.start;
         }
+        let size = 1000;
+        if (req.query.size !== 'undefined' && req.query.size !== '') {
+            size = req.query.size;
+        }
 
         let query = req.query.q;
 
-        //TODO query wfs in batch of 100 for better performance
-        const url = baseURLWorkflow + 'search?size=1000&sort=startTime:DESC&freeText=' + encodeURIComponent(freeText.join(' AND ')) + '&start=' + start + '&query=' +
+        const url = baseURLWorkflow + 'search?size=' + size + '&sort=startTime:DESC&freeText=' + encodeURIComponent(freeText.join(' AND ')) + '&start=' + start + '&query=' +
             encodeURIComponent(query);
         const result = await http.get(url, req.token);
         const hits = result.results;
@@ -231,6 +233,108 @@ router.get('/id/:workflowId', async (req, res, next) => {
     }
 });
 
+router.get('/hierarchical', async (req, res, next) => {
+    try {
+        let size = 1000;
+        if (req.query.size !== 'undefined' && req.query.size !== '') {
+            size = req.query.size;
+        }
+
+        let count = 0;
+        let start = 0;
+        if (!isNaN(req.query.start)) {
+            start = req.query.start;
+            count = Number(start);
+        }
+
+        let freeText = [];
+        if (req.query.freeText !== '') {
+            freeText.push(req.query.freeText);
+        } else {
+            freeText.push('*');
+        }
+
+        let parents = [];
+        let children = [];
+
+        let hits = 0;
+        while (parents.length < size) {
+            const url = baseURLWorkflow + 'search?size=' + size * 10 + '&sort=startTime:DESC&freeText=' + encodeURIComponent(freeText.join(' AND '))
+                + '&start=' + start + '&query=';
+            const result = await http.get(url, req.token);
+            let allData = result.results ? result.results : [];
+            hits = result.totalHits ? result.totalHits : 0;
+
+            let separatedWfs = [];
+            let chunk = 5;
+
+            for (let i = 0, j = allData.length; i < j; i += chunk) {
+                separatedWfs.push(allData.slice(i, i + chunk));
+            }
+
+            for (let i = 0; i < separatedWfs.length; i++) {
+                let wfs = async function (sepWfs) {
+                    return await Promise.all(
+                        sepWfs.map(wf => http.get(baseURLWorkflow + wf.workflowId + '?includeTasks=false', req.token))
+                    );
+                };
+                let checked = 0;
+                let responses = await wfs(separatedWfs[i]);
+                for (let j = 0; j < responses.length; j++) {
+                    if (responses[j].parentWorkflowId) {
+                        separatedWfs[i][j]["parentWorkflowId"] = responses[j].parentWorkflowId;
+                        children.push(separatedWfs[i][j]);
+                    } else {
+                        parents.push(separatedWfs[i][j]);
+                        if (parents.length === size) {
+                            checked = j+1;
+                            break;
+                        }
+                    }
+                    checked = j+1;
+                }
+                count += checked;
+                if (parents.length >= size)
+                    break;
+            }
+            if (req.query.freeText !== '') {
+                for (let i = 0; i < children.length; i++) {
+                    const parent = await http.get(baseURLWorkflow + children[i].parentWorkflowId + '?includeTasks=false', req.token);
+                    parent.startTime = new Date(parent.startTime);
+                    parent.endTime = new Date(parent.endTime);
+                    if (parent.parentWorkflowId && !children.find(wf => wf.workflowId === parent.workflowId))
+                        children.push(parent);
+                    if (!parent.parentWorkflowId && !parents.find(wf => wf.workflowId === parent.workflowId))
+                        parents.push(parent);
+                }
+            }
+            start = Number(start) + size * 10;
+            if (Number(start) >= hits)
+                break;
+        }
+        res.status(200).send({ parents, children, count, hits });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/queue/data', async (req, res, next) => {
+    try {
+        const sizes = await http.get(baseURLTask + 'queue/all', req.token);
+        const polldata = await http.get(baseURLTask + 'queue/polldata/all', req.token);
+        polldata.forEach(pd => {
+            let qname = pd.queueName;
+
+            if (pd.domain != null) {
+                qname = pd.domain + ':' + qname;
+            }
+            pd.qsize = sizes[qname];
+        });
+        res.status(200).send({ polldata });
+    } catch (err) {
+        next(err);
+    }
+});
 
 
 module.exports = router;

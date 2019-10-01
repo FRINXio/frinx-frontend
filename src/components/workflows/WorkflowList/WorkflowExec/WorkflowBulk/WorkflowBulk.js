@@ -1,14 +1,15 @@
 import React, { Component } from 'react'
-import {Accordion, Button, Card, Col, ProgressBar, Row, Spinner} from "react-bootstrap";
+import {Accordion, Button, Card, Col, ProgressBar, Row, Spinner, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
 import * as bulkActions from "../../../../../store/actions/bulk";
 import {connect} from "react-redux";
 import {isEmpty} from "codemirror/src/util/misc";
+import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 
 class WorkflowBulk extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            showBulk: null
+            showBulk: null,
         }
     }
 
@@ -20,8 +21,14 @@ class WorkflowBulk extends Component {
         }
 
         let operation = e.target.value;
-        performBulkOperation(operation, selectedWfs);
+        performBulkOperation(operation, selectedWfs, this.props.pageCount);
+        this.props.bulkOperation();
         this.props.selectAllWfs();
+    }
+
+    changeView() {
+        this.props.setView(!this.props.wfView);
+        this.props.selectWfView();
     }
 
     render() {
@@ -66,6 +73,12 @@ class WorkflowBulk extends Component {
                                         </Button>
                                         Select workflows from table below
                                     </p>
+                                    <ButtonToolbar>
+                                        <ToggleButtonGroup type="radio" value={this.props.wfView ? 0 : 1} name="Workflow view" onChange={this.changeView.bind(this)}>
+                                            <ToggleButton size="sm" variant="outline-secondary" value={0}>Flat</ToggleButton>
+                                            <ToggleButton size="sm" variant="outline-secondary" value={1}>Hierarchy</ToggleButton>
+                                        </ToggleButtonGroup>&nbsp;&nbsp;workflow view
+                                    </ButtonToolbar>
                                 </Col>
                                 <Col>
                                     <Button variant="outline-primary" value="pause"
@@ -108,7 +121,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        performBulkOperation: (operation, wfs) => dispatch(bulkActions.performBulkOperation(operation, wfs)),
+        performBulkOperation: (operation, wfs, defaultPages) => dispatch(bulkActions.performBulkOperation(operation, wfs, defaultPages)),
+        setView: (value) => dispatch(bulkActions.setView(value))
     }
 };
 
