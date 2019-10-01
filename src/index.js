@@ -9,12 +9,13 @@ import thunk from 'redux-thunk';
 import bulkReducer from './store/reducers/bulk';
 import searchReducer from './store/reducers/searchExecs'
 import authReducer from './store/reducers/auth'
+import buildReducer from "./store/reducers/builder"
 import {Provider} from "react-redux";
 import {BrowserRouter} from "react-router-dom";
 
 
 const rootReducer = combineReducers({
-    bulkReducer, searchReducer, authReducer
+    bulkReducer, searchReducer, authReducer, buildReducer
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

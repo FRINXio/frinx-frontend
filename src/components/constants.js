@@ -90,3 +90,22 @@ export const wfLabelsColor = [ "#7D6608", "#43ABC9", "#EBC944", "#CD6155",
     "#3A96EC", "#3ADFEC", "#5D6D7E", "#000080",
     "#229954", "#117864", "#16A085", "#107896",
 ];
+
+export const workflowDescriptions = {
+    name: "name of the workflow",
+    description: "description of the workflow (optional)",
+    version: "numeric field used to identify the version of the schema (use incrementing numbers)",
+    tasks: [],
+    outputParameters: {
+    },
+    schemaVersion: "current Conductor Schema version, schemaVersion 1 is discontinued",
+    restartable: "boolean flag to allow workflow restarts",
+    workflowStatusListenerEnabled: "ff true, every workflow that gets terminated or completed will send a notification"
+};
+
+export const taskDescriptions = {
+    name: "name of the task",
+    taskReferenceName: "alias used to refer the task within the workflow (MUST be unique within workflow)",
+    optional: "when set to true - workflow continues even if the task fails.",
+    startDelay: "time period before task executes"
+};

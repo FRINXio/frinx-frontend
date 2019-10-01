@@ -144,10 +144,6 @@ class DetailsModal extends Component {
         })
     }
 
-    redirect() {
-
-    }
-
     render() {
 
         const actionButtons = (status) => {

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import {Modal, Button, Form, Row, Col} from "react-bootstrap";
+import {connect} from "react-redux";
+import * as builderActions from "../../../../../store/actions/builder";
 const http = require('../../../../../server/HttpServerSide').HttpClient;
 
 
@@ -23,6 +25,7 @@ class InputModal extends Component {
         let name = this.props.wf.split(" / ")[0];
         let version = this.props.wf.split(" / ")[1];
         http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
+            console.log(res);
             this.setState({
                 def: JSON.stringify(res.result, null, 2),
                 wfdesc: res.result["description"] ? res.result["description"].split("-")[0] : "",
@@ -102,7 +105,9 @@ class InputModal extends Component {
         })
     }
 
-    executeWorkflow() {
+    executeWorkflow(e) {
+        e.preventDefault();
+
         let {labels, values } = this.state.workflowForm;
         let payload = {};
 
@@ -118,8 +123,13 @@ class InputModal extends Component {
                 status: res.statusText,
                 wfId: res.body.text
             });
+            this.props.storeWorkflowId(res.body.text);
             this.timeoutBtn();
-        })
+
+            if (this.props.fromBuilder) {
+                this.handleClose()
+            }
+        });
     }
 
     timeoutBtn() {
@@ -138,7 +148,7 @@ class InputModal extends Component {
                     <h4>{this.state.name}</h4>
                     <p className="text-muted">{this.state.wfdesc}</p>
                     <hr/>
-                    <Form>
+                    <Form onSubmit={this.executeWorkflow.bind(this)}>
                         <Row>
                             {labels.map((item, i) => {
                                 return (
@@ -182,4 +192,10 @@ class InputModal extends Component {
     }
 }
 
-export default InputModal;
+const mapDispatchToProps = dispatch => {
+    return {
+        storeWorkflowId: (id) => dispatch(builderActions.storeWorkflowId(id))
+    }
+};
+
+export default connect(null, mapDispatchToProps)(InputModal);

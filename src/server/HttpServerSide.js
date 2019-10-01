@@ -63,20 +63,16 @@ const HttpClient = {
 
     put: (path, data, token) =>
         new Promise((resolve, reject) => {
-
             const req = request.put(path, data).set('Accept', 'application/json');
+
             if (token) {
                 req.set('Authorization', token);
             }
-            req.end((err, res) => {
-                if (err || !res.ok) {
-                    console.error('Error on post! ' + res);
-                    reject(err);
-                } else {
-                    if (res) {
-                        resolve(res);
-                    }
-                }
+
+            req.then(res => {
+                resolve(res);
+            }).catch(error => {
+                reject(error)
             });
         }),
 };
