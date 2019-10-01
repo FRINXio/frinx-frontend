@@ -7,24 +7,29 @@ import {CircleStartNodeModel} from "./NodeModels/StartNode/CircleStartNodeModel"
 import {CircleEndNodeModel} from "./NodeModels/EndNode/CircleEndNodeModel";
 import {DefaultNodeModel} from "./NodeModels/DefaultNodeModel/DefaultNodeModel";
 import SubwfModal from "./SubwfModal/SubwfModal";
-
-import * as _ from "lodash";
-
-import './DiagramBuilder.css'
 import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import {
     getEndNode,
+    getLinksArray,
     getStartNode,
     getWfInputs,
     handleDecideNode,
-    handleForkNode
+    handleForkNode, linkNodes,
+    transform_workflow_to_diagram
 } from "./builder-utils";
 import {ForkNodeModel} from "./NodeModels/ForkNode/ForkNodeModel";
 import {JoinNodeModel} from "./NodeModels/JoinNode/JoinNodeModel";
 import {Toolkit} from "storm-react-diagrams";
 import {DecisionNodeModel} from "./NodeModels/DecisionNode/DecisionNodeModel";
 import CustomAlert from "./CustomAlert";
+import WorkflowDefModal from "./WorkflowDefModal/WorkflowDefModal";
+import GeneralInfoModal from "./GeneralInfoModal/GeneralInfoModal";
+import DetailsModal from "../WorkflowList/WorkflowExec/DetailsModal/DetailsModal";
+import InputModal from "../WorkflowList/WorkflowDefs/InputModal/InputModal";
+import * as _ from "lodash";
+import './DiagramBuilder.css'
+import {Button, Modal} from "react-bootstrap";
 
 const http = require('../../../server/HttpServerSide').HttpClient;
 
@@ -33,9 +38,25 @@ class DiagramBuilder extends Component {
         super(props);
         this.state = {
             showSubWfModal: false,
+            showDefinitionModal: false,
+            showGeneralInfoModal: true,
+            showInputModal: false,
+            showDetailsModal: false,
+            showExitModal: false,
             modalInputs: null,
+            saveExecuteError: null,
             app: new Application()
         };
+
+        this.parseDiagramToJSON = this.parseDiagramToJSON.bind(this);
+        this.showDefinitionModal = this.showDefinitionModal.bind(this);
+        this.showGeneralInfoModal = this.showGeneralInfoModal.bind(this);
+        this.redirectOnExit = this.redirectOnExit.bind(this);
+        this.showInputModal = this.showInputModal.bind(this);
+        this.showDetailsModal = this.showDetailsModal.bind(this);
+        this.showExitModal = this.showExitModal.bind(this);
+        this.saveAndExecute = this.saveAndExecute.bind(this);
+        this.expandNodeToWorkflow = this.expandNodeToWorkflow.bind(this)
     }
 
     componentWillMount() {
@@ -44,12 +65,21 @@ class DiagramBuilder extends Component {
 
     componentDidMount() {
         document.addEventListener('dblclick', this.doubleClickListener.bind(this));
+        document.addEventListener("keydown", this.keyBindings.bind(this), false);
 
         http.get('/api/conductor/metadata/workflow').then(res => {
             this.props.storeWorkflows(res.result || [])
         });
         this.putDefaultsOnCanvas();
         this.props.showCustomAlert(true, "primary", "Start to drag & drop tasks from left menu on canvas.")
+    }
+
+    keyBindings(e) {
+        // CTRL + S
+        if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) && e.keyCode === 83) {
+            e.preventDefault();
+            this.saveAndExecute()
+        }
     }
 
     doubleClickListener(event) {
@@ -84,27 +114,11 @@ class DiagramBuilder extends Component {
         activeModel.addAll(start, end);
     }
 
-    subwfModalHandler() {
-        this.setState({
-            showSubWfModal: !this.state.showSubWfModal
-        })
-    }
-
-    saveNodeInputsHandler(savedInputs, id) {
-        let nodes = this.state.app.getDiagramEngine().getDiagramModel().getNodes();
-
-        _.values(nodes).forEach(node => {
-            if (node.id === id) {
-                node.extras.inputs = savedInputs;
-            }
-        });
-    }
-
     onDropHandler(e) {
         let data = JSON.parse(e.dataTransfer.getData("storm-diagram-node"));
         let node = null;
 
-        this.props.showCustomAlert(false)
+        this.props.showCustomAlert(false);
 
         switch (data.type) {
             case "in":
@@ -220,17 +234,194 @@ class DiagramBuilder extends Component {
         }
     }
 
+    expandNodeToWorkflow() {
+        const diagramModel = this.state.app.getDiagramEngine().getDiagramModel();
+        let selectedNodes = diagramModel.getSelectedItems();
+
+        this.props.showCustomAlert(false);
+
+        selectedNodes = selectedNodes.filter(item => {
+            return item.getType() === "default"
+        });
+
+        selectedNodes.forEach(selectedNode => {
+
+            if (!selectedNode.extras.inputs.subWorkflowParam) {
+                return this.props.showCustomAlert(true, "danger", "Simple task can't be expanded.");
+            }
+
+            const {name, version} = selectedNode.extras.inputs.subWorkflowParam;
+            const {x, y} = selectedNode;
+
+            const inputLink = getLinksArray("in", selectedNode)[0];
+            const outputLink = getLinksArray("out", selectedNode)[0];
+
+            if (!inputLink || !outputLink) {
+                return this.props.showCustomAlert(true, "danger", "Selected node is not connected.");
+            }
+
+            const inputLinkParent = inputLink.sourcePort.getNode();
+            const outputLinkParent = outputLink.targetPort.getNode();
+
+            transform_workflow_to_diagram(name, version, {x, y}, this.state.app).then(expandedNodes => {
+                selectedNode.remove();
+                diagramModel.removeNode(selectedNode);
+                diagramModel.removeLink(inputLink);
+                diagramModel.removeLink(outputLink);
+
+                let firstNode = expandedNodes[0];
+                let lastNode = expandedNodes[expandedNodes.length - 1];
+
+                diagramModel.addAll(linkNodes(inputLinkParent, firstNode), linkNodes(lastNode, outputLinkParent));
+                this.state.app.getDiagramEngine().setDiagramModel(diagramModel);
+                setTimeout(() => this.state.app.getDiagramEngine().repaintCanvas(), 10);
+                this.forceUpdate()
+            }).catch(e => {
+                console.log(e)
+            })
+
+        });
+    }
+
+    saveAndExecute() {
+        let finalWf = this.parseDiagramToJSON();
+        http.put('/api/conductor/metadata', [finalWf]).then(res => {
+            this.showInputModal();
+        }).catch(err => {
+            let errObject = JSON.parse(err.response.text);
+            if (errObject.validationErrors) {
+                const {path, message} = errObject.validationErrors[0];
+                this.props.showCustomAlert(true, "danger", path + ':\xa0\xa0\xa0' + message);
+            }
+            this.setState({saveExecuteError: true});
+        })
+    }
+
+    /// * modal handlers * ///
+    subwfModalHandler() {
+        this.setState({
+            showSubWfModal: !this.state.showSubWfModal
+        })
+    }
+
+    showDefinitionModal() {
+        this.parseDiagramToJSON();
+        this.setState({
+            showDefinitionModal: !this.state.showDefinitionModal
+        })
+    }
+
+    showGeneralInfoModal() {
+        if (this.props.isWfNameLocked && this.state.showGeneralInfoModal === false) {
+            this.parseDiagramToJSON()
+        }
+        this.setState({
+            showGeneralInfoModal: !this.state.showGeneralInfoModal
+        })
+    }
+
+    showDetailsModal() {
+        this.setState({
+            showDetailsModal: !this.state.showDetailsModal
+        })
+    }
+
+    showExitModal() {
+        this.setState({
+            showExitModal: !this.state.showExitModal
+        })
+    }
+
+    showInputModal() {
+        if (this.state.showInputModal) {
+            this.showDetailsModal()
+        }
+        this.setState({
+            showInputModal: !this.state.showInputModal
+        });
+    }
+
+    saveNodeInputsHandler(savedInputs, id) {
+        let nodes = this.state.app.getDiagramEngine().getDiagramModel().getNodes();
+
+        _.values(nodes).forEach(node => {
+            if (node.id === id) {
+                node.extras.inputs = savedInputs;
+            }
+        });
+    }
+
+    redirectOnExit() {
+        this.props.history.push('/workflows/defs');
+    }
+
     render() {
 
         let subWfModal = this.state.showSubWfModal ?
             <SubwfModal modalHandler={this.subwfModalHandler.bind(this)} inputs={this.state.modalInputs}
                         saveInputs={this.saveNodeInputsHandler.bind(this)}/> : null;
 
+        let definitionModal = this.state.showDefinitionModal ?
+            <WorkflowDefModal definition={this.props.finalWorkflow} modalHandler={this.showDefinitionModal}
+                              show={this.state.showDefinitionModal}/> : null;
+
+        let generalInfoModal = this.state.showGeneralInfoModal ?
+            <GeneralInfoModal definition={this.props.finalWorkflow}
+                              workflows={this.props.workflows}
+                              modalHandler={this.showGeneralInfoModal}
+                              saveInputs={this.props.updateFinalWorkflow}
+                              show={this.state.showGeneralInfoModal}
+                              lockWorkflowName={this.props.lockWorkflowName}
+                              isWfNameLocked={this.props.isWfNameLocked}
+                              redirectOnExit={this.redirectOnExit}/> : null;
+
+        let inputModal = this.state.showInputModal ?
+            <InputModal wf={this.props.finalWorkflow.name + " / " + this.props.finalWorkflow.version}
+                        modalHandler={this.showInputModal}
+                        show={this.state.showInputModal} fromBuilder/> : null;
+
+        let detailsModal = this.state.showDetailsModal ?
+            <DetailsModal wfId={this.props.workflowId} modalHandler={this.showDetailsModal}
+                          show={this.state.showDetailsModal} fromBuilder/> : null;
+
+        let exitModal = this.state.showExitModal ?
+            <Modal show={this.state.showExitModal}>
+                <Modal.Header>
+                    <Modal.Title>Do you want to exit builder?</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>All changes will be lost.</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="outline-primary" onClick={this.showExitModal}>Cancel</Button>
+                    <Button variant="danger" onClick={this.redirectOnExit}>Exit</Button>
+                </Modal.Footer>
+            </Modal> : null;
+
         return (
             <div className="body">
                 {subWfModal}
+                {definitionModal}
+                {generalInfoModal}
+                {inputModal}
+                {detailsModal}
+                {exitModal}
                 <div className="builder-header"/>
-                <ControlsHeader parseWftoJSON={this.parseDiagramToJSON.bind(this)} app={this.state.app}/>
+
+                <ControlsHeader
+                    parseWftoJSON={this.parseDiagramToJSON}
+                    showDefinitionModal={this.showDefinitionModal}
+                    showGeneralInfoModal={this.showGeneralInfoModal}
+                    showExitModal={this.showExitModal}
+                    saveAndExecute={this.saveAndExecute}
+                    expandNodeToWorkflow={this.expandNodeToWorkflow}
+                    query={this.props.query}
+                    updateQuery={this.props.updateQuery}
+                    updateCategory={this.props.updateCategory}
+                    updateSidebar={this.props.updateSidebar}
+                    sidebarShown={this.props.sidebarShown}
+                    category={this.props.category}
+                    app={this.state.app}/>
+
+
                 <div className="content">
                     <SideMenu show={this.props.sidebarShown} category={this.props.category}
                               workflows={this.props.workflows} functional={this.props.functional}/>
@@ -260,9 +451,12 @@ const mapStateToProps = state => {
         functional: state.buildReducer.functional,
         sidebarShown: state.buildReducer.sidebarShown,
         category: state.buildReducer.category,
+        query: state.buildReducer.query,
         finalWorkflow: state.buildReducer.finalWorkflow,
         smartRouting: state.buildReducer.switchSmartRouting,
-        customAlert: state.buildReducer.customAlert
+        customAlert: state.buildReducer.customAlert,
+        isWfNameLocked: state.buildReducer.workflowNameLock,
+        workflowId: state.buildReducer.executedWfId,
     }
 };
 
@@ -272,7 +466,10 @@ const mapDispatchToProps = dispatch => {
         updateFinalWorkflow: (finalWorkflow) => dispatch(builderActions.updateFinalWorkflow(finalWorkflow)),
         resetToDefaultWorkflow: () => dispatch(builderActions.resetToDefaultWorkflow()),
         updateSidebar: (isShown) => dispatch(builderActions.updateSidebar(isShown)),
-        showCustomAlert: (show, variant, msg) => dispatch(builderActions.showCustomAlert(show, variant, msg))
+        updateQuery: (query) => dispatch(builderActions.requestUpdateByQuery(query)),
+        updateCategory: (category) => dispatch(builderActions.updateCategory(category)),
+        showCustomAlert: (show, variant, msg) => dispatch(builderActions.showCustomAlert(show, variant, msg)),
+        lockWorkflowName: () => dispatch(builderActions.lockWorkflowName())
     }
 };
 

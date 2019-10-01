@@ -569,8 +569,8 @@ export const createLinks_decision_nodes = (nodes, tasks, links) => {
 };
 
 // in case subworkflow is not found in DB
-export const transform_workflow_to_diagram = (name, version, startPosition, props) => {
-    let diagramEngine = props.app.getDiagramEngine();
+export const transform_workflow_to_diagram = (name, version, startPosition, app) => {
+    let diagramEngine = app.getDiagramEngine();
     let diagramModel = diagramEngine.getDiagramModel();
 
     return http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
