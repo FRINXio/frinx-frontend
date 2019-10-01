@@ -59,10 +59,6 @@ class DiagramBuilder extends Component {
         this.expandNodeToWorkflow = this.expandNodeToWorkflow.bind(this)
     }
 
-    componentWillMount() {
-        this.props.resetToDefaultWorkflow();
-    }
-
     componentDidMount() {
         document.addEventListener('dblclick', this.doubleClickListener.bind(this));
         document.addEventListener("keydown", this.keyBindings.bind(this), false);
@@ -72,6 +68,10 @@ class DiagramBuilder extends Component {
         });
         this.putDefaultsOnCanvas();
         this.props.showCustomAlert(true, "primary", "Start to drag & drop tasks from left menu on canvas.")
+    }
+
+    componentWillUnmount() {
+        this.props.resetToDefaultWorkflow();
     }
 
     keyBindings(e) {

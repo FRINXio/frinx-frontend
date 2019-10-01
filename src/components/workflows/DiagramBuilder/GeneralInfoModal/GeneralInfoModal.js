@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Modal, Button, Form, Tab, Tabs, ButtonGroup} from "react-bootstrap";
+import {Modal, Button, Tab, Tabs, ButtonGroup} from "react-bootstrap";
 import DefaultsDescsTab from "./DefaultsDescsTab";
 import OutputParamsTab from "./OutputParamsTab";
 import GeneralParamsTab from "./GeneralParamsTab";
@@ -170,31 +170,29 @@ class GeneralInfoModal extends Component {
                     <Modal.Title>{isNameLocked ? "Edit general informations" : "Create new workflow"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body style={{padding: "30px"}}>
-                    <Form onSubmit={this.handleSubmit}>
-                        <Tabs style={{marginBottom: "20px"}}>
-                            <Tab eventKey={1} title="General">
-                                <GeneralParamsTab finalWf={this.state.finalWf} handleInput={this.handleInput}
-                                                  isWfNameValid={this.state.isWfNameValid}
-                                                  isWfNameLocked={isNameLocked}/>
-                            </Tab>
-                            <Tab eventKey={2} title="Output parameters">
-                                <OutputParamsTab finalWf={this.state.finalWf} handleSubmit={this.handleSubmit}
-                                                 handleOutputParam={this.handleOutputParam.bind(this)}
-                                                 handleCustomParam={this.handleCustomParam.bind(this)}
-                                                 deleteOutputParam={this.deleteOutputParam.bind(this)}/>
-                            </Tab>
-                            <Tab eventKey={3} title="Defaults & description">
-                                <DefaultsDescsTab finalWf={this.state.finalWf}
-                                                  deleteDefaultAndDesc={this.deleteDefaultAndDesc.bind(this)}
-                                                  handleCustomDefaultAndDesc={this.handleCustomDefaultAndDesc.bind(this)}/>
-                            </Tab>
-                        </Tabs>
-                        <ButtonGroup style={{width: "100%", marginTop: "20px"}}>
-                            {!isNameLocked ? <Button variant="outline-secondary"
-                                                    onClick={this.props.redirectOnExit}>Cancel</Button> : null}
-                            <Button type="submit" variant="primary">Save</Button>
-                        </ButtonGroup>
-                    </Form>
+                    <Tabs style={{marginBottom: "20px"}}>
+                        <Tab eventKey={1} title="General">
+                            <GeneralParamsTab finalWf={this.state.finalWf} handleInput={this.handleInput}
+                                              isWfNameValid={this.state.isWfNameValid} handleSubmit={this.handleSubmit}
+                                              isWfNameLocked={isNameLocked}/>
+                        </Tab>
+                        <Tab eventKey={2} title="Output parameters">
+                            <OutputParamsTab finalWf={this.state.finalWf} handleSubmit={this.handleSubmit}
+                                             handleOutputParam={this.handleOutputParam.bind(this)}
+                                             handleCustomParam={this.handleCustomParam.bind(this)}
+                                             deleteOutputParam={this.deleteOutputParam.bind(this)}/>
+                        </Tab>
+                        <Tab eventKey={3} title="Defaults & description">
+                            <DefaultsDescsTab finalWf={this.state.finalWf}
+                                              deleteDefaultAndDesc={this.deleteDefaultAndDesc.bind(this)}
+                                              handleCustomDefaultAndDesc={this.handleCustomDefaultAndDesc.bind(this)}/>
+                        </Tab>
+                    </Tabs>
+                    <ButtonGroup style={{width: "100%", marginTop: "20px"}}>
+                        {!isNameLocked ? <Button variant="outline-secondary"
+                                                 onClick={this.props.redirectOnExit}>Cancel</Button> : null}
+                        <Button onClick={this.handleSubmit} variant="primary">Save</Button>
+                    </ButtonGroup>
                 </Modal.Body>
             </Modal>
         );

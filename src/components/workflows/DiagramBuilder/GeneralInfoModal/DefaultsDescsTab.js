@@ -13,24 +13,17 @@ class DefaultsDescsTab extends Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            finalWf: nextProps.finalWf
-        })
-    }
-
     getDescriptionAndDefault(selectedParam) {
         let inputParameters = this.state.finalWf.inputParameters || [];
         let result = [];
 
         inputParameters.forEach(param => {
             if (param.match(/^(.*?)\[/)[1] === selectedParam) {
-                param.match(/\[(.*?)]/g).map(group => {
-                    result.push(group.replace(/[\[\]']+/g,''))
+                param.match(/\[(.*?)]/g).forEach(group => {
+                    result.push(group.replace(/[[\]']+/g,''))
                 });
             }
         });
-
         return result.length > 0 ? result : ['','']
     }
 

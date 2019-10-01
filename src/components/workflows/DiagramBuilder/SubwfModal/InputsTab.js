@@ -11,10 +11,13 @@ class InputsTab extends Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            inputs: nextProps.inputs
-        })
+    static getDerivedStateFromProps(props, state) {
+        if (props.inputs !== state.inputs) {
+            return {
+                inputs: props.inputs
+            }
+        }
+        return null
     }
 
     getDescriptionAndDefault(selectedParam) {
@@ -23,12 +26,11 @@ class InputsTab extends Component {
 
         inputParameters.forEach(param => {
             if (param.match(/^(.*?)\[/)[1] === selectedParam) {
-                param.match(/\[(.*?)]/g).map(group => {
-                    result.push(group.replace(/[\[\]']+/g, ''))
+                param.match(/\[(.*?)]/g).forEach(group => {
+                    result.push(group.replace(/[[\]']+/g, ''))
                 });
             }
         });
-
         return result.length > 0 ? result : ['', '']
     }
 
@@ -76,7 +78,6 @@ class InputsTab extends Component {
         )
     }
 
-
     render() {
         let textFieldKeywords = ["template", "uri", "body"];
         let textFieldParams = [];
@@ -102,11 +103,11 @@ class InputsTab extends Component {
                             if (item[0] === "inputParameters") {
                                 return Object.entries(item[1]).map((entry, i) => {
                                     if (textFieldKeywords.find(keyword => entry[0].includes(keyword))) {
-                                        this.handleTextField(entry, item, i, textFieldParams)
+                                        return this.handleTextField(entry, item, i, textFieldParams)
                                     } else if (typeof entry[1] === 'object') {
                                         return Object.entries(entry[1]).map(innerEntry => {
                                             if (textFieldKeywords.find(keyword => innerEntry[0].includes(keyword))) {
-                                                this.handleTextField(innerEntry, entry, i, textFieldParams);
+                                                return this.handleTextField(innerEntry, entry, i, textFieldParams);
                                             } else {
                                                 return (
                                                     <Col sm={6} key={`col-${innerEntry[0]}`}>
@@ -141,7 +142,7 @@ class InputsTab extends Component {
                                         )
                                     }
                                 })
-                            }
+                            } return null;
                         })}
                     </Row>
                     <Row>

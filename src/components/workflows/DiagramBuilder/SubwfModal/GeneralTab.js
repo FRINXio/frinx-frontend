@@ -11,17 +11,19 @@ class GeneralTab extends Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            inputs: nextProps.inputs
-        })
+    static getDerivedStateFromProps(props, state) {
+        if (props.inputs !== state.inputs) {
+            return {
+                inputs: props.inputs
+            }
+        }
+        return null
     }
 
     render() {
-
         let notGeneral = ["type", "subWorkflowParam", "joinOn", "name", "taskReferenceName", "forkTasks", "inputParameters"];
-        let taskName = this.state.inputs["name"];
-        let taskRefName = this.state.inputs["taskReferenceName"];
+        let taskName = this.state.inputs["name"] || '';
+        let taskRefName = this.state.inputs["taskReferenceName"] || '';
         let decisionCases = [];
 
         const renderTaskName = (item) => (
@@ -66,7 +68,7 @@ class GeneralTab extends Component {
                     </InputGroup.Prepend>
                     <Form.Control
                         type="input"
-                        value={item[1]}/>
+                        value={item[1]} onChange={()=>{}}/>
                     <InputGroup.Append>
                         <ButtonGroup>
                             <Button variant="outline-primary"

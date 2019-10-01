@@ -1,5 +1,3 @@
-import {getWfInputs} from "./workflows/DiagramBuilder/builder-utils";
-
 export const mountNetconfTemplate = JSON.stringify( {
     "node-id": ["xr6","Unique identifier of device across all systems"],
     "netconf-node-topology:host": ["192.168.1.213","IP or hostname of the management endpoint on a device"],

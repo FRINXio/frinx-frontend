@@ -13,10 +13,13 @@ class OutputParamsTab extends Component {
         this.handleCustomParam = this.handleCustomParam.bind(this)
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            finalWf: nextProps.finalWf
-        })
+    static getDerivedStateFromProps(props, state) {
+        if (props.finalWf !== state.finalWf) {
+            return {
+                finalWf: props.finalWf
+            }
+        }
+        return null
     }
 
     renderOutputParams() {

@@ -146,15 +146,6 @@ class Grapher extends Component {
         let innerGraph = this.state.innerGraph || [];
         let p = this;
 
-        let showSubGraphDetails = function () {
-            let id = p.state.subGraphId;
-            window.open('#/workflow/id/' + id, '_new');
-        };
-
-        let hidesub = function () {
-            p.setState({showSubGraph: false});
-        };
-
         let hideProps = function () {
             p.setState({showSideBar: false});
         };

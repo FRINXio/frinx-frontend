@@ -80,7 +80,7 @@ const tasks = (props) => {
             optional: false,
             startDelay: 0
         };
-        return tasks.push(<SideMenuItem id={`wf${i}`} model={{type: "in/out", wfObject, name: wf.name}}
+        return tasks.push(<SideMenuItem key={`wf${i}`} model={{type: "in/out", wfObject, name: wf.name}}
                                  name={wf.name} color="#0095FF"/>)
     });
 

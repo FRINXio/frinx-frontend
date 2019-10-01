@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Button, ButtonGroup, Col, Form, InputGroup} from "react-bootstrap";
+import {Button, ButtonGroup, Col, Form, InputGroup, Row} from "react-bootstrap";
 import {workflowDescriptions} from "../../../constants";
 
 class GeneralParamsTab extends Component {
@@ -9,12 +9,24 @@ class GeneralParamsTab extends Component {
         this.state = {
             finalWf: this.props.finalWf,
         };
+
+        this.handleSubmit = this.handleSubmit.bind(this)
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            finalWf: nextProps.finalWf
-        })
+
+    static getDerivedStateFromProps(props, state) {
+        if (props.finalWf !== state.finalWf) {
+            return {
+                finalWf: props.finalWf
+            }
+        }
+        return null
+    }
+
+    handleSubmit(e) {
+        if (e.key === "Enter" || e === "Enter") {
+            this.props.handleSubmit(e)
+        }
     }
 
     render() {
@@ -84,8 +96,7 @@ class GeneralParamsTab extends Component {
                         <InputGroup.Text>{item[0]}:</InputGroup.Text>
                     </InputGroup.Prepend>
                     <Form.Control
-                        type="input"
-                        value={item[1]}/>
+                        value={item[1]} onChange={()=>{}}/>
                     <InputGroup.Append>
                         <ButtonGroup>
                         <Button variant="outline-primary"
@@ -103,51 +114,50 @@ class GeneralParamsTab extends Component {
         );
 
         return (
-            <div>
+            <Form onKeyPress={this.handleSubmit}>
                 {isWfNameLocked ? lockedNameField(nameFieldValue) : unlockedNameField(nameFieldValue)}
                 {description(descFieldValue)}
-                <Form.Row>
-                {Object.entries(this.state.finalWf).map((item, i) => {
-                    if (!hiddenParams.includes(item[0])) {
-                        if (item[0] === "version") {
-                            return (
-                                <Col sm={6} key={`col2-${i}`}>
-                                    {buttonWrappedField(item, ["-", item[1] - 1], ["+", item[1] + 1])}
-                                </Col>
-                            )
+                <Row>
+                    {Object.entries(this.state.finalWf).map((item, i) => {
+                        if (!hiddenParams.includes(item[0])) {
+                            if (item[0] === "version") {
+                                return (
+                                    <Col sm={6} key={`col2-${i}`}>
+                                        {buttonWrappedField(item, ["-", item[1] - 1], ["+", item[1] + 1])}
+                                    </Col>
+                                )
+                            }
+                            if (item[0] === "restartable") {
+                                return (
+                                    <Col sm={6} key={`col2-${i}`}>
+                                        {buttonWrappedField(item, ["<", !item[1]], [">", !item[1]])}
+                                    </Col>
+                                )
+                            } else {
+                                return (
+                                    <Col sm={6} key={`col3-${i}`}>
+                                        <Form.Group>
+                                            <InputGroup>
+                                                <InputGroup.Prepend>
+                                                    <InputGroup.Text>{item[0]}:</InputGroup.Text>
+                                                </InputGroup.Prepend>
+                                                <Form.Control
+                                                    type="input"
+                                                    onChange={(e) => this.props.handleInput(e.target.value, item[0])}
+                                                    value={item[1]}/>
+                                                <Form.Text className="text-muted">
+                                                    {workflowDescriptions[item[0]]}
+                                                </Form.Text>
+                                            </InputGroup>
+                                        </Form.Group>
+                                    </Col>
+                                )
+                            }
                         }
-                        if (item[0] === "restartable") {
-                            return (
-                                <Col sm={6} key={`col2-${i}`}>
-                                    {buttonWrappedField(item, ["<", !item[1]], [">", !item[1]])}
-                                </Col>
-                            )
-                        }
-                        else {
-                            return (
-                                <Col sm={6} key={`col3-${i}`}>
-                                    <Form.Group>
-                                        <InputGroup>
-                                            <InputGroup.Prepend>
-                                                <InputGroup.Text>{item[0]}:</InputGroup.Text>
-                                            </InputGroup.Prepend>
-                                            <Form.Control
-                                                type="input"
-                                                onChange={(e) => this.props.handleInput(e.target.value, item[0])}
-                                                value={item[1]}/>
-                                            <Form.Text className="text-muted">
-                                                {workflowDescriptions[item[0]]}
-                                            </Form.Text>
-                                        </InputGroup>
-                                    </Form.Group>
-                                </Col>
-                            )
-                        }
-                    }
-                    return null;
-                })}
-                </Form.Row>
-            </div>
+                        return null;
+                    })}
+                </Row>
+            </Form>
         );
     }
 }
