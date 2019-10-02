@@ -75,7 +75,7 @@ const tasks = (props) => {
             type: "SUB_WORKFLOW",
             subWorkflowParam: {
                 name: wf.name,
-                version: 1
+                version: wf.version
             },
             optional: false,
             startDelay: 0

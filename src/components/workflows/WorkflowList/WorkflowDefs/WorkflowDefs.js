@@ -9,6 +9,7 @@ import DiagramModal from "./DiagramModal/DiagramModal";
 import PageCount from "../../../common/PageCount";
 import PageSelect from "../../../common/PageSelect";
 import {wfLabelsColor} from "../../../constants";
+import {withRouter} from "react-router-dom";
 
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
@@ -215,6 +216,12 @@ class WorkflowDefs extends Component {
         return labels;
     };
 
+    editWorkflow() {
+        const name = this.state.activeWf.split(" / ")[0];
+        const version = this.state.activeWf.split(" / ")[1];
+        this.props.history.push(`/workflows/builder/${name}/${version}`)
+    }
+
     repeat() {
         let output = [];
         let defaultPages = this.state.defaultPages;
@@ -247,6 +254,8 @@ class WorkflowDefs extends Component {
                                             onClick={this.showInputModal.bind(this)}>Input</Button>
                                     <Button variant="outline-light noshadow"
                                             onClick={this.showDefinitionModal.bind(this)}>Definition</Button>
+                                    <Button variant="outline-light noshadow"
+                                            onClick={this.editWorkflow.bind(this)}>Edit</Button>
                                     <Button variant="outline-light noshadow"
                                             onClick={this.showDiagramModal.bind(this)}>Diagram</Button>
                                     <Button variant="outline-light noshadow" onClick={this.updateFavourite.bind(this, dataset[i])}>
@@ -361,4 +370,4 @@ class WorkflowDefs extends Component {
     }
 }
 
-export default WorkflowDefs
+export default withRouter(WorkflowDefs)
