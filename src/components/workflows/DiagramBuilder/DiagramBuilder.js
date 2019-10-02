@@ -277,7 +277,7 @@ class DiagramBuilder extends Component {
                 setTimeout(() => this.state.app.getDiagramEngine().repaintCanvas(), 10);
                 this.forceUpdate()
             }).catch(e => {
-                console.log(e)
+                this.props.showCustomAlert(true, "danger", e.message);
             })
 
         });

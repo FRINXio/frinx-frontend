@@ -579,7 +579,7 @@ export const transform_workflow_to_diagram = (name, version, startPosition, app)
         let links = [];
 
         if (!tasks) {
-            throw new Error("Cannot find selected sub-workflow.")
+            throw new Error(`Cannot find selected sub-workflow: ${name}.`)
         }
 
         // create nodes + append inputs
