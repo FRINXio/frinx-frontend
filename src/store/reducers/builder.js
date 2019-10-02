@@ -55,19 +55,14 @@ const reducer = (state = initialState, action) => {
         }
         case STORE_WORKFLOWS: {
             const {originalWorkflows, workflows} = action;
-            return {
-                ...state,
-                originalWorkflows,
-                workflows,
-                workflowNameLock: false
-            }
+            return {...state, originalWorkflows, workflows}
         }
         case UPDATE_WORKFLOWS: {
             const {workflows} = action;
             return {...state, workflows}
         }
         case RESET_TO_DEFAULT_WORKFLOW: {
-            return {...state, finalWorkflow: finalWorkflowTemplate}
+            return {...state, finalWorkflow: finalWorkflowTemplate, workflowNameLock: false}
         }
         case STORE_WORKFLOW_ID: {
             const {executedWfId} = action;

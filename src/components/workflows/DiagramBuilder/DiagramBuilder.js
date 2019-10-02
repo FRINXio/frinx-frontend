@@ -66,12 +66,51 @@ class DiagramBuilder extends Component {
         http.get('/api/conductor/metadata/workflow').then(res => {
             this.props.storeWorkflows(res.result || [])
         });
-        this.putDefaultsOnCanvas();
-        this.props.showCustomAlert(true, "primary", "Start to drag & drop tasks from left menu on canvas.")
+
+        if (!_.isEmpty(this.props.match.params)) {
+            const {name, version} = this.props.match.params;
+            this.renderSelectedWorkflow(name, version)
+        } else {
+            this.placeStartEndOnCanvas({x: 900, y: 300}, {x: 1200, y: 300});
+            this.props.showCustomAlert(true, "primary", "Start to drag & drop tasks from left menu on canvas.")
+        }
     }
 
     componentWillUnmount() {
         this.props.resetToDefaultWorkflow();
+    }
+
+    renderSelectedWorkflow(name, version) {
+        this.setState({showGeneralInfoModal: false});
+
+        http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
+            this.props.updateFinalWorkflow(res.result);
+            this.props.showCustomAlert(true, "info", `Editing workflow ${name} / ${version}.`);
+            this.props.lockWorkflowName();
+
+            transform_workflow_to_diagram(name, version, {x: 900, y: 300}, this.state.app).then(expandedNodes => {
+                let diagramEngine = this.state.app.getDiagramEngine();
+                let diagramModel = diagramEngine.getDiagramModel();
+                let firstNode = expandedNodes[0];
+                let lastNode = expandedNodes[expandedNodes.length - 1];
+
+                const {start, end} = this.placeStartEndOnCanvas({
+                    x: firstNode.x - 200,
+                    y: firstNode.y
+                }, {
+                    x: lastNode.x + 200,
+                    y: lastNode.y
+                });
+
+                diagramModel.addAll(linkNodes(start, firstNode), linkNodes(lastNode, end));
+                diagramEngine.zoomToFit();
+                diagramEngine.zoomToFit();
+                diagramEngine.setDiagramModel(diagramModel);
+                diagramEngine.repaintCanvas();
+            }).catch(e => {
+                this.props.showCustomAlert(true, "danger", e.message);
+            })
+        })
     }
 
     keyBindings(e) {
@@ -100,7 +139,7 @@ class DiagramBuilder extends Component {
         }
     }
 
-    putDefaultsOnCanvas() {
+    placeStartEndOnCanvas(startPos, endPos) {
         let diagramEngine = this.state.app.getDiagramEngine();
         let activeModel = diagramEngine.getDiagramModel();
 
@@ -109,9 +148,10 @@ class DiagramBuilder extends Component {
         let start = new CircleStartNodeModel("Start");
         let end = new CircleEndNodeModel("End");
 
-        start.setPosition(900, 100);
-        end.setPosition(1200, 100);
+        start.setPosition(startPos.x, startPos.y);
+        end.setPosition(endPos.x, endPos.y);
         activeModel.addAll(start, end);
+        return {start, end}
     }
 
     onDropHandler(e) {
@@ -272,6 +312,8 @@ class DiagramBuilder extends Component {
                 let firstNode = expandedNodes[0];
                 let lastNode = expandedNodes[expandedNodes.length - 1];
 
+                this.state.app.getDiagramEngine().zoomToFit();
+                this.state.app.getDiagramEngine().zoomToFit();
                 diagramModel.addAll(linkNodes(inputLinkParent, firstNode), linkNodes(lastNode, outputLinkParent));
                 this.state.app.getDiagramEngine().setDiagramModel(diagramModel);
                 setTimeout(() => this.state.app.getDiagramEngine().repaintCanvas(), 10);

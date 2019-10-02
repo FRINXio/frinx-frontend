@@ -64,7 +64,7 @@ class OutputParamsTab extends Component {
                 <hr className="hr-text" data-content="existing output parameters"/>
                 <Form onSubmit={this.props.handleSubmit}>
                     <Row>
-                        {Object.entries(outputParameters[0][1]).map((key, i) => {
+                        {outputParameters.length > 0 ? Object.entries(outputParameters[0][1]).map((key, i) => {
                             return (
                                 <Col sm={6} key={`col4-${i}`}>
                                     <Form.Group>
@@ -80,7 +80,7 @@ class OutputParamsTab extends Component {
                                     </Form.Group>
                                 </Col>
                             )
-                        })}
+                        }) : null}
                     </Row>
                 </Form>
             </div>

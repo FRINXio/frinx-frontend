@@ -30,7 +30,7 @@ class GeneralParamsTab extends Component {
     }
 
     render() {
-        let hiddenParams = ["name", "description", "schemaVersion", "workflowStatusListenerEnabled", "tasks", "outputParameters", "inputParameters"];
+        let hiddenParams = ["name", "description", "schemaVersion", "workflowStatusListenerEnabled", "tasks", "outputParameters", "inputParameters", "updateTime"];
         let nameFieldValue = this.state.finalWf["name"];
         let descFieldValue = this.state.finalWf["description"];
         let {isWfNameLocked, isWfNameValid} = this.props;
