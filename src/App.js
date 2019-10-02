@@ -60,6 +60,7 @@ class App extends Component {
                     <Route exact path="/devices" component={List}/>
                     <Route path="/devices/edit/:id" component={DeviceView}/>
                     <Route exact path="/tasks/:type" component={TaskList}/>
+                    <Route exact path="/workflows/builder" component={DiagramBuilder}/>
                     <Route exact path="/workflows/:type" component={WorkflowList}/>
                     <Route exact path="/workflows/:type/:wfid" component={WorkflowList}/>
                     <Route exact path="/inventory" component={KibanaFrame}/>
