@@ -100,13 +100,12 @@ class List extends Component {
         })
     }
 
-    onDeviceSelect(e){
-        let checkboxID = e.target.id.split("-").pop();
-        let node_id = document.querySelector(`#node_id-${checkboxID}`).innerText;
-        let topology = document.querySelector(`#topology-${checkboxID}`).innerText;
+    onDeviceSelect(e, data, id){
+        let node_id = data[0];
+        let topology = data[3];
 
         if(e.target.checked){
-            this.state.selectedDevices.push({id: checkboxID, topology: topology, node_id: node_id});
+            this.state.selectedDevices.push({id: id, topology: topology, node_id: node_id});
         } else {
             for (let key in this.state.selectedDevices) {
                 let id = this.state.selectedDevices[key].id;
@@ -117,7 +116,7 @@ class List extends Component {
         }
     }
 
-    onDeviceRefresh(e) {
+    onDeviceRefresh(e, data) {
         let refreshBtnID = e.target.id;
         let refreshBtnElem = document.getElementById(refreshBtnID);
         refreshBtnElem.classList.add('fa-spin');
@@ -125,17 +124,13 @@ class List extends Component {
             refreshBtnElem.classList.remove('fa-spin')
         }, 1000);
 
-        let refreshBtnIdx = e.target.id.split("-").pop();
-        let node_id = document.querySelector(`#node_id-${refreshBtnIdx}`).innerText;
-        let topology = document.querySelector(`#topology-${refreshBtnIdx}`).innerText;
+        let node_id = data[0];
+        let topology = data[3] === "netconf" ? "topology-netconf" : "cli";
         let updatedData = this.state.data;
 
-        topology = topology === "netconf" ? "topology-netconf" : "cli";
-
-        updatedData.map((device, i) => {
+        updatedData.map((device) => {
             if (device[0] === node_id) {
                 return this.addDeviceEntry(node_id, topology)
-
             }
             return true;
         });
@@ -143,7 +138,7 @@ class List extends Component {
 
     removeDevices() {
         this.state.selectedDevices.map(device => {
-            if(device["topology"] === "netconf"){
+            if (device["topology"] === "netconf"){
                 return http.delete('api/odl/unmount/topology-netconf/' + device["node_id"])
             } else {
                 return http.delete('api/odl/unmount/cli/' + device["node_id"])
@@ -278,12 +273,9 @@ class List extends Component {
     }
 
 
-    async getDeviceDetails(e) {
-
-        let row_idx = e.target.id.split("-").pop();
-        let node_id = document.querySelector(`#node_id-${row_idx}`).innerText;
-        let topology = document.querySelector(`#topology-${row_idx}`).innerText;
-        topology = topology === "netconf" ? "topology-netconf" : "cli";
+    async getDeviceDetails(data) {
+        let node_id = data[0];
+        let topology = data[3] === "netconf" ? "topology-netconf" : "cli";
         let deviceObject = await this.getDeviceObject(node_id, topology);
         this.setState({
             deviceDetails: deviceObject,
@@ -311,18 +303,18 @@ class List extends Component {
         let output = [];
         let defaultPages = this.state.defaultPages;
         let viewedPage = this.state.viewedPage;
-        let dataset = this.state.keywords === "" ?this.state.data : this.state.table;
+        let dataset = this.state.keywords === "" ? this.state.data : this.state.table;
         dataset = this.sort(dataset, this.state.sortCategory);
         for(let i = 0; i < dataset.length; i++){
             if(i >= (viewedPage-1) * defaultPages && i < viewedPage * defaultPages) {
                 output.push(
                     <tr key={`row-${i}`} id={`row-${i}`}>
-                        <td className=''><Form.Check type="checkbox" onChange={(e) => this.onDeviceSelect(e)} id={`chb-${i}`}/></td>
-                        <td id={`node_id-${i}`} onClick={(e) => this.getDeviceDetails(e)}
+                        <td className=''><Form.Check type="checkbox" onChange={(e) => this.onDeviceSelect(e, dataset[i], i)} id={`chb-${i}`}/></td>
+                        <td id={`node_id-${i}`} onClick={() => this.getDeviceDetails(dataset[i])}
                             className={'clickable btn-outline-primary'}>{dataset[i][0]}</td>
                         <td>{dataset[i][1]}</td>
                         <td style={dataset[i][2] === "connected" ? {color: "#007bff"} : {color: "lightblue"}}>{dataset[i][2]}
-                            &nbsp;&nbsp;<i id={`refreshBtn-${i}`} onClick={(e) => this.onDeviceRefresh(e)}
+                            &nbsp;&nbsp;<i id={`refreshBtn-${i}`} onClick={(e) => this.onDeviceRefresh(e, dataset[i])}
                                            style={{color: "#007bff"}} className="fas fa-sync-alt fa-xs clickable"/></td>
                         <td id={`topology-${i}`}>{dataset[i][3]}</td>
                         <td><Button className="noshadow" variant="outline-primary" onClick={() => {
