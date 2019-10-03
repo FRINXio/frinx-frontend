@@ -54,9 +54,9 @@ router.put('/metadata', async (req, res, next) => {
     }
 });
 
-router.post('/workflow/:workflowName', async (req, res, next) => {
+router.post('/workflow', async (req, res, next) => {
     try {
-        const result = await http.post(baseURLWorkflow + req.params.workflowName, req.body);
+        const result = await http.post(baseURLWorkflow, req.body);
         res.status(200).send(result);
     } catch (err) {
         next(err);
