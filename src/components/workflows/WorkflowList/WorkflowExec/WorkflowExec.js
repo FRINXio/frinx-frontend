@@ -123,7 +123,8 @@ class WorkflowExec extends Component {
         }
     }
 
-    indent(wf, i) {
+    indent(wf, i, size) {
+        let indentSize = size ? size : 6;
         if (wf[i].parentWorkflowId) {
             let layers = 0;
             if (this.state.showChildren.some(child => child.workflowId === wf[i].parentWorkflowId)) {
@@ -134,9 +135,9 @@ class WorkflowExec extends Component {
                     if (layers > 10)
                         break;
                 }
-                return layers*6+'px';
+                return layers*indentSize+'px';
             }
-            return '6px';
+            return indentSize+'px';
         }
         return '0px';
     }
@@ -224,7 +225,7 @@ class WorkflowExec extends Component {
                         }
                         <td onClick={this.showDetailsModal.bind(this, dataset[i]["workflowId"])} className='clickable'
                             style={{
-                                textIndent: this.indent(dataset, i),
+                                textIndent: this.indent(dataset, i, 20),
                                 whiteSpace: "nowrap",
                                 overflow: "hidden",
                                 textOverflow: "ellipsis"
