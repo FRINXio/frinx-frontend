@@ -216,7 +216,8 @@ class MountModal extends Component {
             activeToggles: [],
             mountCliFormAdv: {...JSON.parse("[" + mountCliTemplateAdv + "]")[0], ...JSON.parse("[" + mountCliTemplateLazyOFF + "]")[0]},
             mountNetconfFormAdv: JSON.parse("[" + mountNetconfTemplateAdv + "]")[0],
-            enableBlacklist: false
+            enableBlacklist: false,
+            warning: []
         });
         clearTimeout(this.state.timeout);
     }
