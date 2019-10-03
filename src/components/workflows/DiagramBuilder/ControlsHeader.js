@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Col, Container, Form, InputGroup, Row} from "react-bootstrap";
+import {Button, ButtonGroup, Col, Container, Form, InputGroup, Row} from "react-bootstrap";
 
 class ControlsHeader extends Component {
 
@@ -50,16 +50,19 @@ class ControlsHeader extends Component {
                         </InputGroup>
                         <Col md>
                             <div className="right-controls">
-                                <Button variant="outline-light" onClick={this.props.showExitModal}>
-                                    Exit</Button>
-                                <Button variant="outline-light" onClick={this.props.showDefinitionModal}>
-                                    <i className="fas fa-file-export"/></Button>
-                                <Button variant="outline-light" onClick={this.props.showGeneralInfoModal}>
-                                    <i className="fas fa-edit"/>&nbsp;&nbsp;Edit general</Button>
-                                <Button variant="outline-light" onClick={this.props.saveAndExecute}>
-                                    <i className="fas fa-save"/>&nbsp;&nbsp;Save & Execute</Button>
-                                <Button id="expand" variant="outline-light" onClick={this.props.expandNodeToWorkflow}>
-                                    <i className="fas fa-expand"/>&nbsp;&nbsp;Expand</Button>
+                                <ButtonGroup>
+                                    <Button id="expand" variant="outline-light"
+                                            onClick={this.props.expandNodeToWorkflow}>
+                                        <i className="fas fa-expand"/>&nbsp;&nbsp;Expand</Button>
+                                    <Button variant="outline-light" onClick={this.props.saveAndExecute}>
+                                        <i className="fas fa-save"/>&nbsp;&nbsp;Save & Execute</Button>
+                                    <Button variant="outline-light" onClick={this.props.showGeneralInfoModal}>
+                                        <i className="fas fa-edit"/>&nbsp;&nbsp;Edit general</Button>
+                                    <Button variant="outline-light" onClick={this.props.showDefinitionModal}>
+                                        <i className="fas fa-file-code"/>&nbsp;&nbsp;Def</Button>
+                                    <Button variant="outline-light" onClick={this.props.showExitModal}>
+                                        <i className="fas fa-door-open"/></Button>
+                                </ButtonGroup>
                             </div>
                         </Col>
                     </Row>

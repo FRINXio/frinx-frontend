@@ -33,7 +33,7 @@ class DefaultsDescsTab extends Component {
 
     render() {
         let inputParametersKeys = Object.keys(getWfInputsRegex(this.state.finalWf)) || [];
-        let existingInputParameters = this.state.finalWf.inputParameters;
+        let existingInputParameters = this.state.finalWf.inputParameters || [];
 
         existingInputParameters.forEach(param => {
             inputParametersKeys.push(param.match(/^(.*?)\[/)[1])
