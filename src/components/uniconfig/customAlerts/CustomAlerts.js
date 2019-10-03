@@ -25,11 +25,10 @@ class CustomAlerts extends Component {
                     return (
                         <Alert onClick={handleDismiss} variant={alertType.overallStatus === "complete" ? "success" : "danger" }>
                             <b>COMMIT-TO-NETWORK {alertType.overallStatus.toUpperCase()}:&nbsp;&nbsp;</b>
-                            {alertType.overallStatus === "fail" ?
-                                alertType.errorMessage
-                                :
-                                alertType.nodeStatus ?
-                                    "Node-status: " + alertType.nodeStatus
+                            {alertType.overallStatus === "fail"
+                                ? alertType.errorMessage
+                                : alertType.nodeStatus
+                                    ? "Node-status: " + alertType.nodeStatus
                                     : null
                             }&nbsp;&nbsp;&nbsp;&nbsp;
                             <i className="fas fa-times clickable" onClick={handleDismiss}/>
@@ -57,14 +56,15 @@ class CustomAlerts extends Component {
                     );
                 }
                 case 'dryrun': {
+                    let errorMessage = alertType.errorMessage === "Unified Mountpoint not found."
+                        ? "Dry-run is not supported for this node" : alertType.errorMessage;
                     return (
                         <Alert onClick={handleDismiss} variant={alertType.overallStatus === "complete" ? "success" : "danger" }>
                             <b>DRY-RUN {alertType.overallStatus.toUpperCase()}:&nbsp;&nbsp;</b>
-                            {alertType.overallStatus === "fail" ?
-                                alertType.errorMessage
-                                :
-                                alertType.nodeStatus ?
-                                "Node-status: " + alertType.nodeStatus
+                            {alertType.overallStatus === "fail"
+                                ? errorMessage
+                                : alertType.nodeStatus
+                                    ? "Node-status: " + alertType.nodeStatus
                                     : null
                             }&nbsp;&nbsp;&nbsp;&nbsp;
                             <i className="fas fa-times clickable" onClick={handleDismiss}/>
