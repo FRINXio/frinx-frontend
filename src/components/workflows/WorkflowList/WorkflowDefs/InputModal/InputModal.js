@@ -17,7 +17,8 @@ class InputModal extends Component {
             workflowForm: [],
             wfdesc: "",
             status: "Execute",
-            wfId: null
+            wfId: null,
+            warning: [],
         };
     }
 
@@ -25,7 +26,6 @@ class InputModal extends Component {
         let name = this.props.wf.split(" / ")[0];
         let version = this.props.wf.split(" / ")[1];
         http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
-            console.log(res);
             this.setState({
                 def: JSON.stringify(res.result, null, 2),
                 wfdesc: res.result["description"] ? res.result["description"].split("-")[0] : "",
@@ -99,15 +99,18 @@ class InputModal extends Component {
 
     handleInput(e,i) {
         let wfForm = this.state.workflowForm;
+        let warning = this.state.warning;
         wfForm.values[i] = e.target.value;
+        e.target.value.match(/^\s.*$/) || e.target.value.match(/^.*\s$/)
+            ? warning[i] = true
+            : warning[i] = false;
         this.setState({
-            workflowForm: wfForm
+            workflowForm: wfForm,
+            warning: warning
         })
     }
 
-    executeWorkflow(e) {
-        e.preventDefault();
-
+    executeWorkflow() {
         let {labels, values } = this.state.workflowForm;
         let payload = {};
 
@@ -141,6 +144,7 @@ class InputModal extends Component {
         let values = this.state.workflowForm.values || [];
         let descs = this.state.workflowForm.descs || [];
         let labels = this.state.workflowForm.labels || [];
+        let warning = this.state.warning;
 
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
@@ -155,11 +159,14 @@ class InputModal extends Component {
                                     <Col sm={6} key={`col1-${i}`}>
                                         <Form.Group>
                                             <Form.Label>{item}</Form.Label>
+                                            {warning[i]
+                                                ? <div style={{color: "red", fontSize: "12px", float: "right", marginTop: "5px"}}>Unnecessary space</div>
+                                                : null}
                                             <Form.Control
-                                                type="input"
-                                                onChange={(e) => this.handleInput(e,i)}
-                                                placeholder="Enter the input"
-                                                defaultValue={values[i]}/>
+                                                type="input" onChange={(e) => this.handleInput(e,i)}
+                                                placeholder="Enter the input" defaultValue={values[i]}
+                                                isInvalid={warning[i]}
+                                            />
                                             <Form.Text className="text-muted">
                                                 {descs[i]}
                                             </Form.Text>

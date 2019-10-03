@@ -52,7 +52,8 @@ class MountModal extends Component {
             isAdv: false,
             isSsh: true,
             activeToggles: [],
-            blacklistInfo: false
+            blacklistInfo: false,
+            warning: []
         }
     }
 
@@ -221,10 +222,14 @@ class MountModal extends Component {
     }
 
     handleInput(e, i, formToDisplay, which) {
+        let warning = this.state.warning;
         Object.values(formToDisplay).map( (item,idx) => {
             if (idx === i) {
-                if(e.target){
+                if (e.target) {
                     item[0] = e.target.value;
+                    e.target.value.match(/^\s.*$/) || e.target.value.match(/^.*\s$/)
+                        ? warning[i] = true
+                        : warning[i] = false;
                 } else {
                     item[0] = e.value ? e.value : e;
                     if (which === "type") {
@@ -237,11 +242,13 @@ class MountModal extends Component {
 
         if (this.state.isAdv) {
             this.setState({
-                mountCliFormAdv: formToDisplay
+                mountCliFormAdv: formToDisplay,
+                warning: warning
             })
         } else {
             this.setState({
-                mountCliForm: formToDisplay
+                mountCliForm: formToDisplay,
+                warning: warning
             })
         }
     }
@@ -368,6 +375,7 @@ class MountModal extends Component {
 
     render() {
 
+        let warning = this.state.warning;
         let formToDisplay = [];
         if (this.state.mountType === "Cli") {
             formToDisplay = this.state.mountCliForm;
@@ -536,10 +544,12 @@ class MountModal extends Component {
                 <Form.Group
                     controlId={`mount${type}Input-${item[0].split(":").pop()}`}>
                     <Form.Label>{item[0].split(":").pop()}</Form.Label>
+                    {warning[i]
+                        ? <div style={{color: "red", fontSize: "12px", float: "right", marginTop: "5px"}}>Unnecessary space</div>
+                        : null}
                     <Form.Control
-                        type="input"
-                        onChange={(e) => this.handleInput(e,i,formToDisplay)}
-                        value={item[1][0]}/>
+                        type="input" onChange={(e) => this.handleInput(e,i,formToDisplay)}
+                        value={item[1][0]} isInvalid={warning[i]}/>
                     <Form.Text className="text-muted">
                         {item[1][1]}
                     </Form.Text>
