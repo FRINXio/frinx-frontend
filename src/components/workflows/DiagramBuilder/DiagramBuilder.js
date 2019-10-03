@@ -56,7 +56,9 @@ class DiagramBuilder extends Component {
         this.showDetailsModal = this.showDetailsModal.bind(this);
         this.showExitModal = this.showExitModal.bind(this);
         this.saveAndExecute = this.saveAndExecute.bind(this);
-        this.expandNodeToWorkflow = this.expandNodeToWorkflow.bind(this)
+        this.expandNodeToWorkflow = this.expandNodeToWorkflow.bind(this);
+        this.renderSelectedWorkflow = this.renderSelectedWorkflow.bind(this);
+        this.clearCanvas = this.clearCanvas.bind(this)
     }
 
     componentDidMount() {
@@ -69,7 +71,11 @@ class DiagramBuilder extends Component {
 
         if (!_.isEmpty(this.props.match.params)) {
             const {name, version} = this.props.match.params;
-            this.renderSelectedWorkflow(name, version)
+            http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
+                this.renderSelectedWorkflow(res.result)
+            }).catch(() => {
+                return this.props.showCustomAlert(true, "danger", `Cannot find selected sub-workflow: ${name}.`);
+            });
         } else {
             this.placeStartEndOnCanvas({x: 900, y: 300}, {x: 1200, y: 300});
             this.props.showCustomAlert(true, "primary", "Start to drag & drop tasks from left menu on canvas.")
@@ -80,37 +86,49 @@ class DiagramBuilder extends Component {
         this.props.resetToDefaultWorkflow();
     }
 
-    renderSelectedWorkflow(name, version) {
+    clearCanvas() {
+        const diagramEngine = this.state.app.getDiagramEngine();
+        const activeModel = diagramEngine.getDiagramModel();
+        diagramEngine.setDiagramModel(activeModel);
+
+        _.values(activeModel.getNodes()).forEach(node => {
+            activeModel.removeNode(node);
+        });
+
+        _.values(activeModel.getLinks()).forEach(link => {
+            activeModel.removeLink(link);
+        });
+    };
+
+    renderSelectedWorkflow(definition) {
         this.setState({showGeneralInfoModal: false});
 
-        http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
-            this.props.updateFinalWorkflow(res.result);
-            this.props.showCustomAlert(true, "info", `Editing workflow ${name} / ${version}.`);
-            this.props.lockWorkflowName();
+        this.clearCanvas();
+        this.props.updateFinalWorkflow(definition);
+        this.props.showCustomAlert(true, "info", `Editing workflow ${definition.name} / ${definition.version}.`);
+        this.props.lockWorkflowName();
 
-            transform_workflow_to_diagram(name, version, {x: 900, y: 300}, this.state.app).then(expandedNodes => {
-                let diagramEngine = this.state.app.getDiagramEngine();
-                let diagramModel = diagramEngine.getDiagramModel();
-                let firstNode = expandedNodes[0];
-                let lastNode = expandedNodes[expandedNodes.length - 1];
+        const expandedNodes = transform_workflow_to_diagram(definition, {x: 900, y: 300}, this.state.app);
 
-                const {start, end} = this.placeStartEndOnCanvas({
-                    x: firstNode.x - 200,
-                    y: firstNode.y
-                }, {
-                    x: lastNode.x + 200,
-                    y: lastNode.y
-                });
+        const diagramEngine = this.state.app.getDiagramEngine();
+        const diagramModel = diagramEngine.getDiagramModel();
+        const firstNode = expandedNodes[0];
+        const lastNode = expandedNodes[expandedNodes.length - 1];
 
-                diagramModel.addAll(linkNodes(start, firstNode), linkNodes(lastNode, end));
-                diagramEngine.zoomToFit();
-                diagramEngine.zoomToFit();
-                diagramEngine.setDiagramModel(diagramModel);
-                diagramEngine.repaintCanvas();
-            }).catch(e => {
-                this.props.showCustomAlert(true, "danger", e.message);
-            })
-        })
+        const {start, end} = this.placeStartEndOnCanvas({
+            x: firstNode.x - 200,
+            y: firstNode.y
+        }, {
+            x: lastNode.x + 200,
+            y: lastNode.y
+        });
+
+        diagramModel.addAll(linkNodes(start, firstNode), linkNodes(lastNode, end));
+        diagramEngine.zoomToFit();
+        diagramEngine.zoomToFit();
+        diagramEngine.setDiagramModel(diagramModel);
+        diagramEngine.repaintCanvas();
+
     }
 
     keyBindings(e) {
@@ -292,7 +310,6 @@ class DiagramBuilder extends Component {
 
             const {name, version} = selectedNode.extras.inputs.subWorkflowParam;
             const {x, y} = selectedNode;
-
             const inputLink = getLinksArray("in", selectedNode)[0];
             const outputLink = getLinksArray("out", selectedNode)[0];
 
@@ -303,25 +320,28 @@ class DiagramBuilder extends Component {
             const inputLinkParent = inputLink.sourcePort.getNode();
             const outputLinkParent = outputLink.targetPort.getNode();
 
-            transform_workflow_to_diagram(name, version, {x, y}, this.state.app).then(expandedNodes => {
+            http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then((res, err) => {
+                const expandedNodes = transform_workflow_to_diagram(res.result, {x, y}, this.state.app);
+
+                const diagramEngine = this.state.app.getDiagramEngine();
+                const diagramModel = diagramEngine.getDiagramModel();
+                const firstNode = expandedNodes[0];
+                const lastNode = expandedNodes[expandedNodes.length - 1];
+
                 selectedNode.remove();
                 diagramModel.removeNode(selectedNode);
                 diagramModel.removeLink(inputLink);
                 diagramModel.removeLink(outputLink);
 
-                let firstNode = expandedNodes[0];
-                let lastNode = expandedNodes[expandedNodes.length - 1];
-
-                this.state.app.getDiagramEngine().zoomToFit();
-                this.state.app.getDiagramEngine().zoomToFit();
+                diagramEngine.zoomToFit();
+                diagramEngine.zoomToFit();
                 diagramModel.addAll(linkNodes(inputLinkParent, firstNode), linkNodes(lastNode, outputLinkParent));
-                this.state.app.getDiagramEngine().setDiagramModel(diagramModel);
-                setTimeout(() => this.state.app.getDiagramEngine().repaintCanvas(), 10);
+                diagramEngine.setDiagramModel(diagramModel);
+                setTimeout(() => diagramEngine.repaintCanvas(), 10);
                 this.forceUpdate()
-            }).catch(e => {
-                this.props.showCustomAlert(true, "danger", e.message);
+            }).catch(() => {
+                return this.props.showCustomAlert(true, "danger", `Cannot find selected sub-workflow: ${name}.`);
             })
-
         });
     }
 
@@ -404,8 +424,10 @@ class DiagramBuilder extends Component {
                         saveInputs={this.saveNodeInputsHandler.bind(this)}/> : null;
 
         let definitionModal = this.state.showDefinitionModal ?
-            <WorkflowDefModal definition={this.props.finalWorkflow} modalHandler={this.showDefinitionModal}
-                              show={this.state.showDefinitionModal}/> : null;
+            <WorkflowDefModal definition={this.props.finalWorkflow}
+                              modalHandler={this.showDefinitionModal}
+                              show={this.state.showDefinitionModal}
+                              renderSelectedWorkflow={this.renderSelectedWorkflow}/>: null;
 
         let generalInfoModal = this.state.showGeneralInfoModal ?
             <GeneralInfoModal definition={this.props.finalWorkflow}

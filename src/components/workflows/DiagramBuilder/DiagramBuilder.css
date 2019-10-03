@@ -20,9 +20,8 @@
     box-shadow: 4px -1px 23px -12px rgba(0,0,0,0.7);
 }
 
-.body .header .right-controls Button {
+.body .header .right-controls {
     float: right;
-    margin-left: 5px;
 }
 
 .body .header > * {

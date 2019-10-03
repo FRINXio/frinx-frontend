@@ -18,7 +18,9 @@ class InputModal extends Component {
             wfdesc: "",
             status: "Execute",
             wfId: null,
-            warning: [],
+            name: this.props.wf.split(" / ")[0],
+            version: Number(this.props.wf.split(" / ")[1]),
+            warning: []
         };
     }
 
@@ -29,7 +31,6 @@ class InputModal extends Component {
             this.setState({
                 def: JSON.stringify(res.result, null, 2),
                 wfdesc: res.result["description"] ? res.result["description"].split("-")[0] : "",
-                name: res.result["name"]
             }, () => this.getWorkflowInputDetails())
         });
     }
@@ -112,15 +113,20 @@ class InputModal extends Component {
 
     executeWorkflow() {
         let {labels, values } = this.state.workflowForm;
-        let payload = {};
+        let input = {};
+        let payload = {
+            name: this.state.name,
+            version: this.state.version,
+            input
+        };
 
         for (let i = 0; i < labels.length; i++) {
             if (values[i]) {
-                payload[labels[i]] = values[i].startsWith("{") ? JSON.parse(values[i]) : values[i];
+                input[labels[i]] = values[i].startsWith("{") ? JSON.parse(values[i]) : values[i];
             }
         }
         this.setState({ status: "Executing..."});
-        http.post('/api/conductor/workflow/' + this.state.name, JSON.stringify(payload)).then(res => {
+        http.post('/api/conductor/workflow', JSON.stringify(payload)).then(res => {
             console.log(res);
             this.setState({
                 status: res.statusText,
@@ -149,7 +155,7 @@ class InputModal extends Component {
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
                 <Modal.Body style={{padding: "30px"}}>
-                    <h4>{this.state.name}</h4>
+                    <h4>{this.state.name} / {this.state.version}</h4>
                     <p className="text-muted">{this.state.wfdesc}</p>
                     <hr/>
                     <Form onSubmit={this.executeWorkflow.bind(this)}>

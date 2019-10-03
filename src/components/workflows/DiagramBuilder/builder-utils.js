@@ -130,7 +130,7 @@ export const handleForkNode = (forkNode) => {
                     tmpBranch.push(decideNode.extras.inputs);
                     current = firstNeutralNode;
                     break;
-                default:
+                case "default":
                     tmpBranch.push(current.extras.inputs);
                     parent = current;
                     if (outputLinks.length > 0) {
@@ -139,6 +139,8 @@ export const handleForkNode = (forkNode) => {
                         current = null;
                     }
                     break;
+                default:
+                    current = null;
             }
         }
         forkTasks.push(tmpBranch);
@@ -208,20 +210,6 @@ export const handleDecideNode = (decideNode) => {
         firstNeutralNode = neutralBranchLink.targetPort.getNode();
     }
     return {decideNode, firstNeutralNode}
-};
-
-export const clearCanvas = (diagramEngine) => {
-
-    let activeModel = diagramEngine.getDiagramModel();
-    diagramEngine.setDiagramModel(activeModel);
-
-    _.values(activeModel.getNodes()).forEach(node => {
-        activeModel.removeNode(node);
-    });
-
-    _.values(activeModel.getLinks()).forEach(link => {
-        activeModel.removeLink(link);
-    });
 };
 
 ///////////// JSON TO DIAGRAM PARSER /////////////////////
@@ -569,31 +557,25 @@ export const createLinks_decision_nodes = (nodes, tasks, links) => {
 };
 
 // in case subworkflow is not found in DB
-export const transform_workflow_to_diagram = (name, version, startPosition, app) => {
+export const transform_workflow_to_diagram = (definition, startPosition, app) => {
     let diagramEngine = app.getDiagramEngine();
     let diagramModel = diagramEngine.getDiagramModel();
 
-    return http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
-        let tasks = res.result.tasks;
-        let nodes = [];
-        let links = [];
+    let tasks = definition.tasks;
+    let nodes = [];
+    let links = [];
 
-        if (!tasks) {
-            throw new Error(`Cannot find selected sub-workflow: ${name}.`)
-        }
+    // create nodes + append inputs
+    tasks.forEach((task) => {
+        handleTask(task, nodes, startPosition, links)
+    });
 
-        // create nodes + append inputs
-        tasks.forEach((task) => {
-            handleTask(task, nodes, startPosition, links)
-        });
+    // link nodes together
+    createLinks_fork_join_nodes(nodes, tasks, links);
+    createLinks_decision_nodes(nodes, tasks, links);
+    createLinks_remaining_nodes(nodes, tasks, links);
 
-        // link nodes together
-        createLinks_fork_join_nodes(nodes, tasks, links);
-        createLinks_decision_nodes(nodes, tasks, links);
-        createLinks_remaining_nodes(nodes, tasks, links);
-
-        diagramModel.addAll(...nodes, ...links);
-        setTimeout(() => diagramEngine.repaintCanvas(), 10);
-        return nodes
-    })
+    diagramModel.addAll(...nodes, ...links);
+    setTimeout(() => diagramEngine.repaintCanvas(), 10);
+    return nodes
 };
