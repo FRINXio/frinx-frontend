@@ -130,7 +130,7 @@ export const handleForkNode = (forkNode) => {
                     tmpBranch.push(decideNode.extras.inputs);
                     current = firstNeutralNode;
                     break;
-                default:
+                case "default":
                     tmpBranch.push(current.extras.inputs);
                     parent = current;
                     if (outputLinks.length > 0) {
@@ -139,6 +139,8 @@ export const handleForkNode = (forkNode) => {
                         current = null;
                     }
                     break;
+                default:
+                    current = null;
             }
         }
         forkTasks.push(tmpBranch);
