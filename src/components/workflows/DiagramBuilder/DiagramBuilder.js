@@ -11,7 +11,7 @@ import * as builderActions from "../../../store/actions/builder";
 import {connect} from "react-redux";
 import {
     getEndNode,
-    getLinksArray,
+    getLinksArray, getNodeWidth,
     getStartNode,
     getWfInputs,
     handleDecideNode,
@@ -116,10 +116,10 @@ class DiagramBuilder extends Component {
         const lastNode = expandedNodes[expandedNodes.length - 1];
 
         const {start, end} = this.placeStartEndOnCanvas({
-            x: firstNode.x - 200,
+            x: firstNode.x - 150,
             y: firstNode.y
         }, {
-            x: lastNode.x + 200,
+            x: lastNode.x + getNodeWidth(lastNode) + 110,
             y: lastNode.y
         });
 
@@ -460,7 +460,7 @@ class DiagramBuilder extends Component {
                 {inputModal}
                 {detailsModal}
                 {exitModal}
-                <div className="builder-header"/>
+                {/*<div className="builder-header"/>*/}
 
                 <ControlsHeader
                     parseWftoJSON={this.parseDiagramToJSON}
