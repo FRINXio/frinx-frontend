@@ -11,6 +11,11 @@ import {JoinNodeFactory} from "./NodeModels/JoinNode/JoinNodeFactory";
 import {DecisionNodePortModel} from "./NodeModels/DecisionNode/DecisionNodePortModel";
 import {DecisionNodeFactory} from "./NodeModels/DecisionNode/DecisionNodeFactory";
 
+import {DefaultNodeFactory} from "storm-react-diagrams";
+import {DefaultLinkFactory} from "storm-react-diagrams";
+import {DefaultLabelFactory} from "storm-react-diagrams";
+import {DefaultPortModel} from "./NodeModels/DefaultNodeModel/DefaultPortModel";
+
 export class Application {
 
     activeModel: SRD.DiagramModel;
@@ -18,21 +23,23 @@ export class Application {
 
     constructor() {
         this.diagramEngine = new SRD.DiagramEngine();
-        this.diagramEngine.installDefaultFactories();
 
+        this.diagramEngine.registerLinkFactory(new DefaultLinkFactory());
+        this.diagramEngine.registerLabelFactory(new DefaultLabelFactory());
+
+        this.diagramEngine.registerPortFactory(new SimplePortFactory("default", config => new DefaultPortModel()));
         this.diagramEngine.registerPortFactory(new SimplePortFactory("start", config => new CircleStartPortModel()));
         this.diagramEngine.registerPortFactory(new SimplePortFactory("end", config => new CircleEndPortModel()));
         this.diagramEngine.registerPortFactory(new SimplePortFactory("fork", config => new ForkNodePortModel()));
         this.diagramEngine.registerPortFactory(new SimplePortFactory("join", config => new JoinNodePortModel()));
         this.diagramEngine.registerPortFactory(new SimplePortFactory("decision", config => new DecisionNodePortModel()));
 
-
+        this.diagramEngine.registerNodeFactory(new DefaultNodeFactory());
         this.diagramEngine.registerNodeFactory(new CircleStartNodeFactory());
         this.diagramEngine.registerNodeFactory(new CircleEndNodeFactory());
         this.diagramEngine.registerNodeFactory(new ForkNodeFactory());
         this.diagramEngine.registerNodeFactory(new JoinNodeFactory());
         this.diagramEngine.registerNodeFactory(new DecisionNodeFactory());
-
     }
 
     getActiveDiagram(): SRD.DiagramModel {

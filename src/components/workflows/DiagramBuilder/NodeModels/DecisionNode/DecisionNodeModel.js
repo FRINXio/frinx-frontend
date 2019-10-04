@@ -17,10 +17,10 @@ export class DecisionNodeModel extends NodeModel {
         this.color = color;
         super.extras = {inputs: inputs};
 
-        this.addPort(new DecisionNodePortModel("left", "inputPort"));
-        this.addPort(new DecisionNodePortModel("right", "neutralPort"));
-        this.addPort(new DecisionNodePortModel("bottom", "completePort"));
-        this.addPort(new DecisionNodePortModel("top", "failPort"));
+        this.addPort(new DecisionNodePortModel(true, "left", "inputPort"));
+        this.addPort(new DecisionNodePortModel(false, "right", "neutralPort"));
+        this.addPort(new DecisionNodePortModel(false, "bottom", "completePort"));
+        this.addPort(new DecisionNodePortModel(false, "top", "failPort"));
     }
 
     deSerialize(object, engine: DiagramEngine) {

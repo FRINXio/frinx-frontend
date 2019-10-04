@@ -4,8 +4,9 @@ import { LinkModel, DiagramEngine, PortModel, DefaultLinkModel } from "storm-rea
 export class JoinNodePortModel extends PortModel {
     position: string | "top" | "bottom" | "left" | "right";
 
-    constructor(pos: string = "left") {
+    constructor(isInput: boolean, pos: string = "left") {
         super(pos, "join");
+        this.in = isInput;
         this.position = pos;
     }
 
@@ -25,6 +26,10 @@ export class JoinNodePortModel extends PortModel {
     deSerialize(data: any, engine: DiagramEngine) {
         super.deSerialize(data, engine);
         this.position = data.position;
+    }
+
+    canLinkToPort(port: PortModel): boolean {
+        return !this.in && port.in
     }
 
     createLinkModel(): LinkModel {

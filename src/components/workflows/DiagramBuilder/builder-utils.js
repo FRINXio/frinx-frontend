@@ -4,8 +4,6 @@ import {JoinNodeModel} from "./NodeModels/JoinNode/JoinNodeModel";
 import * as _ from "lodash";
 import {DecisionNodeModel} from "./NodeModels/DecisionNode/DecisionNodeModel";
 
-const http = require('../../../server/HttpServerSide').HttpClient;
-
 export const getWfInputsRegex = (wf) => {
     let def = JSON.stringify(wf);
     let matchArray = def.match(/\workflow.input([\w.])+}/igm);
@@ -313,7 +311,6 @@ export const linkNodes = (node1, node2) => {
             return defaultOutPort.link(node2.getPort("left"))
         }
     }
-    //TODO decision node
 };
 
 export const handleTask = (task, nodes, startPosition, branchNum = 1, forkNode, branchPosX, branchPosY = startPosition.y, forkDepth = 1) => {

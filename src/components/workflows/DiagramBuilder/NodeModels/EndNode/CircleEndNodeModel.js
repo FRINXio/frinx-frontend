@@ -1,21 +1,20 @@
 import { NodeModel } from "storm-react-diagrams";
 import { CircleEndPortModel } from "./CircleEndPortModel";
 import * as _ from "lodash";
-import {DefaultPortModel} from "storm-react-diagrams";
 import {DiagramEngine} from "storm-react-diagrams";
 
 export class CircleEndNodeModel extends NodeModel {
 
     name: string;
     color: string;
-    ports: { [s: string]: DefaultPortModel };
+    ports: { [s: string]: CircleEndPortModel };
 
     constructor(name: string = "Untitled", color: string = "rgb(0,192,255)") {
         super("end");
         this.name = name;
         this.color = color;
 
-        this.addPort(new CircleEndPortModel("left"));
+        this.addPort(new CircleEndPortModel(true, "left"));
     }
 
     deSerialize(object, engine: DiagramEngine) {

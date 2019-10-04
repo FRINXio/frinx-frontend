@@ -179,17 +179,9 @@ class DiagramBuilder extends Component {
         this.props.showCustomAlert(false);
 
         switch (data.type) {
-            case "in":
-                node = new DefaultNodeModel(data.name, "rgb(192,255,0)", data.wfObject);
-                node.addInPort("In");
-                break;
             case "in/out":
                 node = new DefaultNodeModel(data.name, "rgb(169,74,255)", data.wfObject);
                 node.addInPort("In");
-                node.addOutPort("Out");
-                break;
-            case "out":
-                node = new DefaultNodeModel(data.name, "rgb(0,192,255)", data.wfObject);
                 node.addOutPort("Out");
                 break;
             case "start":
