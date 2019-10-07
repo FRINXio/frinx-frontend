@@ -41,7 +41,6 @@ class DetailsModal extends Component {
 
     getData() {
         http.get('/api/conductor/id/' + this.props.wfId).then(res => {
-            console.log(res);
             this.setState({
                 meta: res.meta,
                 result: res.result,

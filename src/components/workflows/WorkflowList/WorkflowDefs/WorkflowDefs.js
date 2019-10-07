@@ -193,12 +193,12 @@ class WorkflowDefs extends Component {
         })
     }
 
-    createLabels = ({description}) => {
+    createLabels = ({name, description}) => {
         let labels = [];
         let str =  description && description.match(/-(,|) [A-Z].*/g)
             ? description.substring(description.indexOf("-") + 1) : "";
         let wfLabels = str.replace(/\s/g, "").split(",");
-        wfLabels.forEach(label => {
+        wfLabels.forEach((label, i) => {
             if (label !== "") {
                 let index = this.state.allLabels.findIndex(lab => lab === label);
                 let color = index >= wfLabelsColor.length
@@ -206,7 +206,7 @@ class WorkflowDefs extends Component {
                     : wfLabelsColor[index];
                 let newLabels = (this.state.labels.findIndex(lbl => lbl === label) < 0) ? [...this.state.labels, label] : this.state.labels;
                 labels.push(
-                    <div style={{backgroundColor: color}} className="wfLabel" onClick={(e) => {
+                    <div key={`${name}-${i}`} style={{backgroundColor: color}} className="wfLabel" onClick={(e) => {
                         e.stopPropagation(); this.onLabelSearch(newLabels)}}>
                         {label}
                     </div>
