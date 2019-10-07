@@ -17,8 +17,8 @@ export class ForkNodeModel extends NodeModel {
         this.color = color;
         super.extras = {inputs: inputs};
 
-        this.addPort(new ForkNodePortModel("left"));
-        this.addPort(new ForkNodePortModel("right"));
+        this.addPort(new ForkNodePortModel(true, "left"));
+        this.addPort(new ForkNodePortModel(false, "right"));
     }
 
     deSerialize(object, engine: DiagramEngine) {

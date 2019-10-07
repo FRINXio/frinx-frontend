@@ -4,8 +4,6 @@ import {JoinNodeModel} from "./NodeModels/JoinNode/JoinNodeModel";
 import * as _ from "lodash";
 import {DecisionNodeModel} from "./NodeModels/DecisionNode/DecisionNodeModel";
 
-const http = require('../../../server/HttpServerSide').HttpClient;
-
 export const getWfInputsRegex = (wf) => {
     let def = JSON.stringify(wf);
     let matchArray = def.match(/\workflow.input([\w.])+}/igm);
@@ -313,14 +311,22 @@ export const linkNodes = (node1, node2) => {
             return defaultOutPort.link(node2.getPort("left"))
         }
     }
-    //TODO decision node
+};
+
+export const getNodeWidth = (node) => {
+    if (node.name.length > 6) {
+        return node.name.length * 6
+    }
+    return node.name.length * 12
+
 };
 
 export const handleTask = (task, nodes, startPosition, branchNum = 1, forkNode, branchPosX, branchPosY = startPosition.y, forkDepth = 1) => {
 
     switch (task.type) {
         case "SUB_WORKFLOW": {
-            let posX = nodes.length === 0 ? startPosition.x : find_mostRightNode(nodes) + nodes[nodes.length - 1].name.length * 7 + 30;
+
+            let posX = nodes.length === 0 ? startPosition.x : find_mostRightNode(nodes) + getNodeWidth(nodes[nodes.length - 1]) + 50;
             let posY = nodes.length === 0 ? startPosition.y : branchPosY;
 
             if (branchPosX) {
@@ -332,7 +338,7 @@ export const handleTask = (task, nodes, startPosition, branchNum = 1, forkNode, 
             break;
         }
         case "FORK_JOIN": {
-            let posX = nodes.length === 0 ? startPosition.x : find_mostRightNode(nodes) + 200;
+            let posX = nodes.length === 0 ? startPosition.x : find_mostRightNode(nodes) + getNodeWidth(nodes[nodes.length - 1]) + 50;
             let posY = nodes.length === 0 ? startPosition.y : branchPosY;
             let branchCount = task.forkTasks.length;
             let branchMargin = 100;
@@ -349,14 +355,17 @@ export const handleTask = (task, nodes, startPosition, branchNum = 1, forkNode, 
 
             task.forkTasks.forEach((branch, branchNum) => {
                 branch.forEach((branchTask, k) => {
-                    let branchPosX = branchTask.type === "JOIN" ? find_mostRightNode(nodes) + 200 : posX + 200 + k * 200;
-                    handleTask(branchTask, nodes, posY, branchNum, node, branchPosX, posY + 30 - (branchSpread / 2) + (branchMargin + 47) * branchNum / forkDepth, forkDepth + 1);
+                    let branchPosX = branchTask.type === "JOIN" ? find_mostRightNode(nodes) + 220 : posX + 220 + k * (getNodeWidth(nodes[nodes.length - 1]) + 50);
+                    let yOffset = branchTask.type === "FORK_JOIN" ? 25 - k*11 : 27;
+                    yOffset = branchTask.type === "JOIN" ? 25 - (k-1)*11 : yOffset;
+                    let branchPosY = posY + yOffset - (branchSpread / 2) + (branchMargin + 47) * branchNum / forkDepth;
+                    handleTask(branchTask, nodes, posY, branchNum, node, branchPosX, branchPosY, forkDepth + 1);
                 })
             });
             break;
         }
         case "JOIN": {
-            let posX = find_mostRightNode(nodes) + 200;
+            let posX = find_mostRightNode(nodes) + 220;
             let posY = nodes.length === 0 ? startPosition.y : branchPosY;
 
             if (branchPosX) {
@@ -369,10 +378,10 @@ export const handleTask = (task, nodes, startPosition, branchNum = 1, forkNode, 
             break;
         }
         case "DECISION": {
-            let posX = nodes.length === 0 ? startPosition.x : find_mostRightNode(nodes) + 200;
+            let posX = nodes.length === 0 ? startPosition.x : find_mostRightNode(nodes) + getNodeWidth(nodes[nodes.length - 1]) + 100;
             let posY = nodes.length === 0 ? startPosition.y : branchPosY;
             let caseCount = _.values(task.decisionCases).length;
-            let branchMargin = 100;
+            let branchMargin = 250;
 
             // branches size in parallel - the deeper the fork node, the smaller the spread and margin is
             let branchSpread = (caseCount * 47 + (caseCount - 1) * branchMargin) / forkDepth; //branches size in parallel
@@ -386,14 +395,14 @@ export const handleTask = (task, nodes, startPosition, branchNum = 1, forkNode, 
 
             _.values(task.decisionCases).forEach((caseBranch, caseNum) => {
                 caseBranch.forEach((branchTask, k) => {
-                    let branchPosX = branchTask.type === "JOIN" ? find_mostRightNode(nodes) + 200 : posX + 200 + k * 200;
+                    let branchPosX = branchTask.type === "JOIN" ? find_mostRightNode(nodes) + 200 : posX + 100 + k * 200;
                     handleTask(branchTask, nodes, posY, caseNum, node, branchPosX, posY + 30 - (branchSpread / 2) + (branchMargin + 47) * caseNum / forkDepth, forkDepth + 1);
                 })
             });
             break;
         }
         default: {
-            let posX = nodes.length === 0 ? startPosition.x : find_mostRightNode(nodes) + nodes[nodes.length - 1].name.length * 7 + 30;
+            let posX = nodes.length === 0 ? startPosition.x : find_mostRightNode(nodes) + getNodeWidth(nodes[nodes.length - 1]) + 60;
             let posY = nodes.length === 0 ? startPosition.y : branchPosY;
 
             if (branchPosX) {
