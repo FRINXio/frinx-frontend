@@ -22,10 +22,14 @@ export const updateQuery = (query) => {
 };
 
 const createQuery = ({query, label}) => {
-    let q = "";
-    if (query)
-        q += "(workflowId:" + query + "+workflowType:*" + query + "*)";
-    if (label.length ) {
+    let q = "", search = "";
+    if (query) {
+        for (let i = 0; i < query.length; i++) {
+            search += "[" + query[i].toUpperCase() + query[i].toLowerCase() + "]"
+        }
+        q += "(workflowId:" + query + "+workflowType:/.*" + search + ".*/)";
+    }
+    if (label.length) {
         if (query)
             q += "AND";
         q += "(status:" + label + ")";
