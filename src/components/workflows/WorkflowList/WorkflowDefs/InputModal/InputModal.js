@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import {Modal, Button, Form, Row, Col} from "react-bootstrap";
 import {connect} from "react-redux";
 import * as builderActions from "../../../../../store/actions/builder";
+import * as mountedDevicesActions from "../../../../../store/actions/mountedDevices";
+import {Typeahead} from 'react-bootstrap-typeahead';
 const http = require('../../../../../server/HttpServerSide').HttpClient;
 
 
@@ -32,6 +34,10 @@ class InputModal extends Component {
                 def: JSON.stringify(res.result, null, 2),
                 wfdesc: res.result["description"] ? res.result["description"].split("-")[0] : "",
             }, () => this.getWorkflowInputDetails())
+        }).then(() => {
+            if (this.state.workflowForm.descs.some(rx => rx.match(/.*#node_id/))) {
+                this.props.getMountedDevices();
+            }
         });
     }
 
@@ -101,8 +107,8 @@ class InputModal extends Component {
     handleInput(e,i) {
         let wfForm = this.state.workflowForm;
         let warning = this.state.warning;
-        wfForm.values[i] = e.target.value;
-        e.target.value.match(/^\s.*$/) || e.target.value.match(/^.*\s$/)
+        wfForm.values[i] = Array.isArray(e) ? e[0] : e.target.value;
+        e.target && (e.target.value.match(/^\s.*$/) || e.target.value.match(/^.*\s$/))
             ? warning[i] = true
             : warning[i] = false;
         this.setState({
@@ -152,6 +158,21 @@ class InputModal extends Component {
         let labels = this.state.workflowForm.labels || [];
         let warning = this.state.warning;
 
+        let inputModel = (type, i) => {
+            if (type === "node_id") {
+                return(
+                    <Typeahead id={`input-${i}`} onChange={(e) => this.handleInput(e,i)}
+                               options={this.props.devices} placeholder="Enter the input"
+                    />)
+            } else {
+                return(
+                    <Form.Control
+                        type="input" onChange={(e) => this.handleInput(e,i)}
+                        placeholder="Enter the input" defaultValue={values[i]}
+                        isInvalid={warning[i]}
+                    />)
+            }
+        };
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
                 <Modal.Body style={{padding: "30px"}}>
@@ -165,16 +186,12 @@ class InputModal extends Component {
                                     <Col sm={6} key={`col1-${i}`}>
                                         <Form.Group>
                                             <Form.Label>{item}</Form.Label>
-                                            {warning[i]
+                                            { warning[i]
                                                 ? <div style={{color: "red", fontSize: "12px", float: "right", marginTop: "5px"}}>Unnecessary space</div>
                                                 : null}
-                                            <Form.Control
-                                                type="input" onChange={(e) => this.handleInput(e,i)}
-                                                placeholder="Enter the input" defaultValue={values[i]}
-                                                isInvalid={warning[i]}
-                                            />
+                                            { inputModel(descs[i] ? descs[i].split('#')[1] : null, i) }
                                             <Form.Text className="text-muted">
-                                                {descs[i]}
+                                                { descs[i] ? descs[i].split('#')[0] : null}
                                             </Form.Text>
                                         </Form.Group>
                                     </Col>
@@ -207,8 +224,15 @@ class InputModal extends Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-        storeWorkflowId: (id) => dispatch(builderActions.storeWorkflowId(id))
+        storeWorkflowId: (id) => dispatch(builderActions.storeWorkflowId(id)),
+        getMountedDevices: () => dispatch(mountedDevicesActions.getMountedDevices())
     }
 };
 
-export default connect(null, mapDispatchToProps)(InputModal);
+const mapStateToProps = state => {
+    return {
+        devices: state.mountedDeviceReducer.devices,
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(InputModal);
