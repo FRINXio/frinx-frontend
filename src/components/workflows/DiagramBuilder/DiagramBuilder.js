@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import SideMenu from "./SideMenu";
+import SideMenu from "./Sidemenu/SideMenu";
 import {DiagramWidget} from "storm-react-diagrams";
 import ControlsHeader from "./ControlsHeader";
 import {Application} from "./Application";
@@ -460,7 +460,6 @@ class DiagramBuilder extends Component {
                 {inputModal}
                 {detailsModal}
                 {exitModal}
-                {/*<div className="builder-header"/>*/}
 
                 <ControlsHeader
                     parseWftoJSON={this.parseDiagramToJSON}

@@ -1,6 +1,7 @@
 import React from "react";
 import SideMenuItem from "./SideMenuItem";
-import {getWfInputsRegex} from "./builder-utils";
+import {getWfInputsRegex} from "../builder-utils";
+import './Sidemenu.css'
 
 const SideMenu = (props) => {
 
@@ -74,8 +75,14 @@ const SideMenu = (props) => {
                 optional: false,
                 startDelay: 0
             };
-            return tasks.push(<SideMenuItem key={`wf${i}`} model={{type: "in/out", wfObject, name: wf.name}}
-                                            name={wf.name} color="#0095FF"/>)
+            return tasks.push(
+                <SideMenuItem key={`wf${i}`} model={{
+                    type: "in/out",
+                    wfObject,
+                    name: wf.name,
+                    description: wf.hasOwnProperty('description') ? wf.description : ''
+                }} name={wf.name} color="#0095FF"/>
+            )
         });
         return tasks;
     };
