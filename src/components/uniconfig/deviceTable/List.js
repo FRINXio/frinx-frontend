@@ -194,7 +194,6 @@ class List extends Component {
         let query = this.state.keywords.toUpperCase();
         if (query !== ""){
             const rows = this.state.data;
-            console.log(rows);
             for(let i = 0; i < rows.length; i++){
                 for(let y = 0; y < rows[i].length; y++){
                     if(rows[i][y] && rows[i][y].toUpperCase().indexOf(query) !== -1){

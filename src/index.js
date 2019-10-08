@@ -10,12 +10,14 @@ import bulkReducer from './store/reducers/bulk';
 import searchReducer from './store/reducers/searchExecs'
 import authReducer from './store/reducers/auth'
 import buildReducer from "./store/reducers/builder"
+import mountedDeviceReducer from "./store/reducers/mountedDevices"
+
 import {Provider} from "react-redux";
 import {BrowserRouter} from "react-router-dom";
 
 
 const rootReducer = combineReducers({
-    bulkReducer, searchReducer, authReducer, buildReducer
+    bulkReducer, searchReducer, authReducer, buildReducer, mountedDeviceReducer
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
