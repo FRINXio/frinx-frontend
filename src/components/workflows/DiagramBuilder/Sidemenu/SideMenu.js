@@ -2,6 +2,7 @@ import React from "react";
 import SideMenuItem from "./SideMenuItem";
 import {getWfInputsRegex} from "../builder-utils";
 import './Sidemenu.css'
+import {Spinner} from "react-bootstrap";
 
 const SideMenu = (props) => {
 
@@ -84,7 +85,11 @@ const SideMenu = (props) => {
                 }} name={wf.name} color="#0095FF"/>
             )
         });
-        return tasks;
+        return tasks.length > 0 ? tasks :
+            <div style={{ marginTop: "50%", textAlign: "center"}}>
+                Loading tasks<br/><br/>
+                <Spinner animation="border" variant="primary"/>
+            </div>
     };
 
     return (
