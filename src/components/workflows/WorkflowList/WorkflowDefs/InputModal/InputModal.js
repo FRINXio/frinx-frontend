@@ -35,7 +35,7 @@ class InputModal extends Component {
                 wfdesc: res.result["description"] ? res.result["description"].split("-")[0] : "",
             }, () => this.getWorkflowInputDetails())
         }).then(() => {
-            if (this.state.workflowForm.descs.some(rx => rx.match(/.*#node_id/))) {
+            if (this.state.workflowForm.descs.some(rx => rx.match(/.*#node_id/g))) {
                 this.props.getMountedDevices();
             }
         });
