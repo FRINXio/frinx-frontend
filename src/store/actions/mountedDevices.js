@@ -4,9 +4,14 @@ const http = require('../../server/HttpServerSide').HttpClient;
 
 const getTopologyDevices = async (topologyType) => {
     const devices = await http.get('/api/odl/oper/all/status/' + topologyType);
-    const topologies = Object.keys(devices);
-    const topology = Object.keys(devices[Object.keys(devices)]);
-    return devices[topologies][topology]["node"].map((node) => {return node["node-id"]});
+    if (Array.isArray(devices)) {
+        const topologies = Object.keys(devices);
+        const topology = Object.keys(devices[Object.keys(devices)]);
+        if (devices[topologies][topology]["node"]) {
+            return devices[topologies][topology]["node"].map((node) => {return node["node-id"]});
+        }
+    }
+    return [];
 };
 
 export const getMountedDevices = () => {

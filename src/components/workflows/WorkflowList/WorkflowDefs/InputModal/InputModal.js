@@ -35,7 +35,7 @@ class InputModal extends Component {
                 wfdesc: res.result["description"] ? res.result["description"].split("-")[0] : "",
             }, () => this.getWorkflowInputDetails())
         }).then(() => {
-            if (this.state.workflowForm.descs.some(rx => rx.match(/.*#node_id/g))) {
+            if (this.state.workflowForm.descs.some(rx => rx && rx.match(/.*#node_id.*/g))) {
                 this.props.getMountedDevices();
             }
         });
@@ -107,8 +107,8 @@ class InputModal extends Component {
     handleInput(e,i) {
         let wfForm = this.state.workflowForm;
         let warning = this.state.warning;
-        wfForm.values[i] = Array.isArray(e) ? e[0] : e.target.value;
-        e.target && (e.target.value.match(/^\s.*$/) || e.target.value.match(/^.*\s$/))
+        wfForm.values[i] = Array.isArray(e) ? e.toString() : e.target.value;
+        wfForm.values[i].match(/^\s.*$/) || wfForm.values[i].match(/^.*\s$/)
             ? warning[i] = true
             : warning[i] = false;
         this.setState({
@@ -159,10 +159,11 @@ class InputModal extends Component {
         let warning = this.state.warning;
 
         let inputModel = (type, i) => {
-            if (type === "node_id") {
+            if (type && type.match(/node_id.*/g)) {
                 return(
-                    <Typeahead id={`input-${i}`} onChange={(e) => this.handleInput(e,i)}
-                               options={this.props.devices} placeholder="Enter the input"
+                    <Typeahead id={`input-${i}`} onChange={(e) => this.handleInput(e,i)} placeholder="Enter the node id"
+                               multiple={!!type.match(/node_ids/g)} options={this.props.devices}
+                               selected={this.props.devices.filter(device => device === values[i])}
                     />)
             } else {
                 return(
