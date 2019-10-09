@@ -4,7 +4,7 @@ const http = require('../../server/HttpServerSide').HttpClient;
 
 const getTopologyDevices = async (topologyType) => {
     const devices = await http.get('/api/odl/oper/all/status/' + topologyType);
-    if (Array.isArray(devices)) {
+    if (Array.isArray(Object.keys(devices[Object.keys(devices)]))) {
         const topologies = Object.keys(devices);
         const topology = Object.keys(devices[Object.keys(devices)]);
         if (devices[topologies][topology]["node"]) {
