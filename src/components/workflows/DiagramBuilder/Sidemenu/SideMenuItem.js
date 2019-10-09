@@ -9,9 +9,15 @@ const getLabelsFromString = (str) => {
 
 const SideMenuItem = (props) => {
 
-    const description = props.model.description.split('-')[0] || null;
-    const labels = getLabelsFromString(props.model.description);
-    const version = props.model.wfObject.subWorkflowParam.version;
+    let description = null;
+    let labels = [];
+    let version = null;
+
+    if (props.model.description) {
+        description = props.model.description.split('-')[0];
+        labels = getLabelsFromString(props.model.description);
+        version = props.model.wfObject.subWorkflowParam.version;
+    }
 
     return (
     <div draggable={true} onDragStart={e => {e.dataTransfer.setData("storm-diagram-node", JSON.stringify(props.model));}}
