@@ -1,0 +1,119 @@
+.tray {
+    position: absolute;
+    background: white;
+    -webkit-box-shadow: 6px 2px 8px 0px rgba(0,0,0,0.49);
+    -moz-box-shadow: 6px 2px 8px 0px rgba(0,0,0,0.49);
+    box-shadow: 6px 2px 8px 0px rgba(0,0,0,0.49);
+    overflow: hidden;
+    width: 0px;
+    max-height: 90vh;
+    z-index: 10;
+    -webkit-transition: width 0.5s;
+    -moz-transition: width 0.5s;
+    -o-transition: width 0.5s;
+    transition: width 0.5s;
+}
+
+.tray-header {
+    position: relative;
+    padding: 10px;
+}
+
+.tray-header .tray-header-info {
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.tray-list {
+    height: 90vh;
+    overflow: scroll;
+    text-align: left;
+}
+
+.tray-system {
+    flex-wrap: wrap;
+    display: inline-flex;
+}
+
+.system-task {
+    font-family: Helvetica, Arial, serif;
+    background-color: rgb(0, 135, 233);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    width: 100px;
+    padding: 10px;
+    margin: 8px;
+    cursor: grab;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+
+.system-task:hover {
+    background-color: rgba(0, 135, 233, 0.58);
+}
+
+.tray-item {
+    font-family: Helvetica, Arial, serif;
+    font-size: 14px;
+    padding: 10px;
+    margin: 10px 10px 5px;
+    cursor: grab;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+
+.tray-item:hover {
+    background-color: rgba(124, 124, 124, 0.19);
+}
+
+.tray-item-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tray-item:hover .tray-item-content {
+    max-height: 300px;
+    -webkit-transition: max-height 1s;
+    -moz-transition: max-height 1s;
+    -o-transition: max-height 1s;
+    transition: max-height 1s;
+}
+
+.tray-item-content .wfLabel {
+    margin-top: 10px
+}
+
+.tray-item-content {
+    -webkit-transition: max-height .4s;
+    -moz-transition: max-height .4s;
+    -o-transition: max-height .4s;
+    transition: max-height .4s;
+    overflow: hidden;
+    max-height: 0;
+}
+
+.tray-item-description {
+    font-size: 13px;
+    margin-top: 10px
+}
+
+.tray-list::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #F5F5F5;
+}
+
+.tray-list::-webkit-scrollbar
+{
+    width: 10px;
+    background-color: #F5F5F5;
+}
+
+.tray-list::-webkit-scrollbar-thumb
+{
+    background-color: #0087e9;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%,
+    color-stop(.5, rgba(255, 255, 255, .2)),
+    color-stop(.5, transparent), to(transparent));
+}
