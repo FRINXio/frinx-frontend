@@ -90,14 +90,18 @@ class WorkflowDefs extends Component {
 
     searchLabel() {
         let toBeRendered = [];
-        const rows = this.state.keywords !== "" ? this.state.table : this.state.data;
-        for (let i = 0; i < rows.length; i++) {
-            if (rows[i]["description"]) {
-                let tags = rows[i]["description"].split("-").pop().replace(/\s/g, "").split(",");
-                if (this.state.labels.every(elem => tags.indexOf(elem) > -1)) {
-                    toBeRendered.push(rows[i]);
+        if (this.state.labels.length) {
+            const rows = this.state.keywords !== "" ? this.state.table : this.state.data;
+            for (let i = 0; i < rows.length; i++) {
+                if (rows[i]["description"]) {
+                    let tags = rows[i]["description"].split("-").pop().replace(/\s/g, "").split(",");
+                    if (this.state.labels.every(elem => tags.indexOf(elem) > -1)) {
+                        toBeRendered.push(rows[i]);
+                    }
                 }
             }
+        } else {
+            toBeRendered = this.state.data;
         }
         let size = ~~(toBeRendered.length / this.state.defaultPages);
         this.setState({
