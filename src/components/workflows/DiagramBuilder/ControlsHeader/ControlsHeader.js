@@ -53,6 +53,7 @@ const ControlsHeader = (props) => {
                             <input id='upload-file' type='file' hidden/>
                             <Nav.Link onClick={props.saveFile}>Export</Nav.Link>
                             <Nav.Link onClick={props.clearCanvas}>Clear</Nav.Link>
+                            <hr/>
                             <Nav.Link onClick={props.showExitModal}>Exit</Nav.Link>
                         </Nav>
                         <Nav>
