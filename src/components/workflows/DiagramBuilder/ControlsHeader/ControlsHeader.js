@@ -60,11 +60,11 @@ const ControlsHeader = (props) => {
                                         onClick={props.expandNodeToWorkflow}>
                                     <i className="fas fa-expand"/>&nbsp;&nbsp;Expand</Button>
                                 <Button variant="outline-light" onClick={props.saveAndExecute}>
-                                    <i className="fas fa-save"/>&nbsp;&nbsp;Save & Execute</Button>
+                                    <i className="fas fa-play-circle"/>&nbsp;&nbsp;Execute</Button>
                                 <Button variant="outline-light" onClick={props.showGeneralInfoModal}>
                                     <i className="fas fa-edit"/>&nbsp;&nbsp;Edit general</Button>
                                 <Button variant="outline-light" onClick={props.showDefinitionModal}>
-                                    <i className="fas fa-file-code"/>&nbsp;&nbsp;Def</Button>
+                                    <i className="fas fa-file-code"/>&nbsp;&nbsp;Definition</Button>
                             </ButtonGroup>
                         </Nav>
                     </Navbar.Collapse>

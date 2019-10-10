@@ -1,6 +1,5 @@
 export const STORE_WORKFLOWS = 'STORE_WORKFLOWS';
 export const UPDATE_BUILDER_QUERY = 'UPDATE_BUILDER_QUERY';
-export const UPDATE_SEARCH_CATEGORY = 'UPDATE_TYPE';
 export const UPDATE_WORKFLOWS = 'UPDATE_WORKFLOWS';
 export const UPDATE_FINAL_WORKFLOW = 'UPDATE_FINAL_WORKFLOW';
 export const LOCK_WORKFLOW_NAME = 'LOCK_WORKFLOW_NAME';
@@ -35,10 +34,6 @@ export const resetToDefaultWorkflow = () => {
 
 export const switchSmartRouting = () => {
   return {type: SWITCH_SMART_ROUTING}
-};
-
-export const updateCategory = (category) => {
-    return {type: UPDATE_SEARCH_CATEGORY, category}
 };
 
 export const updateWorkflows = (workflows) => {

@@ -531,12 +531,10 @@ class DiagramBuilder extends Component {
                     app={this.state.app}/>
 
                 <div className="content">
-                    <SideMenu category={this.props.category}
-                              workflows={this.props.workflows}
+                    <SideMenu workflows={this.props.workflows}
                               functional={this.props.functional}
                               query={this.props.query}
-                              updateQuery={this.props.updateQuery}
-                              updateCategory={this.props.updateCategory}/>
+                              updateQuery={this.props.updateQuery}/>
 
                     <CustomAlert showCustomAlert={this.props.showCustomAlert} show={this.props.customAlert.show}
                                  msg={this.props.customAlert.msg} alertVariant={this.props.customAlert.variant}/>
@@ -562,7 +560,6 @@ const mapStateToProps = state => {
         workflows: state.buildReducer.workflows,
         functional: state.buildReducer.functional,
         sidebarShown: state.buildReducer.sidebarShown,
-        category: state.buildReducer.category,
         query: state.buildReducer.query,
         finalWorkflow: state.buildReducer.finalWorkflow,
         smartRouting: state.buildReducer.switchSmartRouting,
@@ -578,7 +575,6 @@ const mapDispatchToProps = dispatch => {
         updateFinalWorkflow: (finalWorkflow) => dispatch(builderActions.updateFinalWorkflow(finalWorkflow)),
         resetToDefaultWorkflow: () => dispatch(builderActions.resetToDefaultWorkflow()),
         updateQuery: (query) => dispatch(builderActions.requestUpdateByQuery(query)),
-        updateCategory: (category) => dispatch(builderActions.updateCategory(category)),
         showCustomAlert: (show, variant, msg) => dispatch(builderActions.showCustomAlert(show, variant, msg)),
         lockWorkflowName: () => dispatch(builderActions.lockWorkflowName())
     }

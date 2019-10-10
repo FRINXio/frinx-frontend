@@ -32,12 +32,26 @@
     text-align: left;
 }
 
-.tray-controls {
-    position: absolute;
-    background-color: red;
-    z-index: 13;
-    margin-left: 380px;
-    margin-top: 100px;
+.tray-system {
+    flex-wrap: wrap;
+    display: inline-flex;
+}
+
+.system-task {
+    font-family: Helvetica, Arial, serif;
+    background-color: rgb(0, 135, 233);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    width: 100px;
+    padding: 10px;
+    margin: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+
+.system-task:hover {
+    background-color: rgba(0, 135, 233, 0.58);
 }
 
 .tray-item {

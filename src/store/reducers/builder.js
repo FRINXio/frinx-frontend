@@ -2,8 +2,6 @@ import {
     LOCK_WORKFLOW_NAME, RESET_TO_DEFAULT_WORKFLOW, SHOW_CUSTOM_ALERT, STORE_WORKFLOW_ID,
     STORE_WORKFLOWS, SWITCH_SMART_ROUTING,
     UPDATE_BUILDER_QUERY, UPDATE_FINAL_WORKFLOW,
-    UPDATE_SEARCH_CATEGORY,
-    UPDATE_SIDEBAR,
     UPDATE_WORKFLOWS
 } from "../actions/builder";
 
@@ -24,7 +22,6 @@ const initialState = {
     functional: ["start", "end", "fork", "join", "decision"],
     originalWorkflows: [],
     query: "",
-    category: "tasks",
     workflowNameLock: false,
     switchSmartRouting: false,
     executedWfId: null,
@@ -66,10 +63,6 @@ const reducer = (state = initialState, action) => {
         case STORE_WORKFLOW_ID: {
             const {executedWfId} = action;
             return {...state, executedWfId}
-        }
-        case UPDATE_SEARCH_CATEGORY: {
-            const {category} = action;
-            return {...state, category}
         }
         case LOCK_WORKFLOW_NAME: {
             return {...state, workflowNameLock: true}

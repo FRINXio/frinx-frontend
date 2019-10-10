@@ -3,6 +3,7 @@ import SideMenuItem from "./SideMenuItem";
 import {getWfInputsRegex} from "../builder-utils";
 import './Sidemenu.css'
 import {Form, InputGroup, Spinner} from "react-bootstrap";
+import SystemTask from "./SystemTask";
 
 const SideMenu = (props) => {
 
@@ -19,8 +20,8 @@ const SideMenu = (props) => {
                     optional: false,
                     startDelay: 0
                 };
-                functionalTasks.push(<SideMenuItem id={`functionalNode${i}`} model={{type: func, wfObject}}
-                                                   name={func.toUpperCase()} color="#0095FF"/>)
+                functionalTasks.push(<SystemTask id={`functionalNode${i}`} model={{type: func, wfObject}}
+                                                   name={func.toUpperCase()}/>)
             } else if (func === "join") {
                 let wfObject = {
                     name: "joinTask",
@@ -30,8 +31,8 @@ const SideMenu = (props) => {
                     optional: false,
                     startDelay: 0
                 };
-                functionalTasks.push(<SideMenuItem id={`functionalNode${i}`} model={{type: func, wfObject}}
-                                                   name={func.toUpperCase()} color="#0095FF"/>)
+                functionalTasks.push(<SystemTask id={`functionalNode${i}`} model={{type: func, wfObject}}
+                                                   name={func.toUpperCase()}/>)
             } else if (func === "decision") {
                 let wfObject = {
                     name: "decisionTask",
@@ -48,11 +49,11 @@ const SideMenu = (props) => {
                     optional: false,
                     startDelay: 0
                 };
-                functionalTasks.push(<SideMenuItem id={`functionalNode${i}`} model={{type: func, wfObject}}
-                                                   name={func.toUpperCase()} color="#0095FF"/>)
+                functionalTasks.push(<SystemTask id={`functionalNode${i}`} model={{type: func, wfObject}}
+                                                   name={func.toUpperCase()}/>)
             } else {
-                functionalTasks.push(<SideMenuItem id={`functionalNode${i}`} model={{type: func}}
-                                                   name={func.toUpperCase()} color="#0095FF"/>)
+                functionalTasks.push(<SystemTask id={`functionalNode${i}`} model={{type: func}}
+                                                   name={func.toUpperCase()}/>)
             }
         });
         return functionalTasks;
@@ -82,7 +83,7 @@ const SideMenu = (props) => {
                     wfObject,
                     name: wf.name,
                     description: wf.hasOwnProperty('description') ? wf.description : ''
-                }} name={wf.name} color="#0095FF"/>
+                }} name={wf.name}/>
             )
         });
         return tasks.length > 0 ? tasks :
@@ -98,7 +99,7 @@ const SideMenu = (props) => {
                 <InputGroup>
                     <Form.Control value={props.query}
                                   onChange={(e) => props.updateQuery(e.target.value)}
-                                  placeholder={`Search for ${props.category.toLowerCase()}.`}/>
+                                  placeholder={`Search for tasks.`}/>
                     <InputGroup.Append>
                         <InputGroup.Text>
                             <i className="fas fa-search"/>
@@ -106,17 +107,20 @@ const SideMenu = (props) => {
                     </InputGroup.Append>
                 </InputGroup>
                 <div className='tray-header-info'>
-                            <span className='clickable'
-                                  onClick={() => props.updateCategory(props.category === "system tasks" ? "tasks" : "system tasks")}>
-                                switch to {props.category === "system tasks" ? "tasks" : "system tasks"}
-                            </span>
                     <span style={{color: "grey"}}>
-                                showing {props.category === "system tasks" ? functionalTaks().length : tasks().length} results
-                            </span>
+                        Drag & drop tasks to canvas
+                    </span>
+                    <span style={{color: "grey"}}>
+                        showing {tasks().length} results
+                    </span>
                 </div>
             </div>
+
             <div className='tray-list'>
-                {props.category === "system tasks" ? functionalTaks(props) : tasks(props)}
+                <div className='tray-system'>
+                    {functionalTaks()}
+                </div>
+                {tasks()}
             </div>
         </div>
     )
