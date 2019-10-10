@@ -2,7 +2,7 @@ import React from "react";
 import SideMenuItem from "./SideMenuItem";
 import {getWfInputsRegex} from "../builder-utils";
 import './Sidemenu.css'
-import {Spinner} from "react-bootstrap";
+import {Form, InputGroup, Spinner} from "react-bootstrap";
 
 const SideMenu = (props) => {
 
@@ -93,10 +93,31 @@ const SideMenu = (props) => {
     };
 
     return (
-        <div>
-            {props.show ?
-                <div
-                    className="tray">{props.category === "Functional" ? functionalTaks(props) : tasks(props)}</div> : null}
+        <div className="tray">
+            <div className='tray-header'>
+                <InputGroup>
+                    <Form.Control value={props.query}
+                                  onChange={(e) => props.updateQuery(e.target.value)}
+                                  placeholder={`Search for ${props.category.toLowerCase()}.`}/>
+                    <InputGroup.Append>
+                        <InputGroup.Text>
+                            <i className="fas fa-search"/>
+                        </InputGroup.Text>
+                    </InputGroup.Append>
+                </InputGroup>
+                <div className='tray-header-info'>
+                            <span className='clickable'
+                                  onClick={() => props.updateCategory(props.category === "system tasks" ? "tasks" : "system tasks")}>
+                                switch to {props.category === "system tasks" ? "tasks" : "system tasks"}
+                            </span>
+                    <span style={{color: "grey"}}>
+                                showing {props.category === "system tasks" ? functionalTaks().length : tasks().length} results
+                            </span>
+                </div>
+            </div>
+            <div className='tray-list'>
+                {props.category === "system tasks" ? functionalTaks(props) : tasks(props)}
+            </div>
         </div>
     )
 };

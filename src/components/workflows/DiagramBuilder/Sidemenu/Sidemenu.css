@@ -4,12 +4,40 @@
     -webkit-box-shadow: 6px 2px 8px 0px rgba(0,0,0,0.49);
     -moz-box-shadow: 6px 2px 8px 0px rgba(0,0,0,0.49);
     box-shadow: 6px 2px 8px 0px rgba(0,0,0,0.49);
+    overflow: hidden;
     width: 370px;
-    height: 88vh;
+    max-height: 90vh;
+    z-index: 10;
+    -webkit-transition: width 0.5s;
+    -moz-transition: width 0.5s;
+    -o-transition: width 0.5s;
+    transition: width 0.5s;
+}
+
+.tray-header {
+    position: relative;
+    padding: 10px;
+}
+
+.tray-header .tray-header-info {
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.tray-list {
+    height: 90vh;
     overflow: scroll;
     text-align: left;
-    z-index: 10;
-    animation: slide-in 0.4s ease;
+}
+
+.tray-controls {
+    position: absolute;
+    background-color: red;
+    z-index: 13;
+    margin-left: 380px;
+    margin-top: 100px;
 }
 
 .tray-item {
@@ -42,12 +70,6 @@
     margin-top: 10px
 }
 
-/*.tray-item:hover .tray-item-name {*/
-/*    max-height: 300px;*/
-/*    word-wrap: break-word;*/
-/*    overflow: visible;*/
-/*}*/
-
 .tray-item-content {
     -webkit-transition: max-height .4s;
     -moz-transition: max-height .4s;
@@ -62,19 +84,19 @@
     margin-top: 10px
 }
 
-.tray::-webkit-scrollbar-track
+.tray-list::-webkit-scrollbar-track
 {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
     background-color: #F5F5F5;
 }
 
-.tray::-webkit-scrollbar
+.tray-list::-webkit-scrollbar
 {
     width: 10px;
     background-color: #F5F5F5;
 }
 
-.tray::-webkit-scrollbar-thumb
+.tray-list::-webkit-scrollbar-thumb
 {
     background-color: #0087e9;
     background-image: -webkit-gradient(linear, 0 0, 0 100%,

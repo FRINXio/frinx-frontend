@@ -24,8 +24,7 @@ const initialState = {
     functional: ["start", "end", "fork", "join", "decision"],
     originalWorkflows: [],
     query: "",
-    category: "Workflows",
-    sidebarShown: true,
+    category: "tasks",
     workflowNameLock: false,
     switchSmartRouting: false,
     executedWfId: null,
@@ -78,10 +77,6 @@ const reducer = (state = initialState, action) => {
         case SWITCH_SMART_ROUTING: {
             const {switchSmartRouting} = state;
             return {...state, switchSmartRouting: !switchSmartRouting}
-        }
-        case UPDATE_SIDEBAR: {
-            const {sidebarShown} = action;
-            return {...state, sidebarShown}
         }
         case UPDATE_FINAL_WORKFLOW: {
             let {finalWorkflow} = action;

@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import SideMenu from "./Sidemenu/SideMenu";
 import {DiagramWidget} from "storm-react-diagrams";
-import ControlsHeader from "./ControlsHeader";
+import ControlsHeader from "./ControlsHeader/ControlsHeader";
 import {Application} from "./Application";
 import {CircleStartNodeModel} from "./NodeModels/StartNode/CircleStartNodeModel";
 import {CircleEndNodeModel} from "./NodeModels/EndNode/CircleEndNodeModel";
@@ -44,7 +44,6 @@ class DiagramBuilder extends Component {
             showDetailsModal: false,
             showExitModal: false,
             modalInputs: null,
-            saveExecuteError: null,
             app: new Application()
         };
 
@@ -57,7 +56,10 @@ class DiagramBuilder extends Component {
         this.showExitModal = this.showExitModal.bind(this);
         this.saveAndExecute = this.saveAndExecute.bind(this);
         this.expandNodeToWorkflow = this.expandNodeToWorkflow.bind(this);
+        this.saveWorkflow = this.saveWorkflow.bind(this);
         this.renderSelectedWorkflow = this.renderSelectedWorkflow.bind(this);
+        this.submitFile = this.submitFile.bind(this);
+        this.saveFile = this.saveFile.bind(this);
         this.clearCanvas = this.clearCanvas.bind(this)
     }
 
@@ -337,9 +339,23 @@ class DiagramBuilder extends Component {
         });
     }
 
+    saveWorkflow() {
+        let finalWf = this.parseDiagramToJSON();
+        http.put('/api/conductor/metadata', [finalWf]).then(() => {
+            this.props.showCustomAlert(true, "info", `Workflow ${finalWf.name} saved successfully.`);
+        }).catch(err => {
+            let errObject = JSON.parse(err.response.text);
+            if (errObject.validationErrors) {
+                const {path, message} = errObject.validationErrors[0];
+                this.props.showCustomAlert(true, "danger", path + ':\xa0\xa0\xa0' + message);
+            }
+        })
+    }
+
     saveAndExecute() {
         let finalWf = this.parseDiagramToJSON();
-        http.put('/api/conductor/metadata', [finalWf]).then(res => {
+        http.put('/api/conductor/metadata', [finalWf]).then(() => {
+            this.props.showCustomAlert(true, "info", `Workflow ${finalWf.name} saved successfully.`);
             this.showInputModal();
         }).catch(err => {
             let errObject = JSON.parse(err.response.text);
@@ -347,7 +363,6 @@ class DiagramBuilder extends Component {
                 const {path, message} = errObject.validationErrors[0];
                 this.props.showCustomAlert(true, "danger", path + ':\xa0\xa0\xa0' + message);
             }
-            this.setState({saveExecuteError: true});
         })
     }
 
@@ -409,6 +424,48 @@ class DiagramBuilder extends Component {
         this.props.history.push('/workflows/defs');
     }
 
+    submitFile() {
+        const fileToLoad = document.getElementById("upload-file").files[0];
+        const fileReader = new FileReader();
+
+        fileReader.onload = (() => {
+            return function (e) {
+                try {
+                    let jsonObj = JSON.parse(e.target.result);
+                    this.renderSelectedWorkflow(jsonObj);
+                } catch (err) {
+                    alert('Error when trying to parse json.' + err);
+                }
+            }
+        })(fileToLoad).bind(this);
+        fileReader.readAsText(fileToLoad);
+    }
+
+    encode(s) {
+        let out = [];
+        for ( let i = 0; i < s.length; i++ ) {
+            out[i] = s.charCodeAt(i);
+        }
+        return new Uint8Array(out);
+    }
+
+    saveFile() {
+        let definition = this.parseDiagramToJSON();
+        let data = this.encode(JSON.stringify(definition, null, 2));
+        let blob = new Blob([data], {
+            type: 'application/octet-stream'
+        });
+
+        let url = URL.createObjectURL(blob);
+        let link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', this.props.finalWorkflow.name + '.json');
+
+        let event = document.createEvent('MouseEvents');
+        event.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+        link.dispatchEvent(event);
+    }
+
     render() {
 
         let subWfModal = this.state.showSubWfModal ?
@@ -418,8 +475,7 @@ class DiagramBuilder extends Component {
         let definitionModal = this.state.showDefinitionModal ?
             <WorkflowDefModal definition={this.props.finalWorkflow}
                               modalHandler={this.showDefinitionModal}
-                              show={this.state.showDefinitionModal}
-                              renderSelectedWorkflow={this.renderSelectedWorkflow}/>: null;
+                              show={this.state.showDefinitionModal}/>: null;
 
         let generalInfoModal = this.state.showGeneralInfoModal ?
             <GeneralInfoModal definition={this.props.finalWorkflow}
@@ -467,19 +523,20 @@ class DiagramBuilder extends Component {
                     showGeneralInfoModal={this.showGeneralInfoModal}
                     showExitModal={this.showExitModal}
                     saveAndExecute={this.saveAndExecute}
+                    saveWorkflow={this.saveWorkflow}
                     expandNodeToWorkflow={this.expandNodeToWorkflow}
-                    query={this.props.query}
                     updateQuery={this.props.updateQuery}
-                    updateCategory={this.props.updateCategory}
-                    updateSidebar={this.props.updateSidebar}
-                    sidebarShown={this.props.sidebarShown}
-                    category={this.props.category}
+                    submitFile={this.submitFile}
+                    saveFile={this.saveFile}
                     app={this.state.app}/>
 
-
                 <div className="content">
-                    <SideMenu show={this.props.sidebarShown} category={this.props.category}
-                              workflows={this.props.workflows} functional={this.props.functional}/>
+                    <SideMenu category={this.props.category}
+                              workflows={this.props.workflows}
+                              functional={this.props.functional}
+                              query={this.props.query}
+                              updateQuery={this.props.updateQuery}
+                              updateCategory={this.props.updateCategory}/>
 
                     <CustomAlert showCustomAlert={this.props.showCustomAlert} show={this.props.customAlert.show}
                                  msg={this.props.customAlert.msg} alertVariant={this.props.customAlert.variant}/>
@@ -520,7 +577,6 @@ const mapDispatchToProps = dispatch => {
         storeWorkflows: (wfList) => dispatch(builderActions.storeWorkflows(wfList)),
         updateFinalWorkflow: (finalWorkflow) => dispatch(builderActions.updateFinalWorkflow(finalWorkflow)),
         resetToDefaultWorkflow: () => dispatch(builderActions.resetToDefaultWorkflow()),
-        updateSidebar: (isShown) => dispatch(builderActions.updateSidebar(isShown)),
         updateQuery: (query) => dispatch(builderActions.requestUpdateByQuery(query)),
         updateCategory: (category) => dispatch(builderActions.updateCategory(category)),
         showCustomAlert: (show, variant, msg) => dispatch(builderActions.showCustomAlert(show, variant, msg)),
