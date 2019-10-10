@@ -67,7 +67,6 @@ class DiagramBuilder extends Component {
         document.addEventListener('dblclick', this.doubleClickListener.bind(this));
         document.addEventListener("keydown", this.keyBindings.bind(this), false);
         setTimeout(() => document.getElementsByClassName("tray")[0].style.width = "370px", 500);
-        // document.getElementsByClassName("tray")[0].style.width = "370px";
 
         http.get('/api/conductor/metadata/workflow').then(res => {
             this.props.storeWorkflows(res.result || [])
@@ -530,6 +529,7 @@ class DiagramBuilder extends Component {
                     updateQuery={this.props.updateQuery}
                     submitFile={this.submitFile}
                     saveFile={this.saveFile}
+                    clearCanvas={this.clearCanvas}
                     app={this.state.app}/>
 
                 <div className="content">

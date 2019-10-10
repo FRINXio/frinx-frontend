@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Badge, Button, ButtonGroup, Nav, Navbar} from "react-bootstrap";
+import {Button, ButtonGroup, Nav, Navbar} from "react-bootstrap";
 import "./ControlsHeader.css"
 
 const ControlsHeader = (props) => {
@@ -52,6 +52,7 @@ const ControlsHeader = (props) => {
                             <Nav.Link onClick={openFileUpload}>Import</Nav.Link>
                             <input id='upload-file' type='file' hidden/>
                             <Nav.Link onClick={props.saveFile}>Export</Nav.Link>
+                            <Nav.Link onClick={props.clearCanvas}>Clear</Nav.Link>
                             <Nav.Link onClick={props.showExitModal}>Exit</Nav.Link>
                         </Nav>
                         <Nav>
