@@ -76,7 +76,6 @@ class InputModal extends Component {
                 detailsArray[i] = def.match(RegExp3);
             }
         }
-
         for (let i = 0; i < detailsArray.length; i++) {
             if (detailsArray[i]) {
                 tmpDesc[i] = detailsArray[i][0].match(/\[.*?\[/);
@@ -159,19 +158,28 @@ class InputModal extends Component {
         let warning = this.state.warning;
 
         let inputModel = (type, i) => {
-            if (type && type.match(/node_id.*/g)) {
-                return(
-                    <Typeahead id={`input-${i}`} onChange={(e) => this.handleInput(e,i)} placeholder="Enter the node id"
-                               multiple={!!type.match(/node_ids/g)} options={this.props.devices}
-                               selected={this.props.devices.filter(device => device === values[i])}
-                    />)
-            } else {
-                return(
-                    <Form.Control
-                        type="input" onChange={(e) => this.handleInput(e,i)}
-                        placeholder="Enter the input" defaultValue={values[i]}
-                        isInvalid={warning[i]}
-                    />)
+            switch (true) {
+                case /node_id.*/g.test(type):
+                    return (
+                        <Typeahead id={`input-${i}`} onChange={(e) => this.handleInput(e, i)}
+                                   placeholder="Enter the node id"
+                                   multiple={!!type.match(/node_ids/g)} options={this.props.devices}
+                                   selected={this.props.devices.filter(device => device === values[i])}
+                        />);
+                case /template/g.test(type):
+                    return (
+                        <Form.Control
+                            type="input" as="textarea" rows="2" onChange={(e) => this.handleInput(e, i)}
+                            placeholder="Enter the input" defaultValue={values[i]}
+                            isInvalid={warning[i]}
+                        />);
+                default:
+                    return (
+                        <Form.Control
+                            type="input" onChange={(e) => this.handleInput(e, i)}
+                            placeholder="Enter the input" defaultValue={values[i]}
+                            isInvalid={warning[i]}
+                        />);
             }
         };
         return (
