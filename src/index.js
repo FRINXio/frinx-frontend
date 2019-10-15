@@ -1,30 +1,42 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import * as serviceWorker from "./serviceWorker";
 import App from "./App";
 
-import {combineReducers, createStore, applyMiddleware, compose} from "redux";
-import thunk from 'redux-thunk';
-import bulkReducer from './store/reducers/bulk';
-import searchReducer from './store/reducers/searchExecs'
-import authReducer from './store/reducers/auth'
-import buildReducer from "./store/reducers/builder"
-import mountedDeviceReducer from "./store/reducers/mountedDevices"
-
-import {Provider} from "react-redux";
-import {BrowserRouter} from "react-router-dom";
-
+import { combineReducers, createStore, applyMiddleware, compose } from "redux";
+import thunk from "redux-thunk";
+import bulkReducer from "./store/reducers/bulk";
+import searchReducer from "./store/reducers/searchExecs";
+import authReducer from "./store/reducers/auth";
+import buildReducer from "./store/reducers/builder";
+import mountedDeviceReducer from "./store/reducers/mountedDevices";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
 
 const rootReducer = combineReducers({
-    bulkReducer, searchReducer, authReducer, buildReducer, mountedDeviceReducer
+  bulkReducer,
+  searchReducer,
+  authReducer,
+  buildReducer,
+  mountedDeviceReducer
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
+const store = createStore(
+  rootReducer,
+  composeEnhancers(applyMiddleware(thunk))
+);
 
-ReactDOM.render(<Provider store={store}><BrowserRouter><App/></BrowserRouter></Provider>, document.getElementById('root'));
+ReactDOM.render(
+  <Provider store={store}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Provider>,
+  document.getElementById("root")
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
