@@ -265,10 +265,21 @@ class WorkflowExec extends Component {
             if (idx !== -1) wfIds.splice(idx, 1);
         } else {
             wfIds.push(wfId);
+            if (!this.state.allData)
+                wfIds = this.selectChildrenWf(wfId, wfIds)
         }
         this.setState({
             selectedWfs: wfIds
         });
+    }
+
+    selectChildrenWf(parentId, wfIds) {
+        const {children} = this.props.searchReducer;
+        let newWfIds = children.filter(wf => wf.parentWorkflowId === parentId)
+            .map(wf => wf.workflowId)
+        for (let i = 0 ; i < newWfIds.length; i++)
+            wfIds = wfIds.concat(this.selectChildrenWf(newWfIds[i], newWfIds));
+        return [...new Set(wfIds)];
     }
 
     selectAllWfs() {
