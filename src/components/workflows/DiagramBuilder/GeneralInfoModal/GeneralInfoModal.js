@@ -3,6 +3,7 @@ import {Modal, Button, Tab, Tabs, ButtonGroup} from "react-bootstrap";
 import DefaultsDescsTab from "./DefaultsDescsTab";
 import OutputParamsTab from "./OutputParamsTab";
 import GeneralParamsTab from "./GeneralParamsTab";
+import {getLabelsFromString} from "../builder-utils";
 
 class GeneralInfoModal extends Component {
     constructor(props, context) {
@@ -12,6 +13,7 @@ class GeneralInfoModal extends Component {
         this.handleInput = this.handleInput.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.getExistingLabels = this.getExistingLabels.bind(this);
 
         this.state = {
             show: true,
@@ -68,6 +70,17 @@ class GeneralInfoModal extends Component {
             }
         });
         this.setState({isWfNameValid: isValid});
+    }
+
+    getExistingLabels() {
+        let workflows = this.props.workflows || [];
+        let labels = [];
+        workflows.forEach(wf => {
+            if (wf.description) {
+                labels.push(...getLabelsFromString(wf.description))
+            }
+        });
+        return new Set(labels)
     }
 
     handleOutputParam(e, entry) {
@@ -174,7 +187,7 @@ class GeneralInfoModal extends Component {
                         <Tab eventKey={1} title="General">
                             <GeneralParamsTab finalWf={this.state.finalWf} handleInput={this.handleInput}
                                               isWfNameValid={this.state.isWfNameValid} handleSubmit={this.handleSubmit}
-                                              isWfNameLocked={isNameLocked}/>
+                                              isWfNameLocked={isNameLocked} getExistingLabels={this.getExistingLabels}/>
                         </Tab>
                         <Tab eventKey={2} title="Output parameters">
                             <OutputParamsTab finalWf={this.state.finalWf} handleSubmit={this.handleSubmit}

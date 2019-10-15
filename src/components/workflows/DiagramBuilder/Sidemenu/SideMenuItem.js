@@ -1,11 +1,6 @@
 import React from "react";
 import {wfLabelsColor} from "../../../constants";
-
-const getLabelsFromString = (str) => {
-    let labelsString = str.split('-').pop().replace(/ /g,'');
-
-    return labelsString === '' ? [] : labelsString.split(',');
-};
+import {getLabelsFromString} from "../builder-utils";
 
 const SideMenuItem = (props) => {
 

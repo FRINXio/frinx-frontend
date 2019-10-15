@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import {Button, ButtonGroup, Col, Form, InputGroup, Row} from "react-bootstrap";
+import {Typeahead} from 'react-bootstrap-typeahead';
 import {workflowDescriptions} from "../../../constants";
+import {getLabelsFromString} from "../builder-utils";
 
 class GeneralParamsTab extends Component {
     constructor(props, context) {
@@ -8,11 +10,11 @@ class GeneralParamsTab extends Component {
 
         this.state = {
             finalWf: this.props.finalWf,
+            existingLabels: Array.from(this.props.getExistingLabels())
         };
 
         this.handleSubmit = this.handleSubmit.bind(this)
     }
-
 
     static getDerivedStateFromProps(props, state) {
         if (props.finalWf !== state.finalWf) {
@@ -67,27 +69,43 @@ class GeneralParamsTab extends Component {
                             "unique name of workflow" :
                             (nameFieldValue.length < 1 ? "unique name of workflow" : "workflow with this name already exits")}
                     </Form.Control.Feedback>
-                </InputGroup>
+                </InputGroup>s\
             </Form.Group>
         );
 
-        const description = (descFieldValue) => (
+        const description = (descFieldValue) => {
+            let desc = descFieldValue.split('-')[0];
+            let labels = getLabelsFromString(descFieldValue);
+
+            return (
             <Form.Group>
-                <InputGroup>
+                <InputGroup style={{marginBottom: "8px"}}>
                     <InputGroup.Prepend>
                         <InputGroup.Text>description:</InputGroup.Text>
                     </InputGroup.Prepend>
-                <Form.Control
-                    type="input"
-                    onChange={(e) => this.props.handleInput(e.target.value, "description")}
-                    value={descFieldValue}/>
+                    <Form.Control
+                        type="input"
+                        onChange={(e) => this.props.handleInput(e.target.value + "-" + labels, "description")}
+                        value={desc}/>
                 </InputGroup>
-
+                <Typeahead
+                    allowNew
+                    multiple
+                    clearButton
+                    newSelectionPrefix="Add a new label: "
+                    defaultSelected={labels}
+                    value={labels}
+                    onChange={(e) => this.props.handleInput(
+                        desc + "-" + e.map(item => item.label ? item.label.toUpperCase() : item), "description")}
+                    options={this.state.existingLabels}
+                    placeholder="Add labels..."
+                />
                 <Form.Text className="text-muted">
                     {workflowDescriptions["description"]}
                 </Form.Text>
             </Form.Group>
-        );
+            )
+        };
 
         const buttonWrappedField = (item, left, right) => (
             <Form.Group>
