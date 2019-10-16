@@ -608,8 +608,7 @@ class DiagramBuilder extends Component {
   }
 
   render() {
-
-    let inputsModal = this.state.showInputModal ?
+    let inputsModal = this.state.showInputModal ? (
       <InputModal
         wf={
           this.props.finalWorkflow.name +
@@ -618,24 +617,27 @@ class DiagramBuilder extends Component {
         }
         modalHandler={this.showInputModal}
         fromBuilder
-      /> : null;
+      />
+    ) : null;
 
-    let detailsModal = this.state.showDetailModal ?
+    let detailsModal = this.state.showDetailModal ? (
       <DetailsModal
         wfId={this.props.workflowId}
         modalHandler={this.showDetailsModal}
         fromBuilder
-      /> : null;
+      />
+    ) : null;
 
-    let nodeModal = this.state.showNodeModal ?
+    let nodeModal = this.state.showNodeModal ? (
       <SubwfModal
         modalHandler={this.showNodeModal}
         inputs={this.state.modalInputs}
         saveInputs={this.saveNodeInputsHandler}
         show={this.state.showNodeModal}
-      /> : null;
+      />
+    ) : null;
 
-    let generalInfoModal = this.state.showGeneralInfoModal ?
+    let generalInfoModal = this.state.showGeneralInfoModal ? (
       <GeneralInfoModal
         finalWorkflow={this.props.finalWorkflow}
         workflows={this.props.workflows}
@@ -645,16 +647,18 @@ class DiagramBuilder extends Component {
         lockWorkflowName={this.props.lockWorkflowName}
         isWfNameLocked={this.props.isWfNameLocked}
         redirectOnExit={this.redirectOnExit}
-      /> : null;
+      />
+    ) : null;
 
-    let workflowDefModal = this.state.showDefinitionModal ?
+    let workflowDefModal = this.state.showDefinitionModal ? (
       <WorkflowDefModal
         definition={this.props.finalWorkflow}
         closeModal={this.showDefinitionModal}
         show={this.state.showDefinitionModal}
-      /> : null;
+      />
+    ) : null;
 
-    let exitModal = this.state.showExitModal ?
+    let exitModal = this.state.showExitModal ? (
       <Modal show={this.state.showExitModal}>
         <Modal.Header>
           <Modal.Title>Do you want to exit builder?</Modal.Title>
@@ -668,11 +672,11 @@ class DiagramBuilder extends Component {
             Exit
           </Button>
         </Modal.Footer>
-      </Modal> : null;
+      </Modal>
+    ) : null;
 
     return (
       <div className="body">
-
         {workflowDefModal}
         {nodeModal}
         {inputsModal}

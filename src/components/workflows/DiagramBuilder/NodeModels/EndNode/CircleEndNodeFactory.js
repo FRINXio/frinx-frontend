@@ -1,19 +1,21 @@
 import * as SRD from "storm-react-diagrams";
 import { CircleEndNodeModel } from "./CircleEndNodeModel";
 import * as React from "react";
-import {CircleNodeEnd} from "./CircleNodeEnd";
+import { CircleNodeEnd } from "./CircleNodeEnd";
 
 export class CircleEndNodeFactory extends SRD.AbstractNodeFactory {
+  constructor() {
+    super("end");
+  }
 
-    constructor() {
-        super("end");
-    }
+  generateReactWidget(
+    diagramEngine: SRD.DiagramEngine,
+    node: SRD.NodeModel
+  ): JSX.Element {
+    return <CircleNodeEnd node={node} />;
+  }
 
-    generateReactWidget(diagramEngine: SRD.DiagramEngine, node: SRD.NodeModel): JSX.Element {
-        return <CircleNodeEnd node={node} />
-    }
-
-    getNewInstance() {
-        return new CircleEndNodeModel();
-    }
+  getNewInstance() {
+    return new CircleEndNodeModel();
+  }
 }

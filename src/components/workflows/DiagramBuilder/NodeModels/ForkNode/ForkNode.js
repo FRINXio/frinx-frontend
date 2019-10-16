@@ -2,21 +2,28 @@ import * as React from "react";
 import { PortWidget } from "storm-react-diagrams";
 
 export class ForkNode extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      size: 80
+    };
+  }
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            size: 80
-        };
-    }
-
-    render() {
-        return (
-            <div className={"fork-node"} style={{position: "relative", width: this.state.size, height: this.state.size}}>
-                <svg width={this.state.size} height={this.state.size}
-                    dangerouslySetInnerHTML={{
-                        __html:
-                            `
+  render() {
+    return (
+      <div
+        className={"fork-node"}
+        style={{
+          position: "relative",
+          width: this.state.size,
+          height: this.state.size
+        }}
+      >
+        <svg
+          width={this.state.size}
+          height={this.state.size}
+          dangerouslySetInnerHTML={{
+            __html: `
           <g id="Layer_1">
           </g>
           <g id="Layer_2">
@@ -24,17 +31,31 @@ export class ForkNode extends React.Component {
                 <text x="32" y="45" fill="white" font-size="13px" >fork</text>
           </g>
         `
-                    }}/>
+          }}
+        />
 
-                <div style={{position: "absolute", zIndex: 10, left: 7, top: this.state.size / 2 - 8}}>
-                    <PortWidget name="left" node={this.props.node} />
-                </div>
+        <div
+          style={{
+            position: "absolute",
+            zIndex: 10,
+            left: 7,
+            top: this.state.size / 2 - 8
+          }}
+        >
+          <PortWidget name="left" node={this.props.node} />
+        </div>
 
-                <div style={{position: "absolute", zIndex: 10, left: this.state.size - 18, top: this.state.size / 2 - 8}}>
-                    <PortWidget name="right" node={this.props.node} />
-                </div>
-
-            </div>
-        );
-    }
+        <div
+          style={{
+            position: "absolute",
+            zIndex: 10,
+            left: this.state.size - 18,
+            top: this.state.size / 2 - 8
+          }}
+        >
+          <PortWidget name="right" node={this.props.node} />
+        </div>
+      </div>
+    );
+  }
 }

@@ -4,16 +4,18 @@ import { JoinNodeModel } from "./JoinNodeModel";
 import * as React from "react";
 
 export class JoinNodeFactory extends SRD.AbstractNodeFactory {
+  constructor() {
+    super("join");
+  }
 
-    constructor() {
-        super("join");
-    }
+  generateReactWidget(
+    diagramEngine: SRD.DiagramEngine,
+    node: SRD.NodeModel
+  ): JSX.Element {
+    return <JoinNode node={node} />;
+  }
 
-    generateReactWidget(diagramEngine: SRD.DiagramEngine, node: SRD.NodeModel): JSX.Element {
-        return <JoinNode node={node} />
-    }
-
-    getNewInstance() {
-        return new JoinNodeModel();
-    }
+  getNewInstance() {
+    return new JoinNodeModel();
+  }
 }

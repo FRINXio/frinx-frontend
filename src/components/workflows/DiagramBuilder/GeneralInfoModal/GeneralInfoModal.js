@@ -11,7 +11,7 @@ const GeneralInfoModal = props => {
   const isNameLocked = props.isWfNameLocked;
 
   useEffect(() => {
-    setFinalWf(props.finalWorkflow)
+    setFinalWf(props.finalWorkflow);
   }, [props.finalWorkflow]);
 
   const handleSave = () => {
