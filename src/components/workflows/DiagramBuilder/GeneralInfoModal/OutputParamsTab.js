@@ -1,91 +1,67 @@
-import React, { Component } from 'react';
-import {Button, Col, Form, InputGroup, Row} from "react-bootstrap";
+import React, { useState } from "react";
+import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 
-class OutputParamsTab extends Component {
-    constructor(props, context) {
-        super(props, context);
+const OutputParamsTab = props => {
+  const [customParam, setCustomParam] = useState("");
+  const outputParameters = props.finalWf.outputParameters || [];
 
-        this.state = {
-            customParam: "",
-            finalWf: this.props.finalWf
-        };
+  const handleCustomParam = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    props.handleCustomParam(customParam);
+    setCustomParam("");
+  };
 
-        this.handleCustomParam = this.handleCustomParam.bind(this)
-    }
-
-    static getDerivedStateFromProps(props, state) {
-        if (props.finalWf !== state.finalWf) {
-            return {
-                finalWf: props.finalWf
-            }
-        }
-        return null
-    }
-
-    renderOutputParams() {
-        let outputParameters = [];
-
-        Object.entries(this.state.finalWf).map(item => {
-            if (item[0] === "outputParameters") {
-                outputParameters.push(item);
-            }
-            return null;
-        });
-
-        return outputParameters;
-    }
-
-    handleCustomParam(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        this.props.handleCustomParam(this.state.customParam);
-        this.setState({
-            customParam: ""
-        })
-    }
-
-    render() {
-        let outputParameters = this.renderOutputParams();
-
-        return (
-            <div>
-                <Row>
-                    <Form onSubmit={this.handleCustomParam}>
-                        <InputGroup style={{padding: "10px 215px 10px"}}>
-                            <Form.Control value={this.state.customParam}
-                                          onChange={(e) => this.setState({customParam: e.target.value})}
-                                          placeholder="Add new output parameter name"/>
-                            <InputGroup.Append>
-                                <Button variant="outline-primary" type="submit">Add</Button>
-                            </InputGroup.Append>
-                        </InputGroup>
-                    </Form>
-                </Row>
-                <hr className="hr-text" data-content="existing output parameters"/>
-                <Form onSubmit={this.props.handleSubmit}>
-                    <Row>
-                        {outputParameters.length > 0 ? Object.entries(outputParameters[0][1]).map((key, i) => {
-                            return (
-                                <Col sm={6} key={`col4-${i}`}>
-                                    <Form.Group>
-                                        <Form.Label>
-                                            {key[0]}&nbsp;&nbsp;
-                                            <i className="fas fa-times clickable" style={{color: "red"}}
-                                               onClick={() => this.props.deleteOutputParam(key[0])}/>
-                                        </Form.Label>
-                                        <Form.Control
-                                            type="input"
-                                            onChange={(e) => this.props.handleOutputParam(e, key)}
-                                            value={key[1]}/>
-                                    </Form.Group>
-                                </Col>
-                            )
-                        }) : null}
-                    </Row>
-                </Form>
-            </div>
-        );
-    }
-}
+  return (
+    <div>
+      <Row>
+        <Form onSubmit={handleCustomParam}>
+          <InputGroup style={{ padding: "10px 215px 10px" }}>
+            <Form.Control
+              value={customParam}
+              onChange={e => setCustomParam(e.target.value)}
+              placeholder="Add new output parameter name"
+            />
+            <InputGroup.Append>
+              <Button variant="outline-primary" type="submit">
+                Add
+              </Button>
+            </InputGroup.Append>
+          </InputGroup>
+        </Form>
+      </Row>
+      <hr className="hr-text" data-content="existing output parameters" />
+      <Form onSubmit={props.handleSubmit}>
+        <Row>
+          {Object.keys(outputParameters).length > 0
+            ? Object.entries(outputParameters).map((entry, i) => {
+                return (
+                  <Col sm={6} key={`col4-${i}`}>
+                    <Form.Group>
+                      <Form.Label>
+                        {entry[0]}&nbsp;&nbsp;
+                        <i
+                          className="fas fa-times clickable"
+                          style={{ color: "red" }}
+                          onClick={() => props.deleteOutputParam(entry[0])}
+                        />
+                      </Form.Label>
+                      <Form.Control
+                        type="input"
+                        onChange={e =>
+                          props.handleOutputParam(entry[0], e.target.value)
+                        }
+                        value={entry[1]}
+                      />
+                    </Form.Group>
+                  </Col>
+                );
+              })
+            : null}
+        </Row>
+      </Form>
+    </div>
+  );
+};
 
 export default OutputParamsTab;

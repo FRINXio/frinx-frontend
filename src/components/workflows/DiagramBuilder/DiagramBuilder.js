@@ -51,7 +51,10 @@ class DiagramBuilder extends Component {
 
     this.parseDiagramToJSON = this.parseDiagramToJSON.bind(this);
     this.showDefinitionModal = this.showDefinitionModal.bind(this);
+
     this.showGeneralInfoModal = this.showGeneralInfoModal.bind(this);
+    this.closeGeneralInfoModal = this.closeGeneralInfoModal.bind(this);
+
     this.redirectOnExit = this.redirectOnExit.bind(this);
     this.showInputModal = this.showInputModal.bind(this);
     this.showDetailsModal = this.showDetailsModal.bind(this);
@@ -492,15 +495,17 @@ class DiagramBuilder extends Component {
     });
   }
 
+  // GENERAL INFO MODAL
   showGeneralInfoModal() {
-    if (
-      this.props.isWfNameLocked &&
-      this.state.showGeneralInfoModal === false
-    ) {
-      this.parseDiagramToJSON();
-    }
+    this.parseDiagramToJSON();
     this.setState({
-      showGeneralInfoModal: !this.state.showGeneralInfoModal
+      showGeneralInfoModal: true
+    });
+  }
+
+  closeGeneralInfoModal() {
+    this.setState({
+      showGeneralInfoModal: false
     });
   }
 
@@ -617,19 +622,6 @@ class DiagramBuilder extends Component {
       />
     ) : null;
 
-    let generalInfoModal = this.state.showGeneralInfoModal ? (
-      <GeneralInfoModal
-        definition={this.props.finalWorkflow}
-        workflows={this.props.workflows}
-        modalHandler={this.showGeneralInfoModal}
-        saveInputs={this.props.updateFinalWorkflow}
-        show={this.state.showGeneralInfoModal}
-        lockWorkflowName={this.props.lockWorkflowName}
-        isWfNameLocked={this.props.isWfNameLocked}
-        redirectOnExit={this.redirectOnExit}
-      />
-    ) : null;
-
     let inputModal = this.state.showInputModal ? (
       <InputModal
         wf={
@@ -673,7 +665,18 @@ class DiagramBuilder extends Component {
       <div className="body">
         {subWfModal}
         {definitionModal}
-        {generalInfoModal}
+
+        <GeneralInfoModal
+          finalWorkflow={this.props.finalWorkflow}
+          workflows={this.props.workflows}
+          closeModal={this.closeGeneralInfoModal}
+          saveInputs={this.props.updateFinalWorkflow}
+          show={this.state.showGeneralInfoModal}
+          lockWorkflowName={this.props.lockWorkflowName}
+          isWfNameLocked={this.props.isWfNameLocked}
+          redirectOnExit={this.redirectOnExit}
+        />
+
         {inputModal}
         {detailsModal}
         {exitModal}

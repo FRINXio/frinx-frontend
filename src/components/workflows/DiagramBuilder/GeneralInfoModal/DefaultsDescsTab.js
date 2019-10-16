@@ -1,96 +1,106 @@
-import React, { Component } from 'react';
-import {Button, Col, Form, InputGroup} from "react-bootstrap";
-import {getWfInputs, getWfInputsRegex} from "../builder-utils";
-import _ from 'lodash'
+import React, { useState } from "react";
+import { Button, Col, Form, InputGroup } from "react-bootstrap";
+import { getWfInputsRegex } from "../builder-utils";
+import _ from "lodash";
 
-class DefaultsDescsTab extends Component {
-    constructor(props, context) {
-        super(props, context);
+const createInputParamsList = props => {
+  const existingInputParameters = props.finalWf.inputParameters || [];
+  let inputParametersKeys = Object.keys(getWfInputsRegex(props.finalWf)) || [];
 
-        this.state = {
-            finalWf: this.props.finalWf,
-            selectedParam: Object.keys(getWfInputs(this.props.finalWf))[0]
-        };
-    }
+  existingInputParameters.forEach(param => {
+    inputParametersKeys.push(param.match(/^(.*?)\[/)[1]);
+  });
 
-    getDescriptionAndDefault(selectedParam) {
-        let inputParameters = this.state.finalWf.inputParameters || [];
-        let result = [];
+  inputParametersKeys = _.uniq(inputParametersKeys);
 
-        inputParameters.forEach(param => {
-            if (param.match(/^(.*?)\[/)[1] === selectedParam) {
-                param.match(/\[(.*?)]/g).forEach(group => {
-                    result.push(group.replace(/[[\]']+/g,''))
-                });
-            }
+  return inputParametersKeys;
+};
+
+const DefaultsDescsTab = props => {
+  const inputParamsList = createInputParamsList(props);
+  const [selectedParam, setSelectedParam] = useState(inputParamsList[0]);
+
+  const getDescriptionAndDefault = () => {
+    let inputParameters = props.finalWf.inputParameters || [];
+    let result = [];
+
+    inputParameters.forEach(param => {
+      if (param.match(/^(.*?)\[/)[1] === selectedParam) {
+        param.match(/\[(.*?)]/g).forEach(group => {
+          result.push(group.replace(/[[\]']+/g, ""));
         });
-        return result.length > 0 ? result : ['','']
-    }
+      }
+    });
+    return result.length > 0 ? result : ["", ""];
+  };
 
-    changeSelected(e) {
-        this.setState({selectedParam: e.target.value})
-    }
+  let currentDescription = getDescriptionAndDefault(selectedParam)[0];
+  let currentDefault = getDescriptionAndDefault(selectedParam)[1];
 
-    render() {
-        let inputParametersKeys = Object.keys(getWfInputsRegex(this.state.finalWf)) || [];
-        let existingInputParameters = this.state.finalWf.inputParameters || [];
-
-        existingInputParameters.forEach(param => {
-            inputParametersKeys.push(param.match(/^(.*?)\[/)[1])
-        });
-
-        inputParametersKeys = _.uniq(inputParametersKeys);
-
-        let currentDescription = this.getDescriptionAndDefault(this.state.selectedParam)[0];
-        let currentDefault = this.getDescriptionAndDefault(this.state.selectedParam)[1];
-        let noInputParams = inputParametersKeys.length < 1;
-
-        return (
-            <div>
-                <Form>
-                    <Form.Group>
-                        <InputGroup>
-                            <InputGroup.Prepend>
-                                <InputGroup.Text>Available input parameters:</InputGroup.Text>
-                            </InputGroup.Prepend>
-                            <Form.Control disabled={noInputParams} onClick={(e) => this.changeSelected(e)} as="select">
-                                {inputParametersKeys.map(param => <option>{param}</option>)}
-                            </Form.Control>
-                            <InputGroup.Append>
-                                <Button disabled={noInputParams}
-                                        title="delete parameter's default and description"
-                                        onClick={() => this.props.deleteDefaultAndDesc(this.state.selectedParam)}
-                                        variant="outline-danger"><i
-                                    className="fas fa-times"/></Button>
-                            </InputGroup.Append>
-                        </InputGroup>
-                    </Form.Group>
-                    <Form.Row>
-                        <Col>
-                            <Form.Label>default value</Form.Label>
-                            <Form.Control placeholder="default value"
-                                          disabled={noInputParams}
-                                          value={currentDefault}
-                                          onChange={(e) => this.props.handleCustomDefaultAndDesc(
-                                              this.state.selectedParam,
-                                              e.target.value,
-                                              currentDescription)}/>
-                        </Col>
-                        <Col>
-                            <Form.Label>description</Form.Label>
-                            <Form.Control placeholder="description"
-                                          disabled={noInputParams}
-                                          value={currentDescription}
-                                          onChange={(e) => this.props.handleCustomDefaultAndDesc(
-                                              this.state.selectedParam,
-                                              currentDefault,
-                                              e.target.value)}/>
-                        </Col>
-                    </Form.Row>
-                </Form>
-            </div>
-        );
-    }
-}
+  return (
+    <div>
+      <Form>
+        <Form.Group>
+          <InputGroup>
+            <InputGroup.Prepend>
+              <InputGroup.Text>Available input parameters:</InputGroup.Text>
+            </InputGroup.Prepend>
+            <Form.Control
+              disabled={inputParamsList.length === 0}
+              onClick={e => setSelectedParam(e.target.value)}
+              as="select"
+            >
+              {inputParamsList.map(param => (
+                <option>{param}</option>
+              ))}
+            </Form.Control>
+            <InputGroup.Append>
+              <Button
+                disabled={inputParamsList.length === 0}
+                title="delete parameter's default and description"
+                onClick={() => props.deleteDefaultAndDesc(selectedParam)}
+                variant="outline-danger"
+              >
+                <i className="fas fa-times" />
+              </Button>
+            </InputGroup.Append>
+          </InputGroup>
+        </Form.Group>
+        <Form.Row>
+          <Col>
+            <Form.Label>default value</Form.Label>
+            <Form.Control
+              placeholder="default value"
+              disabled={inputParamsList.length === 0}
+              value={currentDefault}
+              onChange={e =>
+                props.handleCustomDefaultAndDesc(
+                  selectedParam,
+                  e.target.value,
+                  currentDescription
+                )
+              }
+            />
+          </Col>
+          <Col>
+            <Form.Label>description</Form.Label>
+            <Form.Control
+              placeholder="description"
+              disabled={inputParamsList.length === 0}
+              value={currentDescription}
+              onChange={e =>
+                props.handleCustomDefaultAndDesc(
+                  selectedParam,
+                  currentDefault,
+                  e.target.value
+                )
+              }
+            />
+          </Col>
+        </Form.Row>
+      </Form>
+    </div>
+  );
+};
 
 export default DefaultsDescsTab;
