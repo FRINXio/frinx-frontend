@@ -1,6 +1,6 @@
 import React from "react";
-import { wfLabelsColor } from "../../../constants";
 import { getLabelsFromString } from "../builder-utils";
+import WfLabels from "../../../common/WfLabels";
 
 const SideMenuItem = props => {
   let description = null;
@@ -37,13 +37,7 @@ const SideMenuItem = props => {
           )}
         </div>
         {labels.map((label, i) => {
-          let color =
-            i >= wfLabelsColor.length ? wfLabelsColor[0] : wfLabelsColor[i];
-          return (
-            <div className="wfLabel" style={{ backgroundColor: color }}>
-              {label}
-            </div>
-          );
+          return <WfLabels key={label} label={label} index={i} />;
         })}
       </div>
     </div>

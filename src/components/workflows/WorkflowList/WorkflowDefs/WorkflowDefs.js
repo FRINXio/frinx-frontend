@@ -17,8 +17,8 @@ import InputModal from "./InputModal/InputModal";
 import DiagramModal from "./DiagramModal/DiagramModal";
 import PageCount from "../../../common/PageCount";
 import PageSelect from "../../../common/PageSelect";
-import { wfLabelsColor } from "../../../constants";
 import { withRouter } from "react-router-dom";
+import WfLabels from "../../../common/WfLabels";
 
 const http = require("../../../../server/HttpServerSide").HttpClient;
 
@@ -256,26 +256,17 @@ class WorkflowDefs extends Component {
     wfLabels.forEach((label, i) => {
       if (label !== "") {
         let index = this.state.allLabels.findIndex(lab => lab === label);
-        let color =
-          index >= wfLabelsColor.length
-            ? wfLabelsColor[0]
-            : wfLabelsColor[index];
         let newLabels =
           this.state.labels.findIndex(lbl => lbl === label) < 0
             ? [...this.state.labels, label]
             : this.state.labels;
         labels.push(
-          <div
+          <WfLabels
             key={`${name}-${i}`}
-            style={{ backgroundColor: color }}
-            className="wfLabel"
-            onClick={e => {
-              e.stopPropagation();
-              this.onLabelSearch(newLabels);
-            }}
-          >
-            {label}
-          </div>
+            label={label}
+            index={index}
+            search={this.onLabelSearch.bind(this, newLabels)}
+          />
         );
       }
     });
