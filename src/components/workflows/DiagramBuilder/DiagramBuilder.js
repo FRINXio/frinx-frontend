@@ -39,7 +39,7 @@ class DiagramBuilder extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showSubWfModal: false,
+      showNodeModal: false,
       showDefinitionModal: false,
       showGeneralInfoModal: true,
       showInputModal: false,
@@ -49,20 +49,25 @@ class DiagramBuilder extends Component {
       app: new Application()
     };
 
-    this.parseDiagramToJSON = this.parseDiagramToJSON.bind(this);
     this.showDefinitionModal = this.showDefinitionModal.bind(this);
     this.showGeneralInfoModal = this.showGeneralInfoModal.bind(this);
-    this.redirectOnExit = this.redirectOnExit.bind(this);
+    this.showNodeModal = this.showNodeModal.bind(this);
     this.showInputModal = this.showInputModal.bind(this);
     this.showDetailsModal = this.showDetailsModal.bind(this);
     this.showExitModal = this.showExitModal.bind(this);
+
+    this.parseDiagramToJSON = this.parseDiagramToJSON.bind(this);
+    this.clearCanvas = this.clearCanvas.bind(this);
+    this.redirectOnExit = this.redirectOnExit.bind(this);
+
+    this.saveNodeInputsHandler = this.saveNodeInputsHandler.bind(this);
     this.saveAndExecute = this.saveAndExecute.bind(this);
     this.expandNodeToWorkflow = this.expandNodeToWorkflow.bind(this);
     this.saveWorkflow = this.saveWorkflow.bind(this);
     this.renderSelectedWorkflow = this.renderSelectedWorkflow.bind(this);
+
     this.submitFile = this.submitFile.bind(this);
     this.saveFile = this.saveFile.bind(this);
-    this.clearCanvas = this.clearCanvas.bind(this);
   }
 
   componentDidMount() {
@@ -182,7 +187,7 @@ class DiagramBuilder extends Component {
       if (node && node.type !== "start" && node.type !== "end") {
         node.setSelected(false);
         this.setState({
-          showSubWfModal: true,
+          showNodeModal: true,
           modalInputs: { inputs: node.extras.inputs, id: node.id }
         });
       }
@@ -478,13 +483,16 @@ class DiagramBuilder extends Component {
       });
   }
 
-  /// * modal handlers * ///
-  subwfModalHandler() {
+  /*** MODAL HANDLERS ***/
+
+  // NODE MODAL
+  showNodeModal() {
     this.setState({
-      showSubWfModal: !this.state.showSubWfModal
+      showNodeModal: !this.state.showNodeModal
     });
   }
 
+  // DEFINITION MODAL
   showDefinitionModal() {
     this.parseDiagramToJSON();
     this.setState({
@@ -492,36 +500,35 @@ class DiagramBuilder extends Component {
     });
   }
 
+  // GENERAL INFO MODAL
   showGeneralInfoModal() {
-    if (
-      this.props.isWfNameLocked &&
-      this.state.showGeneralInfoModal === false
-    ) {
-      this.parseDiagramToJSON();
-    }
+    this.parseDiagramToJSON();
     this.setState({
       showGeneralInfoModal: !this.state.showGeneralInfoModal
     });
   }
 
-  showDetailsModal() {
-    this.setState({
-      showDetailsModal: !this.state.showDetailsModal
-    });
-  }
-
-  showExitModal() {
-    this.setState({
-      showExitModal: !this.state.showExitModal
-    });
-  }
-
+  // WORKFLOW EXECUTION INPUT MODAL
   showInputModal() {
     if (this.state.showInputModal) {
       this.showDetailsModal();
     }
     this.setState({
       showInputModal: !this.state.showInputModal
+    });
+  }
+
+  // WORKFLOW EXECUTION DETAILS MODAL
+  showDetailsModal() {
+    this.setState({
+      showDetailsModal: !this.state.showDetailsModal
+    });
+  }
+
+  // EXIT MODAL
+  showExitModal() {
+    this.setState({
+      showExitModal: !this.state.showExitModal
     });
   }
 
@@ -601,27 +608,40 @@ class DiagramBuilder extends Component {
   }
 
   render() {
-    let subWfModal = this.state.showSubWfModal ? (
-      <SubwfModal
-        modalHandler={this.subwfModalHandler.bind(this)}
-        inputs={this.state.modalInputs}
-        saveInputs={this.saveNodeInputsHandler.bind(this)}
+    let inputsModal = this.state.showInputModal ? (
+      <InputModal
+        wf={
+          this.props.finalWorkflow.name +
+          " / " +
+          this.props.finalWorkflow.version
+        }
+        modalHandler={this.showInputModal}
+        fromBuilder
       />
     ) : null;
 
-    let definitionModal = this.state.showDefinitionModal ? (
-      <WorkflowDefModal
-        definition={this.props.finalWorkflow}
-        modalHandler={this.showDefinitionModal}
-        show={this.state.showDefinitionModal}
+    let detailsModal = this.state.showDetailModal ? (
+      <DetailsModal
+        wfId={this.props.workflowId}
+        modalHandler={this.showDetailsModal}
+        fromBuilder
+      />
+    ) : null;
+
+    let nodeModal = this.state.showNodeModal ? (
+      <SubwfModal
+        modalHandler={this.showNodeModal}
+        inputs={this.state.modalInputs}
+        saveInputs={this.saveNodeInputsHandler}
+        show={this.state.showNodeModal}
       />
     ) : null;
 
     let generalInfoModal = this.state.showGeneralInfoModal ? (
       <GeneralInfoModal
-        definition={this.props.finalWorkflow}
+        finalWorkflow={this.props.finalWorkflow}
         workflows={this.props.workflows}
-        modalHandler={this.showGeneralInfoModal}
+        closeModal={this.showGeneralInfoModal}
         saveInputs={this.props.updateFinalWorkflow}
         show={this.state.showGeneralInfoModal}
         lockWorkflowName={this.props.lockWorkflowName}
@@ -630,25 +650,11 @@ class DiagramBuilder extends Component {
       />
     ) : null;
 
-    let inputModal = this.state.showInputModal ? (
-      <InputModal
-        wf={
-          this.props.finalWorkflow.name +
-          " / " +
-          this.props.finalWorkflow.version
-        }
-        modalHandler={this.showInputModal}
-        show={this.state.showInputModal}
-        fromBuilder
-      />
-    ) : null;
-
-    let detailsModal = this.state.showDetailsModal ? (
-      <DetailsModal
-        wfId={this.props.workflowId}
-        modalHandler={this.showDetailsModal}
-        show={this.state.showDetailsModal}
-        fromBuilder
+    let workflowDefModal = this.state.showDefinitionModal ? (
+      <WorkflowDefModal
+        definition={this.props.finalWorkflow}
+        closeModal={this.showDefinitionModal}
+        show={this.state.showDefinitionModal}
       />
     ) : null;
 
@@ -671,11 +677,11 @@ class DiagramBuilder extends Component {
 
     return (
       <div className="body">
-        {subWfModal}
-        {definitionModal}
-        {generalInfoModal}
-        {inputModal}
+        {workflowDefModal}
+        {nodeModal}
+        {inputsModal}
         {detailsModal}
+        {generalInfoModal}
         {exitModal}
 
         <ControlsHeader

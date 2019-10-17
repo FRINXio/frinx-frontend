@@ -1,53 +1,44 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Tab, Tabs, ButtonGroup } from "react-bootstrap";
 import DefaultsDescsTab from "./DefaultsDescsTab";
 import OutputParamsTab from "./OutputParamsTab";
 import GeneralParamsTab from "./GeneralParamsTab";
 import { getLabelsFromString } from "../builder-utils";
 
-class GeneralInfoModal extends Component {
-  constructor(props, context) {
-    super(props, context);
+const GeneralInfoModal = props => {
+  const [isWfNameValid, setWfNameValid] = useState(false);
+  const [finalWorkflow, setFinalWf] = useState(props.finalWorkflow);
+  const isNameLocked = props.isWfNameLocked;
 
-    this.handleClose = this.handleClose.bind(this);
-    this.handleInput = this.handleInput.bind(this);
-    this.handleSave = this.handleSave.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.getExistingLabels = this.getExistingLabels.bind(this);
+  useEffect(() => {
+    setFinalWf(props.finalWorkflow);
+  }, [props.finalWorkflow]);
 
-    this.state = {
-      show: true,
-      finalWf: this.props.definition,
-      isWfNameValid: false
-    };
-  }
+  const handleSave = () => {
+    props.saveInputs(finalWorkflow);
+    props.lockWorkflowName();
+    props.closeModal();
+  };
 
-  handleClose() {
-    this.setState({ show: false });
-    this.props.modalHandler();
-  }
-
-  handleSave() {
-    this.setState({ show: false });
-    this.props.saveInputs(this.state.finalWf);
-    this.props.lockWorkflowName();
-    this.props.modalHandler();
-  }
-
-  handleSubmit(e) {
-    if (this.props.isWfNameLocked || this.state.isWfNameValid) {
-      this.handleSave();
+  const handleSubmit = e => {
+    if (props.isWfNameLocked || isWfNameValid) {
+      handleSave();
     } else {
       e.preventDefault();
       e.stopPropagation();
     }
-  }
+  };
 
-  handleInput(value, key) {
-    let finalWf = { ...this.state.finalWf };
+  const handleClose = () => {
+    setFinalWf(props.finalWorkflow);
+    props.closeModal();
+  };
+
+  const handleInput = (value, key) => {
+    let finalWf = { ...finalWorkflow };
 
     if (key === "name") {
-      this.validateWorkflowName(value);
+      validateWorkflowName(value);
     }
 
     finalWf = {
@@ -55,25 +46,23 @@ class GeneralInfoModal extends Component {
       [key]: value
     };
 
-    this.setState({
-      finalWf: finalWf
-    });
-  }
+    setFinalWf(finalWf);
+  };
 
-  validateWorkflowName(name) {
+  const validateWorkflowName = name => {
     let isValid = name.length >= 1;
-    let workflows = this.props.workflows || [];
+    let workflows = props.workflows || [];
 
     workflows.forEach(wf => {
       if (wf.name === name) {
         isValid = false;
       }
     });
-    this.setState({ isWfNameValid: isValid });
-  }
+    setWfNameValid(isValid);
+  };
 
-  getExistingLabels() {
-    let workflows = this.props.workflows || [];
+  const getExistingLabels = () => {
+    let workflows = props.workflows || [];
     let labels = [];
     workflows.forEach(wf => {
       if (wf.description) {
@@ -81,27 +70,25 @@ class GeneralInfoModal extends Component {
       }
     });
     return new Set(labels);
-  }
+  };
 
-  handleOutputParam(e, entry) {
-    let finalWf = { ...this.state.finalWf };
+  const handleOutputParam = (key, value) => {
+    let finalWf = { ...finalWorkflow };
     let outputParameters = finalWf.outputParameters;
 
     finalWf = {
       ...finalWf,
       outputParameters: {
         ...outputParameters,
-        [entry[0]]: e.target.value
+        [key]: value
       }
     };
 
-    this.setState({
-      finalWf: finalWf
-    });
-  }
+    setFinalWf(finalWf);
+  };
 
-  handleCustomParam(param) {
-    let finalWf = { ...this.state.finalWf };
+  const handleCustomParam = param => {
+    let finalWf = { ...finalWorkflow };
     let outputParameters = finalWf.outputParameters;
 
     finalWf = {
@@ -112,13 +99,11 @@ class GeneralInfoModal extends Component {
       }
     };
 
-    this.setState({
-      finalWf: finalWf
-    });
-  }
+    setFinalWf(finalWf);
+  };
 
-  handleCustomDefaultAndDesc(param, defaultValue, description) {
-    let finalWf = { ...this.state.finalWf };
+  const handleCustomDefaultAndDesc = (param, defaultValue, description) => {
+    let finalWf = { ...finalWorkflow };
     let inputParameters = finalWf.inputParameters || [];
     // eslint-disable-next-line no-useless-concat
     let entry = `${param}` + `[${description}]` + `[${defaultValue}]`;
@@ -138,15 +123,12 @@ class GeneralInfoModal extends Component {
     }
 
     finalWf = { ...finalWf, inputParameters };
+    setFinalWf(finalWf);
+  };
 
-    this.setState({
-      finalWf: finalWf
-    });
-  }
-
-  deleteDefaultAndDesc(selectedParam) {
-    let finalWf = { ...this.state.finalWf };
-    let inputParameters = this.state.finalWf.inputParameters || [];
+  const deleteDefaultAndDesc = selectedParam => {
+    let finalWf = { ...finalWorkflow };
+    let inputParameters = finalWf.inputParameters || [];
 
     inputParameters.forEach((param, i) => {
       if (param.match(/^(.*?)\[/)[1] === selectedParam) {
@@ -155,87 +137,72 @@ class GeneralInfoModal extends Component {
     });
 
     finalWf = { ...finalWf, inputParameters };
+    setFinalWf(finalWf);
+  };
 
-    this.setState({
-      finalWf: finalWf
-    });
-  }
-
-  deleteOutputParam(selectedParam) {
-    let finalWf = { ...this.state.finalWf };
-    let outputParameters = this.state.finalWf.outputParameters || [];
+  const deleteOutputParam = selectedParam => {
+    let finalWf = { ...finalWorkflow };
+    let outputParameters = finalWf.outputParameters || [];
 
     delete outputParameters[selectedParam];
 
     finalWf = { ...finalWf, outputParameters };
+    setFinalWf(finalWf);
+  };
 
-    this.setState({
-      finalWf: finalWf
-    });
-  }
-
-  render() {
-    let isNameLocked = this.props.isWfNameLocked;
-
-    return (
-      <Modal
-        size="lg"
-        show={this.state.show}
-        onHide={isNameLocked ? this.handleClose : () => false}
-      >
-        <Modal.Header>
-          <Modal.Title>
-            {isNameLocked ? "Edit general informations" : "Create new workflow"}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body style={{ padding: "30px" }}>
-          <Tabs style={{ marginBottom: "20px" }}>
-            <Tab eventKey={1} title="General">
-              <GeneralParamsTab
-                finalWf={this.state.finalWf}
-                handleInput={this.handleInput}
-                isWfNameValid={this.state.isWfNameValid}
-                handleSubmit={this.handleSubmit}
-                isWfNameLocked={isNameLocked}
-                getExistingLabels={this.getExistingLabels}
-              />
-            </Tab>
-            <Tab eventKey={2} title="Output parameters">
-              <OutputParamsTab
-                finalWf={this.state.finalWf}
-                handleSubmit={this.handleSubmit}
-                handleOutputParam={this.handleOutputParam.bind(this)}
-                handleCustomParam={this.handleCustomParam.bind(this)}
-                deleteOutputParam={this.deleteOutputParam.bind(this)}
-              />
-            </Tab>
-            <Tab eventKey={3} title="Defaults & description">
-              <DefaultsDescsTab
-                finalWf={this.state.finalWf}
-                deleteDefaultAndDesc={this.deleteDefaultAndDesc.bind(this)}
-                handleCustomDefaultAndDesc={this.handleCustomDefaultAndDesc.bind(
-                  this
-                )}
-              />
-            </Tab>
-          </Tabs>
-          <ButtonGroup style={{ width: "100%", marginTop: "20px" }}>
-            {!isNameLocked ? (
-              <Button
-                variant="outline-secondary"
-                onClick={this.props.redirectOnExit}
-              >
-                Cancel
-              </Button>
-            ) : null}
-            <Button onClick={this.handleSubmit} variant="primary">
-              Save
+  return (
+    <Modal
+      size="lg"
+      show={props.show}
+      onHide={isNameLocked ? handleClose : () => false}
+    >
+      <Modal.Header>
+        <Modal.Title>
+          {isNameLocked ? "Edit general informations" : "Create new workflow"}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body style={{ padding: "30px" }}>
+        <Tabs style={{ marginBottom: "20px" }}>
+          <Tab eventKey={1} title="General">
+            <GeneralParamsTab
+              finalWf={finalWorkflow}
+              handleInput={handleInput}
+              isWfNameValid={isWfNameValid}
+              handleSubmit={handleSubmit}
+              isWfNameLocked={isNameLocked}
+              getExistingLabels={getExistingLabels}
+            />
+          </Tab>
+          <Tab eventKey={2} title="Output parameters">
+            <OutputParamsTab
+              finalWf={finalWorkflow}
+              handleSubmit={handleSubmit}
+              handleOutputParam={handleOutputParam}
+              handleCustomParam={handleCustomParam}
+              deleteOutputParam={deleteOutputParam}
+            />
+          </Tab>
+          <Tab eventKey={3} title="Defaults & description">
+            <DefaultsDescsTab
+              finalWf={finalWorkflow}
+              deleteDefaultAndDesc={deleteDefaultAndDesc}
+              handleCustomDefaultAndDesc={handleCustomDefaultAndDesc}
+            />
+          </Tab>
+        </Tabs>
+        <ButtonGroup style={{ width: "100%", marginTop: "20px" }}>
+          {!isNameLocked ? (
+            <Button variant="outline-secondary" onClick={props.redirectOnExit}>
+              Cancel
             </Button>
-          </ButtonGroup>
-        </Modal.Body>
-      </Modal>
-    );
-  }
-}
+          ) : null}
+          <Button onClick={handleSubmit} variant="primary">
+            Save
+          </Button>
+        </ButtonGroup>
+      </Modal.Body>
+    </Modal>
+  );
+};
 
 export default GeneralInfoModal;
