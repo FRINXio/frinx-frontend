@@ -436,7 +436,12 @@ class DetailsModal extends Component {
         onHide={this.handleClose}
       >
         <Modal.Header>
-          <Modal.Title>Details of {this.state.meta.name}</Modal.Title>
+          <Modal.Title>
+            Details of{" "}
+            {this.state.meta.name
+              ? this.state.meta.name.replace(/_/g, " ")
+              : null}
+          </Modal.Title>
           <div>
             {parentWorkflowButton()}
             {childWorkflows()}
@@ -446,10 +451,17 @@ class DetailsModal extends Component {
           <Accordion>
             <Accordion.Toggle as={Card.Header}>
               <b>
-                {this.state.meta.name} / {this.state.meta.version}
+                {this.state.meta.name
+                  ? this.state.meta.name.replace(/_/g, " ")
+                  : null}
               </b>
               &nbsp;&nbsp;
               <p style={{ float: "right" }}>{this.props.wfId}</p>
+              <b>
+                <p style={{ float: "right" }}>
+                  Version: {this.state.meta.version}&nbsp;&nbsp;
+                </p>
+              </b>
             </Accordion.Toggle>
             <Accordion.Collapse>
               <Card.Body style={{ padding: "0px" }}>{headerInfo()}</Card.Body>
