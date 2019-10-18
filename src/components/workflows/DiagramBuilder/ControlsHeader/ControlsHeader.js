@@ -16,11 +16,13 @@ const ControlsHeader = props => {
   const handleClickInside = event => {
     const headerEl = document.getElementById("controls-header");
     const expandBtn = document.getElementById("expand");
+    const sideMenu = document.getElementById("sidemenu");
 
     // workaround to prevent deleting nodes while typing
     if (
       headerEl &&
-      headerEl.contains(event.target) &&
+      sideMenu &&
+      (headerEl.contains(event.target) || sideMenu.contains(event.target)) &&
       !expandBtn.contains(event.target)
     ) {
       props.app

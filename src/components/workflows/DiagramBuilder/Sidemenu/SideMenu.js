@@ -127,7 +127,7 @@ const SideMenu = props => {
   };
 
   return (
-    <div className="tray">
+    <div id="sidemenu" className="tray">
       <div className="tray-header">
         <InputGroup>
           <Form.Control
