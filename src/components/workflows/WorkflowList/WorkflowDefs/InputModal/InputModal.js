@@ -148,7 +148,6 @@ class InputModal extends Component {
     }
     this.setState({ status: "Executing..." });
     http.post("/api/conductor/workflow", JSON.stringify(payload)).then(res => {
-      console.log(res);
       this.setState({
         status: res.statusText,
         wfId: res.body.text

@@ -53,6 +53,7 @@ class DiagramBuilder extends Component {
     this.showGeneralInfoModal = this.showGeneralInfoModal.bind(this);
     this.showNodeModal = this.showNodeModal.bind(this);
     this.showInputModal = this.showInputModal.bind(this);
+    this.closeInputModal = this.closeInputModal.bind(this);
     this.showDetailsModal = this.showDetailsModal.bind(this);
     this.showExitModal = this.showExitModal.bind(this);
 
@@ -510,12 +511,16 @@ class DiagramBuilder extends Component {
 
   // WORKFLOW EXECUTION INPUT MODAL
   showInputModal() {
-    if (this.state.showInputModal) {
-      this.showDetailsModal();
-    }
     this.setState({
-      showInputModal: !this.state.showInputModal
+      showInputModal: true
     });
+  }
+
+  closeInputModal() {
+    this.setState({
+      showInputModal: false
+    });
+    this.showDetailsModal();
   }
 
   // WORKFLOW EXECUTION DETAILS MODAL
@@ -615,16 +620,16 @@ class DiagramBuilder extends Component {
           " / " +
           this.props.finalWorkflow.version
         }
-        modalHandler={this.showInputModal}
+        modalHandler={this.closeInputModal}
         fromBuilder
+        show={this.state.showInputModal}
       />
     ) : null;
 
-    let detailsModal = this.state.showDetailModal ? (
+    let detailsModal = this.state.showDetailsModal ? (
       <DetailsModal
         wfId={this.props.workflowId}
         modalHandler={this.showDetailsModal}
-        fromBuilder
       />
     ) : null;
 
