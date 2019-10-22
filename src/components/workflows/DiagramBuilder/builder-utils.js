@@ -298,7 +298,7 @@ export const find_mostRightNode = nodes => {
   return max;
 };
 
-export const linkNodes = (node1, node2) => {
+export const linkNodes = (node1, node2, whichPort) => {
   if (
     node1.type === "fork" ||
     node1.type === "join" ||
@@ -338,6 +338,24 @@ export const linkNodes = (node1, node2) => {
     }
     if (node2.type === "end") {
       return defaultOutPort.link(node2.getPort("left"));
+    }
+  } else if (node1.type === "decision") {
+    const currentPort = node1.getPort(whichPort);
+
+    if (node2.type === "default") {
+      return currentPort.link(node2.getInPorts()[0]);
+    }
+    if (node2.type === "fork") {
+      return currentPort.link(node2.getPort("left"));
+    }
+    if (node2.type === "join") {
+      return currentPort.link(node2.getPort("left"));
+    }
+    if (node2.type === "decision") {
+      return currentPort.link(node2.getPort("inputPort"));
+    }
+    if (node2.type === "end") {
+      return currentPort.link(node2.getPort("left"));
     }
   }
 };

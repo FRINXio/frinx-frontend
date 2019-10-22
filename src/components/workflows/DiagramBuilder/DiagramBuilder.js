@@ -188,8 +188,7 @@ class DiagramBuilder extends Component {
 
       diagramModel.addAll(
         linkNodes(start, firstNode),
-        linkNodes(lastNode, end),
-        lastNode.getPort("neutralPort").link(end.getPort("left")),
+        linkNodes(lastNode, end, "neutralPort"),
         linkNodes(branchLastNodes[0], end),
         linkNodes(branchLastNodes[1], end)
       );
@@ -469,7 +468,7 @@ class DiagramBuilder extends Component {
           diagramEngine.zoomToFit();
           diagramEngine.zoomToFit();
           diagramModel.addAll(
-            linkNodes(inputLinkParent, firstNode),
+            linkNodes(inputLinkParent, firstNode, inputLink.sourcePort.name),
             linkNodes(lastNode, outputLinkParent)
           );
           diagramEngine.setDiagramModel(diagramModel);
