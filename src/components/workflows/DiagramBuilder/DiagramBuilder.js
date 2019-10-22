@@ -146,20 +146,71 @@ class DiagramBuilder extends Component {
     const diagramEngine = this.state.app.getDiagramEngine();
     const diagramModel = diagramEngine.getDiagramModel();
     const firstNode = expandedNodes[0];
-    const lastNode = expandedNodes[expandedNodes.length - 1];
 
-    const { start, end } = this.placeStartEndOnCanvas(
-      {
-        x: firstNode.x - 150,
-        y: firstNode.y
-      },
-      {
-        x: lastNode.x + getNodeWidth(lastNode) + 110,
-        y: lastNode.y
-      }
-    );
+    let lastNode = expandedNodes[expandedNodes.length - 1];
+    let branchLastNodes = [];
 
-    diagramModel.addAll(linkNodes(start, firstNode), linkNodes(lastNode, end));
+    // special case when last node is decision
+    if (definition.tasks[definition.tasks.length - 1].type === "DECISION") {
+      expandedNodes.forEach(node => {
+        if (
+          node.extras.inputs.taskReferenceName ===
+          definition.tasks[definition.tasks.length - 1].taskReferenceName
+        ) {
+          lastNode = node;
+
+          Object.values(lastNode.extras.inputs.decisionCases).forEach(
+            branch => {
+              expandedNodes.forEach(node => {
+                if (
+                  node.extras.inputs.taskReferenceName ===
+                  branch[branch.length - 1].taskReferenceName
+                ) {
+                  branchLastNodes.push(node);
+                }
+              });
+            }
+          );
+        }
+      });
+
+      const mostRightNode = _.maxBy([lastNode, ...branchLastNodes], "x");
+      const { start, end } = this.placeStartEndOnCanvas(
+        {
+          x: firstNode.x - 150,
+          y: firstNode.y
+        },
+        {
+          x: mostRightNode.x + getNodeWidth(mostRightNode) + 110,
+          y: lastNode.y
+        }
+      );
+
+      diagramModel.addAll(
+        linkNodes(start, firstNode),
+        linkNodes(lastNode, end),
+        lastNode.getPort("neutralPort").link(end.getPort("left")),
+        linkNodes(branchLastNodes[0], end),
+        linkNodes(branchLastNodes[1], end)
+      );
+    } else {
+      const { start, end } = this.placeStartEndOnCanvas(
+        {
+          x: firstNode.x - 150,
+          y: firstNode.y
+        },
+        {
+          x: lastNode.x + getNodeWidth(lastNode) + 110,
+          y: lastNode.y
+        }
+      );
+
+      diagramModel.addAll(
+        linkNodes(start, firstNode),
+        linkNodes(lastNode, end)
+      );
+    }
+
     diagramEngine.zoomToFit();
     diagramEngine.zoomToFit();
     diagramEngine.setDiagramModel(diagramModel);

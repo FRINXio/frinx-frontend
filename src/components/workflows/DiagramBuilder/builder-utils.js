@@ -587,7 +587,7 @@ export const createLinks_fork_join_nodes = (nodes, tasks, links) => {
 };
 
 export const createLinks_decision_nodes = (nodes, tasks, links) => {
-  nodes.forEach(node => {
+  nodes.forEach((node, pos) => {
     if (node.type === "decision") {
       let decisionCases = _.values(node.extras.inputs.decisionCases);
       let firstInBranch = [];
@@ -620,7 +620,6 @@ export const createLinks_decision_nodes = (nodes, tasks, links) => {
       });
 
       // find neutral node (first node after decision block)
-      let decisionCaseTasksCount = 0;
       let decisionCaseTasksArray = [];
       let neutralNode = null;
 
@@ -635,13 +634,7 @@ export const createLinks_decision_nodes = (nodes, tasks, links) => {
         });
       });
 
-      decisionCaseTasksCount = decisionCaseTasksArray.length;
-
-      nodes.forEach((node, i) => {
-        if (node.type === "decision") {
-          neutralNode = nodes[i + decisionCaseTasksCount + 1];
-        }
-      });
+      neutralNode = nodes[pos + decisionCaseTasksArray.length + 1];
 
       // connect decision -> first nodes
       firstInBranch.forEach((firstNode, k) => {

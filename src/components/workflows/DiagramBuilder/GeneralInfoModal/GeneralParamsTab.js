@@ -74,9 +74,15 @@ const GeneralParamsTab = props => {
   );
 
   const description = () => {
-    const desc = props.finalWf["description"].split(" - ")[0];
-    const labels = getLabelsFromString(props.finalWf["description"]);
-    const existingLabels = Array.from(props.getExistingLabels());
+    let desc = "";
+    let labels = [];
+    let existingLabels = [];
+
+    if (props.finalWf["description"]) {
+      desc = props.finalWf["description"].split(" - ")[0];
+      labels = getLabelsFromString(props.finalWf["description"]);
+      existingLabels = Array.from(props.getExistingLabels());
+    }
 
     return (
       <Form.Group>
