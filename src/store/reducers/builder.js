@@ -6,6 +6,7 @@ import {
   STORE_WORKFLOWS,
   SWITCH_SMART_ROUTING,
   UPDATE_BUILDER_QUERY,
+  UPDATE_DIAGRAM_VERSION,
   UPDATE_FINAL_WORKFLOW,
   UPDATE_WORKFLOWS
 } from "../actions/builder";
@@ -35,6 +36,7 @@ const initialState = {
     variant: "danger",
     msg: ""
   },
+  diagramVersion: JSON.parse(localStorage.getItem("serializedDiagrams")).length,
   finalWorkflow: {
     name: "",
     description: "",
@@ -87,6 +89,10 @@ const reducer = (state = initialState, action) => {
     case SHOW_CUSTOM_ALERT: {
       let { show, variant, msg } = action;
       return { ...state, customAlert: { show, variant, msg } };
+    }
+    case UPDATE_DIAGRAM_VERSION: {
+      let { version } = action;
+      return { ...state, diagramVersion: version };
     }
     default:
       break;
