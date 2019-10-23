@@ -38,7 +38,7 @@ export class JoinNode extends React.Component {
             position: "absolute",
             zIndex: 10,
             left: 5,
-            top: this.state.size / 2 - 8
+            top: this.state.size / 2 - 12
           }}
         >
           <PortWidget name="left" node={this.props.node} />
@@ -48,8 +48,8 @@ export class JoinNode extends React.Component {
           style={{
             position: "absolute",
             zIndex: 10,
-            left: this.state.size - 23,
-            top: this.state.size / 2 - 8
+            left: this.state.size - 28,
+            top: this.state.size / 2 - 12
           }}
         >
           <PortWidget name="right" node={this.props.node} />

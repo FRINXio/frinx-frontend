@@ -53,7 +53,7 @@ export class DecisionNode extends React.Component {
           style={{
             position: "absolute",
             zIndex: 10,
-            top: this.state.size / 2 - 8
+            top: this.state.size / 2 - 12
           }}
         >
           <PortWidget name="inputPort" node={this.props.node} />
@@ -63,8 +63,8 @@ export class DecisionNode extends React.Component {
           style={{
             position: "absolute",
             zIndex: 10,
-            left: this.state.size - 16,
-            top: this.state.size / 2 - 8
+            left: this.state.size - 25,
+            top: this.state.size / 2 - 12
           }}
         >
           <PortWidget name="neutralPort" node={this.props.node} />
@@ -74,8 +74,8 @@ export class DecisionNode extends React.Component {
           style={{
             position: "absolute",
             zIndex: 10,
-            left: this.state.size / 2 - 8,
-            top: this.state.size - 16
+            left: this.state.size / 2 - 12,
+            top: this.state.size - 25
           }}
         >
           <PortWidget name="completePort" node={this.props.node} />
@@ -85,7 +85,7 @@ export class DecisionNode extends React.Component {
           style={{
             position: "absolute",
             zIndex: 10,
-            left: this.state.size / 2 - 8,
+            left: this.state.size / 2 - 12,
             top: 0
           }}
         >
