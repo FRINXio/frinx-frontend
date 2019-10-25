@@ -41,7 +41,7 @@ class DiagramBuilder extends Component {
     this.state = {
       showNodeModal: false,
       showDefinitionModal: false,
-      showGeneralInfoModal: true,
+      showGeneralInfoModal: false,
       showInputModal: false,
       showDetailsModal: false,
       showExitModal: false,
@@ -98,6 +98,7 @@ class DiagramBuilder extends Component {
           );
         });
     } else {
+      this.setState({ showGeneralInfoModal: true });
       this.placeStartEndOnCanvas({ x: 900, y: 300 }, { x: 1200, y: 300 });
       this.props.showCustomAlert(
         true,
@@ -126,8 +127,6 @@ class DiagramBuilder extends Component {
   }
 
   renderSelectedWorkflow(definition) {
-    this.setState({ showGeneralInfoModal: false });
-
     this.clearCanvas();
     this.props.updateFinalWorkflow(definition);
     this.props.showCustomAlert(
@@ -267,14 +266,12 @@ class DiagramBuilder extends Component {
     this.props.showCustomAlert(false);
 
     switch (data.type) {
-      case "in/out":
+      case "default":
         node = new DefaultNodeModel(
           data.name,
           "rgb(169,74,255)",
           data.wfObject
         );
-        node.addInPort("In");
-        node.addOutPort("Out");
         break;
       case "start":
         node = new CircleStartNodeModel(data.name);

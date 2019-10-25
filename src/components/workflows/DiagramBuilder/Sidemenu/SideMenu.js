@@ -105,7 +105,7 @@ const SideMenu = props => {
         <SideMenuItem
           key={`wf${i}`}
           model={{
-            type: "in/out",
+            type: "default",
             wfObject,
             name: wf.name,
             description: wf.hasOwnProperty("description") ? wf.description : ""
