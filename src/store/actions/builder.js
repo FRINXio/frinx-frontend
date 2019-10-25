@@ -1,5 +1,3 @@
-import { DiagramModel } from "storm-react-diagrams";
-
 export const STORE_WORKFLOWS = "STORE_WORKFLOWS";
 export const UPDATE_BUILDER_QUERY = "UPDATE_BUILDER_QUERY";
 export const UPDATE_WORKFLOWS = "UPDATE_WORKFLOWS";
@@ -9,9 +7,6 @@ export const SWITCH_SMART_ROUTING = "SWITCH_SMART_ROUTING";
 export const RESET_TO_DEFAULT_WORKFLOW = "RESET_TO_DEFAULT_WORKFLOW";
 export const STORE_WORKFLOW_ID = "STORE_WORKFLOW_ID";
 export const SHOW_CUSTOM_ALERT = "SHOW_CUSTOM_ALERT";
-export const SERIALIZE_DIAGRAM = "SERIALIZE_DIAGRAM";
-export const DESERIALIZE_LATEST_DIAGRAM = "DESERIALIZE_LATEST_DIAGRAM";
-export const UPDATE_DIAGRAM_VERSION = "UPDATE_DIAGRAM_VERSION";
 
 export const storeWorkflows = originalWorkflows => {
   return {
@@ -43,10 +38,6 @@ export const resetToDefaultWorkflow = () => {
 
 export const switchSmartRouting = () => {
   return { type: SWITCH_SMART_ROUTING };
-};
-
-export const updateDiagramVersion = version => {
-  return { type: UPDATE_DIAGRAM_VERSION, version };
 };
 
 export const updateWorkflows = workflows => {

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import SideMenu from "./Sidemenu/SideMenu";
-import { DiagramModel, DiagramWidget } from "storm-react-diagrams";
+import { DiagramWidget } from "storm-react-diagrams";
 import ControlsHeader from "./ControlsHeader/ControlsHeader";
 import { Application } from "./Application";
 import { CircleStartNodeModel } from "./NodeModels/StartNode/CircleStartNodeModel";
@@ -66,8 +66,6 @@ class DiagramBuilder extends Component {
     this.expandNodeToWorkflow = this.expandNodeToWorkflow.bind(this);
     this.saveWorkflow = this.saveWorkflow.bind(this);
     this.renderSelectedWorkflow = this.renderSelectedWorkflow.bind(this);
-    this.deserializeDiagram = this.deserializeDiagram.bind(this);
-    this.serializeDiagram = this.serializeDiagram.bind(this);
 
     this.submitFile = this.submitFile.bind(this);
     this.saveFile = this.saveFile.bind(this);
@@ -664,48 +662,6 @@ class DiagramBuilder extends Component {
     link.dispatchEvent(event);
   }
 
-  serializeDiagram() {
-    let serializedDiagram = JSON.stringify(
-      this.state.app
-        .getDiagramEngine()
-        .getDiagramModel()
-        .serializeDiagram()
-    );
-
-    let currentDiagrams = JSON.parse(
-      localStorage.getItem("serializedDiagrams")
-    );
-    let serializedDiagrams = [];
-
-    if (currentDiagrams) {
-      serializedDiagrams = [...currentDiagrams, serializedDiagram];
-    } else {
-      serializedDiagrams.push(serializedDiagram);
-    }
-    localStorage.setItem(
-      "serializedDiagrams",
-      JSON.stringify(serializedDiagrams)
-    );
-    this.props.updateDiagramVersion(this.props.diagramVersion + 1);
-  }
-
-  deserializeDiagram = diff => {
-    let currentDiagrams = JSON.parse(
-      localStorage.getItem("serializedDiagrams")
-    );
-
-    let lastDiagram = currentDiagrams[this.props.diagramVersion + diff];
-    localStorage.setItem("serializedDiagrams", JSON.stringify(currentDiagrams));
-
-    let model = new DiagramModel();
-    model.deSerializeDiagram(
-      JSON.parse(lastDiagram),
-      this.state.app.getDiagramEngine()
-    );
-    this.state.app.getDiagramEngine().setDiagramModel(model);
-    this.props.updateDiagramVersion(this.props.diagramVersion + diff);
-  };
-
   render() {
     let inputsModal = this.state.showInputModal ? (
       <InputModal
@@ -784,6 +740,7 @@ class DiagramBuilder extends Component {
         {exitModal}
 
         <ControlsHeader
+          parseWftoJSON={this.parseDiagramToJSON}
           showDefinitionModal={this.showDefinitionModal}
           showGeneralInfoModal={this.showGeneralInfoModal}
           showExitModal={this.showExitModal}
@@ -794,7 +751,6 @@ class DiagramBuilder extends Component {
           submitFile={this.submitFile}
           saveFile={this.saveFile}
           clearCanvas={this.clearCanvas}
-          deserializeDiagram={this.deserializeDiagram}
           app={this.state.app}
         />
 
@@ -842,8 +798,7 @@ const mapStateToProps = state => {
     smartRouting: state.buildReducer.switchSmartRouting,
     customAlert: state.buildReducer.customAlert,
     isWfNameLocked: state.buildReducer.workflowNameLock,
-    workflowId: state.buildReducer.executedWfId,
-    diagramVersion: state.buildReducer.diagramVersion
+    workflowId: state.buildReducer.executedWfId
   };
 };
 
@@ -857,9 +812,7 @@ const mapDispatchToProps = dispatch => {
     updateQuery: query => dispatch(builderActions.requestUpdateByQuery(query)),
     showCustomAlert: (show, variant, msg) =>
       dispatch(builderActions.showCustomAlert(show, variant, msg)),
-    lockWorkflowName: () => dispatch(builderActions.lockWorkflowName()),
-    updateDiagramVersion: version =>
-      dispatch(builderActions.updateDiagramVersion(version))
+    lockWorkflowName: () => dispatch(builderActions.lockWorkflowName())
   };
 };
 

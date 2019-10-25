@@ -80,13 +80,6 @@ const ControlsHeader = props => {
         </Nav>
         <Nav>
           <ButtonGroup>
-            {/*<Button*/}
-            {/*  variant="outline-light"*/}
-            {/*  onClick={() => props.deserializeDiagram(-1)}*/}
-            {/*>*/}
-            {/*  <i className="fas fa-expand" />*/}
-            {/*  &nbsp;&nbsp;Go back*/}
-            {/*</Button>*/}
             <Button
               id="expand"
               variant="outline-light"
