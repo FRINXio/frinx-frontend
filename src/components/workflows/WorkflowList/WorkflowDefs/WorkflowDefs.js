@@ -279,6 +279,19 @@ class WorkflowDefs extends Component {
     this.props.history.push(`/workflows/builder/${name}/${version}`);
   }
 
+  deleteWorkflow() {
+    const name = this.state.activeWf.split(" / ")[0];
+    const version = this.state.activeWf.split(" / ")[1];
+    http
+      .delete("/api/conductor/metadata/workflow/" + name + "/" + version)
+      .then(res => {
+        this.componentDidMount();
+        this.setState({
+          activeRow: null
+        });
+      });
+  }
+
   repeat() {
     let output = [];
     let defaultPages = this.state.defaultPages;
@@ -359,6 +372,13 @@ class WorkflowDefs extends Component {
                       }
                       style={{ cursor: "pointer" }}
                     />
+                  </Button>
+                  <Button
+                    variant="outline-danger noshadow"
+                    style={{ float: "right" }}
+                    onClick={this.deleteWorkflow.bind(this)}
+                  >
+                    <i className="fas fa-trash-alt" />
                   </Button>
                 </div>
                 <div className="accordBody">

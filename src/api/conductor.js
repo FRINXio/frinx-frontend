@@ -32,6 +32,18 @@ router.get("/metadata/workflow", async (req, res, next) => {
   }
 });
 
+router.delete("/metadata/workflow/:name/:version", async (req, res, next) => {
+  try {
+    const result = await http.delete(
+      baseURLMeta + "workflow/" + req.params.name + "/" + req.params.version,
+      req.token
+    );
+    res.status(200).send({ result });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.get("/metadata/workflow/:name/:version", async (req, res, next) => {
   try {
     const result = await http.get(
