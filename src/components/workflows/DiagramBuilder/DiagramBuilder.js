@@ -32,6 +32,7 @@ import InputModal from "../WorkflowList/WorkflowDefs/InputModal/InputModal";
 import * as _ from "lodash";
 import "./DiagramBuilder.css";
 import { Button, Modal } from "react-bootstrap";
+import {WorkflowDiagram} from "./WorkflowDiagram";
 
 const http = require("../../../server/HttpServerSide").HttpClient;
 
@@ -136,6 +137,11 @@ class DiagramBuilder extends Component {
     );
     this.props.lockWorkflowName();
 
+    let workflowDiagram = new WorkflowDiagram(definition, this.state.app.getDiagramEngine().getDiagramModel(), {x: 900, y: 300});
+    workflowDiagram.createDiagram();
+    return null;
+
+
     const expandedNodes = transform_workflow_to_diagram(
       definition,
       { x: 900, y: 300 },
@@ -145,6 +151,7 @@ class DiagramBuilder extends Component {
     const diagramEngine = this.state.app.getDiagramEngine();
     const diagramModel = diagramEngine.getDiagramModel();
     const firstNode = expandedNodes[0];
+
 
     let lastNode = expandedNodes[expandedNodes.length - 1];
     let branchLastNodes = [];

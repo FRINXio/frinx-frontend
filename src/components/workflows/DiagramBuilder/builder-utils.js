@@ -59,7 +59,7 @@ export const getWfInputs = wf => {
 };
 
 // function to get nested key (inputParameters) from system tasks
-function fn(obj, key) {
+export const fn = (obj, key) => {
   if (_.has(obj, key)) return obj;
 
   return _.flatten(
@@ -68,7 +68,7 @@ function fn(obj, key) {
     }),
     true
   );
-}
+};
 
 export const getLinksArray = (type, node) => {
   let linksArray = [];
@@ -264,8 +264,6 @@ export const place_defaultNode = (task, posX, posY) => {
   let color =
     task.type === "SUB_WORKFLOW" ? "rgb(34,144,255)" : "rgb(134,210,255)";
   let node = new DefaultNodeModel(task.name, color, task);
-  node.addInPort("In");
-  node.addOutPort("Out");
   node.setPosition(posX, posY);
   return node;
 };
