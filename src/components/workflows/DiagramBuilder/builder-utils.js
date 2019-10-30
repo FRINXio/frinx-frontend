@@ -22,6 +22,14 @@ export const getWfInputsRegex = wf => {
   return inputParameters;
 };
 
+export const encode = s => {
+  let out = [];
+  for (let i = 0; i < s.length; i++) {
+    out[i] = s.charCodeAt(i);
+  }
+  return new Uint8Array(out);
+};
+
 export const getLabelsFromString = str => {
   let labelsString = str
     .split("-")

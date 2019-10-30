@@ -25,11 +25,8 @@ const ControlsHeader = props => {
       (headerEl.contains(event.target) || sideMenu.contains(event.target)) &&
       !expandBtn.contains(event.target)
     ) {
-      props.app
-        .getDiagramEngine()
-        .getDiagramModel()
-        .clearSelection();
-      setTimeout(() => props.app.getDiagramEngine().repaintCanvas(), 10);
+      props.workflowDiagram.getDiagramModel().clearSelection();
+      props.workflowDiagram.renderDiagram();
     }
   };
 
@@ -74,8 +71,6 @@ const ControlsHeader = props => {
           <Nav.Link onClick={openFileUpload}>Import</Nav.Link>
           <input id="upload-file" type="file" hidden />
           <Nav.Link onClick={props.saveFile}>Export</Nav.Link>
-          <Nav.Link onClick={props.clearCanvas}>Clear</Nav.Link>
-          <hr />
           <Nav.Link onClick={props.showExitModal}>Exit</Nav.Link>
         </Nav>
         <Nav>
