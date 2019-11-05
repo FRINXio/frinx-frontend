@@ -1,4 +1,3 @@
-import * as SRD from "storm-react-diagrams";
 import {
   fn,
   getEndNode,
@@ -19,11 +18,20 @@ import { CircleEndNodeModel } from "./NodeModels/EndNode/CircleEndNodeModel";
 import { Application } from "./Application";
 const http = require("../../../server/HttpServerSide").HttpClient;
 
-export class WorkflowDiagram {
-  definition;
-  diagramModel: SRD.DiagramModel;
-  startPos: {};
+const nodeColors = {
+  subWorkflow: 'rgb(34,144,255)',
+  simpleTask: 'rgb(134,210,255)',
+  systemTask: 'rgb(11,60,139)'
+};
 
+export class WorkflowDiagram {
+
+  /**
+   * Creates diagram instance with workflow definition
+   * @param app - application with diagram model and engine
+   * @param definition - workflow definition object
+   * @param startPos - position for first node in diagram
+   */
   constructor(app = null, definition = null, startPos = null) {
     this.app = app;
     this.definition = definition;
@@ -58,6 +66,11 @@ export class WorkflowDiagram {
     return _.toArray(this.diagramModel.getLinks());
   }
 
+  /**
+   * Merge prev. definition with new one and saves to db
+   * @param finalWorkflow - previous definition
+   * @returns {Promise<unknown>}
+   */
   saveWorkflow(finalWorkflow) {
     return new Promise((resolve, reject) => {
       const definition = this.parseDiagramToJSON(finalWorkflow);
@@ -75,6 +88,11 @@ export class WorkflowDiagram {
     });
   }
 
+  /**
+   * Creates diagram from definition property
+   * clears canvas, puts nodes on canvas, links nodes
+   * @returns {WorkflowDiagram}
+   */
   createDiagram() {
     const definition = this.definition;
     const tasks = definition.tasks;
@@ -92,6 +110,10 @@ export class WorkflowDiagram {
     return this;
   }
 
+  /**
+   * Repaints canvas
+   * @returns {WorkflowDiagram}
+   */
   renderDiagram() {
     this.diagramEngine.repaintCanvas();
     this.diagramEngine.repaintCanvas();
@@ -133,6 +155,9 @@ export class WorkflowDiagram {
     diagramEngine.repaintCanvas();
   }
 
+  /**
+   * Clears canvas (removes nodes and link)
+   */
   clearDiagram() {
     _.values(this.diagramModel.getNodes()).forEach(node => {
       this.diagramModel.removeNode(node);
@@ -143,6 +168,10 @@ export class WorkflowDiagram {
     });
   }
 
+  /**
+   * Places Start and End node on constant positions
+   * @returns {WorkflowDiagram}
+   */
   placeDefaultNodes() {
     this.diagramEngine.setDiagramModel(this.diagramModel);
     this.diagramModel.addAll(
@@ -152,6 +181,10 @@ export class WorkflowDiagram {
     return this;
   }
 
+  /**
+   * Appends diagram with Start and End node
+   * @returns {WorkflowDiagram}
+   */
   withStartEnd() {
     const diagramModel = this.diagramModel;
     const firstNode = _.first(this.getNodes());
@@ -206,26 +239,26 @@ export class WorkflowDiagram {
 
   placeDefaultNode(task, x, y) {
     const color =
-      task.type === "SUB_WORKFLOW" ? "rgb(34,144,255)" : "rgb(134,210,255)";
+      task.type === "SUB_WORKFLOW" ? nodeColors.subWorkflow : nodeColors.simpleTask;
     const node = new DefaultNodeModel(task.name, color, task);
     node.setPosition(x, y);
     return node;
   }
 
   placeForkNode = (task, x, y) => {
-    let node = new ForkNodeModel(task.name, "rgb(11,60,139)", task);
+    let node = new ForkNodeModel(task.name, nodeColors.systemTask, task);
     node.setPosition(x, y);
     return node;
   };
 
   placeJoinNode = (task, x, y) => {
-    let node = new JoinNodeModel(task.name, "rgb(11,60,139)", task);
+    let node = new JoinNodeModel(task.name, nodeColors.systemTask, task);
     node.setPosition(x, y);
     return node;
   };
 
   placeDecisionNode = (task, x, y) => {
-    let node = new DecisionNodeModel(task.name, "rgb(11,60,139)", task);
+    let node = new DecisionNodeModel(task.name, nodeColors.systemTask, task);
     node.setPosition(x, y);
     return node;
   };
@@ -247,12 +280,20 @@ export class WorkflowDiagram {
     return node.name.length * 12;
   }
 
+  /**
+   * Finds node with matching name to taskName
+   * @param taskName - name of node to find (based on task)
+   * @returns {unknown}
+   */
   getMatchingNode(taskName) {
     return _.toArray(this.getNodes()).find(
       x => x.extras.inputs.taskReferenceName === taskName
     );
   }
 
+  /**
+   * Links all nodes that are left unlinked (defaults)
+   */
   linkRemainingNodes() {
     this.getNodes().forEach((node, i) => {
       _.values(node.ports).forEach(port => {
@@ -379,6 +420,13 @@ export class WorkflowDiagram {
     });
   }
 
+  /**
+   * Links two nodes together ( out -> in )
+   * @param node1 - output node
+   * @param node2 - input node
+   * @param whichPort - optional parameter to target specific port
+   * @returns {LinkModel|*}
+   */
   linkNodes(node1, node2, whichPort) {
     if (
       node1.type === "fork" ||
@@ -441,6 +489,12 @@ export class WorkflowDiagram {
     }
   }
 
+  /**
+   * Calculates position for node based on other nodes position
+   * @param branchX - if nested, offset X position
+   * @param branchY - if nested, offset Y position
+   * @returns {{x: *, y: *}}
+   */
   calculatePosition(branchX, branchY) {
     const nodes = this.getNodes();
     const startPos = this.startPos;
@@ -468,6 +522,18 @@ export class WorkflowDiagram {
     return { x, y };
   }
 
+  /**
+   * Calculates position when rendering forkTasks nodes
+   * @param branchTask - task in branch
+   * @param parentX - X position of parent branch
+   * @param parentY - Y position of parent branch
+   * @param k - iterator of task in branch
+   * @param branchSpread - wideness of fork chunk (including margin between)
+   * @param branchMargin - margin between branches
+   * @param branchNum - iterator of fork branches
+   * @param forkDepth - depth of nested fork (default 1)
+   * @returns {{branchPosY: *, branchPosX: *}}
+   */
   calculateNestedPosition(
     branchTask,
     parentX,
@@ -497,6 +563,13 @@ export class WorkflowDiagram {
     return { branchPosX, branchPosY };
   }
 
+  /**
+   * Creates new node on calculated position
+   * @param task - task definition
+   * @param branchX (optional)
+   * @param branchY (optional)
+   * @param forkDepth (optional)
+   */
   createNode(task, branchX, branchY, forkDepth = 1) {
     switch (task.type) {
       case "SUB_WORKFLOW": {
@@ -579,6 +652,10 @@ export class WorkflowDiagram {
     }
   }
 
+  /**
+   * Traverses diagram nodes (links) to create JSON definition
+   * @param finalWorkflow
+   */
   parseDiagramToJSON(finalWorkflow) {
     let parentNode = getStartNode(this.getLinks());
     let endNode = getEndNode(this.getLinks());
@@ -645,6 +722,10 @@ export class WorkflowDiagram {
     return finalWf;
   }
 
+  /**
+   * Removes selected nodes from diagram model, inserts new nodes from
+   * selected nodes definition.
+   */
   expandSelectedNodes() {
     const selectedNodes = this.diagramModel.getSelectedItems().filter(item => {
       return item.getType() === "default";
