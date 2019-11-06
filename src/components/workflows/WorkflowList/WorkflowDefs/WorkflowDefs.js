@@ -211,14 +211,17 @@ class WorkflowDefs extends Component {
   updateFavourite(data) {
     if (data.description) {
       if (!data.description.match(/-(| )[A-Z]*/g)) data.description += " -";
-      if (data.description.includes(" FAVOURITE")) {
-        data.description = data.description.replace(" FAVOURITE", "");
-        if (data.description.slice(-1) === ",")
-          data.description = data.description.substring(0, data.description.length - 1);
+      if (data.description.includes("FAVOURITE")) {
+        let labelIndex = data.description.indexOf("FAVOURITE");
+        data.description = data.description.replace("FAVOURITE", "");
+        if (data.description[labelIndex - 1] === ",")
+          data.description = data.description.substring(0, labelIndex - 1) + data.description.substring(labelIndex, data.description.length);
+        if (data.description.match(/^(| )-(| )$/g))
+          delete data.description;
       } else {
-        data.description.match(/.*[A-Za-z0-9]/g)
-          ? data.description += ", FAVOURITE"
-          : data.description += " FAVOURITE";
+        data.description.match(/.*[A-Za-z0-9]$/g)
+          ? data.description += ",FAVOURITE"
+          : data.description += "FAVOURITE";
       }
     } else {
       data.description = "- FAVOURITE";
