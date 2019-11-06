@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { Button, Form, Row, Col, InputGroup } from "react-bootstrap";
+import AceEditor from "react-ace";
+import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/theme-tomorrow";
 
 const InputsTab = props => {
   const [customParam, setCustomParam] = useState("");
@@ -68,7 +71,40 @@ const InputsTab = props => {
     );
   };
 
+  const handleCodeField = (entry, item, i, textFieldParams) => {
+    let value = entry[1];
+
+    textFieldParams.push(
+      <Col sm={12} key={`colTf-${entry[0]}`}>
+        <Form.Group>
+          <Form.Label>
+            {entry[0]}
+          </Form.Label>
+          <AceEditor
+            mode="javascript"
+            theme="tomorrow"
+            width="100%"
+            height="300px"
+            onChange={val => props.handleInput(val, item, entry)}
+            fontSize={20}
+            value={value}
+            setOptions={{
+              showPrintMargin: true,
+              showGutter: true,
+              highlightActiveLine: true,
+              showLineNumbers: true,
+              tabSize: 2,
+            }}/>
+          <Form.Text className="text-muted">
+            {getDescriptionAndDefault(entry[0])[0]}
+          </Form.Text>
+        </Form.Group>
+      </Col>
+    );
+  };
+
   let textFieldKeywords = ["template", "uri", "body"];
+  let codeFieldKeywords = ["scriptExpression"];
   let textFieldParams = [];
 
   return (
@@ -99,6 +135,8 @@ const InputsTab = props => {
                   textFieldKeywords.find(keyword => entry[0].includes(keyword))
                 ) {
                   return handleTextField(entry, item, i, textFieldParams);
+                } else if (codeFieldKeywords.find(keyword => entry[0].includes(keyword))) {
+                  return handleCodeField(entry, item, i, textFieldParams)
                 } else if (typeof entry[1] === "object") {
                   return Object.entries(entry[1]).map(innerEntry => {
                     if (

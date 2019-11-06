@@ -5,77 +5,62 @@ import "./Sidemenu.css";
 import { Form, InputGroup, Spinner } from "react-bootstrap";
 import SystemTask from "./SystemTask";
 
+const payload = {
+  fork: {
+    name: "forkTask",
+    taskReferenceName: "forkTaskRef",
+    type: "FORK_JOIN",
+    forkTasks: [],
+    optional: false,
+    startDelay: 0
+  },
+  join: {
+    name: "joinTask",
+    taskReferenceName: "joinTaskRef",
+    type: "JOIN",
+    joinOn: [],
+    optional: false,
+    startDelay: 0
+  },
+  decision: {
+    name: "decisionTask",
+    taskReferenceName: "decisionTaskRef",
+    inputParameters: {
+      case_value_param: ""
+    },
+    type: "DECISION",
+    caseValueParam: "case_value_param",
+    decisionCases: {
+      false: [],
+      true: []
+    },
+    optional: false,
+    startDelay: 0
+  },
+  lambda: {
+    name: "LAMBDA_TASK",
+    taskReferenceName: "lambdaTaskRef",
+    type: "LAMBDA",
+    inputParameters: {
+      lambdaValue: "${workflow.input.lambdaValue}",
+      scriptExpression: "if ($.lambdaValue == 1) {\n  return {testvalue: true} \n} else { \n  return {testvalue: false}\n}"
+    },
+    optional: false,
+    startDelay: 0
+  }
+};
+
 const SideMenu = props => {
   const functionalTaks = () => {
-    let functionalTasks = [];
-
-    props.functional.forEach((func, i) => {
-      if (func === "fork") {
-        let wfObject = {
-          name: "forkTask",
-          taskReferenceName: "forkTaskRef",
-          type: "FORK_JOIN",
-          forkTasks: [],
-          optional: false,
-          startDelay: 0
-        };
-        functionalTasks.push(
-          <SystemTask
-            id={`functionalNode${i}`}
-            model={{ type: func, wfObject }}
-            name={func.toUpperCase()}
-          />
-        );
-      } else if (func === "join") {
-        let wfObject = {
-          name: "joinTask",
-          taskReferenceName: "joinTaskRef",
-          type: "JOIN",
-          joinOn: [],
-          optional: false,
-          startDelay: 0
-        };
-        functionalTasks.push(
-          <SystemTask
-            id={`functionalNode${i}`}
-            model={{ type: func, wfObject }}
-            name={func.toUpperCase()}
-          />
-        );
-      } else if (func === "decision") {
-        let wfObject = {
-          name: "decisionTask",
-          taskReferenceName: "decisionTaskRef",
-          inputParameters: {
-            case_value_param: ""
-          },
-          type: "DECISION",
-          caseValueParam: "case_value_param",
-          decisionCases: {
-            false: [],
-            true: []
-          },
-          optional: false,
-          startDelay: 0
-        };
-        functionalTasks.push(
-          <SystemTask
-            id={`functionalNode${i}`}
-            model={{ type: func, wfObject }}
-            name={func.toUpperCase()}
-          />
-        );
-      } else {
-        functionalTasks.push(
-          <SystemTask
-            id={`functionalNode${i}`}
-            model={{ type: func }}
-            name={func.toUpperCase()}
-          />
-        );
-      }
+    return props.functional.map((func, i) => {
+      return (
+        <SystemTask
+          id={`functionalNode${i}`}
+          model={{ type: func, wfObject: payload[func] }}
+          name={func.toUpperCase()}
+        />
+      );
     });
-    return functionalTasks;
   };
 
   const tasks = () => {

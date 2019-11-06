@@ -21,7 +21,8 @@ const http = require("../../../server/HttpServerSide").HttpClient;
 const nodeColors = {
   subWorkflow: 'rgb(34,144,255)',
   simpleTask: 'rgb(134,210,255)',
-  systemTask: 'rgb(11,60,139)'
+  systemTask: 'rgb(11,60,139)',
+  lambdaTask: "rgb(240,219,79)"
 };
 
 export class WorkflowDiagram {
@@ -147,6 +148,9 @@ export class WorkflowDiagram {
       case "decision":
         node = this.placeDecisionNode(task, points.x, points.y);
         break;
+      case "lambda":
+        node = this.placeLambdaNode(task, points.x, points.y);
+        break;
       default:
         break;
     }
@@ -259,6 +263,12 @@ export class WorkflowDiagram {
 
   placeDecisionNode = (task, x, y) => {
     let node = new DecisionNodeModel(task.name, nodeColors.systemTask, task);
+    node.setPosition(x, y);
+    return node;
+  };
+
+  placeLambdaNode = (task, x, y) => {
+    let node = new DefaultNodeModel(task.name, nodeColors.lambdaTask, task);
     node.setPosition(x, y);
     return node;
   };
@@ -438,16 +448,10 @@ export class WorkflowDiagram {
       if (node2.type === "default") {
         return fork_join_start_outPort.link(node2.getInPorts()[0]);
       }
-      if (node2.type === "fork") {
-        return fork_join_start_outPort.link(node2.getPort("left"));
-      }
-      if (node2.type === "join") {
-        return fork_join_start_outPort.link(node2.getPort("left"));
-      }
       if (node2.type === "decision") {
         return fork_join_start_outPort.link(node2.getPort("inputPort"));
       }
-      if (node2.type === "end") {
+      if (["fork", "join", "end"].includes(node2.type)) {
         return fork_join_start_outPort.link(node2.getPort("left"));
       }
     } else if (node1.type === "default") {
@@ -456,16 +460,10 @@ export class WorkflowDiagram {
       if (node2.type === "default") {
         return defaultOutPort.link(node2.getInPorts()[0]);
       }
-      if (node2.type === "fork") {
-        return defaultOutPort.link(node2.getPort("left"));
-      }
-      if (node2.type === "join") {
-        return defaultOutPort.link(node2.getPort("left"));
-      }
       if (node2.type === "decision") {
         return defaultOutPort.link(node2.getPort("inputPort"));
       }
-      if (node2.type === "end") {
+      if (["fork", "join", "end"].includes(node2.type)) {
         return defaultOutPort.link(node2.getPort("left"));
       }
     } else if (node1.type === "decision") {
@@ -474,16 +472,10 @@ export class WorkflowDiagram {
       if (node2.type === "default") {
         return currentPort.link(node2.getInPorts()[0]);
       }
-      if (node2.type === "fork") {
-        return currentPort.link(node2.getPort("left"));
-      }
-      if (node2.type === "join") {
-        return currentPort.link(node2.getPort("left"));
-      }
       if (node2.type === "decision") {
         return currentPort.link(node2.getPort("inputPort"));
       }
-      if (node2.type === "end") {
+      if (["fork", "join", "end"].includes(node2.type)) {
         return currentPort.link(node2.getPort("left"));
       }
     }
@@ -609,12 +601,6 @@ export class WorkflowDiagram {
         });
         break;
       }
-      case "JOIN": {
-        const { x, y } = this.calculatePosition(branchX, branchY);
-        const node = this.placeJoinNode(task, x, y);
-        this.diagramModel.addNode(node);
-        break;
-      }
       case "DECISION": {
         const { x, y } = this.calculatePosition(branchX, branchY);
         const caseCount = _.values(task.decisionCases).length;
@@ -641,6 +627,18 @@ export class WorkflowDiagram {
             this.createNode(branchTask, branchPosX, branchPosY, forkDepth + 1);
           });
         });
+        break;
+      }
+      case "JOIN": {
+        const { x, y } = this.calculatePosition(branchX, branchY);
+        const node = this.placeJoinNode(task, x, y);
+        this.diagramModel.addNode(node);
+        break;
+      }
+      case "LAMBDA": {
+        const { x, y } = this.calculatePosition(branchX, branchY);
+        const node = this.placeLambdaNode(task, x, y);
+        this.diagramModel.addNode(node);
         break;
       }
       default: {
