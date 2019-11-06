@@ -18,6 +18,13 @@ export const getWfInputsRegex = wf => {
   return inputParameters;
 };
 
+export const hash = () => (
+  Math.random()
+    .toString(36)
+    .toUpperCase()
+    .substr(2, 4)
+);
+
 export const encode = s => {
   let out = [];
   for (let i = 0; i < s.length; i++) {

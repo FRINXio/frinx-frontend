@@ -1,14 +1,14 @@
 import React from "react";
 import SideMenuItem from "./SideMenuItem";
-import { getWfInputsRegex } from "../builder-utils";
-import "./Sidemenu.css";
-import { Form, InputGroup, Spinner } from "react-bootstrap";
+import { getWfInputsRegex, hash } from "../builder-utils";
+import { Form, InputGroup } from "react-bootstrap";
 import SystemTask from "./SystemTask";
+import "./Sidemenu.css";
 
 const payload = {
   fork: {
     name: "forkTask",
-    taskReferenceName: "forkTaskRef",
+    taskReferenceName: "forkTaskRef_" + hash(),
     type: "FORK_JOIN",
     forkTasks: [],
     optional: false,
@@ -16,7 +16,7 @@ const payload = {
   },
   join: {
     name: "joinTask",
-    taskReferenceName: "joinTaskRef",
+    taskReferenceName: "joinTaskRef_" + hash(),
     type: "JOIN",
     joinOn: [],
     optional: false,
@@ -24,7 +24,7 @@ const payload = {
   },
   decision: {
     name: "decisionTask",
-    taskReferenceName: "decisionTaskRef",
+    taskReferenceName: "decisionTaskRef_" + hash(),
     inputParameters: {
       case_value_param: ""
     },
@@ -39,16 +39,32 @@ const payload = {
   },
   lambda: {
     name: "LAMBDA_TASK",
-    taskReferenceName: "lambdaTaskRef",
+    taskReferenceName: "lambdaTaskRef_" + hash(),
     type: "LAMBDA",
     inputParameters: {
       lambdaValue: "${workflow.input.lambdaValue}",
-      scriptExpression: "if ($.lambdaValue == 1) {\n  return {testvalue: true} \n} else { \n  return {testvalue: false}\n}"
+      scriptExpression:
+        "if ($.lambdaValue == 1) {\n  return {testvalue: true} \n} else { \n  return {testvalue: false}\n}"
     },
     optional: false,
     startDelay: 0
   }
 };
+
+const sub_workflow = wf => ({
+  name: wf.name,
+  taskReferenceName:
+    wf.name.toLowerCase().trim() +
+    "_ref_" + hash(),
+  inputParameters: getWfInputsRegex(wf),
+  type: "SUB_WORKFLOW",
+  subWorkflowParam: {
+    name: wf.name,
+    version: wf.version
+  },
+  optional: false,
+  startDelay: 0
+});
 
 const SideMenu = props => {
   const functionalTaks = () => {
@@ -64,29 +80,9 @@ const SideMenu = props => {
   };
 
   const tasks = () => {
-    let workflows = props.workflows || [];
-    let tasks = [];
-
-    workflows.map((wf, i) => {
-      let wfObject = {
-        name: wf.name,
-        taskReferenceName:
-          wf.name.toLowerCase().trim() +
-          "_ref_" +
-          Math.random()
-            .toString(36)
-            .toUpperCase()
-            .substr(2, 4),
-        inputParameters: getWfInputsRegex(wf),
-        type: "SUB_WORKFLOW",
-        subWorkflowParam: {
-          name: wf.name,
-          version: wf.version
-        },
-        optional: false,
-        startDelay: 0
-      };
-      return tasks.push(
+    return props.workflows.map((wf, i) => {
+      let wfObject = sub_workflow(wf);
+      return (
         <SideMenuItem
           key={`wf${i}`}
           model={{
@@ -99,16 +95,6 @@ const SideMenu = props => {
         />
       );
     });
-    return tasks.length > 0 ? (
-      tasks
-    ) : (
-      <div style={{ marginTop: "50%", textAlign: "center" }}>
-        Loading tasks
-        <br />
-        <br />
-        <Spinner animation="border" variant="primary" />
-      </div>
-    );
   };
 
   return (
