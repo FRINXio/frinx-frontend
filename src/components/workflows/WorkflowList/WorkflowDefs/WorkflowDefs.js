@@ -211,11 +211,17 @@ class WorkflowDefs extends Component {
   updateFavourite(data) {
     if (data.description) {
       if (!data.description.match(/-(| )[A-Z]*/g)) data.description += " -";
-      data.description = data.description.includes(", FAVOURITE")
-        ? data.description.replace(", FAVOURITE", "")
-        : (data.description += ", FAVOURITE");
+      if (data.description.includes(" FAVOURITE")) {
+        data.description = data.description.replace(" FAVOURITE", "");
+        if (data.description.slice(-1) === ",")
+          data.description = data.description.substring(0, data.description.length - 1);
+      } else {
+        data.description.match(/.*[A-Za-z0-9]/g)
+          ? data.description += ", FAVOURITE"
+          : data.description += " FAVOURITE";
+      }
     } else {
-      data.description = "-, FAVOURITE";
+      data.description = "- FAVOURITE";
     }
     http.put("/api/conductor/metadata/", [data]).then(response => {
       http.get("/api/conductor/metadata/workflow").then(res => {
