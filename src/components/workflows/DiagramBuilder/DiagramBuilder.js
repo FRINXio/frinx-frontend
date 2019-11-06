@@ -361,7 +361,9 @@ class DiagramBuilder extends Component {
         <Modal.Header>
           <Modal.Title>Do you want to exit builder?</Modal.Title>
         </Modal.Header>
-        <Modal.Body>All changes will be lost.</Modal.Body>
+        <Modal.Body>
+          All changes since last <b>Save</b> or <b>Execute</b> operation will be lost
+        </Modal.Body>
         <Modal.Footer>
           <Button variant="outline-primary" onClick={this.showExitModal}>
             Cancel
