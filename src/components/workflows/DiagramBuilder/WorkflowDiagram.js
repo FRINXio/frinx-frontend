@@ -735,15 +735,20 @@ export class WorkflowDiagram {
       }
 
       const { name, version } = selectedNode.extras.inputs.subWorkflowParam;
-      const inputLink = getLinksArray("in", selectedNode)[0];
-      const outputLink = getLinksArray("out", selectedNode)[0];
+      const inputLinkArray = getLinksArray("in", selectedNode);
+      const outputLinkArray = getLinksArray("out", selectedNode);
 
-      if (!inputLink || !outputLink) {
+      if (!inputLinkArray || !outputLinkArray) {
         throw new Error("Selected node is not connected.");
       }
 
-      const inputLinkParent = inputLink.sourcePort.getNode();
-      const outputLinkParent = outputLink.targetPort.getNode();
+      const inputLinkParents = inputLinkArray.map(inputLink => {
+        return inputLink.sourcePort.getNode()
+      });
+
+      const outputLinkParents = outputLinkArray.map(outputLink => {
+        return outputLink.targetPort.getNode()
+      });
 
       http
         .get("/api/conductor/metadata/workflow/" + name + "/" + version)
@@ -761,14 +766,27 @@ export class WorkflowDiagram {
 
           selectedNode.remove();
           this.diagramModel.removeNode(selectedNode);
-          this.diagramModel.removeLink(inputLink);
-          this.diagramModel.removeLink(outputLink);
+
+          inputLinkArray.forEach(link => {
+            this.diagramModel.removeLink(link);
+          });
+
+          outputLinkArray.forEach(link => {
+            this.diagramModel.removeLink(link);
+          });
+
+          const newLinksFirst = inputLinkParents.map((node,i) => {
+            return linkNodes(node, firstNode, inputLinkArray[i].sourcePort.name)
+          });
+
+          const newLinksLast = outputLinkParents.map(node => {
+            return linkNodes(lastNode, node)
+          });
 
           this.diagramModel.addAll(
             ...subworkflowDiagram.getNodes(),
             ...subworkflowDiagram.getLinks(),
-            linkNodes(inputLinkParent, firstNode, inputLink.sourcePort.name),
-            linkNodes(lastNode, outputLinkParent)
+            ...newLinksFirst, ...newLinksLast
           );
           this.diagramEngine.setDiagramModel(this.diagramModel);
           this.diagramEngine.repaintCanvas();
