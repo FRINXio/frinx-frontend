@@ -24,15 +24,17 @@ class PollData extends React.Component {
 
   componentWillMount() {
     http.get("/api/conductor/queue/data").then(data => {
-      let size = ~~(data.polldata.length / this.state.defaultPages);
-      this.setState({
-        queueData: data.polldata,
-        pagesCount: data.polldata
-          ? data.polldata.length % this.state.defaultPages
-            ? ++size
-            : size
-          : 0
-      });
+      if (data.polldata) {
+        let size = ~~(data.polldata.length / this.state.defaultPages);
+        this.setState({
+          queueData: data.polldata,
+          pagesCount: data.polldata
+            ? data.polldata.length % this.state.defaultPages
+              ? ++size
+              : size
+            : 0
+        });
+      }
     });
   }
 

@@ -51,9 +51,15 @@ export const fetchNewData = (viewedPage, defaultPages) => {
           defaultPages
       )
       .then(res => {
-        const data = res.result ? (res.result.hits ? res.result.hits : []) : [];
-        dispatch(updateSize(res.result.totalHits));
-        dispatch(receiveNewData(data));
+        if (res.result) {
+          const data = res.result
+            ? res.result.hits
+              ? res.result.hits
+              : []
+            : [];
+          dispatch(updateSize(res.result.totalHits));
+          dispatch(receiveNewData(data));
+        }
       });
   };
 };
@@ -78,19 +84,21 @@ export const fetchParentWorkflows = (viewedPage, defaultPages) => {
           defaultPages
       )
       .then(res => {
-        let parents = res.parents ? res.parents : [];
-        let children = res.children ? res.children : [];
-        if (
-          res.count < res.hits &&
-          (typeof checkedWfs[viewedPage] === "undefined" ||
-            checkedWfs.length === 1)
-        ) {
-          checkedWfs.push(res.count);
-          dispatch(updateSize(size + parents.length));
+        if (res) {
+          let parents = res.parents ? res.parents : [];
+          let children = res.children ? res.children : [];
+          if (
+            res.count < res.hits &&
+            (typeof checkedWfs[viewedPage] === "undefined" ||
+              checkedWfs.length === 1)
+          ) {
+            checkedWfs.push(res.count);
+            dispatch(updateSize(size + parents.length));
+          }
+          dispatch(checkedWorkflows(checkedWfs));
+          parents = sortBy(parents, wf => new Date(wf.startTime)).reverse();
+          dispatch(receiveHierarchicalData(parents, children));
         }
-        dispatch(checkedWorkflows(checkedWfs));
-        parents = sortBy(parents, wf => new Date(wf.startTime)).reverse();
-        dispatch(receiveHierarchicalData(parents, children));
       });
   };
 };

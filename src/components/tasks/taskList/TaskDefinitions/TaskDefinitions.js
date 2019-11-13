@@ -30,15 +30,17 @@ class TaskList extends Component {
 
   componentDidMount() {
     http.get("/api/conductor/metadata/taskdef").then(res => {
-      let size = ~~(res.result.length / this.state.defaultPages);
-      this.setState({
-        data: res.result || [],
-        pagesCount: res.result
-          ? res.result.length % this.state.defaultPages
-            ? ++size
-            : size
-          : 0
-      });
+      if (res.result) {
+        let size = ~~(res.result.length / this.state.defaultPages);
+        this.setState({
+          data: res.result || [],
+          pagesCount: res.result
+            ? res.result.length % this.state.defaultPages
+              ? ++size
+              : size
+            : 0
+        });
+      }
     });
   }
 
