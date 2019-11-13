@@ -191,7 +191,8 @@ export const handleDecideNode = decideNode => {
         while (
           (inputLinks.length === 1 ||
             currentNode.type === "join" ||
-            currentNode.type === "decision") &&
+            currentNode.type === "decision" ||
+            currentNode.type === "fork") &&
           outputLink
         ) {
           switch (currentNode.type) {

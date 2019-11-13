@@ -20,7 +20,7 @@ export class DecisionNode extends React.Component {
         }}
       >
         <svg
-          width={this.state.size + 20}
+          width={this.state.size + 50}
           height={this.state.size + 5}
           style={{ position: "absolute" }}
           dangerouslySetInnerHTML={{
