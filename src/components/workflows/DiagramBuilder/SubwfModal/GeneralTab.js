@@ -10,7 +10,8 @@ const GeneralTab = props => {
     "name",
     "taskReferenceName",
     "forkTasks",
-    "inputParameters"
+    "inputParameters",
+    "defaultCase"
   ];
   const taskName = props.inputs["name"] || "";
   const taskRefName = props.inputs["taskReferenceName"] || "";

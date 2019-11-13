@@ -26,14 +26,15 @@ const payload = {
     name: "decisionTask",
     taskReferenceName: "decisionTaskRef_" + hash(),
     inputParameters: {
-      case_value_param: ""
+      param: "true"
     },
     type: "DECISION",
-    caseValueParam: "case_value_param",
+    caseValueParam: "param",
     decisionCases: {
       false: [],
       true: []
     },
+    defaultCase: [],
     optional: false,
     startDelay: 0
   },

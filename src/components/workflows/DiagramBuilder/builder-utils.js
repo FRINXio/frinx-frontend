@@ -18,12 +18,11 @@ export const getWfInputsRegex = wf => {
   return inputParameters;
 };
 
-export const hash = () => (
+export const hash = () =>
   Math.random()
     .toString(36)
     .toUpperCase()
-    .substr(2, 4)
-);
+    .substr(2, 4);
 
 export const encode = s => {
   let out = [];
@@ -180,50 +179,58 @@ export const handleDecideNode = decideNode => {
   let neutralBranchLink = _.values(decideNode.ports.neutralPort.links)[0];
   let firstNeutralNode = null;
 
-  [completeBranchLink, failBranchLink].forEach((branch, i) => {
-    if (branch) {
+  [completeBranchLink, failBranchLink, neutralBranchLink].forEach(
+    (branch, i) => {
       let branchArray = [];
-      let currentNode = branch.targetPort.getNode();
-      let inputLinks = getLinksArray("in", currentNode);
-      let outputLink = getLinksArray("out", currentNode)[0];
 
-      while (
-        (inputLinks.length === 1 ||
-          currentNode.type === "join" ||
-          currentNode.type === "decision") &&
-        outputLink
-      ) {
-        switch (currentNode.type) {
-          case "fork":
-            let { forkNode, joinNode } = handleForkNode(currentNode);
-            branchArray.push(forkNode.extras.inputs, joinNode.extras.inputs);
-            currentNode = getLinksArray(
-              "out",
-              joinNode
-            )[0].targetPort.getNode();
-            break;
-          case "decision":
-            let innerDecideNode = handleDecideNode(currentNode).decideNode;
-            let innerFirstNeutralNode = handleDecideNode(currentNode)
-              .firstNeutralNode;
-            let innerFirstNeutralLinks = getLinksArray(
-              "out",
-              innerFirstNeutralNode
-            );
-            branchArray.push(innerDecideNode.extras.inputs);
+      if (branch) {
+        let currentNode = branch.targetPort.getNode();
+        let inputLinks = getLinksArray("in", currentNode);
+        let outputLink = getLinksArray("out", currentNode)[0];
 
-            if (innerFirstNeutralNode && innerFirstNeutralNode.extras.inputs) {
-              branchArray.push(innerFirstNeutralNode.extras.inputs);
-            }
-            currentNode = innerFirstNeutralLinks[0].targetPort.getNode();
-            break;
-          default:
-            branchArray.push(currentNode.extras.inputs);
-            currentNode = outputLink.targetPort.getNode();
-            break;
+        while (
+          (inputLinks.length === 1 ||
+            currentNode.type === "join" ||
+            currentNode.type === "decision") &&
+          outputLink
+        ) {
+          switch (currentNode.type) {
+            case "fork":
+              let { forkNode, joinNode } = handleForkNode(currentNode);
+              branchArray.push(forkNode.extras.inputs, joinNode.extras.inputs);
+              currentNode = getLinksArray(
+                "out",
+                joinNode
+              )[0].targetPort.getNode();
+              break;
+            case "decision":
+              let innerDecideNode = handleDecideNode(currentNode).decideNode;
+              let innerFirstNeutralNode = handleDecideNode(currentNode)
+                .firstNeutralNode;
+              let innerFirstNeutralLinks = getLinksArray(
+                "out",
+                innerFirstNeutralNode
+              );
+              branchArray.push(innerDecideNode.extras.inputs);
+
+              if (
+                innerFirstNeutralNode &&
+                innerFirstNeutralNode.extras.inputs
+              ) {
+                branchArray.push(innerFirstNeutralNode.extras.inputs);
+              }
+              currentNode = innerFirstNeutralLinks[0].targetPort.getNode();
+              break;
+            default:
+              branchArray.push(currentNode.extras.inputs);
+              currentNode = outputLink.targetPort.getNode();
+              break;
+          }
+          inputLinks = getLinksArray("in", currentNode);
+          outputLink = getLinksArray("out", currentNode)[0];
         }
-        inputLinks = getLinksArray("in", currentNode);
-        outputLink = getLinksArray("out", currentNode)[0];
+
+        firstNeutralNode = currentNode;
       }
 
       let casesValues = Object.keys(decideNode.extras.inputs.decisionCases);
@@ -235,14 +242,15 @@ export const handleDecideNode = decideNode => {
         case 1:
           decideNode.extras.inputs.decisionCases[casesValues[0]] = branchArray;
           break;
+        case 2:
+          decideNode.extras.inputs.defaultCase = branchArray;
+          break;
         default:
           break;
       }
     }
-  });
-  if (neutralBranchLink) {
-    firstNeutralNode = neutralBranchLink.targetPort.getNode();
-  }
+  );
+
   return { decideNode, firstNeutralNode };
 };
 

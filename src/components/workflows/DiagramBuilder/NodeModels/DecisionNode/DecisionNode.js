@@ -5,7 +5,7 @@ export class DecisionNode extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      size: 80
+      size: 100
     };
   }
 
@@ -19,6 +19,29 @@ export class DecisionNode extends React.Component {
           height: this.state.size
         }}
       >
+        <svg
+          width={this.state.size + 20}
+          height={this.state.size + 5}
+          style={{ position: "absolute" }}
+          dangerouslySetInnerHTML={{
+            __html: `
+    
+                <text x="30" y="55" fill="white" font-size="13px" >decide</text>
+                <text x="0" y="10" fill="lightblue" font-size="13px" >if ${this
+                  .props.node.extras.inputs.caseValueParam +
+                  " = " +
+                  Object.keys(
+                    this.props.node.extras.inputs.decisionCases
+                  )[0]}</text>
+                <text x="95" y="40" fill="white" font-size="13px" >else</text>
+                <text x="0" y="98" fill="lightgreen" font-size="13px" >if ${this
+                  .props.node.extras.inputs.caseValueParam +
+                  " = " +
+                  Object.keys(this.props.node.extras.inputs.decisionCases)[1]}
+                </text>
+        `
+          }}
+        />
         <svg
           width={this.state.size}
           height={this.state.size}
@@ -39,9 +62,6 @@ export class DecisionNode extends React.Component {
               `,` +
               (this.state.size - 10) +
               ` "/>
-                <text x="20" y="45" fill="white" font-size="13px" >decide</text>
-                <text x="55" y="15" fill="red" font-size="13px" >0</text>
-                <text x="55" y="73" fill="chartreuse" font-size="13px" >1</text>
           </g>
            <g id="Layer_2">
           </g>

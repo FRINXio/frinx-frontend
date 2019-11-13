@@ -16,17 +16,17 @@ import { DecisionNodeModel } from "./NodeModels/DecisionNode/DecisionNodeModel";
 import { CircleStartNodeModel } from "./NodeModels/StartNode/CircleStartNodeModel";
 import { CircleEndNodeModel } from "./NodeModels/EndNode/CircleEndNodeModel";
 import { Application } from "./Application";
+
 const http = require("../../../server/HttpServerSide").HttpClient;
 
 const nodeColors = {
-  subWorkflow: 'rgb(34,144,255)',
-  simpleTask: 'rgb(134,210,255)',
-  systemTask: 'rgb(11,60,139)',
+  subWorkflow: "rgb(34,144,255)",
+  simpleTask: "rgb(134,210,255)",
+  systemTask: "rgb(11,60,139)",
   lambdaTask: "rgb(240,219,79)"
 };
 
 export class WorkflowDiagram {
-
   /**
    * Creates diagram instance with workflow definition
    * @param app - application with diagram model and engine
@@ -206,7 +206,11 @@ export class WorkflowDiagram {
         _.last(this.definition.tasks).taskReferenceName
       );
 
-      Object.values(decisionNode.extras.inputs.decisionCases).forEach(branch =>
+      [
+        Object.values(decisionNode.extras.inputs.decisionCases)[0],
+        decisionNode.extras.inputs.defaultCase,
+        Object.values(decisionNode.extras.inputs.decisionCases)[1]
+      ].forEach(branch =>
         diagramModel.addLink(
           this.linkNodes(
             this.getMatchingNode(_.last(branch).taskReferenceName),
@@ -214,9 +218,7 @@ export class WorkflowDiagram {
           )
         )
       );
-      diagramModel.addLink(
-        this.linkNodes(decisionNode, endNode, "neutralPort")
-      );
+
       endNode.setPosition(this.getMostRightNodeX() + 150, decisionNode.y);
     }
 
@@ -243,7 +245,9 @@ export class WorkflowDiagram {
 
   placeDefaultNode(task, x, y) {
     const color =
-      task.type === "SUB_WORKFLOW" ? nodeColors.subWorkflow : nodeColors.simpleTask;
+      task.type === "SUB_WORKFLOW"
+        ? nodeColors.subWorkflow
+        : nodeColors.simpleTask;
     const node = new DefaultNodeModel(task.name, color, task);
     node.setPosition(x, y);
     return node;
@@ -374,7 +378,11 @@ export class WorkflowDiagram {
   linkDecisionNodes() {
     this.getNodes().forEach((node, pos) => {
       if (node.type === "decision") {
-        let decisionCases = _.values(node.extras.inputs.decisionCases);
+        let decisionCases = [
+          Object.values(node.extras.inputs.decisionCases)[0],
+          node.extras.inputs.defaultCase,
+          Object.values(node.extras.inputs.decisionCases)[1]
+        ];
         let firstInBranch = [];
         let lastInBranch = [];
 
@@ -411,8 +419,10 @@ export class WorkflowDiagram {
 
         // connect decision -> first nodes
         firstInBranch.forEach((firstNode, k) => {
-          let whichPort = k === 0 ? "failPort" : "completePort";
-          this.diagramModel.addLink(this.linkNodes(node, firstNode, whichPort));
+          let whichPort = ["failPort", "neutralPort", "completePort"];
+          this.diagramModel.addLink(
+            this.linkNodes(node, firstNode, whichPort[k])
+          );
         });
 
         // connect last nodes -> neutral node
@@ -420,11 +430,6 @@ export class WorkflowDiagram {
           lastInBranch.forEach(lastNode => {
             this.diagramModel.addLink(this.linkNodes(lastNode, neutralNode));
           });
-
-          // connect neutral port -> neutral node
-          this.diagramModel.addLink(
-            this.linkNodes(node, neutralNode, "neutralPort")
-          );
         }
       }
     });
@@ -603,8 +608,8 @@ export class WorkflowDiagram {
       }
       case "DECISION": {
         const { x, y } = this.calculatePosition(branchX, branchY);
-        const caseCount = _.values(task.decisionCases).length;
-        const branchMargin = 250;
+        const caseCount = _.values(task.decisionCases).length + 1;
+        const branchMargin = 100;
         const nodeHeight = 47;
         const node = this.placeDecisionNode(task, x, y);
         this.diagramModel.addNode(node);
@@ -613,17 +618,24 @@ export class WorkflowDiagram {
         const branchSpread =
           (caseCount * nodeHeight + (caseCount - 1) * branchMargin) / forkDepth;
 
-        _.values(task.decisionCases).forEach((caseBranch, caseNum) => {
+        const branches = [
+          Object.values(task.decisionCases)[0],
+          task.defaultCase,
+          Object.values(task.decisionCases)[1]
+        ];
+
+        branches.forEach((caseBranch, caseNum) => {
           caseBranch.forEach((branchTask, k) => {
-            const branchPosX =
-              branchTask.type === "JOIN"
-                ? this.getMostRightNodeX() + 200
-                : x + 100 + k * 200;
-            const branchPosY =
-              y +
-              30 -
-              branchSpread / 2 +
-              ((branchMargin + 47) * caseNum) / forkDepth;
+            const { branchPosX, branchPosY } = this.calculateNestedPosition(
+              branchTask,
+              x,
+              y,
+              k,
+              branchSpread,
+              branchMargin,
+              caseNum,
+              forkDepth
+            );
             this.createNode(branchTask, branchPosX, branchPosY, forkDepth + 1);
           });
         });
@@ -743,11 +755,11 @@ export class WorkflowDiagram {
       }
 
       const inputLinkParents = inputLinkArray.map(inputLink => {
-        return inputLink.sourcePort.getNode()
+        return inputLink.sourcePort.getNode();
       });
 
       const outputLinkParents = outputLinkArray.map(outputLink => {
-        return outputLink.targetPort.getNode()
+        return outputLink.targetPort.getNode();
       });
 
       http
@@ -762,7 +774,25 @@ export class WorkflowDiagram {
           subworkflowDiagram.createDiagram();
 
           const firstNode = _.first(subworkflowDiagram.getNodes());
-          const lastNode = _.last(subworkflowDiagram.getNodes());
+          let lastNodes = [];
+
+          // decision special case
+          if (_.last(res.result.tasks).type === "DECISION") {
+            const decisionNode = subworkflowDiagram.getMatchingNode(
+              _.last(res.result.tasks).taskReferenceName
+            );
+
+            lastNodes = [
+              Object.values(decisionNode.extras.inputs.decisionCases)[0],
+              decisionNode.extras.inputs.defaultCase,
+              Object.values(decisionNode.extras.inputs.decisionCases)[1]
+            ].map(branch => {
+                return subworkflowDiagram.getMatchingNode(_.last(branch).taskReferenceName)
+              }
+            );
+          } else {
+             lastNodes.push(_.last(subworkflowDiagram.getNodes()));
+          }
 
           selectedNode.remove();
           this.diagramModel.removeNode(selectedNode);
@@ -775,18 +805,26 @@ export class WorkflowDiagram {
             this.diagramModel.removeLink(link);
           });
 
-          const newLinksFirst = inputLinkParents.map((node,i) => {
-            return linkNodes(node, firstNode, inputLinkArray[i].sourcePort.name)
+          const newLinksFirst = inputLinkParents.map((node, i) => {
+            return linkNodes(
+              node,
+              firstNode,
+              inputLinkArray[i].sourcePort.name
+            );
           });
 
-          const newLinksLast = outputLinkParents.map(node => {
-            return linkNodes(lastNode, node)
+          let newLinksLast = [];
+          outputLinkParents.forEach(node => {
+            lastNodes.forEach(n => {
+              newLinksLast.push(linkNodes(n, node))
+            });
           });
 
           this.diagramModel.addAll(
             ...subworkflowDiagram.getNodes(),
             ...subworkflowDiagram.getLinks(),
-            ...newLinksFirst, ...newLinksLast
+            ...newLinksFirst,
+            ...newLinksLast
           );
           this.diagramEngine.setDiagramModel(this.diagramModel);
           this.diagramEngine.repaintCanvas();
