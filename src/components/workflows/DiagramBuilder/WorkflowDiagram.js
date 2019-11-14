@@ -684,6 +684,8 @@ export class WorkflowDiagram {
     let endNode = getEndNode(this.getLinks());
     let linksArray = this.getLinks();
     let tasks = [];
+    let limit = 20;
+    let i = 0;
 
     if (!parentNode) {
       throw new Error("Start node is not connected.");
@@ -692,7 +694,7 @@ export class WorkflowDiagram {
       throw new Error("End node is not connected.");
     }
 
-    while (parentNode.type !== "end") {
+    while (parentNode.type !== "end" && i !== limit) {
       for (let i = 0; i < linksArray.length; i++) {
         let link = linksArray[i];
 
@@ -727,6 +729,7 @@ export class WorkflowDiagram {
           }
         }
       }
+      i = i + 1;
     }
 
     let finalWf = { ...finalWorkflow };
