@@ -22,8 +22,7 @@ export class DecisionNodeModel extends NodeModel {
 
     this.addPort(new DecisionNodePortModel(true, "left", "inputPort"));
     this.addPort(new DecisionNodePortModel(false, "right", "neutralPort"));
-    this.addPort(new DecisionNodePortModel(false, "bottom", "completePort"));
-    this.addPort(new DecisionNodePortModel(false, "top", "failPort"));
+    this.addPort(new DecisionNodePortModel(false, "bottom", "failPort"));
   }
 
   deSerialize(object, engine: DiagramEngine) {

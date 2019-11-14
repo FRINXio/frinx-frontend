@@ -31,8 +31,7 @@ const payload = {
     type: "DECISION",
     caseValueParam: "param",
     decisionCases: {
-      false: [],
-      true: []
+      false: []
     },
     defaultCase: [],
     optional: false,

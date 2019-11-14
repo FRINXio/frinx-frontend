@@ -33,12 +33,7 @@ export class DecisionNode extends React.Component {
                   Object.keys(
                     this.props.node.extras.inputs.decisionCases
                   )[0]}</text>
-                <text x="95" y="40" fill="white" font-size="13px" >else</text>
-                <text x="0" y="98" fill="lightgreen" font-size="13px" >if ${this
-                  .props.node.extras.inputs.caseValueParam +
-                  " = " +
-                  Object.keys(this.props.node.extras.inputs.decisionCases)[1]}
-                </text>
+                <text x="0" y="98" fill="white" font-size="13px" >else</text>
         `
           }}
         />
@@ -83,22 +78,11 @@ export class DecisionNode extends React.Component {
           style={{
             position: "absolute",
             zIndex: 10,
-            left: this.state.size - 25,
-            top: this.state.size / 2 - 12
-          }}
-        >
-          <PortWidget name="neutralPort" node={this.props.node} />
-        </div>
-
-        <div
-          style={{
-            position: "absolute",
-            zIndex: 10,
             left: this.state.size / 2 - 12,
             top: this.state.size - 25
           }}
         >
-          <PortWidget name="completePort" node={this.props.node} />
+          <PortWidget name="neutralPort" node={this.props.node} />
         </div>
 
         <div

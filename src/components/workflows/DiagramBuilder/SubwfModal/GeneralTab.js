@@ -16,6 +16,7 @@ const GeneralTab = props => {
   const taskName = props.inputs["name"] || "";
   const taskRefName = props.inputs["taskReferenceName"] || "";
   const decisionCases = [];
+  const caseValueParam = [];
 
   const renderTaskName = item => (
     <Form.Group>
@@ -84,8 +85,14 @@ const GeneralTab = props => {
       {renderTaskName(taskName)}
       {renderTaskRefName(taskRefName)}
 
+      <label>decision case</label>
       <Form.Row>
-        {decisionCases}
+      {caseValueParam}
+      {decisionCases}
+      </Form.Row>
+      <hr/>
+
+      <Form.Row>
         {Object.entries(props.inputs).map((item, i) => {
           if (!notGeneral.includes(item[0])) {
             if (item[0] === "decisionCases") {
@@ -95,12 +102,12 @@ const GeneralTab = props => {
                     <Form.Group>
                       <InputGroup>
                         <InputGroup.Prepend>
-                          <InputGroup.Text>decision case #{i}:</InputGroup.Text>
+                          <InputGroup.Text>is equal to</InputGroup.Text>
                         </InputGroup.Prepend>
                         <Form.Control
                           type="input"
                           onChange={e =>
-                            props.handleInput(e.target.value, item, null, i)
+                            props.handleInput(e.target.value, item)
                           }
                           value={entry[0]}
                         />
@@ -117,6 +124,28 @@ const GeneralTab = props => {
                 return (
                   <Col sm={6} key={`colGeneral-${i}`}>
                     {buttonWrappedField(item, ["<", !item[1]], [">", !item[1]])}
+                  </Col>
+                );
+              } else if (item[0] === "caseValueParam") {
+                caseValueParam.push(
+                  <Col sm={6} key={`colGeneral-${i}`}>
+                    <Form.Group>
+                      <InputGroup>
+                        <InputGroup.Prepend>
+                          <InputGroup.Text>if</InputGroup.Text>
+                        </InputGroup.Prepend>
+                        <Form.Control
+                          type="input"
+                          onChange={e =>
+                            props.handleInput(e.target.value, item[0])
+                          }
+                          value={item[1]}
+                        />
+                      </InputGroup>
+                      <Form.Text className="text-muted">
+                        {taskDescriptions[item[0]]}
+                      </Form.Text>
+                    </Form.Group>
                   </Col>
                 );
               } else {

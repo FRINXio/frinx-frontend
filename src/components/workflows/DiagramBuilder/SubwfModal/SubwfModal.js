@@ -80,7 +80,7 @@ class SubwfModal extends Component {
     });
   }
 
-  handleInput(value, key, entry, i) {
+  handleInput(value, key, entry) {
     let inputs = { ...this.state.inputs };
     let objectKeywords = ["template", "body"];
 
@@ -131,20 +131,12 @@ class SubwfModal extends Component {
     } else if (key[0] === "decisionCases") {
       let decisionCases = { ...inputs.decisionCases };
       let keyNames = Object.keys(decisionCases);
-      let trueCase = decisionCases[keyNames[1]] || [];
       let falseCase = decisionCases[keyNames[0]] || [];
 
-      if (i === 0) {
-        decisionCases = {
-          [value]: falseCase,
-          [keyNames[1]]: trueCase
-        };
-      } else {
-        decisionCases = {
-          [keyNames[0]]: falseCase,
-          [value]: trueCase
-        };
-      }
+      decisionCases = {
+        [value]: falseCase
+      };
+
       inputs.decisionCases = decisionCases;
     } else {
       inputs = {

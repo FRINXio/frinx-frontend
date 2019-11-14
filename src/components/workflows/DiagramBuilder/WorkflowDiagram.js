@@ -212,16 +212,17 @@ export class WorkflowDiagram {
 
       [
         Object.values(decisionNode.extras.inputs.decisionCases)[0],
-        decisionNode.extras.inputs.defaultCase,
-        Object.values(decisionNode.extras.inputs.decisionCases)[1]
-      ].forEach(branch =>
-        diagramModel.addLink(
-          this.linkNodes(
-            this.getMatchingNode(_.last(branch).taskReferenceName),
-            endNode
-          )
-        )
-      );
+        decisionNode.extras.inputs.defaultCase
+      ].forEach(branch => {
+        if (branch) {
+          diagramModel.addLink(
+            this.linkNodes(
+              this.getMatchingNode(_.last(branch).taskReferenceName),
+              endNode
+            )
+          );
+        }
+      });
 
       endNode.setPosition(this.getMostRightNodeX() + 150, decisionNode.y);
     }
@@ -384,8 +385,7 @@ export class WorkflowDiagram {
       if (node.type === "decision") {
         let decisionCases = [
           Object.values(node.extras.inputs.decisionCases)[0],
-          node.extras.inputs.defaultCase,
-          Object.values(node.extras.inputs.decisionCases)[1]
+          node.extras.inputs.defaultCase
         ].map(el => {
           return el === undefined ? [] : el;
         });
@@ -434,10 +434,7 @@ export class WorkflowDiagram {
 
         // connect decision -> first nodes
         firstInBranch.forEach((firstNode, k) => {
-          let whichPort = ["failPort", "neutralPort", "completePort"];
-          if (firstInBranch.length === 2) {
-            whichPort = ["failPort", "completePort"];
-          }
+          let whichPort = ["failPort", "neutralPort"];
           this.diagramModel.addLink(
             this.linkNodes(node, firstNode, whichPort[k])
           );
@@ -636,8 +633,7 @@ export class WorkflowDiagram {
 
         let branches = [
           Object.values(task.decisionCases)[0],
-          task.defaultCase,
-          Object.values(task.decisionCases)[1]
+          task.defaultCase
         ].map(el => {
           return el === undefined ? [] : el;
         });
@@ -720,11 +716,6 @@ export class WorkflowDiagram {
                 }
                 parentNode = firstNeutralNode;
               }
-              _.toArray(decideNode.extras.inputs.decisionCases).forEach(caseArr => {
-                if (caseArr.length < 1) {
-                  throw new Error("Decision case is missing.");
-                }
-              });
               break;
             case "end":
               parentNode = link.targetPort.parent;
@@ -802,11 +793,12 @@ export class WorkflowDiagram {
               _.last(res.result.tasks).taskReferenceName
             );
 
-            lastNodes = [
+            let decisionCases = [
               Object.values(decisionNode.extras.inputs.decisionCases)[0],
-              decisionNode.extras.inputs.defaultCase,
-              Object.values(decisionNode.extras.inputs.decisionCases)[1]
-            ].map(branch => {
+              decisionNode.extras.inputs.defaultCase
+            ].filter(decCase => decCase !== undefined);
+
+            lastNodes = decisionCases.map(branch => {
               return subworkflowDiagram.getMatchingNode(
                 _.last(branch).taskReferenceName
               );
@@ -851,9 +843,9 @@ export class WorkflowDiagram {
           this.diagramEngine.repaintCanvas();
           this.renderDiagram();
         })
-        .catch(() => {
-          console.log(`Subworkflow ${name} doesn't exit.`);
-        });
+      .catch(() => {
+        console.log(`Subworkflow ${name} doesn't exit.`);
+      });
     });
   }
 }
