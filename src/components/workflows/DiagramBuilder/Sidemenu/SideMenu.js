@@ -5,57 +5,67 @@ import { Form, InputGroup } from "react-bootstrap";
 import SystemTask from "./SystemTask";
 import "./Sidemenu.css";
 
-const payload = {
-  fork: {
-    name: "forkTask",
-    taskReferenceName: "forkTaskRef_" + hash(),
-    type: "FORK_JOIN",
-    forkTasks: [],
-    optional: false,
-    startDelay: 0
-  },
-  join: {
-    name: "joinTask",
-    taskReferenceName: "joinTaskRef_" + hash(),
-    type: "JOIN",
-    joinOn: [],
-    optional: false,
-    startDelay: 0
-  },
-  decision: {
-    name: "decisionTask",
-    taskReferenceName: "decisionTaskRef_" + hash(),
-    inputParameters: {
-      param: "true"
-    },
-    type: "DECISION",
-    caseValueParam: "param",
-    decisionCases: {
-      false: []
-    },
-    defaultCase: [],
-    optional: false,
-    startDelay: 0
-  },
-  lambda: {
-    name: "LAMBDA_TASK",
-    taskReferenceName: "lambdaTaskRef_" + hash(),
-    type: "LAMBDA",
-    inputParameters: {
-      lambdaValue: "${workflow.input.lambdaValue}",
-      scriptExpression:
-        "if ($.lambdaValue == 1) {\n  return {testvalue: true} \n} else { \n  return {testvalue: false}\n}"
-    },
-    optional: false,
-    startDelay: 0
+const systemTasks = type => {
+  switch (type) {
+    case "fork": {
+      return {
+        name: "forkTask",
+        taskReferenceName: "forkTaskRef_" + hash(),
+        type: "FORK_JOIN",
+        forkTasks: [],
+        optional: false,
+        startDelay: 0
+      };
+    }
+    case "join": {
+      return {
+        name: "joinTask",
+        taskReferenceName: "joinTaskRef_" + hash(),
+        type: "JOIN",
+        joinOn: [],
+        optional: false,
+        startDelay: 0
+      };
+    }
+    case "decision": {
+      return {
+        name: "decisionTask",
+        taskReferenceName: "decisionTaskRef_" + hash(),
+        inputParameters: {
+          param: "true"
+        },
+        type: "DECISION",
+        caseValueParam: "param",
+        decisionCases: {
+          false: []
+        },
+        defaultCase: [],
+        optional: false,
+        startDelay: 0
+      };
+    }
+    case "lambda": {
+      return {
+        name: "LAMBDA_TASK",
+        taskReferenceName: "lambdaTaskRef_" + hash(),
+        type: "LAMBDA",
+        inputParameters: {
+          lambdaValue: "${workflow.input.lambdaValue}",
+          scriptExpression:
+            "if ($.lambdaValue == 1) {\n  return {testvalue: true} \n} else { \n  return {testvalue: false}\n}"
+        },
+        optional: false,
+        startDelay: 0
+      };
+    }
+    default:
+      break;
   }
 };
 
 const sub_workflow = wf => ({
   name: wf.name,
-  taskReferenceName:
-    wf.name.toLowerCase().trim() +
-    "_ref_" + hash(),
+  taskReferenceName: wf.name.toLowerCase().trim() + "_ref_" + hash(),
   inputParameters: getWfInputsRegex(wf),
   type: "SUB_WORKFLOW",
   subWorkflowParam: {
@@ -72,7 +82,7 @@ const SideMenu = props => {
       return (
         <SystemTask
           id={`functionalNode${i}`}
-          model={{ type: func, wfObject: payload[func] }}
+          model={{ type: func, wfObject: systemTasks(func) }}
           name={func.toUpperCase()}
         />
       );
