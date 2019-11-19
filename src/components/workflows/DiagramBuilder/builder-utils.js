@@ -68,6 +68,28 @@ export const getWfInputs = wf => {
   return inputParameters;
 };
 
+// binary search tree to find last nodes in nested decision tree
+export function BinarySearchTree() {
+  this.root = null;
+  this.lastNodes = [];
+}
+
+BinarySearchTree.prototype.inOrderTraversal = function(root) {
+  if (_.last(Object.values(root.decisionCases)[0]).type === "DECISION") {
+    this.inOrderTraversal(_.last(Object.values(root.decisionCases)[0]));
+  } else {
+    this.lastNodes.push(_.last(Object.values(root.decisionCases)[0]));
+  }
+
+  if (root.defaultCase) {
+    if (_.last(root.defaultCase).type === "DECISION") {
+      this.inOrderTraversal(_.last(root.defaultCase));
+    } else {
+      this.lastNodes.push(_.last(root.defaultCase));
+    }
+  }
+};
+
 // function to get nested key (inputParameters) from system tasks
 export const fn = (obj, key) => {
   if (_.has(obj, key)) return obj;

@@ -1,4 +1,5 @@
 import {
+  BinarySearchTree,
   fn,
   getEndNode,
   getLinksArray,
@@ -206,25 +207,23 @@ export class WorkflowDiagram {
 
     // decision special case
     if (_.last(this.definition.tasks).type === "DECISION") {
-      const decisionNode = this.getMatchingNode(
-        _.last(this.definition.tasks).taskReferenceName
-      );
+      const rootTask = _.last(this.definition.tasks);
+      const rootNode = this.getMatchingNode(rootTask.taskReferenceName);
+      const BST = new BinarySearchTree();
 
-      [
-        Object.values(decisionNode.extras.inputs.decisionCases)[0],
-        decisionNode.extras.inputs.defaultCase
-      ].forEach(branch => {
-        if (branch) {
+      BST.inOrderTraversal(rootTask);
+      const lastNodes = BST.lastNodes;
+
+      lastNodes.forEach(node => {
           diagramModel.addLink(
             this.linkNodes(
-              this.getMatchingNode(_.last(branch).taskReferenceName),
+              this.getMatchingNode(node.taskReferenceName),
               endNode
             )
           );
-        }
       });
 
-      endNode.setPosition(this.getMostRightNodeX() + 150, decisionNode.y);
+      endNode.setPosition(this.getMostRightNodeX() + 150, rootNode.y);
     }
 
     this.diagramModel.addAll(
@@ -794,18 +793,14 @@ export class WorkflowDiagram {
 
           // decision special case
           if (_.last(res.result.tasks).type === "DECISION") {
-            const decisionNode = subworkflowDiagram.getMatchingNode(
-              _.last(res.result.tasks).taskReferenceName
-            );
+            const rootTask = _.last(res.result.tasks);
+            const BST = new BinarySearchTree();
 
-            let decisionCases = [
-              Object.values(decisionNode.extras.inputs.decisionCases)[0],
-              decisionNode.extras.inputs.defaultCase
-            ].filter(decCase => decCase !== undefined);
+            BST.inOrderTraversal(rootTask);
 
-            lastNodes = decisionCases.map(branch => {
+            lastNodes = BST.lastNodes.map(node => {
               return subworkflowDiagram.getMatchingNode(
-                _.last(branch).taskReferenceName
+                node.taskReferenceName
               );
             });
           } else {
@@ -848,9 +843,9 @@ export class WorkflowDiagram {
           this.diagramEngine.repaintCanvas();
           this.renderDiagram();
         })
-      .catch(() => {
-        console.log(`Subworkflow ${name} doesn't exit.`);
-      });
+      // .catch(() => {
+      //   console.log(`Subworkflow ${name} doesn't exit.`);
+      // });
     });
   }
 }
