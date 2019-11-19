@@ -404,6 +404,8 @@ export class WorkflowDiagram {
             );
             firstInBranch.push(firstBranchNode);
             lastInBranch.push(lastBranchNode);
+          } else {
+            lastInBranch.push(node);
           }
         });
 
@@ -443,7 +445,7 @@ export class WorkflowDiagram {
         // connect last nodes -> neutral node
         if (neutralNode) {
           lastInBranch.forEach(lastNode => {
-            this.diagramModel.addLink(this.linkNodes(lastNode, neutralNode));
+            this.diagramModel.addLink(this.linkNodes(lastNode, neutralNode, "neutralPort"));
           });
         }
       }
