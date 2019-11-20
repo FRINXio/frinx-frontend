@@ -35,7 +35,7 @@ class WorkflowDia extends Component {
     const { edges, vertices, subworkflows } = this.state;
 
     return (
-      <div>
+      <div style={{overflow: "scroll"}}>
         {!this.props.def ? (
           <div>
             <Row style={{ textAlign: "center" }}>

@@ -22,12 +22,12 @@ const DiagramModal = props => {
   };
 
   return (
-    <Modal size="lg" show={props.show} onHide={handleClose}>
+    <Modal size="lg" dialogClassName="modal-70w" show={props.show} onHide={handleClose}>
       <Modal.Header>
         <Modal.Title>Workflow Diagram</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <WorkflowDia meta={meta} tasks={[]} def={true} />
+          <WorkflowDia meta={meta} tasks={[]} def={true} />
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

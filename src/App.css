@@ -27,6 +27,11 @@
   color: #61dafb;
 }
 
+.modal-70w {
+  width: 70%;
+  max-width: none!important;
+}
+
 .editable-string {
   cursor: pointer;
 }
