@@ -11,6 +11,13 @@ class CustomAlerts extends Component {
 
   render() {
     const handleDismiss = () => this.props.alertHandler();
+    const alert = alertType => {
+      return alertType.overallStatus === "fail"
+        ? alertType.errorMessage
+        : alertType.nodeStatus
+        ? "Node-status: " + alertType.nodeStatus
+        : null;
+    };
 
     function showAlert(alertType) {
       switch (alertType.type) {
@@ -30,12 +37,7 @@ class CustomAlerts extends Component {
                 COMMIT-TO-NETWORK {alertType.overallStatus.toUpperCase()}
                 :&nbsp;&nbsp;
               </b>
-              {alertType.overallStatus === "fail"
-                ? alertType.errorMessage
-                : alertType.nodeStatus
-                ? "Node-status: " + alertType.nodeStatus
-                : null}
-              &nbsp;&nbsp;&nbsp;&nbsp;
+              {alert(alertType)}&nbsp;&nbsp;&nbsp;&nbsp;
               <i className="fas fa-times clickable" onClick={handleDismiss} />
             </Alert>
           );
@@ -44,11 +46,12 @@ class CustomAlerts extends Component {
           return (
             <Alert
               onClick={handleDismiss}
-              variant={alertType.status === "complete" ? "success" : "danger"}
+              variant={
+                alertType.nodeStatus === "complete" ? "success" : "danger"
+              }
             >
               <b>REPLACE-CONFIG-WITH-SNAPSHOT:&nbsp;&nbsp;</b>
-              {alertType.status}
-              &nbsp;&nbsp;&nbsp;&nbsp;
+              {alert(alertType)}&nbsp;&nbsp;&nbsp;&nbsp;
               <i className="fas fa-times clickable" onClick={handleDismiss} />
             </Alert>
           );
@@ -57,20 +60,17 @@ class CustomAlerts extends Component {
           return (
             <Alert
               onClick={handleDismiss}
-              variant={alertType.status === "complete" ? "success" : "danger"}
+              variant={
+                alertType.nodeStatus === "complete" ? "success" : "danger"
+              }
             >
               <b>REPLACE-CONFIG-WITH-OPERATIONAL:&nbsp;&nbsp;</b>
-              {alertType.status}
-              &nbsp;&nbsp;&nbsp;&nbsp;
+              {alert(alertType)}&nbsp;&nbsp;&nbsp;&nbsp;
               <i className="fas fa-times clickable" onClick={handleDismiss} />
             </Alert>
           );
         }
         case "dryrun": {
-          let errorMessage =
-            alertType.errorMessage === "Unified Mountpoint not found."
-              ? "Dry-run is not supported for this node"
-              : alertType.errorMessage;
           return (
             <Alert
               onClick={handleDismiss}
@@ -81,12 +81,7 @@ class CustomAlerts extends Component {
               <b>
                 DRY-RUN {alertType.overallStatus.toUpperCase()}:&nbsp;&nbsp;
               </b>
-              {alertType.overallStatus === "fail"
-                ? errorMessage
-                : alertType.nodeStatus
-                ? "Node-status: " + alertType.nodeStatus
-                : null}
-              &nbsp;&nbsp;&nbsp;&nbsp;
+              {alert(alertType)}&nbsp;&nbsp;&nbsp;&nbsp;
               <i className="fas fa-times clickable" onClick={handleDismiss} />
             </Alert>
           );
@@ -98,10 +93,7 @@ class CustomAlerts extends Component {
               variant={alertType.errorMessage ? "danger" : "success"}
             >
               <b>SYNC-FROM-NETWORK :&nbsp;&nbsp;</b>
-              {alertType.errorMessage
-                ? alertType.errorMessage
-                : alertType.status}
-              &nbsp;&nbsp;&nbsp;&nbsp;
+              {alert(alertType)}&nbsp;&nbsp;&nbsp;&nbsp;
               <i className="fas fa-times clickable" onClick={handleDismiss} />
             </Alert>
           );

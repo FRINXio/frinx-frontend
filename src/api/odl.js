@@ -3,19 +3,18 @@ const http = require("../server/HttpServerSide").HttpClient;
 
 const router = new Router();
 const odlBaseURL = process.env.ODL_HOST;
-const odlConfigURL =
-  odlBaseURL + "/restconf/config/network-topology:network-topology/topology";
-const odlOperURL =
-  odlBaseURL +
-  "/restconf/operational/network-topology:network-topology/topology";
-const odlOperationsURL = odlBaseURL + "/restconf/operations";
+const odlURL =
+  odlBaseURL + "/rests/data/network-topology:network-topology/topology=";
+const odlConfigURL = "?content=config";
+const odlOperURL = "?content=nonconfig";
+const odlOperationsURL = odlBaseURL + "/rests/operations";
 const authToken = "Basic YWRtaW46YWRtaW4=";
 
 /*********** MOUNT AND UNMOUNT ***********/
 router.put("/mount/:topology/:node", async (req, res, next) => {
   try {
     await http.put(
-      odlConfigURL + "/" + req.params.topology + "/node/" + req.params.node,
+      odlURL + req.params.topology + "/node=" + req.params.node,
       req.body,
       authToken
     );
@@ -28,7 +27,7 @@ router.put("/mount/:topology/:node", async (req, res, next) => {
 router.delete("/unmount/:topology/:node", async (req, res, next) => {
   try {
     const result = await http.delete(
-      odlConfigURL + "/" + req.params.topology + "/node/" + req.params.node,
+      odlURL + req.params.topology + "/node=" + req.params.node,
       req.body,
       authToken
     );
@@ -42,7 +41,7 @@ router.delete("/unmount/:topology/:node", async (req, res, next) => {
 router.get("/conf/status/:topology/:node", async (req, res, next) => {
   try {
     const result = await http.get(
-      odlConfigURL + "/" + req.params.topology + "/node/" + req.params.node,
+      odlURL + req.params.topology + "/node=" + req.params.node + odlConfigURL,
       authToken
     );
     res.status(200).send(result);
@@ -54,7 +53,7 @@ router.get("/conf/status/:topology/:node", async (req, res, next) => {
 router.get("/oper/status/:topology/:node", async (req, res, next) => {
   try {
     const result = await http.get(
-      odlOperURL + "/" + req.params.topology + "/node/" + req.params.node,
+      odlURL + req.params.topology + "/node=" + req.params.node + odlOperURL,
       authToken
     );
     res.status(200).send(result);
@@ -68,9 +67,12 @@ router.get("/oper/all/status/:topology", async (req, res, next) => {
   let result = null;
   try {
     if (req.params.topology === "cli") {
-      result = await http.get(odlOperURL + "/cli", authToken);
+      result = await http.get(odlURL + "cli" + odlOperURL, authToken);
     } else {
-      result = await http.get(odlOperURL + "/topology-netconf", authToken);
+      result = await http.get(
+        odlURL + "topology-netconf" + odlOperURL,
+        authToken
+      );
     }
     res.status(200).send(result);
   } catch (e) {
@@ -82,9 +84,12 @@ router.get("/conf/all/status/:topology", async (req, res, next) => {
   let result = null;
   try {
     if (req.params.topology === "cli") {
-      result = await http.get(odlConfigURL + "/cli", authToken);
+      result = await http.get(odlURL + "cli" + odlConfigURL, authToken);
     } else {
-      result = await http.get(odlConfigURL + "/topology-netconf", authToken);
+      result = await http.get(
+        odlURL + "topology-netconf" + odlConfigURL,
+        authToken
+      );
     }
     res.status(200).send(result);
   } catch (e) {
@@ -96,7 +101,9 @@ router.get("/oper/registry/cli-devices", async (req, res, next) => {
   try {
     const result = await http.get(
       odlBaseURL +
-        "/restconf/operational/cli-translate-registry:available-cli-device-translations/?depth=2",
+        "/rests/data/cli-translate-registry:available-cli-device-translations/" +
+        odlOperURL +
+        "depth=2",
       authToken
     );
     res.status(200).send(result);
@@ -109,10 +116,11 @@ router.get("/oper/registry/cli-devices", async (req, res, next) => {
 router.get("/conf/uniconfig/:node", async (req, res, next) => {
   try {
     const result = await http.get(
-      odlConfigURL +
-        "/uniconfig/node/" +
+      odlURL +
+        "uniconfig/node=" +
         req.params.node +
-        "/frinx-uniconfig-topology:configuration",
+        "/frinx-uniconfig-topology:configuration" +
+        odlConfigURL,
       authToken
     );
     res.status(200).send(result);
@@ -124,10 +132,11 @@ router.get("/conf/uniconfig/:node", async (req, res, next) => {
 router.get("/oper/uniconfig/:node", async (req, res, next) => {
   try {
     const result = await http.get(
-      odlOperURL +
-        "/uniconfig/node/" +
+      odlURL +
+        "uniconfig/node=" +
         req.params.node +
-        "/frinx-uniconfig-topology:configuration",
+        "/frinx-uniconfig-topology:configuration" +
+        odlOperURL,
       authToken
     );
     res.status(200).send(result);
@@ -139,8 +148,8 @@ router.get("/oper/uniconfig/:node", async (req, res, next) => {
 router.put("/conf/uniconfig/:node", async (req, res, next) => {
   try {
     const result = await http.put(
-      odlConfigURL +
-        "/uniconfig/node/" +
+      odlURL +
+        "uniconfig/node=" +
         req.params.node +
         "/frinx-uniconfig-topology:configuration",
       req.body,
@@ -156,7 +165,9 @@ router.put("/conf/uniconfig/:node", async (req, res, next) => {
 router.get("/conf/snapshots/:node", async (req, res, next) => {
   try {
     const result = await http.get(
-      odlBaseURL + "/restconf/config/network-topology:network-topology",
+      odlBaseURL +
+        "/rests/data/network-topology:network-topology" +
+        odlConfigURL,
       authToken
     );
     let topologies = ["cli", "uniconfig", "topology-netconf", "unitopo"];
@@ -176,12 +187,12 @@ router.get("/conf/snapshots/:node", async (req, res, next) => {
 router.get("/conf/snapshots/:name/:node", async (req, res, next) => {
   try {
     const result = await http.get(
-      odlConfigURL +
-        "/" +
+      odlURL +
         req.params.name +
-        "/node/" +
+        "/node=" +
         req.params.node +
-        "/frinx-uniconfig-topology:configuration/",
+        "/frinx-uniconfig-topology:configuration" +
+        odlConfigURL,
       authToken
     );
     res.status(200).send(result);
@@ -194,37 +205,6 @@ router.post("/conf/snapshots/delete-snapshot", async (req, res, next) => {
   try {
     const result = await http.post(
       odlOperationsURL + "/snapshot-manager:delete-snapshot",
-      req.body,
-      authToken
-    );
-    res.status(200).send(result);
-  } catch (e) {
-    next(e);
-  }
-});
-
-/*********** UNICONFIG NATIVE ***********/
-router.put("/conf/native/whitelist/:node", async (req, res, next) => {
-  try {
-    const result = await http.put(
-      odlBaseURL +
-        "/restconf/config/direct-unit-matcher:direct-unit-matchers/direct-unit-matcher/" +
-        req.params.node,
-      req.body,
-      authToken
-    );
-    res.status(200).send(result);
-  } catch (e) {
-    next(e);
-  }
-});
-
-router.put("/conf/native/blacklist/:node", async (req, res, next) => {
-  try {
-    const result = await http.put(
-      odlBaseURL +
-        "/restconf/config/uniconfig-manager:blacklisted-reads/blacklisted-read/" +
-        req.params.node,
       req.body,
       authToken
     );
