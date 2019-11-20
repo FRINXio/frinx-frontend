@@ -85,7 +85,6 @@ const GeneralTab = props => {
       {renderTaskName(taskName)}
       {renderTaskRefName(taskRefName)}
 
-      <label>decision case</label>
       <Form.Row>
       {caseValueParam}
       {decisionCases}
