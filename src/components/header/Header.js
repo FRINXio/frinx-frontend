@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./Header.css";
 import logo from "./logo.png";
-import { Navbar, Nav } from "react-bootstrap";
+import { Navbar, Nav, Badge } from "react-bootstrap";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
@@ -40,6 +40,12 @@ class Header extends Component {
         <Navbar.Brand>
           <NavLink to="/">
             <img alt="" src={logo} />
+            <Badge
+              style={{ fontSize: "55%", marginLeft: "10px" }}
+              variant="light"
+            >
+              {process.env.REACT_APP_VERSION}
+            </Badge>
           </NavLink>
         </Navbar.Brand>
         <Navbar.Toggle />
