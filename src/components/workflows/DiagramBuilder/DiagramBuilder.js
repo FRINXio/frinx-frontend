@@ -17,6 +17,7 @@ import { encode } from "./builder-utils";
 import * as builderActions from "../../../store/actions/builder";
 import * as _ from "lodash";
 import "./DiagramBuilder.css";
+import { saveAs } from "file-saver";
 
 const http = require("../../../server/HttpServerSide").HttpClient;
 
@@ -288,18 +289,11 @@ class DiagramBuilder extends Component {
     }
 
     const data = encode(JSON.stringify(definition, null, 2));
-    const blob = new Blob([data], {
+    const file = new Blob([data], {
       type: "application/octet-stream"
     });
 
-    let url = URL.createObjectURL(blob);
-    let link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", this.props.finalWorkflow.name + ".json");
-
-    let event = document.createEvent("MouseEvents");
-    event.initMouseEvent("click", true, true, window);
-    link.dispatchEvent(event);
+    saveAs(file, definition.name + '.json');
   }
 
   redirectOnExit() {

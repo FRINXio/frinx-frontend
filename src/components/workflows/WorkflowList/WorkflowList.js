@@ -1,23 +1,59 @@
-import React, { Component } from "react";
+import React from "react";
 import { Button, Container, Tab, Tabs } from "react-bootstrap";
 import WorkflowDefs from "./WorkflowDefs/WorkflowDefs";
 import WorkflowExec from "./WorkflowExec/WorkflowExec";
 import { withRouter } from "react-router-dom";
+import { saveAs } from 'file-saver';
 
-class WorkflowList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+const http = require("../../../server/HttpServerSide").HttpClient;
+const JSZip = require("jszip");
 
-  changeUrl(e) {
-    this.props.history.push("/workflows/" + e);
-  }
+const WorkflowList = props => {
 
-  render() {
-    let query = this.props.match.params.wfid
-      ? this.props.match.params.wfid
+  const changeUrl = (e) => {
+    props.history.push("/workflows/" + e);
+  };
+
+  const importFiles = (e) => {
+    const files = e.currentTarget.files;
+    Object.keys(files).forEach(i => {
+      const file = files[i];
+      const reader = new FileReader();
+      reader.onload = e => {
+        let definition = JSON.parse(e.target.result);
+        http
+          .put("/api/conductor/metadata", [definition])
+      };
+      reader.readAsBinaryString(file);
+    });
+  };
+
+  const exportFile = () => {
+    http.get("/api/conductor/metadata/workflow").then(res => {
+      const zip = new JSZip();
+      let workflows = res.result || [];
+
+      workflows.forEach(wf => {
+        zip.file(wf.name + '.json', JSON.stringify(wf, null, 2));
+      });
+
+      zip.generateAsync({type:"blob"})
+        .then(function(content) {
+          saveAs(content, "workflows.zip");
+        });
+    })
+  };
+
+    let query = props.match.params.wfid
+      ? props.match.params.wfid
       : null;
+
+    const openFileUpload = () => {
+      document.getElementById("upload-files").click();
+      document
+        .getElementById("upload-files")
+        .addEventListener("change", importFiles);
+    };
 
     return (
       <Container style={{ textAlign: "left", marginTop: "20px" }}>
@@ -27,15 +63,32 @@ class WorkflowList extends Component {
           <Button
             variant="outline-primary"
             style={{ marginLeft: "30px" }}
-            onClick={() => this.props.history.push("/workflows/builder")}
+            onClick={() => props.history.push("/workflows/builder")}
           >
             <i className="fas fa-plus" />
             &nbsp;&nbsp;New
           </Button>
+          <Button
+            variant='outline-primary'
+            style={{ marginLeft: "5px" }}
+            onClick={openFileUpload}
+          >
+            <i className="fas fa-file-import" />
+            &nbsp;&nbsp;Import
+          </Button>
+          <Button
+            variant="outline-primary"
+            style={{ marginLeft: "5px" }}
+            onClick={exportFile}
+          >
+            <i className="fas fa-file-export" />
+            &nbsp;&nbsp;Export
+          </Button>
         </h1>
+        <input id="upload-files" multiple type="file" hidden />
         <Tabs
-          onSelect={e => this.changeUrl(e)}
-          defaultActiveKey={this.props.match.params.type || "defs"}
+          onSelect={e => changeUrl(e)}
+          defaultActiveKey={props.match.params.type || "defs"}
           style={{ marginBottom: "20px" }}
         >
           <Tab eventKey="defs" title="Definitions">
@@ -44,11 +97,10 @@ class WorkflowList extends Component {
           <Tab mountOnEnter unmountOnExit eventKey="exec" title="Executed">
             <WorkflowExec query={query} />
           </Tab>
-          <Tab eventKey="contact" title="Scheduled" disabled></Tab>
+          <Tab eventKey="scheduled" title="Scheduled" disabled></Tab>
         </Tabs>
       </Container>
     );
-  }
-}
+};
 
 export default withRouter(WorkflowList);

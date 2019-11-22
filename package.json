@@ -13,10 +13,13 @@
     "codemirror": "^5.47.0",
     "d3": "^3.5.16",
     "dagre-d3": "^0.4.17",
+    "file-saver": "^2.0.2",
     "jquery": "^3.4.1",
+    "jszip": "^3.2.2",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "react": "^16.8.4",
+    "react-ace": "latest",
     "react-bootstrap": "^1.0.0-beta.8",
     "react-bootstrap-typeahead": "^3.4.5",
     "react-codemirror": "^1.0.0",
@@ -31,8 +34,7 @@
     "redux-thunk": "^2.3.0",
     "storm-react-diagrams": "^5.2.1",
     "superagent": "^5.0.2",
-    "unescape-js": "^1.1.1",
-    "react-ace": "latest"
+    "unescape-js": "^1.1.1"
   },
   "scripts": {
     "start": "react-scripts start",
