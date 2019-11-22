@@ -86,14 +86,14 @@ const InputsTab = props => {
             width="100%"
             height="300px"
             onChange={val => props.handleInput(val, item, entry)}
-            fontSize={20}
+            fontSize={16}
             value={value}
+            wrapEnabled={true}
             setOptions={{
               showPrintMargin: true,
-              showGutter: true,
               highlightActiveLine: true,
               showLineNumbers: true,
-              tabSize: 2,
+              tabSize: 2
             }}/>
           <Form.Text className="text-muted">
             {getDescriptionAndDefault(entry[0])[0]}
