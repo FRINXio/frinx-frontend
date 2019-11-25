@@ -439,7 +439,7 @@ class DetailsModal extends Component {
           <Modal.Title>
             Details of{" "}
             {this.state.meta.name
-              ? this.state.meta.name.replace(/_/g, " ")
+              ? this.state.meta.name
               : null}
           </Modal.Title>
           <div>
@@ -452,7 +452,7 @@ class DetailsModal extends Component {
             <Accordion.Toggle as={Card.Header}>
               <b>
                 {this.state.meta.name
-                  ? this.state.meta.name.replace(/_/g, " ")
+                  ? this.state.meta.name
                   : null}
               </b>
               &nbsp;&nbsp;

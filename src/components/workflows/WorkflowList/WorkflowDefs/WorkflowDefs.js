@@ -177,7 +177,6 @@ class WorkflowDefs extends Component {
               rows[j]["name"]
                 .toString()
                 .toUpperCase()
-                .replace(/_/gi, " ")
                 .indexOf(queryWords[i]) !== -1)
           )
             toBeRendered.push(rows[j]);
@@ -324,7 +323,7 @@ class WorkflowDefs extends Component {
               variant="link"
               eventKey={i}
             >
-              <b>{dataset[i]["name"].replace(/_/g, " ")}</b>
+              <b>{dataset[i]["name"]}</b>
               <br />
               <div className="description">
                 {"version " + dataset[i]["version"] + ": "}

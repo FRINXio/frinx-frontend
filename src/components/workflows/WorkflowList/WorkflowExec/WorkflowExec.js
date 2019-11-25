@@ -309,7 +309,7 @@ class WorkflowExec extends Component {
             }}
             title={dataset[i]["workflowType"]}
           >
-            {dataset[i]["workflowType"].replace(/_/g, " ")}
+            {dataset[i]["workflowType"]}
           </td>
           <td>{dataset[i]["status"]}</td>
           <td>
