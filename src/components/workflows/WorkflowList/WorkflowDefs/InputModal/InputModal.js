@@ -118,15 +118,23 @@ class InputModal extends Component {
   }
 
   handleInput(e, i) {
-    let wfForm = this.state.workflowForm;
-    let warning = this.state.warning;
-    wfForm.values[i] = Array.isArray(e) ? e.toString() : e.target.value;
-    wfForm.values[i].match(/^\s.*$/) || wfForm.values[i].match(/^.*\s$/)
-      ? (warning[i] = true)
-      : (warning[i] = false);
+    const { workflowForm, warning } = this.state;
+
+    workflowForm.values[i] = e.target.value;
+    warning[i] = !!(workflowForm.values[i].match(/^\s.*$/) || workflowForm.values[i].match(/^.*\s$/));
+
     this.setState({
-      workflowForm: wfForm,
-      warning: warning
+      workflowForm,
+      warning
+    });
+  }
+
+  handleTypahead(e, i) {
+    const { workflowForm } = this.state;
+    workflowForm.values[i] = e.toString();
+
+    this.setState({
+      workflowForm
     });
   }
 
@@ -177,7 +185,7 @@ class InputModal extends Component {
           return (
             <Typeahead
               id={`input-${i}`}
-              onChange={e => this.handleInput(e, i)}
+              onChange={e => this.handleTypahead(e, i)}
               placeholder="Enter the node id"
               multiple={!!type.match(/node_ids/g)}
               options={this.props.devices}
