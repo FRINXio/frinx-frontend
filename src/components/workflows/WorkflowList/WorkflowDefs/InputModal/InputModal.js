@@ -202,7 +202,7 @@ class InputModal extends Component {
               rows="2"
               onChange={e => this.handleInput(e, i)}
               placeholder="Enter the input"
-              defaultValue={values[i]}
+              value={values[i] ? values[i] : ""}
               isInvalid={warning[i]}
             />
           );
@@ -212,7 +212,7 @@ class InputModal extends Component {
               type="input"
               onChange={e => this.handleInput(e, i)}
               placeholder="Enter the input"
-              defaultValue={values[i]}
+              value={values[i] ? values[i] : ""}
               isInvalid={warning[i]}
             />
           );

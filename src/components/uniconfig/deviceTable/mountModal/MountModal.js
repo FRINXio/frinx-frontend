@@ -368,7 +368,7 @@ class MountModal extends Component {
                 as="textarea"
                 rows={2}
                 onChange={e => this.handleNative(e)}
-                defaultValue={
+                value={
                   this.state.blacklist["uniconfig-config:blacklist"][
                     "uniconfig-config:path"
                   ]

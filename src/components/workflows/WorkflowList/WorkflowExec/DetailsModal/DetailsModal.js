@@ -374,7 +374,7 @@ class DetailsModal extends Component {
                 type="input"
                 placeholder="Enter the input"
                 onChange={e => this.handleInput(e, i)}
-                defaultValue={values[i]}
+                value={values[i] ? values[i] : ""}
               />
               <Form.Text className="text-muted">{descs[i]}</Form.Text>
             </Form.Group>

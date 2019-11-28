@@ -8,7 +8,6 @@ const WfLabels = props => {
       : wfLabelsColor[props.index];
   return (
     <div
-      key={`${props.key}`}
       style={{ backgroundColor: color }}
       className="wfLabel"
       onClick={e => {
