@@ -170,14 +170,10 @@ class WorkflowDefs extends Component {
         for (let j = 0; j < rows.length; j++)
           if (
             rows[j]["name"] &&
-            (rows[j]["name"]
+            rows[j]["name"]
               .toString()
               .toUpperCase()
-              .indexOf(queryWords[i]) !== -1 ||
-              rows[j]["name"]
-                .toString()
-                .toUpperCase()
-                .indexOf(queryWords[i]) !== -1)
+              .indexOf(queryWords[i]) !== -1
           )
             toBeRendered.push(rows[j]);
         rows = toBeRendered;
@@ -214,13 +210,14 @@ class WorkflowDefs extends Component {
         let labelIndex = data.description.indexOf("FAVOURITE");
         data.description = data.description.replace("FAVOURITE", "");
         if (data.description[labelIndex - 1] === ",")
-          data.description = data.description.substring(0, labelIndex - 1) + data.description.substring(labelIndex, data.description.length);
-        if (data.description.match(/^(| )-(| )$/g))
-          delete data.description;
+          data.description =
+            data.description.substring(0, labelIndex - 1) +
+            data.description.substring(labelIndex, data.description.length);
+        if (data.description.match(/^(| )-(| )$/g)) delete data.description;
       } else {
         data.description.match(/.*[A-Za-z0-9]$/g)
-          ? data.description += ",FAVOURITE"
-          : data.description += "FAVOURITE";
+          ? (data.description += ",FAVOURITE")
+          : (data.description += "FAVOURITE");
       }
     } else {
       data.description = "- FAVOURITE";
@@ -294,8 +291,13 @@ class WorkflowDefs extends Component {
       .delete("/api/conductor/metadata/workflow/" + name + "/" + version)
       .then(res => {
         this.componentDidMount();
+        let table = this.state.table;
+        if (table.length) {
+          table.splice(table.findIndex(wf => wf.name === name), 1);
+        }
         this.setState({
-          activeRow: null
+          activeRow: null,
+          table: table
         });
       });
   }
