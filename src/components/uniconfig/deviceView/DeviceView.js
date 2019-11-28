@@ -304,6 +304,10 @@ class DeviceView extends Component {
   }
 
   render() {
+    const DropdownMenu = React.createRef((props, ref) => {
+      return <DropdownMenu forwardedRef={ref} />;
+    });
+
     let configJSON = JSON.stringify(JSON.parse(this.state.config), null, 2);
     let operationalJSON = JSON.stringify(
       JSON.parse(this.state.operational),
@@ -382,7 +386,7 @@ class DeviceView extends Component {
                     &nbsp;&nbsp;Load Snapshot
                   </Dropdown.Toggle>
 
-                  <Dropdown.Menu as={DropdownMenu}>
+                  <Dropdown.Menu ref={DropdownMenu}>
                     {this.state.snapshots.map((item, i) => {
                       return (
                         <Dropdown.Item
@@ -409,7 +413,7 @@ class DeviceView extends Component {
                       variant={
                         this.state.deletingSnaps ? "danger" : "outline-danger"
                       }
-                      style={{ marginLeft: "20px", marginBottom: "-15px" }}
+                      style={{ marginLeft: "20px", marginRight: "20px" }}
                     >
                       <i
                         className="fas fa-trash"
