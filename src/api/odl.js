@@ -101,9 +101,9 @@ router.get("/oper/registry/cli-devices", async (req, res, next) => {
   try {
     const result = await http.get(
       odlBaseURL +
-        "/rests/data/cli-translate-registry:available-cli-device-translations/" +
+        "/rests/data/cli-translate-registry:available-cli-device-translations" +
         odlOperURL +
-        "depth=2",
+        "&depth=3",
       authToken
     );
     res.status(200).send(result);
