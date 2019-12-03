@@ -462,8 +462,8 @@ class WorkflowExec extends Component {
         modalHandler={this.showDetailsModal.bind(this)}
         refreshTable={
           this.state.allData
-            ? this.props.fetchNewData
-            : this.props.fetchParentWorkflows
+            ? this.props.fetchNewData.bind(this, 1, this.state.defaultPages)
+            : this.props.fetchParentWorkflows.bind(this, 1, this.state.defaultPages)
         }
         show={this.state.detailsModal}
       />
