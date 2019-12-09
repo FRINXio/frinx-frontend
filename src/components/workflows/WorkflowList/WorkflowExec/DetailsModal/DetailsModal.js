@@ -39,7 +39,8 @@ class DetailsModal extends Component {
       activeTab: null,
       status: "Execute",
       timeout: null,
-      parentWfId: ""
+      parentWfId: "",
+      inputsArray: []
     };
   }
 
@@ -53,6 +54,14 @@ class DetailsModal extends Component {
 
   getData() {
     http.get("/api/conductor/id/" + this.props.wfId).then(res => {
+      let matchArray = JSON.stringify(res.meta, null, 2).match(
+        /\workflow.input([\w.])+}/gim
+      );
+      let inputsArray = [];
+      if (matchArray) {
+        let sortedArray = matchArray.join().match(/[^.]+(?=})/gim);
+        inputsArray = [...new Set(sortedArray)];
+      }
       this.setState({
         meta: res.meta,
         result: res.result,
@@ -64,7 +73,8 @@ class DetailsModal extends Component {
             input: res.result.input
           } || {},
         wfId: res.result.workflowId,
-        parentWfId: res.result.parentWorkflowId || ""
+        parentWfId: res.result.parentWorkflowId || "",
+        inputsArray: inputsArray
       });
 
       if (this.state.result.status === "RUNNING") {
@@ -92,12 +102,12 @@ class DetailsModal extends Component {
           this.setState({ status: "Execute" });
           this.props.refreshTable();
         }, 1000);
-      })
+      });
   }
 
-  handleInput(e, i) {
+  handleInput(e, key) {
     let wfForm = this.state.input.input;
-    wfForm[Object.keys(wfForm)[i]] = e.target.value;
+    wfForm[key] = e.target.value;
     this.setState({
       input: {
         ...this.state.input,
@@ -362,12 +372,15 @@ class DetailsModal extends Component {
       let input = this.state.input.input || [];
       let iPam = this.state.meta.inputParameters || [];
 
-      let labels = Object.keys(input);
-      let values = Object.values(input);
+      let labels = this.state.inputsArray;
+      let values = [];
+      labels.forEach(label => {
+        let key = Object.keys(input).findIndex(key => key === label);
+        key > -1 ? values.push(Object.values(input)[key]) : values.push("");
+      });
       let descs = iPam.map(param => {
         return param.match(/\[(.*?)]/)[1];
       });
-
       return labels.map((label, i) => {
         return (
           <Col sm={6} key={`col1-${i}`}>
@@ -376,8 +389,14 @@ class DetailsModal extends Component {
               <Form.Control
                 type="input"
                 placeholder="Enter the input"
-                onChange={e => this.handleInput(e, i)}
-                value={values[i] ? values[i] : ""}
+                onChange={e => this.handleInput(e, labels[i])}
+                value={
+                  values[i]
+                    ? typeof values[i] === "object"
+                      ? JSON.stringify(values[i])
+                      : values[i]
+                    : ""
+                }
               />
               <Form.Text className="text-muted">{descs[i]}</Form.Text>
             </Form.Group>
