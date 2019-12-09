@@ -107,11 +107,8 @@ class DetailsModal extends Component {
 
   handleInput(e, key) {
     let wfForm = this.state.input.input;
-    if (wfForm) wfForm[key] = e.target.value;
-    else {
-      wfForm = {};
-      wfForm[key] = e.target.value;
-    }
+    if (!wfForm) wfForm = {};
+    wfForm[key] = e.target.value;
     this.setState({
       input: {
         ...this.state.input,
