@@ -77,9 +77,7 @@ const InputsTab = props => {
     textFieldParams.push(
       <Col sm={12} key={`colTf-${entry[0]}`}>
         <Form.Group>
-          <Form.Label>
-            {entry[0]}
-          </Form.Label>
+          <Form.Label>{entry[0]}</Form.Label>
           <AceEditor
             mode="javascript"
             theme="tomorrow"
@@ -94,7 +92,8 @@ const InputsTab = props => {
               highlightActiveLine: true,
               showLineNumbers: true,
               tabSize: 2
-            }}/>
+            }}
+          />
           <Form.Text className="text-muted">
             {getDescriptionAndDefault(entry[0])[0]}
           </Form.Text>
@@ -135,8 +134,10 @@ const InputsTab = props => {
                   textFieldKeywords.find(keyword => entry[0].includes(keyword))
                 ) {
                   return handleTextField(entry, item, i, textFieldParams);
-                } else if (codeFieldKeywords.find(keyword => entry[0].includes(keyword))) {
-                  return handleCodeField(entry, item, i, textFieldParams)
+                } else if (
+                  codeFieldKeywords.find(keyword => entry[0].includes(keyword))
+                ) {
+                  return handleCodeField(entry, item, i, textFieldParams);
                 } else if (typeof entry[1] === "object") {
                   return Object.entries(entry[1]).map(innerEntry => {
                     if (

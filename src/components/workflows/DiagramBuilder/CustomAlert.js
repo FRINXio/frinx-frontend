@@ -9,7 +9,7 @@ const CustomAlert = props => {
         variant={props.alertVariant}
         dismissible
         onClose={() => props.showCustomAlert(false)}
-        style={{ textAlign: "right" }}
+        style={{ textAlign: "right", opacity: "70%" }}
       >
         {props.alertVariant === "danger" ? (
           <i className="fas fa-exclamation-triangle" />

@@ -151,7 +151,7 @@ class Login extends Component {
                 </Button>
                 <div
                   style={{ marginTop: "20px" }}
-                  className={error ? "wrongLogin" : "hidden"}
+                  className={error ? "wrongLogin" : "hidden-login"}
                 >
                   <FontAwesomeIcon icon={faTimes} /> {errorMsg}
                 </div>

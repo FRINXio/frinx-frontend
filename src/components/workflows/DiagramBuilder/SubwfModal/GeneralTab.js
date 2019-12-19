@@ -86,10 +86,10 @@ const GeneralTab = props => {
       {renderTaskRefName(taskRefName)}
 
       <Form.Row>
-      {caseValueParam}
-      {decisionCases}
+        {caseValueParam}
+        {decisionCases}
       </Form.Row>
-      <hr/>
+      <hr />
 
       <Form.Row>
         {Object.entries(props.inputs).map((item, i) => {

@@ -8,8 +8,6 @@ import { WorkflowDiagram } from "./WorkflowDiagram";
 import CustomAlert from "./CustomAlert";
 import WorkflowDefModal from "./WorkflowDefModal/WorkflowDefModal";
 import GeneralInfoModal from "./GeneralInfoModal/GeneralInfoModal";
-import ControlsHeader from "./ControlsHeader/ControlsHeader";
-import SideMenu from "./Sidemenu/SideMenu";
 import DetailsModal from "../WorkflowList/WorkflowExec/DetailsModal/DetailsModal";
 import InputModal from "../WorkflowList/WorkflowDefs/InputModal/InputModal";
 import SubwfModal from "./SubwfModal/SubwfModal";
@@ -18,6 +16,11 @@ import * as builderActions from "../../../store/actions/builder";
 import * as _ from "lodash";
 import "./DiagramBuilder.css";
 import { saveAs } from "file-saver";
+import "semantic-ui-css/semantic.min.css";
+import BuilderHeader from "./ControlsHeader/BuilderHeader";
+import Sidemenu from "./Sidemenu/Sidemenu";
+import SidemenuRight from "./Sidemenu/SidemenuRight";
+import { HotKeys } from "react-hotkeys";
 
 const http = require("../../../server/HttpServerSide").HttpClient;
 
@@ -31,20 +34,27 @@ class DiagramBuilder extends Component {
       showInputModal: false,
       showDetailsModal: false,
       showExitModal: false,
+      showNewModal: false,
       modalInputs: null,
+      zoomLevel: 100,
+      isLocked: false,
       workflowDiagram: new WorkflowDiagram(
         new Application(),
         this.props.finalWorkflow,
-        { x: 900, y: 300 }
+        { x: 600, y: 300 }
       )
     };
 
+    this.setLocked = this.setLocked.bind(this);
     this.onNodeDrop = this.onNodeDrop.bind(this);
     this.importFile = this.importFile.bind(this);
     this.exportFile = this.exportFile.bind(this);
+    this.setZoomLevel = this.setZoomLevel.bind(this);
+    this.showNewModal = this.showNewModal.bind(this);
     this.saveWorkflow = this.saveWorkflow.bind(this);
     this.showExitModal = this.showExitModal.bind(this);
     this.showNodeModal = this.showNodeModal.bind(this);
+    this.redirectOnNew = this.redirectOnNew.bind(this);
     this.showInputModal = this.showInputModal.bind(this);
     this.saveAndExecute = this.saveAndExecute.bind(this);
     this.redirectOnExit = this.redirectOnExit.bind(this);
@@ -60,10 +70,6 @@ class DiagramBuilder extends Component {
 
   componentDidMount() {
     document.addEventListener("dblclick", this.doubleClickListener.bind(this));
-    setTimeout(
-      () => (document.getElementsByClassName("tray")[0].style.width = "370px"),
-      500
-    );
 
     http.get("/api/conductor/metadata/workflow").then(res => {
       this.props.storeWorkflows(res.result || []);
@@ -157,7 +163,8 @@ class DiagramBuilder extends Component {
     }
   }
 
-  expandNodeToWorkflow() {
+  expandNodeToWorkflow(e) {
+    e.preventDefault();
     try {
       this.props.showCustomAlert(false);
       this.state.workflowDiagram.expandSelectedNodes();
@@ -166,7 +173,8 @@ class DiagramBuilder extends Component {
     }
   }
 
-  saveWorkflow() {
+  saveWorkflow(e) {
+    e.preventDefault();
     this.state.workflowDiagram
       .saveWorkflow(this.props.finalWorkflow)
       .then(res => {
@@ -185,7 +193,8 @@ class DiagramBuilder extends Component {
       });
   }
 
-  saveAndExecute() {
+  saveAndExecute(e) {
+    e.preventDefault();
     this.state.workflowDiagram
       .saveWorkflow(this.props.finalWorkflow)
       .then(() => {
@@ -219,7 +228,6 @@ class DiagramBuilder extends Component {
 
   // GENERAL INFO MODAL
   showGeneralInfoModal() {
-    this.parseDiagramToJSON();
     this.setState({
       showGeneralInfoModal: !this.state.showGeneralInfoModal
     });
@@ -252,6 +260,13 @@ class DiagramBuilder extends Component {
       showExitModal: !this.state.showExitModal
     });
   }
+
+  showNewModal(e) {
+    e.preventDefault();
+    this.setState({
+      showNewModal: !this.state.showNewModal
+    });
+  }
   /*************** ***************/
 
   saveNodeInputsHandler(savedInputs, id) {
@@ -262,6 +277,7 @@ class DiagramBuilder extends Component {
         node.extras.inputs = savedInputs;
       }
     });
+    this.parseDiagramToJSON();
   }
 
   importFile() {
@@ -293,11 +309,39 @@ class DiagramBuilder extends Component {
       type: "application/octet-stream"
     });
 
-    saveAs(file, definition.name + '.json');
+    saveAs(file, definition.name + ".json");
   }
 
   redirectOnExit() {
     this.props.history.push("/workflows/defs");
+    window.location.reload();
+  }
+
+  redirectOnNew() {
+    this.props.history.push("/workflows/builder");
+    window.location.reload();
+  }
+
+  setZoomLevel(percentage, e) {
+    if (e) {
+      e.preventDefault();
+    }
+    this.setState({
+      zoomLevel: percentage
+    });
+    this.state.workflowDiagram.setZoomLevel(percentage);
+  }
+
+  setLocked(e) {
+    if (e) {
+      e.preventDefault();
+    }
+    this.setState({
+      isLocked: !this.state.workflowDiagram.isLocked()
+    });
+    this.state.workflowDiagram.setLocked(
+      !this.state.workflowDiagram.isLocked()
+    );
   }
 
   render() {
@@ -357,7 +401,8 @@ class DiagramBuilder extends Component {
           <Modal.Title>Do you want to exit builder?</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          All changes since last <b>Save</b> or <b>Execute</b> operation will be lost
+          All changes since last <b>Save</b> or <b>Execute</b> operation will be
+          lost
         </Modal.Body>
         <Modal.Footer>
           <Button variant="outline-primary" onClick={this.showExitModal}>
@@ -370,57 +415,100 @@ class DiagramBuilder extends Component {
       </Modal>
     ) : null;
 
+    let newModal = this.state.showNewModal ? (
+      <Modal show={this.state.showNewModal}>
+        <Modal.Header>
+          <Modal.Title>Create new workflow</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          All changes since last <b>Save</b> or <b>Execute</b> operation will be
+          lost
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-primary" onClick={this.showNewModal}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={this.redirectOnNew}>
+            New
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    ) : null;
+
+    const keyMap = {
+      ZOOM_IN: ["ctrl++"],
+      ZOOM_OUT: ["ctrl+-"],
+      LOCK: ["ctrl+l"],
+      SAVE: ["ctrl+s"],
+      EXECUTE: ["alt+enter"],
+      EXPAND: ["ctrl+x"]
+    };
+
+    const handlers = {
+      ZOOM_IN: e => this.setZoomLevel(this.state.zoomLevel + 10, e),
+      ZOOM_OUT: e => this.setZoomLevel(this.state.zoomLevel - 10, e),
+      LOCK: e => this.setLocked(e),
+      SAVE: e => this.saveWorkflow(e),
+      EXECUTE: e => this.saveAndExecute(e),
+      EXPAND: e => this.expandNodeToWorkflow(e)
+    };
+
     return (
-      <div className="body">
-        {workflowDefModal}
-        {nodeModal}
-        {inputsModal}
-        {detailsModal}
-        {generalInfoModal}
-        {exitModal}
+      <HotKeys keyMap={keyMap}>
+        <HotKeys handlers={handlers}>
+          <div style={{ position: "relative", height: "100vh" }}>
+            {workflowDefModal}
+            {nodeModal}
+            {inputsModal}
+            {detailsModal}
+            {generalInfoModal}
+            {exitModal}
+            {newModal}
 
-        <ControlsHeader
-          showDefinitionModal={this.showDefinitionModal}
-          showGeneralInfoModal={this.showGeneralInfoModal}
-          showExitModal={this.showExitModal}
-          saveAndExecute={this.saveAndExecute}
-          saveWorkflow={this.saveWorkflow}
-          expandNodeToWorkflow={this.expandNodeToWorkflow}
-          updateQuery={this.props.updateQuery}
-          submitFile={this.importFile}
-          saveFile={this.exportFile}
-          workflowDiagram={this.state.workflowDiagram}
-        />
-
-        <div className="content">
-          <SideMenu
-            workflows={this.props.workflows}
-            functional={this.props.functional}
-            query={this.props.query}
-            updateQuery={this.props.updateQuery}
-          />
-
-          <CustomAlert
-            showCustomAlert={this.props.showCustomAlert}
-            show={this.props.customAlert.show}
-            msg={this.props.customAlert.msg}
-            alertVariant={this.props.customAlert.variant}
-          />
-
-          <div
-            className="diagram-layer"
-            onDrop={e => this.onNodeDrop(e)}
-            onDragOver={event => {
-              event.preventDefault();
-            }}
-          >
-            <DiagramWidget
-              className="srd-demo-canvas"
-              diagramEngine={this.state.workflowDiagram.getDiagramEngine()}
+            <BuilderHeader
+              showDefinitionModal={this.showDefinitionModal}
+              showGeneralInfoModal={this.showGeneralInfoModal}
+              showExitModal={this.showExitModal}
+              showNewModal={this.showNewModal}
+              saveAndExecute={this.saveAndExecute}
+              saveWorkflow={this.saveWorkflow}
+              expandNodeToWorkflow={this.expandNodeToWorkflow}
+              updateQuery={this.props.updateQuery}
+              submitFile={this.importFile}
+              saveFile={this.exportFile}
+              workflowDiagram={this.state.workflowDiagram}
+              setZoomLevel={this.setZoomLevel}
+              setLocked={this.setLocked}
             />
+
+            <Sidemenu
+              workflows={this.props.workflows}
+              updateQuery={this.props.updateQuery}
+            />
+            <SidemenuRight functional={this.props.functional} />
+
+            <CustomAlert
+              showCustomAlert={this.props.showCustomAlert}
+              show={this.props.customAlert.show}
+              msg={this.props.customAlert.msg}
+              alertVariant={this.props.customAlert.variant}
+            />
+
+            <div
+              style={{ height: "calc(100% - 50px)" }}
+              onDrop={e => this.onNodeDrop(e)}
+              onDragOver={event => {
+                event.preventDefault();
+              }}
+            >
+              <DiagramWidget
+                className="srd-demo-canvas"
+                diagramEngine={this.state.workflowDiagram.getDiagramEngine()}
+              />
+            </div>
           </div>
-        </div>
-      </div>
+        </HotKeys>
+      </HotKeys>
     );
   }
 }
@@ -429,8 +517,6 @@ const mapStateToProps = state => {
   return {
     workflows: state.buildReducer.workflows,
     functional: state.buildReducer.functional,
-    sidebarShown: state.buildReducer.sidebarShown,
-    query: state.buildReducer.query,
     finalWorkflow: state.buildReducer.finalWorkflow,
     customAlert: state.buildReducer.customAlert,
     isWfNameLocked: state.buildReducer.workflowNameLock,
