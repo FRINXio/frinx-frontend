@@ -109,7 +109,7 @@ const ControlsButton = props => (
           icon="zoom-out"
         />
         <Dropdown
-          text={props.workflowDiagram.getZoomLevel() + "%"}
+          text={props.workflowDiagram.getZoomLevel().toFixed(1) + "%"}
           button
           style={{ paddingLeft: "10px", paddingRight: "10px" }}
         >
