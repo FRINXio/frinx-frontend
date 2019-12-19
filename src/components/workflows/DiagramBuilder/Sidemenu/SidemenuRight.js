@@ -112,6 +112,7 @@ const functional = props => {
         title={task.toUpperCase()}
         id={`functionalNode${i}`}
         draggable={true}
+        style={{cursor: "grab"}}
         onDragStart={e => {
           e.dataTransfer.setData(
             "storm-diagram-node",
