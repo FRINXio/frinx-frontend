@@ -437,10 +437,7 @@ class DetailsModal extends Component {
       >
         <Modal.Header>
           <Modal.Title>
-            Details of{" "}
-            {this.state.meta.name
-              ? this.state.meta.name
-              : null}
+            Details of {this.state.meta.name ? this.state.meta.name : null}
           </Modal.Title>
           <div>
             {parentWorkflowButton()}
@@ -450,11 +447,7 @@ class DetailsModal extends Component {
         <Modal.Body>
           <Accordion>
             <Accordion.Toggle as={Card.Header}>
-              <b>
-                {this.state.meta.name
-                  ? this.state.meta.name
-                  : null}
-              </b>
+              <b>{this.state.meta.name ? this.state.meta.name : null}</b>
               &nbsp;&nbsp;
               <p style={{ float: "right" }}>{this.props.wfId}</p>
               <b>

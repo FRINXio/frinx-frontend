@@ -72,6 +72,41 @@ export class WorkflowDiagram {
     return _.toArray(this.diagramModel.getLinks());
   }
 
+  setZoomLevel(percentage) {
+    let offset = this.diagramModel.getZoomLevel() > percentage ? 100 : -100;
+    this.diagramModel.setZoomLevel(percentage);
+    this.diagramModel.setOffsetX(this.diagramModel.getOffsetX() + offset);
+    this.renderDiagram();
+  }
+
+  getZoomLevel() {
+    return this.diagramModel.getZoomLevel();
+  }
+
+  deleteSelected() {
+    _.values(this.diagramModel.getNodes()).forEach(node => {
+      if (node.isSelected()) {
+        node.remove();
+        this.diagramModel.removeNode(node);
+      }
+    });
+
+    _.values(this.diagramModel.getLinks()).forEach(link => {
+      if (link.isSelected()) {
+        this.diagramModel.removeLink(link);
+      }
+    });
+    this.renderDiagram();
+  }
+
+  setLocked(boolean) {
+    this.diagramModel.setLocked(boolean);
+  }
+
+  isLocked() {
+    return this.diagramModel.isLocked();
+  }
+
   getGraphState(definition) {
     const wfe2graph = new Workflow2Graph();
     const wfe = defaultTo({ tasks: [] })(null);
@@ -189,8 +224,8 @@ export class WorkflowDiagram {
   placeDefaultNodes() {
     this.diagramEngine.setDiagramModel(this.diagramModel);
     this.diagramModel.addAll(
-      this.placeStartNode(900, 300),
-      this.placeEndNode(1200, 300)
+      this.placeStartNode(600, 300),
+      this.placeEndNode(900, 300)
     );
     return this;
   }
@@ -209,24 +244,19 @@ export class WorkflowDiagram {
       lastNode.x + this.getNodeWidth(lastNode) + 150,
       lastNode.y
     );
-    const {edges} = this.getGraphState(this.definition);
+    const { edges } = this.getGraphState(this.definition);
     const lastNodes = [];
 
     // decision special case
     if (_.last(this.definition.tasks).type === "DECISION") {
       edges.forEach(edge => {
         if (edge.to === "final" && edge.type !== "decision") {
-          lastNodes.push(this.getMatchingNode(edge.from))
+          lastNodes.push(this.getMatchingNode(edge.from));
         }
       });
 
       lastNodes.forEach(node => {
-        diagramModel.addLink(
-          this.linkNodes(
-            node,
-            endNode
-          )
-        );
+        diagramModel.addLink(this.linkNodes(node, endNode));
       });
 
       endNode.setPosition(this.getMostRightNodeX() + 150, startNode.y);
@@ -319,8 +349,7 @@ export class WorkflowDiagram {
    * Links all nodes that in diagram
    */
   linkAllNodes() {
-
-    const {edges} = this.getGraphState(this.definition);
+    const { edges } = this.getGraphState(this.definition);
 
     edges.forEach(edge => {
       if (edge.from !== "start" && edge.to !== "final") {
@@ -328,18 +357,14 @@ export class WorkflowDiagram {
           case "simple": {
             const fromNode = this.getMatchingNode(edge.from);
             const toNode = this.getMatchingNode(edge.to);
-            this.diagramModel.addLink(
-              this.linkNodes(fromNode, toNode)
-            );
+            this.diagramModel.addLink(this.linkNodes(fromNode, toNode));
             break;
           }
           case "FORK": {
             const fromNode = this.getMatchingNode(edge.from);
             const toNode = this.getMatchingNode(edge.to);
 
-            this.diagramModel.addLink(
-              this.linkNodes(fromNode, toNode)
-            );
+            this.diagramModel.addLink(this.linkNodes(fromNode, toNode));
             break;
           }
           case "decision": {
@@ -348,7 +373,7 @@ export class WorkflowDiagram {
             let whichPort = "failPort";
 
             if (!_.isEmpty(fromNode.ports.failPort.links)) {
-              whichPort = "neutralPort"
+              whichPort = "neutralPort";
             }
             this.diagramModel.addLink(
               this.linkNodes(fromNode, toNode, whichPort)
@@ -699,7 +724,7 @@ export class WorkflowDiagram {
 
           subworkflowDiagram.createDiagram();
 
-          const {edges} = this.getGraphState(res.result);
+          const { edges } = this.getGraphState(res.result);
           const firstNode = subworkflowDiagram.getMatchingNode(edges[0].to);
           const lastNodes = [];
 
@@ -707,7 +732,7 @@ export class WorkflowDiagram {
           if (_.last(res.result.tasks).type === "DECISION") {
             edges.forEach(edge => {
               if (edge.to === "final") {
-                lastNodes.push(subworkflowDiagram.getMatchingNode(edge.from))
+                lastNodes.push(subworkflowDiagram.getMatchingNode(edge.from));
               }
             });
           } else {
@@ -750,9 +775,9 @@ export class WorkflowDiagram {
           this.diagramEngine.repaintCanvas();
           this.renderDiagram();
         })
-      .catch(() => {
-        console.log(`Subworkflow ${name} doesn't exit.`);
-      });
+        .catch(() => {
+          console.log(`Subworkflow ${name} doesn't exit.`);
+        });
     });
   }
 }

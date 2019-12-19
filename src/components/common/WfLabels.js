@@ -13,8 +13,7 @@ const WfLabels = props => {
       className="wfLabel"
       onClick={e => {
         e.stopPropagation();
-        if (props.search)
-            props.search();
+        if (props.search) props.search();
       }}
     >
       {props.label}

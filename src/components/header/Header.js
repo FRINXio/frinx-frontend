@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./Header.css";
-import logo from "./logo.png";
+import logo from "./logo-min.png";
 import { Navbar, Nav, Badge } from "react-bootstrap";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

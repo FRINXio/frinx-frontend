@@ -19,7 +19,7 @@ export class DefaultNodeModel extends NodeModel {
     super.extras = { inputs: inputs };
 
     this.addInPort("In");
-    this.addOutPort("Out")
+    this.addOutPort("Out");
   }
 
   addInPort(label: string): DefaultPortModel {

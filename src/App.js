@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import Dashboard from "./components/dashboard/Dashboard";
-import { Redirect, Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch, withRouter } from "react-router-dom";
 import List from "./components/uniconfig/deviceTable/List";
 import DeviceView from "./components/uniconfig/deviceView/DeviceView";
 import Header from "./components/header/Header";
@@ -20,6 +20,14 @@ class App extends Component {
     if (this.props.isAuthEnabled) {
       this.props.onTryAutoSignup();
     }
+
+    this.unlisten = this.props.history.listen((location, action) => {
+      console.log("You changed the page to: ", location.pathname);
+    });
+  }
+
+  componentWillUnmount() {
+    this.unlisten();
   }
 
   render() {
@@ -80,15 +88,19 @@ class App extends Component {
       );
     }
 
+    const isBuilderActive = () => {
+      return this.props.location.pathname.includes("/workflows/builder");
+    };
+
     return (
       <div className="App">
-        {this.props.isAuthEnabled ? (
+        {isBuilderActive() ? null : this.props.isAuthEnabled ? (
           this.props.isAuthenticated ? (
             <Header email={this.props.userEmail} />
-          ) : null
-        ) : (
-          <Header email="Default user" />
-        )}
+          ) : (
+            <Header email="Default user" />
+          )
+        ) : null}
         {routes}
       </div>
     );
@@ -112,4 +124,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(App);
+)(withRouter(App));
