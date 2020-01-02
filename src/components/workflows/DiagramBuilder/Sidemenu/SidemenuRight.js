@@ -57,6 +57,19 @@ const systemTasks = type => {
         startDelay: 0
       };
     }
+    case "terminate": {
+      return {
+        name: "TERMINATE_TASK",
+        taskReferenceName: "terminateTaskRef_" + hash(),
+        inputParameters: {
+          terminationStatus: "COMPLETED",
+          workflowOutput: "Expected workflow output"
+        },
+        type: "TERMINATE",
+        startDelay: 0,
+        optional: false
+      };
+    }
     default:
       break;
   }
@@ -83,6 +96,10 @@ const icons = task => {
     case "join":
       return (
         <div className="join-icon">{task.substring(0, 1).toUpperCase()}</div>
+      );
+    case "terminate":
+      return (
+        <div className="lambda-icon">{task.substring(0, 1).toUpperCase()}</div>
       );
     case "decision":
       return (

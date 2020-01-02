@@ -24,7 +24,8 @@ const nodeColors = {
   subWorkflow: "rgb(34,144,255)",
   simpleTask: "rgb(134,210,255)",
   systemTask: "rgb(11,60,139)",
-  lambdaTask: "rgb(240,219,79)"
+  lambdaTask: "rgb(240,219,79)",
+  terminateTask: "rgb(255,30,0)"
 };
 
 export class WorkflowDiagram {
@@ -196,6 +197,9 @@ export class WorkflowDiagram {
       case "lambda":
         node = this.placeLambdaNode(task, points.x, points.y);
         break;
+      case "terminate":
+        node = this.placeTerminateNode(task, points.x, points.y);
+        break;
       default:
         break;
     }
@@ -313,6 +317,12 @@ export class WorkflowDiagram {
 
   placeLambdaNode = (task, x, y) => {
     let node = new DefaultNodeModel(task.name, nodeColors.lambdaTask, task);
+    node.setPosition(x, y);
+    return node;
+  };
+
+  placeTerminateNode = (task, x, y) => {
+    let node = new DefaultNodeModel(task.name, nodeColors.terminateTask, task);
     node.setPosition(x, y);
     return node;
   };
@@ -600,6 +610,12 @@ export class WorkflowDiagram {
       case "LAMBDA": {
         const { x, y } = this.calculatePosition(branchX, branchY);
         const node = this.placeLambdaNode(task, x, y);
+        this.diagramModel.addNode(node);
+        break;
+      }
+      case "TERMINATE": {
+        const { x, y } = this.calculatePosition(branchX, branchY);
+        const node = this.placeTerminateNode(task, x, y);
         this.diagramModel.addNode(node);
         break;
       }

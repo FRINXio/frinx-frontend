@@ -24,7 +24,7 @@ const finalWorkflowTemplate = {
 
 const initialState = {
   workflows: [],
-  functional: ["start", "end", "fork", "join", "lambda", "decision"],
+  functional: ["start", "end", "fork", "join", "lambda", "decision", "terminate"],
   originalWorkflows: [],
   query: "",
   workflowNameLock: false,
