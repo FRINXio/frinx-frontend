@@ -9,7 +9,7 @@ export class CircleEndNodeModel extends NodeModel {
   ports: { [s: string]: CircleEndPortModel };
 
   constructor(name: string = "Untitled", color: string = "rgb(0,192,255)") {
-    super("end");
+    super("end", "end");
     this.name = name;
     this.color = color;
 

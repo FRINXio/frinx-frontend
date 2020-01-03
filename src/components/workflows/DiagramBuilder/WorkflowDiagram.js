@@ -204,7 +204,10 @@ export class WorkflowDiagram {
         break;
     }
 
-    diagramModel.addNode(node);
+    if (node) {
+      diagramModel.addNode(node);
+    }
+
     diagramEngine.repaintCanvas();
   }
 
@@ -276,12 +279,18 @@ export class WorkflowDiagram {
   }
 
   placeStartNode(x, y) {
+    if (this.diagramModel.getNode("start")) {
+      return null;
+    }
     const node = new CircleStartNodeModel("Start");
     node.setPosition(x, y);
     return node;
   }
 
   placeEndNode(x, y) {
+    if (this.diagramModel.getNode("end")) {
+      return null;
+    }
     const node = new CircleEndNodeModel("End");
     node.setPosition(x, y);
     return node;

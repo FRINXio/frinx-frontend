@@ -30,7 +30,7 @@ const favorites = props => {
   return props.workflows
     .map((wf, i) => {
       let wfObject = sub_workflow(wf);
-      if (wf.description.includes("FAVOURITE")) {
+      if (wf.description && wf.description.includes("FAVOURITE")) {
         return (
           <SideMenuItem
             key={`wf${i}`}
@@ -72,7 +72,7 @@ const custom = (props, custom) => {
   return props.workflows
     .map((wf, i) => {
       let wfObject = sub_workflow(wf);
-      if (wf.description.includes(custom)) {
+      if (wf.description && wf.description.includes(custom)) {
         return (
           <SideMenuItem
             key={`wf${i}`}
