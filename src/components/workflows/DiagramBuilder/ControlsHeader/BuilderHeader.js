@@ -79,13 +79,13 @@ const ControlsButton = props => (
           basic
         />
         <Popup
-          trigger={<Button onClick={props.openFileUpload} icon="upload" />}
+          trigger={<Button onClick={props.openFileUpload} icon="download" />}
           header="Import"
           content="Import workflow on canvas (must be in valid JSON format)."
           basic
         />
         <Popup
-          trigger={<Button onClick={props.saveFile} icon="download" />}
+          trigger={<Button onClick={props.saveFile} icon="upload" />}
           header="Export"
           content="Export and download workflow in JSON format."
           basic
@@ -177,7 +177,7 @@ const ControlsButton = props => (
           trigger={
             <Button
               onClick={props.setLocked}
-              icon={props.workflowDiagram.isLocked() ? "lock" : "unlock"}
+              icon={props.workflowDiagram.isLocked() ? <Icon className="lock" style={{color: "red"}}/>  : "unlock"}
             />
           }
           header={
