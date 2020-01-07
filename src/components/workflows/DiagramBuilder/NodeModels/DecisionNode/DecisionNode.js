@@ -44,7 +44,7 @@ export class DecisionNode extends React.Component {
             __html:
               `
           <g id="Layer_1">
-            <polygon fill="${this.props.node.color}" stroke="#000000" stroke-width="3" stroke-miterlimit="10" points="10,` +
+            <polygon fill="${this.props.node.color}" points="10,` +
               this.state.size / 2 +
               ` ` +
               this.state.size / 2 +
@@ -58,10 +58,17 @@ export class DecisionNode extends React.Component {
               (this.state.size - 10) +
               ` "/>
           </g>
-           <g id="Layer_2">
-          </g>
         `
           }}
+        />
+
+        <div className="srd-node-glow"
+             style={{
+               position: "absolute",
+               zIndex: -1,
+               left: 50,
+               top: 50
+             }}
         />
 
         <div

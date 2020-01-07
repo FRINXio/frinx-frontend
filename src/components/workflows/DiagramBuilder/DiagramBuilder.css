@@ -89,8 +89,12 @@
     pointer-events: all
 }
 
-.srd-node--selected > * {
-    border-color: #ffffff !important
+.srd-node--selected .srd-node-glow {
+    box-shadow: 0 0 30px 20px #ffffff;
+}
+
+.srd-node--selected > .srd-default-node, .srd-node--selected > .srd-circle-node {
+    box-shadow: 0 0 40px 0 rgba(255, 255, 255, 0.61);
 }
 
 .srd-port {
@@ -100,11 +104,10 @@
 }
 
 .srd-port:hover, .srd-port.selected {
-    background: #c0ff00
+    background: #ffffff
 }
 
 .srd-circle-node {
-    border: solid 3px black;
     border-radius: 100%;
 }
 
@@ -113,7 +116,6 @@
     border-radius: 5px;
     font-family: sans-serif;
     color: white;
-    border: solid 2px black;
     overflow: visible;
     font-size: 11px
 }
