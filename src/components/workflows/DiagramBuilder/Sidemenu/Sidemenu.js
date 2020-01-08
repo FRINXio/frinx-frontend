@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   Divider,
+  Dropdown,
   Grid,
   Icon,
   Input,
@@ -180,6 +181,10 @@ const Sidemenu = props => {
     );
   };
 
+  const handleLabelChange = (e, { searchQuery, value }) => {
+    props.updateQuery(null, value)
+  };
+
   return (
     <div style={{ zIndex: 11 }}>
       <Sidebar
@@ -259,11 +264,38 @@ const Sidemenu = props => {
           <h3>{open}</h3>
           <Input
             fluid
-            onChange={e => props.updateQuery(e.target.value)}
+            onChange={e => props.updateQuery(e.target.value, null)}
             icon="search"
             placeholder="Search..."
           />
-          <small>Drag & drop workflows on canvas</small>
+          <br />
+          <Dropdown
+            placeholder="Labels"
+            fluid
+            multiple
+            search
+            selection
+            onChange={handleLabelChange}
+            options={[
+              ...new Set(
+                props.workflows
+                  .map(wf => {
+                    return wf.description
+                      ? wf.description
+                          .split("-")
+                          .pop()
+                          .replace(/\s/g, "")
+                          .split(",")
+                      : null;
+                  })
+                  .flat()
+                  .filter(item => item !== null)
+              )
+            ].map((label, i) => {
+              return { key: i, text: label, value: label };
+            })}
+          />
+          <small>Combine search and labels to find workflows</small>
         </div>
         <Divider horizontal section>
           {content.length} results

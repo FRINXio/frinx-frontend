@@ -4,7 +4,7 @@ import {
   SHOW_CUSTOM_ALERT,
   STORE_WORKFLOW_ID,
   STORE_WORKFLOWS,
-  SWITCH_SMART_ROUTING,
+  SWITCH_SMART_ROUTING, UPDATE_BUILDER_LABELS,
   UPDATE_BUILDER_QUERY,
   UPDATE_FINAL_WORKFLOW,
   UPDATE_WORKFLOWS
@@ -27,6 +27,7 @@ const initialState = {
   functional: ["start", "end", "fork", "join", "lambda", "decision", "terminate"],
   originalWorkflows: [],
   query: "",
+  labels: [],
   workflowNameLock: false,
   switchSmartRouting: false,
   executedWfId: null,
@@ -53,6 +54,10 @@ const reducer = (state = initialState, action) => {
     case UPDATE_BUILDER_QUERY: {
       let { query } = action;
       return { ...state, query };
+    }
+    case UPDATE_BUILDER_LABELS: {
+      let { labels } = action;
+      return { ...state, labels };
     }
     case STORE_WORKFLOWS: {
       const { originalWorkflows, workflows } = action;

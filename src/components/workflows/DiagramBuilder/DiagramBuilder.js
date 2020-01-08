@@ -533,7 +533,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(builderActions.updateFinalWorkflow(finalWorkflow)),
     resetToDefaultWorkflow: () =>
       dispatch(builderActions.resetToDefaultWorkflow()),
-    updateQuery: query => dispatch(builderActions.requestUpdateByQuery(query)),
+    updateQuery: (query, labels) => dispatch(builderActions.requestUpdateByQuery(query, labels)),
     showCustomAlert: (show, variant, msg) =>
       dispatch(builderActions.showCustomAlert(show, variant, msg)),
     lockWorkflowName: () => dispatch(builderActions.lockWorkflowName())

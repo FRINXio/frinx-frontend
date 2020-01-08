@@ -1,5 +1,8 @@
+import * as _ from "lodash";
+
 export const STORE_WORKFLOWS = "STORE_WORKFLOWS";
 export const UPDATE_BUILDER_QUERY = "UPDATE_BUILDER_QUERY";
+export const UPDATE_BUILDER_LABELS = "UPDATE_BUILDER_LABELS";
 export const UPDATE_WORKFLOWS = "UPDATE_WORKFLOWS";
 export const UPDATE_FINAL_WORKFLOW = "UPDATE_FINAL_WORKFLOW";
 export const LOCK_WORKFLOW_NAME = "LOCK_WORKFLOW_NAME";
@@ -18,6 +21,10 @@ export const storeWorkflows = originalWorkflows => {
 
 export const updateQuery = query => {
   return { type: UPDATE_BUILDER_QUERY, query };
+};
+
+export const updateLabels = labels => {
+  return { type: UPDATE_BUILDER_LABELS, labels };
 };
 
 export const showCustomAlert = (show, variant = "danger", msg) => {
@@ -48,29 +55,62 @@ export const updateFinalWorkflow = finalWorkflow => {
   return { type: UPDATE_FINAL_WORKFLOW, finalWorkflow };
 };
 
-export const requestUpdateByQuery = query => {
+export const requestUpdateByQuery = (queryIn, labelsIn) => {
   return (dispatch, getState) => {
-    dispatch(updateQuery(query));
-
-    let { originalWorkflows } = getState().buildReducer;
+    
+    let { originalWorkflows, query, labels } = getState().buildReducer;
+    console.log(query, labels);
+    let withLabels = [];
     let toBeUpdated = [];
-    query = query.toUpperCase();
 
-    if (query !== "") {
-      for (let i = 0; i < originalWorkflows.length; i++) {
+    if (queryIn === null) {
+      queryIn = query;
+    }
+    if (labelsIn === null) {
+      labelsIn = labels;
+    }
+
+    dispatch(updateQuery(queryIn));
+    dispatch(updateLabels(labelsIn));
+
+    console.log(queryIn, labelsIn)
+
+    // label filter
+    if (labelsIn && labelsIn.length > 0) {
+      originalWorkflows.forEach(wf => {
+        if (wf.description) {
+          let wfLabels = wf.description
+            .split("-")
+            .pop()
+            .replace(/\s/g, "")
+            .split(",");
+
+          if (_.intersection(wfLabels, labelsIn).length === labelsIn.length) {
+            withLabels.push(wf);
+          }
+        }
+      });
+    } else {
+      withLabels = originalWorkflows;
+    }
+
+    // query filter
+    if (queryIn && queryIn !== "") {
+      withLabels.forEach(wf => {
         if (
-          originalWorkflows[i]["name"] &&
-          originalWorkflows[i]["name"]
+          wf["name"] &&
+          wf["name"]
             .toString()
             .toUpperCase()
-            .indexOf(query) !== -1
+            .indexOf(queryIn.toUpperCase()) !== -1
         ) {
-          toBeUpdated.push(originalWorkflows[i]);
+          toBeUpdated.push(wf);
         }
-      }
-      dispatch(updateWorkflows(toBeUpdated));
+      });
     } else {
-      dispatch(updateWorkflows(originalWorkflows));
+      toBeUpdated = withLabels;
     }
+
+    dispatch(updateWorkflows(toBeUpdated));
   };
 };

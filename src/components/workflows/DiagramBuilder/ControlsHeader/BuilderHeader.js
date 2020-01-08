@@ -254,7 +254,6 @@ const BuilderHeader = props => {
     document.addEventListener("click", handleClickInside, true);
     return () => {
       document.removeEventListener("click", handleClickInside, true);
-      props.updateQuery("");
     };
   }, []);
 
