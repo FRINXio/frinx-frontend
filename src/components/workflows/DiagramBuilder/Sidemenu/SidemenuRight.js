@@ -70,6 +70,26 @@ const systemTasks = type => {
         optional: false
       };
     }
+    case "http": {
+      return {
+        name: "HTTP_REQUEST_TASK",
+        taskReferenceName: "httpRequestTaskRef_" + hash(),
+        inputParameters: {
+          http_request: {
+            uri: "${workflow.input.uri}",
+            method: "GET",
+            contentType: "application/json",
+            accept: "application/json",
+            headers: "${workflow.input.headers}",
+            connectionTimeOut: "3600",
+            readTimeOut: "3600"
+          }
+        },
+        type: "HTTP",
+        startDelay: 0,
+        optional: false
+      };
+    }
     default:
       break;
   }
@@ -116,6 +136,10 @@ const icons = task => {
           </span>
         </div>
       );
+    case "http":
+      return (
+        <div className="lambda-icon">{task.substring(0, 1).toUpperCase()}</div>
+      );
     default:
       break;
   }
@@ -129,7 +153,7 @@ const functional = props => {
         title={task.toUpperCase()}
         id={`functionalNode${i}`}
         draggable={true}
-        style={{cursor: "grab"}}
+        style={{ cursor: "grab" }}
         onDragStart={e => {
           e.dataTransfer.setData(
             "storm-diagram-node",

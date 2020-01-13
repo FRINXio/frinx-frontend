@@ -4,7 +4,8 @@ import {
   SHOW_CUSTOM_ALERT,
   STORE_WORKFLOW_ID,
   STORE_WORKFLOWS,
-  SWITCH_SMART_ROUTING, UPDATE_BUILDER_LABELS,
+  SWITCH_SMART_ROUTING,
+  UPDATE_BUILDER_LABELS,
   UPDATE_BUILDER_QUERY,
   UPDATE_FINAL_WORKFLOW,
   UPDATE_WORKFLOWS
@@ -24,7 +25,7 @@ const finalWorkflowTemplate = {
 
 const initialState = {
   workflows: [],
-  functional: ["start", "end", "fork", "join", "lambda", "decision", "terminate"],
+  functional: ["start", "end", "fork", "join", "lambda", "decision", "terminate", "http"],
   originalWorkflows: [],
   query: "",
   labels: [],

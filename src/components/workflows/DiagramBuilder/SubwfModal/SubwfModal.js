@@ -115,6 +115,11 @@ class SubwfModal extends Component {
           } catch (e) {
             console.log(e);
           }
+        } else if (typeof value === "object" && entry[0] === "method") {
+          value = value.value;
+          if (value === "PUT" || value === "POST")
+            inputObject = { ...inputObject, body: "${workflow.input.body}" };
+          else delete inputObject["body"];
         }
       }
 
