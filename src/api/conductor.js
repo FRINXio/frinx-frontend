@@ -23,6 +23,40 @@ router.get("/metadata/taskdef", async (req, res, next) => {
   }
 });
 
+router.post("/metadata/taskdef", async (req, res, next) => {
+  try {
+    const result = await http.post(baseURLMeta + "taskdefs", req.body);
+    res.status(200).send(result);
+  } catch (err) {
+    res.status(400).send(err.response.body);
+    next(err);
+  }
+});
+
+router.get("/metadata/taskdef/:name", async (req, res, next) => {
+  try {
+    const result = await http.get(
+      baseURLMeta + "taskdefs/" + req.params.name,
+      req.token
+    );
+    res.status(200).send({ result });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete("/metadata/taskdef/:name", async (req, res, next) => {
+  try {
+    const result = await http.delete(
+      baseURLMeta + "taskdefs/" + req.params.name,
+      req.token
+    );
+    res.status(200).send({ result });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.get("/metadata/workflow", async (req, res, next) => {
   try {
     const result = await http.get(baseURLMeta + "workflow", req.token);
