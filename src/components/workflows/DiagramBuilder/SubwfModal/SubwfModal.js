@@ -82,7 +82,7 @@ class SubwfModal extends Component {
 
   handleInput(value, key, entry) {
     let inputs = { ...this.state.inputs };
-    let objectKeywords = ["template", "body"];
+    let objectKeywords = ["template", "body", "headers"];
 
     if (key[0] === "inputParameters") {
       let inputObject = inputs[key[0]];
@@ -91,6 +91,7 @@ class SubwfModal extends Component {
         if (objectKeywords.find(e => entry[0].includes(e))) {
           try {
             value = JSON.parse(value);
+            value = {value}
           } catch (e) {
             console.log(e);
           }
