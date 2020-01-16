@@ -91,7 +91,6 @@ class SubwfModal extends Component {
         if (objectKeywords.find(e => entry[0].includes(e))) {
           try {
             value = JSON.parse(value);
-            value = {value}
           } catch (e) {
             console.log(e);
           }
