@@ -18,6 +18,17 @@ export const getWfInputsRegex = wf => {
   return inputParameters;
 };
 
+export const getTaskInputsRegex = t => {
+  let inputParameters = {};
+  if (t.inputKeys) {
+    t.inputKeys.forEach(el => {
+      inputParameters[el] = "${workflow.input." + el + "}";
+    });
+  }
+
+  return inputParameters;
+};
+
 export const hash = () =>
   Math.random()
     .toString(36)

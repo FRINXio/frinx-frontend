@@ -1,12 +1,12 @@
 import {
-  LOCK_WORKFLOW_NAME,
+  LOCK_WORKFLOW_NAME, OPEN_CARD,
   RESET_TO_DEFAULT_WORKFLOW,
-  SHOW_CUSTOM_ALERT,
+  SHOW_CUSTOM_ALERT, STORE_TASKS,
   STORE_WORKFLOW_ID,
   STORE_WORKFLOWS,
   SWITCH_SMART_ROUTING, UPDATE_BUILDER_LABELS,
   UPDATE_BUILDER_QUERY,
-  UPDATE_FINAL_WORKFLOW,
+  UPDATE_FINAL_WORKFLOW, UPDATE_TASKS,
   UPDATE_WORKFLOWS
 } from "../actions/builder";
 
@@ -24,10 +24,13 @@ const finalWorkflowTemplate = {
 
 const initialState = {
   workflows: [],
-  functional: ["start", "end", "fork", "join", "lambda", "decision", "terminate"],
+  tasks: [],
   originalWorkflows: [],
+  originalTasks: [],
   query: "",
   labels: [],
+  openCard: null,
+  functional: ["start", "end", "fork", "join", "lambda", "decision", "terminate"],
   workflowNameLock: false,
   switchSmartRouting: false,
   executedWfId: null,
@@ -63,9 +66,21 @@ const reducer = (state = initialState, action) => {
       const { originalWorkflows, workflows } = action;
       return { ...state, originalWorkflows, workflows };
     }
+    case STORE_TASKS: {
+      const { originalTasks, tasks } = action;
+      return { ...state, originalTasks, tasks };
+    }
+    case OPEN_CARD: {
+      const { openCard } = action;
+      return { ...state, openCard };
+    }
     case UPDATE_WORKFLOWS: {
       const { workflows } = action;
       return { ...state, workflows };
+    }
+    case UPDATE_TASKS: {
+      const { tasks } = action;
+      return { ...state, tasks };
     }
     case RESET_TO_DEFAULT_WORKFLOW: {
       return {

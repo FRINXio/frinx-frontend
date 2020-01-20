@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 
 export const STORE_WORKFLOWS = "STORE_WORKFLOWS";
+export const STORE_TASKS = "STORE_TASKS";
 export const UPDATE_BUILDER_QUERY = "UPDATE_BUILDER_QUERY";
 export const UPDATE_BUILDER_LABELS = "UPDATE_BUILDER_LABELS";
 export const UPDATE_WORKFLOWS = "UPDATE_WORKFLOWS";
@@ -10,12 +11,36 @@ export const SWITCH_SMART_ROUTING = "SWITCH_SMART_ROUTING";
 export const RESET_TO_DEFAULT_WORKFLOW = "RESET_TO_DEFAULT_WORKFLOW";
 export const STORE_WORKFLOW_ID = "STORE_WORKFLOW_ID";
 export const SHOW_CUSTOM_ALERT = "SHOW_CUSTOM_ALERT";
+export const OPEN_CARD = "OPEN_CARD";
+export const UPDATE_TASKS = "UPDATE_TASKS";
 
 export const storeWorkflows = originalWorkflows => {
   return {
     type: STORE_WORKFLOWS,
     originalWorkflows,
     workflows: originalWorkflows
+  };
+};
+
+export const storeTasks = originalTasks => {
+  return {
+    type: STORE_TASKS,
+    originalTasks,
+    tasks: originalTasks
+  };
+};
+
+export const openCard = which => {
+  return dispatch => {
+    dispatch(changeOpenedCard(which));
+    dispatch(requestUpdateByQuery(null, null));
+  };
+};
+
+export const changeOpenedCard = which => {
+  return {
+    type: OPEN_CARD,
+    openCard: which
   };
 };
 
@@ -51,15 +76,24 @@ export const updateWorkflows = workflows => {
   return { type: UPDATE_WORKFLOWS, workflows };
 };
 
+export const updateTasks = tasks => {
+  return { type: UPDATE_TASKS, tasks };
+};
+
 export const updateFinalWorkflow = finalWorkflow => {
   return { type: UPDATE_FINAL_WORKFLOW, finalWorkflow };
 };
 
 export const requestUpdateByQuery = (queryIn, labelsIn) => {
   return (dispatch, getState) => {
-    
-    let { originalWorkflows, query, labels } = getState().buildReducer;
-    console.log(query, labels);
+    let {
+      originalTasks,
+      originalWorkflows,
+      openCard,
+      query,
+      labels
+    } = getState().buildReducer;
+    let data = openCard === "Tasks" ? originalTasks : originalWorkflows;
     let withLabels = [];
     let toBeUpdated = [];
 
@@ -73,11 +107,9 @@ export const requestUpdateByQuery = (queryIn, labelsIn) => {
     dispatch(updateQuery(queryIn));
     dispatch(updateLabels(labelsIn));
 
-    console.log(queryIn, labelsIn)
-
     // label filter
     if (labelsIn && labelsIn.length > 0) {
-      originalWorkflows.forEach(wf => {
+      data.forEach(wf => {
         if (wf.description) {
           let wfLabels = wf.description
             .split("-")
@@ -91,7 +123,7 @@ export const requestUpdateByQuery = (queryIn, labelsIn) => {
         }
       });
     } else {
-      withLabels = originalWorkflows;
+      withLabels = data;
     }
 
     // query filter
@@ -111,6 +143,10 @@ export const requestUpdateByQuery = (queryIn, labelsIn) => {
       toBeUpdated = withLabels;
     }
 
-    dispatch(updateWorkflows(toBeUpdated));
+    if (openCard === "Tasks") {
+      dispatch(updateTasks(toBeUpdated));
+    } else {
+      dispatch(updateWorkflows(toBeUpdated));
+    }
   };
 };

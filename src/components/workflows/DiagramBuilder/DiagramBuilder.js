@@ -77,6 +77,12 @@ class DiagramBuilder extends Component {
       );
     });
 
+    http.get("/api/conductor/metadata/taskdefs").then(res => {
+      this.props.storeTasks(
+        res.result.sort((a, b) => a.name.localeCompare(b.name)) || []
+      );
+    });
+
     if (!_.isEmpty(this.props.match.params)) {
       this.createExistingWorkflow();
     } else {
@@ -485,7 +491,9 @@ class DiagramBuilder extends Component {
 
             <Sidemenu
               workflows={this.props.workflows}
+              tasks={this.props.tasks}
               updateQuery={this.props.updateQuery}
+              openCard={this.props.openCard}
             />
             <SidemenuRight functional={this.props.functional} />
 
@@ -518,6 +526,7 @@ class DiagramBuilder extends Component {
 const mapStateToProps = state => {
   return {
     workflows: state.buildReducer.workflows,
+    tasks: state.buildReducer.tasks,
     functional: state.buildReducer.functional,
     finalWorkflow: state.buildReducer.finalWorkflow,
     customAlert: state.buildReducer.customAlert,
@@ -529,11 +538,13 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     storeWorkflows: wfList => dispatch(builderActions.storeWorkflows(wfList)),
+    storeTasks: taskList => dispatch(builderActions.storeTasks(taskList)),
     updateFinalWorkflow: finalWorkflow =>
       dispatch(builderActions.updateFinalWorkflow(finalWorkflow)),
     resetToDefaultWorkflow: () =>
       dispatch(builderActions.resetToDefaultWorkflow()),
     updateQuery: (query, labels) => dispatch(builderActions.requestUpdateByQuery(query, labels)),
+    openCard: which => dispatch(builderActions.openCard(which)),
     showCustomAlert: (show, variant, msg) =>
       dispatch(builderActions.showCustomAlert(show, variant, msg)),
     lockWorkflowName: () => dispatch(builderActions.lockWorkflowName())
