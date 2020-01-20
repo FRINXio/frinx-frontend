@@ -80,7 +80,7 @@ const systemTasks = type => {
             method: "GET",
             contentType: "application/json",
             accept: "application/json",
-            headers: "{\n\t${workflow.input.headers}\n}",
+            headers: {},
             connectionTimeOut: "3600",
             readTimeOut: "3600"
           }

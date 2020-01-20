@@ -123,7 +123,64 @@ const InputsTab = props => {
     );
   };
 
-  let textFieldKeywords = ["template", "uri", "body", "headers"];
+  const handleKeyField = (entry, item, i, textFieldParams) => {
+    textFieldParams.push(
+      <Col sm={12} key={`colTf-${entry[0]}`}>
+        <Form.Label>
+          {entry[0]}&nbsp;&nbsp;
+          <Button onClick={props.addRemoveHeader.bind(this, true)}>
+            <i className="fas fa-plus" />
+          </Button>
+        </Form.Label>
+        {Object.entries(entry[1]).map((header, i) => {
+          return (
+            <Row key={`header-${i}`}>
+              <Col sm={6}>
+                <Form.Group controlId={`header-key-${i}`}>
+                  {i === 0 ? (
+                    <Form.Label className="text-muted">Key</Form.Label>
+                  ) : null}
+                  <Form.Control
+                    style={{ marginBottom: "2px" }}
+                    type="input"
+                    onChange={e =>
+                      props.handleInput(e.target.value, item, entry, i, true)
+                    }
+                    value={header[0]}
+                  />
+                </Form.Group>
+              </Col>
+              <Col sm={5}>
+                <Form.Group controlId={`header-value-${i}`}>
+                  {i === 0 ? (
+                    <Form.Label className="text-muted">Value</Form.Label>
+                  ) : null}
+                  <Form.Control
+                    style={{ marginBottom: "2px" }}
+                    type="input"
+                    onChange={e =>
+                      props.handleInput(e.target.value, item, entry, i, false)
+                    }
+                    value={header[1]}
+                  />
+                </Form.Group>
+              </Col>
+              <Col sm={1}>
+                {i === 0 ? (
+                  <Form.Label className="text-muted">Delete</Form.Label>
+                ) : null}
+                <Button onClick={props.addRemoveHeader.bind(this, false, i)}>
+                  <i className="fas fa-minus" />
+                </Button>
+              </Col>
+            </Row>
+          );
+        })}
+      </Col>
+    );
+  };
+
+  let textFieldKeywords = ["template", "uri", "body"];
   let codeFieldKeywords = ["scriptExpression"];
   let selectFieldKeywords = ["method"];
   let textFieldParams = [];
@@ -194,6 +251,13 @@ const InputsTab = props => {
                       )
                     ) {
                       return handleTextField(
+                        innerEntry,
+                        entry,
+                        i,
+                        textFieldParams
+                      );
+                    } else if (innerEntry[0] === "headers") {
+                      return handleKeyField(
                         innerEntry,
                         entry,
                         i,
