@@ -26,6 +26,7 @@ const GeneralTab = props => {
         </InputGroup.Prepend>
         <Form.Control
           type="input"
+          disabled={props.inputs["type"] === "SIMPLE"}
           onChange={e => props.handleInput(e.target.value, "name")}
           value={item}
         />
