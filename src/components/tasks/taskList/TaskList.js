@@ -4,12 +4,15 @@ import TaskDefinitions from "./TaskDefinitions/TaskDefinitions";
 import PollData from "./PollData/PollData";
 import { withRouter } from "react-router-dom";
 import AddTaskModal from "./AddTaskModal";
+import { taskDefinition } from "../../constants";
+const http = require("../../../server/HttpServerSide").HttpClient;
 
 class TaskList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      addTaskModal: false
+      addTaskModal: false,
+      taskBody: taskDefinition
     };
   }
 
@@ -28,16 +31,48 @@ class TaskList extends Component {
     this.props.history.push("/tasks/");
   }
 
+  handleInput(e, i) {
+    let taskBody = this.state.taskBody;
+    taskBody[Object.keys(taskBody)[i]] = e.target.value;
+    this.setState({
+      taskBody: taskBody
+    });
+  }
+
+  addTask() {
+    let taskBody = this.state.taskBody;
+    Object.keys(taskBody).forEach((key, i) => {
+      if (i >= 8) {
+        taskBody[key] = taskBody[key]
+          .replace(/ /g, "")
+          .split(",")
+          .filter(e => {
+            return e !== "";
+          });
+        taskBody[key] = [...new Set(taskBody[key])];
+      }
+    });
+    if (taskBody["name"] !== "") {
+      http.post("/api/conductor/metadata/taskdef", [taskBody]).then(() => {
+        this.setState({
+          taskBody: taskDefinition,
+          addTaskModal: !this.state.addTaskModal
+        });
+        this.refreshPage();
+      });
+    }
+  }
+
   render() {
-    let addTaskModal = this.state.addTaskModal ? (
-      <AddTaskModal
-        modalHandler={this.handleAddTaskModal.bind(this)}
-        refresh={this.refreshPage.bind(this)}
-      />
-    ) : null;
     return (
       <Container style={{ textAlign: "left", marginTop: "20px" }}>
-        {addTaskModal}
+        <AddTaskModal
+            modalHandler={this.handleAddTaskModal.bind(this)}
+            show={this.state.addTaskModal}
+            taskBody={this.state.taskBody}
+            handleInput={this.handleInput.bind(this)}
+            addTask={this.addTask.bind(this)}
+        />
         <h1 style={{ marginBottom: "20px" }}>
           <i style={{ color: "grey" }} className="fas fa-tasks" />
           &nbsp;&nbsp;Tasks

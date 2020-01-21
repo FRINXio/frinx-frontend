@@ -271,8 +271,10 @@ class TaskList extends Component {
       <TaskModal
         name={this.state.taskName}
         modalHandler={this.handleTaskModal.bind(this)}
+        show={this.state.taskModal}
       />
     ) : null;
+
     return (
       <div className="listPage">
         {taskModal}
