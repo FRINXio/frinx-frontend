@@ -11,7 +11,7 @@ import {
 } from "semantic-ui-react";
 
 import "./Sidemenu.css";
-import { getWfInputsRegex, hash } from "../builder-utils";
+import { getTaskInputsRegex, getWfInputsRegex, hash } from "../builder-utils";
 import SideMenuItem from "./SideMenuItem";
 
 const sub_workflow = wf => ({
@@ -23,6 +23,15 @@ const sub_workflow = wf => ({
     name: wf.name,
     version: wf.version
   },
+  optional: false,
+  startDelay: 0
+});
+
+const sub_task = t => ({
+  name: t.name,
+  taskReferenceName: t.name.toLowerCase().trim() + "_ref_" + hash(),
+  inputParameters: getTaskInputsRegex(t),
+  type: "SIMPLE",
   optional: false,
   startDelay: 0
 });
@@ -64,6 +73,26 @@ const workflows = props => {
           description: wf.hasOwnProperty("description") ? wf.description : ""
         }}
         name={wf.name}
+      />
+    );
+  });
+};
+
+const tasks = props => {
+  return props.tasks.map((task, i) => {
+    let wfObject = sub_task(task);
+    return (
+      <SideMenuItem
+        key={`wf${i}`}
+        model={{
+          type: "default",
+          wfObject,
+          name: task.name,
+          description: task.hasOwnProperty("description")
+            ? task.description
+            : ""
+        }}
+        name={task.name}
       />
     );
   });
@@ -133,6 +162,9 @@ const Sidemenu = props => {
       case "Favorites":
         setContent(favorites(props));
         break;
+      case "Tasks":
+        setContent(tasks(props));
+        break;
       default:
         setContent(custom(props, which));
         break;
@@ -145,6 +177,7 @@ const Sidemenu = props => {
       return setExpanded(false);
     }
     getContent(which);
+    props.openCard(which);
     setOpen(which);
     setExpanded(true);
   };
@@ -182,7 +215,7 @@ const Sidemenu = props => {
   };
 
   const handleLabelChange = (e, { searchQuery, value }) => {
-    props.updateQuery(null, value)
+    props.updateQuery(null, value);
   };
 
   return (
@@ -203,6 +236,14 @@ const Sidemenu = props => {
           onClick={() => handleOpen("Workflows")}
         >
           <Icon name="folder open" />
+        </Menu.Item>
+        <Menu.Item
+          as="a"
+          title="Tasks"
+          active={open === "Tasks"}
+          onClick={() => handleOpen("Tasks")}
+        >
+          <Icon name="tasks" />
         </Menu.Item>
         <Menu.Item
           as="a"
@@ -278,7 +319,8 @@ const Sidemenu = props => {
             onChange={handleLabelChange}
             options={[
               ...new Set(
-                props.workflows
+                [open === "Tasks" ? props.tasks : props.workflows]
+                  .flat()
                   .map(wf => {
                     return wf.description
                       ? wf.description
@@ -295,7 +337,10 @@ const Sidemenu = props => {
               return { key: i, text: label, value: label };
             })}
           />
-          <small>Combine search and labels to find workflows</small>
+          <small>
+            Combine search and labels to find{" "}
+            {open ? open.toLowerCase() : "workflows"}
+          </small>
         </div>
         <Divider horizontal section>
           {content.length} results

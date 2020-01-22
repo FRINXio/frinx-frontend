@@ -14,7 +14,7 @@ const baseURLWorkflow = baseURL + "workflow/";
 const baseURLMeta = baseURL + "metadata/";
 const baseURLTask = baseURL + "tasks/";
 
-router.get("/metadata/taskdef", async (req, res, next) => {
+router.get("/metadata/taskdefs", async (req, res, next) => {
   try {
     const result = await http.get(baseURLMeta + "taskdefs", req.token);
     res.status(200).send({ result });
