@@ -41,7 +41,7 @@ class TaskList extends Component {
   }
 
   componentDidMount() {
-    http.get("/api/conductor/metadata/taskdef").then(res => {
+    http.get("/api/conductor/metadata/taskdefs").then(res => {
       if (res.result) {
         let size = ~~(res.result.length / this.state.defaultPages);
         this.setState(
