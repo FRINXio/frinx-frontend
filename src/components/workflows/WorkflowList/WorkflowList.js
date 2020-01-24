@@ -15,15 +15,26 @@ const WorkflowList = props => {
 
   const importFiles = e => {
     const files = e.currentTarget.files;
+    const fileList = [];
+    let count = files.length;
+
     Object.keys(files).forEach(i => {
-      const file = files[i];
+      readFile(files[i]);
+    });
+
+    function readFile(file) {
       const reader = new FileReader();
       reader.onload = e => {
         let definition = JSON.parse(e.target.result);
-        http.put("/api/conductor/metadata", [definition]);
+        fileList.push(definition);
+        if (!--count) {
+          http.put("/api/conductor/metadata", fileList).then(() => {
+            window.location.reload();
+          })
+        }
       };
       reader.readAsBinaryString(file);
-    });
+    }
   };
 
   const exportFile = () => {
