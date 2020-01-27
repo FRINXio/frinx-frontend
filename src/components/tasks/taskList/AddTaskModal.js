@@ -1,38 +1,35 @@
-import React, { useState } from "react";
-import { Col, Row, Modal, Form, Button, Alert } from "react-bootstrap";
+import React from "react";
+import {
+  Col,
+  Row,
+  Modal,
+  Form,
+  Button,
+  OverlayTrigger,
+  Tooltip
+} from "react-bootstrap";
 
 const AddTaskModal = props => {
-  const [infoIn, setInfoIn] = useState(false);
-  const [infoOut, setInfoOut] = useState(false);
-
   const handleClose = () => {
     props.modalHandler();
   };
 
   const showInfo = i => {
     return (
-      <div>
+      <OverlayTrigger
+        key={`info${i}`}
+        placement="right"
+        overlay={
+          <Tooltip id={`tooltip-${i}`}>
+            Please use comma (",") to separate keys
+          </Tooltip>
+        }
+      >
         <i
           style={{ color: "rgba(0, 149, 255, 0.91)" }}
           className="clickable fas fa-info-circle"
-          onMouseEnter={() => {
-            i ? setInfoIn(true) : setInfoOut(true);
-          }}
-          onMouseLeave={() => {
-            i ? setInfoIn(false) : setInfoOut(false);
-          }}
         />
-        <Alert
-          variant="info"
-          className={
-            (i && infoIn) || (!i && infoOut)
-              ? "info fadeInInfo"
-              : "info fadeOutInfo"
-          }
-        >
-          Please use comma (",") to separate names
-        </Alert>
-      </div>
+      </OverlayTrigger>
     );
   };
 
@@ -49,12 +46,13 @@ const AddTaskModal = props => {
                 <Col sm={6} key={`col1-${i}`}>
                   <Form.Group>
                     <Form.Label>
-                      {item}
+                      {item}&nbsp;&nbsp;
                       {i >= 8 ? showInfo(i - 8) : null}
                     </Form.Label>
                     <Form.Control
                       type="input"
-                      onChange={e => props.handleInput(e, i)}
+                      name={Object.keys(props.taskBody)[i]}
+                      onChange={e => props.handleInput(e)}
                       placeholder="Enter the input"
                       value={
                         Object.values(props.taskBody)[i]

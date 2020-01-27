@@ -75,8 +75,8 @@ class TaskList extends Component {
         for (let y = 1; y < Object.values(rows[i]).length; y++) {
           if (
             Object.values(rows[i])[y] &&
-            Object.values(rows[i])[y]
-              .toString()
+            Object.values(rows[i])
+              [y].toString()
               .toUpperCase()
               .indexOf(query) !== -1
           ) {
@@ -134,9 +134,8 @@ class TaskList extends Component {
             <td
               className={
                 highlight
-                  ? this.calculateHighlight(i, "name") +
-                    " leftAligned clickable"
-                  : "leftAligned clickable"
+                  ? this.calculateHighlight(i, "name") + " clickable"
+                  : "clickable"
               }
               onClick={this.handleTaskModal.bind(this, dataset[i]["name"])}
             >
@@ -200,6 +199,7 @@ class TaskList extends Component {
             <td>
               <Button
                 variant="outline-danger noshadow"
+                style={{ padding: "1px 6px" }}
                 onClick={this.deleteTask.bind(this, dataset[i]["name"])}
               >
                 <i className="fas fa-trash-alt" />

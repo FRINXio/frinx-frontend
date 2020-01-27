@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import { Button, Container, Tab, Tabs } from "react-bootstrap";
 import TaskDefinitions from "./TaskDefinitions/TaskDefinitions";
 import PollData from "./PollData/PollData";
@@ -7,42 +7,27 @@ import AddTaskModal from "./AddTaskModal";
 import { taskDefinition } from "../../constants";
 const http = require("../../../server/HttpServerSide").HttpClient;
 
-class TaskList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      addTaskModal: false,
-      taskBody: taskDefinition
-    };
-  }
+const TaskList = props => {
+  const [addTaskModal, setAddTaskModal] = useState(false);
+  const [taskBody, setTaskBody] = useState(taskDefinition);
 
-  changeUrl(e) {
-    this.props.history.push("/tasks/" + e);
-  }
+  const changeUrl = e => {
+    props.history.push("/tasks/" + e);
+  };
 
-  handleAddTaskModal() {
-    this.setState({
-      addTaskModal: !this.state.addTaskModal
+  const handleAddTaskModal = () => {
+    setAddTaskModal(!addTaskModal);
+  };
+
+  const handleInput = e =>
+    setTaskBody({
+      ...taskBody,
+      [e.target.name]: e.target.value
     });
-  }
 
-  refreshPage() {
-    this.props.history.push("/");
-    this.props.history.push("/tasks/");
-  }
-
-  handleInput(e, i) {
-    let taskBody = this.state.taskBody;
-    taskBody[Object.keys(taskBody)[i]] = e.target.value;
-    this.setState({
-      taskBody: taskBody
-    });
-  }
-
-  addTask() {
-    let taskBody = this.state.taskBody;
+  const addTask = () => {
     Object.keys(taskBody).forEach((key, i) => {
-      if (i >= 8) {
+      if (key === "inputKeys" || key === "outputKeys") {
         taskBody[key] = taskBody[key]
           .replace(/ /g, "")
           .split(",")
@@ -54,52 +39,46 @@ class TaskList extends Component {
     });
     if (taskBody["name"] !== "") {
       http.post("/api/conductor/metadata/taskdef", [taskBody]).then(() => {
-        this.setState({
-          taskBody: taskDefinition,
-          addTaskModal: !this.state.addTaskModal
-        });
-        this.refreshPage();
+        window.location.reload();
       });
     }
-  }
+  };
 
-  render() {
-    return (
-      <Container style={{ textAlign: "left", marginTop: "20px" }}>
-        <AddTaskModal
-            modalHandler={this.handleAddTaskModal.bind(this)}
-            show={this.state.addTaskModal}
-            taskBody={this.state.taskBody}
-            handleInput={this.handleInput.bind(this)}
-            addTask={this.addTask.bind(this)}
-        />
-        <h1 style={{ marginBottom: "20px" }}>
-          <i style={{ color: "grey" }} className="fas fa-tasks" />
-          &nbsp;&nbsp;Tasks
-          <Button
-            variant="outline-primary"
-            style={{ marginLeft: "30px" }}
-            onClick={this.handleAddTaskModal.bind(this)}
-          >
-            <i className="fas fa-plus" />
-            &nbsp;&nbsp;New
-          </Button>
-        </h1>
-        <Tabs
-          onSelect={e => this.changeUrl(e)}
-          defaultActiveKey={this.props.match.params.type || "defs"}
-          style={{ marginBottom: "20px" }}
+  return (
+    <Container style={{ textAlign: "left", marginTop: "20px" }}>
+      <AddTaskModal
+        modalHandler={handleAddTaskModal.bind(this)}
+        show={addTaskModal}
+        taskBody={taskBody}
+        handleInput={handleInput.bind(this)}
+        addTask={addTask.bind(this)}
+      />
+      <h1 style={{ marginBottom: "20px" }}>
+        <i style={{ color: "grey" }} className="fas fa-tasks" />
+        &nbsp;&nbsp;Tasks
+        <Button
+          variant="outline-primary"
+          style={{ marginLeft: "30px" }}
+          onClick={handleAddTaskModal.bind(this)}
         >
-          <Tab eventKey="defs" title="Task Definitions">
-            <TaskDefinitions />
-          </Tab>
-          <Tab mountOnEnter eventKey="poll" title="Poll Data">
-            <PollData />
-          </Tab>
-        </Tabs>
-      </Container>
-    );
-  }
-}
+          <i className="fas fa-plus" />
+          &nbsp;&nbsp;New
+        </Button>
+      </h1>
+      <Tabs
+        onSelect={e => changeUrl(e)}
+        defaultActiveKey={props.match.params.type || "defs"}
+        style={{ marginBottom: "20px" }}
+      >
+        <Tab eventKey="defs" title="Task Definitions">
+          <TaskDefinitions />
+        </Tab>
+        <Tab mountOnEnter eventKey="poll" title="Poll Data">
+          <PollData />
+        </Tab>
+      </Tabs>
+    </Container>
+  );
+};
 
 export default withRouter(TaskList);

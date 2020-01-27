@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
-  Accordion, Button,
+  Accordion,
+  Button,
   Card,
   Col,
   Modal,
@@ -49,55 +50,6 @@ const TaskModal = props => {
     }
     return output;
   };
-
-  const headerInfo = () => (
-    <div className="headerInfo">
-      <Row>
-        <Col md="auto">
-          <div>
-            <b>Retry Count</b>
-            <br />
-            {response.retryCount}
-          </div>
-        </Col>
-        <Col md="auto">
-          <div>
-            <b>Timeout Seconds</b>
-            <br />
-            {response.timeoutSeconds}
-          </div>
-        </Col>
-        <Col md="auto">
-          <div>
-            <b>Timeout Policy</b>
-            <br />
-            {response.timeoutPolicy}
-          </div>
-        </Col>
-        <Col md="auto">
-          <div>
-            <b>Retry Logic</b>
-            <br />
-            {response.retryLogic}
-          </div>
-        </Col>
-        <Col md="auto">
-          <div>
-            <b>Retry Delay Seconds</b>
-            <br />
-            {response.retryDelaySeconds}
-          </div>
-        </Col>
-        <Col md="auto">
-          <div>
-            <b>Response Timeout Seconds</b>
-            <br />
-            {response.responseTimeoutSeconds}
-          </div>
-        </Col>
-      </Row>
-    </div>
-  );
 
   const iokeys = () => (
     <Row>
@@ -156,31 +108,20 @@ const TaskModal = props => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Accordion>
-          <Accordion.Toggle as={Card.Header}>
-            <b>{response.name ? response.name : null}</b>
-            &nbsp;&nbsp;
-            <b>
-              <p style={{ float: "right" }}>
-                Create time: {formatDate(response.createTime)}
-                &nbsp;&nbsp;
-              </p>
-            </b>
-          </Accordion.Toggle>
-          <Card.Body style={{ padding: "0px" }}>{headerInfo()}</Card.Body>
-        </Accordion>
         <Tabs
           className="heightWrapper"
           onSelect={e => setActiveTab(e)}
           style={{ marginBottom: "20px" }}
           id="detailTabs"
         >
-          <Tab mountOnEnter eventKey="inputOutput" title="Input/Output">
-            {iokeys()}
-          </Tab>
           <Tab mountOnEnter eventKey="JSON" title="Task JSON">
             {def()}
           </Tab>
+          {response.outputKeys || response.outputKeys ? (
+            <Tab mountOnEnter eventKey="inputOutput" title="Input/Output">
+              {iokeys()}
+            </Tab>
+          ) : null}
         </Tabs>
       </Modal.Body>
       <Modal.Footer>
