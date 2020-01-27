@@ -296,13 +296,50 @@ class TaskList extends Component {
                   >
                     Name/Version
                   </th>
-                  <th>Timeout Policy</th>
-                  <th>Timeout Seconds</th>
-                  <th>Response Timeout</th>
-                  <th>Retry Count</th>
-                  <th>Rate Limit Amount</th>
-                  <th>Rate Limit Frequency Seconds</th>
-                  <th>Retry Logic</th>
+                  <th
+                    className="clickable"
+                    onClick={() => this.sortArray("timeoutPolicy")}
+                  >
+                    Timeout Policy
+                  </th>
+                  <th
+                    className="clickable"
+                    onClick={() => this.sortArray("timeoutSeconds")}
+                  >
+                    Timeout Seconds
+                  </th>
+                  <th
+                    className="clickable"
+                    onClick={() => this.sortArray("responseTimeoutSeconds")}
+                  >
+                    Response Timeout
+                  </th>
+                  <th
+                    className="clickable"
+                    onClick={() => this.sortArray("retryCount")}
+                  >
+                    Retry Count
+                  </th>
+                  <th
+                    className="clickable"
+                    onClick={() => this.sortArray("rateLimitPerFrequency")}
+                  >
+                    Rate Limit Amount
+                  </th>
+                  <th
+                    className="clickable"
+                    onClick={() =>
+                      this.sortArray("rateLimitFrequencyInSeconds")
+                    }
+                  >
+                    Rate Limit Frequency Seconds
+                  </th>
+                  <th
+                    className="clickable"
+                    onClick={() => this.sortArray("retryLogic")}
+                  >
+                    Retry Logic
+                  </th>
                   <th />
                 </tr>
               </thead>
