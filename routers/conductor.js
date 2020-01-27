@@ -6,7 +6,7 @@ const transform = require("lodash/transform");
 const identity = require("lodash/identity");
 
 const Router = require("express");
-const http = require("../client/src/components/common/HttpServerSide").HttpClient;
+const http = require("./HttpServerSide").HttpClient;
 
 const router = new Router();
 const baseURL = process.env.WF_SERVER;

@@ -6,8 +6,6 @@ if (process.env.NODE_ENV !== 'production') {
   require("dotenv").config();
 }
 
-console.log(process.env.WF_SERVER)
-
 const odlAPI = require("./routers/odl");
 const conductorAPI = require("./routers/conductor");
 
