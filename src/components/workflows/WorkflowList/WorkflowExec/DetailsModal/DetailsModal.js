@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import {
   Modal,
-  Dropdown,
   Button,
   Row,
   Col,
@@ -20,6 +19,7 @@ import "./DetailsModal.css";
 import WorkflowDia from "./WorkflowDia/WorkflowDia";
 import UnescapeButton from "../../../../uniconfig/deviceView/consoleModal/UnescapeButton";
 import { withRouter } from "react-router-dom";
+import TaskModal from "../../../../common/TaskModal";
 const http = require("../../../../../server/HttpServerSide").HttpClient;
 
 new Clipboard(".clp");
@@ -40,7 +40,9 @@ class DetailsModal extends Component {
       status: "Execute",
       timeout: null,
       parentWfId: "",
-      inputsArray: []
+      inputsArray: [],
+      taskDetail: {},
+      taskModal: false
     };
   }
 
@@ -141,8 +143,32 @@ class DetailsModal extends Component {
       return (
         <tr key={`row-${i}`} id={`row-${i}`} className="clickable">
           <td>{row["seq"]}</td>
-          <td>{row["taskType"]}</td>
-          <td>{row["referenceTaskName"]}</td>
+          <td onClick={this.handleTaskDetail.bind(this, row)}>
+            {row["taskType"]}&nbsp;&nbsp;
+          </td>
+          <td style={{ textAlign: "center" }}>
+            {row["taskType"] === "SUB_WORKFLOW" ? (
+              <Button
+                variant="primary"
+                onClick={() => {
+                  Object.keys(this.state.subworkflows).map(item => {
+                    return item === row["referenceTaskName"]
+                      ? this.props.history.push(
+                          `/workflows/exec/${this.state.subworkflows[item].wfe.workflowId}`
+                        )
+                      : null;
+                  });
+                }}
+              >
+                <i className="fas fa-arrow-circle-right" />
+              </Button>
+            ) : (
+              ""
+            )}
+          </td>
+          <td onClick={this.handleTaskDetail.bind(this, row)}>
+            {row["referenceTaskName"]}
+          </td>
           <td>
             {this.formatDate(row["startTime"])}
             <br />
@@ -152,6 +178,10 @@ class DetailsModal extends Component {
         </tr>
       );
     });
+  }
+
+  handleTaskDetail(row) {
+    this.setState({ taskDetail: row, taskModal: !this.state.taskModal });
   }
 
   terminateWfs() {
@@ -296,6 +326,7 @@ class DetailsModal extends Component {
             <tr>
               <th>#</th>
               <th>Task Type</th>
+              <th style={{ width: "10px" }}>Subwf.</th>
               <th>Task Ref. Name</th>
               <th>Start/End Time</th>
               <th>Status</th>
@@ -360,10 +391,12 @@ class DetailsModal extends Component {
           />
         </h4>
         <code>
-          <pre id="json" className="heightWrapper">
-            <Highlight language="json">
-              {JSON.stringify(this.state.result, null, 2)}
-            </Highlight>
+          <pre
+            id="json"
+            className="heightWrapper"
+            style={{ backgroundColor: "#eaeef3" }}
+          >
+            {JSON.stringify(this.state.result, null, 2)}
           </pre>
         </code>
       </div>
@@ -423,49 +456,22 @@ class DetailsModal extends Component {
       }
     };
 
-    const childWorkflows = () => {
-      if (
-        this.state.subworkflows &&
-        Object.keys(this.state.subworkflows).length
-      ) {
-        return (
-          <Dropdown style={{ margin: "2px", display: "inline" }}>
-            <Dropdown.Toggle>Children</Dropdown.Toggle>
-            <Dropdown.Menu>
-              {Object.keys(this.state.subworkflows).map((item, i) => {
-                return (
-                  <Dropdown.Item
-                    onClick={() =>
-                      this.props.history.push(
-                        `/workflows/exec/${this.state.subworkflows[item].wfe.workflowId}`
-                      )
-                    }
-                    key={i}
-                  >
-                    {item}
-                  </Dropdown.Item>
-                );
-              })}
-            </Dropdown.Menu>
-          </Dropdown>
-        );
-      }
-    };
-
     return (
       <Modal
         dialogClassName="modalWider"
         show={this.state.show}
         onHide={this.handleClose}
       >
+        <TaskModal
+          task={this.state.taskDetail}
+          show={this.state.taskModal}
+          handle={this.handleTaskDetail.bind(this, {})}
+        />
         <Modal.Header>
           <Modal.Title>
             Details of {this.state.meta.name ? this.state.meta.name : null}
           </Modal.Title>
-          <div>
-            {parentWorkflowButton()}
-            {childWorkflows()}
-          </div>
+          <div>{parentWorkflowButton()}</div>
         </Modal.Header>
         <Modal.Body>
           <Accordion>

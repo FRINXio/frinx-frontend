@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import dagreD3 from "dagre-d3";
 import d3 from "d3";
-import { Tabs, Tab, Modal, Row, Col, Container } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import Clipboard from "clipboard";
-import UnescapeButton from "../uniconfig/deviceView/consoleModal/UnescapeButton";
-import Highlight from "react-highlight.js";
+import TaskModal from "./TaskModal";
 
 new Clipboard(".btn");
 
@@ -192,147 +191,11 @@ class Grapher extends Component {
     });
 
     let showNodeDetails = () => (
-      <Modal
-        size="lg"
-        centered
-        scrollable
+      <TaskModal
+        task={this.state.selectedTask}
         show={this.state.showSideBar}
-        onHide={hideProps}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {this.state.selectedTask.taskType} ({this.state.selectedTask.status}
-            )
-            <div
-              style={{
-                color: "#ff0000",
-                display:
-                  this.state.selectedTask.status === "FAILED" ? "" : "none"
-              }}
-            >
-              {this.state.selectedTask.reasonForIncompletion}
-            </div>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Tabs defaultActiveKey={1}>
-            <Tab eventKey={1} title="Summary">
-              <Container>
-                <Row style={{ marginTop: "20px", marginBottom: "20px" }}>
-                  <Col sm={8}>
-                    <b>Task Ref. Name:&nbsp;&nbsp;</b>
-                    {this.state.selectedTask.referenceTaskName}
-                  </Col>
-                  <Col>
-                    <b>Callback After:&nbsp;&nbsp;</b>
-                    {this.state.selectedTask.callbackAfterSeconds
-                      ? this.state.selectedTask.callbackAfterSeconds
-                      : 0}{" "}
-                    (second)
-                    <br />
-                    <b>Poll Count:&nbsp;&nbsp;</b>
-                    {this.state.selectedTask.pollCount}
-                  </Col>
-                </Row>
-                <hr />
-                <Row style={{ marginBottom: "15px" }}>
-                  <b>
-                    Input
-                    <i
-                      title="copy to clipboard"
-                      className="btn fa fa-clipboard"
-                      data-clipboard-target="#t_input"
-                    />
-                  </b>
-                  <UnescapeButton size="sm" target="t_input" />
-                </Row>
-                <Row>
-                  <code>
-                    <pre style={{ width: "770px" }} id="t_input">
-                      <Highlight language="json">
-                        {JSON.stringify(
-                          this.state.selectedTask.inputData,
-                          null,
-                          3
-                        )}
-                      </Highlight>
-                    </pre>
-                  </code>
-                </Row>
-                <Row style={{ marginBottom: "15px" }}>
-                  <b>
-                    Output
-                    <i
-                      title="copy to clipboard"
-                      className="btn fa fa-clipboard"
-                      data-clipboard-target="#t_output"
-                    />
-                  </b>
-                  <UnescapeButton size="sm" target="t_output" />
-                </Row>
-                <Row>
-                  <code>
-                    <pre style={{ width: "770px" }} id="t_output">
-                      <Highlight language="json">
-                        {JSON.stringify(
-                          this.state.selectedTask.outputData,
-                          null,
-                          3
-                        )}
-                      </Highlight>
-                    </pre>
-                  </code>
-                </Row>
-              </Container>
-            </Tab>
-            <Tab eventKey={2} title="JSON">
-              <br />
-              <b>
-                JSON
-                <i
-                  title="copy to clipboard"
-                  className="btn fa fa-clipboard"
-                  data-clipboard-target="#t_json"
-                />
-              </b>
-              <UnescapeButton size="sm" target="t_json" />
-
-              <code>
-                <pre
-                  style={{ maxHeight: "500px", marginTop: "20px" }}
-                  id="t_json"
-                >
-                  <Highlight language="json">
-                    {JSON.stringify(this.state.selectedTask, null, 3)}
-                  </Highlight>
-                </pre>
-              </code>
-            </Tab>
-            <Tab eventKey={3} title="Logs">
-              <br />
-              <b>
-                Logs
-                <i
-                  title="copy to clipboard"
-                  className="btn fa fa-clipboard"
-                  data-clipboard-target="#t_logs"
-                />
-              </b>
-              <UnescapeButton size="sm" target="t_logs" />
-              <code>
-                <pre
-                  style={{ maxHeight: "500px", marginTop: "20px" }}
-                  id="t_logs"
-                >
-                  <Highlight language="json">
-                    {JSON.stringify(this.state.selectedTask.logs, null, 3)}
-                  </Highlight>
-                </pre>
-              </code>
-            </Tab>
-          </Tabs>
-        </Modal.Body>
-      </Modal>
+        handle={hideProps}
+      />
     );
 
     return (
