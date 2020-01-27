@@ -1,24 +1,28 @@
+FROM node:9.4.0-alpine as client
 
-FROM node:8.9-alpine
+# Setup the client
 
-ARG ODL
-ARG WF_SERVER
-ARG REACT_APP_LOGIN_ENABLED
-
-# Create a work directory and copy dependency files.
-COPY ["package.json", "package-lock.json*", "/tmp/"]
-RUN cd /tmp && npm install --silent
+WORKDIR /usr/app/client/
+COPY client/package*.json ./
+RUN npm install -qy
+COPY client/ ./
+RUN npm run build
 
 
-RUN mkdir /app && cp -r /tmp/node_modules /app
+# Setup the server
 
-WORKDIR /app
-COPY . /app
+FROM node:9.4.0-alpine
 
-RUN sed -i 's,.*ODL_HOST=.*,ODL_HOST='"http://""${ODL}"',' ./.env
-RUN sed -i 's,.*WF_SERVER=.*,WF_SERVER='"http://""${WF_SERVER}/api/"',' ./.env
-RUN sed -i 's,.*REACT_APP_LOGIN_ENABLED=.*,REACT_APP_LOGIN_ENABLED='\""${REACT_APP_LOGIN_ENABLED}\""',' ./.env
+WORKDIR /usr/app/
+COPY --from=client /usr/app/client/build/ ./client/build/
 
-EXPOSE 3000
+WORKDIR /usr/app/server/
+COPY ./package*.json ./
+RUN npm install -qy
+COPY ./ ./
 
-CMD ["npm","run","dev"]
+EXPOSE 3001
+
+# Args from docker-compose are passed as node env variables
+
+CMD ["npm", "start"]

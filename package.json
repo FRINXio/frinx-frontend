@@ -1,75 +1,30 @@
 {
-  "name": "frinx-editor",
-  "version": "0.1.0",
-  "private": true,
-  "proxy": "http://localhost:3001",
-  "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.16",
-    "@fortawesome/free-solid-svg-icons": "^5.8.0",
-    "@fortawesome/react-fontawesome": "^0.1.4",
-    "babel-polyfill": "^6.26.0",
-    "bootstrap": "^4.3.1",
-    "clipboard": "^2.0.4",
-    "codemirror": "^5.47.0",
-    "d3": "^3.5.16",
-    "dagre-d3": "^0.4.17",
-    "file-saver": "^2.0.2",
-    "framer-motion": "^1.6.17",
-    "jquery": "^3.4.1",
-    "jszip": "^3.2.2",
-    "lodash": "^4.17.11",
-    "moment": "^2.24.0",
-    "react": "^16.8.4",
-    "react-ace": "latest",
-    "react-bootstrap": "^1.0.0-beta.8",
-    "react-bootstrap-typeahead": "^3.4.5",
-    "react-codemirror": "^1.0.0",
-    "react-dom": "^16.8.4",
-    "react-dropdown": "^1.6.4",
-    "react-gh-like-diff": "^1.0.5",
-    "react-highlight.js": "^1.0.7",
-    "react-hotkeys": "^2.0.0-pre9",
-    "react-redux": "^7.1.0",
-    "react-router-dom": "^5.0.0",
-    "react-scripts": "2.1.8",
-    "redux": "^4.0.1",
-    "redux-thunk": "^2.3.0",
-    "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.88.1",
-    "storm-react-diagrams": "^5.2.1",
-    "superagent": "^5.0.2",
-    "unescape-js": "^1.1.1"
-  },
+  "name": "frinx-uniconfig-ui-server",
+  "version": "1.0.0",
+  "description": "## Installation",
+  "main": "server.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "server": "node-env-run -E .env src/server/index.js --exec nodemon",
-    "dev": "run-p server start"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "NODE_ENV=production node server.js",
+    "dev": "nodemon server.js"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FRINXio/frinx-uniconfig-ui.git"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FRINXio/frinx-uniconfig-ui/issues"
+  },
+  "homepage": "https://github.com/FRINXio/frinx-uniconfig-ui#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0"
+  },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-loader": "^8.0.5",
-    "babel-preset-env": "^1.7.0",
-    "body-parser": "^1.18.3",
-    "express": "^4.16.4",
-    "express-pino-logger": "^4.0.0",
-    "jsdoc": "^3.6.3",
-    "node-env-run": "^3.0.2",
-    "nodemon": "^1.18.10",
-    "npm-run-all": "^4.1.5",
-    "pino-colada": "^1.4.4",
-    "prettier": "1.18.2"
+    "nodemon": "^2.0.2"
   }
 }
