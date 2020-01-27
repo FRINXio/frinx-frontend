@@ -1,5 +1,5 @@
 const Router = require("express");
-const http = require("../client/src/components/common/HttpServerSide").HttpClient;
+const http = require("./HttpServerSide").HttpClient;
 
 const router = new Router();
 const odlBaseURL = process.env.ODL_HOST;
