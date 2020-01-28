@@ -1,10 +1,19 @@
 import React, { Component } from "react";
-import { Col, Container, Form, FormGroup, Row, Table } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  FormGroup,
+  Row,
+  Table
+} from "react-bootstrap";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import "./TaskDefinitions.css";
 import PageSelect from "../../../common/PageSelect";
 import PageCount from "../../../common/PageCount";
+import TaskModal from "./TaskModal/TaskModal";
 const http = require("../../../common/HttpServerSide").HttpClient;
 
 class TaskList extends Component {
@@ -17,7 +26,10 @@ class TaskList extends Component {
       highlight: [],
       defaultPages: 20,
       pagesCount: 1,
-      viewedPage: 1
+      viewedPage: 1,
+      sorted: false,
+      taskModal: false,
+      taskName: null
     };
     library.add(faSync);
     this.table = React.createRef();
@@ -29,17 +41,20 @@ class TaskList extends Component {
   }
 
   componentDidMount() {
-    http.get("/api/conductor/metadata/taskdef").then(res => {
+    http.get("/api/conductor/metadata/taskdefs").then(res => {
       if (res.result) {
         let size = ~~(res.result.length / this.state.defaultPages);
-        this.setState({
-          data: res.result || [],
-          pagesCount: res.result
-            ? res.result.length % this.state.defaultPages
-              ? ++size
-              : size
-            : 0
-        });
+        this.setState(
+          {
+            data: res.result || [],
+            pagesCount: res.result
+              ? res.result.length % this.state.defaultPages
+                ? ++size
+                : size
+              : 0
+          },
+          () => this.sortArray("name")
+        );
       }
     });
   }
@@ -94,6 +109,14 @@ class TaskList extends Component {
     }
   }
 
+  handleTaskModal(name) {
+    let taskName = name !== undefined ? name : null;
+    this.setState({
+      taskName: taskName,
+      taskModal: !this.state.taskModal
+    });
+  }
+
   repeat() {
     let output = [];
     let highlight = "" === !this.state.keywords;
@@ -111,9 +134,10 @@ class TaskList extends Component {
             <td
               className={
                 highlight
-                  ? this.calculateHighlight(i, "name") + " leftAligned"
-                  : "leftAligned"
+                  ? this.calculateHighlight(i, "name") + " clickable"
+                  : "clickable"
               }
+              onClick={this.handleTaskModal.bind(this, dataset[i]["name"])}
             >
               {dataset[i]["name"]}
             </td>
@@ -172,11 +196,34 @@ class TaskList extends Component {
             >
               {dataset[i]["retryLogic"]}
             </td>
+            <td>
+              <Button
+                variant="outline-danger noshadow"
+                style={{ padding: "1px 6px" }}
+                onClick={this.deleteTask.bind(this, dataset[i]["name"])}
+              >
+                <i className="fas fa-trash-alt" />
+              </Button>
+            </td>
           </tr>
         );
       }
     }
     return output;
+  }
+
+  deleteTask(name) {
+    http.delete("/api/conductor/metadata/taskdef/" + name).then(res => {
+      if (res.status === 200) {
+        let dataset = this.state.data;
+        let tableset = this.state.table;
+        let index = dataset.findIndex(task => task.name === name);
+        if (index > -1) dataset.splice(index, 1);
+        index = tableset.findIndex(task => task.name === name);
+        if (index > -1) tableset.splice(index, 1);
+        this.setState({ data: dataset, table: tableset });
+      }
+    });
   }
 
   setCountPages(defaultPages, pagesCount) {
@@ -193,9 +240,44 @@ class TaskList extends Component {
     });
   }
 
+  sortAscBy = function(key) {
+    return function(x, y) {
+      return x[key] === y[key] ? 0 : x[key] > y[key] ? 1 : -1;
+    };
+  };
+
+  sortDescBy = function(key) {
+    return function(x, y) {
+      return x[key] === y[key] ? 0 : x[key] < y[key] ? 1 : -1;
+    };
+  };
+
+  sortArray(key) {
+    let sortedArray = this.state.data;
+
+    if (this.state.sorted) {
+      sortedArray.sort(this.sortDescBy(key));
+      this.setState({ sorted: false });
+    }
+    if (!this.state.sorted) {
+      sortedArray.sort(this.sortAscBy(key));
+      this.setState({ sorted: true });
+    }
+
+    this.setState({ data: sortedArray });
+  }
   render() {
+    let taskModal = this.state.taskModal ? (
+      <TaskModal
+        name={this.state.taskName}
+        modalHandler={this.handleTaskModal.bind(this)}
+        show={this.state.taskModal}
+      />
+    ) : null;
+
     return (
       <div className="listPage">
+        {taskModal}
         <Container>
           <FormGroup className="searchGroup">
             <Form.Control
@@ -208,14 +290,57 @@ class TaskList extends Component {
             <Table ref={this.table} striped hover size="sm">
               <thead>
                 <tr>
-                  <th>Name/Version</th>
-                  <th>Timeout Policy</th>
-                  <th>Timeout Seconds</th>
-                  <th>Response Timeout</th>
-                  <th>Retry Count</th>
-                  <th>Rate Limit Amount</th>
-                  <th>Rate Limit Frequency Seconds</th>
-                  <th>Retry Logic</th>
+                  <th
+                    className="clickable"
+                    onClick={() => this.sortArray("name")}
+                  >
+                    Name/Version
+                  </th>
+                  <th
+                    className="clickable"
+                    onClick={() => this.sortArray("timeoutPolicy")}
+                  >
+                    Timeout Policy
+                  </th>
+                  <th
+                    className="clickable"
+                    onClick={() => this.sortArray("timeoutSeconds")}
+                  >
+                    Timeout Seconds
+                  </th>
+                  <th
+                    className="clickable"
+                    onClick={() => this.sortArray("responseTimeoutSeconds")}
+                  >
+                    Response Timeout
+                  </th>
+                  <th
+                    className="clickable"
+                    onClick={() => this.sortArray("retryCount")}
+                  >
+                    Retry Count
+                  </th>
+                  <th
+                    className="clickable"
+                    onClick={() => this.sortArray("rateLimitPerFrequency")}
+                  >
+                    Rate Limit Amount
+                  </th>
+                  <th
+                    className="clickable"
+                    onClick={() =>
+                      this.sortArray("rateLimitFrequencyInSeconds")
+                    }
+                  >
+                    Rate Limit Frequency Seconds
+                  </th>
+                  <th
+                    className="clickable"
+                    onClick={() => this.sortArray("retryLogic")}
+                  >
+                    Retry Logic
+                  </th>
+                  <th />
                 </tr>
               </thead>
               <tbody className="tasktable">{this.repeat()}</tbody>

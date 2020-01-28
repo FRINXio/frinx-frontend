@@ -33,7 +33,7 @@ class PollData extends React.Component {
               ? ++size
               : size
             : 0
-        });
+        },() => this.sortArray("queueName"));
       }
     });
   }
@@ -111,7 +111,7 @@ class PollData extends React.Component {
           <tr key={`row-${i}`} id={`row-${i}`}>
             <td>{dataset[i]["queueName"]}</td>
             <td>{dataset[i]["qsize"]}</td>
-            <td>{moment(dataset[i]["lastPollTime"]).fromNow()}</td>
+            <td>{moment(dataset[i]["lastPollTime"]).format("MM/DD/YYYY, HH:mm:ss:SSS")}</td>
             <td>{dataset[i]["workerId"]}</td>
           </tr>
         );

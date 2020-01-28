@@ -34,7 +34,7 @@
     top: 50%;
     transform: translateY(-50%);
     background-color: #e0e1e2;
-    max-height: 400px
+    height: auto!important;
 }
 
 #sidebar-right:hover {

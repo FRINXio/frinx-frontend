@@ -349,7 +349,7 @@ class WorkflowDefs extends Component {
                     variant="outline-light noshadow"
                     onClick={this.showInputModal.bind(this)}
                   >
-                    Input
+                    Execute
                   </Button>
                   <Button
                     variant="outline-light noshadow"

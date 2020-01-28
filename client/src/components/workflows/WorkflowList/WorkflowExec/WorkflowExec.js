@@ -1,15 +1,26 @@
 import React, { Component } from "react";
-import { Button, Col, Container, Form, Row, Table } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  Row,
+  Table,
+  ToggleButton,
+  ToggleButtonGroup
+} from "react-bootstrap";
 import { Typeahead } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import "./WorkflowExec.css";
 import DetailsModal from "./DetailsModal/DetailsModal";
 import WorkflowBulk from "./WorkflowBulk/WorkflowBulk";
-import * as searchActions from "../../../../store/actions/searchExecs";
 import { connect } from "react-redux";
 import PageCount from "../../../common/PageCount";
 import PageSelect from "../../../common/PageSelect";
 import moment from "moment";
+import ButtonToolbar from "react-bootstrap/ButtonToolbar";
+import * as searchActions from "../../../../store/actions/searchExecs";
+import * as bulkActions from "../../../../store/actions/bulk";
 
 class WorkflowExec extends Component {
   constructor(props) {
@@ -20,7 +31,7 @@ class WorkflowExec extends Component {
       wfId: {},
       openParentWfs: [],
       closeDetails: true,
-      allData: true,
+      allData: false,
       showChildren: [],
       defaultPages: 20,
       pagesCount: 1,
@@ -455,6 +466,11 @@ class WorkflowExec extends Component {
     });
   }
 
+  changeView() {
+    this.props.setView(!this.state.allData);
+    this.selectWfView();
+  }
+
   render() {
     let detailsModal = this.state.detailsModal ? (
       <DetailsModal
@@ -477,12 +493,26 @@ class WorkflowExec extends Component {
           selectedWfs={this.state.selectedWfs}
           pageCount={this.state.defaultPages}
           selectAllWfs={this.selectAllWfs.bind(this)}
-          wfView={this.state.allData}
-          selectWfView={this.selectWfView.bind(this)}
           bulkOperation={this.clearView.bind(this)}
         />
 
         <hr style={{ marginTop: "-20px" }} />
+        <ButtonToolbar style={{ marginBottom: "15px", marginRight: "15px" }}>
+          <div style={{ paddingTop: "5px" }}>Workflow view</div>&nbsp;&nbsp;
+          <ToggleButtonGroup
+            type="radio"
+            value={this.state.allData ? 1 : 0}
+            name="Workflow view"
+            onChange={this.changeView.bind(this)}
+          >
+            <ToggleButton size="sm" variant="outline-secondary" value={0}>
+              Hierarchy
+            </ToggleButton>
+            <ToggleButton size="sm" variant="outline-secondary" value={1}>
+              Flat
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </ButtonToolbar>
         <Row>
           <Col>
             <Typeahead
@@ -615,7 +645,8 @@ const mapDispatchToProps = dispatch => {
     deleteParents: children => dispatch(searchActions.deleteParents(children)),
     updateSize: size => dispatch(searchActions.updateSize(size)),
     checkedWorkflows: checkedWfs =>
-      dispatch(searchActions.checkedWorkflows(checkedWfs))
+      dispatch(searchActions.checkedWorkflows(checkedWfs)),
+    setView: value => dispatch(bulkActions.setView(value))
   };
 };
 

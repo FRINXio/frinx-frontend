@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Modal, Button, Tab, Tabs } from "react-bootstrap";
 import GeneralTab from "./GeneralTab";
 import InputsTab from "./InputsTab";
+import { hash } from "../builder-utils";
 
 const http = require("../../../common/HttpServerSide").HttpClient;
 
@@ -13,6 +14,7 @@ class SubwfModal extends Component {
     this.handleInput = this.handleInput.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleCustomParam = this.handleCustomParam.bind(this);
+    this.addRemoveHeader = this.addRemoveHeader.bind(this);
 
     this.state = {
       show: true,
@@ -80,10 +82,24 @@ class SubwfModal extends Component {
     });
   }
 
-  handleInput(value, key, entry) {
+  addRemoveHeader(handleOperation, i) {
+    let inputs = { ...this.state.inputs };
+    let headers = inputs["inputParameters"]["http_request"]["headers"];
+    if (handleOperation) {
+      let key = "key_" + hash();
+      headers[key] = "value_" + hash();
+    } else {
+      delete headers[Object.keys(headers)[i]];
+    }
+    inputs["inputParameters"]["http_request"]["headers"] = headers;
+    this.setState({
+      inputs: inputs
+    });
+  }
+
+  handleInput(value, key, entry, i, headerKey) {
     let inputs = { ...this.state.inputs };
     let objectKeywords = ["template", "body"];
-
     if (key[0] === "inputParameters") {
       let inputObject = inputs[key[0]];
 
@@ -109,12 +125,39 @@ class SubwfModal extends Component {
       let inputParameters = inputs.inputParameters;
 
       if (typeof key[1] === "object") {
-        if (objectKeywords.find(e => entry[0].includes(e))) {
+        if (entry[0] === "headers") {
+          let headers = inputs["inputParameters"]["http_request"]["headers"];
+          let header = Object.keys(headers)[i];
+          if (headerKey) {
+            const renameObjKey = (oldObj, oldKey, newKey) => {
+              return Object.keys(oldObj).reduce((acc, val) => {
+                if (val === oldKey) acc[newKey] = oldObj[oldKey];
+                else acc[val] = oldObj[val];
+                return acc;
+              }, {});
+            };
+            inputs["inputParameters"]["http_request"]["headers"] = renameObjKey(
+              headers,
+              header,
+              value
+            );
+          } else {
+            inputs["inputParameters"]["http_request"]["headers"][
+              header
+            ] = value;
+          }
+          value = inputs["inputParameters"]["http_request"]["headers"];
+        } else if (objectKeywords.find(e => entry[0].includes(e))) {
           try {
             value = JSON.parse(value);
           } catch (e) {
             console.log(e);
           }
+        } else if (typeof value === "object" && entry[0] === "method") {
+          value = value.value;
+          if (value === "PUT" || value === "POST")
+            inputObject = { ...inputObject, body: "${workflow.input.body}" };
+          else delete inputObject["body"];
         }
       }
 
@@ -173,6 +216,7 @@ class SubwfModal extends Component {
                 handleInput={this.handleInput}
                 handleCustomParam={this.handleCustomParam}
                 inputParameters={this.state.inputParameters}
+                addRemoveHeader={this.addRemoveHeader}
               />
             </Tab>
           </Tabs>

@@ -25,7 +25,8 @@ const nodeColors = {
   simpleTask: "rgb(134,210,255)",
   systemTask: "rgb(11,60,139)",
   lambdaTask: "rgb(240,219,79)",
-  terminateTask: "rgb(255,30,0)"
+  terminateTask: "rgb(255,30,0)",
+  httpTask: "rgb(71,255,0)"
 };
 
 export class WorkflowDiagram {
@@ -200,6 +201,9 @@ export class WorkflowDiagram {
       case "terminate":
         node = this.placeTerminateNode(task, points.x, points.y);
         break;
+      case "http":
+        node = this.placeHTTPNode(task, points.x, points.y);
+        break;
       default:
         break;
     }
@@ -332,6 +336,12 @@ export class WorkflowDiagram {
 
   placeTerminateNode = (task, x, y) => {
     let node = new DefaultNodeModel(task.name, nodeColors.terminateTask, task);
+    node.setPosition(x, y);
+    return node;
+  };
+
+  placeHTTPNode = (task, x, y) => {
+    let node = new DefaultNodeModel(task.name, nodeColors.httpTask, task);
     node.setPosition(x, y);
     return node;
   };
@@ -625,6 +635,12 @@ export class WorkflowDiagram {
       case "TERMINATE": {
         const { x, y } = this.calculatePosition(branchX, branchY);
         const node = this.placeTerminateNode(task, x, y);
+        this.diagramModel.addNode(node);
+        break;
+      }
+      case "HTTP": {
+        const { x, y } = this.calculatePosition(branchX, branchY);
+        const node = this.placeHTTPNode(task, x, y);
         this.diagramModel.addNode(node);
         break;
       }
