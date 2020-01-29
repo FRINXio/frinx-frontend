@@ -18,7 +18,9 @@ COPY --from=client /usr/app/client/build/ ./client/build/
 WORKDIR /usr/app/
 COPY ./package*.json ./
 RUN npm install -qy
+
 COPY routers ./routers
+COPY certificates ./certificates
 COPY server.js ./
 
 EXPOSE 3001
