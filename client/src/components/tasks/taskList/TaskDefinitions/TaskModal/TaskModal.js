@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-  Accordion,
   Button,
-  Card,
   Col,
   Modal,
   Row,
@@ -10,9 +8,8 @@ import {
   Table,
   Tabs
 } from "react-bootstrap";
-import moment from "moment";
 import Highlight from "react-highlight.js";
-const http = require("../../../../../server/HttpServerSide").HttpClient;
+const http = require("../../../../common/HttpServerSide").HttpClient;
 
 const TaskModal = props => {
   const [response, setResponse] = useState({});
@@ -29,13 +26,6 @@ const TaskModal = props => {
 
   const handleClose = () => {
     props.modalHandler();
-  };
-
-  const formatDate = dt => {
-    if (dt == null || dt === "") {
-      return "";
-    }
-    return moment(dt).format("DD/MM/YYYY, HH:mm:ss:SSS");
   };
 
   const renderKeys = variable => {
