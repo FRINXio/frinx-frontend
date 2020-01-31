@@ -30,7 +30,7 @@ const initialState = {
   query: "",
   labels: [],
   openCard: null,
-  functional: ["start", "end", "fork", "join", "lambda", "decision", "terminate", "http"],
+  functional: ["start", "end", "fork", "join", "lambda", "decision", "terminate", "http", "event", "wait"],
   workflowNameLock: false,
   switchSmartRouting: false,
   executedWfId: null,

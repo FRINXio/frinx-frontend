@@ -90,6 +90,28 @@ const systemTasks = type => {
         optional: false
       };
     }
+    case "event": {
+      return {
+        name: "EVENT_TASK",
+        taskReferenceName: "eventTaskRef" + hash(),
+        inputParameters: {
+          sourceWorkflowId: "${workflow.input.sourceWorkflowId}"
+        },
+        type: "EVENT",
+        sink: "conductor",
+        startDelay: 0,
+        optional: false
+      };
+    }
+    case "wait": {
+      return {
+        name: "WAIT_TASK",
+        taskReferenceName: "waitTaskRef" + hash(),
+        type: "WAIT",
+        startDelay: 0,
+        optional: false
+      };
+    }
     default:
       break;
   }
@@ -139,6 +161,14 @@ const icons = task => {
     case "http":
       return (
         <div className="lambda-icon">{task.substring(0, 1).toUpperCase()}</div>
+      );
+    case "event":
+      return (
+          <div className="lambda-icon">{task.substring(0, 1).toUpperCase()}</div>
+      );
+    case "wait":
+      return (
+          <div className="lambda-icon">{task.substring(0, 1).toUpperCase()}</div>
       );
     default:
       break;

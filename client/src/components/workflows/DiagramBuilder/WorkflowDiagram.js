@@ -26,7 +26,9 @@ const nodeColors = {
   systemTask: "rgb(11,60,139)",
   lambdaTask: "rgb(240,219,79)",
   terminateTask: "rgb(255,30,0)",
-  httpTask: "rgb(71,255,0)"
+  httpTask: "rgb(80,255,163)",
+  eventTask: "rgb(137,59,255)",
+  waitTask: "rgb(171,171,171)"
 };
 
 export class WorkflowDiagram {
@@ -204,6 +206,12 @@ export class WorkflowDiagram {
       case "http":
         node = this.placeHTTPNode(task, points.x, points.y);
         break;
+      case "event":
+        node = this.placeEventNode(task, points.x, points.y);
+        break;
+      case "wait":
+        node = this.placeWaitNode(task, points.x, points.y);
+        break;
       default:
         break;
     }
@@ -342,6 +350,18 @@ export class WorkflowDiagram {
 
   placeHTTPNode = (task, x, y) => {
     let node = new DefaultNodeModel(task.name, nodeColors.httpTask, task);
+    node.setPosition(x, y);
+    return node;
+  };
+
+  placeEventNode = (task, x, y) => {
+    let node = new DefaultNodeModel(task.name, nodeColors.eventTask, task);
+    node.setPosition(x, y);
+    return node;
+  };
+
+  placeWaitNode = (task, x, y) => {
+    let node = new DefaultNodeModel(task.name, nodeColors.waitTask, task);
     node.setPosition(x, y);
     return node;
   };
@@ -641,6 +661,18 @@ export class WorkflowDiagram {
       case "HTTP": {
         const { x, y } = this.calculatePosition(branchX, branchY);
         const node = this.placeHTTPNode(task, x, y);
+        this.diagramModel.addNode(node);
+        break;
+      }
+      case "EVENT": {
+        const { x, y } = this.calculatePosition(branchX, branchY);
+        const node = this.placeEventNode(task, x, y);
+        this.diagramModel.addNode(node);
+        break;
+      }
+      case "WAIT": {
+        const { x, y } = this.calculatePosition(branchX, branchY);
+        const node = this.placeWaitNode(task, x, y);
         this.diagramModel.addNode(node);
         break;
       }
