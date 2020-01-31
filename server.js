@@ -28,7 +28,7 @@ const host = process.env.NODE_HOST || "0.0.0.0";
 // if certificates folder is empty use HTTP
 // else HTTPS is used (key.pem and cert.pem must be present in folder)
 fs.readdir('./certificates', function (err, files) {
-  if (!files.length) {
+  if (files.length <= 1) {
     app.listen(port, host, function () {
       console.log("Server is listening at http://%s:%s", host, port);
       if (process.send) {
