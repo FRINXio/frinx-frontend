@@ -39,7 +39,7 @@ fs.readdir('./certificates', function (err, files) {
     https.createServer({
       key: fs.readFileSync('./certificates/key.pem'),
       cert: fs.readFileSync('./certificates/cert.pem'),
-      passphrase: 'passphrase'
+      passphrase: process.env.PASSPHRASE
     }, app).listen(port, function () {
       console.log('Server is listening on port %s', port)
     });

@@ -1,6 +1,6 @@
 {
   "name": "frinx-uniconfig-ui-server",
-  "version": "1.0.0",
+  "version": "1.1-dev",
   "description": "## Installation",
   "main": "server.js",
   "scripts": {
