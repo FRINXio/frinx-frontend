@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import {Modal, Button, Form, Row, Col, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
 import { connect } from "react-redux";
 import * as builderActions from "../../../../../store/actions/builder";
 import * as mountedDevicesActions from "../../../../../store/actions/mountedDevices";
@@ -138,6 +138,15 @@ class InputModal extends Component {
     });
   }
 
+  handleSwitch(e, i){
+    const { workflowForm} = this.state;
+    workflowForm.values[i] = e ? "true" : "false";
+
+    this.setState({
+      workflowForm
+    });
+  }
+
   executeWorkflow() {
     let { labels, values } = this.state.workflowForm;
     let input = {};
@@ -205,6 +214,27 @@ class InputModal extends Component {
               value={values[i] ? values[i] : ""}
               isInvalid={warning[i]}
             />
+          );
+        case /bool/g.test(type):
+          return (
+              <ToggleButtonGroup
+                  type="radio"
+                  value={values[i] === "true"}
+                  name={`switch-${i}`}
+                  onChange={e => this.handleSwitch(e, i)}
+                  style={{
+                    height: "calc(1.5em + .75rem + 2px)",
+                    width: "100%",
+                    paddingTop: ".375rem"
+                  }}
+              >
+                <ToggleButton size="sm" variant="outline-primary" value={true}>
+                  On
+                </ToggleButton>
+                <ToggleButton size="sm" variant="outline-primary" value={false}>
+                  Off
+                </ToggleButton>
+              </ToggleButtonGroup>
           );
         default:
           return (
