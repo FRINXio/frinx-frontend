@@ -2,14 +2,8 @@ import * as _ from "lodash";
 
 export const getWfInputsRegex = wf => {
   let def = JSON.stringify(wf);
-  let matchArray = def.match(/\workflow.input([\w.])+}/gim);
-  let inputsArray = [];
+  let inputsArray = [...new Set(def.match(/(?<=workflow\.input\.)([a-zA-Z0-9-_]+)/gim))];
   let inputParameters = {};
-
-  if (matchArray) {
-    let sortedArray = matchArray.join().match(/[^.]+(?=})/gim);
-    inputsArray = [...new Set(sortedArray)];
-  }
 
   inputsArray.forEach(el => {
     inputParameters[el] = "${workflow.input." + el + "}";

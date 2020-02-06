@@ -71,14 +71,8 @@ class InputModal extends Component {
   }
 
   getInputs(def) {
-    let matchArray = def.match(/\workflow.input([\w.])+}/gim);
-    let inputsArray = [];
-    if (matchArray) {
-      let sortedArray = matchArray.join().match(/[^.]+(?=})/gim);
-      inputsArray = [...new Set(sortedArray)];
-    }
-
-    return inputsArray;
+    let matchArray = def.match(/(?<=workflow\.input\.)([a-zA-Z0-9-_]+)/gim);
+    return [...new Set(matchArray)];
   }
 
   getDetails(def, inputsArray) {

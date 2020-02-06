@@ -56,14 +56,10 @@ class DetailsModal extends Component {
 
   getData() {
     http.get("/api/conductor/id/" + this.props.wfId).then(res => {
-      let matchArray = JSON.stringify(res.meta, null, 2).match(
-        /\workflow.input([\w.])+}/gim
-      );
-      let inputsArray = [];
-      if (matchArray) {
-        let sortedArray = matchArray.join().match(/[^.]+(?=})/gim);
-        inputsArray = [...new Set(sortedArray)];
-      }
+
+      let inputsArray = [...new Set(JSON.stringify(res.meta, null, 2)
+          .match(/(?<=workflow\.input\.)([a-zA-Z0-9-_]+)/gim))];
+
       this.setState({
         meta: res.meta,
         result: res.result,
