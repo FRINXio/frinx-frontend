@@ -269,6 +269,9 @@ class MountModal extends Component {
           if (which === "type") {
             this.setState({ deviceType: e.value });
           }
+          if (which === "ssh") {
+            this.setState({ isSsh: e.value === "ssh" });
+          }
         }
       }
       return null;
@@ -593,11 +596,8 @@ class MountModal extends Component {
           <Form.Label>{item[0].split(":").pop()}</Form.Label>
           <Dropdown
             options={options}
-            onChange={e => {
-              this.handleInput(e, i, formToDisplay);
-              this.setState({ isSsh: !this.state.isSsh });
-            }}
-            value={this.state.isSsh ? "ssh" : "telnet"}
+            onChange={e => this.handleInput(e, i, formToDisplay, "ssh")}
+            value={item[1][0]}
           />
           <Form.Text className="text-muted">{item[1][1]}</Form.Text>
         </Form.Group>
