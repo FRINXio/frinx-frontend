@@ -29,7 +29,7 @@
 }
 
 #sidebar-right {
-    opacity: 30%;
+    opacity: 0.3;
     transition: opacity 0.2s ease;
     top: 50%;
     transform: translateY(-50%);
@@ -38,7 +38,7 @@
 }
 
 #sidebar-right:hover {
-    opacity: 100%;
+    opacity: 1;
     transition: opacity 0.2s ease;
 }
 
