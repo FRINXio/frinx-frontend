@@ -281,10 +281,6 @@ class DeviceView extends Component {
     }
   }
 
-  parseSnapshot(name) {
-    return name ? name.replace(this.state.device + "_", "") : name;
-  }
-
   createSnapshot() {
     this.setState({
       creatingSnap: !this.state.creatingSnap
@@ -393,7 +389,7 @@ class DeviceView extends Component {
                           onClick={() => this.loadSnapshot(i)}
                           key={i}
                         >
-                          {this.parseSnapshot(item["topology-id"])}
+                          {item["topology-id"]}
                           {this.state.deletingSnaps ? (
                             <i
                               className="fas fa-minus"
