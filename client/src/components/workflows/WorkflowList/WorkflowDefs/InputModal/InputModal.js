@@ -195,6 +195,7 @@ class InputModal extends Component {
               selected={this.props.devices.filter(
                 device => device === values[i]
               )}
+              onInputChange={e => this.handleTypahead(e, i)}
             />
           );
         case /template/g.test(type):
