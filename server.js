@@ -22,7 +22,7 @@ app.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
 });
 
-const port = process.env.NODE_PORT || 3001;
+const port = process.env.NODE_PORT || 3000;
 const host = process.env.NODE_HOST || "0.0.0.0";
 
 // if certificates folder is empty use HTTP
