@@ -5,6 +5,12 @@ import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import Dropdown from "react-dropdown";
 
+const TEXTFIELD_KEYWORDS = ["template", "uri", "body"];
+const CODEFIELD_KEYWORDS = ["scriptExpression"];
+const SELECTFIELD_KEYWORDS = ["method"];
+
+// FIXME simplify conditional rendering of different input fields
+
 const InputsTab = props => {
   const [customParam, setCustomParam] = useState("");
 
@@ -22,11 +28,11 @@ const InputsTab = props => {
     return result.length > 0 ? result : ["", ""];
   };
 
-  const handleCustomParam = e => {
+  const addNewInputParam = e => {
     e.preventDefault();
     e.stopPropagation();
 
-    props.handleCustomParam(customParam);
+    props.addNewInputParam(customParam);
     setCustomParam("");
   };
 
@@ -53,7 +59,8 @@ const InputsTab = props => {
           <InputGroup
             size="sm"
             style={{
-              minHeight: entry[0] === "uri" || entry[0] === "headers" ? "60px" : "200px"
+              minHeight:
+                entry[0] === "uri" || entry[0] === "headers" ? "60px" : "200px"
             }}
           >
             <Form.Control
@@ -180,15 +187,12 @@ const InputsTab = props => {
     );
   };
 
-  let textFieldKeywords = ["template", "uri", "body"];
-  let codeFieldKeywords = ["scriptExpression"];
-  let selectFieldKeywords = ["method"];
   let textFieldParams = [];
 
   return (
     <div>
       <Row>
-        <Form onSubmit={handleCustomParam}>
+        <Form onSubmit={addNewInputParam}>
           <InputGroup style={{ padding: "10px 215px 10px" }}>
             <Form.Control
               value={customParam}
@@ -210,17 +214,17 @@ const InputsTab = props => {
             if (item[0] === "inputParameters") {
               return Object.entries(item[1]).map((entry, i) => {
                 if (
-                  textFieldKeywords.find(keyword => entry[0].includes(keyword))
+                  TEXTFIELD_KEYWORDS.find(keyword => entry[0].includes(keyword))
                 ) {
                   return handleTextField(entry, item, i, textFieldParams);
                 } else if (
-                  codeFieldKeywords.find(keyword => entry[0].includes(keyword))
+                  CODEFIELD_KEYWORDS.find(keyword => entry[0].includes(keyword))
                 ) {
                   return handleCodeField(entry, item, i, textFieldParams);
                 } else if (typeof entry[1] === "object") {
                   return Object.entries(entry[1]).map(innerEntry => {
                     if (
-                      selectFieldKeywords.find(keyword =>
+                      SELECTFIELD_KEYWORDS.find(keyword =>
                         innerEntry[0].includes(keyword)
                       )
                     ) {
@@ -246,7 +250,7 @@ const InputsTab = props => {
                         );
                       else return null;
                     } else if (
-                      textFieldKeywords.find(keyword =>
+                      TEXTFIELD_KEYWORDS.find(keyword =>
                         innerEntry[0].includes(keyword)
                       )
                     ) {

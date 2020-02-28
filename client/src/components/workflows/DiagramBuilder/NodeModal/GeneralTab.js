@@ -2,19 +2,20 @@ import React from "react";
 import { Form, Col, InputGroup, ButtonGroup, Button } from "react-bootstrap";
 import { taskDescriptions } from "../../../constants";
 
+const NOT_GENERAL = [
+  "type",
+  "subWorkflowParam",
+  "joinOn",
+  "name",
+  "taskReferenceName",
+  "forkTasks",
+  "inputParameters",
+  "defaultCase"
+];
+
 const GeneralTab = props => {
-  const notGeneral = [
-    "type",
-    "subWorkflowParam",
-    "joinOn",
-    "name",
-    "taskReferenceName",
-    "forkTasks",
-    "inputParameters",
-    "defaultCase"
-  ];
-  const taskName = props.inputs["name"] || "";
-  const taskRefName = props.inputs["taskReferenceName"] || "";
+  const taskName = props.inputs?.name || "";
+  const taskRefName = props?.inputs?.taskReferenceName || "";
   const decisionCases = [];
   const caseValueParam = [];
 
@@ -26,7 +27,7 @@ const GeneralTab = props => {
         </InputGroup.Prepend>
         <Form.Control
           type="input"
-          disabled={props.inputs["type"] === "SIMPLE"}
+          disabled={props.inputs?.type === "SIMPLE"}
           onChange={e => props.handleInput(e.target.value, "name")}
           value={item}
         />
@@ -82,7 +83,7 @@ const GeneralTab = props => {
   );
 
   return (
-    <Form onKeyPress={props.handleSave}>
+    <Form>
       {renderTaskName(taskName)}
       {renderTaskRefName(taskRefName)}
 
@@ -94,7 +95,7 @@ const GeneralTab = props => {
 
       <Form.Row>
         {Object.entries(props.inputs).map((item, i) => {
-          if (!notGeneral.includes(item[0])) {
+          if (!NOT_GENERAL.includes(item[0])) {
             if (item[0] === "decisionCases") {
               return Object.entries(item[1]).forEach((entry, i) => {
                 decisionCases.push(
