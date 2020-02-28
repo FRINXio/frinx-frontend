@@ -130,7 +130,7 @@ const InputsTab = props => {
     );
   };
 
-  const handleKeyField = (entry, item) => {
+  const createKeyField = (entry, item) => {
     textFieldParams.push(
       <Col sm={12} key={`colTf-${entry[0]}`}>
         <Form.Label>
@@ -194,7 +194,7 @@ const InputsTab = props => {
     );
   };
 
-  const handleBasicField = (entry, item) => {
+  const createBasicField = (entry, item) => {
     return (
       <Col sm={6} key={`colDefault-${entry[0]}`}>
         <Form.Group>
@@ -222,9 +222,9 @@ const InputsTab = props => {
     ) {
       return createSelectField(entry, item);
     } else if (KEYFIELD_KEYWORDS.find(keyword => entry[0].includes(keyword))) {
-      handleKeyField(entry, entry);
+      createKeyField(entry, entry);
     } else {
-      return handleBasicField(entry, item);
+      return createBasicField(entry, item);
     }
   };
 
