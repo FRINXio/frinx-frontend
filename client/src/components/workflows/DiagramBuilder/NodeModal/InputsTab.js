@@ -8,11 +8,11 @@ import Dropdown from "react-dropdown";
 const TEXTFIELD_KEYWORDS = ["template", "uri", "body"];
 const CODEFIELD_KEYWORDS = ["scriptExpression"];
 const SELECTFIELD_KEYWORDS = ["method"];
-
-// FIXME simplify conditional rendering of different input fields
+const KEYFIELD_KEYWORDS = ["headers"];
 
 const InputsTab = props => {
   const [customParam, setCustomParam] = useState("");
+  let textFieldParams = [];
 
   const getDescriptionAndDefault = selectedParam => {
     let inputParameters = props.inputParameters || [];
@@ -36,7 +36,7 @@ const InputsTab = props => {
     setCustomParam("");
   };
 
-  const handleTextField = (entry, item, i, textFieldParams) => {
+  const createTextField = (entry, item) => {
     let value = entry[1];
 
     if (!entry[0].includes("uri")) {
@@ -53,7 +53,7 @@ const InputsTab = props => {
             <i
               title="copy to clipboard"
               className="btn fa fa-clipboard"
-              data-clipboard-target={"#textfield" + i}
+              data-clipboard-target={`#textfield-${entry[0]}`}
             />
           </Form.Label>
           <InputGroup
@@ -64,7 +64,7 @@ const InputsTab = props => {
             }}
           >
             <Form.Control
-              id={"textfield" + i}
+              id={`textfield-${entry[0]}`}
               as="textarea"
               type="input"
               onChange={e => props.handleInput(e.target.value, item, entry)}
@@ -79,7 +79,7 @@ const InputsTab = props => {
     );
   };
 
-  const handleCodeField = (entry, item, i, textFieldParams) => {
+  const createCodeField = (entry, item) => {
     let value = entry[1];
 
     textFieldParams.push(
@@ -110,10 +110,10 @@ const InputsTab = props => {
     );
   };
 
-  const handleSelectField = (entry, item, i, textFieldParams) => {
+  const createSelectField = (entry, item) => {
     let value = entry[1];
 
-    textFieldParams.push(
+    return (
       <Col sm={12} key={`colTf-${entry[0]}`}>
         <Form.Group>
           <Form.Label>{entry[0]}</Form.Label>
@@ -130,13 +130,17 @@ const InputsTab = props => {
     );
   };
 
-  const handleKeyField = (entry, item, i, textFieldParams) => {
+  const handleKeyField = (entry, item) => {
     textFieldParams.push(
       <Col sm={12} key={`colTf-${entry[0]}`}>
         <Form.Label>
           {entry[0]}&nbsp;&nbsp;
-          <Button onClick={props.addRemoveHeader.bind(this, true)}>
-            <i className="fas fa-plus" />
+          <Button
+            size="sm"
+            variant="outline-primary"
+            onClick={() => props.addRemoveHeader(true)}
+          >
+            <i className="fas fa-plus" /> Add
           </Button>
         </Form.Label>
         {Object.entries(entry[1]).map((header, i) => {
@@ -176,7 +180,10 @@ const InputsTab = props => {
                 {i === 0 ? (
                   <Form.Label className="text-muted">Delete</Form.Label>
                 ) : null}
-                <Button onClick={props.addRemoveHeader.bind(this, false, i)}>
+                <Button
+                  variant="outline-danger"
+                  onClick={() => props.addRemoveHeader(false, i)}
+                >
                   <i className="fas fa-minus" />
                 </Button>
               </Col>
@@ -187,7 +194,39 @@ const InputsTab = props => {
     );
   };
 
-  let textFieldParams = [];
+  const handleBasicField = (entry, item) => {
+    return (
+      <Col sm={6} key={`colDefault-${entry[0]}`}>
+        <Form.Group>
+          <Form.Label>{entry[0]}</Form.Label>
+          <Form.Control
+            type="input"
+            onChange={e => props.handleInput(e.target.value, item, entry)}
+            value={entry[1]}
+          />
+          <Form.Text className="text-muted">
+            {getDescriptionAndDefault(entry[0])[0]}
+          </Form.Text>
+        </Form.Group>
+      </Col>
+    );
+  };
+
+  const handleInputField = (entry, item) => {
+    if (TEXTFIELD_KEYWORDS.find(keyword => entry[0].includes(keyword))) {
+      createTextField(entry, item);
+    } else if (CODEFIELD_KEYWORDS.find(keyword => entry[0].includes(keyword))) {
+      createCodeField(entry, item);
+    } else if (
+      SELECTFIELD_KEYWORDS.find(keyword => entry[0].includes(keyword))
+    ) {
+      return createSelectField(entry, item);
+    } else if (KEYFIELD_KEYWORDS.find(keyword => entry[0].includes(keyword))) {
+      handleKeyField(entry, entry);
+    } else {
+      return handleBasicField(entry, item);
+    }
+  };
 
   return (
     <div>
@@ -210,105 +249,15 @@ const InputsTab = props => {
       <hr className="hr-text" data-content="Existing input parameters" />
       <Form>
         <Row>
-          {Object.entries(props.inputs).map(item => {
+          {Object.entries(props.inputs || []).map(item => {
             if (item[0] === "inputParameters") {
-              return Object.entries(item[1]).map((entry, i) => {
-                if (
-                  TEXTFIELD_KEYWORDS.find(keyword => entry[0].includes(keyword))
-                ) {
-                  return handleTextField(entry, item, i, textFieldParams);
-                } else if (
-                  CODEFIELD_KEYWORDS.find(keyword => entry[0].includes(keyword))
-                ) {
-                  return handleCodeField(entry, item, i, textFieldParams);
-                } else if (typeof entry[1] === "object") {
+              return Object.entries(item[1]).map(entry => {
+                if (typeof entry[1] === "object") {
                   return Object.entries(entry[1]).map(innerEntry => {
-                    if (
-                      SELECTFIELD_KEYWORDS.find(keyword =>
-                        innerEntry[0].includes(keyword)
-                      )
-                    ) {
-                      return handleSelectField(
-                        innerEntry,
-                        entry,
-                        i,
-                        textFieldParams
-                      );
-                    } else if (
-                      innerEntry[0] === "body" &&
-                      Object.keys(entry[1]).includes("method")
-                    ) {
-                      if (
-                        entry[1].method === "PUT" ||
-                        entry[1].method === "POST"
-                      )
-                        return handleTextField(
-                          innerEntry,
-                          entry,
-                          i,
-                          textFieldParams
-                        );
-                      else return null;
-                    } else if (
-                      TEXTFIELD_KEYWORDS.find(keyword =>
-                        innerEntry[0].includes(keyword)
-                      )
-                    ) {
-                      return handleTextField(
-                        innerEntry,
-                        entry,
-                        i,
-                        textFieldParams
-                      );
-                    } else if (innerEntry[0] === "headers") {
-                      return handleKeyField(
-                        innerEntry,
-                        entry,
-                        i,
-                        textFieldParams
-                      );
-                    } else {
-                      return (
-                        <Col sm={6} key={`col-${innerEntry[0]}`}>
-                          <Form.Group>
-                            <Form.Label>{innerEntry[0]}</Form.Label>
-                            <Form.Control
-                              type="input"
-                              onChange={e =>
-                                props.handleInput(
-                                  e.target.value,
-                                  entry,
-                                  innerEntry
-                                )
-                              }
-                              value={innerEntry[1]}
-                            />
-                            <Form.Text className="text-muted">
-                              {getDescriptionAndDefault(innerEntry[0])[0]}
-                            </Form.Text>
-                          </Form.Group>
-                        </Col>
-                      );
-                    }
+                    return handleInputField(innerEntry, entry);
                   });
                 } else {
-                  return (
-                    <Col sm={6} key={`colDefault-${i}`}>
-                      <Form.Group>
-                        <Form.Label>{entry[0]}</Form.Label>
-                        <Form.Control
-                          type="input"
-                          onChange={e =>
-                            props.handleInput(e.target.value, item, entry)
-                          }
-                          value={entry[1]}
-                        />
-                        <Form.Text className="text-muted">
-                          {getDescriptionAndDefault(entry[0])[0]}
-                        </Form.Text>
-                      </Form.Group>
-                    </Col>
-                  );
+                  return handleInputField(entry, item);
                 }
               });
             }

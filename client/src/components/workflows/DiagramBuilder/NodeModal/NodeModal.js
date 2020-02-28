@@ -26,8 +26,10 @@ function NodeModal(props) {
     setName(props.inputs.inputs.name);
     setInputs(props.inputs.inputs);
 
-    if (props.inputs.inputs.subWorkflowParam) {
-      const { name, version } = inputs.subWorkflowParam;
+    const { subWorkflowParam } = props.inputs.inputs;
+
+    if (subWorkflowParam) {
+      const { name, version } = subWorkflowParam;
       setName(name);
       setVersion(version);
 
@@ -164,6 +166,7 @@ function NodeModal(props) {
     };
 
     copiedInputs.decisionCases = decisionCases;
+    setInputs(copiedInputs);
   }
 
   function handleInput(value, key, entry, i, headerKey) {
@@ -171,6 +174,7 @@ function NodeModal(props) {
       case "inputParameters":
         updateInputParams(value, key, entry);
         break;
+      case "headers":
       case "http_request":
         updateHTTPRequest(value, key, entry, i, headerKey);
         break;
