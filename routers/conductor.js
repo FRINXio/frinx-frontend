@@ -104,6 +104,21 @@ router.put("/metadata", async (req, res, next) => {
   }
 });
 
+router.post("/event", async (req, res, next) => {
+  try {
+    const result = await http.post(baseURL + "event/", req.body);
+    res.status(200).send(result);
+  } catch (err) {
+    try {
+      const result = await http.put(baseURL + "event/", req.body);
+      res.status(200).send(result);
+    } catch (e) {
+      res.status(400).send(e.response.body);
+      next(e);
+    }
+  }
+});
+
 router.post("/workflow", async (req, res, next) => {
   try {
     const result = await http.post(baseURLWorkflow, req.body);

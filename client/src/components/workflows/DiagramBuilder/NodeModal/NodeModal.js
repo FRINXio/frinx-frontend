@@ -133,12 +133,13 @@ function NodeModal(props) {
         } catch (e) {
           console.log(e);
         }
-      } else if (typeof value === "object" && entry[0] === "method") {
-        value = value.value;
-        if (value === "PUT" || value === "POST")
-          http_request = { ...http_request, body: "${workflow.input.body}" };
-        else delete http_request["body"];
       }
+    }
+
+    if (entry[0] === "method") {
+      if (value === "PUT" || value === "POST")
+        http_request = { ...http_request, body: "${workflow.input.body}" };
+      else delete http_request["body"];
     }
 
     copiedInputs = {

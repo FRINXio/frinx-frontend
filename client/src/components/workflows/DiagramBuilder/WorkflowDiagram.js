@@ -127,17 +127,102 @@ export class WorkflowDiagram {
   saveWorkflow(finalWorkflow) {
     return new Promise((resolve, reject) => {
       const definition = this.parseDiagramToJSON(finalWorkflow);
-      http
-        .put("/api/conductor/metadata", [definition])
-        .then(() => {
-          resolve(definition);
-        })
-        .catch(err => {
-          const errObject = JSON.parse(err.response.text);
-          if (errObject.validationErrors) {
-            reject(errObject.validationErrors[0]);
+
+      const eventNodes = this.getMatchingTaskNameNodes("EVENT_TASK");
+      const eventHandlers = this.createEventHandlers(eventNodes);
+
+      this.registerEventHandlers(eventHandlers).then(() => {
+        http
+          .put("/api/conductor/metadata", [definition])
+          .then(() => {
+            resolve(definition);
+          })
+          .catch(err => {
+            const errObject = JSON.parse(err.response.text);
+            if (errObject.validationErrors) {
+              reject(errObject.validationErrors[0]);
+            }
+          });
+      });
+    });
+  }
+
+  registerEventHandlers(eventHandlers) {
+    return new Promise((resolve, reject) => {
+      if (eventHandlers.length < 1) {
+        resolve();
+      }
+      eventHandlers.forEach(eventHandler => {
+        http
+          .post("/api/conductor/event", eventHandler)
+          .then(res => {
+            resolve(res);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    });
+  }
+
+  createEventHandlers(eventNodes) {
+    return eventNodes.map(node => {
+      let {
+        action,
+        targetWorkflowId,
+        targetTaskRefName
+      } = node.extras.inputs.inputParameters;
+      let sink = node.extras.inputs.sink;
+      let wfName = this.definition.name;
+      let taskRefName = node.extras.inputs.taskReferenceName;
+
+      let targetWorkflowIdPlaceholder = targetWorkflowId.match(
+        /(?<=workflow\.input\.)([a-zA-Z0-9-_]+)/gim
+      )?.[0];
+      let targetTaskRefNamePlaceholder = targetTaskRefName.match(
+        /(?<=workflow\.input\.)([a-zA-Z0-9-_]+)/gim
+      )?.[0];
+
+      targetWorkflowId = targetWorkflowIdPlaceholder
+        ? `\$\{${targetWorkflowIdPlaceholder}\}`
+        : targetWorkflowId;
+
+      targetTaskRefName = targetTaskRefNamePlaceholder
+        ? `\$\{${targetTaskRefNamePlaceholder}\}`
+        : targetTaskRefName;
+
+      let output = {};
+      Object.entries(node.extras.inputs.inputParameters).forEach(entry => {
+        if (
+          !["action", "targetTaskRefName", "targetWorkflowId"].includes(
+            entry[0]
+          )
+        ) {
+          let outputPlaceholder = entry[1].match(
+            /(?<=workflow\.input\.)([a-zA-Z0-9-_]+)/gim
+          )?.[0];
+
+          output[entry[0]] = outputPlaceholder
+            ? `\$\{${outputPlaceholder}\}`
+            : entry[1];
+        }
+      });
+
+      return {
+        name: `${wfName}_${taskRefName}`,
+        event: `${sink}:${wfName}:${taskRefName}`,
+        actions: [
+          {
+            action: `${action}`,
+            complete_task: {
+              workflowId: targetWorkflowId,
+              taskRefName: targetTaskRefName,
+              output
+            }
           }
-        });
+        ],
+        active: true
+      };
     });
   }
 
@@ -270,7 +355,7 @@ export class WorkflowDiagram {
     if (_.last(this.definition.tasks).type === "DECISION") {
       edges.forEach(edge => {
         if (edge.to === "final" && edge.type !== "decision") {
-          lastNodes.push(this.getMatchingNode(edge.from));
+          lastNodes.push(this.getMatchingTaskRefNode(edge.from));
         }
       });
 
@@ -385,13 +470,17 @@ export class WorkflowDiagram {
 
   /**
    * Finds node with matching name to taskName
-   * @param taskName - name of node to find (based on task)
+   * @param taskRefName - name of node to find (based on task)
    * @returns {unknown}
    */
-  getMatchingNode(taskName) {
+  getMatchingTaskRefNode(taskRefName) {
     return _.toArray(this.getNodes()).find(
-      x => x.extras.inputs.taskReferenceName === taskName
+      x => x.extras.inputs.taskReferenceName === taskRefName
     );
+  }
+
+  getMatchingTaskNameNodes(taskName) {
+    return _.toArray(this.getNodes()).filter(x => x.name === taskName);
   }
 
   /**
@@ -404,21 +493,21 @@ export class WorkflowDiagram {
       if (edge.from !== "start" && edge.to !== "final") {
         switch (edge.type) {
           case "simple": {
-            const fromNode = this.getMatchingNode(edge.from);
-            const toNode = this.getMatchingNode(edge.to);
+            const fromNode = this.getMatchingTaskRefNode(edge.from);
+            const toNode = this.getMatchingTaskRefNode(edge.to);
             this.diagramModel.addLink(this.linkNodes(fromNode, toNode));
             break;
           }
           case "FORK": {
-            const fromNode = this.getMatchingNode(edge.from);
-            const toNode = this.getMatchingNode(edge.to);
+            const fromNode = this.getMatchingTaskRefNode(edge.from);
+            const toNode = this.getMatchingTaskRefNode(edge.to);
 
             this.diagramModel.addLink(this.linkNodes(fromNode, toNode));
             break;
           }
           case "decision": {
-            const fromNode = this.getMatchingNode(edge.from);
-            const toNode = this.getMatchingNode(edge.to);
+            const fromNode = this.getMatchingTaskRefNode(edge.from);
+            const toNode = this.getMatchingTaskRefNode(edge.to);
             let whichPort = "failPort";
 
             if (!_.isEmpty(fromNode.ports.failPort.links)) {
@@ -798,14 +887,18 @@ export class WorkflowDiagram {
           subworkflowDiagram.createDiagram();
 
           const { edges } = this.getGraphState(res.result);
-          const firstNode = subworkflowDiagram.getMatchingNode(edges[0].to);
+          const firstNode = subworkflowDiagram.getMatchingTaskRefNode(
+            edges[0].to
+          );
           const lastNodes = [];
 
           // decision special case
           if (_.last(res.result.tasks).type === "DECISION") {
             edges.forEach(edge => {
               if (edge.to === "final") {
-                lastNodes.push(subworkflowDiagram.getMatchingNode(edge.from));
+                lastNodes.push(
+                  subworkflowDiagram.getMatchingTaskRefNode(edge.from)
+                );
               }
             });
           } else {

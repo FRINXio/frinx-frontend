@@ -96,7 +96,8 @@ const systemTasks = type => {
         taskReferenceName: "eventTaskRef" + hash(),
         inputParameters: {
           targetWorkflowId: "${workflow.input.targetWorkflowId}",
-          targetTaskRefName: "${workflow.input.targetTaskRefName}"
+          targetTaskRefName: "${workflow.input.targetTaskRefName}",
+          action: "complete_task"
         },
         type: "EVENT",
         sink: "conductor",

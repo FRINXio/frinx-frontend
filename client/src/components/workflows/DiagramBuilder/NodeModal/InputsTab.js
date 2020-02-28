@@ -7,8 +7,12 @@ import Dropdown from "react-dropdown";
 
 const TEXTFIELD_KEYWORDS = ["template", "uri", "body"];
 const CODEFIELD_KEYWORDS = ["scriptExpression"];
-const SELECTFIELD_KEYWORDS = ["method"];
+const SELECTFIELD_KEYWORDS = ["method", "action"];
 const KEYFIELD_KEYWORDS = ["headers"];
+const SELECTFIELD_OPTIONS = {
+  action: ["complete_task", "fail_task"],
+  method: ["GET", "PUT", "POST", "DELETE"]
+};
 
 const InputsTab = props => {
   const [customParam, setCustomParam] = useState("");
@@ -112,14 +116,15 @@ const InputsTab = props => {
 
   const createSelectField = (entry, item) => {
     let value = entry[1];
+    let options = SELECTFIELD_OPTIONS[entry[0]];
 
     return (
       <Col sm={12} key={`colTf-${entry[0]}`}>
         <Form.Group>
           <Form.Label>{entry[0]}</Form.Label>
           <Dropdown
-            options={["GET", "PUT", "POST", "DELETE"]}
-            onChange={val => props.handleInput(val, item, entry)}
+            options={options}
+            onChange={e => props.handleInput(e.value, item, entry)}
             value={value}
           />
           <Form.Text className="text-muted">
