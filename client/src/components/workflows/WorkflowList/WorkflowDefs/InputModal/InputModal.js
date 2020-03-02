@@ -6,6 +6,7 @@ import * as mountedDevicesActions from "../../../../../store/actions/mountedDevi
 import { Typeahead } from "react-bootstrap-typeahead";
 const http = require("../../../../common/HttpServerSide").HttpClient;
 
+// FIXME rework this class :)
 class InputModal extends Component {
   constructor(props, context) {
     super(props, context);
@@ -28,6 +29,7 @@ class InputModal extends Component {
   componentDidMount() {
     let name = this.props.wf.split(" / ")[0];
     let version = this.props.wf.split(" / ")[1];
+    this.getWaitingWorkflows()
     http
       .get("/api/conductor/metadata/workflow/" + name + "/" + version)
       .then(res => {
@@ -68,6 +70,25 @@ class InputModal extends Component {
         });
       }
     );
+  }
+
+  getWaitingWorkflows() {
+    let q = 'status:"RUNNING"';
+    http.get(
+            "/api/conductor/executions/?q=&h=&freeText=" +
+            q +
+            "&start=" +
+            0 +
+            "&size="
+        ).then(res => {
+          let runningWfs = res.result?.hits;
+          runningWfs.forEach(wf => {
+            http.get('/api/conductor/id/' + wf.workflowId).then(res => {
+              console.log(res.result)
+              // todo filter only waits
+            })
+          })
+    })
   }
 
   getInputs(def) {
