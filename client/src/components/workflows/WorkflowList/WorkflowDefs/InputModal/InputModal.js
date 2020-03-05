@@ -1,173 +1,179 @@
-import React, { Component } from "react";
-import {Modal, Button, Form, Row, Col, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
-import { connect } from "react-redux";
-import * as builderActions from "../../../../../store/actions/builder";
-import * as mountedDevicesActions from "../../../../../store/actions/mountedDevices";
+import React, { useEffect, useState } from "react";
+import {
+  Modal,
+  Button,
+  Form,
+  Row,
+  Col,
+  ToggleButton,
+  ToggleButtonGroup
+} from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { Typeahead } from "react-bootstrap-typeahead";
+import { getMountedDevices } from "../../../../../store/actions/mountedDevices";
+import { storeWorkflowId } from "../../../../../store/actions/builder";
 const http = require("../../../../common/HttpServerSide").HttpClient;
 
-// FIXME rework this class :)
-class InputModal extends Component {
-  constructor(props, context) {
-    super(props, context);
+const getInputs = def => {
+  let matchArray = def.match(/(?<=workflow\.input\.)([a-zA-Z0-9-_]+)/gim);
+  return [...new Set(matchArray)];
+};
 
-    this.handleClose = this.handleClose.bind(this);
+const getDetails = (def, inputsArray) => {
+  let [detailsArray, tmpDesc, tmpValue, descs, values] = [[], [], [], [], []];
 
-    this.state = {
-      show: true,
-      def: "{}",
-      workflowForm: [],
-      wfdesc: "",
-      status: "Execute",
-      wfId: null,
-      name: this.props.wf.split(" / ")[0],
-      version: Number(this.props.wf.split(" / ")[1]),
-      warning: []
-    };
+  if (inputsArray.length > 0) {
+    for (let i = 0; i < inputsArray.length; i++) {
+      let RegExp3 = new RegExp(`\\b${inputsArray[i]}\\[.*?]"`, "igm");
+      detailsArray[i] = def.match(RegExp3);
+    }
   }
+  for (let i = 0; i < detailsArray.length; i++) {
+    if (detailsArray[i]) {
+      tmpDesc[i] = detailsArray[i][0].match(/\[.*?\[/);
+      tmpValue[i] = detailsArray[i][0].match(/].*?]/);
+      if (tmpDesc[i] == null) {
+        tmpDesc[i] = detailsArray[i][0].match(/\[(.*?)]/);
+        descs[i] = tmpDesc[i][1];
+        values[i] = null;
+      } else {
+        tmpDesc[i] = tmpDesc[i][0].match(/[^[\]"]+/);
+        tmpValue[i] = tmpValue[i][0].match(/[^[\]*]+/);
+        descs[i] = tmpDesc[i] ? tmpDesc[i][0] : null;
+        values[i] = tmpValue[i] ? tmpValue[i][0].replace(/\\/g, "") : null;
+      }
+    } else {
+      descs[i] = null;
+      values[i] = null;
+    }
+  }
+  return { descs, values };
+};
 
-  componentDidMount() {
-    let name = this.props.wf.split(" / ")[0];
-    let version = this.props.wf.split(" / ")[1];
-    this.getWaitingWorkflows()
+function InputModal(props) {
+  const dispatch = useDispatch();
+  const devices = useSelector(state => state.mountedDeviceReducer.devices);
+  const [wfdesc, setWfDescs] = useState();
+  const [wfId, setWfId] = useState();
+  const [name, setName] = useState();
+  const [version, setVersion] = useState();
+  const [warning, setWarning] = useState([]);
+  const [status, setStatus] = useState("Execute");
+  const [workflowForm, setWorkflowForm] = useState({
+    labels: [],
+    descs: [],
+    values: []
+  });
+  const [waitingWfs, setWaitingWfs] = useState([]);
+
+  useEffect(() => {
+    let name = props.wf.split(" / ")[0];
+    let version = props.wf.split(" / ")[1];
+    setName(name);
+    setVersion(Number(props.wf.split(" / ")[1]));
+
     http
       .get("/api/conductor/metadata/workflow/" + name + "/" + version)
       .then(res => {
-        this.setState(
-          {
-            def: JSON.stringify(res.result, null, 2),
-            wfdesc: res.result["description"]
-              ? res.result["description"].split("-")[0]
-              : ""
-          },
-          () => this.getWorkflowInputDetails()
-        );
-      })
-      .then(() => {
-        if (
-          this.state.workflowForm.descs.some(
-            rx => rx && rx.match(/.*#node_id.*/g)
-          )
-        ) {
-          this.props.getMountedDevices();
+        let definition = JSON.stringify(res.result, null, 2);
+        let description = res.result?.description?.split("-")[0] || "";
+        let labels = getInputs(definition);
+        let { descs, values } = getDetails(definition, labels);
+
+        if (definition.match(/\bEVENT_TASK\b/)) {
+          getWaitingWorkflows().then(waitingWfs => {
+            setWaitingWfs(waitingWfs);
+          });
+        }
+
+        setWfDescs(description);
+        setWorkflowForm({
+          labels,
+          descs,
+          values
+        });
+
+        if (descs.some(rx => rx && rx.match(/.*#node_id.*/g))) {
+          dispatch(getMountedDevices());
         }
       });
-  }
+  }, [props]);
 
-  getWorkflowInputDetails() {
-    this.setState(
-      {
-        workflowForm: {
-          labels: this.getInputs(this.state.def)
-        }
-      },
-      () => {
-        this.setState({
-          workflowForm: {
-            labels: this.state.workflowForm.labels,
-            ...this.getDetails(this.state.def, this.state.workflowForm.labels)
-          }
-        });
-      }
-    );
-  }
-
-  getWaitingWorkflows() {
-    let q = 'status:"RUNNING"';
-    http.get(
-            "/api/conductor/executions/?q=&h=&freeText=" +
+  const getWaitingWorkflows = () => {
+    return new Promise((resolve, reject) => {
+      let waitingWfs = [];
+      let q = 'status:"RUNNING"';
+      http
+        .get(
+          "/api/conductor/executions/?q=&h=&freeText=" +
             q +
             "&start=" +
             0 +
             "&size="
-        ).then(res => {
-          let runningWfs = res.result?.hits;
-          runningWfs.forEach(wf => {
-            http.get('/api/conductor/id/' + wf.workflowId).then(res => {
-              console.log(res.result)
-              // todo filter only waits
-            })
-          })
-    })
-  }
+        )
+        .then(res => {
+          let runningWfs = res.result?.hits || [];
+          let promises = runningWfs.map(wf => {
+            return http.get("/api/conductor/id/" + wf.workflowId);
+          });
 
-  getInputs(def) {
-    let matchArray = def.match(/(?<=workflow\.input\.)([a-zA-Z0-9-_]+)/gim);
-    return [...new Set(matchArray)];
-  }
-
-  getDetails(def, inputsArray) {
-    let [detailsArray, tmpDesc, tmpValue, descs, values] = [[], [], [], [], []];
-
-    if (inputsArray.length > 0) {
-      for (let i = 0; i < inputsArray.length; i++) {
-        let RegExp3 = new RegExp(`\\b${inputsArray[i]}\\[.*?]"`, "igm");
-        detailsArray[i] = def.match(RegExp3);
-      }
-    }
-    for (let i = 0; i < detailsArray.length; i++) {
-      if (detailsArray[i]) {
-        tmpDesc[i] = detailsArray[i][0].match(/\[.*?\[/);
-        tmpValue[i] = detailsArray[i][0].match(/].*?]/);
-        if (tmpDesc[i] == null) {
-          tmpDesc[i] = detailsArray[i][0].match(/\[(.*?)]/);
-          descs[i] = tmpDesc[i][1];
-          values[i] = null;
-        } else {
-          tmpDesc[i] = tmpDesc[i][0].match(/[^[\]"]+/);
-          tmpValue[i] = tmpValue[i][0].match(/[^[\]*]+/);
-          descs[i] = tmpDesc[i] ? tmpDesc[i][0] : null;
-          values[i] = tmpValue[i] ? tmpValue[i][0].replace(/\\/g, "") : null;
-        }
-      } else {
-        descs[i] = null;
-        values[i] = null;
-      }
-    }
-    return { descs, values };
-  }
-
-  handleClose() {
-    this.setState({ show: false });
-    this.props.modalHandler();
-  }
-
-  handleInput(e, i) {
-    const { workflowForm, warning } = this.state;
-
-    workflowForm.values[i] = e.target.value;
-    warning[i] = !!(workflowForm.values[i].match(/^\s.*$/) || workflowForm.values[i].match(/^.*\s$/));
-
-    this.setState({
-      workflowForm,
-      warning
+          Promise.all(promises).then(results => {
+            results.forEach(r => {
+              let workflow = r.result;
+              const waitTasks = workflow?.tasks
+                .filter(task => task.taskType === "WAIT")
+                .map(t => t.referenceTaskName);
+              if (waitTasks.length > 0) {
+                let waitingWf = {
+                  id: workflow.workflowId,
+                  name: workflow.workflowName,
+                  waitingTasks: waitTasks
+                };
+                waitingWfs.push(waitingWf);
+              }
+            });
+            resolve(waitingWfs);
+          });
+        });
     });
-  }
+  };
 
-  handleTypahead(e, i) {
-    const { workflowForm } = this.state;
-    workflowForm.values[i] = e.toString();
+  const handleClose = () => {
+    props.modalHandler();
+  };
 
-    this.setState({
-      workflowForm
-    });
-  }
+  const handleInput = (e, i) => {
+    const workflowFormCopy = { ...workflowForm };
+    const warningCopy = { ...warning };
 
-  handleSwitch(e, i){
-    const { workflowForm} = this.state;
-    workflowForm.values[i] = e ? "true" : "false";
+    workflowFormCopy.values[i] = e.target.value;
+    warningCopy[i] = !!(
+      workflowFormCopy.values[i].match(/^\s.*$/) ||
+      workflowFormCopy.values[i].match(/^.*\s$/)
+    );
 
-    this.setState({
-      workflowForm
-    });
-  }
+    setWorkflowForm(workflowFormCopy);
+    setWarning(warningCopy);
+  };
 
-  executeWorkflow() {
-    let { labels, values } = this.state.workflowForm;
+  const handleTypeahead = (e, i) => {
+    const workflowFormCopy = { ...workflowForm };
+    workflowFormCopy.values[i] = e.toString();
+    setWorkflowForm(workflowFormCopy);
+  };
+
+  const handleSwitch = (e, i) => {
+    const workflowFormCopy = { ...workflowForm };
+    workflowFormCopy.values[i] = e ? "true" : "false";
+    setWorkflowForm(workflowFormCopy);
+  };
+
+  const executeWorkflow = () => {
+    let { labels, values } = { ...workflowForm };
     let input = {};
     let payload = {
-      name: this.state.name,
-      version: this.state.version,
+      name: name,
+      version: version,
       input
     };
 
@@ -178,183 +184,204 @@ class InputModal extends Component {
           : values[i];
       }
     }
-    this.setState({ status: "Executing..." });
+    setStatus("Executing...");
     http.post("/api/conductor/workflow", JSON.stringify(payload)).then(res => {
-      this.setState({
-        status: res.statusText,
-        wfId: res.body.text
-      });
-      this.props.storeWorkflowId(res.body.text);
-      this.timeoutBtn();
+      setStatus(res.statusText);
+      setWfId(res.body.text);
 
-      if (this.props.fromBuilder) {
-        this.handleClose();
+      dispatch(storeWorkflowId(res.body.text));
+      timeoutBtn();
+
+      if (props.fromBuilder) {
+        handleClose();
       }
     });
-  }
+  };
 
-  timeoutBtn() {
-    setTimeout(() => this.setState({ status: "Execute" }), 1000);
-  }
+  const timeoutBtn = () => {
+    setTimeout(() => setStatus("Execute"), 1000);
+  };
 
-  render() {
-    let values = this.state.workflowForm.values || [];
-    let descs = this.state.workflowForm.descs || [];
-    let labels = this.state.workflowForm.labels || [];
-    let warning = this.state.warning;
-
-    let inputModel = (type, i) => {
-      switch (true) {
-        case /node_id.*/g.test(type):
-          return (
-            <Typeahead
-              id={`input-${i}`}
-              onChange={e => this.handleTypahead(e, i)}
-              placeholder="Enter the node id"
-              multiple={!!type.match(/node_ids/g)}
-              options={this.props.devices}
-              selected={this.props.devices.filter(
-                device => device === values[i]
-              )}
-              onInputChange={e => this.handleTypahead(e, i)}
-            />
-          );
-        case /template/g.test(type):
-          return (
-            <Form.Control
-              type="input"
-              as="textarea"
-              rows="2"
-              onChange={e => this.handleInput(e, i)}
-              placeholder="Enter the input"
-              value={values[i] ? values[i] : ""}
-              isInvalid={warning[i]}
-            />
-          );
-        case /bool/g.test(type):
-          return (
-              <ToggleButtonGroup
-                  type="radio"
-                  value={values[i] === "true"}
-                  name={`switch-${i}`}
-                  onChange={e => this.handleSwitch(e, i)}
-                  style={{
-                    height: "calc(1.5em + .75rem + 2px)",
-                    width: "100%",
-                    paddingTop: ".375rem"
-                  }}
-              >
-                <ToggleButton size="sm" variant="outline-primary" value={true}>
-                  On
-                </ToggleButton>
-                <ToggleButton size="sm" variant="outline-primary" value={false}>
-                  Off
-                </ToggleButton>
-              </ToggleButtonGroup>
-          );
-        default:
-          return (
-            <Form.Control
-              type="input"
-              onChange={e => this.handleInput(e, i)}
-              placeholder="Enter the input"
-              value={values[i] ? values[i] : ""}
-              isInvalid={warning[i]}
-            />
-          );
-      }
-    };
-    return (
-      <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
-        <Modal.Body style={{ padding: "30px" }}>
-          <h4>
-            {this.state.name} / {this.state.version}
-          </h4>
-          <p className="text-muted">{this.state.wfdesc}</p>
-          <hr />
-          <Form onSubmit={this.executeWorkflow.bind(this)}>
-            <Row>
-              {labels.map((item, i) => {
-                return (
-                  <Col sm={6} key={`col1-${i}`}>
-                    <Form.Group>
-                      <Form.Label>{item}</Form.Label>
-                      {warning[i] ? (
-                        <div
-                          style={{
-                            color: "red",
-                            fontSize: "12px",
-                            float: "right",
-                            marginTop: "5px"
-                          }}
-                        >
-                          Unnecessary space
-                        </div>
-                      ) : null}
-                      {inputModel(descs[i] ? descs[i].split("#")[1] : null, i)}
-                      <Form.Text className="text-muted">
-                        {descs[i] ? descs[i].split("#")[0] : null}
-                      </Form.Text>
-                    </Form.Group>
-                  </Col>
-                );
-              })}
-            </Row>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <a
-            style={{ float: "left", marginRight: "50px" }}
-            href={`/workflows/exec/${this.state.wfId}`}
+  const inputModel = (type, i) => {
+    switch (true) {
+      case waitingWfs.length > 0 && type.toLowerCase().includes("id"):
+        return (
+          <Typeahead
+            id={`input-${type}`}
+            onChange={e => handleTypeahead(e, i)}
+            placeholder="Enter or select workflow id"
+            options={waitingWfs.map(w => w.id)}
+            defaultSelected={workflowForm.values[i] || ""}
+            onInputChange={e => handleTypeahead(e, i)}
+            renderMenuItemChildren={option => (
+              <div>
+                {option}
+                <div>
+                  <small>
+                    name: {waitingWfs.find(w => w.id === option)?.name}
+                  </small>
+                </div>
+              </div>
+            )}
+          />
+        );
+      case waitingWfs.length > 0 && type.toLowerCase().includes("task"):
+        return (
+          <Typeahead
+            id={`input-${type}`}
+            onChange={e => handleTypeahead(e, i)}
+            placeholder="Enter or select task reference name"
+            options={waitingWfs.map(w => w.waitingTasks).flat()}
+            onInputChange={e => handleTypeahead(e, i)}
+            renderMenuItemChildren={option => (
+              <div>
+                {option}
+                <div>
+                  <small>
+                    name:{" "}
+                    {
+                      waitingWfs.find(w => w.waitingTasks.includes(option))
+                        ?.name
+                    }
+                  </small>
+                </div>
+              </div>
+            )}
+          />
+        );
+      case /node_id.*/g.test(type):
+        return (
+          <Typeahead
+            id={`input-${i}`}
+            onChange={e => handleTypeahead(e, i)}
+            placeholder="Enter the node id"
+            multiple={!!type.match(/node_ids/g)}
+            options={devices}
+            selected={devices.filter(
+              device => device === workflowForm.values[i]
+            )}
+            onInputChange={e => handleTypeahead(e, i)}
+          />
+        );
+      case /template/g.test(type):
+        return (
+          <Form.Control
+            type="input"
+            as="textarea"
+            rows="2"
+            onChange={e => handleInput(e, i)}
+            placeholder="Enter the input"
+            value={workflowForm.values[i] || ""}
+            isInvalid={warning[i]}
+          />
+        );
+      case /bool/g.test(type):
+        return (
+          <ToggleButtonGroup
+            type="radio"
+            value={workflowForm.values[i] === "true"}
+            name={`switch-${i}`}
+            onChange={e => handleSwitch(e, i)}
+            style={{
+              height: "calc(1.5em + .75rem + 2px)",
+              width: "100%",
+              paddingTop: ".375rem"
+            }}
           >
-            {this.state.wfId}
-          </a>
-          <Button
-            variant={
-              this.state.status === "OK"
-                ? "success"
-                : this.state.status === "Executing..."
-                ? "info"
-                : this.state.status === "Execute"
-                ? "primary"
-                : "danger"
-            }
-            onClick={this.executeWorkflow.bind(this)}
-          >
-            {this.state.status === "Execute" ? (
-              <i className="fas fa-play" />
-            ) : null}
-            {this.state.status === "Executing..." ? (
-              <i className="fas fa-spinner fa-spin" />
-            ) : null}
-            {this.state.status === "OK" ? (
-              <i className="fas fa-check-circle" />
-            ) : null}
-            &nbsp;&nbsp;{this.state.status}
-          </Button>
-          <Button variant="secondary" onClick={this.handleClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    );
-  }
+            <ToggleButton size="sm" variant="outline-primary" value={true}>
+              On
+            </ToggleButton>
+            <ToggleButton size="sm" variant="outline-primary" value={false}>
+              Off
+            </ToggleButton>
+          </ToggleButtonGroup>
+        );
+      default:
+        return (
+          <Form.Control
+            type="input"
+            onChange={e => handleInput(e, i)}
+            placeholder="Enter the input"
+            value={workflowForm.values[i] || ""}
+            isInvalid={warning[i]}
+          />
+        );
+    }
+  };
+
+  return (
+    <Modal size="lg" show={props.show} onHide={handleClose}>
+      <Modal.Body style={{ padding: "30px" }}>
+        <h4>
+          {name} / {version}
+        </h4>
+        <p className="text-muted">{wfdesc}</p>
+        <hr />
+        <Form onSubmit={executeWorkflow}>
+          <Row>
+            {workflowForm.labels.map((item, i) => {
+              return (
+                <Col sm={6} key={`col1-${i}`}>
+                  <Form.Group>
+                    <Form.Label>{item}</Form.Label>
+                    {warning[i] ? (
+                      <div
+                        style={{
+                          color: "red",
+                          fontSize: "12px",
+                          float: "right",
+                          marginTop: "5px"
+                        }}
+                      >
+                        Unnecessary space
+                      </div>
+                    ) : null}
+                    {inputModel(
+                      workflowForm?.descs[i]?.split("#")[1] || item,
+                      i
+                    )}
+                    <Form.Text className="text-muted">
+                      {workflowForm?.descs[i]?.split("#")[0] || []}
+                    </Form.Text>
+                  </Form.Group>
+                </Col>
+              );
+            })}
+          </Row>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <a
+          style={{ float: "left", marginRight: "50px" }}
+          href={`/workflows/exec/${wfId}`}
+        >
+          {wfId}
+        </a>
+        <Button
+          variant={
+            status === "OK"
+              ? "success"
+              : status === "Executing..."
+              ? "info"
+              : status === "Execute"
+              ? "primary"
+              : "danger"
+          }
+          onClick={executeWorkflow}
+        >
+          {status === "Execute" ? <i className="fas fa-play" /> : null}
+          {status === "Executing..." ? (
+            <i className="fas fa-spinner fa-spin" />
+          ) : null}
+          {status === "OK" ? <i className="fas fa-check-circle" /> : null}
+          &nbsp;&nbsp;{status}
+        </Button>
+        <Button variant="secondary" onClick={handleClose}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    storeWorkflowId: id => dispatch(builderActions.storeWorkflowId(id)),
-    getMountedDevices: () => dispatch(mountedDevicesActions.getMountedDevices())
-  };
-};
-
-const mapStateToProps = state => {
-  return {
-    devices: state.mountedDeviceReducer.devices
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(InputModal);
+export default InputModal;

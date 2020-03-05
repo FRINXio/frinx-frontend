@@ -30,7 +30,7 @@ const WorkflowList = props => {
         if (!--count) {
           http.put("/api/conductor/metadata", fileList).then(() => {
             window.location.reload();
-          })
+          });
         }
       };
       reader.readAsBinaryString(file);
