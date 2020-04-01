@@ -10,7 +10,6 @@ import WorkflowDefModal from "./WorkflowDefModal/WorkflowDefModal";
 import GeneralInfoModal from "./GeneralInfoModal/GeneralInfoModal";
 import DetailsModal from "../WorkflowList/WorkflowExec/DetailsModal/DetailsModal";
 import InputModal from "../WorkflowList/WorkflowDefs/InputModal/InputModal";
-import SubwfModal from "./SubwfModal/SubwfModal";
 import { encode } from "./builder-utils";
 import * as builderActions from "../../../store/actions/builder";
 import * as _ from "lodash";
@@ -21,6 +20,7 @@ import BuilderHeader from "./ControlsHeader/BuilderHeader";
 import Sidemenu from "./Sidemenu/Sidemenu";
 import SidemenuRight from "./Sidemenu/SidemenuRight";
 import { HotKeys } from "react-hotkeys";
+import NodeModal from "./NodeModal/NodeModal";
 
 const http = require("../../common/HttpServerSide").HttpClient;
 
@@ -374,7 +374,7 @@ class DiagramBuilder extends Component {
     ) : null;
 
     let nodeModal = this.state.showNodeModal ? (
-      <SubwfModal
+      <NodeModal
         modalHandler={this.showNodeModal}
         inputs={this.state.modalInputs}
         saveInputs={this.saveNodeInputsHandler}
@@ -543,7 +543,8 @@ const mapDispatchToProps = dispatch => {
       dispatch(builderActions.updateFinalWorkflow(finalWorkflow)),
     resetToDefaultWorkflow: () =>
       dispatch(builderActions.resetToDefaultWorkflow()),
-    updateQuery: (query, labels) => dispatch(builderActions.requestUpdateByQuery(query, labels)),
+    updateQuery: (query, labels) =>
+      dispatch(builderActions.requestUpdateByQuery(query, labels)),
     openCard: which => dispatch(builderActions.openCard(which)),
     showCustomAlert: (show, variant, msg) =>
       dispatch(builderActions.showCustomAlert(show, variant, msg)),

@@ -95,7 +95,9 @@ const systemTasks = type => {
         name: "EVENT_TASK",
         taskReferenceName: "eventTaskRef" + hash(),
         inputParameters: {
-          sourceWorkflowId: "${workflow.input.sourceWorkflowId}"
+          targetWorkflowId: "${workflow.input.targetWorkflowId}",
+          targetTaskRefName: "${workflow.input.targetTaskRefName}",
+          action: "complete_task"
         },
         type: "EVENT",
         sink: "conductor",
@@ -164,11 +166,11 @@ const icons = task => {
       );
     case "event":
       return (
-          <div className="lambda-icon">{task.substring(0, 1).toUpperCase()}</div>
+        <div className="lambda-icon">{task.substring(0, 1).toUpperCase()}</div>
       );
     case "wait":
       return (
-          <div className="lambda-icon">{task.substring(0, 1).toUpperCase()}</div>
+        <div className="lambda-icon">{task.substring(0, 1).toUpperCase()}</div>
       );
     default:
       break;
