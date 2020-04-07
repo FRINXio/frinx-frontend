@@ -1,33 +1,37 @@
 import React, { Component } from "react";
-import "./App.css";
-import Dashboard from "./components/dashboard/Dashboard";
+import { connect } from "react-redux";
 import { Redirect, Route, Switch, withRouter } from "react-router-dom";
-import List from "./components/uniconfig/deviceTable/List";
-import DeviceView from "./components/uniconfig/deviceView/DeviceView";
+import "./App.css";
+import Login from "./components/auth/Login";
+import Logout from "./components/auth/Logout";
+import Registration from "./components/auth/Registration";
+import Dashboard from "./components/dashboard/Dashboard";
+import KibanaFrame from "./components/dashboard/KibanaFrame";
 import Header from "./components/header/Header";
 import TaskList from "./components/tasks/taskList/TaskList";
-import WorkflowList from "./components/workflows/WorkflowList/WorkflowList";
-import Login from "./components/auth/Login";
-import Registration from "./components/auth/Registration";
-import { connect } from "react-redux";
-import Logout from "./components/auth/Logout";
+import List from "./components/uniconfig/deviceTable/List";
+import DeviceView from "./components/uniconfig/deviceView/DeviceView";
+import SubApp from "./components/workflows/frinx-workflow-ui/src/App";
 import * as authActions from "./store/actions/auth";
-import KibanaFrame from "./components/dashboard/KibanaFrame";
-import DiagramBuilder from "./components/workflows/DiagramBuilder/DiagramBuilder";
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isBuilderActive: false,
+    };
+  }
+
   componentDidMount() {
     if (this.props.isAuthEnabled) {
       this.props.onTryAutoSignup();
     }
-
-    this.unlisten = this.props.history.listen((location, action) => {
-      console.log("You changed the page to: ", location.pathname);
-    });
   }
 
-  componentWillUnmount() {
-    this.unlisten();
+  setBuilderActive() {
+    this.setState({
+      isBuilderActive: true,
+    });
   }
 
   render() {
@@ -49,17 +53,17 @@ class App extends Component {
             <Route exact path="/devices" component={List} />
             <Route path="/devices/edit/:id" component={DeviceView} />
             <Route path="/tasks" component={TaskList} />
-            <Route exact path="/workflows/builder" component={DiagramBuilder} />
             <Route
               exact
-              path="/workflows/builder/:name/:version"
-              component={DiagramBuilder}
-            />
-            <Route exact path="/workflows/:type" component={WorkflowList} />
-            <Route
-              exact
-              path="/workflows/:type/:wfid"
-              component={WorkflowList}
+              path={[
+                "/workflows/builder",
+                "/workflows/builder/:name/:version",
+                "/workflows/:type",
+                "/workflows/:type/:wfid",
+              ]}
+              render={() => (
+                <SubApp setBuilderActive={this.setBuilderActive.bind(this)} />
+              )}
             />
             <Route exact path="/inventory" component={KibanaFrame} />
             <Route path="/logout" component={Logout} />
@@ -75,26 +79,26 @@ class App extends Component {
           <Route exact path="/devices" component={List} />
           <Route path="/devices/edit/:id" component={DeviceView} />
           <Route exact path="/tasks/:type" component={TaskList} />
-          <Route exact path="/workflows/builder" component={DiagramBuilder} />
           <Route
             exact
-            path="/workflows/builder/:name/:version"
-            component={DiagramBuilder}
+            path={[
+              "/workflows/builder",
+              "/workflows/builder/:name/:version",
+              "/workflows/:type",
+              "/workflows/:type/:wfid",
+            ]}
+            render={() => (
+              <SubApp setBuilderActive={this.setBuilderActive.bind(this)} />
+            )}
           />
-          <Route exact path="/workflows/:type" component={WorkflowList} />
-          <Route exact path="/workflows/:type/:wfid" component={WorkflowList} />
           <Route exact path="/inventory" component={KibanaFrame} />
         </Switch>
       );
     }
 
-    const isBuilderActive = () => {
-      return this.props.location.pathname.includes("/workflows/builder");
-    };
-
     return (
       <div className="App">
-        {isBuilderActive() ? null : this.props.isAuthEnabled ? (
+        {this.state.isBuilderActive ? null : this.props.isAuthEnabled ? (
           this.props.isAuthenticated ? (
             <Header email={this.props.userEmail} />
           ) : (
@@ -107,17 +111,17 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     isAuthEnabled: process.env.REACT_APP_LOGIN_ENABLED !== "false",
     isAuthenticated: state.authReducer.token !== null,
-    userEmail: state.authReducer.email
+    userEmail: state.authReducer.email,
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    onTryAutoSignup: () => dispatch(authActions.authCheckState())
+    onTryAutoSignup: () => dispatch(authActions.authCheckState()),
   };
 };
 

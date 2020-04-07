@@ -1,25 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import * as serviceWorker from "./serviceWorker";
-import App from "./App";
-
-import { combineReducers, createStore, applyMiddleware, compose } from "redux";
-import thunk from "redux-thunk";
-import bulkReducer from "./store/reducers/bulk";
-import searchReducer from "./store/reducers/searchExecs";
-import authReducer from "./store/reducers/auth";
-import buildReducer from "./store/reducers/builder";
-import mountedDeviceReducer from "./store/reducers/mountedDevices";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
+import { applyMiddleware, combineReducers, compose, createStore } from "redux";
+import thunk from "redux-thunk";
+import App from "./App";
+import "./index.css";
+import * as serviceWorker from "./serviceWorker";
+import authReducer from "./store/reducers/auth";
 
 const rootReducer = combineReducers({
-  bulkReducer,
-  searchReducer,
-  authReducer,
-  buildReducer,
-  mountedDeviceReducer
+  authReducer
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
