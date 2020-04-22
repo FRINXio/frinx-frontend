@@ -6,6 +6,7 @@ WORKDIR /usr/app/client/
 COPY client/package*.json ./
 RUN npm install -qy
 COPY client/ ./
+RUN npm install -qy src/components/workflows/frinx-workflow-ui
 RUN npm run build
 
 # Setup the server
