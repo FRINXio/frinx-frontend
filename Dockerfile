@@ -24,7 +24,7 @@ COPY routers ./routers
 COPY certificates ./certificates
 COPY server.js ./
 
-EXPOSE 3001
+EXPOSE 3000
 
 # environments from docker-compose are passed as node env variables
 
