@@ -16,6 +16,7 @@
     "dagre-d3": "^0.4.17",
     "file-saver": "^2.0.2",
     "framer-motion": "^1.6.17",
+    "frinx-workflow-ui": "file:src/components/workflows/frinx-workflow-ui",
     "jquery": "^3.4.1",
     "jszip": "^3.2.2",
     "lodash": "^4.17.11",
@@ -44,7 +45,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "install": "npm install -qy src/components/workflows/frinx-workflow-ui"
   },
   "eslintConfig": {
     "extends": "react-app"
