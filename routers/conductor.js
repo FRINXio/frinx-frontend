@@ -119,6 +119,16 @@ router.post("/event", async (req, res, next) => {
   }
 });
 
+router.get("/event", async (req, res, next) => {
+  try {
+    const result = await http.get(baseURL + "event/");
+    res.status(200).send(result);
+  } catch (err) {
+    res.status(400).send(err.response.body);
+    next(err);
+  }
+});
+
 router.post("/workflow", async (req, res, next) => {
   try {
     const result = await http.post(baseURLWorkflow, req.body);
