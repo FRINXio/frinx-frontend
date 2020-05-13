@@ -129,6 +129,16 @@ router.get("/event", async (req, res, next) => {
   }
 });
 
+router.delete("/event/:name", async (req, res, next) => {
+  try {
+    const result = await http.delete(baseURL + "event/" + req.params.name);
+    res.status(200).send(result);
+  } catch (err) {
+    res.status(400).send(err.response.body);
+    next(err);
+  }
+});
+
 router.post("/workflow", async (req, res, next) => {
   try {
     const result = await http.post(baseURLWorkflow, req.body);
