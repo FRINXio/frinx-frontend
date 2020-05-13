@@ -113,7 +113,6 @@ router.post("/event", async (req, res, next) => {
       const result = await http.put(baseURL + "event/", req.body);
       res.status(200).send(result);
     } catch (e) {
-      res.status(400).send(e.response.body);
       next(e);
     }
   }
@@ -124,7 +123,6 @@ router.get("/event", async (req, res, next) => {
     const result = await http.get(baseURL + "event/");
     res.status(200).send(result);
   } catch (err) {
-    res.status(400).send(err.response.body);
     next(err);
   }
 });
@@ -134,7 +132,6 @@ router.delete("/event/:name", async (req, res, next) => {
     const result = await http.delete(baseURL + "event/" + req.params.name);
     res.status(200).send(result);
   } catch (err) {
-    res.status(400).send(err.response.body);
     next(err);
   }
 });
