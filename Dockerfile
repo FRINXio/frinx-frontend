@@ -3,6 +3,7 @@
 FROM node:9.4.0-alpine as client
 
 WORKDIR /usr/app/client/
+ENV SASS_BINARY_NAME linux-x64-59
 COPY client/package*.json ./
 RUN npm install -qy
 COPY client/ ./
