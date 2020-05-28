@@ -39,14 +39,13 @@
     "semantic-ui-react": "^0.88.1",
     "superagent": "^5.0.2",
     "unescape-js": "^1.1.1",
-    "frinx-workflow-ui": "^1.1.18"
+    "frinx-workflow-ui": "^1.1.19"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "install": "npm install -qy src/components/workflows/frinx-workflow-ui"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
