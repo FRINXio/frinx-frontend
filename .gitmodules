@@ -1,3 +1,0 @@
-[submodule "client/src/components/workflows/frinx-workflow-ui"]
-	path = client/src/components/workflows/frinx-workflow-ui
-	url = https://github.com/FRINXio/frinx-workflow-ui

@@ -7,7 +7,10 @@ import Header from "./components/header/Header";
 import TaskList from "./components/tasks/taskList/TaskList";
 import List from "./components/uniconfig/deviceTable/List";
 import DeviceView from "./components/uniconfig/deviceView/DeviceView";
-import SubApp from "./components/workflows/frinx-workflow-ui/src/App";
+import SubApp from "frinx-workflow-ui/lib/App";
+
+const conductorApiUrlPrefix = "/api/conductor";
+const frontendUrlPrefix = "/workflows";
 
 function App() {
   const [isBuilderActive, setIsBuilderAcive] = useState(false);
@@ -26,7 +29,11 @@ function App() {
           "/workflows/:type",
           "/workflows/:type/:wfid",
         ]}
-        render={() => <SubApp setBuilderActive={setIsBuilderAcive} />}
+        render={() => <SubApp 
+          frontendUrlPrefix={frontendUrlPrefix}
+          backendApiUrlPrefix={conductorApiUrlPrefix}
+          enableScheduling={false}
+          setBuilderActive={setIsBuilderAcive} />}
       />
       <Route exact path="/inventory" component={KibanaFrame} />
     </Switch>
