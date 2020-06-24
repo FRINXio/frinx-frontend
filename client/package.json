@@ -39,7 +39,7 @@
     "semantic-ui-react": "^0.88.1",
     "superagent": "^5.0.2",
     "unescape-js": "^1.1.1",
-    "frinx-workflow-ui": "^1.1.19"
+    "frinx-workflow-ui": "^1.1.20"
   },
   "scripts": {
     "start": "react-scripts start",
