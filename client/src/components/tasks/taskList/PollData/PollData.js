@@ -1,7 +1,6 @@
 import React from "react";
 import { Row, Form, Col, Table, Container } from "react-bootstrap";
 import moment from "moment";
-import { connect } from "react-redux";
 import "./PollData.css";
 import PageCount from "../../../common/PageCount";
 import PageSelect from "../../../common/PageSelect";
@@ -36,10 +35,6 @@ class PollData extends React.Component {
         },() => this.sortArray("queueName"));
       }
     });
-  }
-
-  componentWillReceiveProps({ queueData }) {
-    this.setState({ queueData });
   }
 
   sortAscBy = function(key) {
@@ -212,4 +207,4 @@ class PollData extends React.Component {
   }
 }
 
-export default connect()(PollData);
+export default PollData;
