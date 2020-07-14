@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Route, Switch, withRouter } from "react-router-dom";
 import "./App.css";
 import Dashboard from "./components/dashboard/Dashboard";
@@ -13,7 +13,6 @@ const conductorApiUrlPrefix = "/api/conductor";
 const frontendUrlPrefix = "/workflows";
 
 function App() {
-  const [isBuilderActive, setIsBuilderAcive] = useState(false);
 
   let routes = (
     <Switch>
@@ -21,6 +20,7 @@ function App() {
       <Route exact path="/devices" component={List} />
       <Route path="/devices/edit/:id" component={DeviceView} />
       <Route path="/tasks" component={TaskList} />
+      <Route exact path="/inventory" component={KibanaFrame} />
       <Route
         exact
         path={[
@@ -29,19 +29,28 @@ function App() {
           "/workflows/:type",
           "/workflows/:type/:wfid",
         ]}
-        render={() => <SubApp 
+        render={() => <SubApp
           frontendUrlPrefix={frontendUrlPrefix}
           backendApiUrlPrefix={conductorApiUrlPrefix}
-          enableScheduling={false}
-          setBuilderActive={setIsBuilderAcive} />}
+          enableScheduling={false} />
+        }
       />
-      <Route exact path="/inventory" component={KibanaFrame} />
     </Switch>
   );
 
   return (
     <div className="App">
-      {isBuilderActive ? null : <Header />}
+      <Route
+        exact
+        path={[
+          "/",
+          "/devices",
+          "/devices/edit/:id",
+          "/tasks*",
+          "/inventory"
+        ]}
+        component={Header}
+      />
       {routes}
     </div>
   );
