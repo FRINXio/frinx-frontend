@@ -22,10 +22,9 @@ const Title = () => (
 );
 
 const Header = () => {
-
   return (
     <Navbar className="navbarHeader">
-      <Navbar.Brand style={{cursor: "pointer"}} >
+      <Navbar.Brand style={{cursor: "pointer"}} onClick={() => window.location = "/"}>
         <Logo />
       </Navbar.Brand>
       <Title />
