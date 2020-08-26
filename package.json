@@ -1,0 +1,45 @@
+{
+  "name": "resource-manager-frontend",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "author": "Juraj Rusnak <jrusnak@frinx.io>",
+  "homepage": "/resourcemanager/frontend",
+  "private": true,
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "css-loader": "^3.5.3",
+    "file-loader": "^6.0.0",
+    "html-loader": "^1.1.0",
+    "node-sass": "^4.14.1",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4",
+    "react-scripts": "^3.4.0",
+    "sass-loader": "^8.0.2",
+    "style-loader": "^1.2.0",
+    "webpack": "4.42.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "3.10.3"
+  },
+  "scripts": {
+    "start:dev": "webpack-dev-server --mode development",
+    "build": "webpack --config ./webpack.config.js --progress --profile --colors",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-react": "^7.9.4",
+    "@babel/plugin-transform-runtime": "^7.11.0",
+    "babel-loader": "^8.1.0",
+    "babel-preset-env": "^1.7.0",
+    "jsdoc": "^3.6.3",
+    "prettier": "1.18.2"
+  }
+}
