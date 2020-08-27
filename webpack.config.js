@@ -11,6 +11,12 @@ module.exports = {
     port: 5000,
     host: '0.0.0.0',
     disableHostCheck: true,
+    proxy: {
+      '/': {
+        target: 'http://localhost:8884',
+        secure: false
+      }
+    },
   },
   output: {
     publicPath: '/resourcemanager/frontend/',

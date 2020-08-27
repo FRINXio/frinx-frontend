@@ -106,9 +106,9 @@ const AllocationStrategiesItem = (props: Props) => {
             .post('http://localhost:8884/query', {
                 query: query,
             }, { headers: {
-                    "x-auth-organization": "FRINX",
+                    "x-tenant-id": "fb",
                     "x-auth-user-role": "OWNER",
-                    "x-auth-user-email": "user@frinx.io"
+                    "from": "fb-user@frinx.io"
                 } })
             .then(response => {
                 return response.data;

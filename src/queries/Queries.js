@@ -5,9 +5,9 @@ import * as axios from 'axios';
 const BASIC_URL = 'http://localhost:8884/query';
 
 const headers = {
-  'x-auth-organization': 'FRINX',
-  'x-auth-user-role': 'OWNER',
-  'x-auth-user-email': 'user@frinx.io',
+  "x-tenant-id": "fb",
+  "x-auth-user-role": "OWNER",
+  "from": "fb-user@frinx.io"
 };
 
 export function fetchQuery(query) {
