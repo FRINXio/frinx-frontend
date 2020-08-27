@@ -1,7 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import PoolCard from './pools/PoolCard'
+import AllocationStrategies from './configure/AllocationStrategies'
 
     ReactDOM.render(
-        <h1>some text</h1>,
+        <div>
+        <PoolCard/>
+        <AllocationStrategies/>
+        </div>,
     document.getElementById("root")
     );
