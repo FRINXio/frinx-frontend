@@ -94,7 +94,7 @@ const PoolCard = (props: Props) => {
         <div>
           {poolArray.map((e, i) => {
             const {ID, Name, PoolType} = e;
-            return <PoolItem poolItem={{id: ID, PoolType, Name}} i={i} />;
+            return <PoolItem key={i} poolItem={{id: ID, PoolType, Name}} i={i} />;
           })}
         </div>
 

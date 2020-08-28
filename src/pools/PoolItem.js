@@ -129,8 +129,8 @@ const PoolItem = (props: Props) => {
             <div className={classes.nameTitle}>{Name}</div>
             <div className={classes.poolTypeTitle}>{PoolType}</div>
             <div className={classes.chipContainer}>
-              {[1, 2, 3, 4].map(() => {
-                return <Chip label={'Tag'} variant="outlined" size="small" className={classes.chip} />
+              {[1, 2, 3, 4].map((i) => {
+                return <Chip key={i}  label={'Tag'} variant="outlined" size="small" className={classes.chip} />
               })}
             </div>
           </div>
@@ -140,6 +140,7 @@ const PoolItem = (props: Props) => {
               {[1, 2, 3, 4].map((e, i) => {
                 return (
                   <motion.div
+                    key={i}
                     animate={isExpanded ? 'notCollapsed' : 'collapsed'}
                     transition={{duration: 0.1 + i * 0.02}}
                     variants={variants}
@@ -158,6 +159,7 @@ const PoolItem = (props: Props) => {
               ? [1, 2, 3, 4].map((e, i) => {
                   return (
                     <motion.div
+                        key={i}
                         animate={{ width: '100%' }}
                         transition={{ duration: 0.5 }}
                         className={classes.expandedResourceContainer}>
