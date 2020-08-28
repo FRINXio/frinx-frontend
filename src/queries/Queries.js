@@ -2,7 +2,7 @@
 import * as axios from 'axios';
 // import {graphql} from 'babel-plugin-relay/macro';
 
-const BASIC_URL = 'http://localhost:8884/query';
+const BASIC_URL = 'http://0.0.0.0:5000/graphql/query';
 
 const headers = {
   "x-tenant-id": "fb",

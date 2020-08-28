@@ -103,7 +103,7 @@ const AllocationStrategiesItem = (props: Props) => {
     function fetchQuery(query) {
 
         return axios
-            .post('http://localhost:8884/query', {
+            .post('http://0.0.0.0:5000/graphql/query', {
                 query: query,
             }, { headers: {
                     "x-tenant-id": "fb",

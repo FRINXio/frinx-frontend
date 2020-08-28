@@ -63,6 +63,8 @@ const PoolCard = (props: Props) => {
       console.log('val', val.data.data.QueryResourcePools);
       setPoolArray(val.data.data.QueryResourcePools);
       console.log(poolArray);
+    }).catch(function (error) {
+      console.log(error); //TODO error handling
     });
   }, []);
 

@@ -12,9 +12,15 @@ module.exports = {
     host: '0.0.0.0',
     disableHostCheck: true,
     proxy: {
-      '/': {
-        target: 'http://localhost:8884',
-        secure: false
+      '/graphql': {
+        target: 'http://localhost:8884/',
+        secure: false,
+        pathRewrite: {'^/graphql' : ''},
+        headers: {
+          'x-tenant-id': 'fb',
+          'x-auth-user-role': 'OWNER',
+          'from': 'fb-user@frinx.io'
+        }
       }
     },
   },
