@@ -5,6 +5,7 @@
     "@babel/flow"
   ],
   "plugins": [
+    "relay",
     "@babel/plugin-proposal-class-properties",
     "@babel/plugin-transform-runtime"
   ]

@@ -1,0 +1,174 @@
+directive @goModel(model: String, models: [String!]) on OBJECT
+    | INPUT_OBJECT
+    | SCALAR
+    | ENUM
+    | INTERFACE
+    | UNION
+
+type ResourceType
+@goModel(model: "github.com/net-auto/resourceManager/ent.ResourceType") {
+    ID: ID!
+    Name: String!
+    PropertyTypes: [PropertyType!]!
+    Pools: [ResourcePool!]!
+}
+
+type PropertyType
+@goModel(model: "github.com/net-auto/resourceManager/ent.PropertyType"){
+    ID: ID!
+    Name: String!
+    Type: String!,
+    IntVal: Int!,
+    StringVal: String!,
+    FloatVal: Float!,
+    Mandatory: Boolean!
+}
+
+type ResourcePool
+@goModel(model: "github.com/net-auto/resourceManager/ent.ResourcePool"){
+    ID: ID!
+    Name: String!
+    PoolType: PoolType!
+    ResourceType: ResourceType!
+    Resources: [Resource!]!
+    Tags: [Tag!]!
+    AllocationStrategy: AllocationStrategy
+}
+
+enum PoolType
+@goModel(
+    model: "github.com/net-auto/resourceManager/ent/resourcepool.PoolType"
+)
+{
+    set
+    singleton
+    allocating
+}
+
+scalar Map
+
+type Resource
+@goModel(model: "github.com/net-auto/resourceManager/ent.Resource")
+{
+    ID: ID!
+    Properties: Map!
+    NestedPool: ResourcePool
+}
+
+enum AllocationStrategyLang
+@goModel(
+    model: "github.com/net-auto/resourceManager/ent/allocationstrategy.Lang"
+)
+{
+    js
+    py
+}
+
+type AllocationStrategy
+@goModel(model: "github.com/net-auto/resourceManager/ent.AllocationStrategy"){
+    ID: ID!
+    Name: String!
+    Description: String
+    Lang: AllocationStrategyLang!
+    Script: String!
+}
+
+type Tag
+@goModel(model: "github.com/net-auto/resourceManager/ent.Tag"){
+    ID: ID!
+    Tag: String!
+    Pools: [ResourcePool]
+}
+
+input TagAnd {
+    matchesAll: [String!]!
+}
+
+input TagOr {
+    matchesAny: [TagAnd!]!
+}
+
+input ResourcePoolInput {
+    ResourcePoolName: String!
+}
+
+input ResourceInput {
+    Properties: Map!
+    UpdatedAt: String!
+    # TODO replace with enum
+    Status: String!
+}
+
+input CreateSetPoolInput {
+    resourceTypeId: ID!
+    poolName: String!
+    description: String
+    poolDealocationSafetyPeriod: Int!
+    poolValues: [Map]!
+}
+
+input CreateSingletonPoolInput {
+    resourceTypeId: ID!
+    poolName: String!
+    description: String
+    poolValues: [Map]!
+}
+
+input CreateAllocatingPoolInput {
+    resourceTypeId: ID!
+    poolName: String!
+    description: String
+    allocationStrategyId: ID!
+    poolDealocationSafetyPeriod: Int!
+}
+
+type Query {
+    QueryResource(input: Map!, poolId: ID!): Resource!
+    QueryResources(poolId: ID!): [Resource]!
+    QueryAllocationStrategy(allocationStrategyId: ID!): AllocationStrategy!
+    QueryAllocationStrategies: [AllocationStrategy]!
+    QueryResourceTypes: [ResourceType]!
+
+    QueryResourcePools(resourceTypeId: ID): [ResourcePool]!
+    QueryRootResourcePools(resourceTypeId: ID): [ResourcePool]!
+    QueryLeafResourcePools(resourceTypeId: ID): [ResourcePool]!
+    SearchPoolsByTags(tags: TagOr): [ResourcePool]!
+
+    QueryTags: [Tag]!
+}
+
+type Mutation {
+    # Tagging
+    CreateTag(tag: String!): Tag!
+    UpdateTag(tagId: ID!, tag: String!): Tag!
+    DeleteTag(tagId: ID!): Tag!
+    TagPool(tagId: ID!, poolId: ID!): Tag!
+
+    # Allocation strategy
+    CreateAllocationStrategy(name: String!, description: String, script: String!, lang: AllocationStrategyLang!): AllocationStrategy!
+    DeleteAllocationStrategy(allocationStrategyId: ID!): AllocationStrategy!
+    TestAllocationStrategy(allocationStrategyId: ID!, resourcePool: ResourcePoolInput!,
+        currentResources: [ResourceInput]!, userInput: Map!): Map!
+
+    # managing resources via pools
+    ClaimResource(poolId: ID!, userInput: Map!): Resource!
+    FreeResource(input: Map!, poolId: ID!): String!
+
+    # create/update/delete resource pool
+    CreateSetPool(input: CreateSetPoolInput!): ResourcePool!
+    CreateNestedSetPool(input: CreateSetPoolInput!, parentResourceId: ID!): ResourcePool!
+    CreateSingletonPool(input: CreateSingletonPoolInput): ResourcePool!
+    CreateNestedSingletonPool(input: CreateSingletonPoolInput, parentResourceId: ID!): ResourcePool!
+    CreateAllocatingPool(input: CreateAllocatingPoolInput): ResourcePool!
+    CreateNestedAllocatingPool(input: CreateAllocatingPoolInput, parentResourceId: ID!): ResourcePool!
+    DeleteResourcePool(resourcePoolId: ID!): String!
+
+    # create/update/delete resource type
+    ## resourceName: String! - name of the resource type AND property type (should they be different?)
+    ## resourceProperties: Map! - for key "init" the value is the initial value of the property type (like 7)
+    ##                            for key "type" the value is the name of the type like "int"
+    CreateResourceType(resourceName: String!, resourceProperties: Map!): ResourceType!
+    DeleteResourceType(resourceTypeId: ID!): String!
+    ## it only changes the name of the resource type
+    UpdateResourceTypeName(resourceTypeId: ID!, resourceName: String!): ResourceType!
+}
