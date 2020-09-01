@@ -9,10 +9,14 @@ function fetchQuery(
     operation,
     variables,
 ) {
-    return fetch('/graphql', {
+    //TODO headers
+    return fetch('/graphql/query', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            "x-tenant-id": "fb",
+            "x-auth-user-role": "OWNER",
+            "from": "fb-user@frinx.io",
         },
         body: JSON.stringify({
             query: operation.text,
