@@ -18,13 +18,15 @@ import 'ace-builds/src-noconflict/theme-tomorrow';
 import "ace-builds/webpack-resolver";
 
 import AllocationStrategyItem from './AllocationStrategyItem';
+import {fetchQuery, queryAllocationStrats} from "../queries/Queries";
+import AddEditStrategy from "../strategies/AddEditStrategy";
 
 const iconWidth = 40;
 const iconHeight = 40;
 
 const styles = theme => ({
   root: {
-    color: theme.palette.grey[900],
+
     fontWeight: 500,
     fontSize: '20px',
     lineHeight: '24px',
@@ -49,55 +51,36 @@ const AllocationStrategies = (props: Props) => {
   console.log("i've loaded");
 }`);
   const [allocationStrategyArray, setAllocationStrategyArray] = useState([]);
+    const [showEditCard, setShowEditCard] = useState(false);
 
   const onChange = val => {
     setEditorValue(val);
     console.log(val, editorValue);
   };
 
-  // useEffect(() => {
-  //   fetchQuery(queryAllocationStrats);
-  // }, []);
+  useEffect(() => {
+      fetchQuery(queryAllocationStrats).then(val => {
+          console.log(val.data.data.QueryAllocationStrategies)
+          setAllocationStrategyArray(val.data.data.QueryAllocationStrategies)
+      });
+  }, []);
+
+    if(showEditCard) {
+        console.log('should be visible')
+        return <AddEditStrategy />
+    }
 
   return (
     <div className={classes.mainDiv}>
       <Card>
-        <div style={{display: 'none'}}>
-          <AceEditor
-            mode="javascript"
-            theme="tomorrow"
-            onChange={onChange}
-            name="UNIQUE_ID_OF_DIV"
-            editorProps={{$blockScrolling: true}}
-            value={editorValue}
-            setOptions={{
-              enableBasicAutocompletion: true,
-              enableLiveAutocompletion: true,
-              enableSnippets: true,
-              showLineNumbers: true,
-              tabSize: 2,
-            }}
-          />
+        <div>
+            <Button type="primary" onClick={() => {setShowEditCard(!showEditCard)}}>
+                add new Strategy
+            </Button>
         </div>
       </Card>
       <div className={classes.buttonDiv}>
         <Card>
-          <Button
-            variant="contained"
-            onClick={() => {
-              fetchQuery(queryAllocationStrats).then(val => {
-                console.log(val);
-              });
-            }}>
-            queryAllocationStrats
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => {
-              createAllocationStrategy();
-            }}>
-            createAllocationStrat
-          </Button>
         </Card>
       </div>
       {allocationStrategyArray.map(e => {

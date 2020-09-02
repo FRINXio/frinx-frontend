@@ -16,7 +16,7 @@ import {motion} from 'framer-motion';
 
 const styles = theme => ({
   root: {
-    color: theme.palette.grey[900],
+
     fontWeight: 500,
     fontSize: '20px',
     lineHeight: '24px',

@@ -21,13 +21,14 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools"
+import {fetchQuery} from "../queries/Queries";
 
 const iconWidth = 40
 const iconHeight = 40
 
 const styles = theme => ({
     root: {
-        color: theme.palette.grey[900],
+
         fontWeight: 500,
         fontSize: '20px',
         lineHeight: '24px',
@@ -99,21 +100,6 @@ const AllocationStrategiesItem = (props: Props) => {
         }
     }
     `
-
-    function fetchQuery(query) {
-
-        return axios
-            .post('http://0.0.0.0:5000/graphql/query', {
-                query: query,
-            }, { headers: {
-                    "x-tenant-id": "fb",
-                    "x-auth-user-role": "OWNER",
-                    "from": "fb-user@frinx.io"
-                } })
-            .then(response => {
-                return response.data;
-            });
-    }
 
     const deleteAllocationStrategy = () => {
         fetchQuery(deleteAllocationStrategyQuery).then(() => {

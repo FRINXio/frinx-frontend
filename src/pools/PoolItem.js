@@ -21,7 +21,7 @@ const iconHeight = 25;
 
 const styles = theme => ({
   root: {
-    color: theme.palette.grey[900],
+
     fontWeight: 500,
     fontSize: '20px',
     lineHeight: '24px',
@@ -42,7 +42,7 @@ const styles = theme => ({
     padding: '5px',
     width: iconWidth + 'px',
     height: iconHeight + 'px',
-    color: theme.palette.grey[900],
+
     border: '2px solid black',
     borderRadius: '5px',
     display: 'flex',

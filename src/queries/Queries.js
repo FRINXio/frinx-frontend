@@ -30,16 +30,15 @@ export const queryAllocationStrats = `query queryAllocationStrats {
     }
     `;
 
-export const createAllocationStrat = name => {
+export const createAllocationStrat = (name, lang, script) => {
   return (
     `mutation createAllocationStrat {
     CreateAllocationStrategy(
         name: "` +
     name +
     `",
-        script: "function invoke() { return {` +
-    'vlan' +
-    `: 101}; }"
+        script: "` + script + `",
+        lang: ` + lang + `,
     ){
         ID
         Name
@@ -63,12 +62,14 @@ export const queryResourceTypes = `
     QueryResourceTypes {
       ID
       Name
-      Edges {
-        PropertyTypes {
-          Name
-          Type
+      PropertyTypes {
+            Name
+            Type
         }
-      }
+        Pools {
+            ID
+            Name
+        }
     }
   }
 `;
