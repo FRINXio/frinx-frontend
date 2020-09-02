@@ -180,7 +180,7 @@ class ResourceTypes extends React.Component<Props, State> {
                             <div className={classes.typesList}>
                                 {resourceTypesData.map((rt, key: id) => {
                                     return <div className={classes.listItem}>
-
+                                        <ResourceTypeItem resourceType={rt}/>
                                     </div>
                                 })}
                             </div>
@@ -193,14 +193,15 @@ class ResourceTypes extends React.Component<Props, State> {
 }
 
 export default withStyles(styles)(
-    createFragmentContainer(ResourceTypes, {
-        resourceTypes: graphql`
-           fragment ResourceTypes_resourceTypes on ResourceType {
-            ID
-            Name
-           }
-        `
-    })
-    ,
+    // createFragmentContainer(ResourceTypes, {
+    //     resourceTypes: graphql`
+    //        fragment ResourceTypes_resourceTypes on ResourceType {
+    //         ID
+    //         Name
+    //        }
+    //     `
+    // })
+    // ,
+    ResourceTypes
 );
 

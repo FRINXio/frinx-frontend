@@ -7,17 +7,17 @@
  * @flow
  * @format
  */
-// import type {ServiceTypeItem_serviceType} from './__generated__/ServiceTypeItem_serviceType.graphql';
+import type {ResourceTypeItem_ResourceType} from './__generated__/ResourceTypeItem_ResourceType.graphql';
 import type {WithAlert} from '@fbcnms/ui/components/Alert/withAlert';
 import type {WithStyles} from '@material-ui/core';
 
 // import CommonStrings from '@fbcnms/strings/Strings';
-// import ConfigureExpansionPanel from './ConfigureExpansionPanel';
+// import ConfigureAccordion from './ConfigureAccordion';
 // import DynamicPropertyTypesGrid from '../DynamicPropertyTypesGrid';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
 import LinearScaleIcon from '@material-ui/icons/LinearScale';
 import React from 'react';
 // import RemoveServiceTypeMutation from '../../mutations/RemoveServiceTypeMutation';
@@ -27,9 +27,10 @@ import React from 'react';
 import {ConnectionHandler} from 'relay-runtime';
 // import {createFragmentContainer, graphql} from 'react-relay';
 import {withStyles} from '@material-ui/core/styles';
+import {createFragmentContainer, graphql} from "react-relay";
 
 type Props = {
-  serviceType: ServiceTypeItem_serviceType,
+  resourceType: ResourceTypeItem_ResourceType,
   onEdit: () => void,
 } & WithAlert &
   WithStyles<typeof styles>;
@@ -45,12 +46,21 @@ const styles = {
 
 class ResourceTypeItem extends React.Component<Props> {
   render() {
-    const {classes, serviceType, onEdit} = this.props;
+    const {classes, resourceType, onEdit} = this.props;
+    const {ID, Name, PropertyTypes} = resourceType
+
+    console.log('resourceType prop', resourceType)
     return (
       <div>
-        <ExpansionPanel>
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            {/*<ConfigureExpansionPanel*/}
+
+        <Accordion>
+          <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+          >
+            {ID}
+            {Name}
+            {PropertyTypes.toString()}
+            {/*<ConfigureAccordion*/}
             {/*  entityName="serviceType"*/}
             {/*  icon={<LinearScaleIcon />}*/}
             {/*  name={serviceType.Name}*/}
@@ -62,8 +72,8 @@ class ResourceTypeItem extends React.Component<Props> {
             {/*  allowDelete={true}*/}
             {/*  onEdit={onEdit}*/}
             {/*/>*/}
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
+          </AccordionSummary>
+          <AccordionDetails>
             <div className={classes.detailsContainer}>
               <div className={classes.section}>
                 {/*<DynamicPropertyTypesGrid*/}
@@ -79,8 +89,8 @@ class ResourceTypeItem extends React.Component<Props> {
                 {/*/>*/}
               </div>
             </div>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+          </AccordionDetails>
+        </Accordion>
       </div>
     );
   }
@@ -130,7 +140,14 @@ class ResourceTypeItem extends React.Component<Props> {
   // };
 }
 
-export default withStyles(styles)(ResourceTypeItem);
+export default withStyles(styles)(createFragmentContainer(ResourceTypeItem, {
+  ResourceType: graphql`
+    fragment ResourceTypeItem_ResourceType on ResourceType {
+      ID
+      Name
+    }
+  `
+}));
 //   withAlert(
 //     ResourceTypeItem
 //   ),
