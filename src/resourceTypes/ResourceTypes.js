@@ -51,6 +51,7 @@ const styles = theme => ({
     },
     addButtonContainer: {
         display: 'flex',
+        justifyContent: 'flex-end'
     },
     typesList: {
         padding: '24px',
@@ -102,10 +103,6 @@ class ResourceTypes extends React.Component<Props, State> {
         const {showAddEditCard, editingServiceType, resourceTypesData} = this.state;
         // const [resourceTypesData, setResourceTypesData] = useState([]);
 
-        if(showAddEditCard) {
-            return <AddEditResourceTypeCard />
-        }
-
         return (
             <ResourceManagerQueryRenderer
                 query={query}
@@ -116,13 +113,7 @@ class ResourceTypes extends React.Component<Props, State> {
                     if (showAddEditCard) {
                         return (
                             <div className={classes.paper}>
-                                {/*<AddEditResourceTypeCard*/}
-                                {/*    key={'new_service_type@' + this.state.dialogKey}*/}
-                                {/*    open={showAddEditCard}*/}
-                                {/*    onClose={this.hideAddEditServiceTypeCard}*/}
-                                {/*    onSave={this.saveService}*/}
-                                {/*    editingServiceType={editingServiceType}*/}
-                                {/*/>*/}
+                                <AddEditResourceTypeCard />
                             </div>
                         );
                     }
@@ -130,51 +121,14 @@ class ResourceTypes extends React.Component<Props, State> {
                     return (
                         <div>
                             <div className={classes.typesList}>
-                                <div className={classes.firstRow}>
-                                    {/*<ConfigueTitle*/}
-                                    {/*    className={classes.title}*/}
-                                    {/*    title={fbt('sssResource Types', 'Resource Types header')}*/}
-                                    {/*    subtitle={fbt(*/}
-                                    {/*        'Add and manage the types of resources that are used in your network topology.',*/}
-                                    {/*        'Service Types subheader',*/}
-                                    {/*    )}*/}
-                                    {/*/>*/}
-                                    <div className={classes.addButtonContainer}>
-                                        {/*<FormActionWithPermissions*/}
-                                        {/*    permissions={{entity: 'serviceType', action: 'create'}}>*/}
-                                        {/*    <Button*/}
-                                        {/*        className={classes.addButton}*/}
-                                        {/*        onClick={() => this.showAddEditServiceTypeCard(null)}>*/}
-                                        {/*        Add Resource Type*/}
-                                        {/*    </Button>*/}
-
-                                        {/*</FormActionWithPermissions>*/}
-                                    </div>
+                                <div className={classes.addButtonContainer}>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => {this.setState({
+                                            showAddEditCard: true
+                                        })}}>Add Resource Type</Button>
                                 </div>
-                                {/*<div className={classes.root}>*/}
-                                {/*    {serviceTypes.edges*/}
-                                {/*        .map(edge => edge.node)*/}
-                                {/*        .filter(Boolean)*/}
-                                {/*        .sort((serviceTypeA, serviceTypeB) =>*/}
-                                {/*            // sortLexicographically(*/}
-                                {/*            //     serviceTypeA.name,*/}
-                                {/*            //     serviceTypeB.name,*/}
-                                {/*            // ),*/}
-                                {/*        )*/}
-                                {/*        .filter(s => !s.isDeleted)*/}
-                                {/*        .map(srvType => (*/}
-                                {/*            <div*/}
-                                {/*                className={classes.listItem}*/}
-                                {/*                key={`srvType_${srvType.id}`}>*/}
-                                {/*                <ResourceTypeItem*/}
-                                {/*                    serviceType={srvType}*/}
-                                {/*                    onEdit={() =>*/}
-                                {/*                        this.showAddEditServiceTypeCard(srvType)*/}
-                                {/*                    }*/}
-                                {/*                />*/}
-                                {/*            </div>*/}
-                                {/*        ))}*/}
-                                {/*</div>*/}
                             </div>
 
                             <div className={classes.typesList}>

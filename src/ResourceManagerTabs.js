@@ -36,7 +36,7 @@ type Props = {
 const ResourceManagerTabs = (props: Props) => {
     const {className, classes} = props;
 
-    const [value, setValue] = React.useState(0);
+    const [value, setValue] = React.useState(2);
 
     function a11yProps(index) {
         return {

@@ -24,10 +24,10 @@ import React from 'react';
 // import ServiceEndpointDefinitionStaticTable from './ServiceEndpointDefinitionStaticTable';
 // import fbt from 'fbt';
 // import withAlert from '@fbcnms/ui/components/Alert/withAlert';
-import {ConnectionHandler} from 'relay-runtime';
 // import {createFragmentContainer, graphql} from 'react-relay';
 import {withStyles} from '@material-ui/core/styles';
 import {createFragmentContainer, graphql} from "react-relay";
+import Typography from "@material-ui/core/Typography";
 
 type Props = {
   resourceType: ResourceTypeItem_ResourceType,
@@ -42,6 +42,11 @@ const styles = {
   section: {
     marginBottom: '24px',
   },
+  idContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginLeft: '5px',
+  }
 };
 
 class ResourceTypeItem extends React.Component<Props> {
@@ -57,37 +62,18 @@ class ResourceTypeItem extends React.Component<Props> {
           <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
           >
-            {ID}
-            {Name}
-            {PropertyTypes.toString()}
-            {/*<ConfigureAccordion*/}
-            {/*  entityName="serviceType"*/}
-            {/*  icon={<LinearScaleIcon />}*/}
-            {/*  name={serviceType.Name}*/}
-            {/*  // instanceCount={serviceType.numberOfServices}*/}
-            {/*  instanceCount={0}*/}
-            {/*  instanceNameSingular="resource"*/}
-            {/*  instanceNamePlural="resources"*/}
-            {/*  onDelete={this.onDelete}*/}
-            {/*  allowDelete={true}*/}
-            {/*  onEdit={onEdit}*/}
-            {/*/>*/}
+            <Typography variant="h6">{Name}</Typography>
+            <div className={classes.idContainer}>
+              <Typography variant="caption"> {'(id: ' + ID + ')'} </Typography>
+            </div>
           </AccordionSummary>
           <AccordionDetails>
             <div className={classes.detailsContainer}>
-              <div className={classes.section}>
-                {/*<DynamicPropertyTypesGrid*/}
-                {/*  key={serviceType.ID}*/}
-                {/*  propertyTypes={[]}*/}
-                {/*  //propertyTypes={serviceType.propertyTypes}*/}
-                {/*/>*/}
-              </div>
-              <div className={classes.section}>
-                {/*<ServiceEndpointDefinitionStaticTable*/}
-                {/*  serviceEndpointDefinitions={[]}*/}
-                {/*  //serviceEndpointDefinitions={serviceType.endpointDefinitions}*/}
-                {/*/>*/}
-              </div>
+              {PropertyTypes.map((pt) => {
+                return <div>
+                  Name: {pt.Name} Type: {pt.Type}
+                </div>
+              })}
             </div>
           </AccordionDetails>
         </Accordion>
@@ -95,49 +81,7 @@ class ResourceTypeItem extends React.Component<Props> {
     );
   }
 
-  // onDelete = () => {
-  //   this.props
-  //     .confirm({
-  //       title: <fbt desc="">Delete Service Type?</fbt>,
-  //       message: fbt(
-  //         'Are you sure you want to delete' +
-  //           fbt.param('service name', this.props.serviceType.name) +
-  //           "? The service type, and all it's instances will be deleted soon, in the background",
-  //         'deletion message',
-  //       ),
-  //       cancelLabel: CommonStrings.common.cancelButton,
-  //       confirmLabel: CommonStrings.common.deleteButton,
-  //       skin: 'red',
-  //     })
-  //     .then(confirm => {
-  //       if (!confirm) {
-  //         return;
-  //       }
-  //       RemoveServiceTypeMutation(
-  //         {id: this.props.serviceType.id},
-  //         {
-  //           onError: (error: any) => {
-  //             this.props.alert('Error: ' + error.source?.errors[0]?.message);
-  //           },
-  //         },
-  //         store => {
-  //           // $FlowFixMe (T62907961) Relay flow types
-  //           const rootQuery = store.getRoot();
-  //           const serviceTypes = ConnectionHandler.getConnection(
-  //             rootQuery,
-  //             'ServiceTypes_serviceTypes',
-  //           );
-  //           ConnectionHandler.deleteNode(
-  //             // $FlowFixMe (T62907961) Relay flow types
-  //             serviceTypes,
-  //             this.props.serviceType.id,
-  //           );
-  //           // $FlowFixMe (T62907961) Relay flow types
-  //           store.delete(this.props.serviceType.id);
-  //         },
-  //       );
-  //     });
-  // };
+
 }
 
 export default withStyles(styles)(createFragmentContainer(ResourceTypeItem, {
@@ -145,6 +89,14 @@ export default withStyles(styles)(createFragmentContainer(ResourceTypeItem, {
     fragment ResourceTypeItem_ResourceType on ResourceType {
       ID
       Name
+      PropertyTypes {
+        Name
+        Type
+      }
+      Pools {
+        ID
+        Name
+      }
     }
   `
 }));
