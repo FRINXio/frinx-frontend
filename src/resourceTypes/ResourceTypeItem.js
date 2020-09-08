@@ -28,10 +28,16 @@ import React from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import {createFragmentContainer, graphql} from "react-relay";
 import Typography from "@material-ui/core/Typography";
+import DeleteResourceTypeMutation from '../mutations/DeleteResourceTypeMutation';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
+import { fetchQuery, deleteResourceType } from '../queries/Queries';
+import Button from "@material-ui/core/Button";
 
 type Props = {
   resourceType: ResourceTypeItem_ResourceType,
   onEdit: () => void,
+  showEditCard: () => void
 } & WithAlert &
   WithStyles<typeof styles>;
 
@@ -45,13 +51,26 @@ const styles = {
   idContainer: {
     display: 'flex',
     alignItems: 'center',
-    marginLeft: '5px',
+  },
+  AccordionSummaryContainer: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-between'
   }
 };
 
 class ResourceTypeItem extends React.Component<Props> {
+  deleteResourceType = (id) => {
+    // DeleteResourceTypeMutation(123)
+
+
+    fetchQuery(deleteResourceType(id)).then(val => {
+      console.log(val)
+    });
+  }
+
   render() {
-    const {classes, resourceType, onEdit} = this.props;
+    const {classes, resourceType, onEdit, showEditCard} = this.props;
     const {ID, Name, PropertyTypes} = resourceType
 
     console.log('resourceType prop', resourceType)
@@ -62,18 +81,34 @@ class ResourceTypeItem extends React.Component<Props> {
           <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
           >
-            <Typography variant="h6">{Name}</Typography>
-            <div className={classes.idContainer}>
-              <Typography variant="caption"> {'(id: ' + ID + ')'} </Typography>
+            <div className={classes.AccordionSummaryContainer}>
+              <div>
+                <Typography variant="h6">{Name}</Typography>
+                <div className={classes.idContainer}>
+                  <Typography variant="caption"> {'(id: ' + ID + ')'} </Typography>
+                </div>
+              </div>
+              <div>
+                <IconButton color="primary" onClick={() => this.deleteResourceType(ID)}><DeleteOutlinedIcon variant="outlined" /></IconButton>
+              </div>
             </div>
+            
           </AccordionSummary>
           <AccordionDetails>
             <div className={classes.detailsContainer}>
+              Properties: 
               {PropertyTypes.map((pt) => {
-                return <div>
-                  Name: {pt.Name} Type: {pt.Type}
+                return <div style={{marginLeft: '8px'}}>
+                  <b>{pt.Name}</b> : {pt.Type}
                 </div>
               })}
+              Pools: 
+              <div style={{display: 'flex'}}>
+                <Button color="primary">Pool1</Button>
+                <Button color="primary">Pool1</Button>
+                <Button color="primary">Pool1</Button>
+              </div>
+              
             </div>
           </AccordionDetails>
         </Accordion>

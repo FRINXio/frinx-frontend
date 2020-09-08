@@ -37,6 +37,13 @@ const styles = theme => ({
   buttonDiv: {
     marginTop: '20px',
   },
+  addButton: {
+    marginLeft: 'auto',
+},
+addButtonContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end'
+},
 });
 
 type Props = {
@@ -58,6 +65,15 @@ const AllocationStrategies = (props: Props) => {
     console.log(val, editorValue);
   };
 
+  const showEditCardFunc = (value) => {
+    setShowEditCard(value)
+    fetchQuery(queryAllocationStrats).then(val => {
+      console.log(val.data.data.QueryAllocationStrategies)
+      setAllocationStrategyArray(val.data.data.QueryAllocationStrategies)
+  });
+}
+
+
   useEffect(() => {
       fetchQuery(queryAllocationStrats).then(val => {
           console.log(val.data.data.QueryAllocationStrategies)
@@ -67,18 +83,21 @@ const AllocationStrategies = (props: Props) => {
 
     if(showEditCard) {
         console.log('should be visible')
-        return <AddEditStrategy />
+        return <AddEditStrategy showAddEditCardFunc={showEditCardFunc}/>
     }
 
   return (
     <div className={classes.mainDiv}>
-      <Card>
         <div>
-            <Button type="primary" onClick={() => {setShowEditCard(!showEditCard)}}>
-                add new Strategy
-            </Button>
+            <div className={classes.typesList}>
+              <div className={classes.addButtonContainer}>
+                  <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {setShowEditCard(true)}}>Add Strategy</Button>
+              </div>
+          </div>
         </div>
-      </Card>
       <div className={classes.buttonDiv}>
         <Card>
         </Card>

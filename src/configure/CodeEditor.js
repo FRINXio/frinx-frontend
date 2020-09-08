@@ -22,7 +22,7 @@ const styles = theme => ({
     lineHeight: '24px',
   },
   mainDiv: {
-    padding: '24px',
+    
   },
   selectContainer: {
     padding: '24px',

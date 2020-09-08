@@ -21,15 +21,20 @@ import TextField from "@material-ui/core/TextField";
 import {createAllocationStrat, fetchQuery, queryAllocationStrats} from "../queries/Queries";
 
 const styles = theme => ({
+    card: {
+        padding: '24px',
+        margin: '24px',
+    },
 });
 
 type Props = {
     children: React.ChildrenArray<null | React.Element<*>>,
     className?: string,
+    showAddEditCardFunc: Function,
 } & WithStyles<typeof styles>;
 
 const AddEditStrategy = (props: Props) => {
-    const {className, classes} = props;
+    const {className, classes, showAddEditCardFunc} = props;
     const [name, setName] = useState('');
 
     const onNameChanged = (val) => {
@@ -42,19 +47,21 @@ const AddEditStrategy = (props: Props) => {
     const createStrategy = () => {
         fetchQuery(createAllocationStrat(name, lang, script)).then(val => {
             console.log(val)
+            showAddEditCardFunc(false)
         });
     }
 
     return (
         <div>
-            <Card>
+            <Card className={classes.card}>
                 <TextField label="NAME" onChange={onNameChanged} />
             </Card>
-            <Card>
+            <Card className={classes.card}>
                 <CodeEditor />
             </Card>
             <div>
-                <Button onClick={createStrategy}>Save</Button>
+                <Button variant="contained"
+                                        color="primary" onClick={createStrategy}>Save</Button>
             </div>
         </div>
 

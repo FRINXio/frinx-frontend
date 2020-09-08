@@ -91,6 +91,17 @@ export const createNewResourceType = name => {
     }`
   );
 };
+export const deleteResourceType = id => {
+    return (
+      `mutation deleteResourceType {
+          DeleteResourceType(
+            resourceTypeId: "` +
+      id +
+      `",
+      )
+      }`
+    );
+  };
 
 export const createComplexResourceType = `mutation createComplexResourceType {
     CreateResourceType(

@@ -113,7 +113,6 @@ const AllocationStrategiesItem = (props: Props) => {
                 setIsExpanded(expanded)
             } }>
                 <AccordionSummary
-                    expandIcon={<CodeIcon className={isExpanded ? (classes.codeIconNotExpanded) : classes.codeIconExpanded}/>}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
                 >
@@ -123,11 +122,11 @@ const AllocationStrategiesItem = (props: Props) => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={classes.notCollapsedMainDiv}>
-                        <div></div>
                         <div>
-                            <div>
-                                { 'Lang: ' + Lang }
-                            </div>
+                            { 'Lang: ' + Lang }
+                        </div>
+                        <div>
+                            
                             <div>
                                 <AceEditor
                                     className={classes.editor}

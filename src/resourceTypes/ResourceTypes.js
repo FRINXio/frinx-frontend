@@ -97,6 +97,15 @@ class ResourceTypes extends React.Component<Props, State> {
             this.setState({resourceTypesData: val.data.data.QueryResourceTypes});
         });
     }
+    showEditCardFunc = (value) => {
+        this.setState({
+            showAddEditCard: value
+        })
+        fetchQuery(queryResourceTypes).then(val => {
+            console.log(val.data.data.QueryResourceTypes);
+            this.setState({resourceTypesData: val.data.data.QueryResourceTypes});
+        });
+    }
 
     render() {
         const {classes} = this.props;
@@ -113,7 +122,7 @@ class ResourceTypes extends React.Component<Props, State> {
                     if (showAddEditCard) {
                         return (
                             <div className={classes.paper}>
-                                <AddEditResourceTypeCard />
+                                <AddEditResourceTypeCard showAddEditCardFunc={this.showEditCardFunc}/>
                             </div>
                         );
                     }
@@ -134,7 +143,7 @@ class ResourceTypes extends React.Component<Props, State> {
                             <div className={classes.typesList}>
                                 {resourceTypesData.map((rt, key: id) => {
                                     return <div className={classes.listItem}>
-                                        <ResourceTypeItem resourceType={rt}/>
+                                        <ResourceTypeItem resourceType={rt} showAddEditCard={this.showEditCardFunc}/>
                                     </div>
                                 })}
                             </div>
