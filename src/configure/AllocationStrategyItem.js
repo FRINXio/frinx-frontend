@@ -138,7 +138,7 @@ const AllocationStrategiesItem = (props: Props) => {
                                     name="UNIQUE_ID_OF_DIV"
                                     editorProps={{$blockScrolling: true}}
                                     value={editorValue}
-                                    readOnly={false}
+                                    readOnly={true}
                                     fontSize={16}
                                     setOptions={{
                                         enableBasicAutocompletion: true,

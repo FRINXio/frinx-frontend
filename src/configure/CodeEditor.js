@@ -34,10 +34,11 @@ const styles = theme => ({
 type Props = {
   children: React.ChildrenArray<null | React.Element<*>>,
   className?: string,
+  setScript: Function,
 } & WithStyles<typeof styles>;
 
 const CodeEditor = (props: Props) => {
-  const {className, classes} = props;
+  const {className, classes, setScript} = props;
   const [lang, setLang] = React.useState('js');
 
   const [editorValue, setEditorValue] = useState(`function onLoad(editor) {
@@ -48,6 +49,7 @@ const CodeEditor = (props: Props) => {
   const onChange = val => {
     setEditorValue(val);
     console.log(val, editorValue);
+    setScript(val)
   };
 
   const handleChange = event => {

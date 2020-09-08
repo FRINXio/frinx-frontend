@@ -21,9 +21,12 @@ import TextField from "@material-ui/core/TextField";
 import {createAllocationStrat, fetchQuery, queryAllocationStrats} from "../queries/Queries";
 
 const styles = theme => ({
+    root: {
+        padding: '24px'
+    },
     card: {
         padding: '24px',
-        margin: '24px',
+        margin: '24px 0px',
     },
 });
 
@@ -36,15 +39,18 @@ type Props = {
 const AddEditStrategy = (props: Props) => {
     const {className, classes, showAddEditCardFunc} = props;
     const [name, setName] = useState('');
+    const [script, setScript] = useState(`function invoke() {log(JSON.stringify({respool: resourcePool.ResourcePoolName, currentRes: currentResources}));return {vlan: userInput.desiredVlan};}`);
 
     const onNameChanged = (val) => {
         setName(val.target.value)
     }
 
-    const script = `function invoke() {log(JSON.stringify({respool: resourcePool.ResourcePoolName, currentRes: currentResources}));return {vlan: userInput.desiredVlan};}`
+    // const script = `function invoke() {log(JSON.stringify({respool: resourcePool.ResourcePoolName, currentRes: currentResources}));return {vlan: userInput.desiredVlan};}`
     const lang = `js`
 
     const createStrategy = () => {
+        console.log('sdf', script);
+
         fetchQuery(createAllocationStrat(name, lang, script)).then(val => {
             console.log(val)
             showAddEditCardFunc(false)
@@ -52,17 +58,23 @@ const AddEditStrategy = (props: Props) => {
     }
 
     return (
-        <div>
+        <div className={classes.root}>
             <Card className={classes.card}>
                 <TextField label="NAME" onChange={onNameChanged} />
             </Card>
             <Card className={classes.card}>
-                <CodeEditor />
+                <CodeEditor setScript={setScript}/>
             </Card>
             <div>
-                <Button variant="contained"
-                                        color="primary" onClick={createStrategy}>Save</Button>
+                <Button 
+                    variant="contained"
+                    color="primary" 
+                    onClick={createStrategy}
+                >
+                    Save
+                </Button>
             </div>
+            
         </div>
 
     );

@@ -44,7 +44,7 @@ const styles = theme => ({
         justifyContent: 'flex-start',
     },
     listItem: {
-        marginBottom: theme.spacing(),
+        marginBottom: '24px',
     },
     addButton: {
         marginLeft: 'auto',

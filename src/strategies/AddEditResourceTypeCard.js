@@ -20,9 +20,12 @@ import AddIcon from '@material-ui/icons/Add';
 import IconButton from "@material-ui/core/IconButton";
 
 const styles = theme => ({
+    root: {
+        padding: '24px'
+    },
     card: {
         padding: '24px',
-        margin: '24px',
+        margin: '24px 0px',
     },
     nameTextField: {
         maxWidth: '120px',
@@ -100,7 +103,7 @@ const AddEditResourceTypeCard = (props: Props) => {
     }
 
     return (
-        <div>
+        <div className={classes.root}>
             <Card className={classes.card}>
                 <TextField label="NAME" onChange={onNameChanged} className={classes.nameTextField} autoFocus={true}/>
             </Card>

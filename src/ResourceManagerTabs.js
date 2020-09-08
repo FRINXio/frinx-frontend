@@ -60,7 +60,7 @@ const ResourceManagerTabs = (props: Props) => {
                 </Tabs>
             </AppBar>
             <ResourceManagerTab value={value} index={0}>
-                <PoolCard />
+                Pools
             </ResourceManagerTab>
             <ResourceManagerTab value={value} index={1}>
                 <AllocationStrategies />
@@ -69,7 +69,7 @@ const ResourceManagerTabs = (props: Props) => {
                 <ResourceTypes />
             </ResourceManagerTab>
             <ResourceManagerTab value={value} index={3}>
-                <PoolCard />
+                Pools
             </ResourceManagerTab>
         </ThemeProvider>
     );
