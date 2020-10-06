@@ -110,36 +110,45 @@ class MountModal extends Component {
         this.setState({ mountType: "Netconf" });
       }
 
-      http.get(this.context.backendApiUrlPrefix + "/conf/status/" + topology + "/" + device).then(res => {
-        try {
-          let values = Object.entries(res["node"][0]);
-          let mountForm =
-            topology === "cli"
-              ? JSON.parse("[" + mountCliTemplate + "]")[0]
-              : JSON.parse("[" + mountNetconfTemplate + "]")[0];
-          Object.entries(mountForm).map(field => {
-            values.forEach(value => {
-              if (field[0].split(":").pop() === value[0].split(":").pop()) {
-                mountForm[field[0]][0] = value[1];
-              }
+      http
+        .get(
+          this.context.backendApiUrlPrefix +
+            + "/" + topology +
+            "/node=" +
+            device +
+            "?content=config",
+          this.context.authToken
+        )
+        .then((res) => {
+          try {
+            let values = Object.entries(res["node"][0]);
+            let mountForm =
+              topology === "cli"
+                ? JSON.parse("[" + mountCliTemplate + "]")[0]
+                : JSON.parse("[" + mountNetconfTemplate + "]")[0];
+            Object.entries(mountForm).map((field) => {
+              values.forEach((value) => {
+                if (field[0].split(":").pop() === value[0].split(":").pop()) {
+                  mountForm[field[0]][0] = value[1];
+                }
+              });
+              return null;
             });
-            return null;
-          });
 
-          if (topology === "cli") {
-            this.setState({
-              mountCliForm: mountForm
-            });
-          } else {
-            this.setState({
-              mountNetconfForm: mountForm,
-              mountType: "Netconf"
-            });
+            if (topology === "cli") {
+              this.setState({
+                mountCliForm: mountForm,
+              });
+            } else {
+              this.setState({
+                mountNetconfForm: mountForm,
+                mountType: "Netconf",
+              });
+            }
+          } catch (e) {
+            console.log(e);
           }
-        } catch (e) {
-          console.log(e);
-        }
-      });
+        });
     }
   }
 
@@ -189,8 +198,16 @@ class MountModal extends Component {
   mountDevice(node, payload, topology) {
     console.log(JSON.stringify(payload, null, 2));
     http
-      .put(this.context.backendApiUrlPrefix + "/mount/" + topology + "/" + node, payload)
-      .then(res => {
+      .put(
+        this.context.backendApiUrlPrefix +
+          "/rests/data/network-topology:network-topology/topology=" +
+          + "/" + topology +
+          "/node=" +
+          node,
+        payload,
+        this.context.authToken
+      )
+      .then((res) => {
         console.log(res);
       })
       .then(() => {
@@ -199,43 +216,59 @@ class MountModal extends Component {
   }
 
   getConnectionStatus(topology, node) {
-    http.get(this.context.backendApiUrlPrefix + "/oper/status/" + topology + "/" + node).then(res => {
-      let connectionStatus = res;
-      if (res === 404) {
-        connectionStatus = "connecting";
-      } else {
-        if (topology === "topology-netconf") {
-          connectionStatus =
-            res.node[0]["netconf-node-topology:connection-status"];
-        } else if (topology === "cli") {
-          connectionStatus = res.node[0]["cli-topology:connection-status"];
+    http
+      .get(
+        this.context.backendApiUrlPrefix +
+          "/rests/data/network-topology:network-topology/topology=" +
+          + "/" + topology +
+          "/node=" +
+          node +
+          "?content=nonconfig",
+        this.context.authToken
+      )
+      .then((res) => {
+        let connectionStatus = res;
+        if (res === 404) {
+          connectionStatus = "connecting";
+        } else {
+          if (topology === "topology-netconf") {
+            connectionStatus =
+              res.node[0]["netconf-node-topology:connection-status"];
+          } else if (topology === "cli") {
+            connectionStatus = res.node[0]["cli-topology:connection-status"];
+          }
+          this.props.addDeviceEntry(node, topology);
         }
-        this.props.addDeviceEntry(node, topology);
-      }
 
-      this.setState({ connectionStatus: connectionStatus });
+        this.setState({ connectionStatus: connectionStatus });
 
-      if (connectionStatus !== "connected") {
-        this.setState({
-          timeout: setTimeout(
-            this.getConnectionStatus.bind(this, topology, node),
-            3000
-          )
-        });
-      }
-    });
+        if (connectionStatus !== "connected") {
+          this.setState({
+            timeout: setTimeout(
+              this.getConnectionStatus.bind(this, topology, node),
+              3000
+            ),
+          });
+        }
+      });
   }
 
   getSupportedDevices() {
-    http.get(this.context.backendApiUrlPrefix + "/oper/registry/cli-devices/").then(res => {
-      try {
-        let objArray = Object.values(Object.entries(res)[0][1]);
-        objArray = [...objArray[0]];
-        this.setState({ deviceTypeVersion: objArray });
-      } catch (e) {
-        console.log(e);
-      }
-    });
+    http
+      .get(
+        this.context.backendApiUrlPrefix +
+          "/rests/data/cli-translate-registry:available-cli-device-translations?content=nonconfig&depth=3",
+        this.context.authToken
+      )
+      .then((res) => {
+        try {
+          let objArray = Object.values(Object.entries(res)[0][1]);
+          objArray = [...objArray[0]];
+          this.setState({ deviceTypeVersion: objArray });
+        } catch (e) {
+          console.log(e);
+        }
+      });
   }
 
   changeMountType(which) {

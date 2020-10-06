@@ -2,9 +2,12 @@ import React, {createContext, useState, useEffect} from 'react'
 
 export const GlobalContext = createContext();
 
+const AUTH_TOKEN = "Basic YWRtaW46YWRtaW4=";
+
 export const globalConstants = {
-  backendApiUrlPrefix: "/uniconfig/api/uniconfig",
+  backendApiUrlPrefix: "/uniconfig/api",
   frontendUrlPrefix: "/uniconfig/ui",
+  authToken: AUTH_TOKEN
 };
 
 export const GlobalProvider = (props) => {

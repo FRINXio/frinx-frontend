@@ -50,16 +50,23 @@ class SnapshotModal extends Component {
         }
       })
     );
-    http.post(this.context.backendApiUrlPrefix + "/operations/create-snapshot", target).then(res => {
-      this.setState({
-        snapshotStatus: JSON.parse(res.body.text)["output"]["overall-status"],
-        errorMsg: JSON.parse(res.body.text)["output"]["node-results"]
-          ? JSON.parse(res.body.text)["output"]["node-results"]["node-result"][
-              "0"
-            ]["error-message"]
-          : ""
+    http
+      .post(
+        this.context.backendApiUrlPrefix +
+          "/rests/operations/snapshot-manager:create-snapshot",
+        target,
+        this.context.authToken
+      )
+      .then((res) => {
+        this.setState({
+          snapshotStatus: res.body["output"]["overall-status"],
+          errorMsg: res.body["output"]["node-results"]
+            ? res.body["output"]["node-results"][
+                "node-result"
+              ]["0"]["error-message"]
+            : "",
+        });
       });
-    });
   }
 
   render() {

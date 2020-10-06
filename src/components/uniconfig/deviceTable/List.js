@@ -71,8 +71,16 @@ class List extends Component {
     //append os/version from conf
     if (topology === "cli") {
       os_version = await http
-        .get(this.context.backendApiUrlPrefix + "/conf/status/" + topology + "/" + node_id)
-        .then(res => {
+        .get(
+          this.context.backendApiUrlPrefix +
+            "/rests/data/network-topology:network-topology/topology=" +
+            topology +
+            "/node=" +
+            node_id +
+            "?content=config",
+          this.context.authToken
+        )
+        .then((res) => {
           try {
             os_version = res["node"]["0"]["cli-topology:device-type"];
             os_version =
@@ -166,10 +174,18 @@ class List extends Component {
     this.state.selectedDevices.map(device => {
       if (device["topology"] === "netconf") {
         return http.delete(
-          this.context.backendApiUrlPrefix + "/unmount/topology-netconf/" + device["node_id"]
+          this.context.backendApiUrlPrefix +
+            "/rests/data/network-topology:network-topology/topology=topology-netconf/node=" +
+            device["node_id"],
+          this.context.authToken
         );
       } else {
-        return http.delete(this.context.backendApiUrlPrefix + "/unmount/cli/" + device["node_id"]);
+        return http.delete(
+          this.context.backendApiUrlPrefix +
+            "/rests/data/network-topology:network-topology/topology=cli/node=" +
+            device["node_id"],
+          this.context.authToken
+        );
       }
     });
     this.setState({ selectedDevices: [] });
@@ -178,41 +194,54 @@ class List extends Component {
 
   refreshAllDeviceEntries() {
     this.setState({ data: [], mountModal: false });
-    http.get(this.context.backendApiUrlPrefix + "/oper/all/status/cli").then(res => {
-      try {
-        let topologies = Object.keys(res);
-        let topology = Object.keys(res[Object.keys(res)]);
-        let topology_id = res[topologies][topology]["topology-id"];
-        let nodes = res[topologies][topology]["node"];
 
-        if (nodes) {
-          nodes.map(device => {
-            let node_id = device["node-id"];
-            return this.addDeviceEntry(node_id, topology_id);
-          });
+    http
+      .get(
+        this.context.backendApiUrlPrefix +
+          "/rests/data/network-topology:network-topology/topology=cli?content=nonconfig",
+        this.context.authToken
+      )
+      .then((res) => {
+        try {
+          let topologies = Object.keys(res);
+          let topology = Object.keys(res[Object.keys(res)]);
+          let topology_id = res[topologies][topology]["topology-id"];
+          let nodes = res[topologies][topology]["node"];
+
+          if (nodes) {
+            nodes.map((device) => {
+              let node_id = device["node-id"];
+              return this.addDeviceEntry(node_id, topology_id);
+            });
+          }
+        } catch (e) {
+          console.log(e);
         }
-      } catch (e) {
-        console.log(e);
-      }
-    });
+      });
 
-    http.get(this.context.backendApiUrlPrefix + "/oper/all/status/topology-netconf").then(res => {
-      try {
-        let topologies = Object.keys(res);
-        let topology = Object.keys(res[Object.keys(res)]);
-        let topology_id = res[topologies][topology]["topology-id"];
-        let nodes = res[topologies][topology]["node"];
+    http
+      .get(
+        this.context.backendApiUrlPrefix +
+          "/rests/data/network-topology:network-topology/topology=topology-netconf?content=nonconfig",
+        this.context.authToken
+      )
+      .then((res) => {
+        try {
+          let topologies = Object.keys(res);
+          let topology = Object.keys(res[Object.keys(res)]);
+          let topology_id = res[topologies][topology]["topology-id"];
+          let nodes = res[topologies][topology]["node"];
 
-        if (nodes) {
-          nodes.map(device => {
-            let node_id = device["node-id"];
-            return this.addDeviceEntry(node_id, topology_id);
-          });
+          if (nodes) {
+            nodes.map((device) => {
+              let node_id = device["node-id"];
+              return this.addDeviceEntry(node_id, topology_id);
+            });
+          }
+        } catch (e) {
+          console.log(e);
         }
-      } catch (e) {
-        console.log(e);
-      }
-    });
+      });
     this.search();
   }
 
@@ -261,8 +290,16 @@ class List extends Component {
     let topology_obj =
       topology === "cli" ? "cli-topology" : "netconf-node-topology";
     return http
-      .get(this.context.backendApiUrlPrefix + "/oper/status/" + topology + "/" + node_id)
-      .then(res => {
+      .get(
+        this.context.backendApiUrlPrefix +
+          "/rests/data/network-topology:network-topology/topology=" +
+          topology +
+          "/node=" +
+          node_id +
+          "?content=nonconfig",
+        this.context.authToken
+      )
+      .then((res) => {
         try {
           let device = res.node[0];
           let node_id = device["node-id"];
@@ -280,8 +317,16 @@ class List extends Component {
             device[`${topology_obj}:connected-message`] || null;
 
           return http
-            .get(this.context.backendApiUrlPrefix + "/conf/status/" + topology + "/" + node_id)
-            .then(res => {
+            .get(
+              this.context.backendApiUrlPrefix +
+                "/rests/data/network-topology:network-topology/topology=" +
+                topology +
+                "/node=" +
+                node_id +
+                "?content=config",
+              this.context.authToken
+            )
+            .then((res) => {
               try {
                 let device = res.node[0];
                 let transport_type =
@@ -301,7 +346,7 @@ class List extends Component {
                   topology: topology,
                   transport_type: transport_type,
                   protocol: protocol,
-                  connected_message: connected_message
+                  connected_message: connected_message,
                 };
               } catch (e) {
                 console.log(e);

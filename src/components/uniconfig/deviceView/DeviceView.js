@@ -50,70 +50,103 @@ class DeviceView extends Component {
       showConsole: false,
       deletingSnaps: false,
       console: "",
-      operation: ""
+      operation: "",
     };
   }
 
   componentDidMount() {
     this.setState(
       {
-        device: window.location.href.split("/").pop()
+        device: window.location.href.split("/").pop(),
       },
       () => this.fetchData(this.state.device)
     );
   }
 
   fetchData(device) {
-    http.get(this.context.backendApiUrlPrefix + "/conf/uniconfig/" + device).then(res => {
-      this.setState({
-        config: JSON.stringify(res),
-        initializing: false
+    http
+      .get(
+        this.context.backendApiUrlPrefix +
+          "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
+          device +
+          "/frinx-uniconfig-topology:configuration?content=config",
+        this.context.authToken
+      )
+      .then((res) => {
+        this.setState({
+          config: JSON.stringify(res),
+          initializing: false,
+        });
       });
-    });
 
-    http.get(this.context.backendApiUrlPrefix + "/oper/uniconfig/" + device).then(res => {
-      this.setState({
-        operational: JSON.stringify(res),
-        initializing: false
+    http
+      .get(
+        this.context.backendApiUrlPrefix +
+          "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
+          device +
+          "/frinx-uniconfig-topology:configuration?content=nonconfig",
+        this.context.authToken
+      )
+      .then((res) => {
+        this.setState({
+          operational: JSON.stringify(res),
+          initializing: false,
+        });
       });
-    });
   }
 
   updateConfig(newData) {
     let data = JSON.parse(JSON.stringify(newData, null, 2));
-    http.put(this.context.backendApiUrlPrefix + "/conf/uniconfig/" + this.state.device, data).then(res => {
-      this.setState({
-        alertType: `putConfig${res.body.status}`,
-        console: JSON.stringify(res.body, null, 2),
-        operation: "Update Config"
+
+    http
+      .put(
+        this.context.backendApiUrlPrefix +
+          "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
+          this.state.device +
+          "/frinx-uniconfig-topology:configuration",
+        data,
+        this.context.authToken
+      )
+      .then((res) => {
+        this.setState({
+          alertType: `putConfig${res.body?.status}`,
+          console: JSON.stringify(res.body, null, 2),
+          operation: "Update Config",
+        });
+        this.animateConsole();
       });
-      this.animateConsole();
-    });
 
     this.setState({
-      config: JSON.stringify(newData, null, 2)
+      config: JSON.stringify(newData, null, 2),
     });
   }
 
   showDiff() {
     this.setState({
-      showDiff: !this.state.showDiff
+      showDiff: !this.state.showDiff,
     });
   }
 
   getCalculatedDiff() {
     let target = JSON.stringify({
       input: {
-        "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] }
-      }
+        "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] },
+      },
     });
-    http.post(this.context.backendApiUrlPrefix + "/operations/calculate-diff/", target).then(res => {
-      this.setState({
-        console: res.body.text,
-        operation: "Calculated Diff"
+    http
+      .post(
+        this.context.backendApiUrlPrefix +
+          "/rests/operations/uniconfig-manager:calculate-diff",
+        target,
+        this.context.authToken
+      )
+      .then((res) => {
+        this.setState({
+          console: JSON.stringify(res.body),
+          operation: "Calculated Diff",
+        });
+        this.animateConsole();
       });
-      this.animateConsole();
-    });
   }
 
   commitToNetwork() {
@@ -121,49 +154,71 @@ class DeviceView extends Component {
     let target = JSON.parse(
       JSON.stringify({
         input: {
-          "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] }
-        }
+          "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] },
+        },
       })
     );
-    http.post(this.context.backendApiUrlPrefix + "/operations/commit/", target).then(res => {
-      this.setState({
-        alertType: parseResponse("commit", res.body.text),
-        showAlert: true,
-        commiting: false,
-        console: res.body.text,
-        operation: "Commit to Network"
-      });
-      this.animateConsole();
-      http.get(this.context.backendApiUrlPrefix + "/oper/uniconfig/" + this.state.device).then(res => {
+    http
+      .post(
+        this.context.backendApiUrlPrefix +
+          "/rests/operations/uniconfig-manager:commit",
+        target,
+        this.context.authToken
+      )
+      .then((res) => {
         this.setState({
-          operational: JSON.stringify(res)
+          alertType: parseResponse("commit", res.body),
+          showAlert: true,
+          commiting: false,
+          console: JSON.stringify(res.body),
+          operation: "Commit to Network",
         });
+        this.animateConsole();
+        http
+          .get(
+            this.context.backendApiUrlPrefix +
+              "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
+              this.state.device +
+              "/frinx-uniconfig-topology:configuration?content=nonconfig",
+            this.context.authToken
+          )
+          .then((res) => {
+            this.setState({
+              operational: JSON.stringify(res),
+            });
+          });
       });
-    });
   }
 
   dryRun() {
     let target = JSON.parse(
       JSON.stringify({
         input: {
-          "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] }
-        }
+          "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] },
+        },
       })
     );
-    http.post(this.context.backendApiUrlPrefix + "/operations/dry-run/", target).then(res => {
-      this.setState({
-        alertType: parseResponse("dryrun", res.body.text),
-        showAlert: true,
-        console: JSON.stringify(
-          parseResponse("dryrun", res.body.text).configuration
-        ),
-        operation: "Dry-run"
+    http
+      .post(
+        this.context.backendApiUrlPrefix +
+          "/rests/operations/dryrun-manager:dryrun-commit",
+        target,
+        this.context.authToken
+      )
+      .then((res) => {
+        this.setState({
+          alertType: parseResponse("dryrun", res.body),
+          showAlert: true,
+          console: JSON.stringify(
+            parseResponse("dryrun", res.body).configuration
+          ),
+          operation: "Dry-run",
+        });
+        this.animateConsole();
+        if (!this.state.alertType["errorMessage"] && this.state.console) {
+          this.consoleHandler();
+        }
       });
-      this.animateConsole();
-      if (!this.state.alertType["errorMessage"] && this.state.console) {
-        this.consoleHandler();
-      }
-    });
   }
 
   animateConsole() {
@@ -179,65 +234,104 @@ class DeviceView extends Component {
     this.setState({ syncing: true });
     let target = JSON.stringify({
       input: {
-        "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] }
-      }
+        "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] },
+      },
     });
-
     http
-      .post(this.context.backendApiUrlPrefix + "/operations/sync-from-network", target)
-      .then(res_first => {
-        http.get(this.context.backendApiUrlPrefix + "/oper/uniconfig/" + this.state.device).then(res => {
-          this.setState({
-            alertType: parseResponse("sync", res_first.body.text),
-            showAlert: true,
-            operational: JSON.stringify(res),
-            initializing: false,
-            syncing: false,
-            console: res_first.body.text,
-            operation: "Sync-from-network"
+      .post(
+        this.context.backendApiUrlPrefix +
+          "/rests/operations/uniconfig-manager:sync-from-network",
+        target,
+        this.context.authToken
+      )
+      .then((res_first) => {
+        http
+          .get(
+            this.context.backendApiUrlPrefix +
+              "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
+              this.state.device +
+              "/frinx-uniconfig-topology:configuration?content=nonconfig",
+            this.context.authToken
+          )
+          .then((res) => {
+            console.log(res_first);
+            this.setState({
+              alertType: parseResponse("sync", res_first.body),
+              showAlert: true,
+              operational: JSON.stringify(res),
+              initializing: false,
+              syncing: false,
+              console: JSON.stringify(res_first.body),
+              operation: "Sync-from-network",
+            });
+            this.animateConsole();
           });
-          this.animateConsole();
-        });
       });
   }
 
   refreshConfig() {
-    http.get(this.context.backendApiUrlPrefix + "/conf/uniconfig/" + this.state.device).then(res => {
-      this.setState({
-        config: JSON.stringify(res)
+    http
+      .get(
+        this.context.backendApiUrlPrefix +
+          "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
+          this.state.device +
+          "/frinx-uniconfig-topology:configuration?content=config",
+        this.context.authToken
+      )
+      .then((res) => {
+        this.setState({
+          config: JSON.stringify(res),
+        });
       });
-    });
   }
 
   replaceConfig() {
     let target = JSON.stringify({
       input: {
-        "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] }
-      }
+        "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] },
+      },
     });
     http
-      .post(this.context.backendApiUrlPrefix + "/operations/replace-config-with-operational", target)
-      .then(res => {
+      .post(
+        this.context.backendApiUrlPrefix +
+          "/rests/operations/uniconfig-manager:replace-config-with-operational",
+        target,
+        this.context.authToken
+      )
+      .then((res) => {
         console.log(res);
         this.refreshConfig();
         this.setState({
-          alertType: parseResponse("replaceconf", res.body.text),
+          alertType: parseResponse("replaceconf", res.body),
           showAlert: true,
-          console: res.body.text,
-          operation: "Replace-config-with-operational"
+          console: JSON.stringify(res.body),
+          operation: "Replace-config-with-operational",
         });
         this.animateConsole();
       });
   }
 
   getSnapshots() {
-    http.get(this.context.backendApiUrlPrefix + "/conf/snapshots/" + this.state.device).then(res => {
-      if (res !== 500) {
-        this.setState({
-          snapshots: res
-        });
-      }
-    });
+    http
+      .get(
+        this.context.backendApiUrlPrefix +
+          "/rests/data/network-topology:network-topology?content=config",
+        this.context.authToken
+      )
+      .then((res) => {
+        if (res !== 500) {
+          let topologies = ["cli", "uniconfig", "topology-netconf", "unitopo"];
+          let snapshots = res["network-topology"]["topology"].filter(
+            (topology) =>
+              topology["node"] &&
+              topology["node"]["0"]["node-id"] === this.state.device &&
+              !topologies.includes(topology["topology-id"])
+          );
+          this.setState({
+            snapshots: snapshots,
+          });
+        }
+      });
   }
 
   loadSnapshot(snapshotId) {
@@ -247,33 +341,50 @@ class DeviceView extends Component {
       let target = JSON.parse(
         JSON.stringify({ input: { name: snapshotName } })
       );
-      http.post(this.context.backendApiUrlPrefix + "/conf/snapshots/delete-snapshot", target).then(res => {
-        console.log(res);
-      });
+      http
+        .post(
+          this.context.backendApiUrlPrefix +
+            "/rests/operations/snapshot-manager:delete-snapshot",
+          target,
+          this.context.authToken
+        )
+        .then((res) => {
+          console.log(res);
+        });
     } else {
       let target = JSON.stringify({
         input: {
           name: snapshotName,
-          "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] }
-        }
+          "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] },
+        },
       });
       http
-        .post(this.context.backendApiUrlPrefix + "/operations/replace-config-with-snapshot", target)
-        .then(res_first => {
+        .post(
+          this.context.backendApiUrlPrefix +
+            "/rests/operations/snapshot-manager:replace-config-with-snapshot",
+          target,
+          this.context.authToken
+        )
+        .then((res_first) => {
           http
             .get(
-              this.context.backendApiUrlPrefix + "/conf/snapshots/" +
-                snapshotName +
-                "/" +
-                this.state.device
+              this.context.backendApiUrlPrefix +
+                "/rests/data/network-topology:network-topology?content=config",
+              this.context.authToken
             )
-            .then(res => {
+            .then((res) => {
+              let snapshot = res["network-topology"]["topology"].filter(
+                (topology) => topology["topology-id"] === snapshotName
+              )[0]?.node[0];
+
+              delete snapshot["node-id"];
+
               this.setState({
-                alertType: parseResponse("replacesnap", res_first.body.text),
+                alertType: parseResponse("replacesnap", res_first.body),
                 showAlert: true,
-                config: JSON.stringify(res, null, 2),
+                config: JSON.stringify(snapshot, null, 2),
                 console: JSON.stringify(res_first.body),
-                operation: "Replace-Config-With-Snapshot"
+                operation: "Replace-Config-With-Snapshot",
               });
               this.animateConsole();
             });
@@ -283,19 +394,19 @@ class DeviceView extends Component {
 
   createSnapshot() {
     this.setState({
-      creatingSnap: !this.state.creatingSnap
+      creatingSnap: !this.state.creatingSnap,
     });
   }
 
   consoleHandler() {
     this.setState({
-      showConsole: !this.state.showConsole
+      showConsole: !this.state.showConsole,
     });
   }
 
   alertHandler() {
     this.setState({
-      showAlert: !this.state.showAlert
+      showAlert: !this.state.showAlert,
     });
   }
 
@@ -364,7 +475,9 @@ class DeviceView extends Component {
           <Button
             className="round floating-btn noshadow"
             onClick={() => {
-              this.props.history.push(this.context.frontendUrlPrefix + "/devices");
+              this.props.history.push(
+                this.context.frontendUrlPrefix + "/devices"
+              );
             }}
             variant="outline-light"
           >
@@ -403,7 +516,7 @@ class DeviceView extends Component {
                     <Button
                       onClick={() =>
                         this.setState({
-                          deletingSnaps: !this.state.deletingSnaps
+                          deletingSnaps: !this.state.deletingSnaps,
                         })
                       }
                       variant={

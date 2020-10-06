@@ -4,12 +4,12 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static(path.join(__dirname, "../build")));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // serve UI static files
 app.get("/*", function (req, res) {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
 
 const port = process.env.NODE_PORT || 4000;
