@@ -15,4 +15,8 @@ In the project directory, run:
 #### `docker run -e NODE_PORT=3000 -d -p 3000:3000 uniconfig-ui` <br>
 Starts the UniConfig-UI container using ODL/WF_SERVER host defined at installation.
 
+## Start with https
+In the project directory, run:
+#### `docker run -v /home/user/cert:/usr/app/server/certificates -e NODE_PORT=3000 -e HTTPS=true -p 3000:3000 uniconfig-ui` <br>
+
 Open web browser with URL `http://localhost:3000/`
