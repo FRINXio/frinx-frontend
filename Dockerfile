@@ -10,6 +10,4 @@ RUN npm run build
 WORKDIR /usr/app/server/
 RUN npm install -qy
 
-EXPOSE 4000
-
 CMD ["npm", "start"]
