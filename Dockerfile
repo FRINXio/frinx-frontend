@@ -1,8 +1,9 @@
 # --- Build UI ---
 
-FROM node:9.4.0-alpine
+FROM node:12-alpine
 ENV SASS_BINARY_NAME linux-x64-59
 RUN apk --no-cache add curl
+RUN apk add --update openssl
 
 # Cache client npm packages
 COPY package.json package-lock.json /usr/app/
