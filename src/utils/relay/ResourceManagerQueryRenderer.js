@@ -9,9 +9,10 @@
  */
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-import React, {useState} from 'react';
-import RelayEnvironment from './ResourceManagerRelayEnvironment.js';
-import {QueryRenderer} from 'react-relay';
+import React, { useState } from 'react';
+import { QueryRenderer } from 'react-relay';
+// eslint-disable-next-line import/extensions
+import environment from '../../environment.js';
 
 type Props = {
   query: any,
@@ -19,17 +20,16 @@ type Props = {
   render: (props: Object) => React$Element<any> | null,
 };
 
-
 const ResourceManagerQueryRenderer = (compProps: Props) => {
-  const {query, variables} = compProps;
-  const [errorPresent, setErrorPresent] = useState(false);
+  const { query, variables } = compProps;
+  const [, setErrorPresent] = useState(false);
 
   return (
     <QueryRenderer
-      environment={RelayEnvironment}
+      environment={environment}
       query={query}
       variables={variables}
-      render={({error, props}) => {
+      render={({ error, props }) => {
         if (error) {
           setErrorPresent(true);
           return null;

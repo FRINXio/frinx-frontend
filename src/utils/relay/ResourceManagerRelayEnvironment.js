@@ -9,21 +9,16 @@
  */
 
 import axios from 'axios';
-import {Environment, Network, RecordSource, Store} from 'relay-runtime';
+import {
+  Environment, Network, RecordSource, Store,
+// eslint-disable-next-line import/no-extraneous-dependencies
+} from 'relay-runtime';
 
 function handleDeactivatedUser(error) {
-  const errorResponse = error?.response;
-
   throw error;
 }
 
-const BASIC_URL = 'http://0.0.0.0:5000/graphql/query';
-
-const headers = {
-  "x-tenant-id": "fb",
-  "x-auth-user-role": "OWNER",
-  "from": "fb-user@frinx.io"
-};
+const BASIC_URL = '/resourcemanager/graphql/query';
 
 function fetchQuery(query) {
   return axios
@@ -32,11 +27,9 @@ function fetchQuery(query) {
       {
         query: query.text,
       },
-      {headers},
+      {},
     )
-    .then(response => {
-      return response.data;
-    })
+    .then((response) => response.data)
     .catch(handleDeactivatedUser);
 }
 

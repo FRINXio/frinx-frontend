@@ -1,83 +1,126 @@
 // @flow
-import type {WithStyles} from '@material-ui/core';
+import type { WithStyles } from '@material-ui/core';
 
 import * as React from 'react';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+// eslint-disable-next-line no-unused-vars
 import classNames from 'classnames';
-import {useEffect, useState} from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import { useEffect, useState } from 'react';
+import { withStyles } from '@material-ui/core/styles';
 
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/theme-tomorrow';
-import AceEditor from 'react-ace';
+import Card from '@material-ui/core/Card';
+// eslint-disable-next-line no-unused-vars
+import { Code } from '@material-ui/icons';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 
-import {motion} from 'framer-motion';
-import Card from "@material-ui/core/Card";
-import {Code} from "@material-ui/icons";
-import CodeEditor from "../configure/CodeEditor";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import {createAllocationStrat, fetchQuery, queryAllocationStrats} from "../queries/Queries";
+import { withSnackbar } from 'notistack';
+import { Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import type {
+  AddStrategyCreateData,
+// eslint-disable-next-line import/no-unresolved
+} from '../../mutations/__generated__/AddStrategyMutation.graphql';
+import AddStrategyMutation from '../mutations/AddStrategyMutation';
+import CodeEditor from '../configure/CodeEditor';
 
-const styles = theme => ({
-    root: {
-        padding: '24px'
-    },
-    card: {
-        padding: '24px',
-        margin: '24px 0px',
-    },
+const styles = () => ({
+  root: {
+    padding: '24px',
+  },
+  card: {
+    padding: '24px',
+    margin: '24px 0px',
+  },
 });
 
 type Props = {
-    children: React.ChildrenArray<null | React.Element<*>>,
-    className?: string,
     showAddEditCardFunc: Function,
 } & WithStyles<typeof styles>;
 
 const AddEditStrategy = (props: Props) => {
-    const {className, classes, showAddEditCardFunc} = props;
-    const [name, setName] = useState('');
-    const [script, setScript] = useState(`function invoke() {log(JSON.stringify({respool: resourcePool.ResourcePoolName, currentRes: currentResources}));return {vlan: userInput.desiredVlan};}`);
+  const {
+    classes, showAddEditCardFunc, enqueueSnackbar,
+  } = props;
+  const [name, setName] = useState('');
+  const [script, setScript] = useState('function invoke() {log(JSON.stringify({respool: resourcePool.ResourcePoolName, currentRes: currentResources}));return {vlan: userInput.desiredVlan};}');
+  const [error, setError] = useState(true);
 
-    const onNameChanged = (val) => {
-        setName(val.target.value)
-    }
+  const onNameChanged = (val) => {
+    setName(val.target.value);
+  };
 
-    // const script = `function invoke() {log(JSON.stringify({respool: resourcePool.ResourcePoolName, currentRes: currentResources}));return {vlan: userInput.desiredVlan};}`
-    const lang = `js`
+  const lang = 'js';
 
-    const createStrategy = () => {
-        console.log('sdf', script);
+  // const input =
 
-        fetchQuery(createAllocationStrat(name, lang, script)).then(val => {
-            console.log(val)
-            showAddEditCardFunc(false)
+  const createStrategy = () => {
+    const input: AddStrategyCreateData = {
+      name,
+      script,
+      lang,
+    };
+
+    const variables: AddStrategyVariables = {
+      input,
+    };
+
+    AddStrategyMutation(variables, (response, err) => {
+      if (err) {
+        console.log(err);
+        enqueueSnackbar(err.message, {
+          variant: 'error',
         });
-    }
+      } else {
+        enqueueSnackbar('Resource Type Added', {
+          variant: 'success',
+        });
+        showAddEditCardFunc(false);
+      }
+    });
+  };
 
-    return (
-        <div className={classes.root}>
-            <Card className={classes.card}>
-                <TextField label="NAME" onChange={onNameChanged} />
-            </Card>
-            <Card className={classes.card}>
-                <CodeEditor setScript={setScript}/>
-            </Card>
-            <div>
-                <Button 
-                    variant="contained"
-                    color="primary" 
-                    onClick={createStrategy}
-                >
-                    Save
-                </Button>
-            </div>
-            
-        </div>
+  useEffect(() => {
+    setError(name.length === 0);
+  }, [name]);
 
-    );
+  return (
+    <div className={classes.root}>
+      <div>
+        <Typography>
+          <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
+            Create New Strategy
+          </Box>
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={createStrategy}
+          disabled={error}
+        >
+          Save
+        </Button>
+        <Button
+          onClick={() => { showAddEditCardFunc(false); }}
+          color="secondary"
+        >
+          Cancel
+        </Button>
+      </div>
+      <Card className={classes.card}>
+        <TextField
+          error={error}
+          label="NAME"
+          onChange={onNameChanged}
+          className={classes.nameTextField}
+          autoFocus
+        />
+      </Card>
+      <Card className={classes.card}>
+        <CodeEditor setScript={setScript} />
+      </Card>
+    </div>
+
+  );
 };
 
-export default withStyles(styles)(AddEditStrategy);
+export default withSnackbar(withStyles(styles)(AddEditStrategy));

@@ -1,78 +1,83 @@
 // @flow
-import type {WithStyles} from '@material-ui/core';
 
 import * as React from 'react';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+// eslint-disable-next-line no-unused-vars
 import classNames from 'classnames';
-import {useEffect, useState} from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import ResourceManagerTab from "./components/layout/ResourceManagerTab";
-import PoolCard from "./pools/PoolCard";
-import AllocationStrategies from "./configure/AllocationStrategies";
-import {ThemeProvider} from "@material-ui/styles";
-import theme from './components/layout/theme'
-import ResourceTypes from "./resourceTypes/ResourceTypes";
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { ThemeProvider } from '@material-ui/styles';
+import {
+  BrowserRouter, Switch, Route, Link,
+} from 'react-router-dom';
+import { SnackbarProvider } from 'notistack';
+import AllocationStrategies from './configure/AllocationStrategies';
+import theme from './components/layout/theme';
+import ResourceTypes from './resourceTypes/ResourceTypes';
+import Pools from './pools/Pools';
+import ResourceList from './pools/resources/ResourcesList';
 
+const styles = () => ({
+  root: {
 
-const styles = theme => ({
-    root: {
-
-        fontWeight: 500,
-        fontSize: '20px',
-        lineHeight: '24px',
-    },
+    fontWeight: 500,
+    fontSize: '20px',
+    lineHeight: '24px',
+  },
 });
+const ResourceManagerTabs = () => {
+  const [value, setValue] = React.useState(0);
 
-type Props = {
-    children: React.ChildrenArray<null | React.Element<*>>,
-    className?: string,
-} & WithStyles<typeof styles>;
-
-const ResourceManagerTabs = (props: Props) => {
-    const {className, classes} = props;
-
-    const [value, setValue] = React.useState(2);
-
-    function a11yProps(index) {
-        return {
-            id: `simple-tab-${index}`,
-            'aria-controls': `simple-tabpanel-${index}`,
-        };
-    }
-
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
+  function a11yProps(index) {
+    return {
+      id: `simple-tab-${index}`,
+      'aria-controls': `simple-tabpanel-${index}`,
     };
+  }
 
-    return (
-        <ThemeProvider theme={theme}>
-            <AppBar position="static" elevation={0}>
-                <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
-                    <Tab label="Pools" {...a11yProps(0)} />
-                    <Tab label="Strategies" {...a11yProps(1)} />
-                    <Tab label="Resource Types" {...a11yProps(2)} />
-                    <Tab label="" {...a11yProps(3)} />
-                </Tabs>
-            </AppBar>
-            <ResourceManagerTab value={value} index={0}>
-                Pools
-            </ResourceManagerTab>
-            <ResourceManagerTab value={value} index={1}>
-                <AllocationStrategies />
-            </ResourceManagerTab>
-            <ResourceManagerTab value={value} index={2}>
-                <ResourceTypes />
-            </ResourceManagerTab>
-            <ResourceManagerTab value={value} index={3}>
-                Pools
-            </ResourceManagerTab>
-        </ThemeProvider>
-    );
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const RESOURCE_MANAGER_URL = '/resourcemanager/frontend';
+
+  return (
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider>
+        <BrowserRouter>
+          <AppBar position="static" elevation={0}>
+            <Tabs value={value} onChange={handleChange} aria-label="">
+              <Tab label="Pools" {...a11yProps(0)} component={Link} to={`${RESOURCE_MANAGER_URL}/pools`} />
+              <Tab label="Strategies" {...a11yProps(1)} component={Link} to={`${RESOURCE_MANAGER_URL}/strategies`} />
+              <Tab label="Resource Types" {...a11yProps(2)} component={Link} to={`${RESOURCE_MANAGER_URL}/resourceTypes`} />
+              <Tab label="" {...a11yProps(3)} component={Link} to={`${RESOURCE_MANAGER_URL}/resources`} />
+            </Tabs>
+          </AppBar>
+
+          <Switch>
+            <Route path={`${RESOURCE_MANAGER_URL}/pools`}>
+              <Pools />
+            </Route>
+            <Route path={`${RESOURCE_MANAGER_URL}/strategies`}>
+              <AllocationStrategies />
+            </Route>
+            <Route path={`${RESOURCE_MANAGER_URL}/resourceTypes`}>
+              <ResourceTypes />
+            </Route>
+            <Route path={`${RESOURCE_MANAGER_URL}/resources/:id`}>
+              <ResourceList />
+            </Route>
+            <Route path="/">
+              <Pools />
+            </Route>
+          </Switch>
+        </BrowserRouter>
+      </SnackbarProvider>
+    </ThemeProvider>
+  );
 };
 
 export default withStyles(styles)(ResourceManagerTabs);

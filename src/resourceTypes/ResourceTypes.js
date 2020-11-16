@@ -8,163 +8,183 @@
  * @format
  */
 
-import type {ContextRouter} from 'react-router-dom';
-// import type {ServiceTypeItem_serviceType} from './__generated__/ServiceTypeItem_serviceType.graphql';
-import type {WithStyles} from '@material-ui/core';
+import type { ContextRouter } from 'react-router-dom';
+import type { WithStyles } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { graphql } from 'react-relay';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import AddEditResourceTypeCard from '../strategies/AddEditResourceTypeCard';
+import ResourceManagerQueryRenderer from '../utils/relay/ResourceManagerQueryRenderer';
+import ResourceTypesTable from './ResourceTypesTable';
+import ResourceTypesFilters from './filters/ResourceTypesFilters';
+import { filterByPool, filterByQuery } from './filters/filterUtils';
 
-import * as axios from 'axios';
-// import AddEditResourceTypeCard from './AddEditResourceTypeCard';
-import React, {useState} from 'react';
-import ResourceTypeItem from './ResourceTypeItem';
-import {createFragmentContainer, graphql} from 'react-relay';
-import {withStyles} from '@material-ui/core/styles';
-import Button from "@material-ui/core/Button";
-import AddEditResourceTypeCard from "../strategies/AddEditResourceTypeCard";
-import ResourceManagerQueryRenderer from "../utils/relay/ResourceManagerQueryRenderer";
-import {fetchQuery, queryResourceTypes} from "../queries/Queries";
-// import {queryResourceTypes} from "../../queries/Queries";
-
-const styles = theme => ({
-    header: {
-        margin: '10px',
-        display: 'flex',
-        justifyContent: 'space-between',
-    },
-    root: {
-        width: '100%',
-        marginTop: '15px',
-    },
-    paper: {
-        flexGrow: 1,
-        overflowY: 'hidden',
-    },
-    content: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-    },
-    listItem: {
-        marginBottom: '24px',
-    },
-    addButton: {
-        marginLeft: 'auto',
-    },
-    addButtonContainer: {
-        display: 'flex',
-        justifyContent: 'flex-end'
-    },
-    typesList: {
-        padding: '24px',
-    },
-    title: {
-        marginLeft: '10px',
-    },
-    firstRow: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
+const styles = () => ({
+  header: {
+    margin: '10px',
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  root: {
+    width: '100%',
+    marginTop: '15px',
+  },
+  paper: {
+    flexGrow: 1,
+    overflowY: 'hidden',
+  },
+  mainContainer: {
+    margin: '24px',
+  },
+  content: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  listItem: {
+    marginBottom: '24px',
+  },
+  addButton: {
+    marginLeft: 'auto',
+  },
+  addButtonContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  typesList: {
+    padding: '24px',
+  },
+  title: {
+    marginLeft: '10px',
+  },
+  firstRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 });
 
 type Props = ContextRouter & WithStyles<typeof styles> & {};
 
-type State = {
-    dialogKey: number,
-    errorMessage: ?string,
-    showAddEditCard: boolean,
-};
-
 const query = graphql`query ResourceTypesQuery {
                         QueryResourceTypes{
-                            ID
-                            Name
+                            id
+                            Name,
+                            PropertyTypes {
+                                Name
+                                Type
+                            }
+                            Pools {
+                                id
+                                Name
+                            }
                         }
                 }
 `;
 
-class ResourceTypes extends React.Component<Props, State> {
-    state = {
-        dialogKey: 1,
-        errorMessage: null,
-        showAddEditCard: false,
-        editingServiceType: null,
-        resourceTypesData: [],
-    };
+const ResourceTypes = (props: Props) => {
+  const [showEditCard, setShowEditCard] = useState(false);
+  const [updateDataVar, setUpdateDataVar] = useState(0);
+  const [filteredArray, setFilteredArray] = useState([]);
+  const [queryArray, setQueryArray] = useState([]);
 
-    componentDidMount() {
-        fetchQuery(queryResourceTypes).then(val => {
-            console.log(val.data.data.QueryResourceTypes);
-            this.setState({resourceTypesData: val.data.data.QueryResourceTypes});
-        });
-    }
-    showEditCardFunc = (value) => {
-        this.setState({
-            showAddEditCard: value
-        })
-        fetchQuery(queryResourceTypes).then(val => {
-            console.log(val.data.data.QueryResourceTypes);
-            this.setState({resourceTypesData: val.data.data.QueryResourceTypes});
-        });
-    }
+  const [filterConstraints, setFilterConstraints] = useState({
+    searchQuery: '',
+    pool: '',
+  });
 
-    render() {
-        const {classes} = this.props;
-        const {showAddEditCard, editingServiceType, resourceTypesData} = this.state;
-        // const [resourceTypesData, setResourceTypesData] = useState([]);
+  const updateFilterConstraint = (key, value) => {
+    console.log('key', key, value);
+    setFilterConstraints({
+      ...filterConstraints,
+      [key]: value,
+    });
+  };
+
+  useEffect(() => {
+    const {
+      searchQuery, pool,
+    } = filterConstraints;
+    let results = filterByQuery(searchQuery, queryArray);
+    results = filterByPool(pool, results);
+    setFilteredArray(results);
+  }, [filterConstraints]);
+
+  useEffect(() => {
+    setFilteredArray(queryArray);
+  }, [queryArray]);
+
+  const showEditCardFunc = (value) => {
+    setShowEditCard(value);
+  };
+  const updateDataVarFunc = () => {
+    setUpdateDataVar(updateDataVar + 1);
+  };
+
+  const { classes } = props;
+  // const [resourceTypesData, setResourceTypesData] = useState([]);
+
+  return (
+    <ResourceManagerQueryRenderer
+      query={query}
+      variables={{ someVar: showEditCard, updateDataVar }}
+      render={(queryProps) => {
+        const { QueryResourceTypes } = queryProps;
+        setQueryArray(QueryResourceTypes);
+
+        if (showEditCard) {
+          return (
+            <div className={classes.paper}>
+              <AddEditResourceTypeCard showAddEditCardFunc={showEditCardFunc} />
+            </div>
+          );
+        }
 
         return (
-            <ResourceManagerQueryRenderer
-                query={query}
-                variables={{}}
-                render={props => {
-                    const {serviceTypes} = props;
+          <div className={classes.mainContainer}>
+            <div className={classes.addButtonContainer}>
+              <Typography component="div">
+                <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
+                  Resource Types (
+                  { QueryResourceTypes.length }
+                  )
+                </Box>
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => { setShowEditCard(true); }}
+              >
+                Add Resource Type
+              </Button>
+            </div>
 
-                    if (showAddEditCard) {
-                        return (
-                            <div className={classes.paper}>
-                                <AddEditResourceTypeCard showAddEditCardFunc={this.showEditCardFunc}/>
-                            </div>
-                        );
-                    }
+            <div>
+              <ResourceTypesFilters
+                setFilteredArray={setFilteredArray}
+                resourceTypesArray={QueryResourceTypes}
+                filterConstraints={filterConstraints}
+                setFilterConstraints={setFilterConstraints}
+                updateFilterConstraint={updateFilterConstraint}
+              />
+            </div>
 
-                    return (
-                        <div>
-                            <div className={classes.typesList}>
-                                <div className={classes.addButtonContainer}>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => {this.setState({
-                                            showAddEditCard: true
-                                        })}}>Add Resource Type</Button>
-                                </div>
-                            </div>
-
-                            <div className={classes.typesList}>
-                                {resourceTypesData.map((rt, key: id) => {
-                                    return <div className={classes.listItem}>
-                                        <ResourceTypeItem resourceType={rt} showAddEditCard={this.showEditCardFunc}/>
-                                    </div>
-                                })}
-                            </div>
-                        </div>
-                    );
-                }}
-            />
+            <div>
+              <ResourceTypesTable
+                resourceTypesData={filteredArray}
+                updateDataVarFunc={updateDataVarFunc}
+              />
+            </div>
+          </div>
         );
-    }
-}
+      }}
+    />
+  );
+};
 
 export default withStyles(styles)(
-    // createFragmentContainer(ResourceTypes, {
-    //     resourceTypes: graphql`
-    //        fragment ResourceTypes_resourceTypes on ResourceType {
-    //         ID
-    //         Name
-    //        }
-    //     `
-    // })
-    // ,
-    ResourceTypes
+  ResourceTypes,
 );
-

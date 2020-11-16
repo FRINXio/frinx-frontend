@@ -1,30 +1,25 @@
-import {commitMutation, graphql} from 'react-relay';
-import RelayEnvironment from "../utils/relay/ResourceManagerRelayEnvironment";
+import { commitMutation, graphql } from 'react-relay';
+import environment from '../environment';
 
 const mutation = graphql`
-    mutation DeleteResourceTypeMutation(
-        $resourceTypeId: ID!,
-    ) {
-        DeleteResourceType(resourceTypeId: $resourceTypeId)
+  mutation DeleteResourceTypeMutation($input: DeleteResourceTypeInput!) {
+    DeleteResourceType(input: $input) {
+      resourceTypeId
     }
+  }
 `;
 
-export default (resourceTypeId) => {
-    const variables = {
-        resourceTypeId
-    };
-
-    console.log(variables);
-
-    commitMutation(
-        RelayEnvironment,
-        {
-            mutation,
-            variables,
-            onCompleted: (response, errors) => {
-                console.log('Response received from server.')
-            },
-            onError: err => console.error(err),
-        },
-    );
-}
+export default (variables, callbacks) => {
+  commitMutation(
+    environment,
+    {
+      mutation,
+      variables,
+      onCompleted: (response) => {
+        callbacks(response);
+        console.log('Response received from server.');
+      },
+      onError: (err) => callbacks(null, err),
+    },
+  );
+};

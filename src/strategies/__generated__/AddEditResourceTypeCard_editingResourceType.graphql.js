@@ -12,10 +12,10 @@ import type { FragmentReference } from "relay-runtime";
 declare export opaque type AddEditResourceTypeCard_editingResourceType$ref: FragmentReference;
 declare export opaque type AddEditResourceTypeCard_editingResourceType$fragmentType: AddEditResourceTypeCard_editingResourceType$ref;
 export type AddEditResourceTypeCard_editingResourceType = {|
-  +ID: string,
+  +id: string,
   +Name: string,
   +PropertyTypes: $ReadOnlyArray<{|
-    +ID: string,
+    +id: string,
     +Name: string,
     +Type: string,
     +IntVal: number,
@@ -39,7 +39,7 @@ var v0 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "ID",
+  "name": "id",
   "storageKey": null
 },
 v1 = {
@@ -111,6 +111,6 @@ return {
 };
 })();
 // prettier-ignore
-(node/*: any*/).hash = 'f5bff3b0616a53199b237fb9aba9ec4b';
+(node/*: any*/).hash = '28f3fc1914d9b101eb5fc456a88962c1';
 
 module.exports = node;

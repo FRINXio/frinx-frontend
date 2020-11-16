@@ -1,0 +1,1 @@
+../../../packages/common-js/.eslintrc-frontend.js

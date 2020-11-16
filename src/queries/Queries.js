@@ -1,14 +1,6 @@
-// @flow
 import * as axios from 'axios';
-// import {graphql} from 'babel-plugin-relay/macro';
 
-const BASIC_URL = 'http://0.0.0.0:5000/graphql/query';
-
-const headers = {
-  "x-tenant-id": "fb",
-  "x-auth-user-role": "OWNER",
-  "from": "fb-user@frinx.io"
-};
+const BASIC_URL = '/resourcemanager/graphql/query';
 
 export function fetchQuery(query) {
   return axios.post(
@@ -16,7 +8,6 @@ export function fetchQuery(query) {
     {
       query,
     },
-    {headers},
   );
 }
 
@@ -30,15 +21,12 @@ export const queryAllocationStrats = `query queryAllocationStrats {
     }
     `;
 
-export const createAllocationStrat = (name, lang, script) => {
-  return (
-    `mutation createAllocationStrat {
+export const createAllocationStrat = (input) => (
+  `mutation createAllocationStrat {
     CreateAllocationStrategy(
-        name: "` +
-    name +
-    `",
-        script: "` + script + `",
-        lang: ` + lang + `,
+        input: ${
+  input
+  }
     ){
         ID
         Name
@@ -46,62 +34,96 @@ export const createAllocationStrat = (name, lang, script) => {
         Script
     }
 }`
-  );
-};
+);
 
 export const queryAllPools = `query QueryAllPools {
     QueryResourcePools{
-        ID
+        id
         Name
         PoolType
+        Tags {
+            id
+            Tag
+        }
+        AllocationStrategy {
+            id
+            Name
+            Lang
+        }
+        ResourceType {
+            id
+            Name
+        }
     }
 }`;
 
-export const queryResourceTypes = `
-  query queryResourceTypes {
+export const queryFilterOptions = `query queryFilterOptions {
+    QueryTags {
+        id
+        Tag
+        Pools {
+            id
+            Name
+        }
+    },
+    QueryAllocationStrategies{ 
+        id
+        Name
+        Lang
+        Script
+    },
     QueryResourceTypes {
-      ID
+      id
       Name
       PropertyTypes {
             Name
             Type
         }
         Pools {
-            ID
+            id
+            Name
+        }
+    }
+}`;
+
+export const queryResourceTypes = `
+  query queryResourceTypes {
+    QueryResourceTypes {
+      id
+      Name
+      PropertyTypes {
+            Name
+            Type
+        }
+        Pools {
+            id
             Name
         }
     }
   }
 `;
 
-export const createNewResourceType = name => {
-  return (
-    `mutation createNewResourceType {
+export const createNewResourceType = (input) => (
+  `mutation createNewResourceType {
         CreateResourceType(
-            resourceName: "` +
-    name +
-    `",
-            resourceProperties: {
-            vlan: "int"
-        }
+            input: ${
+  input
+  }
     ) {
             ID
             Name
         }
     }`
-  );
-};
-export const deleteResourceType = id => {
-    return (
-      `mutation deleteResourceType {
+);
+export const deleteResourceType = (id) => (
+  `mutation deleteResourceType {
           DeleteResourceType(
-            resourceTypeId: "` +
-      id +
-      `",
+            resourceTypeId: "${
+  id
+  }",
       )
       }`
-    );
-  };
+);
 
 export const createComplexResourceType = `mutation createComplexResourceType {
     CreateResourceType(
@@ -116,30 +138,67 @@ export const createComplexResourceType = `mutation createComplexResourceType {
     }
 }`;
 
-export const createSetPool = `mutation createSetPool {
-    CreateSetPool(
-        resourceTypeId: 25769803776,
-        poolName: "vlan_test5",
-        poolValues: [{vlan: 13}, {vlan: 14},],
-        poolDealocationSafetyPeriod: 0
-){
-        ID
-        PoolType
-        Name
+export const tagPool = (tagId, poolId) => `mutation TagPool {
+    TagPool(input: {tagId: ${tagId} , poolId: ${poolId}}) {
+        tag {
+            id
+        }
     }
 }`;
 
-export const createAllocationPool = `mutation createAllocationPool {
-    CreateAllocatingPool(
-        resourceTypeId: 25769803776,
-        poolName: "vlan_allocating",
-        allocationStrategyId: 1,
-        poolDealocationSafetyPeriod: 0
-){
-        ID
+export const untagPool = (tagId, poolId) => `mutation UntagPool {
+    UntagPool(input: {tagId: ${tagId} , poolId: ${poolId}}) {
+        tag {
+            id
+        }
+    }
+}`;
+
+export const createSetPool = (resourceTypeId, poolName, description, poolValues, poolDealocationSafetyPeriod) => `mutation createSetPool {
+    CreateSetPool(input: {
+        resourceTypeId: ${resourceTypeId},
+        poolName: "${poolName}",
+        description: "${description}",
+        poolValues: ${poolValues},
+        poolDealocationSafetyPeriod: ${poolDealocationSafetyPeriod}
+}){
+    pool {
+        id
         PoolType
         Name
     }
+  }
+}`;
+
+export const createAllocationPool = (resourceTypeId, poolName, description, allocationStrategyId, poolDealocationSafetyPeriod) => `mutation createAllocationPool {
+    CreateAllocatingPool(input: {
+        resourceTypeId: ${resourceTypeId},
+        poolName: "${poolName}",
+        description: "${description}",
+        allocationStrategyId: ${allocationStrategyId},
+        poolDealocationSafetyPeriod: ${poolDealocationSafetyPeriod}
+}){
+    pool {
+        id
+        PoolType
+        Name
+    }
+  }
+}`;
+
+export const createSingletonPool = (resourceTypeId, poolName, description, poolValues) => `mutation createSingletonPool {
+    CreateSingletonPool(input: {
+        resourceTypeId: ${resourceTypeId},
+        poolName: "${poolName}",
+        description: "${description}",
+        poolValues: ${poolValues}
+}){
+    pool {
+        id
+        PoolType
+        Name
+    }
+  }
 }`;
 
 export const QueryAllPools = `query QueryAllPools {
@@ -171,8 +230,10 @@ export const QueryResources = `query QueryResources {
     }
 }`;
 
-export const deleteResourcePool = `mutation deleteResourcePool {
-    DeleteResourcePool(resourcePoolId:21474836481)
+export const deleteResourcePool = (resourcePoolId) => `mutation deleteResourcePool {
+    DeleteResourcePool(input: {resourcePoolId: ${resourcePoolId}}) {
+        resourcePoolId 
+    }
 }`;
 
 export const deleteAllocationStrat = `mutation deleteAllocationStrat {

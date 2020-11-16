@@ -8,11 +8,16 @@
 
 /*::
 import type { ConcreteRequest } from 'relay-runtime';
-export type DeleteResourceTypeMutationVariables = {|
+export type DeleteResourceTypeInput = {|
   resourceTypeId: string
 |};
+export type DeleteResourceTypeMutationVariables = {|
+  input: DeleteResourceTypeInput
+|};
 export type DeleteResourceTypeMutationResponse = {|
-  +DeleteResourceType: string
+  +DeleteResourceType: {|
+    +resourceTypeId: string
+  |}
 |};
 export type DeleteResourceTypeMutation = {|
   variables: DeleteResourceTypeMutationVariables,
@@ -23,9 +28,11 @@ export type DeleteResourceTypeMutation = {|
 
 /*
 mutation DeleteResourceTypeMutation(
-  $resourceTypeId: ID!
+  $input: DeleteResourceTypeInput!
 ) {
-  DeleteResourceType(resourceTypeId: $resourceTypeId)
+  DeleteResourceType(input: $input) {
+    resourceTypeId
+  }
 }
 */
 
@@ -34,7 +41,7 @@ var v0 = [
   {
     "defaultValue": null,
     "kind": "LocalArgument",
-    "name": "resourceTypeId"
+    "name": "input"
   }
 ],
 v1 = [
@@ -43,12 +50,23 @@ v1 = [
     "args": [
       {
         "kind": "Variable",
-        "name": "resourceTypeId",
-        "variableName": "resourceTypeId"
+        "name": "input",
+        "variableName": "input"
       }
     ],
-    "kind": "ScalarField",
+    "concreteType": "DeleteResourceTypePayload",
+    "kind": "LinkedField",
     "name": "DeleteResourceType",
+    "plural": false,
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "resourceTypeId",
+        "storageKey": null
+      }
+    ],
     "storageKey": null
   }
 ];
@@ -70,16 +88,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "2d5c91b1e6a2c5a7f736918b10dd212b",
+    "cacheID": "b84f003b6892dfeffbf8ed8fd573abd9",
     "id": null,
     "metadata": {},
     "name": "DeleteResourceTypeMutation",
     "operationKind": "mutation",
-    "text": "mutation DeleteResourceTypeMutation(\n  $resourceTypeId: ID!\n) {\n  DeleteResourceType(resourceTypeId: $resourceTypeId)\n}\n"
+    "text": "mutation DeleteResourceTypeMutation(\n  $input: DeleteResourceTypeInput!\n) {\n  DeleteResourceType(input: $input) {\n    resourceTypeId\n  }\n}\n"
   }
 };
 })();
 // prettier-ignore
-(node/*: any*/).hash = 'cb5cfa607cf9302a91486148967827f5';
+(node/*: any*/).hash = 'e1df93ed439bdbeb75ac2b661165e335';
 
 module.exports = node;

@@ -12,14 +12,14 @@ import type { FragmentReference } from "relay-runtime";
 declare export opaque type ResourceTypeItem_ResourceType$ref: FragmentReference;
 declare export opaque type ResourceTypeItem_ResourceType$fragmentType: ResourceTypeItem_ResourceType$ref;
 export type ResourceTypeItem_ResourceType = {|
-  +ID: string,
+  +id: string,
   +Name: string,
   +PropertyTypes: $ReadOnlyArray<{|
     +Name: string,
     +Type: string,
   |}>,
   +Pools: $ReadOnlyArray<{|
-    +ID: string,
+    +id: string,
     +Name: string,
   |}>,
   +$refType: ResourceTypeItem_ResourceType$ref,
@@ -38,7 +38,7 @@ var v0 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "ID",
+  "name": "id",
   "storageKey": null
 },
 v1 = {
@@ -94,6 +94,6 @@ return {
 };
 })();
 // prettier-ignore
-(node/*: any*/).hash = '39cbfbddf277bc2798447cd641ab3f31';
+(node/*: any*/).hash = 'e07dedfdcd8d3c929a30b805dfa42937';
 
 module.exports = node;

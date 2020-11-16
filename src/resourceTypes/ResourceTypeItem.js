@@ -7,38 +7,33 @@
  * @flow
  * @format
  */
-import type {ResourceTypeItem_ResourceType} from './__generated__/ResourceTypeItem_ResourceType.graphql';
-import type {WithAlert} from '@fbcnms/ui/components/Alert/withAlert';
-import type {WithStyles} from '@material-ui/core';
+// eslint-disable-next-line import/no-unresolved
+import type { WithAlert } from '@fbcnms/ui/components/Alert/withAlert';
+import type { WithStyles } from '@material-ui/core';
 
-// import CommonStrings from '@fbcnms/strings/Strings';
-// import ConfigureAccordion from './ConfigureAccordion';
-// import DynamicPropertyTypesGrid from '../DynamicPropertyTypesGrid';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
-import LinearScaleIcon from '@material-ui/icons/LinearScale';
 import React from 'react';
-// import RemoveServiceTypeMutation from '../../mutations/RemoveServiceTypeMutation';
-// import ServiceEndpointDefinitionStaticTable from './ServiceEndpointDefinitionStaticTable';
-// import fbt from 'fbt';
-// import withAlert from '@fbcnms/ui/components/Alert/withAlert';
-// import {createFragmentContainer, graphql} from 'react-relay';
-import {withStyles} from '@material-ui/core/styles';
-import {createFragmentContainer, graphql} from "react-relay";
-import Typography from "@material-ui/core/Typography";
-import DeleteResourceTypeMutation from '../mutations/DeleteResourceTypeMutation';
+import { withStyles } from '@material-ui/core/styles';
+import { createFragmentContainer, graphql } from 'react-relay';
+import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
-import { fetchQuery, deleteResourceType } from '../queries/Queries';
-import Button from "@material-ui/core/Button";
+import DeleteResourceTypeMutation from '../mutations/DeleteResourceTypeMutation';
+// eslint-disable-next-line camelcase
+import type { ResourceTypeItem_ResourceType } from './__generated__/ResourceTypeItem_ResourceType.graphql';
 
 type Props = {
-  resourceType: ResourceTypeItem_ResourceType,
+  // eslint-disable-next-line camelcase
+  ResourceType: ResourceTypeItem_ResourceType,
+  // eslint-disable-next-line react/no-unused-prop-types
   onEdit: () => void,
+  // eslint-disable-next-line react/no-unused-prop-types
   showEditCard: () => void
 } & WithAlert &
+  // eslint-disable-next-line no-use-before-define
   WithStyles<typeof styles>;
 
 const styles = {
@@ -55,87 +50,90 @@ const styles = {
   AccordionSummaryContainer: {
     width: '100%',
     display: 'flex',
-    justifyContent: 'space-between'
-  }
+    justifyContent: 'space-between',
+  },
 };
 
 class ResourceTypeItem extends React.Component<Props> {
-  deleteResourceType = (id) => {
-    // DeleteResourceTypeMutation(123)
+  deleteResourceType = (event, resourceTypeId) => {
+    const { showAddEditCard } = this.props;
+    event.preventDefault();
+    const variables = {
+      input: {
+        resourceTypeId,
+      },
+    };
 
-
-    fetchQuery(deleteResourceType(id)).then(val => {
-      console.log(val)
-    });
+    DeleteResourceTypeMutation(variables);
+    console.log(showAddEditCard, this.props);
+    showAddEditCard(true);
+    showAddEditCard(false);
   }
 
   render() {
-    const {classes, resourceType, onEdit, showEditCard} = this.props;
-    const {ID, Name, PropertyTypes} = resourceType
+    const {
+      classes, ResourceType,
+    } = this.props;
+    const { id, Name, PropertyTypes } = ResourceType;
 
-    console.log('resourceType prop', resourceType)
     return (
       <div>
 
         <Accordion>
           <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
+            expandIcon={<ExpandMoreIcon />}
           >
             <div className={classes.AccordionSummaryContainer}>
               <div>
                 <Typography variant="h6">{Name}</Typography>
                 <div className={classes.idContainer}>
-                  <Typography variant="caption"> {'(id: ' + ID + ')'} </Typography>
+                  <Typography variant="caption">
+                    {' '}
+                    {`(id: ${id})`}
+                    {' '}
+                  </Typography>
                 </div>
               </div>
               <div>
-                <IconButton color="primary" onClick={() => this.deleteResourceType(ID)}><DeleteOutlinedIcon variant="outlined" /></IconButton>
+                <IconButton color="primary" onClick={(event) => this.deleteResourceType(event, id)}><DeleteOutlinedIcon variant="outlined" /></IconButton>
               </div>
             </div>
-            
+
           </AccordionSummary>
           <AccordionDetails>
             <div className={classes.detailsContainer}>
-              Properties: 
-              {PropertyTypes.map((pt) => {
-                return <div style={{marginLeft: '8px'}}>
-                  <b>{pt.Name}</b> : {pt.Type}
+              Properties:
+              {PropertyTypes.map((pt) => (
+                <div style={{ marginLeft: '8px' }}>
+                  <b>{pt.Name}</b>
+                  {' '}
+                  :
+                  {pt.Type}
                 </div>
-              })}
-              Pools: 
-              <div style={{display: 'flex'}}>
-                <Button color="primary">Pool1</Button>
-                <Button color="primary">Pool1</Button>
-                <Button color="primary">Pool1</Button>
-              </div>
-              
+              ))}
+              Pools:
+
             </div>
           </AccordionDetails>
         </Accordion>
       </div>
     );
   }
-
-
 }
 
 export default withStyles(styles)(createFragmentContainer(ResourceTypeItem, {
   ResourceType: graphql`
     fragment ResourceTypeItem_ResourceType on ResourceType {
-      ID
+      id
       Name
       PropertyTypes {
         Name
         Type
       }
       Pools {
-        ID
+        id
         Name
       }
     }
-  `
+  `,
 }));
-//   withAlert(
-//     ResourceTypeItem
-//   ),
-// );

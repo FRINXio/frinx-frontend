@@ -1,20 +1,19 @@
 // @flow
-import type {WithStyles} from '@material-ui/core';
+import type { WithStyles } from '@material-ui/core';
 
 import * as React from 'react';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import classNames from 'classnames';
-import {useEffect, useState} from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import { useState } from 'react';
+import { withStyles } from '@material-ui/core/styles';
 
+// eslint-disable-next-line no-unused-vars
+import ace from 'ace-builds/src-min-noconflict/ace';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/theme-tomorrow';
 import AceEditor from 'react-ace';
 
-import {motion} from 'framer-motion';
-
-const styles = theme => ({
+const styles = () => ({
   root: {
 
     fontWeight: 500,
@@ -22,7 +21,7 @@ const styles = theme => ({
     lineHeight: '24px',
   },
   mainDiv: {
-    
+
   },
   selectContainer: {
     padding: '24px',
@@ -32,27 +31,24 @@ const styles = theme => ({
 });
 
 type Props = {
-  children: React.ChildrenArray<null | React.Element<*>>,
-  className?: string,
   setScript: Function,
 } & WithStyles<typeof styles>;
 
 const CodeEditor = (props: Props) => {
-  const {className, classes, setScript} = props;
+  const { classes, setScript } = props;
   const [lang, setLang] = React.useState('js');
 
-  const [editorValue, setEditorValue] = useState(`function onLoad(editor) {
-  console.log("i've loaded");
+  const [editorValue, setEditorValue] = useState(`function invoke() {
+  return {"propertyName": "propertyValue"};
 }`);
   // const [allocationStrategyArray, setAllocationStrategyArray] = useState([]);
 
-  const onChange = val => {
+  const onChange = (val) => {
     setEditorValue(val);
-    console.log(val, editorValue);
-    setScript(val)
+    setScript(val);
   };
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setLang(event.target.value);
   };
 
@@ -63,20 +59,21 @@ const CodeEditor = (props: Props) => {
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={lang}
-          onChange={handleChange}>
-          <MenuItem value={'js'}>Javascript</MenuItem>
-          <MenuItem value={'py'}>Python</MenuItem>
+          onChange={handleChange}
+        >
+          <MenuItem value="js">Javascript</MenuItem>
+          <MenuItem value="py">Python</MenuItem>
         </Select>
       </div>
 
       <AceEditor
-        height={'300px'}
-        width={'100%'}
+        height="300px"
+        width="100%"
         mode="javascript"
         theme="tomorrow"
         onChange={onChange}
         name="UNIQUE_ID_OF_DIV"
-        editorProps={{$blockScrolling: true}}
+        editorProps={{ $blockScrolling: true }}
         value={editorValue}
         fontSize={16}
         setOptions={{

@@ -11,11 +11,12 @@ import type { ConcreteRequest } from 'relay-runtime';
 export type AllocationStrategyLang = "js" | "py" | "%future added value";
 export type AllocationStrategiesQueryVariables = {||};
 export type AllocationStrategiesQueryResponse = {|
-  +QueryAllocationStrategies: $ReadOnlyArray<?{|
-    +ID: string,
-    +Lang: AllocationStrategyLang,
+  +QueryAllocationStrategies: $ReadOnlyArray<{|
+    +id: string,
     +Name: string,
+    +Lang: AllocationStrategyLang,
     +Script: string,
+    +Description: ?string,
   |}>
 |};
 export type AllocationStrategiesQuery = {|
@@ -28,10 +29,11 @@ export type AllocationStrategiesQuery = {|
 /*
 query AllocationStrategiesQuery {
   QueryAllocationStrategies {
-    ID
-    Lang
+    id
     Name
+    Lang
     Script
+    Description
   }
 }
 */
@@ -50,14 +52,7 @@ var v0 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "ID",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "Lang",
+        "name": "id",
         "storageKey": null
       },
       {
@@ -71,7 +66,21 @@ var v0 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
+        "name": "Lang",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
         "name": "Script",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "Description",
         "storageKey": null
       }
     ],
@@ -96,16 +105,16 @@ return {
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "83d0e0a3efaa2a928dc88326cbc53ec2",
+    "cacheID": "48eed8e7cfb8e6731dfcae2fc9f08462",
     "id": null,
     "metadata": {},
     "name": "AllocationStrategiesQuery",
     "operationKind": "query",
-    "text": "query AllocationStrategiesQuery {\n  QueryAllocationStrategies {\n    ID\n    Lang\n    Name\n    Script\n  }\n}\n"
+    "text": "query AllocationStrategiesQuery {\n  QueryAllocationStrategies {\n    id\n    Name\n    Lang\n    Script\n    Description\n  }\n}\n"
   }
 };
 })();
 // prettier-ignore
-(node/*: any*/).hash = 'e66369f5be953b3c8ae4d321d7c6643c';
+(node/*: any*/).hash = '195a30d49380e2696bb37fb1576c601b';
 
 module.exports = node;

@@ -1,30 +1,23 @@
 // @flow
-import type {WithStyles} from '@material-ui/core';
+import type { WithStyles } from '@material-ui/core';
 
 import * as React from 'react';
-import * as axios from 'axios';
-import AceEditor from 'react-ace';
 import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import IconButton from '@material-ui/core/IconButton';
+// eslint-disable-next-line no-unused-vars
 import classNames from 'classnames';
-import {graphql} from 'graphql';
-import {motion} from 'framer-motion';
-import {useEffect, useState} from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import { graphql } from 'graphql';
+import { useEffect, useState } from 'react';
+import { withStyles } from '@material-ui/core/styles';
 
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/theme-tomorrow';
-import "ace-builds/webpack-resolver";
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import AddEditStrategy from '../strategies/AddEditStrategy';
+import ResourceManagerQueryRenderer from '../utils/relay/ResourceManagerQueryRenderer';
+import StrategiesTable from '../strategies/StrategiesTable';
+import StrategiesFilters from '../strategies/filters/StrategiesFilters';
+import { filterByLang, filterByQuery } from '../strategies/filters/filterUtils';
 
-import AllocationStrategyItem from './AllocationStrategyItem';
-import {fetchQuery, queryAllocationStrats} from "../queries/Queries";
-import AddEditStrategy from "../strategies/AddEditStrategy";
-
-const iconWidth = 40;
-const iconHeight = 40;
-
-const styles = theme => ({
+const styles = () => ({
   root: {
 
     fontWeight: 500,
@@ -39,79 +32,120 @@ const styles = theme => ({
   },
   addButton: {
     marginLeft: 'auto',
-},
-addButtonContainer: {
+  },
+  addButtonContainer: {
     display: 'flex',
-    justifyContent: 'flex-end'
-},
+    justifyContent: 'space-between',
+  },
 });
 
 type Props = {
-  title: string,
-  children: React.ChildrenArray<null | React.Element<*>>,
-  className?: string,
 } & WithStyles<typeof styles>;
 
 const AllocationStrategies = (props: Props) => {
-  const {className, classes, children} = props;
-  const [editorValue, setEditorValue] = useState(`function onLoad(editor) {
-  console.log("i've loaded");
-}`);
-  const [allocationStrategyArray, setAllocationStrategyArray] = useState([]);
-    const [showEditCard, setShowEditCard] = useState(false);
+  const { classes } = props;
 
-  const onChange = val => {
-    setEditorValue(val);
-    console.log(val, editorValue);
+  const [updateDataVar, setUpdateDataVar] = useState(0);
+
+  const [showEditCard, setShowEditCard] = useState(false);
+
+  const [filteredArray, setFilteredArray] = useState([]);
+  const [queryArray, setQueryArray] = useState([]);
+
+  const [filterConstraints, setFilterConstraints] = useState({
+    searchQuery: '',
+    lang: '',
+  });
+
+  const updateFilterConstraint = (key, value) => {
+    setFilterConstraints({
+      ...filterConstraints,
+      [key]: value,
+    });
   };
 
-  const showEditCardFunc = (value) => {
-    setShowEditCard(value)
-    fetchQuery(queryAllocationStrats).then(val => {
-      console.log(val.data.data.QueryAllocationStrategies)
-      setAllocationStrategyArray(val.data.data.QueryAllocationStrategies)
-  });
-}
-
+  useEffect(() => {
+    const {
+      searchQuery, lang,
+    } = filterConstraints;
+    let results = filterByQuery(searchQuery, queryArray);
+    results = filterByLang(lang, results);
+    setFilteredArray(results);
+  }, [filterConstraints]);
 
   useEffect(() => {
-      fetchQuery(queryAllocationStrats).then(val => {
-          console.log(val.data.data.QueryAllocationStrategies)
-          setAllocationStrategyArray(val.data.data.QueryAllocationStrategies)
-      });
-  }, []);
+    setFilteredArray(queryArray);
+  }, [queryArray]);
+  const showEditCardFunc = (value) => {
+    setShowEditCard(value);
+  };
+  const updateDataVarFunc = () => {
+    setUpdateDataVar(updateDataVar + 1);
+  };
 
-    if(showEditCard) {
-        console.log('should be visible')
-        return <AddEditStrategy showAddEditCardFunc={showEditCardFunc}/>
+  const query = graphql`query AllocationStrategiesQuery {
+      QueryAllocationStrategies{
+            id
+            Name
+            Lang
+            Script
+            Description
+        }
     }
+  `;
+
+  if (showEditCard) {
+    return <AddEditStrategy showAddEditCardFunc={showEditCardFunc} />;
+  }
 
   return (
     <div className={classes.mainDiv}>
-        <div>
-            <div className={classes.typesList}>
-              <div className={classes.addButtonContainer}>
-                  <Button
+      <ResourceManagerQueryRenderer
+        query={query}
+        variables={{ showEditCard, updateDataVar }}
+        render={(queryProps) => {
+          const { QueryAllocationStrategies } = queryProps;
+          setQueryArray(QueryAllocationStrategies);
+          return (
+            <div>
+              <div>
+                <div className={classes.typesList}>
+                  <div className={classes.addButtonContainer}>
+                    <Typography component="div">
+                      <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
+                        Allocation Strategies (
+                        { QueryAllocationStrategies.length }
+                        )
+                      </Box>
+                    </Typography>
+                    <Button
                       variant="contained"
                       color="primary"
-                      onClick={() => {setShowEditCard(true)}}>Add Strategy</Button>
+                      onClick={() => { setShowEditCard(true); }}
+                    >
+                      Add Strategy
+                    </Button>
+                  </div>
+                </div>
               </div>
-          </div>
-        </div>
-      <div className={classes.buttonDiv}>
-        <Card>
-        </Card>
-      </div>
-      {allocationStrategyArray.map(e => {
-        const {ID, Lang, Name, Script} = e;
-        return (
-          <div>
-            <AllocationStrategyItem
-              allocationStrategyItemProps={{id: ID, Lang, Name, Script}}
-            />
-          </div>
-        );
-      })}
+
+              <StrategiesFilters
+                setFilteredArray={setFilteredArray}
+                resourceTypesArray={QueryAllocationStrategies}
+                filterConstraints={filterConstraints}
+                setFilterConstraints={setFilterConstraints}
+                updateFilterConstraint={updateFilterConstraint}
+              />
+
+              <StrategiesTable
+                strategiesData={filteredArray}
+                updateDataVarFunc={updateDataVarFunc}
+              />
+
+            </div>
+          );
+        }}
+      />
     </div>
   );
 };

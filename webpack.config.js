@@ -1,5 +1,5 @@
-const HtmlWebPackPlugin = require("html-webpack-plugin");
-
+// eslint-disable-next-line import/no-extraneous-dependencies
+const HtmlWebPackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   devServer: {
@@ -11,18 +11,6 @@ module.exports = {
     port: 5000,
     host: '0.0.0.0',
     disableHostCheck: true,
-    proxy: {
-      '/graphql': {
-        target: 'http://localhost:8884/',
-        secure: false,
-        pathRewrite: {'^/graphql' : ''},
-        headers: {
-          'x-tenant-id': 'fb',
-          'x-auth-user-role': 'OWNER',
-          'from': 'fb-user@frinx.io'
-        }
-      }
-    },
   },
   output: {
     publicPath: '/resourcemanager/frontend/',
@@ -32,16 +20,17 @@ module.exports = {
     rules: [
       {
         test: /\.(css|scss})$/,
-        loader: 'style-loader!css-loader!sass-loader'},
+        loader: 'style-loader!css-loader!sass-loader',
+      },
       {
         test: /\.m?js$/,
         exclude: /(node_modules)/,
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env']
-          }
-        }
+            presets: ['@babel/preset-env'],
+          },
+        },
       },
       {
         test: /\.(jpe?g|gif|png|svg|)$/i,
@@ -53,22 +42,22 @@ module.exports = {
       },
       {
         test: /\.(woff|woff2|ttf|eot)$/,
-        use: 'file-loader?name=fonts/[name].[ext]!static'
+        use: 'file-loader?name=fonts/[name].[ext]!static',
       },
       {
         test: /\.html$/,
         use: [
           {
-            loader: "html-loader"
-          }
-        ]
-      }
-    ]
+            loader: 'html-loader',
+          },
+        ],
+      },
+    ],
   },
   plugins: [
     new HtmlWebPackPlugin({
-      template: "./public/index.html",
-      filename: "./index.html"
-    })
-  ]
+      template: './public/index.html',
+      filename: './index.html',
+    }),
+  ],
 };

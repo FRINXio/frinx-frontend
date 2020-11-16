@@ -8,14 +8,18 @@
 
 /*::
 import type { ConcreteRequest } from 'relay-runtime';
-export type AddResourceTypeMutationVariables = {|
+export type CreateResourceTypeInput = {|
   resourceName: string,
   resourceProperties: any,
 |};
+export type AddResourceTypeMutationVariables = {|
+  input: CreateResourceTypeInput
+|};
 export type AddResourceTypeMutationResponse = {|
   +CreateResourceType: {|
-    +ID: string,
-    +Name: string,
+    +resourceType: {|
+      +Name: string
+    |}
   |}
 |};
 export type AddResourceTypeMutation = {|
@@ -27,12 +31,13 @@ export type AddResourceTypeMutation = {|
 
 /*
 mutation AddResourceTypeMutation(
-  $resourceName: String!
-  $resourceProperties: Map!
+  $input: CreateResourceTypeInput!
 ) {
-  CreateResourceType(resourceName: $resourceName, resourceProperties: $resourceProperties) {
-    ID
-    Name
+  CreateResourceType(input: $input) {
+    resourceType {
+      Name
+      id
+    }
   }
 }
 */
@@ -42,59 +47,54 @@ var v0 = [
   {
     "defaultValue": null,
     "kind": "LocalArgument",
-    "name": "resourceName"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "resourceProperties"
+    "name": "input"
   }
 ],
 v1 = [
   {
-    "alias": null,
-    "args": [
-      {
-        "kind": "Variable",
-        "name": "resourceName",
-        "variableName": "resourceName"
-      },
-      {
-        "kind": "Variable",
-        "name": "resourceProperties",
-        "variableName": "resourceProperties"
-      }
-    ],
-    "concreteType": "ResourceType",
-    "kind": "LinkedField",
-    "name": "CreateResourceType",
-    "plural": false,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "ID",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "Name",
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
+    "kind": "Variable",
+    "name": "input",
+    "variableName": "input"
   }
-];
+],
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "Name",
+  "storageKey": null
+};
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
     "name": "AddResourceTypeMutation",
-    "selections": (v1/*: any*/),
+    "selections": [
+      {
+        "alias": null,
+        "args": (v1/*: any*/),
+        "concreteType": "CreateResourceTypePayload",
+        "kind": "LinkedField",
+        "name": "CreateResourceType",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "ResourceType",
+            "kind": "LinkedField",
+            "name": "resourceType",
+            "plural": false,
+            "selections": [
+              (v2/*: any*/)
+            ],
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      }
+    ],
     "type": "Mutation",
     "abstractKey": null
   },
@@ -103,19 +103,50 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "AddResourceTypeMutation",
-    "selections": (v1/*: any*/)
+    "selections": [
+      {
+        "alias": null,
+        "args": (v1/*: any*/),
+        "concreteType": "CreateResourceTypePayload",
+        "kind": "LinkedField",
+        "name": "CreateResourceType",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "ResourceType",
+            "kind": "LinkedField",
+            "name": "resourceType",
+            "plural": false,
+            "selections": [
+              (v2/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "id",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      }
+    ]
   },
   "params": {
-    "cacheID": "2ae110c3e43c58ea27e6522c0585e94e",
+    "cacheID": "5b526462599b68293e0e7f0b929fc580",
     "id": null,
     "metadata": {},
     "name": "AddResourceTypeMutation",
     "operationKind": "mutation",
-    "text": "mutation AddResourceTypeMutation(\n  $resourceName: String!\n  $resourceProperties: Map!\n) {\n  CreateResourceType(resourceName: $resourceName, resourceProperties: $resourceProperties) {\n    ID\n    Name\n  }\n}\n"
+    "text": "mutation AddResourceTypeMutation(\n  $input: CreateResourceTypeInput!\n) {\n  CreateResourceType(input: $input) {\n    resourceType {\n      Name\n      id\n    }\n  }\n}\n"
   }
 };
 })();
 // prettier-ignore
-(node/*: any*/).hash = '191808af5af92629d40740bd85c149dc';
+(node/*: any*/).hash = '804582c7393e41b6bb1d555e47dc45cc';
 
 module.exports = node;
