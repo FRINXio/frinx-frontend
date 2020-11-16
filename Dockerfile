@@ -43,7 +43,7 @@ COPY --from=builder /usr/local/bin/watchman* /usr/local/bin/
 COPY --from=builder /usr/local/share/doc/watchman-4.9.0 /usr/local/share/doc/watchman-4.9.0
 COPY --from=builder /usr/local/var/run/watchman /usr/local/var/run/watchman
 
-COPY resource-manager-frontend /resource-manager-frontend
+COPY . /resource-manager-frontend
 
 WORKDIR /resource-manager-frontend
 
