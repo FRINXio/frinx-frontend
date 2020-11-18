@@ -10,7 +10,7 @@ image:
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest
-  name: resource_manager-frontend
+  name: resource-manager-frontend
 
 imagePullSecrets:
   - name: artifactory
