@@ -67,6 +67,7 @@ type ResourcePool implements Node
     allocatedResources(first: Int, last: Int, before: String, after: String): ResourceConnection
     Tags: [Tag!]!
     AllocationStrategy: AllocationStrategy
+    Capacity: PoolCapacityPayload
 }
 
 enum PoolType
@@ -142,6 +143,7 @@ input CreateSetPoolInput {
     description: String
     poolDealocationSafetyPeriod: Int!
     poolValues: [Map!]!
+    tags: [String!]
 }
 
 type CreateSetPoolPayload {
@@ -155,6 +157,7 @@ input CreateNestedSetPoolInput {
     poolDealocationSafetyPeriod: Int!
     poolValues: [Map]!
     parentResourceId: ID!
+    tags: [String!]
 }
 
 type CreateNestedSetPoolPayload {
@@ -167,6 +170,7 @@ input CreateNestedSingletonPoolInput {
     description: String
     poolValues: [Map]!
     parentResourceId: ID!
+    tags: [String!]
 }
 
 type CreateNestedSingletonPoolPayload {
@@ -181,12 +185,12 @@ type DeleteResourcePoolPayload {
     resourcePoolId: ID!
 }
 
-
 input CreateSingletonPoolInput {
     resourceTypeId: ID!
     poolName: String!
     description: String
     poolValues: [Map!]!
+    tags: [String!]
 }
 
 type CreateSingletonPoolPayload {
@@ -201,6 +205,7 @@ input CreateAllocatingPoolInput {
     poolDealocationSafetyPeriod: Int!
     poolProperties: Map!
     poolPropertyTypes: Map!
+    tags: [String!]
 }
 
 type CreateAllocatingPoolPayload {
@@ -214,6 +219,7 @@ input CreateNestedAllocatingPoolInput {
     allocationStrategyId: ID!
     poolDealocationSafetyPeriod: Int!
     parentResourceId: ID!
+    tags: [String!]
 }
 
 type CreateNestedAllocatingPoolPayload {
@@ -226,20 +232,21 @@ type PoolCapacityPayload {
 }
 
 type Query {
+    # Deprecated, use capacity object inside the Resource pool
     QueryPoolCapacity(poolId: ID!): PoolCapacityPayload!
     QueryPoolTypes: [PoolType!]!
     QueryResource(input: Map!, poolId: ID!): Resource!
     QueryResources(poolId: ID!): [Resource!]!
     QueryAllocationStrategy(allocationStrategyId: ID!): AllocationStrategy!
-    QueryAllocationStrategies: [AllocationStrategy!]!
-    QueryResourceTypes: [ResourceType!]!
+    QueryAllocationStrategies(byName: String): [AllocationStrategy!]!
+    QueryResourceTypes(byName: String): [ResourceType!]!
 
     QueryResourcePool(poolId: ID!): ResourcePool!
 
-    QueryResourcePools(resourceTypeId: ID): [ResourcePool!]!
+    QueryResourcePools(resourceTypeId: ID, tags: TagOr): [ResourcePool!]!
     QueryResourcePoolHierarchyPath(poolId: ID!): [ResourcePool!]!
-    QueryRootResourcePools(resourceTypeId: ID): [ResourcePool!]!
-    QueryLeafResourcePools(resourceTypeId: ID): [ResourcePool!]!
+    QueryRootResourcePools(resourceTypeId: ID, tags: TagOr): [ResourcePool!]!
+    QueryLeafResourcePools(resourceTypeId: ID, tags: TagOr): [ResourcePool!]!
     SearchPoolsByTags(tags: TagOr): [ResourcePool!]!
 
     QueryTags: [Tag!]!

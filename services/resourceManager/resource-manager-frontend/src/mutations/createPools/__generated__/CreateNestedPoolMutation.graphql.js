@@ -8,38 +8,37 @@
 
 /*::
 import type { ConcreteRequest } from 'relay-runtime';
-export type CreateAllocatingPoolInput = {|
+export type CreateNestedSetPoolInput = {|
   resourceTypeId: string,
   poolName: string,
   description?: ?string,
-  allocationStrategyId: string,
   poolDealocationSafetyPeriod: number,
-  poolProperties: any,
-  poolPropertyTypes: any,
+  poolValues: $ReadOnlyArray<?any>,
+  parentResourceId: string,
   tags?: ?$ReadOnlyArray<string>,
 |};
-export type CreateAllocationPoolMutationVariables = {|
-  input: CreateAllocatingPoolInput
+export type CreateNestedPoolMutationVariables = {|
+  input: CreateNestedSetPoolInput
 |};
-export type CreateAllocationPoolMutationResponse = {|
-  +CreateAllocatingPool: {|
+export type CreateNestedPoolMutationResponse = {|
+  +CreateNestedSetPool: {|
     +pool: ?{|
       +id: string
     |}
   |}
 |};
-export type CreateAllocationPoolMutation = {|
-  variables: CreateAllocationPoolMutationVariables,
-  response: CreateAllocationPoolMutationResponse,
+export type CreateNestedPoolMutation = {|
+  variables: CreateNestedPoolMutationVariables,
+  response: CreateNestedPoolMutationResponse,
 |};
 */
 
 
 /*
-mutation CreateAllocationPoolMutation(
-  $input: CreateAllocatingPoolInput!
+mutation CreateNestedPoolMutation(
+  $input: CreateNestedSetPoolInput!
 ) {
-  CreateAllocatingPool(input: $input) {
+  CreateNestedSetPool(input: $input) {
     pool {
       id
     }
@@ -65,9 +64,9 @@ v1 = [
         "variableName": "input"
       }
     ],
-    "concreteType": "CreateAllocatingPoolPayload",
+    "concreteType": "CreateNestedSetPoolPayload",
     "kind": "LinkedField",
-    "name": "CreateAllocatingPool",
+    "name": "CreateNestedSetPool",
     "plural": false,
     "selections": [
       {
@@ -97,7 +96,7 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "CreateAllocationPoolMutation",
+    "name": "CreateNestedPoolMutation",
     "selections": (v1/*: any*/),
     "type": "Mutation",
     "abstractKey": null
@@ -106,20 +105,20 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "CreateAllocationPoolMutation",
+    "name": "CreateNestedPoolMutation",
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "f8cf04f2189c646c4ecd502e769f8a45",
+    "cacheID": "044887633badd41c705cb7b83359838f",
     "id": null,
     "metadata": {},
-    "name": "CreateAllocationPoolMutation",
+    "name": "CreateNestedPoolMutation",
     "operationKind": "mutation",
-    "text": "mutation CreateAllocationPoolMutation(\n  $input: CreateAllocatingPoolInput!\n) {\n  CreateAllocatingPool(input: $input) {\n    pool {\n      id\n    }\n  }\n}\n"
+    "text": "mutation CreateNestedPoolMutation(\n  $input: CreateNestedSetPoolInput!\n) {\n  CreateNestedSetPool(input: $input) {\n    pool {\n      id\n    }\n  }\n}\n"
   }
 };
 })();
 // prettier-ignore
-(node/*: any*/).hash = 'ff26b129b8bb8969ad8a046fb4c1be33';
+(node/*: any*/).hash = '0ff7b02f208bd588cfdac0205fc44eea';
 
 module.exports = node;

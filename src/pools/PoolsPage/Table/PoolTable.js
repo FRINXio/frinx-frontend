@@ -136,7 +136,7 @@ const PoolTable = ({
                       <ListItemIcon>
                         <SettingsIcon fontSize="small" />
                       </ListItemIcon>
-                      <ListItemText primary={`Details ${i}`} />
+                      <ListItemText primary="Detail" />
                     </MenuItem>
                     <MenuItem onClick={() => deletePool(row.id)}>
                       <ListItemIcon>

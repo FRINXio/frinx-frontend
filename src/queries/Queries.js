@@ -61,6 +61,31 @@ export const queryAllPools = `query QueryAllPools {
     }
 }`;
 
+export const queryRootPools = `query QueryRootResourcePools {
+    QueryRootResourcePools{
+        id
+        Name
+        PoolType
+        Tags {
+            id
+            Tag
+        }
+        AllocationStrategy {
+            id
+            Name
+            Lang
+        }
+        ResourceType {
+            id
+            Name
+        }
+        Capacity {
+          freeCapacity
+          utilizedCapacity
+        }
+    }
+}`;
+
 export const queryFilterOptions = `query queryFilterOptions {
     QueryTags {
         id

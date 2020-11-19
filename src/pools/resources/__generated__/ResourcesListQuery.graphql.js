@@ -14,7 +14,6 @@ export type ResourcesListQueryVariables = {|
 export type ResourcesListQueryResponse = {|
   +QueryResources: $ReadOnlyArray<{|
     +id: string,
-    +Description: ?string,
     +Properties: any,
     +NestedPool: ?{|
       +id: string,
@@ -35,7 +34,6 @@ query ResourcesListQuery(
 ) {
   QueryResources(poolId: $poolId) {
     id
-    Description
     Properties
     NestedPool {
       id
@@ -76,13 +74,6 @@ v2 = [
     "plural": true,
     "selections": [
       (v1/*: any*/),
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "Description",
-        "storageKey": null
-      },
       {
         "alias": null,
         "args": null,
@@ -131,16 +122,16 @@ return {
     "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "43c8270c3f53186f188199c951f40b9f",
+    "cacheID": "d48ab6b91eb30cfb641a1d04128385c3",
     "id": null,
     "metadata": {},
     "name": "ResourcesListQuery",
     "operationKind": "query",
-    "text": "query ResourcesListQuery(\n  $poolId: ID!\n) {\n  QueryResources(poolId: $poolId) {\n    id\n    Description\n    Properties\n    NestedPool {\n      id\n      Name\n    }\n  }\n}\n"
+    "text": "query ResourcesListQuery(\n  $poolId: ID!\n) {\n  QueryResources(poolId: $poolId) {\n    id\n    Properties\n    NestedPool {\n      id\n      Name\n    }\n  }\n}\n"
   }
 };
 })();
 // prettier-ignore
-(node/*: any*/).hash = '8d8f6c351229adde8472c8b1352d11a6';
+(node/*: any*/).hash = '33a84118dc035f0df856d0c6a034e70a';
 
 module.exports = node;

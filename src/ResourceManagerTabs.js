@@ -19,6 +19,7 @@ import theme from './components/layout/theme';
 import ResourceTypes from './resourceTypes/ResourceTypes';
 import Pools from './pools/Pools';
 import ResourceList from './pools/resources/ResourcesList';
+import PoolDetailPage from './pools/PoolsPage/Details/PoolDetailPage';
 
 const styles = () => ({
   root: {
@@ -58,6 +59,9 @@ const ResourceManagerTabs = () => {
           </AppBar>
 
           <Switch>
+            <Route path={`${RESOURCE_MANAGER_URL}/pools/:id`}>
+              <PoolDetailPage />
+            </Route>
             <Route path={`${RESOURCE_MANAGER_URL}/pools`}>
               <Pools />
             </Route>

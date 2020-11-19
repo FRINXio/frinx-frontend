@@ -7,6 +7,7 @@ import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import { withSnackbar } from 'notistack';
+import Switch from '@material-ui/core/Switch';
 import DeletePoolMutation from '../../mutations/DeletePoolMutation';
 import {
   filterByPoolType,
@@ -18,7 +19,7 @@ import {
 import {
   fetchQuery,
   queryAllPools,
-  queryFilterOptions,
+  queryFilterOptions, queryRootPools,
   tagPool,
   untagPool,
 } from '../../queries/Queries';
@@ -59,14 +60,21 @@ const PoolsPage = (props) => {
     tags: [],
     poolType: '',
   });
+  const [isInRootView, setIsInRootView] = useState(false);
 
   // eslint-disable-next-line react/prop-types
   const { setShowCreatePool } = props;
 
   const fetchData = () => {
-    fetchQuery(queryAllPools).then((res) => {
-      setPoolArray(res.data.data.QueryResourcePools);
-      setFilteredPoolArray(res.data.data.QueryResourcePools);
+    const query = (!isInRootView) ? queryRootPools : queryAllPools;
+
+    fetchQuery(query).then((res) => {
+      setPoolArray(
+        (!isInRootView) ? res.data.data.QueryRootResourcePools : res.data.data.QueryResourcePools,
+      );
+      setFilteredPoolArray(
+        (!isInRootView) ? res.data.data.QueryRootResourcePools : res.data.data.QueryResourcePools,
+      );
     }).catch((error) => {
       console.log(error); // TODO error handling
     });
@@ -123,11 +131,6 @@ const PoolsPage = (props) => {
   };
 
   const deletePool = (resourcePoolId) => {
-    // fetchQuery(deleteResourcePool(poolId)).then(() => {
-    //     fetchData()
-    // }).catch(function (error) {
-    //     console.log(error); //TODO error handling
-    // });
     const variables = {
       input: {
         resourcePoolId,
@@ -146,6 +149,12 @@ const PoolsPage = (props) => {
         fetchData();
       }
     });
+  };
+
+  const handleViewChange = async () => {
+    // console.log(event.target.checked);
+    await setIsInRootView(!isInRootView);
+    fetchData();
   };
 
   return (
@@ -176,6 +185,8 @@ const PoolsPage = (props) => {
             filterConstraints={filterConstraints}
             updateFilterConstraint={updateFilterConstraint}
           />
+          <Switch checked={isInRootView} onChange={handleViewChange} />
+          Show only root pools
           <PoolTable
             QueryTags={filterOptions.QueryTags}
             filteredPoolArray={filteredPoolArray}
