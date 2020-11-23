@@ -54,6 +54,10 @@ export const queryAllPools = `query QueryAllPools {
             id
             Name
         }
+        Capacity {
+          freeCapacity
+          utilizedCapacity
+        }
     }
 }`;
 
