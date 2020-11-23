@@ -43,7 +43,7 @@
   "scripts": {
     "start:dev": "webpack-dev-server --mode development",
     "build": "webpack --config ./webpack.config.js --progress --profile --colors",
-    "relay": "cp ../backend/graph/graphql/schema/schema.graphql ./data/schema.graphql && relay-compiler --src ./ --schema ./data/schema.graphql --extensions js --verbose",
+    "relay": "relay-compiler --src ./ --schema ./data/schema.graphql --extensions js --verbose",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "eslint": "./node_modules/eslint/bin/eslint.js -c .eslintrc.js ."
