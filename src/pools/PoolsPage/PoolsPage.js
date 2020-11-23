@@ -66,14 +66,14 @@ const PoolsPage = (props) => {
   const { setShowCreatePool } = props;
 
   const fetchData = () => {
-    const query = (!isInRootView) ? queryRootPools : queryAllPools;
+    const query = (isInRootView) ? queryRootPools : queryAllPools;
 
     fetchQuery(query).then((res) => {
       setPoolArray(
-        (!isInRootView) ? res.data.data.QueryRootResourcePools : res.data.data.QueryResourcePools,
+        (isInRootView) ? res.data.data.QueryRootResourcePools : res.data.data.QueryResourcePools,
       );
       setFilteredPoolArray(
-        (!isInRootView) ? res.data.data.QueryRootResourcePools : res.data.data.QueryResourcePools,
+        (isInRootView) ? res.data.data.QueryRootResourcePools : res.data.data.QueryResourcePools,
       );
     }).catch((error) => {
       console.log(error); // TODO error handling
@@ -90,6 +90,12 @@ const PoolsPage = (props) => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect((e) => {
+    console.log(e);
+    console.log('here');
+    fetchData();
+  }, [isInRootView]);
 
   // eslint-disable-next-line max-len
   // TODO filtering is performed locally on already fetched data, it should be probably handled by relay/graphql (?)
@@ -154,7 +160,7 @@ const PoolsPage = (props) => {
   const handleViewChange = async () => {
     // console.log(event.target.checked);
     await setIsInRootView(!isInRootView);
-    fetchData();
+    // fetchData();
   };
 
   return (

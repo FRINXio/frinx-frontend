@@ -238,6 +238,39 @@ export const QueryAllPools = `query QueryAllPools {
     }
 }`;
 
+export const QueryAllocatedResources = (poolID, first, after, before) => `query QueryAllocatedResources {
+    QueryResourcePool(poolId: ${poolID}) {
+        allocatedResources(first: ${first}, after: ${ (after) ? "\"" + after + "\"" : null}, before: ${ (before) ? "\"" + before + "\"" : null}) {
+            pageInfo{
+                endCursor {
+                    ID
+                }
+                hasNextPage
+                hasPreviousPage
+                startCursor {
+                    ID
+                }
+            }
+            edges {
+                cursor {
+                    ID
+                }
+                node {
+                    id
+                    Description
+                    NestedPool {
+                        Name
+                        id
+                    }
+                    Properties
+                }
+            }
+            totalCount
+        }
+    }
+}`;
+
+
 export const ClaimResource = `mutation ClaimResource {
     ClaimResource(poolId:21474836480) {
         ID

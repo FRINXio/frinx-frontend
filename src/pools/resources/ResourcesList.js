@@ -5,7 +5,7 @@
 
 import type { ContextRouter } from 'react-router-dom';
 import type { WithStyles } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { graphql } from 'react-relay';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -20,7 +20,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import TableContainer from '@material-ui/core/TableContainer';
 import { useParams } from 'react-router-dom';
 // eslint-disable-next-line import/order
-import FreeResourceMutation from '../../mutations/FreeResourceMutation';
+import { withSnackbar } from 'notistack';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/ext-language_tools';
@@ -28,6 +28,7 @@ import AddIcon from '@material-ui/icons/Add';
 import TextField from '@material-ui/core/TextField';
 import ClaimResourceMutation from '../../mutations/ClaimResourceMutation';
 import ResourceManagerQueryRenderer from '../../utils/relay/ResourceManagerQueryRenderer';
+import FreeResourceMutation from '../../mutations/FreeResourceMutation';
 
 const styles = () => ({
   header: {
@@ -95,7 +96,8 @@ type Props = ContextRouter & WithStyles<typeof styles> & {};
 const query = graphql`query ResourcesListQuery($poolId: ID!) {
     QueryResources(poolId: $poolId){
         id
-        Properties,
+        Description
+        Properties
         NestedPool{
             id
             Name
@@ -112,7 +114,7 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 
 const ResourceList = (props: Props) => {
-  const { classes } = props;
+  const { classes, setUpdateDataVarProp, updateDataVarProp, resources, enqueueSnackbar } = props;
 
   // eslint-disable-next-line no-unused-vars
   const [showEditCard, setShowEditCard] = useState(false);
@@ -131,8 +133,20 @@ const ResourceList = (props: Props) => {
     ClaimResourceMutation({
       poolId: id,
       userInput: tmp,
-    }, () => {
-      setUpdateDataVar(updateDataVar + 1);
+      description: description,
+    }, (response, err) => {
+      if (err) {
+        console.log(err);
+        enqueueSnackbar(err.message, {
+          variant: 'error',
+        });
+      } else {
+        enqueueSnackbar('Resource claimed successfully', {
+          variant: 'success',
+        });
+        setUpdateDataVar(updateDataVar + 1);
+        setUpdateDataVarProp(updateDataVarProp + 1)
+      }
     });
   };
   const freeResource = (row) => {
@@ -140,11 +154,23 @@ const ResourceList = (props: Props) => {
     FreeResourceMutation({
       poolId: id,
       input: row.Properties,
-    }, () => {
-      setUpdateDataVar(updateDataVar + 1);
+    }, (response, err) => {
+      if (err) {
+        console.log(err);
+        enqueueSnackbar(err.message, {
+          variant: 'error',
+        });
+      } else {
+        enqueueSnackbar('Resource freed successfully', {
+          variant: 'success',
+        });
+        setUpdateDataVar(updateDataVar + 1);
+        setUpdateDataVarProp(updateDataVarProp + 1)
+      }
     });
   };
   const [properties, setProperties] = useState([{ type: '', value: '' }]);
+  const [description, setDescription] = useState(null);
 
   const addProperty = () => {
     setProperties([...properties, { type: '', value: '' }]);
@@ -155,6 +181,9 @@ const ResourceList = (props: Props) => {
     tmp[index].type = val.target.value;
     setProperties(tmp);
   };
+  const onDescriptionChanged = (val) => {
+    setDescription(val.target.value);
+  };
   const onPropKeyChanged = (val, index) => {
     const tmp = properties;
     tmp[index].value = val.target.value;
@@ -163,13 +192,26 @@ const ResourceList = (props: Props) => {
 
   return (
     <div>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => claimResource()}
-      >
-        Claim
-      </Button>
+
+      <div className={classes.selectContainer}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => claimResource()}
+        >
+          Claim
+        </Button>
+      </div>
+
+      <div>
+        <div className={classes.selectContainer}>
+          <TextField
+            label="Resource description"
+            onChange={(val) => onDescriptionChanged(val)}
+            className={classes.nameTextField}
+          />
+        </div>
+      </div>
 
       {properties.map((p, index) => (
         <div className={classes.propertyRow}>
@@ -208,18 +250,55 @@ const ResourceList = (props: Props) => {
           return (
             <div>
 
+
               <TableContainer component={Paper} className={classes.container}>
                 <Table ria-label="pool table">
                   <TableHead>
                     <TableRow>
                       <StyledTableCell align="left">Actions</StyledTableCell>
                       <StyledTableCell align="left">ID</StyledTableCell>
+                      <StyledTableCell align="left">Description</StyledTableCell>
                       <StyledTableCell align="left">Properties</StyledTableCell>
                       <StyledTableCell align="left" />
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {QueryResources.map((row, i) => (
+                    {/*{QueryResources.map((row, i) => (*/}
+                    {/*  // eslint-disable-next-line react/no-array-index-key*/}
+                    {/*  <TableRow key={i}>*/}
+                    {/*    <TableCell padding="checkbox" align="center">*/}
+                    {/*      <IconButton*/}
+                    {/*        aria-controls="actions-menu"*/}
+                    {/*        aria-haspopup="true"*/}
+                    {/*        onClick={() => {*/}
+                    {/*        }}*/}
+                    {/*      >*/}
+                    {/*        <MoreVertIcon />*/}
+                    {/*      </IconButton>*/}
+                    {/*    </TableCell>*/}
+                    {/*    <TableCell align="left">{row.id}</TableCell>*/}
+                    {/*    <TableCell align="left">*/}
+                    {/*      {Object.entries(row.Properties).map(([key, value]) => (*/}
+                    {/*        <div>*/}
+                    {/*          {' '}*/}
+                    {/*          { `${key} : ${value}` }*/}
+                    {/*        </div>*/}
+                    {/*      ))}*/}
+                    {/*    </TableCell>*/}
+                    {/*    <TableCell align="left">*/}
+                    {/*      <Button*/}
+                    {/*        variant="contained"*/}
+                    {/*        color="primary"*/}
+                    {/*        onClick={() => freeResource(row)}*/}
+                    {/*      >*/}
+                    {/*        Free*/}
+                    {/*      </Button>*/}
+                    {/*    </TableCell>*/}
+                    {/*  </TableRow>*/}
+                    {/*))}*/}
+
+                    {resources.map((row, i) => (
+
                       // eslint-disable-next-line react/no-array-index-key
                       <TableRow key={i}>
                         <TableCell padding="checkbox" align="center">
@@ -232,9 +311,10 @@ const ResourceList = (props: Props) => {
                             <MoreVertIcon />
                           </IconButton>
                         </TableCell>
-                        <TableCell align="left">{row.id}</TableCell>
+                        <TableCell align="left">{row.node.id}</TableCell>
+                        <TableCell align="left">{row.node.Description}</TableCell>
                         <TableCell align="left">
-                          {Object.entries(row.Properties).map(([key, value]) => (
+                          {Object.entries(row.node.Properties).map(([key, value]) => (
                             <div>
                               {' '}
                               { `${key} : ${value}` }
@@ -245,7 +325,7 @@ const ResourceList = (props: Props) => {
                           <Button
                             variant="contained"
                             color="primary"
-                            onClick={() => freeResource(row)}
+                            onClick={() => freeResource(row.node)}
                           >
                             Free
                           </Button>
@@ -255,6 +335,7 @@ const ResourceList = (props: Props) => {
                   </TableBody>
                 </Table>
               </TableContainer>
+
             </div>
           );
         }}
@@ -264,6 +345,6 @@ const ResourceList = (props: Props) => {
   );
 };
 
-export default withStyles(styles)(
+export default withSnackbar(withStyles(styles)(
   ResourceList,
-);
+));

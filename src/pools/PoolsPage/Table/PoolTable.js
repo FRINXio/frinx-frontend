@@ -61,9 +61,11 @@ const PoolTable = ({
 }) => {
   const classes = useStyles();
   const [actionsAnchorEl, setActionsAnchorEl] = useState(null);
+  const [activeMenuID, setActiveMenuID] = useState(null);
 
-  const handleActionsClick = (event) => {
+  const handleActionsClick = (event, id) => {
     setActionsAnchorEl(event.currentTarget);
+    setActiveMenuID(id);
   };
 
   const handleActionsClose = () => {
@@ -72,7 +74,7 @@ const PoolTable = ({
 
   const getCapacityValue = (capacity) => {
     const { freeCapacity, utilizedCapacity } = capacity;
-    return ((freeCapacity / (freeCapacity + utilizedCapacity)) * 100);
+    return ((utilizedCapacity / (freeCapacity + utilizedCapacity)) * 100);
   };
 
   const RESOURCE_MANAGER_URL = '/resourcemanager/frontend';
@@ -122,21 +124,21 @@ const PoolTable = ({
                   <IconButton
                     aria-controls="actions-menu"
                     aria-haspopup="true"
-                    onClick={handleActionsClick}
+                    onClick={(event) => handleActionsClick(event, row.id)}
                   >
                     <MoreVertIcon />
                   </IconButton>
                   <StyledMenu
                     id={`actions-menu${i}`}
                     anchorEl={actionsAnchorEl}
-                    open={Boolean(actionsAnchorEl)}
+                    open={Boolean(actionsAnchorEl) && (row.id === activeMenuID)}
                     onClose={handleActionsClose}
                   >
                     <MenuItem component={Link} to={`${RESOURCE_MANAGER_URL}/pools/${row.id}`}>
                       <ListItemIcon>
                         <SettingsIcon fontSize="small" />
                       </ListItemIcon>
-                      <ListItemText primary="Detail" />
+                      <ListItemText primary="Details" />
                     </MenuItem>
                     <MenuItem onClick={() => deletePool(row.id)}>
                       <ListItemIcon>
