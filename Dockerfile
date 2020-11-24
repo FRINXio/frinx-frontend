@@ -50,6 +50,7 @@ WORKDIR /resource-manager-frontend
 RUN apk add --no-cache yarn
 
 RUN yarn install --frozen-lockfile && yarn cache clean
+RUN yarn relay
 RUN yarn build
 
 RUN rm -rf /usr/share/nginx/html
