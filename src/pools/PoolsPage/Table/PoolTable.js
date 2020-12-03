@@ -154,10 +154,14 @@ const PoolTable = ({
                 <TableCell align="right">
                   {row.AllocationStrategy ? `${row.AllocationStrategy.Name} (${row.AllocationStrategy?.Lang})` : '-'}
                 </TableCell>
-                <TableCell align="right">{row.ResourceType.Name}</TableCell>
+                <TableCell align="right">{row.ResourceType?.Name}</TableCell>
                 <TableCell align="right">
-                  { `${row.Capacity.utilizedCapacity}/${row.Capacity.freeCapacity + row.Capacity.utilizedCapacity}` }
-                  <LinearProgress value={getCapacityValue(row.Capacity)} variant="determinate" />
+                  { (row.Capacity) ? (
+                    <>
+                      { `${row.Capacity.utilizedCapacity}/${row.Capacity.freeCapacity + row.Capacity.utilizedCapacity}` }
+                      <LinearProgress value={getCapacityValue(row.Capacity)} variant="determinate" />
+                    </>
+                  ) : null }
                 </TableCell>
               </TableRow>
             ))}

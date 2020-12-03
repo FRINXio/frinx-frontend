@@ -193,13 +193,17 @@ const PoolDetailPage = (props: Props) => {
   const [totalCount, setTotalPages] = useState(0);
   const [resources, setResources] = useState([]);
 
-  const queryAllocatedResources = () => {
-    console.log(after);
-    fetchQuery(QueryAllocatedResources(id, first, after, before)).then((v) => {
+  const queryAllocatedResources = (startCursor, endCursor) => {
+    console.log(after, before, (after) ? null : before);
+    fetchQuery(QueryAllocatedResources(id, first, startCursor, endCursor)).then((v) => {
+      if (!v.data.data.QueryResourcePool.allocatedResources) {
+        setResources([]);
+        setTotalPages(0);
+      }
       setTotalPages(v.data.data.QueryResourcePool.allocatedResources.totalCount);
       setResources(v.data.data.QueryResourcePool.allocatedResources.edges);
-      setAfter(v.data.data.QueryResourcePool.allocatedResources.pageInfo.endCursor);
-      setBefore(v.data.data.QueryResourcePool.allocatedResources.pageInfo.startCursor);
+      setAfter(v.data.data.QueryResourcePool.allocatedResources?.pageInfo.endCursor);
+      setBefore(v.data.data.QueryResourcePool.allocatedResources?.pageInfo.startCursor);
     });
   };
 
@@ -208,6 +212,9 @@ const PoolDetailPage = (props: Props) => {
   }, []);
   useEffect(() => {
     queryAllocatedResources();
+  }, [updateDataVar]);
+  useEffect(() => {
+    queryAllocatedResources(after, before);
   }, [page]);
 
   const RESOURCE_MANAGER_URL = '/resourcemanager/frontend';
