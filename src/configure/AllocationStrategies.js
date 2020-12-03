@@ -1,46 +1,44 @@
 // @flow
-import type { WithStyles } from '@material-ui/core';
+import type { WithStyles } from "@material-ui/core";
 
-import * as React from 'react';
-import Button from '@material-ui/core/Button';
+import * as React from "react";
+import Button from "@material-ui/core/Button";
 // eslint-disable-next-line no-unused-vars
-import classNames from 'classnames';
-import { graphql } from 'graphql';
-import { useEffect, useState } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import classNames from "classnames";
+import { graphql } from "graphql";
+import { useEffect, useState } from "react";
+import { withStyles } from "@material-ui/core/styles";
 
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import AddEditStrategy from '../strategies/AddEditStrategy';
-import ResourceManagerQueryRenderer from '../utils/relay/ResourceManagerQueryRenderer';
-import StrategiesTable from '../strategies/StrategiesTable';
-import StrategiesFilters from '../strategies/filters/StrategiesFilters';
-import { filterByLang, filterByQuery } from '../strategies/filters/filterUtils';
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
+import AddEditStrategy from "../strategies/AddEditStrategy";
+import ResourceManagerQueryRenderer from "../utils/relay/ResourceManagerQueryRenderer";
+import StrategiesTable from "../strategies/StrategiesTable";
+import StrategiesFilters from "../strategies/filters/StrategiesFilters";
+import { filterByLang, filterByQuery } from "../strategies/filters/filterUtils";
 
 const styles = () => ({
   root: {
-
     fontWeight: 500,
-    fontSize: '20px',
-    lineHeight: '24px',
+    fontSize: "20px",
+    lineHeight: "24px",
   },
   mainDiv: {
-    padding: '24px',
+    padding: "24px",
   },
   buttonDiv: {
-    marginTop: '20px',
+    marginTop: "20px",
   },
   addButton: {
-    marginLeft: 'auto',
+    marginLeft: "auto",
   },
   addButtonContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
+    display: "flex",
+    justifyContent: "space-between",
   },
 });
 
-type Props = {
-} & WithStyles<typeof styles>;
+type Props = {} & WithStyles<typeof styles>;
 
 const AllocationStrategies = (props: Props) => {
   const { classes } = props;
@@ -49,33 +47,18 @@ const AllocationStrategies = (props: Props) => {
 
   const [showEditCard, setShowEditCard] = useState(false);
 
-  const [filteredArray, setFilteredArray] = useState([]);
-  const [queryArray, setQueryArray] = useState([]);
-
   const [filterConstraints, setFilterConstraints] = useState({
-    searchQuery: '',
-    lang: '',
+    searchQuery: "",
+    lang: "",
   });
 
   const updateFilterConstraint = (key, value) => {
-    setFilterConstraints({
-      ...filterConstraints,
+    setFilterConstraints((prev) => ({
+      ...prev,
       [key]: value,
-    });
+    }));
   };
 
-  useEffect(() => {
-    const {
-      searchQuery, lang,
-    } = filterConstraints;
-    let results = filterByQuery(searchQuery, queryArray);
-    results = filterByLang(lang, results);
-    setFilteredArray(results);
-  }, [filterConstraints]);
-
-  useEffect(() => {
-    setFilteredArray(queryArray);
-  }, [queryArray]);
   const showEditCardFunc = (value) => {
     setShowEditCard(value);
   };
@@ -83,14 +66,15 @@ const AllocationStrategies = (props: Props) => {
     setUpdateDataVar(updateDataVar + 1);
   };
 
-  const query = graphql`query AllocationStrategiesQuery {
-      QueryAllocationStrategies{
-            id
-            Name
-            Lang
-            Script
-            Description
-        }
+  const query = graphql`
+    query AllocationStrategiesQuery {
+      QueryAllocationStrategies {
+        id
+        Name
+        Lang
+        Script
+        Description
+      }
     }
   `;
 
@@ -105,7 +89,6 @@ const AllocationStrategies = (props: Props) => {
         variables={{ showEditCard, updateDataVar }}
         render={(queryProps) => {
           const { QueryAllocationStrategies } = queryProps;
-          setQueryArray(QueryAllocationStrategies);
           return (
             <div>
               <div>
@@ -114,14 +97,15 @@ const AllocationStrategies = (props: Props) => {
                     <Typography component="div">
                       <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
                         Allocation Strategies (
-                        { QueryAllocationStrategies.length }
-                        )
+                        {QueryAllocationStrategies.length})
                       </Box>
                     </Typography>
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={() => { setShowEditCard(true); }}
+                      onClick={() => {
+                        setShowEditCard(true);
+                      }}
                     >
                       Add Strategy
                     </Button>
@@ -130,7 +114,6 @@ const AllocationStrategies = (props: Props) => {
               </div>
 
               <StrategiesFilters
-                setFilteredArray={setFilteredArray}
                 resourceTypesArray={QueryAllocationStrategies}
                 filterConstraints={filterConstraints}
                 setFilterConstraints={setFilterConstraints}
@@ -138,10 +121,15 @@ const AllocationStrategies = (props: Props) => {
               />
 
               <StrategiesTable
-                strategiesData={filteredArray}
+                strategiesData={filterByLang(
+                  filterConstraints.lang,
+                  filterByQuery(
+                    filterConstraints.searchQuery,
+                    QueryAllocationStrategies
+                  )
+                )}
                 updateDataVarFunc={updateDataVarFunc}
               />
-
             </div>
           );
         }}

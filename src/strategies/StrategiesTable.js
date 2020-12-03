@@ -1,37 +1,39 @@
-import React, { useState } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableBody from '@material-ui/core/TableBody';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import SettingsIcon from '@material-ui/icons/Settings';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import { withSnackbar } from 'notistack';
-import Collapse from '@material-ui/core/Collapse';
-import Box from '@material-ui/core/Box';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import AceEditor from 'react-ace';
-import TestAllocationStrategyMutation from '../mutations/TestAllocationStrategyMutation';
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/theme-tomorrow';
-import 'ace-builds/src-noconflict/ext-language_tools';
-import DeleteStrategyMutation from '../mutations/DeleteStrategyMutation';
-import TestStrategy from './TestStrategy';
+import React, { Fragment, useState } from "react";
+import { withStyles } from "@material-ui/core/styles";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import Paper from "@material-ui/core/Paper";
+import Table from "@material-ui/core/Table";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableBody from "@material-ui/core/TableBody";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import IconButton from "@material-ui/core/IconButton";
+import DeleteIcon from "@material-ui/icons/Delete";
+import SettingsIcon from "@material-ui/icons/Settings";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import Button from "@material-ui/core/Button";
+import { withSnackbar } from "notistack";
+import Collapse from "@material-ui/core/Collapse";
+import Box from "@material-ui/core/Box";
+import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
+import AceEditor from "react-ace";
+import TestAllocationStrategyMutation from "../mutations/TestAllocationStrategyMutation";
+import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/theme-tomorrow";
+import "ace-builds/src-noconflict/ext-language_tools";
+import DeleteStrategyMutation from "../mutations/DeleteStrategyMutation";
+import TestStrategy from "./TestStrategy";
+
+/* eslint-disable react/prop-types */
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -42,37 +44,128 @@ const StyledTableCell = withStyles((theme) => ({
 
 const StyledMenu = withStyles({
   paper: {
-    border: '1px solid #d3d4d5',
+    border: "1px solid #d3d4d5",
   },
-})((props) => (
-  <Menu
-    elevation={0}
-    {...props}
-  />
-));
+})((props) => <Menu elevation={0} {...props} />);
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    marginTop: '20px',
+    marginTop: "20px",
   },
   chip: {
     margin: theme.spacing(0.5),
   },
   whiteCheckBox: {
-    color: 'white',
-    '&$checked': {
-      color: 'white',
+    color: "white",
+    "&$checked": {
+      color: "white",
     },
     checked: {},
   },
-  iconButton: {
-    position: 'absolute',
-  },
+  iconButton: {},
 }));
+
+const Row = React.memo((props) => {
+  const classes = useStyles();
+  const {
+    row,
+    i,
+    onActionClick,
+    actionsAnchorEl,
+    onMenuClose,
+    onTestClick,
+    onDeleteClick,
+  } = props;
+  const { Name, Lang, id, Script } = row;
+  const [open, setOpen] = React.useState(false);
+  return (
+    <>
+      <TableRow className={classes.root}>
+        <td>
+          <IconButton
+            className={classes.iconButton}
+            aria-controls="actions-menu"
+            aria-haspopup="true"
+            onClick={onActionClick}
+          >
+            <MoreVertIcon />
+          </IconButton>
+          <StyledMenu
+            id={`actions-menu${i}`}
+            getContentAnchorEl={null}
+            anchorEl={actionsAnchorEl}
+            open={Boolean(actionsAnchorEl)}
+            onClose={onMenuClose}
+          >
+            <MenuItem onClick={() => setOpen(!open)}>
+              <ListItemIcon>
+                <SettingsIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Details" />
+            </MenuItem>
+            <MenuItem onClick={() => onTestClick(row)}>
+              <ListItemIcon>
+                <SettingsIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Test Strategy" />
+            </MenuItem>
+            <MenuItem onClick={() => onDeleteClick(row)}>
+              <ListItemIcon>
+                <DeleteIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Delete" />
+            </MenuItem>
+          </StyledMenu>
+        </td>
+        <TableCell align="left">{Name}</TableCell>
+        <TableCell align="left">{id}</TableCell>
+        <TableCell align="left">{Lang}</TableCell>
+        <TableCell align="right">
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box margin={1}>
+              <AceEditor
+                className={classes.editor}
+                height="450px"
+                width="100%"
+                mode="javascript"
+                theme="tomorrow"
+                name="UNIQUE_ID_OF_DIV"
+                editorProps={{ $blockScrolling: true }}
+                value={Script}
+                readOnly
+                fontSize={16}
+                setOptions={{
+                  enableBasicAutocompletion: true,
+                  enableLiveAutocompletion: true,
+                  enableSnippets: true,
+                  showLineNumbers: true,
+                  tabSize: 2,
+                }}
+              />
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </>
+  );
+});
 
 const StrategiesTable = ({
   // eslint-disable-next-line react/prop-types
-  strategiesData, updateDataVarFunc, enqueueSnackbar,
+  strategiesData,
+  updateDataVarFunc,
+  enqueueSnackbar,
 }) => {
   const classes = useStyles();
   const [actionsAnchorEl, setActionsAnchorEl] = useState(null);
@@ -98,11 +191,11 @@ const StrategiesTable = ({
       if (err) {
         console.log(err);
         enqueueSnackbar(err.message, {
-          variant: 'error',
+          variant: "error",
         });
       } else {
-        enqueueSnackbar('Allocation strategy deleted', {
-          variant: 'warning',
+        enqueueSnackbar("Allocation strategy deleted", {
+          variant: "warning",
         });
         updateDataVarFunc();
       }
@@ -110,15 +203,12 @@ const StrategiesTable = ({
   };
 
   const deleteDialogRender = () => (
-    <Dialog
-      open={dialogOpen}
-      onClose={() => setDialogOpen(false)}
-    >
-      <DialogTitle id="alert-dialog-slide-title">Are you sure you want to delete this allocation strategy?</DialogTitle>
+    <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+      <DialogTitle id="alert-dialog-slide-title">
+        Are you sure you want to delete this allocation strategy?
+      </DialogTitle>
       <DialogActions>
-        <Button onClick={() => setDialogOpen(false)}>
-          Disagree
-        </Button>
+        <Button onClick={() => setDialogOpen(false)}>Disagree</Button>
         <Button
           onClick={() => {
             setActionsAnchorEl(null);
@@ -136,7 +226,7 @@ const StrategiesTable = ({
   const testAllocationStrategy = () => {
     const input = {
       allocationStrategyId: 5,
-      resourcePool: { ResourcePoolName: 'test12345', poolProperties: {} },
+      resourcePool: { ResourcePoolName: "test12345", poolProperties: {} },
       currentResources: [],
       userInput: {},
     };
@@ -144,11 +234,11 @@ const StrategiesTable = ({
       if (err) {
         console.log(err);
         enqueueSnackbar(err.message, {
-          variant: 'error',
+          variant: "error",
         });
       } else {
-        enqueueSnackbar('Test successful', {
-          variant: 'success',
+        enqueueSnackbar("Test successful", {
+          variant: "success",
         });
         updateDataVarFunc();
       }
@@ -166,91 +256,14 @@ const StrategiesTable = ({
     setTestStrategyDialogOpen(true);
   };
 
-  const Row = (props) => {
-    // eslint-disable-next-line react/prop-types
-    const { row, i } = props;
-    const {
-      // eslint-disable-next-line react/prop-types
-      Name, Lang, id, Script,
-    } = row;
-    const [open, setOpen] = React.useState(false);
-    return (
-      <>
-        <TableRow className={classes.root}>
-          <TableCell>
-            <StyledMenu
-              id={`actions-menu${i}`}
-              getContentAnchorEl={null}
-              anchorEl={actionsAnchorEl}
-              open={Boolean(actionsAnchorEl)}
-              onClose={handleActionsClose}
-            >
-              <MenuItem onClick={() => setOpen(!open)}>
-                <ListItemIcon>
-                  <SettingsIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText primary="Details" />
-              </MenuItem>
-              <MenuItem onClick={() => handleTestClicked(row)}>
-                <ListItemIcon>
-                  <SettingsIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText primary="Test Strategy" />
-              </MenuItem>
-              <MenuItem onClick={() => handleDeleteClicked(row)}>
-                <ListItemIcon>
-                  <DeleteIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText primary="Delete" />
-              </MenuItem>
-            </StyledMenu>
-          </TableCell>
-          <TableCell align="left">{Name}</TableCell>
-          <TableCell align="left">{id}</TableCell>
-          <TableCell align="left">{Lang}</TableCell>
-          <TableCell align="right">
-            <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-            <Collapse in={open} timeout="auto" unmountOnExit>
-              <Box margin={1}>
-                <AceEditor
-                  className={classes.editor}
-                  height="450px"
-                  width="100%"
-                  mode="javascript"
-                  theme="tomorrow"
-                  name="UNIQUE_ID_OF_DIV"
-                  editorProps={{ $blockScrolling: true }}
-                  value={Script}
-                  readOnly
-                  fontSize={16}
-                  setOptions={{
-                    enableBasicAutocompletion: true,
-                    enableLiveAutocompletion: true,
-                    enableSnippets: true,
-                    showLineNumbers: true,
-                    tabSize: 2,
-                  }}
-                />
-              </Box>
-            </Collapse>
-          </TableCell>
-        </TableRow>
-      </>
-    );
-  };
-
   const testStrategyRender = () => (
     <Dialog
       open={testStrategyDialogOpen}
       onClose={() => setTestStrategyDialogOpen(false)}
     >
-      <DialogTitle id="alert-dialog-slide-title">Testing Allocation strategy</DialogTitle>
+      <DialogTitle id="alert-dialog-slide-title">
+        Testing Allocation strategy
+      </DialogTitle>
       <TestStrategy strategy={activeStrategy} />
       <DialogActions>
         <Button onClick={() => setTestStrategyDialogOpen(false)}>
@@ -271,7 +284,13 @@ const StrategiesTable = ({
 
   return (
     <TableContainer component={Paper} className={classes.container}>
-      <Button onClick={() => { testAllocationStrategy(); }}>Test</Button>
+      <Button
+        onClick={() => {
+          testAllocationStrategy();
+        }}
+      >
+        Test
+      </Button>
       {deleteDialogRender()}
       {testStrategyRender()}
       <Table ria-label="pool table">
@@ -287,18 +306,16 @@ const StrategiesTable = ({
         <TableBody>
           {/* eslint-disable-next-line react/prop-types */}
           {strategiesData.map((row, i) => (
-            <>
-              <IconButton
-                className={classes.iconButton}
-                aria-controls="actions-menu"
-                aria-haspopup="true"
-                onClick={handleActionsClick}
-              >
-                <MoreVertIcon />
-              </IconButton>
-              {/* eslint-disable-next-line react/prop-types,react/no-array-index-key */}
-              <Row key={`asnd${row.name}${i}`} row={row} i={i} />
-            </>
+            <Row
+              key={row.id}
+              row={row}
+              i={i}
+              onActionClick={handleActionsClick}
+              actionsAnchorEl={actionsAnchorEl}
+              onMenuClose={handleActionsClose}
+              onTestClick={handleTestClicked}
+              onDeleteClick={handleDeleteClicked}
+            />
           ))}
         </TableBody>
       </Table>
