@@ -15,6 +15,7 @@
     "classnames": "^2.2.6",
     "framer-motion": "^2.6.3",
     "graphql": "^15.3.0",
+    "lodash": "^4.17.20",
     "notistack": "^1.0.0",
     "react": "^16.8.4",
     "react-ace": "^9.1.3",

@@ -1,3 +1,4 @@
+// @flow
 import React, { useEffect, useState } from 'react';
 import Grow from '@material-ui/core/Grow';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -15,7 +16,7 @@ import {
   filterByResourceType,
   filterByStrategy,
   filterByTags,
-} from './Filters/filterUtils';
+} from './Filters/filter.helpers';
 import {
   fetchQuery,
   queryAllPools,
@@ -43,12 +44,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const compose = (...functions) => (args) => functions.reduceRight((arg, fn) => fn(arg), args);
+
 const PoolsPage = (props) => {
   const classes = useStyles();
-  // eslint-disable-next-line react/prop-types
   const { enqueueSnackbar } = props;
   const [poolArray, setPoolArray] = useState([]);
-  const [filteredPoolArray, setFilteredPoolArray] = useState([]);
+
   const [filterOptions, setFilterOptions] = useState({
     QueryAllocationStrategies: [],
     QueryResourceTypes: [],
@@ -56,10 +58,10 @@ const PoolsPage = (props) => {
   });
   const [filterConstraints, setFilterConstraints] = useState({
     searchQuery: '',
-    allocStrat: '',
-    resourceType: '',
+    allocStrat: null,
+    resourceType: null,
     tags: [],
-    poolType: '',
+    poolType: null,
   });
   const [isInRootView, setIsInRootView] = useState(false);
 
@@ -72,7 +74,6 @@ const PoolsPage = (props) => {
     fetchQuery(query)
       .then((res) => {
         setPoolArray(isInRootView ? res.data.data.QueryRootResourcePools : res.data.data.QueryResourcePools);
-        setFilteredPoolArray(isInRootView ? res.data.data.QueryRootResourcePools : res.data.data.QueryResourcePools);
       })
       .catch((error) => {
         console.log(error); // TODO error handling
@@ -95,24 +96,20 @@ const PoolsPage = (props) => {
   useEffect(
     (e) => {
       console.log(e);
-      console.log('here');
       fetchData();
     },
     [isInRootView],
   );
 
-  // eslint-disable-next-line max-len
   // TODO filtering is performed locally on already fetched data, it should be probably handled by relay/graphql (?)
-  useEffect(() => {
-    const { searchQuery, tags, poolType, allocStrat, resourceType } = filterConstraints;
-    let results = filterByQuery(searchQuery, poolArray);
-    results = filterByTags(tags, results);
-    results = filterByPoolType(poolType, results);
-    results = filterByStrategy(allocStrat, results);
-    results = filterByResourceType(resourceType, results);
-
-    setFilteredPoolArray(results);
-  }, [filterConstraints]);
+  const { searchQuery, tags, poolType, allocStrat, resourceType } = filterConstraints;
+  const filteredPoolArray = compose(
+    filterByQuery(searchQuery),
+    filterByTags(tags),
+    filterByPoolType(poolType),
+    filterByStrategy(allocStrat?.id),
+    filterByResourceType(resourceType?.id),
+  )(poolArray);
 
   const updateFilterConstraint = (key, value) => {
     setFilterConstraints({
@@ -122,7 +119,6 @@ const PoolsPage = (props) => {
   };
 
   const assignTagToPool = (tag, poolId) => {
-    console.log(tag, poolId);
     fetchQuery(tagPool(tag.id, poolId))
       .then(() => {
         fetchData();
@@ -165,7 +161,7 @@ const PoolsPage = (props) => {
 
   const handleViewChange = async () => {
     // console.log(event.target.checked);
-    await setIsInRootView(!isInRootView);
+    await setIsInRootView((prev) => !prev);
     // fetchData();
   };
 

@@ -1,3 +1,4 @@
+// @flow weak
 import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import TableCell from '@material-ui/core/TableCell';
@@ -19,7 +20,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from 'react-router-dom';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import { TableSortLabel } from '@material-ui/core';
+import get from 'lodash/get';
 import AddTagMenu from './AddTagMenu';
+import { sanitizeString } from '../Filters/filter.helpers';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -50,6 +54,62 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Capacity = {
+  utilizedCapacity: number,
+  freeCapacity: number,
+};
+type Pool = {
+  Name: string,
+  PoolType: string,
+  Tags: { id: string }[],
+  AllocationStrategy: ?{ id: string },
+  ResourceType: ?{ id: string },
+  Capacity: ?Capacity,
+};
+type Order = {
+  orderBy: 'Name' | 'PoolType' | 'AllocationStrategy.Name' | 'ResourceType.Name' | 'Capacity',
+  direction: 'asc' | 'desc',
+};
+
+function getCapacityValue(capacity: Capacity) {
+  const { freeCapacity, utilizedCapacity } = capacity;
+  return (utilizedCapacity / (freeCapacity + utilizedCapacity)) * 100;
+}
+
+function sortByCapacity(cap1: Capacity, cap2: Capacity, direction: 'asc' | 'desc'): number {
+  if (direction === 'asc') {
+    return getCapacityValue(cap1) < getCapacityValue(cap2) ? -1 : 1;
+  }
+  if (direction === 'desc') {
+    return getCapacityValue(cap1) > getCapacityValue(cap2) ? -1 : 1;
+  }
+  return 1;
+}
+
+function sortPools(array: Pool[], order: Order): Pool[] {
+  return [...array].sort((a, b) => {
+    if (order == null) {
+      return 1;
+    }
+    const { direction, orderBy } = order;
+    const firstValue = get(a, orderBy);
+    const secondValue = get(b, orderBy);
+    if (firstValue == null || secondValue == null) {
+      return 1;
+    }
+    if (orderBy === 'Capacity') {
+      return sortByCapacity(firstValue, secondValue, direction);
+    }
+    if (direction === 'asc') {
+      return sanitizeString(firstValue) < sanitizeString(secondValue) ? -1 : 1;
+    }
+    if (direction === 'desc') {
+      return sanitizeString(firstValue) > sanitizeString(secondValue) ? -1 : 1;
+    }
+    return 1;
+  });
+}
+
 const PoolTable = ({
   // eslint-disable-next-line react/prop-types
   filteredPoolArray,
@@ -57,10 +117,15 @@ const PoolTable = ({
   assignTagToPool,
   unassingTagFromPool,
   deletePool,
+}: {
+  filteredPoolArray: Pool[],
 }) => {
   const classes = useStyles();
   const [actionsAnchorEl, setActionsAnchorEl] = useState(null);
   const [activeMenuID, setActiveMenuID] = useState(null);
+  const [order, setOrder] = useState<Order | null>(null);
+
+  const pools = sortPools(filteredPoolArray, order);
 
   const handleActionsClick = (event, id) => {
     setActionsAnchorEl(event.currentTarget);
@@ -69,11 +134,6 @@ const PoolTable = ({
 
   const handleActionsClose = () => {
     setActionsAnchorEl(null);
-  };
-
-  const getCapacityValue = (capacity) => {
-    const { freeCapacity, utilizedCapacity } = capacity;
-    return (utilizedCapacity / (freeCapacity + utilizedCapacity)) * 100;
   };
 
   const RESOURCE_MANAGER_URL = '/resourcemanager/frontend';
@@ -106,17 +166,82 @@ const PoolTable = ({
           <TableHead>
             <TableRow>
               <StyledTableCell align="left">Actions</StyledTableCell>
-              <StyledTableCell align="left">Pool Name</StyledTableCell>
+              <StyledTableCell align="left">
+                <TableSortLabel
+                  active={order?.orderBy === 'Name'}
+                  direction={order?.orderBy === 'Name' ? order?.direction : 'asc'}
+                  onClick={() => {
+                    setOrder((prev) => ({
+                      orderBy: 'Name',
+                      direction: (prev?.direction ?? 'desc') === 'asc' ? 'desc' : 'asc',
+                    }));
+                  }}
+                >
+                  Pool Name
+                </TableSortLabel>
+              </StyledTableCell>
               <StyledTableCell align="right">Tags</StyledTableCell>
-              <StyledTableCell align="right">Pool Type</StyledTableCell>
-              <StyledTableCell align="right">Alloc. Strategy (Lang.)</StyledTableCell>
-              <StyledTableCell align="right">Resource Type</StyledTableCell>
-              <StyledTableCell align="right">Utilized Capacity</StyledTableCell>
+              <StyledTableCell align="right">
+                <TableSortLabel
+                  active={order?.orderBy === 'PoolType'}
+                  direction={order?.orderBy === 'PoolType' ? order?.direction : 'asc'}
+                  onClick={() => {
+                    setOrder((prev) => ({
+                      orderBy: 'PoolType',
+                      direction: (prev?.direction ?? 'desc') === 'asc' ? 'desc' : 'asc',
+                    }));
+                  }}
+                >
+                  Pool Type
+                </TableSortLabel>
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                <TableSortLabel
+                  active={order?.orderBy === 'AllocationStrategy.Name'}
+                  direction={order?.orderBy === 'AllocationStrategy.Name' ? order?.direction : 'asc'}
+                  onClick={() => {
+                    setOrder((prev) => ({
+                      orderBy: 'AllocationStrategy.Name',
+                      direction: (prev?.direction ?? 'desc') === 'asc' ? 'desc' : 'asc',
+                    }));
+                  }}
+                >
+                  Alloc. Strategy (Lang.)
+                </TableSortLabel>
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                <TableSortLabel
+                  active={order?.orderBy === 'ResourceType.Name'}
+                  direction={order?.orderBy === 'ResourceType.Name' ? order?.direction : 'asc'}
+                  onClick={() => {
+                    setOrder((prev) => ({
+                      orderBy: 'ResourceType.Name',
+                      direction: (prev?.direction ?? 'desc') === 'asc' ? 'desc' : 'asc',
+                    }));
+                  }}
+                >
+                  Resource Type
+                </TableSortLabel>
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                <TableSortLabel
+                  active={order?.orderBy === 'Capacity'}
+                  direction={order?.orderBy === 'Capacity' ? order?.direction : 'asc'}
+                  onClick={() => {
+                    setOrder((prev) => ({
+                      orderBy: 'Capacity',
+                      direction: (prev?.direction ?? 'desc') === 'asc' ? 'desc' : 'asc',
+                    }));
+                  }}
+                >
+                  Utilized Capacity
+                </TableSortLabel>
+              </StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {/* eslint-disable-next-line react/prop-types */}
-            {filteredPoolArray.map((row, i) => (
+            {pools.map((row, i) => (
               // eslint-disable-next-line react/no-array-index-key
               <TableRow key={i}>
                 <TableCell padding="checkbox" align="center">
