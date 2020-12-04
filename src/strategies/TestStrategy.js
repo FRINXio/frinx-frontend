@@ -48,7 +48,6 @@ const TestStrategy = (props: Props) => {
           <TextareaAutosize
             placeholder="Search pools"
             variant="outlined"
-            fullWidth
             value={userInput}
             rowsMin={3}
             onChange={(e) => setUserInput(e.target.value)}

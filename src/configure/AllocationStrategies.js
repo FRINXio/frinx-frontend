@@ -1,12 +1,10 @@
 // @flow
-import type { WithStyles } from '@material-ui/core';
-
-import * as React from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 // eslint-disable-next-line no-unused-vars
 import classNames from 'classnames';
 import { graphql } from 'graphql';
-import { useEffect, useState } from 'react';
+import type { WithStyles } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 import Typography from '@material-ui/core/Typography';
@@ -47,31 +45,18 @@ const AllocationStrategies = (props: Props) => {
 
   const [showEditCard, setShowEditCard] = useState(false);
 
-  const [filteredArray, setFilteredArray] = useState([]);
-  const [queryArray, setQueryArray] = useState([]);
-
   const [filterConstraints, setFilterConstraints] = useState({
     searchQuery: '',
     lang: '',
   });
 
   const updateFilterConstraint = (key, value) => {
-    setFilterConstraints({
-      ...filterConstraints,
+    setFilterConstraints((prev) => ({
+      ...prev,
       [key]: value,
-    });
+    }));
   };
 
-  useEffect(() => {
-    const { searchQuery, lang } = filterConstraints;
-    let results = filterByQuery(searchQuery, queryArray);
-    results = filterByLang(lang, results);
-    setFilteredArray(results);
-  }, [filterConstraints]);
-
-  useEffect(() => {
-    setFilteredArray(queryArray);
-  }, [queryArray]);
   const showEditCardFunc = (value) => {
     setShowEditCard(value);
   };
@@ -102,7 +87,8 @@ const AllocationStrategies = (props: Props) => {
         variables={{ showEditCard, updateDataVar }}
         render={(queryProps) => {
           const { QueryAllocationStrategies } = queryProps;
-          setQueryArray(QueryAllocationStrategies);
+          const { lang, searchQuery } = filterConstraints;
+          const filteredData = filterByLang(lang, filterByQuery(searchQuery, QueryAllocationStrategies));
           return (
             <div>
               <div>
@@ -127,14 +113,13 @@ const AllocationStrategies = (props: Props) => {
               </div>
 
               <StrategiesFilters
-                setFilteredArray={setFilteredArray}
                 resourceTypesArray={QueryAllocationStrategies}
                 filterConstraints={filterConstraints}
                 setFilterConstraints={setFilterConstraints}
                 updateFilterConstraint={updateFilterConstraint}
               />
 
-              <StrategiesTable strategiesData={filteredArray} updateDataVarFunc={updateDataVarFunc} />
+              <StrategiesTable strategiesData={filteredData} updateDataVarFunc={updateDataVarFunc} />
             </div>
           );
         }}
