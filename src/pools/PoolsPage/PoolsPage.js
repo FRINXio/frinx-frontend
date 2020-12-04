@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const compose = (...functions) => (args) => functions.reduceRight((arg, fn) => fn(arg), args);
+const pipe = (...functions) => (args) => functions.reduce((arg, fn) => fn(arg), args);
 
 const PoolsPage = (props) => {
   const classes = useStyles();
@@ -93,17 +93,13 @@ const PoolsPage = (props) => {
     fetchData();
   }, []);
 
-  useEffect(
-    (e) => {
-      console.log(e);
-      fetchData();
-    },
-    [isInRootView],
-  );
+  useEffect(() => {
+    fetchData();
+  }, [isInRootView]);
 
   // TODO filtering is performed locally on already fetched data, it should be probably handled by relay/graphql (?)
   const { searchQuery, tags, poolType, allocStrat, resourceType } = filterConstraints;
-  const filteredPoolArray = compose(
+  const filteredPoolArray = pipe(
     filterByQuery(searchQuery),
     filterByTags(tags),
     filterByPoolType(poolType),
@@ -118,8 +114,8 @@ const PoolsPage = (props) => {
     });
   };
 
-  const assignTagToPool = (tag, poolId) => {
-    fetchQuery(tagPool(tag.id, poolId))
+  const handleTagAdd = (tagId, poolId) => {
+    fetchQuery(tagPool(tagId, poolId))
       .then(() => {
         fetchData();
       })
@@ -128,8 +124,8 @@ const PoolsPage = (props) => {
       });
   };
 
-  const unassignTagFromPool = (tag, poolId) => {
-    fetchQuery(untagPool(tag.id, poolId))
+  const handleTagDelete = (tagId, poolId) => {
+    fetchQuery(untagPool(tagId, poolId))
       .then(() => {
         fetchData();
       })
@@ -138,7 +134,7 @@ const PoolsPage = (props) => {
       });
   };
 
-  const deletePool = (resourcePoolId) => {
+  const handlePoolDelete = (resourcePoolId) => {
     const variables = {
       input: {
         resourcePoolId,
@@ -196,11 +192,11 @@ const PoolsPage = (props) => {
           <Switch checked={isInRootView} onChange={handleViewChange} />
           Show only root pools
           <PoolTable
-            QueryTags={filterOptions.QueryTags}
-            filteredPoolArray={filteredPoolArray}
-            deletePool={deletePool}
-            unassingTagFromPool={unassignTagFromPool}
-            assignTagToPool={assignTagToPool}
+            allTags={filterOptions.QueryTags}
+            pools={filteredPoolArray}
+            onPoolDelete={handlePoolDelete}
+            onTagDelete={handleTagDelete}
+            onTagAdd={handleTagAdd}
           />
         </div>
       </Grow>

@@ -9,7 +9,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import Chip from '@material-ui/core/Chip';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -22,8 +21,9 @@ import { Link } from 'react-router-dom';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { TableSortLabel } from '@material-ui/core';
 import get from 'lodash/get';
-import AddTagMenu from './AddTagMenu';
+import PoolTags from './PoolTags';
 import { sanitizeString } from '../Filters/filter.helpers';
+import type { Pool, Tag, Capacity } from '../../pool.types';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -54,18 +54,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type Capacity = {
-  utilizedCapacity: number,
-  freeCapacity: number,
-};
-type Pool = {
-  Name: string,
-  PoolType: string,
-  Tags: { id: string }[],
-  AllocationStrategy: ?{ id: string },
-  ResourceType: ?{ id: string },
-  Capacity: ?Capacity,
-};
 type Order = {
   orderBy: 'Name' | 'PoolType' | 'AllocationStrategy.Name' | 'ResourceType.Name' | 'Capacity',
   direction: 'asc' | 'desc',
@@ -110,22 +98,21 @@ function sortPools(array: Pool[], order: Order): Pool[] {
   });
 }
 
-const PoolTable = ({
-  // eslint-disable-next-line react/prop-types
-  filteredPoolArray,
-  QueryTags,
-  assignTagToPool,
-  unassingTagFromPool,
-  deletePool,
-}: {
-  filteredPoolArray: Pool[],
-}) => {
+type Props = {
+  pools: Pool[],
+  allTags: Tag[],
+  onTagAdd: (tagId: string, poolId: string) => void,
+  onTagDelete: (tagId: string, poolId: string) => void,
+  onPoolDelete: (poolId: string) => void,
+};
+
+const PoolTable = ({ pools, allTags, onTagAdd, onTagDelete, onPoolDelete }: Props) => {
   const classes = useStyles();
   const [actionsAnchorEl, setActionsAnchorEl] = useState(null);
   const [activeMenuID, setActiveMenuID] = useState(null);
   const [order, setOrder] = useState<Order | null>(null);
 
-  const pools = sortPools(filteredPoolArray, order);
+  const sortedPools = sortPools(pools, order);
 
   const handleActionsClick = (event, id) => {
     setActionsAnchorEl(event.currentTarget);
@@ -137,27 +124,6 @@ const PoolTable = ({
   };
 
   const RESOURCE_MANAGER_URL = '/resourcemanager/frontend';
-
-  const renderTags = (tags, poolId) => {
-    const currentTags = tags.map((t) => t.id);
-    // eslint-disable-next-line react/prop-types
-    const allTagsComplement = QueryTags.filter((t) => !currentTags.includes(t.id));
-
-    return (
-      <>
-        {tags.map((t) => (
-          <Chip
-            key={poolId}
-            size="small"
-            label={t.Tag}
-            onDelete={() => unassingTagFromPool(t, poolId)}
-            className={classes.chip}
-          />
-        ))}
-        <AddTagMenu poolId={poolId} allTags={allTagsComplement} assignTagToPool={assignTagToPool} />
-      </>
-    );
-  };
 
   return (
     <>
@@ -240,10 +206,8 @@ const PoolTable = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {/* eslint-disable-next-line react/prop-types */}
-            {pools.map((row, i) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <TableRow key={i}>
+            {sortedPools.map((row) => (
+              <TableRow key={row.id}>
                 <TableCell padding="checkbox" align="center">
                   <IconButton
                     aria-controls="actions-menu"
@@ -253,7 +217,7 @@ const PoolTable = ({
                     <MoreVertIcon />
                   </IconButton>
                   <StyledMenu
-                    id={`actions-menu${i}`}
+                    id={`actions-menu-${row.id}`}
                     anchorEl={actionsAnchorEl}
                     open={Boolean(actionsAnchorEl) && row.id === activeMenuID}
                     onClose={handleActionsClose}
@@ -264,7 +228,7 @@ const PoolTable = ({
                       </ListItemIcon>
                       <ListItemText primary="Details" />
                     </MenuItem>
-                    <MenuItem onClick={() => deletePool(row.id)}>
+                    <MenuItem onClick={() => onPoolDelete(row.id)}>
                       <ListItemIcon>
                         <DeleteIcon fontSize="small" />
                       </ListItemIcon>
@@ -273,7 +237,18 @@ const PoolTable = ({
                   </StyledMenu>
                 </TableCell>
                 <TableCell align="left">{row.Name}</TableCell>
-                <TableCell align="right">{renderTags(row.Tags, row.id)}</TableCell>
+                <TableCell align="right">
+                  <PoolTags
+                    poolTags={row.Tags}
+                    allTags={allTags}
+                    onTagAdd={(tagId) => {
+                      onTagAdd(tagId, row.id);
+                    }}
+                    onDelete={(tagId) => {
+                      onTagDelete(tagId, row.id);
+                    }}
+                  />
+                </TableCell>
                 <TableCell align="right">{row?.PoolType}</TableCell>
                 <TableCell align="right">
                   {row.AllocationStrategy ? `${row.AllocationStrategy.Name} (${row.AllocationStrategy?.Lang})` : '-'}

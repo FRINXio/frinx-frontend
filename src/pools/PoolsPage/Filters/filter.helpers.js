@@ -1,13 +1,6 @@
 // @flow
 import differenceBy from 'lodash/differenceBy';
-
-type Pool = {
-  Name: string,
-  PoolType: string,
-  Tags: { id: string }[],
-  AllocationStrategy?: { id: string },
-  ResourceType?: { id: string },
-};
+import type { Pool } from '../../pool.types';
 
 export function sanitizeString(value: string): string {
   return value.trim().toLocaleLowerCase();
