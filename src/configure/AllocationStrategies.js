@@ -47,18 +47,31 @@ const AllocationStrategies = (props: Props) => {
 
   const [showEditCard, setShowEditCard] = useState(false);
 
+  const [filteredArray, setFilteredArray] = useState([]);
+  const [queryArray, setQueryArray] = useState([]);
+
   const [filterConstraints, setFilterConstraints] = useState({
     searchQuery: '',
     lang: '',
   });
 
   const updateFilterConstraint = (key, value) => {
-    setFilterConstraints((prev) => ({
-      ...prev,
+    setFilterConstraints({
+      ...filterConstraints,
       [key]: value,
-    }));
+    });
   };
 
+  useEffect(() => {
+    const { searchQuery, lang } = filterConstraints;
+    let results = filterByQuery(searchQuery, queryArray);
+    results = filterByLang(lang, results);
+    setFilteredArray(results);
+  }, [filterConstraints]);
+
+  useEffect(() => {
+    setFilteredArray(queryArray);
+  }, [queryArray]);
   const showEditCardFunc = (value) => {
     setShowEditCard(value);
   };
@@ -89,6 +102,7 @@ const AllocationStrategies = (props: Props) => {
         variables={{ showEditCard, updateDataVar }}
         render={(queryProps) => {
           const { QueryAllocationStrategies } = queryProps;
+          setQueryArray(QueryAllocationStrategies);
           return (
             <div>
               <div>
@@ -113,19 +127,14 @@ const AllocationStrategies = (props: Props) => {
               </div>
 
               <StrategiesFilters
+                setFilteredArray={setFilteredArray}
                 resourceTypesArray={QueryAllocationStrategies}
                 filterConstraints={filterConstraints}
                 setFilterConstraints={setFilterConstraints}
                 updateFilterConstraint={updateFilterConstraint}
               />
 
-              <StrategiesTable
-                strategiesData={filterByLang(
-                  filterConstraints.lang,
-                  filterByQuery(filterConstraints.searchQuery, QueryAllocationStrategies),
-                )}
-                updateDataVarFunc={updateDataVarFunc}
-              />
+              <StrategiesTable strategiesData={filteredArray} updateDataVarFunc={updateDataVarFunc} />
             </div>
           );
         }}
