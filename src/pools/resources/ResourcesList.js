@@ -5,8 +5,7 @@
 
 import type { ContextRouter } from 'react-router-dom';
 import type { WithStyles } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import { graphql } from 'react-relay';
+import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
@@ -27,7 +26,6 @@ import 'ace-builds/src-noconflict/ext-language_tools';
 import AddIcon from '@material-ui/icons/Add';
 import TextField from '@material-ui/core/TextField';
 import ClaimResourceMutation from '../../mutations/ClaimResourceMutation';
-import ResourceManagerQueryRenderer from '../../utils/relay/ResourceManagerQueryRenderer';
 import FreeResourceMutation from '../../mutations/FreeResourceMutation';
 
 const styles = () => ({
@@ -93,20 +91,6 @@ const styles = () => ({
 
 type Props = ContextRouter & WithStyles<typeof styles> & {};
 
-const query = graphql`
-  query ResourcesListQuery($poolId: ID!) {
-    QueryResources(poolId: $poolId) {
-      id
-      Description
-      Properties
-      NestedPool {
-        id
-        Name
-      }
-    }
-  }
-`;
-
 const StyledTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: theme.palette.secondary.light,
@@ -135,7 +119,7 @@ const ResourceList = (props: Props) => {
       {
         poolId: id,
         userInput: tmp,
-        description: description,
+        description,
       },
       (response, err) => {
         if (err) {
@@ -240,89 +224,45 @@ const ResourceList = (props: Props) => {
           ) : null}
         </div>
       ))}
-      <ResourceManagerQueryRenderer
-        query={query}
-        variables={{ someVar: showEditCard, updateDataVar, poolId: id }}
-        render={(queryProps) => {
-          const { QueryResources } = queryProps;
-
-          return (
-            <div>
-              <TableContainer component={Paper} className={classes.container}>
-                <Table ria-label="pool table">
-                  <TableHead>
-                    <TableRow>
-                      <StyledTableCell align="left">Actions</StyledTableCell>
-                      <StyledTableCell align="left">ID</StyledTableCell>
-                      <StyledTableCell align="left">Description</StyledTableCell>
-                      <StyledTableCell align="left">Properties</StyledTableCell>
-                      <StyledTableCell align="left" />
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {/*{QueryResources.map((row, i) => (*/}
-                    {/*  // eslint-disable-next-line react/no-array-index-key*/}
-                    {/*  <TableRow key={i}>*/}
-                    {/*    <TableCell padding="checkbox" align="center">*/}
-                    {/*      <IconButton*/}
-                    {/*        aria-controls="actions-menu"*/}
-                    {/*        aria-haspopup="true"*/}
-                    {/*        onClick={() => {*/}
-                    {/*        }}*/}
-                    {/*      >*/}
-                    {/*        <MoreVertIcon />*/}
-                    {/*      </IconButton>*/}
-                    {/*    </TableCell>*/}
-                    {/*    <TableCell align="left">{row.id}</TableCell>*/}
-                    {/*    <TableCell align="left">*/}
-                    {/*      {Object.entries(row.Properties).map(([key, value]) => (*/}
-                    {/*        <div>*/}
-                    {/*          {' '}*/}
-                    {/*          { `${key} : ${value}` }*/}
-                    {/*        </div>*/}
-                    {/*      ))}*/}
-                    {/*    </TableCell>*/}
-                    {/*    <TableCell align="left">*/}
-                    {/*      <Button*/}
-                    {/*        variant="contained"*/}
-                    {/*        color="primary"*/}
-                    {/*        onClick={() => freeResource(row)}*/}
-                    {/*      >*/}
-                    {/*        Free*/}
-                    {/*      </Button>*/}
-                    {/*    </TableCell>*/}
-                    {/*  </TableRow>*/}
-                    {/*))}*/}
-
-                    {resources.map((row, i) => (
-                      // eslint-disable-next-line react/no-array-index-key
-                      <TableRow key={i}>
-                        <TableCell padding="checkbox" align="center">
-                          <IconButton aria-controls="actions-menu" aria-haspopup="true" onClick={() => {}}>
-                            <MoreVertIcon />
-                          </IconButton>
-                        </TableCell>
-                        <TableCell align="left">{row.node.id}</TableCell>
-                        <TableCell align="left">{row.node.Description}</TableCell>
-                        <TableCell align="left">
-                          {Object.entries(row.node.Properties).map(([key, value]) => (
-                            <div> {`${key} : ${value}`}</div>
-                          ))}
-                        </TableCell>
-                        <TableCell align="left">
-                          <Button variant="contained" color="primary" onClick={() => freeResource(row.node)}>
-                            Free
-                          </Button>
-                        </TableCell>
-                      </TableRow>
+      <div>
+        <TableContainer component={Paper} className={classes.container}>
+          <Table ria-label="pool table">
+            <TableHead>
+              <TableRow>
+                <StyledTableCell align="left">Actions</StyledTableCell>
+                <StyledTableCell align="left">ID</StyledTableCell>
+                <StyledTableCell align="left">Description</StyledTableCell>
+                <StyledTableCell align="left">Properties</StyledTableCell>
+                <StyledTableCell align="left" />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {resources.map((row, i) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <TableRow key={i}>
+                  <TableCell padding="checkbox" align="center">
+                    <IconButton aria-controls="actions-menu" aria-haspopup="true" onClick={() => {}}>
+                      <MoreVertIcon />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell align="left">{row.node.id}</TableCell>
+                  <TableCell align="left">{row.node.Description}</TableCell>
+                  <TableCell align="left">
+                    {Object.entries(row.node.Properties).map(([key, value]) => (
+                      <div> {`${key} : ${value}`}</div>
                     ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </div>
-          );
-        }}
-      />
+                  </TableCell>
+                  <TableCell align="left">
+                    <Button variant="contained" color="primary" onClick={() => freeResource(row.node)}>
+                      Free
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
     </div>
   );
 };
