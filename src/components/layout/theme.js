@@ -36,19 +36,19 @@ export const RED = {
 };
 
 export type TextVariant =
-    | 'h1'
-    | 'h2'
-    | 'h3'
-    | 'h4'
-    | 'h5'
-    | 'h6'
-    | 'subtitle1'
-    | 'subtitle2'
-    | 'subtitle3'
-    | 'body1'
-    | 'body2'
-    | 'caption'
-    | 'overline';
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'h5'
+  | 'h6'
+  | 'subtitle1'
+  | 'subtitle2'
+  | 'subtitle3'
+  | 'body1'
+  | 'body2'
+  | 'caption'
+  | 'overline';
 
 export default createMuiTheme({
   palette: {

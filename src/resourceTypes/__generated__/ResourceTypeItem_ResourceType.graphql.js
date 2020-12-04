@@ -32,66 +32,62 @@ export type ResourceTypeItem_ResourceType$key = {
 };
 */
 
-
-const node/*: ReaderFragment*/ = (function(){
-var v0 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-},
-v1 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "Name",
-  "storageKey": null
-};
-return {
-  "argumentDefinitions": [],
-  "kind": "Fragment",
-  "metadata": null,
-  "name": "ResourceTypeItem_ResourceType",
-  "selections": [
-    (v0/*: any*/),
-    (v1/*: any*/),
-    {
-      "alias": null,
-      "args": null,
-      "concreteType": "PropertyType",
-      "kind": "LinkedField",
-      "name": "PropertyTypes",
-      "plural": true,
-      "selections": [
-        (v1/*: any*/),
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "Type",
-          "storageKey": null
-        }
-      ],
-      "storageKey": null
+const node /*: ReaderFragment*/ = (function () {
+  var v0 = {
+      alias: null,
+      args: null,
+      kind: 'ScalarField',
+      name: 'id',
+      storageKey: null,
     },
-    {
-      "alias": null,
-      "args": null,
-      "concreteType": "ResourcePool",
-      "kind": "LinkedField",
-      "name": "Pools",
-      "plural": true,
-      "selections": [
-        (v0/*: any*/),
-        (v1/*: any*/)
-      ],
-      "storageKey": null
-    }
-  ],
-  "type": "ResourceType",
-  "abstractKey": null
-};
+    v1 = {
+      alias: null,
+      args: null,
+      kind: 'ScalarField',
+      name: 'Name',
+      storageKey: null,
+    };
+  return {
+    argumentDefinitions: [],
+    kind: 'Fragment',
+    metadata: null,
+    name: 'ResourceTypeItem_ResourceType',
+    selections: [
+      (v0 /*: any*/),
+      (v1 /*: any*/),
+      {
+        alias: null,
+        args: null,
+        concreteType: 'PropertyType',
+        kind: 'LinkedField',
+        name: 'PropertyTypes',
+        plural: true,
+        selections: [
+          (v1 /*: any*/),
+          {
+            alias: null,
+            args: null,
+            kind: 'ScalarField',
+            name: 'Type',
+            storageKey: null,
+          },
+        ],
+        storageKey: null,
+      },
+      {
+        alias: null,
+        args: null,
+        concreteType: 'ResourcePool',
+        kind: 'LinkedField',
+        name: 'Pools',
+        plural: true,
+        selections: [(v0 /*: any*/), (v1 /*: any*/)],
+        storageKey: null,
+      },
+    ],
+    type: 'ResourceType',
+    abstractKey: null,
+  };
 })();
 // prettier-ignore
 (node/*: any*/).hash = 'e07dedfdcd8d3c929a30b805dfa42937';

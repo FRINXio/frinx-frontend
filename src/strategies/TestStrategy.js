@@ -25,14 +25,12 @@ const styles = () => ({
 });
 
 type Props = {
-    children: React.ChildrenArray<null | React.Element<*>>,
-    showAddEditCardFunc: Function,
+  children: React.ChildrenArray<null | React.Element<*>>,
+  showAddEditCardFunc: Function,
 } & WithStyles<typeof styles>;
 
 const TestStrategy = (props: Props) => {
-  const {
-    classes,
-  } = props;
+  const { classes } = props;
   const [selectedPool, setSelectedPool] = useState(null);
   const [pools, setPools] = useState([]);
   const [userInput, setUserInput] = useState('');
@@ -68,7 +66,6 @@ const TestStrategy = (props: Props) => {
         </Grid>
       </Grid>
     </div>
-
   );
 };
 

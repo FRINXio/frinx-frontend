@@ -3,13 +3,10 @@ import {
   Network,
   RecordSource,
   Store,
-// eslint-disable-next-line import/no-extraneous-dependencies
+  // eslint-disable-next-line import/no-extraneous-dependencies
 } from 'relay-runtime';
 
-function fetchQuery(
-  operation,
-  variables,
-) {
+function fetchQuery(operation, variables) {
   return fetch('/resourcemanager/graphql/query', {
     method: 'POST',
     headers: {

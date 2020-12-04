@@ -34,8 +34,7 @@ import ResourceManagerQueryRenderer from '../../utils/relay/ResourceManagerQuery
 import { createPool } from './createPoolQueries';
 import { fetchQuery, queryFilterOptions } from '../../queries/Queries';
 import CreateNestedPoolMutation from '../../mutations/createPools/CreateNestedPoolMutation';
-import CreateNestedAllocatingPoolMutation
-  from '../../mutations/createPools/CreateNestedAllocatingPoolMutation';
+import CreateNestedAllocatingPoolMutation from '../../mutations/createPools/CreateNestedAllocatingPoolMutation';
 
 // ENUM : probably query in future (?)
 const ALLOCATING = 'allocating';
@@ -131,11 +130,13 @@ const CreatePoolPage = (props) => {
   const [parentResourcesArray, setParentResourcesArray] = useState([]);
 
   useEffect(() => {
-    fetchQuery(queryFilterOptions).then((res) => {
-      setSelectors(res.data.data);
-    }).catch((err) => {
-      console.log(err); // TODO error handling
-    });
+    fetchQuery(queryFilterOptions)
+      .then((res) => {
+        setSelectors(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err); // TODO error handling
+      });
   }, []);
 
   useEffect(() => {
@@ -149,9 +150,9 @@ const CreatePoolPage = (props) => {
     const poolPropertiesInput = {};
     poolProperties.map((prop) => {
       // eslint-disable-next-line no-unused-expressions
-      (prop.key) ? poolPropertyTypes[prop.key] = prop.type : null;
+      prop.key ? (poolPropertyTypes[prop.key] = prop.type) : null;
       // eslint-disable-next-line no-unused-expressions
-      (prop.key) ? poolPropertiesInput[prop.key] = prop.value : null;
+      prop.key ? (poolPropertiesInput[prop.key] = prop.value) : null;
       return prop;
     });
     console.log(poolPropertyTypes);
@@ -172,88 +173,96 @@ const CreatePoolPage = (props) => {
       // eslint-disable-next-line default-case
       switch (pool.poolType) {
         case 'set':
-          CreateNestedPoolMutation({
-            input: {
-              resourceTypeId: pool.resourceType.id,
-              poolName: pool.poolName,
-              description: pool.description,
-              // allocationStrategyId: (allocationStrategy) ? pool.allocationStrategy.id : null,
-              poolDealocationSafetyPeriod: pool.dealocationPeriod,
-              // poolProperties: pool.poolProperties,
-              // poolPropertyTypes: pool.poolPropertyTypes,
-              poolValues: pool.poolValues,
-              parentResourceId: parentResourceID,
+          CreateNestedPoolMutation(
+            {
+              input: {
+                resourceTypeId: pool.resourceType.id,
+                poolName: pool.poolName,
+                description: pool.description,
+                // allocationStrategyId: (allocationStrategy) ? pool.allocationStrategy.id : null,
+                poolDealocationSafetyPeriod: pool.dealocationPeriod,
+                // poolProperties: pool.poolProperties,
+                // poolPropertyTypes: pool.poolPropertyTypes,
+                poolValues: pool.poolValues,
+                parentResourceId: parentResourceID,
+              },
             },
-          }, (response, err) => {
-            if (err) {
-              console.log(err);
-              enqueueSnackbar(err.message, {
-                variant: 'error',
-              });
-            } else {
-              enqueueSnackbar('Pool created', {
-                variant: 'success',
-              });
-              // eslint-disable-next-line react/prop-types
-              props.setShowCreatePool(false);
-            }
-          });
+            (response, err) => {
+              if (err) {
+                console.log(err);
+                enqueueSnackbar(err.message, {
+                  variant: 'error',
+                });
+              } else {
+                enqueueSnackbar('Pool created', {
+                  variant: 'success',
+                });
+                // eslint-disable-next-line react/prop-types
+                props.setShowCreatePool(false);
+              }
+            },
+          );
           return;
 
         case 'allocating':
           console.log('allo');
-          CreateNestedAllocatingPoolMutation({
-            input: {
-              resourceTypeId: pool.resourceType.id,
-              poolName: pool.poolName,
-              description: pool.description,
-              allocationStrategyId: (allocationStrategy) ? pool.allocationStrategy.id : null,
-              poolDealocationSafetyPeriod: pool.dealocationPeriod,
-              // poolProperties: pool.poolProperties,
-              // poolPropertyTypes: pool.poolPropertyTypes,
-              parentResourceId: parentResourceID,
+          CreateNestedAllocatingPoolMutation(
+            {
+              input: {
+                resourceTypeId: pool.resourceType.id,
+                poolName: pool.poolName,
+                description: pool.description,
+                allocationStrategyId: allocationStrategy ? pool.allocationStrategy.id : null,
+                poolDealocationSafetyPeriod: pool.dealocationPeriod,
+                // poolProperties: pool.poolProperties,
+                // poolPropertyTypes: pool.poolPropertyTypes,
+                parentResourceId: parentResourceID,
+              },
             },
-          }, (response, err) => {
-            if (err) {
-              console.log(err);
-              enqueueSnackbar(err.message, {
-                variant: 'error',
-              });
-            } else {
-              enqueueSnackbar('Pool created', {
-                variant: 'success',
-              });
-              // eslint-disable-next-line react/prop-types
-              props.setShowCreatePool(false);
-            }
-          });
+            (response, err) => {
+              if (err) {
+                console.log(err);
+                enqueueSnackbar(err.message, {
+                  variant: 'error',
+                });
+              } else {
+                enqueueSnackbar('Pool created', {
+                  variant: 'success',
+                });
+                // eslint-disable-next-line react/prop-types
+                props.setShowCreatePool(false);
+              }
+            },
+          );
           return;
       }
       // eslint-disable-next-line
     }
 
-    createPool(pool).then((res, err) => {
-      console.log(res, err);
-      if (err) {
-        enqueueSnackbar(err.message, {
-          variant: 'error',
-        });
-      } else {
-        enqueueSnackbar('Pool Created', {
-          variant: 'success',
-        });
-        // eslint-disable-next-line react/prop-types
-        props.setShowCreatePool(false);
-      }
-    }).catch((err) => {
-      console.log('here', err);
-      if (err) {
-        console.log(err);
-        enqueueSnackbar(err.message, {
-          variant: 'error',
-        });
-      }
-    });
+    createPool(pool)
+      .then((res, err) => {
+        console.log(res, err);
+        if (err) {
+          enqueueSnackbar(err.message, {
+            variant: 'error',
+          });
+        } else {
+          enqueueSnackbar('Pool Created', {
+            variant: 'success',
+          });
+          // eslint-disable-next-line react/prop-types
+          props.setShowCreatePool(false);
+        }
+      })
+      .catch((err) => {
+        console.log('here', err);
+        if (err) {
+          console.log(err);
+          enqueueSnackbar(err.message, {
+            variant: 'error',
+          });
+        }
+      });
   };
 
   const renderDealocationPeriod = () => (
@@ -281,12 +290,7 @@ const CreatePoolPage = (props) => {
         getOptionLabel={(option) => option.Name}
         onChange={(e, value) => setAllocationStrategy(value)}
         renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Allocation Strategy"
-            required
-            placeholder="Select Allocation Strategy"
-          />
+          <TextField {...params} label="Allocation Strategy" required placeholder="Select Allocation Strategy" />
         )}
       />
     </Grid>
@@ -324,7 +328,9 @@ const CreatePoolPage = (props) => {
           </Grid>
         ))}
         <Grid item xs={6}>
-          <Button type="submit" color="primary" variant="contained" size="large">Add</Button>
+          <Button type="submit" color="primary" variant="contained" size="large">
+            Add
+          </Button>
         </Grid>
       </Grid>
     </form>
@@ -348,10 +354,14 @@ const CreatePoolPage = (props) => {
               edge="start"
               tabIndex={-1}
               disableRipple
-              onChange={(val) => { handleResourceCheckboxChange(val, i); }}
+              onChange={(val) => {
+                handleResourceCheckboxChange(val, i);
+              }}
             />
           </ListItemIcon>
-          {Object.values(item).map((v) => <ListItemText primary={v} />)}
+          {Object.values(item).map((v) => (
+            <ListItemText primary={v} />
+          ))}
         </ListItem>
       ))}
     </List>
@@ -375,48 +385,45 @@ const CreatePoolPage = (props) => {
       setPoolProperties(tmp);
     };
 
-    return (
-      poolProperties.map((p, index) => (
-        <div className={classes.propertyRow}>
-          <div className={classes.selectContainer}>
-            <Select
-              onClick={(val) => onTypeSelected(val, index)}
-              className={classes.select}
-              fullWidth
-            >
-              <MenuItem value="int">Int</MenuItem>
-              <MenuItem value="string">String</MenuItem>
-            </Select>
-          </div>
-          <div className={classes.textfieldContainer}>
-            <TextField
-              label="KEY"
-              onChange={(val) => onPropKeyChanged(val, index)}
-              className={classes.nameTextField}
-              fullWidth
-            />
-          </div>
-          <div className={classes.textfieldContainer}>
-            <TextField
-              label="VALUE"
-              onChange={(val) => onPropValueChanged(val, index)}
-              className={classes.nameTextField}
-              fullWidth
-            />
-          </div>
-          {(index === poolProperties.length - 1) ? (
-            <IconButton
-              color="primary"
-              onClick={() => { setPoolProperties([...poolProperties, {}]); }}
-              className={classes.addNewButton}
-            >
-              <AddIcon />
-            </IconButton>
-          ) : <div className={classes.addNewButton} />}
-
+    return poolProperties.map((p, index) => (
+      <div className={classes.propertyRow}>
+        <div className={classes.selectContainer}>
+          <Select onClick={(val) => onTypeSelected(val, index)} className={classes.select} fullWidth>
+            <MenuItem value="int">Int</MenuItem>
+            <MenuItem value="string">String</MenuItem>
+          </Select>
         </div>
-      ))
-    );
+        <div className={classes.textfieldContainer}>
+          <TextField
+            label="KEY"
+            onChange={(val) => onPropKeyChanged(val, index)}
+            className={classes.nameTextField}
+            fullWidth
+          />
+        </div>
+        <div className={classes.textfieldContainer}>
+          <TextField
+            label="VALUE"
+            onChange={(val) => onPropValueChanged(val, index)}
+            className={classes.nameTextField}
+            fullWidth
+          />
+        </div>
+        {index === poolProperties.length - 1 ? (
+          <IconButton
+            color="primary"
+            onClick={() => {
+              setPoolProperties([...poolProperties, {}]);
+            }}
+            className={classes.addNewButton}
+          >
+            <AddIcon />
+          </IconButton>
+        ) : (
+          <div className={classes.addNewButton} />
+        )}
+      </div>
+    ));
   };
 
   const POOL_SPECIFIC = {
@@ -437,90 +444,88 @@ const CreatePoolPage = (props) => {
     setIsNested(val.target.checked);
   };
 
-  const query = graphql`query CreatePoolPageQuery {
-        QueryRootResourcePools {
+  const query = graphql`
+    query CreatePoolPageQuery {
+      QueryRootResourcePools {
+        id
+        Name
+        Resources {
+          id
+          Properties
+          NestedPool {
             id
             Name
+            PoolType
             Resources {
+              id
+              Properties
+              NestedPool {
                 id
-                Properties
-                NestedPool {
+                Name
+                PoolType
+                Resources {
+                  id
+                  Properties
+                  NestedPool {
                     id
                     Name
-                    PoolType
                     Resources {
+                      id
+                      Properties
+                      NestedPool {
                         id
-                        Properties
-                        NestedPool {
+                        Name
+                        PoolType
+                        Resources {
+                          id
+                          Properties
+                          NestedPool {
                             id
                             Name
                             PoolType
                             Resources {
+                              id
+                              Properties
+                              NestedPool {
                                 id
-                                Properties
-                                NestedPool{
+                                Name
+                                Resources {
+                                  id
+                                  Properties
+                                  NestedPool {
                                     id
                                     Name
+                                    PoolType
                                     Resources {
+                                      id
+                                      Properties
+                                      NestedPool {
                                         id
-                                        Properties
-                                        NestedPool {
-                                            id
-                                            Name
-                                            PoolType
-                                            Resources {
-                                                id
-                                                Properties
-                                                NestedPool {
-                                                    id
-                                                    Name
-                                                    PoolType
-                                                    Resources {
-                                                        id
-                                                        Properties
-                                                        NestedPool{
-                                                            id
-                                                            Name
-                                                            Resources {
-                                                                id
-                                                                Properties
-                                                                NestedPool {
-                                                                    id
-                                                                    Name
-                                                                    PoolType
-                                                                    Resources {
-                                                                        id
-                                                                        Properties
-                                                                        NestedPool {
-                                                                            id
-                                                                            Name
-                                                                            PoolType
-                                                                            Resources {
-                                                                                id
-                                                                                Properties
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                        Name
+                                        PoolType
+                                        Resources {
+                                          id
+                                          Properties
                                         }
-
+                                      }
                                     }
+                                  }
                                 }
+                              }
                             }
+                          }
                         }
+                      }
                     }
+                  }
                 }
-
+              }
             }
+          }
         }
+      }
     }
-    `;
+  `;
 
   const handleRootPoolChange = (e, value) => {
     setRootPool(value);
@@ -528,7 +533,7 @@ const CreatePoolPage = (props) => {
 
   const findFreeResource = (pool) => {
     console.log('find');
-    return pool.Resources.find((e) => (!e.NestedPool));
+    return pool.Resources.find((e) => !e.NestedPool);
   };
 
   const TreeItemRender = (NestedPool, nodeId) => {
@@ -553,17 +558,15 @@ const CreatePoolPage = (props) => {
       <>
         <TreeItem
           nodeId={nodeId}
-          label={(
+          label={
             <div className={classes.treeItemLabel}>
               {NestedPool.Name}
               <Radio value={NestedPool.id} onChange={handleIconClick} />
             </div>
-          )}
+          }
         >
           {Resources.map((e, i) => (
-            <>
-              {(e.NestedPool) ? TreeItemRender(e.NestedPool, `${nodeId}-${i}`) : null}
-            </>
+            <>{e.NestedPool ? TreeItemRender(e.NestedPool, `${nodeId}-${i}`) : null}</>
           ))}
         </TreeItem>
       </>
@@ -580,7 +583,6 @@ const CreatePoolPage = (props) => {
   };
 
   return (
-
     <Container className={classes.container}>
       <div className={classes.wrapper}>
         <Typography component="div">
@@ -632,12 +634,7 @@ const CreatePoolPage = (props) => {
                   getOptionLabel={(option) => option}
                   onChange={(e, value) => setPoolType(value)}
                   renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Root Pool"
-                      required
-                      placeholder="Select Root Pool"
-                    />
+                    <TextField {...params} label="Root Pool" required placeholder="Select Root Pool" />
                   )}
                 />
               </Grid>
@@ -652,12 +649,7 @@ const CreatePoolPage = (props) => {
                     setPoolValues([]);
                   }}
                   renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      required
-                      label="Resource Type"
-                      placeholder="Select Resource Type"
-                    />
+                    <TextField {...params} required label="Resource Type" placeholder="Select Resource Type" />
                   )}
                 />
               </Grid>
@@ -673,11 +665,17 @@ const CreatePoolPage = (props) => {
               </Grid>
               {POOL_SPECIFIC[poolType]?.map((ps) => ps)}
             </Grid>
-            <Checkbox onChange={(val) => { onCheckboxChange(val); }}>Nested</Checkbox>
+            <Checkbox
+              onChange={(val) => {
+                onCheckboxChange(val);
+              }}
+            >
+              Nested
+            </Checkbox>
             Nested
           </Paper>
 
-          { poolType !== ALLOCATING ? (
+          {poolType !== ALLOCATING ? (
             <Paper elevation={2} className={classes.paper}>
               <Grid container spacing={3}>
                 <Grid item xs={6}>
@@ -692,21 +690,25 @@ const CreatePoolPage = (props) => {
                 </Grid>
                 <Grid item xs={6}>
                   <div className={classes.resourceListButtons}>
-                    {poolValues.length > 0
-                      ? (
-                        <Button variant="contained" size="small" onClick={() => { removeResources(); }}>
-                          Remove
-                        </Button>
-                      )
-                      : null}
+                    {poolValues.length > 0 ? (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => {
+                          removeResources();
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    ) : null}
                   </div>
                   {poolValues.length > 0 ? resourceList() : null}
                 </Grid>
               </Grid>
             </Paper>
-          ) : null }
+          ) : null}
 
-          {(poolType === ALLOCATING && !isNested) ? (
+          {poolType === ALLOCATING && !isNested ? (
             <Paper elevation={2} className={classes.paper}>
               <Grid container spacing={3}>
                 <Grid item xs={6}>
@@ -725,129 +727,116 @@ const CreatePoolPage = (props) => {
             </Paper>
           ) : null}
 
-          {(isNested)
-            ? (
-              <ResourceManagerQueryRenderer
-                query={query}
-                variables={{ }}
-                render={(queryProps) => {
-                  const { QueryRootResourcePools } = queryProps;
+          {isNested ? (
+            <ResourceManagerQueryRenderer
+              query={query}
+              variables={{}}
+              render={(queryProps) => {
+                const { QueryRootResourcePools } = queryProps;
 
-                  return (
-                    <Paper elevation={2} className={classes.paper}>
-                      <div style={{ marginBottom: '30px' }}>
-                        <Typography component="div">
-                          <Box fontSize="h5.fontSize" fontWeight="fontWeightMedium">
-                            Select Parent
-                          </Box>
-                        </Typography>
-                      </div>
-                      <Grid container spacing={3}>
-                        <Grid item xs={3}>
-                          <Autocomplete
-                            id="combo-box-demo"
-                            options={QueryRootResourcePools}
-                            getOptionLabel={(option) => option.Name}
-                            onChange={(e, value) => handleRootPoolChange(e, value)}
-                            renderInput={(params) => (
+                return (
+                  <Paper elevation={2} className={classes.paper}>
+                    <div style={{ marginBottom: '30px' }}>
+                      <Typography component="div">
+                        <Box fontSize="h5.fontSize" fontWeight="fontWeightMedium">
+                          Select Parent
+                        </Box>
+                      </Typography>
+                    </div>
+                    <Grid container spacing={3}>
+                      <Grid item xs={3}>
+                        <Autocomplete
+                          id="combo-box-demo"
+                          options={QueryRootResourcePools}
+                          getOptionLabel={(option) => option.Name}
+                          onChange={(e, value) => handleRootPoolChange(e, value)}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Pool Type" required placeholder="Select Pool Type" />
+                          )}
+                        />
+                      </Grid>
+                      <Grid item xs={6}>
+                        {rootPool ? (
+                          <TreeView
+                            className={classes.root}
+                            defaultCollapseIcon={<ExpandMoreIcon />}
+                            defaultExpandIcon={<ChevronRightIcon />}
+                          >
+                            <RadioGroup value={parentPool} onChange={handleParentPoolChange}>
+                              <TreeItem
+                                nodeId="root"
+                                label={
+                                  <div className={classes.treeItemLabel}>
+                                    {rootPool.Name}
+                                    {rootPool ? (
+                                      <Radio
+                                        value={rootPool.id}
+                                        onChange={() => {
+                                          console.log(rootPool);
+                                          if (findFreeResource(rootPool)) {
+                                            setParentResourcesArray(rootPool.Resources);
+                                            setParentResourceID(findFreeResource(rootPool).id);
+                                          } else {
+                                            setParentResourcesArray([]);
+                                            setParentResourceID(null);
+                                            enqueueSnackbar('This pool has no free resources', {
+                                              variant: 'warning',
+                                            });
+                                          }
+                                        }}
+                                      />
+                                    ) : null}
+                                  </div>
+                                }
+                              >
+                                {rootPool.Resources.map((e, i) => (
+                                  <>{e.NestedPool ? TreeItemRender(e.NestedPool, i) : null}</>
+                                ))}
+                              </TreeItem>
+                            </RadioGroup>
+                          </TreeView>
+                        ) : null}
+                      </Grid>
+
+                      <Grid item xs={3}>
+                        <Autocomplete
+                          id="combo-box-demo"
+                          options={parentResourcesArray}
+                          getOptionLabel={(option) => option.id}
+                          onChange={(e, value) => handeParentResourceChange(e, value)}
+                          renderOption={(value) => (
+                            <>
+                              <div style={{ display: 'block' }}>
+                                <div className={classes.parentResourceLabelID}>{value.id}</div>
+                                <div className={classes.parentResourceLabelProps}>
+                                  {JSON.stringify(value.Properties)}
+                                </div>
+                              </div>
+                            </>
+                          )}
+                          renderInput={(params) => (
+                            <>
                               <TextField
                                 {...params}
-                                label="Pool Type"
+                                label="Parent Resource"
                                 required
-                                placeholder="Select Pool Type"
-                              />
-                            )}
-                          />
-                        </Grid>
-                        <Grid item xs={6}>
-                          {(rootPool)
-                            ? (
-                              <TreeView
-                                className={classes.root}
-                                defaultCollapseIcon={<ExpandMoreIcon />}
-                                defaultExpandIcon={<ChevronRightIcon />}
+                                placeholder="Select Parent Resource"
                               >
-                                <RadioGroup value={parentPool} onChange={handleParentPoolChange}>
-
-                                  <TreeItem
-                                    nodeId="root"
-                                    label={(
-                                      <div className={classes.treeItemLabel}>
-                                        {rootPool.Name}
-                                        {(rootPool) ? (
-                                          <Radio
-                                            value={rootPool.id}
-                                            onChange={() => {
-                                              console.log(rootPool)
-                                              if (findFreeResource(rootPool)) {
-                                                setParentResourcesArray(rootPool.Resources);
-                                                setParentResourceID(findFreeResource(rootPool).id);
-                                              } else {
-                                                setParentResourcesArray([]);
-                                                setParentResourceID(null);
-                                                enqueueSnackbar('This pool has no free resources', {
-                                                  variant: 'warning',
-                                                });
-                                              }
-                                            }}
-                                          />
-                                        ) : null}
-                                      </div>
-                              )}
-                                  >
-                                    {rootPool.Resources.map((e, i) => (
-                                      <>
-                                        {(e.NestedPool) ? TreeItemRender(e.NestedPool, i) : null}
-                                      </>
-                                    ))}
-                                  </TreeItem>
-                                </RadioGroup>
-                              </TreeView>
-                            ) : null}
-                        </Grid>
-
-                        <Grid item xs={3}>
-                          <Autocomplete
-                            id="combo-box-demo"
-                            options={parentResourcesArray}
-                            getOptionLabel={(option) => option.id}
-                            onChange={(e, value) => handeParentResourceChange(e, value)}
-                            renderOption={(value) => (
-                              <>
-                                <div style={{ display: 'block' }}>
-                                  <div className={classes.parentResourceLabelID}>{value.id}</div>
-                                  <div className={classes.parentResourceLabelProps}>{JSON.stringify(value.Properties)}</div>
-                                </div>
-
-                              </>
-                            )}
-                            renderInput={(params) => (
-                              <>
-                                <TextField
-                                  {...params}
-                                  label="Parent Resource"
-                                  required
-                                  placeholder="Select Parent Resource"
-                                >
-                                  asf
-                                </TextField>
-                              </>
-                            )}
-                          />
-                        </Grid>
+                                asf
+                              </TextField>
+                            </>
+                          )}
+                        />
                       </Grid>
-                    </Paper>
-                  );
-                }}
-              />
-            )
-
-            : null}
-
+                    </Grid>
+                  </Paper>
+                );
+              }}
+            />
+          ) : null}
         </div>
       </Grow>
     </Container>
-
   );
 };
 

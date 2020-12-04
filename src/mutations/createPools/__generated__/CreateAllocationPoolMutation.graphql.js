@@ -34,7 +34,6 @@ export type CreateAllocationPoolMutation = {|
 |};
 */
 
-
 /*
 mutation CreateAllocationPoolMutation(
   $input: CreateAllocatingPoolInput!
@@ -47,77 +46,78 @@ mutation CreateAllocationPoolMutation(
 }
 */
 
-const node/*: ConcreteRequest*/ = (function(){
-var v0 = [
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "input"
-  }
-],
-v1 = [
-  {
-    "alias": null,
-    "args": [
+const node /*: ConcreteRequest*/ = (function () {
+  var v0 = [
       {
-        "kind": "Variable",
-        "name": "input",
-        "variableName": "input"
-      }
+        defaultValue: null,
+        kind: 'LocalArgument',
+        name: 'input',
+      },
     ],
-    "concreteType": "CreateAllocatingPoolPayload",
-    "kind": "LinkedField",
-    "name": "CreateAllocatingPool",
-    "plural": false,
-    "selections": [
+    v1 = [
       {
-        "alias": null,
-        "args": null,
-        "concreteType": "ResourcePool",
-        "kind": "LinkedField",
-        "name": "pool",
-        "plural": false,
-        "selections": [
+        alias: null,
+        args: [
           {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "id",
-            "storageKey": null
-          }
+            kind: 'Variable',
+            name: 'input',
+            variableName: 'input',
+          },
         ],
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
-  }
-];
-return {
-  "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
-    "kind": "Fragment",
-    "metadata": null,
-    "name": "CreateAllocationPoolMutation",
-    "selections": (v1/*: any*/),
-    "type": "Mutation",
-    "abstractKey": null
-  },
-  "kind": "Request",
-  "operation": {
-    "argumentDefinitions": (v0/*: any*/),
-    "kind": "Operation",
-    "name": "CreateAllocationPoolMutation",
-    "selections": (v1/*: any*/)
-  },
-  "params": {
-    "cacheID": "f8cf04f2189c646c4ecd502e769f8a45",
-    "id": null,
-    "metadata": {},
-    "name": "CreateAllocationPoolMutation",
-    "operationKind": "mutation",
-    "text": "mutation CreateAllocationPoolMutation(\n  $input: CreateAllocatingPoolInput!\n) {\n  CreateAllocatingPool(input: $input) {\n    pool {\n      id\n    }\n  }\n}\n"
-  }
-};
+        concreteType: 'CreateAllocatingPoolPayload',
+        kind: 'LinkedField',
+        name: 'CreateAllocatingPool',
+        plural: false,
+        selections: [
+          {
+            alias: null,
+            args: null,
+            concreteType: 'ResourcePool',
+            kind: 'LinkedField',
+            name: 'pool',
+            plural: false,
+            selections: [
+              {
+                alias: null,
+                args: null,
+                kind: 'ScalarField',
+                name: 'id',
+                storageKey: null,
+              },
+            ],
+            storageKey: null,
+          },
+        ],
+        storageKey: null,
+      },
+    ];
+  return {
+    fragment: {
+      argumentDefinitions: (v0 /*: any*/),
+      kind: 'Fragment',
+      metadata: null,
+      name: 'CreateAllocationPoolMutation',
+      selections: (v1 /*: any*/),
+      type: 'Mutation',
+      abstractKey: null,
+    },
+    kind: 'Request',
+    operation: {
+      argumentDefinitions: (v0 /*: any*/),
+      kind: 'Operation',
+      name: 'CreateAllocationPoolMutation',
+      selections: (v1 /*: any*/),
+    },
+    params: {
+      cacheID: 'f8cf04f2189c646c4ecd502e769f8a45',
+      id: null,
+      metadata: {},
+      name: 'CreateAllocationPoolMutation',
+      operationKind: 'mutation',
+      text:
+        'mutation CreateAllocationPoolMutation(\n  $input: CreateAllocatingPoolInput!\n) {\n  CreateAllocatingPool(input: $input) {\n    pool {\n      id\n    }\n  }\n}\n',
+    },
+  };
 })();
 // prettier-ignore
 (node/*: any*/).hash = 'ff26b129b8bb8969ad8a046fb4c1be33';

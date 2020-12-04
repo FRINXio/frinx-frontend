@@ -15,7 +15,8 @@ const useStyles = makeStyles(() => ({
 const ResourceTypesFilters = (props) => {
   const {
     // eslint-disable-next-line react/prop-types
-    filterConstraints, updateFilterConstraint,
+    filterConstraints,
+    updateFilterConstraint,
   } = props;
 
   // eslint-disable-next-line react/prop-types

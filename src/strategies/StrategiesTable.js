@@ -1,37 +1,37 @@
-import React, { Fragment, useState } from "react";
-import { withStyles } from "@material-ui/core/styles";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import Paper from "@material-ui/core/Paper";
-import Table from "@material-ui/core/Table";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TableBody from "@material-ui/core/TableBody";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import IconButton from "@material-ui/core/IconButton";
-import DeleteIcon from "@material-ui/icons/Delete";
-import SettingsIcon from "@material-ui/icons/Settings";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
-import { withSnackbar } from "notistack";
-import Collapse from "@material-ui/core/Collapse";
-import Box from "@material-ui/core/Box";
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import AceEditor from "react-ace";
-import TestAllocationStrategyMutation from "../mutations/TestAllocationStrategyMutation";
-import "ace-builds/src-noconflict/mode-javascript";
-import "ace-builds/src-noconflict/theme-tomorrow";
-import "ace-builds/src-noconflict/ext-language_tools";
-import DeleteStrategyMutation from "../mutations/DeleteStrategyMutation";
-import TestStrategy from "./TestStrategy";
+import React, { Fragment, useState } from 'react';
+import { withStyles } from '@material-ui/core/styles';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TableBody from '@material-ui/core/TableBody';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import SettingsIcon from '@material-ui/icons/Settings';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
+import { withSnackbar } from 'notistack';
+import Collapse from '@material-ui/core/Collapse';
+import Box from '@material-ui/core/Box';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import AceEditor from 'react-ace';
+import TestAllocationStrategyMutation from '../mutations/TestAllocationStrategyMutation';
+import 'ace-builds/src-noconflict/mode-javascript';
+import 'ace-builds/src-noconflict/theme-tomorrow';
+import 'ace-builds/src-noconflict/ext-language_tools';
+import DeleteStrategyMutation from '../mutations/DeleteStrategyMutation';
+import TestStrategy from './TestStrategy';
 
 /* eslint-disable react/prop-types */
 
@@ -44,21 +44,21 @@ const StyledTableCell = withStyles((theme) => ({
 
 const StyledMenu = withStyles({
   paper: {
-    border: "1px solid #d3d4d5",
+    border: '1px solid #d3d4d5',
   },
 })((props) => <Menu elevation={0} {...props} />);
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    marginTop: "20px",
+    marginTop: '20px',
   },
   chip: {
     margin: theme.spacing(0.5),
   },
   whiteCheckBox: {
-    color: "white",
-    "&$checked": {
-      color: "white",
+    color: 'white',
+    '&$checked': {
+      color: 'white',
     },
     checked: {},
   },
@@ -67,15 +67,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Row = React.memo((props) => {
   const classes = useStyles();
-  const {
-    row,
-    i,
-    onActionClick,
-    actionsAnchorEl,
-    onMenuClose,
-    onTestClick,
-    onDeleteClick,
-  } = props;
+  const { row, i, onActionClick, actionsAnchorEl, onMenuClose, onTestClick, onDeleteClick } = props;
   const { Name, Lang, id, Script } = row;
   const [open, setOpen] = React.useState(false);
   return (
@@ -121,11 +113,7 @@ const Row = React.memo((props) => {
         <TableCell align="left">{id}</TableCell>
         <TableCell align="left">{Lang}</TableCell>
         <TableCell align="right">
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
+          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
@@ -191,11 +179,11 @@ const StrategiesTable = ({
       if (err) {
         console.log(err);
         enqueueSnackbar(err.message, {
-          variant: "error",
+          variant: 'error',
         });
       } else {
-        enqueueSnackbar("Allocation strategy deleted", {
-          variant: "warning",
+        enqueueSnackbar('Allocation strategy deleted', {
+          variant: 'warning',
         });
         updateDataVarFunc();
       }
@@ -204,9 +192,7 @@ const StrategiesTable = ({
 
   const deleteDialogRender = () => (
     <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-      <DialogTitle id="alert-dialog-slide-title">
-        Are you sure you want to delete this allocation strategy?
-      </DialogTitle>
+      <DialogTitle id="alert-dialog-slide-title">Are you sure you want to delete this allocation strategy?</DialogTitle>
       <DialogActions>
         <Button onClick={() => setDialogOpen(false)}>Disagree</Button>
         <Button
@@ -226,7 +212,7 @@ const StrategiesTable = ({
   const testAllocationStrategy = () => {
     const input = {
       allocationStrategyId: 5,
-      resourcePool: { ResourcePoolName: "test12345", poolProperties: {} },
+      resourcePool: { ResourcePoolName: 'test12345', poolProperties: {} },
       currentResources: [],
       userInput: {},
     };
@@ -234,11 +220,11 @@ const StrategiesTable = ({
       if (err) {
         console.log(err);
         enqueueSnackbar(err.message, {
-          variant: "error",
+          variant: 'error',
         });
       } else {
-        enqueueSnackbar("Test successful", {
-          variant: "success",
+        enqueueSnackbar('Test successful', {
+          variant: 'success',
         });
         updateDataVarFunc();
       }
@@ -257,18 +243,11 @@ const StrategiesTable = ({
   };
 
   const testStrategyRender = () => (
-    <Dialog
-      open={testStrategyDialogOpen}
-      onClose={() => setTestStrategyDialogOpen(false)}
-    >
-      <DialogTitle id="alert-dialog-slide-title">
-        Testing Allocation strategy
-      </DialogTitle>
+    <Dialog open={testStrategyDialogOpen} onClose={() => setTestStrategyDialogOpen(false)}>
+      <DialogTitle id="alert-dialog-slide-title">Testing Allocation strategy</DialogTitle>
       <TestStrategy strategy={activeStrategy} />
       <DialogActions>
-        <Button onClick={() => setTestStrategyDialogOpen(false)}>
-          Disagree
-        </Button>
+        <Button onClick={() => setTestStrategyDialogOpen(false)}>Disagree</Button>
         <Button
           onClick={() => {
             setActionsAnchorEl(null);

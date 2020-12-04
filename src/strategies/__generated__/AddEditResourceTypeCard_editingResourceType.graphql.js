@@ -33,82 +33,81 @@ export type AddEditResourceTypeCard_editingResourceType$key = {
 };
 */
 
-
-const node/*: ReaderFragment*/ = (function(){
-var v0 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-},
-v1 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "Name",
-  "storageKey": null
-};
-return {
-  "argumentDefinitions": [],
-  "kind": "Fragment",
-  "metadata": null,
-  "name": "AddEditResourceTypeCard_editingResourceType",
-  "selections": [
-    (v0/*: any*/),
-    (v1/*: any*/),
-    {
-      "alias": null,
-      "args": null,
-      "concreteType": "PropertyType",
-      "kind": "LinkedField",
-      "name": "PropertyTypes",
-      "plural": true,
-      "selections": [
-        (v0/*: any*/),
-        (v1/*: any*/),
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "Type",
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "IntVal",
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "StringVal",
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "FloatVal",
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "Mandatory",
-          "storageKey": null
-        }
-      ],
-      "storageKey": null
-    }
-  ],
-  "type": "ResourceType",
-  "abstractKey": null
-};
+const node /*: ReaderFragment*/ = (function () {
+  var v0 = {
+      alias: null,
+      args: null,
+      kind: 'ScalarField',
+      name: 'id',
+      storageKey: null,
+    },
+    v1 = {
+      alias: null,
+      args: null,
+      kind: 'ScalarField',
+      name: 'Name',
+      storageKey: null,
+    };
+  return {
+    argumentDefinitions: [],
+    kind: 'Fragment',
+    metadata: null,
+    name: 'AddEditResourceTypeCard_editingResourceType',
+    selections: [
+      (v0 /*: any*/),
+      (v1 /*: any*/),
+      {
+        alias: null,
+        args: null,
+        concreteType: 'PropertyType',
+        kind: 'LinkedField',
+        name: 'PropertyTypes',
+        plural: true,
+        selections: [
+          (v0 /*: any*/),
+          (v1 /*: any*/),
+          {
+            alias: null,
+            args: null,
+            kind: 'ScalarField',
+            name: 'Type',
+            storageKey: null,
+          },
+          {
+            alias: null,
+            args: null,
+            kind: 'ScalarField',
+            name: 'IntVal',
+            storageKey: null,
+          },
+          {
+            alias: null,
+            args: null,
+            kind: 'ScalarField',
+            name: 'StringVal',
+            storageKey: null,
+          },
+          {
+            alias: null,
+            args: null,
+            kind: 'ScalarField',
+            name: 'FloatVal',
+            storageKey: null,
+          },
+          {
+            alias: null,
+            args: null,
+            kind: 'ScalarField',
+            name: 'Mandatory',
+            storageKey: null,
+          },
+        ],
+        storageKey: null,
+      },
+    ],
+    type: 'ResourceType',
+    abstractKey: null,
+  };
 })();
 // prettier-ignore
 (node/*: any*/).hash = '28f3fc1914d9b101eb5fc456a88962c1';

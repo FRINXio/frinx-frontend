@@ -4,10 +4,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: [
-    'plugin:flowtype/recommended',
-    'airbnb',
-  ],
+  extends: ['plugin:flowtype/recommended', 'airbnb', 'prettier', 'prettier/react'],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -15,13 +12,11 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  plugins: [
-    'react',
-    'flowtype',
-  ],
+  plugins: ['react', 'flowtype'],
   rules: {
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-filename-extension': 'off',
     'flowtype/no-types-missing-file-annotation': 'off',
+    'react/prop-types': 'off',
   },
 };

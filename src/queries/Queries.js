@@ -3,12 +3,9 @@ import * as axios from 'axios';
 const BASIC_URL = '/resourcemanager/graphql/query';
 
 export function fetchQuery(query) {
-  return axios.post(
-    BASIC_URL,
-    {
-      query,
-    },
-  );
+  return axios.post(BASIC_URL, {
+    query,
+  });
 }
 
 export const queryAllocationStrats = `query queryAllocationStrats {
@@ -21,20 +18,17 @@ export const queryAllocationStrats = `query queryAllocationStrats {
     }
     `;
 
-export const createAllocationStrat = (input) => (
+export const createAllocationStrat = (input) =>
   `mutation createAllocationStrat {
     CreateAllocationStrategy(
-        input: ${
-  input
-  }
+        input: ${input}
     ){
         ID
         Name
         Lang
         Script
     }
-}`
-);
+}`;
 
 export const queryAllPools = `query QueryAllPools {
     QueryResourcePools{
@@ -132,27 +126,21 @@ export const queryResourceTypes = `
   }
 `;
 
-export const createNewResourceType = (input) => (
+export const createNewResourceType = (input) =>
   `mutation createNewResourceType {
         CreateResourceType(
-            input: ${
-  input
-  }
+            input: ${input}
     ) {
             ID
             Name
         }
-    }`
-);
-export const deleteResourceType = (id) => (
+    }`;
+export const deleteResourceType = (id) =>
   `mutation deleteResourceType {
           DeleteResourceType(
-            resourceTypeId: "${
-  id
-  }",
+            resourceTypeId: "${id}",
       )
-      }`
-);
+      }`;
 
 export const createComplexResourceType = `mutation createComplexResourceType {
     CreateResourceType(
@@ -183,7 +171,13 @@ export const untagPool = (tagId, poolId) => `mutation UntagPool {
     }
 }`;
 
-export const createSetPool = (resourceTypeId, poolName, description, poolValues, poolDealocationSafetyPeriod) => `mutation createSetPool {
+export const createSetPool = (
+  resourceTypeId,
+  poolName,
+  description,
+  poolValues,
+  poolDealocationSafetyPeriod,
+) => `mutation createSetPool {
     CreateSetPool(input: {
         resourceTypeId: ${resourceTypeId},
         poolName: "${poolName}",
@@ -199,7 +193,13 @@ export const createSetPool = (resourceTypeId, poolName, description, poolValues,
   }
 }`;
 
-export const createAllocationPool = (resourceTypeId, poolName, description, allocationStrategyId, poolDealocationSafetyPeriod) => `mutation createAllocationPool {
+export const createAllocationPool = (
+  resourceTypeId,
+  poolName,
+  description,
+  allocationStrategyId,
+  poolDealocationSafetyPeriod,
+) => `mutation createAllocationPool {
     CreateAllocatingPool(input: {
         resourceTypeId: ${resourceTypeId},
         poolName: "${poolName}",
@@ -215,7 +215,12 @@ export const createAllocationPool = (resourceTypeId, poolName, description, allo
   }
 }`;
 
-export const createSingletonPool = (resourceTypeId, poolName, description, poolValues) => `mutation createSingletonPool {
+export const createSingletonPool = (
+  resourceTypeId,
+  poolName,
+  description,
+  poolValues,
+) => `mutation createSingletonPool {
     CreateSingletonPool(input: {
         resourceTypeId: ${resourceTypeId},
         poolName: "${poolName}",
@@ -240,7 +245,9 @@ export const QueryAllPools = `query QueryAllPools {
 
 export const QueryAllocatedResources = (poolID, first, after, before) => `query QueryAllocatedResources {
     QueryResourcePool(poolId: ${poolID}) {
-        allocatedResources(first: ${first}, after: ${ (after) ? "\"" + after + "\"" : null}, before: ${ (before) ? "\"" + before + "\"" : null}) {
+        allocatedResources(first: ${first}, after: ${after ? '"' + after + '"' : null}, before: ${
+  before ? '"' + before + '"' : null
+}) {
             pageInfo{
                 endCursor {
                     ID
@@ -269,7 +276,6 @@ export const QueryAllocatedResources = (poolID, first, after, before) => `query 
         }
     }
 }`;
-
 
 export const ClaimResource = `mutation ClaimResource {
     ClaimResource(poolId:21474836480) {

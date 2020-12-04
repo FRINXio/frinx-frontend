@@ -8,9 +8,11 @@ const Pools = () => {
 
   return (
     <>
-      {showCreatePool
-        ? <CreatePoolPage setShowCreatePool={setShowCreatePool} />
-        : <PoolsPage setShowCreatePool={setShowCreatePool} />}
+      {showCreatePool ? (
+        <CreatePoolPage setShowCreatePool={setShowCreatePool} />
+      ) : (
+        <PoolsPage setShowCreatePool={setShowCreatePool} />
+      )}
     </>
   );
 };

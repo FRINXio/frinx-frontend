@@ -27,7 +27,6 @@ export type DeleteStrategyMutation = {|
 |};
 */
 
-
 /*
 mutation DeleteStrategyMutation(
   $input: DeleteAllocationStrategyInput!
@@ -40,77 +39,78 @@ mutation DeleteStrategyMutation(
 }
 */
 
-const node/*: ConcreteRequest*/ = (function(){
-var v0 = [
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "input"
-  }
-],
-v1 = [
-  {
-    "alias": null,
-    "args": [
+const node /*: ConcreteRequest*/ = (function () {
+  var v0 = [
       {
-        "kind": "Variable",
-        "name": "input",
-        "variableName": "input"
-      }
+        defaultValue: null,
+        kind: 'LocalArgument',
+        name: 'input',
+      },
     ],
-    "concreteType": "DeleteAllocationStrategyPayload",
-    "kind": "LinkedField",
-    "name": "DeleteAllocationStrategy",
-    "plural": false,
-    "selections": [
+    v1 = [
       {
-        "alias": null,
-        "args": null,
-        "concreteType": "AllocationStrategy",
-        "kind": "LinkedField",
-        "name": "strategy",
-        "plural": false,
-        "selections": [
+        alias: null,
+        args: [
           {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "id",
-            "storageKey": null
-          }
+            kind: 'Variable',
+            name: 'input',
+            variableName: 'input',
+          },
         ],
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
-  }
-];
-return {
-  "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
-    "kind": "Fragment",
-    "metadata": null,
-    "name": "DeleteStrategyMutation",
-    "selections": (v1/*: any*/),
-    "type": "Mutation",
-    "abstractKey": null
-  },
-  "kind": "Request",
-  "operation": {
-    "argumentDefinitions": (v0/*: any*/),
-    "kind": "Operation",
-    "name": "DeleteStrategyMutation",
-    "selections": (v1/*: any*/)
-  },
-  "params": {
-    "cacheID": "ff5d893581fae89e3c7e1bf7777b959d",
-    "id": null,
-    "metadata": {},
-    "name": "DeleteStrategyMutation",
-    "operationKind": "mutation",
-    "text": "mutation DeleteStrategyMutation(\n  $input: DeleteAllocationStrategyInput!\n) {\n  DeleteAllocationStrategy(input: $input) {\n    strategy {\n      id\n    }\n  }\n}\n"
-  }
-};
+        concreteType: 'DeleteAllocationStrategyPayload',
+        kind: 'LinkedField',
+        name: 'DeleteAllocationStrategy',
+        plural: false,
+        selections: [
+          {
+            alias: null,
+            args: null,
+            concreteType: 'AllocationStrategy',
+            kind: 'LinkedField',
+            name: 'strategy',
+            plural: false,
+            selections: [
+              {
+                alias: null,
+                args: null,
+                kind: 'ScalarField',
+                name: 'id',
+                storageKey: null,
+              },
+            ],
+            storageKey: null,
+          },
+        ],
+        storageKey: null,
+      },
+    ];
+  return {
+    fragment: {
+      argumentDefinitions: (v0 /*: any*/),
+      kind: 'Fragment',
+      metadata: null,
+      name: 'DeleteStrategyMutation',
+      selections: (v1 /*: any*/),
+      type: 'Mutation',
+      abstractKey: null,
+    },
+    kind: 'Request',
+    operation: {
+      argumentDefinitions: (v0 /*: any*/),
+      kind: 'Operation',
+      name: 'DeleteStrategyMutation',
+      selections: (v1 /*: any*/),
+    },
+    params: {
+      cacheID: 'ff5d893581fae89e3c7e1bf7777b959d',
+      id: null,
+      metadata: {},
+      name: 'DeleteStrategyMutation',
+      operationKind: 'mutation',
+      text:
+        'mutation DeleteStrategyMutation(\n  $input: DeleteAllocationStrategyInput!\n) {\n  DeleteAllocationStrategy(input: $input) {\n    strategy {\n      id\n    }\n  }\n}\n',
+    },
+  };
 })();
 // prettier-ignore
 (node/*: any*/).hash = '51400653b080e8bfae921f31f5980189';
