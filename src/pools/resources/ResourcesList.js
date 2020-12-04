@@ -99,9 +99,7 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 
 const ResourceList = (props: Props) => {
-  const {
-    classes, setUpdateDataVarProp, updateDataVarProp, resources, enqueueSnackbar,
-  } = props;
+  const { classes, setUpdateDataVarProp, updateDataVarProp, resources, enqueueSnackbar } = props;
 
   // eslint-disable-next-line no-unused-vars
   const [showEditCard, setShowEditCard] = useState(false);
@@ -117,44 +115,50 @@ const ResourceList = (props: Props) => {
       return prop;
     });
 
-    ClaimResourceMutation({
-      poolId: id,
-      userInput: tmp,
-      description,
-    }, (response, err) => {
-      if (err) {
-        console.log(err);
-        enqueueSnackbar(err.message, {
-          variant: 'error',
-        });
-      } else {
-        enqueueSnackbar('Resource claimed successfully', {
-          variant: 'success',
-        });
-        setUpdateDataVar(updateDataVar + 1);
-        setUpdateDataVarProp(updateDataVarProp + 1);
-      }
-    });
+    ClaimResourceMutation(
+      {
+        poolId: id,
+        userInput: tmp,
+        description,
+      },
+      (response, err) => {
+        if (err) {
+          console.log(err);
+          enqueueSnackbar(err.message, {
+            variant: 'error',
+          });
+        } else {
+          enqueueSnackbar('Resource claimed successfully', {
+            variant: 'success',
+          });
+          setUpdateDataVar(updateDataVar + 1);
+          setUpdateDataVarProp(updateDataVarProp + 1);
+        }
+      },
+    );
   };
   const freeResource = (row) => {
     console.log(row);
-    FreeResourceMutation({
-      poolId: id,
-      input: row.Properties,
-    }, (response, err) => {
-      if (err) {
-        console.log(err);
-        enqueueSnackbar(err.message, {
-          variant: 'error',
-        });
-      } else {
-        enqueueSnackbar('Resource freed successfully', {
-          variant: 'success',
-        });
-        setUpdateDataVar(updateDataVar + 1);
-        setUpdateDataVarProp(updateDataVarProp + 1);
-      }
-    });
+    FreeResourceMutation(
+      {
+        poolId: id,
+        input: row.Properties,
+      },
+      (response, err) => {
+        if (err) {
+          console.log(err);
+          enqueueSnackbar(err.message, {
+            variant: 'error',
+          });
+        } else {
+          enqueueSnackbar('Resource freed successfully', {
+            variant: 'success',
+          });
+          setUpdateDataVar(updateDataVar + 1);
+          setUpdateDataVarProp(updateDataVarProp + 1);
+        }
+      },
+    );
   };
   const [properties, setProperties] = useState([{ type: '', value: '' }]);
   const [description, setDescription] = useState(null);
@@ -179,13 +183,8 @@ const ResourceList = (props: Props) => {
 
   return (
     <div>
-
       <div className={classes.selectContainer}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => claimResource()}
-        >
+        <Button variant="contained" color="primary" onClick={() => claimResource()}>
           Claim
         </Button>
       </div>
@@ -203,11 +202,7 @@ const ResourceList = (props: Props) => {
       {properties.map((p, index) => (
         <div className={classes.propertyRow}>
           <div>
-            <TextField
-              label="KEY"
-              onChange={(val) => onPropKeyChanged(val, index)}
-              className={classes.nameTextField}
-            />
+            <TextField label="KEY" onChange={(val) => onPropKeyChanged(val, index)} className={classes.nameTextField} />
           </div>
           <div className={classes.selectContainer}>
             <TextField
@@ -216,20 +211,20 @@ const ResourceList = (props: Props) => {
               className={classes.nameTextField}
             />
           </div>
-          {(index === properties.length - 1) ? (
+          {index === properties.length - 1 ? (
             <IconButton
               color="primary"
-              onClick={() => { addProperty(); }}
+              onClick={() => {
+                addProperty();
+              }}
               className={classes.addNewButton}
             >
               <AddIcon />
             </IconButton>
           ) : null}
-
         </div>
       ))}
       <div>
-
         <TableContainer component={Paper} className={classes.container}>
           <Table ria-label="pool table">
             <TableHead>
@@ -242,18 +237,11 @@ const ResourceList = (props: Props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-
               {resources.map((row, i) => (
-
                 // eslint-disable-next-line react/no-array-index-key
                 <TableRow key={i}>
                   <TableCell padding="checkbox" align="center">
-                    <IconButton
-                      aria-controls="actions-menu"
-                      aria-haspopup="true"
-                      onClick={() => {
-                      }}
-                    >
+                    <IconButton aria-controls="actions-menu" aria-haspopup="true" onClick={() => {}}>
                       <MoreVertIcon />
                     </IconButton>
                   </TableCell>
@@ -261,18 +249,11 @@ const ResourceList = (props: Props) => {
                   <TableCell align="left">{row.node.Description}</TableCell>
                   <TableCell align="left">
                     {Object.entries(row.node.Properties).map(([key, value]) => (
-                      <div>
-                        {' '}
-                        { `${key} : ${value}` }
-                      </div>
+                      <div> {`${key} : ${value}`}</div>
                     ))}
                   </TableCell>
                   <TableCell align="left">
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => freeResource(row.node)}
-                    >
+                    <Button variant="contained" color="primary" onClick={() => freeResource(row.node)}>
                       Free
                     </Button>
                   </TableCell>
@@ -281,13 +262,9 @@ const ResourceList = (props: Props) => {
             </TableBody>
           </Table>
         </TableContainer>
-
       </div>
     </div>
-
   );
 };
 
-export default withSnackbar(withStyles(styles)(
-  ResourceList,
-));
+export default withSnackbar(withStyles(styles)(ResourceList));

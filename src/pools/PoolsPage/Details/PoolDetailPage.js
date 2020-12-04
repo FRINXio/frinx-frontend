@@ -59,124 +59,120 @@ const styles = (theme) => ({
     display: 'flex',
     alignItems: 'center',
   },
-
 });
 
 type Props = ContextRouter & WithStyles<typeof styles> & {};
 
-const query = graphql`query PoolDetailPageQuery($poolId: ID!) {
+const query = graphql`
+  query PoolDetailPageQuery($poolId: ID!) {
     QueryResourcePool(poolId: $poolId) {
+      Name
+      PoolType
+      ResourceType {
+        id
         Name
-        PoolType
-        ResourceType {
-            id
-            Name
-        }
-        AllocationStrategy {
-            Script
-            Description
-            Lang
-            id
-        }
-        Tags {
-            id
-            Tag
-        }
+      }
+      AllocationStrategy {
+        Script
+        Description
+        Lang
+        id
+      }
+      Tags {
+        id
+        Tag
+      }
     }
     QueryResources(poolId: $poolId) {
+      id
+      NestedPool {
         id
-        NestedPool{
+        Name
+        Resources {
+          id
+          Properties
+          NestedPool {
             id
             Name
+            PoolType
             Resources {
+              id
+              Properties
+              NestedPool {
                 id
-                Properties
-                NestedPool {
+                Name
+                PoolType
+                Resources {
+                  id
+                  Properties
+                  NestedPool {
                     id
                     Name
-                    PoolType
                     Resources {
+                      id
+                      Properties
+                      NestedPool {
                         id
-                        Properties
-                        NestedPool {
+                        Name
+                        PoolType
+                        Resources {
+                          id
+                          Properties
+                          NestedPool {
                             id
                             Name
                             PoolType
                             Resources {
+                              id
+                              Properties
+                              NestedPool {
                                 id
-                                Properties
-                                NestedPool{
+                                Name
+                                Resources {
+                                  id
+                                  Properties
+                                  NestedPool {
                                     id
                                     Name
+                                    PoolType
                                     Resources {
+                                      id
+                                      Properties
+                                      NestedPool {
                                         id
-                                        Properties
-                                        NestedPool {
-                                            id
-                                            Name
-                                            PoolType
-                                            Resources {
-                                                id
-                                                Properties
-                                                NestedPool {
-                                                    id
-                                                    Name
-                                                    PoolType
-                                                    Resources {
-                                                        id
-                                                        Properties
-                                                        NestedPool{
-                                                            id
-                                                            Name
-                                                            Resources {
-                                                                id
-                                                                Properties
-                                                                NestedPool {
-                                                                    id
-                                                                    Name
-                                                                    PoolType
-                                                                    Resources {
-                                                                        id
-                                                                        Properties
-                                                                        NestedPool {
-                                                                            id
-                                                                            Name
-                                                                            PoolType
-                                                                            Resources {
-                                                                                id
-                                                                                Properties
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                        Name
+                                        PoolType
+                                        Resources {
+                                          id
+                                          Properties
                                         }
-
+                                      }
                                     }
+                                  }
                                 }
+                              }
                             }
+                          }
                         }
+                      }
                     }
+                  }
                 }
-
+              }
             }
+          }
         }
+      }
     }
     QueryPoolCapacity(poolId: $poolId) {
-        freeCapacity
-        utilizedCapacity
+      freeCapacity
+      utilizedCapacity
     }
     QueryResourcePoolHierarchyPath(poolId: $poolId) {
-        id
-        Name
+      id
+      Name
     }
-    
-}
+  }
 `;
 
 const PoolDetailPage = (props: Props) => {
@@ -221,7 +217,7 @@ const PoolDetailPage = (props: Props) => {
 
   const getCapacityValue = (capacity) => {
     const { freeCapacity, utilizedCapacity } = capacity;
-    return ((utilizedCapacity / (freeCapacity + utilizedCapacity)) * 100);
+    return (utilizedCapacity / (freeCapacity + utilizedCapacity)) * 100;
   };
 
   const TreeItemRender = (NestedPool, nodeId) => {
@@ -236,22 +232,16 @@ const PoolDetailPage = (props: Props) => {
       <>
         <TreeItem
           nodeId={nodeId}
-          label={(
+          label={
             // eslint-disable-next-line react/prop-types
             <div className={classes.treeItemLabel}>
               {NestedPool.Name}
-              <LaunchIcon
-                color="primary"
-                onClick={handleIconClick}
-                className={classes.launchIcon}
-              />
+              <LaunchIcon color="primary" onClick={handleIconClick} className={classes.launchIcon} />
             </div>
-        )}
+          }
         >
           {Resources.map((e, i) => (
-            <>
-              {(e.NestedPool) ? TreeItemRender(e.NestedPool, `${nodeId}-${i}`) : null}
-            </>
+            <>{e.NestedPool ? TreeItemRender(e.NestedPool, `${nodeId}-${i}`) : null}</>
           ))}
         </TreeItem>
       </>
@@ -260,10 +250,10 @@ const PoolDetailPage = (props: Props) => {
 
   const handlePaginationChange = (event, value) => {
     console.log(event, value);
-    (page < value) ? setBefore(null) : setAfter(null);
+    page < value ? setBefore(null) : setAfter(null);
 
     setPage(value);
-    console.log((page > value), before, after, page)
+    console.log(page > value, before, after, page);
     //queryAllocatedResources();
   };
 
@@ -273,9 +263,7 @@ const PoolDetailPage = (props: Props) => {
         query={query}
         variables={{ updateDataVar, poolId: id, first }}
         render={(queryProps) => {
-          const {
-            QueryResources, QueryPoolCapacity, QueryResourcePoolHierarchyPath, QueryResourcePool,
-          } = queryProps;
+          const { QueryResources, QueryPoolCapacity, QueryResourcePoolHierarchyPath, QueryResourcePool } = queryProps;
           console.log(queryProps);
           if (first === 0) setFirst(10);
 
@@ -283,7 +271,7 @@ const PoolDetailPage = (props: Props) => {
             <div>
               <Typography component="div">
                 <Box fontSize="h3.fontSize" fontWeight="fontWeightMedium">
-                  { QueryResourcePool.Name }
+                  {QueryResourcePool.Name}
                 </Box>
               </Typography>
               <Breadcrumbs separator="›" aria-label="breadcrumb">
@@ -303,8 +291,9 @@ const PoolDetailPage = (props: Props) => {
                       </Box>
                     </Typography>
                     <div style={{ display: 'flex', marginBottom: '24px' }}>
-                      {QueryResourcePool.Tags.map((e) => <Chip key={e.id} color="primary" label={e.Tag} className={classes.chip} />)}
-
+                      {QueryResourcePool.Tags.map((e) => (
+                        <Chip key={e.id} color="primary" label={e.Tag} className={classes.chip} />
+                      ))}
                     </div>
                     <div className={classes.poolInfoContainer}>
                       <div className={` ${classes.pool}`}>Pool Type: </div>
@@ -325,9 +314,7 @@ const PoolDetailPage = (props: Props) => {
                       defaultExpandIcon={<ChevronRightIcon />}
                     >
                       {QueryResources.map((e, i) => (
-                        <>
-                          {(e.NestedPool) ? TreeItemRender(e.NestedPool, i) : null}
-                        </>
+                        <>{e.NestedPool ? TreeItemRender(e.NestedPool, i) : null}</>
                       ))}
                     </TreeView>
                   </Paper>
@@ -352,10 +339,8 @@ const PoolDetailPage = (props: Props) => {
                       {QueryPoolCapacity.utilizedCapacity}
                     </div>
                   </Paper>
-
                 </Grid>
                 <Grid item xs={9}>
-
                   <Paper className={classes.paper}>
                     <Typography component="div">
                       <Box fontSize="h6.fontSize" fontWeight="fontWeightMedium">
@@ -385,10 +370,8 @@ const PoolDetailPage = (props: Props) => {
                   {/*    <CodeEditor setScript="" /> */}
                   {/*  </Card> */}
                   {/* </Paper> */}
-
                 </Grid>
               </Grid>
-
             </div>
           );
         }}
@@ -397,6 +380,4 @@ const PoolDetailPage = (props: Props) => {
   );
 };
 
-export default withRouter(withSnackbar(withStyles(styles)(
-  PoolDetailPage,
-)));
+export default withRouter(withSnackbar(withStyles(styles)(PoolDetailPage)));

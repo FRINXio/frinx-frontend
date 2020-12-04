@@ -31,7 +31,7 @@ type Props = {
   // eslint-disable-next-line react/no-unused-prop-types
   onEdit: () => void,
   // eslint-disable-next-line react/no-unused-prop-types
-  showEditCard: () => void
+  showEditCard: () => void,
 } & WithAlert &
   // eslint-disable-next-line no-use-before-define
   WithStyles<typeof styles>;
@@ -68,51 +68,39 @@ class ResourceTypeItem extends React.Component<Props> {
     console.log(showAddEditCard, this.props);
     showAddEditCard(true);
     showAddEditCard(false);
-  }
+  };
 
   render() {
-    const {
-      classes, ResourceType,
-    } = this.props;
+    const { classes, ResourceType } = this.props;
     const { id, Name, PropertyTypes } = ResourceType;
 
     return (
       <div>
-
         <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-          >
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <div className={classes.AccordionSummaryContainer}>
               <div>
                 <Typography variant="h6">{Name}</Typography>
                 <div className={classes.idContainer}>
-                  <Typography variant="caption">
-                    {' '}
-                    {`(id: ${id})`}
-                    {' '}
-                  </Typography>
+                  <Typography variant="caption"> {`(id: ${id})`} </Typography>
                 </div>
               </div>
               <div>
-                <IconButton color="primary" onClick={(event) => this.deleteResourceType(event, id)}><DeleteOutlinedIcon variant="outlined" /></IconButton>
+                <IconButton color="primary" onClick={(event) => this.deleteResourceType(event, id)}>
+                  <DeleteOutlinedIcon variant="outlined" />
+                </IconButton>
               </div>
             </div>
-
           </AccordionSummary>
           <AccordionDetails>
             <div className={classes.detailsContainer}>
               Properties:
               {PropertyTypes.map((pt) => (
                 <div style={{ marginLeft: '8px' }}>
-                  <b>{pt.Name}</b>
-                  {' '}
-                  :
-                  {pt.Type}
+                  <b>{pt.Name}</b> :{pt.Type}
                 </div>
               ))}
               Pools:
-
             </div>
           </AccordionDetails>
         </Accordion>
@@ -121,19 +109,21 @@ class ResourceTypeItem extends React.Component<Props> {
   }
 }
 
-export default withStyles(styles)(createFragmentContainer(ResourceTypeItem, {
-  ResourceType: graphql`
-    fragment ResourceTypeItem_ResourceType on ResourceType {
-      id
-      Name
-      PropertyTypes {
-        Name
-        Type
-      }
-      Pools {
+export default withStyles(styles)(
+  createFragmentContainer(ResourceTypeItem, {
+    ResourceType: graphql`
+      fragment ResourceTypeItem_ResourceType on ResourceType {
         id
         Name
+        PropertyTypes {
+          Name
+          Type
+        }
+        Pools {
+          id
+          Name
+        }
       }
-    }
-  `,
-}));
+    `,
+  }),
+);

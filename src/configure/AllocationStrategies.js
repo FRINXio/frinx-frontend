@@ -19,7 +19,6 @@ import { filterByLang, filterByQuery } from '../strategies/filters/filterUtils';
 
 const styles = () => ({
   root: {
-
     fontWeight: 500,
     fontSize: '20px',
     lineHeight: '24px',
@@ -39,8 +38,7 @@ const styles = () => ({
   },
 });
 
-type Props = {
-} & WithStyles<typeof styles>;
+type Props = {} & WithStyles<typeof styles>;
 
 const AllocationStrategies = (props: Props) => {
   const { classes } = props;
@@ -65,9 +63,7 @@ const AllocationStrategies = (props: Props) => {
   };
 
   useEffect(() => {
-    const {
-      searchQuery, lang,
-    } = filterConstraints;
+    const { searchQuery, lang } = filterConstraints;
     let results = filterByQuery(searchQuery, queryArray);
     results = filterByLang(lang, results);
     setFilteredArray(results);
@@ -83,14 +79,15 @@ const AllocationStrategies = (props: Props) => {
     setUpdateDataVar(updateDataVar + 1);
   };
 
-  const query = graphql`query AllocationStrategiesQuery {
-      QueryAllocationStrategies{
-            id
-            Name
-            Lang
-            Script
-            Description
-        }
+  const query = graphql`
+    query AllocationStrategiesQuery {
+      QueryAllocationStrategies {
+        id
+        Name
+        Lang
+        Script
+        Description
+      }
     }
   `;
 
@@ -113,15 +110,15 @@ const AllocationStrategies = (props: Props) => {
                   <div className={classes.addButtonContainer}>
                     <Typography component="div">
                       <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
-                        Allocation Strategies (
-                        { QueryAllocationStrategies.length }
-                        )
+                        Allocation Strategies ({QueryAllocationStrategies.length})
                       </Box>
                     </Typography>
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={() => { setShowEditCard(true); }}
+                      onClick={() => {
+                        setShowEditCard(true);
+                      }}
                     >
                       Add Strategy
                     </Button>
@@ -137,11 +134,7 @@ const AllocationStrategies = (props: Props) => {
                 updateFilterConstraint={updateFilterConstraint}
               />
 
-              <StrategiesTable
-                strategiesData={filteredArray}
-                updateDataVarFunc={updateDataVarFunc}
-              />
-
+              <StrategiesTable strategiesData={filteredArray} updateDataVarFunc={updateDataVarFunc} />
             </div>
           );
         }}

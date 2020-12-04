@@ -32,12 +32,7 @@ const StyledMenu = withStyles({
   paper: {
     border: '1px solid #d3d4d5',
   },
-})((props) => (
-  <Menu
-    elevation={0}
-    {...props}
-  />
-));
+})((props) => <Menu elevation={0} {...props} />);
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -57,7 +52,11 @@ const useStyles = makeStyles((theme) => ({
 
 const PoolTable = ({
   // eslint-disable-next-line react/prop-types
-  filteredPoolArray, QueryTags, assignTagToPool, unassingTagFromPool, deletePool,
+  filteredPoolArray,
+  QueryTags,
+  assignTagToPool,
+  unassingTagFromPool,
+  deletePool,
 }) => {
   const classes = useStyles();
   const [actionsAnchorEl, setActionsAnchorEl] = useState(null);
@@ -74,7 +73,7 @@ const PoolTable = ({
 
   const getCapacityValue = (capacity) => {
     const { freeCapacity, utilizedCapacity } = capacity;
-    return ((utilizedCapacity / (freeCapacity + utilizedCapacity)) * 100);
+    return (utilizedCapacity / (freeCapacity + utilizedCapacity)) * 100;
   };
 
   const RESOURCE_MANAGER_URL = '/resourcemanager/frontend';
@@ -118,7 +117,7 @@ const PoolTable = ({
           <TableBody>
             {/* eslint-disable-next-line react/prop-types */}
             {filteredPoolArray.map((row, i) => (
-            // eslint-disable-next-line react/no-array-index-key
+              // eslint-disable-next-line react/no-array-index-key
               <TableRow key={i}>
                 <TableCell padding="checkbox" align="center">
                   <IconButton
@@ -131,7 +130,7 @@ const PoolTable = ({
                   <StyledMenu
                     id={`actions-menu${i}`}
                     anchorEl={actionsAnchorEl}
-                    open={Boolean(actionsAnchorEl) && (row.id === activeMenuID)}
+                    open={Boolean(actionsAnchorEl) && row.id === activeMenuID}
                     onClose={handleActionsClose}
                   >
                     <MenuItem component={Link} to={`${RESOURCE_MANAGER_URL}/pools/${row.id}`}>
@@ -156,12 +155,12 @@ const PoolTable = ({
                 </TableCell>
                 <TableCell align="right">{row.ResourceType?.Name}</TableCell>
                 <TableCell align="right">
-                  { (row.Capacity) ? (
+                  {row.Capacity ? (
                     <>
-                      { `${row.Capacity.utilizedCapacity}/${row.Capacity.freeCapacity + row.Capacity.utilizedCapacity}` }
+                      {`${row.Capacity.utilizedCapacity}/${row.Capacity.freeCapacity + row.Capacity.utilizedCapacity}`}
                       <LinearProgress value={getCapacityValue(row.Capacity)} variant="determinate" />
                     </>
-                  ) : null }
+                  ) : null}
                 </TableCell>
               </TableRow>
             ))}

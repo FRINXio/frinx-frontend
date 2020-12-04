@@ -34,12 +34,7 @@ const StyledMenu = withStyles({
   paper: {
     border: '1px solid #d3d4d5',
   },
-})((props) => (
-  <Menu
-    elevation={0}
-    {...props}
-  />
-));
+})((props) => <Menu elevation={0} {...props} />);
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -59,7 +54,9 @@ const useStyles = makeStyles((theme) => ({
 
 const ResourceTypesTable = ({
   // eslint-disable-next-line react/prop-types
-  resourceTypesData, updateDataVarFunc, enqueueSnackbar,
+  resourceTypesData,
+  updateDataVarFunc,
+  enqueueSnackbar,
 }) => {
   const classes = useStyles();
   const [actionsAnchorEl, setActionsAnchorEl] = useState(null);
@@ -96,13 +93,14 @@ const ResourceTypesTable = ({
   };
 
   const deleteDialogRender = () => (
-    <Dialog
-      open={dialogOpen}
-      onClose={() => setDialogOpen(false)}
-    >
+    <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
       <DialogTitle id="alert-dialog-slide-title">Are you sure you want to delete this resource type?</DialogTitle>
       <DialogActions>
-        <Button onClick={() => { setDialogOpen(false); }}>
+        <Button
+          onClick={() => {
+            setDialogOpen(false);
+          }}
+        >
           Disagree
         </Button>
         <Button
@@ -142,13 +140,8 @@ const ResourceTypesTable = ({
           {resourceTypesData.map((row, i) => (
             // eslint-disable-next-line react/no-array-index-key
             <TableRow key={i}>
-
               <TableCell padding="checkbox" align="center">
-                <IconButton
-                  aria-controls="actions-menu"
-                  aria-haspopup="true"
-                  onClick={handleActionsClick}
-                >
+                <IconButton aria-controls="actions-menu" aria-haspopup="true" onClick={handleActionsClick}>
                   <MoreVertIcon />
                 </IconButton>
                 <StyledMenu
@@ -177,23 +170,17 @@ const ResourceTypesTable = ({
                 {row.PropertyTypes.map((pt, j) => (
                   // eslint-disable-next-line react/no-array-index-key
                   <div key={`propertytypes${j}`}>
-                    <b>{pt.Name}</b>
-                    {' '}
-                    :
-                    {pt.Type}
+                    <b>{pt.Name}</b> :{pt.Type}
                   </div>
                 ))}
-
               </TableCell>
               <TableCell align="right">
-                {(row.Pools) ? row.Pools.slice(0, 3).map((pool, j) => (
-                  // eslint-disable-next-line react/no-array-index-key
-                  <span key={`poolNameId${j}`}>
-                    {' '}
-                    {pool.Name}
-                    {' '}
-                  </span>
-                )) : '-'}
+                {row.Pools
+                  ? row.Pools.slice(0, 3).map((pool, j) => (
+                      // eslint-disable-next-line react/no-array-index-key
+                      <span key={`poolNameId${j}`}> {pool.Name} </span>
+                    ))
+                  : '-'}
               </TableCell>
             </TableRow>
           ))}

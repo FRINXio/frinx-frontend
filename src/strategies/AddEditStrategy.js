@@ -18,7 +18,7 @@ import { Typography } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import type {
   AddStrategyCreateData,
-// eslint-disable-next-line import/no-unresolved
+  // eslint-disable-next-line import/no-unresolved
 } from '../../mutations/__generated__/AddStrategyMutation.graphql';
 import AddStrategyMutation from '../mutations/AddStrategyMutation';
 import CodeEditor from '../configure/CodeEditor';
@@ -34,15 +34,15 @@ const styles = () => ({
 });
 
 type Props = {
-    showAddEditCardFunc: Function,
+  showAddEditCardFunc: Function,
 } & WithStyles<typeof styles>;
 
 const AddEditStrategy = (props: Props) => {
-  const {
-    classes, showAddEditCardFunc, enqueueSnackbar,
-  } = props;
+  const { classes, showAddEditCardFunc, enqueueSnackbar } = props;
   const [name, setName] = useState('');
-  const [script, setScript] = useState('function invoke() {log(JSON.stringify({respool: resourcePool.ResourcePoolName, currentRes: currentResources}));return {vlan: userInput.desiredVlan};}');
+  const [script, setScript] = useState(
+    'function invoke() {log(JSON.stringify({respool: resourcePool.ResourcePoolName, currentRes: currentResources}));return {vlan: userInput.desiredVlan};}',
+  );
   const [error, setError] = useState(true);
 
   const onNameChanged = (val) => {
@@ -91,35 +91,25 @@ const AddEditStrategy = (props: Props) => {
             Create New Strategy
           </Box>
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={createStrategy}
-          disabled={error}
-        >
+        <Button variant="contained" color="primary" onClick={createStrategy} disabled={error}>
           Save
         </Button>
         <Button
-          onClick={() => { showAddEditCardFunc(false); }}
+          onClick={() => {
+            showAddEditCardFunc(false);
+          }}
           color="secondary"
         >
           Cancel
         </Button>
       </div>
       <Card className={classes.card}>
-        <TextField
-          error={error}
-          label="NAME"
-          onChange={onNameChanged}
-          className={classes.nameTextField}
-          autoFocus
-        />
+        <TextField error={error} label="NAME" onChange={onNameChanged} className={classes.nameTextField} autoFocus />
       </Card>
       <Card className={classes.card}>
         <CodeEditor setScript={setScript} />
       </Card>
     </div>
-
   );
 };
 

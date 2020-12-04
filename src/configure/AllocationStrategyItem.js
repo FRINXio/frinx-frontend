@@ -18,7 +18,6 @@ import 'ace-builds/src-noconflict/ext-language_tools';
 
 const styles = () => ({
   root: {
-
     fontWeight: 500,
     fontSize: '20px',
     lineHeight: '24px',
@@ -38,7 +37,6 @@ const styles = () => ({
   },
   heading: {
     // fontSize: 15,
-
   },
   headingId: {
     color: '#838383',
@@ -54,27 +52,22 @@ const styles = () => ({
     borderRadius: '7px',
     transition: 'background-color 200ms',
   },
-
 });
 
 type allocationStrategyItemPropsTypes = {
-    id: Number,
-    Lang: string,
-    Name: string,
-    Script: string,
-}
+  id: Number,
+  Lang: string,
+  Name: string,
+  Script: string,
+};
 
 type Props = {
-    allocationStrategyItemProps: allocationStrategyItemPropsTypes,
+  allocationStrategyItemProps: allocationStrategyItemPropsTypes,
 } & WithStyles<typeof styles>;
 
 const AllocationStrategiesItem = (props: Props) => {
-  const {
-    classes, allocationStrategyItemProps,
-  } = props;
-  const {
-    id, Lang, Name, Script,
-  } = allocationStrategyItemProps;
+  const { classes, allocationStrategyItemProps } = props;
+  const { id, Lang, Name, Script } = allocationStrategyItemProps;
   const [editorValue, setEditorValue] = useState(Script);
   // eslint-disable-next-line no-unused-vars
   const [isExpanded, setIsExpanded] = useState(false);
@@ -84,29 +77,19 @@ const AllocationStrategiesItem = (props: Props) => {
   };
   return (
     <div className={classes.mainDiv}>
-      <Accordion onChange={(event, expanded) => {
-        setIsExpanded(expanded);
-      }}
+      <Accordion
+        onChange={(event, expanded) => {
+          setIsExpanded(expanded);
+        }}
       >
-        <AccordionSummary
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
+        <AccordionSummary aria-controls="panel1a-content" id="panel1a-header">
           <Typography className={classes.heading}>{Name}</Typography>
-          <Typography className={classes.headingId}>
-            {` ( id: ${id} `}
-            )
-            {' '}
-          </Typography>
-
+          <Typography className={classes.headingId}>{` ( id: ${id} `}) </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <div className={classes.notCollapsedMainDiv}>
+            <div>{`Lang: ${Lang}`}</div>
             <div>
-              { `Lang: ${Lang}` }
-            </div>
-            <div>
-
               <div>
                 <AceEditor
                   className={classes.editor}

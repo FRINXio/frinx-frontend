@@ -10,8 +10,11 @@
 
 import axios from 'axios';
 import {
-  Environment, Network, RecordSource, Store,
-// eslint-disable-next-line import/no-extraneous-dependencies
+  Environment,
+  Network,
+  RecordSource,
+  Store,
+  // eslint-disable-next-line import/no-extraneous-dependencies
 } from 'relay-runtime';
 
 function handleDeactivatedUser(error) {

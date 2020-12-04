@@ -69,20 +69,21 @@ const styles = () => ({
 
 type Props = ContextRouter & WithStyles<typeof styles> & {};
 
-const query = graphql`query ResourceTypesQuery {
-                        QueryResourceTypes{
-                            id
-                            Name,
-                            PropertyTypes {
-                                Name
-                                Type
-                            }
-                            Pools {
-                                id
-                                Name
-                            }
-                        }
-                }
+const query = graphql`
+  query ResourceTypesQuery {
+    QueryResourceTypes {
+      id
+      Name
+      PropertyTypes {
+        Name
+        Type
+      }
+      Pools {
+        id
+        Name
+      }
+    }
+  }
 `;
 
 const ResourceTypes = (props: Props) => {
@@ -105,9 +106,7 @@ const ResourceTypes = (props: Props) => {
   };
 
   useEffect(() => {
-    const {
-      searchQuery, pool,
-    } = filterConstraints;
+    const { searchQuery, pool } = filterConstraints;
     let results = filterByQuery(searchQuery, queryArray);
     results = filterByPool(pool, results);
     setFilteredArray(results);
@@ -148,15 +147,15 @@ const ResourceTypes = (props: Props) => {
             <div className={classes.addButtonContainer}>
               <Typography component="div">
                 <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
-                  Resource Types (
-                  { QueryResourceTypes.length }
-                  )
+                  Resource Types ({QueryResourceTypes.length})
                 </Box>
               </Typography>
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => { setShowEditCard(true); }}
+                onClick={() => {
+                  setShowEditCard(true);
+                }}
               >
                 Add Resource Type
               </Button>
@@ -173,10 +172,7 @@ const ResourceTypes = (props: Props) => {
             </div>
 
             <div>
-              <ResourceTypesTable
-                resourceTypesData={filteredArray}
-                updateDataVarFunc={updateDataVarFunc}
-              />
+              <ResourceTypesTable resourceTypesData={filteredArray} updateDataVarFunc={updateDataVarFunc} />
             </div>
           </div>
         );
@@ -185,6 +181,4 @@ const ResourceTypes = (props: Props) => {
   );
 };
 
-export default withStyles(styles)(
-  ResourceTypes,
-);
+export default withStyles(styles)(ResourceTypes);

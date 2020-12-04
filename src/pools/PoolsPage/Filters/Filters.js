@@ -16,12 +16,21 @@ const getPoolTypes = (poolArray) => [...new Set(poolArray.map((pool) => pool.Poo
 
 const Filters = ({
   // eslint-disable-next-line react/prop-types,max-len
-  QueryAllocationStrategies, QueryResourceTypes, QueryTags, poolArray, updateFilterConstraint, filterConstraints,
+  QueryAllocationStrategies,
+  QueryResourceTypes,
+  QueryTags,
+  poolArray,
+  updateFilterConstraint,
+  filterConstraints,
 }) => {
   const classes = useStyles();
   const {
     // eslint-disable-next-line react/prop-types
-    searchQuery, poolType, tags, allocStrat, resourceType,
+    searchQuery,
+    poolType,
+    tags,
+    allocStrat,
+    resourceType,
   } = filterConstraints;
 
   return (
@@ -62,14 +71,7 @@ const Filters = ({
           getOptionLabel={(option) => option.Tag}
           filterSelectedOptions
           onChange={(e, value) => updateFilterConstraint('tags', value)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="outlined"
-              label="Tags"
-              placeholder="Select Tags"
-            />
-          )}
+          renderInput={(params) => <TextField {...params} variant="outlined" label="Tags" placeholder="Select Tags" />}
         />
       </Grid>
       <Grid item xs={4}>
@@ -80,12 +82,7 @@ const Filters = ({
           getOptionLabel={(option) => `${option.Name} (${option.Lang})`}
           onChange={(e, value) => updateFilterConstraint('allocStrat', value)}
           renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Strategy"
-              placeholder="Select Strategy"
-              variant="outlined"
-            />
+            <TextField {...params} label="Strategy" placeholder="Select Strategy" variant="outlined" />
           )}
         />
       </Grid>
@@ -97,12 +94,7 @@ const Filters = ({
           getOptionLabel={(option) => `${option.Name} (${option.Pools.length} pools)`}
           onChange={(e, value) => updateFilterConstraint('resourceType', value)}
           renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Resource Type"
-              placeholder="Select Resource Type"
-              variant="outlined"
-            />
+            <TextField {...params} label="Resource Type" placeholder="Select Resource Type" variant="outlined" />
           )}
         />
       </Grid>

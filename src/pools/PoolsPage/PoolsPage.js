@@ -19,7 +19,8 @@ import {
 import {
   fetchQuery,
   queryAllPools,
-  queryFilterOptions, queryRootPools,
+  queryFilterOptions,
+  queryRootPools,
   tagPool,
   untagPool,
 } from '../../queries/Queries';
@@ -66,24 +67,24 @@ const PoolsPage = (props) => {
   const { setShowCreatePool } = props;
 
   const fetchData = () => {
-    const query = (isInRootView) ? queryRootPools : queryAllPools;
+    const query = isInRootView ? queryRootPools : queryAllPools;
 
-    fetchQuery(query).then((res) => {
-      setPoolArray(
-        (isInRootView) ? res.data.data.QueryRootResourcePools : res.data.data.QueryResourcePools,
-      );
-      setFilteredPoolArray(
-        (isInRootView) ? res.data.data.QueryRootResourcePools : res.data.data.QueryResourcePools,
-      );
-    }).catch((error) => {
-      console.log(error); // TODO error handling
-    });
+    fetchQuery(query)
+      .then((res) => {
+        setPoolArray(isInRootView ? res.data.data.QueryRootResourcePools : res.data.data.QueryResourcePools);
+        setFilteredPoolArray(isInRootView ? res.data.data.QueryRootResourcePools : res.data.data.QueryResourcePools);
+      })
+      .catch((error) => {
+        console.log(error); // TODO error handling
+      });
 
-    fetchQuery(queryFilterOptions).then((res) => {
-      setFilterOptions(res.data.data);
-    }).catch((error) => {
-      console.log(error); // TODO error handling
-    });
+    fetchQuery(queryFilterOptions)
+      .then((res) => {
+        setFilterOptions(res.data.data);
+      })
+      .catch((error) => {
+        console.log(error); // TODO error handling
+      });
   };
 
   // TODO: QueryRenderer should fetch the data child components should contain Fragments
@@ -91,18 +92,19 @@ const PoolsPage = (props) => {
     fetchData();
   }, []);
 
-  useEffect((e) => {
-    console.log(e);
-    console.log('here');
-    fetchData();
-  }, [isInRootView]);
+  useEffect(
+    (e) => {
+      console.log(e);
+      console.log('here');
+      fetchData();
+    },
+    [isInRootView],
+  );
 
   // eslint-disable-next-line max-len
   // TODO filtering is performed locally on already fetched data, it should be probably handled by relay/graphql (?)
   useEffect(() => {
-    const {
-      searchQuery, tags, poolType, allocStrat, resourceType,
-    } = filterConstraints;
+    const { searchQuery, tags, poolType, allocStrat, resourceType } = filterConstraints;
     let results = filterByQuery(searchQuery, poolArray);
     results = filterByTags(tags, results);
     results = filterByPoolType(poolType, results);
@@ -121,19 +123,23 @@ const PoolsPage = (props) => {
 
   const assignTagToPool = (tag, poolId) => {
     console.log(tag, poolId);
-    fetchQuery(tagPool(tag.id, poolId)).then(() => {
-      fetchData();
-    }).catch((error) => {
-      console.log(error); // TODO error handling
-    });
+    fetchQuery(tagPool(tag.id, poolId))
+      .then(() => {
+        fetchData();
+      })
+      .catch((error) => {
+        console.log(error); // TODO error handling
+      });
   };
 
   const unassignTagFromPool = (tag, poolId) => {
-    fetchQuery(untagPool(tag.id, poolId)).then(() => {
-      fetchData();
-    }).catch((error) => {
-      console.log(error); // TODO error handling
-    });
+    fetchQuery(untagPool(tag.id, poolId))
+      .then(() => {
+        fetchData();
+      })
+      .catch((error) => {
+        console.log(error); // TODO error handling
+      });
   };
 
   const deletePool = (resourcePoolId) => {

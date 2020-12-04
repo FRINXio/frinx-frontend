@@ -10,9 +10,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { ThemeProvider } from '@material-ui/styles';
-import {
-  BrowserRouter, Switch, Route, Link,
-} from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
 import AllocationStrategies from './configure/AllocationStrategies';
 import theme from './components/layout/theme';
@@ -23,7 +21,6 @@ import PoolDetailPage from './pools/PoolsPage/Details/PoolDetailPage';
 
 const styles = () => ({
   root: {
-
     fontWeight: 500,
     fontSize: '20px',
     lineHeight: '24px',
@@ -53,7 +50,12 @@ const ResourceManagerTabs = () => {
             <Tabs value={value} onChange={handleChange} aria-label="">
               <Tab label="Pools" {...a11yProps(0)} component={Link} to={`${RESOURCE_MANAGER_URL}/pools`} />
               <Tab label="Strategies" {...a11yProps(1)} component={Link} to={`${RESOURCE_MANAGER_URL}/strategies`} />
-              <Tab label="Resource Types" {...a11yProps(2)} component={Link} to={`${RESOURCE_MANAGER_URL}/resourceTypes`} />
+              <Tab
+                label="Resource Types"
+                {...a11yProps(2)}
+                component={Link}
+                to={`${RESOURCE_MANAGER_URL}/resourceTypes`}
+              />
               <Tab label="" {...a11yProps(3)} component={Link} to={`${RESOURCE_MANAGER_URL}/resources`} />
             </Tabs>
           </AppBar>

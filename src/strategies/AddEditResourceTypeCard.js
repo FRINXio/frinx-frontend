@@ -22,7 +22,7 @@ import { withSnackbar } from 'notistack';
 import type {
   AddResourceTypeMutationVariables,
   AddResourceTypeCreateData,
-// eslint-disable-next-line import/no-unresolved
+  // eslint-disable-next-line import/no-unresolved
 } from '../../mutations/__generated__/AddResourceTypeMutation.graphql';
 import AddResourceTypeMutation from '../mutations/AddResourceTypeMutation';
 
@@ -60,13 +60,11 @@ const styles = () => ({
 });
 
 type Props = {
-    showAddEditCardFunc: Function,
+  showAddEditCardFunc: Function,
 } & WithStyles<typeof styles>;
 
 const AddEditResourceTypeCard = (props: Props) => {
-  const {
-    classes, showAddEditCardFunc, enqueueSnackbar,
-  } = props;
+  const { classes, showAddEditCardFunc, enqueueSnackbar } = props;
 
   const [name, setName] = useState('');
   const [properties, setProperties] = useState([{ type: '', value: '' }]);
@@ -84,7 +82,8 @@ const AddEditResourceTypeCard = (props: Props) => {
     });
 
     const input: AddResourceTypeCreateData = {
-      resourceName: name, resourceProperties: tmp,
+      resourceName: name,
+      resourceProperties: tmp,
     };
 
     const variables: AddResourceTypeMutationVariables = {
@@ -127,23 +126,19 @@ const AddEditResourceTypeCard = (props: Props) => {
 
   return (
     <div className={classes.root}>
-
       <div>
         <Typography>
           <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
             Create New Resource Type
           </Box>
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={addNewResourceType}
-          disabled={error}
-        >
+        <Button variant="contained" color="primary" onClick={addNewResourceType} disabled={error}>
           Save
         </Button>
         <Button
-          onClick={() => { showAddEditCardFunc(false); }}
+          onClick={() => {
+            showAddEditCardFunc(false);
+          }}
           color="secondary"
         >
           Cancel
@@ -152,13 +147,7 @@ const AddEditResourceTypeCard = (props: Props) => {
 
       <form>
         <Card className={classes.card}>
-          <TextField
-            error={error}
-            label="NAME"
-            onChange={onNameChanged}
-            className={classes.nameTextField}
-            autoFocus
-          />
+          <TextField error={error} label="NAME" onChange={onNameChanged} className={classes.nameTextField} autoFocus />
         </Card>
         <div>
           <Typography>Properties</Typography>
@@ -176,24 +165,22 @@ const AddEditResourceTypeCard = (props: Props) => {
                   />
                 </div>
                 <div className={classes.selectContainer}>
-                  <Select
-                    onClick={(val) => onTypeSelected(val, index)}
-                    className={classes.select}
-                  >
+                  <Select onClick={(val) => onTypeSelected(val, index)} className={classes.select}>
                     <MenuItem value="int">Int</MenuItem>
                     <MenuItem value="string">String</MenuItem>
                   </Select>
                 </div>
-                {(index === properties.length - 1) ? (
+                {index === properties.length - 1 ? (
                   <IconButton
                     color="primary"
-                    onClick={() => { addProperty(); }}
+                    onClick={() => {
+                      addProperty();
+                    }}
                     className={classes.addNewButton}
                   >
                     <AddIcon />
                   </IconButton>
                 ) : null}
-
               </div>
             ))}
           </div>
@@ -203,20 +190,24 @@ const AddEditResourceTypeCard = (props: Props) => {
   );
 };
 
-export default withSnackbar(withStyles(styles)(createFragmentContainer(AddEditResourceTypeCard, {
-  editingResourceType: graphql`
+export default withSnackbar(
+  withStyles(styles)(
+    createFragmentContainer(AddEditResourceTypeCard, {
+      editingResourceType: graphql`
         fragment AddEditResourceTypeCard_editingResourceType on ResourceType {
+          id
+          Name
+          PropertyTypes {
             id
             Name
-            PropertyTypes {
-                id
-                Name
-                Type
-                IntVal
-                StringVal
-                FloatVal
-                Mandatory
-            }
+            Type
+            IntVal
+            StringVal
+            FloatVal
+            Mandatory
+          }
         }
-    `,
-})));
+      `,
+    }),
+  ),
+);

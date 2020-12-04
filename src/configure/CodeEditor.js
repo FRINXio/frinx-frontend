@@ -15,14 +15,11 @@ import AceEditor from 'react-ace';
 
 const styles = () => ({
   root: {
-
     fontWeight: 500,
     fontSize: '20px',
     lineHeight: '24px',
   },
-  mainDiv: {
-
-  },
+  mainDiv: {},
   selectContainer: {
     padding: '24px',
     display: 'flex',
@@ -55,12 +52,7 @@ const CodeEditor = (props: Props) => {
   return (
     <div className={classes.mainDiv}>
       <div className={classes.selectContainer}>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={lang}
-          onChange={handleChange}
-        >
+        <Select labelId="demo-simple-select-label" id="demo-simple-select" value={lang} onChange={handleChange}>
           <MenuItem value="js">Javascript</MenuItem>
           <MenuItem value="py">Python</MenuItem>
         </Select>

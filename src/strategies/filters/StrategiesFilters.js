@@ -14,16 +14,15 @@ const useStyles = makeStyles(() => ({
 const StrategiesFilters = (props) => {
   const {
     // eslint-disable-next-line react/prop-types
-    filterConstraints, updateFilterConstraint,
+    filterConstraints,
+    updateFilterConstraint,
   } = props;
   // eslint-disable-next-line react/prop-types
   const { searchQuery, lang } = filterConstraints;
 
   const classes = useStyles();
 
-  const options = [
-    'js', 'py',
-  ];
+  const options = ['js', 'py'];
   return (
     <Grid container spacing={3} className={classes.container}>
       <Grid item xs={9}>

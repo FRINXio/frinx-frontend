@@ -1,6 +1,4 @@
-import {
-  createAllocationPool, createSetPool, createSingletonPool, fetchQuery,
-} from '../../queries/Queries';
+import { createAllocationPool, createSetPool, createSingletonPool, fetchQuery } from '../../queries/Queries';
 import CreateAllocationPoolMutation from '../../mutations/createPools/CreateAllocationPoolMutation';
 
 // eslint-disable-next-line camelcase
@@ -41,22 +39,25 @@ export const createPool = (pool) => {
       return postCreateSetPool(pool);
     case 'allocating':
       return new Promise((resolve, reject) => {
-        CreateAllocationPoolMutation({
-          input: {
-            resourceTypeId: pool.resourceType.id,
-            poolName: pool.poolName,
-            description: pool.description,
-            allocationStrategyId: pool.allocationStrategy.id,
-            poolDealocationSafetyPeriod: pool.dealocationPeriod,
-            poolProperties: pool.poolProperties,
-            poolPropertyTypes: pool.poolPropertyTypes,
+        CreateAllocationPoolMutation(
+          {
+            input: {
+              resourceTypeId: pool.resourceType.id,
+              poolName: pool.poolName,
+              description: pool.description,
+              allocationStrategyId: pool.allocationStrategy.id,
+              poolDealocationSafetyPeriod: pool.dealocationPeriod,
+              poolProperties: pool.poolProperties,
+              poolPropertyTypes: pool.poolPropertyTypes,
+            },
           },
-        }, (response, err) => {
-          if (err) reject(err);
-          resolve(response, err);
-        });
+          (response, err) => {
+            if (err) reject(err);
+            resolve(response, err);
+          },
+        );
       });
-      // return postCreateAllocatingPool(pool);
+    // return postCreateAllocatingPool(pool);
     case 'singleton':
       // eslint-disable-next-line no-use-before-define
       return postCreateSingletonPool(pool);
@@ -64,30 +65,32 @@ export const createPool = (pool) => {
 };
 
 export const postCreateSetPool = (pool) => {
-  const {
-    poolName, description, resourceType, dealocationPeriod, poolValues,
-  } = pool;
+  const { poolName, description, resourceType, dealocationPeriod, poolValues } = pool;
 
   // eslint-disable-next-line max-len
-  return fetchQuery(createSetPool(resourceType.id, poolName, description, parseObject_toGraphQL(poolValues), dealocationPeriod))
-    .then((res) => res.data).catch((error) => error); // TODO error handling);
+  return fetchQuery(
+    createSetPool(resourceType.id, poolName, description, parseObject_toGraphQL(poolValues), dealocationPeriod),
+  )
+    .then((res) => res.data)
+    .catch((error) => error); // TODO error handling);
 };
 
 export const postCreateAllocatingPool = (pool) => {
-  const {
-    poolName, description, allocationStrategy, resourceType, dealocationPeriod,
-  } = pool;
+  const { poolName, description, allocationStrategy, resourceType, dealocationPeriod } = pool;
 
   // eslint-disable-next-line max-len
-  return fetchQuery(createAllocationPool(resourceType.id, poolName, description, allocationStrategy.id, dealocationPeriod))
-    .then((res) => res.data).catch((error) => error); // TODO error handling);
+  return fetchQuery(
+    createAllocationPool(resourceType.id, poolName, description, allocationStrategy.id, dealocationPeriod),
+  )
+    .then((res) => res.data)
+    .catch((error) => error); // TODO error handling);
 };
 
 export const postCreateSingletonPool = (pool) => {
-  const {
-    poolName, description, resourceType, poolValues,
-  } = pool;
+  const { poolName, description, resourceType, poolValues } = pool;
 
   // eslint-disable-next-line max-len
-  return fetchQuery(createSingletonPool(resourceType.id, poolName, description, parseObject_toGraphQL(poolValues))).then((res) => res.data).catch((error) => error); // TODO error handling);
+  return fetchQuery(createSingletonPool(resourceType.id, poolName, description, parseObject_toGraphQL(poolValues)))
+    .then((res) => res.data)
+    .catch((error) => error); // TODO error handling);
 };
