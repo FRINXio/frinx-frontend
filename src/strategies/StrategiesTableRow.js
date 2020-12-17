@@ -23,6 +23,7 @@ import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/ext-language_tools';
+import {useStateValue} from "../utils/StateProvider";
 
 const StyledMenu = withStyles({
   paper: {
@@ -48,58 +49,60 @@ const StrategiesTableRow = (props: Props) => {
   const { row, onActionClick, actionsAnchorEl, onMenuClose, onTestClick, onDeleteClick } = props;
   const { Name, Lang, id, Script } = row;
   const [isOpen, setIsOpen] = React.useState(false);
+  const [{ isAdmin }] = useStateValue();
 
   return (
     <>
       <TableRow className={classes.root}>
-        <td>
-          <IconButton
-            className={classes.iconButton}
-            aria-controls="actions-menu"
-            aria-haspopup="true"
-            onClick={onActionClick}
-          >
-            <MoreVertIcon />
-          </IconButton>
-          <StyledMenu
-            id={`actions-menu-$${id}`}
-            getContentAnchorEl={null}
-            anchorEl={actionsAnchorEl}
-            open={Boolean(actionsAnchorEl)}
-            onClose={onMenuClose}
-          >
-            <MenuItem
-              onClick={() => {
-                setIsOpen((prev) => !prev);
-              }}
+        {isAdmin ?
+          <td>
+            <IconButton
+              className={classes.iconButton}
+              aria-controls="actions-menu"
+              aria-haspopup="true"
+              onClick={onActionClick}
             >
-              <ListItemIcon>
-                <SettingsIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Details" />
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                onTestClick(row);
-              }}
+              <MoreVertIcon />
+            </IconButton>
+            <StyledMenu
+              id={`actions-menu-$${id}`}
+              getContentAnchorEl={null}
+              anchorEl={actionsAnchorEl}
+              open={Boolean(actionsAnchorEl)}
+              onClose={onMenuClose}
             >
-              <ListItemIcon>
-                <SettingsIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Test Strategy" />
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                onDeleteClick(row);
-              }}
-            >
-              <ListItemIcon>
-                <DeleteIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Delete" />
-            </MenuItem>
-          </StyledMenu>
-        </td>
+              <MenuItem
+                onClick={() => {
+                  setIsOpen((prev) => !prev);
+                }}
+              >
+                <ListItemIcon>
+                  <SettingsIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Details" />
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  onTestClick(row);
+                }}
+              >
+                <ListItemIcon>
+                  <SettingsIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Test Strategy" />
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  onDeleteClick(row);
+                }}
+              >
+                <ListItemIcon>
+                  <DeleteIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Delete" />
+              </MenuItem>
+            </StyledMenu>
+          </td> : null }
         <TableCell align="left">{Name}</TableCell>
         <TableCell align="left">{id}</TableCell>
         <TableCell align="left">{Lang}</TableCell>

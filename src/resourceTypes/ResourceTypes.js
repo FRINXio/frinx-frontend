@@ -21,6 +21,7 @@ import ResourceManagerQueryRenderer from '../utils/relay/ResourceManagerQueryRen
 import ResourceTypesTable from './ResourceTypesTable';
 import ResourceTypesFilters from './filters/ResourceTypesFilters';
 import { filterByPool, filterByQuery } from './filters/filterUtils';
+import {useStateValue} from "../utils/StateProvider";
 
 const styles = () => ({
   header: {
@@ -124,7 +125,7 @@ const ResourceTypes = (props: Props) => {
   };
 
   const { classes } = props;
-  // const [resourceTypesData, setResourceTypesData] = useState([]);
+  const [{ isAdmin }] = useStateValue();
 
   return (
     <ResourceManagerQueryRenderer
@@ -150,15 +151,18 @@ const ResourceTypes = (props: Props) => {
                   Resource Types ({QueryResourceTypes.length})
                 </Box>
               </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  setShowEditCard(true);
-                }}
-              >
-                Add Resource Type
-              </Button>
+              {isAdmin ?
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setShowEditCard(true);
+                  }}
+                >
+                  Add Resource Type
+                </Button>
+                : null
+              }
             </div>
 
             <div>

@@ -24,6 +24,8 @@ import get from 'lodash/get';
 import PoolTags from './PoolTags';
 import { sanitizeString } from '../Filters/filter.helpers';
 import type { Pool, Tag, Capacity } from '../../pool.types';
+import {useStateValue} from "../../../utils/StateProvider";
+import PoolDeleteDialog from "./PoolDeleteDialog";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -125,9 +127,29 @@ const PoolTable = ({ pools, allTags, onTagAdd, onTagDelete, onPoolDelete }: Prop
 
   const RESOURCE_MANAGER_URL = '/resourcemanager/frontend';
 
+  const [{ isAdmin }] = useStateValue();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const handleDeleteClicked = (row) => {
+    setActionsAnchorEl(null);
+    setActiveMenuID(row.id);
+    setIsDeleteDialogOpen(true);
+  };
+
   return (
     <>
       <TableContainer component={Paper} className={classes.container}>
+        <PoolDeleteDialog
+            isOpen={isDeleteDialogOpen}
+            onClose={() => {
+              setIsDeleteDialogOpen(false);
+            }}
+            onAccept={() => {
+              setActionsAnchorEl(null);
+              setIsDeleteDialogOpen(false);
+              onPoolDelete(activeMenuID);
+            }}
+        />
         <Table ria-label="pool table">
           <TableHead>
             <TableRow>
@@ -228,12 +250,14 @@ const PoolTable = ({ pools, allTags, onTagAdd, onTagDelete, onPoolDelete }: Prop
                       </ListItemIcon>
                       <ListItemText primary="Details" />
                     </MenuItem>
-                    <MenuItem onClick={() => onPoolDelete(row.id)}>
-                      <ListItemIcon>
-                        <DeleteIcon fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText primary="Delete" />
-                    </MenuItem>
+                    {isAdmin ?
+                      <MenuItem onClick={() => handleDeleteClicked(row)}>
+                        <ListItemIcon>
+                          <DeleteIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Delete" />
+                      </MenuItem>
+                      : null}
                   </StyledMenu>
                 </TableCell>
                 <TableCell align="left">{row.Name}</TableCell>

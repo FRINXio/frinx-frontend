@@ -7,6 +7,7 @@ import DeleteStrategyMutation from '../mutations/DeleteStrategyMutation';
 import StrategiesTableRow from './StrategiesTableRow';
 import TestStrategyDialog from './TestStrategyDialog';
 import DeleteStrategyDialog from './DeleteStrategyDialog';
+import {useStateValue} from "../utils/StateProvider";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -104,6 +105,8 @@ const StrategiesTable = ({
     setIsTestStrategyDialogOpen(true);
   };
 
+  const [{ isAdmin }] = useStateValue();
+
   return (
     <TableContainer component={Paper} className={classes.container}>
       <Button
@@ -138,7 +141,7 @@ const StrategiesTable = ({
       <Table ria-label="pool table">
         <TableHead>
           <TableRow>
-            <StyledTableCell align="left">Actions</StyledTableCell>
+            {isAdmin ? <StyledTableCell align="left">Actions</StyledTableCell> : null}
             <StyledTableCell align="left">Strategy Name</StyledTableCell>
             <StyledTableCell align="left">ID</StyledTableCell>
             <StyledTableCell align="left">Lang</StyledTableCell>

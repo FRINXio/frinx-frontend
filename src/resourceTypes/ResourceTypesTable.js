@@ -22,6 +22,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import { withSnackbar } from 'notistack';
 import DeleteResourceTypeMutation from '../mutations/DeleteResourceTypeMutation';
+import {useStateValue} from "../utils/StateProvider";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -122,13 +123,15 @@ const ResourceTypesTable = ({
     setDialogOpen(true);
   };
 
+  const [{ isAdmin }] = useStateValue();
+
   return (
     <TableContainer component={Paper} className={classes.container}>
       {deleteDialogRender()}
       <Table ria-label="pool table">
         <TableHead>
           <TableRow>
-            <StyledTableCell align="left">Actions</StyledTableCell>
+            {isAdmin ? <StyledTableCell align="left">Actions</StyledTableCell> : null }
             <StyledTableCell align="left">Resource Type Name</StyledTableCell>
             <StyledTableCell align="left">ID</StyledTableCell>
             <StyledTableCell align="left">Properties</StyledTableCell>
@@ -140,30 +143,32 @@ const ResourceTypesTable = ({
           {resourceTypesData.map((row, i) => (
             // eslint-disable-next-line react/no-array-index-key
             <TableRow key={i}>
-              <TableCell padding="checkbox" align="center">
-                <IconButton aria-controls="actions-menu" aria-haspopup="true" onClick={handleActionsClick}>
-                  <MoreVertIcon />
-                </IconButton>
-                <StyledMenu
-                  id={`actions-menu${i}`}
-                  anchorEl={actionsAnchorEl}
-                  open={Boolean(actionsAnchorEl)}
-                  onClose={handleActionsClose}
-                >
-                  <MenuItem>
-                    <ListItemIcon>
-                      <SettingsIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText primary="Details" />
-                  </MenuItem>
-                  <MenuItem onClick={() => handleDeleteClicked(row)}>
-                    <ListItemIcon>
-                      <DeleteIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText primary="Delete" />
-                  </MenuItem>
-                </StyledMenu>
-              </TableCell>
+              {isAdmin ?
+                <TableCell padding="checkbox" align="center">
+                  <IconButton aria-controls="actions-menu" aria-haspopup="true" onClick={handleActionsClick}>
+                    <MoreVertIcon />
+                  </IconButton>
+                  <StyledMenu
+                    id={`actions-menu${i}`}
+                    anchorEl={actionsAnchorEl}
+                    open={Boolean(actionsAnchorEl)}
+                    onClose={handleActionsClose}
+                  >
+                    <MenuItem>
+                      <ListItemIcon>
+                        <SettingsIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="Details" />
+                    </MenuItem>
+                    <MenuItem onClick={() => handleDeleteClicked(row)}>
+                      <ListItemIcon>
+                        <DeleteIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText primary="Delete" />
+                    </MenuItem>
+                  </StyledMenu>
+                </TableCell>
+              : null}
               <TableCell align="left">{row.Name}</TableCell>
               <TableCell align="left">{row.id}</TableCell>
               <TableCell align="left">

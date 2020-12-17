@@ -27,6 +27,7 @@ import {
 } from '../../queries/Queries';
 import PoolTable from './Table/PoolTable';
 import Filters from './Filters/Filters';
+import {useStateValue} from "../../utils/StateProvider";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -64,6 +65,7 @@ const PoolsPage = (props) => {
     poolType: null,
   });
   const [isInRootView, setIsInRootView] = useState(false);
+  const [{ isAdmin }] = useStateValue();
 
   // eslint-disable-next-line react/prop-types
   const { setShowCreatePool } = props;
@@ -170,15 +172,19 @@ const PoolsPage = (props) => {
           </Box>
         </Typography>
         <div className={classes.btnContainer}>
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.buttons}
-            startIcon={<AddIcon />}
-            onClick={() => setShowCreatePool(true)}
-          >
-            New
-          </Button>
+          {(isAdmin)
+              ? (
+                  <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.buttons}
+                      startIcon={<AddIcon />}
+                      onClick={() => setShowCreatePool(true)}
+                  >
+                    New
+                  </Button>
+              )
+              : null}
         </div>
       </div>
       <Grow in mountOnEnter unmountOnExit>
