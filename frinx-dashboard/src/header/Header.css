@@ -1,0 +1,22 @@
+.navbarHeader {
+  height: 50px;
+  color: white;
+  z-index: 110;
+  background: linear-gradient(
+    -90deg,
+    rgba(0, 149, 255, 0.91) 0%,
+    rgb(0, 93, 167) 100%
+  );
+}
+
+.navbar-text {
+  color: white !important;
+}
+
+.navbarHeader img {
+  height: 30px;
+}
+
+.user-nav {
+  margin-left: auto;
+}
