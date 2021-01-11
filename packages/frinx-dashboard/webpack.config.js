@@ -2,6 +2,9 @@
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
+const dotenv = require('dotenv').config( {
+  path: path.join(__dirname, '.env')
+} );
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -72,19 +75,8 @@ module.exports = {
       template: './public/index.html',
       filename: './index.html',
     }),
-    new webpack.DefinePlugin({
-      'process.env.REACT_APP_URL_UNICONFIG': JSON.stringify('false'),
-      'process.env.REACT_APP_URL_UNICONFIG_ENABLED': JSON.stringify('false'),
-      'process.env.REACT_APP_URL_UNIFLOW': JSON.stringify('false'),
-      'process.env.REACT_APP_URL_INVENTORY': JSON.stringify('false'),
-      'process.env.REACT_APP_URL_USER_MGMT': JSON.stringify('false'),
-      'process.env.REACT_APP_URL_UNIFLOW_ENABLED': JSON.stringify('false'),
-      'process.env.REACT_APP_URL_INVENTORY_ENABLED': JSON.stringify('false'),
-      'process.env.REACT_APP_URL_USER_MGMT_ENABLED': JSON.stringify('false'),
-      'process.env.REACT_APP_AUTH_ENABLED': JSON.stringify('false'),
-      'process.env.REACT_APP_AD_CLIENT_ID': JSON.stringify(''),
-      'process.env.REACT_APP_AD_REDIRECT_URL': JSON.stringify(''),
-      'process.env.PUBLIC_URL': JSON.stringify('/'),
-    }),
+    new webpack.DefinePlugin( {
+      "process.env": dotenv.parsed
+    } ),
   ],
 };
