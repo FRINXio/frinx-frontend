@@ -30,11 +30,8 @@
     "webpack-dev-server": "^3.11.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "start2": "webpack-dev-server --mode development",
-    "//": "the '|| true' part is there to ignore error due to : 'mv: cannot move 'build/dashboard' to a subdirectory of itself, 'build/dashboard/dashboard''",
-    "build": "react-scripts build && mkdir build/dashboard && (mv build/* build/dashboard/ || true)",
-    "build2": "NODE_ENV=production webpack --mode production",
+    "start": "webpack-dev-server --mode development",
+    "build": "NODE_ENV=production webpack --mode production",
     "transpile": "babel src -d lib --copy-files --extensions '.ts,.tsx'",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
