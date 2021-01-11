@@ -87,10 +87,4 @@ module.exports = {
       'process.env.PUBLIC_URL': JSON.stringify('/'),
     }),
   ],
-  externals: isDev
-    ? undefined
-    : {
-        react: 'react',
-        reactDOM: 'react-dom',
-      },
 };
