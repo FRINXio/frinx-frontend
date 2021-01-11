@@ -1,6 +1,7 @@
 // @flow weak
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -19,14 +20,8 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'index.ts',
-    library: 'frinxWorkflowUI',
-    libraryTarget: 'umd',
+    filename: 'index.js',
     publicPath: '/',
-    // Substitute publicPath above with settings below when testing frinx-workflow-ui running on host and talking to workflow-proxy in net-auto
-    /*
-    publicPath: '/workflow/frontend/',
-    */
   },
   devtool: isDev ? 'source-map' : undefined,
   module: {
@@ -38,7 +33,7 @@ module.exports = {
       },
       {
         test: /\.(css|scss})$/,
-        loader: 'style-loader!css-loader!sass-loader',
+        use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {
         test: /\.m?js$/,
@@ -76,6 +71,20 @@ module.exports = {
     new HtmlWebPackPlugin({
       template: './public/index.html',
       filename: './index.html',
+    }),
+    new webpack.DefinePlugin({
+      'process.env.REACT_APP_URL_UNICONFIG': JSON.stringify('false'),
+      'process.env.REACT_APP_URL_UNICONFIG_ENABLED': JSON.stringify('false'),
+      'process.env.REACT_APP_URL_UNIFLOW': JSON.stringify('false'),
+      'process.env.REACT_APP_URL_INVENTORY': JSON.stringify('false'),
+      'process.env.REACT_APP_URL_USER_MGMT': JSON.stringify('false'),
+      'process.env.REACT_APP_URL_UNIFLOW_ENABLED': JSON.stringify('false'),
+      'process.env.REACT_APP_URL_INVENTORY_ENABLED': JSON.stringify('false'),
+      'process.env.REACT_APP_URL_USER_MGMT_ENABLED': JSON.stringify('false'),
+      'process.env.REACT_APP_AUTH_ENABLED': JSON.stringify('false'),
+      'process.env.REACT_APP_AD_CLIENT_ID': JSON.stringify(''),
+      'process.env.REACT_APP_AD_REDIRECT_URL': JSON.stringify(''),
+      'process.env.PUBLIC_URL': JSON.stringify('/'),
     }),
   ],
   externals: isDev
