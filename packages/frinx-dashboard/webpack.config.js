@@ -1,6 +1,7 @@
 // @flow weak
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 const dotenv = require('dotenv').config({
   path: path.join(__dirname, '.env'),
@@ -20,6 +21,7 @@ function fullPath(...parts) {
 }
 
 const plugins = [
+  new CopyWebpackPlugin({ patterns: [{ from: fullPath('static'), to: '.' }] }),
   new HtmlWebPackPlugin({
     template: fullPath('src', 'index.html'),
     inject: true,
