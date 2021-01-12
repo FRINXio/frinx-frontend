@@ -1,52 +1,69 @@
 // @flow weak
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
-const dotenv = require('dotenv').config( {
-  path: path.join(__dirname, '.env')
-} );
+const dotenv = require('dotenv').config({
+  path: path.join(__dirname, '.env'),
+});
 
-const isDev = process.env.NODE_ENV !== 'production';
+const ENVIRONMENT = process.env.NODE_ENV || 'development';
+
+const isProd = ENVIRONMENT === 'production';
+const isDev = ENVIRONMENT === 'development';
+
+if (!(isProd || isDev)) {
+  throw new Error('webpack: isProd or isDev has to be true');
+}
+
+function fullPath(...parts) {
+  return path.join(__dirname, ...parts);
+}
+
+const plugins = [
+  new CopyWebpackPlugin({ patterns: [{ from: fullPath('static'), to: '.' }] }),
+  new HtmlWebPackPlugin({
+    template: fullPath('src', 'index.html'),
+    inject: true,
+    filename: 'index.html',
+  }),
+  new webpack.DefinePlugin({
+    'process.env': Object.keys(dotenv.parsed).reduce(
+      (acc, key) => ({
+        ...acc,
+        [key]: JSON.stringify(dotenv.parsed[key]),
+      }),
+      {},
+    ),
+  }),
+];
 
 module.exports = {
-  entry: isDev ? path.resolve(__dirname, 'src/index.ts') : path.resolve(__dirname, 'src/index.ts'),
+  entry: [fullPath('src', 'index.ts')],
+  output: {
+    path: fullPath('build'),
+    filename: 'bundle.js',
+    publicPath: '/',
+  },
   devServer: {
     historyApiFallback: true,
     inline: true,
-    hot: true,
     open: false,
     disableHostCheck: true,
     port: 3000,
+    contentBase: fullPath('static'),
   },
-  resolve: {
-    extensions: [ '.tsx', '.ts', '.js', ".jsx" ],
-  },
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'index.js',
-    publicPath: '/',
-  },
-  devtool: isDev ? 'source-map' : undefined,
+  devtool: isDev ? 'eval-cheap-module-source-map' : false,
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        use: 'babel-loader',
         exclude: /node_modules/,
       },
       {
         test: /\.(css|scss})$/,
         use: ['style-loader', 'css-loader', 'sass-loader'],
-      },
-      {
-        test: /\.m?js$/,
-        exclude: /(node_modules)/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env'],
-          },
-        },
       },
       {
         test: /\.(jpe?g|gif|png|svg|)$/i,
@@ -60,23 +77,11 @@ module.exports = {
         test: /\.(woff|woff2|ttf|eot)$/,
         use: 'url-loader',
       },
-      {
-        test: /\.html$/,
-        use: [
-          {
-            loader: 'html-loader',
-          },
-        ],
-      },
     ],
   },
-  plugins: [
-    new HtmlWebPackPlugin({
-      template: './public/index.html',
-      filename: './index.html',
-    }),
-    new webpack.DefinePlugin( {
-      "process.env": dotenv.parsed
-    } ),
-  ],
+  plugins,
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js', '.jsx'],
+  },
+  context: fullPath('src'),
 };

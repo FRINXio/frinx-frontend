@@ -2,5 +2,12 @@
   "private": true,
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "scripts": {
+    "formatter:check": "prettier -l '*.md' 'packages/**/*.js' 'packages/**/*.ts' 'packages/**/*.tsx' 'packages/*/package.json' package.json",
+    "formatter": "prettier --write '*.md' 'packages/**/*.js' 'packages/**/*.ts' 'packages/**/*.tsx' 'packages/*/package.json' package.json"
+  },
+  "devDependencies": {
+    "prettier": "^2.2.1"
+  }
 }
