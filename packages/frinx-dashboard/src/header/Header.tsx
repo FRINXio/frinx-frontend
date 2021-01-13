@@ -7,7 +7,7 @@ import logo from "./logo-min.png";
 const Header: FC<{ isAuthEnabled: boolean }> = ({ isAuthEnabled }) => {
   return (
     <Navbar className="navbarHeader">
-      <Navbar.Brand href={process.env.PUBLIC_URL}>
+      <Navbar.Brand href={window.CONFIG.public_url}>
         <img src={logo} alt="logo" />
       </Navbar.Brand>
       {isAuthEnabled ? <UserNav /> : null}

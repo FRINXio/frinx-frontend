@@ -11,14 +11,14 @@ export function removeTokenCookie(): void {
 }
 
 export function isAuthEnabled(): boolean {
-  return process.env.REACT_APP_AUTH_ENABLED === "true";
+  return window.CONFIG.auth_enabled === "true";
 }
 
 const authConfig: Configuration = {
   auth: {
-    clientId: process.env.REACT_APP_AD_CLIENT_ID || "",
+    clientId: window.CONFIG.auth_client_id || "",
     redirectUri:
-      process.env.REACT_APP_AD_REDIRECT_URL || "http://localhost:3000/",
+        window.CONFIG.auth_redirect_url || "http://localhost:3000/",
   },
   cache: {
     cacheLocation: "localStorage",
