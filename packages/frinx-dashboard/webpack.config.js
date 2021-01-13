@@ -21,21 +21,23 @@ function fullPath(...parts) {
 }
 
 const plugins = [
-  new CopyWebpackPlugin({ patterns: [{ from: fullPath('static'), to: '.' }] }),
+  new CopyWebpackPlugin({ patterns: [{ from: fullPath('static'), to: '.' }, { from: fullPath('config'), to: '.' }] }),
   new HtmlWebPackPlugin({
-    template: fullPath('src', 'index.html'),
+    template: fullPath('src', 'index.shtml'),
     inject: true,
-    filename: 'index.html',
+    filename: isDev ? 'index.html' : 'index.shtml',
   }),
-  new webpack.DefinePlugin({
-    'process.env': Object.keys(dotenv.parsed).reduce(
-      (acc, key) => ({
-        ...acc,
-        [key]: JSON.stringify(dotenv.parsed[key]),
-      }),
-      {},
-    ),
-  }),
+  ...(isProd ? [] : [
+    new webpack.DefinePlugin({
+      'window.CONFIG': Object.keys(dotenv.parsed).reduce(
+          (acc, key) => ({
+            ...acc,
+            [key]: JSON.stringify(dotenv.parsed[key]),
+          }),
+          {},
+      ),
+    }),
+  ])
 ];
 
 module.exports = {

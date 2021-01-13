@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+
+  <!--# include file="inc.shtml" -->
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="/favicon.ico" />
