@@ -7,7 +7,6 @@ import type { ContextRouter } from 'react-router-dom';
 import type { WithStyles } from '@material-ui/core';
 import { graphql } from 'react-relay';
 import { withStyles } from '@material-ui/core/styles';
-import TableCell from '@material-ui/core/TableCell';
 import { withSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -29,7 +28,6 @@ import Pagination from '@material-ui/lab/Pagination';
 import ResourceManagerQueryRenderer from '../../../utils/relay/ResourceManagerQueryRenderer';
 import ResourcesList from '../../resources/ResourcesList';
 import { fetchQuery, QueryAllocatedResources } from '../../../queries/Queries';
-import { Button } from '@material-ui/core';
 
 const styles = (theme) => ({
   container: {
@@ -188,6 +186,11 @@ const PoolDetailPage = (props: Props) => {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalPages] = useState(0);
   const [resources, setResources] = useState([]);
+  const [poolName, setPoolName] = useState("");
+  const [breadcrumbs, setBreadcrumbs] = useState([]);
+  const [capacity, setCapacity] = useState([]);
+  const [resourcePool, setResourcePool] = useState([])
+  const [queryResources, setQueryResources] = useState([]);
 
   const queryAllocatedResources = (startCursor, endCursor) => {
     console.log(after, before, (after) ? null : before);
@@ -215,8 +218,8 @@ const PoolDetailPage = (props: Props) => {
 
   const RESOURCE_MANAGER_URL = '/resourcemanager/frontend';
 
-  const getCapacityValue = (capacity) => {
-    const { freeCapacity, utilizedCapacity } = capacity;
+  const getCapacityValue = (cap) => {
+    const { freeCapacity, utilizedCapacity } = cap;
     return (utilizedCapacity / (freeCapacity + utilizedCapacity)) * 100;
   };
 
@@ -253,93 +256,100 @@ const PoolDetailPage = (props: Props) => {
     page < value ? setBefore(null) : setAfter(null);
 
     setPage(value);
-    console.log(page > value, before, after, page);
-    //queryAllocatedResources();
   };
 
   return (
     <div>
-      <ResourceManagerQueryRenderer
-        query={query}
-        variables={{ updateDataVar, poolId: id, first }}
-        render={(queryProps) => {
-          const { QueryResources, QueryPoolCapacity, QueryResourcePoolHierarchyPath, QueryResourcePool } = queryProps;
-          console.log(queryProps);
-          if (first === 0) setFirst(10);
+      <Typography component="div">
+        <Box fontSize="h3.fontSize" fontWeight="fontWeightMedium">
+          {poolName}
+        </Box>
+      </Typography>
+      <Breadcrumbs separator="›" aria-label="breadcrumb">
+        {breadcrumbs.map((e) => (
+            <Link color="primary" href={`${RESOURCE_MANAGER_URL}/pools/${e.id}`}>
+              {e.Name}
+            </Link>
+        ))}
+      </Breadcrumbs>
+      <Grid container spacing={3}>
+        <Grid item xs={3}>
+          {(resourcePool) ?
+              <Paper className={classes.paper}>
 
-          return (
+            <Typography component="div">
+              <Box fontSize="h6.fontSize" fontWeight="fontWeightMedium">
+                Properties
+              </Box>
+            </Typography>
+            {(resourcePool.Tags) ? <div style={{ display: 'flex', marginBottom: '24px' }}>
+              {resourcePool.Tags.map((e) => (
+                  <Chip key={e.id} color="primary" label={e.Tag} className={classes.chip} />
+              ))}
+            </div> : null}
+            <div className={classes.poolInfoContainer}>
+              <div className={` ${classes.pool}`}>Pool Type: </div>
+              <div>{resourcePool.PoolType}</div>
+              <div>Resource Type: </div>
+              <div>{resourcePool.ResourceType?.Name}</div>
+            </div>
+          </Paper>
+              : null}
+          <Paper className={classes.paper}>
+            <Typography component="div">
+              <Box fontSize="h6.fontSize" fontWeight="fontWeightMedium">
+                Pool hierarchy
+              </Box>
+            </Typography>
+            <TreeView
+                className={classes.root}
+                defaultCollapseIcon={<ExpandMoreIcon />}
+                defaultExpandIcon={<ChevronRightIcon />}
+            >
+              {queryResources.map((e, i) => (
+                  <>{e.NestedPool ? TreeItemRender(e.NestedPool, i) : null}</>
+              ))}
+            </TreeView>
+          </Paper>
+          <Paper className={classes.paper}>
+            <Typography component="div">
+              <Box fontSize="h6.fontSize" fontWeight="fontWeightMedium">
+                Capacity
+              </Box>
+            </Typography>
+            <LinearProgress
+                value={getCapacityValue(capacity)}
+                variant="determinate"
+                disableShrink
+                style={{ height: 10 }}
+            />
             <div>
-              <Typography component="div">
-                <Box fontSize="h3.fontSize" fontWeight="fontWeightMedium">
-                  {QueryResourcePool.Name}
-                </Box>
-              </Typography>
-              <Breadcrumbs separator="›" aria-label="breadcrumb">
-                {QueryResourcePoolHierarchyPath.map((e) => (
-                  <Link color="primary" href={`${RESOURCE_MANAGER_URL}/pools/${e.id}`}>
-                    {e.Name}
-                  </Link>
-                ))}
-              </Breadcrumbs>
+              Free:
+              {capacity.freeCapacity}
+            </div>
+            <div>
+              Utilized:
+              {capacity.utilizedCapacity}
+            </div>
+          </Paper>
+        </Grid>
+        <ResourceManagerQueryRenderer
+          query={query}
+          variables={{ updateDataVar, poolId: id, first }}
+          render={(queryProps) => {
+            const { QueryResources, QueryPoolCapacity, QueryResourcePoolHierarchyPath, QueryResourcePool } = queryProps;
+            console.log(queryProps);
+            setPoolName(QueryResourcePool.Name)
+            setBreadcrumbs(QueryResourcePoolHierarchyPath)
+            setResourcePool(QueryResourcePool)
+            setCapacity(QueryPoolCapacity)
+            setQueryResources(QueryResources)
 
-              <Grid container spacing={3}>
-                <Grid item xs={3}>
-                  <Paper className={classes.paper}>
-                    <Typography component="div">
-                      <Box fontSize="h6.fontSize" fontWeight="fontWeightMedium">
-                        Properties
-                      </Box>
-                    </Typography>
-                    <div style={{ display: 'flex', marginBottom: '24px' }}>
-                      {QueryResourcePool.Tags.map((e) => (
-                        <Chip key={e.id} color="primary" label={e.Tag} className={classes.chip} />
-                      ))}
-                    </div>
-                    <div className={classes.poolInfoContainer}>
-                      <div className={` ${classes.pool}`}>Pool Type: </div>
-                      <div>{QueryResourcePool.PoolType}</div>
-                      <div>Resource Type: </div>
-                      <div>{QueryResourcePool.ResourceType.Name}</div>
-                    </div>
-                  </Paper>
-                  <Paper className={classes.paper}>
-                    <Typography component="div">
-                      <Box fontSize="h6.fontSize" fontWeight="fontWeightMedium">
-                        Pool hierarchy
-                      </Box>
-                    </Typography>
-                    <TreeView
-                      className={classes.root}
-                      defaultCollapseIcon={<ExpandMoreIcon />}
-                      defaultExpandIcon={<ChevronRightIcon />}
-                    >
-                      {QueryResources.map((e, i) => (
-                        <>{e.NestedPool ? TreeItemRender(e.NestedPool, i) : null}</>
-                      ))}
-                    </TreeView>
-                  </Paper>
-                  <Paper className={classes.paper}>
-                    <Typography component="div">
-                      <Box fontSize="h6.fontSize" fontWeight="fontWeightMedium">
-                        Capacity
-                      </Box>
-                    </Typography>
-                    <LinearProgress
-                      value={getCapacityValue(QueryPoolCapacity)}
-                      variant="determinate"
-                      disableShrink
-                      style={{ height: 10 }}
-                    />
-                    <div>
-                      Free:
-                      {QueryPoolCapacity.freeCapacity}
-                    </div>
-                    <div>
-                      Utilized:
-                      {QueryPoolCapacity.utilizedCapacity}
-                    </div>
-                  </Paper>
-                </Grid>
+            if (first === 0) setFirst(10);
+
+            return (
+              <>
+
                 <Grid item xs={9}>
                   <Paper className={classes.paper}>
                     <Typography component="div">
@@ -359,23 +369,12 @@ const PoolDetailPage = (props: Props) => {
                       onChange={handlePaginationChange}
                     />
                   </Paper>
-
-                  {/* <Paper className={classes.paper}> */}
-                  {/*  <Typography component="div"> */}
-                  {/*    <Box fontSize="h6.fontSize" fontWeight="fontWeightMedium"> */}
-                  {/*      Strategy */}
-                  {/*    </Box> */}
-                  {/*  </Typography> */}
-                  {/*  <Card className={classes.card}> */}
-                  {/*    <CodeEditor setScript="" /> */}
-                  {/*  </Card> */}
-                  {/* </Paper> */}
                 </Grid>
-              </Grid>
-            </div>
-          );
-        }}
-      />
+              </>
+            );
+          }}
+        />
+      </Grid>
     </div>
   );
 };
