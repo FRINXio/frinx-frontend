@@ -1,0 +1,5 @@
+.details-table {
+    max-height: 300px;
+    width: 110%;
+    overflow: auto;
+}
