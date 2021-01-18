@@ -3,6 +3,7 @@ import './css/bootstrap.min.css';
 import './css/awesomefonts.css';
 import './css/neat.css';
 import './css/mono-blue.min.css';
+import 'semantic-ui-css/semantic.min.css';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
@@ -40,7 +41,7 @@ function App(props) {
                 (props.frontendUrlPrefix || frontendUrlPrefix) + '/builder',
                 (props.frontendUrlPrefix || frontendUrlPrefix) + '/builder/:name/:version',
               ]}
-              render={props => <DiagramBuilder {...props} />}
+              render={(props) => <DiagramBuilder {...props} />}
             />
             <Route
               exact
