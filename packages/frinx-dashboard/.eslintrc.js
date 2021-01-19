@@ -88,6 +88,6 @@ module.exports = {
     'react/jsx-filename-extension': ['error', { extensions: ['.tsx'] }],
     'react/jsx-props-no-spreading': 'off',
     'jsx-a11y/label-has-associated-control': ['error', {}],
-    'arrow-body-style': ['error', 'always'],
+    'arrow-body-style': 'off',
   },
 };
