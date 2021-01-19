@@ -3,9 +3,9 @@ import './css/bootstrap.min.css';
 import './css/awesomefonts.css';
 import './css/neat.css';
 import './css/mono-blue.min.css';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Link, useParams, useRouteMatch, Redirect } from 'react-router-dom';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import DiagramBuilder from './pages/diagramBuilder/DiagramBuilder';
@@ -29,37 +29,35 @@ const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)))
 const { frontendUrlPrefix } = globalConstants;
 
 function App(props) {
+  let { path, url } = useRouteMatch();
+
+  useEffect(() => {
+    console.log(path, url);
+  }, [path, url]);
+
   return (
-    <GlobalProvider {...props}>
-      <Provider store={store}>
-        <BrowserRouter>
-          <Switch>
-            <Route
-              exact
-              path={[
-                (props.frontendUrlPrefix || frontendUrlPrefix) + '/builder',
-                (props.frontendUrlPrefix || frontendUrlPrefix) + '/builder/:name/:version',
-              ]}
-              render={props => <DiagramBuilder {...props} />}
-            />
-            <Route
-              exact
-              path={[
-                (props.frontendUrlPrefix || frontendUrlPrefix) + '/:type',
-                (props.frontendUrlPrefix || frontendUrlPrefix) + '/:type/:wfid',
-              ]}
-              render={() => (
-                <>
-                  <Header />
-                  <WorkflowList />
-                </>
-              )}
-            />
-            <Redirect to={(props.frontendUrlPrefix || frontendUrlPrefix) + '/defs'} />
-          </Switch>
-        </BrowserRouter>
-      </Provider>
-    </GlobalProvider>
+    <Provider store={store}>
+      <Router>
+        <Switch>
+          <Route
+            exact
+            path={[path + '/builder', path + '/builder/:name/:version']}
+            render={props => <DiagramBuilder {...props} />}
+          />
+          <Route
+            exact
+            path={[path + '/:type', path + '/:type/:wfid']}
+            render={() => (
+              <>
+                <Header />
+                <WorkflowList />
+              </>
+            )}
+          />
+          <Redirect to={path + '/defs'} />
+        </Switch>
+      </Router>
+    </Provider>
   );
 }
 

@@ -1,19 +1,18 @@
-import React, { FC, useEffect, useRef } from "react";
-import { PublicClientApplication } from "@azure/msal-browser";
-import { MsalProvider } from "@azure/msal-react";
-import Dashboard from "./dashboard/Dashboard";
-import Header from "./header/Header";
-import {
-  NotificationContainer,
-  NotificationManager,
-} from "react-notifications";
-import "react-notifications/lib/notifications.css";
-import { createPublicClientApp } from "./auth-helpers";
+import React, { FC, useEffect, useRef } from 'react';
+import { PublicClientApplication } from '@azure/msal-browser';
+import { MsalProvider } from '@azure/msal-react';
+import Dashboard from './dashboard/Dashboard';
+import Header from './header/Header';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
+import { createPublicClientApp } from './auth-helpers';
+import { BrowserRouter as Router, Switch, Route, Link, useParams, useRouteMatch } from 'react-router-dom';
+import { WorkflowApp } from 'frinx-workflow-ui/lib'
 
 function setMessages() {
   const urlParams = new URLSearchParams(window.location?.search);
-  const message = urlParams.get("message");
-  const messageLevel = urlParams.get("message_level");
+  const message = urlParams.get('message');
+  const messageLevel = urlParams.get('message_level');
 
   // TODO this causes a warning in browser
   // Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Transition which is inside StrictMode. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here: https://fb.me/react-strict-mode-find-node
@@ -21,16 +20,16 @@ function setMessages() {
   if (message) {
     switch (messageLevel) {
       default:
-      case "info":
+      case 'info':
         NotificationManager.info(message);
         break;
-      case "success":
+      case 'success':
         NotificationManager.success(message);
         break;
-      case "warning":
+      case 'warning':
         NotificationManager.warning(message);
         break;
-      case "error":
+      case 'error':
         NotificationManager.error(message);
         break;
     }
@@ -38,9 +37,7 @@ function setMessages() {
 }
 
 const AppWithAuth = () => {
-  const publicClientAppRef = useRef<PublicClientApplication>(
-    createPublicClientApp()
-  );
+  const publicClientAppRef = useRef<PublicClientApplication>(createPublicClientApp());
 
   return (
     <MsalProvider instance={publicClientAppRef.current}>
@@ -60,9 +57,19 @@ const App: FC<{ isAuthEnabled: boolean }> = ({ isAuthEnabled }) => {
     <AppWithAuth />
   ) : (
     <>
-      <Header isAuthEnabled={false} />
-      <Dashboard />
-      <NotificationContainer correlationId="notificationContainer" />
+      <Router>
+        <Header isAuthEnabled={false} />
+        {/* <Dashboard />
+      <NotificationContainer correlationId="notificationContainer" /> */}
+        <Switch>
+          <Route path="/uniflow/ui">
+            <WorkflowApp/>
+          </Route>
+          <Route exact path="/">
+            <h4>Dashboard</h4>
+          </Route>
+        </Switch>
+      </Router>
     </>
   );
 };
