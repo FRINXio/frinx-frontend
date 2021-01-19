@@ -14,7 +14,6 @@ function setMessages() {
   const message = urlParams.get('message');
   const messageLevel = urlParams.get('message_level');
 
-  // TODO this causes a warning in browser
   // Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Transition which is inside StrictMode. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here: https://fb.me/react-strict-mode-find-node
 
   if (message) {
