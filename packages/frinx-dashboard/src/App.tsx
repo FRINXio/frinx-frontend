@@ -1,13 +1,13 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { PublicClientApplication } from '@azure/msal-browser';
+import { BrowserRouter as Router, Switch, Route, Link, useParams, useRouteMatch } from 'react-router-dom';
 import { MsalProvider } from '@azure/msal-react';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 import Dashboard from './dashboard/Dashboard';
 import Header from './header/Header';
-import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 import { createPublicClientApp } from './auth-helpers';
-import { BrowserRouter as Router, Switch, Route, Link, useParams, useRouteMatch } from 'react-router-dom';
-import { WorkflowApp } from 'frinx-workflow-ui/lib'
+import { WorkflowApp } from 'frinx-workflow-ui/dist';
 
 function setMessages() {
   const urlParams = new URLSearchParams(window.location?.search);
@@ -63,7 +63,7 @@ const App: FC<{ isAuthEnabled: boolean }> = ({ isAuthEnabled }) => {
       <NotificationContainer correlationId="notificationContainer" /> */}
         <Switch>
           <Route path="/uniflow/ui">
-            <WorkflowApp/>
+            <WorkflowApp />
           </Route>
           <Route exact path="/">
             <h4>Dashboard</h4>
