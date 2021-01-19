@@ -1,11 +1,8 @@
-// @flow weak
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const webpack = require('webpack');
-const dotenv = require('dotenv').config({
-  path: path.join(__dirname, '.env'),
-});
+/* eslint-enable */
 
 const ENVIRONMENT = process.env.NODE_ENV || 'development';
 
@@ -21,23 +18,18 @@ function fullPath(...parts) {
 }
 
 const plugins = [
-  new CopyWebpackPlugin({ patterns: [{ from: fullPath('static'), to: '.' }, { from: fullPath('config'), to: '.' }] }),
+  new CopyWebpackPlugin({
+    patterns: [
+      { from: fullPath('static'), to: '.' },
+      { from: fullPath('config'), to: '.' },
+    ],
+  }),
   new HtmlWebPackPlugin({
-    template: fullPath('src', 'index.shtml'),
+    template: isDev ? fullPath('src', 'index.dev.html') : fullPath('src', 'index.shtml'),
     inject: true,
     filename: isDev ? 'index.html' : 'index.shtml',
+    scriptLoading: 'blocking',
   }),
-  ...(isProd ? [] : [
-    new webpack.DefinePlugin({
-      'window.CONFIG': Object.keys(dotenv.parsed).reduce(
-          (acc, key) => ({
-            ...acc,
-            [key]: JSON.stringify(dotenv.parsed[key]),
-          }),
-          {},
-      ),
-    }),
-  ])
 ];
 
 module.exports = {
@@ -78,6 +70,20 @@ module.exports = {
       {
         test: /\.(woff|woff2|ttf|eot)$/,
         use: 'url-loader',
+      },
+      {
+        test: /\.inline.svg$/,
+        use: [
+          {
+            loader: 'babel-loader',
+          },
+          {
+            loader: 'react-svg-loader',
+            options: {
+              jsx: true,
+            },
+          },
+        ],
       },
     ],
   },

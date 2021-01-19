@@ -1,19 +1,18 @@
-import React, { FC, useEffect, useRef } from "react";
-import { PublicClientApplication } from "@azure/msal-browser";
-import { MsalProvider } from "@azure/msal-react";
-import Dashboard from "./dashboard/Dashboard";
-import Header from "./header/Header";
-import {
-  NotificationContainer,
-  NotificationManager,
-} from "react-notifications";
-import "react-notifications/lib/notifications.css";
-import { createPublicClientApp } from "./auth-helpers";
+import React, { FC, useEffect, useRef } from 'react';
+import { PublicClientApplication } from '@azure/msal-browser';
+import { ChakraProvider } from '@chakra-ui/react';
+import { MsalProvider } from '@azure/msal-react';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import Dashboard from './components/dashboard/dashboard';
+import Header from './components/header/header';
+import 'react-notifications/lib/notifications.css';
+import { createPublicClientApp } from './auth-helpers';
+import theme from './theme';
 
 function setMessages() {
   const urlParams = new URLSearchParams(window.location?.search);
-  const message = urlParams.get("message");
-  const messageLevel = urlParams.get("message_level");
+  const message = urlParams.get('message');
+  const messageLevel = urlParams.get('message_level');
 
   // TODO this causes a warning in browser
   // Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Transition which is inside StrictMode. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here: https://fb.me/react-strict-mode-find-node
@@ -21,16 +20,16 @@ function setMessages() {
   if (message) {
     switch (messageLevel) {
       default:
-      case "info":
+      case 'info':
         NotificationManager.info(message);
         break;
-      case "success":
+      case 'success':
         NotificationManager.success(message);
         break;
-      case "warning":
+      case 'warning':
         NotificationManager.warning(message);
         break;
-      case "error":
+      case 'error':
         NotificationManager.error(message);
         break;
     }
@@ -38,16 +37,16 @@ function setMessages() {
 }
 
 const AppWithAuth = () => {
-  const publicClientAppRef = useRef<PublicClientApplication>(
-    createPublicClientApp()
-  );
+  const publicClientAppRef = useRef<PublicClientApplication>(createPublicClientApp());
 
   return (
-    <MsalProvider instance={publicClientAppRef.current}>
-      <Header isAuthEnabled />
-      <Dashboard />
-      <NotificationContainer />
-    </MsalProvider>
+    <ChakraProvider theme={theme}>
+      <MsalProvider instance={publicClientAppRef.current}>
+        <Header isAuthEnabled />
+        <Dashboard />
+        <NotificationContainer />
+      </MsalProvider>
+    </ChakraProvider>
   );
 };
 
@@ -59,11 +58,11 @@ const App: FC<{ isAuthEnabled: boolean }> = ({ isAuthEnabled }) => {
   return isAuthEnabled ? (
     <AppWithAuth />
   ) : (
-    <>
+    <ChakraProvider theme={theme}>
       <Header isAuthEnabled={false} />
       <Dashboard />
       <NotificationContainer correlationId="notificationContainer" />
-    </>
+    </ChakraProvider>
   );
 };
 
