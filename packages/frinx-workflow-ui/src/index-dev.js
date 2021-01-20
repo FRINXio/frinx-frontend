@@ -1,5 +1,6 @@
 // @flow
 import App from './App';
+import ServiceUIApp from './ServiceUiApp';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -10,7 +11,7 @@ ReactDOM.render(
   <Router>
     <Switch>
       <Route path="/uniflow/ui">
-        <App />
+        <ServiceUIApp />
       </Route>
       <Route exact path="/">
         <h1>Dashboard</h1>

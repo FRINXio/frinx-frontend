@@ -5,15 +5,17 @@ import './css/neat.css';
 import './css/mono-blue.min.css';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import buildReducer from './store/reducers/builder';
 import bulkReducer from './store/reducers/bulk';
 import searchReducer from './store/reducers/searchExecs';
-import Header from './common/header/Header';
-import { GlobalProvider, globalConstants } from './common/GlobalContext';
-import WorkflowListReadOnly from './pages/workflowList/WorkflowListReadOnly';
+import { GlobalProvider } from './common/GlobalContext';
+import WorkflowDefsReadOnly from './pages/workflowList/WorkflowDefs/WorkflowDefsReadOnly';
+import DiagramBuilder from './pages/diagramBuilder/DiagramBuilder';
+import WorkflowExec from './pages/workflowList/WorkflowExec/WorkflowExec';
+import PageContainer from './common/PageContainer';
 
 const rootReducer = combineReducers({
   bulkReducer,
@@ -25,36 +27,37 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
 
-const { frontendUrlPrefix } = globalConstants;
+const ServiceAppHeader = () => (
+  <PageContainer>
+    <h1 style={{ marginBottom: '20px' }}>
+      <i style={{ color: 'grey' }} className="fas fa-cogs" />
+      &nbsp;&nbsp;Service Portal
+    </h1>
+  </PageContainer>
+);
 
 function ServiceUIApp(props) {
+  let { path } = useRouteMatch();
+
   return (
     <GlobalProvider {...props}>
       <Provider store={store}>
         <Switch>
-          <Redirect
-            exact
-            from={[
-              (props.frontendUrlPrefix || frontendUrlPrefix) + '/builder',
-              (props.frontendUrlPrefix || frontendUrlPrefix) + '/builder/:h/:vno',
-            ]}
-            to={(props.frontendUrlPrefix || frontendUrlPrefix) + '/defs'}
-          />
           <Route
             exact
-            path={[
-              (props.frontendUrlPrefix || frontendUrlPrefix) + '/:type',
-              (props.frontendUrlPrefix || frontendUrlPrefix) + '/:type/:wfid',
-              '/',
-            ]}
-            render={() => (
-              <>
-                <Header />
-                <WorkflowListReadOnly />
-              </>
-            )}
+            path={[path + '/builder', path + '/builder/:name/:version']}
+            render={props => <DiagramBuilder {...props} />}
           />
-          <Redirect to={(props.frontendUrlPrefix || frontendUrlPrefix) + '/defs'} />
+          <>
+            <ServiceAppHeader />
+            <Route exact path={path + '/defs'}>
+              <WorkflowDefsReadOnly />
+            </Route>
+            <Route exact path={path + '/exec/:wfid?'}>
+              <WorkflowExec query={'123'} />
+            </Route>
+            <Redirect to={path + '/defs'} />
+          </>
         </Switch>
       </Provider>
     </GlobalProvider>

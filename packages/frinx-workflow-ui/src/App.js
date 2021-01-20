@@ -63,8 +63,8 @@ function App(props) {
             <Route exact path={path + '/polldata'}>
               <PollData />
             </Route>
+            <Redirect to={path + '/defs'} />
           </>
-          <Redirect to={path + '/defs'} />
         </Switch>
       </Provider>
     </GlobalProvider>
