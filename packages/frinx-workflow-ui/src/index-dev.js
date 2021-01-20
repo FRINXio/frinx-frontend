@@ -11,7 +11,7 @@ ReactDOM.render(
   <Router>
     <Switch>
       <Route path="/uniflow/ui">
-        <ServiceUIApp />
+        <App />
       </Route>
       <Route exact path="/">
         <h1>Dashboard</h1>
