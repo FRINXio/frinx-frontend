@@ -1,12 +1,10 @@
 // @flow
 import App from './App';
-import ServiceUIApp from './ServiceUiApp';
 import React from 'react';
 import ReactDOM from 'react-dom';
-
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-// TODO remove
+// TODO remove Router
 ReactDOM.render(
   <Router>
     <Switch>
