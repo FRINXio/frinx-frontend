@@ -12,6 +12,7 @@ import * as searchActions from '../../../store/actions/searchExecs';
 import DetailsModal from './DetailsModal/DetailsModal';
 import WorkflowBulk from './WorkflowBulk/WorkflowBulk';
 import { GlobalContext } from '../../../common/GlobalContext';
+import PageContainer from '../../../common/PageContainer';
 import './WorkflowExec.css';
 
 class WorkflowExec extends Component {
@@ -410,7 +411,7 @@ class WorkflowExec extends Component {
     ) : null;
 
     return (
-      <div>
+      <PageContainer>
         {detailsModal}
         <WorkflowBulk
           wfsCount={this.repeat().length}
@@ -521,7 +522,7 @@ class WorkflowExec extends Component {
             </Col>
           </Row>
         </Container>
-      </div>
+      </PageContainer>
     );
   }
 }

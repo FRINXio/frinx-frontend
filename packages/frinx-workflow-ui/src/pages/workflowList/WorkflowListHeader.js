@@ -1,18 +1,14 @@
 // @flow
-import React, { useContext } from 'react';
-import { Button, Container, Tab, Tabs } from 'react-bootstrap';
-import { withRouter } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { Button } from 'react-bootstrap';
 import { HttpClient as http } from '../../common/HttpClient';
-import WorkflowDefs from './WorkflowDefs/WorkflowDefs';
-import WorkflowExec from './WorkflowExec/WorkflowExec';
-import Scheduling from './Scheduling/Scheduling';
-import { changeUrl, exportButton } from './workflowUtils';
-import EventListeners from './EventListeners/EventListeners';
+import { exportButton } from './workflowUtils';
 import { GlobalContext } from '../../common/GlobalContext';
-import TaskList from './Tasks/TaskList';
-import PollData from './PollData/PollData';
+import { useRouteMatch, useHistory } from 'react-router-dom';
+import PageContainer from '../../common/PageContainer';
 
 const workflowModifyButtons = (openFileUpload, history, frontendUrlPrefix) => {
+  console.log(frontendUrlPrefix)
   return [
     <Button
       key="builder-btn"
@@ -41,10 +37,10 @@ const upperMenu = (history, openFileUpload, backendApiUrlPrefix, frontendUrlPref
   );
 };
 
-const WorkflowList = props => {
+const WorkflowListHeader = () => {
   const global = useContext(GlobalContext);
-  let urlUpdater = changeUrl(props.history, global.frontendUrlPrefix);
-  let query = props.match.params.wfid ? props.match.params.wfid : null;
+  const history = useHistory();
+  const { path } = useRouteMatch();
 
   const importFiles = e => {
     const files = e.currentTarget.files;
@@ -75,38 +71,14 @@ const WorkflowList = props => {
     document.getElementById('upload-files').addEventListener('change', importFiles);
   };
 
-  let menu = upperMenu(props.history, openFileUpload, global.backendApiUrlPrefix, global.frontendUrlPrefix);
+  let menu = upperMenu(history, openFileUpload, global.backendApiUrlPrefix, path);
 
   return (
-    <Container style={{ textAlign: 'left', marginTop: '20px' }}>
+    <PageContainer>
       {menu}
       <input id="upload-files" multiple type="file" hidden />
-      <Tabs
-        onSelect={e => urlUpdater(e)}
-        defaultActiveKey={props.match.params.type || 'defs'}
-        style={{ marginBottom: '20px' }}
-      >
-        <Tab mountOnEnter unmountOnExit eventKey="defs" title="Definitions">
-          <WorkflowDefs />
-        </Tab>
-        <Tab mountOnEnter unmountOnExit eventKey="exec" title="Executed">
-          <WorkflowExec query={query} />
-        </Tab>
-        <Tab mountOnEnter unmountOnExit eventKey="scheduled" title="Scheduled" disabled={!global.enableScheduling}>
-          <Scheduling />
-        </Tab>
-        <Tab mountOnEnter unmountOnExit eventKey="eventlisteners" title="Event Listeners">
-          <EventListeners />
-        </Tab>
-        <Tab mountOnEnter unmountOnExit eventKey="tasks" title="Tasks">
-          <TaskList />
-        </Tab>
-        <Tab mountOnEnter unmountOnExit eventKey="polldata" title="Poll Data">
-          <PollData />
-        </Tab>
-      </Tabs>
-    </Container>
+    </PageContainer>
   );
 };
 
-export default withRouter(WorkflowList);
+export default WorkflowListHeader;

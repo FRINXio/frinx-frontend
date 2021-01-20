@@ -8,6 +8,7 @@ import 'ace-builds/src-noconflict/theme-tomorrow';
 import { GlobalContext } from '../../../common/GlobalContext';
 import { usePagination } from '../../../common/PaginationHook';
 import PaginationPages from '../../../common/Pagination';
+import PageContainer from '../../../common/PageContainer';
 
 function EventListeners() {
   const global = useContext(GlobalContext);
@@ -121,7 +122,7 @@ function EventListeners() {
   );
 
   return (
-    <div>
+    <PageContainer>
       {editModal()}
       <Input iconPosition="left" fluid icon placeholder="Search...">
         <input value={searchTerm} onChange={handleChange} />
@@ -171,7 +172,7 @@ function EventListeners() {
           </Table.Row>
         </Table.Footer>
       </Table>
-    </div>
+    </PageContainer>
   );
 }
 

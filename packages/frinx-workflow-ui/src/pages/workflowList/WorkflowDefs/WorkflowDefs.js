@@ -15,6 +15,7 @@ import { HttpClient as http } from '../../../common/HttpClient';
 import { GlobalContext } from '../../../common/GlobalContext';
 import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
+import PageContainer from '../../../common/PageContainer';
 
 const jsonParse = json => {
   try {
@@ -359,7 +360,7 @@ function WorkflowDefs(props) {
   };
 
   return (
-    <div>
+    <PageContainer>
       {renderDefinitionModal()}
       {renderInputModal()}
       {renderDiagramModal()}
@@ -415,7 +416,7 @@ function WorkflowDefs(props) {
           </Table.Row>
         </Table.Footer>
       </Table>
-    </div>
+    </PageContainer>
   );
 }
 
