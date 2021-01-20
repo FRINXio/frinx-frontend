@@ -78,6 +78,7 @@ class DiagramBuilder extends Component {
   }
 
   componentDidMount() {
+    console.log(this.props)
     document.addEventListener('dblclick', this.doubleClickListener.bind(this));
 
     http.get(this.context.backendApiUrlPrefix + '/metadata/workflow').then(res => {

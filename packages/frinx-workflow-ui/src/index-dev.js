@@ -2,9 +2,10 @@
 import App from './App';
 import React from 'react';
 import ReactDOM from 'react-dom';
+
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-// TODO remove Router
+// TODO remove
 ReactDOM.render(
   <Router>
     <Switch>
