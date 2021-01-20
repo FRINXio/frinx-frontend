@@ -3,7 +3,7 @@ import './css/bootstrap.min.css';
 import './css/awesomefonts.css';
 import './css/neat.css';
 import './css/mono-blue.min.css';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Provider } from 'react-redux';
 import { Redirect, Route, Switch, useRouteMatch, useParams } from 'react-router-dom';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
@@ -31,13 +31,18 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
 
+// TODO iterate over this to render routes in <Switch>
+export const routes = [
+  { label: 'Definitions', path: '/defs' },
+  { label: 'Executed', path: '/exec/:wfid?' },
+  { label: 'Scheduled', path: '/scheduled' },
+  { label: 'Event Listeners', path: '/eventlisteners' },
+  { label: 'Tasks', path: '/tasks' },
+  { label: 'Poll Data', path: '/polldata' },
+];
+
 function App(props) {
   let { path } = useRouteMatch();
-  let { wfid } = useParams();
-
-  useEffect(() => {
-    console.log(wfid);
-  });
 
   return (
     <GlobalProvider {...props}>
