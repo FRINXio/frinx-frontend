@@ -3,9 +3,9 @@ import './css/bootstrap.min.css';
 import './css/awesomefonts.css';
 import './css/neat.css';
 import './css/mono-blue.min.css';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, Switch, useRouteMatch, useParams } from 'react-router-dom';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import DiagramBuilder from './pages/diagramBuilder/DiagramBuilder';
@@ -33,6 +33,11 @@ const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)))
 
 function App(props) {
   let { path } = useRouteMatch();
+  let { wfid } = useParams();
+
+  useEffect(() => {
+    console.log(wfid);
+  });
 
   return (
     <GlobalProvider {...props}>
@@ -48,9 +53,11 @@ function App(props) {
             <Route exact path={path + '/defs'}>
               <WorkflowDefs />
             </Route>
-            <Route exact path={path + '/exec/:wfid?'}>
-              <WorkflowExec query={'123'} />
-            </Route>
+            <Route
+              exact
+              path={path + '/exec/:wfid?'}
+              render={props => <WorkflowExec query={props.match.params.wfid} />}
+            />
             <Route exact path={path + '/scheduled'}>
               <Scheduling />
             </Route>
@@ -63,8 +70,8 @@ function App(props) {
             <Route exact path={path + '/polldata'}>
               <PollData />
             </Route>
-            <Redirect to={path + '/defs'} />
           </>
+          <Redirect to={path + '/defs'} />
         </Switch>
       </Provider>
     </GlobalProvider>

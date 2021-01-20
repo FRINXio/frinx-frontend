@@ -53,11 +53,13 @@ function ServiceUIApp(props) {
             <Route exact path={path + '/defs'}>
               <WorkflowDefsReadOnly />
             </Route>
-            <Route exact path={path + '/exec/:wfid?'}>
-              <WorkflowExec query={'123'} />
-            </Route>
-            <Redirect to={path + '/defs'} />
+            <Route
+              exact
+              path={path + '/exec/:wfid?'}
+              render={props => <WorkflowExec query={props.match.params.wfid} />}
+            />
           </>
+          <Redirect to={path + '/defs'} />
         </Switch>
       </Provider>
     </GlobalProvider>
