@@ -5,7 +5,7 @@ import './css/neat.css';
 import './css/mono-blue.min.css';
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router, Switch, Route, Link, useParams, useRouteMatch, Redirect } from 'react-router-dom';
+import { Switch, Route, Link, useParams, useRouteMatch, Redirect } from 'react-router-dom';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import DiagramBuilder from './pages/diagramBuilder/DiagramBuilder';
@@ -37,26 +37,24 @@ function App(props) {
 
   return (
     <Provider store={store}>
-      <Router>
-        <Switch>
-          <Route
-            exact
-            path={[path + '/builder', path + '/builder/:name/:version']}
-            render={props => <DiagramBuilder {...props} />}
-          />
-          <Route
-            exact
-            path={[path + '/:type', path + '/:type/:wfid']}
-            render={() => (
-              <>
-                <Header />
-                <WorkflowList />
-              </>
-            )}
-          />
-          <Redirect to={path + '/defs'} />
-        </Switch>
-      </Router>
+      <Switch>
+        <Route
+          exact
+          path={[path + '/builder', path + '/builder/:name/:version']}
+          render={props => <DiagramBuilder {...props} />}
+        />
+        <Route
+          exact
+          path={[path + '/:type', path + '/:type/:wfid']}
+          render={() => (
+            <>
+              <Header />
+              <WorkflowList />
+            </>
+          )}
+        />
+        <Redirect to={path + '/defs'} />
+      </Switch>
     </Provider>
   );
 }

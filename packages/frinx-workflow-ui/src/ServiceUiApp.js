@@ -31,33 +31,31 @@ function ServiceUIApp(props) {
   return (
     <GlobalProvider {...props}>
       <Provider store={store}>
-        <BrowserRouter>
-          <Switch>
-            <Redirect
-              exact
-              from={[
-                (props.frontendUrlPrefix || frontendUrlPrefix) + '/builder',
-                (props.frontendUrlPrefix || frontendUrlPrefix) + '/builder/:h/:vno',
-              ]}
-              to={(props.frontendUrlPrefix || frontendUrlPrefix) + '/defs'}
-            />
-            <Route
-              exact
-              path={[
-                (props.frontendUrlPrefix || frontendUrlPrefix) + '/:type',
-                (props.frontendUrlPrefix || frontendUrlPrefix) + '/:type/:wfid',
-                '/',
-              ]}
-              render={() => (
-                <>
-                  <Header />
-                  <WorkflowListReadOnly />
-                </>
-              )}
-            />
-            <Redirect to={(props.frontendUrlPrefix || frontendUrlPrefix) + '/defs'} />
-          </Switch>
-        </BrowserRouter>
+        <Switch>
+          <Redirect
+            exact
+            from={[
+              (props.frontendUrlPrefix || frontendUrlPrefix) + '/builder',
+              (props.frontendUrlPrefix || frontendUrlPrefix) + '/builder/:h/:vno',
+            ]}
+            to={(props.frontendUrlPrefix || frontendUrlPrefix) + '/defs'}
+          />
+          <Route
+            exact
+            path={[
+              (props.frontendUrlPrefix || frontendUrlPrefix) + '/:type',
+              (props.frontendUrlPrefix || frontendUrlPrefix) + '/:type/:wfid',
+              '/',
+            ]}
+            render={() => (
+              <>
+                <Header />
+                <WorkflowListReadOnly />
+              </>
+            )}
+          />
+          <Redirect to={(props.frontendUrlPrefix || frontendUrlPrefix) + '/defs'} />
+        </Switch>
       </Provider>
     </GlobalProvider>
   );

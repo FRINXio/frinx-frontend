@@ -1,6 +1,6 @@
 // @flow
 import './DiagramBuilder.css';
-import 'semantic-ui-css/semantic.min.css';
+// import 'semantic-ui-css/semantic.min.css';
 import * as _ from 'lodash';
 import * as builderActions from '../../store/actions/builder';
 import BuilderHeader from './ControlsHeader/BuilderHeader';
