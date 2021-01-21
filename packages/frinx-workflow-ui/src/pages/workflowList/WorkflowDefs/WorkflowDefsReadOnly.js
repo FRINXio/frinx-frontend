@@ -24,6 +24,7 @@ import { HttpClient as http } from '../../../common/HttpClient';
 import { GlobalContext } from '../../../common/GlobalContext';
 import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
+import PageContainer from '../../../common/PageContainer';
 
 const jsonParse = json => {
   try {
@@ -45,7 +46,7 @@ const getLabels = dataset => {
     .sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
 };
 
-function WorkflowDefs(props) {
+function WorkflowDefs() {
   const global = useContext(GlobalContext);
   const [keywords, setKeywords] = useState('');
   const [labels, setLabels] = useState([]);
@@ -234,7 +235,7 @@ function WorkflowDefs(props) {
   };
 
   return (
-    <div>
+    <PageContainer>
       {renderDefinitionModal()}
       {renderInputModal()}
       {renderDiagramModal()}
@@ -288,7 +289,7 @@ function WorkflowDefs(props) {
           </Table.Row>
         </Table.Footer>
       </Table>
-    </div>
+    </PageContainer>
   );
 }
 

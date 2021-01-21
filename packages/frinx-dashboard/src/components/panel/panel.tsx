@@ -1,20 +1,18 @@
-import React, { CSSProperties, FC, useState } from 'react';
+import React, { FC } from 'react';
 import { Box, Heading, Text, Link, Flex, Icon, WrapItem } from '@chakra-ui/react';
+import { Link as RouterLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 type Props = {
-  title: string;
+  label: string;
   description: string;
   icon: IconDefinition;
-  style: CSSProperties;
-  url: string | undefined;
-  isExternal: boolean;
-  isDisabled: boolean;
+  path: string;
 };
 
-const Panel: FC<Props> = props => {
-  const { url, isExternal, title, description, icon } = props;
+const Panel: FC<Props> = (props) => {
+  const { path, label, description, icon } = props;
 
   return (
     <WrapItem
@@ -42,14 +40,13 @@ const Panel: FC<Props> = props => {
       <Box paddingLeft={4} flex={1}>
         <Heading size="md" as="h2" marginBottom={1}>
           <Link
-            href={url}
-            target={isExternal ? '_blank' : undefined}
-            rel={isExternal ? 'noopener noreferrer' : undefined}
+            to={path}
+            as={RouterLink}
             _hover={{
               textDecor: 'underline',
             }}
           >
-            {title}
+            {label}
           </Link>
         </Heading>
         <Text fontSize="sm">{description}</Text>

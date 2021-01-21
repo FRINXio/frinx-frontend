@@ -10,7 +10,7 @@ type GlobalConstants = {
 };
 
 export const globalConstants: GlobalConstants = {
-  backendApiUrlPrefix: '/uniflow/api/conductor',
+  backendApiUrlPrefix: 'http://frinx_test.frinx.services/workflow/proxy',
   frontendUrlPrefix: '/uniflow/ui',
   enableScheduling: true,
   disabledTasks: ['js', 'py', 'while', 'while_end'],

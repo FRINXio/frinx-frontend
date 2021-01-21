@@ -6,6 +6,7 @@ import { GlobalContext } from '../../../common/GlobalContext';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
 import { usePagination } from '../../../common/PaginationHook';
 import PaginationPages from '../../../common/Pagination';
+import PageContainer from '../../../common/PageContainer';
 
 function PollData() {
   const global = useContext(GlobalContext);
@@ -99,13 +100,13 @@ function PollData() {
   };
 
   return (
-    <div>
+    <PageContainer>
       <Input iconPosition="left" fluid icon placeholder="Search...">
         <input value={keywords} onChange={e => setKeywords(e.target.value)} />
         <Icon name="search" />
       </Input>
       {pollTable()}
-    </div>
+    </PageContainer>
   );
 }
 

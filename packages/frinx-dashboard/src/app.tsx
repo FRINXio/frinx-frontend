@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { Route, BrowserRouter, Switch } from 'react-router-dom';
 import { PublicClientApplication } from '@azure/msal-browser';
-import { ChakraProvider } from '@chakra-ui/react';
+import { Box, ChakraProvider, Container, HStack, Skeleton } from '@chakra-ui/react';
 import { MsalProvider } from '@azure/msal-react';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import Dashboard from './components/dashboard/dashboard';
@@ -9,34 +9,8 @@ import Header from './components/header/header';
 import 'react-notifications/lib/notifications.css';
 import { createPublicClientApp } from './auth-helpers';
 import theme from './theme';
-import unwrap from './helpers/unwrap';
-
-type RouteRecord = {
-  route: string;
-  importFn: () => Promise<any>;
-  componentName: string;
-};
-const importMap = new Map<ServiceName, RouteRecord>([
-  ['uniflow', { route: '/uniflow', importFn: () => import('@frinx/workflow-ui/dist'), componentName: 'WorkflowApp' }],
-]);
-
-async function getRoutes(): Promise<{ route: string; Component: FC }[]> {
-  const promiseArray = await Promise.all(
-    window.__CONFIG__.enabled_services.map(async (r) => {
-      const { route, importFn, componentName } = unwrap(importMap.get(r));
-      return {
-        route,
-        componentName,
-        component: await importFn(),
-      };
-    }),
-  );
-
-  return promiseArray.map((p) => ({
-    route: p.route,
-    Component: p.component[p.componentName],
-  }));
-}
+import { getRoutes, RouteType } from './helpers/route.helpers';
+import AppMenu from './components/app-menu/app-menu';
 
 function setMessages() {
   const urlParams = new URLSearchParams(window.location?.search);
@@ -64,7 +38,7 @@ function setMessages() {
   }
 }
 
-const AppWithAuth: FC<{ routes: { route: string; Component: FC }[] | null }> = ({ routes }) => {
+const AppWithAuth: FC<{ routes: RouteType[] | null }> = ({ routes }) => {
   const publicClientAppRef = useRef<PublicClientApplication>(createPublicClientApp());
 
   return (
@@ -72,21 +46,34 @@ const AppWithAuth: FC<{ routes: { route: string; Component: FC }[] | null }> = (
       <ChakraProvider theme={theme}>
         <BrowserRouter>
           <NotificationContainer correlationId="notificationContainer" />
-          <Header isAuthEnabled />
-          <Switch>
-            <Route path="/" exact>
-              <Dashboard />
-            </Route>
-            {routes &&
-              routes.map((r) => {
-                const { route, Component } = r;
-                return (
-                  <Route path={route} key={route}>
-                    <Component />
-                  </Route>
-                );
-              })}
-          </Switch>
+          <Header isAuthEnabled>
+            <Switch>
+              {routes &&
+                routes.map((r) => {
+                  return (
+                    <Route path={r.path} key={r.path}>
+                      <AppMenu menuLinks={r.menuLinks} />
+                    </Route>
+                  );
+                })}
+            </Switch>
+          </Header>
+          <Box paddingTop={10}>
+            <Switch>
+              <Route path="/" exact>
+                <Dashboard />
+              </Route>
+              {routes &&
+                routes.map((r) => {
+                  const { path, RootComponent } = r;
+                  return (
+                    <Route path={path} key={path}>
+                      <RootComponent />
+                    </Route>
+                  );
+                })}
+            </Switch>
+          </Box>
         </BrowserRouter>
       </ChakraProvider>
     </MsalProvider>
@@ -94,14 +81,37 @@ const AppWithAuth: FC<{ routes: { route: string; Component: FC }[] | null }> = (
 };
 
 const App: FC<{ isAuthEnabled: boolean }> = ({ isAuthEnabled }) => {
-  const [routes, setRoutes] = useState<null | { route: string; Component: FC }[]>(null);
+  const [routes, setRoutes] = useState<null | RouteType[]>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setMessages();
+    setIsLoading(true);
     getRoutes().then((r) => {
       setRoutes(r);
+      setIsLoading(false);
     });
   }, []);
+
+  if (isLoading) {
+    return (
+      <ChakraProvider theme={theme}>
+        <BrowserRouter>
+          <Header isAuthEnabled={false} />
+          <Box paddingTop={10}>
+            <Container maxWidth={1280}>
+              <HStack spacing={4}>
+                <Skeleton height="100px" flex={1} />
+                <Skeleton height="100px" flex={1} />
+                <Skeleton height="100px" flex={1} />
+                <Skeleton height="100px" flex={1} />
+              </HStack>
+            </Container>
+          </Box>
+        </BrowserRouter>
+      </ChakraProvider>
+    );
+  }
 
   return isAuthEnabled ? (
     <AppWithAuth routes={routes} />
@@ -109,21 +119,34 @@ const App: FC<{ isAuthEnabled: boolean }> = ({ isAuthEnabled }) => {
     <ChakraProvider theme={theme}>
       <BrowserRouter>
         <NotificationContainer correlationId="notificationContainer" />
-        <Header isAuthEnabled={false} />
-        <Switch>
-          <Route path="/" exact>
-            <Dashboard />
-          </Route>
-          {routes &&
-            routes.map((r) => {
-              const { route, Component } = r;
-              return (
-                <Route exact path={route} key={route}>
-                  <Component />
-                </Route>
-              );
-            })}
-        </Switch>
+        <Header isAuthEnabled={false}>
+          <Switch>
+            {routes &&
+              routes.map((r) => {
+                return (
+                  <Route path={r.path} key={r.path}>
+                    <AppMenu menuLinks={r.menuLinks} />
+                  </Route>
+                );
+              })}
+          </Switch>
+        </Header>
+        <Box paddingTop={10}>
+          <Switch>
+            <Route path="/" exact>
+              <Dashboard />
+            </Route>
+            {routes &&
+              routes.map((r) => {
+                const { path, RootComponent } = r;
+                return (
+                  <Route exact path={path} key={path}>
+                    <RootComponent />
+                  </Route>
+                );
+              })}
+          </Switch>
+        </Box>
       </BrowserRouter>
     </ChakraProvider>
   );
