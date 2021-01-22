@@ -37,7 +37,11 @@ const getLabels = dataset => {
     .sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
 };
 
-function WorkflowDefs(props) {
+type Props = {
+  onDefinitionClick: (name: string, version: string) => void,
+};
+
+const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
   const global = useContext(GlobalContext);
   const [keywords, setKeywords] = useState('');
   const [labels, setLabels] = useState([]);
@@ -190,7 +194,9 @@ function WorkflowDefs(props) {
           basic
           circular
           icon="edit"
-          onClick={() => props.history.push(`${global.frontendUrlPrefix}/builder/${dataset.name}/${dataset.version}`)}
+          onClick={() => {
+            onDefinitionClick(dataset.name, dataset.version);
+          }}
         />
         <Button
           title={dataset.hasSchedule ? 'Edit schedule' : 'Create schedule'}
@@ -418,6 +424,6 @@ function WorkflowDefs(props) {
       </Table>
     </PageContainer>
   );
-}
+};
 
-export default withRouter(WorkflowDefs);
+export default WorkflowDefinitions;

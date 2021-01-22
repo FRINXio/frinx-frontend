@@ -24,7 +24,7 @@ const importMap = new Map<ServiceName, RouteRecord>([
     'uniflow',
     {
       path: '/uniflow/ui',
-      importFn: () => import('@frinx/workflow-ui/dist'),
+      importFn: () => import('@frinx/workflow-ui/src'),
       label: 'UniFlow',
       description: 'Create, organize and execute workflows.',
       icon: faCogs,

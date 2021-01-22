@@ -51,10 +51,8 @@ class DiagramBuilder extends Component {
     this.saveWorkflow = this.saveWorkflow.bind(this);
     this.showExitModal = this.showExitModal.bind(this);
     this.showNodeModal = this.showNodeModal.bind(this);
-    this.redirectOnNew = this.redirectOnNew.bind(this);
     this.showInputModal = this.showInputModal.bind(this);
     this.saveAndExecute = this.saveAndExecute.bind(this);
-    this.redirectOnExit = this.redirectOnExit.bind(this);
     this.closeInputModal = this.closeInputModal.bind(this);
     this.showDetailsModal = this.showDetailsModal.bind(this);
     this.parseDiagramToJSON = this.parseDiagramToJSON.bind(this);
@@ -88,10 +86,11 @@ class DiagramBuilder extends Component {
       this.props.storeTasks(res.result?.sort((a, b) => a.name.localeCompare(b.name)) || []);
     });
 
-    if (!_.isEmpty(this.props.match.params)) {
-      this.createExistingWorkflow();
-    } else {
+    const { name, version } = this.props;
+    if (name == null && version == null) {
       this.createNewWorkflow();
+    } else {
+      this.createExistingWorkflow();
     }
 
     const styleTag = document.createElement('link');
@@ -118,7 +117,7 @@ class DiagramBuilder extends Component {
   }
 
   createExistingWorkflow() {
-    const { name, version } = this.props.match.params;
+    const { name, version } = this.props;
     http
       .get(this.context.backendApiUrlPrefix + '/metadata/workflow/' + name + '/' + version)
       .then(res => {
@@ -319,16 +318,6 @@ class DiagramBuilder extends Component {
     saveAs(file, definition.name + '.json');
   }
 
-  redirectOnExit() {
-    this.props.history.push(this.context.frontendUrlPrefix + '/defs');
-    window.location.reload();
-  }
-
-  redirectOnNew() {
-    this.props.history.push(this.context.frontendUrlPrefix + '/builder');
-    window.location.reload();
-  }
-
   setZoomLevel(percentage, e) {
     if (e) {
       e.preventDefault();
@@ -381,7 +370,7 @@ class DiagramBuilder extends Component {
         show={this.state.showGeneralInfoModal}
         lockWorkflowName={this.props.lockWorkflowName}
         isWfNameLocked={this.props.isWfNameLocked}
-        redirectOnExit={this.redirectOnExit}
+        redirectOnExit={this.props.onExitBtnClick}
       />
     ) : null;
 
@@ -405,7 +394,7 @@ class DiagramBuilder extends Component {
           <Button variant="outline-primary" onClick={this.showExitModal}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={this.redirectOnExit}>
+          <Button variant="danger" onClick={this.props.onExitBtnClick}>
             Exit
           </Button>
         </Modal.Footer>
@@ -424,7 +413,7 @@ class DiagramBuilder extends Component {
           <Button variant="outline-primary" onClick={this.showNewModal}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={this.redirectOnNew}>
+          <Button variant="primary" onClick={this.props.onNewBtnClick}>
             New
           </Button>
         </Modal.Footer>
