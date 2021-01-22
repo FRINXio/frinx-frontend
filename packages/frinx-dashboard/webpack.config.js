@@ -56,6 +56,17 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
+        test: /\.js?$/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-flow'],
+            plugins: ['@babel/plugin-proposal-class-properties'],
+          },
+        },
+        include: /frinx-workflow-ui/,
+      },
+      {
         test: /\.(css|scss})$/,
         use: ['style-loader', 'css-loader', 'sass-loader'],
       },

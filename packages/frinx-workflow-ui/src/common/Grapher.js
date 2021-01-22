@@ -16,7 +16,7 @@ type SubGraph = {
 };
 
 type Props = {
-  innerGraph?: ?[],
+  innerGraph?: [],
   layout: {},
   edges: [],
   vertices: {},
@@ -25,8 +25,8 @@ type Props = {
 };
 
 type StateType = {
-  innerGraph: ?[],
-  subGraph: ?SubGraph,
+  innerGraph: [],
+  subGraph: SubGraph,
   showSideBar: boolean,
   selectedTask: Task,
   showSubGraph: boolean,
@@ -77,7 +77,13 @@ class Grapher extends Component<Props, StateType> {
     this.grapher.shapes().house = function(parent, bbox, node) {
       let w = bbox.width,
         h = bbox.height,
-        points = [{ x: 0, y: 0 }, { x: w, y: 0 }, { x: w, y: -h }, { x: w / 2, y: (-h * 3) / 2 }, { x: 0, y: -h }];
+        points = [
+          { x: 0, y: 0 },
+          { x: w, y: 0 },
+          { x: w, y: -h },
+          { x: w / 2, y: (-h * 3) / 2 },
+          { x: 0, y: -h },
+        ];
       let shapeSvg = parent
         .insert('polygon', ':first-child')
         .attr(
@@ -100,7 +106,13 @@ class Grapher extends Component<Props, StateType> {
     this.grapher.shapes().star = function(parent, bbox, node) {
       let w = bbox.width,
         h = bbox.height,
-        points = [{ x: 0, y: 0 }, { x: w, y: 0 }, { x: w, y: -h }, { x: w / 2, y: (-h * 3) / 2 }, { x: 0, y: -h }];
+        points = [
+          { x: 0, y: 0 },
+          { x: w, y: 0 },
+          { x: w, y: -h },
+          { x: w / 2, y: (-h * 3) / 2 },
+          { x: 0, y: -h },
+        ];
       let shapeSvg = parent.insert('polygon', ':first-child').attr('points', starPoints(w, h));
       node.intersect = function(point) {
         return dagreD3.intersect.polygon(node, points, point);

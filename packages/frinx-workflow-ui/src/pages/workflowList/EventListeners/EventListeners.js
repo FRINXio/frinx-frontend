@@ -10,7 +10,7 @@ import { usePagination } from '../../../common/PaginationHook';
 import PaginationPages from '../../../common/Pagination';
 import PageContainer from '../../../common/PageContainer';
 
-function EventListeners() {
+const EventListeners = () => {
   const global = useContext(GlobalContext);
   const [eventListeners, setEventListeners] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -174,6 +174,6 @@ function EventListeners() {
       </Table>
     </PageContainer>
   );
-}
+};
 
 export default EventListeners;

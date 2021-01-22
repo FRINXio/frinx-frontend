@@ -1,14 +1,14 @@
 {
-  "public_url": "/",
-  "auth_enabled": "false",
-  "auth_client_id": "c6becead-ca19-4efc-8444-16c4cddbf85a",
-  "auth_redirect_url": "http://frinx.dashboard.services/",
+  "enabled_services": ["uniflow"],
+  "auth_enabled": "true",
+  "auth_client_id": "366fab79-6c61-4a24-8c2c-b2be2f48fe35",
+  "auth_redirect_url": "http://localhost:3000",
   "inventory_enabled": "false",
   "uniconfig_enabled": "false",
   "uniflow_enabled": "true",
-  "usermanagement_enabled": "false",
+  "usermanagement_enabled": "true",
   "url_inventory": "http://localhost:5601",
   "url_uniconfig": "/uniconfig/ui",
-  "url_uniflow": "/uniflow/ui",
-  "url_usermanagement": "false"
+  "url_uniflow": "http://frinx_test.frinx.services/workflow/frontend",
+  "url_usermanagement": "true"
 }

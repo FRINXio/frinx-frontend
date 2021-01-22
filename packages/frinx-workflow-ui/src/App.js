@@ -14,7 +14,7 @@ import buildReducer from './store/reducers/builder';
 import bulkReducer from './store/reducers/bulk';
 import searchReducer from './store/reducers/searchExecs';
 import { GlobalProvider } from './common/GlobalContext';
-import WorkflowDefs from './pages/workflowList/WorkflowDefs/WorkflowDefs';
+import WorkflowDefs from './pages/workflowList/WorkflowDefs/WorkflowDefinitions';
 import WorkflowExec from './pages/workflowList/WorkflowExec/WorkflowExec';
 import Scheduling from './pages/workflowList/Scheduling/Scheduling';
 import EventListeners from './pages/workflowList/EventListeners/EventListeners';
@@ -56,7 +56,7 @@ function App(props) {
           <>
             <WorkflowListHeader />
             <Route exact path={path + '/defs'}>
-              <WorkflowDefs />
+              <WorkflowDefinitions />
             </Route>
             <Route
               exact
