@@ -36,7 +36,9 @@ const UniflowApp: FC = () => {
                   history.push('/uniflow/definitions');
                 }}
                 onNewBtnClick={() => {
-                  history.replace('/uniflow/builder');
+                  history.push('/uniflow/builder');
+                  // this is an ugly hack for now
+                  window.location.reload();
                 }}
               />
             );
