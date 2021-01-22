@@ -6,9 +6,9 @@
   "inventory_enabled": "false",
   "uniconfig_enabled": "false",
   "uniflow_enabled": "true",
-  "usermanagement_enabled": "true",
+  "usermanagement_enabled": "false",
   "url_inventory": "http://localhost:5601",
   "url_uniconfig": "/uniconfig/ui",
-  "url_uniflow": "http://frinx_test.frinx.services/workflow/frontend",
-  "url_usermanagement": "true"
+  "url_uniflow": "/uniflow/ui",
+  "url_usermanagement": "false"
 }
