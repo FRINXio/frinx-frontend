@@ -1,6 +1,6 @@
 // @flow
 import './DiagramBuilder.css';
-import 'semantic-ui-css/semantic.min.css';
+// import 'semantic-ui-css/semantic.min.css';
 import * as _ from 'lodash';
 import * as builderActions from '../../store/actions/builder';
 import BuilderHeader from './ControlsHeader/BuilderHeader';
@@ -93,10 +93,22 @@ class DiagramBuilder extends Component {
     } else {
       this.createNewWorkflow();
     }
+
+    const styleTag = document.createElement('link');
+    styleTag.setAttribute('rel', 'stylesheet');
+    styleTag.setAttribute('href', '//cdn.jsdelivr.net/npm/semantic-ui@2.4.1/dist/semantic.min.css');
+    styleTag.setAttribute('id', 'SEMANTIC_STYLE');
+    console.log(styleTag);
+    document.head?.appendChild(styleTag);
   }
 
   componentWillUnmount() {
     this.props.resetToDefaultWorkflow();
+
+    const styleTag = document.getElementById('SEMANTIC_STYLE');
+    if (styleTag != null) {
+      document.head?.removeChild(styleTag);
+    }
   }
 
   createNewWorkflow() {
@@ -526,7 +538,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(DiagramBuilder);
+export default connect(mapStateToProps, mapDispatchToProps)(DiagramBuilder);

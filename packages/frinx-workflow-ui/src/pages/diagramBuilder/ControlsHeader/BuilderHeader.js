@@ -261,7 +261,7 @@ const BuilderHeader = props => {
       headerEl &&
       sideMenu &&
       (headerEl.contains(event.target) || sideMenu.contains(event.target)) &&
-      (!expandBtn.contains(event.target) && !deleteBtn.contains(event.target))
+      !expandBtn.contains(event.target) && !deleteBtn.contains(event.target)
     ) {
       props.workflowDiagram.getDiagramModel().clearSelection();
       props.workflowDiagram.renderDiagram();

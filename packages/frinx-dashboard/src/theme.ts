@@ -9,6 +9,10 @@ const theme = extendTheme({
         color: 'gray.800',
         background: 'gray.100',
       },
+      '.chakra-link.active': {
+        borderColor: 'white',
+        color: 'white',
+      },
     },
   },
   colors: {

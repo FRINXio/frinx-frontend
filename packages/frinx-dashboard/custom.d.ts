@@ -10,8 +10,10 @@ declare module '*.inline.svg' {
 
 declare module 'react-notifications';
 
+declare type ServiceName = 'inventory' | 'uniconfig' | 'uniflow' | 'user_management';
 interface Window {
-  __CONFIG__: {
+  __CONFIG__: Readonly<{
+    enabled_services: ServiceName[];
     public_url: string;
     auth_enabled: 'true' | 'false';
     auth_client_id: string;
@@ -24,7 +26,7 @@ interface Window {
     url_uniconfig: string;
     url_uniflow: string;
     url_usermanagement: string;
-  };
+  }>;
 
   dashboardApp: {
     render: () => void;
