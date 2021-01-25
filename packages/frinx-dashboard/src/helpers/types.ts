@@ -76,6 +76,12 @@ export type InputParameters =
   | RawInputParams
   | DynamicForkInputParams;
 
+export type WorkflowPayload = {
+  input: any;
+  name: string;
+  version: number;
+};
+
 export type TaskType =
   | 'DECISION'
   | 'EVENT'
@@ -89,10 +95,8 @@ export type TaskType =
   | 'WHILE_END'
   | 'SUB_WORKFLOW';
 
-export type BaseTask<T = undefined> = {
-  id: string;
+export type TaskDefinition = {
   name: string;
-  taskReferenceName: string;
   ownerEmail: string;
   description?: string;
   retryCount: number;
@@ -100,10 +104,55 @@ export type BaseTask<T = undefined> = {
   retryDelaySeconds: number;
   timeoutPolicy: 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
   timeoutSeconds: number;
-  pollTimeoutSeconds: number;
   responseTimeoutSeconds: number;
   inputKeys?: string[];
   outputKeys?: string[];
+  createTime?: number;
+  createdBy?: string;
+  rateLimitFrequencyInSeconds?: number;
+  rateLimitPerFrequency?: number;
+};
+
+export type ActionTypes = 'complete_task' | 'fail_task';
+
+export type ActionTargetTask = {
+  workflowId: string;
+  taskRefName: string;
+  output?: any;
+};
+
+export type ActionTargetWorkflow = {
+  workflowId: string;
+  taskRefName: string;
+  output?: any;
+};
+
+export type Action = {
+  action: string;
+  expandInLineJson: boolean;
+} & (
+  | { [key in ActionTypes]: ActionTargetTask }
+  | { start_workflow: ActionTargetWorkflow }
+);
+
+export type EventListner = {
+  name: string;
+  event: string;
+  actions: Action[];
+  active?: boolean;
+};
+
+export type Queue = {
+  lastPollTime: number;
+  qsize: number;
+  queueName: string;
+  workerId: string;
+};
+
+export type BaseTask<T = undefined> = {
+  name: string;
+  taskReferenceName: string;
+  description?: string;
   optional: boolean;
   startDelay: number;
   inputParameters: T;
@@ -170,8 +219,12 @@ export type StartTask = BaseTask & {
 export type EndTask = BaseTask & {
   type: 'END_TASK';
 };
+export type SimpleTask = BaseTask & {
+  type: 'SIMPLE';
+};
 
 export type Task =
+  | SimpleTask
   | DecisionTask
   | EventTask
   | HTTPTask

@@ -5,6 +5,11 @@ export interface HttpResponse<T> extends Response {
 export async function http<T>(request: RequestInfo): Promise<HttpResponse<T>> {
   const response: HttpResponse<T> = await fetch(request);
   response.parsedBody = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`request failed with http-code ${response.status}`);
+  }
+
   return response;
 }
 
@@ -29,6 +34,10 @@ export async function put<T>(
 }
 
 // delete is reserved keyword
-export async function del<T>(path: string, args: RequestInit = { method: 'delete' }): Promise<HttpResponse<T>> {
+export async function del<T>(
+  path: string,
+  body?: any,
+  args: RequestInit = { method: 'delete', body: JSON.stringify(body) },
+): Promise<HttpResponse<T>> {
   return await http<T>(new Request(path, args));
 }
