@@ -8,7 +8,7 @@ export type MenuLink = {
 };
 export type RouteRecord = {
   path: string;
-  importFn: () => Promise<{ default: { RootComponent: FC; menuLinks: MenuLink[] } }>;
+  importFn: () => Promise<unknown>;
   label: string;
   description: string;
   icon: IconDefinition;
@@ -23,8 +23,8 @@ const importMap = new Map<ServiceName, RouteRecord>([
   [
     'uniflow',
     {
-      path: '/uniflow/ui',
-      importFn: () => import('@frinx/workflow-ui/src'),
+      path: '/uniflow',
+      importFn: () => import('@frinx/workflow-ui'),
       label: 'UniFlow',
       description: 'Create, organize and execute workflows.',
       icon: faCogs,

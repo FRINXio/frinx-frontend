@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Route, Switch, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
+import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
 import {
   ReduxProvider,
   WorkflowListHeader,
@@ -10,12 +10,10 @@ import {
   TaskList,
   PollData,
   DiagramBuilder,
-} from '@frinx/workflow-ui/src';
+} from '@frinx/workflow-ui';
 
 const UniflowApp: FC = () => {
   const history = useHistory();
-  const { params } = useRouteMatch();
-  console.log(params);
 
   return (
     <ReduxProvider>
@@ -26,8 +24,9 @@ const UniflowApp: FC = () => {
         <Route
           exact
           path="/uniflow/builder/:name?/:version?"
-          render={(props) => {
+          render={(props: RouteComponentProps<{ name?: string; version?: string }>) => {
             const { match } = props;
+
             return (
               <DiagramBuilder
                 name={match.params.name}
@@ -60,7 +59,9 @@ const UniflowApp: FC = () => {
           <Route
             exact
             path="/uniflow/executed/:wfId?"
-            render={(props) => <WorkflowExec query={props.match.params.wfId} />}
+            render={(props: RouteComponentProps<{ wfId?: string }>) => {
+              return <WorkflowExec query={props.match.params.wfId} />;
+            }}
           />
           <Route exact path="/uniflow/scheduled">
             <Scheduling />
