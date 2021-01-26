@@ -1,6 +1,4 @@
-import React, {createContext, useState, useEffect} from 'react'
-
-export const GlobalContext = createContext();
+import React, {createContext } from 'react'
 
 const AUTH_TOKEN = "Basic YWRtaW46YWRtaW4=";
 
@@ -10,18 +8,10 @@ export const globalConstants = {
   authToken: AUTH_TOKEN
 };
 
+export const GlobalContext = createContext(globalConstants);
+
 export const GlobalProvider = (props) => {
-  const [global, setGlobal] = useState(globalConstants);
+  const { children, ...rest } = props;
+  return <GlobalContext.Provider value={{ ...globalConstants, ...rest }}>{children}</GlobalContext.Provider>;
 
-  useEffect(() => {
-    setGlobal({...global, ...props})
-  }, [props])
-
-  return (
-    <GlobalContext.Provider
-      value={global}
-    >
-      {props.children}
-    </GlobalContext.Provider>
-  );
 };

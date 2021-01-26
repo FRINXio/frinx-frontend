@@ -1,4 +1,4 @@
-import { IconDefinition, faCogs } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition, faCogs, faLaptopCode } from '@fortawesome/free-solid-svg-icons';
 import { FC } from 'react';
 import unwrap from './unwrap';
 
@@ -24,10 +24,22 @@ const importMap = new Map<ServiceName, RouteRecord>([
     'uniflow',
     {
       path: '/uniflow',
-      importFn: () => import('@frinx/workflow-ui'),
+      // @ts-ignore
+      importFn: () => import('@frinx/workflow-ui/dist'),
       label: 'UniFlow',
       description: 'Create, organize and execute workflows.',
       icon: faCogs,
+    },
+  ],
+  [
+    'uniconfig',
+    {
+      path: '/uniconfig',
+      // @ts-ignore
+      importFn: () => import('@frinx/uniconfig-ui/dist'),
+      label: 'UniConfig',
+      description: 'Manage network device configurations.',
+      icon: faLaptopCode,
     },
   ],
 ]);
