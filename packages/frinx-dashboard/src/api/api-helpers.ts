@@ -1,43 +1,41 @@
-export interface HttpResponse<T> extends Response {
-  parsedBody?: T;
-}
+// TODO dynamic source of url
+const CONDUCTOR_API_URL: string = 'localhost:8080/api';
 
-export async function http<T>(request: RequestInfo): Promise<HttpResponse<T>> {
-  const response: HttpResponse<T> = await fetch(request);
-  response.parsedBody = await response.json();
+export async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
+  const url = `${CONDUCTOR_API_URL}/${path}`;
+  const response = await fetch(url, options);
 
   if (!response.ok) {
-    throw new Error(`request failed with http-code ${response.status}`);
+    throw new Error(`apiFetch failed with http-code ${response.status}`);
   }
 
-  return response;
+  return response.json();
 }
 
-export async function get<T>(path: string, args: RequestInit = { method: 'get' }): Promise<HttpResponse<T>> {
-  return await http<T>(new Request(path, args));
+export async function sendGetRequest(path: string, options: RequestInit = { method: 'get' }): Promise<unknown> {
+  return apiFetch(path, options);
 }
 
-export async function post<T>(
+export async function sendPostRequest(
   path: string,
   body: any,
-  args: RequestInit = { method: 'post', body: JSON.stringify(body) },
-): Promise<HttpResponse<T>> {
-  return await http<T>(new Request(path, args));
+  options: RequestInit = { method: 'post', body: JSON.stringify(body) },
+): Promise<unknown> {
+  return apiFetch(path, options);
 }
 
-export async function put<T>(
+export async function sendPutRequest(
   path: string,
   body: any,
-  args: RequestInit = { method: 'put', body: JSON.stringify(body) },
-): Promise<HttpResponse<T>> {
-  return await http<T>(new Request(path, args));
+  options: RequestInit = { method: 'put', body: JSON.stringify(body) },
+): Promise<unknown> {
+  return apiFetch(path, options);
 }
 
-// delete is reserved keyword
-export async function del<T>(
+export async function sendDeleteRequest(
   path: string,
   body?: any,
-  args: RequestInit = { method: 'delete', body: JSON.stringify(body) },
-): Promise<HttpResponse<T>> {
-  return await http<T>(new Request(path, args));
+  options: RequestInit = { method: 'delete', body: JSON.stringify(body) },
+): Promise<unknown> {
+  return apiFetch(path, options);
 }

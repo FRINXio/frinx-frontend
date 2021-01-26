@@ -135,7 +135,7 @@ export type Action = {
   | { start_workflow: ActionTargetWorkflow }
 );
 
-export type EventListner = {
+export type EventListener = {
   name: string;
   event: string;
   actions: Action[];
