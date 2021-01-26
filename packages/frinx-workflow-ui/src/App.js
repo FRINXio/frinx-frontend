@@ -54,7 +54,7 @@ function App(props) {
             render={props => <DiagramBuilder {...props} />}
           />
           <>
-            <WorkflowListHeader />
+            <WorkflowListHeader onAddButtonClick={() => {}} />
             <Route exact path={path + '/defs'}>
               <WorkflowDefinitions />
             </Route>
