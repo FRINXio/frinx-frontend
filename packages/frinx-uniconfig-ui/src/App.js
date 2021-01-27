@@ -10,7 +10,6 @@ const { frontendUrlPrefix } = globalConstants;
 function App(props) {
   return (
     <GlobalProvider {...props}>
-      {/* <Header /> */}
       <Switch>
         <Route exact path={(props.frontendUrlPrefix || frontendUrlPrefix) + '/devices'} component={List} />
         <Route
