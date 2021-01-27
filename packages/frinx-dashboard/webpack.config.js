@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 /* eslint-enable */
@@ -26,10 +27,11 @@ const plugins = [
   }),
   new HtmlWebPackPlugin({
     template: isDev ? fullPath('src', 'index.dev.html') : fullPath('src', 'index.shtml'),
-    inject: true,
+    inject: false,
     filename: isDev ? 'index.html' : 'index.shtml',
     scriptLoading: 'blocking',
   }),
+  new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
 ];
 
 module.exports = {
@@ -54,6 +56,17 @@ module.exports = {
         test: /\.tsx?$/,
         use: 'babel-loader',
         exclude: /node_modules/,
+      },
+      {
+        test: /\.js?$/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-flow'],
+            plugins: ['@babel/plugin-proposal-class-properties'],
+          },
+        },
+        include: /frinx-workflow-ui/,
       },
       {
         test: /\.(css|scss})$/,

@@ -3,13 +3,14 @@ import React, { useContext } from 'react';
 import { Button } from 'react-bootstrap';
 import { HttpClient as http } from '../../common/HttpClient';
 import { GlobalContext } from '../../common/GlobalContext';
-import { useRouteMatch, useHistory } from 'react-router-dom';
 import PageContainer from '../../common/PageContainer';
 
-const WorkflowListHeader = () => {
+type Props = {
+  onAddButtonClick: () => void,
+};
+
+const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
   const global = useContext(GlobalContext);
-  const history = useHistory();
-  const { path } = useRouteMatch();
 
   const importFiles = e => {
     const files = e.currentTarget.files;
@@ -60,12 +61,7 @@ const WorkflowListHeader = () => {
       <h1 style={{ marginBottom: '20px' }}>
         <i style={{ color: 'grey' }} className="fas fa-cogs" />
         &nbsp;&nbsp;Workflows
-        <Button
-          key="builder-btn"
-          variant="outline-primary"
-          style={{ marginLeft: '30px' }}
-          onClick={() => history.push(path + '/builder')}
-        >
+        <Button key="builder-btn" variant="outline-primary" style={{ marginLeft: '30px' }} onClick={onAddButtonClick}>
           <i className="fas fa-plus" />
           &nbsp;&nbsp;New
         </Button>

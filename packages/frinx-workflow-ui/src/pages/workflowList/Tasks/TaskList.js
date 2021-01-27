@@ -11,7 +11,7 @@ import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
 import PageContainer from '../../../common/PageContainer';
 
-function TaskList() {
+const TaskList = () => {
   const global = useContext(GlobalContext);
   const [keywords, setKeywords] = useState('');
   const [sorted, setSorted] = useState(false);
@@ -196,6 +196,6 @@ function TaskList() {
       {taskTable()}
     </PageContainer>
   );
-}
+};
 
 export default TaskList;

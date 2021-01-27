@@ -20,7 +20,7 @@ const WfLabels = (props: Props) => {
       circular
       size="tiny"
       style={{ backgroundColor: color, color: 'white', cursor: 'pointer' }}
-      {...(props: any)}
+      {...props}
     >
       <p>{props.label}</p>
     </Label>
