@@ -21,11 +21,21 @@ export type RouteType = {
 
 const importMap = new Map<ServiceName, RouteRecord>([
   [
-    'uniflow',
+    'inventory',
     {
       path: '/uniflow/ui',
       importFn: () => import('@frinx/workflow-ui/src'),
       label: 'UniFlow',
+      description: 'Create, organize and execute workflows.',
+      icon: faCogs,
+    },
+  ],
+  [
+    'uniflow',
+    {
+      path: '/uniresource',
+      importFn: () => import('../../../frinx-uniresource-ui'),
+      label: 'UniResource',
       description: 'Create, organize and execute workflows.',
       icon: faCogs,
     },

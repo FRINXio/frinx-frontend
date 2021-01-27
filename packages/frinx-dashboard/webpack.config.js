@@ -57,14 +57,27 @@ module.exports = {
       },
       {
         test: /\.js?$/,
+        exclude: '/frinx-uniresource-ui',
         use: {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-flow'],
-            plugins: ['@babel/plugin-proposal-class-properties'],
+            plugins: ['@babel/plugin-proposal-class-properties', "@babel/plugin-transform-flow-strip-types"],
           },
         },
         include: /frinx-workflow-ui/,
+      },
+      {
+        test: /\.m?js$/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            babelrc: true,
+            presets: ['@babel/preset-flow'],
+            plugins: ['@babel/plugin-proposal-class-properties'],
+          },
+        },
+        include: /frinx-uniresource-ui/,
       },
       {
         test: /\.(css|scss})$/,

@@ -92,6 +92,7 @@ const ResourceTypes = (props: Props) => {
   const [updateDataVar, setUpdateDataVar] = useState(0);
   const [filteredArray, setFilteredArray] = useState([]);
   const [queryArray, setQueryArray] = useState([]);
+  const [numOfResourcetypes, setNumOfResourcetypes] = useState(0);
 
   const [filterConstraints, setFilterConstraints] = useState({
     searchQuery: '',
@@ -128,12 +129,33 @@ const ResourceTypes = (props: Props) => {
   const [{ isAdmin }] = useStateValue();
 
   return (
+      <div className={classes.mainContainer}>
+        <div className={classes.addButtonContainer}>
+          <Typography component="div">
+            <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
+              Resource Types ({numOfResourcetypes})
+            </Box>
+          </Typography>
+          {isAdmin ?
+              <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setShowEditCard(true);
+                  }}
+              >
+                Add Resource Type
+              </Button>
+              : null
+          }
+        </div>
     <ResourceManagerQueryRenderer
       query={query}
       variables={{ someVar: showEditCard, updateDataVar }}
       render={(queryProps) => {
         const { QueryResourceTypes } = queryProps;
         setQueryArray(QueryResourceTypes);
+        setNumOfResourcetypes(QueryResourceTypes.length)
 
         if (showEditCard) {
           return (
@@ -144,44 +166,25 @@ const ResourceTypes = (props: Props) => {
         }
 
         return (
-          <div className={classes.mainContainer}>
-            <div className={classes.addButtonContainer}>
-              <Typography component="div">
-                <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
-                  Resource Types ({QueryResourceTypes.length})
-                </Box>
-              </Typography>
-              {isAdmin ?
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    setShowEditCard(true);
-                  }}
-                >
-                  Add Resource Type
-                </Button>
-                : null
-              }
-            </div>
+            <>
+              <div>
+                <ResourceTypesFilters
+                  setFilteredArray={setFilteredArray}
+                  resourceTypesArray={QueryResourceTypes}
+                  filterConstraints={filterConstraints}
+                  setFilterConstraints={setFilterConstraints}
+                  updateFilterConstraint={updateFilterConstraint}
+                />
+              </div>
 
-            <div>
-              <ResourceTypesFilters
-                setFilteredArray={setFilteredArray}
-                resourceTypesArray={QueryResourceTypes}
-                filterConstraints={filterConstraints}
-                setFilterConstraints={setFilterConstraints}
-                updateFilterConstraint={updateFilterConstraint}
-              />
-            </div>
-
-            <div>
-              <ResourceTypesTable resourceTypesData={filteredArray} updateDataVarFunc={updateDataVarFunc} />
-            </div>
-          </div>
+              <div>
+                <ResourceTypesTable resourceTypesData={filteredArray} updateDataVarFunc={updateDataVarFunc} />
+              </div>
+            </>
         );
       }}
     />
+    </div>
   );
 };
 

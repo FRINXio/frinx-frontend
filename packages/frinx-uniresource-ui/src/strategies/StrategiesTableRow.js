@@ -34,17 +34,17 @@ const useStyles = makeStyles(() => ({
   iconButton: {},
 }));
 
-type Row = { Name: string, Lang: string, id: string, Script: string };
-type Props = {|
-  row: Row,
-  onActionClick: () => void,
-  actionsAnchorEl: HTMLElement,
-  onMenuClose: () => void,
-  onTestClick: (Row) => void,
-  onDeleteClick: (Row) => void,
-|};
+// type Row = { Name: string, Lang: string, id: string, Script: string };
+// type Props = {
+//   row: Row,
+//   onActionClick: () => void,
+//   actionsAnchorEl: HTMLElement,
+//   onMenuClose: () => void,
+//   onTestClick: (Row) => void,
+//   onDeleteClick: (Row) => void,
+// };
 
-const StrategiesTableRow = (props: Props) => {
+const StrategiesTableRow = (props) => {
   const classes = useStyles();
   const { row, onActionClick, actionsAnchorEl, onMenuClose, onTestClick, onDeleteClick } = props;
   const { Name, Lang, id, Script } = row;

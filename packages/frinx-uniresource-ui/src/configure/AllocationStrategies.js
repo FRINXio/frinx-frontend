@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 // eslint-disable-next-line no-unused-vars
 import classNames from 'classnames';
 import { graphql } from 'graphql';
-import type { WithStyles } from '@material-ui/core';
+// import type { WithStyles } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 import Typography from '@material-ui/core/Typography';
@@ -36,11 +36,12 @@ const styles = () => ({
   },
 });
 
-type Props = {} & WithStyles<typeof styles>;
+// type Props = {} & WithStyles<typeof styles>;
 
-const AllocationStrategies = (props: Props) => {
+const AllocationStrategies = (props) => {
   const { classes } = props;
 
+  const [numOfStrategies, setNumOfStrategies] = useState(0);
   const [updateDataVar, setUpdateDataVar] = useState(0);
 
   const [showEditCard, setShowEditCard] = useState(false);
@@ -82,35 +83,38 @@ const AllocationStrategies = (props: Props) => {
 
   return (
     <div className={classes.mainDiv}>
+      <div>
+        <div>
+          <div className={classes.typesList}>
+            <div className={classes.addButtonContainer}>
+              <Typography component="div">
+                <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
+                  Allocation Strategies ({numOfStrategies})
+                </Box>
+              </Typography>
+              <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setShowEditCard(true);
+                  }}
+              >
+                Add Strategy
+              </Button>
+            </div>
+          </div>
+        </div>
+
       <ResourceManagerQueryRenderer
         query={query}
         variables={{ showEditCard, updateDataVar }}
         render={(queryProps) => {
           const { QueryAllocationStrategies } = queryProps;
+          setNumOfStrategies(QueryAllocationStrategies.length)
           const { lang, searchQuery } = filterConstraints;
           const filteredData = filterByLang(lang, filterByQuery(searchQuery, QueryAllocationStrategies));
           return (
-            <div>
-              <div>
-                <div className={classes.typesList}>
-                  <div className={classes.addButtonContainer}>
-                    <Typography component="div">
-                      <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
-                        Allocation Strategies ({QueryAllocationStrategies.length})
-                      </Box>
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => {
-                        setShowEditCard(true);
-                      }}
-                    >
-                      Add Strategy
-                    </Button>
-                  </div>
-                </div>
-              </div>
+            <>
 
               <StrategiesFilters
                 resourceTypesArray={QueryAllocationStrategies}
@@ -120,10 +124,12 @@ const AllocationStrategies = (props: Props) => {
               />
 
               <StrategiesTable strategiesData={filteredData} updateDataVarFunc={updateDataVarFunc} />
-            </div>
+            </>
+
           );
         }}
       />
+      </div>
     </div>
   );
 };

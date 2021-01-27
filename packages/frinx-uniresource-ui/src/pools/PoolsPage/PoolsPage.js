@@ -10,13 +10,13 @@ import AddIcon from '@material-ui/icons/Add';
 import { withSnackbar } from 'notistack';
 import Switch from '@material-ui/core/Switch';
 import DeletePoolMutation from '../../mutations/DeletePoolMutation';
-import {
-  filterByPoolType,
-  filterByQuery,
-  filterByResourceType,
-  filterByStrategy,
-  filterByTags,
-} from './Filters/filter.helpers';
+// import {
+//   filterByPoolType,
+//   filterByQuery,
+//   filterByResourceType,
+//   filterByStrategy,
+//   filterByTags,
+// } from './Filters/filter.helpers';
 import {
   fetchQuery,
   queryAllPools,
@@ -102,11 +102,11 @@ const PoolsPage = (props) => {
   // TODO filtering is performed locally on already fetched data, it should be probably handled by relay/graphql (?)
   const { searchQuery, tags, poolType, allocStrat, resourceType } = filterConstraints;
   const filteredPoolArray = pipe(
-    filterByQuery(searchQuery),
-    filterByTags(tags),
-    filterByPoolType(poolType),
-    filterByStrategy(allocStrat?.id),
-    filterByResourceType(resourceType?.id),
+    // filterByQuery(searchQuery),
+    // filterByTags(tags),
+    // filterByPoolType(poolType),
+    // filterByStrategy(allocStrat?.id),
+    // filterByResourceType(resourceType?.id),
   )(poolArray);
 
   const updateFilterConstraint = (key, value) => {

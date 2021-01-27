@@ -1,5 +1,5 @@
 // @flow
-import type { WithStyles } from '@material-ui/core';
+// import type { WithStyles } from '@material-ui/core';
 
 import * as React from 'react';
 // eslint-disable-next-line no-unused-vars
@@ -24,12 +24,12 @@ const styles = () => ({
   },
 });
 
-type Props = {
-  children: React.ChildrenArray<null | React.Element<*>>,
-  showAddEditCardFunc: Function,
-} & WithStyles<typeof styles>;
+// type Props = {
+//   children: React.ChildrenArray<null | React.Element<*>>,
+//   showAddEditCardFunc: Function,
+// } & WithStyles<typeof styles>;
 
-const TestStrategy = (props: Props) => {
+const TestStrategy = (props) => {
   const { classes } = props;
   const [selectedPool, setSelectedPool] = useState(null);
   const [pools, setPools] = useState([]);

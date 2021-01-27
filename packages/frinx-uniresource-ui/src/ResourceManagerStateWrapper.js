@@ -3,7 +3,8 @@ import * as React from 'react';
 import { StateProvider, useStateValue } from './utils/StateProvider';
 import ResourceManagerTabs from './ResourceManagerTabs';
 
-const ResourceManagerStateWrapper = () => {
+const ResourceManagerStateWrapper = (props) => {
+  const { children } = props
   const initialState = {
     isAdmin: true,
   };
@@ -23,7 +24,7 @@ const ResourceManagerStateWrapper = () => {
 
   return (
     <StateProvider initialState={initialState} reducer={reducer}>
-      <ResourceManagerTabs />
+      {children}
     </StateProvider>
   );
 };

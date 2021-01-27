@@ -1,14 +1,14 @@
 // @flow
 import differenceBy from 'lodash/differenceBy';
-import type { Pool } from '../../pool.types';
+// import type { Pool } from '../../pool.types';
 
-export function sanitizeString(value: string): string {
+export function sanitizeString(value) {
   return value.trim().toLocaleLowerCase();
 }
 
 // TODO: write unit test
 
-export function filterByQuery(query: ?string): (Pool[]) => Pool[] {
+export function filterByQuery(query) {
   return (array) => {
     if (query == null || query === '') {
       return array;
@@ -24,7 +24,7 @@ export function filterByQuery(query: ?string): (Pool[]) => Pool[] {
   };
 }
 
-export function filterByTags(tags: { id: string }[]): (Pool[]) => Pool[] {
+export function filterByTags(tags) {
   return (array) => {
     if (tags.length === 0) {
       return array;
@@ -36,7 +36,7 @@ export function filterByTags(tags: { id: string }[]): (Pool[]) => Pool[] {
   };
 }
 
-export function filterByPoolType(query: ?string): (Pool[]) => Pool[] {
+export function filterByPoolType(query) {
   return (array) => {
     if (query == null || query === '') {
       return array;
@@ -45,7 +45,7 @@ export function filterByPoolType(query: ?string): (Pool[]) => Pool[] {
   };
 }
 
-export function filterByStrategy(query: ?string): (Pool[]) => Pool[] {
+export function filterByStrategy(query) {
   return (array) => {
     if (query == null || query === '') {
       return array;
@@ -54,7 +54,7 @@ export function filterByStrategy(query: ?string): (Pool[]) => Pool[] {
   };
 }
 
-export function filterByResourceType(query: ?string): (Pool[]) => Pool[] {
+export function filterByResourceType(query) {
   return (array) => {
     if (query == null || query === '') {
       return array;

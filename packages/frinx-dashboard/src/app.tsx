@@ -11,6 +11,7 @@ import { createPublicClientApp } from './auth-helpers';
 import theme from './theme';
 import AppMenu from './components/app-menu/app-menu';
 import UniflowApp from './uniflow-app';
+import UniresourceApp from "./uniresource-app";
 
 function setMessages() {
   const urlParams = new URLSearchParams(window.location?.search);
@@ -57,6 +58,9 @@ const AppWithAuth: FC = () => {
               <Route path="/uniflow">
                 <UniflowApp />
               </Route>
+              <Route path="/uniresource">
+                <UniresourceApp />
+              </Route>
             </Switch>
           </Box>
         </BrowserRouter>
@@ -86,6 +90,9 @@ const App: FC<{ isAuthEnabled: boolean }> = ({ isAuthEnabled }) => {
             </Route>
             <Route path="/uniflow">
               <UniflowApp />
+            </Route>
+            <Route path="/uniresource">
+              <UniresourceApp />
             </Route>
           </Switch>
         </Box>
