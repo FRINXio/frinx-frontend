@@ -1,19 +1,52 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
-import {
-  ReduxProvider,
-  WorkflowListHeader,
-  WorkflowDefinitions,
-  WorkflowExec,
-  Scheduling,
-  EventListeners,
-  TaskList,
-  PollData,
-  DiagramBuilder,
-} from '@frinx/workflow-ui';
 
 const UniflowApp: FC = () => {
+  const [components, setComponents] = useState<typeof import('@frinx/workflow-ui') | null>(null);
   const history = useHistory();
+
+  useEffect(() => {
+    import('@frinx/workflow-ui').then((mod) => {
+      const {
+        ReduxProvider,
+        WorkflowListHeader,
+        WorkflowDefinitions,
+        WorkflowExec,
+        Scheduling,
+        EventListeners,
+        TaskList,
+        PollData,
+        DiagramBuilder,
+      } = mod;
+      setComponents({
+        ReduxProvider,
+        WorkflowListHeader,
+        WorkflowDefinitions,
+        WorkflowExec,
+        Scheduling,
+        EventListeners,
+        TaskList,
+        PollData,
+        DiagramBuilder,
+      });
+    });
+  }, []);
+
+  if (components == null) {
+    return null;
+  }
+
+  const {
+    ReduxProvider,
+    WorkflowListHeader,
+    WorkflowDefinitions,
+    WorkflowExec,
+    Scheduling,
+    EventListeners,
+    TaskList,
+    PollData,
+    DiagramBuilder,
+  } = components;
 
   return (
     <ReduxProvider>

@@ -1,5 +1,6 @@
 // @flow weak
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -82,6 +83,7 @@ module.exports = {
       template: './public/index.html',
       filename: './index.html',
     }),
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   ],
   externals: isDev
     ? undefined

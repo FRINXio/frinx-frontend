@@ -10,25 +10,24 @@ declare module '*.inline.svg' {
 
 declare module 'react-notifications';
 
-declare type ServiceName = 'inventory' | 'uniconfig' | 'uniflow' | 'user_management';
+interface DashboardApp {
+  init: () => Promise<DashboardApp>;
+
+  render: () => void;
+}
+
+/* eslint-disable @typescript-eslint/naming-convention */
 interface Window {
   __CONFIG__: Readonly<{
-    enabled_services: ServiceName[];
-    public_url: string;
-    auth_enabled: 'true' | 'false';
+    auth_enabled: boolean;
     auth_client_id: string;
     auth_redirect_url: string;
-    inventory_enabled: 'true' | 'false';
-    uniconfig_enabled: 'true' | 'false';
-    uniflow_enabled: 'true' | 'false';
-    usermanagement_enabled: 'true' | 'false';
-    url_inventory: string;
-    url_uniconfig: string;
-    url_uniflow: string;
-    url_usermanagement: string;
+    uniresource_enabled: boolean;
+    uniconfig_enabled: boolean;
+    uniflow_enabled: boolean;
+    usermanagement_enabled: boolean;
   }>;
 
-  dashboardApp: {
-    render: () => void;
-  };
+  dashboardApp: DashboardApp;
 }
+/* eslint-enable */
