@@ -7,6 +7,7 @@ import {HttpClient as http} from "../../common/HttpClient";
 import {GlobalContext} from '../../common/GlobalContext';
 import _ from "lodash";
 import {createNodeObject} from "./deviceUtils";
+import {useRouteMatch, useHistory} from 'react-router-dom';
 
 const GET_CLI_TOPOLOGY_URL = "/rests/data/network-topology:network-topology/topology=cli?content=nonconfig";
 const GET_NETCONF_TOPOLOGY_URL = "/rests/data/network-topology:network-topology/topology=topology-netconf?content=nonconfig";
@@ -16,6 +17,8 @@ const UNMOUNT_NODE_URL = (topology, node_id) => "/rests/data/network-topology:ne
 
 const DeviceList = (props) => {
     const global = useContext(GlobalContext);
+    let { path } = useRouteMatch();
+    let history = useHistory();
     const [nodes, setNodes] = useState([]);
     const [filteredNodes, setFilteredNodes] = useState([]);
     const [checked, setChecked] = useState([]);
@@ -84,8 +87,8 @@ const DeviceList = (props) => {
     };
 
     const mountNode = () => {
-        props.history.push({
-            pathname: global.frontendUrlPrefix + '/mount',
+        history.push({
+            pathname: '/uniconfig/mount', // workaround for now
             state: {templateNode: checked.length === 1 ? checked[0] : null }
         })
     };

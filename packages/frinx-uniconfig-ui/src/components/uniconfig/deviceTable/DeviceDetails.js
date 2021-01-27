@@ -168,6 +168,8 @@ const DeviceDetails = (props) => {
     useEffect(() => {
         const {nodeId} = props?.match?.params;
         const {topology} = queryString.parse(props?.location?.search);
+
+        console.log(nodeId, topology)
         fetchDevice(topology, nodeId);
     }, []);
 
@@ -272,7 +274,7 @@ const DeviceDetails = (props) => {
     return (
         <Grow in>
             <Container>
-                <DeviceHeader title={node?.nodeId}/>
+                <DeviceHeader title={node?.nodeId || 'unknown'}/>
                 <Paper elevation={2} className={classes.paper}>
                     <Grid container spacing={3}>
                         <Grid item xs={6}>

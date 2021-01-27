@@ -30,7 +30,7 @@ const UniconfigApp: FC = () => {
             path={'/uniconfig/devices/:nodeId'}
             component={DeviceDetails}
           />
-          <Route exact path={'/uniconfig/devices/mount'} component={MountDevice} />
+          <Route exact path={'/uniconfig/mount'} component={MountDevice} />
         </>
       </Switch>
     </ThemeProvider>

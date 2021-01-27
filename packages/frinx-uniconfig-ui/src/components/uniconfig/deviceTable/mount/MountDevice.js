@@ -12,6 +12,8 @@ import {HttpClient as http} from "../../../common/HttpClient";
 import _ from "lodash";
 import CliTab from "./CliTab";
 import NetconfTab from "./NetconfTab";
+import { useHistory, useRouteMatch } from 'react-router-dom';
+
 
 const useStyles = makeStyles((theme) => ({
     wrapper: {
@@ -60,6 +62,8 @@ const MountDevice = (props) => {
     const [tab, setTab] = useState(0);
     const [supportedDevices, setSupportedDevices] = useState([]);
     const [templateNode, setTemplateNode] = useState();
+    let history = useHistory()
+    let { path } = useRouteMatch();
 
     useEffect(() => {
         // if node was selected as template
@@ -87,7 +91,7 @@ const MountDevice = (props) => {
         <Container>
             <div className={classes.wrapper}>
                 <Typography variant="h2" gutterBottom>
-                    <IconButton onClick={() => props.history.push(global.frontendUrlPrefix + '/devices')}>
+                    <IconButton onClick={() => history.push('/uniconfig/devices')}>
                         <NavigateBeforeIcon className={classes.icon}/>
                     </IconButton>
                     Mount Device

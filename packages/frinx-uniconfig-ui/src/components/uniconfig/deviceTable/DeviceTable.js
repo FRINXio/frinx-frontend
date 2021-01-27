@@ -15,8 +15,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import DnsIcon from '@material-ui/icons/Dns';
 import IconButton from "@material-ui/core/IconButton";
 import ConnectionStatusBadge from "../../common/ConnectionStatusBadge";
-import {withRouter} from "react-router-dom";
-import {GlobalContext} from "../../common/GlobalContext";
+import {useRouteMatch, useHistory} from 'react-router-dom';
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -42,7 +41,8 @@ const useStyles = makeStyles((theme) => ({
 
 const DeviceTable = (props) => {
     const classes = useStyles();
-    const global = useContext(GlobalContext);
+    const {path} = useRouteMatch();
+    const history = useHistory();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -110,12 +110,12 @@ const DeviceTable = (props) => {
                                     <TableCell align="left">{node.osVersion}</TableCell>
                                     <TableCell align="right">
                                         <IconButton color="secondary"
-                                                    onClick={() => props.history.push(global.frontendUrlPrefix + `/devices/${node.nodeId}?topology=${node.topologyId}`)}
+                                                    onClick={() => history.push(path + `/${node.nodeId}?topology=${node.topologyId}`)}
                                                     size="small" className={classes.actionButton}>
                                             <DnsIcon/>
                                         </IconButton>
                                         <IconButton color="primary" size="small"
-                                                    onClick={() => props.history.push(global.frontendUrlPrefix + `/devices/edit/${node.nodeId}`)}
+                                                    onClick={() => history.push(path+ `/edit/${node.nodeId}`)}
                                                     className={classes.actionButton}>
                                             <SettingsIcon/>
                                         </IconButton>
@@ -138,4 +138,4 @@ const DeviceTable = (props) => {
     )
 };
 
-export default withRouter(DeviceTable);
+export default DeviceTable;
