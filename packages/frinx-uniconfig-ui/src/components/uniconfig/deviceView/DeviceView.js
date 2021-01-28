@@ -1,34 +1,24 @@
-import React, { Component } from "react";
-import { ReactGhLikeDiff } from "react-gh-like-diff";
-import Editor from "./editor/Editor";
-import "./DeviceView.css";
-import {
-  Badge,
-  Button,
-  ButtonGroup,
-  Col,
-  Container,
-  Dropdown,
-  Form,
-  Row,
-  Spinner
-} from "react-bootstrap";
-import SnapshotModal from "./snapshotModal/SnapshotModal";
-import CustomAlerts from "../customAlerts/CustomAlerts";
-import ConsoleModal from "./consoleModal/ConsoleModal";
-import { parseResponse } from "./ResponseParser";
-import { HttpClient as http } from "../../common/HttpClient";
-import { GlobalContext } from "../../common/GlobalContext";
+import React, { Component } from 'react';
+import { ReactGhLikeDiff } from 'react-gh-like-diff';
+import Editor from './editor/Editor';
+import './DeviceView.css';
+import { Badge, Button, ButtonGroup, Col, Container, Dropdown, Form, Row, Spinner } from 'react-bootstrap';
+import SnapshotModal from './snapshotModal/SnapshotModal';
+import CustomAlerts from '../customAlerts/CustomAlerts';
+import ConsoleModal from './consoleModal/ConsoleModal';
+import { parseResponse } from './ResponseParser';
+import { HttpClient as http } from '../../common/HttpClient';
+import { GlobalContext } from '../../common/GlobalContext';
 
 const defaultOptions = {
-  originalFileName: "Operational",
-  updatedFileName: "Operational",
-  inputFormat: "diff",
-  outputFormat: "line-by-line",
+  originalFileName: 'Operational',
+  updatedFileName: 'Operational',
+  inputFormat: 'diff',
+  outputFormat: 'line-by-line',
   showFiles: false,
-  matching: "none",
+  matching: 'none',
   matchWordsThreshold: 0.25,
-  matchingMaxComparisons: 2500
+  matchingMaxComparisons: 2500,
 };
 
 class DeviceView extends Component {
@@ -36,10 +26,10 @@ class DeviceView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      config: "{}",
-      operational: "{}",
+      config: '{}',
+      operational: '{}',
       device: null,
-      snapshots: ["snapshot1", "snapshot2"],
+      snapshots: ['snapshot1', 'snapshot2'],
       showDiff: false,
       creatingSnap: false,
       syncing: false,
@@ -49,30 +39,25 @@ class DeviceView extends Component {
       commiting: false,
       showConsole: false,
       deletingSnaps: false,
-      console: "",
-      operation: "",
+      console: '',
+      operation: '',
     };
   }
 
   componentDidMount() {
-    this.setState(
-      {
-        device: window.location.href.split("/").pop(),
-      },
-      () => this.fetchData(this.state.device)
-    );
+    this.fetchData(this.props.deviceId);
   }
 
   fetchData(device) {
     http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
+          '/rests/data/network-topology:network-topology/topology=uniconfig/node=' +
           device +
-          "/frinx-uniconfig-topology:configuration?content=config",
-        this.context.authToken
+          '/frinx-uniconfig-topology:configuration?content=config',
+        this.context.authToken,
       )
-      .then((res) => {
+      .then(res => {
         this.setState({
           config: JSON.stringify(res),
           initializing: false,
@@ -82,12 +67,12 @@ class DeviceView extends Component {
     http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
+          '/rests/data/network-topology:network-topology/topology=uniconfig/node=' +
           device +
-          "/frinx-uniconfig-topology:configuration?content=nonconfig",
-        this.context.authToken
+          '/frinx-uniconfig-topology:configuration?content=nonconfig',
+        this.context.authToken,
       )
-      .then((res) => {
+      .then(res => {
         this.setState({
           operational: JSON.stringify(res),
           initializing: false,
@@ -101,17 +86,17 @@ class DeviceView extends Component {
     http
       .put(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
-          this.state.device +
-          "/frinx-uniconfig-topology:configuration",
+          '/rests/data/network-topology:network-topology/topology=uniconfig/node=' +
+          this.props.deviceId +
+          '/frinx-uniconfig-topology:configuration',
         data,
-        this.context.authToken
+        this.context.authToken,
       )
-      .then((res) => {
+      .then(res => {
         this.setState({
           alertType: `putConfig${res.body?.status}`,
           console: JSON.stringify(res.body, null, 2),
-          operation: "Update Config",
+          operation: 'Update Config',
         });
         this.animateConsole();
       });
@@ -130,20 +115,19 @@ class DeviceView extends Component {
   getCalculatedDiff() {
     let target = JSON.stringify({
       input: {
-        "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] },
+        'target-nodes': { node: [this.props.deviceId.replace(/%20/g, ' ')] },
       },
     });
     http
       .post(
-        this.context.backendApiUrlPrefix +
-          "/rests/operations/uniconfig-manager:calculate-diff",
+        this.context.backendApiUrlPrefix + '/rests/operations/uniconfig-manager:calculate-diff',
         target,
-        this.context.authToken
+        this.context.authToken,
       )
-      .then((res) => {
+      .then(res => {
         this.setState({
           console: JSON.stringify(res.body),
-          operation: "Calculated Diff",
+          operation: 'Calculated Diff',
         });
         this.animateConsole();
       });
@@ -154,35 +138,34 @@ class DeviceView extends Component {
     let target = JSON.parse(
       JSON.stringify({
         input: {
-          "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] },
+          'target-nodes': { node: [this.props.deviceId.replace(/%20/g, ' ')] },
         },
-      })
+      }),
     );
     http
       .post(
-        this.context.backendApiUrlPrefix +
-          "/rests/operations/uniconfig-manager:commit",
+        this.context.backendApiUrlPrefix + '/rests/operations/uniconfig-manager:commit',
         target,
-        this.context.authToken
+        this.context.authToken,
       )
-      .then((res) => {
+      .then(res => {
         this.setState({
-          alertType: parseResponse("commit", res.body),
+          alertType: parseResponse('commit', res.body),
           showAlert: true,
           commiting: false,
           console: JSON.stringify(res.body),
-          operation: "Commit to Network",
+          operation: 'Commit to Network',
         });
         this.animateConsole();
         http
           .get(
             this.context.backendApiUrlPrefix +
-              "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
-              this.state.device +
-              "/frinx-uniconfig-topology:configuration?content=nonconfig",
-            this.context.authToken
+              '/rests/data/network-topology:network-topology/topology=uniconfig/node=' +
+              this.props.deviceId +
+              '/frinx-uniconfig-topology:configuration?content=nonconfig',
+            this.context.authToken,
           )
-          .then((res) => {
+          .then(res => {
             this.setState({
               operational: JSON.stringify(res),
             });
@@ -194,39 +177,34 @@ class DeviceView extends Component {
     let target = JSON.parse(
       JSON.stringify({
         input: {
-          "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] },
+          'target-nodes': { node: [this.props.deviceId.replace(/%20/g, ' ')] },
         },
-      })
+      }),
     );
     http
       .post(
-        this.context.backendApiUrlPrefix +
-          "/rests/operations/dryrun-manager:dryrun-commit",
+        this.context.backendApiUrlPrefix + '/rests/operations/dryrun-manager:dryrun-commit',
         target,
-        this.context.authToken
+        this.context.authToken,
       )
-      .then((res) => {
+      .then(res => {
         this.setState({
-          alertType: parseResponse("dryrun", res.body),
+          alertType: parseResponse('dryrun', res.body),
           showAlert: true,
-          console: JSON.stringify(
-            parseResponse("dryrun", res.body).configuration
-          ),
-          operation: "Dry-run",
+          console: JSON.stringify(parseResponse('dryrun', res.body).configuration),
+          operation: 'Dry-run',
         });
         this.animateConsole();
-        if (!this.state.alertType["errorMessage"] && this.state.console) {
+        if (!this.state.alertType['errorMessage'] && this.state.console) {
           this.consoleHandler();
         }
       });
   }
 
   animateConsole() {
-    document.getElementById("consoleButton").classList.add("button--animate");
+    document.getElementById('consoleButton').classList.add('button--animate');
     setTimeout(() => {
-      document
-        .getElementById("consoleButton")
-        .classList.remove("button--animate");
+      document.getElementById('consoleButton').classList.remove('button--animate');
     }, 500);
   }
 
@@ -234,35 +212,34 @@ class DeviceView extends Component {
     this.setState({ syncing: true });
     let target = JSON.stringify({
       input: {
-        "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] },
+        'target-nodes': { node: [this.props.deviceId.replace(/%20/g, ' ')] },
       },
     });
     http
       .post(
-        this.context.backendApiUrlPrefix +
-          "/rests/operations/uniconfig-manager:sync-from-network",
+        this.context.backendApiUrlPrefix + '/rests/operations/uniconfig-manager:sync-from-network',
         target,
-        this.context.authToken
+        this.context.authToken,
       )
-      .then((res_first) => {
+      .then(res_first => {
         http
           .get(
             this.context.backendApiUrlPrefix +
-              "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
-              this.state.device +
-              "/frinx-uniconfig-topology:configuration?content=nonconfig",
-            this.context.authToken
+              '/rests/data/network-topology:network-topology/topology=uniconfig/node=' +
+              this.props.deviceId +
+              '/frinx-uniconfig-topology:configuration?content=nonconfig',
+            this.context.authToken,
           )
-          .then((res) => {
+          .then(res => {
             console.log(res_first);
             this.setState({
-              alertType: parseResponse("sync", res_first.body),
+              alertType: parseResponse('sync', res_first.body),
               showAlert: true,
               operational: JSON.stringify(res),
               initializing: false,
               syncing: false,
               console: JSON.stringify(res_first.body),
-              operation: "Sync-from-network",
+              operation: 'Sync-from-network',
             });
             this.animateConsole();
           });
@@ -273,12 +250,12 @@ class DeviceView extends Component {
     http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
-          this.state.device +
-          "/frinx-uniconfig-topology:configuration?content=config",
-        this.context.authToken
+          '/rests/data/network-topology:network-topology/topology=uniconfig/node=' +
+          this.props.deviceId +
+          '/frinx-uniconfig-topology:configuration?content=config',
+        this.context.authToken,
       )
-      .then((res) => {
+      .then(res => {
         this.setState({
           config: JSON.stringify(res),
         });
@@ -288,24 +265,23 @@ class DeviceView extends Component {
   replaceConfig() {
     let target = JSON.stringify({
       input: {
-        "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] },
+        'target-nodes': { node: [this.props.deviceId.replace(/%20/g, ' ')] },
       },
     });
     http
       .post(
-        this.context.backendApiUrlPrefix +
-          "/rests/operations/uniconfig-manager:replace-config-with-operational",
+        this.context.backendApiUrlPrefix + '/rests/operations/uniconfig-manager:replace-config-with-operational',
         target,
-        this.context.authToken
+        this.context.authToken,
       )
-      .then((res) => {
+      .then(res => {
         console.log(res);
         this.refreshConfig();
         this.setState({
-          alertType: parseResponse("replaceconf", res.body),
+          alertType: parseResponse('replaceconf', res.body),
           showAlert: true,
           console: JSON.stringify(res.body),
-          operation: "Replace-config-with-operational",
+          operation: 'Replace-config-with-operational',
         });
         this.animateConsole();
       });
@@ -314,18 +290,17 @@ class DeviceView extends Component {
   getSnapshots() {
     http
       .get(
-        this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology?content=config",
-        this.context.authToken
+        this.context.backendApiUrlPrefix + '/rests/data/network-topology:network-topology?content=config',
+        this.context.authToken,
       )
-      .then((res) => {
+      .then(res => {
         if (res !== 500) {
-          let topologies = ["cli", "uniconfig", "topology-netconf", "unitopo"];
-          let snapshots = res["network-topology"]["topology"].filter(
-            (topology) =>
-              topology["node"] &&
-              topology["node"]["0"]["node-id"] === this.state.device &&
-              !topologies.includes(topology["topology-id"])
+          let topologies = ['cli', 'uniconfig', 'topology-netconf', 'unitopo'];
+          let snapshots = res['network-topology']['topology'].filter(
+            topology =>
+              topology['node'] &&
+              topology['node']['0']['node-id'] === this.props.deviceId &&
+              !topologies.includes(topology['topology-id']),
           );
           this.setState({
             snapshots: snapshots,
@@ -336,55 +311,50 @@ class DeviceView extends Component {
 
   loadSnapshot(snapshotId) {
     //deleting snapshot
-    let snapshotName = this.state.snapshots[snapshotId]["topology-id"];
+    let snapshotName = this.state.snapshots[snapshotId]['topology-id'];
     if (this.state.deletingSnaps) {
-      let target = JSON.parse(
-        JSON.stringify({ input: { name: snapshotName } })
-      );
+      let target = JSON.parse(JSON.stringify({ input: { name: snapshotName } }));
       http
         .post(
-          this.context.backendApiUrlPrefix +
-            "/rests/operations/snapshot-manager:delete-snapshot",
+          this.context.backendApiUrlPrefix + '/rests/operations/snapshot-manager:delete-snapshot',
           target,
-          this.context.authToken
+          this.context.authToken,
         )
-        .then((res) => {
+        .then(res => {
           console.log(res);
         });
     } else {
       let target = JSON.stringify({
         input: {
           name: snapshotName,
-          "target-nodes": { node: [this.state.device.replace(/%20/g, " ")] },
+          'target-nodes': { node: [this.props.deviceId.replace(/%20/g, ' ')] },
         },
       });
       http
         .post(
-          this.context.backendApiUrlPrefix +
-            "/rests/operations/snapshot-manager:replace-config-with-snapshot",
+          this.context.backendApiUrlPrefix + '/rests/operations/snapshot-manager:replace-config-with-snapshot',
           target,
-          this.context.authToken
+          this.context.authToken,
         )
-        .then((res_first) => {
+        .then(res_first => {
           http
             .get(
-              this.context.backendApiUrlPrefix +
-                "/rests/data/network-topology:network-topology?content=config",
-              this.context.authToken
+              this.context.backendApiUrlPrefix + '/rests/data/network-topology:network-topology?content=config',
+              this.context.authToken,
             )
-            .then((res) => {
-              let snapshot = res["network-topology"]["topology"].filter(
-                (topology) => topology["topology-id"] === snapshotName
+            .then(res => {
+              let snapshot = res['network-topology']['topology'].filter(
+                topology => topology['topology-id'] === snapshotName,
               )[0]?.node[0];
 
-              delete snapshot["node-id"];
+              delete snapshot['node-id'];
 
               this.setState({
-                alertType: parseResponse("replacesnap", res_first.body),
+                alertType: parseResponse('replacesnap', res_first.body),
                 showAlert: true,
                 config: JSON.stringify(snapshot, null, 2),
                 console: JSON.stringify(res_first.body),
-                operation: "Replace-Config-With-Snapshot",
+                operation: 'Replace-Config-With-Snapshot',
               });
               this.animateConsole();
             });
@@ -416,29 +386,18 @@ class DeviceView extends Component {
     });
 
     let configJSON = JSON.stringify(JSON.parse(this.state.config), null, 2);
-    let operationalJSON = JSON.stringify(
-      JSON.parse(this.state.operational),
-      null,
-      2
-    );
+    let operationalJSON = JSON.stringify(JSON.parse(this.state.operational), null, 2);
 
     const operational = () => (
       <div>
         {this.state.initializing ? (
-          <i
-            className="fas fa-sync fa-spin fa-8x"
-            style={{ margin: "40%", color: "lightblue" }}
-          />
+          <i className="fas fa-sync fa-spin fa-8x" style={{ margin: '40%', color: 'lightblue' }} />
         ) : this.state.showDiff ? (
-          <ReactGhLikeDiff
-            options={defaultOptions}
-            past={operationalJSON}
-            current={configJSON}
-          />
+          <ReactGhLikeDiff options={defaultOptions} past={operationalJSON} current={configJSON} />
         ) : (
           <Editor
             title="Actual Configuration"
-            deviceName={this.state.device}
+            deviceName={this.props.deviceId}
             editable={false}
             syncFromNetwork={this.syncFromNetwork.bind(this)}
             syncing={this.state.syncing}
@@ -451,15 +410,12 @@ class DeviceView extends Component {
     const config = () => (
       <div>
         {this.state.initializing ? (
-          <i
-            className="fas fa-sync fa-spin fa-8x"
-            style={{ margin: "40%", color: "lightblue" }}
-          />
+          <i className="fas fa-sync fa-spin fa-8x" style={{ margin: '40%', color: 'lightblue' }} />
         ) : (
           <Editor
             title="Intended Configuration"
             editable={true}
-            deviceName={this.state.device}
+            deviceName={this.props.deviceId}
             updateConfig={this.updateConfig.bind(this)}
             replaceConfig={this.replaceConfig.bind(this)}
             refreshConfig={this.refreshConfig.bind(this)}
@@ -472,24 +428,13 @@ class DeviceView extends Component {
     return (
       <div>
         <header className="options">
-          <Button
-            className="round floating-btn noshadow"
-            onClick={() => {
-              this.props.history.push(
-                this.context.frontendUrlPrefix + "/devices"
-              );
-            }}
-            variant="outline-light"
-          >
+          <Button className="round floating-btn noshadow" onClick={this.props.onBackBtnClick} variant="outline-light">
             <i className="fas fa-chevron-left" />
           </Button>
           <Container fluid className="container-props">
             <Row>
               <Col md={5} className="child">
-                <Dropdown
-                  onClick={this.getSnapshots.bind(this)}
-                  className="leftAligned"
-                >
+                <Dropdown onClick={this.getSnapshots.bind(this)} className="leftAligned">
                   <Dropdown.Toggle variant="light" id="dropdown-basic">
                     <i className="fas fa-file-download" />
                     &nbsp;&nbsp;Load Snapshot
@@ -498,17 +443,9 @@ class DeviceView extends Component {
                   <Dropdown.Menu ref={DropdownMenu}>
                     {this.state.snapshots.map((item, i) => {
                       return (
-                        <Dropdown.Item
-                          onClick={() => this.loadSnapshot(i)}
-                          key={i}
-                        >
-                          {item["topology-id"]}
-                          {this.state.deletingSnaps ? (
-                            <i
-                              className="fas fa-minus"
-                              style={{ float: "right" }}
-                            />
-                          ) : null}
+                        <Dropdown.Item onClick={() => this.loadSnapshot(i)} key={i}>
+                          {item['topology-id']}
+                          {this.state.deletingSnaps ? <i className="fas fa-minus" style={{ float: 'right' }} /> : null}
                         </Dropdown.Item>
                       );
                     })}
@@ -519,24 +456,15 @@ class DeviceView extends Component {
                           deletingSnaps: !this.state.deletingSnaps,
                         })
                       }
-                      variant={
-                        this.state.deletingSnaps ? "danger" : "outline-danger"
-                      }
-                      style={{ marginLeft: "20px", marginRight: "20px" }}
+                      variant={this.state.deletingSnaps ? 'danger' : 'outline-danger'}
+                      style={{ marginLeft: '20px', marginRight: '20px' }}
                     >
-                      <i
-                        className="fas fa-trash"
-                        style={{ marginRight: "10px" }}
-                      />
+                      <i className="fas fa-trash" style={{ marginRight: '10px' }} />
                       Toggle deleting
                     </Button>
                   </Dropdown.Menu>
                 </Dropdown>
-                <Button
-                  className="leftAligned"
-                  variant="outline-light"
-                  onClick={this.createSnapshot.bind(this)}
-                >
+                <Button className="leftAligned" variant="outline-light" onClick={this.createSnapshot.bind(this)}>
                   <i className="fas fa-folder-plus" />
                   &nbsp;&nbsp;Create snapshot
                 </Button>
@@ -547,45 +475,31 @@ class DeviceView extends Component {
                   className="button--moema clickable button--size-s"
                   onClick={this.consoleHandler.bind(this)}
                 >
-                  {" "}
-                  {this.state.device}
+                  {' '}
+                  {this.props.deviceId}
                 </Badge>
               </Col>
               <Col md={5} className="child">
                 <Form.Group className="rightAligned">
                   <Dropdown as={ButtonGroup}>
                     <Button
-                      variant={this.state.showDiff ? "light" : "outline-light"}
+                      variant={this.state.showDiff ? 'light' : 'outline-light'}
                       onClick={this.showDiff.bind(this)}
                     >
                       <i className="fas fa-exchange-alt" />
                       &nbsp;&nbsp;
-                      {this.state.showDiff ? "Hide Diff" : "Show Diff"}
+                      {this.state.showDiff ? 'Hide Diff' : 'Show Diff'}
                     </Button>
-                    <Dropdown.Toggle
-                      split
-                      variant="outline-light"
-                      id="dropdown-split-basic"
-                    />
+                    <Dropdown.Toggle split variant="outline-light" id="dropdown-split-basic" />
                     <Dropdown.Menu>
-                      <Dropdown.Item
-                        onClick={this.getCalculatedDiff.bind(this)}
-                      >
-                        Get calculated diff
-                      </Dropdown.Item>
+                      <Dropdown.Item onClick={this.getCalculatedDiff.bind(this)}>Get calculated diff</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
-                  <Button
-                    variant="outline-light"
-                    onClick={this.dryRun.bind(this)}
-                  >
+                  <Button variant="outline-light" onClick={this.dryRun.bind(this)}>
                     <i className="fas fa-play" />
                     &nbsp;&nbsp;Dry run
                   </Button>
-                  <Button
-                    variant="outline-light"
-                    onClick={this.commitToNetwork.bind(this)}
-                  >
+                  <Button variant="outline-light" onClick={this.commitToNetwork.bind(this)}>
                     {this.state.commiting ? (
                       <Spinner size="sm" animation="border" />
                     ) : (
@@ -600,16 +514,10 @@ class DeviceView extends Component {
         </header>
 
         {this.state.creatingSnap ? (
-          <SnapshotModal
-            snapHandler={this.createSnapshot.bind(this)}
-            device={this.state.device}
-          />
+          <SnapshotModal snapHandler={this.createSnapshot.bind(this)} device={this.props.deviceId} />
         ) : null}
         {this.state.showAlert ? (
-          <CustomAlerts
-            alertHandler={this.alertHandler.bind(this)}
-            alertType={this.state.alertType}
-          />
+          <CustomAlerts alertHandler={this.alertHandler.bind(this)} alertType={this.state.alertType} />
         ) : null}
         {this.state.showConsole ? (
           <ConsoleModal

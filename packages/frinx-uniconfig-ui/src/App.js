@@ -1,24 +1,36 @@
 import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect, useRouteMatch } from 'react-router-dom';
 import './App.css';
-import List from './components/uniconfig/deviceTable/List';
 import DeviceView from './components/uniconfig/deviceView/DeviceView';
-import { GlobalProvider, globalConstants } from './components/common/GlobalContext';
-
-const { frontendUrlPrefix } = globalConstants;
+import { GlobalProvider } from './components/common/GlobalContext';
+import DeviceList from './components/uniconfig/deviceTable/DeviceList';
+import { ThemeProvider } from '@material-ui/core/styles';
+import theme from './components/common/theme';
+import DeviceDetails from './components/uniconfig/deviceTable/DeviceDetails';
+import Breadcrumb from './components/common/Breadcrumb';
+import MountDevice from './components/uniconfig/deviceTable/mount/MountDevice';
 
 function App(props) {
+  let { path } = useRouteMatch();
+
   return (
     <GlobalProvider {...props}>
-      <Switch>
-        <Route exact path={(props.frontendUrlPrefix || frontendUrlPrefix) + '/devices'} component={List} />
-        <Route
-          exact
-          path={(props.frontendUrlPrefix || frontendUrlPrefix) + '/devices/edit/:id'}
-          component={DeviceView}
-        />
-        <Redirect to={(props.frontendUrlPrefix || frontendUrlPrefix) + '/devices'} />
-      </Switch>
+      <ThemeProvider theme={theme}>
+        <Switch>
+          <Route exact path={path + '/devices/edit/:id'} component={DeviceView} />
+          <>
+            <Breadcrumb />
+            <Route exact path={path + '/devices'} component={DeviceList} />
+            <Route
+              exact
+              path={path + '/devices/:nodeId'}
+              component={DeviceDetails}
+            />
+            <Route exact path={path + '/mount'} component={MountDevice} />
+            <Redirect to={path + '/devices'} />
+          </>
+        </Switch>
+      </ThemeProvider>
     </GlobalProvider>
   );
 }

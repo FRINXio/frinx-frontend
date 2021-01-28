@@ -11,7 +11,6 @@ const HttpClient = {
         if (err) {
           if (res && res.error) {
             resolve(res.error.status);
-            console.log(res.error.message);
           } else {
             reject(err);
           }
@@ -25,8 +24,7 @@ const HttpClient = {
     new Promise((resolve, reject) => {
       const req = request
         .delete(path, data)
-        .accept("application/json")
-        .query("archiveWorkflow=false");
+        .accept("application/json");
       if (token) {
         req.set("Authorization", token);
       }
