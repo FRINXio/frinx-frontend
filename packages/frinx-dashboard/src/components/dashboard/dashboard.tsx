@@ -1,18 +1,28 @@
 import React, { FC } from 'react';
 import { Container, Wrap } from '@chakra-ui/react';
-import { faCogs, faLaptopCode, faBoxOpen, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faCogs, faLaptopCode } from '@fortawesome/free-solid-svg-icons';
 import Panel from '../panel/panel';
-import { getDashboardLinks } from '../../helpers/route.helpers';
+import { ServiceKey } from '../../types';
 
-const PANELS = getDashboardLinks();
+type Props = {
+  enabledServices: Map<ServiceKey, boolean>;
+};
 
-const Dashboard: FC = () => {
+const Dashboard: FC<Props> = ({ enabledServices }) => {
   return (
     <Container maxWidth={1280}>
       <Wrap spacing={4}>
-        {PANELS.map((p) => {
-          return <Panel key={p.label} label={p.label} description={p.description} icon={p.icon} path={p.path} />;
-        })}
+        {enabledServices.get('uniflow_enabled') && (
+          <Panel label="Uniflow" description="Create, organize and execute workflows." icon={faCogs} path="/uniflow" />
+        )}
+        {enabledServices.get('uniconfig_enabled') && (
+          <Panel
+            label="Uniconfig"
+            description="Manage network device configurations."
+            icon={faLaptopCode}
+            path="/uniconfig"
+          />
+        )}
       </Wrap>
     </Container>
   );

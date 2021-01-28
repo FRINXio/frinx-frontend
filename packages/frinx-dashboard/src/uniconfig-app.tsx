@@ -1,9 +1,22 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
-import { List, DeviceView } from '@frinx/uniconfig-ui';
 
 const UniconfigApp: FC = () => {
+  const [components, setComponents] = useState<typeof import('@frinx/uniconfig-ui') | null>(null);
   const history = useHistory();
+
+  useEffect(() => {
+    import('@frinx/uniconfig-ui').then((mod) => {
+      const { DeviceView, List } = mod;
+      setComponents({ DeviceView, List });
+    });
+  }, []);
+
+  if (components == null) {
+    return null;
+  }
+
+  const { List, DeviceView } = components;
 
   return (
     <Switch>
@@ -11,7 +24,11 @@ const UniconfigApp: FC = () => {
         <Redirect to="/uniconfig/devices" />
       </Route>
       <Route exact path="/uniconfig/devices">
-        <List />
+        <List
+          onEditBtnClick={(id: string) => {
+            history.push(`/uniconfig/devices/edit/${id}`);
+          }}
+        />
       </Route>
       <Route exact path="/uniconfig/devices/edit/:id">
         <DeviceView />

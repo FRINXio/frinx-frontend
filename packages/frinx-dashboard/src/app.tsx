@@ -9,9 +9,9 @@ import Header from './components/header/header';
 import 'react-notifications/lib/notifications.css';
 import { createPublicClientApp } from './auth-helpers';
 import theme from './theme';
-import AppMenu from './components/app-menu/app-menu';
 import UniflowApp from './uniflow-app';
 import UniconfigApp from './uniconfig-app';
+import { ServiceKey } from './types';
 
 function setMessages() {
   const urlParams = new URLSearchParams(window.location?.search);
@@ -39,7 +39,9 @@ function setMessages() {
   }
 }
 
-const AppWithAuth: FC = () => {
+const AppWithAuth: FC<{
+  enabledServices: Map<ServiceKey, boolean>;
+}> = ({ enabledServices }) => {
   const publicClientAppRef = useRef<PublicClientApplication>(createPublicClientApp());
 
   return (
@@ -47,20 +49,22 @@ const AppWithAuth: FC = () => {
       <ChakraProvider theme={theme}>
         <BrowserRouter>
           <NotificationContainer correlationId="notificationContainer" />
-          <Header isAuthEnabled>
-            <AppMenu />
-          </Header>
+          <Header isAuthEnabled enabledServices={enabledServices} />
           <Box paddingTop={10}>
             <Switch>
               <Route path="/" exact>
-                <Dashboard />
+                <Dashboard enabledServices={enabledServices} />
               </Route>
-              <Route path="/uniflow">
-                <UniflowApp />
-              </Route>
-              <Route path="/uniconfig">
-                <UniconfigApp />
-              </Route>
+              {enabledServices.get('uniflow_enabled') && (
+                <Route path="/uniflow">
+                  <UniflowApp />
+                </Route>
+              )}
+              {enabledServices.get('uniconfig_enabled') && (
+                <Route path="/uniconfig">
+                  <UniconfigApp />
+                </Route>
+              )}
             </Switch>
           </Box>
         </BrowserRouter>
@@ -69,31 +73,38 @@ const AppWithAuth: FC = () => {
   );
 };
 
-const App: FC<{ isAuthEnabled: boolean }> = ({ isAuthEnabled }) => {
+type Props = {
+  enabledServices: Map<ServiceKey, boolean>;
+  isAuthEnabled: boolean;
+};
+
+const App: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
   useEffect(() => {
     setMessages();
   }, []);
 
   return isAuthEnabled ? (
-    <AppWithAuth />
+    <AppWithAuth enabledServices={enabledServices} />
   ) : (
     <ChakraProvider theme={theme}>
       <BrowserRouter>
         <NotificationContainer correlationId="notificationContainer" />
-        <Header isAuthEnabled={false}>
-          <AppMenu />
-        </Header>
+        <Header isAuthEnabled={false} enabledServices={enabledServices} />
         <Box paddingTop={10}>
           <Switch>
             <Route path="/" exact>
-              <Dashboard />
+              <Dashboard enabledServices={enabledServices} />
             </Route>
-            <Route path="/uniflow">
-              <UniflowApp />
-            </Route>
-            <Route path="/uniconfig">
-              <UniconfigApp />
-            </Route>
+            {enabledServices.get('uniflow_enabled') && (
+              <Route path="/uniflow">
+                <UniflowApp />
+              </Route>
+            )}
+            {enabledServices.get('uniconfig_enabled') && (
+              <Route path="/uniconfig">
+                <UniconfigApp />
+              </Route>
+            )}
           </Switch>
         </Box>
       </BrowserRouter>

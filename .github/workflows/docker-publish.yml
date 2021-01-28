@@ -43,19 +43,19 @@ jobs:
           # Strip "v" prefix from tag name
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
           # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
+          [ "$VERSION" == "main" ] && VERSION=latest
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
-          # Add latest tag if we are on master and github.ref points to a tag
+          # Add latest tag if we are on main and github.ref points to a tag
           if [[ "${{ github.ref }}" == "refs/tags/"* ]]; then
-            MASTER=$(git show-ref --hash origin/master)
-            echo "master: $MASTER"
+            MAIN=$(git show-ref --hash origin/main)
+            echo "main: $MAIN"
             HEAD=$(git rev-parse HEAD)
             echo "head: $HEAD"
             echo "github.ref ${{ github.ref }}"
-            if [[ $MASTER == $HEAD ]]; then
+            if [[ $MAIN == $HEAD ]]; then
               VERSION=latest
               echo VERSION=$VERSION
               docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
