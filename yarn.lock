@@ -12578,7 +12578,7 @@ prettier@^1.18.2:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.19.1.tgz#f7d7f5ff8a9cd872a7be4ca142095956a60797cb"
   integrity sha512-s7PoyDv/II1ObgQunCbB9PdLmUcBZcnWOcxDh7O0N/UwDEsHyqkW+Qh28jW+mVuCdx7gLB0BotYI1Y6uI9iyew==
 
-prettier@^2.1.2, prettier@^2.2.1:
+prettier@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.2.1.tgz#795a1a78dd52f073da0cd42b21f9c91381923ff5"
   integrity sha512-PqyhM2yCjg/oKkFPtTGUojv7gnZAoG80ttl45O6x2Ug/rMJw4wcc9k6aaf2hibP7BGVCCM33gZoGjyvt9mm16Q==
@@ -12999,10 +12999,10 @@ react-focus-lock@2.4.1:
     use-callback-ref "^1.2.1"
     use-sidecar "^1.0.1"
 
-react-gh-like-diff@^1.0.5:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/react-gh-like-diff/-/react-gh-like-diff-1.1.4.tgz#5fa271a0b0c969c8c9d9be3c89d587f92f10b0c4"
-  integrity sha512-ONkTQKSuA0r9qJuuVbxVYCj6kKU+RL82gR53nM6Tv8+8M6BbHZEAB/t+W9ZF4xz24sA9oWPMvEkZVlT5EXbI2A==
+react-gh-like-diff@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/react-gh-like-diff/-/react-gh-like-diff-2.0.2.tgz#9a0f91511d7af20407666e5950d2056db0600d62"
+  integrity sha512-Cd5Kjijx74kz0POQNCSRvFnpfvY4E28NxWea8z0UPZ1J6b2RThRkMBfoD/FwaFvrT/7XeYk5SrQ8qtc0e8iRoA==
   dependencies:
     diff2html "^3.1.6"
     difflib "^0.2.4"

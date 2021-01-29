@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Button, ButtonGroup, Dropdown } from "react-bootstrap";
-import "../../../../../node_modules/react-gh-like-diff/lib/diff2html.css";
+import 'react-gh-like-diff/dist/css/diff2html.min.css';
 import CodeMirror from "react-codemirror";
 import "codemirror/addon/fold/foldcode";
 import "codemirror/addon/fold/foldgutter";

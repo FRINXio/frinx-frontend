@@ -1,27 +1,22 @@
-import React, {createContext, useState, useEffect} from 'react'
+import React, { createContext} from 'react';
 
-export const GlobalContext = createContext();
+type GlobalConstants = {
+  backendApiUrlPrefix: string,
+  frontendUrlPrefix: string,
+  authToken: string
+};
 
 const AUTH_TOKEN = "Basic YWRtaW46YWRtaW4=";
 
-export const globalConstants = {
+export const globalConstants: GlobalConstants = {
   backendApiUrlPrefix: "/uniconfig/api",
-  frontendUrlPrefix: "/uniconfig/ui",
+  frontendUrlPrefix: "/uniconfig",
   authToken: AUTH_TOKEN
 };
 
-export const GlobalProvider = (props) => {
-  const [global, setGlobal] = useState(globalConstants);
+export const GlobalContext = createContext<GlobalConstants>(globalConstants);
 
-  useEffect(() => {
-    setGlobal({...global, ...props})
-  }, [props])
-
-  return (
-    <GlobalContext.Provider
-      value={global}
-    >
-      {props.children}
-    </GlobalContext.Provider>
-  );
+export const GlobalProvider = (props: GlobalConstants & { children: React$Node }) => {
+  const { children, ...rest } = props;
+  return <GlobalContext.Provider value={{ ...globalConstants, ...rest }}>{children}</GlobalContext.Provider>;
 };

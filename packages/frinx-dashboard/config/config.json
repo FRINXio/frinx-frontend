@@ -3,7 +3,7 @@
   "auth_client_id": "366fab79-6c61-4a24-8c2c-b2be2f48fe35",
   "auth_redirect_url": "http://localhost:3000",
   "uniresource_enabled": false,
-  "uniconfig_enabled": false,
+  "uniconfig_enabled": true,
   "uniflow_enabled": true,
   "usermanagement_enabled": false
 }

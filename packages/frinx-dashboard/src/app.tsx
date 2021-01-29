@@ -10,6 +10,7 @@ import 'react-notifications/lib/notifications.css';
 import { createPublicClientApp } from './auth-helpers';
 import theme from './theme';
 import UniflowApp from './uniflow-app';
+import UniconfigApp from './uniconfig-app';
 import { ServiceKey } from './types';
 
 function setMessages() {
@@ -59,6 +60,11 @@ const AppWithAuth: FC<{
                   <UniflowApp />
                 </Route>
               )}
+              {enabledServices.get('uniconfig_enabled') && (
+                <Route path="/uniconfig">
+                  <UniconfigApp />
+                </Route>
+              )}
             </Switch>
           </Box>
         </BrowserRouter>
@@ -92,6 +98,11 @@ const App: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
             {enabledServices.get('uniflow_enabled') && (
               <Route path="/uniflow">
                 <UniflowApp />
+              </Route>
+            )}
+            {enabledServices.get('uniconfig_enabled') && (
+              <Route path="/uniconfig">
+                <UniconfigApp />
               </Route>
             )}
           </Switch>

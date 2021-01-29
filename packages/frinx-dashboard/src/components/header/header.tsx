@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGripHorizontal, faCogs } from '@fortawesome/free-solid-svg-icons';
+import { faGripHorizontal, faCogs, faLaptopCode } from '@fortawesome/free-solid-svg-icons';
 import { Flex, IconButton, Image, MenuButton, Menu, MenuList, MenuItem, Box, Icon, Text } from '@chakra-ui/react';
 import { HamburgerIcon } from '@chakra-ui/icons';
 import UserNav from '../user-nav/user-nav';
@@ -16,15 +16,7 @@ type Props = {
 
 const Header: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
   return (
-    <Flex
-      height={16}
-      alignItems="center"
-      px={4}
-      boxShadow="md"
-      position="relative"
-      zIndex="modal"
-      background="brand.600"
-    >
+    <Flex height={16} alignItems="center" px={4} boxShadow="md" position="relative" background="brand.600">
       <Box marginRight={4}>
         <Menu>
           <MenuButton colorScheme="brand" size="md" as={IconButton} icon={<HamburgerIcon />} />
@@ -44,6 +36,12 @@ const Header: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
               <MenuItem as={Link} to="/uniflow">
                 <Icon width={6} height={6} as={FontAwesomeIcon} icon={faCogs} color="brand.700" marginRight={2} />
                 <Text fontWeight="bold">Uniflow</Text>
+              </MenuItem>
+            )}
+            {enabledServices.get('uniconfig_enabled') && (
+              <MenuItem as={Link} to="/uniconfig">
+                <Icon width={6} height={6} as={FontAwesomeIcon} icon={faLaptopCode} color="brand.700" marginRight={2} />
+                <Text fontWeight="bold">Uniconfig</Text>
               </MenuItem>
             )}
           </MenuList>

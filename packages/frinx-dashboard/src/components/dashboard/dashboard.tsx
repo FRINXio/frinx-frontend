@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Container, Wrap } from '@chakra-ui/react';
-import { faCogs } from '@fortawesome/free-solid-svg-icons';
+import { faCogs, faLaptopCode } from '@fortawesome/free-solid-svg-icons';
 import Panel from '../panel/panel';
 import { ServiceKey } from '../../types';
 
@@ -14,6 +14,14 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
       <Wrap spacing={4}>
         {enabledServices.get('uniflow_enabled') && (
           <Panel label="Uniflow" description="Create, organize and execute workflows." icon={faCogs} path="/uniflow" />
+        )}
+        {enabledServices.get('uniconfig_enabled') && (
+          <Panel
+            label="Uniconfig"
+            description="Manage network device configurations."
+            icon={faLaptopCode}
+            path="/uniconfig"
+          />
         )}
       </Wrap>
     </Container>

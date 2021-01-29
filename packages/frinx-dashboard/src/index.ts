@@ -7,13 +7,13 @@ import { ServiceKey } from './types';
 
 const ALL_SERVICES: ServiceKey[] = [
   'uniflow_enabled' as const,
+  'uniconfig_enabled' as const,
   // 'uniresource_enabled' as const,
-  // 'uniconfig_enabled' as const,
   // 'usermanagement_enabled' as const,
 ];
 const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
   ['uniflow_enabled', () => import('@frinx/workflow-ui')],
-  ['uniconfig_enabled', () => import('@frinx/workflow-ui')],
+  ['uniconfig_enabled', () => import('@frinx/uniconfig-ui')],
   ['uniresource_enabled', () => import('@frinx/workflow-ui')],
   ['usermanagement_enabled', () => import('@frinx/workflow-ui')],
 ]);
@@ -42,6 +42,7 @@ class DashboardApp {
   }
 
   render() {
+    console.log(this.enabledServices);
     ReactDOM.render(
       React.createElement(
         React.StrictMode,

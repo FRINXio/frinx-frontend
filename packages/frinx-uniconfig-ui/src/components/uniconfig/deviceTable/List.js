@@ -1,34 +1,22 @@
-import React, { Component } from "react";
-import {
-  Button,
-  Col,
-  Container,
-  Form,
-  FormGroup,
-  Row,
-  Table
-} from "react-bootstrap";
-import "./List.css";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faMinusCircle,
-  faPlusCircle,
-  faSync
-} from "@fortawesome/free-solid-svg-icons";
-import MountModal from "./mountModal/MountModal";
-import DetailModal from "./detailModal/DetailModal";
-import PageSelect from "../../common/PageSelect";
-import PageCount from "../../common/PageCount";
-import { HttpClient as http } from "../../common/HttpClient";
+import React, { Component } from 'react';
+import { Button, Col, Container, Form, FormGroup, Row, Table } from 'react-bootstrap';
+import './List.css';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMinusCircle, faPlusCircle, faSync } from '@fortawesome/free-solid-svg-icons';
+import MountModal from './mountModal/MountModal';
+import DetailModal from './detailModal/DetailModal';
+import PageSelect from '../../common/PageSelect';
+import PageCount from '../../common/PageCount';
+import { HttpClient as http } from '../../common/HttpClient';
 import { GlobalContext } from '../../common/GlobalContext';
 
 class List extends Component {
-  static contextType = GlobalContext
+  static contextType = GlobalContext;
   constructor(props) {
     super(props);
     this.state = {
-      keywords: "",
+      keywords: '',
       data: [],
       table: [],
       selectedDevices: [],
@@ -39,7 +27,7 @@ class List extends Component {
       pagesCount: 1,
       viewedPage: 1,
       sort: false,
-      sortCategory: 0
+      sortCategory: 0,
     };
     library.add(faSync);
     this.table = React.createRef();
@@ -69,39 +57,30 @@ class List extends Component {
     let device_object = await this.getDeviceObject(node_id, topology);
 
     //append os/version from conf
-    if (topology === "cli") {
+    if (topology === 'cli') {
       os_version = await http
         .get(
           this.context.backendApiUrlPrefix +
-            "/rests/data/network-topology:network-topology/topology=" +
+            '/rests/data/network-topology:network-topology/topology=' +
             topology +
-            "/node=" +
+            '/node=' +
             node_id +
-            "?content=config",
-          this.context.authToken
+            '?content=config',
+          this.context.authToken,
         )
-        .then((res) => {
+        .then(res => {
           try {
-            os_version = res["node"]["0"]["cli-topology:device-type"];
-            os_version =
-              os_version +
-              " / " +
-              res["node"]["0"]["cli-topology:device-version"];
+            os_version = res['node']['0']['cli-topology:device-type'];
+            os_version = os_version + ' / ' + res['node']['0']['cli-topology:device-version'];
             return os_version;
           } catch (e) {
             console.log(e);
           }
         });
     } else {
-      os_version = "netconf";
+      os_version = 'netconf';
     }
-    if (device_object)
-      return [
-        device_object.node_id,
-        device_object.host,
-        device_object.status,
-        os_version
-      ];
+    if (device_object) return [device_object.node_id, device_object.host, device_object.status, os_version];
   }
 
   async addDeviceEntry(node_id, topology) {
@@ -126,7 +105,7 @@ class List extends Component {
 
     this.setState({
       data: newData,
-      pagesCount: pages
+      pagesCount: pages,
     });
   }
 
@@ -138,7 +117,7 @@ class List extends Component {
       this.state.selectedDevices.push({
         id: id,
         topology: topology,
-        node_id: node_id
+        node_id: node_id,
       });
     } else {
       for (let key in this.state.selectedDevices) {
@@ -153,13 +132,13 @@ class List extends Component {
   onDeviceRefresh(e, data) {
     let refreshBtnID = e.target.id;
     let refreshBtnElem = document.getElementById(refreshBtnID);
-    refreshBtnElem.classList.add("fa-spin");
+    refreshBtnElem.classList.add('fa-spin');
     setTimeout(() => {
-      refreshBtnElem.classList.remove("fa-spin");
+      refreshBtnElem.classList.remove('fa-spin');
     }, 1000);
 
     let node_id = data[0];
-    let topology = data[3] === "netconf" ? "topology-netconf" : "cli";
+    let topology = data[3] === 'netconf' ? 'topology-netconf' : 'cli';
     let updatedData = this.state.data;
 
     updatedData.map(device => {
@@ -172,19 +151,19 @@ class List extends Component {
 
   removeDevices() {
     this.state.selectedDevices.map(device => {
-      if (device["topology"] === "netconf") {
+      if (device['topology'] === 'netconf') {
         return http.delete(
           this.context.backendApiUrlPrefix +
-            "/rests/data/network-topology:network-topology/topology=topology-netconf/node=" +
-            device["node_id"],
-          this.context.authToken
+            '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' +
+            device['node_id'],
+          this.context.authToken,
         );
       } else {
         return http.delete(
           this.context.backendApiUrlPrefix +
-            "/rests/data/network-topology:network-topology/topology=cli/node=" +
-            device["node_id"],
-          this.context.authToken
+            '/rests/data/network-topology:network-topology/topology=cli/node=' +
+            device['node_id'],
+          this.context.authToken,
         );
       }
     });
@@ -198,19 +177,19 @@ class List extends Component {
     http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=cli?content=nonconfig",
-        this.context.authToken
+          '/rests/data/network-topology:network-topology/topology=cli?content=nonconfig',
+        this.context.authToken,
       )
-      .then((res) => {
+      .then(res => {
         try {
           let topologies = Object.keys(res);
           let topology = Object.keys(res[Object.keys(res)]);
-          let topology_id = res[topologies][topology]["topology-id"];
-          let nodes = res[topologies][topology]["node"];
+          let topology_id = res[topologies][topology]['topology-id'];
+          let nodes = res[topologies][topology]['node'];
 
           if (nodes) {
-            nodes.map((device) => {
-              let node_id = device["node-id"];
+            nodes.map(device => {
+              let node_id = device['node-id'];
               return this.addDeviceEntry(node_id, topology_id);
             });
           }
@@ -222,19 +201,19 @@ class List extends Component {
     http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=topology-netconf?content=nonconfig",
-        this.context.authToken
+          '/rests/data/network-topology:network-topology/topology=topology-netconf?content=nonconfig',
+        this.context.authToken,
       )
-      .then((res) => {
+      .then(res => {
         try {
           let topologies = Object.keys(res);
           let topology = Object.keys(res[Object.keys(res)]);
-          let topology_id = res[topologies][topology]["topology-id"];
-          let nodes = res[topologies][topology]["node"];
+          let topology_id = res[topologies][topology]['topology-id'];
+          let nodes = res[topologies][topology]['node'];
 
           if (nodes) {
-            nodes.map((device) => {
-              let node_id = device["node-id"];
+            nodes.map(device => {
+              let node_id = device['node-id'];
               return this.addDeviceEntry(node_id, topology_id);
             });
           }
@@ -248,7 +227,7 @@ class List extends Component {
   search() {
     let toBeRendered = [];
     let query = this.state.keywords.toUpperCase();
-    if (query !== "") {
+    if (query !== '') {
       const rows = this.state.data;
       for (let i = 0; i < rows.length; i++) {
         for (let y = 0; y < rows[i].length; y++) {
@@ -262,77 +241,66 @@ class List extends Component {
       toBeRendered = this.state.data;
     }
     let size = ~~(toBeRendered.length / this.state.defaultPages);
-    let pages = toBeRendered.length
-      ? toBeRendered.length % this.state.defaultPages
-        ? ++size
-        : size
-      : 0;
+    let pages = toBeRendered.length ? (toBeRendered.length % this.state.defaultPages ? ++size : size) : 0;
 
     this.setState({
       table: toBeRendered,
-      pagesCount: pages
+      pagesCount: pages,
     });
   }
 
   showMountModal() {
     this.setState({
-      mountModal: !this.state.mountModal
+      mountModal: !this.state.mountModal,
     });
   }
 
   showDetailModal() {
     this.setState({
-      detailModal: !this.state.detailModal
+      detailModal: !this.state.detailModal,
     });
   }
 
   getDeviceObject(node_id, topology) {
-    let topology_obj =
-      topology === "cli" ? "cli-topology" : "netconf-node-topology";
+    let topology_obj = topology === 'cli' ? 'cli-topology' : 'netconf-node-topology';
     return http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=" +
+          '/rests/data/network-topology:network-topology/topology=' +
           topology +
-          "/node=" +
+          '/node=' +
           node_id +
-          "?content=nonconfig",
-        this.context.authToken
+          '?content=nonconfig',
+        this.context.authToken,
       )
-      .then((res) => {
+      .then(res => {
         try {
           let device = res.node[0];
-          let node_id = device["node-id"];
+          let node_id = device['node-id'];
           let host = device[`${topology_obj}:host`];
           let a_cap = device[`${topology_obj}:available-capabilities`];
-          let u_cap =
-            device[`${topology_obj}:unavailable-capabilities`] || null;
+          let u_cap = device[`${topology_obj}:unavailable-capabilities`] || null;
           let status = device[`${topology_obj}:connection-status`];
           let port = device[`${topology_obj}:port`];
-          let err_patterns =
-            device[`${topology_obj}:default-error-patterns`] || null;
-          let commit_patterns =
-            device[`${topology_obj}:default-commit-error-patterns`] || null;
-          let connected_message =
-            device[`${topology_obj}:connected-message`] || null;
+          let err_patterns = device[`${topology_obj}:default-error-patterns`] || null;
+          let commit_patterns = device[`${topology_obj}:default-commit-error-patterns`] || null;
+          let connected_message = device[`${topology_obj}:connected-message`] || null;
 
           return http
             .get(
               this.context.backendApiUrlPrefix +
-                "/rests/data/network-topology:network-topology/topology=" +
+                '/rests/data/network-topology:network-topology/topology=' +
                 topology +
-                "/node=" +
+                '/node=' +
                 node_id +
-                "?content=config",
-              this.context.authToken
+                '?content=config',
+              this.context.authToken,
             )
-            .then((res) => {
+            .then(res => {
               try {
                 let device = res.node[0];
-                let transport_type =
-                  device[`${topology_obj}:transport-type`] ||
-                  device[`${topology_obj}:tcp-only`];
-                let protocol = topology_obj.split("-")[0];
+                let transport_type = device[`${topology_obj}:transport-type`] || device[`${topology_obj}:tcp-only`];
+                let protocol = topology_obj.split('-')[0];
 
                 return {
                   node_id: node_id,
@@ -360,10 +328,10 @@ class List extends Component {
 
   async getDeviceDetails(data) {
     let node_id = data[0];
-    let topology = data[3] === "netconf" ? "topology-netconf" : "cli";
+    let topology = data[3] === 'netconf' ? 'topology-netconf' : 'cli';
     let deviceObject = await this.getDeviceObject(node_id, topology);
     this.setState({
-      deviceDetails: deviceObject
+      deviceDetails: deviceObject,
     });
 
     this.showDetailModal();
@@ -388,44 +356,30 @@ class List extends Component {
     let output = [];
     let defaultPages = this.state.defaultPages;
     let viewedPage = this.state.viewedPage;
-    let dataset =
-      this.state.keywords === "" ? this.state.data : this.state.table;
+    let dataset = this.state.keywords === '' ? this.state.data : this.state.table;
     dataset = this.sort(dataset, this.state.sortCategory);
     for (let i = 0; i < dataset.length; i++) {
-      if (
-        i >= (viewedPage - 1) * defaultPages &&
-        i < viewedPage * defaultPages
-      ) {
+      if (i >= (viewedPage - 1) * defaultPages && i < viewedPage * defaultPages) {
         output.push(
           <tr key={`row-${i}`} id={`row-${i}`}>
             <td className="">
-              <Form.Check
-                type="checkbox"
-                onChange={e => this.onDeviceSelect(e, dataset[i], i)}
-                id={`chb-${i}`}
-              />
+              <Form.Check type="checkbox" onChange={e => this.onDeviceSelect(e, dataset[i], i)} id={`chb-${i}`} />
             </td>
             <td
               id={`node_id-${i}`}
               onClick={() => this.getDeviceDetails(dataset[i])}
-              className={"clickable btn-outline-primary"}
+              className={'clickable btn-outline-primary'}
             >
               {dataset[i][0]}
             </td>
             <td>{dataset[i][1]}</td>
-            <td
-              style={
-                dataset[i][2] === "connected"
-                  ? { color: "#007bff" }
-                  : { color: "lightblue" }
-              }
-            >
+            <td style={dataset[i][2] === 'connected' ? { color: '#007bff' } : { color: 'lightblue' }}>
               {dataset[i][2]}
               &nbsp;&nbsp;
               <i
                 id={`refreshBtn-${i}`}
                 onClick={e => this.onDeviceRefresh(e, dataset[i])}
-                style={{ color: "#007bff" }}
+                style={{ color: '#007bff' }}
                 className="fas fa-sync-alt fa-xs clickable"
               />
             </td>
@@ -435,14 +389,14 @@ class List extends Component {
                 className="noshadow"
                 variant="outline-primary"
                 onClick={() => {
-                  this.props.history.push(this.context.frontendUrlPrefix + "/devices/edit/" + dataset[i][0]);
+                  this.props.onEditBtnClick(dataset[i][0]);
                 }}
                 size="sm"
               >
                 <i className="fas fa-cog" />
               </Button>
             </td>
-          </tr>
+          </tr>,
         );
       }
     }
@@ -450,13 +404,12 @@ class List extends Component {
   }
 
   columnSort(i) {
-    let dataset =
-      this.state.keywords === "" ? this.state.data : this.state.table;
+    let dataset = this.state.keywords === '' ? this.state.data : this.state.table;
     dataset = this.sort(dataset, i);
     this.setState({
-      [this.state.keywords === "" ? "data" : "table"]: dataset,
+      [this.state.keywords === '' ? 'data' : 'table']: dataset,
       sort: !this.state.sort,
-      sortCategory: i
+      sortCategory: i,
     });
   }
 
@@ -464,13 +417,13 @@ class List extends Component {
     this.setState({
       defaultPages: defaultPages,
       pagesCount: pagesCount,
-      viewedPage: 1
+      viewedPage: 1,
     });
   }
 
   setViewPage(page) {
     this.setState({
-      viewedPage: page
+      viewedPage: page,
     });
   }
 
@@ -495,33 +448,20 @@ class List extends Component {
       <div className="listPage">
         <Container>
           <FormGroup className="deviceGroup leftAligned1">
-            <Button
-              variant="outline-primary"
-              onClick={this.showMountModal.bind(this)}
-            >
+            <Button variant="outline-primary" onClick={this.showMountModal.bind(this)}>
               <FontAwesomeIcon icon={faPlusCircle} /> Mount Device
             </Button>
-            <Button
-              variant="outline-danger"
-              onClick={this.removeDevices.bind(this)}
-            >
+            <Button variant="outline-danger" onClick={this.removeDevices.bind(this)}>
               <FontAwesomeIcon icon={faMinusCircle} /> Unmount Devices
             </Button>
           </FormGroup>
           <FormGroup className="deviceGroup rightAligned1">
-            <Button
-              variant="primary gradientBtn"
-              onClick={this.refreshAllDeviceEntries.bind(this)}
-            >
+            <Button variant="primary gradientBtn" onClick={this.refreshAllDeviceEntries.bind(this)}>
               <FontAwesomeIcon icon={faSync} /> Refresh
             </Button>
           </FormGroup>
           <FormGroup className="searchGroup">
-            <Form.Control
-              value={this.state.keywords}
-              onChange={this.onEditSearch}
-              placeholder="Search by keyword."
-            />
+            <Form.Control value={this.state.keywords} onChange={this.onEditSearch} placeholder="Search by keyword." />
           </FormGroup>
 
           {mountModal}
@@ -532,28 +472,16 @@ class List extends Component {
               <thead>
                 <tr>
                   <th>Select</th>
-                  <th
-                    className="tableHeader"
-                    onClick={() => this.columnSort(0)}
-                  >
+                  <th className="tableHeader" onClick={() => this.columnSort(0)}>
                     Node ID
                   </th>
-                  <th
-                    className="tableHeader"
-                    onClick={() => this.columnSort(1)}
-                  >
+                  <th className="tableHeader" onClick={() => this.columnSort(1)}>
                     IP address
                   </th>
-                  <th
-                    className="tableHeader"
-                    onClick={() => this.columnSort(2)}
-                  >
+                  <th className="tableHeader" onClick={() => this.columnSort(2)}>
                     Status
                   </th>
-                  <th
-                    className="tableHeader"
-                    onClick={() => this.columnSort(3)}
-                  >
+                  <th className="tableHeader" onClick={() => this.columnSort(3)}>
                     OS/Version
                   </th>
                   <th>Config</th>
@@ -563,15 +491,11 @@ class List extends Component {
             </Table>
           </div>
         </Container>
-        <Container style={{ marginTop: "5px" }}>
+        <Container style={{ marginTop: '5px' }}>
           <Row>
             <Col sm={2}>
               <PageCount
-                dataSize={
-                  this.state.keywords === ""
-                    ? this.state.data.length
-                    : this.state.table.length
-                }
+                dataSize={this.state.keywords === '' ? this.state.data.length : this.state.table.length}
                 defaultPages={this.state.defaultPages}
                 handler={this.setCountPages.bind(this)}
               />
