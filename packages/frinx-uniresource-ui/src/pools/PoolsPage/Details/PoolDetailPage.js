@@ -174,7 +174,7 @@ const query = graphql`
 `;
 
 const PoolDetailPage = (props: Props) => {
-  const { classes, match } = props;
+  const { classes, match, onBreadcrumbLinkClicked } = props;
   const { params } = match;
   console.log(props);
   const { id } = params;
@@ -216,7 +216,6 @@ const PoolDetailPage = (props: Props) => {
     queryAllocatedResources(after, before);
   }, [page]);
 
-  const RESOURCE_MANAGER_URL = '/resourcemanager/frontend';
 
   const getCapacityValue = (cap) => {
     const { freeCapacity, utilizedCapacity } = cap;
@@ -228,7 +227,7 @@ const PoolDetailPage = (props: Props) => {
 
     const handleIconClick = (event) => {
       event.preventDefault();
-      window.location.replace(`${RESOURCE_MANAGER_URL}/pools/${NestedPool.id}`);
+      onBreadcrumbLinkClicked(NestedPool.id)
     };
 
     return (
@@ -267,7 +266,7 @@ const PoolDetailPage = (props: Props) => {
       </Typography>
       <Breadcrumbs separator="›" aria-label="breadcrumb">
         {breadcrumbs.map((e) => (
-            <Link color="primary" href={`${RESOURCE_MANAGER_URL}/pools/${e.id}`}>
+            <Link color="primary" onClick={() => {onBreadcrumbLinkClicked(e.id)}}>
               {e.Name}
             </Link>
         ))}
@@ -361,6 +360,7 @@ const PoolDetailPage = (props: Props) => {
                       setUpdateDataVarProp={setUpdateDataVar}
                       updateDataVarProp={updateDataVar}
                       resources={resources}
+                      match={match}
                     />
                     <Pagination
                       count={Math.ceil(totalCount / first)}

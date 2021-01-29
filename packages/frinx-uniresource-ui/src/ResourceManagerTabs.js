@@ -64,7 +64,6 @@ const ResourceManagerTabs = () => {
     setValue(newValue);
   };
 
-  const RESOURCE_MANAGER_URL = '/resourcemanager/frontend';
 
   return (
       <ThemeProvider theme={theme}>

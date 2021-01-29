@@ -100,13 +100,14 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 
 const ResourceList = (props: Props) => {
-  const { classes, setUpdateDataVarProp, updateDataVarProp, resources, enqueueSnackbar } = props;
+  const { classes, setUpdateDataVarProp, updateDataVarProp, resources, enqueueSnackbar, match } = props;
 
   // eslint-disable-next-line no-unused-vars
   const [showEditCard, setShowEditCard] = useState(false);
   const [updateDataVar, setUpdateDataVar] = useState(0);
 
-  const { id } = useParams();
+  const { params } = match;
+  const { id } = params;
 
   const claimResource = () => {
     const tmp = {};

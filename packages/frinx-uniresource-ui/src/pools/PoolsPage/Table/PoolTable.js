@@ -108,7 +108,7 @@ type Props = {
   onPoolDelete: (poolId: string) => void,
 };
 
-const PoolTable = ({ pools, allTags, onTagAdd, onTagDelete, onPoolDelete }: Props) => {
+const PoolTable = ({ pools, allTags, onTagAdd, onTagDelete, onPoolDelete, onDetailClicked }: Props) => {
   const classes = useStyles();
   const [actionsAnchorEl, setActionsAnchorEl] = useState(null);
   const [activeMenuID, setActiveMenuID] = useState(null);
@@ -124,8 +124,6 @@ const PoolTable = ({ pools, allTags, onTagAdd, onTagDelete, onPoolDelete }: Prop
   const handleActionsClose = () => {
     setActionsAnchorEl(null);
   };
-
-  const RESOURCE_MANAGER_URL = '/resourcemanager/frontend';
 
   const [{ isAdmin }] = useStateValue();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -244,7 +242,7 @@ const PoolTable = ({ pools, allTags, onTagAdd, onTagDelete, onPoolDelete }: Prop
                     open={Boolean(actionsAnchorEl) && row.id === activeMenuID}
                     onClose={handleActionsClose}
                   >
-                    <MenuItem component={Link} to={`${RESOURCE_MANAGER_URL}/pools/${row.id}`}>
+                    <MenuItem component={Link} onClick={() => onDetailClicked(row.id)}>
                       <ListItemIcon>
                         <SettingsIcon fontSize="small" />
                       </ListItemIcon>

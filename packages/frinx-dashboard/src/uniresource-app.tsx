@@ -78,7 +78,12 @@ const UniresourceApp: FC = () => {
                             console.log(match)
                             // @ts-ignore
                             return (
-                                <PoolDetailPage match={match} />
+                                <PoolDetailPage
+                                    match={match}
+                                    onBreadcrumbLinkClicked={(id: string) => {
+                                        history.push(`/uniresource/pools/${id}`);
+                                    }}
+                                />
                             );
                         }}
                     />
@@ -88,7 +93,11 @@ const UniresourceApp: FC = () => {
                         render={(props) => {
                             const { match } = props;
                             return (
-                                <Pools />
+                                <Pools
+                                    onDetailClicked={(id: string) => {
+                                        history.push(`/uniresource/pools/${id}`);
+                                    }}
+                                />
                             );
                         }}
                     />
@@ -115,11 +124,11 @@ const UniresourceApp: FC = () => {
 
                     <Route
                         exact
-                        path="/uniresource/resourceTypes"
+                        path="/uniresource/resources/:id"
                         render={(props) => {
                             const { match } = props;
                             return (
-                                <ResourceTypes />
+                                <ResourceList match={match} />
                             );
                         }}
                     />

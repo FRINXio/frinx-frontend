@@ -3,7 +3,8 @@ import { useState } from 'react';
 import PoolsPage from './PoolsPage/PoolsPage';
 import CreatePoolPage from './CreatePoolPage/CreatePoolPage';
 
-const Pools = () => {
+const Pools = (props) => {
+  const { onDetailClicked } = props
   const [showCreatePool, setShowCreatePool] = useState(false);
 
   return (
@@ -11,7 +12,10 @@ const Pools = () => {
       {showCreatePool ? (
         <CreatePoolPage setShowCreatePool={setShowCreatePool} />
       ) : (
-        <PoolsPage setShowCreatePool={setShowCreatePool} />
+        <PoolsPage
+            setShowCreatePool={setShowCreatePool}
+            onDetailClicked={onDetailClicked}
+        />
       )}
     </>
   );
