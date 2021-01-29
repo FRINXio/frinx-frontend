@@ -23,14 +23,14 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
             path="/uniconfig"
           />
         )}
-          {enabledServices.get('uniresource_enabled') && (
-              <Panel
-                  label="Uniresource"
-                  description="Manage network devices"
-                  icon={faLaptopCode}
-                  path="/uniresource"
-              />
-          )}
+        {enabledServices.get('uniresource_enabled') && (
+            <Panel
+                label="Uniresource"
+                description="Manage network devices"
+                icon={faLaptopCode}
+                path="/uniresource"
+            />
+        )}
       </Wrap>
     </Container>
   );

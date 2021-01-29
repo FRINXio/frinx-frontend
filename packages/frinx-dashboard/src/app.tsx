@@ -1,3 +1,4 @@
+
 import React, { FC, useEffect, useRef } from "react";
 import { Route, BrowserRouter, Switch } from "react-router-dom";
 import { PublicClientApplication } from "@azure/msal-browser";

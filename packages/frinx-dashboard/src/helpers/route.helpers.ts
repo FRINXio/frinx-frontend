@@ -37,7 +37,7 @@ const importMap = new Map<ServiceName, RouteRecord>([
       path: '/uniconfig',
       // @ts-ignore
       importFn: () => import('@frinx/uniconfig-ui/dist'),
-      label: 'UniConfissg',
+      label: 'UniConfig',
       description: 'Manage network device configurations.',
       icon: faLaptopCode,
     },
