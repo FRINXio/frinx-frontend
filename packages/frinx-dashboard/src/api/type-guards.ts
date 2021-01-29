@@ -13,14 +13,9 @@ export function isTaskDefinition(taskDefinition: unknown): taskDefinition is Tas
   );
 }
 
-export function isArrayTypeOf<T>(array: any, testFunc: any): array is T[] {
-    for (const item of array) {
-      if (!testFunc(item)) {
-        return false;
-      }
-    }
-    return true;
-  }
+export function isArrayTypeOf<T>(array: unknown, testFunc: (value: unknown) => value is T): array is T[] {
+  return Array.isArray(array) && array.every(testFunc);
+}
 
 export function isEventListener(eventListener: unknown): eventListener is EventListener {
   return (
