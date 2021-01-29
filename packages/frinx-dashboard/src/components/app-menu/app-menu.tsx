@@ -1,7 +1,7 @@
-import React, { FC } from "react";
-import { Flex, Link } from "@chakra-ui/react";
-import { NavLink, Route, Switch } from "react-router-dom";
-import { ServiceKey } from "../../types";
+import React, { FC } from 'react';
+import { Flex, Link } from '@chakra-ui/react';
+import { NavLink, Route, Switch } from 'react-router-dom';
+import { ServiceKey } from '../../types';
 
 type Props = {
   enabledServices: Map<ServiceKey, boolean>;
@@ -11,7 +11,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
   return (
     <Flex alignItems="stretch" height="100%">
       <Switch>
-        {enabledServices.get("uniflow_enabled") && (
+        {enabledServices.get('uniflow_enabled') && (
           <Route path="/uniflow">
             <Link
               to="/uniflow/definitions"
@@ -25,10 +25,10 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
               borderColor="transparent"
               borderStyle="solid"
               _hover={{
-                borderColor: "brand.50",
+                borderColor: 'brand.50',
               }}
               _active={{
-                background: "brand.800",
+                background: 'brand.800',
               }}
             >
               Definitions
@@ -45,10 +45,10 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
               borderColor="transparent"
               borderStyle="solid"
               _hover={{
-                borderColor: "brand.50",
+                borderColor: 'brand.50',
               }}
               _active={{
-                background: "brand.800",
+                background: 'brand.800',
               }}
             >
               Executed
@@ -65,10 +65,10 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
               borderColor="transparent"
               borderStyle="solid"
               _hover={{
-                borderColor: "brand.50",
+                borderColor: 'brand.50',
               }}
               _active={{
-                background: "brand.800",
+                background: 'brand.800',
               }}
             >
               Scheduled
@@ -85,10 +85,10 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
               borderColor="transparent"
               borderStyle="solid"
               _hover={{
-                borderColor: "brand.50",
+                borderColor: 'brand.50',
               }}
               _active={{
-                background: "brand.800",
+                background: 'brand.800',
               }}
             >
               Event listeners
@@ -105,10 +105,10 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
               borderColor="transparent"
               borderStyle="solid"
               _hover={{
-                borderColor: "brand.50",
+                borderColor: 'brand.50',
               }}
               _active={{
-                background: "brand.800",
+                background: 'brand.800',
               }}
             >
               Tasks
@@ -125,17 +125,17 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
               borderColor="transparent"
               borderStyle="solid"
               _hover={{
-                borderColor: "brand.50",
+                borderColor: 'brand.50',
               }}
               _active={{
-                background: "brand.800",
+                background: 'brand.800',
               }}
             >
               Poll data
             </Link>
           </Route>
         )}
-        {enabledServices.get("uniresource_enabled") && (
+        {enabledServices.get('uniresource_enabled') && (
           <Route path="/uniresource">
             <Link
               to="/uniresource/pools"
@@ -149,10 +149,10 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
               borderColor="transparent"
               borderStyle="solid"
               _hover={{
-                borderColor: "brand.50",
+                borderColor: 'brand.50',
               }}
               _active={{
-                background: "brand.800",
+                background: 'brand.800',
               }}
             >
               Pools
@@ -169,10 +169,10 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
               borderColor="transparent"
               borderStyle="solid"
               _hover={{
-                borderColor: "brand.50",
+                borderColor: 'brand.50',
               }}
               _active={{
-                background: "brand.800",
+                background: 'brand.800',
               }}
             >
               Strategies
@@ -189,10 +189,10 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
               borderColor="transparent"
               borderStyle="solid"
               _hover={{
-                borderColor: "brand.50",
+                borderColor: 'brand.50',
               }}
               _active={{
-                background: "brand.800",
+                background: 'brand.800',
               }}
             >
               Resource Types

@@ -1,9 +1,10 @@
 // @flow
 import * as React from 'react';
 import { StateProvider, useStateValue } from './utils/StateProvider';
-import ResourceManagerTabs from './ResourceManagerTabs';
+import { SnackbarProvider } from 'notistack';
+import { ThemeProvider } from '@material-ui/styles';
 
-const ResourceManagerStateWrapper = (props) => {
+const ResourceManagerStateWrapper = props => {
   const { children } = props;
   const initialState = {
     isAdmin: true,
@@ -24,7 +25,9 @@ const ResourceManagerStateWrapper = (props) => {
 
   return (
     <StateProvider initialState={initialState} reducer={reducer}>
-      {children}
+      <ThemeProvider theme={}>
+        <SnackbarProvider>{children}</SnackbarProvider>
+      </ThemeProvider>
     </StateProvider>
   );
 };
