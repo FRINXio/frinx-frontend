@@ -10,9 +10,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { ThemeProvider } from '@material-ui/styles';
-import {
-  BrowserRouter, Switch, Route, Link,
-} from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
 import axios from 'axios';
 import { useEffect } from 'react';
@@ -26,7 +24,6 @@ import { useStateValue } from './utils/StateProvider';
 
 const styles = () => ({
   root: {
-
     fontWeight: 500,
     fontSize: '20px',
     lineHeight: '24px',
@@ -64,11 +61,10 @@ const ResourceManagerTabs = () => {
     setValue(newValue);
   };
 
-
   return (
-      <ThemeProvider theme={theme}>
-        <SnackbarProvider />
-      </ThemeProvider>
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider />
+    </ThemeProvider>
   );
 };
 

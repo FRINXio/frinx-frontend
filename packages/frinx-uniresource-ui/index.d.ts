@@ -19,13 +19,12 @@
 import { FC } from 'react';
 
 declare module '@frinx/uniresource-ui' {
-    export const SnackbarProvider: FC;
-    export const ResourceTypes: FC;
-    export const Pools: FC;
-    export const ResourceList;
-    export const PoolDetailPage: FC;
-    export const ThemeProvider: FC;
-    export const AllocationStrategies: FC;
-    export const ResourceManagerStateWrapper: FC;
+  export const SnackbarProvider: FC;
+  export const ResourceTypes: FC;
+  export const Pools: FC;
+  export const ResourceList;
+  export const PoolDetailPage: FC;
+  export const ThemeProvider: FC;
+  export const AllocationStrategies: FC;
+  export const ResourceManagerStateWrapper: FC;
 }
-

@@ -186,14 +186,14 @@ const PoolDetailPage = (props: Props) => {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalPages] = useState(0);
   const [resources, setResources] = useState([]);
-  const [poolName, setPoolName] = useState("");
+  const [poolName, setPoolName] = useState('');
   const [breadcrumbs, setBreadcrumbs] = useState([]);
   const [capacity, setCapacity] = useState([]);
-  const [resourcePool, setResourcePool] = useState([])
+  const [resourcePool, setResourcePool] = useState([]);
   const [queryResources, setQueryResources] = useState([]);
 
   const queryAllocatedResources = (startCursor, endCursor) => {
-    console.log(after, before, (after) ? null : before);
+    console.log(after, before, after ? null : before);
     fetchQuery(QueryAllocatedResources(id, first, startCursor, endCursor)).then((v) => {
       if (!v.data.data.QueryResourcePool.allocatedResources) {
         setResources([]);
@@ -216,7 +216,6 @@ const PoolDetailPage = (props: Props) => {
     queryAllocatedResources(after, before);
   }, [page]);
 
-
   const getCapacityValue = (cap) => {
     const { freeCapacity, utilizedCapacity } = cap;
     return (utilizedCapacity / (freeCapacity + utilizedCapacity)) * 100;
@@ -227,7 +226,7 @@ const PoolDetailPage = (props: Props) => {
 
     const handleIconClick = (event) => {
       event.preventDefault();
-      onBreadcrumbLinkClicked(NestedPool.id)
+      onBreadcrumbLinkClicked(NestedPool.id);
     };
 
     return (
@@ -266,34 +265,40 @@ const PoolDetailPage = (props: Props) => {
       </Typography>
       <Breadcrumbs separator="›" aria-label="breadcrumb">
         {breadcrumbs.map((e) => (
-            <Link color="primary" onClick={() => {onBreadcrumbLinkClicked(e.id)}}>
-              {e.Name}
-            </Link>
+          <Link
+            color="primary"
+            onClick={() => {
+              onBreadcrumbLinkClicked(e.id);
+            }}
+          >
+            {e.Name}
+          </Link>
         ))}
       </Breadcrumbs>
       <Grid container spacing={3}>
         <Grid item xs={3}>
-          {(resourcePool) ?
-              <Paper className={classes.paper}>
-
-            <Typography component="div">
-              <Box fontSize="h6.fontSize" fontWeight="fontWeightMedium">
-                Properties
-              </Box>
-            </Typography>
-            {(resourcePool.Tags) ? <div style={{ display: 'flex', marginBottom: '24px' }}>
-              {resourcePool.Tags.map((e) => (
-                  <Chip key={e.id} color="primary" label={e.Tag} className={classes.chip} />
-              ))}
-            </div> : null}
-            <div className={classes.poolInfoContainer}>
-              <div className={` ${classes.pool}`}>Pool Type: </div>
-              <div>{resourcePool.PoolType}</div>
-              <div>Resource Type: </div>
-              <div>{resourcePool.ResourceType?.Name}</div>
-            </div>
-          </Paper>
-              : null}
+          {resourcePool ? (
+            <Paper className={classes.paper}>
+              <Typography component="div">
+                <Box fontSize="h6.fontSize" fontWeight="fontWeightMedium">
+                  Properties
+                </Box>
+              </Typography>
+              {resourcePool.Tags ? (
+                <div style={{ display: 'flex', marginBottom: '24px' }}>
+                  {resourcePool.Tags.map((e) => (
+                    <Chip key={e.id} color="primary" label={e.Tag} className={classes.chip} />
+                  ))}
+                </div>
+              ) : null}
+              <div className={classes.poolInfoContainer}>
+                <div className={` ${classes.pool}`}>Pool Type: </div>
+                <div>{resourcePool.PoolType}</div>
+                <div>Resource Type: </div>
+                <div>{resourcePool.ResourceType?.Name}</div>
+              </div>
+            </Paper>
+          ) : null}
           <Paper className={classes.paper}>
             <Typography component="div">
               <Box fontSize="h6.fontSize" fontWeight="fontWeightMedium">
@@ -301,12 +306,12 @@ const PoolDetailPage = (props: Props) => {
               </Box>
             </Typography>
             <TreeView
-                className={classes.root}
-                defaultCollapseIcon={<ExpandMoreIcon />}
-                defaultExpandIcon={<ChevronRightIcon />}
+              className={classes.root}
+              defaultCollapseIcon={<ExpandMoreIcon />}
+              defaultExpandIcon={<ChevronRightIcon />}
             >
               {queryResources.map((e, i) => (
-                  <>{e.NestedPool ? TreeItemRender(e.NestedPool, i) : null}</>
+                <>{e.NestedPool ? TreeItemRender(e.NestedPool, i) : null}</>
               ))}
             </TreeView>
           </Paper>
@@ -317,10 +322,10 @@ const PoolDetailPage = (props: Props) => {
               </Box>
             </Typography>
             <LinearProgress
-                value={getCapacityValue(capacity)}
-                variant="determinate"
-                disableShrink
-                style={{ height: 10 }}
+              value={getCapacityValue(capacity)}
+              variant="determinate"
+              disableShrink
+              style={{ height: 10 }}
             />
             <div>
               Free:
@@ -338,17 +343,16 @@ const PoolDetailPage = (props: Props) => {
           render={(queryProps) => {
             const { QueryResources, QueryPoolCapacity, QueryResourcePoolHierarchyPath, QueryResourcePool } = queryProps;
             console.log(queryProps);
-            setPoolName(QueryResourcePool.Name)
-            setBreadcrumbs(QueryResourcePoolHierarchyPath)
-            setResourcePool(QueryResourcePool)
-            setCapacity(QueryPoolCapacity)
-            setQueryResources(QueryResources)
+            setPoolName(QueryResourcePool.Name);
+            setBreadcrumbs(QueryResourcePoolHierarchyPath);
+            setResourcePool(QueryResourcePool);
+            setCapacity(QueryPoolCapacity);
+            setQueryResources(QueryResources);
 
             if (first === 0) setFirst(10);
 
             return (
               <>
-
                 <Grid item xs={9}>
                   <Paper className={classes.paper}>
                     <Typography component="div">

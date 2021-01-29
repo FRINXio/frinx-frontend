@@ -4,7 +4,7 @@ import { StateProvider, useStateValue } from './utils/StateProvider';
 import ResourceManagerTabs from './ResourceManagerTabs';
 
 const ResourceManagerStateWrapper = (props) => {
-  const { children } = props
+  const { children } = props;
   const initialState = {
     isAdmin: true,
   };
@@ -24,7 +24,7 @@ const ResourceManagerStateWrapper = (props) => {
 
   return (
     <StateProvider initialState={initialState} reducer={reducer}>
-      { children }
+      {children}
     </StateProvider>
   );
 };

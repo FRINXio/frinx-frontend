@@ -24,8 +24,8 @@ import get from 'lodash/get';
 import PoolTags from './PoolTags';
 import { sanitizeString } from '../Filters/filter.helpers';
 import type { Pool, Tag, Capacity } from '../../pool.types';
-import {useStateValue} from "../../../utils/StateProvider";
-import PoolDeleteDialog from "./PoolDeleteDialog";
+import { useStateValue } from '../../../utils/StateProvider';
+import PoolDeleteDialog from './PoolDeleteDialog';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -138,15 +138,15 @@ const PoolTable = ({ pools, allTags, onTagAdd, onTagDelete, onPoolDelete, onDeta
     <>
       <TableContainer component={Paper} className={classes.container}>
         <PoolDeleteDialog
-            isOpen={isDeleteDialogOpen}
-            onClose={() => {
-              setIsDeleteDialogOpen(false);
-            }}
-            onAccept={() => {
-              setActionsAnchorEl(null);
-              setIsDeleteDialogOpen(false);
-              onPoolDelete(activeMenuID);
-            }}
+          isOpen={isDeleteDialogOpen}
+          onClose={() => {
+            setIsDeleteDialogOpen(false);
+          }}
+          onAccept={() => {
+            setActionsAnchorEl(null);
+            setIsDeleteDialogOpen(false);
+            onPoolDelete(activeMenuID);
+          }}
         />
         <Table ria-label="pool table">
           <TableHead>
@@ -248,14 +248,14 @@ const PoolTable = ({ pools, allTags, onTagAdd, onTagDelete, onPoolDelete, onDeta
                       </ListItemIcon>
                       <ListItemText primary="Details" />
                     </MenuItem>
-                    {isAdmin ?
+                    {isAdmin ? (
                       <MenuItem onClick={() => handleDeleteClicked(row)}>
                         <ListItemIcon>
                           <DeleteIcon fontSize="small" />
                         </ListItemIcon>
                         <ListItemText primary="Delete" />
                       </MenuItem>
-                      : null}
+                    ) : null}
                   </StyledMenu>
                 </TableCell>
                 <TableCell align="left">{row.Name}</TableCell>

@@ -1,39 +1,42 @@
-import React, { FC, useEffect, useRef } from 'react';
-import { Route, BrowserRouter, Switch } from 'react-router-dom';
-import { PublicClientApplication } from '@azure/msal-browser';
-import { Box, ChakraProvider } from '@chakra-ui/react';
-import { MsalProvider } from '@azure/msal-react';
-import { NotificationContainer, NotificationManager } from 'react-notifications';
-import Dashboard from './components/dashboard/dashboard';
-import Header from './components/header/header';
-import 'react-notifications/lib/notifications.css';
-import { createPublicClientApp } from './auth-helpers';
-import theme from './theme';
-import UniflowApp from './uniflow-app';
-import UniconfigApp from './uniconfig-app';
-import { ServiceKey } from './types';
+import React, { FC, useEffect, useRef } from "react";
+import { Route, BrowserRouter, Switch } from "react-router-dom";
+import { PublicClientApplication } from "@azure/msal-browser";
+import { Box, ChakraProvider } from "@chakra-ui/react";
+import { MsalProvider } from "@azure/msal-react";
+import {
+  NotificationContainer,
+  NotificationManager,
+} from "react-notifications";
+import Dashboard from "./components/dashboard/dashboard";
+import Header from "./components/header/header";
+import "react-notifications/lib/notifications.css";
+import { createPublicClientApp } from "./auth-helpers";
+import theme from "./theme";
+import UniflowApp from "./uniflow-app";
+import UniconfigApp from "./uniconfig-app";
+import { ServiceKey } from "./types";
 import UniresourceApp from "./uniresource-app";
 
 function setMessages() {
   const urlParams = new URLSearchParams(window.location?.search);
-  const message = urlParams.get('message');
-  const messageLevel = urlParams.get('message_level');
+  const message = urlParams.get("message");
+  const messageLevel = urlParams.get("message_level");
 
   // Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Transition which is inside StrictMode. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here: https://fb.me/react-strict-mode-find-node
 
   if (message) {
     switch (messageLevel) {
       default:
-      case 'info':
+      case "info":
         NotificationManager.info(message);
         break;
-      case 'success':
+      case "success":
         NotificationManager.success(message);
         break;
-      case 'warning':
+      case "warning":
         NotificationManager.warning(message);
         break;
-      case 'error':
+      case "error":
         NotificationManager.error(message);
         break;
     }
@@ -43,7 +46,9 @@ function setMessages() {
 const AppWithAuth: FC<{
   enabledServices: Map<ServiceKey, boolean>;
 }> = ({ enabledServices }) => {
-  const publicClientAppRef = useRef<PublicClientApplication>(createPublicClientApp());
+  const publicClientAppRef = useRef<PublicClientApplication>(
+    createPublicClientApp()
+  );
 
   return (
     <MsalProvider instance={publicClientAppRef.current}>
@@ -56,20 +61,20 @@ const AppWithAuth: FC<{
               <Route path="/" exact>
                 <Dashboard enabledServices={enabledServices} />
               </Route>
-              {enabledServices.get('uniflow_enabled') && (
+              {enabledServices.get("uniflow_enabled") && (
                 <Route path="/uniflow">
                   <UniflowApp />
                 </Route>
               )}
-              {enabledServices.get('uniconfig_enabled') && (
+              {enabledServices.get("uniconfig_enabled") && (
                 <Route path="/uniconfig">
                   <UniconfigApp />
                 </Route>
               )}
-              {enabledServices.get('uniresource_enabled') && (
-                  <Route path="/uniresource">
-                    <UniresourceApp />
-                  </Route>
+              {enabledServices.get("uniresource_enabled") && (
+                <Route path="/uniresource">
+                  <UniresourceApp />
+                </Route>
               )}
             </Switch>
           </Box>
@@ -101,20 +106,20 @@ const App: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
             <Route path="/" exact>
               <Dashboard enabledServices={enabledServices} />
             </Route>
-            {enabledServices.get('uniflow_enabled') && (
+            {enabledServices.get("uniflow_enabled") && (
               <Route path="/uniflow">
                 <UniflowApp />
               </Route>
             )}
-            {enabledServices.get('uniconfig_enabled') && (
+            {enabledServices.get("uniconfig_enabled") && (
               <Route path="/uniconfig">
                 <UniconfigApp />
               </Route>
             )}
-            {enabledServices.get('uniresource_enabled') && (
-                <Route path="/uniresource">
-                  <UniresourceApp />
-                </Route>
+            {enabledServices.get("uniresource_enabled") && (
+              <Route path="/uniresource">
+                <UniresourceApp />
+              </Route>
             )}
           </Switch>
         </Box>

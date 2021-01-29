@@ -21,7 +21,7 @@ import ResourceManagerQueryRenderer from '../utils/relay/ResourceManagerQueryRen
 import ResourceTypesTable from './ResourceTypesTable';
 import ResourceTypesFilters from './filters/ResourceTypesFilters';
 import { filterByPool, filterByQuery } from './filters/filterUtils';
-import {useStateValue} from "../utils/StateProvider";
+import { useStateValue } from '../utils/StateProvider';
 
 const styles = () => ({
   header: {
@@ -129,43 +129,42 @@ const ResourceTypes = (props: Props) => {
   const [{ isAdmin }] = useStateValue();
 
   return (
-      <div className={classes.mainContainer}>
-        <div className={classes.addButtonContainer}>
-          <Typography component="div">
-            <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
-              Resource Types ({numOfResourcetypes})
-            </Box>
-          </Typography>
-          {isAdmin ?
-              <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    setShowEditCard(true);
-                  }}
-              >
-                Add Resource Type
-              </Button>
-              : null
+    <div className={classes.mainContainer}>
+      <div className={classes.addButtonContainer}>
+        <Typography component="div">
+          <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
+            Resource Types ({numOfResourcetypes})
+          </Box>
+        </Typography>
+        {isAdmin ? (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setShowEditCard(true);
+            }}
+          >
+            Add Resource Type
+          </Button>
+        ) : null}
+      </div>
+      <ResourceManagerQueryRenderer
+        query={query}
+        variables={{ someVar: showEditCard, updateDataVar }}
+        render={(queryProps) => {
+          const { QueryResourceTypes } = queryProps;
+          setQueryArray(QueryResourceTypes);
+          setNumOfResourcetypes(QueryResourceTypes.length);
+
+          if (showEditCard) {
+            return (
+              <div className={classes.paper}>
+                <AddEditResourceTypeCard showAddEditCardFunc={showEditCardFunc} />
+              </div>
+            );
           }
-        </div>
-    <ResourceManagerQueryRenderer
-      query={query}
-      variables={{ someVar: showEditCard, updateDataVar }}
-      render={(queryProps) => {
-        const { QueryResourceTypes } = queryProps;
-        setQueryArray(QueryResourceTypes);
-        setNumOfResourcetypes(QueryResourceTypes.length)
 
-        if (showEditCard) {
           return (
-            <div className={classes.paper}>
-              <AddEditResourceTypeCard showAddEditCardFunc={showEditCardFunc} />
-            </div>
-          );
-        }
-
-        return (
             <>
               <div>
                 <ResourceTypesFilters
@@ -181,9 +180,9 @@ const ResourceTypes = (props: Props) => {
                 <ResourceTypesTable resourceTypesData={filteredArray} updateDataVarFunc={updateDataVarFunc} />
               </div>
             </>
-        );
-      }}
-    />
+          );
+        }}
+      />
     </div>
   );
 };
