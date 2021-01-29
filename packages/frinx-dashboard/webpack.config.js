@@ -38,7 +38,7 @@ module.exports = {
   entry: [fullPath('src', 'index.ts')],
   output: {
     path: fullPath('build'),
-    filename: 'bundle.js',
+    filename: 'static/bundle.js',
     publicPath: '/',
   },
   devServer: {
