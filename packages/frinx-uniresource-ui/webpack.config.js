@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const HtmlWebPackPlugin = require('html-webpack-plugin');
+const path = require('path');
 
 module.exports = {
   devServer: {
@@ -13,7 +14,11 @@ module.exports = {
     disableHostCheck: true,
   },
   output: {
-    publicPath: '/resourcemanager/frontend/',
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'index.js',
+    library: 'frinxUniResourceUI',
+    libraryTarget: 'umd',
+    publicPath: '/',
   },
   devtool: 'source-map',
   module: {

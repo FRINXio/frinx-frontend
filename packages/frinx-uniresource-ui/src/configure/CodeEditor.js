@@ -8,9 +8,9 @@ import { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 
 // eslint-disable-next-line no-unused-vars
-import ace from 'ace-builds/src-min-noconflict/ace';
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/theme-tomorrow';
+// // import ace from 'ace-builds/src-min-noconflict/ace';
+// import 'ace-builds/src-noconflict/mode-javascript';
+// import 'ace-builds/src-noconflict/theme-tomorrow';
 import AceEditor from 'react-ace';
 
 const styles = () => ({

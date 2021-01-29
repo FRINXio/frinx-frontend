@@ -35,14 +35,14 @@ const useStyles = makeStyles(() => ({
 }));
 
 type Row = { Name: string, Lang: string, id: string, Script: string };
-type Props = {|
+type Props = {
   row: Row,
   onActionClick: () => void,
   actionsAnchorEl: HTMLElement,
   onMenuClose: () => void,
   onTestClick: (Row) => void,
   onDeleteClick: (Row) => void,
-|};
+};
 
 const StrategiesTableRow = (props: Props) => {
   const classes = useStyles();

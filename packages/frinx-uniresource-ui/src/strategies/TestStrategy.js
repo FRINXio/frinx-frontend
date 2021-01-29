@@ -24,12 +24,12 @@ const styles = () => ({
   },
 });
 
-type Props = {
-  children: React.ChildrenArray<null | React.Element<*>>,
-  showAddEditCardFunc: Function,
-} & WithStyles<typeof styles>;
+// type Props = {
+//   children: React.ChildrenArray<null | React.Element<*>>,
+//   showAddEditCardFunc: Function,
+// } & WithStyles<typeof styles>;
 
-const TestStrategy = (props: Props) => {
+const TestStrategy = (props) => {
   const { classes } = props;
   const [selectedPool, setSelectedPool] = useState(null);
   const [pools, setPools] = useState([]);

@@ -135,6 +135,70 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
             </Link>
           </Route>
         )}
+          {enabledServices.get('uniresource_enabled') && (
+              <Route path="/uniresource">
+                  <Link
+                      to="/uniresource/pools"
+                      as={NavLink}
+                      exact
+                      color="brand.50"
+                      display="flex"
+                      alignItems="center"
+                      paddingX={4}
+                      borderBottomWidth={4}
+                      borderColor="transparent"
+                      borderStyle="solid"
+                      _hover={{
+                          borderColor: 'brand.50',
+                      }}
+                      _active={{
+                          background: 'brand.800',
+                      }}
+                  >
+                      Pools
+                  </Link>
+                  <Link
+                      to="/uniresource/strategies"
+                      as={NavLink}
+                      exact
+                      color="brand.50"
+                      display="flex"
+                      alignItems="center"
+                      paddingX={4}
+                      borderBottomWidth={4}
+                      borderColor="transparent"
+                      borderStyle="solid"
+                      _hover={{
+                          borderColor: 'brand.50',
+                      }}
+                      _active={{
+                          background: 'brand.800',
+                      }}
+                  >
+                      Strategies
+                  </Link>
+                  <Link
+                      to="/uniresource/resourceTypes"
+                      as={NavLink}
+                      exact
+                      color="brand.50"
+                      display="flex"
+                      alignItems="center"
+                      paddingX={4}
+                      borderBottomWidth={4}
+                      borderColor="transparent"
+                      borderStyle="solid"
+                      _hover={{
+                          borderColor: 'brand.50',
+                      }}
+                      _active={{
+                          background: 'brand.800',
+                      }}
+                  >
+                      Resource Types
+                  </Link>
+              </Route>
+          )}
       </Switch>
     </Flex>
   );
