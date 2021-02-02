@@ -1,6 +1,6 @@
-import { Workflow, TaskDefinition, Queue, WorkflowPayload, EventListener } from 'helpers/types';
+import { Workflow, TaskDefinition, Queue, WorkflowPayload, EventListener } from '../../helpers/types/uniflow-types';
 import { sendGetRequest, sendPostRequest, sendPutRequest, sendDeleteRequest } from './api-helpers';
-import { isArrayTypeOf, isEventListener, isQueue, isTaskDefinition, isWorkflow } from './type-guards';
+import { isArrayTypeOf, isEventListener, isQueue, isTaskDefinition, isWorkflow } from '../../helpers/types/uniflow-type-guards';
 
 // Get all the workflow definitions
 export async function getWorkflows(): Promise<Workflow[]> {
