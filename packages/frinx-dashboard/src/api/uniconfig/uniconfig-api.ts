@@ -6,7 +6,7 @@ import {
   NetconfConfigurationalDataStore,
   NetconfOperationalDataStore,
   NetconfTopology,
-} from '../helpers/types';
+} from '../../helpers/types/uniconfig-types';
 import { sendGetRequest, sendPostRequest, sendPutRequest, sendDeleteRequest } from './api-helpers';
 import {
   isCliOperationalDataStore,
@@ -15,7 +15,7 @@ import {
   isNetconfConfigurationalDataStore,
   isNetconfTopology,
   isCliTopology,
-} from './type-guards';
+} from '../../helpers/types/uniconfig-type-guards';
 
 const BASE_CLI_URL = '/rests/data/network-topology:network-topology/topology=cli';
 const BASE_NETCONF_URL = '/rests/data/network-topology:network-topology/topology=topology-netconf';
@@ -23,11 +23,11 @@ const BASE_NETCONF_URL = '/rests/data/network-topology:network-topology/topology
 const CLI_TOPOLOGY_URL = BASE_CLI_URL + '?content=nonconfig';
 const NETCONF_TOPOLOGY_URL = BASE_NETCONF_URL + '?content=nonconfig';
 
-const CLI_OPER_URL = nodeId => BASE_CLI_URL + '/node=' + nodeId + '?content=nonconfig';
-const CLI_CONF_URL = nodeId => BASE_CLI_URL + '/node=' + nodeId + '?content=config';
+const CLI_OPER_URL = (nodeId: string) => BASE_CLI_URL + '/node=' + nodeId + '?content=nonconfig';
+const CLI_CONF_URL = (nodeId: string) => BASE_CLI_URL + '/node=' + nodeId + '?content=config';
 
-const NETCONF_OPER_URL = nodeId => BASE_NETCONF_URL + '/node=' + nodeId + '?content=nonconfig';
-const NETCONF_CONF_URL = nodeId => BASE_NETCONF_URL + '/node=' + nodeId + '?content=config';
+const NETCONF_OPER_URL = (nodeId: string) => BASE_NETCONF_URL + '/node=' + nodeId + '?content=nonconfig';
+const NETCONF_CONF_URL = (nodeId: string) => BASE_NETCONF_URL + '/node=' + nodeId + '?content=config';
 
 const GET_SUPPORTED_DEVICES_URL =
   '/rests/data/cli-translate-registry:available-cli-device-translations?content=nonconfig&depth=3';
