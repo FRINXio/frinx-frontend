@@ -29,6 +29,8 @@ const CLI_CONF_URL = nodeId => BASE_CLI_URL + '/node=' + nodeId + '?content=conf
 const NETCONF_OPER_URL = nodeId => BASE_NETCONF_URL + '/node=' + nodeId + '?content=nonconfig';
 const NETCONF_CONF_URL = nodeId => BASE_NETCONF_URL + '/node=' + nodeId + '?content=config';
 
+const GET_SUPPORTED_DEVICES_URL =
+  '/rests/data/cli-translate-registry:available-cli-device-translations?content=nonconfig&depth=3';
 
 export async function getCliOperationalDataStore(nodeId: string): Promise<CliOperationalDataStore> {
   const datastore = await sendGetRequest(CLI_OPER_URL(nodeId));

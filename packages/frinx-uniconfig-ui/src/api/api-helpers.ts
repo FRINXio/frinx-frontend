@@ -19,7 +19,7 @@ export async function sendGetRequest(path: string): Promise<unknown> {
   return apiFetch(path, options);
 }
 
-export async function sendPostRequest(path: string, body: any): Promise<unknown> {
+export async function sendPostRequest(path: string, body: unknown): Promise<unknown> {
   const options = {
     method: 'POST',
     body: JSON.stringify(body),
@@ -27,7 +27,7 @@ export async function sendPostRequest(path: string, body: any): Promise<unknown>
   return apiFetch(path, options);
 }
 
-export async function sendPutRequest(path: string, body: any): Promise<unknown> {
+export async function sendPutRequest(path: string, body: unknown): Promise<unknown> {
   const options = {
     method: 'PUT',
     body: JSON.stringify(body),
@@ -35,7 +35,7 @@ export async function sendPutRequest(path: string, body: any): Promise<unknown> 
   return apiFetch(path, options);
 }
 
-export async function sendDeleteRequest(path: string, body?: any): Promise<unknown> {
+export async function sendDeleteRequest(path: string, body?: unknown): Promise<unknown> {
   const options = {
     method: 'DELETE',
     body: JSON.stringify(body),
