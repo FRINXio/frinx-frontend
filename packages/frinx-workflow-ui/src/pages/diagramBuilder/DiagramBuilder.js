@@ -345,11 +345,16 @@ class DiagramBuilder extends Component {
         modalHandler={this.closeInputModal}
         fromBuilder
         show={this.state.showInputModal}
+        onWorkflowIdClick={this.props.onWorkflowIdClick}
       />
     ) : null;
 
     const detailsModal = this.state.showDetailsModal ? (
-      <DetailsModal wfId={this.props.workflowId} modalHandler={this.showDetailsModal} />
+      <DetailsModal
+        wfId={this.props.workflowId}
+        modalHandler={this.showDetailsModal}
+        onWorkflowIdClick={this.props.onWorkflowIdClick}
+      />
     ) : null;
 
     const nodeModal = this.state.showNodeModal ? (

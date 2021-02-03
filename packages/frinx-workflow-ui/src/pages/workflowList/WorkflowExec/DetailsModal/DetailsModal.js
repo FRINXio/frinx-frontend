@@ -3,7 +3,6 @@ import Clipboard from 'clipboard';
 import moment from 'moment';
 import React, { Component } from 'react';
 import { Button, ButtonGroup, Card, Col, Form, Modal, Row, Tab, Table, Tabs } from 'react-bootstrap';
-import { withRouter, Link } from 'react-router-dom';
 import TaskModal from '../../../../common/TaskModal';
 import './DetailsModal.css';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
@@ -139,12 +138,10 @@ class DetailsModal extends Component {
           <td onClick={this.handleTaskDetail.bind(this, row)}>{row['taskType']}&nbsp;&nbsp;</td>
           <td style={{ textAlign: 'center' }}>
             {row['taskType'] === 'SUB_WORKFLOW' ? (
-              <Button variant="primary" as={Link} to={`${this.context.frontendUrlPrefix}/exec/${row.subWorkflowId}`}>
+              <Button variant="primary" onClick={() => this.props.onWorkflowIdClick(row.subWorkflowId)}>
                 <i className="fas fa-arrow-circle-right" />
               </Button>
-            ) : (
-              ''
-            )}
+            ) : null}
           </td>
           <td onClick={this.handleTaskDetail.bind(this, row)}>{row['referenceTaskName']}</td>
           <td>
@@ -372,7 +369,7 @@ class DetailsModal extends Component {
         return (
           <Button
             style={{ margin: '2px', display: 'inline' }}
-            onClick={() => this.props.history.push(`${this.context.frontendUrlPrefix}/exec/${this.state.parentWfId}`)}
+            onClick={() => this.props.onWorkflowIdClick(this.state.parentWfId)}
           >
             Parent
           </Button>
@@ -434,7 +431,7 @@ class DetailsModal extends Component {
         <Modal.Footer>
           <a
             style={{ float: 'left', marginRight: '50px' }}
-            href={`${this.context.frontendUrlPrefix}/exec/${this.state.wfIdRerun}`}
+            onClick={() => this.props.onWorkflowIdClick(this.state.wfIdRerun)}
           >
             {this.state.wfIdRerun}
           </a>
@@ -463,4 +460,4 @@ class DetailsModal extends Component {
   }
 }
 
-export default withRouter(DetailsModal);
+export default DetailsModal;

@@ -39,9 +39,10 @@ const getLabels = dataset => {
 
 type Props = {
   onDefinitionClick: (name: string, version: string) => void,
+  onWorkflowIdClick: (wfId: string) => void,
 };
 
-const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
+const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) => {
   const global = useContext(GlobalContext);
   const [keywords, setKeywords] = useState('');
   const [labels, setLabels] = useState([]);
@@ -68,7 +69,6 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
             let searchedKeys = ['name'];
             let queryWords = keywords.toUpperCase().split(' ');
             let labelsArr = jsonParse(e.description)?.labels;
-            console.log(queryWords);
 
             // if labels are used and wf doesnt contain selected labels => filter out
             if (labels.length > 0) {
@@ -321,7 +321,9 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
   };
 
   const renderInputModal = () => {
-    return inputModal ? <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} /> : null;
+    return inputModal ? (
+      <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} onWorkflowIdClick={onWorkflowIdClick} />
+    ) : null;
   };
 
   const renderDiagramModal = () => {
@@ -342,7 +344,13 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
 
   const renderDependencyModal = () => {
     return dependencyModal ? (
-      <DependencyModal wf={activeWf} modalHandler={showDependencyModal} show={dependencyModal} data={data} />
+      <DependencyModal
+        wf={activeWf}
+        modalHandler={showDependencyModal}
+        show={dependencyModal}
+        data={data}
+        onDefinitionClick={onDefinitionClick}
+      />
     ) : null;
   };
 
