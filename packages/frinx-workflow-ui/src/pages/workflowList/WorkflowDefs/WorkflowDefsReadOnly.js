@@ -14,7 +14,6 @@ import { Col, Form, Row, Modal } from 'react-bootstrap';
 import { Table, Header, Button, Popup } from 'semantic-ui-react';
 import { Typeahead } from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
-import { withRouter } from 'react-router-dom';
 import WfLabels from '../../../common/WfLabels';
 import DefinitionModal from './DefinitonModal/DefinitionModal';
 import DiagramModal from './DiagramModal/DiagramModal';
@@ -306,4 +305,4 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
   );
 }
 
-export default withRouter(WorkflowDefs);
+export default WorkflowDefs;
