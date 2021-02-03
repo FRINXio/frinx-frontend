@@ -276,7 +276,7 @@ function InputModal(props) {
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <a style={{ float: 'left', marginRight: '50px' }} href={`${global.frontendUrlPrefix}/exec/${wfId}`}>
+        <a style={{ float: 'left', marginRight: '50px' }} onClick={() => props.onWorkflowIdClick(wfId)}>
           {wfId}
         </a>
         <Button

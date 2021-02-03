@@ -72,6 +72,9 @@ const UniflowApp: FC = () => {
                   // this is an ugly hack for now
                   window.location.reload();
                 }}
+                onWorkflowIdClick={(wfId: string) => {
+                  history.push(`/uniflow/executed/${wfId}`);
+                }}
               />
             );
           }}
@@ -87,13 +90,23 @@ const UniflowApp: FC = () => {
               onDefinitionClick={(name: string, version: string) => {
                 history.push(`/uniflow/builder/${name}/${version}`);
               }}
+              onWorkflowIdClick={(wfId: string) => {
+                history.push(`/uniflow/executed/${wfId}`);
+              }}
             />
           </Route>
           <Route
             exact
             path="/uniflow/executed/:wfId?"
             render={(props: RouteComponentProps<{ wfId?: string }>) => {
-              return <WorkflowExec query={props.match.params.wfId} />;
+              return (
+                <WorkflowExec
+                  query={props.match.params.wfId}
+                  onWorkflowIdClick={(wfId: string) => {
+                    history.push(`/uniflow/executed/${wfId}`);
+                  }}
+                />
+              );
             }}
           />
           <Route exact path="/uniflow/scheduled">

@@ -46,7 +46,12 @@ const getLabels = dataset => {
     .sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
 };
 
-function WorkflowDefs() {
+type Props = {
+  onDefinitionClick: (name: string, version: string) => void,
+  onWorkflowIdClick: (wfId: string) => void,
+};
+
+function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
   const global = useContext(GlobalContext);
   const [keywords, setKeywords] = useState('');
   const [labels, setLabels] = useState([]);
@@ -221,7 +226,9 @@ function WorkflowDefs() {
   };
 
   const renderInputModal = () => {
-    return inputModal ? <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} /> : null;
+    return inputModal ? (
+      <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} onWorkflowIdClick={onWorkflowIdClick} />
+    ) : null;
   };
 
   const renderDiagramModal = () => {
@@ -230,7 +237,13 @@ function WorkflowDefs() {
 
   const renderDependencyModal = () => {
     return dependencyModal ? (
-      <DependencyModal wf={activeWf} modalHandler={showDependencyModal} show={dependencyModal} data={data} />
+      <DependencyModal
+        wf={activeWf}
+        modalHandler={showDependencyModal}
+        show={dependencyModal}
+        data={data}
+        onDefinitionClick={onDefinitionClick}
+      />
     ) : null;
   };
 

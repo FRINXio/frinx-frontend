@@ -407,6 +407,7 @@ class WorkflowExec extends Component {
             : this.props.fetchParentWorkflows.bind(this, 1, this.state.defaultPages, this.context.backendApiUrlPrefix)
         }
         show={this.state.detailsModal}
+        onWorkflowIdClick={this.props.onWorkflowIdClick}
       />
     ) : null;
 
