@@ -4,7 +4,9 @@ import { isArrayTypeOf, isEventListener, isQueue, isTaskDefinition, isWorkflow }
 
 // Get all the workflow definitions
 export async function getWorkflows(): Promise<Workflow[]> {
-  const workflows = await sendGetRequest('/metadata/workflow');
+  const response = await sendGetRequest('/metadata/workflow');
+  // TODO: backend should return just 'Workflow[]' not '{result: Workflow[]}`
+  const workflows = (response as {result: Workflow[]}).result;
 
   if (isArrayTypeOf<Workflow>(workflows, isWorkflow)) {
     return workflows
@@ -34,7 +36,9 @@ export async function registerTaskDefinition(taskDefinition: TaskDefinition): Pr
 
 // Get all the task definitions
 export async function getTaskDefinitions(): Promise<TaskDefinition[]> {
-  const definitions = await sendGetRequest('/metadata/taskdefs');
+  const response = await sendGetRequest('/metadata/taskdefs');
+  // TODO: backend should return just 'Workflow[]' not '{result: Workflow[]}`
+  const definitions = (response as {result: TaskDefinition[]}).result;
 
   if (isArrayTypeOf<TaskDefinition>(definitions, isTaskDefinition)) {
     return definitions

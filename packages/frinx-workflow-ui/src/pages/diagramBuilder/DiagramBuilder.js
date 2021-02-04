@@ -23,6 +23,7 @@ import { connect } from 'react-redux';
 import { encode } from './builder-utils';
 import { HttpClient as http } from '../../common/HttpClient';
 import { saveAs } from 'file-saver';
+import callbackUtils from '../../utils/callbackUtils';
 
 class DiagramBuilder extends Component {
   static contextType = GlobalContext;
@@ -78,12 +79,12 @@ class DiagramBuilder extends Component {
   componentDidMount() {
     document.addEventListener('dblclick', this.doubleClickListener.bind(this));
 
-    http.get(this.context.backendApiUrlPrefix + '/metadata/workflow').then(res => {
-      this.props.storeWorkflows(res.result?.sort((a, b) => a.name.localeCompare(b.name)) || []);
+    callbackUtils.getWorkflows().then(workflows => {
+      this.props.storeWorkflows(workflows.sort((a, b) => a.name.localeCompare(b.name)) || []);
     });
 
-    http.get(this.context.backendApiUrlPrefix + '/metadata/taskdefs').then(res => {
-      this.props.storeTasks(res.result?.sort((a, b) => a.name.localeCompare(b.name)) || []);
+    callbackUtils.getTaskDefinitions().then(definitions => {
+      this.props.storeTasks(definitions.sort((a, b) => a.name.localeCompare(b.name)) || []);
     });
 
     const { name, version } = this.props;

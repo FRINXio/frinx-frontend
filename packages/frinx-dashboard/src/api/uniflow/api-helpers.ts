@@ -1,5 +1,5 @@
 // TODO dynamic source of url
-const CONDUCTOR_API_URL: string = 'localhost:8080/api';
+const CONDUCTOR_API_URL: string = 'http://localhost:5000/api/uniflow/conductor';
 
 export async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
   const url = `${CONDUCTOR_API_URL}${path}`;
