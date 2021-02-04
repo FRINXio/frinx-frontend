@@ -21,7 +21,6 @@ import { HotKeys } from 'react-hotkeys';
 import { WorkflowDiagram } from './WorkflowDiagram';
 import { connect } from 'react-redux';
 import { encode } from './builder-utils';
-import { HttpClient as http } from '../../common/HttpClient';
 import { saveAs } from 'file-saver';
 import callbackUtils from '../../utils/callbackUtils';
 
@@ -70,7 +69,6 @@ class DiagramBuilder extends Component {
         new Application(),
         this.props.finalWorkflow,
         { x: 600, y: 300 },
-        this.context.backendApiUrlPrefix,
         this.context.prefixHttpTask,
       ),
     });
@@ -79,11 +77,14 @@ class DiagramBuilder extends Component {
   componentDidMount() {
     document.addEventListener('dblclick', this.doubleClickListener.bind(this));
 
-    callbackUtils.getWorkflows().then(workflows => {
+    const getWorkflows = callbackUtils.getWorkflowsCallback();
+    const getTaskDefinitions = callbackUtils.getTaskDefinitionsCallback();
+
+    getWorkflows().then(workflows => {
       this.props.storeWorkflows(workflows.sort((a, b) => a.name.localeCompare(b.name)) || []);
     });
 
-    callbackUtils.getTaskDefinitions().then(definitions => {
+    getTaskDefinitions().then(definitions => {
       this.props.storeTasks(definitions.sort((a, b) => a.name.localeCompare(b.name)) || []);
     });
 
@@ -119,10 +120,11 @@ class DiagramBuilder extends Component {
 
   createExistingWorkflow() {
     const { name, version } = this.props;
-    http
-      .get(this.context.backendApiUrlPrefix + '/metadata/workflow/' + name + '/' + version)
-      .then(res => {
-        this.createDiagramByDefinition(res.result);
+    const getWorkflow = callbackUtils.getWorkflowCallback();
+
+    getWorkflow(name, version)
+      .then(workflow => {
+        this.createDiagramByDefinition(workflow);
       })
       .catch(() => {
         return this.props.showCustomAlert(true, 'danger', `Cannot find selected sub-workflow: ${name}.`);

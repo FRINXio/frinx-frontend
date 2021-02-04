@@ -6,7 +6,7 @@ import { isArrayTypeOf, isEventListener, isQueue, isTaskDefinition, isWorkflow }
 export async function getWorkflows(): Promise<Workflow[]> {
   const response = await sendGetRequest('/metadata/workflow');
   // TODO: backend should return just 'Workflow[]' not '{result: Workflow[]}`
-  const workflows = (response as {result: Workflow[]}).result;
+  const workflows = (response as {result: unknown}).result;
 
   if (isArrayTypeOf<Workflow>(workflows, isWorkflow)) {
     return workflows
@@ -38,7 +38,7 @@ export async function registerTaskDefinition(taskDefinition: TaskDefinition): Pr
 export async function getTaskDefinitions(): Promise<TaskDefinition[]> {
   const response = await sendGetRequest('/metadata/taskdefs');
   // TODO: backend should return just 'Workflow[]' not '{result: Workflow[]}`
-  const definitions = (response as {result: TaskDefinition[]}).result;
+  const definitions = (response as {result: unknown}).result;
 
   if (isArrayTypeOf<TaskDefinition>(definitions, isTaskDefinition)) {
     return definitions
@@ -68,7 +68,9 @@ export async function deleteTaskDefinition(name: string): Promise<TaskDefinition
 
 // Returns single workflow based on name and version
 export async function getWorkflow(name: string, version: number): Promise<Workflow> {
-  const workflow = await sendGetRequest(`/metadata/workflow/${name}/${version}`);
+  const response = await sendGetRequest(`/metadata/workflow/${name}/${version}`);
+  // TODO: backend should return just 'Workflow' not '{result: Workflow}`
+  const workflow = (response as {result: unknown}).result;
 
   if (isWorkflow(workflow)) {
     return workflow;
