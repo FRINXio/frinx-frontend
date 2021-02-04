@@ -1,7 +1,10 @@
 import { FC } from 'react';
+import { UniflowApiCallbacks } from './src/UniflowApiProvider'
 
 declare module '@frinx/workflow-ui' {
   export const ReduxProvider: FC;
+  export const getUniflowApiProvider: (callbacks: UniflowApiCallbacks) => FC;
+  export const UniflowApiProvider: FC
   export const WorkflowListHeader: FC<{ onAddButtonClick: () => void }>;
   export const WorkflowDefinitions: FC<{
     onDefinitionClick: (name: string, version: string) => void;
