@@ -1,10 +1,13 @@
-import { getWorkflows, getTaskDefinitions } from './api/uniflow/uniflow-api';
+import { getWorkflows, getWorkflow, getTaskDefinitions, registerEventListener, putWorkflow } from './api/uniflow/uniflow-api';
 import React, { FC, useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
 
 const callbacks = {
   getWorkflows,
-  getTaskDefinitions
+  getWorkflow,
+  getTaskDefinitions,
+  registerEventListener,
+  putWorkflow
 }
 
 const UniflowApp: FC = () => {
