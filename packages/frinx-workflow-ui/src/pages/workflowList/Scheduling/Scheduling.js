@@ -1,13 +1,12 @@
 // @flow
-
+import React, { useContext, useEffect, useState } from 'react';
 import PageCount from '../../../common/PageCount';
 import PageSelect from '../../../common/PageSelect';
-import React, { useContext, useEffect, useState } from 'react';
 import SchedulingModal from './SchedulingModal/SchedulingModal';
 import superagent from 'superagent';
 import { Accordion, Button, Card, Col, Container, Row, Table } from 'react-bootstrap';
 import { GlobalContext } from '../../../common/GlobalContext';
-import { withRouter } from 'react-router-dom';
+import PageContainer from '../../../common/PageContainer';
 
 const Scheduling = () => {
   const global = useContext(GlobalContext);
@@ -168,7 +167,7 @@ const Scheduling = () => {
   };
 
   return (
-    <div>
+    <PageContainer>
       <SchedulingModal
         name={getActiveScheduleName()}
         workflowName={getActiveWorkflowName()}
@@ -208,8 +207,8 @@ const Scheduling = () => {
           </Col>
         </Row>
       </Container>
-    </div>
+    </PageContainer>
   );
 };
 
-export default withRouter(Scheduling);
+export default Scheduling;

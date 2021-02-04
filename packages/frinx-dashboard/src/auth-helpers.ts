@@ -11,14 +11,15 @@ export function removeTokenCookie(): void {
 }
 
 export function isAuthEnabled(): boolean {
-  return process.env.REACT_APP_AUTH_ENABLED === "true";
+  return window.__CONFIG__.auth_enabled === "true";
 }
 
 const authConfig: Configuration = {
   auth: {
-    clientId: process.env.REACT_APP_AD_CLIENT_ID || "",
+    clientId: window.__CONFIG__.auth_client_id || "",
     redirectUri:
-      process.env.REACT_APP_AD_REDIRECT_URL || "http://localhost:3000/",
+        window.__CONFIG__.auth_redirect_url || "http://localhost:3000/",
+    // authority: 'https://login.microsoftonline.com/8379e38f-b9ed-4168-8a1b-69be764c9750'
   },
   cache: {
     cacheLocation: "localStorage",

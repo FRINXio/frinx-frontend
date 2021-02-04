@@ -1,11 +1,9 @@
-// @flow weak
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const webpack = require('webpack');
-const dotenv = require('dotenv').config({
-  path: path.join(__dirname, '.env'),
-});
+/* eslint-enable */
 
 const ENVIRONMENT = process.env.NODE_ENV || 'development';
 
@@ -21,28 +19,26 @@ function fullPath(...parts) {
 }
 
 const plugins = [
-  new CopyWebpackPlugin({ patterns: [{ from: fullPath('static'), to: '.' }] }),
+  new CopyWebpackPlugin({
+    patterns: [
+      { from: fullPath('static'), to: '.' },
+      { from: fullPath('config'), to: '.' },
+    ],
+  }),
   new HtmlWebPackPlugin({
-    template: fullPath('src', 'index.html'),
-    inject: true,
-    filename: 'index.html',
+    template: isDev ? fullPath('src', 'index.dev.html') : fullPath('src', 'index.shtml'),
+    inject: false,
+    filename: isDev ? 'index.html' : 'index.shtml',
+    scriptLoading: 'blocking',
   }),
-  new webpack.DefinePlugin({
-    'process.env': Object.keys(dotenv.parsed).reduce(
-      (acc, key) => ({
-        ...acc,
-        [key]: JSON.stringify(dotenv.parsed[key]),
-      }),
-      {},
-    ),
-  }),
+  new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
 ];
 
 module.exports = {
   entry: [fullPath('src', 'index.ts')],
   output: {
     path: fullPath('build'),
-    filename: 'bundle.js',
+    filename: 'static/bundle.js',
     publicPath: '/',
   },
   devServer: {
@@ -62,6 +58,17 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
+        test: /\.js?$/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-flow'],
+            plugins: ['@babel/plugin-proposal-class-properties'],
+          },
+        },
+        include: [/frinx-workflow-ui/, /frinx-uniconfig-ui/],
+      },
+      {
         test: /\.(css|scss})$/,
         use: ['style-loader', 'css-loader', 'sass-loader'],
       },
@@ -76,6 +83,20 @@ module.exports = {
       {
         test: /\.(woff|woff2|ttf|eot)$/,
         use: 'url-loader',
+      },
+      {
+        test: /\.inline.svg$/,
+        use: [
+          {
+            loader: 'babel-loader',
+          },
+          {
+            loader: 'react-svg-loader',
+            options: {
+              jsx: true,
+            },
+          },
+        ],
       },
     ],
   },

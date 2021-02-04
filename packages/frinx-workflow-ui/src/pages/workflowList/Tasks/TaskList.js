@@ -9,8 +9,9 @@ import { taskDefinition } from '../../../constants';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
 import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
+import PageContainer from '../../../common/PageContainer';
 
-function TaskList() {
+const TaskList = () => {
   const global = useContext(GlobalContext);
   const [keywords, setKeywords] = useState('');
   const [sorted, setSorted] = useState(false);
@@ -174,7 +175,7 @@ function TaskList() {
   ) : null;
 
   return (
-    <div>
+    <PageContainer>
       {taskModalComp}
       {addTaskModal}
       <Grid padded="horizontally">
@@ -193,8 +194,8 @@ function TaskList() {
         </Grid.Row>
       </Grid>
       {taskTable()}
-    </div>
+    </PageContainer>
   );
-}
+};
 
 export default TaskList;

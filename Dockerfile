@@ -17,4 +17,4 @@ RUN rm -rf /usr/share/nginx/html
 RUN cp nginx.conf /etc/nginx/nginx.conf
 
 # TODO we should have static code generated for the whole repo, not an individual project
-RUN cp -avr packages/frinx-dashboard/dist /usr/share/nginx/html
+RUN cp -avr packages/frinx-dashboard/build /usr/share/nginx/html

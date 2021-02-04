@@ -1,5 +1,6 @@
 // @flow weak
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -82,11 +83,31 @@ module.exports = {
       template: './public/index.html',
       filename: './index.html',
     }),
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   ],
   externals: isDev
     ? undefined
     : {
-        react: 'react',
-        reactDOM: 'react-dom',
+        react: {
+          root: 'React',
+          commonjs2: 'react',
+          commonjs: 'react',
+          amd: 'react',
+          umd: 'react',
+        },
+        'react-dom': {
+          root: 'ReactDOM',
+          commonjs2: 'react-dom',
+          commonjs: 'react-dom',
+          amd: 'react-dom',
+          umd: 'react-dom',
+        },
+        'react-router-dom': {
+          root: 'ReactRouterDOM',
+          commonjs2: 'react-router-dom',
+          commonjs: 'react-router-dom',
+          amd: 'react-router-dom',
+          umd: 'react-router-dom',
+        },
       },
 };

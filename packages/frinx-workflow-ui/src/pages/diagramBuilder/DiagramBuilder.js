@@ -1,6 +1,7 @@
+// @flow
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import { WorkflowBuilder } from '@frinx/workflow-builder/build';
+import { WorkflowBuilder } from '@frinx/workflow-builder';
 import { GlobalContext } from '../../common/GlobalContext';
 
 const DiagramBuilder = () => {
