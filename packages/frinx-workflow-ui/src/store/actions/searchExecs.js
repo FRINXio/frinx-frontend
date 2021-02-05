@@ -1,5 +1,5 @@
 import { sortBy } from 'lodash';
-import { HttpClient as http } from '../../common/HttpClient';
+import callbackUtils from '../../utils/callbackUtils';
 
 export const RECEIVE_NEW_DATA = 'RECEIVE_NEW_DATA';
 export const HIERARCHY_NEW_DATA = 'HIERARCHY_NEW_DATA';
@@ -36,19 +36,19 @@ const createQuery = ({ query, label }) => {
   return q;
 };
 
-export const fetchNewData = (viewedPage, defaultPages, backendApiUrlPrefix) => {
+export const fetchNewData = (viewedPage, defaultPages) => {
   return (dispatch, getState) => {
     let q = createQuery(getState().searchReducer);
     let page = (viewedPage - 1) * defaultPages;
-    http
-      .get(backendApiUrlPrefix + '/executions/?q=&h=&freeText=' + q + '&start=' + page + '&size=' + defaultPages)
-      .then(res => {
-        if (res.result) {
-          const data = res.result ? (res.result.hits ? res.result.hits : []) : [];
-          dispatch(updateSize(res.result.totalHits));
-          dispatch(receiveNewData(data));
-        }
-      });
+    const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback(q, page, defaultPages);
+
+    getWorkflowExecutions(q, page, defaultPages).then(res => {
+      if (res.result) {
+        const data = res.result ? (res.result.hits ? res.result.hits : []) : [];
+        dispatch(updateSize(res.result.totalHits));
+        dispatch(receiveNewData(data));
+      }
+    });
   };
 };
 
@@ -56,29 +56,27 @@ export const receiveNewData = data => {
   return { type: RECEIVE_NEW_DATA, data };
 };
 
-export const fetchParentWorkflows = (viewedPage, defaultPages, backendApiUrlPrefix) => {
+export const fetchParentWorkflows = (viewedPage, defaultPages) => {
   return (dispatch, getState) => {
     let page = viewedPage - 1;
 
     const { checkedWfs, size } = getState().searchReducer;
     let q = createQuery(getState().searchReducer);
-    http
-      .get(
-        backendApiUrlPrefix + '/hierarchical/?freeText=' + q + '&start=' + checkedWfs[page] + '&size=' + defaultPages,
-      )
-      .then(res => {
-        if (res) {
-          let parents = res.parents ? res.parents : [];
-          let children = res.children ? res.children : [];
-          if (res.count < res.hits && (typeof checkedWfs[viewedPage] === 'undefined' || checkedWfs.length === 1)) {
-            checkedWfs.push(res.count);
-            dispatch(updateSize(size + parents.length));
-          }
-          dispatch(checkedWorkflows(checkedWfs));
-          parents = sortBy(parents, wf => new Date(wf.startTime)).reverse();
-          dispatch(receiveHierarchicalData(parents, children));
+    let getWorkflowExecutionsHierarchical = callbackUtils.getWorkflowExecutionsHierarchicalCallback();
+
+    getWorkflowExecutionsHierarchical(q, checkedWfs[page], defaultPages).then(res => {
+      if (res) {
+        let parents = res.parents ? res.parents : [];
+        let children = res.children ? res.children : [];
+        if (res.count < res.hits && (typeof checkedWfs[viewedPage] === 'undefined' || checkedWfs.length === 1)) {
+          checkedWfs.push(res.count);
+          dispatch(updateSize(size + parents.length));
         }
-      });
+        dispatch(checkedWorkflows(checkedWfs));
+        parents = sortBy(parents, wf => new Date(wf.startTime)).reverse();
+        dispatch(receiveHierarchicalData(parents, children));
+      }
+    });
   };
 };
 

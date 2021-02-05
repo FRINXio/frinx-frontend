@@ -1,6 +1,6 @@
-import { HttpClient as http } from '../../common/HttpClient';
 import { round } from 'lodash/math';
 import { fetchNewData, fetchParentWorkflows } from './searchExecs';
+import callbackUtils from '../../utils/callbackUtils';
 
 export const IS_FLAT = 'IS_FLAT';
 export const REQUEST_BULK_OPERATION = 'REQUEST_BULK_OPERATION';
@@ -13,13 +13,11 @@ export const requestBulkOperation = () => {
   return { type: REQUEST_BULK_OPERATION };
 };
 
-export const receiveBulkOperationResponse = (successfulResults, errorResults, defaultPages, backendApiUrlPrefix) => {
+export const receiveBulkOperationResponse = (successfulResults, errorResults, defaultPages) => {
   return (dispatch, getState) => {
     dispatch(storeResponse(successfulResults, errorResults));
     const { isFlat } = getState().bulkReducer;
-    isFlat
-      ? dispatch(fetchNewData(1, defaultPages, backendApiUrlPrefix))
-      : dispatch(fetchParentWorkflows(1, defaultPages, backendApiUrlPrefix));
+    isFlat ? dispatch(fetchNewData(1, defaultPages)) : dispatch(fetchParentWorkflows(1, defaultPages));
     setTimeout(() => dispatch(resetBulkOperationResult()), 2000);
   };
 };
@@ -44,18 +42,17 @@ export const updateLoadingBar = percentage => {
   return { type: UPDATE_LOADING_BAR, percentage };
 };
 
-export const checkDeleted = (deletedWfs, workflows, defaultPages, backendApiUrlPrefix) => {
+export const checkDeleted = (deletedWfs, workflows, defaultPages) => {
   return dispatch => {
     if (deletedWfs.length === workflows.length) {
-      dispatch(receiveBulkOperationResponse(deletedWfs, {}, defaultPages, backendApiUrlPrefix));
+      dispatch(receiveBulkOperationResponse(deletedWfs, {}, defaultPages));
     } else {
       setTimeout(() => dispatch(checkDeleted(deletedWfs, workflows, defaultPages)), 200);
     }
   };
 };
 
-export const performBulkOperation = (operation, workflows, defaultPages, backendApiUrlPrefix) => {
-  const url = backendApiUrlPrefix + '/bulk/' + operation;
+export const performBulkOperation = (operation, workflows, defaultPages) => {
   let deletedWfs = [];
 
   return dispatch => {
@@ -63,40 +60,56 @@ export const performBulkOperation = (operation, workflows, defaultPages, backend
     try {
       switch (operation) {
         case 'retry':
-        case 'restart':
-          http.post(url, workflows).then(res => {
+          const retryWorkflows = callbackUtils.retryWorkflowsCallback();
+
+          retryWorkflows(workflows).then(res => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
-            dispatch(
-              receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages, backendApiUrlPrefix),
-            );
+            dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages));
+          });
+          break;
+        case 'restart':
+          const restartWorkflows = callbackUtils.restartWorkflowsCallback();
+
+          restartWorkflows(workflows).then(res => {
+            const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
+            dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages));
           });
           break;
         case 'pause':
-        case 'resume':
-          http.put(url, workflows).then(res => {
+          const pauseWorkflows = callbackUtils.pauseWorkflowsCallback();
+
+          pauseWorkflows(workflows).then(res => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
-            dispatch(
-              receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages, backendApiUrlPrefix),
-            );
+            dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages));
+          });
+          break;
+        case 'resume':
+          const resumeWorkflows = callbackUtils.resumeWorkflowsCallback();
+
+          resumeWorkflows(workflows).then(res => {
+            const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
+            dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages));
           });
           break;
         case 'terminate':
-          http.delete(url, workflows).then(res => {
+          const terminateWorkflows = callbackUtils.terminateWorkflowsCallback();
+
+          terminateWorkflows(workflows).then(res => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
-            dispatch(
-              receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages, backendApiUrlPrefix),
-            );
+            dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages));
           });
           break;
         case 'delete':
+          const deleteWorkflowInstance = callbackUtils.deleteWorkflowInstanceCallback();
+
           workflows.map(wf => {
-            http.delete(backendApiUrlPrefix + '/workflow/' + wf).then(() => {
+            deleteWorkflowInstance(wf).then(() => {
               deletedWfs.push(wf);
               dispatch(updateLoadingBar(round((deletedWfs.length / workflows.length) * 100)));
             });
             return null;
           });
-          dispatch(checkDeleted(deletedWfs, workflows, defaultPages, backendApiUrlPrefix));
+          dispatch(checkDeleted(deletedWfs, workflows, defaultPages));
           break;
         default:
           dispatch(failBulkOperation('Invalid operation requested.'));

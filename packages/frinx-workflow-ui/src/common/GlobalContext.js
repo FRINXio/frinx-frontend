@@ -2,14 +2,12 @@
 import React, { createContext, useEffect, useState } from 'react';
 
 type GlobalConstants = {
-  backendApiUrlPrefix: string,
   enableScheduling: boolean,
   disabledTasks: string[],
   prefixHttpTask: string,
 };
 
 export const globalConstants: GlobalConstants = {
-  backendApiUrlPrefix: 'http://localhost:5000/api/uniflow/conductor',
   enableScheduling: true,
   disabledTasks: ['js', 'py', 'while', 'while_end'],
   prefixHttpTask: '',

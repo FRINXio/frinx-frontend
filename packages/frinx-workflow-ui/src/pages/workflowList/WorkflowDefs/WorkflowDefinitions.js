@@ -4,18 +4,17 @@ import { Col, Form, Row, Modal } from 'react-bootstrap';
 import { Table, Header, Button, Popup } from 'semantic-ui-react';
 import { Typeahead } from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
-import { withRouter } from 'react-router-dom';
 import WfLabels from '../../../common/WfLabels';
 import DefinitionModal from './DefinitonModal/DefinitionModal';
 import DiagramModal from './DiagramModal/DiagramModal';
 import InputModal from './InputModal/InputModal';
 import DependencyModal from './DependencyModal/DependencyModal';
 import SchedulingModal from '../Scheduling/SchedulingModal/SchedulingModal';
-import { HttpClient as http } from '../../../common/HttpClient';
 import { GlobalContext } from '../../../common/GlobalContext';
 import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
 import PageContainer from '../../../common/PageContainer';
+import callbackUtils from '../../../utils/callbackUtils';
 
 const jsonParse = json => {
   try {
@@ -95,18 +94,12 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     setItemList(results);
   }, [keywords, labels, data]);
 
-  const metadataUrlSuffix = () => {
-    // Use standard URL (/metadata/workflow) in case scheduling is disabled
-    // but use a special endpoint that returns workflow metadata with
-    // scheduling info attached (/schedule/metadata/workflow)
-    // if scheduling is supported by the backend
-    return global.enableScheduling === false ? '/metadata/workflow' : '/schedule/metadata/workflow';
-  };
-
   const getData = () => {
-    http.get(global.backendApiUrlPrefix + metadataUrlSuffix()).then(res => {
-      if (res.result) {
-        let dataset = res.result.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
+    const getWorkflows = callbackUtils.getWorkflowsCallback();
+
+    getWorkflows().then(workflows => {
+      if (workflows) {
+        let dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
         setData(dataset);
         setAllLabels(getLabels(dataset));
       }
@@ -148,9 +141,12 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
 
     workflow.description = JSON.stringify(wfDescription);
 
-    http.put(global.backendApiUrlPrefix + '/metadata/', [workflow]).then(() => {
-      http.get(global.backendApiUrlPrefix + metadataUrlSuffix()).then(res => {
-        let dataset = res.result.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
+    const putWorkflow = callbackUtils.putWorkflowCallback();
+    const getWorkflows = callbackUtils.getWorkflowsCallback();
+
+    putWorkflow([workflow]).then(() => {
+      getWorkflows().then(workflows => {
+        let dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
         let allLabels = getLabels(dataset);
         setData(dataset);
         setAllLabels(allLabels);
@@ -168,12 +164,12 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   };
 
   const deleteWorkflow = workflow => {
-    http
-      .delete(global.backendApiUrlPrefix + '/metadata/workflow/' + workflow.name + '/' + workflow.version)
-      .then(() => {
-        getData();
-        setConfirmDeleteModal(false);
-      });
+    const deleteWorkflow = callbackUtils.deleteWorkflowCallback();
+
+    deleteWorkflow(workflow.name, workflow.version).then(() => {
+      getData();
+      setConfirmDeleteModal(false);
+    });
   };
 
   const repeatButtons = dataset => {

@@ -1,11 +1,10 @@
 // @flow
 import GeneralTab from './GeneralTab';
 import InputsTab from './InputsTab';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Modal, Tab, Tabs } from 'react-bootstrap';
-import { GlobalContext } from '../../../common/GlobalContext';
 import { hash } from '../builder-utils';
-import { HttpClient as http } from '../../../common/HttpClient';
+import callbackUtils from '../../../utils/callbackUtils';
 
 const OBJECT_KEYWORDS = ['template', 'body'];
 
@@ -17,8 +16,8 @@ const renameObjKey = (oldObj, oldKey, newKey) => {
   }, {});
 };
 
+
 function NodeModal(props) {
-  const global = useContext(GlobalContext);
   const [inputs, setInputs] = useState([]);
   const [name, setName] = useState();
   const [version, setVersion] = useState();
@@ -35,9 +34,12 @@ function NodeModal(props) {
       setName(name);
       setVersion(version);
 
-      http.get(global.backendApiUrlPrefix + '/metadata/workflow/' + name + '/' + version).then(res => {
-        setInputParameters(res.result.inputParameters);
-      });
+      const getWorkflow = callbackUtils.getWorkflowCallback()
+      
+      getWorkflow(name, version).then(workflow => {
+        setInputParameters(workflow.inputParameters)
+      })
+
     }
   }, [props.inputs]);
 

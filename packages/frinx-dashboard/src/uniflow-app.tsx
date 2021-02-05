@@ -1,4 +1,31 @@
-import { getWorkflows, getWorkflow, getTaskDefinitions, registerEventListener, putWorkflow } from './api/uniflow/uniflow-api';
+import {
+  getWorkflows,
+  getWorkflow,
+  getTaskDefinitions,
+  getTaskDefinition,
+  registerTaskDefinition,
+  deleteTaskDefinition,
+  registerEventListener,
+  putWorkflow,
+  getEventListeners,
+  deleteEventListener,
+  getQueues,
+  deleteWorkflow,
+  getWorkflowExecutions,
+  getWorkflowInstanceDetail,
+  executeWorkflow,
+  getWorkflowExecutionsHierarchical,
+  terminateWorkflows,
+  pauseWorkflows,
+  resumeWorkflows,
+  retryWorkflows,
+  restartWorkflows,
+  deleteWorkflowInstance,
+  getSchedules,
+  deleteSchedule,
+  getSchedule,
+  registerSchedule,
+} from './api/uniflow/uniflow-api';
 import React, { FC, useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
 
@@ -6,9 +33,30 @@ const callbacks = {
   getWorkflows,
   getWorkflow,
   getTaskDefinitions,
+  getTaskDefinition,
+  registerTaskDefinition,
+  deleteTaskDefinition,
   registerEventListener,
-  putWorkflow
-}
+  putWorkflow,
+  getEventListeners,
+  deleteEventListener,
+  getQueues,
+  deleteWorkflow,
+  getWorkflowExecutions,
+  getWorkflowInstanceDetail,
+  executeWorkflow,
+  getWorkflowExecutionsHierarchical,
+  terminateWorkflows,
+  pauseWorkflows,
+  resumeWorkflows,
+  retryWorkflows,
+  restartWorkflows,
+  deleteWorkflowInstance,
+  getSchedules,
+  deleteSchedule,
+  getSchedule,
+  registerSchedule,
+};
 
 const UniflowApp: FC = () => {
   const [components, setComponents] = useState<typeof import('@frinx/workflow-ui') | null>(null);
@@ -26,7 +74,7 @@ const UniflowApp: FC = () => {
         TaskList,
         PollData,
         DiagramBuilder,
-        getUniflowApiProvider
+        getUniflowApiProvider,
       } = mod;
       setComponents({
         ReduxProvider,
@@ -39,7 +87,7 @@ const UniflowApp: FC = () => {
         PollData,
         DiagramBuilder,
         getUniflowApiProvider,
-        UniflowApiProvider: getUniflowApiProvider(callbacks)
+        UniflowApiProvider: getUniflowApiProvider(callbacks),
       });
     });
   }, []);
@@ -58,7 +106,7 @@ const UniflowApp: FC = () => {
     TaskList,
     PollData,
     DiagramBuilder,
-    UniflowApiProvider
+    UniflowApiProvider,
   } = components;
 
   return (

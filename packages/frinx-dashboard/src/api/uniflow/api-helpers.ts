@@ -23,9 +23,9 @@ export async function sendPostRequest(path: string, body: unknown): Promise<unkn
   const options = {
     method: 'POST',
     body: JSON.stringify(body),
-    headers: new Headers({
+    headers: {
       'content-type': 'application/json',
-    }),
+    },
   };
   return apiFetch(path, options);
 }
@@ -34,9 +34,9 @@ export async function sendPutRequest(path: string, body: unknown): Promise<unkno
   const options = {
     method: 'PUT',
     body: JSON.stringify(body),
-    headers: new Headers({
+    headers: {
       'content-type': 'application/json',
-    }),
+    },
   };
   return apiFetch(path, options);
 }

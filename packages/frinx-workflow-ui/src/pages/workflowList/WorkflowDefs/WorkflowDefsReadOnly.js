@@ -19,11 +19,10 @@ import DefinitionModal from './DefinitonModal/DefinitionModal';
 import DiagramModal from './DiagramModal/DiagramModal';
 import InputModal from './InputModal/InputModal';
 import DependencyModal from './DependencyModal/DependencyModal';
-import { HttpClient as http } from '../../../common/HttpClient';
-import { GlobalContext } from '../../../common/GlobalContext';
 import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
 import PageContainer from '../../../common/PageContainer';
+import callbackUtils from '../../../utils/callbackUtils';
 
 const jsonParse = json => {
   try {
@@ -51,7 +50,6 @@ type Props = {
 };
 
 function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
-  const global = useContext(GlobalContext);
   const [keywords, setKeywords] = useState('');
   const [labels, setLabels] = useState([]);
   const [data, setData] = useState([]);
@@ -102,9 +100,11 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
   }, [keywords, labels, data]);
 
   const getData = () => {
-    http.get(global.backendApiUrlPrefix + '/metadata/workflow').then(res => {
-      if (res.result) {
-        let dataset = res.result.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
+    const getWorkflows = callbackUtils.getWorkflowsCallback();
+
+    getWorkflows().then(workflows => {
+      if (workflows) {
+        let dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
         setData(dataset);
         setAllLabels(getLabels(dataset));
       }
