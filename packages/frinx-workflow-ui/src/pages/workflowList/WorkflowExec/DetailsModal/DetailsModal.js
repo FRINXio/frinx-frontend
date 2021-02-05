@@ -7,14 +7,12 @@ import TaskModal from '../../../../common/TaskModal';
 import './DetailsModal.css';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
 import UnescapeButton from '../../../../common/UnescapeButton';
-import { HttpClient as http } from '../../../../common/HttpClient';
-import { GlobalContext } from '../../../../common/GlobalContext';
+import callbackUtils from '../../../../utils/callbackUtils';
 
 new Clipboard('.clp');
 
 class DetailsModal extends Component {
-  static contextType = GlobalContext;
-  constructor(props, context) {
+  constructor(props) {
     super(props, context);
     this.state = {
       show: true,
@@ -43,7 +41,9 @@ class DetailsModal extends Component {
   }
 
   getData() {
-    http.get(this.context.backendApiUrlPrefix + '/id/' + this.props.wfId).then(res => {
+    const getWorkflowInstanceDetail = callbackUtils.getWorkflowInstanceDetailCallback();
+
+    getWorkflowInstanceDetail(this.props.wfId).then(res => {
       let inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
       let def = JSON.stringify(res);
       let match = inputCaptureRegex.exec(def);
@@ -86,10 +86,13 @@ class DetailsModal extends Component {
 
   executeWorkflow() {
     this.setState({ status: 'Executing...' });
-    http.post(this.context.backendApiUrlPrefix + '/workflow', JSON.stringify(this.state.input)).then(res => {
+
+    const executeWorkflow = callbackUtils.executeWorkflowCallback();
+
+    executeWorkflow(this.state.input).then(res => {
       this.setState({
-        status: res.statusText,
-        wfIdRerun: res.body.text,
+        status: 'OK',
+        wfIdRerun: res.text,
       });
       setTimeout(() => {
         this.setState({ status: 'Execute' });
@@ -160,31 +163,41 @@ class DetailsModal extends Component {
   }
 
   terminateWfs() {
-    http.delete(this.context.backendApiUrlPrefix + '/bulk/terminate', [this.state.wfId]).then(() => {
+    const terminateWorkflows = callbackUtils.terminateWorkflowsCallback();
+
+    terminateWorkflows([this.state.wfId]).then(() => {
       this.getData();
     });
   }
 
   pauseWfs() {
-    http.put(this.context.backendApiUrlPrefix + '/bulk/pause', [this.state.wfId]).then(() => {
+    const pauseWorkflows = callbackUtils.pauseWorkflowsCallback();
+
+    pauseWorkflows([this.state.wfId]).then(() => {
       this.getData();
     });
   }
 
   resumeWfs() {
-    http.put(this.context.backendApiUrlPrefix + '/bulk/resume', [this.state.wfId]).then(() => {
+    const resumeWorkflows = callbackUtils.resumeWorkflowsCallback();
+
+    resumeWorkflows([this.state.wfId]).then(() => {
       this.getData();
     });
   }
 
   retryWfs() {
-    http.post(this.context.backendApiUrlPrefix + '/bulk/retry', [this.state.wfId]).then(() => {
+    const retryWorkflows = callbackUtils.retryWorkflowsCallback();
+
+    retryWorkflows([this.state.wfId]).then(() => {
       this.getData();
     });
   }
 
   restartWfs() {
-    http.post(this.context.backendApiUrlPrefix + '/bulk/restart', [this.state.wfId]).then(() => {
+    const restartWorkflows = callbackUtils.restartWorkflowsCallback();
+
+    restartWorkflows([this.state.wfId]).then(() => {
       this.getData();
     });
   }

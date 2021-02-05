@@ -2,17 +2,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Table, Button, Input, Icon, Grid } from 'semantic-ui-react';
 import TaskModal from './TaskModal';
-import { HttpClient as http } from '../../../common/HttpClient';
-import { GlobalContext } from '../../../common/GlobalContext';
 import AddTaskModal from './AddTaskModal';
 import { taskDefinition } from '../../../constants';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
 import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
 import PageContainer from '../../../common/PageContainer';
+import callbackUtils from '../../../utils/callbackUtils';
 
 const TaskList = () => {
-  const global = useContext(GlobalContext);
   const [keywords, setKeywords] = useState('');
   const [sorted, setSorted] = useState(false);
   const [data, setData] = useState([]);
@@ -55,11 +53,11 @@ const TaskList = () => {
   }, [keywords, data]);
 
   const getData = () => {
-    http.get(global.backendApiUrlPrefix + '/metadata/taskdefs').then(res => {
-      if (res.result) {
-        let data = res.result.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
-        setData(data);
-      }
+    const getTaskDefinitions = callbackUtils.getTaskDefinitionsCallback();
+
+    getTaskDefinitions().then(taskDefinitions => {
+      let data = taskDefinitions.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
+      setData(data);
     });
   };
 
@@ -89,10 +87,10 @@ const TaskList = () => {
   };
 
   const deleteTask = name => {
-    http.delete(global.backendApiUrlPrefix + '/metadata/taskdef/' + name).then(res => {
-      if (res.status === 200) {
-        getData();
-      }
+    const deleteTaskDefinition = callbackUtils.deleteTaskDefinitionCallback();
+
+    deleteTaskDefinition(name).then(() => {
+      getData();
     });
   };
 
@@ -154,7 +152,10 @@ const TaskList = () => {
     });
     if (taskBody['name'] !== '') {
       const newTask = { ...taskBody, ownerEmail: 'example@example.com' };
-      http.post(global.backendApiUrlPrefix + '/metadata/taskdef', [newTask]).then(() => {
+
+      const registerTaskDefinition = callbackUtils.registerTaskDefinitionCallback();
+
+      registerTaskDefinition([newTask]).then(() => {
         window.location.reload();
       });
     }

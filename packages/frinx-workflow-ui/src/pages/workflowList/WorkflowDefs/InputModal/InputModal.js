@@ -1,11 +1,10 @@
 // @flow
 import Dropdown from 'react-dropdown';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, Modal, Row, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
-import { GlobalContext } from '../../../../common/GlobalContext';
 import { Typeahead } from 'react-bootstrap-typeahead';
-import { HttpClient as http } from '../../../../common/HttpClient';
 import { storeWorkflowId } from '../../../../store/actions/builder';
+import callbackUtils from '../../../../utils/callbackUtils';
 import { useDispatch } from 'react-redux';
 
 const jsonParse = json => {
@@ -30,7 +29,6 @@ const getInputs = def => {
 };
 
 function InputModal(props) {
-  const global = useContext(GlobalContext);
   const dispatch = useDispatch();
   const [wfId, setWfId] = useState();
   const [warning, setWarning] = useState([]);
@@ -64,11 +62,14 @@ function InputModal(props) {
   const getWaitingWorkflows = () => {
     return new Promise((resolve, reject) => {
       const waitingWfs = [];
-      const q = 'status:"RUNNING"';
-      http.get(global.backendApiUrlPrefix + '/executions/?q=&h=&freeText=' + q + '&start=' + 0 + '&size=').then(res => {
+
+      const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback();
+      const getWorkflowInstanceDetail = callbackUtils.getWorkflowInstanceDetailCallback();
+
+      getWorkflowExecutions().then(res => {
         const runningWfs = res.result?.hits || [];
         const promises = runningWfs.map(wf => {
-          return http.get(global.backendApiUrlPrefix + '/id/' + wf.workflowId);
+          return getWorkflowInstanceDetail(wf.workflowId);
         });
 
         Promise.all(promises).then(results => {
@@ -135,11 +136,13 @@ function InputModal(props) {
       input[label] = typeof value === 'string' && value.startsWith('{') ? JSON.parse(value) : value;
     });
 
+    const executeWorkflow = callbackUtils.executeWorkflowCallback();
+
     setStatus('Executing...');
-    http.post(global.backendApiUrlPrefix + '/workflow', JSON.stringify(payload)).then(res => {
+    executeWorkflow(payload).then(res => {
       setStatus(res.statusText);
-      setWfId(res.body.text);
-      dispatch(storeWorkflowId(res.body.text));
+      setWfId(res.text);
+      dispatch(storeWorkflowId(res.text));
       timeoutBtn();
 
       if (props.fromBuilder) {

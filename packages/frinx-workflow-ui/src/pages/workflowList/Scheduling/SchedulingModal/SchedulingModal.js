@@ -2,12 +2,11 @@
 
 import AceEditor from 'react-ace';
 import React, { useContext, useState } from 'react';
-import superagent from 'superagent';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { GlobalContext } from '../../../../common/GlobalContext';
+import callbackUtils from '../../../../utils/callbackUtils';
 
 const SchedulingModal = props => {
-  const global = useContext(GlobalContext);
   const [schedule, setSchedule] = useState();
   const [status, setStatus] = useState();
   const [error, setError] = useState();
@@ -23,9 +22,10 @@ const SchedulingModal = props => {
     setSchedule(null);
     setStatus(null);
     setError(null);
-    const path = global.backendApiUrlPrefix + '/schedule/' + props.name;
-    const req = superagent.get(path).accept('application/json');
-    req.end((err, res) => {
+
+    const getSchedule = callbackUtils.getScheduleCallback();
+
+    getSchedule(props.name).then((res) => {
       if (res && res.ok) {
         // found in db
         setFound(true);
@@ -48,9 +48,10 @@ const SchedulingModal = props => {
   const submitForm = () => {
     setError(null);
     setStatus('Submitting');
-    const path = global.backendApiUrlPrefix + '/schedule/' + props.name;
-    const req = superagent.put(path, schedule).set('Content-Type', 'application/json');
-    req.end((err, res) => {
+
+    const registerSchedule = callbackUtils.registerScheduleCallback();
+
+    registerSchedule(props.name, schedule).then((res, err) => {
       if (res && res.ok) {
         handleClose();
       } else {
@@ -123,9 +124,10 @@ const SchedulingModal = props => {
   const handleDelete = () => {
     setError(null);
     setStatus('Deleting');
-    const path = global.backendApiUrlPrefix + '/schedule/' + props.name;
-    const req = superagent.delete(path, schedule);
-    req.end((err, res) => {
+
+    const deleteSchedule = callbackUtils.deleteScheduleCallback();
+
+    deleteSchedule(props.name).then((res, err) => {
       if (res && res.ok) {
         handleClose();
       } else {

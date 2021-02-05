@@ -2,16 +2,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Table, Checkbox, Button, Icon, Input } from 'semantic-ui-react';
 import { Modal } from 'react-bootstrap';
 import AceEditor from 'react-ace';
-import { HttpClient as http } from '../../../common/HttpClient';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/theme-tomorrow';
-import { GlobalContext } from '../../../common/GlobalContext';
 import { usePagination } from '../../../common/PaginationHook';
 import PaginationPages from '../../../common/Pagination';
 import PageContainer from '../../../common/PageContainer';
+import callbackUtils from '../../../utils/callbackUtils';
 
 const EventListeners = () => {
-  const global = useContext(GlobalContext);
   const [eventListeners, setEventListeners] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -42,9 +40,11 @@ const EventListeners = () => {
   }, [searchTerm, eventListeners]);
 
   const getData = () => {
-    http.get(global.backendApiUrlPrefix + '/event').then(res => {
-      if (Array.isArray(res)) {
-        setEventListeners(res);
+    const getEventListeners = callbackUtils.getEventListenersCallback();
+
+    getEventListeners().then(eventListeners => {
+      if (Array.isArray(eventListeners)) {
+        setEventListeners(eventListeners);
       }
     });
   };
@@ -54,8 +54,9 @@ const EventListeners = () => {
       event.active = state;
     }
 
-    http
-      .post(global.backendApiUrlPrefix + '/event', event)
+    const registerEventListener = callbackUtils.registerEventListenerCallback();
+
+    registerEventListener(event)
       .then(res => {
         getData();
       })
@@ -66,8 +67,9 @@ const EventListeners = () => {
   };
 
   const deleteEvent = name => {
-    http
-      .delete(global.backendApiUrlPrefix + '/event/' + name)
+    const deleteEventListener = callbackUtils.deleteEventListenerCallback();
+
+    deleteEventListener(name)
       .then(() => {
         getData();
       })
