@@ -2,13 +2,11 @@
 import React, { createContext, useEffect, useState } from 'react';
 
 type GlobalConstants = {
-  enableScheduling: boolean,
   disabledTasks: string[],
   prefixHttpTask: string,
 };
 
 export const globalConstants: GlobalConstants = {
-  enableScheduling: true,
   disabledTasks: ['js', 'py', 'while', 'while_end'],
   prefixHttpTask: '',
 };

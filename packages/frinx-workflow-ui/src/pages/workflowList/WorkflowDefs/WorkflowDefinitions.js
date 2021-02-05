@@ -199,7 +199,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
           basic
           circular
           icon="clock"
-          disabled={!global.enableScheduling}
           onClick={() => showSchedulingModal(dataset)}
         />
         <Button
