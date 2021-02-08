@@ -31,7 +31,7 @@ export const usePagination = (itemList, maxItemsPerPage) => {
     return true;
   });
 
-  const setItemList = items => {
+  const setItemList = (items) => {
     setCurrentPage(1);
     setItems(items);
   };

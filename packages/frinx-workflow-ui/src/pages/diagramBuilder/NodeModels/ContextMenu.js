@@ -11,7 +11,7 @@ function getSubworkflowName(inputs) {
   return inputs.type === 'SUB_WORKFLOW' ? inputs.name : null;
 }
 
-export const NodeContextMenu = props => {
+export const NodeContextMenu = (props) => {
   const taskRefName = props.node?.extras?.inputs?.taskReferenceName || '<no ref name>';
   const subwfName = getSubworkflowName(props.node?.extras?.inputs);
 
@@ -25,7 +25,7 @@ export const NodeContextMenu = props => {
     deleteNode(props.node, props.diagramEngine);
   };
 
-  // TODO: disabled for now, find a better way to open subworkflow 
+  // TODO: disabled for now, find a better way to open subworkflow
   // const openSubworkflow = () => {
   //   // version is hardcoded to 1 since there is no version param in node
   //   window.open(`${global.frontendUrlPrefix}/builder/${subwfName}/1`);
@@ -49,11 +49,11 @@ export const NodeContextMenu = props => {
   );
 };
 
-export const NodeMenuProvider = props => {
+export const NodeMenuProvider = (props) => {
   return <MenuProvider id={props.node.id}>{props.children}</MenuProvider>;
 };
 
-export const LinkContextMenu = props => {
+export const LinkContextMenu = (props) => {
   const deleteLink = (link, diagramEngine) => {
     link.remove();
     diagramEngine.getDiagramModel().removeLink(link);
@@ -74,7 +74,7 @@ export const LinkContextMenu = props => {
   );
 };
 
-export const LinkMenuProvider = props => {
+export const LinkMenuProvider = (props) => {
   return (
     <MenuProvider id={props.link.id} component="g" event="onContextMenu" storeRef={false}>
       {props.children}

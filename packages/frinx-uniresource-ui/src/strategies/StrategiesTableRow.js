@@ -23,7 +23,7 @@ import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/ext-language_tools';
-import {useStateValue} from "../utils/StateProvider";
+import { useStateValue } from '../utils/StateProvider';
 
 const StyledMenu = withStyles({
   paper: {
@@ -54,7 +54,7 @@ const StrategiesTableRow = (props: Props) => {
   return (
     <>
       <TableRow className={classes.root}>
-        {isAdmin ?
+        {isAdmin ? (
           <td>
             <IconButton
               className={classes.iconButton}
@@ -102,7 +102,8 @@ const StrategiesTableRow = (props: Props) => {
                 <ListItemText primary="Delete" />
               </MenuItem>
             </StyledMenu>
-          </td> : null }
+          </td>
+        ) : null}
         <TableCell align="left">{Name}</TableCell>
         <TableCell align="left">{id}</TableCell>
         <TableCell align="left">{Lang}</TableCell>

@@ -40,7 +40,7 @@ const DeviceList = (props: Props) => {
     let results =
       !query && !osVersion
         ? nodes
-        : nodes.filter(node => {
+        : nodes.filter((node) => {
             let searchedKeys = ['nodeId', 'topologyId', 'osVersion', 'connectionStatus', 'host', 'port'];
 
             if (osVersion && node['osVersion'] !== osVersion) {
@@ -49,12 +49,7 @@ const DeviceList = (props: Props) => {
 
             // search for keywords in "searchedKeys"
             for (let i = 0; i < searchedKeys.length; i += 1) {
-              if (
-                node[searchedKeys[i]]
-                  .toString()
-                  .toLowerCase()
-                  .includes(query.toLocaleLowerCase())
-              ) {
+              if (node[searchedKeys[i]].toString().toLowerCase().includes(query.toLocaleLowerCase())) {
                 return true;
               }
             }
@@ -69,13 +64,13 @@ const DeviceList = (props: Props) => {
     let topologyNetconf = await getTopology('netconf');
 
     let nodesCli = await Promise.all(
-      (topologyCli?.node || []).map(async node => {
+      (topologyCli?.node || []).map(async (node) => {
         return await createNodeObject(topologyCli['topology-id'], node);
       }),
     );
 
     let nodesNetconf = await Promise.all(
-      (topologyNetconf?.node || []).map(async node => {
+      (topologyNetconf?.node || []).map(async (node) => {
         return await createNodeObject(topologyNetconf['topology-id'], node);
       }),
     );
@@ -83,7 +78,7 @@ const DeviceList = (props: Props) => {
     setNodes([...nodesCli, ...nodesNetconf]);
   };
 
-  const updateNode = async node => {
+  const updateNode = async (node) => {
     let result = await http.get(
       global.backendApiUrlPrefix + GET_NODE_URL(node.topologyId, node.nodeId),
       global.authToken,
@@ -107,12 +102,12 @@ const DeviceList = (props: Props) => {
 
   const unmountNodes = async () => {
     let unmounted = await Promise.all(
-      checked.map(async node => {
+      checked.map(async (node) => {
         return await unmountNode(node);
       }),
     );
 
-    unmounted.forEach(response => {
+    unmounted.forEach((response) => {
       if (response.status !== 204) {
         console.log('Device didnt unmount successfully');
       }
@@ -122,14 +117,14 @@ const DeviceList = (props: Props) => {
     fetchData();
   };
 
-  const unmountNode = async node => {
+  const unmountNode = async (node) => {
     return await http.delete(
       global.backendApiUrlPrefix + UNMOUNT_NODE_URL(node.topologyId, node.nodeId),
       global.authToken,
     );
   };
 
-  const getTopology = async topology => {
+  const getTopology = async (topology) => {
     const URL = topology === 'cli' ? GET_CLI_TOPOLOGY_URL : GET_NETCONF_TOPOLOGY_URL;
     const result = await http.get(global.backendApiUrlPrefix + URL, global.authToken);
     return result?.topology?.[0];

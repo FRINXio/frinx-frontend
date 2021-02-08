@@ -99,13 +99,13 @@ class WorkflowBulk extends Component {
                   </p>
                 </Col>
                 <Col>
-                  <Button variant="outline-primary" value="pause" onClick={e => this.performOperation(e)}>
+                  <Button variant="outline-primary" value="pause" onClick={(e) => this.performOperation(e)}>
                     Pause
                   </Button>
                   <Button
                     variant="outline-primary"
                     value="resume"
-                    onClick={e => this.performOperation(e)}
+                    onClick={(e) => this.performOperation(e)}
                     style={{ marginLeft: '5px' }}
                   >
                     Resume
@@ -113,7 +113,7 @@ class WorkflowBulk extends Component {
                   <Button
                     variant="outline-primary"
                     value="retry"
-                    onClick={e => this.performOperation(e)}
+                    onClick={(e) => this.performOperation(e)}
                     style={{ marginLeft: '5px' }}
                   >
                     Retry
@@ -121,7 +121,7 @@ class WorkflowBulk extends Component {
                   <Button
                     variant="outline-primary"
                     value="restart"
-                    onClick={e => this.performOperation(e)}
+                    onClick={(e) => this.performOperation(e)}
                     style={{ marginLeft: '5px' }}
                   >
                     Restart
@@ -129,7 +129,7 @@ class WorkflowBulk extends Component {
                   <Button
                     variant="outline-danger"
                     value="terminate"
-                    onClick={e => this.performOperation(e)}
+                    onClick={(e) => this.performOperation(e)}
                     style={{ marginLeft: '5px' }}
                   >
                     Terminate
@@ -137,7 +137,7 @@ class WorkflowBulk extends Component {
                   <Button
                     variant="outline-secondary"
                     value="delete"
-                    onClick={e => this.performOperation(e)}
+                    onClick={(e) => this.performOperation(e)}
                     style={{ marginLeft: '5px' }}
                   >
                     Delete
@@ -155,21 +155,18 @@ class WorkflowBulk extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     bulkReducer: state.bulkReducer,
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     performBulkOperation: (operation, wfs, defaultPages) =>
       dispatch(bulkActions.performBulkOperation(operation, wfs, defaultPages)),
-    setView: value => dispatch(bulkActions.setView(value)),
+    setView: (value) => dispatch(bulkActions.setView(value)),
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(WorkflowBulk);
+export default connect(mapStateToProps, mapDispatchToProps)(WorkflowBulk);

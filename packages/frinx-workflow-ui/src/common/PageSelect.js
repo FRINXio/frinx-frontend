@@ -28,7 +28,7 @@ class PageSelect extends Component<Props, StateType> {
       <Pagination.Prev
         key={'prev'}
         disabled={viewedPage === 1 || pagesCount === 0}
-        onClick={e => {
+        onClick={(e) => {
           if (viewedPage !== 1 && pagesCount !== 0) this.props.handler(viewedPage - 1);
         }}
       />,

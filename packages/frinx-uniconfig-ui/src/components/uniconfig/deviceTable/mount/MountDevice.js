@@ -14,7 +14,7 @@ import _ from 'lodash';
 import CliTab from './CliTab';
 import NetconfTab from './NetconfTab';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
     display: 'flex',
     alignItems: 'center',
@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const TabPanel = props => {
+const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
 
   return (
@@ -68,10 +68,10 @@ const MountDevice = (props: Props) => {
   }, []);
 
   const getSupportedDevices = () => {
-    http.get(global.backendApiUrlPrefix + GET_SUPPORTED_DEVICES_URL, global.authToken).then(res => {
+    http.get(global.backendApiUrlPrefix + GET_SUPPORTED_DEVICES_URL, global.authToken).then((res) => {
       try {
         let supportedDevices = res['available-cli-device-translations']['available-cli-device-translation'];
-        let grouped = _.groupBy(supportedDevices, function(device) {
+        let grouped = _.groupBy(supportedDevices, function (device) {
           return device['device-type'];
         });
         setSupportedDevices(grouped);

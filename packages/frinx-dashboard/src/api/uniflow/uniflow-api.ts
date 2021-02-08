@@ -26,7 +26,7 @@ export async function getWorkflows(): Promise<Workflow[]> {
 export async function getSchedules(): Promise<unknown> {
   const scheduled = await sendGetRequest('/schedule/');
 
-  return scheduled
+  return scheduled;
 }
 
 // TODO: types, guards
@@ -34,7 +34,7 @@ export async function getSchedules(): Promise<unknown> {
 export async function getSchedule(name: string): Promise<unknown> {
   const scheduled = await sendGetRequest('/schedule/' + name);
 
-  return scheduled
+  return scheduled;
 }
 
 // TODO: types, guards
@@ -42,7 +42,7 @@ export async function getSchedule(name: string): Promise<unknown> {
 export async function registerSchedule(name: string, schedule: unknown): Promise<unknown> {
   const scheduled = await sendPutRequest('/schedule/' + name, schedule);
 
-  return scheduled
+  return scheduled;
 }
 
 // TODO: types, guards
@@ -50,7 +50,7 @@ export async function registerSchedule(name: string, schedule: unknown): Promise
 export async function deleteSchedule(name: string): Promise<unknown> {
   const scheduled = await sendDeleteRequest('/schedule/' + name);
 
-  return scheduled
+  return scheduled;
 }
 
 // TODO change route in uniflow-api to "/metadata/taskdefs"
@@ -164,7 +164,7 @@ export async function getQueues(): Promise<Queue[]> {
 export async function getWorkflowExecutions(query: string, start?: number, size?: string): Promise<unknown> {
   query = query || 'status:"RUNNING"';
   start = start || 0;
-  size = size || ''
+  size = size || '';
   const executions = sendGetRequest(`/executions/?q=&h=&freeText=${query}&start=${start}&size=${size}`);
 
   return executions;
@@ -172,12 +172,15 @@ export async function getWorkflowExecutions(query: string, start?: number, size?
 
 // TODO: Just copy-pasted for now, needs rework in uniflow-api
 // Returns list of running workflows in hierarchical strucutre
-export async function getWorkflowExecutionsHierarchical(query: string, start?: number, size?: string): Promise<unknown> {
-  const executions = sendGetRequest(`/hierarchical/?freeText=${query}&start=${start}&size=${size}`)
+export async function getWorkflowExecutionsHierarchical(
+  query: string,
+  start?: number,
+  size?: string,
+): Promise<unknown> {
+  const executions = sendGetRequest(`/hierarchical/?freeText=${query}&start=${start}&size=${size}`);
 
-  return executions
+  return executions;
 }
-
 
 // TODO: needs rework in uniflow-api
 // Get detail of existing instance of workflow

@@ -8,15 +8,15 @@ export const UPDATE_QUERY = 'UPDATE_QUERY';
 export const DATA_SIZE = 'DATA_SIZE';
 export const CHECKED_WORKFLOWS = 'CHECKED_WORKFLOWS';
 
-export const updateSize = size => {
+export const updateSize = (size) => {
   return { type: DATA_SIZE, size };
 };
 
-export const updateLabel = label => {
+export const updateLabel = (label) => {
   return { type: UPDATE_LABEL, label };
 };
 
-export const updateQuery = query => {
+export const updateQuery = (query) => {
   return { type: UPDATE_QUERY, query };
 };
 
@@ -42,7 +42,7 @@ export const fetchNewData = (viewedPage, defaultPages) => {
     let page = (viewedPage - 1) * defaultPages;
     const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback(q, page, defaultPages);
 
-    getWorkflowExecutions(q, page, defaultPages).then(res => {
+    getWorkflowExecutions(q, page, defaultPages).then((res) => {
       if (res.result) {
         const data = res.result ? (res.result.hits ? res.result.hits : []) : [];
         dispatch(updateSize(res.result.totalHits));
@@ -52,7 +52,7 @@ export const fetchNewData = (viewedPage, defaultPages) => {
   };
 };
 
-export const receiveNewData = data => {
+export const receiveNewData = (data) => {
   return { type: RECEIVE_NEW_DATA, data };
 };
 
@@ -64,7 +64,7 @@ export const fetchParentWorkflows = (viewedPage, defaultPages) => {
     let q = createQuery(getState().searchReducer);
     let getWorkflowExecutionsHierarchical = callbackUtils.getWorkflowExecutionsHierarchicalCallback();
 
-    getWorkflowExecutionsHierarchical(q, checkedWfs[page], defaultPages).then(res => {
+    getWorkflowExecutionsHierarchical(q, checkedWfs[page], defaultPages).then((res) => {
       if (res) {
         let parents = res.parents ? res.parents : [];
         let children = res.children ? res.children : [];
@@ -73,7 +73,7 @@ export const fetchParentWorkflows = (viewedPage, defaultPages) => {
           dispatch(updateSize(size + parents.length));
         }
         dispatch(checkedWorkflows(checkedWfs));
-        parents = sortBy(parents, wf => new Date(wf.startTime)).reverse();
+        parents = sortBy(parents, (wf) => new Date(wf.startTime)).reverse();
         dispatch(receiveHierarchicalData(parents, children));
       }
     });
@@ -84,18 +84,18 @@ export const receiveHierarchicalData = (parents, children) => {
   return { type: HIERARCHY_NEW_DATA, parents, children };
 };
 
-export const checkedWorkflows = checkedWfs => {
+export const checkedWorkflows = (checkedWfs) => {
   return { type: CHECKED_WORKFLOWS, checkedWfs };
 };
 
-export const updateParents = childInput => {
+export const updateParents = (childInput) => {
   return (dispatch, getState) => {
     const { parents, children } = getState().searchReducer;
     let dataset = parents;
     dataset.forEach((wfs, i) => {
-      if (childInput.some(e => e.parentWorkflowId === wfs.workflowId)) {
-        let unfoldChildren = childInput.filter(wf => wf.parentWorkflowId === wfs['workflowId']);
-        unfoldChildren = sortBy(unfoldChildren, wf => new Date(wf.startTime));
+      if (childInput.some((e) => e.parentWorkflowId === wfs.workflowId)) {
+        let unfoldChildren = childInput.filter((wf) => wf.parentWorkflowId === wfs['workflowId']);
+        unfoldChildren = sortBy(unfoldChildren, (wf) => new Date(wf.startTime));
         unfoldChildren.forEach((wf, index) => dataset.splice(index + 1 + i, 0, wf));
       }
     });
@@ -103,12 +103,12 @@ export const updateParents = childInput => {
   };
 };
 
-export const deleteParents = childInput => {
+export const deleteParents = (childInput) => {
   return (dispatch, getState) => {
     const { parents, children } = getState().searchReducer;
     let dataset = parents;
-    childInput.forEach(wfs => {
-      dataset = dataset.filter(p => p.workflowId !== wfs.workflowId);
+    childInput.forEach((wfs) => {
+      dataset = dataset.filter((p) => p.workflowId !== wfs.workflowId);
     });
     dispatch(receiveHierarchicalData(dataset, children));
   };

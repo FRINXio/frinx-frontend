@@ -44,7 +44,7 @@ function ServiceUIApp(props) {
         <Route
           exact
           path={[path + '/builder', path + '/builder/:name/:version']}
-          render={props => <DiagramBuilder {...props} />}
+          render={(props) => <DiagramBuilder {...props} />}
         />
         <>
           <ServiceAppHeader />
@@ -54,7 +54,7 @@ function ServiceUIApp(props) {
           <Route
             exact
             path={path + '/exec/:wfid?'}
-            render={props => <WorkflowExec query={props.match.params.wfid} />}
+            render={(props) => <WorkflowExec query={props.match.params.wfid} />}
           />
         </>
         <Redirect to={path + '/defs'} />

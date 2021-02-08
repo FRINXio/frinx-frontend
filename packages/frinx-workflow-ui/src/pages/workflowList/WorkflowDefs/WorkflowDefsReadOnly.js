@@ -24,7 +24,7 @@ import { usePagination } from '../../../common/PaginationHook';
 import PageContainer from '../../../common/PageContainer';
 import callbackUtils from '../../../utils/callbackUtils';
 
-const jsonParse = json => {
+const jsonParse = (json) => {
   try {
     return JSON.parse(json);
   } catch (e) {
@@ -32,13 +32,13 @@ const jsonParse = json => {
   }
 };
 
-const getLabels = dataset => {
+const getLabels = (dataset) => {
   let labelsArr = dataset.map(({ description }) => {
     return jsonParse(description)?.labels;
   });
   let allLabels = [...new Set([].concat(...labelsArr))];
   return allLabels
-    .filter(e => {
+    .filter((e) => {
       return e !== undefined;
     })
     .sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
@@ -69,7 +69,7 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
     var results =
       !keywords && labels.length === 0
         ? data
-        : data.filter(e => {
+        : data.filter((e) => {
             let searchedKeys = ['name'];
             let queryWords = keywords.toUpperCase().split(' ');
             let labelsArr = jsonParse(e.description)?.labels;
@@ -84,12 +84,7 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
             // search for keywords in "searchedKeys"
             for (let i = 0; i < searchedKeys.length; i += 1) {
               for (let j = 0; j < queryWords.length; j += 1) {
-                if (
-                  e[searchedKeys[i]]
-                    .toString()
-                    .toUpperCase()
-                    .indexOf(queryWords[j]) === -1
-                ) {
+                if (e[searchedKeys[i]].toString().toUpperCase().indexOf(queryWords[j]) === -1) {
                   return false;
                 }
               }
@@ -102,7 +97,7 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
   const getData = () => {
     const getWorkflows = callbackUtils.getWorkflowsCallback();
 
-    getWorkflows().then(workflows => {
+    getWorkflows().then((workflows) => {
       if (workflows) {
         let dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
         setData(dataset);
@@ -113,7 +108,7 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
 
   const searchFavourites = () => {
     let newLabels = [...labels];
-    let index = newLabels.findIndex(label => label === 'FAVOURITE');
+    let index = newLabels.findIndex((label) => label === 'FAVOURITE');
     index > -1 ? newLabels.splice(index, 1) : newLabels.push('FAVOURITE');
     setLabels(newLabels);
   };
@@ -122,12 +117,12 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
     const labelsDef = jsonParse(description)?.labels || [];
 
     return labelsDef.map((label, i) => {
-      let index = allLabels.findIndex(lab => lab === label);
+      let index = allLabels.findIndex((lab) => lab === label);
       return <WfLabels key={`${name}-${i}`} label={label} index={index} search={() => setLabels([...labels, label])} />;
     });
   };
 
-  const repeatButtons = dataset => {
+  const repeatButtons = (dataset) => {
     return (
       <Table.Cell singleLine textAlign="center">
         <Button title="Diagram" basic circular icon="fork" onClick={() => showDiagramModal(dataset)} />
@@ -145,7 +140,7 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
   };
 
   const filteredRows = () => {
-    return pageItems.map(e => {
+    return pageItems.map((e) => {
       return (
         <Table.Row>
           <Table.Cell>
@@ -180,7 +175,7 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
                 />
               }
               header={<h4>Used directly in following workflows:</h4>}
-              content={getDependencies(e).usedInWfs.map(wf => (
+              content={getDependencies(e).usedInWfs.map((wf) => (
                 <p>{wf.name}</p>
               ))}
               basic
@@ -192,28 +187,28 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
     });
   };
 
-  const showDefinitionModal = workflow => {
+  const showDefinitionModal = (workflow) => {
     setDefModal(!defModal);
     setActiveWf(workflow);
   };
 
-  const showInputModal = workflow => {
+  const showInputModal = (workflow) => {
     setInputModal(!inputModal);
     setActiveWf(workflow);
   };
 
-  const showDiagramModal = workflow => {
+  const showDiagramModal = (workflow) => {
     setDiagramModal(!diagramModal);
     setActiveWf(workflow);
   };
 
-  const showDependencyModal = workflow => {
+  const showDependencyModal = (workflow) => {
     setDependencyModal(!dependencyModal);
     setActiveWf(workflow);
   };
 
-  const getDependencies = workflow => {
-    const usedInWfs = data.filter(wf => {
+  const getDependencies = (workflow) => {
+    const usedInWfs = data.filter((wf) => {
       let wfJSON = JSON.stringify(wf, null, 2);
       return wfJSON.includes(`"name": "${workflow.name}"`) && wf.name !== workflow.name;
     });
@@ -265,7 +260,7 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
           <Typeahead
             id="typeaheadDefs"
             selected={labels}
-            onChange={e => setLabels(e)}
+            onChange={(e) => setLabels(e)}
             clearButton
             labelKey="name"
             multiple
@@ -277,7 +272,7 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
           <Form.Group>
             <Form.Control
               value={keywords}
-              onChange={e => setKeywords(e.target.value)}
+              onChange={(e) => setKeywords(e.target.value)}
               placeholder="Search by keyword."
             />
           </Form.Group>

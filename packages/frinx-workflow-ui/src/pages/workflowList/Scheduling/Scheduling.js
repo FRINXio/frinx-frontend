@@ -49,7 +49,7 @@ const Scheduling = () => {
     setActiveRow(null);
   };
 
-  const changeActiveRow = i => {
+  const changeActiveRow = (i) => {
     const deselectingCurrentRow = activeRow == i;
     if (deselectingCurrentRow) {
       deselectActiveRow();
@@ -64,10 +64,10 @@ const Scheduling = () => {
     setViewedPage(1);
   };
 
-  const deleteEntry = schedulingEntry => {
+  const deleteEntry = (schedulingEntry) => {
     const deleteSchedule = callbackUtils.deleteScheduleCallback();
 
-    deleteSchedule(schedulingEntry.name).then(res => {
+    deleteSchedule(schedulingEntry.name).then((res) => {
       if (res && res.ok) {
         deselectActiveRow();
         refresh();

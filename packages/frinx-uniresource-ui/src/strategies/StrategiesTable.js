@@ -7,7 +7,7 @@ import DeleteStrategyMutation from '../mutations/DeleteStrategyMutation';
 import StrategiesTableRow from './StrategiesTableRow';
 import TestStrategyDialog from './TestStrategyDialog';
 import DeleteStrategyDialog from './DeleteStrategyDialog';
-import {useStateValue} from "../utils/StateProvider";
+import { useStateValue } from '../utils/StateProvider';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
