@@ -45,13 +45,12 @@ export class WorkflowDiagram {
    * @param definition - workflow definition object
    * @param startPos - position for first node in diagram
    */
-  constructor(app, definition, startPos, prefixHttpTask) {
+  constructor(app, definition, startPos) {
     this.app = app;
     this.definition = definition;
     this.diagramEngine = app.getDiagramEngine();
     this.diagramModel = app.getDiagramEngine().getDiagramModel();
     this.startPos = startPos;
-    this.prefixHttpTask = prefixHttpTask;
   }
 
   setDefinition(definition) {
@@ -816,7 +815,7 @@ export class WorkflowDiagram {
           node = this.placePyNode(task, x, y);
         } else if (task.type == 'SIMPLE' && task.name == 'GLOBAL___graphQL') {
           node = this.placeGraphQLNode(task, x, y);
-        } else if (task.type == 'SIMPLE' && task.name == this.prefixHttpTask + 'HTTP_task') {
+        } else if (task.type == 'SIMPLE' && task.name == 'GLOBAL___HTTP_task') {
           if (task.taskReferenceName.includes('graphQLTaskRef_')) {
             node = this.placeGraphQLNode(task, x, y);
           } else {

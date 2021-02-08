@@ -68,8 +68,7 @@ class DiagramBuilder extends Component {
       workflowDiagram: new WorkflowDiagram(
         new Application(),
         this.props.finalWorkflow,
-        { x: 600, y: 300 },
-        this.context.prefixHttpTask,
+        { x: 600, y: 300 }
       ),
     });
   }
@@ -480,7 +479,6 @@ class DiagramBuilder extends Component {
               system={this.props.system}
               updateQuery={this.props.updateQuery}
               openCard={this.props.openCard}
-              prefixHttpTask={this.context.prefixHttpTask}
               disabledTasks={this.context.disabledTasks}
             />
 
