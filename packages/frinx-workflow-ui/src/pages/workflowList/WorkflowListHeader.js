@@ -1,5 +1,5 @@
 // @flow
-import React, { useContext } from 'react';
+import React from 'react';
 import { Button } from 'react-bootstrap';
 import PageContainer from '../../common/PageContainer';
 import callbackUtils from '../../utils/callbackUtils';

@@ -9,7 +9,7 @@
 */
 
 // @flow
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Col, Form, Row, Modal } from 'react-bootstrap';
 import { Table, Header, Button, Popup } from 'semantic-ui-react';
 import { Typeahead } from 'react-bootstrap-typeahead';

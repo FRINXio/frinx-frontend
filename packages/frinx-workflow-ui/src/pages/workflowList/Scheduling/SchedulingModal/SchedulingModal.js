@@ -1,9 +1,8 @@
 // @flow
 
 import AceEditor from 'react-ace';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { GlobalContext } from '../../../../common/GlobalContext';
 import callbackUtils from '../../../../utils/callbackUtils';
 
 const SchedulingModal = props => {

@@ -1,7 +1,6 @@
 // @flow
 import * as _ from 'lodash';
 import defaultTo from 'lodash/fp/defaultTo';
-import { HttpClient as http } from '../../common/HttpClient';
 import Workflow2Graph from '../../common/wfegraph';
 import { Application } from './Application';
 import {

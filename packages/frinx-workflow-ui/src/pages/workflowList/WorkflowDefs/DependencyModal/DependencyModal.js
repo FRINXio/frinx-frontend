@@ -1,5 +1,5 @@
 // @flow
-import React, { useContext } from 'react';
+import React from 'react';
 import { Button } from 'semantic-ui-react';
 import { Modal } from 'react-bootstrap';
 import { Tree, TreeNode } from 'react-organizational-chart';

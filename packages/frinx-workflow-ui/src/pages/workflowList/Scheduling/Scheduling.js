@@ -1,5 +1,5 @@
 // @flow
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PageCount from '../../../common/PageCount';
 import PageSelect from '../../../common/PageSelect';
 import SchedulingModal from './SchedulingModal/SchedulingModal';
