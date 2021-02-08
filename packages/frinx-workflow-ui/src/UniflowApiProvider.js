@@ -12,7 +12,7 @@ export function getUniflowApiProvider(callbacks: UniflowApiCallbacks) {
   return UniflowApiProvider;
 }
 
-export const UniflowApiContext = createContext < boolean > false;
+export const UniflowApiContext = createContext<boolean>(false);
 
 const UniflowApiProvider: FC = ({ children }) => {
   return <UniflowApiContext.Provider value={true}>{children}</UniflowApiContext.Provider>;
