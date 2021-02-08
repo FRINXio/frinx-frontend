@@ -30,7 +30,7 @@ export const storeResponse = (successfulResults, errorResults) => {
   };
 };
 
-export const failBulkOperation = error => {
+export const failBulkOperation = (error) => {
   return { type: FAIL_BULK_OPERATION, error };
 };
 
@@ -38,12 +38,12 @@ export const resetBulkOperationResult = () => {
   return { type: RESET_BULK_OPERATION_RESULT };
 };
 
-export const updateLoadingBar = percentage => {
+export const updateLoadingBar = (percentage) => {
   return { type: UPDATE_LOADING_BAR, percentage };
 };
 
 export const checkDeleted = (deletedWfs, workflows, defaultPages) => {
-  return dispatch => {
+  return (dispatch) => {
     if (deletedWfs.length === workflows.length) {
       dispatch(receiveBulkOperationResponse(deletedWfs, {}, defaultPages));
     } else {
@@ -55,14 +55,14 @@ export const checkDeleted = (deletedWfs, workflows, defaultPages) => {
 export const performBulkOperation = (operation, workflows, defaultPages) => {
   let deletedWfs = [];
 
-  return dispatch => {
+  return (dispatch) => {
     dispatch(requestBulkOperation());
     try {
       switch (operation) {
         case 'retry':
           const retryWorkflows = callbackUtils.retryWorkflowsCallback();
 
-          retryWorkflows(workflows).then(res => {
+          retryWorkflows(workflows).then((res) => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
             dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages));
           });
@@ -70,7 +70,7 @@ export const performBulkOperation = (operation, workflows, defaultPages) => {
         case 'restart':
           const restartWorkflows = callbackUtils.restartWorkflowsCallback();
 
-          restartWorkflows(workflows).then(res => {
+          restartWorkflows(workflows).then((res) => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
             dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages));
           });
@@ -78,7 +78,7 @@ export const performBulkOperation = (operation, workflows, defaultPages) => {
         case 'pause':
           const pauseWorkflows = callbackUtils.pauseWorkflowsCallback();
 
-          pauseWorkflows(workflows).then(res => {
+          pauseWorkflows(workflows).then((res) => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
             dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages));
           });
@@ -86,7 +86,7 @@ export const performBulkOperation = (operation, workflows, defaultPages) => {
         case 'resume':
           const resumeWorkflows = callbackUtils.resumeWorkflowsCallback();
 
-          resumeWorkflows(workflows).then(res => {
+          resumeWorkflows(workflows).then((res) => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
             dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages));
           });
@@ -94,7 +94,7 @@ export const performBulkOperation = (operation, workflows, defaultPages) => {
         case 'terminate':
           const terminateWorkflows = callbackUtils.terminateWorkflowsCallback();
 
-          terminateWorkflows(workflows).then(res => {
+          terminateWorkflows(workflows).then((res) => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
             dispatch(receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages));
           });
@@ -102,7 +102,7 @@ export const performBulkOperation = (operation, workflows, defaultPages) => {
         case 'delete':
           const deleteWorkflowInstance = callbackUtils.deleteWorkflowInstanceCallback();
 
-          workflows.map(wf => {
+          workflows.map((wf) => {
             deleteWorkflowInstance(wf).then(() => {
               deletedWfs.push(wf);
               dispatch(updateLoadingBar(round((deletedWfs.length / workflows.length) * 100)));
@@ -120,6 +120,6 @@ export const performBulkOperation = (operation, workflows, defaultPages) => {
   };
 };
 
-export const setView = isFlat => {
+export const setView = (isFlat) => {
   return { type: IS_FLAT, isFlat };
 };

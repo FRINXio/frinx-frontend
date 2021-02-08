@@ -3,7 +3,7 @@ import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import Highlight from 'react-highlight.js';
 
-const DefinitionModal = props => {
+const DefinitionModal = (props) => {
   return (
     <Modal size="xl" show={props.show} onHide={props.modalHandler}>
       <Modal.Header>

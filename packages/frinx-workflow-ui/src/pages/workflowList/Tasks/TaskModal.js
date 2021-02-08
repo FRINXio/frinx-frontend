@@ -3,7 +3,7 @@ import { Button, Col, Modal, Row, Tab, Table, Tabs } from 'react-bootstrap';
 import Highlight from 'react-highlight.js';
 import callbackUtils from '../../../utils/callbackUtils';
 
-const TaskModal = props => {
+const TaskModal = (props) => {
   const [response, setResponse] = useState({});
   const [activeTab, setActiveTab] = useState('');
 
@@ -11,7 +11,7 @@ const TaskModal = props => {
     const name = props.name;
     const getTaskDefinition = callbackUtils.getTaskDefinitionCallback();
 
-    getTaskDefinition(name).then(definition => {
+    getTaskDefinition(name).then((definition) => {
       if (definition) {
         setResponse(definition);
       }
@@ -22,7 +22,7 @@ const TaskModal = props => {
     props.modalHandler();
   };
 
-  const renderKeys = variable => {
+  const renderKeys = (variable) => {
     let output = [];
     let keys = response[variable] ? response[variable] : 0;
     for (let i = 0; i < keys.length; i++) {
@@ -74,7 +74,7 @@ const TaskModal = props => {
     </div>
   );
 
-  const jsonParse = json => {
+  const jsonParse = (json) => {
     try {
       return JSON.parse(json);
     } catch (e) {
@@ -94,7 +94,7 @@ const TaskModal = props => {
       <Modal.Body>
         <Tabs
           className="heightWrapper"
-          onSelect={e => setActiveTab(e)}
+          onSelect={(e) => setActiveTab(e)}
           style={{ marginBottom: '20px' }}
           id="detailTabs"
         >

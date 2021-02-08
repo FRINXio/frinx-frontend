@@ -9,12 +9,12 @@ type Props = {
 };
 
 const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
-  const importFiles = e => {
+  const importFiles = (e) => {
     const files = e.currentTarget.files;
     const fileList = [];
     let count = files.length;
 
-    Object.keys(files).forEach(i => {
+    Object.keys(files).forEach((i) => {
       readFile(files[i]);
     });
 
@@ -22,7 +22,7 @@ const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
       const reader = new FileReader();
       const putWorkflow = callbackUtils.putWorkflowCallback();
 
-      reader.onload = e => {
+      reader.onload = (e) => {
         let definition = JSON.parse(e.target.result);
         fileList.push(definition);
         if (!--count) {
@@ -43,14 +43,14 @@ const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
   const exportFile = () => {
     const getWorkflows = callbackUtils.getWorkflowsCallback();
 
-    getWorkflows().then(workflows => {
+    getWorkflows().then((workflows) => {
       const zip = new JSZip();
 
-      workflows.forEach(wf => {
+      workflows.forEach((wf) => {
         zip.file(wf.name + '.json', JSON.stringify(wf, null, 2));
       });
 
-      zip.generateAsync({ type: 'blob' }).then(function(content) {
+      zip.generateAsync({ type: 'blob' }).then(function (content) {
         saveAs(content, 'workflows.zip');
       });
     });

@@ -1,5 +1,5 @@
-import { LogLevel } from "@azure/msal-common";
-import { PublicClientApplication, Configuration } from "@azure/msal-browser";
+import { LogLevel } from '@azure/msal-common';
+import { PublicClientApplication, Configuration } from '@azure/msal-browser';
 
 // Set ID token (JWT) to cookie
 export function setTokenCookie(token: string): void {
@@ -11,18 +11,17 @@ export function removeTokenCookie(): void {
 }
 
 export function isAuthEnabled(): boolean {
-  return window.__CONFIG__.auth_enabled === "true";
+  return window.__CONFIG__.auth_enabled === 'true';
 }
 
 const authConfig: Configuration = {
   auth: {
-    clientId: window.__CONFIG__.auth_client_id || "",
-    redirectUri:
-        window.__CONFIG__.auth_redirect_url || "http://localhost:3000/",
+    clientId: window.__CONFIG__.auth_client_id || '',
+    redirectUri: window.__CONFIG__.auth_redirect_url || 'http://localhost:3000/',
     // authority: 'https://login.microsoftonline.com/8379e38f-b9ed-4168-8a1b-69be764c9750'
   },
   cache: {
-    cacheLocation: "localStorage",
+    cacheLocation: 'localStorage',
     storeAuthStateInCookie: false,
   },
   system: {

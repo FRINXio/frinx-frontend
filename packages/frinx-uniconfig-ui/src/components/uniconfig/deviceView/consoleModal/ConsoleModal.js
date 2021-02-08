@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import { Modal, Button, ListGroup } from "react-bootstrap";
-import Highlight from "react-highlight.js";
-import UnescapeButton from "./UnescapeButton";
+import React, { Component } from 'react';
+import { Modal, Button, ListGroup } from 'react-bootstrap';
+import Highlight from 'react-highlight.js';
+import UnescapeButton from './UnescapeButton';
 
 class ConsoleModal extends Component {
   constructor(props, context) {
@@ -12,14 +12,14 @@ class ConsoleModal extends Component {
     this.state = {
       show: true,
       content: this.props.content,
-      operation: this.props.operation
+      operation: this.props.operation,
     };
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
       operation: nextProps.operation,
-      content: nextProps.content
+      content: nextProps.content,
     });
   }
 
@@ -32,39 +32,33 @@ class ConsoleModal extends Component {
     let output = this.state.content;
     if (output) {
       output = output.substring(1, output.length - 1);
-      output = output.split("\\n").map(i => {
-        return i !== "" ? <ListGroup.Item>{i}</ListGroup.Item> : "";
+      output = output.split('\\n').map((i) => {
+        return i !== '' ? <ListGroup.Item>{i}</ListGroup.Item> : '';
       });
     }
     return output;
   }
 
   render() {
-    let content = this.state.content || "{}";
+    let content = this.state.content || '{}';
     return (
       <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
         <Modal.Header>
           <Modal.Title>Console output of {this.state.operation}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {this.state.operation === "Dry-run" ? (
+          {this.state.operation === 'Dry-run' ? (
             <ListGroup>{this.parseDryRun()}</ListGroup>
           ) : (
-            <code style={{ fontSize: "20px" }}>
-              <pre id="content" style={{ marginTop: "20px" }}>
-                <Highlight language="json">
-                  {JSON.stringify(JSON.parse(content), null, 2)}
-                </Highlight>
+            <code style={{ fontSize: '20px' }}>
+              <pre id="content" style={{ marginTop: '20px' }}>
+                <Highlight language="json">{JSON.stringify(JSON.parse(content), null, 2)}</Highlight>
               </pre>
             </code>
           )}
         </Modal.Body>
         <Modal.Footer>
-          {this.state.operation === "Calculated Diff" ? (
-            <UnescapeButton target="content" />
-          ) : (
-            ""
-          )}
+          {this.state.operation === 'Calculated Diff' ? <UnescapeButton target="content" /> : ''}
           <Button variant="secondary" onClick={this.handleClose}>
             Close
           </Button>

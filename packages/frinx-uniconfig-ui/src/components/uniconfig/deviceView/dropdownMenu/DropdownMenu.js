@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { FormControl } from "react-bootstrap";
+import React, { Component } from 'react';
+import { FormControl } from 'react-bootstrap';
 
 class DropdownMenu extends Component {
   constructor(props, context) {
@@ -7,7 +7,7 @@ class DropdownMenu extends Component {
 
     this.handleChange = this.handleChange.bind(this);
 
-    this.state = { value: "" };
+    this.state = { value: '' };
   }
 
   handleChange(e) {
@@ -15,12 +15,7 @@ class DropdownMenu extends Component {
   }
 
   render() {
-    const {
-      children,
-      style,
-      className,
-      "aria-labelledby": labeledBy
-    } = this.props;
+    const { children, style, className, 'aria-labelledby': labeledBy } = this.props;
 
     const { value } = this.state;
 
@@ -34,12 +29,9 @@ class DropdownMenu extends Component {
           value={value}
         />
         <ul className="list-unstyled">
-          {React.Children.toArray(children).filter(child => {
-            if (value === "" || typeof child.props.children === "object")
-              if (
-                Array.isArray(child.props.children) &&
-                typeof child.props.children[0] === "string"
-              )
+          {React.Children.toArray(children).filter((child) => {
+            if (value === '' || typeof child.props.children === 'object')
+              if (Array.isArray(child.props.children) && typeof child.props.children[0] === 'string')
                 return child.props.children[0].startsWith(value);
             return true;
           })}

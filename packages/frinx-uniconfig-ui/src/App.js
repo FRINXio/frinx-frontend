@@ -21,11 +21,7 @@ function App(props) {
           <>
             <Breadcrumb />
             <Route exact path={path + '/devices'} component={DeviceList} />
-            <Route
-              exact
-              path={path + '/devices/:nodeId'}
-              component={DeviceDetails}
-            />
+            <Route exact path={path + '/devices/:nodeId'} component={DeviceDetails} />
             <Route exact path={path + '/mount'} component={MountDevice} />
             <Redirect to={path + '/devices'} />
           </>

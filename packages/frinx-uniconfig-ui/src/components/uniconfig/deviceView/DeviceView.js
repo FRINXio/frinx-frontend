@@ -57,7 +57,7 @@ class DeviceView extends Component {
           '/frinx-uniconfig-topology:configuration?content=config',
         this.context.authToken,
       )
-      .then(res => {
+      .then((res) => {
         this.setState({
           config: JSON.stringify(res),
           initializing: false,
@@ -72,7 +72,7 @@ class DeviceView extends Component {
           '/frinx-uniconfig-topology:configuration?content=nonconfig',
         this.context.authToken,
       )
-      .then(res => {
+      .then((res) => {
         this.setState({
           operational: JSON.stringify(res),
           initializing: false,
@@ -92,7 +92,7 @@ class DeviceView extends Component {
         data,
         this.context.authToken,
       )
-      .then(res => {
+      .then((res) => {
         this.setState({
           alertType: `putConfig${res.body?.status}`,
           console: JSON.stringify(res.body, null, 2),
@@ -124,7 +124,7 @@ class DeviceView extends Component {
         target,
         this.context.authToken,
       )
-      .then(res => {
+      .then((res) => {
         this.setState({
           console: JSON.stringify(res.body),
           operation: 'Calculated Diff',
@@ -148,7 +148,7 @@ class DeviceView extends Component {
         target,
         this.context.authToken,
       )
-      .then(res => {
+      .then((res) => {
         this.setState({
           alertType: parseResponse('commit', res.body),
           showAlert: true,
@@ -165,7 +165,7 @@ class DeviceView extends Component {
               '/frinx-uniconfig-topology:configuration?content=nonconfig',
             this.context.authToken,
           )
-          .then(res => {
+          .then((res) => {
             this.setState({
               operational: JSON.stringify(res),
             });
@@ -187,7 +187,7 @@ class DeviceView extends Component {
         target,
         this.context.authToken,
       )
-      .then(res => {
+      .then((res) => {
         this.setState({
           alertType: parseResponse('dryrun', res.body),
           showAlert: true,
@@ -221,7 +221,7 @@ class DeviceView extends Component {
         target,
         this.context.authToken,
       )
-      .then(res_first => {
+      .then((res_first) => {
         http
           .get(
             this.context.backendApiUrlPrefix +
@@ -230,7 +230,7 @@ class DeviceView extends Component {
               '/frinx-uniconfig-topology:configuration?content=nonconfig',
             this.context.authToken,
           )
-          .then(res => {
+          .then((res) => {
             console.log(res_first);
             this.setState({
               alertType: parseResponse('sync', res_first.body),
@@ -255,7 +255,7 @@ class DeviceView extends Component {
           '/frinx-uniconfig-topology:configuration?content=config',
         this.context.authToken,
       )
-      .then(res => {
+      .then((res) => {
         this.setState({
           config: JSON.stringify(res),
         });
@@ -274,7 +274,7 @@ class DeviceView extends Component {
         target,
         this.context.authToken,
       )
-      .then(res => {
+      .then((res) => {
         console.log(res);
         this.refreshConfig();
         this.setState({
@@ -293,11 +293,11 @@ class DeviceView extends Component {
         this.context.backendApiUrlPrefix + '/rests/data/network-topology:network-topology?content=config',
         this.context.authToken,
       )
-      .then(res => {
+      .then((res) => {
         if (res !== 500) {
           let topologies = ['cli', 'uniconfig', 'topology-netconf', 'unitopo'];
           let snapshots = res['network-topology']['topology'].filter(
-            topology =>
+            (topology) =>
               topology['node'] &&
               topology['node']['0']['node-id'] === this.props.deviceId &&
               !topologies.includes(topology['topology-id']),
@@ -320,7 +320,7 @@ class DeviceView extends Component {
           target,
           this.context.authToken,
         )
-        .then(res => {
+        .then((res) => {
           console.log(res);
         });
     } else {
@@ -336,15 +336,15 @@ class DeviceView extends Component {
           target,
           this.context.authToken,
         )
-        .then(res_first => {
+        .then((res_first) => {
           http
             .get(
               this.context.backendApiUrlPrefix + '/rests/data/network-topology:network-topology?content=config',
               this.context.authToken,
             )
-            .then(res => {
+            .then((res) => {
               let snapshot = res['network-topology']['topology'].filter(
-                topology => topology['topology-id'] === snapshotName,
+                (topology) => topology['topology-id'] === snapshotName,
               )[0]?.node[0];
 
               delete snapshot['node-id'];

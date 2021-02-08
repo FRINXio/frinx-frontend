@@ -22,15 +22,10 @@ const EventListeners = () => {
   useEffect(() => {
     const results = !searchTerm
       ? eventListeners
-      : eventListeners.filter(e => {
+      : eventListeners.filter((e) => {
           let searchedKeys = ['name', 'event'];
           for (let i = 0; i < searchedKeys.length; i += 1) {
-            if (
-              e[searchedKeys[i]]
-                .toString()
-                .toLowerCase()
-                .includes(searchTerm.toLocaleLowerCase())
-            ) {
+            if (e[searchedKeys[i]].toString().toLowerCase().includes(searchTerm.toLocaleLowerCase())) {
               return true;
             }
           }
@@ -42,7 +37,7 @@ const EventListeners = () => {
   const getData = () => {
     const getEventListeners = callbackUtils.getEventListenersCallback();
 
-    getEventListeners().then(eventListeners => {
+    getEventListeners().then((eventListeners) => {
       if (Array.isArray(eventListeners)) {
         setEventListeners(eventListeners);
       }
@@ -57,32 +52,32 @@ const EventListeners = () => {
     const registerEventListener = callbackUtils.registerEventListenerCallback();
 
     registerEventListener(event)
-      .then(res => {
+      .then((res) => {
         getData();
       })
-      .catch(err => {
+      .catch((err) => {
         alert(err);
       });
     setSelectedEvent(null);
   };
 
-  const deleteEvent = name => {
+  const deleteEvent = (name) => {
     const deleteEventListener = callbackUtils.deleteEventListenerCallback();
 
     deleteEventListener(name)
       .then(() => {
         getData();
       })
-      .catch(err => {
+      .catch((err) => {
         alert(err);
       });
   };
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  const parseJSON = data => {
+  const parseJSON = (data) => {
     try {
       let parsedJSON = JSON.parse(data);
       setSelectedEvent(parsedJSON);
@@ -102,7 +97,7 @@ const EventListeners = () => {
           theme="tomorrow"
           width="100%"
           height="300px"
-          onChange={data => parseJSON(data)}
+          onChange={(data) => parseJSON(data)}
           fontSize={16}
           value={JSON.stringify(selectedEvent, null, 2)}
           wrapEnabled={true}
@@ -143,7 +138,7 @@ const EventListeners = () => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {pageItems.map(e => {
+          {pageItems.map((e) => {
             return (
               <Table.Row key={e.event}>
                 <Table.Cell style={{ textAlign: 'center' }}>

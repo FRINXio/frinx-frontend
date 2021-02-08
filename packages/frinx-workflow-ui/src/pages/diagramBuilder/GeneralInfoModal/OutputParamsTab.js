@@ -2,11 +2,11 @@
 import React, { useState } from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
 
-const OutputParamsTab = props => {
+const OutputParamsTab = (props) => {
   const [customParam, setCustomParam] = useState('');
   const outputParameters = props.finalWf.outputParameters || [];
 
-  const handleCustomParam = e => {
+  const handleCustomParam = (e) => {
     e.preventDefault();
     e.stopPropagation();
     props.handleCustomParam(customParam);
@@ -20,7 +20,7 @@ const OutputParamsTab = props => {
           <InputGroup style={{ padding: '10px 215px 10px' }}>
             <Form.Control
               value={customParam}
-              onChange={e => setCustomParam(e.target.value)}
+              onChange={(e) => setCustomParam(e.target.value)}
               placeholder="Add new output parameter name"
             />
             <InputGroup.Append>
@@ -49,7 +49,7 @@ const OutputParamsTab = props => {
                       </Form.Label>
                       <Form.Control
                         type="input"
-                        onChange={e => props.handleOutputParam(entry[0], e.target.value)}
+                        onChange={(e) => props.handleOutputParam(entry[0], e.target.value)}
                         value={entry[1]}
                       />
                     </Form.Group>

@@ -19,18 +19,18 @@ const jsonParse = (json: string) => {
   }
 };
 
-const getInputParameters = props => {
+const getInputParameters = (props) => {
   const inputParameters = jsonParse(props.finalWf.inputParameters ? props.finalWf.inputParameters[0] : null);
   const inputParametersKeys = Object.keys(getWfInputsRegex(props.finalWf)) || [];
 
-  const inputParams = inputParametersKeys.map(key => ({
+  const inputParams = inputParametersKeys.map((key) => ({
     label: key,
     ...(inputParameters ? (inputParameters[key] ? inputParameters[key] : inputParamsTemplate) : inputParamsTemplate),
   }));
 
   const defaults = ['value', 'description', 'type'];
   inputParams.forEach((param, i) => {
-    defaults.forEach(d => {
+    defaults.forEach((d) => {
       if (!inputParams[i][d]) {
         inputParams[i][d] = '';
       }
@@ -40,7 +40,7 @@ const getInputParameters = props => {
   return inputParams;
 };
 
-const DefaultsDescsTab = props => {
+const DefaultsDescsTab = (props) => {
   const inputParams = getInputParameters(props);
   const [selectedParam, setSelectedParam] = useState(inputParams[0]?.label);
   const selectedParamObj = _.find(inputParams, { label: selectedParam });
@@ -60,7 +60,7 @@ const DefaultsDescsTab = props => {
               <Form.Label>{param[0]}</Form.Label>
               <Dropdown
                 options={types}
-                onChange={e => {
+                onChange={(e) => {
                   props.handleInputParams(selectedParam, selectedParamObj, param[0], e.value);
                 }}
                 value={param[1]}
@@ -75,7 +75,7 @@ const DefaultsDescsTab = props => {
               <Form.Label>{param[0]}</Form.Label>
               <Form.Control
                 defaultValue={param[1]}
-                onChange={e => props.handleInputParams(selectedParam, selectedParamObj, param[0], e.target.value)}
+                onChange={(e) => props.handleInputParams(selectedParam, selectedParamObj, param[0], e.target.value)}
               />
             </Form.Group>
           </Col>
@@ -97,7 +97,7 @@ const DefaultsDescsTab = props => {
               onChange={handleInputParamSelect}
               as="select"
             >
-              {inputParams.map(param => (
+              {inputParams.map((param) => (
                 <option value={param.label}>{param.label}</option>
               ))}
             </Form.Control>

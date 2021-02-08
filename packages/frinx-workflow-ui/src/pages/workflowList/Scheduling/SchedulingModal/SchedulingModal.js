@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import callbackUtils from '../../../../utils/callbackUtils';
 
-const SchedulingModal = props => {
+const SchedulingModal = (props) => {
   const [schedule, setSchedule] = useState();
   const [status, setStatus] = useState();
   const [error, setError] = useState();
@@ -60,7 +60,7 @@ const SchedulingModal = props => {
     });
   };
 
-  const setCronString = str => {
+  const setCronString = (str) => {
     const mySchedule = {
       ...schedule,
       cronString: str,
@@ -68,7 +68,7 @@ const SchedulingModal = props => {
     setSchedule(mySchedule);
   };
 
-  const setEnabled = enabled => {
+  const setEnabled = (enabled) => {
     const mySchedule = {
       ...schedule,
       enabled: enabled,
@@ -76,7 +76,7 @@ const SchedulingModal = props => {
     setSchedule(mySchedule);
   };
 
-  const setWorkflowContext = workflowContext => {
+  const setWorkflowContext = (workflowContext) => {
     try {
       workflowContext = JSON.parse(workflowContext);
       const mySchedule = {
@@ -157,7 +157,7 @@ const SchedulingModal = props => {
             <Form.Label>Cron</Form.Label>
             <Form.Control
               type="input"
-              onChange={e => setCronString(e.target.value)}
+              onChange={(e) => setCronString(e.target.value)}
               placeholder="Enter cron pattern"
               value={getCronString()}
             />
@@ -165,7 +165,7 @@ const SchedulingModal = props => {
           </Form.Group>
           <Form.Group>
             <Form.Label>Enabled</Form.Label>
-            <Form.Control type="checkbox" onChange={e => setEnabled(e.target.checked)} checked={getEnabled()} />
+            <Form.Control type="checkbox" onChange={(e) => setEnabled(e.target.checked)} checked={getEnabled()} />
           </Form.Group>
           <Form.Group>
             <Form.Label>Workflow Input</Form.Label>
@@ -174,7 +174,7 @@ const SchedulingModal = props => {
               theme="tomorrow"
               width="100%"
               height="100px"
-              onChange={data => setWorkflowContext(data)}
+              onChange={(data) => setWorkflowContext(data)}
               fontSize={16}
               value={getWorkflowContext()}
               wrapEnabled={true}

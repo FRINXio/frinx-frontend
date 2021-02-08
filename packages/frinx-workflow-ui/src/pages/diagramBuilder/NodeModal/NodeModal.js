@@ -16,7 +16,6 @@ const renameObjKey = (oldObj, oldKey, newKey) => {
   }, {});
 };
 
-
 function NodeModal(props) {
   const [inputs, setInputs] = useState([]);
   const [name, setName] = useState();
@@ -34,12 +33,11 @@ function NodeModal(props) {
       setName(name);
       setVersion(version);
 
-      const getWorkflow = callbackUtils.getWorkflowCallback()
-      
-      getWorkflow(name, version).then(workflow => {
-        setInputParameters(workflow.inputParameters)
-      })
+      const getWorkflow = callbackUtils.getWorkflowCallback();
 
+      getWorkflow(name, version).then((workflow) => {
+        setInputParameters(workflow.inputParameters);
+      });
     }
   }, [props.inputs]);
 
@@ -98,7 +96,7 @@ function NodeModal(props) {
     const inputParameters = updatedInputs.inputParameters;
 
     if (typeof key[1] === 'object') {
-      if (OBJECT_KEYWORDS.find(e => entry[0].includes(e))) {
+      if (OBJECT_KEYWORDS.find((e) => entry[0].includes(e))) {
         try {
           value = JSON.parse(value);
         } catch (e) {
@@ -176,7 +174,7 @@ function NodeModal(props) {
       if (entry[0] === 'headers') {
         value = updateHTTPHeader(value, i, headerKey);
       } else if (
-        OBJECT_KEYWORDS.find(e => entry[0].includes(e)) &&
+        OBJECT_KEYWORDS.find((e) => entry[0].includes(e)) &&
         !props.inputs.inputs.taskReferenceName.includes('graphQLTaskRef_')
       ) {
         try {

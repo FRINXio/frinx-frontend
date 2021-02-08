@@ -130,10 +130,7 @@ export type ActionTargetWorkflow = {
 export type Action = {
   action: string;
   expandInLineJson: boolean;
-} & (
-  | { [key in ActionTypes]: ActionTargetTask }
-  | { start_workflow: ActionTargetWorkflow }
-);
+} & ({ [key in ActionTypes]: ActionTargetTask } | { start_workflow: ActionTargetWorkflow });
 
 export type EventListener = {
   name: string;

@@ -16,7 +16,7 @@ const PollData = () => {
   useEffect(() => {
     const getQueues = callbackUtils.getQueuesCallback();
 
-    getQueues().then(queues => {
+    getQueues().then((queues) => {
       setData(queues);
     });
   }, []);
@@ -24,7 +24,7 @@ const PollData = () => {
   useEffect(() => {
     const results = !keywords
       ? data
-      : data.filter(e => {
+      : data.filter((e) => {
           let searchedKeys = ['queueName', 'qsize', 'lastPollTime', 'workerId'];
 
           for (let i = 0; i < searchedKeys.length; i += 1) {
@@ -39,12 +39,7 @@ const PollData = () => {
                 return true;
               }
             }
-            if (
-              e[searchedKeys[i]]
-                .toString()
-                .toLowerCase()
-                .includes(keywords.toLocaleLowerCase())
-            ) {
+            if (e[searchedKeys[i]].toString().toLowerCase().includes(keywords.toLocaleLowerCase())) {
               return true;
             }
           }
@@ -53,7 +48,7 @@ const PollData = () => {
     setItemList(results);
   }, [keywords, data]);
 
-  const sortArray = key => {
+  const sortArray = (key) => {
     let sortedArray = data;
 
     sortedArray.sort(sorted ? sortDescBy(key) : sortAscBy(key));
@@ -62,7 +57,7 @@ const PollData = () => {
   };
 
   const filteredRows = () => {
-    return pageItems.map(e => {
+    return pageItems.map((e) => {
       return (
         <Table.Row key={e.queueName}>
           <Table.Cell>{e.queueName}</Table.Cell>
@@ -100,7 +95,7 @@ const PollData = () => {
   return (
     <PageContainer>
       <Input iconPosition="left" fluid icon placeholder="Search...">
-        <input value={keywords} onChange={e => setKeywords(e.target.value)} />
+        <input value={keywords} onChange={(e) => setKeywords(e.target.value)} />
         <Icon name="search" />
       </Input>
       {pollTable()}
