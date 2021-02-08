@@ -11,7 +11,6 @@ import thunk from 'redux-thunk';
 import buildReducer from './store/reducers/builder';
 import bulkReducer from './store/reducers/bulk';
 import searchReducer from './store/reducers/searchExecs';
-import { GlobalProvider } from './common/GlobalContext';
 import WorkflowDefsReadOnly from './pages/workflowList/WorkflowDefs/WorkflowDefsReadOnly';
 import DiagramBuilder from './pages/diagramBuilder/DiagramBuilder';
 import WorkflowExec from './pages/workflowList/WorkflowExec/WorkflowExec';
@@ -40,29 +39,27 @@ function ServiceUIApp(props) {
   let { path } = useRouteMatch();
 
   return (
-    <GlobalProvider {...props}>
-      <Provider store={store}>
-        <Switch>
+    <Provider store={store}>
+      <Switch>
+        <Route
+          exact
+          path={[path + '/builder', path + '/builder/:name/:version']}
+          render={props => <DiagramBuilder {...props} />}
+        />
+        <>
+          <ServiceAppHeader />
+          <Route exact path={path + '/defs'}>
+            <WorkflowDefsReadOnly />
+          </Route>
           <Route
             exact
-            path={[path + '/builder', path + '/builder/:name/:version']}
-            render={props => <DiagramBuilder {...props} />}
+            path={path + '/exec/:wfid?'}
+            render={props => <WorkflowExec query={props.match.params.wfid} />}
           />
-          <>
-            <ServiceAppHeader />
-            <Route exact path={path + '/defs'}>
-              <WorkflowDefsReadOnly />
-            </Route>
-            <Route
-              exact
-              path={path + '/exec/:wfid?'}
-              render={props => <WorkflowExec query={props.match.params.wfid} />}
-            />
-          </>
-          <Redirect to={path + '/defs'} />
-        </Switch>
-      </Provider>
-    </GlobalProvider>
+        </>
+        <Redirect to={path + '/defs'} />
+      </Switch>
+    </Provider>
   );
 }
 

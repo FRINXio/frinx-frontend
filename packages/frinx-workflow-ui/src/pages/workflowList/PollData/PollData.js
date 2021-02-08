@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Input, Icon } from 'semantic-ui-react';
 import moment from 'moment';
 import { sortAscBy, sortDescBy } from '../workflowUtils';

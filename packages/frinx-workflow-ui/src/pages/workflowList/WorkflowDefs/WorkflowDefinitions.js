@@ -1,5 +1,5 @@
 // @flow
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Col, Form, Row, Modal } from 'react-bootstrap';
 import { Table, Header, Button, Popup } from 'semantic-ui-react';
 import { Typeahead } from 'react-bootstrap-typeahead';
@@ -10,7 +10,6 @@ import DiagramModal from './DiagramModal/DiagramModal';
 import InputModal from './InputModal/InputModal';
 import DependencyModal from './DependencyModal/DependencyModal';
 import SchedulingModal from '../Scheduling/SchedulingModal/SchedulingModal';
-import { GlobalContext } from '../../../common/GlobalContext';
 import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
 import PageContainer from '../../../common/PageContainer';
@@ -42,7 +41,6 @@ type Props = {
 };
 
 const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) => {
-  const global = useContext(GlobalContext);
   const [keywords, setKeywords] = useState('');
   const [labels, setLabels] = useState([]);
   const [data, setData] = useState([]);

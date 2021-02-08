@@ -16,7 +16,6 @@ import closest from 'closest';
 import { Application } from './Application';
 import { Button, Modal } from 'react-bootstrap';
 import { DiagramWidget, Toolkit } from '@projectstorm/react-diagrams';
-import { GlobalContext } from '../../common/GlobalContext';
 import { HotKeys } from 'react-hotkeys';
 import { WorkflowDiagram } from './WorkflowDiagram';
 import { connect } from 'react-redux';
@@ -25,7 +24,6 @@ import { saveAs } from 'file-saver';
 import callbackUtils from '../../utils/callbackUtils';
 
 class DiagramBuilder extends Component {
-  static contextType = GlobalContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -479,7 +477,6 @@ class DiagramBuilder extends Component {
               system={this.props.system}
               updateQuery={this.props.updateQuery}
               openCard={this.props.openCard}
-              disabledTasks={this.context.disabledTasks}
             />
 
             <CustomAlert

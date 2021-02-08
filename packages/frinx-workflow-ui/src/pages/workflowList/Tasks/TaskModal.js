@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Col, Modal, Row, Tab, Table, Tabs } from 'react-bootstrap';
 import Highlight from 'react-highlight.js';
 import callbackUtils from '../../../utils/callbackUtils';

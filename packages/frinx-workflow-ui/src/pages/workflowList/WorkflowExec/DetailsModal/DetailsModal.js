@@ -13,7 +13,7 @@ new Clipboard('.clp');
 
 class DetailsModal extends Component {
   constructor(props) {
-    super(props, context);
+    super(props);
     this.state = {
       show: true,
       meta: {},

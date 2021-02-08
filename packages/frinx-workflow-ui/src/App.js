@@ -3,7 +3,7 @@ import './css/bootstrap.min.css';
 import './css/awesomefonts.css';
 import './css/neat.css';
 import './css/mono-blue.min.css';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Provider } from 'react-redux';
 import { Redirect, Route, Switch, useRouteMatch, useParams } from 'react-router-dom';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
@@ -13,7 +13,6 @@ import WorkflowListHeader from './pages/workflowList/WorkflowListHeader';
 import buildReducer from './store/reducers/builder';
 import bulkReducer from './store/reducers/bulk';
 import searchReducer from './store/reducers/searchExecs';
-import { GlobalProvider } from './common/GlobalContext';
 import WorkflowDefinitions from './pages/workflowList/WorkflowDefs/WorkflowDefinitions';
 import WorkflowExec from './pages/workflowList/WorkflowExec/WorkflowExec';
 import Scheduling from './pages/workflowList/Scheduling/Scheduling';
@@ -38,47 +37,45 @@ const callbacks = {
 
 const UniflowApiProvider = getUniflowApiProvider(callbacks);
 
-function App(props) {
+function App() {
   let { path } = useRouteMatch();
 
   return (
-    <GlobalProvider {...props}>
-      <UniflowApiProvider>
-        <Provider store={store}>
-          <Switch>
+    <UniflowApiProvider>
+      <Provider store={store}>
+        <Switch>
+          <Route
+            exact
+            path={[path + '/builder', path + '/builder/:name/:version']}
+            render={props => <DiagramBuilder {...props} />}
+          />
+          <>
+            <WorkflowListHeader onAddButtonClick={() => {}} />
+            <Route exact path={path + '/defs'}>
+              <WorkflowDefinitions />
+            </Route>
             <Route
               exact
-              path={[path + '/builder', path + '/builder/:name/:version']}
-              render={props => <DiagramBuilder {...props} />}
+              path={path + '/exec/:wfid?'}
+              render={props => <WorkflowExec query={props.match.params.wfid} />}
             />
-            <>
-              <WorkflowListHeader onAddButtonClick={() => {}} />
-              <Route exact path={path + '/defs'}>
-                <WorkflowDefinitions />
-              </Route>
-              <Route
-                exact
-                path={path + '/exec/:wfid?'}
-                render={props => <WorkflowExec query={props.match.params.wfid} />}
-              />
-              <Route exact path={path + '/scheduled'}>
-                <Scheduling />
-              </Route>
-              <Route exact path={path + '/eventlisteners'}>
-                <EventListeners />
-              </Route>
-              <Route exact path={path + '/tasks'}>
-                <TaskList />
-              </Route>
-              <Route exact path={path + '/polldata'}>
-                <PollData />
-              </Route>
-              <Redirect from={path} to={path + '/defs'} />
-            </>
-          </Switch>
-        </Provider>
-      </UniflowApiProvider>
-    </GlobalProvider>
+            <Route exact path={path + '/scheduled'}>
+              <Scheduling />
+            </Route>
+            <Route exact path={path + '/eventlisteners'}>
+              <EventListeners />
+            </Route>
+            <Route exact path={path + '/tasks'}>
+              <TaskList />
+            </Route>
+            <Route exact path={path + '/polldata'}>
+              <PollData />
+            </Route>
+            <Redirect from={path} to={path + '/defs'} />
+          </>
+        </Switch>
+      </Provider>
+    </UniflowApiProvider>
   );
 }
 

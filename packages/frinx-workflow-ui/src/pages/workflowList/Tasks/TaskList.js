@@ -1,5 +1,5 @@
 // @flow
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Button, Input, Icon, Grid } from 'semantic-ui-react';
 import TaskModal from './TaskModal';
 import AddTaskModal from './AddTaskModal';

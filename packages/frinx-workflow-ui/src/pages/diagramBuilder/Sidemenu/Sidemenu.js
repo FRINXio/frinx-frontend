@@ -358,24 +358,22 @@ const tasks = props => {
 };
 
 const system = props => {
-  return props.system
-    .filter(task => props.disabledTasks?.includes(task.name) == false)
-    .map((task, i) => {
-      const wfObject = systemTasks(task.name, props);
-      return (
-        <SideMenuItem
-          key={`st${i}`}
-          model={{
-            type: task.name,
-            wfObject,
-            name: task.name,
-            description: task.hasOwnProperty('description') ? task.description : '',
-          }}
-          name={task.name.toUpperCase()}
-          icon={icons(task)}
-        />
-      );
-    });
+  return props.system.map((task, i) => {
+    const wfObject = systemTasks(task.name, props);
+    return (
+      <SideMenuItem
+        key={`st${i}`}
+        model={{
+          type: task.name,
+          wfObject,
+          name: task.name,
+          description: task.hasOwnProperty('description') ? task.description : '',
+        }}
+        name={task.name.toUpperCase()}
+        icon={icons(task)}
+      />
+    );
+  });
 };
 
 const custom = (props, custom) => {
