@@ -186,7 +186,7 @@ else:
     case 'graphQL': {
       // graphQL task is a simple facade on top of HTTP task
       return {
-        name: props.prefixHttpTask + 'HTTP_task',
+        name: 'GLOBAL___HTTP_task',
         taskReferenceName: 'graphQLTaskRef_' + hash(),
         inputParameters: {
           http_request: {
@@ -226,7 +226,7 @@ else:
     }
     case 'http': {
       return {
-        name: props.prefixHttpTask + 'HTTP_task',
+        name: 'GLOBAL___HTTP_task',
         taskReferenceName: 'httpRequestTaskRef_' + hash(),
         inputParameters: {
           http_request: {
@@ -351,7 +351,7 @@ const tasks = props => {
           name: task.name,
           description: task.hasOwnProperty('description') ? task.description : '',
         }}
-        name={task.name.replace(props.prefixHttpTask, '')}
+        name={task.name}
       />
     );
   });

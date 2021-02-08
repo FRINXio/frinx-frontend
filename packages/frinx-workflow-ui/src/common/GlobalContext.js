@@ -3,12 +3,10 @@ import React, { createContext, useEffect, useState } from 'react';
 
 type GlobalConstants = {
   disabledTasks: string[],
-  prefixHttpTask: string,
 };
 
 export const globalConstants: GlobalConstants = {
   disabledTasks: ['js', 'py', 'while', 'while_end'],
-  prefixHttpTask: '',
 };
 
 export const GlobalContext = createContext<GlobalConstants>(globalConstants);
