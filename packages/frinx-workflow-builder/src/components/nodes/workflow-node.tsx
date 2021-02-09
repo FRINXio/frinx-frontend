@@ -17,10 +17,13 @@ const WorkflowNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
       overflow="hidden"
       boxShadow={data?.isSelected ? undefined : 'base'}
       borderRadius="md"
+      _hover={{
+        boxShadow: 'md',
+      }}
     >
       <Flex px={2} py={3} fontSize="sm" fontWeight="medium" alignItems="center">
         <Heading as="h4" size="xs" isTruncated>
-          {data?.task.name}
+          {data?.task?.name}
         </Heading>
         <Box marginLeft="auto">
           <Tooltip label="Edit workflow">
@@ -43,40 +46,53 @@ const WorkflowNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
             port,
             {
               style: {
-                background: theme.colors.gray[200],
-                width: theme.space[12],
-                height: theme.space[6],
-                fontSize: theme.fontSizes.xs,
-                color: theme.colors.gray[700],
                 marginRight: 'auto',
-                display: 'flex',
+              },
+            },
+            React.createElement(
+              Flex,
+              {
+                background: 'gray.200',
+                fontSize: 'xs',
+                color: 'gray.700',
+                width: 12,
+                height: 6,
                 alignItems: 'center',
                 justifyContent: 'center',
                 textTransform: 'uppercase',
+                _hover: {
+                  background: 'gray.300',
+                },
               },
-            },
-            'in',
+              'in',
+            ),
           );
         })}
         {outputs?.map((port) => {
           return React.cloneElement(
-            // @ts-ignore
             port,
             {
               style: {
-                background: theme.colors.gray[200],
-                width: theme.space[12],
-                height: theme.space[6],
-                fontSize: theme.fontSizes.xs,
-                color: theme.colors.gray[600],
                 marginLeft: 'auto',
-                display: 'flex',
+              },
+            },
+            React.createElement(
+              Flex,
+              {
+                background: 'gray.200',
+                fontSize: 'xs',
+                color: 'gray.700',
+                width: 12,
+                height: 6,
                 alignItems: 'center',
                 justifyContent: 'center',
                 textTransform: 'uppercase',
+                _hover: {
+                  background: 'gray.300',
+                },
               },
-            },
-            'out',
+              'out',
+            ),
           );
         })}
       </Flex>

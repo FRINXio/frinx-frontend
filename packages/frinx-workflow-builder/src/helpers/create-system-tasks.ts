@@ -12,25 +12,25 @@ export default function createSystemTasks(): ListedTask[] {
       label: 'FORK',
     },
     {
-      label: 'Join',
+      label: 'JOIN',
     },
     {
-      label: 'While',
+      label: 'WHILE',
     },
     {
-      label: 'While end',
+      label: 'WHILE END',
     },
     {
-      label: 'Decision',
+      label: 'DECISION',
     },
     {
       label: 'LAMBDA',
     },
     {
-      label: 'Python',
+      label: 'PY',
     },
     {
-      label: 'JS task',
+      label: 'JS',
     },
     {
       label: 'HTTP',
@@ -39,16 +39,16 @@ export default function createSystemTasks(): ListedTask[] {
       label: 'GRAPHQL',
     },
     {
-      label: 'Terminate',
+      label: 'TERMINATE',
     },
     {
-      label: 'Event',
+      label: 'EVENT',
     },
     {
-      label: 'Wait',
+      label: 'WAIT',
     },
     {
-      label: 'Raw',
+      label: 'RAW',
     },
   ];
 }

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import 'beautiful-react-diagrams/styles.css';
 import Diagram, { useSchema } from 'beautiful-react-diagrams';
-import { Box, CloseButton, Flex, Heading, Text, useTheme } from '@chakra-ui/react';
+import { Box, Button, CloseButton, Flex, Heading, Text, useTheme } from '@chakra-ui/react';
 import { NodeData, Task } from './helpers/types';
 import { createSchemaFromWorkflow, createWorkflowNode } from './helpers/diagram.helpers';
 import RightDrawer from './components/right-drawer';
@@ -34,8 +34,6 @@ const App: FC<Props> = ({ onClose }) => {
   };
   const { name, description } = workflow;
 
-  console.log(copiedSchema);
-
   const handleAddButtonClick = (t: Task) => {
     addNode(createWorkflowNode(onClick, t));
   };
@@ -52,7 +50,15 @@ const App: FC<Props> = ({ onClose }) => {
           </Text>
         </Box>
         <Box ml="auto">
-          <CloseButton onClick={onClose} />
+          {/* <CloseButton onClick={onClose} /> */}
+          <Button
+            colorScheme="blue"
+            onClick={() => {
+              console.log(copiedSchema);
+            }}
+          >
+            Save
+          </Button>
         </Box>
       </Flex>
       <Flex

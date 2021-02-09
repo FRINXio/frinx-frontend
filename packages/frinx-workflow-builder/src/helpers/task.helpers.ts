@@ -1,5 +1,23 @@
+/* eslint-disable no-template-curly-in-string */
 import { v4 as uuid } from 'uuid';
-import { Task, HTTPTask, GraphQLTask, JSPythonTask, LambdaTask, StartTask, EndTask, ForkTask } from './types';
+import {
+  Task,
+  HTTPTask,
+  GraphQLTask,
+  JSPythonTask,
+  LambdaTask,
+  StartTask,
+  EndTask,
+  ForkTask,
+  JoinTask,
+  WhileTask,
+  WhileEndTask,
+  DecisionTask,
+  TerminateTask,
+  EventTask,
+  WaitTask,
+  RawTask,
+} from './types';
 
 const DEFAULT_TASK_OPTIONS: Pick<
   Task,
@@ -125,7 +143,6 @@ function createStartEndTask(type: 'START' | 'END'): StartTask | EndTask {
     name,
     type: name,
     taskReferenceName: `startTaskRef_${uuid()}`,
-    inputParameters: undefined,
     ...DEFAULT_TASK_OPTIONS,
   };
 }
@@ -137,7 +154,113 @@ function createForkTask(): ForkTask {
     type: 'FORK_JOIN',
     taskReferenceName: `forkTaskRef_${uuid()}`,
     forkTasks: [],
-    inputParameters: undefined,
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
+
+function createJoinTask(): JoinTask {
+  return {
+    id: uuid(),
+    name: 'joinTask',
+    type: 'JOIN',
+    taskReferenceName: `joinTaskRef_${uuid()}`,
+    joinOn: [],
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
+
+function createWhileTask(): WhileTask {
+  return {
+    id: uuid(),
+    name: 'whileTask',
+    type: 'DO_WHILE',
+    taskReferenceName: `whileTaskRef_${uuid()}`,
+    loopOver: [],
+    loopCondition: '',
+    inputParameters: {
+      iterations: 3,
+    },
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
+
+function createWhileEndTask(): WhileEndTask {
+  return {
+    id: uuid(),
+    name: 'whileEndTask',
+    type: 'WHILE_END',
+    taskReferenceName: `whileEndTaskRef_${uuid()}`,
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
+
+function createDecisionTask(): DecisionTask {
+  return {
+    id: uuid(),
+    name: 'decisionTask',
+    type: 'DECISION',
+    taskReferenceName: `decisionTaskRef_${uuid()}`,
+    caseValueParam: '',
+    decisionCases: {
+      true: [],
+    },
+    defaultCase: [],
+    inputParameters: {
+      param: 'true',
+    },
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
+
+function createTerminateTask(): TerminateTask {
+  return {
+    id: uuid(),
+    name: 'terminateTask',
+    type: 'TERMINATE',
+    taskReferenceName: `terminateTaskRef_${uuid()}`,
+    inputParameters: {
+      terminationStatus: 'COMPLETED',
+      workflowOutput: 'Expected workflow output',
+    },
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
+
+function createEventTask(): EventTask {
+  return {
+    id: uuid(),
+    name: 'eventTask',
+    type: 'EVENT',
+    taskReferenceName: `eventTaskRef_${uuid()}`,
+    sink: 'conductor',
+    inputParameters: {
+      targetWorkflowId: '${workflow.input.targetWorkflowId}',
+      targetTaskRefName: '${workflow.input.targetTaskRefName}',
+      action: 'complete_task',
+    },
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
+
+function createWaitTask(): WaitTask {
+  return {
+    id: uuid(),
+    name: 'waitTask',
+    type: 'WAIT',
+    taskReferenceName: `waitTaskRef_${uuid()}`,
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
+
+function createRawTask(): RawTask {
+  return {
+    id: uuid(),
+    name: 'rawTask',
+    type: 'RAW',
+    taskReferenceName: `rawTaskRef_${uuid()}`,
+    inputParameters: {
+      raw: '',
+    },
     ...DEFAULT_TASK_OPTIONS,
   };
 }
@@ -160,6 +283,22 @@ export function createTask(taskLabel: string): Task {
       return createStartEndTask('END');
     case 'FORK':
       return createForkTask();
+    case 'JOIN':
+      return createJoinTask();
+    case 'WHILE':
+      return createWhileTask();
+    case 'WHILE END':
+      return createWhileEndTask();
+    case 'DECISION':
+      return createDecisionTask();
+    case 'TERMINATE':
+      return createTerminateTask();
+    case 'EVENT':
+      return createEventTask();
+    case 'WAIT':
+      return createWaitTask();
+    case 'RAW':
+      return createRawTask();
     default:
       throw new Error('should never happen');
   }
