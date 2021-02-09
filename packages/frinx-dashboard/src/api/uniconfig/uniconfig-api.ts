@@ -20,20 +20,14 @@ import {
 const BASE_CLI_URL = '/rests/data/network-topology:network-topology/topology=cli';
 const BASE_NETCONF_URL = '/rests/data/network-topology:network-topology/topology=topology-netconf';
 
-const CLI_TOPOLOGY_URL = BASE_CLI_URL + '?content=nonconfig';
-const NETCONF_TOPOLOGY_URL = BASE_NETCONF_URL + '?content=nonconfig';
-
-const CLI_OPER_URL = (nodeId: string) => BASE_CLI_URL + '/node=' + nodeId + '?content=nonconfig';
-const CLI_CONF_URL = (nodeId: string) => BASE_CLI_URL + '/node=' + nodeId + '?content=config';
-
-const NETCONF_OPER_URL = (nodeId: string) => BASE_NETCONF_URL + '/node=' + nodeId + '?content=nonconfig';
-const NETCONF_CONF_URL = (nodeId: string) => BASE_NETCONF_URL + '/node=' + nodeId + '?content=config';
+const CLI_TOPOLOGY_URL = `${BASE_CLI_URL}?content=nonconfig`;
+const NETCONF_TOPOLOGY_URL = `${BASE_NETCONF_URL}?content=nonconfig`;
 
 const GET_SUPPORTED_DEVICES_URL =
   '/rests/data/cli-translate-registry:available-cli-device-translations?content=nonconfig&depth=3';
 
 export async function getCliOperationalDataStore(nodeId: string): Promise<CliOperationalDataStore> {
-  const datastore = await sendGetRequest(CLI_OPER_URL(nodeId));
+  const datastore = await sendGetRequest(`${BASE_CLI_URL}/node=${nodeId}?content=nonconfig`);
 
   if (isCliOperationalDataStore(datastore)) {
     return datastore;
@@ -43,7 +37,7 @@ export async function getCliOperationalDataStore(nodeId: string): Promise<CliOpe
 }
 
 export async function getNetconfOperationalDataStore(nodeId: string): Promise<NetconfOperationalDataStore> {
-  const datastore = await sendGetRequest(NETCONF_OPER_URL(nodeId));
+  const datastore = await sendGetRequest(`${BASE_NETCONF_URL}/node=${nodeId}?content=nonconfig`);
 
   if (isNetconfOperationalDataStore(datastore)) {
     return datastore;
@@ -53,7 +47,7 @@ export async function getNetconfOperationalDataStore(nodeId: string): Promise<Ne
 }
 
 export async function getCliConfigurationalDataStore(nodeId: string): Promise<CliConfigurationalDataStore> {
-  const datastore = await sendGetRequest(CLI_CONF_URL(nodeId));
+  const datastore = await sendGetRequest(`${BASE_CLI_URL}/node=${nodeId}?content=config`);
 
   if (isCliConfigurationalDataStore(datastore)) {
     return datastore;
@@ -63,7 +57,7 @@ export async function getCliConfigurationalDataStore(nodeId: string): Promise<Cl
 }
 
 export async function getNetconfConfigurationalDataStore(nodeId: string): Promise<NetconfConfigurationalDataStore> {
-  const datastore = await sendGetRequest(NETCONF_CONF_URL(nodeId));
+  const datastore = await sendGetRequest(`${BASE_NETCONF_URL}/node=${nodeId}?content=config`);
 
   if (isNetconfConfigurationalDataStore(datastore)) {
     return datastore;

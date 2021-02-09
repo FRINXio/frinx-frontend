@@ -9,40 +9,28 @@ import {
 
 export function isCliOperationalDataStore(datastore: unknown): datastore is CliOperationalDataStore {
   if (datastore !== null && typeof datastore === 'object') {
-    return (
-      'node-id' in datastore! &&
-      typeof datastore['node-id'] === 'string'
-    );
+    return 'node-id' in datastore! && typeof datastore['node-id'] === 'string';
   }
   return false;
 }
 
 export function isNetconfOperationalDataStore(datastore: unknown): datastore is NetconfOperationalDataStore {
   if (datastore !== null && typeof datastore === 'object') {
-    return (
-      'node-id' in datastore! &&
-      typeof datastore['node-id'] === 'string'
-    );
+    return 'node-id' in datastore! && typeof datastore['node-id'] === 'string';
   }
   return false;
 }
 
 export function isCliConfigurationalDataStore(datastore: unknown): datastore is CliConfigurationalDataStore {
   if (datastore !== null && typeof datastore === 'object') {
-    return (
-      'node-id' in datastore! &&
-      typeof datastore['node-id'] === 'string'
-    );
+    return 'node-id' in datastore! && typeof datastore['node-id'] === 'string';
   }
   return false;
 }
 
 export function isNetconfConfigurationalDataStore(datastore: unknown): datastore is NetconfConfigurationalDataStore {
   if (datastore !== null && typeof datastore === 'object') {
-    return (
-      'node-id' in datastore! &&
-      typeof datastore['node-id'] === 'string'
-    );
+    return 'node-id' in datastore! && typeof datastore['node-id'] === 'string';
   }
   return false;
 }
