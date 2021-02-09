@@ -44,6 +44,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const [dependencyModal, setDependencyModal] = useState(false);
   const [schedulingModal, setSchedulingModal] = useState(false);
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+  const [workflowListViewModal, setWorkflowListViewModal] = useState(false);
   const [allLabels, setAllLabels] = useState([]);
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
 
@@ -172,6 +173,13 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
         <Button title="Diagram" basic circular icon="fork" onClick={() => showDiagramModal(dataset)} />
         <Button title="Definition" basic circular icon="file code" onClick={() => showDefinitionModal(dataset)} />
         <Button
+          title="Workflow List"
+          basic
+          circular
+          icon="list ul"
+          onClick={() => showWorkflowListViewModal(dataset)}
+        />
+        <Button
           title="Edit"
           basic
           circular
@@ -282,6 +290,11 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     setActiveWf(workflow);
   };
 
+  const showWorkflowListViewModal = workflow => {
+    setWorkflowListViewModal(!workflowListViewModal);
+    setActiveWf(workflow);
+  };
+
   const getActiveWfScheduleName = () => {
     if (activeWf != null && activeWf.expectedScheduleName != null) {
       return activeWf.expectedScheduleName;
@@ -309,6 +322,18 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
 
   const renderDiagramModal = () => {
     return diagramModal ? <DiagramModal wf={activeWf} modalHandler={showDiagramModal} show={diagramModal} /> : null;
+  };
+
+  const renderWorkflowListViewModal = () => {
+    return workflowListViewModal ? (
+      <WorkflowListViewModal
+        wf={activeWf}
+        modalHandler={showWorkflowListViewModal}
+        show={workflowListViewModal}
+        data={data}
+        onDefinitionClick={onDefinitionClick}
+      />
+    ) : null;
   };
 
   const renderSchedulingModal = () => {
@@ -362,6 +387,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
       {renderDependencyModal()}
       {renderSchedulingModal()}
       {renderConfirmDeleteModal()}
+      {renderWorkflowListViewModal()}
       <Row>
         <Button
           primary
