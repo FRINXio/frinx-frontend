@@ -16,7 +16,7 @@ const HIDDEN = [
   'inputParameters',
   'defaultCase',
   'loopOver',
-  'description'
+  'description',
 ];
 
 const GeneralTab = (props) => {
@@ -60,13 +60,13 @@ const GeneralTab = (props) => {
     </Form.Group>
   );
 
-  const renderDescription = item => (
+  const renderDescription = (item) => (
     <Form.Group>
       <InputGroup>
         <InputGroup.Prepend>
           <InputGroup.Text>description:</InputGroup.Text>
         </InputGroup.Prepend>
-        <Form.Control type="input" onChange={e => props.handleInput(e.target.value, ['description'])} value={item} />
+        <Form.Control type="input" onChange={(e) => props.handleInput(e.target.value, ['description'])} value={item} />
       </InputGroup>
       <Form.Text className="text-muted">{taskDescriptions['description']}</Form.Text>
     </Form.Group>

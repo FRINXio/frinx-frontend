@@ -6,7 +6,7 @@ import OutputParamsTab from './OutputParamsTab';
 import GeneralParamsTab from './GeneralParamsTab';
 import { jsonParse } from '../../../common/utils';
 
-const GeneralInfoModal = props => {
+const GeneralInfoModal = (props) => {
   const [isWfNameValid, setWfNameValid] = useState(false);
   const [finalWorkflow, setFinalWf] = useState(props.finalWorkflow);
   const isNameLocked = props.isWfNameLocked;
@@ -21,7 +21,7 @@ const GeneralInfoModal = props => {
     props.closeModal();
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     if (props.isWfNameLocked || isWfNameValid) {
       handleSave();
     } else {
@@ -59,11 +59,11 @@ const GeneralInfoModal = props => {
     setFinalWf(finalWf);
   };
 
-  const validateWorkflowName = name => {
+  const validateWorkflowName = (name) => {
     let isValid = name.length >= 1;
     let workflows = props.workflows || [];
 
-    workflows.forEach(wf => {
+    workflows.forEach((wf) => {
       if (wf.name === name) {
         isValid = false;
       }
@@ -74,7 +74,7 @@ const GeneralInfoModal = props => {
   const getExistingLabels = () => {
     let workflows = props.workflows || [];
     let labels = [];
-    workflows.forEach(wf => {
+    workflows.forEach((wf) => {
       let wfLabels = jsonParse(wf.description)?.labels;
       if (wfLabels) {
         labels.push(...wfLabels);
@@ -98,7 +98,7 @@ const GeneralInfoModal = props => {
     setFinalWf(finalWf);
   };
 
-  const handleCustomParam = param => {
+  const handleCustomParam = (param) => {
     let finalWf = { ...finalWorkflow };
     let outputParameters = finalWf.outputParameters;
 
@@ -120,7 +120,7 @@ const GeneralInfoModal = props => {
     delete paramObj.label;
 
     if (key === 'options') {
-      value = value.split(',').map(e => {
+      value = value.split(',').map((e) => {
         if (e === 'true' || e === 'false') {
           return e == 'true';
         }
@@ -153,7 +153,7 @@ const GeneralInfoModal = props => {
     setFinalWf(finalWf);
   };
 
-  const deleteOutputParam = selectedParam => {
+  const deleteOutputParam = (selectedParam) => {
     let finalWf = { ...finalWorkflow };
     let outputParameters = finalWf.outputParameters || [];
 

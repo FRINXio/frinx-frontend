@@ -6,7 +6,7 @@ import { jsonParse } from '../../../../common/utils.js';
 import { hash } from '../../../diagramBuilder/builder-utils';
 
 function createWorkflowTree(tasks, allWorkflows) {
-  return tasks.map(task => {
+  return tasks.map((task) => {
     return {
       name: task.name,
       taskReferenceName: task.taskReferenceName,
@@ -30,7 +30,7 @@ function getSubTasks(task, allWorkflows) {
     const nonDefaultCaseNames = Object.keys(decisionCases);
 
     const decisionBranches = [
-      ...nonDefaultCaseNames.map(name => {
+      ...nonDefaultCaseNames.map((name) => {
         return {
           name: name,
           tasks: decisionCases[name],
@@ -42,7 +42,7 @@ function getSubTasks(task, allWorkflows) {
       },
     ];
 
-    return decisionBranches.map(branch => {
+    return decisionBranches.map((branch) => {
       return {
         name: branch.name,
         // we need to create unique ID to be able to expand/hide the branch in tree
@@ -68,7 +68,7 @@ function getSubTasks(task, allWorkflows) {
   return [];
 }
 
-const WorkflowListViewModal = props => {
+const WorkflowListViewModal = (props) => {
   const [workflowTree, setWorkflowTree] = useState([]);
   const [expandedTasks, setExpandedTasks] = useState([]);
 
@@ -80,9 +80,9 @@ const WorkflowListViewModal = props => {
 
   function expandHideTask(task) {
     if (expandedTasks.includes(task.taskReferenceName)) {
-      setExpandedTasks(oldArray => oldArray.filter(item => item !== task.taskReferenceName));
+      setExpandedTasks((oldArray) => oldArray.filter((item) => item !== task.taskReferenceName));
     } else {
-      setExpandedTasks(oldArray => [...oldArray, task.taskReferenceName]);
+      setExpandedTasks((oldArray) => [...oldArray, task.taskReferenceName]);
     }
   }
 
@@ -137,7 +137,7 @@ const WorkflowListViewModal = props => {
             <List.Header>{renderHeader(task)}</List.Header>
             <List.Description>{task?.description}</List.Description>
             {expandedTasks.includes(task.taskReferenceName) && (
-              <List.List>{task.subtasks.map(st => renderSubtasks(st))}</List.List>
+              <List.List>{task.subtasks.map((st) => renderSubtasks(st))}</List.List>
             )}
           </List.Content>
         </List.Item>
@@ -155,7 +155,7 @@ const WorkflowListViewModal = props => {
     );
   }
 
-  const renderWorkflowAsTree = () => <List>{workflowTree.map(t => renderSubtasks(t))}</List>;
+  const renderWorkflowAsTree = () => <List>{workflowTree.map((t) => renderSubtasks(t))}</List>;
 
   return (
     <Modal size="lg" dialogClassName="modal-70w" show={props.show} onHide={props.modalHandler}>

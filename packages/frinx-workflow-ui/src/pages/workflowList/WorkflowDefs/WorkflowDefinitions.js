@@ -290,7 +290,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     setActiveWf(workflow);
   };
 
-  const showWorkflowListViewModal = workflow => {
+  const showWorkflowListViewModal = (workflow) => {
     setWorkflowListViewModal(!workflowListViewModal);
     setActiveWf(workflow);
   };

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, Menu } from 'semantic-ui-react';
 
-const getDescription = wfObject => {
+const getDescription = (wfObject) => {
   if (!wfObject?.description) {
     return null;
   }
@@ -14,7 +14,7 @@ const getDescription = wfObject => {
   }
 };
 
-const SideMenuItem = props => {
+const SideMenuItem = (props) => {
   const description = getDescription(props.model.wfObject);
 
   return (
@@ -24,7 +24,7 @@ const SideMenuItem = props => {
       fluid
       as={Card}
       draggable={true}
-      onDragStart={e => {
+      onDragStart={(e) => {
         e.dataTransfer.setData('storm-diagram-node', JSON.stringify(props.model));
       }}
       style={{ cursor: 'grab', backgroundColor: 'white' }}
