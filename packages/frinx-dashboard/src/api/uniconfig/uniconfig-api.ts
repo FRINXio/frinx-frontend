@@ -67,13 +67,13 @@ export async function getNetconfConfigurationalDataStore(nodeId: string): Promis
 }
 
 export async function mountCliNode(nodeId: string, payload: MountPayload): Promise<unknown> {
-  const datastore = await sendPutRequest(BASE_CLI_URL + '/node=' + nodeId, payload);
+  const datastore = await sendPutRequest(`${BASE_CLI_URL}/node=${nodeId}`, payload);
 
   return datastore;
 }
 
 export async function unmountCliNode(nodeId: string): Promise<unknown> {
-  const datastore = await sendDeleteRequest(BASE_CLI_URL + '/node=' + nodeId);
+  const datastore = await sendDeleteRequest(`${BASE_CLI_URL}/node=${nodeId}`);
 
   return datastore;
 }
