@@ -32,7 +32,7 @@ export async function getSchedules(): Promise<unknown> {
 // TODO: types, guards
 // Get workflow schedule
 export async function getSchedule(name: string): Promise<unknown> {
-  const scheduled = await sendGetRequest('/schedule/' + name);
+  const scheduled = await sendGetRequest(`/schedule/${name}`);
 
   return scheduled;
 }
@@ -40,7 +40,7 @@ export async function getSchedule(name: string): Promise<unknown> {
 // TODO: types, guards
 // Register workflow schedule
 export async function registerSchedule(name: string, schedule: unknown): Promise<unknown> {
-  const scheduled = await sendPutRequest('/schedule/' + name, schedule);
+  const scheduled = await sendPutRequest(`/schedule/${name}`, schedule);
 
   return scheduled;
 }
@@ -48,7 +48,7 @@ export async function registerSchedule(name: string, schedule: unknown): Promise
 // TODO: types, guards
 // Delete workflow schedule
 export async function deleteSchedule(name: string): Promise<unknown> {
-  const scheduled = await sendDeleteRequest('/schedule/' + name);
+  const scheduled = await sendDeleteRequest(`/schedule/${name}`);
 
   return scheduled;
 }
@@ -76,7 +76,7 @@ export async function getTaskDefinitions(): Promise<TaskDefinition[]> {
 
 // Get a task definition
 export async function getTaskDefinition(name: string): Promise<TaskDefinition> {
-  const response = await sendGetRequest('/metadata/taskdef/' + name);
+  const response = await sendGetRequest(`/metadata/taskdef/${name}`);
   const definition = (response as { result: unknown }).result;
 
   if (isTaskDefinition(definition)) {
@@ -89,7 +89,7 @@ export async function getTaskDefinition(name: string): Promise<TaskDefinition> {
 // Delete a task definition
 export async function deleteTaskDefinition(name: string): Promise<TaskDefinition> {
   const query = '?archiveWorfklow=false';
-  const definition = await sendDeleteRequest('/metadata/taskdef/' + name + query);
+  const definition = await sendDeleteRequest(`/metadata/taskdef/${name}${query}`);
 
   return definition as TaskDefinition;
 }
@@ -142,7 +142,7 @@ export async function registerEventListener(eventListener: EventListener): Promi
 // Delete event listener
 export async function deleteEventListener(name: string): Promise<EventListener> {
   const query = '?archiveWorfklow=false';
-  const eventListenerRes = await sendDeleteRequest('/event/' + name + query);
+  const eventListenerRes = await sendDeleteRequest(`/event/${name}${query}`);
 
   return eventListenerRes as EventListener;
 }
@@ -161,10 +161,7 @@ export async function getQueues(): Promise<Queue[]> {
 
 // TODO: Just copy-pasted for now, needs rework in uniflow-api
 // Returns list of running workflows
-export async function getWorkflowExecutions(query: string, start?: number, size?: string): Promise<unknown> {
-  query = query || 'status:"RUNNING"';
-  start = start || 0;
-  size = size || '';
+export async function getWorkflowExecutions(query = 'status:"RUNNING"', start = 0, size = ''): Promise<unknown> {
   const executions = sendGetRequest(`/executions/?q=&h=&freeText=${query}&start=${start}&size=${size}`);
 
   return executions;
@@ -185,7 +182,7 @@ export async function getWorkflowExecutionsHierarchical(
 // TODO: needs rework in uniflow-api
 // Get detail of existing instance of workflow
 export async function getWorkflowInstanceDetail(workflowId: number): Promise<unknown> {
-  const workflowDetails = sendGetRequest('/id/' + workflowId);
+  const workflowDetails = sendGetRequest(`/id/${workflowId}`);
 
   return workflowDetails;
 }
@@ -229,7 +226,7 @@ export async function restartWorkflows(workflowIds: string[]): Promise<string[]>
 }
 
 export async function deleteWorkflowInstance(workflowId: string): Promise<string> {
-  const workflowIdRes = await sendDeleteRequest('/workflow/' + workflowId);
+  const workflowIdRes = await sendDeleteRequest(`/workflow/${workflowId}`);
 
   return workflowIdRes as string;
 }
