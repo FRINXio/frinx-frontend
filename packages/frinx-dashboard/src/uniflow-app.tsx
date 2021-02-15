@@ -1,31 +1,3 @@
-import {
-  getWorkflows,
-  getWorkflow,
-  getTaskDefinitions,
-  getTaskDefinition,
-  registerTaskDefinition,
-  deleteTaskDefinition,
-  registerEventListener,
-  putWorkflow,
-  getEventListeners,
-  deleteEventListener,
-  getQueues,
-  deleteWorkflow,
-  getWorkflowExecutions,
-  getWorkflowInstanceDetail,
-  executeWorkflow,
-  getWorkflowExecutionsHierarchical,
-  terminateWorkflows,
-  pauseWorkflows,
-  resumeWorkflows,
-  retryWorkflows,
-  restartWorkflows,
-  deleteWorkflowInstance,
-  getSchedules,
-  deleteSchedule,
-  getSchedule,
-  registerSchedule,
-} from './api/uniflow/uniflow-api';
 import React, { FC, useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
 import {
@@ -56,35 +28,6 @@ import {
   getSchedule,
   registerSchedule,
 } from './api/uniflow/uniflow-api';
-
-const callbacks = {
-  getWorkflows,
-  getWorkflow,
-  getTaskDefinitions,
-  getTaskDefinition,
-  registerTaskDefinition,
-  deleteTaskDefinition,
-  registerEventListener,
-  putWorkflow,
-  getEventListeners,
-  deleteEventListener,
-  getQueues,
-  deleteWorkflow,
-  getWorkflowExecutions,
-  getWorkflowInstanceDetail,
-  executeWorkflow,
-  getWorkflowExecutionsHierarchical,
-  terminateWorkflows,
-  pauseWorkflows,
-  resumeWorkflows,
-  retryWorkflows,
-  restartWorkflows,
-  deleteWorkflowInstance,
-  getSchedules,
-  deleteSchedule,
-  getSchedule,
-  registerSchedule,
-};
 
 const callbacks = {
   getWorkflows,
