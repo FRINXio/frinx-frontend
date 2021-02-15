@@ -77,7 +77,7 @@ export type InputParameters =
   | DynamicForkInputParams;
 
 export type WorkflowPayload = {
-  input: any;
+  input: unknown;
   name: string;
   version: number;
 };
@@ -118,22 +118,19 @@ export type ActionTypes = 'complete_task' | 'fail_task';
 export type ActionTargetTask = {
   workflowId: string;
   taskRefName: string;
-  output?: any;
+  output?: unknown;
 };
 
 export type ActionTargetWorkflow = {
   workflowId: string;
   taskRefName: string;
-  output?: any;
+  output?: unknown;
 };
 
 export type Action = {
   action: string;
   expandInLineJson: boolean;
-} & (
-  | { [key in ActionTypes]: ActionTargetTask }
-  | { start_workflow: ActionTargetWorkflow }
-);
+} & ({ [key in ActionTypes]: ActionTargetTask } | { start_workflow: ActionTargetWorkflow });
 
 export type EventListener = {
   name: string;

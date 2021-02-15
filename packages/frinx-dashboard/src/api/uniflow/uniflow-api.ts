@@ -1,13 +1,19 @@
 import { Workflow, TaskDefinition, Queue, WorkflowPayload, EventListener } from '../../helpers/types/uniflow-types';
 import { sendGetRequest, sendPostRequest, sendPutRequest, sendDeleteRequest } from './api-helpers';
-import { isArrayTypeOf, isEventListener, isQueue, isTaskDefinition, isWorkflow } from '../../helpers/types/uniflow-type-guards';
+import {
+  isArrayTypeOf,
+  isEventListener,
+  isQueue,
+  isTaskDefinition,
+  isWorkflow,
+} from '../../helpers/types/uniflow-type-guards';
 
 // Get all the workflow definitions
 export async function getWorkflows(): Promise<Workflow[]> {
   const workflows = await sendGetRequest('/metadata/workflow');
 
   if (isArrayTypeOf<Workflow>(workflows, isWorkflow)) {
-    return workflows
+    return workflows;
   }
 
   throw new Error(`Expected Workflow[], got '${JSON.stringify(workflows)}'.`);
@@ -18,7 +24,7 @@ export async function getScheduledWorkflows(): Promise<Workflow[]> {
   const scheduled = await sendGetRequest('/schedule/metadata/workflow');
 
   if (isArrayTypeOf<Workflow>(scheduled, isWorkflow)) {
-    return scheduled
+    return scheduled;
   }
 
   throw new Error(`Expected Workflow[], got '${JSON.stringify(scheduled)}'.`);
@@ -37,7 +43,7 @@ export async function getTaskDefinitions(): Promise<TaskDefinition[]> {
   const definitions = await sendGetRequest('/metadata/taskdefs');
 
   if (isArrayTypeOf<TaskDefinition>(definitions, isTaskDefinition)) {
-    return definitions
+    return definitions;
   }
 
   throw new Error(`Expected TaskDefinitions[], got '${JSON.stringify(definitions)}'.`);
@@ -64,17 +70,17 @@ export async function deleteTaskDefinition(name: string): Promise<TaskDefinition
 
 // Returns single workflow based on name and version
 export async function getWorkflow(name: string, version: number): Promise<Workflow> {
-  const workflow = await sendGetRequest(`/metadata/workflow/${name}/${version}`);
-
-  if (isWorkflow(workflow)) {
-    return workflow;
+  const data = await sendGetRequest(`/metadata/workflow/${name}/${version}`);
+  console.log(data)
+  if (isWorkflow(data.result)) {
+    return data.result;
   }
 
-  throw new Error(`Expected Workflow, got '${JSON.stringify(workflow)}'.`);
+  throw new Error(`Expected Workflow, got '${JSON.stringify(data.result)}'.`);
 }
 
 // Register/Update new workflows
-export async function putWorkflow(workflows: Array<Workflow>): Promise<Workflow[]> {
+export async function putWorkflow(workflows: Workflow[]): Promise<Workflow[]> {
   const workflow = await sendPutRequest('/metadata/', workflows);
 
   return workflow as Workflow[];
@@ -85,9 +91,9 @@ export async function getEventListeners(): Promise<EventListener[]> {
   const eventListeners = await sendGetRequest('/event');
 
   if (isArrayTypeOf<EventListener>(eventListeners, isEventListener)) {
-    return eventListeners
+    return eventListeners;
   }
-  
+
   throw new Error(`Expected EventListener[], got '${JSON.stringify(eventListeners)}'.`);
 }
 
@@ -111,7 +117,7 @@ export async function getQueues(): Promise<Queue[]> {
   const queues = await sendGetRequest('/queue/data');
 
   if (isArrayTypeOf<Queue>(queues, isQueue)) {
-    return queues
+    return queues;
   }
 
   throw new Error(`Expected Queue[], got '${JSON.stringify(queues)}'.`);
@@ -129,7 +135,7 @@ export async function getWorkflowExecutions(query: string): Promise<unknown> {
 // TODO: needs rework in uniflow-api
 // Get detail of existing instance of workflow
 export async function getWorkflowInstanceDetail(workflowId: number): Promise<unknown> {
-  const workflowDetails = sendGetRequest('/id/' + workflowId);
+  const workflowDetails = sendGetRequest(`/id/${workflowId}`);
 
   return workflowDetails;
 }

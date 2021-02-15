@@ -1,5 +1,5 @@
 // TODO dynamic source of url
-const CONDUCTOR_API_URL: string = 'localhost:8080/api';
+const CONDUCTOR_API_URL = 'http://frinx_test.frinx.services/workflow/proxy';
 
 export async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
   const url = `${CONDUCTOR_API_URL}${path}`;

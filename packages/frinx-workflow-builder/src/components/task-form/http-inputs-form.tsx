@@ -6,11 +6,10 @@ import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-textmate';
 import 'ace-builds/src-noconflict/ext-language_tools';
-import unwrap from '../../helpers/unwrap';
 
 type Props = {
   params: HTTPInputParams;
-  onChange: (p: RecursivePartial<HTTPInputParams>) => void;
+  onChange: (p: HTTPInputParams) => void;
 };
 
 function getBodyFromRequest(params: HTTPInputParams): string | null {
@@ -36,7 +35,9 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
           onChange={(event) => {
             event.persist();
             onChange({
+              ...params,
               http_request: {
+                ...params.http_request,
                 uri: event.target.value,
               },
             });
@@ -52,7 +53,9 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
           onChange={(event) => {
             event.persist();
             onChange({
+              ...params,
               http_request: {
+                ...params.http_request,
                 // we can safely cast this
                 method: event.target.value as HTTPMethod,
               },
@@ -75,7 +78,9 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
           onChange={(event) => {
             event.persist();
             onChange({
+              ...params,
               http_request: {
+                ...params.http_request,
                 contentType: event.target.value,
               },
             });
@@ -92,7 +97,9 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
             onChange={(event) => {
               event.persist();
               onChange({
+                ...params,
                 http_request: {
+                  ...params.http_request,
                   timeout: Number(event.target.value),
                 },
               });
@@ -110,7 +117,9 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
           value={JSON.stringify(headers, null, 2)}
           onChange={(value) => {
             onChange({
+              ...params,
               http_request: {
+                ...params.http_request,
                 headers: JSON.parse(value),
               },
             });
@@ -135,7 +144,9 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
             value={body ?? ''}
             onChange={(value) => {
               onChange({
+                ...params,
                 http_request: {
+                  ...params.http_request,
                   body: value,
                 },
               });

@@ -1,6 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import { createElement } from 'react';
 import { render } from 'react-dom';
+import { Task, Workflow } from './helpers/types';
 import Root from './root';
 
 const mountElement = document.querySelector('#root');
@@ -11,10 +12,10 @@ if (mountElement == null) {
 
 const hash = () => Math.random().toString(36).toUpperCase().substr(2, 4);
 
-const workflow = {
+const workflow: Workflow = {
   updateTime: 1607938645688,
   name: 'test test',
-  description: '',
+  description: 'sample description',
   version: 1,
   tasks: [
     {
@@ -34,15 +35,9 @@ const workflow = {
         },
       },
       type: 'SIMPLE',
-      decisionCases: {},
-      defaultCase: [],
-      forkTasks: [],
       startDelay: 0,
-      joinOn: [],
       optional: false,
-      defaultExclusiveJoinTask: [],
       asyncComplete: false,
-      loopOver: [],
     },
     {
       name: 'GLOBAL___js',
@@ -88,7 +83,6 @@ return {testvalue: false};
       optional: false,
       defaultExclusiveJoinTask: [],
       asyncComplete: false,
-      loopOver: [],
     },
   ],
   inputParameters: [],

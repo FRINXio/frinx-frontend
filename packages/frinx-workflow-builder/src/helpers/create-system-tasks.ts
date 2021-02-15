@@ -50,5 +50,8 @@ export default function createSystemTasks(): ListedTask[] {
     {
       label: 'RAW',
     },
+    {
+      label: 'DYNAMIC FORK',
+    },
   ];
 }

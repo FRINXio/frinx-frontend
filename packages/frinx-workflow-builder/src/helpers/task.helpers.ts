@@ -17,6 +17,7 @@ import {
   EventTask,
   WaitTask,
   RawTask,
+  DynamicForkTask,
 } from './types';
 
 const DEFAULT_TASK_OPTIONS: Pick<
@@ -105,7 +106,7 @@ function createJSTask(): JSPythonTask {
 function createPYTask(): JSPythonTask {
   return {
     id: uuid(),
-    name: 'GLOBAL__JS',
+    name: 'GLOBAL__PY',
     type: 'SIMPLE',
     taskReferenceName: `lambdaJsTaskRef_${uuid()}`,
     inputParameters: {
@@ -200,13 +201,14 @@ function createDecisionTask(): DecisionTask {
     name: 'decisionTask',
     type: 'DECISION',
     taskReferenceName: `decisionTaskRef_${uuid()}`,
-    caseValueParam: '',
+    caseValueParam: 'param',
     decisionCases: {
       true: [],
     },
     defaultCase: [],
     inputParameters: {
       param: 'true',
+      foo: 'bar',
     },
     ...DEFAULT_TASK_OPTIONS,
   };
@@ -265,6 +267,26 @@ function createRawTask(): RawTask {
   };
 }
 
+function createDynamicForkTask(): DynamicForkTask {
+  return {
+    id: uuid(),
+    name: 'dynamicForkTask',
+    type: 'SUB_WORKFLOW',
+    taskReferenceName: `dynamicForkTaskRef_${uuid()}`,
+    inputParameters: {
+      expectedName: '${workflow.input.expectedName}',
+      expectedType: 'SIMPLE',
+      dynamic_tasks: '${workflow.input.dynamic_tasks}',
+      dynamic_tasks_i: '${workflow.input.dynamic_tasks_i}',
+    },
+    subWorkflowParam: {
+      name: 'Dynamic_fork',
+      version: 1,
+    },
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
+
 export function createTask(taskLabel: string): Task {
   switch (taskLabel) {
     case 'HTTP':
@@ -299,6 +321,8 @@ export function createTask(taskLabel: string): Task {
       return createWaitTask();
     case 'RAW':
       return createRawTask();
+    case 'DYNAMIC FORK':
+      return createDynamicForkTask();
     default:
       throw new Error('should never happen');
   }

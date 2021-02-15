@@ -17,9 +17,6 @@ const WorkflowNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
       overflow="hidden"
       boxShadow={data?.isSelected ? undefined : 'base'}
       borderRadius="md"
-      _hover={{
-        boxShadow: 'md',
-      }}
     >
       <Flex px={2} py={3} fontSize="sm" fontWeight="medium" alignItems="center">
         <Heading as="h4" size="xs" isTruncated>
@@ -43,56 +40,46 @@ const WorkflowNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
       <Flex background="gray.100">
         {inputs?.map((port) => {
           return React.cloneElement(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             port,
             {
               style: {
+                background: theme.colors.gray[200],
+                width: theme.space[12],
+                height: theme.space[6],
+                fontSize: theme.fontSizes.xs,
+                color: theme.colors.gray[700],
                 marginRight: 'auto',
-              },
-            },
-            React.createElement(
-              Flex,
-              {
-                background: 'gray.200',
-                fontSize: 'xs',
-                color: 'gray.700',
-                width: 12,
-                height: 6,
+                display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 textTransform: 'uppercase',
-                _hover: {
-                  background: 'gray.300',
-                },
               },
-              'in',
-            ),
+            },
+            'in',
           );
         })}
         {outputs?.map((port) => {
           return React.cloneElement(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             port,
             {
               style: {
+                background: theme.colors.gray[200],
+                width: theme.space[12],
+                height: theme.space[6],
+                fontSize: theme.fontSizes.xs,
+                color: theme.colors.gray[600],
                 marginLeft: 'auto',
-              },
-            },
-            React.createElement(
-              Flex,
-              {
-                background: 'gray.200',
-                fontSize: 'xs',
-                color: 'gray.700',
-                width: 12,
-                height: 6,
+                display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 textTransform: 'uppercase',
-                _hover: {
-                  background: 'gray.300',
-                },
               },
-              'out',
-            ),
+            },
+            'out',
           );
         })}
       </Flex>

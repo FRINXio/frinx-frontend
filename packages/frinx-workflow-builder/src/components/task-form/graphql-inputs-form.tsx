@@ -9,7 +9,7 @@ import 'ace-builds/src-noconflict/ext-language_tools';
 
 type Props = {
   params: GraphQLInputParams;
-  onChange: (params: RecursivePartial<GraphQLInputParams>) => void;
+  onChange: (params: GraphQLInputParams) => void;
 };
 
 const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
@@ -28,7 +28,9 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
           onChange={(event) => {
             event.persist();
             onChange({
+              ...params,
               http_request: {
+                ...params.http_request,
                 uri: event.target.value,
               },
             });
@@ -54,7 +56,9 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
           onChange={(event) => {
             event.persist();
             onChange({
+              ...params,
               http_request: {
+                ...params.http_request,
                 contentType: event.target.value,
               },
             });
@@ -71,7 +75,9 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
             onChange={(event) => {
               event.persist();
               onChange({
+                ...params,
                 http_request: {
+                  ...params.http_request,
                   timeout: Number(event.target.value),
                 },
               });
@@ -89,7 +95,9 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
           value={JSON.stringify(headers, null, 2)}
           onChange={(value) => {
             onChange({
+              ...params,
               http_request: {
+                ...params.http_request,
                 headers: JSON.parse(value),
               },
             });
@@ -114,8 +122,11 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
           value={query}
           onChange={(value) => {
             onChange({
+              ...params,
               http_request: {
+                ...params.http_request,
                 body: {
+                  ...params.http_request.body,
                   query: value,
                 },
               },
@@ -141,8 +152,11 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
           value={JSON.stringify(variables, null, 2)}
           onChange={(value) => {
             onChange({
+              ...params,
               http_request: {
+                ...params.http_request,
                 body: {
+                  ...params.http_request.body,
                   variables: JSON.parse(value),
                 },
               },

@@ -13,6 +13,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/react-fontawesome": "^0.1.11",
+    "@frinx/workflow-builder": "^0.0.1",
     "@frinx/workflow-ui": "1.2.3",
     "@frinx/uniconfig-ui": "1.1.9",
     "@types/jest": "^26.0.15",

@@ -1,13 +1,17 @@
-import React, { FC, FormEvent, ReactNode } from 'react';
+import React, { FC, FormEvent, useEffect, useState } from 'react';
 import {
   Box,
   Button,
   Checkbox,
+  Divider,
   Flex,
   FormControl,
   FormHelperText,
   FormLabel,
+  HStack,
   Input,
+  InputGroup,
+  InputLeftAddon,
   Stack,
   Tab,
   TabList,
@@ -15,49 +19,38 @@ import {
   TabPanels,
   Tabs,
 } from '@chakra-ui/react';
-import { GraphQLInputParams, HTTPInputParams, InputParameters, LambdaInputParams, Task } from 'helpers/types';
-import HTTPInputsForm from './http-inputs-form';
-import LambdaInputsForm from './lambda-inputs-form';
-import GraphQLInputsForm from './graphql-inputs-form';
-import { useWorkflowContext } from '../../workflow-context';
+import { InputParameters, Task } from '../../helpers/types';
 import unwrap from '../../helpers/unwrap';
+import { renderInputParamForm } from './input-params-forms';
 
 type Props = {
   task: Task;
   onClose: () => void;
-  onFormSubmit: (values: unknown) => void;
+  onFormSubmit: (task: Task) => void;
 };
 
-const isHttpTaskInputParams = (params: InputParameters): params is HTTPInputParams => 'http_request' in params;
-const isLambdaTaskInputParams = (params: InputParameters): params is LambdaInputParams => 'lambdaValue' in params;
-const isGraphQLTaskInputParams = (params: InputParameters): params is GraphQLInputParams =>
-  'http_request' in params && 'body' in params.http_request && typeof params.http_request.body === 'object';
+const TaskForm: FC<Props> = ({ task, onClose, onFormSubmit }) => {
+  const [taskState, setTaskState] = useState(unwrap(task));
 
-function renderInputParamForm(
-  params: InputParameters | undefined,
-  setState: (p: RecursivePartial<InputParameters>) => void,
-): ReactNode | null {
-  if (params == null) {
-    return null;
-  }
-  if (isGraphQLTaskInputParams(params)) {
-    return <GraphQLInputsForm params={params} onChange={setState} />;
-  }
-  if (isHttpTaskInputParams(params)) {
-    return <HTTPInputsForm params={params} onChange={setState} />;
-  }
-  if (isLambdaTaskInputParams(params)) {
-    return <LambdaInputsForm params={params} onChange={setState} />;
-  }
-  return null;
-}
-
-const TaskForm: FC<Props> = ({ onClose, onFormSubmit }) => {
-  const { task, updateTask, updateInputParams } = useWorkflowContext();
-  const { taskReferenceName, startDelay, optional, inputParameters } = unwrap(task);
+  useEffect(() => {
+    setTaskState(task);
+  }, [task]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    onFormSubmit(taskState);
+  };
+
+  const handleUpdateInputParameters = (inputParameters: InputParameters) => {
+    setTaskState((t) => {
+      if ('inputParameters' in t) {
+        return {
+          ...t,
+          inputParameters,
+        };
+      }
+      return t;
+    });
   };
 
   return (
@@ -65,7 +58,7 @@ const TaskForm: FC<Props> = ({ onClose, onFormSubmit }) => {
       <Tabs size="md" variant="enclosed">
         <TabList>
           <Tab>General settings</Tab>
-          <Tab>Input parameters</Tab>
+          {'inputParameters' in taskState && <Tab>Input parameters</Tab>}
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -75,11 +68,13 @@ const TaskForm: FC<Props> = ({ onClose, onFormSubmit }) => {
                 variant="filled"
                 name="taskReferenceName"
                 type="text"
-                value={taskReferenceName}
+                value={taskState.taskReferenceName}
                 onChange={(event) => {
-                  updateTask({
+                  event.persist();
+                  setTaskState((t) => ({
+                    ...t,
                     taskReferenceName: event.target.value,
-                  });
+                  }));
                 }}
               />
               <FormHelperText>
@@ -93,11 +88,13 @@ const TaskForm: FC<Props> = ({ onClose, onFormSubmit }) => {
                   variant="filled"
                   name="startDelay"
                   type="text"
-                  value={startDelay}
+                  value={taskState.startDelay}
                   onChange={(event) => {
-                    updateTask({
+                    event.persist();
+                    setTaskState((t) => ({
+                      ...t,
                       startDelay: Number(event.target.value),
-                    });
+                    }));
                   }}
                 />
                 <FormHelperText>time period before task executes</FormHelperText>
@@ -107,11 +104,13 @@ const TaskForm: FC<Props> = ({ onClose, onFormSubmit }) => {
               <Flex alignItems="center">
                 <Checkbox
                   name="optional"
-                  isChecked={optional}
+                  isChecked={taskState.optional}
                   onChange={(event) => {
-                    updateTask({
+                    event.persist();
+                    setTaskState((t) => ({
+                      ...t,
                       optional: event.target.checked,
-                    });
+                    }));
                   }}
                   id="optional"
                 />
@@ -121,10 +120,57 @@ const TaskForm: FC<Props> = ({ onClose, onFormSubmit }) => {
               </Flex>
               <FormHelperText>when set to true - workflow continues even if the task fails.</FormHelperText>
             </FormControl>
+            {taskState.type === 'DECISION' && (
+              <>
+                <HStack spacing={2}>
+                  <FormControl>
+                    <InputGroup>
+                      <InputLeftAddon>if</InputLeftAddon>
+                      <Input
+                        type="text"
+                        value={taskState.caseValueParam}
+                        onChange={(event) => {
+                          event.persist();
+                          setTaskState((s) => {
+                            return {
+                              ...s,
+                              caseValueParam: event.target.value,
+                            };
+                          });
+                        }}
+                      />
+                    </InputGroup>
+                  </FormControl>
+                  <FormControl>
+                    <InputGroup>
+                      <InputLeftAddon>is equal to</InputLeftAddon>
+                      <Input
+                        type="text"
+                        value={Object.keys(taskState.decisionCases)[0]}
+                        onChange={(event) => {
+                          event.persist();
+                          setTaskState((s) => {
+                            return {
+                              ...s,
+                              decisionCases: {
+                                [event.target.value]: [],
+                              },
+                            };
+                          });
+                        }}
+                      />
+                    </InputGroup>
+                  </FormControl>
+                </HStack>
+              </>
+            )}
           </TabPanel>
-          <TabPanel>{renderInputParamForm(inputParameters, updateInputParams)}</TabPanel>
+          {'inputParameters' in taskState && (
+            <TabPanel>{renderInputParamForm(taskState, handleUpdateInputParameters)}</TabPanel>
+          )}
         </TabPanels>
       </Tabs>
+      <Divider />
       <Stack direction="row" spacing={2} align="center">
         <Button type="submit" colorScheme="blue">
           Save changes

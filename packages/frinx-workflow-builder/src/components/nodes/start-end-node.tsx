@@ -42,11 +42,24 @@ const BaseNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
               justifyContent="center"
               textTransform="uppercase"
               fontSize="xs"
+              position="relative"
               _hover={{
                 background: 'gray.300',
               }}
             >
-              {React.cloneElement(port, null, 'in')}
+              {React.cloneElement(
+                port,
+                {
+                  style: {
+                    position: 'absolute',
+                    inset: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  },
+                },
+                'in',
+              )}
             </Flex>
           );
         })}
@@ -64,11 +77,24 @@ const BaseNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
               justifyContent="center"
               textTransform="uppercase"
               fontSize="xs"
+              position="relative"
               _hover={{
                 background: 'gray.300',
               }}
             >
-              {React.cloneElement(port, null, 'out')}
+              {React.cloneElement(
+                port,
+                {
+                  style: {
+                    position: 'absolute',
+                    inset: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  },
+                },
+                'out',
+              )}
             </Flex>
           );
         })}

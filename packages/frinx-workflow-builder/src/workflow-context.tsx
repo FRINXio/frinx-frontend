@@ -35,10 +35,14 @@ export const TaskProvider: FC<Props> = ({ children, workflow }) => {
   const [workflowState] = useState<Workflow<TaskWithId>>(convertWorkflow(workflow));
   const [taskState, setTaskState] = useState<Task | null>(null);
 
+  console.log({ workflowState });
+
   const handleTaskUpdate = (baseTask: RecursivePartial<BaseTask>) => {
     setTaskState((s) => {
-      const newState = merge(s, baseTask);
-      return newState;
+      return {
+        ...s,
+        ...baseTask,
+      };
     });
   };
 

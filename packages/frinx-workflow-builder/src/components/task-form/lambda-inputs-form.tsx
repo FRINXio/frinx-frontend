@@ -9,7 +9,7 @@ import 'ace-builds/src-noconflict/ext-language_tools';
 
 type Props = {
   params: LambdaInputParams;
-  onChange: (p: RecursivePartial<LambdaInputParams>) => void;
+  onChange: (p: LambdaInputParams) => void;
 };
 
 const LambdaInputsForm: FC<Props> = ({ params, onChange }) => {
@@ -27,6 +27,7 @@ const LambdaInputsForm: FC<Props> = ({ params, onChange }) => {
           onChange={(event) => {
             event.persist();
             onChange({
+              ...params,
               lambdaValue: event.target.value,
             });
           }}
@@ -41,6 +42,7 @@ const LambdaInputsForm: FC<Props> = ({ params, onChange }) => {
           value={scriptExpression}
           onChange={(value) => {
             onChange({
+              ...params,
               scriptExpression: value,
             });
           }}

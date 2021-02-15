@@ -1,5 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
+import { WorkflowBuilder } from '@frinx/workflow-builder/src';
+import { putWorkflow, getWorkflow } from './api/uniflow/uniflow-api';
 
 const UniflowApp: FC = () => {
   const [components, setComponents] = useState<typeof import('@frinx/workflow-ui') | null>(null);
@@ -61,18 +63,19 @@ const UniflowApp: FC = () => {
             const { match } = props;
 
             return (
-              <DiagramBuilder
-                name={match.params.name}
-                version={match.params.version}
-                onExitBtnClick={() => {
-                  history.push('/uniflow/definitions');
-                }}
-                onNewBtnClick={() => {
-                  history.push('/uniflow/builder');
-                  // this is an ugly hack for now
-                  window.location.reload();
-                }}
-              />
+              <WorkflowBuilder name={match.params.name} version={match.params.version} getWorkflowCallback={getWorkflow} saveWorkflowCallback={putWorkflow} />
+              // <DiagramBuilder
+              //   name={match.params.name}
+              //   version={match.params.version}
+              //   onExitBtnClick={() => {
+              //     history.push('/uniflow/definitions');
+              //   }}
+              //   onNewBtnClick={() => {
+              //     history.push('/uniflow/builder');
+              //     // this is an ugly hack for now
+              //     window.location.reload();
+              //   }}
+              // />
             );
           }}
         />

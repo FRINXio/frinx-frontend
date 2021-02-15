@@ -10,9 +10,8 @@ type JsonArray = Array<AnyJson | string>;
 export type WhileInputParams = {
   iterations: number;
 };
-export type DecisionInputParams = {
-  param: string;
-};
+export type DecisionInputParams = Record<string, string>;
+
 export type LambdaInputParams = {
   lambdaValue: string;
   scriptExpression: string;
@@ -175,7 +174,6 @@ export type WhileEndTask = BaseTask & {
 };
 export type DynamicForkTask = BaseTask<DynamicForkInputParams> & {
   type: 'SUB_WORKFLOW';
-  asyncComplete: boolean;
   subWorkflowParam: {
     name: string;
     version: number;
@@ -230,7 +228,7 @@ export type Workflow<T extends Task = Task> = {
 };
 export type NodeData = {
   isSelected: boolean;
-  task: Task | null;
+  task: TaskWithId | null;
   onClick: (data?: NodeData) => void;
 };
 export type CustomNodeType = Node<NodeData>;
