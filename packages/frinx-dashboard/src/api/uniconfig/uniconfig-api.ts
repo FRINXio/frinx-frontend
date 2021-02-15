@@ -7,7 +7,7 @@ import {
   NetconfOperationalDataStore,
   NetconfTopology,
 } from '../../helpers/types/uniconfig-types';
-import { sendGetRequest, sendPostRequest, sendPutRequest, sendDeleteRequest } from './api-helpers';
+import { sendGetRequest, sendPutRequest, sendDeleteRequest } from './api-helpers';
 import {
   isCliOperationalDataStore,
   isNetconfOperationalDataStore,
@@ -22,9 +22,6 @@ const BASE_NETCONF_URL = '/rests/data/network-topology:network-topology/topology
 
 const CLI_TOPOLOGY_URL = `${BASE_CLI_URL}?content=nonconfig`;
 const NETCONF_TOPOLOGY_URL = `${BASE_NETCONF_URL}?content=nonconfig`;
-
-const GET_SUPPORTED_DEVICES_URL =
-  '/rests/data/cli-translate-registry:available-cli-device-translations?content=nonconfig&depth=3';
 
 export async function getCliOperationalDataStore(nodeId: string): Promise<CliOperationalDataStore> {
   const datastore = await sendGetRequest(`${BASE_CLI_URL}/node=${nodeId}?content=nonconfig`);

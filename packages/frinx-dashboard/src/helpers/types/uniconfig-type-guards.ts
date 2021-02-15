@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   CliOperationalDataStore,
   NetconfOperationalDataStore,
@@ -37,14 +38,14 @@ export function isNetconfConfigurationalDataStore(datastore: unknown): datastore
 
 export function isCliTopology(topology: unknown): topology is CliTopology {
   if (topology !== null && typeof topology === 'object') {
-    return 'topology' in topology! && typeof topology['topology'][0]['topology-id'] === 'string';
+    return 'topology' in topology!;
   }
   return false;
 }
 
 export function isNetconfTopology(topology: unknown): topology is NetconfTopology {
   if (topology !== null && typeof topology === 'object') {
-    return 'topology' in topology! && typeof topology['topology'][0]['topology-id'] === 'string';
+    return 'topology' in topology!;
   }
   return false;
 }

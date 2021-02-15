@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-
 type AnyJson = JsonArray | JsonMap;
 type JsonMap = {
   [key: string]: AnyJson | string;
@@ -77,7 +76,7 @@ export type InputParameters =
   | DynamicForkInputParams;
 
 export type WorkflowPayload = {
-  input: any;
+  input: unknown;
   name: string;
   version: number;
 };
@@ -118,13 +117,13 @@ export type ActionTypes = 'complete_task' | 'fail_task';
 export type ActionTargetTask = {
   workflowId: string;
   taskRefName: string;
-  output?: any;
+  output?: unknown;
 };
 
 export type ActionTargetWorkflow = {
   workflowId: string;
   taskRefName: string;
-  output?: any;
+  output?: unknown;
 };
 
 export type Action = {

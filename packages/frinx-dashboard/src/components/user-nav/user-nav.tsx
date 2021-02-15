@@ -96,14 +96,9 @@ const UserNav: FC = () => {
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
-                    instance
-                      .logout()
-                      .catch((e) => {
-                        console.error(e);
-                      })
-                      .finally(() => {
-                        removeTokenCookie();
-                      });
+                    instance.logout().finally(() => {
+                      removeTokenCookie();
+                    });
                   }}
                 >
                   <Flex

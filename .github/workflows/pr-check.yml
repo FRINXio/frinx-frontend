@@ -5,7 +5,7 @@ name: Formatter check
 
 on:
   pull_request:
-    branches: 
+    branches:
       - main
 
 jobs:
@@ -18,3 +18,4 @@ jobs:
           node-version: 12
       - run: yarn install
       - run: yarn run formatter:check
+      - run: cd packages/frinx-frontend && yarn run lint
