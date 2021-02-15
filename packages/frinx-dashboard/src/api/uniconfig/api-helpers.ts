@@ -1,5 +1,5 @@
 // TODO dynamic source of url
-const UNICONFIG_API_URL: string = 'localhost:8080/api';
+const UNICONFIG_API_URL = 'localhost:8080/api';
 
 export async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
   const url = `${UNICONFIG_API_URL}${path}`;

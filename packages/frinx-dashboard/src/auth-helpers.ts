@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { LogLevel } from '@azure/msal-common';
 import { PublicClientApplication, Configuration } from '@azure/msal-browser';
 
@@ -11,7 +12,7 @@ export function removeTokenCookie(): void {
 }
 
 export function isAuthEnabled(): boolean {
-  return window.__CONFIG__.auth_enabled === 'true';
+  return window.__CONFIG__.auth_enabled;
 }
 
 const authConfig: Configuration = {
@@ -30,6 +31,7 @@ const authConfig: Configuration = {
         if (containsPii) {
           return;
         }
+        /* eslint-disable no-console */
         switch (level) {
           case LogLevel.Error:
             console.error(message);
@@ -44,6 +46,7 @@ const authConfig: Configuration = {
           default:
             console.info(message);
         }
+        /* eslint-enable */
       },
       // Do not log personal and org data
       piiLoggingEnabled: false,

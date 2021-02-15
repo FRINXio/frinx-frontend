@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { FC } from 'react';
 
-const KibanaFrame = () => {
+const KibanaFrame: FC = () => {
   return (
     <div>
       <iframe
