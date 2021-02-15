@@ -53,10 +53,9 @@ export async function deleteSchedule(name: string): Promise<unknown> {
   return scheduled;
 }
 
-// TODO change route in uniflow-api to "/metadata/taskdefs"
 // Register new task definition
 export async function registerTaskDefinition(taskDefinition: TaskDefinition[]): Promise<TaskDefinition[]> {
-  const definition = await sendPostRequest('/metadata/taskdef/', taskDefinition);
+  const definition = await sendPostRequest('/metadata/taskdefs/', taskDefinition);
 
   return definition as TaskDefinition[];
 }
@@ -76,7 +75,7 @@ export async function getTaskDefinitions(): Promise<TaskDefinition[]> {
 
 // Get a task definition
 export async function getTaskDefinition(name: string): Promise<TaskDefinition> {
-  const response = await sendGetRequest(`/metadata/taskdef/${name}`);
+  const response = await sendGetRequest(`/metadata/taskdefs/${name}`);
   const definition = (response as { result: unknown }).result;
 
   if (isTaskDefinition(definition)) {

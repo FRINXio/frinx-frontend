@@ -4,6 +4,7 @@ import { Modal, Button, Tab, Tabs, ButtonGroup } from 'react-bootstrap';
 import DefaultsDescsTab from './DefaultsDescsTab';
 import OutputParamsTab from './OutputParamsTab';
 import GeneralParamsTab from './GeneralParamsTab';
+import { jsonParse } from '../../../common/utils';
 
 const GeneralInfoModal = (props) => {
   const [isWfNameValid, setWfNameValid] = useState(false);
@@ -34,14 +35,6 @@ const GeneralInfoModal = (props) => {
     props.closeModal();
   };
 
-  const parseJSON = (json) => {
-    try {
-      return JSON.parse(json);
-    } catch (e) {
-      return null;
-    }
-  };
-
   const handleInput = (value, key) => {
     let finalWf = { ...finalWorkflow };
 
@@ -52,7 +45,7 @@ const GeneralInfoModal = (props) => {
     if (key === 'description') {
       let innerKey = Array.isArray(value) ? 'labels' : 'description';
       value = {
-        ...parseJSON(finalWf.description),
+        ...jsonParse(finalWf.description),
         [innerKey]: value,
       };
       value = JSON.stringify(value);
@@ -76,14 +69,6 @@ const GeneralInfoModal = (props) => {
       }
     });
     setWfNameValid(isValid);
-  };
-
-  const jsonParse = (json) => {
-    try {
-      return JSON.parse(json);
-    } catch (e) {
-      return null;
-    }
   };
 
   const getExistingLabels = () => {

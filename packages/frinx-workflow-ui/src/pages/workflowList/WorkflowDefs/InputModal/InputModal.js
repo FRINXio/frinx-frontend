@@ -6,14 +6,7 @@ import { Typeahead } from 'react-bootstrap-typeahead';
 import { storeWorkflowId } from '../../../../store/actions/builder';
 import callbackUtils from '../../../../utils/callbackUtils';
 import { useDispatch } from 'react-redux';
-
-const jsonParse = (json) => {
-  try {
-    return JSON.parse(json);
-  } catch (e) {
-    return null;
-  }
-};
+import { jsonParse } from '../../../../common/utils';
 
 const getInputs = (def) => {
   const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
@@ -272,7 +265,15 @@ function InputModal(props) {
                       </div>
                     ) : null}
                     {inputModel(item, i)}
-                    <Form.Text className="text-muted">{item.description}</Form.Text>
+                    <Form.Text className="text-muted">
+                      {item.description}
+                      <br />
+                      {item.constraint && (
+                        <>
+                          <b>Constraint:</b> {item.constraint}
+                        </>
+                      )}
+                    </Form.Text>
                   </Form.Group>
                 </Col>
               );

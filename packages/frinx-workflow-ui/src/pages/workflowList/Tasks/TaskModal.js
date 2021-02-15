@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Col, Modal, Row, Tab, Table, Tabs } from 'react-bootstrap';
 import Highlight from 'react-highlight.js';
 import callbackUtils from '../../../utils/callbackUtils';
+import { jsonParse } from '../../../common/utils';
 
 const TaskModal = (props) => {
   const [response, setResponse] = useState({});
@@ -73,14 +74,6 @@ const TaskModal = (props) => {
       </code>
     </div>
   );
-
-  const jsonParse = (json) => {
-    try {
-      return JSON.parse(json);
-    } catch (e) {
-      return null;
-    }
-  };
 
   return (
     <Modal dialogClassName="modalWider" show={props.show} onHide={handleClose}>
