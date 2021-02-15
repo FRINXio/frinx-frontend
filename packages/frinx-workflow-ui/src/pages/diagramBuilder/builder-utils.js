@@ -1,7 +1,7 @@
 // @flow
 import * as _ from 'lodash';
 
-export const getWfInputsRegex = wf => {
+export const getWfInputsRegex = (wf) => {
   let def = JSON.stringify(wf);
   let inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
   let match = inputCaptureRegex.exec(def);
@@ -16,17 +16,17 @@ export const getWfInputsRegex = wf => {
 
   let inputParameters = {};
 
-  inputsArray.forEach(el => {
+  inputsArray.forEach((el) => {
     inputParameters[el] = '${workflow.input.' + el + '}';
   });
 
   return inputParameters;
 };
 
-export const getTaskInputsRegex = t => {
+export const getTaskInputsRegex = (t) => {
   let inputParameters = {};
   if (t.inputKeys) {
-    t.inputKeys.forEach(el => {
+    t.inputKeys.forEach((el) => {
       inputParameters[el] = '${workflow.input.' + el + '}';
     });
   }
@@ -34,13 +34,9 @@ export const getTaskInputsRegex = t => {
   return inputParameters;
 };
 
-export const hash = () =>
-  Math.random()
-    .toString(36)
-    .toUpperCase()
-    .substr(2, 4);
+export const hash = () => Math.random().toString(36).toUpperCase().substr(2, 4);
 
-export const encode = s => {
+export const encode = (s) => {
   let out = [];
   for (let i = 0; i < s.length; i++) {
     out[i] = s.charCodeAt(i);
@@ -48,17 +44,17 @@ export const encode = s => {
   return new Uint8Array(out);
 };
 
-export const getWfInputs = wf => {
+export const getWfInputs = (wf) => {
   let taskArray = wf.tasks;
   let inputParams = [];
   let inputParameters = {};
 
-  taskArray.forEach(task => {
+  taskArray.forEach((task) => {
     if (task !== undefined) {
       let nonSystemTask = fn(task, 'inputParameters');
 
       if (_.isArray(nonSystemTask)) {
-        nonSystemTask.forEach(el => {
+        nonSystemTask.forEach((el) => {
           if (el.inputParameters) {
             inputParams.push(el.inputParameters);
           }
@@ -81,7 +77,7 @@ export const fn = (obj, key) => {
   if (_.has(obj, key)) return obj;
 
   return _.flatten(
-    _.map(obj, function(v) {
+    _.map(obj, function (v) {
       return typeof v == 'object' ? fn(v, key) : [];
     }),
     true,
@@ -90,7 +86,7 @@ export const fn = (obj, key) => {
 
 export const getLinksArray = (type, node) => {
   let linksArray = [];
-  _.values(node.ports).forEach(port => {
+  _.values(node.ports).forEach((port) => {
     if (type === 'in' || type === 'inputPort') {
       if (port.in || port.name === 'left') {
         linksArray = _.values(port.links);
@@ -104,7 +100,7 @@ export const getLinksArray = (type, node) => {
   return linksArray;
 };
 
-export const getStartNode = links => {
+export const getStartNode = (links) => {
   for (let i = 0; i < _.values(links).length; i++) {
     let link = _.values(links)[i];
     if (link.sourcePort.type === 'start') {
@@ -113,7 +109,7 @@ export const getStartNode = links => {
   }
 };
 
-export const getEndNode = links => {
+export const getEndNode = (links) => {
   for (let i = 0; i < _.values(links).length; i++) {
     let link = _.values(links)[i];
     if (link.targetPort.type === 'end') {
@@ -122,7 +118,7 @@ export const getEndNode = links => {
   }
 };
 
-export const handleRawNode = rawNode => {
+export const handleRawNode = (rawNode) => {
   if (!rawNode.inputParameters.raw) {
     throw new Error('Invalid raw task definition. No content');
   }
@@ -135,14 +131,14 @@ export const handleRawNode = rawNode => {
   }
 };
 
-export const handleForkNode = forkNode => {
+export const handleForkNode = (forkNode) => {
   let joinNode = null;
   let forkTasks = [];
   let joinOn = [];
   let forkBranches = forkNode.ports.right.links;
 
   //for each branch chain tasks
-  _.values(forkBranches).forEach(link => {
+  _.values(forkBranches).forEach((link) => {
     let tmpBranch = [];
     let parent = link.targetPort.getNode();
     let current = link.targetPort.getNode();
@@ -192,7 +188,7 @@ export const handleForkNode = forkNode => {
   return { forkNode, joinNode };
 };
 
-export const handleDecideNode = decideNode => {
+export const handleDecideNode = (decideNode) => {
   let failBranchLink = _.values(decideNode.ports.failPort.links)[0];
   let neutralBranchLink = _.values(decideNode.ports.neutralPort.links)[0];
   let firstNeutralNode = null;

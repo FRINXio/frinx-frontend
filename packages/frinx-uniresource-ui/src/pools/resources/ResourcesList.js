@@ -27,7 +27,7 @@ import AddIcon from '@material-ui/icons/Add';
 import TextField from '@material-ui/core/TextField';
 import ClaimResourceMutation from '../../mutations/ClaimResourceMutation';
 import FreeResourceMutation from '../../mutations/FreeResourceMutation';
-import {useStateValue} from "../../utils/StateProvider";
+import { useStateValue } from '../../utils/StateProvider';
 
 const styles = () => ({
   header: {
@@ -187,11 +187,11 @@ const ResourceList = (props: Props) => {
   return (
     <div>
       <div className={classes.selectContainer}>
-        {isAdmin ?
+        {isAdmin ? (
           <Button variant="contained" color="primary" onClick={() => claimResource()}>
             Claim
           </Button>
-            : null}
+        ) : null}
       </div>
 
       <div>
@@ -258,11 +258,11 @@ const ResourceList = (props: Props) => {
                     ))}
                   </TableCell>
                   <TableCell align="left">
-                    {isAdmin ?
+                    {isAdmin ? (
                       <Button variant="contained" color="primary" onClick={() => freeResource(row.node)}>
                         Free
                       </Button>
-                      : null }
+                    ) : null}
                   </TableCell>
                 </TableRow>
               ))}

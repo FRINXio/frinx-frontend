@@ -3,7 +3,7 @@ import React from 'react';
 import { Modal } from 'react-bootstrap';
 import Highlight from 'react-highlight.js';
 
-const WorkflowDefModal = props => {
+const WorkflowDefModal = (props) => {
   return (
     <Modal size="xl" show={props.show} onHide={props.closeModal}>
       <Modal.Header>

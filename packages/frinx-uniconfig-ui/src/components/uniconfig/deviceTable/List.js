@@ -68,7 +68,7 @@ class List extends Component {
             '?content=config',
           this.context.authToken,
         )
-        .then(res => {
+        .then((res) => {
           try {
             os_version = res['node']['0']['cli-topology:device-type'];
             os_version = os_version + ' / ' + res['node']['0']['cli-topology:device-version'];
@@ -141,7 +141,7 @@ class List extends Component {
     let topology = data[3] === 'netconf' ? 'topology-netconf' : 'cli';
     let updatedData = this.state.data;
 
-    updatedData.map(device => {
+    updatedData.map((device) => {
       if (device[0] === node_id) {
         return this.addDeviceEntry(node_id, topology);
       }
@@ -150,7 +150,7 @@ class List extends Component {
   }
 
   removeDevices() {
-    this.state.selectedDevices.map(device => {
+    this.state.selectedDevices.map((device) => {
       if (device['topology'] === 'netconf') {
         return http.delete(
           this.context.backendApiUrlPrefix +
@@ -180,7 +180,7 @@ class List extends Component {
           '/rests/data/network-topology:network-topology/topology=cli?content=nonconfig',
         this.context.authToken,
       )
-      .then(res => {
+      .then((res) => {
         try {
           let topologies = Object.keys(res);
           let topology = Object.keys(res[Object.keys(res)]);
@@ -188,7 +188,7 @@ class List extends Component {
           let nodes = res[topologies][topology]['node'];
 
           if (nodes) {
-            nodes.map(device => {
+            nodes.map((device) => {
               let node_id = device['node-id'];
               return this.addDeviceEntry(node_id, topology_id);
             });
@@ -204,7 +204,7 @@ class List extends Component {
           '/rests/data/network-topology:network-topology/topology=topology-netconf?content=nonconfig',
         this.context.authToken,
       )
-      .then(res => {
+      .then((res) => {
         try {
           let topologies = Object.keys(res);
           let topology = Object.keys(res[Object.keys(res)]);
@@ -212,7 +212,7 @@ class List extends Component {
           let nodes = res[topologies][topology]['node'];
 
           if (nodes) {
-            nodes.map(device => {
+            nodes.map((device) => {
               let node_id = device['node-id'];
               return this.addDeviceEntry(node_id, topology_id);
             });
@@ -273,7 +273,7 @@ class List extends Component {
           '?content=nonconfig',
         this.context.authToken,
       )
-      .then(res => {
+      .then((res) => {
         try {
           let device = res.node[0];
           let node_id = device['node-id'];
@@ -296,7 +296,7 @@ class List extends Component {
                 '?content=config',
               this.context.authToken,
             )
-            .then(res => {
+            .then((res) => {
               try {
                 let device = res.node[0];
                 let transport_type = device[`${topology_obj}:transport-type`] || device[`${topology_obj}:tcp-only`];
@@ -363,7 +363,7 @@ class List extends Component {
         output.push(
           <tr key={`row-${i}`} id={`row-${i}`}>
             <td className="">
-              <Form.Check type="checkbox" onChange={e => this.onDeviceSelect(e, dataset[i], i)} id={`chb-${i}`} />
+              <Form.Check type="checkbox" onChange={(e) => this.onDeviceSelect(e, dataset[i], i)} id={`chb-${i}`} />
             </td>
             <td
               id={`node_id-${i}`}
@@ -378,7 +378,7 @@ class List extends Component {
               &nbsp;&nbsp;
               <i
                 id={`refreshBtn-${i}`}
-                onClick={e => this.onDeviceRefresh(e, dataset[i])}
+                onClick={(e) => this.onDeviceRefresh(e, dataset[i])}
                 style={{ color: '#007bff' }}
                 className="fas fa-sync-alt fa-xs clickable"
               />

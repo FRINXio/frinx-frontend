@@ -16,7 +16,7 @@ export const OPEN_CARD = 'OPEN_CARD';
 export const UPDATE_TASKS = 'UPDATE_TASKS';
 export const UPDATE_SYSTEM = 'UPDATE_SYSTEM';
 
-export const storeWorkflows = originalWorkflows => {
+export const storeWorkflows = (originalWorkflows) => {
   return {
     type: STORE_WORKFLOWS,
     originalWorkflows,
@@ -24,7 +24,7 @@ export const storeWorkflows = originalWorkflows => {
   };
 };
 
-export const storeTasks = originalTasks => {
+export const storeTasks = (originalTasks) => {
   return {
     type: STORE_TASKS,
     originalTasks,
@@ -32,25 +32,25 @@ export const storeTasks = originalTasks => {
   };
 };
 
-export const openCard = which => {
-  return dispatch => {
+export const openCard = (which) => {
+  return (dispatch) => {
     dispatch(changeOpenedCard(which));
     dispatch(requestUpdateByQuery(null, null));
   };
 };
 
-export const changeOpenedCard = which => {
+export const changeOpenedCard = (which) => {
   return {
     type: OPEN_CARD,
     openCard: which,
   };
 };
 
-export const updateQuery = query => {
+export const updateQuery = (query) => {
   return { type: UPDATE_BUILDER_QUERY, query };
 };
 
-export const updateLabels = labels => {
+export const updateLabels = (labels) => {
   return { type: UPDATE_BUILDER_LABELS, labels };
 };
 
@@ -58,7 +58,7 @@ export const showCustomAlert = (show, variant = 'danger', msg) => {
   return { type: SHOW_CUSTOM_ALERT, show, variant, msg };
 };
 
-export const storeWorkflowId = id => {
+export const storeWorkflowId = (id) => {
   return { type: STORE_WORKFLOW_ID, executedWfId: id };
 };
 
@@ -74,19 +74,19 @@ export const switchSmartRouting = () => {
   return { type: SWITCH_SMART_ROUTING };
 };
 
-export const updateWorkflows = workflows => {
+export const updateWorkflows = (workflows) => {
   return { type: UPDATE_WORKFLOWS, workflows };
 };
 
-export const updateTasks = tasks => {
+export const updateTasks = (tasks) => {
   return { type: UPDATE_TASKS, tasks };
 };
 
-export const updateSystem = system => {
+export const updateSystem = (system) => {
   return { type: UPDATE_SYSTEM, system };
 };
 
-export const updateFinalWorkflow = finalWorkflow => {
+export const updateFinalWorkflow = (finalWorkflow) => {
   return { type: UPDATE_FINAL_WORKFLOW, finalWorkflow };
 };
 
@@ -122,7 +122,7 @@ export const requestUpdateByQuery = (queryIn, labelsIn) => {
 
     // label filter
     if (labelsIn && labelsIn.length > 0) {
-      data.forEach(wf => {
+      data.forEach((wf) => {
         var wfLabels;
 
         if (wf.description) {
@@ -143,14 +143,8 @@ export const requestUpdateByQuery = (queryIn, labelsIn) => {
 
     // query filter
     if (queryIn && queryIn !== '') {
-      withLabels.forEach(wf => {
-        if (
-          wf['name'] &&
-          wf['name']
-            .toString()
-            .toUpperCase()
-            .indexOf(queryIn.toUpperCase()) !== -1
-        ) {
+      withLabels.forEach((wf) => {
+        if (wf['name'] && wf['name'].toString().toUpperCase().indexOf(queryIn.toUpperCase()) !== -1) {
           toBeUpdated.push(wf);
         }
       });

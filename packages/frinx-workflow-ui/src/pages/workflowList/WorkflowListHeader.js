@@ -1,33 +1,32 @@
 // @flow
-import React, { useContext } from 'react';
+import React from 'react';
 import { Button } from 'react-bootstrap';
-import { HttpClient as http } from '../../common/HttpClient';
-import { GlobalContext } from '../../common/GlobalContext';
 import PageContainer from '../../common/PageContainer';
+import callbackUtils from '../../utils/callbackUtils';
 
 type Props = {
   onAddButtonClick: () => void,
 };
 
 const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
-  const global = useContext(GlobalContext);
-
-  const importFiles = e => {
+  const importFiles = (e) => {
     const files = e.currentTarget.files;
     const fileList = [];
     let count = files.length;
 
-    Object.keys(files).forEach(i => {
+    Object.keys(files).forEach((i) => {
       readFile(files[i]);
     });
 
     function readFile(file) {
       const reader = new FileReader();
-      reader.onload = e => {
+      const putWorkflow = callbackUtils.putWorkflowCallback();
+
+      reader.onload = (e) => {
         let definition = JSON.parse(e.target.result);
         fileList.push(definition);
         if (!--count) {
-          http.put(global.backendApiUrlPrefix + '/metadata', fileList).then(() => {
+          putWorkflow(fileList).then(() => {
             window.location.reload();
           });
         }
@@ -41,16 +40,17 @@ const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
     document.getElementById('upload-files').addEventListener('change', importFiles);
   };
 
-  const exportFile = backendApiUrlPrefix => {
-    http.get(backendApiUrlPrefix + '/metadata/workflow').then(res => {
-      const zip = new JSZip();
-      let workflows = res.result || [];
+  const exportFile = () => {
+    const getWorkflows = callbackUtils.getWorkflowsCallback();
 
-      workflows.forEach(wf => {
+    getWorkflows().then((workflows) => {
+      const zip = new JSZip();
+
+      workflows.forEach((wf) => {
         zip.file(wf.name + '.json', JSON.stringify(wf, null, 2));
       });
 
-      zip.generateAsync({ type: 'blob' }).then(function(content) {
+      zip.generateAsync({ type: 'blob' }).then(function (content) {
         saveAs(content, 'workflows.zip');
       });
     });
@@ -69,12 +69,7 @@ const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
           <i className="fas fa-file-import" />
           &nbsp;&nbsp;Import
         </Button>
-        <Button
-          key="export-btn"
-          variant="outline-primary"
-          style={{ marginLeft: '5px' }}
-          onClick={() => exportFile(global.backendApiUrlPrefix)}
-        >
+        <Button key="export-btn" variant="outline-primary" style={{ marginLeft: '5px' }} onClick={() => exportFile()}>
           <i className="fas fa-file-export" />
           &nbsp;&nbsp;Export
         </Button>

@@ -1,18 +1,16 @@
 // @flow
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Button, Input, Icon, Grid } from 'semantic-ui-react';
 import TaskModal from './TaskModal';
-import { HttpClient as http } from '../../../common/HttpClient';
-import { GlobalContext } from '../../../common/GlobalContext';
 import AddTaskModal from './AddTaskModal';
 import { taskDefinition } from '../../../constants';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
 import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
 import PageContainer from '../../../common/PageContainer';
+import callbackUtils from '../../../utils/callbackUtils';
 
 const TaskList = () => {
-  const global = useContext(GlobalContext);
   const [keywords, setKeywords] = useState('');
   const [sorted, setSorted] = useState(false);
   const [data, setData] = useState([]);
@@ -29,7 +27,7 @@ const TaskList = () => {
   useEffect(() => {
     const results = !keywords
       ? data
-      : data.filter(e => {
+      : data.filter((e) => {
           let searchedKeys = [
             'name',
             'timeoutPolicy',
@@ -40,12 +38,7 @@ const TaskList = () => {
           ];
 
           for (let i = 0; i < searchedKeys.length; i += 1) {
-            if (
-              e[searchedKeys[i]]
-                .toString()
-                .toLowerCase()
-                .includes(keywords.toLocaleLowerCase())
-            ) {
+            if (e[searchedKeys[i]].toString().toLowerCase().includes(keywords.toLocaleLowerCase())) {
               return true;
             }
           }
@@ -55,22 +48,22 @@ const TaskList = () => {
   }, [keywords, data]);
 
   const getData = () => {
-    http.get(global.backendApiUrlPrefix + '/metadata/taskdefs').then(res => {
-      if (res.result) {
-        let data = res.result.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
-        setData(data);
-      }
+    const getTaskDefinitions = callbackUtils.getTaskDefinitionsCallback();
+
+    getTaskDefinitions().then((taskDefinitions) => {
+      let data = taskDefinitions.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
+      setData(data);
     });
   };
 
-  const handleTaskModal = name => {
+  const handleTaskModal = (name) => {
     let taskName = name !== undefined ? name : null;
     setTaskName(taskName);
     setTaskModal(!taskModal);
   };
 
   const filteredRows = () => {
-    return pageItems.map(e => {
+    return pageItems.map((e) => {
       return (
         <Table.Row key={e.name}>
           <Table.Cell>{e.name}</Table.Cell>
@@ -88,15 +81,15 @@ const TaskList = () => {
     });
   };
 
-  const deleteTask = name => {
-    http.delete(global.backendApiUrlPrefix + '/metadata/taskdef/' + name).then(res => {
-      if (res.status === 200) {
-        getData();
-      }
+  const deleteTask = (name) => {
+    const deleteTaskDefinition = callbackUtils.deleteTaskDefinitionCallback();
+
+    deleteTaskDefinition(name).then(() => {
+      getData();
     });
   };
 
-  const sortArray = key => {
+  const sortArray = (key) => {
     let sortedArray = data;
 
     sortedArray.sort(sorted ? sortDescBy(key) : sortAscBy(key));
@@ -134,7 +127,7 @@ const TaskList = () => {
     );
   };
 
-  const handleInput = e =>
+  const handleInput = (e) =>
     setTaskBody({
       ...taskBody,
       [e.target.name]: e.target.value,
@@ -146,7 +139,7 @@ const TaskList = () => {
         taskBody[key] = taskBody[key]
           .replace(/ /g, '')
           .split(',')
-          .filter(e => {
+          .filter((e) => {
             return e !== '';
           });
         taskBody[key] = [...new Set(taskBody[key])];
@@ -154,7 +147,10 @@ const TaskList = () => {
     });
     if (taskBody['name'] !== '') {
       const newTask = { ...taskBody, ownerEmail: 'example@example.com' };
-      http.post(global.backendApiUrlPrefix + '/metadata/taskdef', [newTask]).then(() => {
+
+      const registerTaskDefinition = callbackUtils.registerTaskDefinitionCallback();
+
+      registerTaskDefinition([newTask]).then(() => {
         window.location.reload();
       });
     }
@@ -182,7 +178,7 @@ const TaskList = () => {
         <Grid.Row>
           <Grid.Column width={15}>
             <Input iconPosition="left" fluid icon placeholder="Search...">
-              <input value={keywords} onChange={e => setKeywords(e.target.value)} />
+              <input value={keywords} onChange={(e) => setKeywords(e.target.value)} />
               <Icon name="search" />
             </Input>
           </Grid.Column>

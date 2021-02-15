@@ -16,16 +16,14 @@ import closest from 'closest';
 import { Application } from './Application';
 import { Button, Modal } from 'react-bootstrap';
 import { DiagramWidget, Toolkit } from '@projectstorm/react-diagrams';
-import { GlobalContext } from '../../common/GlobalContext';
 import { HotKeys } from 'react-hotkeys';
 import { WorkflowDiagram } from './WorkflowDiagram';
 import { connect } from 'react-redux';
 import { encode } from './builder-utils';
-import { HttpClient as http } from '../../common/HttpClient';
 import { saveAs } from 'file-saver';
+import callbackUtils from '../../utils/callbackUtils';
 
 class DiagramBuilder extends Component {
-  static contextType = GlobalContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -65,25 +63,22 @@ class DiagramBuilder extends Component {
 
   componentWillMount() {
     this.setState({
-      workflowDiagram: new WorkflowDiagram(
-        new Application(),
-        this.props.finalWorkflow,
-        { x: 600, y: 300 },
-        this.context.backendApiUrlPrefix,
-        this.context.prefixHttpTask,
-      ),
+      workflowDiagram: new WorkflowDiagram(new Application(), this.props.finalWorkflow, { x: 600, y: 300 }),
     });
   }
 
   componentDidMount() {
     document.addEventListener('dblclick', this.doubleClickListener.bind(this));
 
-    http.get(this.context.backendApiUrlPrefix + '/metadata/workflow').then(res => {
-      this.props.storeWorkflows(res.result?.sort((a, b) => a.name.localeCompare(b.name)) || []);
+    const getWorkflows = callbackUtils.getWorkflowsCallback();
+    const getTaskDefinitions = callbackUtils.getTaskDefinitionsCallback();
+
+    getWorkflows().then((workflows) => {
+      this.props.storeWorkflows(workflows.sort((a, b) => a.name.localeCompare(b.name)) || []);
     });
 
-    http.get(this.context.backendApiUrlPrefix + '/metadata/taskdefs').then(res => {
-      this.props.storeTasks(res.result?.sort((a, b) => a.name.localeCompare(b.name)) || []);
+    getTaskDefinitions().then((definitions) => {
+      this.props.storeTasks(definitions.sort((a, b) => a.name.localeCompare(b.name)) || []);
     });
 
     const { name, version } = this.props;
@@ -118,10 +113,11 @@ class DiagramBuilder extends Component {
 
   createExistingWorkflow() {
     const { name, version } = this.props;
-    http
-      .get(this.context.backendApiUrlPrefix + '/metadata/workflow/' + name + '/' + version)
-      .then(res => {
-        this.createDiagramByDefinition(res.result);
+    const getWorkflow = callbackUtils.getWorkflowCallback();
+
+    getWorkflow(name, version)
+      .then((workflow) => {
+        this.createDiagramByDefinition(workflow);
       })
       .catch(() => {
         return this.props.showCustomAlert(true, 'danger', `Cannot find selected sub-workflow: ${name}.`);
@@ -133,11 +129,7 @@ class DiagramBuilder extends Component {
     this.props.showCustomAlert(true, 'info', `Editing workflow ${definition.name} / ${definition.version}.`);
     this.props.lockWorkflowName();
 
-    this.state.workflowDiagram
-      .setDefinition(definition)
-      .createDiagram()
-      .withStartEnd()
-      .renderDiagram();
+    this.state.workflowDiagram.setDefinition(definition).createDiagram().withStartEnd().renderDiagram();
   }
 
   onNodeDrop(e) {
@@ -191,10 +183,10 @@ class DiagramBuilder extends Component {
     };
     this.state.workflowDiagram
       .saveWorkflow(finalWorkflow)
-      .then(res => {
+      .then((res) => {
         this.props.showCustomAlert(true, 'info', `Workflow ${res.name} saved successfully.`);
       })
-      .catch(e => {
+      .catch((e) => {
         this.props.showCustomAlert(true, 'danger', e.path + ':\xa0\xa0\xa0' + e.message);
       });
   }
@@ -206,7 +198,7 @@ class DiagramBuilder extends Component {
       .then(() => {
         this.showInputModal();
       })
-      .catch(e => {
+      .catch((e) => {
         this.props.showCustomAlert(true, 'danger', e.path + ':\xa0\xa0\xa0' + e.message);
       });
   }
@@ -278,7 +270,7 @@ class DiagramBuilder extends Component {
   saveNodeInputsHandler(savedInputs, id) {
     const nodes = this.state.workflowDiagram.getNodes();
 
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
       if (node.id === id) {
         node.extras.inputs = savedInputs;
       }
@@ -291,7 +283,7 @@ class DiagramBuilder extends Component {
     const fileReader = new FileReader();
 
     fileReader.onload = (() => {
-      return function(e) {
+      return function (e) {
         try {
           const jsonObj = JSON.parse(e.target.result);
           this.createDiagramByDefinition(jsonObj);
@@ -345,11 +337,16 @@ class DiagramBuilder extends Component {
         modalHandler={this.closeInputModal}
         fromBuilder
         show={this.state.showInputModal}
+        onWorkflowIdClick={this.props.onWorkflowIdClick}
       />
     ) : null;
 
     const detailsModal = this.state.showDetailsModal ? (
-      <DetailsModal wfId={this.props.workflowId} modalHandler={this.showDetailsModal} />
+      <DetailsModal
+        wfId={this.props.workflowId}
+        modalHandler={this.showDetailsModal}
+        onWorkflowIdClick={this.props.onWorkflowIdClick}
+      />
     ) : null;
 
     const nodeModal = this.state.showNodeModal ? (
@@ -430,12 +427,12 @@ class DiagramBuilder extends Component {
     };
 
     const handlers = {
-      ZOOM_IN: e => this.setZoomLevel(this.state.zoomLevel + 10, e),
-      ZOOM_OUT: e => this.setZoomLevel(this.state.zoomLevel - 10, e),
-      LOCK: e => this.setLocked(e),
-      SAVE: e => this.saveWorkflow(e),
-      EXECUTE: e => this.saveAndExecute(e),
-      EXPAND: e => this.expandNodeToWorkflow(e),
+      ZOOM_IN: (e) => this.setZoomLevel(this.state.zoomLevel + 10, e),
+      ZOOM_OUT: (e) => this.setZoomLevel(this.state.zoomLevel - 10, e),
+      LOCK: (e) => this.setLocked(e),
+      SAVE: (e) => this.saveWorkflow(e),
+      EXECUTE: (e) => this.saveAndExecute(e),
+      EXPAND: (e) => this.expandNodeToWorkflow(e),
     };
 
     return (
@@ -472,8 +469,6 @@ class DiagramBuilder extends Component {
               system={this.props.system}
               updateQuery={this.props.updateQuery}
               openCard={this.props.openCard}
-              prefixHttpTask={this.context.prefixHttpTask}
-              disabledTasks={this.context.disabledTasks}
             />
 
             <CustomAlert
@@ -485,8 +480,8 @@ class DiagramBuilder extends Component {
 
             <div
               style={{ height: 'calc(100% - 50px)' }}
-              onDrop={e => this.onNodeDrop(e)}
-              onDragOver={event => {
+              onDrop={(e) => this.onNodeDrop(e)}
+              onDragOver={(event) => {
                 event.preventDefault();
               }}
             >
@@ -502,7 +497,7 @@ class DiagramBuilder extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     workflows: state.buildReducer.workflows,
     tasks: state.buildReducer.tasks,
@@ -514,14 +509,14 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    storeWorkflows: wfList => dispatch(builderActions.storeWorkflows(wfList)),
-    storeTasks: taskList => dispatch(builderActions.storeTasks(taskList)),
-    updateFinalWorkflow: finalWorkflow => dispatch(builderActions.updateFinalWorkflow(finalWorkflow)),
+    storeWorkflows: (wfList) => dispatch(builderActions.storeWorkflows(wfList)),
+    storeTasks: (taskList) => dispatch(builderActions.storeTasks(taskList)),
+    updateFinalWorkflow: (finalWorkflow) => dispatch(builderActions.updateFinalWorkflow(finalWorkflow)),
     resetToDefaultWorkflow: () => dispatch(builderActions.resetToDefaultWorkflow()),
     updateQuery: (query, labels) => dispatch(builderActions.requestUpdateByQuery(query, labels)),
-    openCard: which => dispatch(builderActions.openCard(which)),
+    openCard: (which) => dispatch(builderActions.openCard(which)),
     showCustomAlert: (show, variant, msg) => dispatch(builderActions.showCustomAlert(show, variant, msg)),
     lockWorkflowName: () => dispatch(builderActions.lockWorkflowName()),
   };

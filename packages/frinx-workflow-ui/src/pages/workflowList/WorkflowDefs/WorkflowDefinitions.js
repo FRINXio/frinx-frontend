@@ -1,37 +1,28 @@
 // @flow
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Col, Form, Row, Modal } from 'react-bootstrap';
 import { Table, Header, Button, Popup } from 'semantic-ui-react';
 import { Typeahead } from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
-import { withRouter } from 'react-router-dom';
 import WfLabels from '../../../common/WfLabels';
 import DefinitionModal from './DefinitonModal/DefinitionModal';
 import DiagramModal from './DiagramModal/DiagramModal';
 import InputModal from './InputModal/InputModal';
 import DependencyModal from './DependencyModal/DependencyModal';
 import SchedulingModal from '../Scheduling/SchedulingModal/SchedulingModal';
-import { HttpClient as http } from '../../../common/HttpClient';
-import { GlobalContext } from '../../../common/GlobalContext';
 import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
 import PageContainer from '../../../common/PageContainer';
+import callbackUtils from '../../../utils/callbackUtils';
+import { jsonParse } from '../../../common/utils';
 
-const jsonParse = json => {
-  try {
-    return JSON.parse(json);
-  } catch (e) {
-    return null;
-  }
-};
-
-const getLabels = dataset => {
+const getLabels = (dataset) => {
   let labelsArr = dataset.map(({ description }) => {
     return jsonParse(description)?.labels;
   });
   let allLabels = [...new Set([].concat(...labelsArr))];
   return allLabels
-    .filter(e => {
+    .filter((e) => {
       return e !== undefined;
     })
     .sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
@@ -39,10 +30,10 @@ const getLabels = dataset => {
 
 type Props = {
   onDefinitionClick: (name: string, version: string) => void,
+  onWorkflowIdClick: (wfId: string) => void,
 };
 
-const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
-  const global = useContext(GlobalContext);
+const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) => {
   const [keywords, setKeywords] = useState('');
   const [labels, setLabels] = useState([]);
   const [data, setData] = useState([]);
@@ -53,6 +44,7 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
   const [dependencyModal, setDependencyModal] = useState(false);
   const [schedulingModal, setSchedulingModal] = useState(false);
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+  const [workflowListViewModal, setWorkflowListViewModal] = useState(false);
   const [allLabels, setAllLabels] = useState([]);
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
 
@@ -64,11 +56,10 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
     var results =
       !keywords && labels.length === 0
         ? data
-        : data.filter(e => {
+        : data.filter((e) => {
             let searchedKeys = ['name'];
             let queryWords = keywords.toUpperCase().split(' ');
             let labelsArr = jsonParse(e.description)?.labels;
-            console.log(queryWords);
 
             // if labels are used and wf doesnt contain selected labels => filter out
             if (labels.length > 0) {
@@ -80,12 +71,7 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
             // search for keywords in "searchedKeys"
             for (let i = 0; i < searchedKeys.length; i += 1) {
               for (let j = 0; j < queryWords.length; j += 1) {
-                if (
-                  e[searchedKeys[i]]
-                    .toString()
-                    .toUpperCase()
-                    .indexOf(queryWords[j]) === -1
-                ) {
+                if (e[searchedKeys[i]].toString().toUpperCase().indexOf(queryWords[j]) === -1) {
                   return false;
                 }
               }
@@ -95,18 +81,12 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
     setItemList(results);
   }, [keywords, labels, data]);
 
-  const metadataUrlSuffix = () => {
-    // Use standard URL (/metadata/workflow) in case scheduling is disabled
-    // but use a special endpoint that returns workflow metadata with
-    // scheduling info attached (/schedule/metadata/workflow)
-    // if scheduling is supported by the backend
-    return global.enableScheduling === false ? '/metadata/workflow' : '/schedule/metadata/workflow';
-  };
-
   const getData = () => {
-    http.get(global.backendApiUrlPrefix + metadataUrlSuffix()).then(res => {
-      if (res.result) {
-        let dataset = res.result.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
+    const getWorkflows = callbackUtils.getWorkflowsCallback();
+
+    getWorkflows().then((workflows) => {
+      if (workflows) {
+        let dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
         setData(dataset);
         setAllLabels(getLabels(dataset));
       }
@@ -115,12 +95,12 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
 
   const searchFavourites = () => {
     let newLabels = [...labels];
-    let index = newLabels.findIndex(label => label === 'FAVOURITE');
+    let index = newLabels.findIndex((label) => label === 'FAVOURITE');
     index > -1 ? newLabels.splice(index, 1) : newLabels.push('FAVOURITE');
     setLabels(newLabels);
   };
 
-  const updateFavourite = workflow => {
+  const updateFavourite = (workflow) => {
     var wfDescription = jsonParse(workflow.description);
 
     // if workflow doesn't contain description attr. at all
@@ -139,7 +119,7 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
     }
     // if workflow is already favourited (unfav.)
     else if (wfDescription.labels.includes('FAVOURITE')) {
-      wfDescription.labels = wfDescription?.labels.filter(e => e !== 'FAVOURITE');
+      wfDescription.labels = wfDescription?.labels.filter((e) => e !== 'FAVOURITE');
     }
     // if workflow has correct description object, just add label
     else {
@@ -148,9 +128,12 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
 
     workflow.description = JSON.stringify(wfDescription);
 
-    http.put(global.backendApiUrlPrefix + '/metadata/', [workflow]).then(() => {
-      http.get(global.backendApiUrlPrefix + metadataUrlSuffix()).then(res => {
-        let dataset = res.result.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
+    const putWorkflow = callbackUtils.putWorkflowCallback();
+    const getWorkflows = callbackUtils.getWorkflowsCallback();
+
+    putWorkflow([workflow]).then(() => {
+      getWorkflows().then((workflows) => {
+        let dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
         let allLabels = getLabels(dataset);
         setData(dataset);
         setAllLabels(allLabels);
@@ -162,21 +145,21 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
     const labelsDef = jsonParse(description)?.labels || [];
 
     return labelsDef.map((label, i) => {
-      let index = allLabels.findIndex(lab => lab === label);
+      let index = allLabels.findIndex((lab) => lab === label);
       return <WfLabels key={`${name}-${i}`} label={label} index={index} search={() => setLabels([...labels, label])} />;
     });
   };
 
-  const deleteWorkflow = workflow => {
-    http
-      .delete(global.backendApiUrlPrefix + '/metadata/workflow/' + workflow.name + '/' + workflow.version)
-      .then(() => {
-        getData();
-        setConfirmDeleteModal(false);
-      });
+  const deleteWorkflow = (workflow) => {
+    const deleteWorkflow = callbackUtils.deleteWorkflowCallback();
+
+    deleteWorkflow(workflow.name, workflow.version).then(() => {
+      getData();
+      setConfirmDeleteModal(false);
+    });
   };
 
-  const repeatButtons = dataset => {
+  const repeatButtons = (dataset) => {
     return (
       <Table.Cell singleLine textAlign="center">
         <Button title="Delete" basic negative circular icon="trash" onClick={() => showConfirmDeleteModal(dataset)} />
@@ -189,6 +172,13 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
         />
         <Button title="Diagram" basic circular icon="fork" onClick={() => showDiagramModal(dataset)} />
         <Button title="Definition" basic circular icon="file code" onClick={() => showDefinitionModal(dataset)} />
+        <Button
+          title="Workflow List"
+          basic
+          circular
+          icon="list ul"
+          onClick={() => showWorkflowListViewModal(dataset)}
+        />
         <Button
           title="Edit"
           basic
@@ -203,7 +193,6 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
           basic
           circular
           icon="clock"
-          disabled={!global.enableScheduling}
           onClick={() => showSchedulingModal(dataset)}
         />
         <Button
@@ -219,7 +208,7 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
   };
 
   const filteredRows = () => {
-    return pageItems.map(e => {
+    return pageItems.map((e) => {
       return (
         <Table.Row key={`${e.name}-${e.version}`}>
           <Table.Cell>
@@ -254,7 +243,7 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
                 />
               }
               header={<h4>Used directly in following workflows:</h4>}
-              content={getDependencies(e).usedInWfs.map(wf => (
+              content={getDependencies(e).usedInWfs.map((wf) => (
                 <p key={wf.name}>{wf.name}</p>
               ))}
               basic
@@ -266,17 +255,17 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
     });
   };
 
-  const showDefinitionModal = workflow => {
+  const showDefinitionModal = (workflow) => {
     setDefModal(!defModal);
     setActiveWf(workflow);
   };
 
-  const showInputModal = workflow => {
+  const showInputModal = (workflow) => {
     setInputModal(!inputModal);
     setActiveWf(workflow);
   };
 
-  const showDiagramModal = workflow => {
+  const showDiagramModal = (workflow) => {
     setDiagramModal(!diagramModal);
     setActiveWf(workflow);
   };
@@ -286,18 +275,23 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
     getData();
   };
 
-  const showSchedulingModal = workflow => {
+  const showSchedulingModal = (workflow) => {
     setSchedulingModal(!schedulingModal);
     setActiveWf(workflow);
   };
 
-  const showDependencyModal = workflow => {
+  const showDependencyModal = (workflow) => {
     setDependencyModal(!dependencyModal);
     setActiveWf(workflow);
   };
 
-  const showConfirmDeleteModal = workflow => {
+  const showConfirmDeleteModal = (workflow) => {
     setConfirmDeleteModal(!confirmDeleteModal);
+    setActiveWf(workflow);
+  };
+
+  const showWorkflowListViewModal = (workflow) => {
+    setWorkflowListViewModal(!workflowListViewModal);
     setActiveWf(workflow);
   };
 
@@ -308,8 +302,8 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
     return null;
   };
 
-  const getDependencies = workflow => {
-    const usedInWfs = data.filter(wf => {
+  const getDependencies = (workflow) => {
+    const usedInWfs = data.filter((wf) => {
       let wfJSON = JSON.stringify(wf, null, 2);
       return wfJSON.includes(`"name": "${workflow.name}"`) && wf.name !== workflow.name;
     });
@@ -321,11 +315,25 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
   };
 
   const renderInputModal = () => {
-    return inputModal ? <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} /> : null;
+    return inputModal ? (
+      <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} onWorkflowIdClick={onWorkflowIdClick} />
+    ) : null;
   };
 
   const renderDiagramModal = () => {
     return diagramModal ? <DiagramModal wf={activeWf} modalHandler={showDiagramModal} show={diagramModal} /> : null;
+  };
+
+  const renderWorkflowListViewModal = () => {
+    return workflowListViewModal ? (
+      <WorkflowListViewModal
+        wf={activeWf}
+        modalHandler={showWorkflowListViewModal}
+        show={workflowListViewModal}
+        data={data}
+        onDefinitionClick={onDefinitionClick}
+      />
+    ) : null;
   };
 
   const renderSchedulingModal = () => {
@@ -342,7 +350,13 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
 
   const renderDependencyModal = () => {
     return dependencyModal ? (
-      <DependencyModal wf={activeWf} modalHandler={showDependencyModal} show={dependencyModal} data={data} />
+      <DependencyModal
+        wf={activeWf}
+        modalHandler={showDependencyModal}
+        show={dependencyModal}
+        data={data}
+        onDefinitionClick={onDefinitionClick}
+      />
     ) : null;
   };
 
@@ -373,6 +387,7 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
       {renderDependencyModal()}
       {renderSchedulingModal()}
       {renderConfirmDeleteModal()}
+      {renderWorkflowListViewModal()}
       <Row>
         <Button
           primary
@@ -386,7 +401,7 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
           <Typeahead
             id="typeaheadDefs"
             selected={labels}
-            onChange={e => setLabels(e)}
+            onChange={(e) => setLabels(e)}
             clearButton
             labelKey="name"
             multiple
@@ -398,7 +413,7 @@ const WorkflowDefinitions = ({ onDefinitionClick }: Props) => {
           <Form.Group>
             <Form.Control
               value={keywords}
-              onChange={e => setKeywords(e.target.value)}
+              onChange={(e) => setKeywords(e.target.value)}
               placeholder="Search by keyword."
             />
           </Form.Group>

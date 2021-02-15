@@ -3,7 +3,7 @@ import './css/bootstrap.min.css';
 import './css/awesomefonts.css';
 import './css/neat.css';
 import './css/mono-blue.min.css';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Provider } from 'react-redux';
 import { Redirect, Route, Switch, useRouteMatch, useParams } from 'react-router-dom';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
@@ -13,13 +13,13 @@ import WorkflowListHeader from './pages/workflowList/WorkflowListHeader';
 import buildReducer from './store/reducers/builder';
 import bulkReducer from './store/reducers/bulk';
 import searchReducer from './store/reducers/searchExecs';
-import { GlobalProvider } from './common/GlobalContext';
 import WorkflowDefinitions from './pages/workflowList/WorkflowDefs/WorkflowDefinitions';
 import WorkflowExec from './pages/workflowList/WorkflowExec/WorkflowExec';
 import Scheduling from './pages/workflowList/Scheduling/Scheduling';
 import EventListeners from './pages/workflowList/EventListeners/EventListeners';
 import TaskList from './pages/workflowList/Tasks/TaskList';
 import PollData from './pages/workflowList/PollData/PollData';
+import { getUniflowApiProvider } from './UniflowApiProvider';
 
 const rootReducer = combineReducers({
   bulkReducer,
@@ -31,17 +31,23 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
 
-function App(props) {
+const callbacks = {
+  //...
+};
+
+const UniflowApiProvider = getUniflowApiProvider(callbacks);
+
+function App() {
   let { path } = useRouteMatch();
 
   return (
-    <GlobalProvider {...props}>
+    <UniflowApiProvider>
       <Provider store={store}>
         <Switch>
           <Route
             exact
             path={[path + '/builder', path + '/builder/:name/:version']}
-            render={props => <DiagramBuilder {...props} />}
+            render={(props) => <DiagramBuilder {...props} />}
           />
           <>
             <WorkflowListHeader onAddButtonClick={() => {}} />
@@ -51,7 +57,7 @@ function App(props) {
             <Route
               exact
               path={path + '/exec/:wfid?'}
-              render={props => <WorkflowExec query={props.match.params.wfid} />}
+              render={(props) => <WorkflowExec query={props.match.params.wfid} />}
             />
             <Route exact path={path + '/scheduled'}>
               <Scheduling />
@@ -69,7 +75,7 @@ function App(props) {
           </>
         </Switch>
       </Provider>
-    </GlobalProvider>
+    </UniflowApiProvider>
   );
 }
 

@@ -33,15 +33,17 @@ export class Application {
     this.diagramEngine.registerLinkFactory(new LinkWithContextFactory());
     this.diagramEngine.registerLabelFactory(new DefaultLabelFactory());
 
-    this.diagramEngine.registerPortFactory(new SimplePortFactory('default', config => new DefaultPortModel()));
-    this.diagramEngine.registerPortFactory(new SimplePortFactory('start', config => new CircleStartPortModel()));
-    this.diagramEngine.registerPortFactory(new SimplePortFactory('end', config => new CircleEndPortModel()));
-    this.diagramEngine.registerPortFactory(new SimplePortFactory('fork', config => new ForkNodePortModel()));
-    this.diagramEngine.registerPortFactory(new SimplePortFactory('join', config => new JoinNodePortModel()));
-    this.diagramEngine.registerPortFactory(new SimplePortFactory('decision', config => new DecisionNodePortModel()));
-    this.diagramEngine.registerPortFactory(new SimplePortFactory('dynamic', config => new DynamicNodePortModel()));
-    this.diagramEngine.registerPortFactory(new SimplePortFactory('while', config => new DowhileNodePortModel()));
-    this.diagramEngine.registerPortFactory(new SimplePortFactory('while_end', config => new DowhileEndNodePortModel()));
+    this.diagramEngine.registerPortFactory(new SimplePortFactory('default', (config) => new DefaultPortModel()));
+    this.diagramEngine.registerPortFactory(new SimplePortFactory('start', (config) => new CircleStartPortModel()));
+    this.diagramEngine.registerPortFactory(new SimplePortFactory('end', (config) => new CircleEndPortModel()));
+    this.diagramEngine.registerPortFactory(new SimplePortFactory('fork', (config) => new ForkNodePortModel()));
+    this.diagramEngine.registerPortFactory(new SimplePortFactory('join', (config) => new JoinNodePortModel()));
+    this.diagramEngine.registerPortFactory(new SimplePortFactory('decision', (config) => new DecisionNodePortModel()));
+    this.diagramEngine.registerPortFactory(new SimplePortFactory('dynamic', (config) => new DynamicNodePortModel()));
+    this.diagramEngine.registerPortFactory(new SimplePortFactory('while', (config) => new DowhileNodePortModel()));
+    this.diagramEngine.registerPortFactory(
+      new SimplePortFactory('while_end', (config) => new DowhileEndNodePortModel()),
+    );
 
     this.diagramEngine.registerNodeFactory(new NodeWithContextFactory());
     this.diagramEngine.registerNodeFactory(new CircleStartNodeFactory());

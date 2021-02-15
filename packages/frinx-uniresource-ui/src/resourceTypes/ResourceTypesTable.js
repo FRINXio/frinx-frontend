@@ -22,7 +22,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import { withSnackbar } from 'notistack';
 import DeleteResourceTypeMutation from '../mutations/DeleteResourceTypeMutation';
-import {useStateValue} from "../utils/StateProvider";
+import { useStateValue } from '../utils/StateProvider';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -131,7 +131,7 @@ const ResourceTypesTable = ({
       <Table ria-label="pool table">
         <TableHead>
           <TableRow>
-            {isAdmin ? <StyledTableCell align="left">Actions</StyledTableCell> : null }
+            {isAdmin ? <StyledTableCell align="left">Actions</StyledTableCell> : null}
             <StyledTableCell align="left">Resource Type Name</StyledTableCell>
             <StyledTableCell align="left">ID</StyledTableCell>
             <StyledTableCell align="left">Properties</StyledTableCell>
@@ -143,7 +143,7 @@ const ResourceTypesTable = ({
           {resourceTypesData.map((row, i) => (
             // eslint-disable-next-line react/no-array-index-key
             <TableRow key={i}>
-              {isAdmin ?
+              {isAdmin ? (
                 <TableCell padding="checkbox" align="center">
                   <IconButton aria-controls="actions-menu" aria-haspopup="true" onClick={handleActionsClick}>
                     <MoreVertIcon />
@@ -168,7 +168,7 @@ const ResourceTypesTable = ({
                     </MenuItem>
                   </StyledMenu>
                 </TableCell>
-              : null}
+              ) : null}
               <TableCell align="left">{row.Name}</TableCell>
               <TableCell align="left">{row.id}</TableCell>
               <TableCell align="left">
