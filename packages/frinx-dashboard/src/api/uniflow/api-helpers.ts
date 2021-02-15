@@ -1,5 +1,6 @@
 // TODO dynamic source of url
-const CONDUCTOR_API_URL = 'http://frinx_test.frinx.services/workflow/proxy';
+// eslint-disable-next-line no-underscore-dangle
+const CONDUCTOR_API_URL = window.__CONFIG__.conductor_api_url;
 
 export async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
   const url = `${CONDUCTOR_API_URL}${path}`;
@@ -23,6 +24,9 @@ export async function sendPostRequest(path: string, body: unknown): Promise<unkn
   const options = {
     method: 'POST',
     body: JSON.stringify(body),
+    headers: {
+      'content-type': 'application/json',
+    },
   };
   return apiFetch(path, options);
 }
@@ -31,6 +35,9 @@ export async function sendPutRequest(path: string, body: unknown): Promise<unkno
   const options = {
     method: 'PUT',
     body: JSON.stringify(body),
+    headers: {
+      'content-type': 'application/json',
+    },
   };
   return apiFetch(path, options);
 }

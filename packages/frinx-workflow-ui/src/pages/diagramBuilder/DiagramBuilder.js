@@ -6,13 +6,13 @@ import { GlobalContext } from '../../common/GlobalContext';
 
 const DiagramBuilder = () => {
   const { name, version } = useParams();
-  // const [workflow, setWorkflow] = useState(null);
+  const [workflow, setWorkflow] = useState(null);
   const context = useContext(GlobalContext);
 
   useEffect(() => {
     fetch(context.backendApiUrlPrefix + '/metadata/workflow/' + name + '/' + version)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         console.log(data);
         setWorkflow(data.result);
       });

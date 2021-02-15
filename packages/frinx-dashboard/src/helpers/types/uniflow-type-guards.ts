@@ -1,10 +1,11 @@
-import { Workflow, TaskDefinition, Queue, WorkflowPayload, EventListener } from './uniflow-types';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { Workflow, TaskDefinition, Queue, EventListener } from './uniflow-types';
 
 // TODO more strict in the future
 
 export function isWorkflow(workflow: unknown): workflow is Workflow {
   if (workflow !== null && typeof workflow === 'object') {
-    return 'name' in workflow! && typeof workflow['name'] === 'string';
+    return 'name' in workflow!;
   }
 
   return false;
@@ -12,7 +13,7 @@ export function isWorkflow(workflow: unknown): workflow is Workflow {
 
 export function isTaskDefinition(taskDefinition: unknown): taskDefinition is TaskDefinition {
   if (taskDefinition !== null && typeof taskDefinition === 'object') {
-    return 'name' in taskDefinition! && typeof taskDefinition['name'] === 'string';
+    return 'name' in taskDefinition!;
   }
 
   return false;
@@ -24,7 +25,7 @@ export function isArrayTypeOf<T>(array: unknown, testFunc: (value: unknown) => v
 
 export function isEventListener(eventListener: unknown): eventListener is EventListener {
   if (eventListener !== null && typeof eventListener === 'object') {
-    return 'name' in eventListener! && typeof eventListener['name'] === 'string';
+    return 'name' in eventListener!;
   }
 
   return false;
@@ -32,7 +33,7 @@ export function isEventListener(eventListener: unknown): eventListener is EventL
 
 export function isQueue(queue: unknown): queue is Queue {
   if (queue !== null && typeof queue === 'object') {
-    return 'queueName' in queue! && typeof queue['queueName'] === 'string';
+    return 'queueName' in queue!;
   }
 
   return false;

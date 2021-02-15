@@ -1,11 +1,11 @@
 // @flow
 import GeneralTab from './GeneralTab';
 import InputsTab from './InputsTab';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Modal, Tab, Tabs } from 'react-bootstrap';
-import { GlobalContext } from '../../../common/GlobalContext';
 import { hash } from '../builder-utils';
-import { HttpClient as http } from '../../../common/HttpClient';
+import callbackUtils from '../../../utils/callbackUtils';
+import { jsonParse } from '../../../common/utils';
 
 const OBJECT_KEYWORDS = ['template', 'body'];
 
@@ -18,15 +18,19 @@ const renameObjKey = (oldObj, oldKey, newKey) => {
 };
 
 function NodeModal(props) {
-  const global = useContext(GlobalContext);
   const [inputs, setInputs] = useState([]);
   const [name, setName] = useState();
   const [version, setVersion] = useState();
+  const [description, setDescription] = useState();
   const [inputParameters, setInputParameters] = useState([]);
 
   useEffect(() => {
-    setName(props.inputs.inputs.name);
-    setInputs(props.inputs.inputs);
+    const inputs = props.inputs.inputs;
+    const { name, description } = inputs;
+
+    setName(name);
+    setDescription(jsonParse(description));
+    setInputs(inputs);
 
     const { subWorkflowParam } = props.inputs.inputs;
 
@@ -35,8 +39,10 @@ function NodeModal(props) {
       setName(name);
       setVersion(version);
 
-      http.get(global.backendApiUrlPrefix + '/metadata/workflow/' + name + '/' + version).then(res => {
-        setInputParameters(res.result.inputParameters);
+      const getWorkflow = callbackUtils.getWorkflowCallback();
+
+      getWorkflow(name, version).then((workflow) => {
+        setInputParameters(workflow.inputParameters);
       });
     }
   }, [props.inputs]);
@@ -96,7 +102,7 @@ function NodeModal(props) {
     const inputParameters = updatedInputs.inputParameters;
 
     if (typeof key[1] === 'object') {
-      if (OBJECT_KEYWORDS.find(e => entry[0].includes(e))) {
+      if (OBJECT_KEYWORDS.find((e) => entry[0].includes(e))) {
         try {
           value = JSON.parse(value);
         } catch (e) {
@@ -174,7 +180,7 @@ function NodeModal(props) {
       if (entry[0] === 'headers') {
         value = updateHTTPHeader(value, i, headerKey);
       } else if (
-        OBJECT_KEYWORDS.find(e => entry[0].includes(e)) &&
+        OBJECT_KEYWORDS.find((e) => entry[0].includes(e)) &&
         !props.inputs.inputs.taskReferenceName.includes('graphQLTaskRef_')
       ) {
         try {
@@ -218,6 +224,28 @@ function NodeModal(props) {
     setInputs(copiedInputs);
   }
 
+  function updateDescription(value) {
+    const copiedInputs = { ...inputs };
+    let descriptionObj;
+
+    try {
+      descriptionObj = JSON.parse(copiedInputs.description);
+    } catch (e) {
+      descriptionObj = {
+        description: '',
+        labels: [],
+      };
+    }
+
+    descriptionObj = {
+      ...descriptionObj,
+      description: value,
+    };
+
+    copiedInputs.description = JSON.stringify(descriptionObj);
+    setInputs(copiedInputs);
+  }
+
   function handleInput(value, key, entry, i, headerKey) {
     switch (key[0]) {
       case 'inputParameters':
@@ -232,6 +260,9 @@ function NodeModal(props) {
         break;
       case 'decisionCases':
         updateDecisionCase(value);
+        break;
+      case 'description':
+        updateDescription(value);
         break;
       default: {
         let copiedInputs = { ...inputs };
@@ -248,8 +279,11 @@ function NodeModal(props) {
   return (
     <Modal size="lg" show={props.show} onHide={props.modalHandler}>
       <Modal.Header>
-        <Modal.Title style={{ fontSize: '20px' }}>
+        <Modal.Title>
           {name} / {version}
+          <div style={{ fontSize: '18px' }}>
+            <p className="text-muted">{description?.description}</p>
+          </div>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ padding: '30px' }}>

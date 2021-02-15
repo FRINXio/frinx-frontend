@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-
 type AnyJson = JsonArray | JsonMap;
 type JsonMap = {
   [key: string]: AnyJson | string;

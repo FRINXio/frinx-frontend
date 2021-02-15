@@ -1,32 +1,30 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Input, Icon } from 'semantic-ui-react';
 import moment from 'moment';
-import { HttpClient as http } from '../../../common/HttpClient';
-import { GlobalContext } from '../../../common/GlobalContext';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
 import { usePagination } from '../../../common/PaginationHook';
 import PaginationPages from '../../../common/Pagination';
 import PageContainer from '../../../common/PageContainer';
+import callbackUtils from '../../../utils/callbackUtils';
 
 const PollData = () => {
-  const global = useContext(GlobalContext);
   const [sorted, setSorted] = useState(false);
   const [data, setData] = useState([]);
   const [keywords, setKeywords] = useState('');
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
 
   useEffect(() => {
-    http.get(global.backendApiUrlPrefix + '/queue/data').then(data => {
-      if (data.polldata) {
-        setData(data.polldata);
-      }
+    const getQueues = callbackUtils.getQueuesCallback();
+
+    getQueues().then((queues) => {
+      setData(queues);
     });
   }, []);
 
   useEffect(() => {
     const results = !keywords
       ? data
-      : data.filter(e => {
+      : data.filter((e) => {
           let searchedKeys = ['queueName', 'qsize', 'lastPollTime', 'workerId'];
 
           for (let i = 0; i < searchedKeys.length; i += 1) {
@@ -41,12 +39,7 @@ const PollData = () => {
                 return true;
               }
             }
-            if (
-              e[searchedKeys[i]]
-                .toString()
-                .toLowerCase()
-                .includes(keywords.toLocaleLowerCase())
-            ) {
+            if (e[searchedKeys[i]].toString().toLowerCase().includes(keywords.toLocaleLowerCase())) {
               return true;
             }
           }
@@ -55,7 +48,7 @@ const PollData = () => {
     setItemList(results);
   }, [keywords, data]);
 
-  const sortArray = key => {
+  const sortArray = (key) => {
     let sortedArray = data;
 
     sortedArray.sort(sorted ? sortDescBy(key) : sortAscBy(key));
@@ -64,7 +57,7 @@ const PollData = () => {
   };
 
   const filteredRows = () => {
-    return pageItems.map(e => {
+    return pageItems.map((e) => {
       return (
         <Table.Row key={e.queueName}>
           <Table.Cell>{e.queueName}</Table.Cell>
@@ -102,7 +95,7 @@ const PollData = () => {
   return (
     <PageContainer>
       <Input iconPosition="left" fluid icon placeholder="Search...">
-        <input value={keywords} onChange={e => setKeywords(e.target.value)} />
+        <input value={keywords} onChange={(e) => setKeywords(e.target.value)} />
         <Icon name="search" />
       </Input>
       {pollTable()}

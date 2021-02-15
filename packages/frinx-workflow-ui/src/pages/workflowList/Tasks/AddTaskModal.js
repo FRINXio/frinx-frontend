@@ -1,12 +1,12 @@
 import React from 'react';
 import { Col, Row, Modal, Form, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-const AddTaskModal = props => {
+const AddTaskModal = (props) => {
   const handleClose = () => {
     props.modalHandler();
   };
 
-  const showInfo = i => {
+  const showInfo = (i) => {
     return (
       <OverlayTrigger
         key={`info${i}`}
@@ -37,7 +37,7 @@ const AddTaskModal = props => {
                     <Form.Control
                       type="input"
                       name={Object.keys(props.taskBody)[i]}
-                      onChange={e => props.handleInput(e)}
+                      onChange={(e) => props.handleInput(e)}
                       placeholder="Enter the input"
                       value={Object.values(props.taskBody)[i] ? Object.values(props.taskBody)[i] : ''}
                     />

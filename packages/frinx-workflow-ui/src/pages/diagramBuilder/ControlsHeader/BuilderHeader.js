@@ -4,7 +4,7 @@ import logo from './logo-min.png';
 import x from './X_icon_RGB-min.png';
 import { Navbar } from 'react-bootstrap';
 import { Button, Dropdown, Icon, Popup } from 'semantic-ui-react';
-import { NavLink, withRouter } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import './BuilderHeader.css';
 
@@ -47,7 +47,7 @@ const Title = () => (
   </motion.div>
 );
 
-const ControlsButton = props => (
+const ControlsButton = (props) => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{
@@ -115,7 +115,7 @@ const ControlsButton = props => (
           style={{ paddingLeft: '10px', paddingRight: '10px' }}
         >
           <Dropdown.Menu>
-            {[25, 50, 75, 100, 125].map(level => {
+            {[25, 50, 75, 100, 125].map((level) => {
               return (
                 <Dropdown.Item key={'zoom-lvl-item-' + level} onClick={() => props.setZoomLevel(level)}>
                   <span className="text">{level}</span>
@@ -239,7 +239,7 @@ const ControlsButton = props => (
   </motion.div>
 );
 
-const BuilderHeader = props => {
+const BuilderHeader = (props) => {
   const inputFileRef = useRef(null);
 
   useEffect(() => {
@@ -249,7 +249,7 @@ const BuilderHeader = props => {
     };
   }, []);
 
-  const handleClickInside = event => {
+  const handleClickInside = (event) => {
     const headerEl = document.getElementById('builder-header');
     const sideMenu = document.getElementById('sidebar-secondary');
     const expandBtn = document.getElementById('expand');
@@ -261,13 +261,14 @@ const BuilderHeader = props => {
       headerEl &&
       sideMenu &&
       (headerEl.contains(event.target) || sideMenu.contains(event.target)) &&
-      !expandBtn.contains(event.target) && !deleteBtn.contains(event.target)
+      !expandBtn.contains(event.target) &&
+      !deleteBtn.contains(event.target)
     ) {
       props.workflowDiagram.getDiagramModel().clearSelection();
       props.workflowDiagram.renderDiagram();
     }
   };
-  const onFileChange = e => {
+  const onFileChange = (e) => {
     props.submitFile(e);
   };
 
@@ -298,7 +299,7 @@ const BuilderHeader = props => {
         setZoomLevel={props.setZoomLevel}
         setLocked={props.setLocked}
       />
-      <input type="file" hidden ref={inputFileRef} onClick={e => (e.target.value = null)} onChange={onFileChange} />
+      <input type="file" hidden ref={inputFileRef} onClick={(e) => (e.target.value = null)} onChange={onFileChange} />
       <Navbar.Collapse className="justify-content-end">
         <Button key="exit-btn" basic inverted animated="vertical" onClick={props.showExitModal}>
           <Button.Content hidden>Exit</Button.Content>
@@ -311,4 +312,4 @@ const BuilderHeader = props => {
   );
 };
 
-export default withRouter(BuilderHeader);
+export default BuilderHeader;

@@ -4,10 +4,8 @@ import React, { Component } from 'react';
 import { Accordion, Button, Card, Col, ProgressBar, Row, Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import * as bulkActions from '../../../../store/actions/bulk';
-import { GlobalContext } from '../../../../common/GlobalContext';
 
 class WorkflowBulk extends Component {
-  static contextType = GlobalContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -23,7 +21,7 @@ class WorkflowBulk extends Component {
     }
 
     let operation = e.target.value;
-    performBulkOperation(operation, selectedWfs, this.props.pageCount, this.context.backendApiUrlPrefix);
+    performBulkOperation(operation, selectedWfs, this.props.pageCount);
     this.props.bulkOperation();
     this.props.selectAllWfs();
   }
@@ -101,13 +99,13 @@ class WorkflowBulk extends Component {
                   </p>
                 </Col>
                 <Col>
-                  <Button variant="outline-primary" value="pause" onClick={e => this.performOperation(e)}>
+                  <Button variant="outline-primary" value="pause" onClick={(e) => this.performOperation(e)}>
                     Pause
                   </Button>
                   <Button
                     variant="outline-primary"
                     value="resume"
-                    onClick={e => this.performOperation(e)}
+                    onClick={(e) => this.performOperation(e)}
                     style={{ marginLeft: '5px' }}
                   >
                     Resume
@@ -115,7 +113,7 @@ class WorkflowBulk extends Component {
                   <Button
                     variant="outline-primary"
                     value="retry"
-                    onClick={e => this.performOperation(e)}
+                    onClick={(e) => this.performOperation(e)}
                     style={{ marginLeft: '5px' }}
                   >
                     Retry
@@ -123,7 +121,7 @@ class WorkflowBulk extends Component {
                   <Button
                     variant="outline-primary"
                     value="restart"
-                    onClick={e => this.performOperation(e)}
+                    onClick={(e) => this.performOperation(e)}
                     style={{ marginLeft: '5px' }}
                   >
                     Restart
@@ -131,7 +129,7 @@ class WorkflowBulk extends Component {
                   <Button
                     variant="outline-danger"
                     value="terminate"
-                    onClick={e => this.performOperation(e)}
+                    onClick={(e) => this.performOperation(e)}
                     style={{ marginLeft: '5px' }}
                   >
                     Terminate
@@ -139,7 +137,7 @@ class WorkflowBulk extends Component {
                   <Button
                     variant="outline-secondary"
                     value="delete"
-                    onClick={e => this.performOperation(e)}
+                    onClick={(e) => this.performOperation(e)}
                     style={{ marginLeft: '5px' }}
                   >
                     Delete
@@ -157,21 +155,18 @@ class WorkflowBulk extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     bulkReducer: state.bulkReducer,
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    performBulkOperation: (operation, wfs, defaultPages, backendApiUrlPrefix) =>
-      dispatch(bulkActions.performBulkOperation(operation, wfs, defaultPages, backendApiUrlPrefix)),
-    setView: value => dispatch(bulkActions.setView(value)),
+    performBulkOperation: (operation, wfs, defaultPages) =>
+      dispatch(bulkActions.performBulkOperation(operation, wfs, defaultPages)),
+    setView: (value) => dispatch(bulkActions.setView(value)),
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(WorkflowBulk);
+export default connect(mapStateToProps, mapDispatchToProps)(WorkflowBulk);

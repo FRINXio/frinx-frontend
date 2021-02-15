@@ -1,15 +1,13 @@
 // @flow
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PageCount from '../../../common/PageCount';
 import PageSelect from '../../../common/PageSelect';
 import SchedulingModal from './SchedulingModal/SchedulingModal';
-import superagent from 'superagent';
 import { Accordion, Button, Card, Col, Container, Row, Table } from 'react-bootstrap';
-import { GlobalContext } from '../../../common/GlobalContext';
 import PageContainer from '../../../common/PageContainer';
+import callbackUtils from '../../../utils/callbackUtils';
 
 const Scheduling = () => {
-  const global = useContext(GlobalContext);
   const [showSchedulingModal, setShowSchedulingModal] = useState(false);
   const [activeRow, setActiveRow] = useState();
   const [pagesCount, setPagesCount] = useState(1);
@@ -20,9 +18,9 @@ const Scheduling = () => {
   const [viewedPage, setViewedPage] = useState(1);
 
   const refresh = () => {
-    const path = global.backendApiUrlPrefix + '/schedule/';
-    const req = superagent.get(path).accept('application/json');
-    req.end((err, res) => {
+    const getSchedules = callbackUtils.getSchedulesCallback();
+
+    getSchedules().then((res, err) => {
       if (res && res.ok && Array.isArray(res.body)) {
         const result = res.body;
 
@@ -51,7 +49,7 @@ const Scheduling = () => {
     setActiveRow(null);
   };
 
-  const changeActiveRow = i => {
+  const changeActiveRow = (i) => {
     const deselectingCurrentRow = activeRow == i;
     if (deselectingCurrentRow) {
       deselectActiveRow();
@@ -66,10 +64,10 @@ const Scheduling = () => {
     setViewedPage(1);
   };
 
-  const deleteEntry = schedulingEntry => {
-    const path = global.backendApiUrlPrefix + '/schedule/' + schedulingEntry.name;
-    const req = superagent.delete(path).accept('application/json');
-    req.end((err, res) => {
+  const deleteEntry = (schedulingEntry) => {
+    const deleteSchedule = callbackUtils.deleteScheduleCallback();
+
+    deleteSchedule(schedulingEntry.name).then((res) => {
       if (res && res.ok) {
         deselectActiveRow();
         refresh();

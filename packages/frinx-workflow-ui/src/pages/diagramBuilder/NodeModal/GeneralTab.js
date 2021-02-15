@@ -4,6 +4,7 @@ import { Accordion, Icon } from 'semantic-ui-react';
 import { Button, ButtonGroup, Col, Form, InputGroup } from 'react-bootstrap';
 import { taskDescriptions } from '../../../constants';
 import AceEditor from 'react-ace';
+import { jsonParse } from '../../../common/utils';
 
 const HIDDEN = [
   'type',
@@ -15,16 +16,18 @@ const HIDDEN = [
   'inputParameters',
   'defaultCase',
   'loopOver',
+  'description',
 ];
 
-const GeneralTab = props => {
+const GeneralTab = (props) => {
   const [showAdvancedParams, setShowAdvancedParams] = useState(false);
   const taskName = props.inputs?.name || '';
   const taskRefName = props?.inputs?.taskReferenceName || '';
+  const description = jsonParse(props?.inputs?.description)?.description;
   const decisionCases = [];
   const caseValueParam = [];
 
-  const renderTaskName = item => (
+  const renderTaskName = (item) => (
     <Form.Group>
       <InputGroup size="lg">
         <InputGroup.Prepend>
@@ -33,7 +36,7 @@ const GeneralTab = props => {
         <Form.Control
           type="input"
           disabled={props.inputs?.type === 'SIMPLE'}
-          onChange={e => props.handleInput(e.target.value, 'name')}
+          onChange={(e) => props.handleInput(e.target.value, 'name')}
           value={item}
         />
       </InputGroup>
@@ -41,7 +44,7 @@ const GeneralTab = props => {
     </Form.Group>
   );
 
-  const renderTaskRefName = item => (
+  const renderTaskRefName = (item) => (
     <Form.Group>
       <InputGroup size="lg">
         <InputGroup.Prepend>
@@ -49,11 +52,23 @@ const GeneralTab = props => {
         </InputGroup.Prepend>
         <Form.Control
           type="input"
-          onChange={e => props.handleInput(e.target.value, 'taskReferenceName')}
+          onChange={(e) => props.handleInput(e.target.value, 'taskReferenceName')}
           value={item}
         />
       </InputGroup>
       <Form.Text className="text-muted">{taskDescriptions['taskReferenceName']}</Form.Text>
+    </Form.Group>
+  );
+
+  const renderDescription = (item) => (
+    <Form.Group>
+      <InputGroup>
+        <InputGroup.Prepend>
+          <InputGroup.Text>description:</InputGroup.Text>
+        </InputGroup.Prepend>
+        <Form.Control type="input" onChange={(e) => props.handleInput(e.target.value, ['description'])} value={item} />
+      </InputGroup>
+      <Form.Text className="text-muted">{taskDescriptions['description']}</Form.Text>
     </Form.Group>
   );
 
@@ -79,8 +94,8 @@ const GeneralTab = props => {
     </Form.Group>
   );
 
-  const renderDecisionCasesParam = item => {
-    return Object.entries(item[1]).forEach(entry => {
+  const renderDecisionCasesParam = (item) => {
+    return Object.entries(item[1]).forEach((entry) => {
       decisionCases.push(
         <Col sm={6} key={`colGeneral-decision-case`}>
           <Form.Group>
@@ -88,7 +103,7 @@ const GeneralTab = props => {
               <InputGroup.Prepend>
                 <InputGroup.Text>is equal to</InputGroup.Text>
               </InputGroup.Prepend>
-              <Form.Control type="input" onChange={e => props.handleInput(e.target.value, item)} value={entry[0]} />
+              <Form.Control type="input" onChange={(e) => props.handleInput(e.target.value, item)} value={entry[0]} />
             </InputGroup>
             <Form.Text className="text-muted">{taskDescriptions[item[0]]}</Form.Text>
           </Form.Group>
@@ -105,7 +120,7 @@ const GeneralTab = props => {
     );
   };
 
-  const renderCaseValueParam = item => {
+  const renderCaseValueParam = (item) => {
     caseValueParam.push(
       <Col sm={6} key={`colGeneral-case-value`}>
         <Form.Group>
@@ -113,7 +128,7 @@ const GeneralTab = props => {
             <InputGroup.Prepend>
               <InputGroup.Text>if</InputGroup.Text>
             </InputGroup.Prepend>
-            <Form.Control type="input" onChange={e => props.handleInput(e.target.value, item[0])} value={item[1]} />
+            <Form.Control type="input" onChange={(e) => props.handleInput(e.target.value, item[0])} value={item[1]} />
           </InputGroup>
           <Form.Text className="text-muted">{taskDescriptions[item[0]]}</Form.Text>
         </Form.Group>
@@ -131,7 +146,7 @@ const GeneralTab = props => {
             theme="tomorrow"
             width="100%"
             height="300px"
-            onChange={val => props.handleInput(val, item[0])}
+            onChange={(val) => props.handleInput(val, item[0])}
             fontSize={16}
             value={item[1]}
             wrapEnabled={true}
@@ -156,7 +171,7 @@ const GeneralTab = props => {
             <InputGroup.Prepend>
               <InputGroup.Text>{item[0]}:</InputGroup.Text>
             </InputGroup.Prepend>
-            <Form.Control type="input" onChange={e => props.handleInput(e.target.value, item[0])} value={item[1]} />
+            <Form.Control type="input" onChange={(e) => props.handleInput(e.target.value, item[0])} value={item[1]} />
           </InputGroup>
           <Form.Text className="text-muted">{taskDescriptions[item[0]]}</Form.Text>
         </Form.Group>
@@ -189,6 +204,7 @@ const GeneralTab = props => {
     <Form>
       {renderTaskName(taskName)}
       {renderTaskRefName(taskRefName)}
+      {renderDescription(description)}
       <Form.Row>
         {caseValueParam}
         {decisionCases}

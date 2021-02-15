@@ -1,13 +1,11 @@
 // @flow
 
 import AceEditor from 'react-ace';
-import React, { useContext, useState } from 'react';
-import superagent from 'superagent';
+import React, { useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { GlobalContext } from '../../../../common/GlobalContext';
+import callbackUtils from '../../../../utils/callbackUtils';
 
-const SchedulingModal = props => {
-  const global = useContext(GlobalContext);
+const SchedulingModal = (props) => {
   const [schedule, setSchedule] = useState();
   const [status, setStatus] = useState();
   const [error, setError] = useState();
@@ -23,9 +21,10 @@ const SchedulingModal = props => {
     setSchedule(null);
     setStatus(null);
     setError(null);
-    const path = global.backendApiUrlPrefix + '/schedule/' + props.name;
-    const req = superagent.get(path).accept('application/json');
-    req.end((err, res) => {
+
+    const getSchedule = callbackUtils.getScheduleCallback();
+
+    getSchedule(props.name).then((res) => {
       if (res && res.ok) {
         // found in db
         setFound(true);
@@ -48,9 +47,10 @@ const SchedulingModal = props => {
   const submitForm = () => {
     setError(null);
     setStatus('Submitting');
-    const path = global.backendApiUrlPrefix + '/schedule/' + props.name;
-    const req = superagent.put(path, schedule).set('Content-Type', 'application/json');
-    req.end((err, res) => {
+
+    const registerSchedule = callbackUtils.registerScheduleCallback();
+
+    registerSchedule(props.name, schedule).then((res, err) => {
       if (res && res.ok) {
         handleClose();
       } else {
@@ -60,7 +60,7 @@ const SchedulingModal = props => {
     });
   };
 
-  const setCronString = str => {
+  const setCronString = (str) => {
     const mySchedule = {
       ...schedule,
       cronString: str,
@@ -68,7 +68,7 @@ const SchedulingModal = props => {
     setSchedule(mySchedule);
   };
 
-  const setEnabled = enabled => {
+  const setEnabled = (enabled) => {
     const mySchedule = {
       ...schedule,
       enabled: enabled,
@@ -76,7 +76,7 @@ const SchedulingModal = props => {
     setSchedule(mySchedule);
   };
 
-  const setWorkflowContext = workflowContext => {
+  const setWorkflowContext = (workflowContext) => {
     try {
       workflowContext = JSON.parse(workflowContext);
       const mySchedule = {
@@ -123,9 +123,10 @@ const SchedulingModal = props => {
   const handleDelete = () => {
     setError(null);
     setStatus('Deleting');
-    const path = global.backendApiUrlPrefix + '/schedule/' + props.name;
-    const req = superagent.delete(path, schedule);
-    req.end((err, res) => {
+
+    const deleteSchedule = callbackUtils.deleteScheduleCallback();
+
+    deleteSchedule(props.name).then((res, err) => {
       if (res && res.ok) {
         handleClose();
       } else {
@@ -156,7 +157,7 @@ const SchedulingModal = props => {
             <Form.Label>Cron</Form.Label>
             <Form.Control
               type="input"
-              onChange={e => setCronString(e.target.value)}
+              onChange={(e) => setCronString(e.target.value)}
               placeholder="Enter cron pattern"
               value={getCronString()}
             />
@@ -164,7 +165,7 @@ const SchedulingModal = props => {
           </Form.Group>
           <Form.Group>
             <Form.Label>Enabled</Form.Label>
-            <Form.Control type="checkbox" onChange={e => setEnabled(e.target.checked)} checked={getEnabled()} />
+            <Form.Control type="checkbox" onChange={(e) => setEnabled(e.target.checked)} checked={getEnabled()} />
           </Form.Group>
           <Form.Group>
             <Form.Label>Workflow Input</Form.Label>
@@ -173,7 +174,7 @@ const SchedulingModal = props => {
               theme="tomorrow"
               width="100%"
               height="100px"
-              onChange={data => setWorkflowContext(data)}
+              onChange={(data) => setWorkflowContext(data)}
               fontSize={16}
               value={getWorkflowContext()}
               wrapEnabled={true}

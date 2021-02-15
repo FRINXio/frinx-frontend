@@ -13,7 +13,7 @@ const WfLabels = (props: Props) => {
   let color = props.index >= wfLabelsColor.length ? wfLabelsColor[0] : wfLabelsColor[props.index];
   return (
     <Label
-      onClick={e => {
+      onClick={(e) => {
         e.stopPropagation();
         if (props.search) props.search();
       }}

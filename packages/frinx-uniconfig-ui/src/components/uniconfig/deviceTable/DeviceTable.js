@@ -17,14 +17,14 @@ import DnsIcon from '@material-ui/icons/Dns';
 import IconButton from '@material-ui/core/IconButton';
 import ConnectionStatusBadge from '../../common/ConnectionStatusBadge';
 
-const StyledTableCell = withStyles(theme => ({
+const StyledTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: theme.palette.primary.dark,
     color: theme.palette.common.white,
   },
 }))(TableCell);
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     marginTop: '20px',
   },
@@ -53,12 +53,12 @@ const DeviceTable = (props: Props) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = event => {
+  const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const checkNode = node => {
+  const checkNode = (node) => {
     let newChecked = [...props.checked];
 
     if (Array.isArray(node)) {

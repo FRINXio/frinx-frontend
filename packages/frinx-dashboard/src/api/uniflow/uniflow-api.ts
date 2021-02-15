@@ -8,9 +8,11 @@ import {
   isWorkflow,
 } from '../../helpers/types/uniflow-type-guards';
 
-// Get all the workflow definitions
+// Get all the workflow definitions (including scheduled)
 export async function getWorkflows(): Promise<Workflow[]> {
-  const workflows = await sendGetRequest('/metadata/workflow');
+  const response = await sendGetRequest('/metadata/workflow');
+  // TODO: backend should return just 'Workflow[]' not '{result: Workflow[]}`
+  const workflows = (response as { result: unknown }).result;
 
   if (isArrayTypeOf<Workflow>(workflows, isWorkflow)) {
     return workflows;
@@ -19,28 +21,50 @@ export async function getWorkflows(): Promise<Workflow[]> {
   throw new Error(`Expected Workflow[], got '${JSON.stringify(workflows)}'.`);
 }
 
-// Get all the scheduled workflows
-export async function getScheduledWorkflows(): Promise<Workflow[]> {
-  const scheduled = await sendGetRequest('/schedule/metadata/workflow');
+// TODO: types, guards
+// Get schedules of workflows
+export async function getSchedules(): Promise<unknown> {
+  const scheduled = await sendGetRequest('/schedule/');
 
-  if (isArrayTypeOf<Workflow>(scheduled, isWorkflow)) {
-    return scheduled;
-  }
-
-  throw new Error(`Expected Workflow[], got '${JSON.stringify(scheduled)}'.`);
+  return scheduled;
 }
 
-// TODO change route in uniflow-api to "/metadata/taskdefs"
-// Register new task definition
-export async function registerTaskDefinition(taskDefinition: TaskDefinition): Promise<TaskDefinition> {
-  const definition = await sendPostRequest('/metadata/taskdef/', taskDefinition);
+// TODO: types, guards
+// Get workflow schedule
+export async function getSchedule(name: string): Promise<unknown> {
+  const scheduled = await sendGetRequest(`/schedule/${name}`);
 
-  return definition as TaskDefinition;
+  return scheduled;
+}
+
+// TODO: types, guards
+// Register workflow schedule
+export async function registerSchedule(name: string, schedule: unknown): Promise<unknown> {
+  const scheduled = await sendPutRequest(`/schedule/${name}`, schedule);
+
+  return scheduled;
+}
+
+// TODO: types, guards
+// Delete workflow schedule
+export async function deleteSchedule(name: string): Promise<unknown> {
+  const scheduled = await sendDeleteRequest(`/schedule/${name}`);
+
+  return scheduled;
+}
+
+// Register new task definition
+export async function registerTaskDefinition(taskDefinition: TaskDefinition[]): Promise<TaskDefinition[]> {
+  const definition = await sendPostRequest('/metadata/taskdefs/', taskDefinition);
+
+  return definition as TaskDefinition[];
 }
 
 // Get all the task definitions
 export async function getTaskDefinitions(): Promise<TaskDefinition[]> {
-  const definitions = await sendGetRequest('/metadata/taskdefs');
+  const response = await sendGetRequest('/metadata/taskdefs');
+  // TODO: backend should return just 'Workflow[]' not '{result: Workflow[]}`
+  const definitions = (response as { result: unknown }).result;
 
   if (isArrayTypeOf<TaskDefinition>(definitions, isTaskDefinition)) {
     return definitions;
@@ -51,7 +75,8 @@ export async function getTaskDefinitions(): Promise<TaskDefinition[]> {
 
 // Get a task definition
 export async function getTaskDefinition(name: string): Promise<TaskDefinition> {
-  const definition = await sendGetRequest('/metadata/taskdefs/' + name);
+  const response = await sendGetRequest(`/metadata/taskdefs/${name}`);
+  const definition = (response as { result: unknown }).result;
 
   if (isTaskDefinition(definition)) {
     return definition;
@@ -63,20 +88,29 @@ export async function getTaskDefinition(name: string): Promise<TaskDefinition> {
 // Delete a task definition
 export async function deleteTaskDefinition(name: string): Promise<TaskDefinition> {
   const query = '?archiveWorfklow=false';
-  const definition = await sendDeleteRequest('/metadata/taskdefs/' + name + query);
+  const definition = await sendDeleteRequest(`/metadata/taskdef/${name}${query}`);
 
   return definition as TaskDefinition;
 }
 
 // Returns single workflow based on name and version
 export async function getWorkflow(name: string, version: number): Promise<Workflow> {
-  const data = await sendGetRequest(`/metadata/workflow/${name}/${version}`);
-  console.log(data)
-  if (isWorkflow(data.result)) {
-    return data.result;
+  const response = await sendGetRequest(`/metadata/workflow/${name}/${version}`);
+  // TODO: backend should return just 'Workflow' not '{result: Workflow}`
+  const workflow = (response as { result: unknown }).result;
+
+  if (isWorkflow(workflow)) {
+    return workflow;
   }
 
   throw new Error(`Expected Workflow, got '${JSON.stringify(data.result)}'.`);
+}
+
+// Delete workflow
+export async function deleteWorkflow(name: string, version: number): Promise<Workflow> {
+  const workflow = await sendDeleteRequest(`/metadata/workflow/${name}/${version}`);
+
+  return workflow as Workflow;
 }
 
 // Register/Update new workflows
@@ -107,14 +141,15 @@ export async function registerEventListener(eventListener: EventListener): Promi
 // Delete event listener
 export async function deleteEventListener(name: string): Promise<EventListener> {
   const query = '?archiveWorfklow=false';
-  const eventListenerRes = await sendDeleteRequest('/event/' + name + query);
+  const eventListenerRes = await sendDeleteRequest(`/event/${name}${query}`);
 
   return eventListenerRes as EventListener;
 }
 
 // Get all queues
 export async function getQueues(): Promise<Queue[]> {
-  const queues = await sendGetRequest('/queue/data');
+  const response = await sendGetRequest('/queue/data');
+  const queues = (response as { polldata: unknown }).polldata;
 
   if (isArrayTypeOf<Queue>(queues, isQueue)) {
     return queues;
@@ -124,10 +159,21 @@ export async function getQueues(): Promise<Queue[]> {
 }
 
 // TODO: Just copy-pasted for now, needs rework in uniflow-api
-// Returns hierarchical list of running workflows
-export async function getWorkflowExecutions(query: string): Promise<unknown> {
-  query = 'status:"RUNNING"';
-  const executions = sendGetRequest(`/executions/?q=&h=&freeText=${query}&start=0&size=`);
+// Returns list of running workflows
+export async function getWorkflowExecutions(query = 'status:"RUNNING"', start = 0, size = ''): Promise<unknown> {
+  const executions = sendGetRequest(`/executions/?q=&h=&freeText=${query}&start=${start}&size=${size}`);
+
+  return executions;
+}
+
+// TODO: Just copy-pasted for now, needs rework in uniflow-api
+// Returns list of running workflows in hierarchical strucutre
+export async function getWorkflowExecutionsHierarchical(
+  query: string,
+  start?: number,
+  size?: string,
+): Promise<unknown> {
+  const executions = sendGetRequest(`/hierarchical/?freeText=${query}&start=${start}&size=${size}`);
 
   return executions;
 }
@@ -176,4 +222,10 @@ export async function restartWorkflows(workflowIds: string[]): Promise<string[]>
   const workflowIdsRes = await sendPostRequest('/bulk/restart', workflowIds);
 
   return workflowIdsRes as string[];
+}
+
+export async function deleteWorkflowInstance(workflowId: string): Promise<string> {
+  const workflowIdRes = await sendDeleteRequest(`/workflow/${workflowId}`);
+
+  return workflowIdRes as string;
 }
