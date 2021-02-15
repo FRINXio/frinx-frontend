@@ -1,29 +1,32 @@
 import React from 'react';
 import InputMask from "react-input-mask";
-import { Button, Box, Text, Input, Divider } from "@chakra-ui/react"
+import { Button, Box, Text, Input, Divider, Container, Flex, Center } from "@chakra-ui/react"
 
 type ScanPageProps = {
     onStartScanClick: Function
 }
 
 const ScanPage = ({onStartScanClick} : ScanPageProps) => {
-    const firstLetter = /(?!.*[DFIOQU])[A-VXY]/i;
-    const letter = /(?!.*[DFIOQU])[A-Z]/i;
-    const digit = /[0-9]/;
-    const mask = [firstLetter, digit, letter, " ", digit, letter, digit];
     return (
         <div className="App">
-            <Box padding="50px">
+            <Box 
+                    display="flex" 
+                    justifyContent="space-between"
+                    >
+                    <Text fontSize={32}>Scan the network</Text>
+            </Box>
+            <Flex justifyContent="center"   >
+            <Box padding="50px" >
+                
                 <Box 
-                    borderWidth="1px"
+                    borderWidth="0px"
                     bg="white"
-                    borderColor="#000000"
+                    boxShadow=" 0 1px 3px 0 rgb(0 0 0 / 10%), 0 1px 2px 0 rgb(0 0 0 / 6%);"
                     borderRadius="5px"
                     padding="20px" 
                     marginBottom="10px"
                     >
-                        <Text fontSize={28}>Scan the network</Text>
-                        <Divider />
+                        
                         <Box 
                             marginTop="24px"
                             display="grid"
@@ -42,14 +45,17 @@ const ScanPage = ({onStartScanClick} : ScanPageProps) => {
                                 <Input placeholder="22, 23" aria-label="test" />
 
                                 <Box />
-                                <Button 
+                        </Box>
+                        <Center><Button 
                                     bg="brand.500" 
                                     color="white" 
                                     width="150px" 
-                                    onClick={() => {onStartScanClick()}}>Start scanning</Button>
-                        </Box>
+                                    onClick={() => {onStartScanClick()}}>Start scanning</Button></Center>
                 </Box>
+                
             </Box>
+            </Flex>
+            
         </div>
     );
 }

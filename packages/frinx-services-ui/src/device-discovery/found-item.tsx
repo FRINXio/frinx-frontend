@@ -12,8 +12,9 @@ type FoundItemProps = {
 const FoundItem = ({id, setCheckedItems, checkedItems} : FoundItemProps) => {
     return (
         <Box 
-            borderWidth="1px"
-            borderColor="#000000"
+            borderWidth="0px"
+            bg="white"
+            boxShadow=" 0 1px 3px 0 rgb(0 0 0 / 10%), 0 1px 2px 0 rgb(0 0 0 / 6%);"
             borderRadius="5px"
             padding="20px" 
             marginBottom="10px"

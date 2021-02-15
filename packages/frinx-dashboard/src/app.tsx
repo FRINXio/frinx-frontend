@@ -73,11 +73,6 @@ const AppWithAuth: FC<{
                   <UniconfigApp />
                 </Route>
               )}
-              {enabledServices.get("uniresource_enabled") && (
-                <Route path="/uniresource">
-                  <UniresourceApp />
-                </Route>
-              )}
             </Switch>
           </Box>
         </BrowserRouter>
@@ -118,6 +113,9 @@ const App: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
                 <UniconfigApp />
               </Route>
             )}
+            <Route path="/services">
+              <ServicesApp />
+            </Route>
           </Switch>
         </Box>
       </BrowserRouter>

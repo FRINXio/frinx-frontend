@@ -1,8 +1,10 @@
+import DeviceDiscoveryApp from './device-discovery';
+import FoundOnNetworkPage from './device-discovery/found-on-network-page'
+import ScanPage from './device-discovery/scan-page'
+import ServicesWrapper from './services-wrapper'
 
-import DeviceDiscoveryApp from "./device_discovery";
-import FoundOnNetworkPage from "./device_discovery/FoundOnNetworkPage"
-import ScanPage from "./device_discovery/ScanPage"
 
-export { ScanPage }
-export { DeviceDiscoveryApp }
-export { FoundOnNetworkPage }
+export {ScanPage}
+export {DeviceDiscoveryApp}
+export {FoundOnNetworkPage}
+export {ServicesWrapper}

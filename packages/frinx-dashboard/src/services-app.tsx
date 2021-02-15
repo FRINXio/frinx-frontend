@@ -1,7 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Route, Switch, useHistory} from 'react-router-dom';
-//
-
+import { Route, Switch, useHistory } from 'react-router-dom';
 
 const ServicesApp: FC = () => {
     const [components, setComponents] = useState<typeof import('@frinx/services-ui') | null>(null);
@@ -12,12 +10,14 @@ const ServicesApp: FC = () => {
             const {
                 DeviceDiscoveryApp,
                 ScanPage,
-                FoundOnNetworkPage
+                FoundOnNetworkPage,
+                ServicesWrapper
             } = mod;
             setComponents({
                 DeviceDiscoveryApp,
                 ScanPage,
-                FoundOnNetworkPage
+                FoundOnNetworkPage,
+                ServicesWrapper
             });
         });
     }, []);
@@ -29,30 +29,31 @@ const ServicesApp: FC = () => {
     const {
         DeviceDiscoveryApp,
         ScanPage,
-        FoundOnNetworkPage
+        FoundOnNetworkPage,
+        ServicesWrapper
     } = components;
 
     return (
-        <Switch>
-            <Route exact path="/services/">
-                <DeviceDiscoveryApp
-                    onNewJobClick={() => {
-                        history.push('/services/scan');
-                        return
-                    }}
-                />
-            </Route>
-            <Route exact path="/services/scan">
-                <ScanPage
-                    onStartScanClick={() => {
+        <ServicesWrapper>
+            <Switch>
+                <Route exact path="/services/">
+                    <DeviceDiscoveryApp
+                        onNewJobClick={() => {
+                            history.push('/services/scan');
+                        }}
+                    />
+                </Route>
+                <Route exact path="/services/scan">
+                    <ScanPage
+                        onStartScanClick={() => {
                             history.push('/services/results');
-                            return
-                    }} />
-            </Route>
-            <Route exact path="/services/results">
-                <FoundOnNetworkPage />
-            </Route>
-        </Switch>
+                        }} />
+                </Route>
+                <Route exact path="/services/results">
+                    <FoundOnNetworkPage />
+                </Route>
+            </Switch>
+        </ServicesWrapper>
     );
 };
 

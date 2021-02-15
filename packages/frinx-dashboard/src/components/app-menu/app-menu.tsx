@@ -135,6 +135,49 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
             </Link>
           </Route>
         )}
+          <Route path="/services">
+            <Link
+              to="/services"
+              as={NavLink}
+              exact
+              color="brand.50"
+              display="flex"
+              alignItems="center"
+              paddingX={4}
+              borderBottomWidth={4}
+              borderColor="transparent"
+              borderStyle="solid"
+              _hover={{
+                borderColor: 'brand.50',
+              }}
+              _active={{
+                background: 'brand.800',
+              }}
+            >
+              Jobs
+            </Link>
+            <Link
+              to="/services/scan"
+              as={NavLink}
+              exact
+              color="brand.50"
+              display="flex"
+              alignItems="center"
+              paddingX={4}
+              borderBottomWidth={4}
+              borderColor="transparent"
+              borderStyle="solid"
+              _hover={{
+                borderColor: 'brand.50',
+              }}
+              _active={{
+                background: 'brand.800',
+              }}
+            >
+              Scan
+            </Link>
+          </Route>
+
       </Switch>
     </Flex>
   );

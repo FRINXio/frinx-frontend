@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Box, Text, Icon } from "@chakra-ui/react"
 import { AddIcon, SettingsIcon } from "@chakra-ui/icons";
-import JobItem from './JobItem.';
+import JobItem from './job-item';
 import './index.css';
 
 const mockJobArray = [

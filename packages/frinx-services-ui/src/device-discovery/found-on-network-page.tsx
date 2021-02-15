@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure, Text, Icon, Input, InputGroup, InputRightElement } from "@chakra-ui/react"
 import { AddIcon, SettingsIcon } from "@chakra-ui/icons";
-import FoundItem from './FoundItem';
+import FoundItem from './found-item';
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
