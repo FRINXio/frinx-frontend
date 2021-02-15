@@ -1,9 +1,8 @@
 // TODO dynamic source of url
-// eslint-disable-next-line no-underscore-dangle
-const CONDUCTOR_API_URL: string = window.__CONFIG__.conductor_api_url;
+const UNICONFIG_API_URL: string = 'localhost:8080/api';
 
 export async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
-  const url = `${CONDUCTOR_API_URL}${path}`;
+  const url = `${UNICONFIG_API_URL}${path}`;
   const response = await fetch(url, options);
 
   if (!response.ok) {
@@ -24,9 +23,6 @@ export async function sendPostRequest(path: string, body: unknown): Promise<unkn
   const options = {
     method: 'POST',
     body: JSON.stringify(body),
-    headers: {
-      'content-type': 'application/json',
-    },
   };
   return apiFetch(path, options);
 }
@@ -35,9 +31,6 @@ export async function sendPutRequest(path: string, body: unknown): Promise<unkno
   const options = {
     method: 'PUT',
     body: JSON.stringify(body),
-    headers: {
-      'content-type': 'application/json',
-    },
   };
   return apiFetch(path, options);
 }
