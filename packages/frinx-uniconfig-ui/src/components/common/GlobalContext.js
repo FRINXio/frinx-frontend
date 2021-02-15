@@ -14,7 +14,7 @@ export const globalConstants: GlobalConstants = {
   authToken: AUTH_TOKEN,
 };
 
-export const GlobalContext = createContext<GlobalConstants>(globalConstants);
+export const GlobalContext = createContext < GlobalConstants > globalConstants;
 
 export const GlobalProvider = (props: GlobalConstants & { children: React$Node }) => {
   const { children, ...rest } = props;
