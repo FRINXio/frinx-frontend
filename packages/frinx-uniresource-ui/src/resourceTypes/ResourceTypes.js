@@ -1,13 +1,4 @@
-/**
- * Copyright 2004-present Facebook. All Rights Reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @flow
- * @format
- */
-
+// @flow
 import type { ContextRouter } from 'react-router-dom';
 import type { WithStyles } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
@@ -92,6 +83,7 @@ const ResourceTypes = (props: Props) => {
   const [updateDataVar, setUpdateDataVar] = useState(0);
   const [filteredArray, setFilteredArray] = useState([]);
   const [queryArray, setQueryArray] = useState([]);
+  const [numOfResourcetypes, setNumOfResourcetypes] = useState(0);
 
   const [filterConstraints, setFilterConstraints] = useState({
     searchQuery: '',
@@ -128,59 +120,61 @@ const ResourceTypes = (props: Props) => {
   const [{ isAdmin }] = useStateValue();
 
   return (
-    <ResourceManagerQueryRenderer
-      query={query}
-      variables={{ someVar: showEditCard, updateDataVar }}
-      render={(queryProps) => {
-        const { QueryResourceTypes } = queryProps;
-        setQueryArray(QueryResourceTypes);
+    <div className={classes.mainContainer}>
+      <div className={classes.addButtonContainer}>
+        <Typography component="div">
+          <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
+            Resource Types ({numOfResourcetypes})
+          </Box>
+        </Typography>
+        {isAdmin ? (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setShowEditCard(true);
+            }}
+          >
+            Add Resource Type
+          </Button>
+        ) : null}
+      </div>
+      <ResourceManagerQueryRenderer
+        query={query}
+        variables={{ someVar: showEditCard, updateDataVar }}
+        render={(queryProps) => {
+          const { QueryResourceTypes } = queryProps;
+          setQueryArray(QueryResourceTypes);
+          setNumOfResourcetypes(QueryResourceTypes.length);
 
-        if (showEditCard) {
+          if (showEditCard) {
+            return (
+              <div className={classes.paper}>
+                <AddEditResourceTypeCard showAddEditCardFunc={showEditCardFunc} />
+              </div>
+            );
+          }
+
           return (
-            <div className={classes.paper}>
-              <AddEditResourceTypeCard showAddEditCardFunc={showEditCardFunc} />
-            </div>
+            <>
+              <div>
+                <ResourceTypesFilters
+                  setFilteredArray={setFilteredArray}
+                  resourceTypesArray={QueryResourceTypes}
+                  filterConstraints={filterConstraints}
+                  setFilterConstraints={setFilterConstraints}
+                  updateFilterConstraint={updateFilterConstraint}
+                />
+              </div>
+
+              <div>
+                <ResourceTypesTable resourceTypesData={filteredArray} updateDataVarFunc={updateDataVarFunc} />
+              </div>
+            </>
           );
-        }
-
-        return (
-          <div className={classes.mainContainer}>
-            <div className={classes.addButtonContainer}>
-              <Typography component="div">
-                <Box fontSize="h4.fontSize" fontWeight="fontWeightMedium">
-                  Resource Types ({QueryResourceTypes.length})
-                </Box>
-              </Typography>
-              {isAdmin ? (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    setShowEditCard(true);
-                  }}
-                >
-                  Add Resource Type
-                </Button>
-              ) : null}
-            </div>
-
-            <div>
-              <ResourceTypesFilters
-                setFilteredArray={setFilteredArray}
-                resourceTypesArray={QueryResourceTypes}
-                filterConstraints={filterConstraints}
-                setFilterConstraints={setFilterConstraints}
-                updateFilterConstraint={updateFilterConstraint}
-              />
-            </div>
-
-            <div>
-              <ResourceTypesTable resourceTypesData={filteredArray} updateDataVarFunc={updateDataVarFunc} />
-            </div>
-          </div>
-        );
-      }}
-    />
+        }}
+      />
+    </div>
   );
 };
 

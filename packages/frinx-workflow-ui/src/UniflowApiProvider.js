@@ -1,3 +1,4 @@
+// @flow
 import React, { createContext, FC } from 'react';
 import callbackUtils from './utils/callbackUtils';
 
@@ -12,7 +13,7 @@ export function getUniflowApiProvider(callbacks: UniflowApiCallbacks) {
   return UniflowApiProvider;
 }
 
-export const UniflowApiContext = createContext < boolean > false;
+export const UniflowApiContext = createContext(false);
 
 const UniflowApiProvider: FC = ({ children }) => {
   return <UniflowApiContext.Provider value={true}>{children}</UniflowApiContext.Provider>;

@@ -1,10 +1,10 @@
 // @flow
+import React, { useEffect, useState } from 'react';
 import GeneralTab from './GeneralTab';
 import InputsTab from './InputsTab';
-import React, { useEffect, useState } from 'react';
+import callbackUtils from '../../../utils/callbackUtils';
 import { Button, Modal, Tab, Tabs } from 'react-bootstrap';
 import { hash } from '../builder-utils';
-import callbackUtils from '../../../utils/callbackUtils';
 import { jsonParse } from '../../../common/utils';
 
 const OBJECT_KEYWORDS = ['template', 'body'];

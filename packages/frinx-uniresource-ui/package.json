@@ -1,11 +1,17 @@
 {
-  "name": "resource-manager-frontend",
+  "name": "@frinx/uniresource-ui",
   "version": "1.0.0",
-  "main": "src/index.js",
-  "author": "Juraj Rusnak <jrusnak@frinx.io>",
+  "main": "dist/index.js",
+  "module": "src/index.js",
+  "typings": "index.d.ts",
+  "author": "frinx",
   "homepage": "/resourcemanager/frontend",
   "license": "BSD-3-Clause",
   "private": true,
+  "files": [
+    "dist/*",
+    "index.d.ts"
+  ],
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",

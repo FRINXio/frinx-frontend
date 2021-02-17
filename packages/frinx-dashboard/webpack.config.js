@@ -66,7 +66,7 @@ module.exports = {
             plugins: ['@babel/plugin-proposal-class-properties'],
           },
         },
-        include: [/frinx-workflow-ui/, /frinx-uniconfig-ui/],
+        include: [/frinx-workflow-ui/, /frinx-uniconfig-ui/, /frinx-uniresource-ui/],
       },
       {
         test: /\.(css|scss})$/,
