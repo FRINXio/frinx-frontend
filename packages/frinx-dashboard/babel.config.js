@@ -1,4 +1,4 @@
-module.exports = api => {
+module.exports = (api) => {
   const plugins = [
     // TODO: remove this later
     'relay',

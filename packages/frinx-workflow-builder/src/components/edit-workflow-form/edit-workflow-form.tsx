@@ -14,7 +14,7 @@ const EditWorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose }) => {
 
   return (
     <form
-      onSubmit={event => {
+      onSubmit={(event) => {
         event.preventDefault();
         onSubmit(workflowState);
       }}
@@ -28,9 +28,9 @@ const EditWorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose }) => {
         <Input
           name="description"
           value={description}
-          onChange={event => {
+          onChange={(event) => {
             event.persist();
-            setWorkflowState(wf => ({
+            setWorkflowState((wf) => ({
               ...wf,
               description: event.target.value,
             }));
@@ -42,9 +42,9 @@ const EditWorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose }) => {
         <Input
           name="version"
           value={version}
-          onChange={event => {
+          onChange={(event) => {
             event.persist();
-            setWorkflowState(wf => ({
+            setWorkflowState((wf) => ({
               ...wf,
               version: Number(event.target.value),
             }));
@@ -56,9 +56,9 @@ const EditWorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose }) => {
         <Input
           name="ownerEmail"
           value={ownerEmail}
-          onChange={event => {
+          onChange={(event) => {
             event.persist();
-            setWorkflowState(wf => ({
+            setWorkflowState((wf) => ({
               ...wf,
               ownerEmail: event.target.value,
             }));
@@ -71,9 +71,9 @@ const EditWorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose }) => {
           <Select
             name="timeoutPolicy"
             value={timeoutPolicy}
-            onChange={event => {
+            onChange={(event) => {
               event.persist();
-              setWorkflowState(wf => ({
+              setWorkflowState((wf) => ({
                 ...wf,
                 timeoutPolicy: event.target.value,
               }));
@@ -89,9 +89,9 @@ const EditWorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose }) => {
           <Input
             name="timeoutSeconds"
             value={timeoutSeconds}
-            onChange={event => {
+            onChange={(event) => {
               event.persist();
-              setWorkflowState(wf => ({
+              setWorkflowState((wf) => ({
                 ...wf,
                 timeoutSeconds: Number(event.target.value),
               }));
@@ -104,9 +104,9 @@ const EditWorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose }) => {
           <Checkbox
             name="restartable"
             isChecked={restartable}
-            onChange={event => {
+            onChange={(event) => {
               event.persist();
-              setWorkflowState(wf => ({
+              setWorkflowState((wf) => ({
                 ...wf,
                 restartable: event.target.checked,
               }));

@@ -1,4 +1,4 @@
-module.exports = api => {
+module.exports = (api) => {
   const plugins = [
     '@babel/plugin-proposal-object-rest-spread',
     '@babel/plugin-proposal-nullish-coalescing-operator',
