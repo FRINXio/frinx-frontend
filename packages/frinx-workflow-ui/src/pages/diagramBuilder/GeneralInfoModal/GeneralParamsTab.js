@@ -4,7 +4,7 @@ import { Button, ButtonGroup, Col, Form, InputGroup, Row } from 'react-bootstrap
 import { Typeahead } from 'react-bootstrap-typeahead';
 import { workflowDescriptions } from '../../../constants';
 
-const GeneralParamsTab = props => {
+const GeneralParamsTab = (props) => {
   const { isWfNameLocked, isWfNameValid } = props;
   const hiddenParams = [
     'name',
@@ -17,7 +17,7 @@ const GeneralParamsTab = props => {
     'updateTime',
   ];
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     if (e.key === 'Enter' || e === 'Enter') {
       props.handleSubmit(e);
     }
@@ -35,7 +35,7 @@ const GeneralParamsTab = props => {
         <Form.Control
           disabled
           type="input"
-          onChange={e => props.handleInput(e.target.value, 'name')}
+          onChange={(e) => props.handleInput(e.target.value, 'name')}
           value={props.finalWf['name']}
         />
       </InputGroup>
@@ -52,7 +52,7 @@ const GeneralParamsTab = props => {
           isValid={isWfNameValid}
           isInvalid={!isWfNameValid}
           type="input"
-          onChange={e => props.handleInput(e.target.value, 'name')}
+          onChange={(e) => props.handleInput(e.target.value, 'name')}
           value={props.finalWf['name']}
         />
         <Form.Control.Feedback type={isWfNameValid ? 'valid' : 'invalid'}>
@@ -66,7 +66,7 @@ const GeneralParamsTab = props => {
     </Form.Group>
   );
 
-  const parseJson = json => {
+  const parseJson = (json) => {
     try {
       return JSON.parse(json);
     } catch (e) {
@@ -92,7 +92,7 @@ const GeneralParamsTab = props => {
           <InputGroup.Prepend>
             <InputGroup.Text>description:</InputGroup.Text>
           </InputGroup.Prepend>
-          <Form.Control type="input" onChange={e => props.handleInput(e.target.value, 'description')} value={desc} />
+          <Form.Control type="input" onChange={(e) => props.handleInput(e.target.value, 'description')} value={desc} />
         </InputGroup>
         <Typeahead
           id="new-label-typehead"
@@ -102,8 +102,11 @@ const GeneralParamsTab = props => {
           newSelectionPrefix="Add a new label: "
           defaultSelected={labels}
           value={labels}
-          onChange={e =>
-            props.handleInput(e.map(item => (item.label ? item.label.toUpperCase() : item)), 'description')
+          onChange={(e) =>
+            props.handleInput(
+              e.map((item) => (item.label ? item.label.toUpperCase() : item)),
+              'description',
+            )
           }
           options={existingLabels}
           placeholder="Add labels..."
@@ -165,7 +168,7 @@ const GeneralParamsTab = props => {
                       </InputGroup.Prepend>
                       <Form.Control
                         type="input"
-                        onChange={e => props.handleInput(e.target.value, item[0])}
+                        onChange={(e) => props.handleInput(e.target.value, item[0])}
                         value={item[1]}
                       />
                       <Form.Text className="text-muted">{workflowDescriptions[item[0]]}</Form.Text>

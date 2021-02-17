@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, Menu } from 'semantic-ui-react';
 
-const SideMenuItem = props => {
+const SideMenuItem = (props) => {
   let description = null;
 
   if (props.model.description) {
@@ -20,7 +20,7 @@ const SideMenuItem = props => {
       fluid
       as={Card}
       draggable={true}
-      onDragStart={e => {
+      onDragStart={(e) => {
         e.dataTransfer.setData('storm-diagram-node', JSON.stringify(props.model));
       }}
       style={{ cursor: 'grab', backgroundColor: 'white' }}

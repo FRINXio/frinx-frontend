@@ -2,7 +2,7 @@
 import React from 'react';
 import { Alert } from 'react-bootstrap';
 
-const CustomAlert = props => {
+const CustomAlert = (props) => {
   return (
     <div className={props.show ? 'custom-alert-in' : 'custom-alert-out'}>
       <Alert

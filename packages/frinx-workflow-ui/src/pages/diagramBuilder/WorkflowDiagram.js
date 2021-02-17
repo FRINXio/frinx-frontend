@@ -96,14 +96,14 @@ export class WorkflowDiagram {
   }
 
   deleteSelected() {
-    _.values(this.diagramModel.getNodes()).forEach(node => {
+    _.values(this.diagramModel.getNodes()).forEach((node) => {
       if (node.isSelected()) {
         node.remove();
         this.diagramModel.removeNode(node);
       }
     });
 
-    _.values(this.diagramModel.getLinks()).forEach(link => {
+    _.values(this.diagramModel.getLinks()).forEach((link) => {
       if (link.isSelected()) {
         this.diagramModel.removeLink(link);
       }
@@ -145,7 +145,7 @@ export class WorkflowDiagram {
           .then(() => {
             resolve(definition);
           })
-          .catch(err => {
+          .catch((err) => {
             const errObject = JSON.parse(err.response.text);
             if (errObject.validationErrors) {
               reject(errObject.validationErrors[0]);
@@ -160,13 +160,13 @@ export class WorkflowDiagram {
       if (eventHandlers.length < 1) {
         resolve();
       }
-      eventHandlers.forEach(eventHandler => {
+      eventHandlers.forEach((eventHandler) => {
         http
           .post(this.backendApiUrlPrefix + '/event', eventHandler)
-          .then(res => {
+          .then((res) => {
             resolve(res);
           })
-          .catch(err => {
+          .catch((err) => {
             reject(err);
           });
       });
@@ -174,7 +174,7 @@ export class WorkflowDiagram {
   }
 
   createEventHandlers(eventNodes) {
-    return eventNodes.map(node => {
+    return eventNodes.map((node) => {
       let { action, targetWorkflowId, targetTaskRefName } = node.extras.inputs.inputParameters;
       let sink = node.extras.inputs.sink;
       let wfName = this.definition.name;
@@ -188,7 +188,7 @@ export class WorkflowDiagram {
       targetTaskRefName = targetTaskRefNamePlaceholder ? `\$\{${targetTaskRefNamePlaceholder}\}` : targetTaskRefName;
 
       let output = {};
-      Object.entries(node.extras.inputs.inputParameters).forEach(entry => {
+      Object.entries(node.extras.inputs.inputParameters).forEach((entry) => {
         if (!['action', 'targetTaskRefName', 'targetWorkflowId'].includes(entry[0])) {
           let outputPlaceholder = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim.exec(entry[1])?.[1];
 
@@ -224,7 +224,7 @@ export class WorkflowDiagram {
     const tasks = definition.tasks;
     this.clearDiagram();
 
-    tasks.forEach(task => {
+    tasks.forEach((task) => {
       this.createNode(task);
     });
 
@@ -321,11 +321,11 @@ export class WorkflowDiagram {
    * Clears canvas (removes nodes and link)
    */
   clearDiagram() {
-    _.values(this.diagramModel.getNodes()).forEach(node => {
+    _.values(this.diagramModel.getNodes()).forEach((node) => {
       this.diagramModel.removeNode(node);
     });
 
-    _.values(this.diagramModel.getLinks()).forEach(link => {
+    _.values(this.diagramModel.getLinks()).forEach((link) => {
       this.diagramModel.removeLink(link);
     });
   }
@@ -356,13 +356,13 @@ export class WorkflowDiagram {
 
     // decision special case
     if (_.last(this.definition.tasks).type === 'DECISION') {
-      edges.forEach(edge => {
+      edges.forEach((edge) => {
         if (edge.to === 'final' && edge.type !== 'decision') {
           lastNodes.push(this.getMatchingTaskRefNode(edge.from));
         }
       });
 
-      lastNodes.forEach(node => {
+      lastNodes.forEach((node) => {
         diagramModel.addLink(this.linkNodes(node, endNode));
       });
 
@@ -492,7 +492,7 @@ export class WorkflowDiagram {
 
   getMostRightNodeX() {
     let max = 0;
-    this.getNodes().forEach(node => {
+    this.getNodes().forEach((node) => {
       if (node.x > max) {
         max = node.x;
       }
@@ -513,11 +513,11 @@ export class WorkflowDiagram {
    * @returns {unknown}
    */
   getMatchingTaskRefNode(taskRefName) {
-    return _.toArray(this.getNodes()).find(x => x.extras.inputs.taskReferenceName === taskRefName);
+    return _.toArray(this.getNodes()).find((x) => x.extras.inputs.taskReferenceName === taskRefName);
   }
 
   getMatchingTaskNameNodes(taskName) {
-    return _.toArray(this.getNodes()).filter(x => x.name === taskName);
+    return _.toArray(this.getNodes()).filter((x) => x.name === taskName);
   }
 
   /**
@@ -526,7 +526,7 @@ export class WorkflowDiagram {
   linkAllNodes() {
     const { edges } = this.getGraphState(this.definition);
 
-    edges.forEach(edge => {
+    edges.forEach((edge) => {
       if (edge.from !== 'start' && edge.to !== 'final') {
         switch (edge.type) {
           case 'simple': {
@@ -732,7 +732,7 @@ export class WorkflowDiagram {
         // branches size in parallel - the deeper the fork node, the smaller the spread and margin is
         const branchSpread = (caseCount * nodeHeight + (caseCount - 1) * branchMargin) / forkDepth;
 
-        let branches = [Object.values(task.decisionCases)[0], task.defaultCase].map(el => {
+        let branches = [Object.values(task.decisionCases)[0], task.defaultCase].map((el) => {
           return el === undefined ? [] : el;
         });
 
@@ -757,7 +757,7 @@ export class WorkflowDiagram {
         const node = this.placeDowhileNode(task, x, y);
         this.diagramModel.addNode(node);
 
-        task.loopOver.forEach(loopedOverTask => {
+        task.loopOver.forEach((loopedOverTask) => {
           this.createNode(loopedOverTask, branchX, branchY, forkDepth);
         });
 
@@ -920,9 +920,9 @@ export class WorkflowDiagram {
           // Error checking
           if (loopTasks.length == 0) {
             throw new Error('While loop is empty');
-          } else if (loopTasks.filter(subTask => subTask.type === 'DO_WHILE').length > 0) {
+          } else if (loopTasks.filter((subTask) => subTask.type === 'DO_WHILE').length > 0) {
             throw new Error('Nested while loops are not supported');
-          } else if (loopTasks.filter(subTask => subTask.type === 'SUB_WORKFLOW').length > 0) {
+          } else if (loopTasks.filter((subTask) => subTask.type === 'SUB_WORKFLOW').length > 0) {
             throw new Error('Subworkflows in while loops are not supported');
           }
 
@@ -1001,11 +1001,11 @@ export class WorkflowDiagram {
    * selected nodes definition.
    */
   expandSelectedNodes() {
-    const selectedNodes = this.diagramModel.getSelectedItems().filter(item => {
+    const selectedNodes = this.diagramModel.getSelectedItems().filter((item) => {
       return item.getType() === 'default';
     });
 
-    selectedNodes.forEach(selectedNode => {
+    selectedNodes.forEach((selectedNode) => {
       if (!selectedNode.extras.inputs.subWorkflowParam) {
         throw new Error("Simple task can't be expanded");
       }
@@ -1018,17 +1018,17 @@ export class WorkflowDiagram {
         throw new Error('Selected node is not connected.');
       }
 
-      const inputLinkParents = inputLinkArray.map(inputLink => {
+      const inputLinkParents = inputLinkArray.map((inputLink) => {
         return inputLink.sourcePort.getNode();
       });
 
-      const outputLinkParents = outputLinkArray.map(outputLink => {
+      const outputLinkParents = outputLinkArray.map((outputLink) => {
         return outputLink.targetPort.getNode();
       });
 
       http
         .get(this.backendApiUrlPrefix + '/metadata/workflow/' + name + '/' + version)
-        .then(res => {
+        .then((res) => {
           const subworkflowDiagram = new WorkflowDiagram(
             new Application(),
             res.result,
@@ -1044,7 +1044,7 @@ export class WorkflowDiagram {
 
           // decision special case
           if (_.last(res.result.tasks).type === 'DECISION') {
-            edges.forEach(edge => {
+            edges.forEach((edge) => {
               if (edge.to === 'final') {
                 lastNodes.push(subworkflowDiagram.getMatchingTaskRefNode(edge.from));
               }
@@ -1056,11 +1056,11 @@ export class WorkflowDiagram {
           selectedNode.remove();
           this.diagramModel.removeNode(selectedNode);
 
-          inputLinkArray.forEach(link => {
+          inputLinkArray.forEach((link) => {
             this.diagramModel.removeLink(link);
           });
 
-          outputLinkArray.forEach(link => {
+          outputLinkArray.forEach((link) => {
             this.diagramModel.removeLink(link);
           });
 
@@ -1069,8 +1069,8 @@ export class WorkflowDiagram {
           });
 
           let newLinksLast = [];
-          outputLinkParents.forEach(node => {
-            lastNodes.forEach(n => {
+          outputLinkParents.forEach((node) => {
+            lastNodes.forEach((n) => {
               newLinksLast.push(linkNodes(n, node));
             });
           });

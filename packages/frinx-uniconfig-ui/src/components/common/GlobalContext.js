@@ -1,20 +1,20 @@
-import React, { createContext} from 'react';
+import React, { createContext } from 'react';
 
 type GlobalConstants = {
   backendApiUrlPrefix: string,
   frontendUrlPrefix: string,
-  authToken: string
+  authToken: string,
 };
 
-const AUTH_TOKEN = "Basic YWRtaW46YWRtaW4=";
+const AUTH_TOKEN = 'Basic YWRtaW46YWRtaW4=';
 
 export const globalConstants: GlobalConstants = {
-  backendApiUrlPrefix: "/uniconfig/api",
-  frontendUrlPrefix: "/uniconfig",
-  authToken: AUTH_TOKEN
+  backendApiUrlPrefix: '/uniconfig/api',
+  frontendUrlPrefix: '/uniconfig',
+  authToken: AUTH_TOKEN,
 };
 
-export const GlobalContext = createContext<GlobalConstants>(globalConstants);
+export const GlobalContext = createContext < GlobalConstants > globalConstants;
 
 export const GlobalProvider = (props: GlobalConstants & { children: React$Node }) => {
   const { children, ...rest } = props;

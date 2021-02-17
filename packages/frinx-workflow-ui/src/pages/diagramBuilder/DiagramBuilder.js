@@ -78,11 +78,11 @@ class DiagramBuilder extends Component {
   componentDidMount() {
     document.addEventListener('dblclick', this.doubleClickListener.bind(this));
 
-    http.get(this.context.backendApiUrlPrefix + '/metadata/workflow').then(res => {
+    http.get(this.context.backendApiUrlPrefix + '/metadata/workflow').then((res) => {
       this.props.storeWorkflows(res.result?.sort((a, b) => a.name.localeCompare(b.name)) || []);
     });
 
-    http.get(this.context.backendApiUrlPrefix + '/metadata/taskdefs').then(res => {
+    http.get(this.context.backendApiUrlPrefix + '/metadata/taskdefs').then((res) => {
       this.props.storeTasks(res.result?.sort((a, b) => a.name.localeCompare(b.name)) || []);
     });
 
@@ -120,7 +120,7 @@ class DiagramBuilder extends Component {
     const { name, version } = this.props;
     http
       .get(this.context.backendApiUrlPrefix + '/metadata/workflow/' + name + '/' + version)
-      .then(res => {
+      .then((res) => {
         this.createDiagramByDefinition(res.result);
       })
       .catch(() => {
@@ -133,11 +133,7 @@ class DiagramBuilder extends Component {
     this.props.showCustomAlert(true, 'info', `Editing workflow ${definition.name} / ${definition.version}.`);
     this.props.lockWorkflowName();
 
-    this.state.workflowDiagram
-      .setDefinition(definition)
-      .createDiagram()
-      .withStartEnd()
-      .renderDiagram();
+    this.state.workflowDiagram.setDefinition(definition).createDiagram().withStartEnd().renderDiagram();
   }
 
   onNodeDrop(e) {
@@ -191,10 +187,10 @@ class DiagramBuilder extends Component {
     };
     this.state.workflowDiagram
       .saveWorkflow(finalWorkflow)
-      .then(res => {
+      .then((res) => {
         this.props.showCustomAlert(true, 'info', `Workflow ${res.name} saved successfully.`);
       })
-      .catch(e => {
+      .catch((e) => {
         this.props.showCustomAlert(true, 'danger', e.path + ':\xa0\xa0\xa0' + e.message);
       });
   }
@@ -206,7 +202,7 @@ class DiagramBuilder extends Component {
       .then(() => {
         this.showInputModal();
       })
-      .catch(e => {
+      .catch((e) => {
         this.props.showCustomAlert(true, 'danger', e.path + ':\xa0\xa0\xa0' + e.message);
       });
   }
@@ -278,7 +274,7 @@ class DiagramBuilder extends Component {
   saveNodeInputsHandler(savedInputs, id) {
     const nodes = this.state.workflowDiagram.getNodes();
 
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
       if (node.id === id) {
         node.extras.inputs = savedInputs;
       }
@@ -291,7 +287,7 @@ class DiagramBuilder extends Component {
     const fileReader = new FileReader();
 
     fileReader.onload = (() => {
-      return function(e) {
+      return function (e) {
         try {
           const jsonObj = JSON.parse(e.target.result);
           this.createDiagramByDefinition(jsonObj);
@@ -430,12 +426,12 @@ class DiagramBuilder extends Component {
     };
 
     const handlers = {
-      ZOOM_IN: e => this.setZoomLevel(this.state.zoomLevel + 10, e),
-      ZOOM_OUT: e => this.setZoomLevel(this.state.zoomLevel - 10, e),
-      LOCK: e => this.setLocked(e),
-      SAVE: e => this.saveWorkflow(e),
-      EXECUTE: e => this.saveAndExecute(e),
-      EXPAND: e => this.expandNodeToWorkflow(e),
+      ZOOM_IN: (e) => this.setZoomLevel(this.state.zoomLevel + 10, e),
+      ZOOM_OUT: (e) => this.setZoomLevel(this.state.zoomLevel - 10, e),
+      LOCK: (e) => this.setLocked(e),
+      SAVE: (e) => this.saveWorkflow(e),
+      EXECUTE: (e) => this.saveAndExecute(e),
+      EXPAND: (e) => this.expandNodeToWorkflow(e),
     };
 
     return (
@@ -485,8 +481,8 @@ class DiagramBuilder extends Component {
 
             <div
               style={{ height: 'calc(100% - 50px)' }}
-              onDrop={e => this.onNodeDrop(e)}
-              onDragOver={event => {
+              onDrop={(e) => this.onNodeDrop(e)}
+              onDragOver={(event) => {
                 event.preventDefault();
               }}
             >
@@ -502,7 +498,7 @@ class DiagramBuilder extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     workflows: state.buildReducer.workflows,
     tasks: state.buildReducer.tasks,
@@ -514,14 +510,14 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    storeWorkflows: wfList => dispatch(builderActions.storeWorkflows(wfList)),
-    storeTasks: taskList => dispatch(builderActions.storeTasks(taskList)),
-    updateFinalWorkflow: finalWorkflow => dispatch(builderActions.updateFinalWorkflow(finalWorkflow)),
+    storeWorkflows: (wfList) => dispatch(builderActions.storeWorkflows(wfList)),
+    storeTasks: (taskList) => dispatch(builderActions.storeTasks(taskList)),
+    updateFinalWorkflow: (finalWorkflow) => dispatch(builderActions.updateFinalWorkflow(finalWorkflow)),
     resetToDefaultWorkflow: () => dispatch(builderActions.resetToDefaultWorkflow()),
     updateQuery: (query, labels) => dispatch(builderActions.requestUpdateByQuery(query, labels)),
-    openCard: which => dispatch(builderActions.openCard(which)),
+    openCard: (which) => dispatch(builderActions.openCard(which)),
     showCustomAlert: (show, variant, msg) => dispatch(builderActions.showCustomAlert(show, variant, msg)),
     lockWorkflowName: () => dispatch(builderActions.lockWorkflowName()),
   };

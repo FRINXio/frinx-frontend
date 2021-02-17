@@ -35,7 +35,7 @@ function NodeModal(props) {
       setName(name);
       setVersion(version);
 
-      http.get(global.backendApiUrlPrefix + '/metadata/workflow/' + name + '/' + version).then(res => {
+      http.get(global.backendApiUrlPrefix + '/metadata/workflow/' + name + '/' + version).then((res) => {
         setInputParameters(res.result.inputParameters);
       });
     }
@@ -96,7 +96,7 @@ function NodeModal(props) {
     const inputParameters = updatedInputs.inputParameters;
 
     if (typeof key[1] === 'object') {
-      if (OBJECT_KEYWORDS.find(e => entry[0].includes(e))) {
+      if (OBJECT_KEYWORDS.find((e) => entry[0].includes(e))) {
         try {
           value = JSON.parse(value);
         } catch (e) {
@@ -174,7 +174,7 @@ function NodeModal(props) {
       if (entry[0] === 'headers') {
         value = updateHTTPHeader(value, i, headerKey);
       } else if (
-        OBJECT_KEYWORDS.find(e => entry[0].includes(e)) &&
+        OBJECT_KEYWORDS.find((e) => entry[0].includes(e)) &&
         !props.inputs.inputs.taskReferenceName.includes('graphQLTaskRef_')
       ) {
         try {

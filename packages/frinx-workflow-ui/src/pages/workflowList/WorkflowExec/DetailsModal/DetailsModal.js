@@ -44,7 +44,7 @@ class DetailsModal extends Component {
   }
 
   getData() {
-    http.get(this.context.backendApiUrlPrefix + '/id/' + this.props.wfId).then(res => {
+    http.get(this.context.backendApiUrlPrefix + '/id/' + this.props.wfId).then((res) => {
       let inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
       let def = JSON.stringify(res);
       let match = inputCaptureRegex.exec(def);
@@ -87,7 +87,7 @@ class DetailsModal extends Component {
 
   executeWorkflow() {
     this.setState({ status: 'Executing...' });
-    http.post(this.context.backendApiUrlPrefix + '/workflow', JSON.stringify(this.state.input)).then(res => {
+    http.post(this.context.backendApiUrlPrefix + '/workflow', JSON.stringify(this.state.input)).then((res) => {
       this.setState({
         status: res.statusText,
         wfIdRerun: res.body.text,
@@ -193,7 +193,7 @@ class DetailsModal extends Component {
   }
 
   render() {
-    const actionButtons = status => {
+    const actionButtons = (status) => {
       switch (status) {
         case 'FAILED':
         case 'TERMINATED':
@@ -341,11 +341,11 @@ class DetailsModal extends Component {
 
       let labels = this.state.inputsArray;
       let values = [];
-      labels.forEach(label => {
-        let key = Object.keys(input).findIndex(key => key === label);
+      labels.forEach((label) => {
+        let key = Object.keys(input).findIndex((key) => key === label);
         key > -1 ? values.push(Object.values(input)[key]) : values.push('');
       });
-      let descs = iPam.map(param => {
+      let descs = iPam.map((param) => {
         if (param.match(/\[(.*?)]/)) return param.match(/\[(.*?)]/)[1];
         else return '';
       });
@@ -357,7 +357,7 @@ class DetailsModal extends Component {
               <Form.Control
                 type="input"
                 placeholder="Enter the input"
-                onChange={e => this.handleInput(e, labels[i])}
+                onChange={(e) => this.handleInput(e, labels[i])}
                 value={values[i] ? (typeof values[i] === 'object' ? JSON.stringify(values[i]) : values[i]) : ''}
               />
               <Form.Text className="text-muted">{descs[i]}</Form.Text>
@@ -397,7 +397,7 @@ class DetailsModal extends Component {
           <Card.Body style={{ padding: '0px' }}>{headerInfo()}</Card.Body>
           <Tabs
             className="heightWrapper"
-            onSelect={e => this.setState({ activeTab: e })}
+            onSelect={(e) => this.setState({ activeTab: e })}
             style={{ marginBottom: '20px' }}
             id="detailTabs"
           >

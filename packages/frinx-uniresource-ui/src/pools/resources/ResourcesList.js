@@ -92,7 +92,7 @@ const styles = () => ({
 
 type Props = ContextRouter & WithStyles<typeof styles> & {};
 
-const StyledTableCell = withStyles(theme => ({
+const StyledTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: theme.palette.secondary.light,
     color: theme.palette.common.white,
@@ -109,7 +109,7 @@ const ResourceList = (props: Props) => {
   const claimResource = () => {
     const tmp = {};
     // eslint-disable-next-line no-use-before-define
-    properties.map(prop => {
+    properties.map((prop) => {
       tmp[prop.value] = prop.type;
       return prop;
     });
@@ -136,7 +136,7 @@ const ResourceList = (props: Props) => {
       },
     );
   };
-  const freeResource = row => {
+  const freeResource = (row) => {
     console.log(row);
     FreeResourceMutation(
       {
@@ -171,7 +171,7 @@ const ResourceList = (props: Props) => {
     tmp[index].type = val.target.value;
     setProperties(tmp);
   };
-  const onDescriptionChanged = val => {
+  const onDescriptionChanged = (val) => {
     setDescription(val.target.value);
   };
   const onPropKeyChanged = (val, index) => {
@@ -196,7 +196,7 @@ const ResourceList = (props: Props) => {
         <div className={classes.selectContainer}>
           <TextField
             label="Resource description"
-            onChange={val => onDescriptionChanged(val)}
+            onChange={(val) => onDescriptionChanged(val)}
             className={classes.nameTextField}
           />
         </div>
@@ -205,12 +205,12 @@ const ResourceList = (props: Props) => {
       {properties.map((p, index) => (
         <div className={classes.propertyRow}>
           <div>
-            <TextField label="KEY" onChange={val => onPropKeyChanged(val, index)} className={classes.nameTextField} />
+            <TextField label="KEY" onChange={(val) => onPropKeyChanged(val, index)} className={classes.nameTextField} />
           </div>
           <div className={classes.selectContainer}>
             <TextField
               label="VALUE"
-              onChange={val => onPropValueChanged(val, index)}
+              onChange={(val) => onPropValueChanged(val, index)}
               className={classes.nameTextField}
             />
           </div>

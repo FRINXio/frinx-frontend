@@ -41,7 +41,7 @@ function App(props) {
           <Route
             exact
             path={[path + '/builder', path + '/builder/:name/:version']}
-            render={props => <DiagramBuilder {...props} />}
+            render={(props) => <DiagramBuilder {...props} />}
           />
           <>
             <WorkflowListHeader onAddButtonClick={() => {}} />
@@ -51,7 +51,7 @@ function App(props) {
             <Route
               exact
               path={path + '/exec/:wfid?'}
-              render={props => <WorkflowExec query={props.match.params.wfid} />}
+              render={(props) => <WorkflowExec query={props.match.params.wfid} />}
             />
             <Route exact path={path + '/scheduled'}>
               <Scheduling />

@@ -5,7 +5,7 @@ import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import IconButton from '@material-ui/core/IconButton';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
     display: 'flex',
     alignItems: 'center',

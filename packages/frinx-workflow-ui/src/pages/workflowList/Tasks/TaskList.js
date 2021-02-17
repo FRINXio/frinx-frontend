@@ -29,7 +29,7 @@ const TaskList = () => {
   useEffect(() => {
     const results = !keywords
       ? data
-      : data.filter(e => {
+      : data.filter((e) => {
           let searchedKeys = [
             'name',
             'timeoutPolicy',
@@ -40,12 +40,7 @@ const TaskList = () => {
           ];
 
           for (let i = 0; i < searchedKeys.length; i += 1) {
-            if (
-              e[searchedKeys[i]]
-                .toString()
-                .toLowerCase()
-                .includes(keywords.toLocaleLowerCase())
-            ) {
+            if (e[searchedKeys[i]].toString().toLowerCase().includes(keywords.toLocaleLowerCase())) {
               return true;
             }
           }
@@ -55,7 +50,7 @@ const TaskList = () => {
   }, [keywords, data]);
 
   const getData = () => {
-    http.get(global.backendApiUrlPrefix + '/metadata/taskdefs').then(res => {
+    http.get(global.backendApiUrlPrefix + '/metadata/taskdefs').then((res) => {
       if (res.result) {
         let data = res.result.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
         setData(data);
@@ -63,14 +58,14 @@ const TaskList = () => {
     });
   };
 
-  const handleTaskModal = name => {
+  const handleTaskModal = (name) => {
     let taskName = name !== undefined ? name : null;
     setTaskName(taskName);
     setTaskModal(!taskModal);
   };
 
   const filteredRows = () => {
-    return pageItems.map(e => {
+    return pageItems.map((e) => {
       return (
         <Table.Row key={e.name}>
           <Table.Cell>{e.name}</Table.Cell>
@@ -88,15 +83,15 @@ const TaskList = () => {
     });
   };
 
-  const deleteTask = name => {
-    http.delete(global.backendApiUrlPrefix + '/metadata/taskdef/' + name).then(res => {
+  const deleteTask = (name) => {
+    http.delete(global.backendApiUrlPrefix + '/metadata/taskdef/' + name).then((res) => {
       if (res.status === 200) {
         getData();
       }
     });
   };
 
-  const sortArray = key => {
+  const sortArray = (key) => {
     let sortedArray = data;
 
     sortedArray.sort(sorted ? sortDescBy(key) : sortAscBy(key));
@@ -134,7 +129,7 @@ const TaskList = () => {
     );
   };
 
-  const handleInput = e =>
+  const handleInput = (e) =>
     setTaskBody({
       ...taskBody,
       [e.target.name]: e.target.value,
@@ -146,7 +141,7 @@ const TaskList = () => {
         taskBody[key] = taskBody[key]
           .replace(/ /g, '')
           .split(',')
-          .filter(e => {
+          .filter((e) => {
             return e !== '';
           });
         taskBody[key] = [...new Set(taskBody[key])];
@@ -182,7 +177,7 @@ const TaskList = () => {
         <Grid.Row>
           <Grid.Column width={15}>
             <Input iconPosition="left" fluid icon placeholder="Search...">
-              <input value={keywords} onChange={e => setKeywords(e.target.value)} />
+              <input value={keywords} onChange={(e) => setKeywords(e.target.value)} />
               <Icon name="search" />
             </Input>
           </Grid.Column>

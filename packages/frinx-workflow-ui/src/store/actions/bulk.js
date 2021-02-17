@@ -32,7 +32,7 @@ export const storeResponse = (successfulResults, errorResults) => {
   };
 };
 
-export const failBulkOperation = error => {
+export const failBulkOperation = (error) => {
   return { type: FAIL_BULK_OPERATION, error };
 };
 
@@ -40,12 +40,12 @@ export const resetBulkOperationResult = () => {
   return { type: RESET_BULK_OPERATION_RESULT };
 };
 
-export const updateLoadingBar = percentage => {
+export const updateLoadingBar = (percentage) => {
   return { type: UPDATE_LOADING_BAR, percentage };
 };
 
 export const checkDeleted = (deletedWfs, workflows, defaultPages, backendApiUrlPrefix) => {
-  return dispatch => {
+  return (dispatch) => {
     if (deletedWfs.length === workflows.length) {
       dispatch(receiveBulkOperationResponse(deletedWfs, {}, defaultPages, backendApiUrlPrefix));
     } else {
@@ -58,13 +58,13 @@ export const performBulkOperation = (operation, workflows, defaultPages, backend
   const url = backendApiUrlPrefix + '/bulk/' + operation;
   let deletedWfs = [];
 
-  return dispatch => {
+  return (dispatch) => {
     dispatch(requestBulkOperation());
     try {
       switch (operation) {
         case 'retry':
         case 'restart':
-          http.post(url, workflows).then(res => {
+          http.post(url, workflows).then((res) => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
             dispatch(
               receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages, backendApiUrlPrefix),
@@ -73,7 +73,7 @@ export const performBulkOperation = (operation, workflows, defaultPages, backend
           break;
         case 'pause':
         case 'resume':
-          http.put(url, workflows).then(res => {
+          http.put(url, workflows).then((res) => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
             dispatch(
               receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages, backendApiUrlPrefix),
@@ -81,7 +81,7 @@ export const performBulkOperation = (operation, workflows, defaultPages, backend
           });
           break;
         case 'terminate':
-          http.delete(url, workflows).then(res => {
+          http.delete(url, workflows).then((res) => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
             dispatch(
               receiveBulkOperationResponse(bulkSuccessfulResults, bulkErrorResults, defaultPages, backendApiUrlPrefix),
@@ -89,7 +89,7 @@ export const performBulkOperation = (operation, workflows, defaultPages, backend
           });
           break;
         case 'delete':
-          workflows.map(wf => {
+          workflows.map((wf) => {
             http.delete(backendApiUrlPrefix + '/workflow/' + wf).then(() => {
               deletedWfs.push(wf);
               dispatch(updateLoadingBar(round((deletedWfs.length / workflows.length) * 100)));
@@ -107,6 +107,6 @@ export const performBulkOperation = (operation, workflows, defaultPages, backend
   };
 };
 
-export const setView = isFlat => {
+export const setView = (isFlat) => {
   return { type: IS_FLAT, isFlat };
 };

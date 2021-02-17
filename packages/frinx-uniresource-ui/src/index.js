@@ -6,7 +6,6 @@ import Pools from './pools/Pools';
 import ResourceList from './pools/resources/ResourcesList';
 import PoolDetailPage from './pools/PoolsPage/Details/PoolDetailPage';
 
-
 export { AllocationStrategies };
 export { ResourceTypes };
 export { Pools };

@@ -21,7 +21,7 @@ import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import * as queryString from 'query-string';
 import Grow from '@material-ui/core/Grow';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     padding: '30px',
   },
@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const TabPanel = props => {
+const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
 
   return (
@@ -59,7 +59,7 @@ const TabPanel = props => {
 const GET_NODE_URL = (topology, node_id) =>
   '/rests/data/network-topology:network-topology/topology=' + topology + '/node=' + node_id + '?content=nonconfig';
 
-const nodeKeyValueMap = node => {
+const nodeKeyValueMap = (node) => {
   const basic = [
     {
       displayValue: 'node ID',
@@ -106,7 +106,7 @@ const nodeKeyValueMap = node => {
   return [];
 };
 
-const capabilitiesKeyValueMap = node => {
+const capabilitiesKeyValueMap = (node) => {
   if (node.topologyId === 'cli') {
     return [
       {
@@ -118,7 +118,7 @@ const capabilitiesKeyValueMap = node => {
     return [
       {
         displayValue: 'Available Capabilities',
-        value: _.flatMap(node?.availableCapabilities?.['available-capability'] || [], item => item?.capability),
+        value: _.flatMap(node?.availableCapabilities?.['available-capability'] || [], (item) => item?.capability),
       },
       {
         displayValue: 'Yang Module Capabilities',
@@ -138,7 +138,7 @@ const capabilitiesKeyValueMap = node => {
   return [];
 };
 
-const errorPatternsKeyValueMap = node => {
+const errorPatternsKeyValueMap = (node) => {
   if (node.topologyId === 'cli') {
     return [
       {
@@ -193,7 +193,7 @@ const DeviceDetails = (props: Props) => {
   const CapabilitiesList = ({ node }) => {
     const [openedCapabilities, setOpenedCapabilities] = useState();
 
-    const handleOpenCapabilities = which => {
+    const handleOpenCapabilities = (which) => {
       if (which === openedCapabilities) {
         setOpenedCapabilities(null);
       } else {
@@ -209,7 +209,7 @@ const DeviceDetails = (props: Props) => {
         </ListItem>
         <Collapse in={openedCapabilities === displayValue} timeout="auto" unmountOnExit>
           <List component="div" className={classes.capabilitiesList} disablePadding>
-            {value?.map(item => (
+            {value?.map((item) => (
               <ListItem key={`item-${displayValue}-${item}`}>
                 <ListItemText>
                   <Box fontFamily="Monospace" fontSize={12}>
@@ -227,7 +227,7 @@ const DeviceDetails = (props: Props) => {
   const ErrorPatternsList = ({ node }) => {
     const [openedErrorPatterns, setOpenedErrorPatterns] = useState('Error Patterns');
 
-    const handleOpenErrorPatterns = which => {
+    const handleOpenErrorPatterns = (which) => {
       if (which === openedErrorPatterns) {
         setOpenedErrorPatterns(null);
       } else {
@@ -243,7 +243,7 @@ const DeviceDetails = (props: Props) => {
         </ListItem>
         <Collapse in={openedErrorPatterns === displayValue} timeout="auto" unmountOnExit>
           <List component="div" className={classes.errorPatternList} disablePadding>
-            {value?.map(item => (
+            {value?.map((item) => (
               <ListItem key={`item-${displayValue}-${item}`}>
                 <ListItemText>
                   <Box fontFamily="Monospace" fontSize={12}>

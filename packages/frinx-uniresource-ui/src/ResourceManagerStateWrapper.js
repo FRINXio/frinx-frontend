@@ -4,7 +4,7 @@ import { StateProvider, useStateValue } from './utils/StateProvider';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/styles';
 
-const ResourceManagerStateWrapper = props => {
+const ResourceManagerStateWrapper = (props) => {
   const { children } = props;
   const initialState = {
     isAdmin: true,

@@ -1,11 +1,11 @@
-const request = require("superagent");
+const request = require('superagent');
 
 const HttpClient = {
   get: (path, token) =>
     new Promise((resolve, reject) => {
-      const req = request.get(path).accept("application/json");
+      const req = request.get(path).accept('application/json');
       if (token) {
-        req.set("Authorization", token);
+        req.set('Authorization', token);
       }
       req.end((err, res) => {
         if (err) {
@@ -22,11 +22,9 @@ const HttpClient = {
 
   delete: (path, data, token) =>
     new Promise((resolve, reject) => {
-      const req = request
-        .delete(path, data)
-        .accept("application/json");
+      const req = request.delete(path, data).accept('application/json');
       if (token) {
-        req.set("Authorization", token);
+        req.set('Authorization', token);
       }
       req.end((err, res) => {
         if (err) {
@@ -42,15 +40,13 @@ const HttpClient = {
 
   post: (path, data, token) =>
     new Promise((resolve, reject) => {
-      const req = request
-        .post(path, data)
-        .set("Content-Type", "application/json");
+      const req = request.post(path, data).set('Content-Type', 'application/json');
       if (token) {
-        req.set("Authorization", token);
+        req.set('Authorization', token);
       }
       req.end((err, res) => {
         if (err || !res.ok) {
-          console.error("Error on post! " + res);
+          console.error('Error on post! ' + res);
           reject(err);
         } else {
           if (res) {
@@ -62,20 +58,20 @@ const HttpClient = {
 
   put: (path, data, token) =>
     new Promise((resolve, reject) => {
-      const req = request.put(path, data).set("Accept", "application/json");
+      const req = request.put(path, data).set('Accept', 'application/json');
 
       if (token) {
-        req.set("Authorization", token);
+        req.set('Authorization', token);
       }
 
       req
-        .then(res => {
+        .then((res) => {
           resolve(res);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
-    })
+    }),
 };
 
 exports.HttpClient = HttpClient;

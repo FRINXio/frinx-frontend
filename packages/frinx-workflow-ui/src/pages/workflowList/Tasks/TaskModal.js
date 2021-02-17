@@ -4,14 +4,14 @@ import Highlight from 'react-highlight.js';
 import { HttpClient as http } from '../../../common/HttpClient';
 import { GlobalContext } from '../../../common/GlobalContext';
 
-const TaskModal = props => {
+const TaskModal = (props) => {
   const global = useContext(GlobalContext);
   const [response, setResponse] = useState({});
   const [activeTab, setActiveTab] = useState('');
 
   useEffect(() => {
     const name = props.name;
-    http.get(global.backendApiUrlPrefix + '/metadata/taskdef/' + name).then(res => {
+    http.get(global.backendApiUrlPrefix + '/metadata/taskdef/' + name).then((res) => {
       if (res.result) {
         setResponse(res.result);
       }
@@ -22,7 +22,7 @@ const TaskModal = props => {
     props.modalHandler();
   };
 
-  const renderKeys = variable => {
+  const renderKeys = (variable) => {
     let output = [];
     let keys = response[variable] ? response[variable] : 0;
     for (let i = 0; i < keys.length; i++) {
@@ -74,7 +74,7 @@ const TaskModal = props => {
     </div>
   );
 
-  const jsonParse = json => {
+  const jsonParse = (json) => {
     try {
       return JSON.parse(json);
     } catch (e) {
@@ -94,7 +94,7 @@ const TaskModal = props => {
       <Modal.Body>
         <Tabs
           className="heightWrapper"
-          onSelect={e => setActiveTab(e)}
+          onSelect={(e) => setActiveTab(e)}
           style={{ marginBottom: '20px' }}
           id="detailTabs"
         >

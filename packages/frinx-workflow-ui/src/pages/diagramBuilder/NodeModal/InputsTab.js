@@ -32,7 +32,7 @@ const SELECTFIELD_OPTIONS = {
   expectedType: ['SIMPLE', 'SUB_WORKFLOW'],
 };
 
-const jsonParse = json => {
+const jsonParse = (json) => {
   try {
     return JSON.parse(json);
   } catch (e) {
@@ -40,11 +40,11 @@ const jsonParse = json => {
   }
 };
 
-const InputsTab = props => {
+const InputsTab = (props) => {
   const [customParam, setCustomParam] = useState('');
   const textFieldParams = [];
 
-  const getDescriptionAndDefault = selectedParam => {
+  const getDescriptionAndDefault = (selectedParam) => {
     const inputParameters = jsonParse(props.inputParameters ? props.inputParameters[0] : null);
 
     if (!inputParameters) {
@@ -54,7 +54,7 @@ const InputsTab = props => {
     return inputParameters[selectedParam]?.description;
   };
 
-  const addNewInputParam = e => {
+  const addNewInputParam = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -62,7 +62,7 @@ const InputsTab = props => {
     setCustomParam('');
   };
 
-  const removeInputParam = e => {
+  const removeInputParam = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -100,7 +100,7 @@ const InputsTab = props => {
               id={`textfield-${entry[0]}`}
               as="textarea"
               type="input"
-              onChange={e => props.handleInput(e.target.value, item, entry)}
+              onChange={(e) => props.handleInput(e.target.value, item, entry)}
               value={value}
             />
           </InputGroup>
@@ -163,7 +163,7 @@ const InputsTab = props => {
             theme="tomorrow"
             width="100%"
             height="300px"
-            onChange={val => props.handleInput(val, item, entry)}
+            onChange={(val) => props.handleInput(val, item, entry)}
             fontSize={16}
             value={value}
             wrapEnabled={true}
@@ -188,7 +188,7 @@ const InputsTab = props => {
       <Col sm={6} key={`colTf-${entry[0]}`}>
         <Form.Group>
           <Form.Label>{entry[0]}</Form.Label>
-          <Dropdown options={options} onChange={e => props.handleInput(e.value, item, entry)} value={value} />
+          <Dropdown options={options} onChange={(e) => props.handleInput(e.value, item, entry)} value={value} />
           <Form.Text className="text-muted">{getDescriptionAndDefault(entry[0])}</Form.Text>
         </Form.Group>
       </Col>
@@ -213,7 +213,7 @@ const InputsTab = props => {
                   <Form.Control
                     style={{ marginBottom: '2px' }}
                     type="input"
-                    onChange={e => props.handleInput(e.target.value, item, entry, i, true)}
+                    onChange={(e) => props.handleInput(e.target.value, item, entry, i, true)}
                     value={header[0]}
                   />
                 </Form.Group>
@@ -224,7 +224,7 @@ const InputsTab = props => {
                   <Form.Control
                     style={{ marginBottom: '2px' }}
                     type="input"
-                    onChange={e => props.handleInput(e.target.value, item, entry, i, false)}
+                    onChange={(e) => props.handleInput(e.target.value, item, entry, i, false)}
                     value={header[1]}
                   />
                 </Form.Group>
@@ -247,7 +247,11 @@ const InputsTab = props => {
       <Col sm={6} key={`colDefault-${entry[0]}`}>
         <Form.Group>
           <Form.Label>{entry[0]}</Form.Label>
-          <Form.Control type="input" onChange={e => props.handleInput(e.target.value, item, entry)} value={entry[1]} />
+          <Form.Control
+            type="input"
+            onChange={(e) => props.handleInput(e.target.value, item, entry)}
+            value={entry[1]}
+          />
           <Form.Text className="text-muted">{getDescriptionAndDefault(entry[0])}</Form.Text>
         </Form.Group>
       </Col>
@@ -261,13 +265,13 @@ const InputsTab = props => {
       } else {
         createTextField(entry, item);
       }
-    } else if (TEXTFIELD_KEYWORDS.find(keyword => entry[0].includes(keyword))) {
+    } else if (TEXTFIELD_KEYWORDS.find((keyword) => entry[0].includes(keyword))) {
       createTextField(entry, item);
-    } else if (CODEFIELD_KEYWORDS.find(keyword => entry[0].includes(keyword))) {
+    } else if (CODEFIELD_KEYWORDS.find((keyword) => entry[0].includes(keyword))) {
       createCodeField(entry, item);
-    } else if (SELECTFIELD_KEYWORDS.find(keyword => entry[0].includes(keyword))) {
+    } else if (SELECTFIELD_KEYWORDS.find((keyword) => entry[0].includes(keyword))) {
       return createSelectField(entry, item);
-    } else if (KEYFIELD_KEYWORDS.find(keyword => entry[0].includes(keyword))) {
+    } else if (KEYFIELD_KEYWORDS.find((keyword) => entry[0].includes(keyword))) {
       createKeyField(entry, entry);
     } else {
       return createBasicField(entry, item);
@@ -281,7 +285,7 @@ const InputsTab = props => {
           <InputGroup style={{ padding: '10px 215px 10px' }}>
             <Form.Control
               value={customParam}
-              onChange={e => setCustomParam(e.target.value)}
+              onChange={(e) => setCustomParam(e.target.value)}
               placeholder="Add new parameter name"
             />
             <InputGroup.Append>
@@ -307,13 +311,13 @@ const InputsTab = props => {
       {props.name !== 'RAW' && createAdditionalFieldsPrompt()}
 
       <hr className="hr-text" data-content="Existing input parameters" />
-      <Form onSubmit={e => e.preventDefault()}>
+      <Form onSubmit={(e) => e.preventDefault()}>
         <Row>
-          {Object.entries(props.inputs || []).map(item => {
+          {Object.entries(props.inputs || []).map((item) => {
             if (item[0] === 'inputParameters') {
-              return Object.entries(item[1]).map(entry => {
-                if (typeof entry[1] === 'object' && !TEXTFIELD_KEYWORDS.find(keyword => entry[0].includes(keyword))) {
-                  return Object.entries(entry[1]).map(innerEntry => {
+              return Object.entries(item[1]).map((entry) => {
+                if (typeof entry[1] === 'object' && !TEXTFIELD_KEYWORDS.find((keyword) => entry[0].includes(keyword))) {
+                  return Object.entries(entry[1]).map((innerEntry) => {
                     return handleInputField(innerEntry, entry);
                   });
                 } else {

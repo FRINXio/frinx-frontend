@@ -7,7 +7,7 @@ import SideMenuItem from './SideMenuItem';
 import { getTaskInputsRegex, getWfInputsRegex, hash } from '../builder-utils';
 import { version } from '../../../../package.json';
 
-const jsonParse = json => {
+const jsonParse = (json) => {
   try {
     return JSON.parse(json);
   } catch (e) {
@@ -15,7 +15,7 @@ const jsonParse = json => {
   }
 };
 
-const icons = taskDef => {
+const icons = (taskDef) => {
   const task = taskDef.name;
   switch (task) {
     case 'start':
@@ -51,7 +51,7 @@ const icons = taskDef => {
   }
 };
 
-const sub_workflow = wf => ({
+const sub_workflow = (wf) => ({
   name: wf.name,
   taskReferenceName: wf.name.toLowerCase().trim() + '_ref_' + hash(),
   inputParameters: getWfInputsRegex(wf),
@@ -64,7 +64,7 @@ const sub_workflow = wf => ({
   startDelay: 0,
 });
 
-const sub_task = t => ({
+const sub_task = (t) => ({
   name: t.name,
   taskReferenceName: t.name.toLowerCase().trim() + '_ref_' + hash(),
   inputParameters: getTaskInputsRegex(t),
@@ -299,7 +299,7 @@ else:
   }
 };
 
-const favorites = props => {
+const favorites = (props) => {
   return props.workflows
     .map((wf, i) => {
       const wfObject = sub_workflow(wf);
@@ -318,10 +318,10 @@ const favorites = props => {
         );
       }
     })
-    .filter(item => item !== undefined);
+    .filter((item) => item !== undefined);
 };
 
-const workflows = props => {
+const workflows = (props) => {
   return props.workflows.map((wf, i) => {
     const wfObject = sub_workflow(wf);
     return (
@@ -339,7 +339,7 @@ const workflows = props => {
   });
 };
 
-const tasks = props => {
+const tasks = (props) => {
   return props.tasks.map((task, i) => {
     const wfObject = sub_task(task);
     return (
@@ -357,9 +357,9 @@ const tasks = props => {
   });
 };
 
-const system = props => {
+const system = (props) => {
   return props.system
-    .filter(task => props.disabledTasks?.includes(task.name) == false)
+    .filter((task) => props.disabledTasks?.includes(task.name) == false)
     .map((task, i) => {
       const wfObject = systemTasks(task.name, props);
       return (
@@ -397,14 +397,14 @@ const custom = (props, custom) => {
         );
       }
     })
-    .filter(item => item !== undefined);
+    .filter((item) => item !== undefined);
 };
 
-const getCustoms = props => {
+const getCustoms = (props) => {
   return [
     ...new Set(
       props.workflows
-        .map(wf => {
+        .map((wf) => {
           if (wf.hasOwnProperty('description')) {
             if (wf.description.match(/custom(?:\w+)?\b/gim)) {
               return wf.description.match(/custom(?:\w+)?\b/gim);
@@ -412,12 +412,12 @@ const getCustoms = props => {
           }
         })
         .flat()
-        .filter(item => item !== undefined),
+        .filter((item) => item !== undefined),
     ),
   ];
 };
 
-const Sidemenu = props => {
+const Sidemenu = (props) => {
   const [visible, setVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [content, setContent] = useState([]);
@@ -425,7 +425,7 @@ const Sidemenu = props => {
   const [open, setOpen] = useState();
 
   const getContent = useCallback(
-    which => {
+    (which) => {
       switch (which) {
         case 'Workflows':
           setContent(workflows(props));
@@ -455,7 +455,7 @@ const Sidemenu = props => {
     getContent(open);
   }, [props, customs.length, getContent, open]);
 
-  const handleOpen = which => {
+  const handleOpen = (which) => {
     if (which === open) {
       setOpen();
       return setExpanded(false);
@@ -565,7 +565,12 @@ const Sidemenu = props => {
       <Sidebar id="sidebar-secondary" as={Menu} animation="overlay" direction="left" vertical visible={expanded}>
         <div className="sidebar-header">
           <h3>{open}</h3>
-          <Input fluid onChange={e => props.updateQuery(e.target.value, null)} icon="search" placeholder="Search..." />
+          <Input
+            fluid
+            onChange={(e) => props.updateQuery(e.target.value, null)}
+            icon="search"
+            placeholder="Search..."
+          />
           <br />
           <Dropdown
             placeholder="Labels"
@@ -578,11 +583,11 @@ const Sidemenu = props => {
               ...new Set(
                 [open === 'Tasks' ? props.tasks : props.workflows]
                   .flat()
-                  .map(wf => {
+                  .map((wf) => {
                     return jsonParse(wf.description)?.labels || null;
                   })
                   .flat()
-                  .filter(item => item !== null),
+                  .filter((item) => item !== null),
               ),
             ].map((label, i) => {
               return { key: i, text: label, value: label };

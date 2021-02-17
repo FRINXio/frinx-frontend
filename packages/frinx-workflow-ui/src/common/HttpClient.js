@@ -24,10 +24,7 @@ const HttpClient = {
 
   delete: (path: string, data: [{}], token: string) =>
     new Promise<string>((resolve, reject) => {
-      const req = request
-        .delete(path, data)
-        .accept('application/json')
-        .query('archiveWorkflow=false');
+      const req = request.delete(path, data).accept('application/json').query('archiveWorkflow=false');
       if (token) {
         req.set('Authorization', token);
       }
@@ -70,10 +67,10 @@ const HttpClient = {
       }
 
       req
-        .then(res => {
+        .then((res) => {
           resolve(res);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     }),

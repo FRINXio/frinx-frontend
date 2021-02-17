@@ -13,7 +13,7 @@ function getSubworkflowName(inputs) {
   return inputs.type === 'SUB_WORKFLOW' ? inputs.name : null;
 }
 
-export const NodeContextMenu = props => {
+export const NodeContextMenu = (props) => {
   const global = useContext(GlobalContext);
 
   const taskRefName = props.node?.extras?.inputs?.taskReferenceName || '<no ref name>';
@@ -52,11 +52,11 @@ export const NodeContextMenu = props => {
   );
 };
 
-export const NodeMenuProvider = props => {
+export const NodeMenuProvider = (props) => {
   return <MenuProvider id={props.node.id}>{props.children}</MenuProvider>;
 };
 
-export const LinkContextMenu = props => {
+export const LinkContextMenu = (props) => {
   const deleteLink = (link, diagramEngine) => {
     link.remove();
     diagramEngine.getDiagramModel().removeLink(link);
@@ -77,7 +77,7 @@ export const LinkContextMenu = props => {
   );
 };
 
-export const LinkMenuProvider = props => {
+export const LinkMenuProvider = (props) => {
   return (
     <MenuProvider id={props.link.id} component="g" event="onContextMenu" storeRef={false}>
       {props.children}

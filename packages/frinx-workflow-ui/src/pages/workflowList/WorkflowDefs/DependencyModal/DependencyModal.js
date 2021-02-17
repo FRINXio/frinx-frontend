@@ -7,10 +7,10 @@ import { withRouter } from 'react-router-dom';
 import './DependencyModal.css';
 import { GlobalContext } from '../../../../common/GlobalContext';
 
-const DependencyModal = props => {
+const DependencyModal = (props) => {
   const global = useContext(GlobalContext);
 
-  const createDepTree = rootWorkflow => {
+  const createDepTree = (rootWorkflow) => {
     let tree = [];
     let parents = getWorkflowParents(rootWorkflow);
     let rootNode = {
@@ -37,8 +37,8 @@ const DependencyModal = props => {
     return tree;
   };
 
-  const getWorkflowParents = workflow => {
-    const usedInWfs = props.data.filter(wf => {
+  const getWorkflowParents = (workflow) => {
+    const usedInWfs = props.data.filter((wf) => {
       let wfJSON = JSON.stringify(wf, null, 2);
       let wfMatch = `"name": "${workflow.name}"`;
       let wfMatchDF = `"expectedName": "${workflow.name}"`;
@@ -47,8 +47,8 @@ const DependencyModal = props => {
     return usedInWfs;
   };
 
-  const nestBranch = wf => {
-    return wf.parents.map(p => {
+  const nestBranch = (wf) => {
+    return wf.parents.map((p) => {
       return (
         <TreeNode
           label={
@@ -70,7 +70,7 @@ const DependencyModal = props => {
   };
 
   const DependencyTree = () => {
-    return createDepTree(props.wf).map(wf => {
+    return createDepTree(props.wf).map((wf) => {
       return (
         <Tree
           label={

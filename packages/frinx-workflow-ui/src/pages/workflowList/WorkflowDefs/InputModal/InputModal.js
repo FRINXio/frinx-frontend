@@ -8,7 +8,7 @@ import { HttpClient as http } from '../../../../common/HttpClient';
 import { storeWorkflowId } from '../../../../store/actions/builder';
 import { useDispatch } from 'react-redux';
 
-const jsonParse = json => {
+const jsonParse = (json) => {
   try {
     return JSON.parse(json);
   } catch (e) {
@@ -16,7 +16,7 @@ const jsonParse = json => {
   }
 };
 
-const getInputs = def => {
+const getInputs = (def) => {
   const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
   let match = inputCaptureRegex.exec(def);
   const inputsArray = [];
@@ -48,13 +48,13 @@ function InputModal(props) {
     const labels = getInputs(definition);
     const inputParams = jsonParse(props.wf.inputParameters ? props.wf.inputParameters[0] : null);
 
-    const workflowForm = labels.map(label => ({
+    const workflowForm = labels.map((label) => ({
       label: label,
       ...(inputParams ? inputParams[label] : null),
     }));
 
     if (definition.match(/\bEVENT_TASK\b/)) {
-      getWaitingWorkflows().then(waitingWfs => {
+      getWaitingWorkflows().then((waitingWfs) => {
         setWaitingWfs(waitingWfs);
       });
     }
@@ -65,28 +65,32 @@ function InputModal(props) {
     return new Promise((resolve, reject) => {
       const waitingWfs = [];
       const q = 'status:"RUNNING"';
-      http.get(global.backendApiUrlPrefix + '/executions/?q=&h=&freeText=' + q + '&start=' + 0 + '&size=').then(res => {
-        const runningWfs = res.result?.hits || [];
-        const promises = runningWfs.map(wf => {
-          return http.get(global.backendApiUrlPrefix + '/id/' + wf.workflowId);
-        });
-
-        Promise.all(promises).then(results => {
-          results.forEach(r => {
-            const workflow = r.result;
-            const waitTasks = workflow?.tasks.filter(task => task.taskType === 'WAIT').map(t => t.referenceTaskName);
-            if (waitTasks.length > 0) {
-              const waitingWf = {
-                id: workflow.workflowId,
-                name: workflow.workflowName,
-                waitingTasks: waitTasks,
-              };
-              waitingWfs.push(waitingWf);
-            }
+      http
+        .get(global.backendApiUrlPrefix + '/executions/?q=&h=&freeText=' + q + '&start=' + 0 + '&size=')
+        .then((res) => {
+          const runningWfs = res.result?.hits || [];
+          const promises = runningWfs.map((wf) => {
+            return http.get(global.backendApiUrlPrefix + '/id/' + wf.workflowId);
           });
-          resolve(waitingWfs);
+
+          Promise.all(promises).then((results) => {
+            results.forEach((r) => {
+              const workflow = r.result;
+              const waitTasks = workflow?.tasks
+                .filter((task) => task.taskType === 'WAIT')
+                .map((t) => t.referenceTaskName);
+              if (waitTasks.length > 0) {
+                const waitingWf = {
+                  id: workflow.workflowId,
+                  name: workflow.workflowName,
+                  waitingTasks: waitTasks,
+                };
+                waitingWfs.push(waitingWf);
+              }
+            });
+            resolve(waitingWfs);
+          });
         });
-      });
     });
   };
 
@@ -136,7 +140,7 @@ function InputModal(props) {
     });
 
     setStatus('Executing...');
-    http.post(global.backendApiUrlPrefix + '/workflow', JSON.stringify(payload)).then(res => {
+    http.post(global.backendApiUrlPrefix + '/workflow', JSON.stringify(payload)).then((res) => {
       setStatus(res.statusText);
       setWfId(res.body.text);
       dispatch(storeWorkflowId(res.body.text));
@@ -158,16 +162,16 @@ function InputModal(props) {
         return (
           <Typeahead
             id={`input-${i}`}
-            onChange={e => handleTypeahead(e, i)}
+            onChange={(e) => handleTypeahead(e, i)}
             placeholder="Enter or select workflow id"
-            options={waitingWfs.map(w => w.id)}
+            options={waitingWfs.map((w) => w.id)}
             defaultSelected={workflowForm[i].value}
-            onInputChange={e => handleTypeahead(e, i)}
-            renderMenuItemChildren={option => (
+            onInputChange={(e) => handleTypeahead(e, i)}
+            renderMenuItemChildren={(option) => (
               <div>
                 {option}
                 <div>
-                  <small>name: {waitingWfs.find(w => w.id === option)?.name}</small>
+                  <small>name: {waitingWfs.find((w) => w.id === option)?.name}</small>
                 </div>
               </div>
             )}
@@ -177,15 +181,15 @@ function InputModal(props) {
         return (
           <Typeahead
             id={`input-${item.i}`}
-            onChange={e => handleTypeahead(e, i)}
+            onChange={(e) => handleTypeahead(e, i)}
             placeholder="Enter or select task reference name"
-            options={waitingWfs.map(w => w.waitingTasks).flat()}
-            onInputChange={e => handleTypeahead(e, i)}
-            renderMenuItemChildren={option => (
+            options={waitingWfs.map((w) => w.waitingTasks).flat()}
+            onInputChange={(e) => handleTypeahead(e, i)}
+            renderMenuItemChildren={(option) => (
               <div>
                 {option}
                 <div>
-                  <small>name: {waitingWfs.find(w => w.waitingTasks.includes(option))?.name}</small>
+                  <small>name: {waitingWfs.find((w) => w.waitingTasks.includes(option))?.name}</small>
                 </div>
               </div>
             )}
@@ -197,7 +201,7 @@ function InputModal(props) {
             type="input"
             as="textarea"
             rows="2"
-            onChange={e => handleInput(e, i)}
+            onChange={(e) => handleInput(e, i)}
             placeholder="Enter the input"
             value={workflowForm[i].value}
             isInvalid={warning[i]}
@@ -209,7 +213,7 @@ function InputModal(props) {
             type="radio"
             value={item.value.toString()}
             name={`switch-${i}`}
-            onChange={e => handleSwitch(e, i)}
+            onChange={(e) => handleSwitch(e, i)}
             style={{
               height: 'calc(1.5em + .75rem + 2px)',
               width: '100%',
@@ -225,12 +229,12 @@ function InputModal(props) {
           </ToggleButtonGroup>
         );
       case 'select':
-        return <Dropdown options={item.options} onChange={e => handleSwitch(e.value, i)} value={item.value} />;
+        return <Dropdown options={item.options} onChange={(e) => handleSwitch(e.value, i)} value={item.value} />;
       default:
         return (
           <Form.Control
             type="input"
-            onChange={e => handleInput(e, i)}
+            onChange={(e) => handleInput(e, i)}
             placeholder="Enter the input"
             value={item.value}
             isInvalid={warning[i]}

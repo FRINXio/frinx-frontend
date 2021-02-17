@@ -12,18 +12,18 @@ type Props = {
 const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
   const global = useContext(GlobalContext);
 
-  const importFiles = e => {
+  const importFiles = (e) => {
     const files = e.currentTarget.files;
     const fileList = [];
     let count = files.length;
 
-    Object.keys(files).forEach(i => {
+    Object.keys(files).forEach((i) => {
       readFile(files[i]);
     });
 
     function readFile(file) {
       const reader = new FileReader();
-      reader.onload = e => {
+      reader.onload = (e) => {
         let definition = JSON.parse(e.target.result);
         fileList.push(definition);
         if (!--count) {
@@ -41,16 +41,16 @@ const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
     document.getElementById('upload-files').addEventListener('change', importFiles);
   };
 
-  const exportFile = backendApiUrlPrefix => {
-    http.get(backendApiUrlPrefix + '/metadata/workflow').then(res => {
+  const exportFile = (backendApiUrlPrefix) => {
+    http.get(backendApiUrlPrefix + '/metadata/workflow').then((res) => {
       const zip = new JSZip();
       let workflows = res.result || [];
 
-      workflows.forEach(wf => {
+      workflows.forEach((wf) => {
         zip.file(wf.name + '.json', JSON.stringify(wf, null, 2));
       });
 
-      zip.generateAsync({ type: 'blob' }).then(function(content) {
+      zip.generateAsync({ type: 'blob' }).then(function (content) {
         saveAs(content, 'workflows.zip');
       });
     });

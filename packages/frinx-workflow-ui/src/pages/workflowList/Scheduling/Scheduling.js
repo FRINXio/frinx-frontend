@@ -51,7 +51,7 @@ const Scheduling = () => {
     setActiveRow(null);
   };
 
-  const changeActiveRow = i => {
+  const changeActiveRow = (i) => {
     const deselectingCurrentRow = activeRow == i;
     if (deselectingCurrentRow) {
       deselectActiveRow();
@@ -66,7 +66,7 @@ const Scheduling = () => {
     setViewedPage(1);
   };
 
-  const deleteEntry = schedulingEntry => {
+  const deleteEntry = (schedulingEntry) => {
     const path = global.backendApiUrlPrefix + '/schedule/' + schedulingEntry.name;
     const req = superagent.delete(path).accept('application/json');
     req.end((err, res) => {

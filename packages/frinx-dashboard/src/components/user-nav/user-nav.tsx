@@ -28,7 +28,7 @@ const UserNav: FC = () => {
         scopes: ['User.Read'],
       });
 
-      authResultPromise.then(value => {
+      authResultPromise.then((value) => {
         // Pushing JWT token to cookie (msal stores it in localStorage) in order to pass the token to api-gateway
         //  api gateway needs to make sure the token is still valid
         // TODO now the token is in localStorage and also in cookie ... is that OK ?
@@ -98,7 +98,7 @@ const UserNav: FC = () => {
                   onClick={() => {
                     instance
                       .logout()
-                      .catch(e => {
+                      .catch((e) => {
                         console.error(e);
                       })
                       .finally(() => {

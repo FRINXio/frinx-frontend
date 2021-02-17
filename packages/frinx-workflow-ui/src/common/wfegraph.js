@@ -32,11 +32,11 @@ class Workflow2Graph {
 
     const forks = [];
     const tasks = wfe.tasks || [];
-    tasks.forEach(tt => {
+    tasks.forEach((tt) => {
       if (tt.taskType === 'FORK') {
         let wfts = [];
         let forkedTasks = (tt.inputData && tt.inputData.forkedTasks) || [];
-        forkedTasks.forEach(ft => {
+        forkedTasks.forEach((ft) => {
           wfts.push({ name: ft, referenceTaskName: ft, type: 'SIMPLE' });
         });
         forks[tt.referenceTaskName] = wfts;
@@ -49,7 +49,7 @@ class Workflow2Graph {
     this.executedTasks = {};
     let joins = {};
     if (Object.keys(wfe).length) {
-      wfe.tasks.forEach(t => {
+      wfe.tasks.forEach((t) => {
         this.executedTasks[t.referenceTaskName] = {
           status: t.status,
           input: t.inputData,
@@ -197,7 +197,7 @@ class Workflow2Graph {
       };
 
       let fork = t1.forkTasks || [];
-      fork.forEach(ft => {
+      fork.forEach((ft) => {
         let tasks = ft;
 
         vertices[tasks[0].taskReferenceName] = {
@@ -296,7 +296,7 @@ class Workflow2Graph {
         isExecuting = false;
       }
       let fts = forks[t1.taskReferenceName] || [];
-      fts.forEach(ft => {
+      fts.forEach((ft) => {
         vertices[ft.referenceTaskName] = {
           name: ft.name,
           ref: ft.referenceTaskName,

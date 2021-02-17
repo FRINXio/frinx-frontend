@@ -8,7 +8,7 @@ const UniresourceApp: FC = () => {
   const history = useHistory();
 
   useEffect(() => {
-    import('@frinx/uniresource-ui').then(mod => {
+    import('@frinx/uniresource-ui').then((mod) => {
       const {
         ResourceTypes,
         Pools,
