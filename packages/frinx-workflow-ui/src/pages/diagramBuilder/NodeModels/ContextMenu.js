@@ -1,10 +1,8 @@
 // @flow
 import 'react-contexify/dist/ReactContexify.min.css';
 import * as React from 'react';
-import { GlobalContext } from '../../../common/GlobalContext';
 import { Icon } from 'semantic-ui-react';
 import { Item, Menu, MenuProvider, Separator } from 'react-contexify';
-import { useContext } from 'react';
 
 function getSubworkflowName(inputs) {
   if (inputs == null) {
@@ -14,8 +12,6 @@ function getSubworkflowName(inputs) {
 }
 
 export const NodeContextMenu = (props) => {
-  const global = useContext(GlobalContext);
-
   const taskRefName = props.node?.extras?.inputs?.taskReferenceName || '<no ref name>';
   const subwfName = getSubworkflowName(props.node?.extras?.inputs);
 
@@ -29,10 +25,11 @@ export const NodeContextMenu = (props) => {
     deleteNode(props.node, props.diagramEngine);
   };
 
-  const openSubworkflow = () => {
-    // version is hardcoded to 1 since there is no version param in node
-    window.open(`${global.frontendUrlPrefix}/builder/${subwfName}/1`);
-  };
+  // TODO: disabled for now, find a better way to open subworkflow
+  // const openSubworkflow = () => {
+  //   // version is hardcoded to 1 since there is no version param in node
+  //   window.open(`${global.frontendUrlPrefix}/builder/${subwfName}/1`);
+  // };
 
   return (
     <Menu id={props.node.id}>
@@ -42,12 +39,12 @@ export const NodeContextMenu = (props) => {
         <Icon name="trash" />
         Delete
       </Item>
-      {subwfName && (
+      {/* {subwfName && (
         <Item onClick={openSubworkflow}>
           <Icon name="external alternate" />
           Open sub-workflow
         </Item>
-      )}
+      )} */}
     </Menu>
   );
 };

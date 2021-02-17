@@ -1,6 +1,5 @@
 // @flow
-
-import * as React from 'react';
+import React from 'react';
 // eslint-disable-next-line no-unused-vars
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';

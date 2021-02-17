@@ -1,20 +1,12 @@
 // @flow
 import Dropdown from 'react-dropdown';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, Modal, Row, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
-import { GlobalContext } from '../../../../common/GlobalContext';
 import { Typeahead } from 'react-bootstrap-typeahead';
-import { HttpClient as http } from '../../../../common/HttpClient';
 import { storeWorkflowId } from '../../../../store/actions/builder';
+import callbackUtils from '../../../../utils/callbackUtils';
 import { useDispatch } from 'react-redux';
-
-const jsonParse = (json) => {
-  try {
-    return JSON.parse(json);
-  } catch (e) {
-    return null;
-  }
-};
+import { jsonParse } from '../../../../common/utils';
 
 const getInputs = (def) => {
   const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
@@ -30,7 +22,6 @@ const getInputs = (def) => {
 };
 
 function InputModal(props) {
-  const global = useContext(GlobalContext);
   const dispatch = useDispatch();
   const [wfId, setWfId] = useState();
   const [warning, setWarning] = useState([]);
@@ -64,33 +55,33 @@ function InputModal(props) {
   const getWaitingWorkflows = () => {
     return new Promise((resolve, reject) => {
       const waitingWfs = [];
-      const q = 'status:"RUNNING"';
-      http
-        .get(global.backendApiUrlPrefix + '/executions/?q=&h=&freeText=' + q + '&start=' + 0 + '&size=')
-        .then((res) => {
-          const runningWfs = res.result?.hits || [];
-          const promises = runningWfs.map((wf) => {
-            return http.get(global.backendApiUrlPrefix + '/id/' + wf.workflowId);
-          });
 
-          Promise.all(promises).then((results) => {
-            results.forEach((r) => {
-              const workflow = r.result;
-              const waitTasks = workflow?.tasks
-                .filter((task) => task.taskType === 'WAIT')
-                .map((t) => t.referenceTaskName);
-              if (waitTasks.length > 0) {
-                const waitingWf = {
-                  id: workflow.workflowId,
-                  name: workflow.workflowName,
-                  waitingTasks: waitTasks,
-                };
-                waitingWfs.push(waitingWf);
-              }
-            });
-            resolve(waitingWfs);
+      const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback();
+      const getWorkflowInstanceDetail = callbackUtils.getWorkflowInstanceDetailCallback();
+
+      getWorkflowExecutions().then((res) => {
+        const runningWfs = res.result?.hits || [];
+        const promises = runningWfs.map((wf) => {
+          return getWorkflowInstanceDetail(wf.workflowId);
+        });
+
+        Promise.all(promises).then((results) => {
+          results.forEach((r) => {
+            const workflow = r.result;
+            const waitTasks = workflow?.tasks
+              .filter((task) => task.taskType === 'WAIT')
+              .map((t) => t.referenceTaskName);
+            if (waitTasks.length > 0) {
+              const waitingWf = {
+                id: workflow.workflowId,
+                name: workflow.workflowName,
+                waitingTasks: waitTasks,
+              };
+              waitingWfs.push(waitingWf);
+            }
           });
         });
+      });
     });
   };
 
@@ -139,11 +130,13 @@ function InputModal(props) {
       input[label] = typeof value === 'string' && value.startsWith('{') ? JSON.parse(value) : value;
     });
 
+    const executeWorkflow = callbackUtils.executeWorkflowCallback();
+
     setStatus('Executing...');
-    http.post(global.backendApiUrlPrefix + '/workflow', JSON.stringify(payload)).then((res) => {
+    executeWorkflow(payload).then((res) => {
       setStatus(res.statusText);
-      setWfId(res.body.text);
-      dispatch(storeWorkflowId(res.body.text));
+      setWfId(res.text);
+      dispatch(storeWorkflowId(res.text));
       timeoutBtn();
 
       if (props.fromBuilder) {
@@ -271,7 +264,15 @@ function InputModal(props) {
                       </div>
                     ) : null}
                     {inputModel(item, i)}
-                    <Form.Text className="text-muted">{item.description}</Form.Text>
+                    <Form.Text className="text-muted">
+                      {item.description}
+                      <br />
+                      {item.constraint && (
+                        <>
+                          <b>Constraint:</b> {item.constraint}
+                        </>
+                      )}
+                    </Form.Text>
                   </Form.Group>
                 </Col>
               );
@@ -280,7 +281,7 @@ function InputModal(props) {
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <a style={{ float: 'left', marginRight: '50px' }} href={`${global.frontendUrlPrefix}/exec/${wfId}`}>
+        <a style={{ float: 'left', marginRight: '50px' }} onClick={() => props.onWorkflowIdClick(wfId)}>
           {wfId}
         </a>
         <Button

@@ -4,10 +4,8 @@ import React, { Component } from 'react';
 import { Accordion, Button, Card, Col, ProgressBar, Row, Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import * as bulkActions from '../../../../store/actions/bulk';
-import { GlobalContext } from '../../../../common/GlobalContext';
 
 class WorkflowBulk extends Component {
-  static contextType = GlobalContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -23,7 +21,7 @@ class WorkflowBulk extends Component {
     }
 
     let operation = e.target.value;
-    performBulkOperation(operation, selectedWfs, this.props.pageCount, this.context.backendApiUrlPrefix);
+    performBulkOperation(operation, selectedWfs, this.props.pageCount);
     this.props.bulkOperation();
     this.props.selectAllWfs();
   }
@@ -165,8 +163,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    performBulkOperation: (operation, wfs, defaultPages, backendApiUrlPrefix) =>
-      dispatch(bulkActions.performBulkOperation(operation, wfs, defaultPages, backendApiUrlPrefix)),
+    performBulkOperation: (operation, wfs, defaultPages) =>
+      dispatch(bulkActions.performBulkOperation(operation, wfs, defaultPages)),
     setView: (value) => dispatch(bulkActions.setView(value)),
   };
 };

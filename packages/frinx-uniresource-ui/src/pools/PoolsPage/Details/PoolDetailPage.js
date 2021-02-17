@@ -1,8 +1,4 @@
-/**
- * @flow
- * @format
- */
-
+// @flow
 import type { ContextRouter } from 'react-router-dom';
 import type { WithStyles } from '@material-ui/core';
 import { graphql } from 'react-relay';
@@ -263,12 +259,7 @@ const PoolDetailPage = (props: Props) => {
       </Typography>
       <Breadcrumbs separator="›" aria-label="breadcrumb">
         {breadcrumbs.map((e) => (
-          <Link
-            color="primary"
-            onClick={() => {
-              onBreadcrumbLinkClick(e.id);
-            }}
-          >
+          <Link color="primary" href={`${RESOURCE_MANAGER_URL}/pools/${e.id}`}>
             {e.Name}
           </Link>
         ))}
@@ -290,9 +281,9 @@ const PoolDetailPage = (props: Props) => {
                 </div>
               ) : null}
               <div className={classes.poolInfoContainer}>
-                <div className={` ${classes.pool}`}>Pool Type:</div>
+                <div className={` ${classes.pool}`}>Pool Type: </div>
                 <div>{resourcePool.PoolType}</div>
-                <div>Resource Type:</div>
+                <div>Resource Type: </div>
                 <div>{resourcePool.ResourceType?.Name}</div>
               </div>
             </Paper>

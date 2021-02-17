@@ -16,16 +16,14 @@ import closest from 'closest';
 import { Application } from './Application';
 import { Button, Modal } from 'react-bootstrap';
 import { DiagramWidget, Toolkit } from '@projectstorm/react-diagrams';
-import { GlobalContext } from '../../common/GlobalContext';
 import { HotKeys } from 'react-hotkeys';
 import { WorkflowDiagram } from './WorkflowDiagram';
 import { connect } from 'react-redux';
 import { encode } from './builder-utils';
-import { HttpClient as http } from '../../common/HttpClient';
 import { saveAs } from 'file-saver';
+import callbackUtils from '../../utils/callbackUtils';
 
 class DiagramBuilder extends Component {
-  static contextType = GlobalContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -65,25 +63,22 @@ class DiagramBuilder extends Component {
 
   componentWillMount() {
     this.setState({
-      workflowDiagram: new WorkflowDiagram(
-        new Application(),
-        this.props.finalWorkflow,
-        { x: 600, y: 300 },
-        this.context.backendApiUrlPrefix,
-        this.context.prefixHttpTask,
-      ),
+      workflowDiagram: new WorkflowDiagram(new Application(), this.props.finalWorkflow, { x: 600, y: 300 }),
     });
   }
 
   componentDidMount() {
     document.addEventListener('dblclick', this.doubleClickListener.bind(this));
 
-    http.get(this.context.backendApiUrlPrefix + '/metadata/workflow').then((res) => {
-      this.props.storeWorkflows(res.result?.sort((a, b) => a.name.localeCompare(b.name)) || []);
+    const getWorkflows = callbackUtils.getWorkflowsCallback();
+    const getTaskDefinitions = callbackUtils.getTaskDefinitionsCallback();
+
+    getWorkflows().then((workflows) => {
+      this.props.storeWorkflows(workflows.sort((a, b) => a.name.localeCompare(b.name)) || []);
     });
 
-    http.get(this.context.backendApiUrlPrefix + '/metadata/taskdefs').then((res) => {
-      this.props.storeTasks(res.result?.sort((a, b) => a.name.localeCompare(b.name)) || []);
+    getTaskDefinitions().then((definitions) => {
+      this.props.storeTasks(definitions.sort((a, b) => a.name.localeCompare(b.name)) || []);
     });
 
     const { name, version } = this.props;
@@ -118,10 +113,11 @@ class DiagramBuilder extends Component {
 
   createExistingWorkflow() {
     const { name, version } = this.props;
-    http
-      .get(this.context.backendApiUrlPrefix + '/metadata/workflow/' + name + '/' + version)
-      .then((res) => {
-        this.createDiagramByDefinition(res.result);
+    const getWorkflow = callbackUtils.getWorkflowCallback();
+
+    getWorkflow(name, version)
+      .then((workflow) => {
+        this.createDiagramByDefinition(workflow);
       })
       .catch(() => {
         return this.props.showCustomAlert(true, 'danger', `Cannot find selected sub-workflow: ${name}.`);
@@ -341,11 +337,16 @@ class DiagramBuilder extends Component {
         modalHandler={this.closeInputModal}
         fromBuilder
         show={this.state.showInputModal}
+        onWorkflowIdClick={this.props.onWorkflowIdClick}
       />
     ) : null;
 
     const detailsModal = this.state.showDetailsModal ? (
-      <DetailsModal wfId={this.props.workflowId} modalHandler={this.showDetailsModal} />
+      <DetailsModal
+        wfId={this.props.workflowId}
+        modalHandler={this.showDetailsModal}
+        onWorkflowIdClick={this.props.onWorkflowIdClick}
+      />
     ) : null;
 
     const nodeModal = this.state.showNodeModal ? (
@@ -468,8 +469,6 @@ class DiagramBuilder extends Component {
               system={this.props.system}
               updateQuery={this.props.updateQuery}
               openCard={this.props.openCard}
-              prefixHttpTask={this.context.prefixHttpTask}
-              disabledTasks={this.context.disabledTasks}
             />
 
             <CustomAlert

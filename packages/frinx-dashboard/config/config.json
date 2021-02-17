@@ -2,6 +2,7 @@
   "auth_enabled": true,
   "auth_client_id": "366fab79-6c61-4a24-8c2c-b2be2f48fe35",
   "auth_redirect_url": "http://localhost:3000",
+  "conductor_api_url": "http://localhost:3001",
   "uniresource_enabled": true,
   "uniconfig_enabled": true,
   "uniflow_enabled": true,

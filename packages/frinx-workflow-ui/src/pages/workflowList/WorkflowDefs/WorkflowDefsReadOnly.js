@@ -9,30 +9,21 @@
 */
 
 // @flow
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Col, Form, Row, Modal } from 'react-bootstrap';
 import { Table, Header, Button, Popup } from 'semantic-ui-react';
 import { Typeahead } from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
-import { withRouter } from 'react-router-dom';
 import WfLabels from '../../../common/WfLabels';
 import DefinitionModal from './DefinitonModal/DefinitionModal';
 import DiagramModal from './DiagramModal/DiagramModal';
 import InputModal from './InputModal/InputModal';
 import DependencyModal from './DependencyModal/DependencyModal';
-import { HttpClient as http } from '../../../common/HttpClient';
-import { GlobalContext } from '../../../common/GlobalContext';
 import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
 import PageContainer from '../../../common/PageContainer';
-
-const jsonParse = (json) => {
-  try {
-    return JSON.parse(json);
-  } catch (e) {
-    return null;
-  }
-};
+import callbackUtils from '../../../utils/callbackUtils';
+import { jsonParse } from '../../../common/utils';
 
 const getLabels = (dataset) => {
   let labelsArr = dataset.map(({ description }) => {
@@ -46,8 +37,12 @@ const getLabels = (dataset) => {
     .sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
 };
 
-function WorkflowDefs() {
-  const global = useContext(GlobalContext);
+type Props = {
+  onDefinitionClick: (name: string, version: string) => void,
+  onWorkflowIdClick: (wfId: string) => void,
+};
+
+function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
   const [keywords, setKeywords] = useState('');
   const [labels, setLabels] = useState([]);
   const [data, setData] = useState([]);
@@ -93,9 +88,11 @@ function WorkflowDefs() {
   }, [keywords, labels, data]);
 
   const getData = () => {
-    http.get(global.backendApiUrlPrefix + '/metadata/workflow').then((res) => {
-      if (res.result) {
-        let dataset = res.result.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
+    const getWorkflows = callbackUtils.getWorkflowsCallback();
+
+    getWorkflows().then((workflows) => {
+      if (workflows) {
+        let dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
         setData(dataset);
         setAllLabels(getLabels(dataset));
       }
@@ -216,7 +213,9 @@ function WorkflowDefs() {
   };
 
   const renderInputModal = () => {
-    return inputModal ? <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} /> : null;
+    return inputModal ? (
+      <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} onWorkflowIdClick={onWorkflowIdClick} />
+    ) : null;
   };
 
   const renderDiagramModal = () => {
@@ -225,7 +224,13 @@ function WorkflowDefs() {
 
   const renderDependencyModal = () => {
     return dependencyModal ? (
-      <DependencyModal wf={activeWf} modalHandler={showDependencyModal} show={dependencyModal} data={data} />
+      <DependencyModal
+        wf={activeWf}
+        modalHandler={showDependencyModal}
+        show={dependencyModal}
+        data={data}
+        onDefinitionClick={onDefinitionClick}
+      />
     ) : null;
   };
 
@@ -288,4 +293,4 @@ function WorkflowDefs() {
   );
 }
 
-export default withRouter(WorkflowDefs);
+export default WorkflowDefs;

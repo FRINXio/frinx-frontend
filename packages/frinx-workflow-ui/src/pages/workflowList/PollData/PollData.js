@@ -1,25 +1,23 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Input, Icon } from 'semantic-ui-react';
 import moment from 'moment';
-import { HttpClient as http } from '../../../common/HttpClient';
-import { GlobalContext } from '../../../common/GlobalContext';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
 import { usePagination } from '../../../common/PaginationHook';
 import PaginationPages from '../../../common/Pagination';
 import PageContainer from '../../../common/PageContainer';
+import callbackUtils from '../../../utils/callbackUtils';
 
 const PollData = () => {
-  const global = useContext(GlobalContext);
   const [sorted, setSorted] = useState(false);
   const [data, setData] = useState([]);
   const [keywords, setKeywords] = useState('');
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
 
   useEffect(() => {
-    http.get(global.backendApiUrlPrefix + '/queue/data').then((data) => {
-      if (data.polldata) {
-        setData(data.polldata);
-      }
+    const getQueues = callbackUtils.getQueuesCallback();
+
+    getQueues().then((queues) => {
+      setData(queues);
     });
   }, []);
 

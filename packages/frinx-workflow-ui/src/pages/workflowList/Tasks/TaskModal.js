@@ -1,19 +1,20 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Col, Modal, Row, Tab, Table, Tabs } from 'react-bootstrap';
 import Highlight from 'react-highlight.js';
-import { HttpClient as http } from '../../../common/HttpClient';
-import { GlobalContext } from '../../../common/GlobalContext';
+import callbackUtils from '../../../utils/callbackUtils';
+import { jsonParse } from '../../../common/utils';
 
 const TaskModal = (props) => {
-  const global = useContext(GlobalContext);
   const [response, setResponse] = useState({});
   const [activeTab, setActiveTab] = useState('');
 
   useEffect(() => {
     const name = props.name;
-    http.get(global.backendApiUrlPrefix + '/metadata/taskdef/' + name).then((res) => {
-      if (res.result) {
-        setResponse(res.result);
+    const getTaskDefinition = callbackUtils.getTaskDefinitionCallback();
+
+    getTaskDefinition(name).then((definition) => {
+      if (definition) {
+        setResponse(definition);
       }
     });
   }, []);
@@ -73,14 +74,6 @@ const TaskModal = (props) => {
       </code>
     </div>
   );
-
-  const jsonParse = (json) => {
-    try {
-      return JSON.parse(json);
-    } catch (e) {
-      return null;
-    }
-  };
 
   return (
     <Modal dialogClassName="modalWider" show={props.show} onHide={handleClose}>

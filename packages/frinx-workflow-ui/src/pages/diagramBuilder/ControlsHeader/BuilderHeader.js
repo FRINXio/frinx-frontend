@@ -4,7 +4,7 @@ import logo from './logo-min.png';
 import x from './X_icon_RGB-min.png';
 import { Navbar } from 'react-bootstrap';
 import { Button, Dropdown, Icon, Popup } from 'semantic-ui-react';
-import { NavLink, withRouter } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import './BuilderHeader.css';
 
@@ -312,4 +312,4 @@ const BuilderHeader = (props) => {
   );
 };
 
-export default withRouter(BuilderHeader);
+export default BuilderHeader;

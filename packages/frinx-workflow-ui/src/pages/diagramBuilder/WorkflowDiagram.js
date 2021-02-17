@@ -1,7 +1,6 @@
 // @flow
 import * as _ from 'lodash';
 import defaultTo from 'lodash/fp/defaultTo';
-import { HttpClient as http } from '../../common/HttpClient';
 import Workflow2Graph from '../../common/wfegraph';
 import { Application } from './Application';
 import {
@@ -23,6 +22,7 @@ import { CircleStartNodeModel } from './NodeModels/StartNode/CircleStartNodeMode
 import { DynamicNodeModel } from './NodeModels/DynamicForkNode/DynamicNodeModel';
 import { DowhileNodeModel } from './NodeModels/DoWhileNode/DowhileNodeModel';
 import { DowhileEndNodeModel } from './NodeModels/DoWhileEndNode/DowhileEndNodeModel';
+import callbackUtils from '../../utils/callbackUtils';
 
 const nodeColors = {
   subWorkflow: 'rgb(34,144,255)',
@@ -44,14 +44,12 @@ export class WorkflowDiagram {
    * @param definition - workflow definition object
    * @param startPos - position for first node in diagram
    */
-  constructor(app, definition, startPos, backendApiUrlPrefix, prefixHttpTask) {
+  constructor(app, definition, startPos) {
     this.app = app;
     this.definition = definition;
     this.diagramEngine = app.getDiagramEngine();
     this.diagramModel = app.getDiagramEngine().getDiagramModel();
     this.startPos = startPos;
-    this.backendApiUrlPrefix = backendApiUrlPrefix;
-    this.prefixHttpTask = prefixHttpTask;
   }
 
   setDefinition(definition) {
@@ -135,13 +133,12 @@ export class WorkflowDiagram {
   saveWorkflow(finalWorkflow) {
     return new Promise((resolve, reject) => {
       const definition = this.parseDiagramToJSON(finalWorkflow);
-
       const eventNodes = this.getMatchingTaskNameNodes('EVENT_TASK');
       const eventHandlers = this.createEventHandlers(eventNodes);
+      const putWorkflow = callbackUtils.putWorkflowCallback();
 
       this.registerEventHandlers(eventHandlers).then(() => {
-        http
-          .put(this.backendApiUrlPrefix + '/metadata', [definition])
+        putWorkflow([definition])
           .then(() => {
             resolve(definition);
           })
@@ -156,15 +153,16 @@ export class WorkflowDiagram {
   }
 
   registerEventHandlers(eventHandlers) {
+    const registerEventHandlers = callbackUtils.registerEventListenerCallback();
+
     return new Promise((resolve, reject) => {
       if (eventHandlers.length < 1) {
         resolve();
       }
       eventHandlers.forEach((eventHandler) => {
-        http
-          .post(this.backendApiUrlPrefix + '/event', eventHandler)
-          .then((res) => {
-            resolve(res);
+        registerEventHandlers(eventHandler)
+          .then((eventListener) => {
+            resolve(eventListener);
           })
           .catch((err) => {
             reject(err);
@@ -816,7 +814,7 @@ export class WorkflowDiagram {
           node = this.placePyNode(task, x, y);
         } else if (task.type == 'SIMPLE' && task.name == 'GLOBAL___graphQL') {
           node = this.placeGraphQLNode(task, x, y);
-        } else if (task.type == 'SIMPLE' && task.name == this.prefixHttpTask + 'HTTP_task') {
+        } else if (task.type == 'SIMPLE' && task.name == 'GLOBAL___HTTP_task') {
           if (task.taskReferenceName.includes('graphQLTaskRef_')) {
             node = this.placeGraphQLNode(task, x, y);
           } else {
@@ -1026,24 +1024,20 @@ export class WorkflowDiagram {
         return outputLink.targetPort.getNode();
       });
 
-      http
-        .get(this.backendApiUrlPrefix + '/metadata/workflow/' + name + '/' + version)
-        .then((res) => {
-          const subworkflowDiagram = new WorkflowDiagram(
-            new Application(),
-            res.result,
-            selectedNode,
-            this.backendApiUrlPrefix,
-          );
+      const getWorkflow = callbackUtils.getWorkflowCallback();
+
+      getWorkflow(name, version)
+        .then((workflow) => {
+          const subworkflowDiagram = new WorkflowDiagram(new Application(), workflow, selectedNode);
 
           subworkflowDiagram.createDiagram();
 
-          const { edges } = this.getGraphState(res.result);
+          const { edges } = this.getGraphState(workflow);
           const firstNode = subworkflowDiagram.getMatchingTaskRefNode(edges[0].to);
           const lastNodes = [];
 
           // decision special case
-          if (_.last(res.result.tasks).type === 'DECISION') {
+          if (_.last(workflow.tasks).type === 'DECISION') {
             edges.forEach((edge) => {
               if (edge.to === 'final') {
                 lastNodes.push(subworkflowDiagram.getMatchingTaskRefNode(edge.from));

@@ -2,40 +2,25 @@ import React, { useState } from 'react';
 import { getWfInputsRegex } from '../builder-utils';
 import Dropdown from 'react-dropdown';
 import { Form, Row, Col, InputGroup } from 'react-bootstrap';
-
 import _ from 'lodash';
+import { jsonParse } from '../../../common/utils';
 
 const inputParamsTemplate = {
   value: '',
   description: '',
   type: 'string',
-};
-
-const jsonParse = (json: string) => {
-  try {
-    return JSON.parse(json);
-  } catch (e) {
-    return null;
-  }
+  constraint: '',
 };
 
 const getInputParameters = (props) => {
   const inputParameters = jsonParse(props.finalWf.inputParameters ? props.finalWf.inputParameters[0] : null);
   const inputParametersKeys = Object.keys(getWfInputsRegex(props.finalWf)) || [];
 
+  // fill input param key with existing attributes or use template
   const inputParams = inputParametersKeys.map((key) => ({
     label: key,
     ...(inputParameters ? (inputParameters[key] ? inputParameters[key] : inputParamsTemplate) : inputParamsTemplate),
   }));
-
-  const defaults = ['value', 'description', 'type'];
-  inputParams.forEach((param, i) => {
-    defaults.forEach((d) => {
-      if (!inputParams[i][d]) {
-        inputParams[i][d] = '';
-      }
-    });
-  });
 
   return inputParams;
 };
