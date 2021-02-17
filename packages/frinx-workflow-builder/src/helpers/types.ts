@@ -89,42 +89,27 @@ export type TaskType =
   | 'WHILE_END'
   | 'SUB_WORKFLOW';
 
+type TaskValues = {
+  name: string;
+  taskReferenceName: string;
+  ownerEmail: string;
+  description?: string;
+  retryCount: number;
+  retryLogic: 'FIXED' | 'EXPONENTIAL_BACKOFF';
+  retryDelaySeconds: number;
+  timeoutPolicy: 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
+  timeoutSeconds: number;
+  pollTimeoutSeconds: number;
+  responseTimeoutSeconds: number;
+  inputKeys?: string[];
+  outputKeys?: string[];
+  optional: boolean;
+  startDelay: number;
+};
+
 type BaseTask<T = undefined> = T extends undefined
-  ? {
-      id: string;
-      name: string;
-      taskReferenceName: string;
-      ownerEmail: string;
-      description?: string;
-      retryCount: number;
-      retryLogic: 'FIXED' | 'EXPONENTIAL_BACKOFF';
-      retryDelaySeconds: number;
-      timeoutPolicy: 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
-      timeoutSeconds: number;
-      pollTimeoutSeconds: number;
-      responseTimeoutSeconds: number;
-      inputKeys?: string[];
-      outputKeys?: string[];
-      optional: boolean;
-      startDelay: number;
-    }
-  : {
-      id: string;
-      name: string;
-      taskReferenceName: string;
-      ownerEmail: string;
-      description?: string;
-      retryCount: number;
-      retryLogic: 'FIXED' | 'EXPONENTIAL_BACKOFF';
-      retryDelaySeconds: number;
-      timeoutPolicy: 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
-      timeoutSeconds: number;
-      pollTimeoutSeconds: number;
-      responseTimeoutSeconds: number;
-      inputKeys?: string[];
-      outputKeys?: string[];
-      optional: boolean;
-      startDelay: number;
+  ? TaskValues
+  : TaskValues & {
       inputParameters: T;
     };
 

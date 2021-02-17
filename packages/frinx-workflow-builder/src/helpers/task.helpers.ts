@@ -47,7 +47,7 @@ const DEFAULT_TASK_OPTIONS: Pick<
   description: '',
 };
 
-function createHTTPTask(): HTTPTask {
+function createHTTPTask(): HTTPTask & { id: string } {
   return {
     id: uuid(),
     name: 'GLOBAL___HTTP_task',
@@ -65,7 +65,7 @@ function createHTTPTask(): HTTPTask {
     ...DEFAULT_TASK_OPTIONS,
   };
 }
-function createGraphQLTask(): GraphQLTask {
+function createGraphQLTask(): GraphQLTask & { id: string } {
   return {
     id: uuid(),
     name: 'GLOBAL___HTTP_task',
@@ -87,7 +87,7 @@ function createGraphQLTask(): GraphQLTask {
     ...DEFAULT_TASK_OPTIONS,
   };
 }
-function createJSTask(): JSPythonTask {
+function createJSTask(): JSPythonTask & { id: string } {
   return {
     id: uuid(),
     name: 'GLOBAL__JS',
@@ -103,7 +103,7 @@ function createJSTask(): JSPythonTask {
     ...DEFAULT_TASK_OPTIONS,
   };
 }
-function createPYTask(): JSPythonTask {
+function createPYTask(): JSPythonTask & { id: string } {
   return {
     id: uuid(),
     name: 'GLOBAL__PY',
@@ -120,7 +120,7 @@ function createPYTask(): JSPythonTask {
     ...DEFAULT_TASK_OPTIONS,
   };
 }
-function createLambdaTask(): LambdaTask {
+function createLambdaTask(): LambdaTask & { id: string } {
   return {
     id: uuid(),
     name: 'LAMBDA_TASK',
@@ -137,7 +137,7 @@ function createLambdaTask(): LambdaTask {
   };
 }
 
-function createStartEndTask(type: 'START' | 'END'): StartTask | EndTask {
+function createStartEndTask(type: 'START' | 'END'): (StartTask & { id: string }) | (EndTask & { id: string }) {
   const name = type === 'START' ? 'START_TASK' : 'END_TASK';
   return {
     id: type === 'START' ? 'start' : 'end',
@@ -148,7 +148,7 @@ function createStartEndTask(type: 'START' | 'END'): StartTask | EndTask {
   };
 }
 
-function createForkTask(): ForkTask {
+function createForkTask(): ForkTask & { id: string } {
   return {
     id: uuid(),
     name: 'forkTask',
@@ -159,7 +159,7 @@ function createForkTask(): ForkTask {
   };
 }
 
-function createJoinTask(): JoinTask {
+function createJoinTask(): JoinTask & { id: string } {
   return {
     id: uuid(),
     name: 'joinTask',
@@ -170,7 +170,7 @@ function createJoinTask(): JoinTask {
   };
 }
 
-function createWhileTask(): WhileTask {
+function createWhileTask(): WhileTask & { id: string } {
   return {
     id: uuid(),
     name: 'whileTask',
@@ -185,7 +185,7 @@ function createWhileTask(): WhileTask {
   };
 }
 
-function createWhileEndTask(): WhileEndTask {
+function createWhileEndTask(): WhileEndTask & { id: string } {
   return {
     id: uuid(),
     name: 'whileEndTask',
@@ -195,7 +195,7 @@ function createWhileEndTask(): WhileEndTask {
   };
 }
 
-function createDecisionTask(): DecisionTask {
+function createDecisionTask(): DecisionTask & { id: string } {
   return {
     id: uuid(),
     name: 'decisionTask',
@@ -214,7 +214,7 @@ function createDecisionTask(): DecisionTask {
   };
 }
 
-function createTerminateTask(): TerminateTask {
+function createTerminateTask(): TerminateTask & { id: string } {
   return {
     id: uuid(),
     name: 'terminateTask',
@@ -228,7 +228,7 @@ function createTerminateTask(): TerminateTask {
   };
 }
 
-function createEventTask(): EventTask {
+function createEventTask(): EventTask & { id: string } {
   return {
     id: uuid(),
     name: 'eventTask',
@@ -244,7 +244,7 @@ function createEventTask(): EventTask {
   };
 }
 
-function createWaitTask(): WaitTask {
+function createWaitTask(): WaitTask & { id: string } {
   return {
     id: uuid(),
     name: 'waitTask',
@@ -254,7 +254,7 @@ function createWaitTask(): WaitTask {
   };
 }
 
-function createRawTask(): RawTask {
+function createRawTask(): RawTask & { id: string } {
   return {
     id: uuid(),
     name: 'rawTask',
@@ -267,7 +267,7 @@ function createRawTask(): RawTask {
   };
 }
 
-function createDynamicForkTask(): DynamicForkTask {
+function createDynamicForkTask(): DynamicForkTask & { id: string } {
   return {
     id: uuid(),
     name: 'dynamicForkTask',
@@ -287,7 +287,7 @@ function createDynamicForkTask(): DynamicForkTask {
   };
 }
 
-export function createTask(taskLabel: string): Task {
+export function createTask(taskLabel: string): Task & { id: string } {
   switch (taskLabel) {
     case 'HTTP':
       return createHTTPTask();

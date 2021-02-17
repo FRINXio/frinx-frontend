@@ -77,10 +77,11 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
         textTransform="uppercase"
         fontSize="xs"
       >
-        {outputs?.map((port) => {
+        {outputs?.map((port, i) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          const [label] = port.props.id.split(':');
+          // const [label] = port.props.id.split(':');
+          const label = Object.keys(data?.task.decisionCases)[i] ?? 'else';
           return React.cloneElement(
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore

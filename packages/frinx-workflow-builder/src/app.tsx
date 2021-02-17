@@ -32,7 +32,6 @@ import EditWorkflowForm from './components/edit-workflow-form/edit-workflow-form
 import BgSvg from './img/bg.svg';
 import { convertDiagramWorkflow } from './helpers/workflow.helpers';
 
-
 type Props = {
   onClose: () => void;
   workflow: Workflow;
@@ -60,7 +59,6 @@ const App: FC<Props> = ({ workflow, onWorkflowSave }) => {
   const onClick = (data?: NodeData) => {
     setTask(data?.task ?? null);
   };
-  console.log(createSchemaFromWorkflow(convertWorkflow(workflow), onClick));
   const schemaRef = React.useRef(createSchemaFromWorkflow(convertWorkflow(workflow), onClick));
   const [schema, { onChange, addNode, removeNode }] = useSchema<NodeData>(schemaRef.current);
   const copiedSchema = {
@@ -91,7 +89,6 @@ const App: FC<Props> = ({ workflow, onWorkflowSave }) => {
     onChange({ nodes: copiedNodes });
   };
 
-
   return (
     <Flex height="100vh" flexDirection="column">
       <Flex height={24} alignItems="center" px={4} boxShadow="base" position="relative" zIndex="modal">
@@ -105,38 +102,49 @@ const App: FC<Props> = ({ workflow, onWorkflowSave }) => {
         </Box>
         <Box ml="auto">
           <HStack spacing={2}>
-          <Menu>
-            <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-              Actions
-            </MenuButton>
-            <MenuList>
-              <MenuItem>Save workflow</MenuItem>
-              <MenuItem icon={<ViewIcon />} onClick={workflowDefinitionDisclosure.onOpen}>Show definition</MenuItem>
-              <Divider />
-              <MenuGroup title="Create">
-                <MenuItem icon={<AddIcon />} onClick={workflowModalDisclosure.onOpen}>New workflow</MenuItem>
-                <MenuItem icon={<DownloadIcon style={{ transform: 'rotate(180deg)' }} />}>Import workflow</MenuItem>
-                <MenuItem icon={<DownloadIcon />}>Export workflow</MenuItem>
-              </MenuGroup>
-              <MenuGroup title="Edit">
-                <MenuItem icon={<EditIcon />} onClick={() => {
-                  setIsEditing(true);
-                }}>Edit workflow</MenuItem>
-              </MenuGroup>
-              <Divider />
-              <MenuItem icon={<DeleteIcon />} color="red.500">Delete workflow</MenuItem>
-            </MenuList>
-          </Menu>
-          <Button
-            colorScheme="blue"
-            onClick={() => {
-              const wf = convertDiagramWorkflow(copiedSchema, workflowState);
-              console.log(wf)
-              // onWorkflowSave([wf]);
-            }}
-          >
-            Save and execute
-          </Button>
+            <Menu>
+              <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                Actions
+              </MenuButton>
+              <MenuList>
+                <MenuItem>Save workflow</MenuItem>
+                <MenuItem icon={<ViewIcon />} onClick={workflowDefinitionDisclosure.onOpen}>
+                  Show definition
+                </MenuItem>
+                <Divider />
+                <MenuGroup title="Create">
+                  <MenuItem icon={<AddIcon />} onClick={workflowModalDisclosure.onOpen}>
+                    New workflow
+                  </MenuItem>
+                  <MenuItem icon={<DownloadIcon style={{ transform: 'rotate(180deg)' }} />}>Import workflow</MenuItem>
+                  <MenuItem icon={<DownloadIcon />}>Export workflow</MenuItem>
+                </MenuGroup>
+                <MenuGroup title="Edit">
+                  <MenuItem
+                    icon={<EditIcon />}
+                    onClick={() => {
+                      setIsEditing(true);
+                    }}
+                  >
+                    Edit workflow
+                  </MenuItem>
+                </MenuGroup>
+                <Divider />
+                <MenuItem icon={<DeleteIcon />} color="red.500">
+                  Delete workflow
+                </MenuItem>
+              </MenuList>
+            </Menu>
+            <Button
+              colorScheme="blue"
+              onClick={() => {
+                const wf = convertDiagramWorkflow(copiedSchema, workflowState);
+                console.log(wf);
+                // onWorkflowSave([wf]);
+              }}
+            >
+              Save and execute
+            </Button>
           </HStack>
         </Box>
       </Flex>
@@ -180,19 +188,29 @@ const App: FC<Props> = ({ workflow, onWorkflowSave }) => {
         {isEditing && (
           <RightDrawer>
             <Box px={6} py={10}>
-              <Heading as="h2" size="md" mb={10}>Edit workflow</Heading>
-              <EditWorkflowForm workflow={workflowState} onSubmit={wf => {
-                setWorkflowState(wf);
-              }} onClose={() => {
-                setWorkflowState(workflow);
-                setIsEditing(false);
-              }} />
+              <Heading as="h2" size="md" mb={10}>
+                Edit workflow
+              </Heading>
+              <EditWorkflowForm
+                workflow={workflowState}
+                onSubmit={(wf) => {
+                  setWorkflowState(wf);
+                }}
+                onClose={() => {
+                  setWorkflowState(workflow);
+                  setIsEditing(false);
+                }}
+              />
             </Box>
           </RightDrawer>
         )}
       </Flex>
       {/* <WorkflowDefinitionModal isOpen={workflowDefinitionDisclosure.isOpen} onClose={workflowDefinitionDisclosure.onClose} workflow={convertDiagramWorkflow(copiedSchema, workflowState)} /> */}
-      <NewWorkflowModal isOpen={workflowModalDisclosure.isOpen} onClose={workflowModalDisclosure.onClose} onConfirm={() => console.log('NEW WORKFLOW')} />
+      <NewWorkflowModal
+        isOpen={workflowModalDisclosure.isOpen}
+        onClose={workflowModalDisclosure.onClose}
+        onConfirm={() => console.log('NEW WORKFLOW')}
+      />
     </Flex>
   );
 };

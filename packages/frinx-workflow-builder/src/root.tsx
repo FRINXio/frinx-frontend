@@ -15,7 +15,7 @@ const Root: FC<Props> = ({ name, version, onClose, saveWorkflowCallback, getWork
   const [workflow, setWorkflow] = useState<Workflow | null>(null);
   useEffect(() => {
     if (name != null && version != null) {
-      getWorkflowCallback(name, version).then(wf => {
+      getWorkflowCallback(name, version).then((wf) => {
         setWorkflow(wf);
       });
     }

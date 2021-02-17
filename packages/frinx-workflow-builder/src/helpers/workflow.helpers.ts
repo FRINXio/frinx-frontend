@@ -1,7 +1,6 @@
-import { parse } from '@babel/core';
-import { DiagramSchema } from 'beautiful-react-diagrams/@types/DiagramSchema';
-import { flatten } from 'lodash';
-import { DecisionTask, NodeData, Task, Workflow } from './types';
+import { DiagramSchema, Link, Node } from 'beautiful-react-diagrams/@types/DiagramSchema';
+import { dropWhile } from 'lodash';
+import { NodeData, Task, TaskWithId, Workflow } from './types';
 import unwrap from './unwrap';
 
 function parseId(id: string) {
@@ -20,88 +19,150 @@ function parseId(id: string) {
   };
 }
 
-function prepareLinks<T extends { input: string }>(array: T[]): T[] {
+function dropNullValues<T>(array: (T | null)[]): T[] {
+  const result: T[] = [];
+  array.forEach((value) => {
+    if (value != null) {
+      result.push(value);
+    }
+  });
+  return result;
+}
+
+function getDecisionCaseKey(value: Record<string, Task[]>): string {
+  return Object.keys(value).filter((k) => k !== 'else')[0];
+}
+
+function getNextNode(schema: DiagramSchema<NodeData>, id = 'start'): Node<NodeData> | null {
+  const { links, nodes } = schema;
+  const link = links?.find((l) => parseId(l.input).id === id);
+  const node = nodes.find((n) => n.id === link?.output);
+  if (node == null) {
+    return null;
+  }
+  return node;
+}
+
+function prepareLinks<T extends { input: string }>(array: T[], id = 'start'): T[] {
   const arrCopy = [...array];
-  const index = array.findIndex(v => v.input === 'start');
+  const index = array.findIndex((v) => v.input === id);
   arrCopy.splice(index, 1);
   arrCopy.splice(0, 0, array[index]);
   return arrCopy;
 }
 
-export function convertDiagramTasks(schema: DiagramSchema<NodeData>): Task[] | null {
-  const { nodes, links } = schema;
-
-  console.log(links);
-
-  if (links == null) {
-    return null;
+export function convertDiagramTasks(schema: DiagramSchema<NodeData>, id = 'start'): TaskWithId[] | null {
+  const { links } = schema;
+  const result = [];
+  for (let i = 0; i <= (links || []).length; i += 1) {
+    const nextNode = getNextNode(schema, id);
+    result.push(nextNode);
+    id = nextNode?.id;
   }
 
-  const result = prepareLinks(links).reduce((acc, link) => {
-    const node = unwrap(
-      nodes.find(n => {
-        return n.id === parseId(link.input).id;
-      }),
-    );
-    const parsedOutput = parseId(link.output);
-    const parsedInput = parseId(link.input);
-    const task = node.data?.task ?? null;
-    const taskCopy = task ? { ...task } : null;
+  const tasks = dropNullValues(result)
+    .filter((n) => n.id !== 'end')
+    .map((n) => unwrap(n.data?.task));
 
-    if (parsedInput.type != null || parsedOutput.type != null) {
-      return acc;
+  return tasks.reduce((acc, curr) => {
+    if (curr.type === 'DECISION') {
+      const link = unwrap(links).find((l) => parseId(l.input).id === curr.id);
+
+      curr.decisionCases = {
+        [unwrap(parseId(unwrap(link).input).type)]: getNextNode(schema, parseId(unwrap(link).input).id),
+      };
     }
 
-    if (taskCopy && taskCopy.type === 'DECISION') {
-      taskCopy.decisionCases = links
-        .filter(l => {
-          const parsedOutputId = parseId(l.output);
-          const parsedInputId = parseId(l.input);
-          if (parsedOutputId.type != null) {
-            return parsedOutputId.id === taskCopy.id;
-          }
-          return parsedInputId.type != null && parsedInputId.id === taskCopy.id;
-        })
-        .reduce((accu, curr) => {
-          const parsedOutputId = parseId(curr.output);
-          const parsedInputId = parseId(curr.input);
+    return [...acc, curr];
+  }, [] as TaskWithId[]);
 
-          if (parsedOutputId.type != null) {
-            const targetNode = unwrap(nodes.find(n => n.id === curr.input));
-            return {
-              ...accu,
-              [parsedOutputId.type]: unwrap(targetNode.data?.task),
-            };
-          }
-          const targetNode = unwrap(nodes.find(n => n.id === curr.output));
+  return tasks;
+  // const { nodes, links } = schema;
 
-          return {
-            ...accu,
-            [unwrap(parsedInputId.type)]: unwrap(targetNode.data?.task),
-          };
-        }, {});
-      return [...acc, taskCopy];
-    }
+  // if (links == null) {
+  //   return null;
+  // }
 
-    if (taskCopy == null || node.id === 'start' || node.id === 'end') {
-      return acc;
-    }
+  // const preparedLinks = prepareLinks(links, id);
+  // const idsToFilter: string[] = [];
 
-    return [...acc, taskCopy];
-  }, [] as Task[]);
+  // const result = preparedLinks.reduce((acc, link) => {
+  //   const node = unwrap(
+  //     nodes.find((n) => {
+  //       return n.id === parseId(link.input).id;
+  //     }),
+  //   );
+  //   const parsedOutput = parseId(link.output);
+  //   const parsedInput = parseId(link.input);
+  //   const task = node.data?.task ?? null;
+  //   const taskCopy = task ? { ...task } : null;
 
-  const outputLinks = links.filter(l => parseId(l.input).type != null).map(l => l.output);
-  const inputLinks = links.filter(l => parseId(l.output).type != null).map(l => l.input);
+  //   if (node == null) {
+  //     return acc;
+  //   }
 
-  return result.filter(task => outputLinks.includes(task.id) || inputLinks.includes(task.id));
+  //   // if (parsedOutput.type != null) {
+  //   //   return acc;
+  //   // }
+
+  //   if (parsedInput.type != null) {
+  //     idsToFilter.push(parsedOutput.id);
+  //   }
+
+  //   if (taskCopy && taskCopy.type === 'DECISION') {
+  //     taskCopy.decisionCases = links
+  //       .filter((l) => {
+  //         const parsedOutputId = parseId(l.output);
+  //         const parsedInputId = parseId(l.input);
+  //         if (parsedOutputId.type != null) {
+  //           return parsedOutputId.id === taskCopy.id;
+  //         }
+  //         return parsedInputId.type != null && parsedInputId.id === taskCopy.id;
+  //       })
+  //       .reduce((accu, curr) => {
+  //         const parsedOutputId = parseId(curr.output);
+  //         const parsedInputId = parseId(curr.input);
+
+  //         if (parsedOutputId.type != null) {
+  //           const targetNode = unwrap(nodes.find((n) => n.id === curr.input));
+  //           return {
+  //             ...accu,
+  //             [parsedOutputId.type === 'else' ? 'else' : getDecisionCaseKey(taskCopy.decisionCases)]: [
+  //               unwrap(targetNode.data?.task),
+  //             ],
+  //           };
+  //         }
+  //         const targetNode = unwrap(nodes.find((n) => n.id === curr.output));
+
+  //         return {
+  //           ...accu,
+  //           [unwrap(parsedInputId.type) === 'else' ? 'else' : getDecisionCaseKey(taskCopy.decisionCases)]: [
+  //             unwrap(targetNode.data?.task),
+  //           ],
+  //         };
+  //       }, {});
+  //     return [...acc, taskCopy];
+  //   }
+
+  //   if (taskCopy == null || node.id === 'start' || node.id === 'end') {
+  //     return acc;
+  //   }
+
+  //   return [...acc, taskCopy];
+  // }, [] as TaskWithId[]);
+
+  // return result.filter((t) => !idsToFilter.includes(t.id));
 }
 
-export function convertDiagramWorkflow(schema: DiagramSchema<NodeData>, workflow: Workflow): Workflow<Task> {
+export function convertDiagramWorkflow(
+  schema: DiagramSchema<NodeData>,
+  workflow: Workflow<TaskWithId>,
+): Workflow<Task> {
   const { tasks, ...rest } = workflow;
   return {
     ...rest,
     tasks:
-      convertDiagramTasks(schema)?.map(t => {
+      convertDiagramTasks(schema)?.map((t) => {
         const { id, ...task } = t;
         return task;
       }) ?? [],

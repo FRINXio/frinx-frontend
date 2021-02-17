@@ -19,70 +19,50 @@ const workflow: Workflow = {
   version: 1,
   tasks: [
     {
-      name: 'GLOBAL___HTTP_task',
-      taskReferenceName: 'httpRequestTaskRef_S3NY',
-      inputParameters: {
-        http_request: {
-          uri: '${workflow.input.uri}',
-          method: 'GET',
-          contentType: 'application/json',
-          headers: {
-            from: 'frinxUser',
-            'x-auth-user-roles': 'OWNER',
-            'x-tenant-id': 'frinx_test',
+      name: 'decisionTask',
+      type: 'DECISION',
+      taskReferenceName: 'decisionTaskRef_1234',
+      caseValueParam: 'param',
+      decisionCases: {
+        true: [
+          {
+            name: 'GLOBAL___HTTP_task',
+            taskReferenceName: 'httpRequestTaskRef_S3NY',
+            inputParameters: {
+              http_request: {
+                uri: '${workflow.input.uri}',
+                method: 'GET',
+                contentType: 'application/json',
+                headers: {
+                  from: 'frinxUser',
+                  'x-auth-user-roles': 'OWNER',
+                  'x-tenant-id': 'frinx_test',
+                },
+                timeout: 3600,
+              },
+            },
+            type: 'SIMPLE',
+            startDelay: 0,
+            optional: false,
+            asyncComplete: false,
           },
-          timeout: 3600,
-        },
+        ],
       },
-      type: 'SIMPLE',
-      startDelay: 0,
-      optional: false,
-      asyncComplete: false,
-    },
-    {
-      name: 'GLOBAL___js',
-      taskReferenceName: `lambdaJsTaskRef_${hash()}`,
-      type: 'SIMPLE',
-      inputParameters: {
-        lambdaValue: '${workflow.input.lambdaValue}',
-        scriptExpression: `if ($.lambdaValue == 1) {
-return {testvalue: true};
-} else {
-return {testvalue: false};
-}`,
-      },
-      optional: false,
-      startDelay: 0,
-    },
-    {
-      name: 'GLOBAL___HTTP_task',
-      taskReferenceName: 'graphQLTaskRef_UAS4',
-      inputParameters: {
-        http_request: {
-          uri: '${workflow.input.uri}',
-          method: 'POST',
-          contentType: 'application/json',
-          headers: {
-            from: 'frinxUser',
-            'x-auth-user-roles': 'OWNER',
-            'x-tenant-id': 'frinx_test',
-          },
-          body: {
-            query: 'query queryResourceTypes {\n     QueryResourceTypes{\n         ID\n         Name\n     }\n }',
-            variables: {},
-          },
-          timeout: 3600,
-        },
-      },
-      type: 'SIMPLE',
-      decisionCases: {},
       defaultCase: [],
-      forkTasks: [],
-      startDelay: 0,
-      joinOn: [],
+      inputParameters: {
+        param: 'true',
+      },
       optional: false,
-      defaultExclusiveJoinTask: [],
-      asyncComplete: false,
+      ownerEmail: 'frinxUser',
+      pollTimeoutSeconds: 0,
+      responseTimeoutSeconds: 10,
+      retryCount: 0,
+      retryDelaySeconds: 0,
+      retryLogic: 'EXPONENTIAL_BACKOFF',
+      startDelay: 0,
+      timeoutPolicy: 'TIME_OUT_WF',
+      timeoutSeconds: 60,
+      description: '',
     },
   ],
   inputParameters: [],
@@ -96,8 +76,26 @@ return {testvalue: false};
   variables: {},
 };
 
+function getWorkflow(): Promise<Workflow> {
+  return Promise.resolve(workflow);
+}
+
+function saveWorkflow(wfs: Workflow[]): Promise<unknown> {
+  console.log(wfs);
+  return Promise.resolve();
+}
+
 const handleClose = () => {
   console.log('CLOSE');
 };
 
-render(createElement(Root, { workflow, onClose: handleClose }), mountElement);
+render(
+  createElement(Root, {
+    onClose: handleClose,
+    getWorkflowCallback: getWorkflow,
+    saveWorkflowCallback: saveWorkflow,
+    name: '1',
+    version: '2',
+  }),
+  mountElement,
+);

@@ -1,5 +1,5 @@
 import { createSchema } from 'beautiful-react-diagrams';
-import { flatten, uniqueId } from 'lodash';
+import { flatten } from 'lodash';
 import { DiagramSchema, Link } from 'beautiful-react-diagrams/@types/DiagramSchema';
 import { v4 as uuid } from 'uuid';
 import WorkflowNode from '../components/nodes/workflow-node';
@@ -7,7 +7,10 @@ import BaseNode from '../components/nodes/start-end-node';
 import DecisionNode from '../components/nodes/decision-node';
 import { CustomNodeType, DecisionTask, NodeData, Task, TaskWithId, Workflow } from './types';
 
-function craeteDecisionNode(clickHandler: (data?: NodeData) => void, task: DecisionTask): CustomNodeType {
+function craeteDecisionNode(
+  clickHandler: (data?: NodeData) => void,
+  task: DecisionTask & { id: string },
+): CustomNodeType {
   return {
     content: task.name,
     id: task.id,
@@ -20,7 +23,7 @@ function craeteDecisionNode(clickHandler: (data?: NodeData) => void, task: Decis
       },
     ],
     outputs: [
-      ...Object.keys(task.decisionCases).map(key => {
+      ...Object.keys(task.decisionCases).map((key) => {
         return {
           id: `${key}:${task.id}`,
         };
@@ -69,7 +72,7 @@ export function createNodesFromWorkflow(
 ): CustomNodeType[] {
   return wf.tasks.reduce((acc, t, i) => {
     if (t.type === 'DECISION') {
-      const dTasks = flatten(Object.keys(t.decisionCases).map(key => t.decisionCases[key])).map(tsk => {
+      const dTasks = flatten(Object.keys(t.decisionCases).map((key) => t.decisionCases[key])).map((tsk) => {
         return convertTaskToNode({ ...tsk, id: uuid() }, i, clickHandler);
       });
       return [...acc, craeteDecisionNode(clickHandler, t), ...dTasks];
@@ -111,7 +114,7 @@ export function createEndNode(index: number, clickHandler: (data?: NodeData) => 
 
 function dropNullValues<T>(array: (T | null)[]): T[] {
   const result: T[] = [];
-  array.forEach(value => {
+  array.forEach((value) => {
     if (value != null) {
       result.push(value);
     }
@@ -153,7 +156,7 @@ export function createSchemaFromWorkflow(
   });
 }
 
-export function createWorkflowNode(clickHandler: (data?: NodeData) => void, task: Task): CustomNodeType {
+export function createWorkflowNode(clickHandler: (data?: NodeData) => void, task: TaskWithId): CustomNodeType {
   if (task.type === 'DECISION') {
     return craeteDecisionNode(clickHandler, task);
   }

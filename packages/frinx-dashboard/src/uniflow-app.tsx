@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
+import { WorkflowBuilder } from '@frinx/workflow-builder/src';
 import {
   getWorkflows,
   getWorkflow,
@@ -105,7 +106,6 @@ const UniflowApp: FC = () => {
     EventListeners,
     TaskList,
     PollData,
-    DiagramBuilder,
     UniflowApiProvider,
   } = components;
 
@@ -122,50 +122,12 @@ const UniflowApp: FC = () => {
             render={(props: RouteComponentProps<{ name?: string; version?: string }>) => {
               const { match } = props;
 
-<<<<<<< HEAD
-            return (
-              <WorkflowBuilder name={match.params.name} version={match.params.version} getWorkflowCallback={getWorkflow} saveWorkflowCallback={putWorkflow} />
-              // <DiagramBuilder
-              //   name={match.params.name}
-              //   version={match.params.version}
-              //   onExitBtnClick={() => {
-              //     history.push('/uniflow/definitions');
-              //   }}
-              //   onNewBtnClick={() => {
-              //     history.push('/uniflow/builder');
-              //     // this is an ugly hack for now
-              //     window.location.reload();
-              //   }}
-              // />
-            );
-          }}
-        />
-        <>
-          <WorkflowListHeader
-            onAddButtonClick={() => {
-              history.push('/uniflow/builder');
-            }}
-          />
-          <Route exact path="/uniflow/definitions">
-            <WorkflowDefinitions
-              onDefinitionClick={(name: string, version: string) => {
-                history.push(`/uniflow/builder/${name}/${version}`);
-=======
               return (
-                <DiagramBuilder
+                <WorkflowBuilder
                   name={match.params.name}
                   version={match.params.version}
-                  onExitBtnClick={() => {
-                    history.push('/uniflow/definitions');
-                  }}
-                  onNewBtnClick={() => {
-                    history.push('/uniflow/builder');
-                    // this is an ugly hack for now
-                    window.location.reload();
-                  }}
-                  onWorkflowIdClick={(wfId: string) => {
-                    history.push(`/uniflow/executed/${wfId}`);
-                  }}
+                  getWorkflowCallback={getWorkflow}
+                  saveWorkflowCallback={putWorkflow}
                 />
               );
             }}
@@ -198,7 +160,6 @@ const UniflowApp: FC = () => {
                     }}
                   />
                 );
->>>>>>> origin/main
               }}
             />
             <Route exact path="/uniflow/scheduled">
