@@ -28,7 +28,8 @@
   "scripts": {
     "dev": "run-s relay dev:webpack",
     "dev:webpack": "webpack serve --mode development",
-    "build": "NODE_ENV=production webpack --mode production",
+    "build:webpack": "NODE_ENV=production webpack --mode production",
+    "build": "run-s relay build:webpack",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc --noEmit",
     "relay": "cd ../frinx-uniresource-ui && yarn run relay"
