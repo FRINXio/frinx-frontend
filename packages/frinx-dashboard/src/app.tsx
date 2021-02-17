@@ -12,6 +12,7 @@ import theme from './theme';
 import UniflowApp from './uniflow-app';
 import UniconfigApp from './uniconfig-app';
 import { ServiceKey } from './types';
+import UniresourceApp from './uniresource-app';
 
 function setMessages() {
   const urlParams = new URLSearchParams(window.location?.search);
@@ -65,6 +66,11 @@ const AppWithAuth: FC<{
                   <UniconfigApp />
                 </Route>
               )}
+              {enabledServices.get('uniresource_enabled') && (
+                <Route path="/uniresource">
+                  <UniresourceApp />
+                </Route>
+              )}
             </Switch>
           </Box>
         </BrowserRouter>
@@ -103,6 +109,11 @@ const App: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
             {enabledServices.get('uniconfig_enabled') && (
               <Route path="/uniconfig">
                 <UniconfigApp />
+              </Route>
+            )}
+            {enabledServices.get('uniresource_enabled') && (
+              <Route path="/uniresource">
+                <UniresourceApp />
               </Route>
             )}
           </Switch>

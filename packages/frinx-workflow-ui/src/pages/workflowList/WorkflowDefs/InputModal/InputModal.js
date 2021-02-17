@@ -80,7 +80,6 @@ function InputModal(props) {
               waitingWfs.push(waitingWf);
             }
           });
-          resolve(waitingWfs);
         });
       });
     });

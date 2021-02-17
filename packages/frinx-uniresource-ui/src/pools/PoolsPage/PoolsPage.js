@@ -49,7 +49,7 @@ const pipe = (...functions) => (args) => functions.reduce((arg, fn) => fn(arg), 
 
 const PoolsPage = (props) => {
   const classes = useStyles();
-  const { enqueueSnackbar } = props;
+  const { enqueueSnackbar, onDetailClick } = props;
   const [poolArray, setPoolArray] = useState([]);
 
   const [filterOptions, setFilterOptions] = useState({
@@ -201,6 +201,7 @@ const PoolsPage = (props) => {
             onPoolDelete={handlePoolDelete}
             onTagDelete={handleTagDelete}
             onTagAdd={handleTagAdd}
+            onDetailClick={onDetailClick}
           />
         </div>
       </Grow>

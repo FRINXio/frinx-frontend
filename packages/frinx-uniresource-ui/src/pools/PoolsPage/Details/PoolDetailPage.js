@@ -1,8 +1,4 @@
-/**
- * @flow
- * @format
- */
-
+// @flow
 import type { ContextRouter } from 'react-router-dom';
 import type { WithStyles } from '@material-ui/core';
 import { graphql } from 'react-relay';
@@ -14,7 +10,6 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { withRouter } from 'react-router';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
@@ -174,11 +169,7 @@ const query = graphql`
 `;
 
 const PoolDetailPage = (props: Props) => {
-  const { classes, match } = props;
-  const { params } = match;
-  console.log(props);
-  const { id } = params;
-
+  const { classes, onBreadcrumbLinkClick, id } = props;
   const [updateDataVar, setUpdateDataVar] = useState(0);
   const [first, setFirst] = useState(10);
   const [after, setAfter] = useState(null);
@@ -193,7 +184,6 @@ const PoolDetailPage = (props: Props) => {
   const [queryResources, setQueryResources] = useState([]);
 
   const queryAllocatedResources = (startCursor, endCursor) => {
-    console.log(after, before, after ? null : before);
     fetchQuery(QueryAllocatedResources(id, first, startCursor, endCursor)).then((v) => {
       if (!v.data.data.QueryResourcePool.allocatedResources) {
         setResources([]);
@@ -216,8 +206,6 @@ const PoolDetailPage = (props: Props) => {
     queryAllocatedResources(after, before);
   }, [page]);
 
-  const RESOURCE_MANAGER_URL = '/resourcemanager/frontend';
-
   const getCapacityValue = (cap) => {
     const { freeCapacity, utilizedCapacity } = cap;
     return (utilizedCapacity / (freeCapacity + utilizedCapacity)) * 100;
@@ -228,7 +216,7 @@ const PoolDetailPage = (props: Props) => {
 
     const handleIconClick = (event) => {
       event.preventDefault();
-      window.location.replace(`${RESOURCE_MANAGER_URL}/pools/${NestedPool.id}`);
+      onBreadcrumbLinkClick(NestedPool.id);
     };
 
     return (
@@ -339,7 +327,6 @@ const PoolDetailPage = (props: Props) => {
           variables={{ updateDataVar, poolId: id, first }}
           render={(queryProps) => {
             const { QueryResources, QueryPoolCapacity, QueryResourcePoolHierarchyPath, QueryResourcePool } = queryProps;
-            console.log(queryProps);
             setPoolName(QueryResourcePool.Name);
             setBreadcrumbs(QueryResourcePoolHierarchyPath);
             setResourcePool(QueryResourcePool);
@@ -361,6 +348,7 @@ const PoolDetailPage = (props: Props) => {
                       setUpdateDataVarProp={setUpdateDataVar}
                       updateDataVarProp={updateDataVar}
                       resources={resources}
+                      match={match}
                     />
                     <Pagination
                       count={Math.ceil(totalCount / first)}
@@ -379,4 +367,4 @@ const PoolDetailPage = (props: Props) => {
   );
 };
 
-export default withRouter(withSnackbar(withStyles(styles)(PoolDetailPage)));
+export default withSnackbar(withStyles(styles)(PoolDetailPage));

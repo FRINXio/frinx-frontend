@@ -4,8 +4,8 @@ import { Divider, Dropdown, Grid, Icon, Input, Menu, Popup, Sidebar } from 'sema
 
 import './Sidemenu.css';
 import SideMenuItem from './SideMenuItem';
+import pkgJson from '../../../../package.json';
 import { getTaskInputsRegex, getWfInputsRegex, hash } from '../builder-utils';
-import { version } from '../../../../package.json';
 import { jsonParse } from '../../../common/utils';
 
 const icons = (taskDef) => {
@@ -541,7 +541,7 @@ const Sidemenu = (props) => {
             <Icon name="help circle" />
           </Menu.Item>
           <Menu.Item style={{ wordWrap: 'break-word', padding: '10px 0 10px 0' }}>
-            <small>{version}</small>
+            <small>{pkgJson.version}</small>
           </Menu.Item>
         </div>
       </Sidebar>
