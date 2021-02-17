@@ -42,7 +42,6 @@ class DashboardApp {
   }
 
   render() {
-    console.log(this.enabledServices);
     ReactDOM.render(
       React.createElement(
         React.StrictMode,
