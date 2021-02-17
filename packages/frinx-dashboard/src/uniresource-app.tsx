@@ -1,14 +1,12 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Route, Switch, Redirect, useHistory, useRouteMatch, RouteComponentProps } from 'react-router-dom';
+import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
 
 const UniresourceApp: FC = () => {
-  const { params } = useRouteMatch();
-  console.log(params);
   const [components, setComponents] = useState<typeof import('@frinx/uniresource-ui') | null>(null);
   const history = useHistory();
 
   useEffect(() => {
-    import('@frinx/uniresource-ui').then((mod) => {
+    import('@frinx/uniresource-ui').then(mod => {
       const {
         ResourceTypes,
         Pools,
@@ -45,7 +43,7 @@ const UniresourceApp: FC = () => {
     <ResourceManagerStateWrapper>
       <Switch>
         <Route exact path="/uniresource">
-          <Pools />
+          <Redirect to="/uniresource/pools" />
         </Route>
         <Route
           exact
@@ -68,7 +66,7 @@ const UniresourceApp: FC = () => {
           render={() => {
             return (
               <Pools
-                onDetailClicked={(id: string) => {
+                onDetailClick={(id: string) => {
                   history.push(`/uniresource/pools/${id}`);
                 }}
               />

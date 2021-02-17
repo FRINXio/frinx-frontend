@@ -106,9 +106,10 @@ type Props = {
   onTagAdd: (tagId: string, poolId: string) => void,
   onTagDelete: (tagId: string, poolId: string) => void,
   onPoolDelete: (poolId: string) => void,
+  onDetailClick: (id: string) => void,
 };
 
-const PoolTable = ({ pools, allTags, onTagAdd, onTagDelete, onPoolDelete, onDetailClicked }: Props) => {
+const PoolTable = ({ pools, allTags, onTagAdd, onTagDelete, onPoolDelete, onDetailClick }: Props) => {
   const classes = useStyles();
   const [actionsAnchorEl, setActionsAnchorEl] = useState(null);
   const [activeMenuID, setActiveMenuID] = useState(null);
@@ -242,7 +243,7 @@ const PoolTable = ({ pools, allTags, onTagAdd, onTagDelete, onPoolDelete, onDeta
                     open={Boolean(actionsAnchorEl) && row.id === activeMenuID}
                     onClose={handleActionsClose}
                   >
-                    <MenuItem component={Link} onClick={() => onDetailClicked(row.id)}>
+                    <MenuItem component={Link} onClick={() => onDetailClick(row.id)}>
                       <ListItemIcon>
                         <SettingsIcon fontSize="small" />
                       </ListItemIcon>

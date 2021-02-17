@@ -29,7 +29,7 @@ import PoolTable from './Table/PoolTable';
 import Filters from './Filters/Filters';
 import { useStateValue } from '../../utils/StateProvider';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   container: {
     marginTop: '20px',
   },
@@ -45,11 +45,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const pipe = (...functions) => (args) => functions.reduce((arg, fn) => fn(arg), args);
+const pipe = (...functions) => args => functions.reduce((arg, fn) => fn(arg), args);
 
-const PoolsPage = (props) => {
+const PoolsPage = props => {
   const classes = useStyles();
-  const { enqueueSnackbar, onDetailClicked } = props;
+  const { enqueueSnackbar, onDetailClick } = props;
   const [poolArray, setPoolArray] = useState([]);
 
   const [filterOptions, setFilterOptions] = useState({
@@ -74,18 +74,18 @@ const PoolsPage = (props) => {
     const query = isInRootView ? queryRootPools : queryAllPools;
 
     fetchQuery(query)
-      .then((res) => {
+      .then(res => {
         setPoolArray(isInRootView ? res.data.data.QueryRootResourcePools : res.data.data.QueryResourcePools);
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error); // TODO error handling
       });
 
     fetchQuery(queryFilterOptions)
-      .then((res) => {
+      .then(res => {
         setFilterOptions(res.data.data);
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error); // TODO error handling
       });
   };
@@ -121,7 +121,7 @@ const PoolsPage = (props) => {
       .then(() => {
         fetchData();
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error); // TODO error handling
       });
   };
@@ -131,12 +131,12 @@ const PoolsPage = (props) => {
       .then(() => {
         fetchData();
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error); // TODO error handling
       });
   };
 
-  const handlePoolDelete = (resourcePoolId) => {
+  const handlePoolDelete = resourcePoolId => {
     const variables = {
       input: {
         resourcePoolId,
@@ -159,7 +159,7 @@ const PoolsPage = (props) => {
 
   const handleViewChange = async () => {
     // console.log(event.target.checked);
-    await setIsInRootView((prev) => !prev);
+    await setIsInRootView(prev => !prev);
     // fetchData();
   };
 
@@ -201,7 +201,7 @@ const PoolsPage = (props) => {
             onPoolDelete={handlePoolDelete}
             onTagDelete={handleTagDelete}
             onTagAdd={handleTagAdd}
-            onDetailClicked={onDetailClicked}
+            onDetailClick={onDetailClick}
           />
         </div>
       </Grow>
