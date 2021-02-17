@@ -24,7 +24,7 @@ import ResourceManagerQueryRenderer from '../../../utils/relay/ResourceManagerQu
 import ResourcesList from '../../resources/ResourcesList';
 import { fetchQuery, QueryAllocatedResources } from '../../../queries/Queries';
 
-const styles = theme => ({
+const styles = (theme) => ({
   container: {
     marginTop: '20px',
   },
@@ -184,7 +184,7 @@ const PoolDetailPage = (props: Props) => {
   const [queryResources, setQueryResources] = useState([]);
 
   const queryAllocatedResources = (startCursor, endCursor) => {
-    fetchQuery(QueryAllocatedResources(id, first, startCursor, endCursor)).then(v => {
+    fetchQuery(QueryAllocatedResources(id, first, startCursor, endCursor)).then((v) => {
       if (!v.data.data.QueryResourcePool.allocatedResources) {
         setResources([]);
         setTotalPages(0);
@@ -206,7 +206,7 @@ const PoolDetailPage = (props: Props) => {
     queryAllocatedResources(after, before);
   }, [page]);
 
-  const getCapacityValue = cap => {
+  const getCapacityValue = (cap) => {
     const { freeCapacity, utilizedCapacity } = cap;
     return (utilizedCapacity / (freeCapacity + utilizedCapacity)) * 100;
   };
@@ -214,7 +214,7 @@ const PoolDetailPage = (props: Props) => {
   const TreeItemRender = (NestedPool, nodeId) => {
     const { Resources } = NestedPool;
 
-    const handleIconClick = event => {
+    const handleIconClick = (event) => {
       event.preventDefault();
       onBreadcrumbLinkClick(NestedPool.id);
     };
@@ -254,7 +254,7 @@ const PoolDetailPage = (props: Props) => {
         </Box>
       </Typography>
       <Breadcrumbs separator="›" aria-label="breadcrumb">
-        {breadcrumbs.map(e => (
+        {breadcrumbs.map((e) => (
           <Link color="primary" href={`${RESOURCE_MANAGER_URL}/pools/${e.id}`}>
             {e.Name}
           </Link>
@@ -271,7 +271,7 @@ const PoolDetailPage = (props: Props) => {
               </Typography>
               {resourcePool.Tags ? (
                 <div style={{ display: 'flex', marginBottom: '24px' }}>
-                  {resourcePool.Tags.map(e => (
+                  {resourcePool.Tags.map((e) => (
                     <Chip key={e.id} color="primary" label={e.Tag} className={classes.chip} />
                   ))}
                 </div>
@@ -325,7 +325,7 @@ const PoolDetailPage = (props: Props) => {
         <ResourceManagerQueryRenderer
           query={query}
           variables={{ updateDataVar, poolId: id, first }}
-          render={queryProps => {
+          render={(queryProps) => {
             const { QueryResources, QueryPoolCapacity, QueryResourcePoolHierarchyPath, QueryResourcePool } = queryProps;
             setPoolName(QueryResourcePool.Name);
             setBreadcrumbs(QueryResourcePoolHierarchyPath);

@@ -10,7 +10,7 @@ export const globalConstants = {
 
 export const GlobalContext = createContext(globalConstants);
 
-export const GlobalProvider = props => {
+export const GlobalProvider = (props) => {
   const { children, ...rest } = props;
   return <GlobalContext.Provider value={{ ...globalConstants, ...rest }}>{children}</GlobalContext.Provider>;
 };

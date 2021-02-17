@@ -6,7 +6,7 @@ const UniresourceApp: FC = () => {
   const history = useHistory();
 
   useEffect(() => {
-    import('@frinx/uniresource-ui').then(mod => {
+    import('@frinx/uniresource-ui').then((mod) => {
       const {
         ResourceTypes,
         Pools,
@@ -60,26 +60,19 @@ const UniresourceApp: FC = () => {
             );
           }}
         />
-        <Route
-          exact
-          path="/uniresource/pools"
-          render={() => {
-            return (
-              <Pools
-                onDetailClick={(id: string) => {
-                  history.push(`/uniresource/pools/${id}`);
-                }}
-              />
-            );
-          }}
-        />
+        <Route exact path="/uniresource/pools">
+          <Pools
+            onDetailClick={(id: string) => {
+              history.push(`/uniresource/pools/${id}`);
+            }}
+          />
+        </Route>
         <Route exact path="/uniresource/strategies">
           <AllocationStrategies />
         </Route>
         <Route exact path="/uniresource/resourceTypes">
           <ResourceTypes />
         </Route>
-
         <Route
           exact
           path="/uniresource/resources/:id"
