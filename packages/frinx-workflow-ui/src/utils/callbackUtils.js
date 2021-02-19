@@ -1,33 +1,6 @@
 // TODO types for callbacks
 
 class CallbackUtils {
-  getWorkflows: unknown | null;
-  getWorkflow: unknown | null;
-  getTaskDefinitions: unknown | null;
-  registerEventListener: unknown | null;
-  putWorkflow: unknown | null;
-  getEventListeners: unknown | null;
-  deleteEventListener: unknown | null;
-  getQueues: unknown | null;
-  deleteWorkflow: unknown | null;
-  deleteTaskDefinition: unknown | null;
-  registerTaskDefinition: unknown | null;
-  getTaskDefinition: unknown | null;
-  getWorkflowExecutions: unknown | null;
-  getWorkflowInstanceDetail: unknown | null;
-  executeWorkflow: unknown | null;
-  getWorkflowExecutionsHierarchical: unknown | null;
-  terminateWorkflows: unknown | null;
-  pauseWorkflows: unknown | null;
-  resumeWorkflows: unknown | null;
-  retryWorkflows: unknown | null;
-  restartWorkflows: unknown | null;
-  deleteWorkflowInstance: unknown | null;
-  getSchedules: unknown | null;
-  deleteSchedule: unknown | null;
-  getSchedule: unknown | null;
-  registerSchedule: unknown | null;
-
   constructor() {
     this.getWorkflows = null;
     this.getTaskDefinitions = null;
@@ -56,186 +29,159 @@ class CallbackUtils {
     this.registerSchedule = null;
   }
 
-  setCallbacks(callbacks: {
-    getWorkflows: unknown;
-    getWorkflow: unknown;
-    getTaskDefinitions: unknown;
-    registerEventListener: unknown;
-    putWorkflow: unknown;
-    getEventListeners: unknown;
-    deleteEventListener: unknown;
-    getQueues: unknown;
-    deleteWorkflow: unknown;
-    deleteTaskDefinition: unknown;
-    registerTaskDefinition: unknown;
-    getTaskDefinition: unknown;
-    getWorkflowExecutions: unknown;
-    getWorkflowInstanceDetail: unknown;
-    executeWorkflow: unknown;
-    getWorkflowExecutionsHierarchical: unknown;
-    terminateWorkflows: unknown;
-    pauseWorkflows: unknown;
-    resumeWorkflows: unknown;
-    retryWorkflows: unknown;
-    restartWorkflows: unknown;
-    deleteWorkflowInstance: unknown;
-    getSchedules: unknown;
-    deleteSchedule: unknown;
-    getSchedule: unknown;
-    registerSchedule: unknown;
-  }) {
+  setCallbacks(callbacks) {
     if (this.getWorkflows != null) {
-      throw new Error('getWorkflows is already set');
+      return;
     }
 
     this.getWorkflows = callbacks.getWorkflows;
 
     if (this.getTaskDefinitions != null) {
-      throw new Error('getTaskDefinitions is already set');
+      return;
     }
 
     this.getTaskDefinitions = callbacks.getTaskDefinitions;
 
     if (this.getWorkflow != null) {
-      throw new Error('getWorkflow is already set');
+      return;
     }
 
     this.getWorkflow = callbacks.getWorkflow;
 
     if (this.registerEventListener != null) {
-      throw new Error('registerEventListener is already set');
+      return;
     }
 
     this.registerEventListener = callbacks.registerEventListener;
 
     if (this.putWorkflow != null) {
-      throw new Error('putWorkflow is already set');
+      return;
     }
 
     this.putWorkflow = callbacks.putWorkflow;
 
     if (this.getEventListeners != null) {
-      throw new Error('getEventListeners is already set');
+      return;
     }
 
     this.getEventListeners = callbacks.getEventListeners;
 
     if (this.deleteEventListener != null) {
-      throw new Error('deleteEventListener is already set');
+      return;
     }
 
     this.deleteEventListener = callbacks.deleteEventListener;
 
     if (this.getQueues != null) {
-      throw new Error('getQueues is already set');
+      return;
     }
 
     this.getQueues = callbacks.getQueues;
 
     if (this.deleteWorkflow != null) {
-      throw new Error('deleteWorkflow is already set');
+      return;
     }
 
     this.deleteWorkflow = callbacks.deleteWorkflow;
 
     if (this.deleteTaskDefinition != null) {
-      throw new Error('deleteTaskDefinition is already set');
+      return;
     }
 
     this.deleteTaskDefinition = callbacks.deleteTaskDefinition;
 
     if (this.registerTaskDefinition != null) {
-      throw new Error('registerTaskDefinition is already set');
+      return;
     }
 
     this.registerTaskDefinition = callbacks.registerTaskDefinition;
 
     if (this.getTaskDefinition != null) {
-      throw new Error('getTaskDefinition is already set');
+      return;
     }
 
     this.getTaskDefinition = callbacks.getTaskDefinition;
 
     if (this.getWorkflowExecutions != null) {
-      throw new Error('getWorkflowExecutions is already set');
+      return;
     }
 
     this.getWorkflowExecutions = callbacks.getWorkflowExecutions;
 
     if (this.getWorkflowInstanceDetail != null) {
-      throw new Error('getWorkflowInstanceDetail is already set');
+      return;
     }
 
     this.getWorkflowInstanceDetail = callbacks.getWorkflowInstanceDetail;
 
     if (this.executeWorkflow != null) {
-      throw new Error('executeWorkflow is already set');
+      return;
     }
 
     this.executeWorkflow = callbacks.executeWorkflow;
 
     if (this.getWorkflowExecutionsHierarchical != null) {
-      throw new Error('getWorkflowExecutionsHierarchical is already set');
+      return;
     }
 
     this.getWorkflowExecutionsHierarchical = callbacks.getWorkflowExecutionsHierarchical;
 
     if (this.terminateWorkflows != null) {
-      throw new Error('terminateWorkflows is already set');
+      return;
     }
 
     this.terminateWorkflows = callbacks.terminateWorkflows;
 
     if (this.pauseWorkflows != null) {
-      throw new Error('pauseWorkflows is already set');
+      return;
     }
 
     this.pauseWorkflows = callbacks.pauseWorkflows;
 
     if (this.resumeWorkflows != null) {
-      throw new Error('resumeWorkflows is already set');
+      return;
     }
 
     this.resumeWorkflows = callbacks.resumeWorkflows;
 
     if (this.retryWorkflows != null) {
-      throw new Error('retryWorkflows is already set');
+      return;
     }
 
     this.retryWorkflows = callbacks.retryWorkflows;
 
     if (this.restartWorkflows != null) {
-      throw new Error('restartWorkflows is already set');
+      return;
     }
 
     this.restartWorkflows = callbacks.restartWorkflows;
 
     if (this.deleteWorkflowInstance != null) {
-      throw new Error('deleteWorkflowInstance is already set');
+      return;
     }
 
     this.deleteWorkflowInstance = callbacks.deleteWorkflowInstance;
 
     if (this.getSchedules != null) {
-      throw new Error('getSchedules is already set');
+      return;
     }
 
     this.getSchedules = callbacks.getSchedules;
 
     if (this.deleteSchedule != null) {
-      throw new Error('deleteSchedule is already set');
+      return;
     }
 
     this.deleteSchedule = callbacks.deleteSchedule;
 
     if (this.getSchedule != null) {
-      throw new Error('getSchedule is already set');
+      return;
     }
 
     this.getSchedule = callbacks.getSchedule;
 
     if (this.registerSchedule != null) {
-      throw new Error('registerSchedule is already set');
+      return;
     }
 
     this.registerSchedule = callbacks.registerSchedule;
