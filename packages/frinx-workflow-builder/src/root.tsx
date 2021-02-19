@@ -2,6 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import { Workflow } from 'helpers/types';
 import App from './app';
+import theme from './theme';
 
 type Props = {
   name?: string;
@@ -22,7 +23,7 @@ const Root: FC<Props> = ({ name, version, onClose, saveWorkflowCallback, getWork
   }, [name, version, getWorkflowCallback]);
 
   return workflow != null ? (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <App onClose={onClose} workflow={workflow} onWorkflowSave={saveWorkflowCallback} />
     </ChakraProvider>
   ) : null;

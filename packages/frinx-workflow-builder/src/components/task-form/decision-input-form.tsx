@@ -30,6 +30,7 @@ const DecisionInputForm: FC<Props> = ({ params, onChange }) => {
             />
             <IconButton
               size="sm"
+              isDisabled={newParam === ''}
               aria-label="add param"
               colorScheme="blue"
               icon={<AddIcon />}

@@ -4,8 +4,8 @@ import { Box } from '@chakra-ui/react';
 const RightDrawer: FC = ({ children }) => {
   return (
     <Box
-      position="fixed"
-      top={24}
+      position="absolute"
+      top={0}
       right={0}
       bottom={0}
       width={640}

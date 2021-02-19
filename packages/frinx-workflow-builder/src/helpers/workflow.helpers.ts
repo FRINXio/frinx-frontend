@@ -1,6 +1,8 @@
 import { DiagramSchema, Link, Node } from 'beautiful-react-diagrams/@types/DiagramSchema';
 import { dropWhile } from 'lodash';
-import { NodeData, Task, TaskWithId, Workflow } from './types';
+import { v4 as uuid } from 'uuid';
+import { getTaskLabel } from './task.helpers';
+import { NodeData, Task, ExtendedTask, Workflow } from './types';
 import unwrap from './unwrap';
 
 function parseId(id: string) {
@@ -51,41 +53,33 @@ function prepareLinks<T extends { input: string }>(array: T[], id = 'start'): T[
   return arrCopy;
 }
 
-export function convertDiagramTasks(schema: DiagramSchema<NodeData>, id = 'start'): TaskWithId[] | null {
-  const { links } = schema;
-  const result = [];
-  for (let i = 0; i <= (links || []).length; i += 1) {
-    const nextNode = getNextNode(schema, id);
-    result.push(nextNode);
-    id = nextNode?.id;
-  }
-
-  const tasks = dropNullValues(result)
-    .filter((n) => n.id !== 'end')
-    .map((n) => unwrap(n.data?.task));
-
-  return tasks.reduce((acc, curr) => {
-    if (curr.type === 'DECISION') {
-      const link = unwrap(links).find((l) => parseId(l.input).id === curr.id);
-
-      curr.decisionCases = {
-        [unwrap(parseId(unwrap(link).input).type)]: getNextNode(schema, parseId(unwrap(link).input).id),
-      };
-    }
-
-    return [...acc, curr];
-  }, [] as TaskWithId[]);
-
-  return tasks;
+export function convertDiagramTasks(schema: DiagramSchema<NodeData>, id = 'start'): ExtendedTask[] | null {
+  // const { links } = schema;
+  // const result = [];
+  // for (let i = 0; i <= (links || []).length; i += 1) {
+  //   const nextNode = getNextNode(schema, id);
+  //   result.push(nextNode);
+  //   id = nextNode?.id;
+  // }
+  // const tasks = dropNullValues(result)
+  //   .filter((n) => n.id !== 'end')
+  //   .map((n) => unwrap(n.data?.task));
+  // return tasks.reduce((acc, curr) => {
+  //   if (curr.type === 'DECISION') {
+  //     const link = unwrap(links).find((l) => parseId(l.input).id === curr.id);
+  //     curr.decisionCases = {
+  //       [unwrap(parseId(unwrap(link).input).type)]: getNextNode(schema, parseId(unwrap(link).input).id),
+  //     };
+  //   }
+  //   return [...acc, curr];
+  // }, [] as ExtendedTask[]);
+  // return tasks;
   // const { nodes, links } = schema;
-
   // if (links == null) {
   //   return null;
   // }
-
   // const preparedLinks = prepareLinks(links, id);
   // const idsToFilter: string[] = [];
-
   // const result = preparedLinks.reduce((acc, link) => {
   //   const node = unwrap(
   //     nodes.find((n) => {
@@ -96,19 +90,15 @@ export function convertDiagramTasks(schema: DiagramSchema<NodeData>, id = 'start
   //   const parsedInput = parseId(link.input);
   //   const task = node.data?.task ?? null;
   //   const taskCopy = task ? { ...task } : null;
-
   //   if (node == null) {
   //     return acc;
   //   }
-
   //   // if (parsedOutput.type != null) {
   //   //   return acc;
   //   // }
-
   //   if (parsedInput.type != null) {
   //     idsToFilter.push(parsedOutput.id);
   //   }
-
   //   if (taskCopy && taskCopy.type === 'DECISION') {
   //     taskCopy.decisionCases = links
   //       .filter((l) => {
@@ -122,7 +112,6 @@ export function convertDiagramTasks(schema: DiagramSchema<NodeData>, id = 'start
   //       .reduce((accu, curr) => {
   //         const parsedOutputId = parseId(curr.output);
   //         const parsedInputId = parseId(curr.input);
-
   //         if (parsedOutputId.type != null) {
   //           const targetNode = unwrap(nodes.find((n) => n.id === curr.input));
   //           return {
@@ -133,7 +122,6 @@ export function convertDiagramTasks(schema: DiagramSchema<NodeData>, id = 'start
   //           };
   //         }
   //         const targetNode = unwrap(nodes.find((n) => n.id === curr.output));
-
   //         return {
   //           ...accu,
   //           [unwrap(parsedInputId.type) === 'else' ? 'else' : getDecisionCaseKey(taskCopy.decisionCases)]: [
@@ -143,20 +131,17 @@ export function convertDiagramTasks(schema: DiagramSchema<NodeData>, id = 'start
   //       }, {});
   //     return [...acc, taskCopy];
   //   }
-
   //   if (taskCopy == null || node.id === 'start' || node.id === 'end') {
   //     return acc;
   //   }
-
   //   return [...acc, taskCopy];
-  // }, [] as TaskWithId[]);
-
+  // }, [] as ExtendedTask[]);
   // return result.filter((t) => !idsToFilter.includes(t.id));
 }
 
 export function convertDiagramWorkflow(
   schema: DiagramSchema<NodeData>,
-  workflow: Workflow<TaskWithId>,
+  workflow: Workflow<ExtendedTask>,
 ): Workflow<Task> {
   const { tasks, ...rest } = workflow;
   return {
@@ -166,5 +151,17 @@ export function convertDiagramWorkflow(
         const { id, ...task } = t;
         return task;
       }) ?? [],
+  };
+}
+
+export function convertWorkflow(wf: Workflow): Workflow<ExtendedTask> {
+  const { tasks, ...rest } = wf;
+  return {
+    ...rest,
+    tasks: tasks.map((t) => ({
+      ...t,
+      id: uuid(),
+      label: getTaskLabel(t),
+    })),
   };
 }

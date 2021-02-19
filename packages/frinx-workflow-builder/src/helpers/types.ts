@@ -192,7 +192,25 @@ export type Task =
   | StartTask
   | EndTask;
 
-export type TaskWithId = Task & { id: string };
+export type TaskLabel =
+  | 'decision'
+  | 'while'
+  | 'end'
+  | 'event'
+  | 'fork'
+  | 'join'
+  | 'lambda'
+  | 'raw'
+  | 'start'
+  | 'dynamic fork'
+  | 'terminate'
+  | 'wait'
+  | 'while end'
+  | 'graphql'
+  | 'http'
+  | 'js'
+  | 'py';
+export type ExtendedTask = Task & { id: string; label: TaskLabel };
 
 export type Workflow<T extends Task = Task> = {
   name: string;
@@ -213,7 +231,7 @@ export type Workflow<T extends Task = Task> = {
 };
 export type NodeData = {
   isSelected: boolean;
-  task: TaskWithId | null;
+  task: { id: string; label: TaskLabel } | ExtendedTask;
   onClick: (data?: NodeData) => void;
 };
 export type CustomNodeType = Node<NodeData>;

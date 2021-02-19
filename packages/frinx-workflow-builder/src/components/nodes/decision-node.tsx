@@ -1,28 +1,33 @@
 import React, { FC } from 'react';
-import { Box, Flex, Heading, IconButton, Text, Tooltip, useTheme } from '@chakra-ui/react';
+import { Box, Flex, Heading, IconButton, Text, Theme, Tooltip, useTheme } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
 import { CustomNodeType, Task, DecisionTask } from '../../helpers/types';
+import unwrap from '../../helpers/unwrap';
+import { getNodeColor } from './nodes.helpers';
 
 const isDecisionTask = (task: Task | undefined | null): task is DecisionTask => {
   return task != null && task.type === 'DECISION';
 };
 
 const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
-  const theme = useTheme();
+  const theme = useTheme<Theme>();
   const { inputs, outputs, data } = props;
+  const task = unwrap(unwrap(data).task);
 
   return (
     <Flex
       alignItems="stretch"
-      background="gray.200"
+      background="white"
       width={60}
-      height={16}
-      borderRadius="base"
-      overflow="hidden"
-      boxShadow="base"
       borderWidth={2}
       borderStyle="solid"
-      borderColor="gray.300"
+      borderColor={data?.isSelected ? 'blue.600' : 'gray.200'}
+      borderTopColor={getNodeColor(task.label)}
+      borderTopWidth={6}
+      borderTopStyle="solid"
+      overflow="hidden"
+      boxShadow={data?.isSelected ? undefined : 'base'}
+      borderRadius="md"
     >
       <Flex
         width={10}
@@ -41,41 +46,39 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
         })}
       </Flex>
 
-      <Flex textAlign="center" flex={1} paddingY={2}>
-        <Box flex={1}>
-          <Heading as="h4" size="xs" fontSize="sm" fontWeight={600} marginBottom={2}>
-            {data?.task?.name}
+      <Box flex={1}>
+        <Flex alignItems="center" flex={1} paddingX={2} paddingY={1} height={8}>
+          <Heading as="h6" size="xs" textTransform="uppercase">
+            {task.label}
           </Heading>
+          <Box marginLeft="auto">
+            <Tooltip label="Edit workflow">
+              <IconButton
+                onClick={(event) => {
+                  event.stopPropagation();
+                  data?.onClick(data);
+                }}
+                aria-label="Edit workflow"
+                icon={<EditIcon />}
+                size="xs"
+                colorScheme="blue"
+              />
+            </Tooltip>
+          </Box>
+        </Flex>
+        <Flex height={8} alignItems="center" justifyContent="center">
           <Text size="sm" color="gray.700" fontFamily="monospace">
-            {isDecisionTask(data?.task) && <>if {data?.task?.caseValueParam} =</>}
+            {isDecisionTask(data?.task) && <>if {data?.task?.caseValueParam} ==</>}
           </Text>
-        </Box>
-        <Box marginLeft="auto">
-          <Tooltip label="Edit workflow">
-            <IconButton
-              onClick={(event) => {
-                event.stopPropagation();
-                data?.onClick(data);
-              }}
-              aria-label="Edit workflow"
-              icon={<EditIcon />}
-              size="xs"
-              colorScheme="blue"
-            />
-          </Tooltip>
-        </Box>
-      </Flex>
+        </Flex>
+      </Box>
       <Flex
         width={10}
         // background="gray.200"
-        color="gray.700"
         marginLeft="auto"
         flexDirection="column"
-        textAlign="center"
-        alignItems="center"
-        justifyContent="center"
-        textTransform="uppercase"
-        fontSize="xs"
+        alignItems="stretch"
+        justifyContent="space-between"
       >
         {outputs?.map((port, i) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -89,8 +92,12 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
             {
               style: {
                 background: theme.colors.gray[200],
-                marginTop: theme.space[2],
-                marginBottom: theme.space[2],
+                color: theme.colors.gray[700],
+                fontSize: theme.fontSizes.xs,
+                height: theme.sizes[6],
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               },
             },
             label,

@@ -3,11 +3,8 @@ declare module '*.svg' {
   return content;
 }
 
-declare type RecursivePartial<T> = {
-  [P in keyof T]?: T[P] extends (infer U)[]
-    ? RecursivePartial<U>[]
-    : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    T[P] extends Record<string, any>
-    ? RecursivePartial<T[P]>
-    : T[P];
-};
+// declare module 'feather-icons-react' {
+//   const content: FC<{ icon: string; size: string }>;
+
+//   export default content;
+// }

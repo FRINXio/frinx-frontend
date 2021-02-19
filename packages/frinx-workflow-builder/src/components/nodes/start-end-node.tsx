@@ -1,36 +1,31 @@
 import React, { FC } from 'react';
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Flex, Text } from '@chakra-ui/react';
 import { CustomNodeType } from '../../helpers/types';
 
 const BaseNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
-  const { inputs, outputs, content } = props;
+  const { inputs, outputs, data } = props;
 
   return (
     <Box
-      background="gray.100"
+      background="white"
       width={20}
       height={20}
       borderRadius="50%"
       overflow="hidden"
       boxShadow="base"
-      borderWidth={2}
+      borderWidth={4}
       borderStyle="solid"
-      borderColor="gray.200"
+      borderColor={data?.task.label === 'start' ? 'green.100' : 'red.100'}
     >
-      <div
-        style={{
-          padding: '10px',
-          fontSize: 13,
-          fontWeight: 600,
-          textAlign: 'center',
-        }}
-      >
-        {content}
-      </div>
+      <Box padding={2} fontSize="sm" fontWeight={600} textAlign="center">
+        <Text textTransform="uppercase">{data?.task.label}</Text>
+      </Box>
       <Flex>
         {inputs?.map((port) => {
           return (
             <Flex
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               key={port.key}
               width={12}
               height={6}
@@ -48,6 +43,8 @@ const BaseNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
               }}
             >
               {React.cloneElement(
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 port,
                 {
                   style: {
@@ -66,6 +63,8 @@ const BaseNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
         {outputs?.map((port) => {
           return (
             <Flex
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               key={port.key}
               width={12}
               height={6}
@@ -83,6 +82,8 @@ const BaseNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
               }}
             >
               {React.cloneElement(
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 port,
                 {
                   style: {

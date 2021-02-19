@@ -5,16 +5,18 @@ import { v4 as uuid } from 'uuid';
 import WorkflowNode from '../components/nodes/workflow-node';
 import BaseNode from '../components/nodes/start-end-node';
 import DecisionNode from '../components/nodes/decision-node';
-import { CustomNodeType, DecisionTask, NodeData, Task, TaskWithId, Workflow } from './types';
+import { CustomNodeType, DecisionTask, NodeData, ExtendedTask, Workflow, TaskLabel } from './types';
+import { getTaskLabel } from './task.helpers';
 
 function craeteDecisionNode(
+  task: DecisionTask & { id: string; label: TaskLabel },
+  i: number,
   clickHandler: (data?: NodeData) => void,
-  task: DecisionTask & { id: string },
 ): CustomNodeType {
   return {
     content: task.name,
     id: task.id,
-    coordinates: [100, 200],
+    coordinates: [275 * (i + 1), 100],
     render: DecisionNode,
     inputs: [
       {
@@ -40,12 +42,12 @@ function craeteDecisionNode(
   };
 }
 
-function convertTaskToNode(t: TaskWithId, i: number, clickHandler: (data?: NodeData) => void): CustomNodeType {
+function convertTaskToNode(t: ExtendedTask, i: number, clickHandler: (data?: NodeData) => void): CustomNodeType {
   return {
     content: t.name,
     id: t.id,
     render: WorkflowNode,
-    coordinates: [300 * (i + 1), 100],
+    coordinates: [275 * (i + 1), 100],
     outputs: [
       {
         id: t.id,
@@ -67,15 +69,15 @@ function convertTaskToNode(t: TaskWithId, i: number, clickHandler: (data?: NodeD
 }
 
 export function createNodesFromWorkflow(
-  wf: Workflow<TaskWithId>,
+  wf: Workflow<ExtendedTask>,
   clickHandler: (data?: NodeData) => void,
 ): CustomNodeType[] {
   return wf.tasks.reduce((acc, t, i) => {
     if (t.type === 'DECISION') {
-      const dTasks = flatten(Object.keys(t.decisionCases).map((key) => t.decisionCases[key])).map((tsk) => {
-        return convertTaskToNode({ ...tsk, id: uuid() }, i, clickHandler);
+      const dTasks = flatten(Object.keys(t.decisionCases).map((key) => t.decisionCases[key])).map((tsk, idx) => {
+        return convertTaskToNode({ ...tsk, id: uuid(), label: getTaskLabel(tsk) }, idx + 1 + i, clickHandler);
       });
-      return [...acc, craeteDecisionNode(clickHandler, t), ...dTasks];
+      return [...acc, craeteDecisionNode(t, i, clickHandler), ...dTasks];
     }
 
     return [...acc, convertTaskToNode(t, i, clickHandler)];
@@ -92,7 +94,7 @@ export function createStartNode(clickHandler: (data?: NodeData) => void): Custom
     data: {
       isSelected: false,
       onClick: clickHandler,
-      task: null,
+      task: { id: 'start', label: 'start' },
     },
   };
 }
@@ -101,13 +103,13 @@ export function createEndNode(index: number, clickHandler: (data?: NodeData) => 
   return {
     content: 'END',
     id: 'end',
-    coordinates: [300 * index, 100],
+    coordinates: [275 * index, 100],
     inputs: [{ id: 'end', alignment: 'left' }],
     render: BaseNode,
     data: {
       isSelected: false,
       onClick: clickHandler,
-      task: null,
+      task: { id: 'end', label: 'end' },
     },
   };
 }
@@ -130,6 +132,7 @@ export function createLinks(values: CustomNodeType[]): Link[] {
         ? {
             input: curr.outputs != null ? curr.outputs[0].id : '',
             output: nextNode?.inputs != null ? nextNode.inputs[0].id : '',
+            className: 'node__link',
           }
         : null;
     return [...acc, link];
@@ -139,7 +142,7 @@ export function createLinks(values: CustomNodeType[]): Link[] {
 }
 
 export function createSchemaFromWorkflow(
-  wf: Workflow<TaskWithId>,
+  wf: Workflow<ExtendedTask>,
   clickHandler: (data?: NodeData) => void,
 ): DiagramSchema<NodeData> {
   const nodesFromWorkflow = createNodesFromWorkflow(wf, clickHandler);
@@ -156,9 +159,17 @@ export function createSchemaFromWorkflow(
   });
 }
 
-export function createWorkflowNode(clickHandler: (data?: NodeData) => void, task: TaskWithId): CustomNodeType {
+export function createWorkflowNode(clickHandler: (data?: NodeData) => void, task: ExtendedTask): CustomNodeType {
   if (task.type === 'DECISION') {
-    return craeteDecisionNode(clickHandler, task);
+    return craeteDecisionNode(task, 0, clickHandler);
+  }
+
+  if (task.type === 'START_TASK') {
+    return createStartNode(clickHandler);
+  }
+
+  if (task.type === 'END_TASK') {
+    return createEndNode(0, clickHandler);
   }
 
   return {

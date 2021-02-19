@@ -2,25 +2,8 @@ import React, { FC, useState } from 'react';
 import 'beautiful-react-diagrams/styles.css';
 import Diagram, { useSchema } from 'beautiful-react-diagrams';
 import { v4 as uuid } from 'uuid';
-import {
-  Box,
-  Button,
-  Divider,
-  Flex,
-  Heading,
-  HStack,
-  Menu,
-  MenuButton,
-  MenuGroup,
-  MenuItem,
-  MenuList,
-  Text,
-  useDisclosure,
-  useTheme,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, HStack, Text, useDisclosure, useTheme } from '@chakra-ui/react';
 import produce, { castDraft } from 'immer';
-import { AddIcon, ChevronDownIcon, DeleteIcon, DownloadIcon, EditIcon, ViewIcon } from '@chakra-ui/icons';
-import { NodeData, Task, TaskWithId, Workflow } from './helpers/types';
 import { createSchemaFromWorkflow, createWorkflowNode } from './helpers/diagram.helpers';
 import unwrap from './helpers/unwrap';
 import RightDrawer from './components/right-drawer';
@@ -29,8 +12,10 @@ import LeftMenu from './components/left-menu';
 import NewWorkflowModal from './components/new-workflow-modal/new-workflow-modal';
 import WorkflowDefinitionModal from './components/workflow-definition-modal/workflow-definition-modal';
 import EditWorkflowForm from './components/edit-workflow-form/edit-workflow-form';
+import ActionsMenu from './components/actions-menu/actions-menu';
 import BgSvg from './img/bg.svg';
-import { convertDiagramWorkflow } from './helpers/workflow.helpers';
+import { convertDiagramWorkflow, convertWorkflow } from './helpers/workflow.helpers';
+import { NodeData, ExtendedTask, Workflow } from './helpers/types';
 
 type Props = {
   onClose: () => void;
@@ -38,20 +23,9 @@ type Props = {
   onWorkflowSave: (workflows: Workflow[]) => Promise<unknown>;
 };
 
-function convertWorkflow(wf: Workflow): Workflow<TaskWithId> {
-  const { tasks, ...rest } = wf;
-  return {
-    ...rest,
-    tasks: tasks.map((t) => ({
-      ...t,
-      id: uuid(),
-    })),
-  };
-}
-
 const App: FC<Props> = ({ workflow, onWorkflowSave }) => {
   const theme = useTheme();
-  const [task, setTask] = useState<Task | null>(null);
+  const [task, setTask] = useState<ExtendedTask | null>(null);
   const [workflowState, setWorkflowState] = useState<Workflow>(workflow);
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
@@ -73,11 +47,11 @@ const App: FC<Props> = ({ workflow, onWorkflowSave }) => {
   };
   const { name, description } = workflow;
 
-  const handleAddButtonClick = (t: Task) => {
+  const handleAddButtonClick = (t: ExtendedTask) => {
     addNode(createWorkflowNode(onClick, t));
   };
 
-  const handleFormSubmit = (t: Task) => {
+  const handleFormSubmit = (t: ExtendedTask) => {
     const copiedNodes = castDraft(
       produce(copiedSchema.nodes, (acc) => {
         const index = acc.findIndex((n) => n.id === t.id);
@@ -91,7 +65,15 @@ const App: FC<Props> = ({ workflow, onWorkflowSave }) => {
 
   return (
     <Flex height="100vh" flexDirection="column">
-      <Flex height={24} alignItems="center" px={4} boxShadow="base" position="relative" zIndex="modal">
+      <Flex
+        height={16}
+        alignItems="center"
+        px={4}
+        boxShadow="base"
+        position="relative"
+        zIndex="modal"
+        background="white"
+      >
         <Box>
           <Heading size="lg" mb={2}>
             {name}
@@ -102,39 +84,13 @@ const App: FC<Props> = ({ workflow, onWorkflowSave }) => {
         </Box>
         <Box ml="auto">
           <HStack spacing={2}>
-            <Menu>
-              <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-                Actions
-              </MenuButton>
-              <MenuList>
-                <MenuItem>Save workflow</MenuItem>
-                <MenuItem icon={<ViewIcon />} onClick={workflowDefinitionDisclosure.onOpen}>
-                  Show definition
-                </MenuItem>
-                <Divider />
-                <MenuGroup title="Create">
-                  <MenuItem icon={<AddIcon />} onClick={workflowModalDisclosure.onOpen}>
-                    New workflow
-                  </MenuItem>
-                  <MenuItem icon={<DownloadIcon style={{ transform: 'rotate(180deg)' }} />}>Import workflow</MenuItem>
-                  <MenuItem icon={<DownloadIcon />}>Export workflow</MenuItem>
-                </MenuGroup>
-                <MenuGroup title="Edit">
-                  <MenuItem
-                    icon={<EditIcon />}
-                    onClick={() => {
-                      setIsEditing(true);
-                    }}
-                  >
-                    Edit workflow
-                  </MenuItem>
-                </MenuGroup>
-                <Divider />
-                <MenuItem icon={<DeleteIcon />} color="red.500">
-                  Delete workflow
-                </MenuItem>
-              </MenuList>
-            </Menu>
+            <ActionsMenu
+              onShowDefinitionBtnClick={workflowDefinitionDisclosure.onOpen}
+              onNewWorkflowBtnClick={workflowModalDisclosure.onOpen}
+              onEditWorkflowBtnClick={() => {
+                setIsEditing(true);
+              }}
+            />
             <Button
               colorScheme="blue"
               onClick={() => {
@@ -205,7 +161,11 @@ const App: FC<Props> = ({ workflow, onWorkflowSave }) => {
           </RightDrawer>
         )}
       </Flex>
-      {/* <WorkflowDefinitionModal isOpen={workflowDefinitionDisclosure.isOpen} onClose={workflowDefinitionDisclosure.onClose} workflow={convertDiagramWorkflow(copiedSchema, workflowState)} /> */}
+      <WorkflowDefinitionModal
+        isOpen={workflowDefinitionDisclosure.isOpen}
+        onClose={workflowDefinitionDisclosure.onClose}
+        workflow={convertDiagramWorkflow(copiedSchema, workflowState)}
+      />
       <NewWorkflowModal
         isOpen={workflowModalDisclosure.isOpen}
         onClose={workflowModalDisclosure.onClose}

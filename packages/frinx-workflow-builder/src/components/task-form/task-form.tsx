@@ -19,14 +19,14 @@ import {
   TabPanels,
   Tabs,
 } from '@chakra-ui/react';
-import { InputParameters, Task } from '../../helpers/types';
+import { InputParameters, ExtendedTask } from '../../helpers/types';
 import unwrap from '../../helpers/unwrap';
 import { renderInputParamForm } from './input-params-forms';
 
 type Props = {
-  task: Task;
+  task: ExtendedTask;
   onClose: () => void;
-  onFormSubmit: (task: Task) => void;
+  onFormSubmit: (task: ExtendedTask) => void;
 };
 
 const TaskForm: FC<Props> = ({ task, onClose, onFormSubmit }) => {
@@ -55,7 +55,7 @@ const TaskForm: FC<Props> = ({ task, onClose, onFormSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Tabs size="md" variant="enclosed">
+      <Tabs size="md">
         <TabList>
           <Tab>General settings</Tab>
           {'inputParameters' in taskState && <Tab>Input parameters</Tab>}
@@ -164,13 +164,32 @@ const TaskForm: FC<Props> = ({ task, onClose, onFormSubmit }) => {
                 </HStack>
               </>
             )}
+            {taskState.type === 'EVENT' && (
+              <FormControl id="sink">
+                <FormLabel>Sink</FormLabel>
+                <Input
+                  type="text"
+                  name="sink"
+                  value={taskState.sink}
+                  onChange={(event) => {
+                    event.persist();
+                    setTaskState((s) => {
+                      return {
+                        ...s,
+                        sink: event.target.value,
+                      };
+                    });
+                  }}
+                />
+              </FormControl>
+            )}
           </TabPanel>
           {'inputParameters' in taskState && (
             <TabPanel>{renderInputParamForm(taskState, handleUpdateInputParameters)}</TabPanel>
           )}
         </TabPanels>
       </Tabs>
-      <Divider />
+      <Divider my={4} />
       <Stack direction="row" spacing={2} align="center">
         <Button type="submit" colorScheme="blue">
           Save changes

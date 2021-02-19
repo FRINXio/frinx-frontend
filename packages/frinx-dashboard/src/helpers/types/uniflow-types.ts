@@ -238,7 +238,7 @@ export type Task =
   | StartTask
   | EndTask;
 
-export type TaskWithId = Task & { id: string };
+export type ExtendedTask = Task & { id: string };
 
 export type Workflow<T extends Task = Task> = {
   name: string;

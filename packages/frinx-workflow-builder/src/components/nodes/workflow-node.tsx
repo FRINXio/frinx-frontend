@@ -2,6 +2,8 @@ import React, { FC } from 'react';
 import { Box, Flex, Heading, IconButton, Tooltip, useTheme } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
 import { CustomNodeType } from '../../helpers/types';
+import { getNodeColor } from './nodes.helpers';
+import unwrap from '../../helpers/unwrap';
 
 const WorkflowNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
   const { inputs, outputs, data } = props;
@@ -10,17 +12,20 @@ const WorkflowNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
   return (
     <Box
       background="white"
-      width={60}
+      width={48}
       borderWidth={2}
       borderStyle="solid"
       borderColor={data?.isSelected ? 'blue.600' : 'gray.200'}
+      borderTopColor={getNodeColor(unwrap(data).task?.label)}
+      borderTopWidth={6}
+      borderTopStyle="solid"
       overflow="hidden"
       boxShadow={data?.isSelected ? undefined : 'base'}
       borderRadius="md"
     >
-      <Flex px={2} py={3} fontSize="sm" fontWeight="medium" alignItems="center">
-        <Heading as="h4" size="xs" isTruncated>
-          {data?.task?.name}
+      <Flex px={2} py={1} fontSize="sm" fontWeight="medium" alignItems="center">
+        <Heading as="h6" size="xs" textTransform="uppercase">
+          {data?.task?.label}
         </Heading>
         <Box marginLeft="auto">
           <Tooltip label="Edit workflow">

@@ -18,6 +18,11 @@ import {
   WaitTask,
   RawTask,
   DynamicForkTask,
+  InputParameters,
+  HTTPInputParams,
+  GraphQLInputParams,
+  LambdaInputParams,
+  TaskLabel,
 } from './types';
 
 const DEFAULT_TASK_OPTIONS: Pick<
@@ -47,9 +52,10 @@ const DEFAULT_TASK_OPTIONS: Pick<
   description: '',
 };
 
-function createHTTPTask(): HTTPTask & { id: string } {
+function createHTTPTask(label: TaskLabel): HTTPTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'GLOBAL___HTTP_task',
     type: 'SIMPLE',
     taskReferenceName: `httpRequestTaskRef_${uuid()}`,
@@ -65,9 +71,10 @@ function createHTTPTask(): HTTPTask & { id: string } {
     ...DEFAULT_TASK_OPTIONS,
   };
 }
-function createGraphQLTask(): GraphQLTask & { id: string } {
+function createGraphQLTask(label: TaskLabel): GraphQLTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'GLOBAL___HTTP_task',
     type: 'SIMPLE',
     taskReferenceName: `graphQLTaskRef_${uuid()}`,
@@ -87,9 +94,10 @@ function createGraphQLTask(): GraphQLTask & { id: string } {
     ...DEFAULT_TASK_OPTIONS,
   };
 }
-function createJSTask(): JSPythonTask & { id: string } {
+function createJSTask(label: TaskLabel): JSPythonTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'GLOBAL__JS',
     type: 'SIMPLE',
     taskReferenceName: `lambdaJsTaskRef_${uuid()}`,
@@ -103,9 +111,10 @@ function createJSTask(): JSPythonTask & { id: string } {
     ...DEFAULT_TASK_OPTIONS,
   };
 }
-function createPYTask(): JSPythonTask & { id: string } {
+function createPYTask(label: TaskLabel): JSPythonTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'GLOBAL__PY',
     type: 'SIMPLE',
     taskReferenceName: `lambdaJsTaskRef_${uuid()}`,
@@ -120,9 +129,10 @@ function createPYTask(): JSPythonTask & { id: string } {
     ...DEFAULT_TASK_OPTIONS,
   };
 }
-function createLambdaTask(): LambdaTask & { id: string } {
+function createLambdaTask(label: TaskLabel): LambdaTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'LAMBDA_TASK',
     taskReferenceName: `lambdaTaskRef_${uuid()}`,
     type: 'LAMBDA',
@@ -137,10 +147,13 @@ function createLambdaTask(): LambdaTask & { id: string } {
   };
 }
 
-function createStartEndTask(type: 'START' | 'END'): (StartTask & { id: string }) | (EndTask & { id: string }) {
-  const name = type === 'START' ? 'START_TASK' : 'END_TASK';
+function createStartEndTask(
+  label: 'start' | 'end',
+): (StartTask & { id: string; label: string }) | (EndTask & { id: string; label: string }) {
+  const name = label === 'start' ? 'START_TASK' : 'END_TASK';
   return {
-    id: type === 'START' ? 'start' : 'end',
+    id: label,
+    label,
     name,
     type: name,
     taskReferenceName: `startTaskRef_${uuid()}`,
@@ -148,9 +161,10 @@ function createStartEndTask(type: 'START' | 'END'): (StartTask & { id: string })
   };
 }
 
-function createForkTask(): ForkTask & { id: string } {
+function createForkTask(label: TaskLabel): ForkTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'forkTask',
     type: 'FORK_JOIN',
     taskReferenceName: `forkTaskRef_${uuid()}`,
@@ -159,9 +173,10 @@ function createForkTask(): ForkTask & { id: string } {
   };
 }
 
-function createJoinTask(): JoinTask & { id: string } {
+function createJoinTask(label: TaskLabel): JoinTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'joinTask',
     type: 'JOIN',
     taskReferenceName: `joinTaskRef_${uuid()}`,
@@ -170,9 +185,10 @@ function createJoinTask(): JoinTask & { id: string } {
   };
 }
 
-function createWhileTask(): WhileTask & { id: string } {
+function createWhileTask(label: TaskLabel): WhileTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'whileTask',
     type: 'DO_WHILE',
     taskReferenceName: `whileTaskRef_${uuid()}`,
@@ -185,9 +201,10 @@ function createWhileTask(): WhileTask & { id: string } {
   };
 }
 
-function createWhileEndTask(): WhileEndTask & { id: string } {
+function createWhileEndTask(label: TaskLabel): WhileEndTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'whileEndTask',
     type: 'WHILE_END',
     taskReferenceName: `whileEndTaskRef_${uuid()}`,
@@ -195,9 +212,10 @@ function createWhileEndTask(): WhileEndTask & { id: string } {
   };
 }
 
-function createDecisionTask(): DecisionTask & { id: string } {
+function createDecisionTask(label: TaskLabel): DecisionTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'decisionTask',
     type: 'DECISION',
     taskReferenceName: `decisionTaskRef_${uuid()}`,
@@ -214,9 +232,10 @@ function createDecisionTask(): DecisionTask & { id: string } {
   };
 }
 
-function createTerminateTask(): TerminateTask & { id: string } {
+function createTerminateTask(label: TaskLabel): TerminateTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'terminateTask',
     type: 'TERMINATE',
     taskReferenceName: `terminateTaskRef_${uuid()}`,
@@ -228,9 +247,10 @@ function createTerminateTask(): TerminateTask & { id: string } {
   };
 }
 
-function createEventTask(): EventTask & { id: string } {
+function createEventTask(label: TaskLabel): EventTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'eventTask',
     type: 'EVENT',
     taskReferenceName: `eventTaskRef_${uuid()}`,
@@ -244,9 +264,10 @@ function createEventTask(): EventTask & { id: string } {
   };
 }
 
-function createWaitTask(): WaitTask & { id: string } {
+function createWaitTask(label: TaskLabel): WaitTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'waitTask',
     type: 'WAIT',
     taskReferenceName: `waitTaskRef_${uuid()}`,
@@ -254,9 +275,10 @@ function createWaitTask(): WaitTask & { id: string } {
   };
 }
 
-function createRawTask(): RawTask & { id: string } {
+function createRawTask(label: TaskLabel): RawTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'rawTask',
     type: 'RAW',
     taskReferenceName: `rawTaskRef_${uuid()}`,
@@ -267,9 +289,10 @@ function createRawTask(): RawTask & { id: string } {
   };
 }
 
-function createDynamicForkTask(): DynamicForkTask & { id: string } {
+function createDynamicForkTask(label: TaskLabel): DynamicForkTask & { id: string; label: string } {
   return {
     id: uuid(),
+    label,
     name: 'dynamicForkTask',
     type: 'SUB_WORKFLOW',
     taskReferenceName: `dynamicForkTaskRef_${uuid()}`,
@@ -287,42 +310,122 @@ function createDynamicForkTask(): DynamicForkTask & { id: string } {
   };
 }
 
-export function createTask(taskLabel: string): Task & { id: string } {
+export function createTask(taskLabel: TaskLabel): Task & { id: string; label: string } {
   switch (taskLabel) {
-    case 'HTTP':
-      return createHTTPTask();
-    case 'GRAPHQL':
-      return createGraphQLTask();
-    case 'JS':
-      return createJSTask();
-    case 'PY':
-      return createPYTask();
-    case 'LAMBDA':
-      return createLambdaTask();
-    case 'START':
-      return createStartEndTask('START');
-    case 'END':
-      return createStartEndTask('END');
-    case 'FORK':
-      return createForkTask();
-    case 'JOIN':
-      return createJoinTask();
-    case 'WHILE':
-      return createWhileTask();
-    case 'WHILE END':
-      return createWhileEndTask();
+    case 'http':
+      return createHTTPTask(taskLabel);
+    case 'graphql':
+      return createGraphQLTask(taskLabel);
+    case 'js':
+      return createJSTask(taskLabel);
+    case 'py':
+      return createPYTask(taskLabel);
+    case 'lambda':
+      return createLambdaTask(taskLabel);
+    case 'start':
+      return createStartEndTask(taskLabel);
+    case 'end':
+      return createStartEndTask(taskLabel);
+    case 'fork':
+      return createForkTask(taskLabel);
+    case 'join':
+      return createJoinTask(taskLabel);
+    case 'while':
+      return createWhileTask(taskLabel);
+    case 'while end':
+      return createWhileEndTask(taskLabel);
+    case 'decision':
+      return createDecisionTask(taskLabel);
+    case 'terminate':
+      return createTerminateTask(taskLabel);
+    case 'event':
+      return createEventTask(taskLabel);
+    case 'wait':
+      return createWaitTask(taskLabel);
+    case 'raw':
+      return createRawTask(taskLabel);
+    case 'dynamic fork':
+      return createDynamicForkTask(taskLabel);
+    default:
+      throw new Error('should never happen');
+  }
+}
+
+export const isHttpTaskInputParams = (params: InputParameters): params is HTTPInputParams => 'http_request' in params;
+export const isGraphQLTaskInputParams = (params: InputParameters): params is GraphQLInputParams =>
+  'http_request' in params && 'body' in params.http_request && typeof params.http_request.body === 'object';
+export const isLambdaTaskInputParams = (params: InputParameters): params is LambdaInputParams =>
+  'lambdaValue' in params;
+
+export const isHttpTask = (task: Task): task is HTTPTask =>
+  task.type === 'SIMPLE' && isHttpTaskInputParams(task.inputParameters);
+export const isGraphQLTask = (task: Task): task is GraphQLTask =>
+  task.type === 'SIMPLE' && isGraphQLTaskInputParams(task.inputParameters);
+export const isJSorPYTask = (task: Task): task is JSPythonTask =>
+  task.type === 'SIMPLE' && isLambdaTaskInputParams(task.inputParameters);
+
+export function createSystemTasks(): TaskLabel[] {
+  return [
+    'start',
+    'end',
+    'http',
+    'graphql',
+    'js',
+    'py',
+    'lambda',
+    'decision',
+    'event',
+    'while',
+    'fork',
+    'join',
+    'raw',
+    'dynamic fork',
+    'terminate',
+    'wait',
+    'while end',
+  ];
+}
+
+export function getTaskLabel(t: Task): TaskLabel {
+  switch (t.type) {
     case 'DECISION':
-      return createDecisionTask();
-    case 'TERMINATE':
-      return createTerminateTask();
+      return 'decision';
+    case 'DO_WHILE':
+      return 'while';
+    case 'END_TASK':
+      return 'end';
     case 'EVENT':
-      return createEventTask();
-    case 'WAIT':
-      return createWaitTask();
+      return 'event';
+    case 'FORK_JOIN':
+      return 'fork';
+    case 'JOIN':
+      return 'join';
+    case 'LAMBDA':
+      return 'lambda';
     case 'RAW':
-      return createRawTask();
-    case 'DYNAMIC FORK':
-      return createDynamicForkTask();
+      return 'raw';
+    case 'START_TASK':
+      return 'start';
+    case 'SUB_WORKFLOW':
+      return 'dynamic fork';
+    case 'TERMINATE':
+      return 'terminate';
+    case 'WAIT':
+      return 'wait';
+    case 'WHILE_END':
+      return 'while end';
+    case 'SIMPLE': {
+      if (isGraphQLTask(t)) {
+        return 'graphql';
+      }
+      if (isHttpTask(t)) {
+        return 'http';
+      }
+      if (isJSorPYTask(t)) {
+        return t.name.replace('GLOBAL__', '').toLowerCase() as 'js' | 'py';
+      }
+      throw new Error('should never happen');
+    }
     default:
       throw new Error('should never happen');
   }

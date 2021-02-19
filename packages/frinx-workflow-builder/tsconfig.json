@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "lib": ["es5", "es6", "es7", "es2019", "dom"],
+    "lib": ["es5", "es6", "es7", "ESNext", "dom"],
     "jsx": "react-jsx",
     "declaration": true,
     "outDir": "dist",
@@ -12,7 +12,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
-    "baseUrl": "./src",
     "resolveJsonModule": true,
     "allowJs": true,
     "skipLibCheck": true,
@@ -21,5 +20,6 @@
     "isolatedModules": true,
     "noEmit": false
   },
-  "include": ["custom.d.ts", "src", "*.ts", "*.js"]
+  "include": ["custom.d.ts", "feather-icons-react.d.ts", "src", "*.ts", "*.js"],
+  "exclude": ["**/node_modules"]
 }
