@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { HttpClient as http } from '../../../common/HttpClient';
-import { GlobalContext } from '../../../common/GlobalContext';
+import callbackUtils from '../../../../utils/callbackUtils';
 
 class SnapshotModal extends Component {
-  static contextType = GlobalContext;
-  constructor(props, context) {
-    super(props, context);
+  constructor(props) {
+    super(props);
     this.state = {
       show: true,
       snapshotStatus: 0,
@@ -40,30 +38,25 @@ class SnapshotModal extends Component {
 
   handleSave() {
     let name = document.getElementById('snapshotNameInput').value;
-    let target = JSON.parse(
-      JSON.stringify({
-        input: {
-          name: name,
-          'target-nodes': {
-            node: [this.state.device],
-          },
+    let target = {
+      input: {
+        name: name,
+        'target-nodes': {
+          node: [this.state.device],
         },
-      }),
-    );
-    http
-      .post(
-        this.context.backendApiUrlPrefix + '/rests/operations/snapshot-manager:create-snapshot',
-        target,
-        this.context.authToken,
-      )
-      .then((res) => {
-        this.setState({
-          snapshotStatus: res.body['output']['overall-status'],
-          errorMsg: res.body['output']['node-results']
-            ? res.body['output']['node-results']['node-result']['0']['error-message']
-            : '',
-        });
+      },
+    };
+
+    const createSnapshot = callbackUtils.createSnapshotCallback();
+
+    createSnapshot(target).then((output) => {
+      this.setState({
+        snapshotStatus: output['output']['overall-status'],
+        errorMsg: output['output']['node-results']
+          ? output['output']['node-results']['node-result']['0']['error-message']
+          : '',
       });
+    });
   }
 
   render() {

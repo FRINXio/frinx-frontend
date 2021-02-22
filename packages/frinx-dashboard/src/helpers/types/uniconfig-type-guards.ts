@@ -1,37 +1,38 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
-  CliOperationalDataStore,
-  NetconfOperationalDataStore,
-  CliConfigurationalDataStore,
-  NetconfConfigurationalDataStore,
+  CliOperationalState,
+  NetconfOperationalState,
+  CliConfigurationalState,
+  NetconfConfigurationalState,
   CliTopology,
   NetconfTopology,
+  CliDeviceTranslations,
 } from './uniconfig-types';
 
-export function isCliOperationalDataStore(datastore: unknown): datastore is CliOperationalDataStore {
-  if (datastore !== null && typeof datastore === 'object') {
-    return 'node-id' in datastore! && typeof datastore['node-id'] === 'string';
+export function isCliOperationalState(state: unknown): state is CliOperationalState {
+  if (state !== null && typeof state === 'object') {
+    return 'node-id' in state! && typeof state['node-id'] === 'string';
   }
   return false;
 }
 
-export function isNetconfOperationalDataStore(datastore: unknown): datastore is NetconfOperationalDataStore {
-  if (datastore !== null && typeof datastore === 'object') {
-    return 'node-id' in datastore! && typeof datastore['node-id'] === 'string';
+export function isNetconfOperationalState(state: unknown): state is NetconfOperationalState {
+  if (state !== null && typeof state === 'object') {
+    return 'node-id' in state! && typeof state['node-id'] === 'string';
   }
   return false;
 }
 
-export function isCliConfigurationalDataStore(datastore: unknown): datastore is CliConfigurationalDataStore {
-  if (datastore !== null && typeof datastore === 'object') {
-    return 'node-id' in datastore! && typeof datastore['node-id'] === 'string';
+export function isCliConfigurationalState(state: unknown): state is CliConfigurationalState {
+  if (state !== null && typeof state === 'object') {
+    return 'node-id' in state! && typeof state['node-id'] === 'string';
   }
   return false;
 }
 
-export function isNetconfConfigurationalDataStore(datastore: unknown): datastore is NetconfConfigurationalDataStore {
-  if (datastore !== null && typeof datastore === 'object') {
-    return 'node-id' in datastore! && typeof datastore['node-id'] === 'string';
+export function isNetconfConfigurationalState(state: unknown): state is NetconfConfigurationalState {
+  if (state !== null && typeof state === 'object') {
+    return 'node-id' in state! && typeof state['node-id'] === 'string';
   }
   return false;
 }
@@ -46,6 +47,13 @@ export function isCliTopology(topology: unknown): topology is CliTopology {
 export function isNetconfTopology(topology: unknown): topology is NetconfTopology {
   if (topology !== null && typeof topology === 'object') {
     return 'topology' in topology!;
+  }
+  return false;
+}
+
+export function isCliDeviceTranslations(translations: unknown): translations is CliDeviceTranslations {
+  if (translations !== null && typeof translations === 'object') {
+    return 'available-cli-device-translations' in translations!;
   }
   return false;
 }

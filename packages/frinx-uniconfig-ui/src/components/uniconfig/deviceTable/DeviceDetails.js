@@ -1,6 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { HttpClient as http } from '../../common/HttpClient';
-import { GlobalContext } from '../../common/GlobalContext';
+import React, { useEffect, useState } from 'react';
 import { createNodeObject } from './deviceUtils';
 import Container from '@material-ui/core/Container';
 import DeviceHeader from './DeviceHeader';
@@ -18,8 +16,8 @@ import List from '@material-ui/core/List';
 import _ from 'lodash';
 import Collapse from '@material-ui/core/Collapse';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import * as queryString from 'query-string';
 import Grow from '@material-ui/core/Grow';
+import callbackUtils from '../../../utils/callbackUtils';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -55,9 +53,6 @@ const TabPanel = (props) => {
     </div>
   );
 };
-
-const GET_NODE_URL = (topology, node_id) =>
-  '/rests/data/network-topology:network-topology/topology=' + topology + '/node=' + node_id + '?content=nonconfig';
 
 const nodeKeyValueMap = (node) => {
   const basic = [
@@ -151,22 +146,20 @@ const errorPatternsKeyValueMap = (node) => {
 };
 
 const DeviceDetails = (props: Props) => {
-  const global = useContext(GlobalContext);
   const [node, setNode] = useState({});
   const [tab, setTab] = useState(0);
   const classes = useStyles();
 
   useEffect(() => {
-    const { nodeId } = props?.match?.params;
-    const { topology } = queryString.parse(props?.location?.search);
-
-    console.log(nodeId, topology);
+    const { topology, nodeId } = props;
     fetchDevice(topology, nodeId);
   }, []);
 
   const fetchDevice = async (topologyId, nodeId) => {
-    let result = await http.get(global.backendApiUrlPrefix + GET_NODE_URL(topologyId, nodeId), global.authToken);
-    let node = result?.node?.[0];
+    const getCliOperationalState = callbackUtils.getCliOperationalStateCallback();
+    const getNetconfOperationalState = callbackUtils.getNetconfOperationalStateCallback();
+
+    const node = topologyId === 'cli' ? await getCliOperationalState(nodeId) : await getNetconfOperationalState(nodeId);
 
     if (!node) {
       console.log('node not mounted');
