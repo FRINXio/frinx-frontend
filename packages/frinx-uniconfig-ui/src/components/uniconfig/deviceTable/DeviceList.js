@@ -1,22 +1,12 @@
 // @flow
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '@material-ui/core/Container';
 import DeviceFilters from './DeviceFilters';
 import DeviceTable from './DeviceTable';
 import DeviceListHeader from './DeviceListHeader';
-import { HttpClient as http } from '../../common/HttpClient';
-import { GlobalContext } from '../../common/GlobalContext';
 import _ from 'lodash';
 import { createNodeObject } from './deviceUtils';
-
-const GET_CLI_TOPOLOGY_URL = '/rests/data/network-topology:network-topology/topology=cli?content=nonconfig';
-const GET_NETCONF_TOPOLOGY_URL =
-  '/rests/data/network-topology:network-topology/topology=topology-netconf?content=nonconfig';
-
-const GET_NODE_URL = (topology, node_id) =>
-  '/rests/data/network-topology:network-topology/topology=' + topology + '/node=' + node_id + '?content=nonconfig';
-const UNMOUNT_NODE_URL = (topology, node_id) =>
-  '/rests/data/network-topology:network-topology/topology=' + topology + '/node=' + node_id;
+import callbackUtils from '../../../utils/callbackUtils';
 
 type Props = {
   onMountBtnClick: (templateNode: any) => void,
@@ -25,7 +15,6 @@ type Props = {
 };
 
 const DeviceList = (props: Props) => {
-  const global = useContext(GlobalContext);
   const [nodes, setNodes] = useState([]);
   const [filteredNodes, setFilteredNodes] = useState([]);
   const [checked, setChecked] = useState([]);
@@ -49,7 +38,7 @@ const DeviceList = (props: Props) => {
 
             // search for keywords in "searchedKeys"
             for (let i = 0; i < searchedKeys.length; i += 1) {
-              if (node[searchedKeys[i]].toString().toLowerCase().includes(query.toLocaleLowerCase())) {
+              if (node[searchedKeys[i]]?.toString().toLowerCase().includes(query.toLocaleLowerCase())) {
                 return true;
               }
             }
@@ -60,18 +49,21 @@ const DeviceList = (props: Props) => {
   }, [query, osVersion, nodes]);
 
   const fetchData = async () => {
-    let topologyCli = await getTopology('cli');
-    let topologyNetconf = await getTopology('netconf');
+    const getCliTopology = callbackUtils.getCliTopologyCallback();
+    const getNetconfTopology = callbackUtils.getNetconfTopologyCallback();
 
-    let nodesCli = await Promise.all(
-      (topologyCli?.node || []).map(async (node) => {
-        return await createNodeObject(topologyCli['topology-id'], node);
+    const topologyCli = await getCliTopology();
+    const topologyNetconf = await getNetconfTopology();
+
+    const nodesCli = await Promise.all(
+      (topologyCli?.topology[0]?.node || []).map(async (node) => {
+        return await createNodeObject(topologyCli?.topology[0]['topology-id'], node);
       }),
     );
 
-    let nodesNetconf = await Promise.all(
-      (topologyNetconf?.node || []).map(async (node) => {
-        return await createNodeObject(topologyNetconf['topology-id'], node);
+    const nodesNetconf = await Promise.all(
+      (topologyNetconf?.topology[0]?.node || []).map(async (node) => {
+        return await createNodeObject(topologyNetconf?.topology[0]['topology-id'], node);
       }),
     );
 
@@ -79,18 +71,20 @@ const DeviceList = (props: Props) => {
   };
 
   const updateNode = async (node) => {
-    let result = await http.get(
-      global.backendApiUrlPrefix + GET_NODE_URL(node.topologyId, node.nodeId),
-      global.authToken,
-    );
-    let newNode = result?.node?.[0];
+    const { nodeId, topologyId } = node;
+
+    const getCliOperationalState = callbackUtils.getCliOperationalStateCallback();
+    const getNetconfOperationalState = callbackUtils.getNetconfOperationalStateCallback();
+
+    const newNode =
+      topologyId === 'cli' ? await getCliOperationalState(nodeId) : await getNetconfOperationalState(nodeId);
 
     if (!newNode) {
       fetchData();
       return;
     }
 
-    let newNodeObj = await createNodeObject(node.topologyId, newNode);
+    let newNodeObj = await createNodeObject(topologyId, newNode);
 
     let updatedNodes = _.uniqBy([...nodes, newNodeObj], 'nodeId');
     setNodes(updatedNodes);
@@ -118,16 +112,16 @@ const DeviceList = (props: Props) => {
   };
 
   const unmountNode = async (node) => {
-    return await http.delete(
-      global.backendApiUrlPrefix + UNMOUNT_NODE_URL(node.topologyId, node.nodeId),
-      global.authToken,
-    );
-  };
+    const { nodeId, topologyId } = node;
 
-  const getTopology = async (topology) => {
-    const URL = topology === 'cli' ? GET_CLI_TOPOLOGY_URL : GET_NETCONF_TOPOLOGY_URL;
-    const result = await http.get(global.backendApiUrlPrefix + URL, global.authToken);
-    return result?.topology?.[0];
+    const unmountCliNode = callbackUtils.unmountCliNodeCallback();
+    const unmountNetconfNode = callbackUtils.unmountNetconfNodeCallback();
+
+    if (topologyId === 'cli') {
+      return await unmountCliNode(nodeId);
+    } else {
+      return await unmountNetconfNode(nodeId);
+    }
   };
 
   return (

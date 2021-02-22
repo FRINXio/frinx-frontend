@@ -1,7 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { GlobalContext } from '../../../common/GlobalContext';
+import React, { useEffect, useState } from 'react';
 import { useInterval } from '../../../common/useInterval';
-import { HttpClient as http } from '../../../common/HttpClient';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -19,15 +17,9 @@ import Console from './Console';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
-
-const MOUNT_CLI_DEVICE_URL = (nodeId) => '/rests/data/network-topology:network-topology/topology=cli/node=' + nodeId;
-const GET_CLI_NODE_NONCONFIG_URL = (nodeId) =>
-  '/rests/data/network-topology:network-topology/topology=cli/node=' + nodeId + '?content=nonconfig';
-const GET_CLI_NODE_CONFIG_URL = (nodeId) =>
-  '/rests/data/network-topology:network-topology/topology=cli/node=' + nodeId + '?content=config';
+import callbackUtils from '../../../../utils/callbackUtils';
 
 const CliTab = ({ supportedDevices, templateNode }) => {
-  const global = useContext(GlobalContext);
   const [cliMountForm, setCliMountForm] = useState({
     'network-topology:node-id': 'xr5',
     'cli-topology:host': '192.168.1.215',
@@ -68,27 +60,27 @@ const CliTab = ({ supportedDevices, templateNode }) => {
       return null;
     }
     const { nodeId } = templateNode;
-    const result = await http.get(global.backendApiUrlPrefix + GET_CLI_NODE_CONFIG_URL(nodeId), global.authToken);
 
-    if (!result) {
-      const { statusCode, statusText } = result;
-      return handleAlertOpen(statusCode, statusText);
+    const getCliConfigurationalState = callbackUtils.getCliConfigurationalStateCallback();
+    const state = await getCliConfigurationalState(nodeId);
+
+    if (!state) {
+      // TODO error messages, alerts ...
+      // return handleAlertOpen(statusCode, statusText);
     }
-
-    const node = result?.node[0];
 
     setCliMountForm({
       ...cliMountForm,
-      'network-topology:node-id': node['node-id'],
-      'cli-topology:device-version': node['cli-topology:device-version'].replace('x', '*'),
-      ...node,
+      'network-topology:node-id': state['node-id'],
+      'cli-topology:device-version': state['cli-topology:device-version'].replace('x', '*'),
+      ...state,
     });
 
     setCliMountAdvForm({
       ...cliMountAdvForm,
-      dryRun: !!node['cli-topology:dry-run-journal-size'],
-      lazyConnection: !!node['cli-topology:command-timeout'],
-      ...node,
+      dryRun: !!state['cli-topology:dry-run-journal-size'],
+      lazyConnection: !!state['cli-topology:command-timeout'],
+      ...state,
     });
   };
 
@@ -146,30 +138,36 @@ const CliTab = ({ supportedDevices, templateNode }) => {
     };
 
     const payload = {
-      'network-topology:node': {
-        ...cliMountForm,
-        'node-extension:reconcile': cliMountAdvForm['node-extension:reconcile'],
-        'cli-topology:journal-size': cliMountAdvForm['cli-topology:journal-size'],
-        'cli-topology:dry-run-journal-size': parseInt(cliMountAdvForm['cli-topology:dry-run-journal-size']),
-        ...(cliMountAdvForm.dryRun ? dryRunOn : null),
-        ...(cliMountAdvForm.lazyConnection ? lazyConnectionOn : lazyConnectionOff),
-      },
+      'network-topology:node': [
+        {
+          ...cliMountForm,
+          'node-extension:reconcile': cliMountAdvForm['node-extension:reconcile'],
+          'cli-topology:journal-size': cliMountAdvForm['cli-topology:journal-size'],
+          'cli-topology:dry-run-journal-size': parseInt(cliMountAdvForm['cli-topology:dry-run-journal-size']),
+          ...(cliMountAdvForm.dryRun ? dryRunOn : null),
+          ...(cliMountAdvForm.lazyConnection ? lazyConnectionOn : lazyConnectionOff),
+        },
+      ],
     };
 
     const nodeId = cliMountForm['network-topology:node-id'];
 
-    const result = await http.put(global.backendApiUrlPrefix + MOUNT_CLI_DEVICE_URL(nodeId), payload, global.authToken);
-    const { statusCode, statusText } = result;
+    const mountCliNode = callbackUtils.mountCliNodeCallback();
+    const result = await mountCliNode(nodeId, payload);
+
+    const { status, statusText } = result;
 
     setNodeId(nodeId);
     setOutputConsole({ ...outputConsole, isRunning: true });
-    handleAlertOpen(statusCode, statusText);
+    handleAlertOpen(status, statusText);
   };
 
   const checkConnectionStatus = async (nodeId) => {
-    const result = await http.get(global.backendApiUrlPrefix + GET_CLI_NODE_NONCONFIG_URL(nodeId), global.authToken);
-    const connectionStatus = result?.node[0]?.['cli-topology:connection-status'];
-    const connectedMessage = result?.node[0]?.['cli-topology:connected-message'];
+    const getCliOperationalState = callbackUtils.getCliOperationalStateCallback();
+    const state = await getCliOperationalState(nodeId);
+
+    const connectionStatus = state['cli-topology:connection-status'];
+    const connectedMessage = state['cli-topology:connected-message'];
     const date = new Date().toLocaleTimeString();
     const connectionStatusString = `[${date}] ${connectionStatus}`;
     const connectedMessageString = `[${date}] ${connectedMessage}`;

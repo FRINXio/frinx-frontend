@@ -1,18 +1,17 @@
 // @flow
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
-import { GlobalContext } from '../../../common/GlobalContext';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Paper from '@material-ui/core/Paper/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { HttpClient as http } from '../../../common/HttpClient';
 import _ from 'lodash';
 import CliTab from './CliTab';
 import NetconfTab from './NetconfTab';
+import callbackUtils from '../../../../utils/callbackUtils';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -44,16 +43,12 @@ const TabPanel = (props) => {
   );
 };
 
-const GET_SUPPORTED_DEVICES_URL =
-  '/rests/data/cli-translate-registry:available-cli-device-translations?content=nonconfig&depth=3';
-
 type Props = {
   templateNode: any,
   onBackBtnClick: () => void,
 };
 
 const MountDevice = (props: Props) => {
-  const global = useContext(GlobalContext);
   const classes = useStyles();
   const [tab, setTab] = useState(0);
   const [supportedDevices, setSupportedDevices] = useState([]);
@@ -68,10 +63,13 @@ const MountDevice = (props: Props) => {
   }, []);
 
   const getSupportedDevices = () => {
-    http.get(global.backendApiUrlPrefix + GET_SUPPORTED_DEVICES_URL, global.authToken).then((res) => {
+    const getCliDeviceTranslations = callbackUtils.getCliDeviceTranslationsCallback();
+
+    getCliDeviceTranslations().then((res) => {
+      console.log(res);
       try {
-        let supportedDevices = res['available-cli-device-translations']['available-cli-device-translation'];
-        let grouped = _.groupBy(supportedDevices, function (device) {
+        const supportedDevices = res['available-cli-device-translations']['available-cli-device-translation'];
+        const grouped = _.groupBy(supportedDevices, function (device) {
           return device['device-type'];
         });
         setSupportedDevices(grouped);

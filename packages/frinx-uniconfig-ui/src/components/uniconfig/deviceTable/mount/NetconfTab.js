@@ -1,7 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { GlobalContext } from '../../../common/GlobalContext';
+import React, { useEffect, useState } from 'react';
 import { useInterval } from '../../../common/useInterval';
-import { HttpClient as http } from '../../../common/HttpClient';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -18,17 +16,10 @@ import MuiAlert from '@material-ui/lab/Alert';
 import Console from './Console';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
-import { Visibility, VisibilityOff } from '@material-ui/icons';
-
-const MOUNT_NETCONF_DEVICE_URL = (nodeId) =>
-  '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId;
-const GET_NETCONF_NODE_NONCONFIG_URL = (nodeId) =>
-  '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId + '?content=nonconfig';
-const GET_NETCONF_NODE_CONFIG_URL = (nodeId) =>
-  '/rests/data/network-topology:network-topology/topology=topology-netconf/node=' + nodeId + '?content=config';
+import { StarRateRounded, Visibility, VisibilityOff } from '@material-ui/icons';
+import callbackUtils from '../../../../utils/callbackUtils';
 
 const NetconfTab = ({ templateNode }) => {
-  const global = useContext(GlobalContext);
   const [netconfMountForm, setNetconfMountForm] = useState({
     'node-id': 'xr5',
     'netconf-node-topology:host': '192.168.1.213',
@@ -74,24 +65,25 @@ const NetconfTab = ({ templateNode }) => {
       return null;
     }
     const { nodeId } = templateNode;
-    const result = await http.get(global.backendApiUrlPrefix + GET_NETCONF_NODE_CONFIG_URL(nodeId), global.authToken);
 
-    if (!result) {
-      const { statusCode, statusText } = result;
-      return handleAlertOpen(statusCode, statusText);
+    const getNetconfConfigurationalState = callbackUtils.getNetconfConfigurationalStateCallback();
+    const state = await getNetconfConfigurationalState(nodeId);
+
+    if (!StarRateRounded) {
+      // TODO error messages, alerts ...
+      // const { statusCode, statusText } = state;
+      // return handleAlertOpen(statusCode, statusText);
     }
-
-    const node = result?.node[0];
 
     setNetconfMountForm({
       ...netconfMountForm,
-      ...node,
+      ...state,
     });
 
     setNetconfMountAdvForm({
       ...netconfMountAdvForm,
-      dryRun: !!node['netconf-node-topology:dry-run-journal-size'],
-      ...node,
+      dryRun: !!state['netconf-node-topology:dry-run-journal-size'],
+      ...state,
     });
   };
 
@@ -141,38 +133,39 @@ const NetconfTab = ({ templateNode }) => {
     };
 
     const payload = {
-      'network-topology:node': {
-        ...netconfMountForm,
-        'node-extension:reconcile': netconfMountAdvForm['node-extension:reconcile'],
-        'netconf-node-topology:tcp-only': netconfMountAdvForm['netconf-node-topology:tcp-only'],
-        'netconf-node-topology:keepalive-delay': parseInt(netconfMountAdvForm['netconf-node-topology:keepalive-delay']),
-        ...(netconfMountAdvForm.dryRun ? dryRunOn : null),
-        ...(netconfMountAdvForm['netconf-node-topology:override'] ? overrideCapabilitiesOn : null),
-        ...(netconfMountAdvForm['uniconfig-config:uniconfig-native-enabled'] ? uniconfigNativeOn : null),
-      },
+      'network-topology:node': [
+        {
+          ...netconfMountForm,
+          'node-extension:reconcile': netconfMountAdvForm['node-extension:reconcile'],
+          'netconf-node-topology:tcp-only': netconfMountAdvForm['netconf-node-topology:tcp-only'],
+          'netconf-node-topology:keepalive-delay': parseInt(
+            netconfMountAdvForm['netconf-node-topology:keepalive-delay'],
+          ),
+          ...(netconfMountAdvForm.dryRun ? dryRunOn : null),
+          ...(netconfMountAdvForm['netconf-node-topology:override'] ? overrideCapabilitiesOn : null),
+          ...(netconfMountAdvForm['uniconfig-config:uniconfig-native-enabled'] ? uniconfigNativeOn : null),
+        },
+      ],
     };
 
     const nodeId = netconfMountForm['node-id'];
 
-    const result = await http.put(
-      global.backendApiUrlPrefix + MOUNT_NETCONF_DEVICE_URL(nodeId),
-      payload,
-      global.authToken,
-    );
-    const { statusCode, statusText } = result;
+    const mountNetconfNode = callbackUtils.mountNetconfNodeCallback();
+    const result = await mountNetconfNode(nodeId, payload);
+
+    const { status, statusText } = result;
 
     setNodeId(nodeId);
     setOutputConsole({ ...outputConsole, isRunning: true });
-    handleAlertOpen(statusCode, statusText);
+    handleAlertOpen(status, statusText);
   };
 
   const checkConnectionStatus = async (nodeId) => {
-    const result = await http.get(
-      global.backendApiUrlPrefix + GET_NETCONF_NODE_NONCONFIG_URL(nodeId),
-      global.authToken,
-    );
-    const connectionStatus = result?.node[0]?.['netconf-node-topology:connection-status'];
-    const connectedMessage = result?.node[0]?.['netconf-node-topology:connected-message'];
+    const getNetconfOperationalState = callbackUtils.getNetconfOperationalStateCallback();
+    const state = await getNetconfOperationalState(nodeId);
+
+    const connectionStatus = state['netconf-node-topology:connection-status'];
+    const connectedMessage = state['netconf-node-topology:connected-message'];
     const date = new Date().toLocaleTimeString();
     const connectionStatusString = `[${date}] ${connectionStatus}`;
     const connectedMessageString = `[${date}] ${connectedMessage}`;
