@@ -54,7 +54,8 @@ const callbacks = {
 
 const UniconfigApp: FC = () => {
   const history = useHistory();
-  const query = new URLSearchParams(useLocation().search);
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
 
   const [components, setComponents] = useState<typeof import('@frinx/uniconfig-ui') | null>(null);
 
