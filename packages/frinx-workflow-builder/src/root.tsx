@@ -30,7 +30,7 @@ const Root: FC<Props> = ({ name, version, onClose, saveWorkflowCallback, getWork
 
   return workflow != null ? (
     <ChakraProvider theme={theme}>
-      <App onClose={onClose} workflow={workflow} onWorkflowSave={saveWorkflowCallback} />
+      <App onClose={onClose} workflow={workflow} onWorkflowChange={setWorkflow} onWorkflowSave={saveWorkflowCallback} />
     </ChakraProvider>
   ) : null;
 };

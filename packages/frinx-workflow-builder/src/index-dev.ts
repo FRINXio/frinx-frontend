@@ -1,7 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import { createElement } from 'react';
 import { render } from 'react-dom';
-import { Task, Workflow } from './helpers/types';
+import { HTTPTask, Workflow } from './helpers/types';
 import Root from './root';
 
 const mountElement = document.querySelector('#root');
@@ -9,8 +9,6 @@ const mountElement = document.querySelector('#root');
 if (mountElement == null) {
   throw new Error('#root element not found');
 }
-
-const hash = () => Math.random().toString(36).toUpperCase().substr(2, 4);
 
 const workflow: Workflow = {
   updateTime: 1607938645688,
@@ -25,7 +23,7 @@ const workflow: Workflow = {
       caseValueParam: 'param',
       decisionCases: {
         true: [
-          {
+          ({
             name: 'GLOBAL___HTTP_task',
             taskReferenceName: 'httpRequestTaskRef_S3NY',
             inputParameters: {
@@ -45,7 +43,7 @@ const workflow: Workflow = {
             startDelay: 0,
             optional: false,
             asyncComplete: false,
-          },
+          } as unknown) as HTTPTask,
         ],
       },
       defaultCase: [],

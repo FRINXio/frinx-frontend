@@ -1,9 +1,9 @@
 import React, { FC, useState } from 'react';
 import 'beautiful-react-diagrams/styles.css';
 import Diagram, { useSchema } from 'beautiful-react-diagrams';
-import { v4 as uuid } from 'uuid';
+import { DiagramSchema } from 'beautiful-react-diagrams/@types/DiagramSchema';
 import { Box, Button, Flex, Heading, HStack, Text, useDisclosure, useTheme } from '@chakra-ui/react';
-import produce, { castDraft } from 'immer';
+import produce, { castImmutable } from 'immer';
 import { createSchemaFromWorkflow, createWorkflowNode } from './helpers/diagram.helpers';
 import unwrap from './helpers/unwrap';
 import RightDrawer from './components/right-drawer';
@@ -15,51 +15,59 @@ import EditWorkflowForm from './components/edit-workflow-form/edit-workflow-form
 import ActionsMenu from './components/actions-menu/actions-menu';
 import BgSvg from './img/bg.svg';
 import { convertDiagramWorkflow, convertWorkflow } from './helpers/workflow.helpers';
-import { NodeData, ExtendedTask, Workflow } from './helpers/types';
+import { NodeData, ExtendedTask, Workflow, CustomNodeType } from './helpers/types';
 
 type Props = {
   onClose: () => void;
   workflow: Workflow;
+  onWorkflowChange: (workflow: Workflow) => void;
   onWorkflowSave: (workflows: Workflow[]) => Promise<unknown>;
 };
 
-const App: FC<Props> = ({ workflow, onWorkflowSave }) => {
+const App: FC<Props> = ({ workflow, onWorkflowChange }) => {
   const theme = useTheme();
   const [task, setTask] = useState<ExtendedTask | null>(null);
-  const [workflowState, setWorkflowState] = useState<Workflow>(workflow);
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
   const [isEditing, setIsEditing] = useState(false);
   const onClick = (data?: NodeData) => {
-    setTask(data?.task ?? null);
+    const { task: t } = unwrap(data);
+    if ('name' in t) {
+      setTask(t);
+    }
   };
   const schemaRef = React.useRef(createSchemaFromWorkflow(convertWorkflow(workflow), onClick));
-  const [schema, { onChange, addNode, removeNode }] = useSchema<NodeData>(schemaRef.current);
-  const copiedSchema = {
+  const [schema, { onChange, addNode }] = useSchema<NodeData>(schemaRef.current);
+  const copiedSchema: DiagramSchema<NodeData> = {
     ...schema,
     nodes: schema.nodes.map((n) => ({
       ...n,
       data: {
         ...n.data,
         isSelected: n.id === task?.id,
+        onClick,
+        task: {
+          ...unwrap(n.data).task,
+        },
       },
     })),
   };
-  const { name, description } = workflow;
+  const { name } = workflow;
 
   const handleAddButtonClick = (t: ExtendedTask) => {
     addNode(createWorkflowNode(onClick, t));
   };
 
   const handleFormSubmit = (t: ExtendedTask) => {
-    const copiedNodes = castDraft(
+    const copiedNodes = castImmutable(
       produce(copiedSchema.nodes, (acc) => {
         const index = acc.findIndex((n) => n.id === t.id);
         unwrap(acc[index].data).task = t;
 
         return acc;
       }),
-    );
+      // immer.js returns incompatible type, so we have to cast it manually
+    ) as CustomNodeType[];
     onChange({ nodes: copiedNodes });
   };
 
@@ -94,9 +102,8 @@ const App: FC<Props> = ({ workflow, onWorkflowSave }) => {
             <Button
               colorScheme="blue"
               onClick={() => {
-                const wf = convertDiagramWorkflow(copiedSchema, workflowState);
-                console.log(wf);
-                // onWorkflowSave([wf]);
+                const wf = convertDiagramWorkflow(copiedSchema, workflow);
+                console.log('SAVE: ', wf);
               }}
             >
               Save and execute
@@ -114,7 +121,11 @@ const App: FC<Props> = ({ workflow, onWorkflowSave }) => {
       >
         <LeftMenu onTaskAdd={handleAddButtonClick} />
         <Diagram
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           schema={copiedSchema}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           onChange={onChange}
           style={{
             boxShadow: 'none',
@@ -148,12 +159,12 @@ const App: FC<Props> = ({ workflow, onWorkflowSave }) => {
                 Edit workflow
               </Heading>
               <EditWorkflowForm
-                workflow={workflowState}
+                workflow={workflow}
                 onSubmit={(wf) => {
-                  setWorkflowState(wf);
+                  onWorkflowChange(wf);
                 }}
                 onClose={() => {
-                  setWorkflowState(workflow);
+                  onWorkflowChange(workflow);
                   setIsEditing(false);
                 }}
               />
@@ -164,7 +175,7 @@ const App: FC<Props> = ({ workflow, onWorkflowSave }) => {
       <WorkflowDefinitionModal
         isOpen={workflowDefinitionDisclosure.isOpen}
         onClose={workflowDefinitionDisclosure.onClose}
-        workflow={convertDiagramWorkflow(copiedSchema, workflowState)}
+        workflow={convertDiagramWorkflow(copiedSchema, workflow)}
       />
       <NewWorkflowModal
         isOpen={workflowModalDisclosure.isOpen}
