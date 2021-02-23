@@ -1,6 +1,5 @@
-// TODO dynamic source of url
 const UNICONFIG_API_URL = window.__CONFIG__.uniconfig_api_url;
-const AUTHORIZATION = 'Basic YWRtaW46YWRtaW4=';
+const AUTHORIZATION = window.__CONFIG__.uniconfig_auth; // encoded admin/admin credentials (default)
 
 export async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
   const url = `${UNICONFIG_API_URL}${path}`;
