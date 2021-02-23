@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
-import { Workflow } from 'helpers/types';
+import { Workflow } from './helpers/types';
 import App from './app';
 import theme from './theme';
 
@@ -21,6 +21,12 @@ const Root: FC<Props> = ({ name, version, onClose, saveWorkflowCallback, getWork
       });
     }
   }, [name, version, getWorkflowCallback]);
+
+  useEffect(() => {
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = `.nodeLink path { stroke: ${theme.colors.gray[400]} !important; stroke-width: 0.25rem !important; } `;
+    document.head.appendChild(styleTag);
+  }, []);
 
   return workflow != null ? (
     <ChakraProvider theme={theme}>

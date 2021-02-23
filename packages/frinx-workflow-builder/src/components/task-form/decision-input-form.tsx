@@ -1,8 +1,8 @@
 import React, { FC, useState } from 'react';
 import { Box, Divider, FormControl, FormLabel, HStack, IconButton, Input } from '@chakra-ui/react';
-import { DecisionInputParams } from 'helpers/types';
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import { omitBy } from 'lodash';
+import { DecisionInputParams } from '../../helpers/types';
 
 type Props = {
   params: DecisionInputParams;

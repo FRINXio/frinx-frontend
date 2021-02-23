@@ -9,7 +9,7 @@ const theme = extendTheme({
         color: 'gray.800',
         background: 'gray.100',
       },
-      '.node__link': {
+      '.nodeLink': {
         color: 'red',
         path: {
           stroke: 'red',

@@ -132,7 +132,7 @@ export function createLinks(values: CustomNodeType[]): Link[] {
         ? {
             input: curr.outputs != null ? curr.outputs[0].id : '',
             output: nextNode?.inputs != null ? nextNode.inputs[0].id : '',
-            className: 'node__link',
+            className: 'nodeLink',
           }
         : null;
     return [...acc, link];
