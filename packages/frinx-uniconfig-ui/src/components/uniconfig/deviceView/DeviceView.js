@@ -1,464 +1,371 @@
-import React, { Component } from 'react';
-import { ReactGhLikeDiff } from 'react-gh-like-diff';
-import Editor from './editor/Editor';
-import './DeviceView.css';
-import { Badge, Button, ButtonGroup, Col, Container, Dropdown, Form, Row, Spinner } from 'react-bootstrap';
-import SnapshotModal from './snapshotModal/SnapshotModal';
-import CustomAlerts from '../customAlerts/CustomAlerts';
-import ConsoleModal from './consoleModal/ConsoleModal';
-import { parseResponse } from './ResponseParser';
+import React, { useEffect, useState } from 'react';
+import {
+  Grid,
+  GridItem,
+  Container,
+  Box,
+  Flex,
+  Menu,
+  Button,
+  IconButton,
+  MenuList,
+  MenuButton,
+  MenuItem,
+  Stack,
+  ButtonGroup,
+  useToast,
+  useDisclosure,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalFooter,
+  ModalBody,
+  ModalOverlay,
+  Textarea,
+  Heading,
+} from '@chakra-ui/react';
+import { ChevronDownIcon, DeleteIcon } from '@chakra-ui/icons';
+import { CreateSnapshotModal } from './createSnapshotModal/CreateSnapshotModal';
 import callbackUtils from '../../../utils/callbackUtils';
+import { Config } from './editor/Config';
+import { Oper } from './editor/Oper';
 
-const defaultOptions = {
-  originalFileName: 'Operational',
-  updatedFileName: 'Operational',
-  inputFormat: 'diff',
-  outputFormat: 'line-by-line',
-  showFiles: false,
-  matching: 'none',
-  matchWordsThreshold: 0.25,
-  matchingMaxComparisons: 2500,
+const ResponseModal = ({ body }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [colorScheme, setColorScheme] = useState('gray');
+
+  useEffect(() => {
+    const timer = setTimeout(() => setColorScheme('gray'), 4000);
+
+    if (body?.output['overall-status'] === 'complete') {
+      setColorScheme('green');
+    } else if (body?.output['overall-status'] === 'fail') {
+      setColorScheme('red');
+    }
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [body]);
+
+  return (
+    <>
+      <Button colorScheme={colorScheme} onClick={onOpen}>
+        Response
+      </Button>
+      <Modal size="xl" isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Response</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Textarea value={JSON.stringify(body, null, 2)} readOnly height={96} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
 };
 
-class DeviceView extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      config: '{}',
-      operational: '{}',
-      device: null,
-      snapshots: ['snapshot1', 'snapshot2'],
-      showDiff: false,
-      creatingSnap: false,
-      syncing: false,
-      initializing: true,
-      alertType: null,
-      showAlert: false,
-      commiting: false,
-      showConsole: false,
-      deletingSnaps: false,
-      console: '',
-      operation: '',
-    };
-  }
+const ConfirmDeleteModal = ({ snapshotId, deleteSnapshot, isLoading }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  return (
+    <>
+      <IconButton
+        size="sm"
+        colorScheme="red"
+        icon={<DeleteIcon />}
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpen();
+        }}
+      />
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Delete snapshot {snapshotId}?</ModalHeader>
+          <ModalCloseButton />
+          <ModalFooter>
+            <Button colorScheme="red" mr={3} isLoading={isLoading} onClick={() => deleteSnapshot(snapshotId)}>
+              Delete
+            </Button>
+            <Button variant="ghost" onClick={onClose}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};
 
-  componentDidMount() {
-    this.fetchData(this.props.deviceId);
-  }
+const DeviceView = ({ deviceId }) => {
+  const [config, setConfig] = useState();
+  const [operational, setOperational] = useState();
+  const [snapshots, setSnapshots] = useState([]);
+  const [showDiff, setShowDiff] = useState(false);
+  const [rawResponse, setRawResponse] = useState();
+  const [isLoading, setIsLoading] = useState({
+    config: false,
+    oper: false,
+    calculatedDiff: false,
+    dryRun: false,
+    syncFromNetwork: false,
+    replaceConfigWithOper: false,
+    replaceConfigWithSnapshot: false,
+    deleteSnapshot: false,
+    commitToNetwork: false,
+  });
+  const toast = useToast();
 
-  fetchData(device) {
+  useEffect(() => {
     const getCliConfigurationalDataStore = callbackUtils.getCliConfigurationalDataStoreCallback();
     const getCliOperationalDatastore = callbackUtils.getCliOperationalDataStoreCallback();
 
-    getCliConfigurationalDataStore(device).then((datastore) => {
-      this.setState({
-        config: JSON.stringify(datastore),
-        initializing: false,
-      });
+    setIsLoading({ oper: true, config: true });
+
+    getCliConfigurationalDataStore(deviceId).then((datastore) => {
+      setConfig(datastore);
+      setIsLoading((prevState) => ({ ...prevState, config: false }));
     });
 
-    getCliOperationalDatastore(device).then((datastore) => {
-      this.setState({
-        operational: JSON.stringify(datastore),
-        initializing: false,
-      });
+    getCliOperationalDatastore(deviceId).then((datastore) => {
+      setOperational(datastore);
+      setIsLoading((prevState) => ({ ...prevState, oper: false }));
     });
+  }, [deviceId]);
+
+  function operationHandler(operation, response) {
+    setIsLoading((prevState) => ({ ...prevState, [operation]: false }));
+    toast({
+      title: `${response?.output?.['overall-status']}`,
+      status: response?.output?.['overall-status'] === 'complete' ? 'success' : 'error',
+      duration: 9000,
+      isClosable: true,
+    });
+    setRawResponse(response);
   }
 
-  updateConfig(newData) {
-    let data = JSON.parse(JSON.stringify(newData, null, 2));
-
+  async function updateConfig(newConfig) {
     const updateCliConfigurationalDataStore = callbackUtils.updateCliConfigurationalDataStoreCallback();
 
-    updateCliConfigurationalDataStore(this.props.deviceId, data).then((res) => {
-      this.setState({
-        alertType: `putConfig${res.status}`,
-        console: JSON.stringify(res.body, null, 2),
-        operation: 'Update Config',
-      });
-      this.animateConsole();
-    });
+    setIsLoading((prevState) => ({ ...prevState, config: true }));
+    const response = await updateCliConfigurationalDataStore(deviceId, newConfig);
 
-    this.setState({
-      config: JSON.stringify(newData, null, 2),
-    });
-  }
+    // config is not pulled again just replaced locally
+    setConfig(newConfig);
+    setIsLoading((prevState) => ({ ...prevState, config: false }));
 
-  showDiff() {
-    this.setState({
-      showDiff: !this.state.showDiff,
+    const { status, statusText } = response;
+
+    toast({
+      title: `${status} ${statusText}`,
+      status: status >= 200 && status < 300 ? 'success' : 'error',
+      duration: 9000,
+      isClosable: true,
     });
   }
 
-  getCalculatedDiff() {
+  async function refreshConfig() {
+    const getCliConfigurationalDataStore = callbackUtils.getCliConfigurationalDataStoreCallback();
+
+    setIsLoading((prevState) => ({ ...prevState, config: true }));
+    const config = await getCliConfigurationalDataStore(deviceId);
+    setIsLoading((prevState) => ({ ...prevState, config: false }));
+    setConfig(config);
+  }
+
+  async function getCalculatedDiff() {
     let target = {
       input: {
-        'target-nodes': { node: [this.props.deviceId.replace(/%20/g, ' ')] },
+        'target-nodes': { node: [deviceId.replace(/%20/g, ' ')] },
       },
     };
 
+    setIsLoading((prevState) => ({ ...prevState, calculatedDiff: true }));
     const calculateDiff = callbackUtils.calculateDiffCallback();
-
-    calculateDiff(target).then((output) => {
-      this.setState({
-        console: JSON.stringify(output),
-        operation: 'Calculated Diff',
-      });
-      this.animateConsole();
-    });
+    const response = await calculateDiff(target);
+    operationHandler('calculatedDiff', response);
   }
 
-  commitToNetwork() {
-    this.setState({ commiting: true });
+  async function dryRun() {
     let target = {
       input: {
-        'target-nodes': { node: [this.props.deviceId.replace(/%20/g, ' ')] },
+        'target-nodes': { node: [deviceId.replace(/%20/g, ' ')] },
       },
     };
 
-    const commitToNetwork = callbackUtils.commitToNetworkCallback();
-    const getCliOperationalDataStore = callbackUtils.getCliOperationalDataStoreCallback();
-
-    commitToNetwork(target).then((output) => {
-      this.setState({
-        alertType: parseResponse('commit', output),
-        showAlert: true,
-        commiting: false,
-        console: JSON.stringify(output),
-        operation: 'Commit to Network',
-      });
-      this.animateConsole();
-
-      getCliOperationalDataStore(this.props.deviceId).then((res) => {
-        this.setState({
-          operational: JSON.stringify(res),
-        });
-      });
-    });
-  }
-
-  dryRun() {
-    let target = {
-      input: {
-        'target-nodes': { node: [this.props.deviceId.replace(/%20/g, ' ')] },
-      },
-    };
-
+    setIsLoading((prevState) => ({ ...prevState, dryRun: true }));
     const dryRunCommit = callbackUtils.dryRunCommitCallback();
-
-    dryRunCommit(target).then((output) => {
-      this.setState({
-        alertType: parseResponse('dryrun', output),
-        showAlert: true,
-        console: JSON.stringify(output),
-        operation: 'Dry-run',
-      });
-      this.animateConsole();
-      if (!this.state.alertType['errorMessage'] && this.state.console) {
-        this.consoleHandler();
-      }
-    });
+    const response = await dryRunCommit(target);
+    operationHandler('dryRun', response);
   }
 
-  animateConsole() {
-    document.getElementById('consoleButton').classList.add('button--animate');
-    setTimeout(() => {
-      document.getElementById('consoleButton').classList.remove('button--animate');
-    }, 500);
-  }
-
-  syncFromNetwork() {
-    this.setState({ syncing: true });
+  async function syncFromNetwork() {
     let target = {
       input: {
-        'target-nodes': { node: [this.props.deviceId.replace(/%20/g, ' ')] },
+        'target-nodes': { node: [deviceId.replace(/%20/g, ' ')] },
       },
     };
 
     const syncFromNetwork = callbackUtils.syncFromNetworkCallback();
     const getCliOperationalDataStore = callbackUtils.getCliOperationalDataStoreCallback();
 
-    syncFromNetwork(target).then((sync_output) => {
-      getCliOperationalDataStore(this.props.deviceId).then((output) => {
-        console.log(output);
-        this.setState({
-          alertType: parseResponse('sync', sync_output),
-          showAlert: true,
-          operational: JSON.stringify(output),
-          initializing: false,
-          syncing: false,
-          console: JSON.stringify(sync_output),
-          operation: 'Sync-from-network',
-        });
-        this.animateConsole();
-      });
-    });
+    setIsLoading((prevState) => ({ ...prevState, syncFromNetwork: true }));
+    const syncReponse = await syncFromNetwork(target);
+    const datastore = await getCliOperationalDataStore(deviceId);
+    setOperational(datastore);
+    operationHandler('syncFromNetwork', syncReponse);
   }
 
-  refreshConfig() {
-    const getCliConfigurationalDataStore = callbackUtils.getCliConfigurationalDataStoreCallback();
-
-    getCliConfigurationalDataStore(this.props.deviceId).then((datastore) => {
-      this.setState({
-        config: JSON.stringify(datastore),
-      });
-    });
-  }
-
-  replaceConfig() {
+  async function replaceConfigWithOper() {
     let target = {
       input: {
-        'target-nodes': { node: [this.props.deviceId.replace(/%20/g, ' ')] },
+        'target-nodes': { node: [deviceId.replace(/%20/g, ' ')] },
       },
     };
 
     const replaceConfigWithOperational = callbackUtils.replaceConfigWithOperationalCallback();
 
-    replaceConfigWithOperational(target).then((output) => {
-      this.refreshConfig();
-      this.setState({
-        alertType: parseResponse('replaceconf', output),
-        showAlert: true,
-        console: JSON.stringify(output),
-        operation: 'Replace-config-with-operational',
-      });
-      this.animateConsole();
-    });
+    setIsLoading((prevState) => ({ ...prevState, replaceConfigWithOper: true }));
+    const replaceResponse = await replaceConfigWithOperational(target);
+    operationHandler('replaceConfigWithOper', replaceResponse);
+    refreshConfig();
   }
 
-  getSnapshots() {
+  async function getSnapshots() {
     const getSnapshots = callbackUtils.getSnapshotsCallback();
 
-    getSnapshots().then((output) => {
-      console.log(output);
-      let topologies = ['cli', 'uniconfig', 'topology-netconf', 'unitopo'];
-      let snapshots = output['network-topology']['topology'].filter(
-        (topology) =>
-          topology['node'] &&
-          topology['node']['0']['node-id'] === this.props.deviceId &&
-          !topologies.includes(topology['topology-id']),
-      );
-      this.setState({
-        snapshots: snapshots,
-      });
-    });
+    const snapshotsResponse = await getSnapshots();
+    const topologies = ['cli', 'uniconfig', 'topology-netconf', 'unitopo'];
+    const snapshots = snapshotsResponse['network-topology']['topology'].filter(
+      (topology) =>
+        topology?.['node']?.['0']?.['node-id'] === deviceId && !topologies.includes(topology['topology-id']),
+    );
+
+    const snapshotNames = snapshots.map((ss) => ss['topology-id']);
+    setSnapshots(snapshotNames);
   }
 
-  loadSnapshot(snapshotId) {
-    let snapshotName = this.state.snapshots[snapshotId]['topology-id'];
-
-    const deleteSnapshot = callbackUtils.deleteSnapshotCallback();
-    const getSnapshots = callbackUtils.getSnapshots();
-    const replaceConfigWithSnapshot = callbackUtils.replaceConfigWithSnapshotCallback();
-
-    // deleting snapshot
-    if (this.state.deletingSnaps) {
-      let target = { input: { name: snapshotName } };
-
-      return deleteSnapshot(target);
-    }
-
+  async function replaceConfigWithSnapshot(snapshotId) {
     let target = {
       input: {
-        name: snapshotName,
-        'target-nodes': { node: [this.props.deviceId.replace(/%20/g, ' ')] },
+        name: snapshotId,
+        'target-nodes': { node: [deviceId.replace(/%20/g, ' ')] },
       },
     };
 
-    replaceConfigWithSnapshot(target).then((output) => {
-      getSnapshots().then((snapshots_output) => {
-        let snapshot = snapshots_output['network-topology']['topology'].filter(
-          (topology) => topology['topology-id'] === snapshotName,
-        )[0]?.node[0];
+    const replaceConfigWithSnapshot = callbackUtils.replaceConfigWithSnapshotCallback();
 
-        delete snapshot['node-id'];
-
-        this.setState({
-          alertType: parseResponse('replacesnap', output),
-          showAlert: true,
-          config: JSON.stringify(snapshot, null, 2),
-          console: JSON.stringify(output),
-          operation: 'Replace-Config-With-Snapshot',
-        });
-        this.animateConsole();
-      });
-    });
+    setIsLoading((prevState) => ({ ...prevState, replaceConfigWithSnapshot: true }));
+    const response = await replaceConfigWithSnapshot(target);
+    operationHandler('replaceConfigWithSnapshot', response);
+    refreshConfig();
   }
 
-  createSnapshot() {
-    this.setState({
-      creatingSnap: !this.state.creatingSnap,
-    });
+  async function deleteSnapshot(snapshotId) {
+    const deleteSnapshot = callbackUtils.deleteSnapshotCallback();
+    const target = { input: { name: snapshotId } };
+
+    setIsLoading((prevState) => ({ ...prevState, deleteSnapshot: true }));
+    const response = await deleteSnapshot(target);
+    operationHandler('deleteSnapshot', response);
+    getSnapshots();
   }
 
-  consoleHandler() {
-    this.setState({
-      showConsole: !this.state.showConsole,
-    });
+  async function commitToNetwork() {
+    let target = {
+      input: {
+        'target-nodes': { node: [deviceId.replace(/%20/g, ' ')] },
+      },
+    };
+
+    const commitToNetwork = callbackUtils.commitToNetworkCallback();
+    const getCliOperationalDataStore = callbackUtils.getCliOperationalDataStoreCallback();
+
+    setIsLoading((prevState) => ({ ...prevState, commitToNetwork: true }));
+    const response = await commitToNetwork(target);
+    const datastore = await getCliOperationalDataStore(deviceId);
+    setOperational(datastore);
+    operationHandler('commitToNetwork', response);
   }
 
-  alertHandler() {
-    this.setState({
-      showAlert: !this.state.showAlert,
-    });
-  }
-
-  render() {
-    const DropdownMenu = React.createRef((props, ref) => {
-      return <DropdownMenu forwardedRef={ref} />;
-    });
-
-    let configJSON = JSON.stringify(JSON.parse(this.state.config), null, 2);
-    let operationalJSON = JSON.stringify(JSON.parse(this.state.operational), null, 2);
-
-    const operational = () => (
-      <div>
-        {this.state.initializing ? (
-          <i className="fas fa-sync fa-spin fa-8x" style={{ margin: '40%', color: 'lightblue' }} />
-        ) : this.state.showDiff ? (
-          <ReactGhLikeDiff options={defaultOptions} past={operationalJSON} current={configJSON} />
-        ) : (
-          <Editor
-            title="Actual Configuration"
-            deviceName={this.props.deviceId}
-            editable={false}
-            syncFromNetwork={this.syncFromNetwork.bind(this)}
-            syncing={this.state.syncing}
-            inputJSON={operationalJSON}
-          />
-        )}
-      </div>
-    );
-
-    const config = () => (
-      <div>
-        {this.state.initializing ? (
-          <i className="fas fa-sync fa-spin fa-8x" style={{ margin: '40%', color: 'lightblue' }} />
-        ) : (
-          <Editor
-            title="Intended Configuration"
-            editable={true}
-            deviceName={this.props.deviceId}
-            updateConfig={this.updateConfig.bind(this)}
-            replaceConfig={this.replaceConfig.bind(this)}
-            refreshConfig={this.refreshConfig.bind(this)}
-            inputJSON={configJSON}
-          />
-        )}
-      </div>
-    );
-
-    return (
-      <div>
-        <header className="options">
-          <Button className="round floating-btn noshadow" onClick={this.props.onBackBtnClick} variant="outline-light">
-            <i className="fas fa-chevron-left" />
-          </Button>
-          <Container fluid className="container-props">
-            <Row>
-              <Col md={5} className="child">
-                <Dropdown onClick={this.getSnapshots.bind(this)} className="leftAligned">
-                  <Dropdown.Toggle variant="light" id="dropdown-basic">
-                    <i className="fas fa-file-download" />
-                    &nbsp;&nbsp;Load Snapshot
-                  </Dropdown.Toggle>
-
-                  <Dropdown.Menu ref={DropdownMenu}>
-                    {this.state.snapshots.map((item, i) => {
-                      return (
-                        <Dropdown.Item onClick={() => this.loadSnapshot(i)} key={i}>
-                          {item['topology-id']}
-                          {this.state.deletingSnaps ? <i className="fas fa-minus" style={{ float: 'right' }} /> : null}
-                        </Dropdown.Item>
-                      );
-                    })}
-                    <Dropdown.Divider />
-                    <Button
-                      onClick={() =>
-                        this.setState({
-                          deletingSnaps: !this.state.deletingSnaps,
-                        })
-                      }
-                      variant={this.state.deletingSnaps ? 'danger' : 'outline-danger'}
-                      style={{ marginLeft: '20px', marginRight: '20px' }}
-                    >
-                      <i className="fas fa-trash" style={{ marginRight: '10px' }} />
-                      Toggle deleting
-                    </Button>
-                  </Dropdown.Menu>
-                </Dropdown>
-                <Button className="leftAligned" variant="outline-light" onClick={this.createSnapshot.bind(this)}>
-                  <i className="fas fa-folder-plus" />
-                  &nbsp;&nbsp;Create snapshot
+  return (
+    <Container maxWidth={1280}>
+      <Grid templateColumns="repeat(12, 1fr)" gap={4}>
+        <GridItem colSpan={12}>
+          <Box boxShadow="base" borderRadius="md" bg="white" w="100%" h="100%" p={4} color="black">
+            <Flex justify="space-between">
+              <Stack direction="row" spacing={2}>
+                <Menu>
+                  <MenuButton as={Button} rightIcon={<ChevronDownIcon />} onClick={() => getSnapshots()}>
+                    Load Snapshot
+                  </MenuButton>
+                  <MenuList>
+                    {snapshots.map((snapshot) => (
+                      <MenuItem onClick={() => replaceConfigWithSnapshot(snapshot)} justifyContent="space-between">
+                        {snapshot}
+                        <ConfirmDeleteModal
+                          snapshotId={snapshot}
+                          deleteSnapshot={deleteSnapshot}
+                          isLoading={isLoading.deleteSnapshot}
+                        />
+                      </MenuItem>
+                    ))}
+                  </MenuList>
+                </Menu>
+                <CreateSnapshotModal deviceId={deviceId} operationHandler={operationHandler} />
+                <ResponseModal body={rawResponse} />
+              </Stack>
+              <Stack direction="row" spacing={2}>
+                <Heading size="lg">{deviceId}</Heading>
+              </Stack>
+              <Stack direction="row" spacing={2}>
+                <ButtonGroup isAttached>
+                  <Button onClick={() => setShowDiff((prevState) => !prevState)}>
+                    {showDiff ? 'Hide diff' : 'Show diff'}
+                  </Button>
+                  <Menu>
+                    <MenuButton isLoading={isLoading.calculatedDiff} as={IconButton} icon={<ChevronDownIcon />} />
+                    <MenuList>
+                      <MenuItem onClick={() => getCalculatedDiff()}>Show calculated diff</MenuItem>
+                    </MenuList>
+                  </Menu>
+                </ButtonGroup>
+                <Button onClick={() => dryRun()}>Dry run</Button>
+                <Button colorScheme="blue" onClick={() => commitToNetwork()}>
+                  Commit to Network
                 </Button>
-              </Col>
-              <Col md={2} className="child">
-                <Badge
-                  id="consoleButton"
-                  className="button--moema clickable button--size-s"
-                  onClick={this.consoleHandler.bind(this)}
-                >
-                  {' '}
-                  {this.props.deviceId}
-                </Badge>
-              </Col>
-              <Col md={5} className="child">
-                <Form.Group className="rightAligned">
-                  <Dropdown as={ButtonGroup}>
-                    <Button
-                      variant={this.state.showDiff ? 'light' : 'outline-light'}
-                      onClick={this.showDiff.bind(this)}
-                    >
-                      <i className="fas fa-exchange-alt" />
-                      &nbsp;&nbsp;
-                      {this.state.showDiff ? 'Hide Diff' : 'Show Diff'}
-                    </Button>
-                    <Dropdown.Toggle split variant="outline-light" id="dropdown-split-basic" />
-                    <Dropdown.Menu>
-                      <Dropdown.Item onClick={this.getCalculatedDiff.bind(this)}>Get calculated diff</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                  <Button variant="outline-light" onClick={this.dryRun.bind(this)}>
-                    <i className="fas fa-play" />
-                    &nbsp;&nbsp;Dry run
-                  </Button>
-                  <Button variant="outline-light" onClick={this.commitToNetwork.bind(this)}>
-                    {this.state.commiting ? (
-                      <Spinner size="sm" animation="border" />
-                    ) : (
-                      <i className="fas fa-network-wired" />
-                    )}
-                    &nbsp;&nbsp;Commit to network
-                  </Button>
-                </Form.Group>
-              </Col>
-            </Row>
-          </Container>
-        </header>
-
-        {this.state.creatingSnap ? (
-          <SnapshotModal snapHandler={this.createSnapshot.bind(this)} device={this.props.deviceId} />
-        ) : null}
-        {this.state.showAlert ? (
-          <CustomAlerts alertHandler={this.alertHandler.bind(this)} alertType={this.state.alertType} />
-        ) : null}
-        {this.state.showConsole ? (
-          <ConsoleModal
-            consoleHandler={this.consoleHandler.bind(this)}
-            content={this.state.console}
-            operation={this.state.operation}
-          />
-        ) : null}
-
-        <Container fluid className="container-props">
-          <div className="editor">
-            <div className="config">{config()}</div>
-            <div className="operational">{operational()}</div>
-          </div>
-        </Container>
-      </div>
-    );
-  }
-}
+              </Stack>
+            </Flex>
+          </Box>
+        </GridItem>
+        <GridItem colSpan={6}>
+          <Box boxShadow="base" borderRadius="md" bg="white" w="100%" h="100%" p={4}>
+            <Config
+              isLoading={isLoading.config}
+              currentConfigState={config}
+              updateConfig={updateConfig}
+              refreshConfig={refreshConfig}
+              replaceConfigWithOper={replaceConfigWithOper}
+            />
+          </Box>
+        </GridItem>
+        <GridItem colSpan={6}>
+          <Box boxShadow="base" borderRadius="md" bg="white" w="100%" h="100%" p={4}>
+            <Oper
+              isLoading={isLoading.oper}
+              showDiff={showDiff}
+              currentOperState={operational}
+              currentConfigState={config}
+              syncFromNetwork={syncFromNetwork}
+            />
+          </Box>
+        </GridItem>
+      </Grid>
+    </Container>
+  );
+};
 
 export default DeviceView;
