@@ -1,8 +1,12 @@
 // @flow
-import React from 'react';
-import { Button } from 'react-bootstrap';
 import PageContainer from '../../common/PageContainer';
+import React from 'react';
 import callbackUtils from '../../utils/callbackUtils';
+import { Button, Heading, Icon, Stack, Text } from '@chakra-ui/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { JSZip } from 'jszip';
+import { faCogs, faFileExport, faFileImport, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { saveAs } from 'file-saver';
 
 type Props = {
   onAddButtonClick: () => void,
@@ -23,7 +27,7 @@ const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
       const putWorkflow = callbackUtils.putWorkflowCallback();
 
       reader.onload = (e) => {
-        let definition = JSON.parse(e.target.result);
+        const definition = JSON.parse(e.target.result);
         fileList.push(definition);
         if (!--count) {
           putWorkflow(fileList).then(() => {
@@ -58,22 +62,25 @@ const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
 
   return (
     <PageContainer>
-      <h1 style={{ marginBottom: '20px' }}>
-        <i style={{ color: 'grey' }} className="fas fa-cogs" />
-        &nbsp;&nbsp;Workflows
-        <Button key="builder-btn" variant="outline-primary" style={{ marginLeft: '30px' }} onClick={onAddButtonClick}>
-          <i className="fas fa-plus" />
-          &nbsp;&nbsp;New
-        </Button>
-        <Button key="import-btn" variant="outline-primary" style={{ marginLeft: '5px' }} onClick={openFileUpload}>
-          <i className="fas fa-file-import" />
-          &nbsp;&nbsp;Import
-        </Button>
-        <Button key="export-btn" variant="outline-primary" style={{ marginLeft: '5px' }} onClick={() => exportFile()}>
-          <i className="fas fa-file-export" />
-          &nbsp;&nbsp;Export
-        </Button>
-      </h1>
+      <Heading as="h1" marginBottom={20}>
+        <Stack spacing={4} direction="row">
+          <Icon as={FontAwesomeIcon} icon={faCogs} color="grey" />
+          <Text>Workflows</Text>
+
+          <Button variant="outline" colorScheme="blue" onClick={onAddButtonClick}>
+            <Icon as={FontAwesomeIcon} icon={faPlus} />
+            &nbsp;&nbsp;New
+          </Button>
+          <Button variant="outline" colorScheme="blue" onClick={openFileUpload}>
+            <Icon as={FontAwesomeIcon} icon={faFileImport} />
+            &nbsp;&nbsp;Import
+          </Button>
+          <Button variant="outline" colorScheme="blue" onClick={() => exportFile()}>
+            <Icon as={FontAwesomeIcon} icon={faFileExport} />
+            &nbsp;&nbsp;Export
+          </Button>
+        </Stack>
+      </Heading>
       <input id="upload-files" multiple type="file" hidden />
     </PageContainer>
   );

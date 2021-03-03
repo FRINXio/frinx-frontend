@@ -1,12 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Col, Modal, Row, Tab, Table, Tabs } from 'react-bootstrap';
+// @flow
 import Highlight from 'react-highlight.js';
+import React, { useEffect, useState } from 'react';
 import callbackUtils from '../../../utils/callbackUtils';
+import {
+  Box,
+  Button,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Table,
+  Tabs,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
 import { jsonParse } from '../../../common/utils';
 
 const TaskModal = (props) => {
   const [response, setResponse] = useState({});
-  const [activeTab, setActiveTab] = useState('');
 
   useEffect(() => {
     const name = props.name;
@@ -17,48 +39,48 @@ const TaskModal = (props) => {
         setResponse(definition);
       }
     });
-  }, []);
+  }, [props.name]);
 
   const handleClose = () => {
     props.modalHandler();
   };
 
   const renderKeys = (variable) => {
-    let output = [];
-    let keys = response[variable] ? response[variable] : 0;
+    const output = [];
+    const keys = response[variable] ? response[variable] : 0;
     for (let i = 0; i < keys.length; i++) {
       output.push(
-        <tr key={`${variable}-${i}`}>
-          <td>{keys[i]}</td>
-        </tr>,
+        <Tr key={`${variable}-${i}`}>
+          <Td>{keys[i]}</Td>
+        </Tr>,
       );
     }
     return output;
   };
 
   const iokeys = () => (
-    <Row>
-      <Col>
+    <Flex>
+      <Box>
         <Table striped hover size="sm">
-          <thead>
-            <tr>
-              <th>Input keys</th>
-            </tr>
-          </thead>
-          <tbody>{renderKeys('inputKeys')}</tbody>
+          <Thead>
+            <Tr>
+              <Th>Input keys</Th>
+            </Tr>
+          </Thead>
+          <Tbody>{renderKeys('inputKeys')}</Tbody>
         </Table>
-      </Col>
-      <Col>
+      </Box>
+      <Box>
         <Table striped hover size="sm">
-          <thead>
-            <tr>
-              <th>Output keys</th>
-            </tr>
-          </thead>
+          <Thead>
+            <Tr>
+              <Th>Output keys</Th>
+            </Tr>
+          </Thead>
           <tbody>{renderKeys('outputKeys')}</tbody>
         </Table>
-      </Col>
-    </Row>
+      </Box>
+    </Flex>
   );
 
   const def = () => (
@@ -76,36 +98,39 @@ const TaskModal = (props) => {
   );
 
   return (
-    <Modal dialogClassName="modalWider" show={props.show} onHide={handleClose}>
-      <Modal.Header>
-        <Modal.Title>
+    <Modal size="3xl" dialogClassName="modalWider" isOpen={props.show} onClose={handleClose}>
+      <ModalOverlay />
+      <ModalCloseButton />
+      <ModalContent>
+        <ModalHeader>
           Details of {response.name ? response.name : null}
           <br />
           <p className="text-muted">{jsonParse(response.description)?.description || response.description}</p>
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Tabs
-          className="heightWrapper"
-          onSelect={(e) => setActiveTab(e)}
-          style={{ marginBottom: '20px' }}
-          id="detailTabs"
-        >
-          <Tab mountOnEnter eventKey="JSON" title="Task JSON">
-            {def()}
-          </Tab>
-          {response.outputKeys || response.outputKeys ? (
-            <Tab mountOnEnter eventKey="inputOutput" title="Input/Output">
-              {iokeys()}
-            </Tab>
-          ) : null}
-        </Tabs>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Close
-        </Button>
-      </Modal.Footer>
+        </ModalHeader>
+        <ModalBody>
+          <Tabs marginBottom={20}>
+            <TabList>
+              <Tab>Task JSON</Tab>
+              <Tab>Input/Output</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel mountOnEnter eventKey="JSON" title="Task JSON">
+                {def()}
+              </TabPanel>
+              {response.outputKeys || response.outputKeys ? (
+                <TabPanel mountOnEnter eventKey="inputOutput" title="Input/Output">
+                  {iokeys()}
+                </TabPanel>
+              ) : null}
+            </TabPanels>
+          </Tabs>
+        </ModalBody>
+        <ModalFooter>
+          <Button colorScheme="gray" onClick={handleClose}>
+            Close
+          </Button>
+        </ModalFooter>
+      </ModalContent>
     </Modal>
   );
 };

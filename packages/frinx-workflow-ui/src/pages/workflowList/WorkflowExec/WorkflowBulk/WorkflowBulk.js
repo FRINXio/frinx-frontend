@@ -1,9 +1,24 @@
 // @flow
-import _ from 'lodash';
 import React, { Component } from 'react';
-import { Accordion, Button, Card, Col, ProgressBar, Row, Spinner } from 'react-bootstrap';
+import _ from 'lodash';
 import { connect } from 'react-redux';
+
 import * as bulkActions from '../../../../store/actions/bulk';
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Progress,
+  Spinner,
+  Stack,
+  Text,
+} from '@chakra-ui/react';
 
 class WorkflowBulk extends Component {
   constructor(props) {
@@ -20,136 +35,100 @@ class WorkflowBulk extends Component {
       return;
     }
 
-    let operation = e.target.value;
+    const operation = e.target.value;
     performBulkOperation(operation, selectedWfs, this.props.pageCount);
     this.props.bulkOperation();
     this.props.selectAllWfs();
   }
 
   render() {
-    let { selectedWfs, bulkReducer, wfsCount } = this.props;
+    const { selectedWfs, bulkReducer, wfsCount } = this.props;
 
-    const progressInstance = <ProgressBar max={100} now={bulkReducer.loading} label={`${bulkReducer.loading}%`} />;
+    const progressInstance = (
+      <Progress marginTop={5} width="100%" colorScheme="blue" value={bulkReducer.loading} max={100} size="sm" />
+    );
 
     return (
-      <Accordion activeKey={this.state.showBulk} style={{ marginBottom: '20px' }}>
-        <Card>
-          <Accordion.Toggle
-            onClick={() =>
-              this.setState({
-                showBulk: this.state.showBulk === '0' ? null : '0',
-              })
-            }
-            className="clickable"
-            as={Card.Header}
-            eventKey="0"
-          >
-            Bulk Processing (click to expand)&nbsp;&nbsp;
-            <i className="fas fa-ellipsis-h" />
-            &nbsp;&nbsp; Displaying <b>{wfsCount}</b> workflows
-            <i
-              style={{ float: 'right', marginTop: '5px' }}
-              className={this.state.showBulk ? 'fas fa-chevron-up' : 'fas fa-chevron-down'}
-            />
-          </Accordion.Toggle>
-          <Accordion.Collapse eventKey="0">
-            <Card.Body>
-              <Row>
-                <Col>
-                  <h5>
-                    Workflows selected: {selectedWfs.length}
-                    <Spinner
-                      variant="primary"
-                      style={{ float: 'right', marginRight: '40px' }}
-                      animation={bulkReducer.isFetching ? 'border' : false}
-                    />
-                    {!bulkReducer.isFetching ? (
-                      bulkReducer.successfulResults.length > 0 &&
-                      Object.entries(bulkReducer.errorResults).length === 0 ? (
-                        <i
-                          style={{
-                            float: 'right',
-                            marginRight: '40px',
-                            color: 'green',
-                          }}
-                          className="fas fa-check-circle fa-2x"
-                        />
-                      ) : Object.entries(bulkReducer.errorResults).length > 0 ? (
-                        <i
-                          style={{
-                            float: 'right',
-                            marginRight: '40px',
-                            color: '#dc3545',
-                          }}
-                          className="fas fa-times-circle fa-2x"
-                        />
-                      ) : null
-                    ) : null}
-                  </h5>
-                  <p>
-                    <Button
-                      size="sm"
-                      onClick={this.props.selectAllWfs}
-                      variant="outline-secondary"
-                      style={{ marginRight: '10px' }}
-                    >
-                      {selectedWfs.length > 0 ? 'Uncheck all' : 'Check all'}
-                    </Button>
-                    Select workflows from table below
-                  </p>
-                </Col>
-                <Col>
-                  <Button variant="outline-primary" value="pause" onClick={(e) => this.performOperation(e)}>
-                    Pause
-                  </Button>
+      <Accordion allowToggle marginBottom={4} backgroundColor="white">
+        <AccordionItem>
+          <h2>
+            <AccordionButton>
+              <Box flex="1" textAlign="left">
+                Bulk Processing (click to expand)&nbsp;&nbsp;
+                <i className="fas fa-ellipsis-h" />
+                &nbsp;&nbsp; Displaying <b>{wfsCount}</b> workflows
+              </Box>
+              <AccordionIcon />
+            </AccordionButton>
+          </h2>
+          <AccordionPanel padding={8}>
+            <Flex justifyContent="space-between">
+              <Box>
+                <Heading as="h5" size="sm">
+                  Workflows selected: {selectedWfs.length}
+                  {bulkReducer.isFetching ? (
+                    <Spinner color="brand.500" size="md" marginLeft={8} float="right" marginRight={40} />
+                  ) : null}
+                  {!bulkReducer.isFetching ? (
+                    bulkReducer.successfulResults.length > 0 &&
+                    Object.entries(bulkReducer.errorResults).length === 0 ? (
+                      <i
+                        style={{
+                          float: 'right',
+                          marginRight: '40px',
+                          color: 'green',
+                        }}
+                        className="fas fa-check-circle fa-2x"
+                      />
+                    ) : Object.entries(bulkReducer.errorResults).length > 0 ? (
+                      <i
+                        style={{
+                          float: 'right',
+                          marginRight: '40px',
+                          color: '#dc3545',
+                        }}
+                        className="fas fa-times-circle fa-2x"
+                      />
+                    ) : null
+                  ) : null}
+                </Heading>
+                <Flex alignItems="center" marginTop={8}>
                   <Button
-                    variant="outline-primary"
-                    value="resume"
-                    onClick={(e) => this.performOperation(e)}
-                    style={{ marginLeft: '5px' }}
+                    size="sm"
+                    variant="outline"
+                    marginRight={8}
+                    colorScheme="gray"
+                    onClick={this.props.selectAllWfs}
                   >
-                    Resume
+                    {selectedWfs.length > 0 ? 'Uncheck all' : 'Check all'}
                   </Button>
-                  <Button
-                    variant="outline-primary"
-                    value="retry"
-                    onClick={(e) => this.performOperation(e)}
-                    style={{ marginLeft: '5px' }}
-                  >
-                    Retry
-                  </Button>
-                  <Button
-                    variant="outline-primary"
-                    value="restart"
-                    onClick={(e) => this.performOperation(e)}
-                    style={{ marginLeft: '5px' }}
-                  >
-                    Restart
-                  </Button>
-                  <Button
-                    variant="outline-danger"
-                    value="terminate"
-                    onClick={(e) => this.performOperation(e)}
-                    style={{ marginLeft: '5px' }}
-                  >
-                    Terminate
-                  </Button>
-                  <Button
-                    variant="outline-secondary"
-                    value="delete"
-                    onClick={(e) => this.performOperation(e)}
-                    style={{ marginLeft: '5px' }}
-                  >
-                    Delete
-                  </Button>
-                </Col>
-              </Row>
-              <Row>
-                <Col>{bulkReducer.loading === 0 ? null : progressInstance}</Col>
-              </Row>
-            </Card.Body>
-          </Accordion.Collapse>
-        </Card>
+                  <Text>Select workflows from table below</Text>
+                </Flex>
+              </Box>
+              <Stack spacing={4} direction="row">
+                <Button variant="outline" value="pause" colorScheme="blue" onClick={(e) => this.performOperation(e)}>
+                  Pause
+                </Button>
+                <Button variant="outline" value="resume" colorScheme="blue" onClick={(e) => this.performOperation(e)}>
+                  Resume
+                </Button>
+                <Button variant="outline" value="retry" colorScheme="blue" onClick={(e) => this.performOperation(e)}>
+                  Retry
+                </Button>
+                <Button variant="outline" value="restart" colorScheme="blue" onClick={(e) => this.performOperation(e)}>
+                  Restart
+                </Button>
+                <Button variant="outline" value="terminate" colorScheme="red" onClick={(e) => this.performOperation(e)}>
+                  Terminate
+                </Button>
+                <Button variant="outline" value="delete" colorScheme="gray" onClick={(e) => this.performOperation(e)}>
+                  Delete
+                </Button>
+              </Stack>
+            </Flex>
+            <Flex>{bulkReducer.loading === 0 ? null : progressInstance}</Flex>
+          </AccordionPanel>
+        </AccordionItem>
       </Accordion>
     );
   }

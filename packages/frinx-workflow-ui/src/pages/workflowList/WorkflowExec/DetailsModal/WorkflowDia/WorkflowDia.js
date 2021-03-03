@@ -1,9 +1,9 @@
 // @flow
-import defaultTo from 'lodash/fp/defaultTo';
-import React, { Component } from 'react';
-import { Col, Row } from 'react-bootstrap';
 import Grapher from '../../../../../common/Grapher';
+import React, { Component } from 'react';
 import Workflow2Graph from '../../../../../common/wfegraph';
+import defaultTo from 'lodash/fp/defaultTo';
+import { Box, Flex } from '@chakra-ui/react';
 
 class WorkflowDia extends Component {
   constructor(props) {
@@ -20,8 +20,8 @@ class WorkflowDia extends Component {
     const subworkflows = {};
 
     for (const refname in subwfs) {
-      let submeta = subwfs[refname].meta;
-      let subwfe = subwfs[refname].wfe;
+      const submeta = subwfs[refname].meta;
+      const subwfe = subwfs[refname].wfe;
       subworkflows[refname] = wfe2graph.convert(subwfe, submeta);
     }
 
@@ -36,20 +36,20 @@ class WorkflowDia extends Component {
     const { edges, vertices, subworkflows } = this.state;
 
     return (
-      <div style={{ overflow: 'scroll' }}>
+      <Box overflow="scroll">
         {!this.props.def ? (
           <div>
-            <Row style={{ textAlign: 'center' }}>
-              <Col>
+            <Flex textAlign="center">
+              <Box>
                 <h2>Execution Flow</h2>
-              </Col>
-            </Row>
+              </Box>
+            </Flex>
             <hr />
           </div>
         ) : null}
 
         <Grapher def={this.props.def} edges={edges} vertices={vertices} layout="TD-auto" innerGraph={subworkflows} />
-      </div>
+      </Box>
     );
   }
 }

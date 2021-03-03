@@ -1,11 +1,30 @@
 // @flow
-import React, { useEffect, useState } from 'react';
+import PageContainer from '../../../common/PageContainer';
 import PageCount from '../../../common/PageCount';
 import PageSelect from '../../../common/PageSelect';
+import React, { useEffect, useState } from 'react';
 import SchedulingModal from './SchedulingModal/SchedulingModal';
-import { Accordion, Button, Card, Col, Container, Row, Table } from 'react-bootstrap';
-import PageContainer from '../../../common/PageContainer';
 import callbackUtils from '../../../utils/callbackUtils';
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Button,
+  Flex,
+  Icon,
+  IconButton,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 const Scheduling = () => {
   const [showSchedulingModal, setShowSchedulingModal] = useState(false);
@@ -124,18 +143,18 @@ const Scheduling = () => {
         if (i >= (viewedPage - 1) * defaultPages && i < viewedPage * defaultPages) {
           output.push(
             <div className="wfRow" key={i}>
-              <Accordion.Toggle
-                onClick={changeActiveRow.bind(this, i)}
-                className="clickable wfDef"
-                as={Card.Header}
-                eventKey={i.toString()}
-              >
-                <b>{data[i]['workflowName']}</b> v.{data[i]['workflowVersion']}
-                <br />
-                <div className="description">{data[i]['cronString']}</div>
-              </Accordion.Toggle>
-              <Accordion.Collapse eventKey={i.toString()}>
-                <Card.Body style={{ padding: '0px' }}>
+              <AccordionItem onClick={changeActiveRow.bind(this, i)}>
+                <h2>
+                  <AccordionButton>
+                    <Box flex="1" textAlign="left">
+                      <b>{data[i]['workflowName']}</b> v.{data[i]['workflowVersion']}
+                      <br />
+                      <div className="description">{data[i]['cronString']}</div>
+                    </Box>
+                    <AccordionIcon />
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel padding={0}>
                   <div
                     style={{
                       background: 'linear-gradient(-120deg, rgb(0, 147, 255) 0%, rgb(0, 118, 203) 100%)',
@@ -143,19 +162,19 @@ const Scheduling = () => {
                       marginBottom: '10px',
                     }}
                   >
-                    <Button variant="outline-light noshadow" onClick={flipShowSchedulingModal}>
+                    <Button variant="outline" color="white" colorScheme="whiteAlpha" onClick={flipShowSchedulingModal}>
                       Edit
                     </Button>
-                    <Button
-                      variant="outline-danger noshadow"
-                      style={{ float: 'right' }}
+                    <IconButton
+                      icon={<Icon as={FontAwesomeIcon} icon={faTrashAlt} />}
+                      variant="outline"
+                      float="right"
+                      colorScheme="red"
                       onClick={deleteEntry.bind(this, data[i])}
-                    >
-                      <i className="fas fa-trash-alt" />
-                    </Button>
+                    />
                   </div>
-                </Card.Body>
-              </Accordion.Collapse>
+                </AccordionPanel>
+              </AccordionItem>
             </div>,
           );
         }
@@ -173,38 +192,39 @@ const Scheduling = () => {
         onClose={onModalClose}
         show={showSchedulingModal}
       />
-      <Button variant="outline-primary" style={{ marginLeft: '30px' }} onClick={() => refresh()}>
+      <Button variant="outline" size="sm" colorScheme="blue" onClick={() => refresh()} marginBottom={5}>
         <i className="fas fa-sync" />
         &nbsp;&nbsp;Refresh
       </Button>
 
       <div className="scrollWrapper" style={{ maxHeight: '650px' }}>
-        <Table>
-          <thead>
-            <tr>
-              <th>Name/Cron</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style={{ padding: '0' }}>
-                <Accordion activeKey={activeRow}>{repeat()}</Accordion>
-              </td>
-            </tr>
-          </tbody>
+        <Table background="white">
+          <Thead>
+            <Tr>
+              <Th>Name/Cron</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            <Tr>
+              <Td padding={0}>
+                <Accordion allowToggle activeKey={activeRow}>
+                  {repeat()}
+                </Accordion>
+              </Td>
+            </Tr>
+          </Tbody>
         </Table>
       </div>
-      <Container style={{ marginTop: '5px' }}>
-        <Row>
-          <Col sm={2}>
+      <Box marginTop={4}>
+        <Flex justifyContent="space-between">
+          <Box sm={2}>
             <PageCount dataSize={getDataLength()} defaultPages={defaultPages} handler={setCountPages.bind(this)} />
-          </Col>
-          <Col sm={8} />
-          <Col sm={2}>
+          </Box>
+          <Box sm={2}>
             <PageSelect viewedPage={viewedPage} count={pagesCount} handler={setViewedPage} />
-          </Col>
-        </Row>
-      </Container>
+          </Box>
+        </Flex>
+      </Box>
     </PageContainer>
   );
 };

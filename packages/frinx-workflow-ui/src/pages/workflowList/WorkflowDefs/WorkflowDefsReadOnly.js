@@ -1,6 +1,6 @@
-/* 
-  FIXME 
-  This is just copy-pasted WorfklowDefs with removed functionality. 
+/*
+  FIXME
+  This is just copy-pasted WorfklowDefs with removed functionality.
   Find out better way to implement read only components. We probably
   want to use something different than class inheritance.
 
@@ -9,27 +9,56 @@
 */
 
 // @flow
-import React, { useState, useEffect } from 'react';
-import { Col, Form, Row, Modal } from 'react-bootstrap';
-import { Table, Header, Button, Popup } from 'semantic-ui-react';
-import { Typeahead } from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
-import WfLabels from '../../../common/WfLabels';
 import DefinitionModal from './DefinitonModal/DefinitionModal';
+import DependencyModal from './DependencyModal/DependencyModal';
 import DiagramModal from './DiagramModal/DiagramModal';
 import InputModal from './InputModal/InputModal';
-import DependencyModal from './DependencyModal/DependencyModal';
-import PaginationPages from '../../../common/Pagination';
-import { usePagination } from '../../../common/PaginationHook';
 import PageContainer from '../../../common/PageContainer';
+import PaginationPages from '../../../common/Pagination';
+import React, { useEffect, useState } from 'react';
+import WfLabels from '../../../common/WfLabels';
+import _ from 'lodash';
 import callbackUtils from '../../../utils/callbackUtils';
+import {
+  Box,
+  Button,
+  Grid,
+  Heading,
+  Icon,
+  IconButton,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Stack,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Tfoot,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Typeahead } from 'react-bootstrap-typeahead';
+import { faCodeBranch, faFileCode, faPlay, faSearch, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faStarOutlined } from '@fortawesome/free-regular-svg-icons';
 import { jsonParse } from '../../../common/utils';
+import { usePagination } from '../../../common/PaginationHook';
 
 const getLabels = (dataset) => {
-  let labelsArr = dataset.map(({ description }) => {
+  const labelsArr = dataset.map(({ description }) => {
     return jsonParse(description)?.labels;
   });
-  let allLabels = [...new Set([].concat(...labelsArr))];
+  const allLabels = [...new Set([].concat(...labelsArr))];
   return allLabels
     .filter((e) => {
       return e !== undefined;
@@ -59,13 +88,13 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
   }, []);
 
   useEffect(() => {
-    var results =
+    const results =
       !keywords && labels.length === 0
         ? data
         : data.filter((e) => {
-            let searchedKeys = ['name'];
-            let queryWords = keywords.toUpperCase().split(' ');
-            let labelsArr = jsonParse(e.description)?.labels;
+            const searchedKeys = ['name'];
+            const queryWords = keywords.toUpperCase().split(' ');
+            const labelsArr = jsonParse(e.description)?.labels;
 
             // if labels are used and wf doesnt contain selected labels => filter out
             if (labels.length > 0) {
@@ -85,14 +114,14 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
             }
           });
     setItemList(results);
-  }, [keywords, labels, data]);
+  }, [keywords, labels, data, setItemList]);
 
   const getData = () => {
     const getWorkflows = callbackUtils.getWorkflowsCallback();
 
     getWorkflows().then((workflows) => {
       if (workflows) {
-        let dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
+        const dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
         setData(dataset);
         setAllLabels(getLabels(dataset));
       }
@@ -100,8 +129,8 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
   };
 
   const searchFavourites = () => {
-    let newLabels = [...labels];
-    let index = newLabels.findIndex((label) => label === 'FAVOURITE');
+    const newLabels = [...labels];
+    const index = newLabels.findIndex((label) => label === 'FAVOURITE');
     index > -1 ? newLabels.splice(index, 1) : newLabels.push('FAVOURITE');
     setLabels(newLabels);
   };
@@ -110,72 +139,80 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
     const labelsDef = jsonParse(description)?.labels || [];
 
     return labelsDef.map((label, i) => {
-      let index = allLabels.findIndex((lab) => lab === label);
+      const index = allLabels.findIndex((lab) => lab === label);
       return <WfLabels key={`${name}-${i}`} label={label} index={index} search={() => setLabels([...labels, label])} />;
     });
   };
 
   const repeatButtons = (dataset) => {
     return (
-      <Table.Cell singleLine textAlign="center">
-        <Button title="Diagram" basic circular icon="fork" onClick={() => showDiagramModal(dataset)} />
-        <Button title="Definition" basic circular icon="file code" onClick={() => showDefinitionModal(dataset)} />
-        <Button
-          title="Execute"
-          id={`executeBtn-${dataset.name}`}
-          primary
-          circular
-          icon="play"
-          onClick={() => showInputModal(dataset)}
-        />
-      </Table.Cell>
+      <Td textAlign="center">
+        <Stack direction="row" spacing={1}>
+          <IconButton
+            colorScheme="gray"
+            isRound
+            variant="outline"
+            title="Diagram"
+            icon={<Icon as={FontAwesomeIcon} icon={faCodeBranch} />}
+            onClick={() => showDiagramModal(dataset)}
+          />
+          <IconButton
+            colorScheme="gray"
+            isRound
+            variant="outline"
+            title="Definition"
+            icon={<Icon as={FontAwesomeIcon} icon={faFileCode} />}
+            onClick={() => showDefinitionModal(dataset)}
+          />
+          <IconButton
+            colorScheme="blue"
+            isRound
+            title="Execute"
+            icon={<Icon as={FontAwesomeIcon} icon={faPlay} />}
+            onClick={() => showInputModal(dataset)}
+          />
+        </Stack>
+      </Td>
     );
   };
 
   const filteredRows = () => {
     return pageItems.map((e) => {
       return (
-        <Table.Row>
-          <Table.Cell>
-            <Header as="h4">
-              <Header.Content>
-                {e.name} / {e.version}
-                <Header.Subheader>
-                  {jsonParse(e.description)?.description ||
-                    (jsonParse(e.description)?.description !== '' && e.description) ||
-                    'no description'}
-                </Header.Subheader>
-              </Header.Content>
-            </Header>
-          </Table.Cell>
-          <Table.Cell>{createLabels(e)}</Table.Cell>
-          <Table.Cell width={2} textAlign="center">
-            <Popup
-              disabled={getDependencies(e).length === 0}
-              trigger={
-                <Button
-                  size="mini"
-                  content="Tree"
-                  disabled={getDependencies(e).length === 0}
-                  label={{
-                    as: 'a',
-                    basic: true,
-                    pointing: 'right',
-                    content: getDependencies(e).length,
-                  }}
-                  labelPosition="left"
-                  onClick={() => showDependencyModal(e)}
-                />
-              }
-              header={<h4>Used directly in following workflows:</h4>}
-              content={getDependencies(e).usedInWfs.map((wf) => (
-                <p>{wf.name}</p>
-              ))}
-              basic
-            />
-          </Table.Cell>
+        <Tr>
+          <Td>
+            <Heading as="h6" size="xs">
+              {e.name} / {e.version}
+            </Heading>
+            <Text>
+              {jsonParse(e.description)?.description ||
+                (jsonParse(e.description)?.description !== '' && e.description) ||
+                'no description'}
+            </Text>
+          </Td>
+          <Td>{createLabels(e)}</Td>
+          <Td width={2} textAlign="center">
+            <Popover>
+              <PopoverTrigger>
+                <Button size="sm" disabled={getDependencies(e).length === 0} onClick={() => showDependencyModal(e)}>
+                  {' '}
+                  {getDependencies(e).length + ' '} Tree{' '}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <PopoverArrow />
+                <PopoverCloseButton />
+                <PopoverHeader>Used directly in following workflows:</PopoverHeader>
+                <PopoverBody>
+                  {getDependencies(e).usedInWfs.map((wf) => (
+                    <p key={wf.name}>{wf.name}</p>
+                  ))}
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
+          </Td>
           {repeatButtons(e)}
-        </Table.Row>
+        </Tr>
       );
     });
   };
@@ -202,7 +239,7 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
 
   const getDependencies = (workflow) => {
     const usedInWfs = data.filter((wf) => {
-      let wfJSON = JSON.stringify(wf, null, 2);
+      const wfJSON = JSON.stringify(wf, null, 2);
       return wfJSON.includes(`"name": "${workflow.name}"`) && wf.name !== workflow.name;
     });
     return { length: usedInWfs.length, usedInWfs };
@@ -240,16 +277,16 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
       {renderInputModal()}
       {renderDiagramModal()}
       {renderDependencyModal()}
-      <Row>
-        <Button
-          primary
-          style={{ margin: '0 0 15px 15px' }}
+      <Grid templateColumns="40px 1fr 1fr" gap={4}>
+        <IconButton
+          colorScheme="blue"
+          height={8}
+          width={8}
           onClick={() => searchFavourites()}
           title="Favourites"
-          icon={labels.includes('FAVOURITE') ? 'star' : 'star outline'}
-          size="tiny"
+          icon={<Icon as={FontAwesomeIcon} icon={labels.includes('FAVOURITE') ? faStar : faStarOutlined} />}
         />
-        <Col>
+        <Box>
           <Typeahead
             id="typeaheadDefs"
             selected={labels}
@@ -260,34 +297,38 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
             options={allLabels}
             placeholder="Search by label."
           />
-        </Col>
-        <Col>
-          <Form.Group>
-            <Form.Control
+        </Box>
+        <Box>
+          <InputGroup marginBottom={8}>
+            <InputLeftElement>
+              <Icon as={FontAwesomeIcon} icon={faSearch} color="grey" />
+            </InputLeftElement>
+            <Input
               value={keywords}
               onChange={(e) => setKeywords(e.target.value)}
               placeholder="Search by keyword."
+              background="white"
             />
-          </Form.Group>
-        </Col>
-      </Row>
-      <Table celled compact color="blue">
-        <Table.Header fullWidth>
-          <Table.Row>
-            <Table.HeaderCell>Name/Version</Table.HeaderCell>
-            <Table.HeaderCell>Labels</Table.HeaderCell>
-            <Table.HeaderCell textAlign="center">Included in</Table.HeaderCell>
-            <Table.HeaderCell textAlign="center">Actions</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>{filteredRows()}</Table.Body>
-        <Table.Footer>
-          <Table.Row>
-            <Table.HeaderCell colSpan="4">
+          </InputGroup>
+        </Box>
+      </Grid>
+      <Table background="white">
+        <Thead>
+          <Tr>
+            <Th>Name/Version</Th>
+            <Th>Labels</Th>
+            <Th textAlign="center">Included in</Th>
+            <Th textAlign="center">Actions</Th>
+          </Tr>
+        </Thead>
+        <Tbody>{filteredRows()}</Tbody>
+        <Tfoot>
+          <Tr>
+            <Th>
               <PaginationPages totalPages={totalPages} currentPage={currentPage} changePageHandler={setCurrentPage} />
-            </Table.HeaderCell>
-          </Table.Row>
-        </Table.Footer>
+            </Th>
+          </Tr>
+        </Tfoot>
       </Table>
     </PageContainer>
   );
