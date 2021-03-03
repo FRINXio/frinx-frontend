@@ -87,22 +87,23 @@ export type TaskType =
   | 'TERMINATE'
   | 'DO_WHILE'
   | 'WHILE_END'
-  | 'SUB_WORKFLOW';
+  | 'SUB_WORKFLOW'
+  | 'CUSTOM';
 
 type TaskValues = {
   name: string;
   taskReferenceName: string;
-  ownerEmail: string;
-  description?: string;
-  retryCount: number;
-  retryLogic: 'FIXED' | 'EXPONENTIAL_BACKOFF';
-  retryDelaySeconds: number;
-  timeoutPolicy: 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
-  timeoutSeconds: number;
-  pollTimeoutSeconds: number;
-  responseTimeoutSeconds: number;
-  inputKeys?: string[];
-  outputKeys?: string[];
+  // ownerEmail: string;
+  // description?: string;
+  // retryCount: number;
+  // retryLogic: 'FIXED' | 'EXPONENTIAL_BACKOFF';
+  // retryDelaySeconds: number;
+  // timeoutPolicy: 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
+  // timeoutSeconds: number;
+  // pollTimeoutSeconds: number;
+  // responseTimeoutSeconds: number;
+  // inputKeys?: string[];
+  // outputKeys?: string[];
   optional: boolean;
   startDelay: number;
 };
@@ -173,6 +174,9 @@ export type StartTask = BaseTask & {
 export type EndTask = BaseTask & {
   type: 'END_TASK';
 };
+export type SimpleTask = BaseTask<Record<string, string>> & {
+  type: 'SIMPLE';
+};
 
 export type Task =
   | DecisionTask
@@ -190,7 +194,8 @@ export type Task =
   | WhileEndTask
   | RawTask
   | StartTask
-  | EndTask;
+  | EndTask
+  | SimpleTask;
 
 export type TaskLabel =
   | 'decision'
@@ -209,8 +214,46 @@ export type TaskLabel =
   | 'graphql'
   | 'http'
   | 'js'
-  | 'py';
-export type ExtendedTask = Task & { id: string; label: TaskLabel };
+  | 'py'
+  | 'simple'
+  | 'custom';
+
+export type ExtendedDecisionTask = DecisionTask & { id: string; label: TaskLabel };
+export type ExtendedEventTask = EventTask & { id: string; label: TaskLabel };
+export type ExtendedHTTPTask = HTTPTask & { id: string; label: TaskLabel };
+export type ExtendedGraphQLTask = GraphQLTask & { id: string; label: TaskLabel };
+export type ExtendedForkTask = ForkTask & { id: string; label: TaskLabel };
+export type ExtendedJoinTask = JoinTask & { id: string; label: TaskLabel };
+export type ExtendedDynamicForkTask = DynamicForkTask & { id: string; label: TaskLabel };
+export type ExtendedWaitTask = WaitTask & { id: string; label: TaskLabel };
+export type ExtendedLambdaTask = LambdaTask & { id: string; label: TaskLabel };
+export type ExtendedJSPythonTask = JSPythonTask & { id: string; label: TaskLabel };
+export type ExtendedTerminateTask = TerminateTask & { id: string; label: TaskLabel };
+export type ExtendedWhileTask = WhileTask & { id: string; label: TaskLabel };
+export type ExtendedWhileEndTask = WhileEndTask & { id: string; label: TaskLabel };
+export type ExtendedRawTask = RawTask & { id: string; label: TaskLabel };
+export type ExtendedStartTask = StartTask & { id: string; label: TaskLabel };
+export type ExtendedEndTask = EndTask & { id: string; label: TaskLabel };
+export type ExtendedSimpleTask = SimpleTask & { id: string; label: TaskLabel };
+
+export type ExtendedTask =
+  | ExtendedDecisionTask
+  | ExtendedEventTask
+  | ExtendedHTTPTask
+  | ExtendedGraphQLTask
+  | ExtendedForkTask
+  | ExtendedJoinTask
+  | ExtendedDynamicForkTask
+  | ExtendedWaitTask
+  | ExtendedLambdaTask
+  | ExtendedJSPythonTask
+  | ExtendedTerminateTask
+  | ExtendedWhileTask
+  | ExtendedWhileEndTask
+  | ExtendedRawTask
+  | ExtendedStartTask
+  | ExtendedEndTask
+  | ExtendedSimpleTask;
 
 export type Workflow<T extends Task = Task> = {
   name: string;
@@ -229,9 +272,31 @@ export type Workflow<T extends Task = Task> = {
   timeoutSeconds: number;
   variables: Record<string, unknown>;
 };
-export type NodeData = {
-  isSelected: boolean;
-  task: { id: string; label: TaskLabel } | ExtendedTask;
-  onClick: (data?: NodeData) => void;
-};
+export type NodeData =
+  | {
+      isSelected: boolean;
+      task: ExtendedTask;
+      onEditBtnClick: (data?: NodeData) => void;
+      onDeleteBtnClick?: (id: string) => void;
+    }
+  | undefined;
 export type CustomNodeType = Node<NodeData>;
+
+export type TaskDefinition = {
+  name: string;
+  description?: string;
+  retryCount: number;
+  timeoutSeconds: number;
+  pollTimeoutSeconds: number;
+  inputKeys?: string[];
+  outputKeys?: string[];
+  inputTemplate?: Record<string, string>;
+  timeoutPolicy: 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
+  retryLogic: 'FIXED' | 'EXPONENTIAL_BACKOFF';
+  retryDelaySeconds: number;
+  responseTimeoutSeconds: number;
+  concurrentExecLimit?: number;
+  rateLimitFrequencyInSeconds?: number;
+  rateLimitPerFrequency?: number;
+  ownerEmail: string;
+};

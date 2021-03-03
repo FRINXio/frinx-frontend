@@ -1,7 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import { createElement } from 'react';
 import { render } from 'react-dom';
-import { HTTPTask, Workflow } from './helpers/types';
+import { HTTPTask, TaskDefinition, Workflow } from './helpers/types';
 import Root from './root';
 
 const mountElement = document.querySelector('#root');
@@ -24,7 +24,28 @@ const workflow: Workflow = {
       decisionCases: {
         true: [
           ({
-            name: 'GLOBAL___HTTP_task',
+            name: '1GLOBAL___HTTP_task',
+            taskReferenceName: 'httpRequestTaskRef_S3NY',
+            inputParameters: {
+              http_request: {
+                uri: '${workflow.input.uri}',
+                method: 'GET',
+                contentType: 'application/json',
+                headers: {
+                  from: 'frinxUser',
+                  'x-auth-user-roles': 'OWNER',
+                  'x-tenant-id': 'frinx_test',
+                },
+                timeout: 3600,
+              },
+            },
+            type: 'SIMPLE',
+            startDelay: 0,
+            optional: false,
+            asyncComplete: false,
+          } as unknown) as HTTPTask,
+          ({
+            name: '11GLOBAL___HTTP_task',
             taskReferenceName: 'httpRequestTaskRef_S3NY',
             inputParameters: {
               http_request: {
@@ -46,22 +67,77 @@ const workflow: Workflow = {
           } as unknown) as HTTPTask,
         ],
       },
-      defaultCase: [],
+      defaultCase: [
+        ({
+          name: '2GLOBAL___HTTP_task',
+          taskReferenceName: 'httpRequestTaskRef_S3NZ',
+          inputParameters: {
+            http_request: {
+              uri: '${workflow.input.uri}',
+              method: 'GET',
+              contentType: 'application/json',
+              headers: {
+                from: 'frinxUser',
+                'x-auth-user-roles': 'OWNER',
+                'x-tenant-id': 'frinx_test',
+              },
+              timeout: 3600,
+            },
+          },
+          type: 'SIMPLE',
+          startDelay: 0,
+          optional: false,
+          asyncComplete: false,
+        } as unknown) as HTTPTask,
+        ({
+          name: '22GLOBAL___HTTP_task',
+          taskReferenceName: 'httpRequestTaskRef_S3NZ',
+          inputParameters: {
+            http_request: {
+              uri: '${workflow.input.uri}',
+              method: 'GET',
+              contentType: 'application/json',
+              headers: {
+                from: 'frinxUser',
+                'x-auth-user-roles': 'OWNER',
+                'x-tenant-id': 'frinx_test',
+              },
+              timeout: 3600,
+            },
+          },
+          type: 'SIMPLE',
+          startDelay: 0,
+          optional: false,
+          asyncComplete: false,
+        } as unknown) as HTTPTask,
+      ],
       inputParameters: {
         param: 'true',
       },
       optional: false,
-      ownerEmail: 'frinxUser',
-      pollTimeoutSeconds: 0,
-      responseTimeoutSeconds: 10,
-      retryCount: 0,
-      retryDelaySeconds: 0,
-      retryLogic: 'EXPONENTIAL_BACKOFF',
       startDelay: 0,
-      timeoutPolicy: 'TIME_OUT_WF',
-      timeoutSeconds: 60,
-      description: '',
     },
+    ({
+      name: '3GLOBAL___HTTP_task',
+      taskReferenceName: 'httpRequestTaskRef_S3NZ',
+      inputParameters: {
+        http_request: {
+          uri: '${workflow.input.uri}',
+          method: 'GET',
+          contentType: 'application/json',
+          headers: {
+            from: 'frinxUser',
+            'x-auth-user-roles': 'OWNER',
+            'x-tenant-id': 'frinx_test',
+          },
+          timeout: 3600,
+        },
+      },
+      type: 'SIMPLE',
+      startDelay: 0,
+      optional: false,
+      asyncComplete: false,
+    } as unknown) as HTTPTask,
   ],
   inputParameters: [],
   outputParameters: {},
@@ -79,8 +155,19 @@ function getWorkflow(): Promise<Workflow> {
 }
 
 function saveWorkflow(wfs: Workflow[]): Promise<unknown> {
-  console.log(wfs);
   return Promise.resolve();
+}
+
+async function getWorkflows(): Promise<Workflow[]> {
+  const data = await fetch('http://10.19.0.7/api/uniflow/conductor/metadata/workflow').then((res) => res.json());
+
+  return data.result;
+}
+
+async function getTaskDefinitions(): Promise<TaskDefinition[]> {
+  const data = await fetch('http://10.19.0.7/api/uniflow/conductor/metadata/taskdefs').then((res) => res.json());
+
+  return data.result;
 }
 
 const handleClose = () => {
@@ -92,6 +179,8 @@ render(
     onClose: handleClose,
     getWorkflowCallback: getWorkflow,
     saveWorkflowCallback: saveWorkflow,
+    getWorkflowsCallback: getWorkflows,
+    getTaskDefinitionsCallback: getTaskDefinitions,
     name: '1',
     version: '2',
   }),

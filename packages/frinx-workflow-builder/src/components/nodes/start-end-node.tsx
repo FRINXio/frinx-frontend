@@ -3,7 +3,7 @@ import { Box, Flex, Text } from '@chakra-ui/react';
 import { CustomNodeType } from '../../helpers/types';
 
 const BaseNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
-  const { inputs, outputs, data } = props;
+  const { inputs, outputs, content } = props;
 
   return (
     <Box
@@ -15,10 +15,10 @@ const BaseNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
       boxShadow="base"
       borderWidth={4}
       borderStyle="solid"
-      borderColor={data?.task.label === 'start' ? 'green.100' : 'red.100'}
+      borderColor={content === 'start' ? 'green.100' : 'red.100'}
     >
       <Box padding={2} fontSize="sm" fontWeight={600} textAlign="center">
-        <Text textTransform="uppercase">{data?.task.label}</Text>
+        <Text textTransform="uppercase">{content}</Text>
       </Box>
       <Flex>
         {inputs?.map((port) => {

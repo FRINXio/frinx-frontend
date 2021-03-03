@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { FormControl, FormLabel, Input } from '@chakra-ui/react';
-import { TerminateInputParams } from 'helpers/types';
+import { TerminateInputParams } from '../../helpers/types';
 
 type Props = {
   params: TerminateInputParams;

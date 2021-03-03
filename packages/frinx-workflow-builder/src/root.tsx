@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
-import { Workflow } from './helpers/types';
+import { Task, TaskDefinition, Workflow } from './helpers/types';
 import App from './app';
 import theme from './theme';
 
@@ -10,10 +10,23 @@ type Props = {
   onClose: () => void;
   saveWorkflowCallback: (workflows: Workflow[]) => Promise<unknown>;
   getWorkflowCallback: (name: string, version: string) => Promise<Workflow>;
+  getWorkflowsCallback: () => Promise<Workflow[]>;
+  getTaskDefinitionsCallback: () => Promise<TaskDefinition[]>;
 };
 
-const Root: FC<Props> = ({ name, version, onClose, saveWorkflowCallback, getWorkflowCallback }) => {
+const Root: FC<Props> = ({
+  name,
+  version,
+  onClose,
+  saveWorkflowCallback,
+  getWorkflowCallback,
+  getWorkflowsCallback,
+  getTaskDefinitionsCallback,
+}) => {
   const [workflow, setWorkflow] = useState<Workflow | null>(null);
+  const [workflows, setWorkflows] = useState<Workflow[] | null>(null);
+  const [taskDefinitions, setTaskDefinitions] = useState<TaskDefinition[] | null>(null);
+
   useEffect(() => {
     if (name != null && version != null) {
       getWorkflowCallback(name, version).then((wf) => {
@@ -23,14 +36,33 @@ const Root: FC<Props> = ({ name, version, onClose, saveWorkflowCallback, getWork
   }, [name, version, getWorkflowCallback]);
 
   useEffect(() => {
+    getWorkflowsCallback().then((wfs) => {
+      setWorkflows(wfs);
+    });
+  }, [getWorkflowsCallback]);
+
+  useEffect(() => {
+    getTaskDefinitionsCallback().then((tsks) => {
+      setTaskDefinitions(tsks);
+    });
+  }, [getTaskDefinitionsCallback]);
+
+  useEffect(() => {
     const styleTag = document.createElement('style');
     styleTag.innerHTML = `.nodeLink path { stroke: ${theme.colors.gray[400]} !important; stroke-width: 0.25rem !important; } `;
     document.head.appendChild(styleTag);
   }, []);
 
-  return workflow != null ? (
+  return workflow != null && workflows != null && taskDefinitions != null ? (
     <ChakraProvider theme={theme}>
-      <App onClose={onClose} workflow={workflow} onWorkflowChange={setWorkflow} onWorkflowSave={saveWorkflowCallback} />
+      <App
+        onClose={onClose}
+        workflow={workflow}
+        onWorkflowChange={setWorkflow}
+        onWorkflowSave={saveWorkflowCallback}
+        workflows={workflows}
+        taskDefinitions={taskDefinitions}
+      />
     </ChakraProvider>
   ) : null;
 };

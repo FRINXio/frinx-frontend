@@ -1,18 +1,18 @@
 import React, { FC } from 'react';
 import { Box, Flex, Heading, IconButton, Text, Theme, Tooltip, useTheme } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
-import { CustomNodeType, Task, DecisionTask } from '../../helpers/types';
+import { CustomNodeType, ExtendedDecisionTask, ExtendedTask } from '../../helpers/types';
 import unwrap from '../../helpers/unwrap';
 import { getNodeColor } from './nodes.helpers';
 
-const isDecisionTask = (task: Task | undefined | null): task is DecisionTask => {
+const isDecisionTask = (task: ExtendedTask): task is ExtendedDecisionTask => {
   return task != null && task.type === 'DECISION';
 };
 
 const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
   const theme = useTheme<Theme>();
   const { inputs, outputs, data } = props;
-  const task = unwrap(unwrap(data).task);
+  const { task, onEditBtnClick } = unwrap(data);
 
   return (
     <Flex
@@ -56,7 +56,7 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
               <IconButton
                 onClick={(event) => {
                   event.stopPropagation();
-                  data?.onClick(data);
+                  onEditBtnClick(data);
                 }}
                 aria-label="Edit workflow"
                 icon={<EditIcon />}
@@ -68,7 +68,7 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
         </Flex>
         <Flex height={8} alignItems="center" justifyContent="center">
           <Text size="sm" color="gray.700" fontFamily="monospace">
-            {isDecisionTask(data?.task) && <>if {data?.task?.caseValueParam} ==</>}
+            {isDecisionTask(task) && <>if {task.caseValueParam} ==</>}
           </Text>
         </Flex>
       </Box>
