@@ -1,9 +1,17 @@
 // @flow
-import React from 'react';
-import { Button } from 'semantic-ui-react';
-import { Modal } from 'react-bootstrap';
-import { Tree, TreeNode } from 'react-organizational-chart';
 import './DependencyModal.css';
+import React from 'react';
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+} from '@chakra-ui/react';
+import { Tree, TreeNode } from 'react-organizational-chart';
 
 const DependencyModal = (props) => {
   const createDepTree = (rootWorkflow) => {
@@ -84,16 +92,18 @@ const DependencyModal = (props) => {
   };
 
   return (
-    <Modal size="xl" show={props.show} onHide={props.modalHandler}>
-      <Modal.Header>
-        <Modal.Title>Workflow Dependency Tree</Modal.Title>
-      </Modal.Header>
-      <Modal.Body style={{ overflowX: 'scroll' }}>{DependencyTree()}</Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={props.modalHandler}>
-          Close
-        </Button>
-      </Modal.Footer>
+    <Modal size="3xl" isOpen={props.show} onClose={props.modalHandler}>
+      <ModalOverlay />
+      <ModalCloseButton />
+      <ModalContent>
+        <ModalHeader>Workflow Dependency Tree</ModalHeader>
+        <ModalBody overflowX="scroll">{DependencyTree()}</ModalBody>
+        <ModalFooter>
+          <Button colorScheme="gray" onClick={props.modalHandler}>
+            Close
+          </Button>
+        </ModalFooter>
+      </ModalContent>
     </Modal>
   );
 };

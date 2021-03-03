@@ -1,13 +1,31 @@
+// @flow
 import React from 'react';
-import { Pagination } from 'semantic-ui-react';
+import { Flex } from '@chakra-ui/react';
+import { Next, PageGroup, Paginator, Previous } from 'chakra-paginator';
 
 function PaginationPages(props) {
   return (
-    <Pagination
-      activePage={props.currentPage}
-      onPageChange={(e, { activePage }) => props.changePageHandler(activePage)}
-      totalPages={props.totalPages || 1}
-    />
+    <>
+      <Paginator
+        currentPage={props.currentPage}
+        onPageChange={(nextPage) => {
+          props.changePageHandler(nextPage);
+        }}
+        pagesQuantity={props.totalPages || 1}
+        activeStyles={{
+          width: 45,
+        }}
+        normalStyles={{
+          width: 45,
+        }}
+      >
+        <Flex>
+          <Previous>{'<'}</Previous>
+          <PageGroup isInline align="center" />
+          <Next>{'>'}</Next>
+        </Flex>
+      </Paginator>
+    </>
   );
 }
 

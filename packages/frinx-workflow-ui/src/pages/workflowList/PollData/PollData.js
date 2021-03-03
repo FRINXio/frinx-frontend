@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Input, Icon } from 'semantic-ui-react';
+// @flow
+import PageContainer from '../../../common/PageContainer';
+import PaginationPages from '../../../common/Pagination';
+import React, { useEffect, useState } from 'react';
+import callbackUtils from '../../../utils/callbackUtils';
 import moment from 'moment';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Icon, Input, InputGroup, InputLeftElement, Table, Tbody, Td, Tfoot, Th, Thead, Tr } from '@chakra-ui/react';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
 import { usePagination } from '../../../common/PaginationHook';
-import PaginationPages from '../../../common/Pagination';
-import PageContainer from '../../../common/PageContainer';
-import callbackUtils from '../../../utils/callbackUtils';
 
 const PollData = () => {
   const [sorted, setSorted] = useState(false);
@@ -25,7 +28,7 @@ const PollData = () => {
     const results = !keywords
       ? data
       : data.filter((e) => {
-          let searchedKeys = ['queueName', 'qsize', 'lastPollTime', 'workerId'];
+          const searchedKeys = ['queueName', 'qsize', 'lastPollTime', 'workerId'];
 
           for (let i = 0; i < searchedKeys.length; i += 1) {
             if (searchedKeys[i] === 'lastPollTime') {
@@ -46,10 +49,10 @@ const PollData = () => {
           return false;
         });
     setItemList(results);
-  }, [keywords, data]);
+  }, [keywords, data, setItemList]);
 
   const sortArray = (key) => {
-    let sortedArray = data;
+    const sortedArray = data;
 
     sortedArray.sort(sorted ? sortDescBy(key) : sortAscBy(key));
     setSorted(!sorted);
@@ -59,45 +62,52 @@ const PollData = () => {
   const filteredRows = () => {
     return pageItems.map((e) => {
       return (
-        <Table.Row key={e.queueName}>
-          <Table.Cell>{e.queueName}</Table.Cell>
-          <Table.Cell>{e.qsize}</Table.Cell>
-          <Table.Cell>{moment(e.lastPollTime).format('MM/DD/YYYY, HH:mm:ss:SSS')}</Table.Cell>
-          <Table.Cell>{e.workerId}</Table.Cell>
-        </Table.Row>
+        <Tr key={e.queueName}>
+          <Td>{e.queueName}</Td>
+          <Td>{e.qsize}</Td>
+          <Td>{moment(e.lastPollTime).format('MM/DD/YYYY, HH:mm:ss:SSS')}</Td>
+          <Td>{e.workerId}</Td>
+        </Tr>
       );
     });
   };
 
   const pollTable = () => {
     return (
-      <Table celled compact sortable color="blue">
-        <Table.Header fullWidth>
-          <Table.Row>
-            <Table.HeaderCell onClick={() => sortArray('queueName')}>Name (Domain)</Table.HeaderCell>
-            <Table.HeaderCell onClick={() => sortArray('qsize')}>Size</Table.HeaderCell>
-            <Table.HeaderCell onClick={() => sortArray('lastPollTime')}>Last Poll Time</Table.HeaderCell>
-            <Table.HeaderCell onClick={() => sortArray('workerId')}>Last Polled By</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>{filteredRows()}</Table.Body>
-        <Table.Footer>
-          <Table.Row>
-            <Table.HeaderCell colSpan="4">
+      <Table background="white">
+        <Thead>
+          <Tr>
+            <Th onClick={() => sortArray('queueName')}>Name (Domain)</Th>
+            <Th onClick={() => sortArray('qsize')}>Size</Th>
+            <Th onClick={() => sortArray('lastPollTime')}>Last Poll Time</Th>
+            <Th onClick={() => sortArray('workerId')}>Last Polled By</Th>
+          </Tr>
+        </Thead>
+        <Tbody>{filteredRows()}</Tbody>
+        <Tfoot>
+          <Tr>
+            <Th>
               <PaginationPages totalPages={totalPages} currentPage={currentPage} changePageHandler={setCurrentPage} />
-            </Table.HeaderCell>
-          </Table.Row>
-        </Table.Footer>
+            </Th>
+          </Tr>
+        </Tfoot>
       </Table>
     );
   };
 
   return (
     <PageContainer>
-      <Input iconPosition="left" fluid icon placeholder="Search...">
-        <input value={keywords} onChange={(e) => setKeywords(e.target.value)} />
-        <Icon name="search" />
-      </Input>
+      <InputGroup marginBottom={8}>
+        <InputLeftElement>
+          <Icon as={FontAwesomeIcon} icon={faSearch} color="grey" />
+        </InputLeftElement>
+        <Input
+          value={keywords}
+          placeholder="Search..."
+          onChange={(e) => setKeywords(e.target.value)}
+          background="white"
+        />
+      </InputGroup>
       {pollTable()}
     </PageContainer>
   );

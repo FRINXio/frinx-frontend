@@ -1,15 +1,35 @@
 // @flow
 import Dropdown from 'react-dropdown';
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Form, Modal, Row, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
-import { Typeahead } from 'react-bootstrap-typeahead';
-import { storeWorkflowId } from '../../../../store/actions/builder';
 import callbackUtils from '../../../../utils/callbackUtils';
-import { useDispatch } from 'react-redux';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Grid,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Radio,
+  RadioGroup,
+  Stack,
+  Text,
+  Textarea,
+} from '@chakra-ui/react';
+import { Typeahead } from 'react-bootstrap-typeahead';
 import { jsonParse } from '../../../../common/utils';
+import { storeWorkflowId } from '../../../../store/actions/builder';
+import { useDispatch } from 'react-redux';
 
 const getInputs = (def) => {
-  const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
+  const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)}/gim;
   let match = inputCaptureRegex.exec(def);
   const inputsArray = [];
 
@@ -53,7 +73,7 @@ function InputModal(props) {
   }, [props]);
 
   const getWaitingWorkflows = () => {
-    return new Promise((resolve, reject) => {
+    return new Promise(() => {
       const waitingWfs = [];
 
       const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback();
@@ -190,121 +210,103 @@ function InputModal(props) {
         );
       case 'textarea':
         return (
-          <Form.Control
-            type="input"
-            as="textarea"
-            rows="2"
+          <FormControl
             onChange={(e) => handleInput(e, i)}
             placeholder="Enter the input"
-            value={workflowForm[i].value}
+            value={item.value}
             isInvalid={warning[i]}
-          />
+          >
+            <Textarea
+              rows={2}
+              onChange={(e) => handleInput(e, i)}
+              value={workflowForm[i].value}
+              placeholder="Enter the input"
+            />
+          </FormControl>
         );
       case 'toggle':
         return (
-          <ToggleButtonGroup
-            type="radio"
-            value={item.value.toString()}
-            name={`switch-${i}`}
-            onChange={(e) => handleSwitch(e, i)}
-            style={{
-              height: 'calc(1.5em + .75rem + 2px)',
-              width: '100%',
-              paddingTop: '.375rem',
-            }}
-          >
-            <ToggleButton size="sm" variant="outline-primary" value={item?.options[0].toString()}>
-              {item?.options[0].toString()}
-            </ToggleButton>
-            <ToggleButton size="sm" variant="outline-primary" value={item?.options[1].toString()}>
-              {item?.options[1].toString()}
-            </ToggleButton>
-          </ToggleButtonGroup>
+          <RadioGroup value={item.value.toString()} onChange={(e) => handleSwitch(e, i)}>
+            <Stack direction="row" spacing={5}>
+              <Radio value={item?.options[0].toString()}>{item?.options[0].toString()}</Radio>
+              <Radio value={item?.options[1].toString()}>{item?.options[1].toString()}</Radio>
+            </Stack>
+          </RadioGroup>
         );
       case 'select':
         return <Dropdown options={item.options} onChange={(e) => handleSwitch(e.value, i)} value={item.value} />;
       default:
         return (
-          <Form.Control
-            type="input"
-            onChange={(e) => handleInput(e, i)}
-            placeholder="Enter the input"
-            value={item.value}
-            isInvalid={warning[i]}
-          />
+          <FormControl isInvalid={warning[i]}>
+            <Input onChange={(e) => handleInput(e, i)} value={item.value} placeholder="Enter the input" />
+          </FormControl>
         );
     }
   };
 
   return (
-    <Modal size="lg" show={props.show} onHide={handleClose}>
-      <Modal.Body style={{ padding: '30px' }}>
-        <h4>
+    <Modal size="3xl" isOpen={props.show} onClose={handleClose}>
+      <ModalOverlay />
+      <ModalCloseButton />
+      <ModalContent>
+        <ModalHeader>
           {name} / {version}
-        </h4>
-        <p className="text-muted">{wfdesc}</p>
-        <hr />
-        <Form onSubmit={executeWorkflow}>
-          <Row>
-            {workflowForm.map((item, i) => {
-              return (
-                <Col sm={6} key={`col1-${i}`}>
-                  <Form.Group>
-                    <Form.Label>{item.label}</Form.Label>
-                    {warning[i] ? (
-                      <div
-                        style={{
-                          color: 'red',
-                          fontSize: '12px',
-                          float: 'right',
-                          marginTop: '5px',
-                        }}
-                      >
-                        Unnecessary space
-                      </div>
-                    ) : null}
-                    {inputModel(item, i)}
-                    <Form.Text className="text-muted">
-                      {item.description}
-                      <br />
-                      {item.constraint && (
-                        <>
-                          <b>Constraint:</b> {item.constraint}
-                        </>
-                      )}
-                    </Form.Text>
-                  </Form.Group>
-                </Col>
-              );
-            })}
-          </Row>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <a style={{ float: 'left', marginRight: '50px' }} onClick={() => props.onWorkflowIdClick(wfId)}>
-          {wfId}
-        </a>
-        <Button
-          variant={
-            status === 'OK'
-              ? 'success'
-              : status === 'Executing...'
-              ? 'info'
-              : status === 'Execute'
-              ? 'primary'
-              : 'danger'
-          }
-          onClick={executeWorkflow}
-        >
-          {status === 'Execute' ? <i className="fas fa-play" /> : null}
-          {status === 'Executing...' ? <i className="fas fa-spinner fa-spin" /> : null}
-          {status === 'OK' ? <i className="fas fa-check-circle" /> : null}
-          &nbsp;&nbsp;{status}
-        </Button>
-        <Button variant="secondary" onClick={() => handleClose(false)}>
-          Close
-        </Button>
-      </Modal.Footer>
+          <Text fontSize={15} fontWeight="normal" color="gray.500">
+            {' '}
+            {wfdesc}{' '}
+          </Text>
+        </ModalHeader>
+        <ModalBody padding={30}>
+          <form onSubmit={executeWorkflow}>
+            <Grid templateColumns="330px 330px" columnGap={30} rowGap={4}>
+              {workflowForm.map((item, i) => {
+                return (
+                  <Box key={`col1-${i}`}>
+                    <FormControl>
+                      <FormLabel>{item.label}</FormLabel>
+                      {warning[i] ? (
+                        <Box color="red" fontSize={12} float="right" marginTop={5}>
+                          Unnecessary space
+                        </Box>
+                      ) : null}
+                      {inputModel(item, i)}
+                      <FormHelperText className="text-muted">
+                        {item.description}
+                        <br />
+                        {item.constraint && (
+                          <>
+                            <b>Constraint:</b> {item.constraint}
+                          </>
+                        )}
+                      </FormHelperText>
+                    </FormControl>
+                  </Box>
+                );
+              })}
+            </Grid>
+          </form>
+        </ModalBody>
+        <ModalFooter>
+          <a style={{ float: 'left', marginRight: '50px' }} onClick={() => props.onWorkflowIdClick(wfId)}>
+            {wfId}
+          </a>
+          <Button
+            marginRight={4}
+            colorScheme={
+              status === 'OK' ? 'green' : status === 'Executing...' ? 'teal' : status === 'Execute' ? 'blue' : 'red'
+            }
+            onClick={executeWorkflow}
+          >
+            {status === 'Execute' ? <i className="fas fa-play" /> : null}
+            {status === 'Executing...' ? <i className="fas fa-spinner fa-spin" /> : null}
+            {status === 'OK' ? <i className="fas fa-check-circle" /> : null}
+            &nbsp;&nbsp;{status}
+          </Button>
+          <Button colorScheme="gray" onClick={() => handleClose(false)}>
+            Close
+          </Button>
+        </ModalFooter>
+      </ModalContent>
     </Modal>
   );
 }

@@ -1,18 +1,34 @@
-import moment from 'moment';
-import React, { Component } from 'react';
-import { Button, Col, Container, Form, Row, Table, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
-import { Typeahead } from 'react-bootstrap-typeahead';
+// @flow
+import './WorkflowExec.css';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import { connect } from 'react-redux';
-import PageCount from '../../../common/PageCount';
-import PageSelect from '../../../common/PageSelect';
 import * as bulkActions from '../../../store/actions/bulk';
 import * as searchActions from '../../../store/actions/searchExecs';
 import DetailsModal from './DetailsModal/DetailsModal';
-import WorkflowBulk from './WorkflowBulk/WorkflowBulk';
 import PageContainer from '../../../common/PageContainer';
-import './WorkflowExec.css';
+import PageCount from '../../../common/PageCount';
+import PageSelect from '../../../common/PageSelect';
+import React, { Component } from 'react';
+import WorkflowBulk from './WorkflowBulk/WorkflowBulk';
+import moment from 'moment';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Checkbox,
+  Flex,
+  FormControl,
+  Grid,
+  Input,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
+import { Typeahead } from 'react-bootstrap-typeahead';
+import { connect } from 'react-redux';
 
 class WorkflowExec extends Component {
   constructor(props) {
@@ -42,7 +58,7 @@ class WorkflowExec extends Component {
       : this.props.fetchParentWorkflows(this.state.viewedPage, this.state.defaultPages);
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.query !== prevProps.query) {
       this.setState({
         allData: true,
@@ -56,8 +72,8 @@ class WorkflowExec extends Component {
       }
     }
 
-    let { data, query, parents, size } = this.props.searchReducer;
-    let dataset = this.state.allData ? data : parents;
+    const { data, query, parents, size } = this.props.searchReducer;
+    const dataset = this.state.allData ? data : parents;
     if (
       dataset.length === 1 &&
       query !== '' &&
@@ -107,7 +123,7 @@ class WorkflowExec extends Component {
   }
 
   showChildrenWorkflows(workflow, closeParentWfs, closeChildWfs) {
-    let childrenDataset = this.props.searchReducer.children;
+    const childrenDataset = this.props.searchReducer.children;
     if (childrenDataset.length) {
       childrenDataset.forEach((wf, index) => (wf.index = index));
     }
@@ -116,7 +132,7 @@ class WorkflowExec extends Component {
     let openParents = closeParentWfs ? closeParentWfs : this.state.openParentWfs;
 
     if (openParents.filter((wfs) => wfs.startTime === workflow.startTime).length) {
-      let closeParents = openParents.filter((wf) => wf.parentWorkflowId === workflow.workflowId);
+      const closeParents = openParents.filter((wf) => wf.parentWorkflowId === workflow.workflowId);
       this.props.deleteParents(showChildren.filter((wf) => wf.parentWorkflowId === workflow.workflowId));
       openParents = openParents.filter((wfs) => wfs.startTime !== workflow.startTime);
       showChildren = showChildren.filter((wf) => wf.parentWorkflowId !== workflow.workflowId);
@@ -132,7 +148,7 @@ class WorkflowExec extends Component {
   }
 
   indent(wf, i, size) {
-    let indentSize = size ? size : 6;
+    const indentSize = size ? size : 6;
     if (wf[i].parentWorkflowId) {
       let layers = 0;
       if (this.state.showChildren.some((child) => child.workflowId === wf[i].parentWorkflowId)) {
@@ -194,12 +210,12 @@ class WorkflowExec extends Component {
   }
 
   repeat() {
-    let { data, parents, children } = this.props.searchReducer;
-    let childSet = children;
-    let parentsId = childSet ? childSet.map((wf) => wf.parentWorkflowId) : [];
-    let output = [];
+    const { data, parents, children } = this.props.searchReducer;
+    const childSet = children;
+    const parentsId = childSet ? childSet.map((wf) => wf.parentWorkflowId) : [];
+    const output = [];
     let dataset = this.state.allData ? data : parents;
-    let sort = this.state.sort;
+    const sort = this.state.sort;
     for (let i = 0; i < sort.length; i++) {
       if (i === 0 && sort[i] !== 2)
         dataset = dataset.sort(this.dynamicSort(sort[i] ? '-workflowType' : 'workflowType'));
@@ -208,7 +224,7 @@ class WorkflowExec extends Component {
     }
     for (let i = 0; i < dataset.length; i++) {
       output.push(
-        <tr
+        <Tr
           key={`row-${i}`}
           id={`row-${i}`}
           className={
@@ -217,16 +233,16 @@ class WorkflowExec extends Component {
               : null
           }
         >
-          <td>
-            <Form.Check
-              checked={this.state.selectedWfs.includes(dataset[i]['workflowId'])}
+          <Td>
+            <Checkbox
+              isChecked={this.state.selectedWfs.includes(dataset[i]['workflowId'])}
               onChange={(e) => this.selectWf(e)}
-              style={{ marginLeft: '20px' }}
+              marginLeft={20}
               id={`chb-${i}`}
             />
-          </td>
+          </Td>
           {this.state.allData ? null : (
-            <td
+            <Td
               className="clickable"
               onClick={this.showChildrenWorkflows.bind(this, dataset[i], null, null)}
               style={{ textIndent: this.indent(dataset, i) }}
@@ -238,9 +254,9 @@ class WorkflowExec extends Component {
                   <i className="fas fa-plus" />
                 )
               ) : null}
-            </td>
+            </Td>
           )}
-          <td
+          <Td
             onClick={this.showDetailsModal.bind(this, dataset[i]['workflowId'])}
             className="clickable"
             style={{
@@ -252,11 +268,11 @@ class WorkflowExec extends Component {
             title={dataset[i]['workflowType']}
           >
             {dataset[i]['workflowType']}
-          </td>
-          <td>{dataset[i]['status']}</td>
-          <td>{moment(dataset[i]['startTime']).format('MM/DD/YYYY, HH:mm:ss:SSS')}</td>
-          <td>{dataset[i].endTime ? moment(dataset[i]['endTime']).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}</td>
-        </tr>,
+          </Td>
+          <Td>{dataset[i]['status']}</Td>
+          <Td>{moment(dataset[i]['startTime']).format('MM/DD/YYYY, HH:mm:ss:SSS')}</Td>
+          <Td>{dataset[i].endTime ? moment(dataset[i]['endTime']).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}</Td>
+        </Tr>,
       );
     }
     return output;
@@ -274,14 +290,14 @@ class WorkflowExec extends Component {
 
   selectWf(e) {
     const { data, parents } = this.props.searchReducer;
-    let dataset = this.state.allData ? data : parents;
-    let rowNum = e.target.id.split('-')[1];
+    const dataset = this.state.allData ? data : parents;
+    const rowNum = e.target.id.split('-')[1];
 
     let wfIds = this.state.selectedWfs;
-    let wfId = dataset[rowNum]['workflowId'];
+    const wfId = dataset[rowNum]['workflowId'];
 
     if (wfIds.includes(wfId)) {
-      let idx = wfIds.indexOf(wfId);
+      const idx = wfIds.indexOf(wfId);
       if (idx !== -1) wfIds.splice(idx, 1);
     } else {
       wfIds.push(wfId);
@@ -294,18 +310,18 @@ class WorkflowExec extends Component {
 
   selectChildrenWf(parentId, wfIds) {
     const { children } = this.props.searchReducer;
-    let newWfIds = children.filter((wf) => wf.parentWorkflowId === parentId).map((wf) => wf.workflowId);
+    const newWfIds = children.filter((wf) => wf.parentWorkflowId === parentId).map((wf) => wf.workflowId);
     for (let i = 0; i < newWfIds.length; i++) wfIds = wfIds.concat(this.selectChildrenWf(newWfIds[i], newWfIds));
     return [...new Set(wfIds)];
   }
 
   selectAllWfs() {
     const { data, parents, children } = this.props.searchReducer;
-    let hiddenChildren = children.filter(
+    const hiddenChildren = children.filter(
       (obj) => !this.state.showChildren.some((obj2) => obj.startTime === obj2.startTime),
     );
-    let dataset = this.state.allData ? data : parents.concat(hiddenChildren);
-    let wfIds = [];
+    const dataset = this.state.allData ? data : parents.concat(hiddenChildren);
+    const wfIds = [];
 
     if (this.state.selectedWfs.length > 0) {
       this.setState({ selectedWfs: [] });
@@ -321,7 +337,7 @@ class WorkflowExec extends Component {
   }
 
   showDetailsModal(workflowId) {
-    let wfId = workflowId !== undefined ? workflowId : null;
+    const wfId = workflowId !== undefined ? workflowId : null;
     this.setState({
       detailsModal: !this.state.detailsModal,
       wfId: wfId,
@@ -368,7 +384,7 @@ class WorkflowExec extends Component {
   }
 
   sortWf(number) {
-    let sort = this.state.sort;
+    const sort = this.state.sort;
     for (let i = 0; i < sort.length; i++) {
       i === number ? (sort[i] = sort[i] === 2 ? 0 : sort[i] === 0 ? 1 : 0) : (sort[i] = 2);
     }
@@ -387,7 +403,7 @@ class WorkflowExec extends Component {
   }
 
   render() {
-    let detailsModal = this.state.detailsModal ? (
+    const detailsModal = this.state.detailsModal ? (
       <DetailsModal
         wfId={this.state.wfId}
         modalHandler={this.showDetailsModal.bind(this)}
@@ -412,25 +428,27 @@ class WorkflowExec extends Component {
           bulkOperation={this.clearView.bind(this)}
         />
 
-        <hr style={{ marginTop: '-20px' }} />
-        <ButtonToolbar style={{ marginBottom: '15px', marginRight: '15px' }}>
-          <div style={{ paddingTop: '5px' }}>Workflow view</div>&nbsp;&nbsp;
-          <ToggleButtonGroup
-            type="radio"
-            value={this.state.allData ? 1 : 0}
-            name="Workflow view"
-            onChange={this.changeView.bind(this)}
-          >
-            <ToggleButton size="sm" variant="outline-secondary" value={0}>
+        <Flex alignItems="center" marginBottom={4}>
+          <Text marginRight={4}>Workflow view</Text>
+
+          <ButtonGroup size="sm" isAttached colorScheme="blue" onChange={this.changeView.bind(this)}>
+            <Button
+              variant={this.state.allData ? 'outline' : 'solid'}
+              onClick={this.state.allData ? this.changeView.bind(this) : null}
+            >
               Hierarchy
-            </ToggleButton>
-            <ToggleButton size="sm" variant="outline-secondary" value={1}>
+            </Button>
+            <Button
+              variant={this.state.allData ? 'solid' : 'outline'}
+              onClick={this.state.allData ? null : this.changeView.bind(this)}
+            >
               Flat
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </ButtonToolbar>
-        <Row>
-          <Col>
+            </Button>
+          </ButtonGroup>
+        </Flex>
+
+        <Grid templateColumns="1fr 1fr 40px" gap={4} marginBottom={12}>
+          <Box flexGrow={1}>
             <Typeahead
               id="typeaheadExec"
               selected={this.props.searchReducer.labels}
@@ -441,19 +459,20 @@ class WorkflowExec extends Component {
               placeholder="Search by status."
               ref={(ref) => (this._typeahead = ref)}
             />
-          </Col>
-          <Col>
-            <Form.Group>
-              <Form.Control
+          </Box>
+          <Box flexGrow={1}>
+            <FormControl>
+              <Input
                 value={this.props.searchReducer.query}
                 onChange={(e) => this.changeQuery(e.target.value)}
                 placeholder="Search by keyword."
+                background="white"
               />
-            </Form.Group>
-          </Col>
+            </FormControl>
+          </Box>
           <Button
             className="primary"
-            style={{ marginBottom: '15px', marginRight: '15px' }}
+            colorScheme="blue"
             onClick={() => {
               this.changeLabels([]);
               this._typeahead.clear();
@@ -462,57 +481,56 @@ class WorkflowExec extends Component {
           >
             <i className="fas fa-times" />
           </Button>
-        </Row>
+        </Grid>
         <div className="execTableWrapper">
-          <Table ref={this.table} striped={this.state.allData} hover size="sm">
-            <thead>
-              <tr>
-                <th> </th>
-                {this.state.allData ? null : <th>Children</th>}
-                <th onClick={this.sortWf.bind(this, 0)} className="clickable">
+          <Table background="white" ref={this.table} striped={this.state.allData} hover size="sm">
+            <Thead>
+              <Tr>
+                <Th> </Th>
+                {this.state.allData ? null : <Th>Children</Th>}
+                <Th onClick={this.sortWf.bind(this, 0)} className="clickable">
                   Name &nbsp;
                   {this.state.sort[0] !== 2 ? (
                     <i className={this.state.sort[0] ? 'fas fa-sort-up' : 'fas fa-sort-down'} />
                   ) : null}
-                </th>
-                <th>Status</th>
-                <th onClick={this.sortWf.bind(this, 1)} className="clickable">
+                </Th>
+                <Th>Status</Th>
+                <Th onClick={this.sortWf.bind(this, 1)} className="clickable">
                   Start Time &nbsp;
                   {this.state.sort[1] !== 2 ? (
                     <i className={this.state.sort[1] ? 'fas fa-sort-down' : 'fas fa-sort-up'} />
                   ) : null}
-                </th>
-                <th onClick={this.sortWf.bind(this, 2)} className="clickable">
+                </Th>
+                <Th onClick={this.sortWf.bind(this, 2)} className="clickable">
                   End Time &nbsp;
                   {this.state.sort[2] !== 2 ? (
                     <i className={this.state.sort[2] ? 'fas fa-sort-down' : 'fas fa-sort-up'} />
                   ) : null}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="execTableRows">{this.repeat()}</tbody>
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody className="execTableRows">{this.repeat()}</Tbody>
           </Table>
         </div>
-        <Container style={{ marginTop: '5px' }}>
-          <Row>
-            <Col sm={2}>
+        <Box marginTop={5}>
+          <Flex justifyContent="space-between">
+            <Box>
               <PageCount
                 dataSize={this.props.searchReducer.size}
                 defaultPages={this.state.defaultPages}
                 handler={this.setCountPages.bind(this)}
               />
-            </Col>
-            <Col sm={8} />
-            <Col sm={2}>
+            </Box>
+            <Box>
               <PageSelect
                 viewedPage={this.state.viewedPage}
                 count={this.state.pagesCount}
                 indent={1}
                 handler={this.setViewPage.bind(this)}
               />
-            </Col>
-          </Row>
-        </Container>
+            </Box>
+          </Flex>
+        </Box>
       </PageContainer>
     );
   }
