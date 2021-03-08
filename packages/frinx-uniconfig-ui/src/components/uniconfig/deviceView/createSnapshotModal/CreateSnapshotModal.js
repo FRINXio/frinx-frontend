@@ -15,13 +15,13 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 
-export const CreateSnapshotModal = ({ deviceId, operationHandler }) => {
+const CreateSnapshotModal = ({ deviceId, operationHandler }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [snapshotName, setSnapshotName] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
   async function createSnapshot() {
-    let target = {
+    const target = {
       input: {
         name: snapshotName,
         'target-nodes': {
@@ -53,7 +53,7 @@ export const CreateSnapshotModal = ({ deviceId, operationHandler }) => {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} isLoading={isLoading} onClick={() => createSnapshot()}>
+            <Button colorScheme="blue" mr={3} isLoading={isLoading} onClick={createSnapshot}>
               Create
             </Button>
             <Button variant="ghost" onClick={onClose}>
@@ -65,3 +65,5 @@ export const CreateSnapshotModal = ({ deviceId, operationHandler }) => {
     </>
   );
 };
+
+export default CreateSnapshotModal;
