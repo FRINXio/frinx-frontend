@@ -13,10 +13,10 @@ import {
   Skeleton,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import { Editor } from './Editor';
+import Editor from './Editor';
 
-export const Config = ({ currentConfigState, isLoading, updateConfig, refreshConfig, replaceConfigWithOper }) => {
-  const [modified, setModified] = useState(false);
+const Config = ({ currentConfigState, isLoading, updateConfig, refreshConfig, replaceConfigWithOper }) => {
+  const [isModified, setIsModified] = useState(false);
   const [currentLocalConfigState, setCurrentLocalConfigState] = useState();
   const [prevConfigState, setPrevConfigState] = useState();
   const [isParsable, setIsParsable] = useState(true);
@@ -33,24 +33,24 @@ export const Config = ({ currentConfigState, isLoading, updateConfig, refreshCon
     } catch (e) {
       setIsParsable(false);
     }
-    setModified(prevConfigState !== localConfig);
+    setIsModified(prevConfigState !== localConfig);
     setCurrentLocalConfigState(localConfig);
   }
 
   function refresh() {
-    setModified(false);
+    setIsModified(false);
     refreshConfig();
   }
 
   function cancel() {
-    setModified(false);
+    setIsModified(false);
     setCurrentLocalConfigState(prevConfigState);
   }
 
   function saveConfig() {
     const config = JSON.parse(currentLocalConfigState);
     updateConfig(config);
-    setModified(false);
+    setIsModified(false);
     setPrevConfigState(currentLocalConfigState);
   }
 
@@ -61,24 +61,22 @@ export const Config = ({ currentConfigState, isLoading, updateConfig, refreshCon
           Intended Configuration
         </Heading>
         <Stack direction="row" spacing={2}>
-          <Button colorScheme="blue" isLoading={isLoading} onClick={() => saveConfig()}>
+          <Button colorScheme="blue" isLoading={isLoading} onClick={saveConfig}>
             Save
           </Button>
-          {modified ? (
-            <Button isLoading={isLoading} onClick={() => cancel()}>
+          {isModified ? (
+            <Button isLoading={isLoading} onClick={cancel}>
               Cancel
             </Button>
           ) : (
             <ButtonGroup isAttached>
-              <Button isLoading={isLoading} onClick={() => refresh()}>
+              <Button isLoading={isLoading} onClick={refresh}>
                 Refresh
               </Button>
               <Menu>
                 <MenuButton as={IconButton} icon={<ChevronDownIcon />} />
                 <MenuList>
-                  <MenuItem isLoading={isLoading} onClick={() => replaceConfigWithOper()}>
-                    Replace with Operational
-                  </MenuItem>
+                  <MenuItem onClick={replaceConfigWithOper}>Replace with Operational</MenuItem>
                 </MenuList>
               </Menu>
             </ButtonGroup>
@@ -87,8 +85,8 @@ export const Config = ({ currentConfigState, isLoading, updateConfig, refreshCon
       </Flex>
       {!isLoading ? (
         <Editor
-          readOnly={false}
-          modified={modified}
+          isReadOnly={false}
+          isModified={isModified}
           currentState={currentLocalConfigState}
           isParsable={isParsable}
           setCurrentLocalConfigState={updateConfigCurrentState}
@@ -106,3 +104,5 @@ export const Config = ({ currentConfigState, isLoading, updateConfig, refreshCon
     </>
   );
 };
+
+export default Config;

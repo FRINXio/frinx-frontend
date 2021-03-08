@@ -152,7 +152,7 @@ const DeviceDetails = ({ topology, nodeId }) => {
           <TabPanels>
             <TabPanel>
               {nodeKeyValueMap(node).map(({ displayValue, value }) => (
-                <Flex justify="space-between" align="center" marginBottom={2} marginTop={4}>
+                <Flex key={displayValue} justify="space-between" align="center" marginBottom={2} marginTop={4}>
                   <Heading as="h6" size="sm">
                     {displayValue}:
                   </Heading>
@@ -164,7 +164,7 @@ const DeviceDetails = ({ topology, nodeId }) => {
             </TabPanel>
             <TabPanel>
               {capabilitiesKeyValueMap(node).map(({ displayValue, value }) => (
-                <Box marginTop={4}>
+                <Box key={displayValue} marginTop={4}>
                   <Heading as="h4" size="md" marginBottom={4}>
                     {displayValue}
                   </Heading>
@@ -174,7 +174,7 @@ const DeviceDetails = ({ topology, nodeId }) => {
             </TabPanel>
             <TabPanel>
               {errorPatternsKeyValueMap(node).map(({ displayValue, value }) => (
-                <Box marginTop={4}>
+                <Box key={displayValue} marginTop={4}>
                   <Heading as="h4" size="md" marginBottom={4}>
                     {displayValue}
                   </Heading>

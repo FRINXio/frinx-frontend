@@ -14,91 +14,15 @@ import {
   Stack,
   ButtonGroup,
   useToast,
-  useDisclosure,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalFooter,
-  ModalBody,
-  ModalOverlay,
-  Textarea,
   Heading,
 } from '@chakra-ui/react';
-import { ChevronDownIcon, DeleteIcon } from '@chakra-ui/icons';
-import { CreateSnapshotModal } from './createSnapshotModal/CreateSnapshotModal';
+import { ChevronDownIcon } from '@chakra-ui/icons';
+import CreateSnapshotModal from './createSnapshotModal/CreateSnapshotModal';
 import callbackUtils from '../../../utils/callbackUtils';
-import { Config } from './editor/Config';
-import { Oper } from './editor/Oper';
-
-const ResponseModal = ({ body }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [colorScheme, setColorScheme] = useState('gray');
-
-  useEffect(() => {
-    const timer = setTimeout(() => setColorScheme('gray'), 4000);
-
-    if (body?.output['overall-status'] === 'complete') {
-      setColorScheme('green');
-    } else if (body?.output['overall-status'] === 'fail') {
-      setColorScheme('red');
-    }
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [body]);
-
-  return (
-    <>
-      <Button colorScheme={colorScheme} onClick={onOpen}>
-        Response
-      </Button>
-      <Modal size="xl" isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Response</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Textarea value={JSON.stringify(body, null, 2)} readOnly height={96} />
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    </>
-  );
-};
-
-const ConfirmDeleteModal = ({ snapshotId, deleteSnapshot, isLoading }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  return (
-    <>
-      <IconButton
-        size="sm"
-        colorScheme="red"
-        icon={<DeleteIcon />}
-        onClick={(e) => {
-          e.stopPropagation();
-          onOpen();
-        }}
-      />
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Delete snapshot {snapshotId}?</ModalHeader>
-          <ModalCloseButton />
-          <ModalFooter>
-            <Button colorScheme="red" mr={3} isLoading={isLoading} onClick={() => deleteSnapshot(snapshotId)}>
-              Delete
-            </Button>
-            <Button variant="ghost" onClick={onClose}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
-  );
-};
+import Config from './editor/Config';
+import Oper from './editor/Oper';
+import ResponseModal from './responseModal/ResponseModal';
+import ConfirmDeleteModal from './confirmDeleteModal/ConfirmDeleteModal';
 
 const DeviceView = ({ deviceId }) => {
   const [config, setConfig] = useState();
@@ -177,7 +101,7 @@ const DeviceView = ({ deviceId }) => {
   }
 
   async function getCalculatedDiff() {
-    let target = {
+    const target = {
       input: {
         'target-nodes': { node: [deviceId.replace(/%20/g, ' ')] },
       },
@@ -190,7 +114,7 @@ const DeviceView = ({ deviceId }) => {
   }
 
   async function dryRun() {
-    let target = {
+    const target = {
       input: {
         'target-nodes': { node: [deviceId.replace(/%20/g, ' ')] },
       },
@@ -203,7 +127,7 @@ const DeviceView = ({ deviceId }) => {
   }
 
   async function syncFromNetwork() {
-    let target = {
+    const target = {
       input: {
         'target-nodes': { node: [deviceId.replace(/%20/g, ' ')] },
       },
@@ -220,7 +144,7 @@ const DeviceView = ({ deviceId }) => {
   }
 
   async function replaceConfigWithOper() {
-    let target = {
+    const target = {
       input: {
         'target-nodes': { node: [deviceId.replace(/%20/g, ' ')] },
       },
@@ -249,7 +173,7 @@ const DeviceView = ({ deviceId }) => {
   }
 
   async function replaceConfigWithSnapshot(snapshotId) {
-    let target = {
+    const target = {
       input: {
         name: snapshotId,
         'target-nodes': { node: [deviceId.replace(/%20/g, ' ')] },
@@ -275,7 +199,7 @@ const DeviceView = ({ deviceId }) => {
   }
 
   async function commitToNetwork() {
-    let target = {
+    const target = {
       input: {
         'target-nodes': { node: [deviceId.replace(/%20/g, ' ')] },
       },
@@ -299,7 +223,7 @@ const DeviceView = ({ deviceId }) => {
             <Flex justify="space-between">
               <Stack direction="row" spacing={2}>
                 <Menu>
-                  <MenuButton as={Button} rightIcon={<ChevronDownIcon />} onClick={() => getSnapshots()}>
+                  <MenuButton as={Button} rightIcon={<ChevronDownIcon />} onClick={getSnapshots}>
                     Load Snapshot
                   </MenuButton>
                   <MenuList>
@@ -329,12 +253,12 @@ const DeviceView = ({ deviceId }) => {
                   <Menu>
                     <MenuButton isLoading={isLoading.calculatedDiff} as={IconButton} icon={<ChevronDownIcon />} />
                     <MenuList>
-                      <MenuItem onClick={() => getCalculatedDiff()}>Show calculated diff</MenuItem>
+                      <MenuItem onClick={getCalculatedDiff}>Show calculated diff</MenuItem>
                     </MenuList>
                   </Menu>
                 </ButtonGroup>
-                <Button onClick={() => dryRun()}>Dry run</Button>
-                <Button colorScheme="blue" onClick={() => commitToNetwork()}>
+                <Button onClick={dryRun}>Dry run</Button>
+                <Button colorScheme="blue" onClick={commitToNetwork}>
                   Commit to Network
                 </Button>
               </Stack>

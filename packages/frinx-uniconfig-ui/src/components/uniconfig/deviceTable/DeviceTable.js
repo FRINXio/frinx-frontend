@@ -68,7 +68,7 @@ const DeviceTable = ({ nodes, isChecked, updateNode, onDeviceClick, setIsChecked
         </Grid>
       </Box>
       {nodes.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((node, i) => (
-        <Box boxShadow="base" borderRadius="md" bg="white" w="100%" h="100%" p={4} marginTop={4}>
+        <Box key={`tableRow-${i}`} boxShadow="base" borderRadius="md" bg="white" w="100%" h="100%" p={4} marginTop={4}>
           <Grid templateColumns="repeat(16, 1fr)" spacing={4}>
             <GridItem colSpan={1}>
               <Flex h="100%" align="center" justify="flex-start">

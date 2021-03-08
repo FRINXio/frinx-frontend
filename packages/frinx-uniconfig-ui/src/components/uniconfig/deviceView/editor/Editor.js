@@ -6,7 +6,7 @@ import 'codemirror/addon/fold/foldgutter.css';
 import 'codemirror/addon/fold/brace-fold';
 require('codemirror/mode/javascript/javascript');
 
-export const Editor = ({ readOnly, modified, isParsable, currentState, setCurrentLocalConfigState }) => {
+const Editor = ({ isReadOnly, isModified, isParsable, currentState, setCurrentLocalConfigState }) => {
   const codemirrorRef = useRef();
 
   useEffect(() => {
@@ -18,8 +18,8 @@ export const Editor = ({ readOnly, modified, isParsable, currentState, setCurren
     <>
       <Box bg="#EDF2F7" w="100%" h="30px" p={4}>
         <Stack h="100%" isInline={true} align="center">
-          <Text fontSize="md">{readOnly ? 'Operational datastore' : 'Configurational datastore'}</Text>
-          {modified && (
+          <Text fontSize="md">{isReadOnly ? 'Operational datastore' : 'Configurational datastore'}</Text>
+          {isModified && (
             <Badge variant="outline" colorScheme="yellow">
               Modified
             </Badge>
@@ -36,7 +36,7 @@ export const Editor = ({ readOnly, modified, isParsable, currentState, setCurren
           mode: 'application/ld+json',
           lineNumbers: true,
           lineWrapping: true,
-          readOnly: readOnly,
+          readOnly: isReadOnly,
           foldGutter: true,
           gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
         }}
@@ -44,3 +44,5 @@ export const Editor = ({ readOnly, modified, isParsable, currentState, setCurren
     </>
   );
 };
+
+export default Editor;

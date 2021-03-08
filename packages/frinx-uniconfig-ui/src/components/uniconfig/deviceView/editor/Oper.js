@@ -1,16 +1,16 @@
 import React from 'react';
 import { Heading, Button, Flex, Stack, Skeleton } from '@chakra-ui/react';
-import { Editor } from './Editor';
+import Editor from './Editor';
 import ReactDiffViewer from 'react-diff-viewer';
 
-export const Oper = ({ isLoading, showDiff, currentOperState, currentConfigState, syncFromNetwork }) => (
+const Oper = ({ isLoading, showDiff, currentOperState, currentConfigState, syncFromNetwork }) => (
   <>
     <Flex justify="space-between" align="center" marginBottom={4}>
       <Heading as="h4" size="md">
         Actual Configuration
       </Heading>
       <Stack direction="row" spacing={2}>
-        <Button isLoading={isLoading} onClick={() => syncFromNetwork()}>
+        <Button isLoading={isLoading} onClick={syncFromNetwork}>
           Sync from network
         </Button>
       </Stack>
@@ -37,3 +37,5 @@ export const Oper = ({ isLoading, showDiff, currentOperState, currentConfigState
     )}
   </>
 );
+
+export default Oper;
