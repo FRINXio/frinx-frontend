@@ -1,20 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    backgroundColor: 'black',
-    width: '100%',
-    height: '200px',
-    maxHeight: '200px',
-    overflowY: 'scroll',
-    color: 'white',
-    padding: '20px',
-  },
-}));
+import { Box } from '@chakra-ui/react';
 
 const Console = ({ outputConsole }) => {
-  const classes = useStyles();
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -23,12 +10,12 @@ const Console = ({ outputConsole }) => {
   }, [outputConsole]);
 
   return (
-    <div className={classes.root}>
+    <Box bg="black" w="100%" h={200} maxH={200} overflowY="scroll" color="white" p={4}>
       {outputConsole.output.map((s, i) => (
         <p key={i}>{s}</p>
       ))}
       <div ref={messagesEndRef} />
-    </div>
+    </Box>
   );
 };
 

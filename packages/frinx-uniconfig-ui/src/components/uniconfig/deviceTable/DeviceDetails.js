@@ -1,58 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import {
+  Container,
+  Heading,
+  Flex,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  Box,
+  Text,
+  Textarea,
+  useToast,
+} from '@chakra-ui/react';
 import { createNodeObject } from './deviceUtils';
-import Container from '@material-ui/core/Container';
-import DeviceHeader from './DeviceHeader';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import serverSvg from './server.svg';
-import Grid from '@material-ui/core/Grid';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import ConnectionStatusBadge from '../../common/ConnectionStatusBadge';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import List from '@material-ui/core/List';
 import _ from 'lodash';
-import Collapse from '@material-ui/core/Collapse';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import Grow from '@material-ui/core/Grow';
 import callbackUtils from '../../../utils/callbackUtils';
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: '30px',
-  },
-  basicTab: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    margin: '20px',
-    width: '500px',
-  },
-  capabilitiesList: {
-    overflow: 'auto',
-    maxHeight: 160,
-  },
-  errorPatternList: {
-    overflow: 'auto',
-    maxHeight: 310,
-  },
-  img: {
-    width: '100%',
-    objectFit: 'cover',
-    objectPosition: '0px 10px',
-  },
-}));
-
-const TabPanel = (props) => {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} {...other}>
-      {value === index && <div style={{ marginTop: '40px' }}>{children}</div>}
-    </div>
-  );
-};
 
 const nodeKeyValueMap = (node) => {
   const basic = [
@@ -145,15 +109,13 @@ const errorPatternsKeyValueMap = (node) => {
   return [];
 };
 
-const DeviceDetails = (props: Props) => {
+const DeviceDetails = ({ topology, nodeId }) => {
   const [node, setNode] = useState({});
-  const [tab, setTab] = useState(0);
-  const classes = useStyles();
+  const toast = useToast();
 
   useEffect(() => {
-    const { topology, nodeId } = props;
     fetchDevice(topology, nodeId);
-  }, []);
+  }, [topology, nodeId]);
 
   const fetchDevice = async (topologyId, nodeId) => {
     const getCliOperationalState = callbackUtils.getCliOperationalStateCallback();
@@ -162,135 +124,68 @@ const DeviceDetails = (props: Props) => {
     const node = topologyId === 'cli' ? await getCliOperationalState(nodeId) : await getNetconfOperationalState(nodeId);
 
     if (!node) {
-      console.log('node not mounted');
-      return;
+      return toast({
+        title: `${nodeId} is not available`,
+        status: 'warning',
+        duration: 9000,
+        isClosable: true,
+      });
     }
 
     let nodeObj = await createNodeObject(topologyId, node);
     setNode(nodeObj);
   };
 
-  const BasicInfo = ({ node }) => {
-    return nodeKeyValueMap(node).map(({ displayValue, value }) => {
-      return (
-        <div key={displayValue} className={classes.basicTab}>
-          <Box fontSize={16} fontWeight="fontWeightMedium" style={{ marginRight: '20px' }}>
-            {displayValue}:
-          </Box>
-          <Box fontSize={16}>{value === 'connectionStatus' ? <ConnectionStatusBadge node={node} /> : node[value]}</Box>
-        </div>
-      );
-    });
-  };
-
-  const CapabilitiesList = ({ node }) => {
-    const [openedCapabilities, setOpenedCapabilities] = useState();
-
-    const handleOpenCapabilities = (which) => {
-      if (which === openedCapabilities) {
-        setOpenedCapabilities(null);
-      } else {
-        setOpenedCapabilities(which);
-      }
-    };
-
-    return capabilitiesKeyValueMap(node).map(({ displayValue, value }) => (
-      <>
-        <ListItem button onClick={() => handleOpenCapabilities(displayValue)}>
-          <ListItemText primary={`${displayValue} (${value.length})`} />
-          {openedCapabilities === displayValue ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
-        <Collapse in={openedCapabilities === displayValue} timeout="auto" unmountOnExit>
-          <List component="div" className={classes.capabilitiesList} disablePadding>
-            {value?.map((item) => (
-              <ListItem key={`item-${displayValue}-${item}`}>
-                <ListItemText>
-                  <Box fontFamily="Monospace" fontSize={12}>
-                    {item}
-                  </Box>
-                </ListItemText>
-              </ListItem>
-            ))}
-          </List>
-        </Collapse>
-      </>
-    ));
-  };
-
-  const ErrorPatternsList = ({ node }) => {
-    const [openedErrorPatterns, setOpenedErrorPatterns] = useState('Error Patterns');
-
-    const handleOpenErrorPatterns = (which) => {
-      if (which === openedErrorPatterns) {
-        setOpenedErrorPatterns(null);
-      } else {
-        setOpenedErrorPatterns(which);
-      }
-    };
-
-    return errorPatternsKeyValueMap(node).map(({ displayValue, value }) => (
-      <>
-        <ListItem button onClick={() => handleOpenErrorPatterns(displayValue)}>
-          <ListItemText primary={`${displayValue} (${value.length})`} />
-          {openedErrorPatterns === displayValue ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
-        <Collapse in={openedErrorPatterns === displayValue} timeout="auto" unmountOnExit>
-          <List component="div" className={classes.errorPatternList} disablePadding>
-            {value?.map((item) => (
-              <ListItem key={`item-${displayValue}-${item}`}>
-                <ListItemText>
-                  <Box fontFamily="Monospace" fontSize={12}>
-                    {item}
-                  </Box>
-                </ListItemText>
-              </ListItem>
-            ))}
-          </List>
-        </Collapse>
-      </>
-    ));
-  };
-
   return (
-    <Grow in>
-      <Container>
-        <DeviceHeader title={node?.nodeId || 'unknown'} onBackBtnClick={props.onBackBtnClick} />
-        <Paper elevation={2} className={classes.paper}>
-          <Grid container spacing={3}>
-            <Grid item xs={6}>
-              <Tabs
-                value={tab}
-                indicatorColor="primary"
-                textColor="primary"
-                onChange={(e, newValue) => setTab(newValue)}
-              >
-                <Tab label="Basic" id={`full-width-tab-${0}`} />
-                <Tab label="Capabilities" id={`full-width-tab-${1}`} />
-                <Tab
-                  label="Error Patterns"
-                  disabled={node?.topologyId === 'topology-netconf'}
-                  id={`full-width-tab-${2}`}
-                />
-              </Tabs>
-              <TabPanel value={tab} index={0}>
-                <BasicInfo node={node} />
-              </TabPanel>
-              <TabPanel value={tab} index={1}>
-                <CapabilitiesList node={node} />
-              </TabPanel>
-              <TabPanel value={tab} index={2}>
-                <ErrorPatternsList node={node} />
-              </TabPanel>
-            </Grid>
-            <Grid item xs={6}>
-              <div style={{ maxWidth: '100%' }}>
-                <img className={classes.img} src={serverSvg} alt="device image" />
-              </div>
-            </Grid>
-          </Grid>
-        </Paper>
-      </Container>
-    </Grow>
+    <Container maxWidth={1280}>
+      <Heading as="h2" size="3xl" marginBottom={6}>
+        {node?.nodeId || 'unknown'}
+      </Heading>
+      <Box boxShadow="base" borderRadius="md" bg="white" w="100%" h="100%" p={4} marginTop={4}>
+        <Tabs>
+          <TabList>
+            <Tab>Basic</Tab>
+            <Tab>Capabilities</Tab>
+            <Tab isDisabled={node?.topologyId === 'topology-netconf'}>Error Patterns</Tab>
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>
+              {nodeKeyValueMap(node).map(({ displayValue, value }) => (
+                <Flex justify="space-between" align="center" marginBottom={2} marginTop={4}>
+                  <Heading as="h6" size="sm">
+                    {displayValue}:
+                  </Heading>
+                  <Text fontSize="lg">
+                    {value === 'connectionStatus' ? <ConnectionStatusBadge node={node} /> : node[value]}
+                  </Text>
+                </Flex>
+              ))}
+            </TabPanel>
+            <TabPanel>
+              {capabilitiesKeyValueMap(node).map(({ displayValue, value }) => (
+                <Box marginTop={4}>
+                  <Heading as="h4" size="md" marginBottom={4}>
+                    {displayValue}
+                  </Heading>
+                  <Textarea value={JSON.stringify(value, null, 2)} readOnly h={52} />
+                </Box>
+              ))}
+            </TabPanel>
+            <TabPanel>
+              {errorPatternsKeyValueMap(node).map(({ displayValue, value }) => (
+                <Box marginTop={4}>
+                  <Heading as="h4" size="md" marginBottom={4}>
+                    {displayValue}
+                  </Heading>
+                  <Textarea value={JSON.stringify(value, null, 2)} readOnly h={52} />
+                </Box>
+              ))}
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Box>
+    </Container>
   );
 };
 

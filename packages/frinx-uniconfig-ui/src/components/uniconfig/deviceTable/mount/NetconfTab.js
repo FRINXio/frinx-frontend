@@ -1,22 +1,27 @@
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Grid,
+  GridItem,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Select,
+  Switch,
+  Stack,
+  useToast,
+  FormHelperText,
+} from '@chakra-ui/react';
+import Console from './Console';
 import React, { useEffect, useState } from 'react';
 import { useInterval } from '../../../common/useInterval';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Typography from '@material-ui/core/Typography';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Button from '@material-ui/core/Button';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
-import Console from './Console';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
-import { StarRateRounded, Visibility, VisibilityOff } from '@material-ui/icons';
 import callbackUtils from '../../../../utils/callbackUtils';
 
 const NetconfTab = ({ templateNode }) => {
@@ -50,11 +55,7 @@ const NetconfTab = ({ templateNode }) => {
   const [nodeId, setNodeId] = useState();
   const [outputConsole, setOutputConsole] = useState({ output: [], isRunning: false });
   const [showPassword, setShowPassword] = useState(false);
-  const [alert, setAlert] = useState({
-    open: false,
-    severity: 'success',
-    message: '',
-  });
+  const toast = useToast();
 
   useEffect(() => {
     templateNode?.topologyId === 'topology-netconf' && setNodeTemplate(templateNode);
@@ -69,10 +70,13 @@ const NetconfTab = ({ templateNode }) => {
     const getNetconfConfigurationalState = callbackUtils.getNetconfConfigurationalStateCallback();
     const state = await getNetconfConfigurationalState(nodeId);
 
-    if (!StarRateRounded) {
-      // TODO error messages, alerts ...
-      // const { statusCode, statusText } = state;
-      // return handleAlertOpen(statusCode, statusText);
+    if (!state) {
+      toast({
+        title: `${nodeId} is not available`,
+        status: 'warning',
+        duration: 9000,
+        isClosable: true,
+      });
     }
 
     setNetconfMountForm({
@@ -94,26 +98,6 @@ const NetconfTab = ({ templateNode }) => {
     },
     outputConsole.isRunning ? 2000 : null,
   );
-
-  const handleAlertClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setAlert({ ...alert, open: false });
-  };
-
-  const handleAlertOpen = (statusCode, statusText) => {
-    statusCode = statusCode.toString();
-    if (statusCode.startsWith('2')) {
-      setAlert({ ...alert, open: true, severity: 'success', message: `${statusCode} ${statusText}` });
-    } else if (statusCode.startsWith('4')) {
-      setAlert({ ...alert, open: true, severity: 'warning', message: `${statusCode} ${statusText}` });
-    } else if (statusCode.startsWith('5')) {
-      setAlert({ ...alert, open: true, severity: 'error', message: `${statusCode} ${statusText}` });
-    } else {
-      setAlert({ ...alert, open: true, severity: 'info', message: `${statusCode} ${statusText}` });
-    }
-  };
 
   const mountNetconfDevice = async () => {
     const dryRunOn = {
@@ -157,7 +141,12 @@ const NetconfTab = ({ templateNode }) => {
 
     setNodeId(nodeId);
     setOutputConsole({ ...outputConsole, isRunning: true });
-    handleAlertOpen(status, statusText);
+    toast({
+      title: `${status} ${statusText}`,
+      status: status.toString().startsWith('2') ? 'success' : 'error',
+      duration: 9000,
+      isClosable: true,
+    });
   };
 
   const checkConnectionStatus = async (nodeId) => {
@@ -184,18 +173,6 @@ const NetconfTab = ({ templateNode }) => {
       key: 'node-id',
     },
     {
-      displayValue: 'Host',
-      description: 'IP or hostname of the management endpoint on a device',
-      size: 4,
-      key: 'netconf-node-topology:host',
-    },
-    {
-      displayValue: 'Port',
-      description: 'TCP port',
-      size: 2,
-      key: 'netconf-node-topology:port',
-    },
-    {
       displayValue: 'Username',
       description: 'Username credential',
       size: 3,
@@ -206,6 +183,18 @@ const NetconfTab = ({ templateNode }) => {
       description: 'Password credential',
       size: 3,
       key: 'netconf-node-topology:password',
+    },
+    {
+      displayValue: 'Host',
+      description: 'IP or hostname of the management endpoint on a device',
+      size: 4,
+      key: 'netconf-node-topology:host',
+    },
+    {
+      displayValue: 'Port',
+      description: 'TCP port',
+      size: 2,
+      key: 'netconf-node-topology:port',
     },
   ];
 
@@ -235,9 +224,11 @@ const NetconfTab = ({ templateNode }) => {
       ],
       off: [],
     },
+    // TODO: find a way to display/edit capabilities (object)
     {
       displayValue: 'Override capabilities',
       toggle: true,
+      isDisabled: true,
       key: 'netconf-node-topology:override',
       size: 3,
       on: [
@@ -255,164 +246,141 @@ const NetconfTab = ({ templateNode }) => {
     },
   ];
 
-  const handleToggle = (key, e) => {
-    setNetconfMountAdvForm({
-      ...netconfMountAdvForm,
-      [key]: e.target.checked,
-    });
-  };
-
-  const renderBasicOptions = () => {
-    return mountNetconfBasicTemplate.map(({ displayValue, description, size, select, options, key }) => {
+  const renderBasicOptions = () =>
+    mountNetconfBasicTemplate.map(({ displayValue, description, size, select, options, key }) => {
       return (
-        <Grid key={displayValue} item xs={size}>
-          <TextField
-            id={`inputField-${displayValue}`}
-            select={select}
-            label={displayValue}
-            value={netconfMountForm[key]}
-            helperText={description}
-            onChange={(e) => setNetconfMountForm({ ...netconfMountForm, [key]: e.target.value })}
-            variant="outlined"
-            type={displayValue === 'Password' && !showPassword ? 'password' : 'text'}
-            fullWidth
-            InputProps={{
-              endAdornment: displayValue === 'Password' && (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => setShowPassword(!showPassword)}
-                    edge="end"
-                  >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          >
-            {select &&
-              options?.map((option, i) => (
-                <MenuItem key={`option-${i}-${displayValue}`} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-          </TextField>
-        </Grid>
+        <GridItem key={displayValue} colSpan={size}>
+          {select ? (
+            <FormControl>
+              <FormLabel>{displayValue}</FormLabel>
+              <Select placeholder={netconfMountForm[key]}>
+                {options?.map((o) => (
+                  <option key={`option-${o}`} value={o}>
+                    {o}
+                  </option>
+                ))}
+              </Select>
+              <FormHelperText>{description}</FormHelperText>
+            </FormControl>
+          ) : (
+            <FormControl>
+              <FormLabel>{displayValue}</FormLabel>
+              <InputGroup>
+                <Input
+                  value={netconfMountForm[key]}
+                  type={displayValue === 'Password' && !showPassword ? 'password' : 'text'}
+                  onChange={(e) => setNetconfMountForm({ ...netconfMountForm, [key]: e.target.value })}
+                  placeholder={displayValue}
+                />
+                {displayValue === 'Password' && (
+                  <InputRightElement width="4.5rem">
+                    <Button h="1.75rem" size="sm" onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? 'Hide' : 'Show'}
+                    </Button>
+                  </InputRightElement>
+                )}
+              </InputGroup>
+              <FormHelperText>{description}</FormHelperText>
+            </FormControl>
+          )}
+        </GridItem>
       );
     });
-  };
 
-  const renderToggles = () => {
-    return mountNetconfAdvTemplate.map(({ displayValue, toggle, key, size }) => {
+  const renderToggles = () =>
+    mountNetconfAdvTemplate.map(({ displayValue, toggle, isDisabled, key, size }) => {
       if (toggle) {
         return (
-          <Grid key={displayValue} item xs={size}>
-            <FormControlLabel
-              key={key}
-              control={<Switch checked={netconfMountAdvForm[key]} onChange={(e) => handleToggle(key, e)} />}
-              label={displayValue}
-            />
-          </Grid>
+          <GridItem key={displayValue} colSpan={size}>
+            <FormControl display="flex" alignItems="center">
+              <FormLabel mb="0">{displayValue}</FormLabel>
+              <Switch
+                isChecked={netconfMountAdvForm[key]}
+                isDisabled={isDisabled}
+                onChange={(e) =>
+                  setNetconfMountAdvForm({
+                    ...netconfMountAdvForm,
+                    [key]: e.target.checked,
+                  })
+                }
+              />
+            </FormControl>
+          </GridItem>
         );
       }
     });
-  };
 
-  const renderAdvOptions = () => {
+  const renderAdvOptions = () =>
     // if field is type toggle, render its on/off subfields
-    return mountNetconfAdvTemplate.map(({ displayValue, description, size, key, toggle, on, off }) => {
+    mountNetconfAdvTemplate.map(({ displayValue, description, size, key, toggle, on, off }) => {
       if (toggle) {
         return (netconfMountAdvForm[key] ? on : off)?.map(({ displayValue, key }) => (
-          <Grid key={displayValue} item xs={size}>
-            <TextField
-              id={`inputField-${key}`}
-              label={displayValue}
-              value={netconfMountAdvForm[key]}
-              helperText={description}
-              onChange={(e) =>
-                setNetconfMountAdvForm({
-                  ...netconfMountAdvForm,
-                  [key]: e.target.value,
-                })
-              }
-              variant="outlined"
-              fullWidth
-            />
-          </Grid>
+          <GridItem key={displayValue} colSpan={size}>
+            <FormControl>
+              <FormLabel>{displayValue}</FormLabel>
+              <Input
+                value={netconfMountAdvForm[key]}
+                onChange={(e) => setNetconfMountAdvForm({ ...netconfMountAdvForm, [key]: e.target.value })}
+                placeholder={displayValue}
+              />
+              <FormHelperText>{description}</FormHelperText>
+            </FormControl>
+          </GridItem>
         ));
       }
       return (
-        <Grid key={displayValue} item xs={size}>
-          <TextField
-            id={`inputField-${key}`}
-            label={displayValue}
-            value={netconfMountAdvForm[key]}
-            helperText={description}
-            onChange={(e) =>
-              setNetconfMountAdvForm({
-                ...netconfMountAdvForm,
-                [key]: e.target.value,
-              })
-            }
-            variant="outlined"
-            fullWidth
-          />
-        </Grid>
+        <GridItem key={displayValue} colSpan={size}>
+          <FormControl>
+            <FormLabel>{displayValue}</FormLabel>
+            <Input
+              value={netconfMountForm[key]}
+              onChange={(e) => setNetconfMountAdvForm({ ...netconfMountAdvForm, [key]: e.target.value })}
+              placeholder={displayValue}
+            />
+            <FormHelperText>{description}</FormHelperText>
+          </FormControl>
+        </GridItem>
       );
     });
-  };
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <Grid container spacing={3}>
-          {renderBasicOptions()}
-        </Grid>
+    <>
+      <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={4}>
+        {renderBasicOptions()}
       </Grid>
-      <Grid item xs={12}>
-        <Accordion style={{ boxShadow: 'none' }}>
-          <AccordionSummary style={{ padding: 0 }} expandIcon={<ExpandMoreIcon />}>
-            <Typography color="textSecondary" variant="button">
-              Advanced settings
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails style={{ padding: 0 }}>
-            <Grid container spacing={3}>
+      <Accordion allowToggle mt={8} mb={8}>
+        <AccordionItem>
+          <AccordionButton>
+            <Box flex="1" textAlign="left">
+              Advanced Settings
+            </Box>
+            <AccordionIcon />
+          </AccordionButton>
+          <AccordionPanel pb={4}>
+            <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={4}>
               {renderToggles()}
               {renderAdvOptions()}
             </Grid>
-          </AccordionDetails>
-        </Accordion>
-      </Grid>
-      <Grid item xs={12}>
-        <Accordion style={{ boxShadow: 'none' }}>
-          <AccordionSummary style={{ padding: 0 }} expandIcon={<ExpandMoreIcon />}>
-            <Typography color="textSecondary" variant="button">
+          </AccordionPanel>
+        </AccordionItem>
+        <AccordionItem>
+          <AccordionButton>
+            <Box flex="1" textAlign="left">
               Output
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails style={{ padding: 0 }}>
+            </Box>
+            <AccordionIcon />
+          </AccordionButton>
+          <AccordionPanel pb={4}>
             <Console outputConsole={outputConsole} />
-          </AccordionDetails>
-        </Accordion>
-      </Grid>
-      <Grid item xs={12}>
-        <Button
-          style={{ float: 'right' }}
-          size="large"
-          variant="contained"
-          color="primary"
-          onClick={() => mountNetconfDevice()}
-        >
+          </AccordionPanel>
+        </AccordionItem>
+      </Accordion>
+      <Stack direction="row" justify="flex-end">
+        <Button colorScheme="blue" onClick={mountNetconfDevice}>
           Mount
         </Button>
-        <Snackbar open={alert.open} autoHideDuration={6000} onClose={handleAlertClose}>
-          <MuiAlert onClose={handleAlertClose} severity={alert.severity} elevation={6} variant="filled">
-            {alert.message}
-          </MuiAlert>
-        </Snackbar>
-      </Grid>
-    </Grid>
+      </Stack>
+    </>
   );
 };
 
