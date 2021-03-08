@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { Stack, Text, Badge, Box } from '@chakra-ui/react';
-import 'react-gh-like-diff/dist/css/diff2html.min.css';
 import { Controlled as CodeMirror } from 'react-codemirror2';
 import 'codemirror/addon/fold/foldgutter';
 import 'codemirror/addon/fold/foldgutter.css';

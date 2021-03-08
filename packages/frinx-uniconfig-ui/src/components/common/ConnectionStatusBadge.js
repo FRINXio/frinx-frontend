@@ -1,7 +1,5 @@
 import React from 'react';
-import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import Chip from '@material-ui/core/Chip';
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import { Tooltip, Badge } from '@chakra-ui/react';
 
 const ConnectionStatusBadge = ({ node, checkConnectionStatus }) => {
   const getColor = (status) => {
@@ -10,24 +8,20 @@ const ConnectionStatusBadge = ({ node, checkConnectionStatus }) => {
         return 'green';
       case 'connecting':
         return 'yellow';
+      default:
+        return 'red';
     }
   };
 
-  const style = {
-    color: getColor(node.connectionStatus),
-  };
-
   return (
-    <Tooltip title="Click to update status">
-      <Chip
-        tooltip="Check"
-        clickable
+    <Tooltip label="Click to update status" aria-label="A tooltip">
+      <Badge
+        colorScheme={getColor(node.connectionStatus)}
         onClick={() => checkConnectionStatus(node)}
-        variant="outlined"
-        size="small"
-        icon={<FiberManualRecordIcon style={style} />}
-        label={node.connectionStatus}
-      />
+        style={{ cursor: 'pointer' }}
+      >
+        {node.connectionStatus}
+      </Badge>
     </Tooltip>
   );
 };

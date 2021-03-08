@@ -1,23 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { useInterval } from '../../../common/useInterval';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Typography from '@material-ui/core/Typography';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Button from '@material-ui/core/Button';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Grid,
+  GridItem,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Select,
+  Switch,
+  Stack,
+  useToast,
+  FormHelperText,
+} from '@chakra-ui/react';
 import Console from './Console';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
-import { Visibility, VisibilityOff } from '@material-ui/icons';
+import React, { useEffect, useState } from 'react';
 import callbackUtils from '../../../../utils/callbackUtils';
+import { useInterval } from '../../../common/useInterval';
 
 const CliTab = ({ supportedDevices, templateNode }) => {
   const [cliMountForm, setCliMountForm] = useState({
@@ -45,11 +50,7 @@ const CliTab = ({ supportedDevices, templateNode }) => {
   const [nodeId, setNodeId] = useState();
   const [outputConsole, setOutputConsole] = useState({ output: [], isRunning: false });
   const [showPassword, setShowPassword] = useState(false);
-  const [alert, setAlert] = useState({
-    open: false,
-    severity: 'success',
-    message: '',
-  });
+  const toast = useToast();
 
   useEffect(() => {
     templateNode?.topologyId === 'cli' && setNodeTemplate(templateNode);
@@ -65,8 +66,12 @@ const CliTab = ({ supportedDevices, templateNode }) => {
     const state = await getCliConfigurationalState(nodeId);
 
     if (!state) {
-      // TODO error messages, alerts ...
-      // return handleAlertOpen(statusCode, statusText);
+      toast({
+        title: `${nodeId} is not available`,
+        status: 'warning',
+        duration: 9000,
+        isClosable: true,
+      });
     }
 
     setCliMountForm({
@@ -91,26 +96,6 @@ const CliTab = ({ supportedDevices, templateNode }) => {
     },
     outputConsole.isRunning ? 2000 : null,
   );
-
-  const handleAlertClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setAlert({ ...alert, open: false });
-  };
-
-  const handleAlertOpen = (statusCode, statusText) => {
-    statusCode = statusCode.toString();
-    if (statusCode.startsWith('2')) {
-      setAlert({ ...alert, open: true, severity: 'success', message: `${statusCode} ${statusText}` });
-    } else if (statusCode.startsWith('4')) {
-      setAlert({ ...alert, open: true, severity: 'warning', message: `${statusCode} ${statusText}` });
-    } else if (statusCode.startsWith('5')) {
-      setAlert({ ...alert, open: true, severity: 'error', message: `${statusCode} ${statusText}` });
-    } else {
-      setAlert({ ...alert, open: true, severity: 'info', message: `${statusCode} ${statusText}` });
-    }
-  };
 
   const getDeviceTypeVersions = (deviceType) => {
     if (!cliMountForm['cli-topology:device-type']) {
@@ -159,7 +144,12 @@ const CliTab = ({ supportedDevices, templateNode }) => {
 
     setNodeId(nodeId);
     setOutputConsole({ ...outputConsole, isRunning: true });
-    handleAlertOpen(status, statusText);
+    toast({
+      title: `${status} ${statusText}`,
+      status: status.toString().startsWith('2') ? 'success' : 'error',
+      duration: 9000,
+      isClosable: true,
+    });
   };
 
   const checkConnectionStatus = async (nodeId) => {
@@ -292,164 +282,150 @@ const CliTab = ({ supportedDevices, templateNode }) => {
     },
   ];
 
-  const handleToggle = (key, e) => {
-    setCliMountAdvForm({
-      ...cliMountAdvForm,
-      [key]: e.target.checked,
-    });
-  };
-
-  const renderBasicOptions = () => {
-    return mountCliBasicTemplate.map(({ displayValue, description, size, select, options, key }) => {
+  const renderBasicOptions = () =>
+    mountCliBasicTemplate.map(({ displayValue, description, size, select, options, key }) => {
       return (
-        <Grid key={displayValue} item xs={size}>
-          <TextField
-            id={`inputField-${displayValue}`}
-            select={select}
-            label={displayValue}
-            value={cliMountForm[key]}
-            helperText={description}
-            onChange={(e) => setCliMountForm({ ...cliMountForm, [key]: e.target.value })}
-            variant="outlined"
-            type={displayValue === 'Password' && !showPassword ? 'password' : 'text'}
-            fullWidth
-            InputProps={{
-              endAdornment: displayValue === 'Password' && (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => setShowPassword(!showPassword)}
-                    edge="end"
-                  >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          >
-            {select &&
-              options?.map((option, i) => (
-                <MenuItem key={`option-${i}-${displayValue}`} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-          </TextField>
-        </Grid>
+        <GridItem key={displayValue} colSpan={size}>
+          {select ? (
+            <FormControl>
+              <FormLabel>{displayValue}</FormLabel>
+              <Select placeholder={cliMountForm[key]}>
+                {options?.map((o) => (
+                  <option key={`option-${o}`} value={o}>
+                    {o}
+                  </option>
+                ))}
+              </Select>
+              <FormHelperText>{description}</FormHelperText>
+            </FormControl>
+          ) : (
+            <FormControl>
+              <FormLabel>{displayValue}</FormLabel>
+              <InputGroup>
+                <Input
+                  value={cliMountForm[key]}
+                  type={displayValue === 'Password' && !showPassword ? 'password' : 'text'}
+                  onChange={(e) => setCliMountForm({ ...cliMountForm, [key]: e.target.value })}
+                  placeholder={displayValue}
+                />
+                {displayValue === 'Password' && (
+                  <InputRightElement width="4.5rem">
+                    <Button h="1.75rem" size="sm" onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? 'Hide' : 'Show'}
+                    </Button>
+                  </InputRightElement>
+                )}
+              </InputGroup>
+              <FormHelperText>{description}</FormHelperText>
+            </FormControl>
+          )}
+        </GridItem>
       );
     });
-  };
 
-  const renderToggles = () => {
-    return mountCliAdvTemplate.map(({ displayValue, toggle, key, size }) => {
+  const renderToggles = () =>
+    mountCliAdvTemplate.map(({ displayValue, toggle, key, size }) => {
       if (toggle) {
         return (
-          <Grid key={displayValue} item xs={size}>
-            <FormControlLabel
-              key={key}
-              control={<Switch checked={cliMountAdvForm[key]} onChange={(e) => handleToggle(key, e)} />}
-              label={displayValue}
-            />
-          </Grid>
+          <GridItem key={displayValue} colSpan={size}>
+            <FormControl display="flex" alignItems="center">
+              <FormLabel mb="0">{displayValue}</FormLabel>
+              <Switch
+                isChecked={cliMountAdvForm[key]}
+                onChange={(e) =>
+                  setCliMountAdvForm({
+                    ...cliMountAdvForm,
+                    [key]: e.target.checked,
+                  })
+                }
+              />
+            </FormControl>
+          </GridItem>
         );
       }
     });
-  };
 
-  const renderAdvOptions = () => {
-    // if field is type toggle, render its on/off subfields
-    return mountCliAdvTemplate.map(({ displayValue, description, size, key, toggle, on, off }) => {
+  const renderAdvOptions = () =>
+    mountCliAdvTemplate.map(({ displayValue, description, size, key, toggle, on, off }) => {
+      // if field is type toggle, render its on/off subfields
       if (toggle) {
         return (cliMountAdvForm[key] ? on : off)?.map(({ displayValue, key }) => (
-          <Grid key={displayValue} item xs={size}>
-            <TextField
-              id={`inputField-${key}`}
-              label={displayValue}
+          <GridItem key={displayValue} colSpan={size}>
+            <FormControl>
+              <FormLabel>{displayValue}</FormLabel>
+              <Input
+                value={cliMountAdvForm[key]}
+                onChange={(e) =>
+                  setCliMountAdvForm({
+                    ...cliMountAdvForm,
+                    [key]: e.target.value,
+                  })
+                }
+                placeholder={displayValue}
+              />
+              <FormHelperText>{description}</FormHelperText>
+            </FormControl>
+          </GridItem>
+        ));
+      }
+      return (
+        <GridItem key={displayValue} colSpan={size}>
+          <FormControl>
+            <FormLabel>{displayValue}</FormLabel>
+            <Input
               value={cliMountAdvForm[key]}
-              helperText={description}
               onChange={(e) =>
                 setCliMountAdvForm({
                   ...cliMountAdvForm,
                   [key]: e.target.value,
                 })
               }
-              variant="outlined"
-              fullWidth
+              placeholder={displayValue}
             />
-          </Grid>
-        ));
-      }
-      return (
-        <Grid key={displayValue} item xs={size}>
-          <TextField
-            id={`inputField-${key}`}
-            label={displayValue}
-            value={cliMountAdvForm[key]}
-            helperText={description}
-            onChange={(e) =>
-              setCliMountAdvForm({
-                ...cliMountAdvForm,
-                [key]: e.target.value,
-              })
-            }
-            variant="outlined"
-            fullWidth
-          />
-        </Grid>
+            <FormHelperText>{description}</FormHelperText>
+          </FormControl>
+        </GridItem>
       );
     });
-  };
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <Grid container spacing={3}>
-          {renderBasicOptions()}
-        </Grid>
+    <>
+      <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={4}>
+        {renderBasicOptions()}
       </Grid>
-      <Grid item xs={12}>
-        <Accordion style={{ boxShadow: 'none' }}>
-          <AccordionSummary style={{ padding: 0 }} expandIcon={<ExpandMoreIcon />}>
-            <Typography color="textSecondary" variant="button">
-              Advanced settings
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails key="advOptions" style={{ padding: 0 }}>
-            <Grid container spacing={3}>
+      <Accordion allowToggle mt={8} mb={8}>
+        <AccordionItem>
+          <AccordionButton>
+            <Box flex="1" textAlign="left">
+              Advanced Settings
+            </Box>
+            <AccordionIcon />
+          </AccordionButton>
+          <AccordionPanel pb={4}>
+            <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={4}>
               {renderToggles()}
               {renderAdvOptions()}
             </Grid>
-          </AccordionDetails>
-        </Accordion>
-      </Grid>
-      <Grid item xs={12}>
-        <Accordion style={{ boxShadow: 'none' }}>
-          <AccordionSummary style={{ padding: 0 }} expandIcon={<ExpandMoreIcon />}>
-            <Typography color="textSecondary" variant="button">
+          </AccordionPanel>
+        </AccordionItem>
+        <AccordionItem>
+          <AccordionButton>
+            <Box flex="1" textAlign="left">
               Output
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails style={{ padding: 0 }}>
+            </Box>
+            <AccordionIcon />
+          </AccordionButton>
+          <AccordionPanel pb={4}>
             <Console outputConsole={outputConsole} />
-          </AccordionDetails>
-        </Accordion>
-      </Grid>
-      <Grid item xs={12}>
-        <Button
-          style={{ float: 'right' }}
-          size="large"
-          variant="contained"
-          color="primary"
-          onClick={() => mountCliDevice()}
-        >
+          </AccordionPanel>
+        </AccordionItem>
+      </Accordion>
+      <Stack direction="row" justify="flex-end">
+        <Button colorScheme="blue" onClick={mountCliDevice}>
           Mount
         </Button>
-        <Snackbar open={alert.open} autoHideDuration={6000} onClose={handleAlertClose}>
-          <MuiAlert onClose={handleAlertClose} severity={alert.severity} elevation={6} variant="filled">
-            {alert.message}
-          </MuiAlert>
-        </Snackbar>
-      </Grid>
-    </Grid>
+      </Stack>
+    </>
   );
 };
 

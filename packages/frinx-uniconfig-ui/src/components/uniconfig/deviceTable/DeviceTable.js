@@ -1,65 +1,28 @@
-// @flow
 import React, { useState } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableBody from '@material-ui/core/TableBody';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Checkbox from '@material-ui/core/Checkbox';
-import TablePagination from '@material-ui/core/TablePagination';
-import Grow from '@material-ui/core/Grow';
-import SettingsIcon from '@material-ui/icons/Settings';
-import DnsIcon from '@material-ui/icons/Dns';
-import IconButton from '@material-ui/core/IconButton';
 import ConnectionStatusBadge from '../../common/ConnectionStatusBadge';
+import {
+  Box,
+  Flex,
+  Text,
+  Checkbox,
+  IconButton,
+  Stack,
+  Grid,
+  GridItem,
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+} from '@chakra-ui/react';
+import { SettingsIcon, InfoIcon, ChevronRightIcon, ChevronLeftIcon } from '@chakra-ui/icons';
 
-const StyledTableCell = withStyles((theme) => ({
-  head: {
-    backgroundColor: theme.palette.primary.dark,
-    color: theme.palette.common.white,
-  },
-}))(TableCell);
-
-const useStyles = makeStyles((theme) => ({
-  container: {
-    marginTop: '20px',
-  },
-  chip: {
-    margin: theme.spacing(0.5),
-  },
-  port: {
-    color: 'grey',
-  },
-  actionButton: {
-    marginLeft: theme.spacing(1),
-  },
-}));
-
-type Props = {
-  onDeviceClick: (deviceId: string, topologyId: string) => void,
-  onEditClick: (deviceId: string) => void,
-};
-
-const DeviceTable = (props: Props) => {
-  const classes = useStyles();
+const DeviceTable = ({ nodes, isChecked, updateNode, onDeviceClick, setIsChecked, onEditClick }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
   const checkNode = (node) => {
-    let newChecked = [...props.checked];
+    let newChecked = [...isChecked];
 
     if (Array.isArray(node)) {
       newChecked = newChecked.length > 0 ? [] : node;
@@ -67,86 +30,135 @@ const DeviceTable = (props: Props) => {
       let index = newChecked.indexOf(node);
       (index === -1 && newChecked.push(node)) || newChecked.splice(index, 1);
     }
-    props.setChecked(newChecked);
+    setIsChecked(newChecked);
   };
 
   return (
-    <TableContainer component={Paper} className={classes.container}>
-      <Table ria-label="device table">
-        <TableHead>
-          <TableRow>
-            <StyledTableCell align="left" padding="checkbox">
-              <Checkbox
-                checked={props.checked.length > 0}
-                onClick={() => checkNode(props.nodes)}
-                style={{ color: 'white' }}
-                inputProps={{ 'aria-label': 'primary checkbox' }}
-              />
-            </StyledTableCell>
-            <StyledTableCell align="left">Node ID</StyledTableCell>
-            <StyledTableCell align="left">Host</StyledTableCell>
-            <StyledTableCell align="left">Status</StyledTableCell>
-            <StyledTableCell align="left">OS/Version</StyledTableCell>
-            <StyledTableCell align="right">Actions</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {props.nodes.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((node, i) => (
-            <Grow key={i} in={true} style={{ transformOrigin: '0 0 0' }} {...{ timeout: i * 200 }}>
-              <TableRow key={i}>
-                <TableCell padding="checkbox" align="center">
-                  <Checkbox
-                    checked={props.checked.indexOf(node) !== -1}
-                    onClick={() => checkNode(node)}
-                    inputProps={{ 'aria-label': 'primary checkbox' }}
-                  />
-                </TableCell>
-                <TableCell align="left">{node.nodeId}</TableCell>
-                <TableCell align="left">
+    <>
+      <Box boxShadow="base" borderRadius="md" bg="white" w="100%" h="100%" p={4} marginTop={4}>
+        <Grid templateColumns="repeat(16, 1fr)" spacing={4}>
+          <GridItem colSpan={1}>
+            <Checkbox isChecked={isChecked.length > 0} onChange={() => checkNode(nodes)} size="lg" />
+          </GridItem>
+          <GridItem colSpan={3}>
+            <Flex justify="flex-start">
+              <Text as="b">Node ID</Text>
+            </Flex>
+          </GridItem>
+          <GridItem colSpan={3}>
+            <Flex justify="flex-start">
+              <Text as="b">Host</Text>
+            </Flex>
+          </GridItem>
+          <GridItem colSpan={3}>
+            <Flex justify="flex-start">
+              <Text as="b">Connection Status</Text>
+            </Flex>
+          </GridItem>
+          <GridItem colSpan={3}>
+            <Flex justify="flex-start">
+              <Text as="b">Version</Text>
+            </Flex>
+          </GridItem>
+          <GridItem colSpan={3}>
+            <Flex justify="flex-end">
+              <Text as="b">Actions</Text>
+            </Flex>
+          </GridItem>
+        </Grid>
+      </Box>
+      {nodes.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((node, i) => (
+        <Box boxShadow="base" borderRadius="md" bg="white" w="100%" h="100%" p={4} marginTop={4}>
+          <Grid templateColumns="repeat(16, 1fr)" spacing={4}>
+            <GridItem colSpan={1}>
+              <Flex h="100%" align="center" justify="flex-start">
+                <Checkbox isChecked={isChecked.indexOf(node) !== -1} onChange={() => checkNode(node)} size="lg" />
+              </Flex>
+            </GridItem>
+            <GridItem colSpan={3}>
+              <Flex h="100%" align="center" justify="flex-start">
+                <Text as="b">{node.nodeId}</Text>
+              </Flex>
+            </GridItem>
+            <GridItem colSpan={3}>
+              <Flex h="100%" align="center" justify="flex-start">
+                <Text>
                   {node.host || 'resolving...'}
-                  <span className={classes.port}>{node.port ? ':' + node.port : null}</span>
-                </TableCell>
-                <TableCell align="left">
-                  <ConnectionStatusBadge node={node} checkConnectionStatus={props.updateNode} />
-                </TableCell>
-                <TableCell align="left">{node.osVersion}</TableCell>
-                <TableCell align="right">
+                  <Text as="span" color="gray.500">
+                    {node.port ? ':' + node.port : null}
+                  </Text>
+                </Text>
+              </Flex>
+            </GridItem>
+            <GridItem colSpan={3}>
+              <Flex h="100%" align="center" justify="flex-start">
+                <ConnectionStatusBadge node={node} checkConnectionStatus={updateNode} />
+              </Flex>
+            </GridItem>
+            <GridItem colSpan={3}>
+              <Flex h="100%" align="center" justify="flex-start">
+                <Text>{node.osVersion}</Text>
+              </Flex>
+            </GridItem>
+            <GridItem colSpan={3}>
+              <Flex h="100%" align="center" justify="flex-end">
+                <Stack direction="row" spacing={2}>
                   <IconButton
-                    color="secondary"
                     onClick={() => {
-                      props.onDeviceClick(node.nodeId, node.topologyId);
+                      onDeviceClick(node.nodeId, node.topologyId);
                     }}
-                    size="small"
-                    className={classes.actionButton}
-                  >
-                    <DnsIcon />
-                  </IconButton>
+                    size="sm"
+                    icon={<InfoIcon />}
+                  />
                   <IconButton
-                    color="primary"
-                    size="small"
+                    size="sm"
                     onClick={() => {
-                      props.onEditClick(node.nodeId);
+                      onEditClick(node.nodeId);
                     }}
-                    className={classes.actionButton}
-                  >
-                    <SettingsIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            </Grow>
-          ))}
-        </TableBody>
-      </Table>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={props.nodes.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-      />
-    </TableContainer>
+                    icon={<SettingsIcon />}
+                  />
+                </Stack>
+              </Flex>
+            </GridItem>
+          </Grid>
+        </Box>
+      ))}
+      <Box w="100%" marginTop={4}>
+        <Flex justify="space-between" align="center">
+          <Text size="md" color="gray.500">
+            {nodes.length} nodes total
+          </Text>
+          <Stack spacing={2} direction="row" justify="flex-end">
+            <IconButton
+              size="sm"
+              icon={<ChevronLeftIcon />}
+              style={{ backgroundColor: '#d9e0e6' }}
+              disabled={page === 0}
+              onClick={() => setPage((prevPage) => prevPage - 1)}
+            />
+            <Menu placement="top">
+              <MenuButton size="sm" as={Button} style={{ backgroundColor: '#d9e0e6' }}>
+                {page}
+              </MenuButton>
+              <MenuList>
+                {[...Array(nodes.length % rowsPerPage).keys()].map((page) => (
+                  <MenuItem key={`pageOption-${page}`} onClick={() => setPage(page)}>
+                    {page}
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </Menu>
+            <IconButton
+              size="sm"
+              icon={<ChevronRightIcon />}
+              style={{ backgroundColor: '#d9e0e6' }}
+              disabled={nodes.length % rowsPerPage <= page + 1}
+              onClick={() => setPage((prevPage) => prevPage + 1)}
+            />
+          </Stack>
+        </Flex>
+      </Box>
+    </>
   );
 };
 
