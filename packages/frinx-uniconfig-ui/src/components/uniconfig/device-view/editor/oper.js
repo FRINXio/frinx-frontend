@@ -1,6 +1,6 @@
 import React from 'react';
 import { Heading, Button, Flex, Stack, Skeleton } from '@chakra-ui/react';
-import Editor from './Editor';
+import Editor from './editor';
 import ReactDiffViewer from 'react-diff-viewer';
 
 const Oper = ({ isLoading, showDiff, currentOperState, currentConfigState, syncFromNetwork }) => (

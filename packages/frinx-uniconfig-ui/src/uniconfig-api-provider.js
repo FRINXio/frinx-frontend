@@ -1,5 +1,5 @@
 import React, { createContext } from 'react';
-import callbackUtils from './utils/callbackUtils';
+import callbackUtils from './utils/callback.utils';
 
 export function getUniconfigApiProvider(callbacks) {
   callbackUtils.setCallbacks(callbacks);

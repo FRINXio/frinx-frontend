@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
-import CliTab from './CliTab';
-import NetconfTab from './NetconfTab';
-import callbackUtils from '../../../../utils/callbackUtils';
+import CliTab from './cli-tab';
+import NetconfTab from './netconf-tab';
+import callbackUtils from '../../../../utils/callback.utils';
 
 import { Container, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Box } from '@chakra-ui/react';
 

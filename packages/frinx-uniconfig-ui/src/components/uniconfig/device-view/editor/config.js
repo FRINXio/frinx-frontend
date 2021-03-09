@@ -13,7 +13,7 @@ import {
   Skeleton,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import Editor from './Editor';
+import Editor from './editor';
 
 const Config = ({ currentConfigState, isLoading, updateConfig, refreshConfig, replaceConfigWithOper }) => {
   const [isModified, setIsModified] = useState(false);

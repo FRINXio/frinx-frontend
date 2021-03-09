@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import callbackUtils from '../../../../utils/callbackUtils';
+import callbackUtils from '../../../../utils/callback.utils';
 import {
   Modal,
   ModalContent,

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ConnectionStatusBadge from '../../common/ConnectionStatusBadge';
+import ConnectionStatusBadge from '../../common/connection-status-badge';
 import {
   Box,
   Flex,
