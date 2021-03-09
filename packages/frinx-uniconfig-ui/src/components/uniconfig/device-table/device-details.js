@@ -13,10 +13,10 @@ import {
   Textarea,
   useToast,
 } from '@chakra-ui/react';
-import { createNodeObject } from './deviceUtils';
-import ConnectionStatusBadge from '../../common/ConnectionStatusBadge';
+import { createNodeObject } from './device.helpers';
+import ConnectionStatusBadge from '../../common/connection-status-badge';
 import _ from 'lodash';
-import callbackUtils from '../../../utils/callbackUtils';
+import callbackUtils from '../../../utils/callback.utils';
 
 const nodeKeyValueMap = (node) => {
   const basic = [

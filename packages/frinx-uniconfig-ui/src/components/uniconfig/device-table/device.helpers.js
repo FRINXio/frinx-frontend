@@ -1,4 +1,4 @@
-import callbackUtils from '../../../utils/callbackUtils';
+import callbackUtils from '../../../utils/callback.utils';
 
 export const getOsVersion = (node_id) => {
   const getCliConfigurationalState = callbackUtils.getCliConfigurationalStateCallback();

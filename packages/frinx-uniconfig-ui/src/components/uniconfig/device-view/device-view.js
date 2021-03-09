@@ -17,12 +17,12 @@ import {
   Heading,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import CreateSnapshotModal from './createSnapshotModal/CreateSnapshotModal';
-import callbackUtils from '../../../utils/callbackUtils';
-import Config from './editor/Config';
-import Oper from './editor/Oper';
-import ResponseModal from './responseModal/ResponseModal';
-import ConfirmDeleteModal from './confirmDeleteModal/ConfirmDeleteModal';
+import CreateSnapshotModal from './create-snapshot-modal/create-snapshot-modal';
+import callbackUtils from '../../../utils/callback.utils';
+import Config from './editor/config';
+import Oper from './editor/oper';
+import ResponseModal from './response-modal/response-modal';
+import ConfirmDeleteModal from './confirm-delete-modal/confirm-delete-modal';
 
 const DeviceView = ({ deviceId }) => {
   const [config, setConfig] = useState();

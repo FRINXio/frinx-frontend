@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import DeviceTable from './DeviceTable';
+import DeviceTable from './device-table';
 import _ from 'lodash';
-import { createNodeObject } from './deviceUtils';
-import callbackUtils from '../../../utils/callbackUtils';
+import { createNodeObject } from './device.helpers';
+import callbackUtils from '../../../utils/callback.utils';
 import {
   Stack,
   Grid,
