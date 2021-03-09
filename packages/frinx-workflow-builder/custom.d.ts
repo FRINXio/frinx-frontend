@@ -3,8 +3,8 @@ declare module '*.svg' {
   return content;
 }
 
-// declare module 'feather-icons-react' {
-//   const content: FC<{ icon: string; size: string }>;
+declare module 'feather-icons-react' {
+  const content: FC<{ icon: string; size: string }>;
 
-//   export default content;
-// }
+  export default content;
+}

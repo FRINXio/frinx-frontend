@@ -19,8 +19,8 @@ import {
   TabPanels,
   Tabs,
 } from '@chakra-ui/react';
+import produce from 'immer';
 import { InputParameters, ExtendedTask } from '../../helpers/types';
-import unwrap from '../../helpers/unwrap';
 import { renderInputParamForm } from './input-params-forms';
 
 type Props = {
@@ -30,7 +30,7 @@ type Props = {
 };
 
 const TaskForm: FC<Props> = ({ task, onClose, onFormSubmit }) => {
-  const [taskState, setTaskState] = useState(unwrap(task));
+  const [taskState, setTaskState] = useState(task);
 
   useEffect(() => {
     setTaskState(task);
@@ -43,19 +43,17 @@ const TaskForm: FC<Props> = ({ task, onClose, onFormSubmit }) => {
 
   const handleUpdateInputParameters = (inputParameters: InputParameters) => {
     setTaskState((t) => {
-      if ('inputParameters' in t) {
-        return {
-          ...t,
-          inputParameters,
-        };
-      }
-      return t;
+      return produce(t, (acc) => {
+        if ('inputParameters' in acc) {
+          acc.inputParameters = inputParameters;
+        }
+      });
     });
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <Tabs size="md">
+      <Tabs size="md" isLazy>
         <TabList>
           <Tab>General settings</Tab>
           {'inputParameters' in taskState && <Tab>Input parameters</Tab>}

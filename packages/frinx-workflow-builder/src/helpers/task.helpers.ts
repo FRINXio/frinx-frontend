@@ -17,7 +17,7 @@ import {
   ExtendedEventTask,
   ExtendedWaitTask,
   ExtendedRawTask,
-  ExtendedDynamicForkTask,
+  ExtendedSubworkflowTask,
   ExtendedHTTPTask,
   ExtendedGraphQLTask,
   ExtendedJSPythonTask,
@@ -133,7 +133,7 @@ function createLambdaTask(label: TaskLabel): ExtendedLambdaTask {
 
 function createStartEndTask(
   label: 'start' | 'end',
-): (StartTask & { id: string; label: string }) | (EndTask & { id: string; label: string }) {
+): (StartTask & { id: string; label: TaskLabel }) | (EndTask & { id: string; label: TaskLabel }) {
   const name = label === 'start' ? 'START_TASK' : 'END_TASK';
   return {
     id: label,
@@ -273,7 +273,7 @@ function createRawTask(label: TaskLabel): ExtendedRawTask {
   };
 }
 
-export function createSubWorkflowTask(name: string, version: string): ExtendedDynamicForkTask {
+export function createSubWorkflowTask(name: string, version: string): ExtendedSubworkflowTask {
   return {
     id: uuid(),
     label: 'sub workflow',
@@ -396,6 +396,8 @@ export function getTaskLabel(t: Task): TaskLabel {
       return 'wait';
     case 'WHILE_END':
       return 'while end';
+    case 'SUB_WORKFLOW':
+      return 'sub workflow';
     case 'SIMPLE': {
       if (isGraphQLTask(t)) {
         return 'graphql';

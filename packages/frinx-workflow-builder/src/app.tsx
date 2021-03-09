@@ -1,7 +1,6 @@
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 import 'beautiful-react-diagrams/styles.css';
 import Diagram, { useSchema } from 'beautiful-react-diagrams';
-import { DiagramSchema } from 'beautiful-react-diagrams/@types/DiagramSchema';
 import { Box, Button, Flex, Heading, HStack, Text, useDisclosure, useTheme } from '@chakra-ui/react';
 import ScrollContainer from 'react-indiana-drag-scroll';
 import produce, { castImmutable } from 'immer';
@@ -17,6 +16,8 @@ import ActionsMenu from './components/actions-menu/actions-menu';
 import BgSvg from './img/bg.svg';
 import { convertDiagramWorkflow, convertWorkflow } from './helpers/workflow.helpers';
 import { NodeData, ExtendedTask, Workflow, CustomNodeType, TaskDefinition } from './helpers/types';
+import { useTaskActions } from './task-actions-context';
+import ExpandedWorkflowModal from './components/expanded-workflow-modal/expanded-workflow-modal';
 
 type Props = {
   onClose: () => void;
@@ -29,26 +30,10 @@ type Props = {
 
 const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions }) => {
   const theme = useTheme();
-  const [task, setTask] = useState<ExtendedTask | null>(null);
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
   const [isEditing, setIsEditing] = useState(false);
-  const handleEditButtonClick = useCallback(
-    (data?: NodeData) => {
-      const { task: t } = unwrap(data);
-      setTask(t);
-    },
-    [setTask],
-  );
-  const schemaCtrlRef = React.useRef(
-    useMemo(
-      () =>
-        createDiagramController(convertWorkflow(workflow), {
-          onEditBtnClick: handleEditButtonClick,
-        }),
-      [workflow, handleEditButtonClick],
-    ),
-  );
+  const schemaCtrlRef = useRef(useMemo(() => createDiagramController(convertWorkflow(workflow)), [workflow]));
   const [schema, { onChange, addNode, removeNode }] = useSchema<NodeData>(
     useMemo(() => schemaCtrlRef.current.createSchemaFromWorkflow(), []),
   );
@@ -61,8 +46,7 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
     },
     [removeNode, schema.nodes],
   );
-
-  const copiedSchema = schemaCtrlRef.current.updateSchema(schema, handleDeleteButtonClick, task?.id);
+  const { selectedTask, selectTask } = useTaskActions(handleDeleteButtonClick);
 
   const { name } = workflow;
 
@@ -72,7 +56,7 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
 
   const handleFormSubmit = (t: ExtendedTask) => {
     const copiedNodes = castImmutable(
-      produce(copiedSchema.nodes, (acc) => {
+      produce(schema.nodes, (acc) => {
         const index = acc.findIndex((n) => n.id === t.id);
         unwrap(acc[index].data).task = t;
 
@@ -116,7 +100,7 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
             <Button
               colorScheme="blue"
               onClick={() => {
-                console.log(convertDiagramWorkflow(copiedSchema, workflow));
+                console.log(convertDiagramWorkflow(schema, workflow));
               }}
             >
               Save and execute
@@ -133,35 +117,37 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
         }}
       >
         <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
-        <Box flex={1} overflow="auto" as={ScrollContainer}>
-          <Diagram
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            schema={copiedSchema}
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            onChange={onChange}
-            style={{
-              boxShadow: 'none',
-              border: 'none',
-              background: theme.colors.gray[100],
-              backgroundImage: `url(${BgSvg})`,
-              flex: 1,
-              // width: copiedSchema.nodes.length * 270,
-            }}
-          />
+        <Box flex={1} as={ScrollContainer}>
+          <Box position="relative" height="100%" width={4000}>
+            <Diagram
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              schema={schema}
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              onChange={onChange}
+              style={{
+                boxShadow: 'none',
+                border: 'none',
+                background: theme.colors.gray[100],
+                backgroundImage: `url(${BgSvg})`,
+                flex: 1,
+                // width: copiedSchema.nodes.length * 270,
+              }}
+            />
+          </Box>
         </Box>
-        {task && (
+        {selectedTask?.task && selectedTask?.actionType === 'edit' && (
           <RightDrawer>
             <Box px={6} py={10}>
               <Heading as="h2" size="md" mb={10}>
-                {task.name}
+                {selectedTask.task.name}
               </Heading>
               <TaskForm
-                key={task.id}
-                task={task}
+                key={selectedTask.task.id}
+                task={selectedTask.task}
                 onClose={() => {
-                  setTask(null);
+                  selectTask(null);
                 }}
                 onFormSubmit={handleFormSubmit}
               />
@@ -188,11 +174,20 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
           </RightDrawer>
         )}
       </Flex>
-      <WorkflowDefinitionModal
+      {selectedTask?.actionType === 'expand' && (
+        <ExpandedWorkflowModal
+          onClose={() => {
+            selectTask(null);
+          }}
+          workflowName={selectedTask.task.subWorkflowParam.name}
+          workflowVersion={selectedTask.task.subWorkflowParam.version}
+        />
+      )}
+      {/* <WorkflowDefinitionModal
         isOpen={workflowDefinitionDisclosure.isOpen}
         onClose={workflowDefinitionDisclosure.onClose}
         // workflow={convertDiagramWorkflow(copiedSchema, workflow)}
-      />
+      /> */}
       <NewWorkflowModal
         isOpen={workflowModalDisclosure.isOpen}
         onClose={workflowModalDisclosure.onClose}

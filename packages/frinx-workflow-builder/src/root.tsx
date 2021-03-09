@@ -1,8 +1,9 @@
 import React, { FC, useEffect, useState } from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
-import { Task, TaskDefinition, Workflow } from './helpers/types';
+import { TaskDefinition, Workflow } from './helpers/types';
 import App from './app';
 import theme from './theme';
+import { TaskActionsProvider } from './task-actions-context';
 
 type Props = {
   name?: string;
@@ -47,22 +48,24 @@ const Root: FC<Props> = ({
     });
   }, [getTaskDefinitionsCallback]);
 
-  useEffect(() => {
-    const styleTag = document.createElement('style');
-    styleTag.innerHTML = `.nodeLink path { stroke: ${theme.colors.gray[400]} !important; stroke-width: 0.25rem !important; } `;
-    document.head.appendChild(styleTag);
-  }, []);
+  // useEffect(() => {
+  //   const styleTag = document.createElement('style');
+  //   styleTag.innerHTML = `.nodeLink path { stroke: ${theme.colors.gray[400]} !important; stroke-width: 0.25rem !important; } .bi.bi-diagram .bi.bi-diagram-node { z-index: 1 !important; }`;
+  //   document.head.appendChild(styleTag);
+  // }, []);
 
   return workflow != null && workflows != null && taskDefinitions != null ? (
     <ChakraProvider theme={theme}>
-      <App
-        onClose={onClose}
-        workflow={workflow}
-        onWorkflowChange={setWorkflow}
-        onWorkflowSave={saveWorkflowCallback}
-        workflows={workflows}
-        taskDefinitions={taskDefinitions}
-      />
+      <TaskActionsProvider>
+        <App
+          onClose={onClose}
+          workflow={workflow}
+          onWorkflowChange={setWorkflow}
+          onWorkflowSave={saveWorkflowCallback}
+          workflows={workflows}
+          taskDefinitions={taskDefinitions}
+        />
+      </TaskActionsProvider>
     </ChakraProvider>
   ) : null;
 };

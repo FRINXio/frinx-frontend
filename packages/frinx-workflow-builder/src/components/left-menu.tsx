@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { Box, Flex, Heading, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Tooltip } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { ExtendedTask, TaskDefinition, Workflow } from '../helpers/types';
@@ -10,10 +10,10 @@ type Props = {
   taskDefinitions: TaskDefinition[];
 };
 
-const LeftMenu: FC<Props> = ({ onTaskAdd, workflows, taskDefinitions }) => {
+const LeftMenu: FC<Props> = memo(({ onTaskAdd, workflows, taskDefinitions }) => {
   return (
     <Box background="white" width={96} boxShadow="base" height="100%" px={6} py={10}>
-      <Tabs display="flex" flexDirection="column" height="100%">
+      <Tabs display="flex" flexDirection="column" height="100%" isLazy>
         <TabList>
           <Tab>System tasks</Tab>
           <Tab>Tasks</Tab>
@@ -108,6 +108,6 @@ const LeftMenu: FC<Props> = ({ onTaskAdd, workflows, taskDefinitions }) => {
       </Tabs>
     </Box>
   );
-};
+});
 
 export default LeftMenu;

@@ -1,7 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import { createElement } from 'react';
 import { render } from 'react-dom';
-import { HTTPTask, TaskDefinition, Workflow } from './helpers/types';
+import { HTTPTask, TaskDefinition, Workflow, SubworkflowTask } from './helpers/types';
 import Root from './root';
 
 const mountElement = document.querySelector('#root');
@@ -118,26 +118,20 @@ const workflow: Workflow = {
       startDelay: 0,
     },
     ({
-      name: '3GLOBAL___HTTP_task',
-      taskReferenceName: 'httpRequestTaskRef_S3NZ',
+      name: '3SUB_WORKFLOW_TASK',
+      taskReferenceName: 'subWorkflowTaskRef_S3NZ',
       inputParameters: {
-        http_request: {
-          uri: '${workflow.input.uri}',
-          method: 'GET',
-          contentType: 'application/json',
-          headers: {
-            from: 'frinxUser',
-            'x-auth-user-roles': 'OWNER',
-            'x-tenant-id': 'frinx_test',
-          },
-          timeout: 3600,
-        },
+        foo: '${workflow.input.foo}',
       },
-      type: 'SIMPLE',
+      type: 'SUB_WORKFLOW',
+      subWorkflowParam: {
+        name: 'Test workflow',
+        version: 1,
+      },
       startDelay: 0,
       optional: false,
       asyncComplete: false,
-    } as unknown) as HTTPTask,
+    } as unknown) as SubworkflowTask,
   ],
   inputParameters: [],
   outputParameters: {},

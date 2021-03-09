@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import {
-  Button,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -9,7 +8,7 @@ import {
   ModalOverlay,
   Textarea,
 } from '@chakra-ui/react';
-import { Workflow } from 'helpers/types';
+import { Workflow } from '../../helpers/types';
 
 type Props = {
   isOpen: boolean;

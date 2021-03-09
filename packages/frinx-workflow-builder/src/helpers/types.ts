@@ -158,7 +158,7 @@ export type WhileTask = BaseTask<WhileInputParams> & {
 export type WhileEndTask = BaseTask & {
   type: 'WHILE_END';
 };
-export type DynamicForkTask = BaseTask<DynamicForkInputParams> & {
+export type SubworkflowTask = BaseTask<DynamicForkInputParams> & {
   type: 'SUB_WORKFLOW';
   subWorkflowParam: {
     name: string;
@@ -185,7 +185,7 @@ export type Task =
   | GraphQLTask
   | ForkTask
   | JoinTask
-  | DynamicForkTask
+  | SubworkflowTask
   | WaitTask
   | LambdaTask
   | JSPythonTask
@@ -207,7 +207,7 @@ export type TaskLabel =
   | 'lambda'
   | 'raw'
   | 'start'
-  | 'dynamic fork'
+  | 'sub workflow'
   | 'terminate'
   | 'wait'
   | 'while end'
@@ -224,7 +224,7 @@ export type ExtendedHTTPTask = HTTPTask & { id: string; label: TaskLabel };
 export type ExtendedGraphQLTask = GraphQLTask & { id: string; label: TaskLabel };
 export type ExtendedForkTask = ForkTask & { id: string; label: TaskLabel };
 export type ExtendedJoinTask = JoinTask & { id: string; label: TaskLabel };
-export type ExtendedDynamicForkTask = DynamicForkTask & { id: string; label: TaskLabel };
+export type ExtendedSubworkflowTask = SubworkflowTask & { id: string; label: TaskLabel };
 export type ExtendedWaitTask = WaitTask & { id: string; label: TaskLabel };
 export type ExtendedLambdaTask = LambdaTask & { id: string; label: TaskLabel };
 export type ExtendedJSPythonTask = JSPythonTask & { id: string; label: TaskLabel };
@@ -243,7 +243,7 @@ export type ExtendedTask =
   | ExtendedGraphQLTask
   | ExtendedForkTask
   | ExtendedJoinTask
-  | ExtendedDynamicForkTask
+  | ExtendedSubworkflowTask
   | ExtendedWaitTask
   | ExtendedLambdaTask
   | ExtendedJSPythonTask
@@ -274,10 +274,7 @@ export type Workflow<T extends Task = Task> = {
 };
 export type NodeData =
   | {
-      isSelected: boolean;
       task: ExtendedTask;
-      onEditBtnClick: (data?: NodeData) => void;
-      onDeleteBtnClick?: (id: string) => void;
     }
   | undefined;
 export type CustomNodeType = Node<NodeData>;

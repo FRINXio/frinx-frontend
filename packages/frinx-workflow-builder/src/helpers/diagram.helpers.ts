@@ -1,15 +1,17 @@
 import { createSchema } from 'beautiful-react-diagrams';
 import { flatten } from 'lodash';
-import { DiagramSchema, Link } from 'beautiful-react-diagrams/@types/DiagramSchema';
+import { Link } from 'beautiful-react-diagrams/@types/DiagramSchema';
 import { v4 as uuid } from 'uuid';
 import TaskNode from '../components/nodes/task-node';
 import BaseNode from '../components/nodes/start-end-node';
 import DecisionNode from '../components/nodes/decision-node';
-import { CustomNodeType, NodeData, ExtendedTask, Workflow, ExtendedDecisionTask } from './types';
+import { CustomNodeType, ExtendedTask, Workflow, ExtendedDecisionTask } from './types';
 import { getTaskLabel } from './task.helpers';
 import unwrap from './unwrap';
 
 const NODE_WIDTH = 275;
+const MAIN_Y_AXIS_POSITON = 500;
+const DECISION_Y_AXIS_POSITON = 300;
 
 function dropNullValues<T>(array: (T | null)[]): T[] {
   const result: T[] = [];
@@ -21,18 +23,12 @@ function dropNullValues<T>(array: (T | null)[]): T[] {
   return result;
 }
 
-type ClickHandlers = {
-  onEditBtnClick: (data?: NodeData) => void;
-  onDeleteBtnClick?: (id: string) => void;
-};
 type Position = {
   x: number;
   y: number;
 };
 class DiagramController {
   workflow: Workflow<ExtendedTask>;
-
-  onEditBtnClick: (data?: NodeData) => void;
 
   onDeleteBtnClick: ((id: string) => void) | undefined = undefined;
 
@@ -42,24 +38,14 @@ class DiagramController {
 
   private defaultTasksIndex = 0;
 
-  constructor(workflow: Workflow<ExtendedTask>, clickHandlers: ClickHandlers) {
+  constructor(workflow: Workflow<ExtendedTask>) {
     this.workflow = workflow;
-    this.onEditBtnClick = clickHandlers.onEditBtnClick;
-
-    if (clickHandlers.onDeleteBtnClick) {
-      this.onDeleteBtnClick = clickHandlers.onDeleteBtnClick;
-    }
   }
-
-  setDeleteBtnClickHandler = (deleteBtnClickHandler: (id: string) => void) => {
-    this.onDeleteBtnClick = deleteBtnClickHandler;
-  };
 
   createDecisionTaskNode = (task: ExtendedDecisionTask, position: Position): CustomNodeType => {
     return {
       content: task.name,
       id: task.id,
-      // TODO
       coordinates: [position.x, position.y],
       render: DecisionNode,
       inputs: [
@@ -79,9 +65,6 @@ class DiagramController {
         },
       ],
       data: {
-        onEditBtnClick: this.onEditBtnClick,
-        onDeleteBtnClick: this.onDeleteBtnClick,
-        isSelected: false,
         task,
       },
     };
@@ -107,9 +90,6 @@ class DiagramController {
       ],
       data: {
         task,
-        isSelected: false,
-        onEditBtnClick: this.onEditBtnClick,
-        onDeleteBtnClick: this.onDeleteBtnClick,
       },
     };
   };
@@ -118,7 +98,7 @@ class DiagramController {
     return {
       content: 'start',
       id: 'start',
-      coordinates: [100, 300],
+      coordinates: [100, MAIN_Y_AXIS_POSITON],
       outputs: [{ id: 'start', alignment: 'right' }],
       render: BaseNode,
       data: undefined,
@@ -129,7 +109,6 @@ class DiagramController {
     return {
       content: 'end',
       id: 'end',
-      // TODO
       coordinates: [position.x, position.y],
       inputs: [{ id: 'end', alignment: 'left' }],
       render: BaseNode,
@@ -168,9 +147,6 @@ class DiagramController {
         },
       ],
       data: {
-        onDeleteBtnClick: this.onDeleteBtnClick,
-        onEditBtnClick: this.onEditBtnClick,
-        isSelected: false,
         task,
       },
     };
@@ -186,7 +162,7 @@ class DiagramController {
           this.taskIndex -= 1;
           return this.createGenericTaskNode(
             { ...tsk, id: uuid(), label: getTaskLabel(tsk) },
-            { x: NODE_WIDTH * this.dTasksIndex, y: 100 },
+            { x: NODE_WIDTH * this.dTasksIndex, y: DECISION_Y_AXIS_POSITON },
           );
         });
         this.defaultTasksIndex = this.taskIndex + dTasks.length;
@@ -195,14 +171,14 @@ class DiagramController {
           this.taskIndex -= 1;
           return this.createGenericTaskNode(
             { ...tsk, id: uuid(), label: getTaskLabel(tsk) },
-            { x: NODE_WIDTH * this.defaultTasksIndex, y: 200 },
+            { x: NODE_WIDTH * this.defaultTasksIndex, y: MAIN_Y_AXIS_POSITON },
           );
         });
         return [
           ...acc,
           this.createDecisionTaskNode(t, {
             x: NODE_WIDTH * (this.taskIndex + dTasks.length + defaultTasks.length),
-            y: 300,
+            y: MAIN_Y_AXIS_POSITON,
           }),
           ...dTasks,
           ...defaultTasks,
@@ -214,7 +190,7 @@ class DiagramController {
         ...acc,
         this.createGenericTaskNode(t, {
           x: NODE_WIDTH * this.taskIndex,
-          y: 300,
+          y: MAIN_Y_AXIS_POSITON,
         }),
       ];
     }, [] as CustomNodeType[]);
@@ -229,7 +205,6 @@ class DiagramController {
         const nextNodeInputId = unwrap(nodes[index + decisionCasesLength + defaultTasksLenght + 1].inputs)[0].id;
         state[index + decisionCasesLength] = { id: nextNodeInputId, type: 'output' };
         state[index + decisionCasesLength + 1] = { id: unwrap(curr.outputs)[1].id, type: 'input' };
-        // state[index + decisionCasesLength + defaultTasksLenght + 1] = { id:  }
       }
       let stateLink: Link | null = null;
       if (state[index]) {
@@ -260,7 +235,7 @@ class DiagramController {
     const nodes = [
       this.createStartNode(),
       ...nodesFromWorkflow,
-      this.createEndNode({ x: NODE_WIDTH * (this.taskIndex + 1), y: 300 }),
+      this.createEndNode({ x: NODE_WIDTH * (this.taskIndex + 1), y: MAIN_Y_AXIS_POSITON }),
     ];
     const links = this.createLinks(nodes);
 
@@ -269,36 +244,8 @@ class DiagramController {
       links,
     });
   };
-
-  updateSchema = (
-    schema: DiagramSchema<NodeData>,
-    deleteBtnClickHandler: (id: string) => void,
-    taskId?: string,
-  ): DiagramSchema<NodeData> => {
-    const { nodes, links } = schema;
-    return {
-      links,
-      nodes: nodes.map((n) => {
-        const data = n.data
-          ? {
-              ...n.data,
-              isSelected: n.id === taskId,
-              onDeleteBtnClick: deleteBtnClickHandler,
-            }
-          : undefined;
-
-        return {
-          ...n,
-          data,
-        };
-      }),
-    };
-  };
 }
 
-export function createDiagramController(
-  workflow: Workflow<ExtendedTask>,
-  clickHandlers: ClickHandlers,
-): DiagramController {
-  return new DiagramController(workflow, clickHandlers);
+export function createDiagramController(workflow: Workflow<ExtendedTask>): DiagramController {
+  return new DiagramController(workflow);
 }
