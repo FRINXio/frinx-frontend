@@ -151,7 +151,8 @@ const DeviceList = ({ onMountBtnClick, onDeviceClick, onEditClick }) => {
           <InputGroup>
             <InputLeftElement pointerEvents="none" children={<SearchIcon color="gray.300" />} />
             <Input
-              variant="white"
+              variant="outline"
+              background="white"
               placeholder="Search devices ( id, host, status, version ... )"
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -159,7 +160,8 @@ const DeviceList = ({ onMountBtnClick, onDeviceClick, onEditClick }) => {
         </GridItem>
         <GridItem colSpan={3}>
           <Select
-            variant="white"
+            variant="outline"
+            background="white"
             color="gray.400"
             placeholder="Select version"
             onChange={(e) => setOsVersion(e.target.value)}
