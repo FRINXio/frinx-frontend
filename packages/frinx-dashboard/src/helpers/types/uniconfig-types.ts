@@ -7,7 +7,7 @@ mount parameters and topology type, these types are minimal
 basic example with only mandatory parameters for now
 */
 
-export type DataStore =
+export type State =
   | {
       'node-id': string;
       'cli-topology:host': string;
@@ -19,7 +19,7 @@ export type DataStore =
       'netconf-node-topolog:port': number;
     };
 
-export type ConfigurationalDataStore = DataStore &
+export type ConfigurationalState = State &
   (
     | {
         'cli-topology:password': string;
@@ -31,7 +31,7 @@ export type ConfigurationalDataStore = DataStore &
       }
   );
 
-export type OperationalDataStore = DataStore &
+export type OperationalState = State &
   (
     | {
         'cli-topology:connected-message': string;
@@ -43,27 +43,27 @@ export type OperationalDataStore = DataStore &
       }
   );
 
-export type CliConfigurationalDataStore = ConfigurationalDataStore & {
+export type CliConfigurationalState = ConfigurationalState & {
   'cli-topology:device-type': string;
   'cli-topology:device-version': string;
   'cli-topology:transport-type': string;
   'cli-topology:journal-size': number;
 };
 
-export type NetconfConfigurationalDataStore = ConfigurationalDataStore & {
+export type NetconfConfigurationalState = ConfigurationalState & {
   'netconf-node-topology:tcp-only': boolean;
 };
 
-export type CliOperationalDataStore = OperationalDataStore;
+export type CliOperationalState = OperationalState;
 
-export type NetconfOperationalDataStore = OperationalDataStore;
+export type NetconfOperationalState = OperationalState;
 
 export type CliTopology = {
-  topology: [{ 'topology-id': 'cli'; node: CliOperationalDataStore[] }];
+  topology: [{ 'topology-id': 'cli'; node: CliOperationalState[] }];
 };
 
 export type NetconfTopology = {
-  topology: [{ 'topology-id': 'topology-netconf'; node: NetconfOperationalDataStore[] }];
+  topology: [{ 'topology-id': 'topology-netconf'; node: NetconfOperationalState[] }];
 };
 
 export type MountPayload = {
@@ -85,4 +85,14 @@ export type MountPayload = {
         'netconf-node-topology:username': string;
         'netconf-node-topology:password': string;
       };
+};
+
+export type CliDeviceTranslations = {
+  'available-cli-device-translations': { 'available-cli-device-translation': DeviceTranslation[] };
+};
+
+export type DeviceTranslation = {
+  'device-type': string;
+  'device-version': string;
+  units: unknown;
 };

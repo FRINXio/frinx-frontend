@@ -23,6 +23,8 @@ interface Window {
     auth_client_id: string;
     auth_redirect_url: string;
     conductor_api_url: string;
+    uniconfig_api_url: string;
+    uniconfig_auth: string;
     uniresource_enabled: boolean;
     uniconfig_enabled: boolean;
     uniflow_enabled: boolean;

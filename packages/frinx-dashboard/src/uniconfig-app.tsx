@@ -1,15 +1,76 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
+import { Route, Switch, Redirect, useHistory, useLocation, RouteComponentProps } from 'react-router-dom';
+import {
+  getCliTopology,
+  getNetconfTopology,
+  getCliConfigurationalState,
+  getNetconfConfigurationalState,
+  getCliOperationalState,
+  getNetconfOperationalState,
+  getCliConfigurationalDataStore,
+  getCliOperationalDataStore,
+  mountCliNode,
+  mountNetconfNode,
+  unmountCliNode,
+  unmountNetconfNode,
+  getCliDeviceTranslations,
+  updateCliConfigurationalDataStore,
+  calculateDiff,
+  commitToNetwork,
+  dryRunCommit,
+  syncFromNetwork,
+  replaceConfigWithOperational,
+  getSnapshots,
+  deleteSnapshot,
+  replaceConfigWithSnapshot,
+  createSnapshot,
+} from './api/uniconfig/uniconfig-api';
+
+const callbacks = {
+  getCliTopology,
+  getNetconfTopology,
+  getCliConfigurationalState,
+  getNetconfConfigurationalState,
+  getCliOperationalState,
+  getNetconfOperationalState,
+  getCliConfigurationalDataStore,
+  getCliOperationalDataStore,
+  mountCliNode,
+  mountNetconfNode,
+  unmountCliNode,
+  unmountNetconfNode,
+  getCliDeviceTranslations,
+  updateCliConfigurationalDataStore,
+  calculateDiff,
+  commitToNetwork,
+  dryRunCommit,
+  syncFromNetwork,
+  replaceConfigWithOperational,
+  getSnapshots,
+  deleteSnapshot,
+  replaceConfigWithSnapshot,
+  createSnapshot,
+};
 
 const UniconfigApp: FC = () => {
   const history = useHistory();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+
   const [components, setComponents] = useState<typeof import('@frinx/uniconfig-ui') | null>(null);
 
   useEffect(() => {
     import('@frinx/uniconfig-ui').then((mod) => {
-      const { ThemeProvider, DeviceDetails, DeviceList, DeviceView, MountDevice } = mod;
+      const { DeviceDetails, DeviceList, DeviceView, MountDevice, getUniconfigApiProvider } = mod;
 
-      setComponents({ ThemeProvider, DeviceDetails, DeviceList, DeviceView, MountDevice });
+      setComponents({
+        DeviceDetails,
+        DeviceList,
+        DeviceView,
+        MountDevice,
+        getUniconfigApiProvider,
+        UniconfigApiProvider: getUniconfigApiProvider(callbacks),
+      });
     });
   }, []);
 
@@ -17,10 +78,10 @@ const UniconfigApp: FC = () => {
     return null;
   }
 
-  const { ThemeProvider, DeviceDetails, DeviceList, DeviceView, MountDevice } = components;
+  const { DeviceDetails, DeviceList, DeviceView, MountDevice, UniconfigApiProvider } = components;
 
   return (
-    <ThemeProvider>
+    <UniconfigApiProvider>
       <Switch>
         <Route exact path="/uniconfig">
           <Redirect to="/uniconfig/devices" />
@@ -41,10 +102,10 @@ const UniconfigApp: FC = () => {
         <Route
           exact
           path="/uniconfig/devices/edit/:id"
-          render={(props: RouteComponentProps<{ deviceId: string }>) => {
+          render={(props: RouteComponentProps<{ id: string }>) => {
             return (
               <DeviceView
-                deviceid={props.match.params.deviceId}
+                deviceId={props.match.params.id}
                 onBackBtnClick={() => {
                   props.history.push('/uniconfig/devices');
                 }}
@@ -52,13 +113,21 @@ const UniconfigApp: FC = () => {
             );
           }}
         />
-        <Route exact path="/uniconfig/devices/:nodeId">
-          <DeviceDetails
-            onBackBtnClick={() => {
-              history.push('/uniconfig/devices');
-            }}
-          />
-        </Route>
+        <Route
+          exact
+          path="/uniconfig/devices/:nodeId"
+          render={(props: RouteComponentProps<{ nodeId: string; topology: string }>) => {
+            return (
+              <DeviceDetails
+                nodeId={props.match.params.nodeId}
+                topology={query.get('topology')}
+                onBackBtnClick={() => {
+                  history.push('/uniconfig/devices');
+                }}
+              />
+            );
+          }}
+        />
         <Route
           exact
           path="/uniconfig/mount"
@@ -76,7 +145,7 @@ const UniconfigApp: FC = () => {
           }}
         />
       </Switch>
-    </ThemeProvider>
+    </UniconfigApiProvider>
   );
 };
 

@@ -1,5 +1,3 @@
-// TODO dynamic source of url
-// eslint-disable-next-line no-underscore-dangle
 const CONDUCTOR_API_URL = window.__CONFIG__.conductor_api_url;
 
 export async function apiFetch(path: string, options: RequestInit): Promise<unknown> {

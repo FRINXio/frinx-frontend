@@ -1,14 +1,12 @@
-import { HttpClient as http } from '../../common/HttpClient';
-import { globalConstants as global } from '../../common/GlobalContext';
-
-const GET_CLI_OS_VERSION_URL = (node_id) =>
-  '/rests/data/network-topology:network-topology/topology=cli/node=' + node_id + '?content=config';
+import callbackUtils from '../../../utils/callback.utils';
 
 export const getOsVersion = (node_id) => {
-  return http.get(global.backendApiUrlPrefix + GET_CLI_OS_VERSION_URL(node_id), global.authToken).then((res) => {
+  const getCliConfigurationalState = callbackUtils.getCliConfigurationalStateCallback();
+
+  return getCliConfigurationalState(node_id).then((config) => {
     try {
-      let os_version = res['node']['0']['cli-topology:device-type'];
-      return os_version + ' / ' + res['node']['0']['cli-topology:device-version'];
+      let os_version = config['cli-topology:device-type'];
+      return `${os_version}/${config['cli-topology:device-version']}`;
     } catch (e) {
       console.log(e);
       return null;
