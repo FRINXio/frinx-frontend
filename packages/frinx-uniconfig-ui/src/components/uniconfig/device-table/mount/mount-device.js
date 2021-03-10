@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { Container, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Box } from '@chakra-ui/react';
 import _ from 'lodash';
 import CliTab from './cli-tab';
 import NetconfTab from './netconf-tab';
 import callbackUtils from '../../../../utils/callback.utils';
 
-import { Container, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Box } from '@chakra-ui/react';
-
 const MountDevice = ({ templateNode }) => {
-  const [tab, setTab] = useState(0);
   const [supportedDevices, setSupportedDevices] = useState([]);
 
   useEffect(() => {
-    // if node was selected as template
-    setTab(templateNode?.topologyId === 'topology-netconf' ? 1 : 0);
     getSupportedDevices();
   }, [templateNode]);
 
@@ -22,9 +18,7 @@ const MountDevice = ({ templateNode }) => {
     getCliDeviceTranslations().then((res) => {
       try {
         const supportedDevices = res['available-cli-device-translations']['available-cli-device-translation'];
-        const grouped = _.groupBy(supportedDevices, function (device) {
-          return device['device-type'];
-        });
+        const grouped = _.groupBy(supportedDevices, (device) => device['device-type']);
         setSupportedDevices(grouped);
       } catch (e) {
         console.log(e);
@@ -38,7 +32,7 @@ const MountDevice = ({ templateNode }) => {
         Mount Device
       </Heading>
       <Box boxShadow="base" borderRadius="md" bg="white" w="100%" h="100%" p={4} marginTop={4}>
-        <Tabs index={tab} onChange={(index) => setTab(index)} isFitted>
+        <Tabs defaultIndex={templateNode?.topologyId === 'topology-netconf' ? 1 : 0} isFitted>
           <TabList>
             <Tab>CLI</Tab>
             <Tab>Netconf</Tab>
