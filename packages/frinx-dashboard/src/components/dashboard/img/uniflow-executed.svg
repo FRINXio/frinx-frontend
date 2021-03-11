@@ -7,4 +7,6 @@
 <path d="M156 67.3333L114.333 88.1667L156 109L197.667 88.1667L156 67.3333Z" stroke="#3282CE" stroke-width="8.33333" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M114.333 129.833L156 150.667L197.667 129.833" stroke="#3282CE" stroke-width="8.33333" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M114.333 109L156 129.833L197.667 109" stroke="#3282CE" stroke-width="8.33333" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M445.595 264H387.324C382.727 264 379 267.727 379 272.324V330.595C379 335.192 382.727 338.919 387.324 338.919H445.595C450.192 338.919 453.919 335.192 453.919 330.595V272.324C453.919 267.727 450.192 264 445.595 264Z" fill="#9AE6B4" stroke="#9AE6B4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M431 293.5L411.75 312.75L403 304" stroke="#2F855A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

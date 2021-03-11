@@ -19,6 +19,7 @@
     "@types/node": "^14.14.10",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "feather-icons-react": "^0.4.3",
     "framer-motion": "^3.2.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
