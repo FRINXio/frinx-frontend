@@ -1,23 +1,34 @@
-// @flow
 import React, { useEffect, useState } from 'react';
-import Container from '@material-ui/core/Container';
-import DeviceFilters from './DeviceFilters';
-import DeviceTable from './DeviceTable';
-import DeviceListHeader from './DeviceListHeader';
+import DeviceTable from './device-table';
 import _ from 'lodash';
-import { createNodeObject } from './deviceUtils';
-import callbackUtils from '../../../utils/callbackUtils';
+import { createNodeObject } from './device.helpers';
+import callbackUtils from '../../../utils/callback.utils';
+import {
+  Stack,
+  Grid,
+  GridItem,
+  Container,
+  Button,
+  Heading,
+  InputGroup,
+  InputLeftElement,
+  Input,
+  Select,
+  Flex,
+  IconButton,
+} from '@chakra-ui/react';
+import { AddIcon, SearchIcon } from '@chakra-ui/icons';
+import { faRedo } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-type Props = {
-  onMountBtnClick: (templateNode: any) => void,
-  onDeviceClick: (deviceId: string, topologyId: string) => void,
-  onEditClick: (deviceId: string) => void,
+const getOsVersions = (nodes) => {
+  return [...new Set(nodes.map((node) => node.osVersion))];
 };
 
-const DeviceList = (props: Props) => {
+const DeviceList = ({ onMountBtnClick, onDeviceClick, onEditClick }) => {
   const [nodes, setNodes] = useState([]);
   const [filteredNodes, setFilteredNodes] = useState([]);
-  const [checked, setChecked] = useState([]);
+  const [isChecked, setIsChecked] = useState([]);
   const [query, setQuery] = useState('');
   const [osVersion, setOsVersion] = useState('');
 
@@ -45,7 +56,7 @@ const DeviceList = (props: Props) => {
             return false;
           });
     setFilteredNodes(results);
-    setChecked([]);
+    setIsChecked([]);
   }, [query, osVersion, nodes]);
 
   const fetchData = async () => {
@@ -91,12 +102,12 @@ const DeviceList = (props: Props) => {
   };
 
   const mountNode = () => {
-    props.onMountBtnClick(checked.length === 1 ? checked[0] : null);
+    onMountBtnClick(isChecked.length === 1 ? isChecked[0] : null);
   };
 
   const unmountNodes = async () => {
     let unmounted = await Promise.all(
-      checked.map(async (node) => {
+      isChecked.map(async (node) => {
         return await unmountNode(node);
       }),
     );
@@ -107,7 +118,7 @@ const DeviceList = (props: Props) => {
       }
     });
 
-    setChecked([]);
+    setIsChecked([]);
     fetchData();
   };
 
@@ -125,22 +136,70 @@ const DeviceList = (props: Props) => {
   };
 
   return (
-    <Container>
-      <DeviceListHeader
-        title={'Devices'}
-        checked={checked}
-        fetchData={fetchData}
-        mountNode={mountNode}
-        unmountNodes={unmountNodes}
-      />
-      <DeviceFilters nodes={nodes} setQuery={setQuery} setOsVersion={setOsVersion} />
+    <Container maxWidth={1280}>
+      <Flex justify="space-between" align="center" marginBottom={6}>
+        <Heading as="h2" size="3xl">
+          Devices
+        </Heading>
+        <Button leftIcon={<AddIcon />} colorScheme="blue" onClick={mountNode} marginLeft={4}>
+          Mount {isChecked.length === 1 ? `as ${isChecked[0]?.nodeId}` : null}
+        </Button>
+      </Flex>
+
+      <Grid templateColumns="repeat(12, 1fr)" gap={4}>
+        <GridItem colSpan={7}>
+          <InputGroup>
+            <InputLeftElement pointerEvents="none" children={<SearchIcon color="gray.300" />} />
+            <Input
+              variant="outline"
+              background="white"
+              placeholder="Search devices ( id, host, status, version ... )"
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </InputGroup>
+        </GridItem>
+        <GridItem colSpan={3}>
+          <Select
+            variant="outline"
+            background="white"
+            color="gray.400"
+            placeholder="Select version"
+            onChange={(e) => setOsVersion(e.target.value)}
+          >
+            {getOsVersions(nodes).map((v) => (
+              <option key={`option-${v}`} value={v}>
+                {v}
+              </option>
+            ))}
+          </Select>
+        </GridItem>
+        <GridItem colSpan={2}>
+          <Stack direction="row">
+            <Button
+              isFullWidth
+              style={{ backgroundColor: '#d9e0e6' }}
+              disabled={isChecked.length === 0}
+              onClick={unmountNodes}
+            >
+              Unmount ({isChecked.length})
+            </Button>
+            <IconButton
+              icon={<FontAwesomeIcon icon={faRedo} />}
+              style={{ backgroundColor: '#d9e0e6' }}
+              onClick={fetchData}
+            >
+              Refresh Devices
+            </IconButton>
+          </Stack>
+        </GridItem>
+      </Grid>
       <DeviceTable
         nodes={filteredNodes}
-        checked={checked}
-        setChecked={setChecked}
+        isChecked={isChecked}
+        setIsChecked={setIsChecked}
         updateNode={updateNode}
-        onDeviceClick={props.onDeviceClick}
-        onEditClick={props.onEditClick}
+        onDeviceClick={onDeviceClick}
+        onEditClick={onEditClick}
       />
     </Container>
   );

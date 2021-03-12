@@ -7,7 +7,6 @@ declare module '@frinx/uniconfig-ui' {
     onEditClick: (deviceId: string) => void;
   }>;
   export const DeviceView: FC<{ deviceId: string; onBackBtnClick: () => void }>;
-  export const ThemeProvider: FC;
   export const DeviceDetails: FC<{ nodeId: string; topology: string | null; onBackBtnClick: () => void }>;
   export const MountDevice: FC<{ onBackBtnClick: () => void; templateNode: any }>;
   export const getUniconfigApiProvider: (callbacks: unknown) => FC;

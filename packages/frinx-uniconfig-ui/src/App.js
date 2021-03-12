@@ -1,13 +1,11 @@
 import React from 'react';
 import { Route, Switch, Redirect, useRouteMatch } from 'react-router-dom';
 import './App.css';
-import DeviceView from './components/uniconfig/deviceView/DeviceView';
-import DeviceList from './components/uniconfig/deviceTable/DeviceList';
-import { ThemeProvider } from '@material-ui/core/styles';
-import theme from './components/common/theme';
-import DeviceDetails from './components/uniconfig/deviceTable/DeviceDetails';
-import MountDevice from './components/uniconfig/deviceTable/mount/MountDevice';
-import { getUniconfigApiProvider } from './UniconfigApiProvider';
+import DeviceView from './components/uniconfig/device-view/device-view';
+import DeviceList from './components/uniconfig/device-table/device-list';
+import DeviceDetails from './components/uniconfig/device-table/device-details';
+import MountDevice from './components/uniconfig/device-table/mount/mount-device';
+import { getUniconfigApiProvider } from './uniconfig-api-provider';
 
 const callbacks = {
   //...
@@ -20,17 +18,15 @@ function App() {
 
   return (
     <UniconfigApiProvider>
-      <ThemeProvider theme={theme}>
-        <Switch>
-          <Route exact path={path + '/devices/edit/:id'} component={DeviceView} />
-          <>
-            <Route exact path={path + '/devices'} component={DeviceList} />
-            <Route exact path={path + '/devices/:nodeId'} component={DeviceDetails} />
-            <Route exact path={path + '/mount'} component={MountDevice} />
-            <Redirect to={path + '/devices'} />
-          </>
-        </Switch>
-      </ThemeProvider>
+      <Switch>
+        <Route exact path={path + '/devices/edit/:id'} component={DeviceView} />
+        <>
+          <Route exact path={path + '/devices'} component={DeviceList} />
+          <Route exact path={path + '/devices/:nodeId'} component={DeviceDetails} />
+          <Route exact path={path + '/mount'} component={MountDevice} />
+          <Redirect to={path + '/devices'} />
+        </>
+      </Switch>
     </UniconfigApiProvider>
   );
 }

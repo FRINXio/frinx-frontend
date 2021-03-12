@@ -61,10 +61,9 @@ const UniconfigApp: FC = () => {
 
   useEffect(() => {
     import('@frinx/uniconfig-ui').then((mod) => {
-      const { ThemeProvider, DeviceDetails, DeviceList, DeviceView, MountDevice, getUniconfigApiProvider } = mod;
+      const { DeviceDetails, DeviceList, DeviceView, MountDevice, getUniconfigApiProvider } = mod;
 
       setComponents({
-        ThemeProvider,
         DeviceDetails,
         DeviceList,
         DeviceView,
@@ -79,75 +78,73 @@ const UniconfigApp: FC = () => {
     return null;
   }
 
-  const { ThemeProvider, DeviceDetails, DeviceList, DeviceView, MountDevice, UniconfigApiProvider } = components;
+  const { DeviceDetails, DeviceList, DeviceView, MountDevice, UniconfigApiProvider } = components;
 
   return (
     <UniconfigApiProvider>
-      <ThemeProvider>
-        <Switch>
-          <Route exact path="/uniconfig">
-            <Redirect to="/uniconfig/devices" />
-          </Route>
-          <Route exact path="/uniconfig/devices">
-            <DeviceList
-              onMountBtnClick={(templateNode) => {
-                history.push('/uniconfig/mount', { templateNode });
-              }}
-              onDeviceClick={(deviceId, topologyId) => {
-                history.push(`/uniconfig/devices/${deviceId}?topology=${topologyId}`);
-              }}
-              onEditClick={(deviceId) => {
-                history.push(`/uniconfig/devices/edit/${deviceId}`);
-              }}
-            />
-          </Route>
-          <Route
-            exact
-            path="/uniconfig/devices/edit/:id"
-            render={(props: RouteComponentProps<{ id: string }>) => {
-              return (
-                <DeviceView
-                  deviceId={props.match.params.id}
-                  onBackBtnClick={() => {
-                    props.history.push('/uniconfig/devices');
-                  }}
-                />
-              );
+      <Switch>
+        <Route exact path="/uniconfig">
+          <Redirect to="/uniconfig/devices" />
+        </Route>
+        <Route exact path="/uniconfig/devices">
+          <DeviceList
+            onMountBtnClick={(templateNode) => {
+              history.push('/uniconfig/mount', { templateNode });
+            }}
+            onDeviceClick={(deviceId, topologyId) => {
+              history.push(`/uniconfig/devices/${deviceId}?topology=${topologyId}`);
+            }}
+            onEditClick={(deviceId) => {
+              history.push(`/uniconfig/devices/edit/${deviceId}`);
             }}
           />
-          <Route
-            exact
-            path="/uniconfig/devices/:nodeId"
-            render={(props: RouteComponentProps<{ nodeId: string; topology: string }>) => {
-              return (
-                <DeviceDetails
-                  nodeId={props.match.params.nodeId}
-                  topology={query.get('topology')}
-                  onBackBtnClick={() => {
-                    history.push('/uniconfig/devices');
-                  }}
-                />
-              );
-            }}
-          />
-          <Route
-            exact
-            path="/uniconfig/mount"
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            render={(props: RouteComponentProps<void, void, { templateNode: unknown }>) => {
-              return (
-                <MountDevice
-                  onBackBtnClick={() => {
-                    history.push('/uniconfig/devices');
-                  }}
-                  templateNode={props.location.state.templateNode}
-                />
-              );
-            }}
-          />
-        </Switch>
-      </ThemeProvider>
+        </Route>
+        <Route
+          exact
+          path="/uniconfig/devices/edit/:id"
+          render={(props: RouteComponentProps<{ id: string }>) => {
+            return (
+              <DeviceView
+                deviceId={props.match.params.id}
+                onBackBtnClick={() => {
+                  props.history.push('/uniconfig/devices');
+                }}
+              />
+            );
+          }}
+        />
+        <Route
+          exact
+          path="/uniconfig/devices/:nodeId"
+          render={(props: RouteComponentProps<{ nodeId: string; topology: string }>) => {
+            return (
+              <DeviceDetails
+                nodeId={props.match.params.nodeId}
+                topology={query.get('topology')}
+                onBackBtnClick={() => {
+                  history.push('/uniconfig/devices');
+                }}
+              />
+            );
+          }}
+        />
+        <Route
+          exact
+          path="/uniconfig/mount"
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          render={(props: RouteComponentProps<void, void, { templateNode: unknown }>) => {
+            return (
+              <MountDevice
+                onBackBtnClick={() => {
+                  history.push('/uniconfig/devices');
+                }}
+                templateNode={props.location.state.templateNode}
+              />
+            );
+          }}
+        />
+      </Switch>
     </UniconfigApiProvider>
   );
 };

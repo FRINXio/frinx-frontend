@@ -1,12 +1,9 @@
-import { createElement } from 'react';
 import App from './App';
-import DeviceView from './components/uniconfig/deviceView/DeviceView';
-import DeviceList from './components/uniconfig/deviceTable/DeviceList';
-import { ThemeProvider as Provider } from '@material-ui/core/styles';
-import DeviceDetails from './components/uniconfig/deviceTable/DeviceDetails';
-import MountDevice from './components/uniconfig/deviceTable/mount/MountDevice';
-import theme from './components/common/theme';
-import { getUniconfigApiProvider } from './UniconfigApiProvider';
+import DeviceView from './components/uniconfig/device-view/device-view';
+import DeviceList from './components/uniconfig/device-table/device-list';
+import DeviceDetails from './components/uniconfig/device-table/device-details';
+import MountDevice from './components/uniconfig/device-table/mount/mount-device';
+import { getUniconfigApiProvider } from './uniconfig-api-provider';
 
 export { App as UniconfigApp };
 export { DeviceList };
@@ -16,10 +13,6 @@ export { DeviceDetails };
 export { MountDevice };
 
 export { getUniconfigApiProvider };
-
-export const ThemeProvider = ({ children }) => {
-  return createElement(Provider, { theme }, children);
-};
 
 export const menuLinks = [{ label: 'Devices', path: '/devices' }];
 
