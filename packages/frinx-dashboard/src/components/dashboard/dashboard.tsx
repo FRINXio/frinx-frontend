@@ -15,40 +15,47 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
       {enabledServices.get('uniflow_enabled') && (
         <Box marginBottom={12}>
           <Heading as="h2" size="md" marginBottom={4}>
-            Uniflow
+            UniFlow
           </Heading>
           <UniflowActions />
         </Box>
       )}
       {enabledServices.get('uniconfig_enabled') && (
-        <Box marginBottom={12}>
+        <Box>
           <Heading as="h2" size="md" marginBottom={4}>
-            Uniconfig
+            UniConfig
           </Heading>
           <UniconfigActions />
         </Box>
       )}
-      <Box as="header" mb={4}>
-        <Heading as="h2" size="md">
-          Frinx services
-        </Heading>
+      <Box marginTop={20}>
+        <Box as="header" marginBottom={4}>
+          <Heading as="h2" size="md">
+            FRINX services
+          </Heading>
+        </Box>
+        <HStack spacing={4}>
+          {enabledServices.get('uniflow_enabled') && (
+            <Panel
+              label="UniFlow"
+              description="Create, organize and execute workflows."
+              icon="layers"
+              path="/uniflow"
+            />
+          )}
+          {enabledServices.get('uniconfig_enabled') && (
+            <Panel
+              label="UniConfig"
+              description="Manage network device configurations."
+              icon="server"
+              path="/uniconfig"
+            />
+          )}
+          {enabledServices.get('uniresource_enabled') && (
+            <Panel label="UniResource" description="Manage network devices." icon="hard-drive" path="/uniresource" />
+          )}
+        </HStack>
       </Box>
-      <HStack spacing={4}>
-        {enabledServices.get('uniflow_enabled') && (
-          <Panel label="Uniflow" description="Create, organize and execute workflows." icon="layers" path="/uniflow" />
-        )}
-        {enabledServices.get('uniconfig_enabled') && (
-          <Panel
-            label="Uniconfig"
-            description="Manage network device configurations."
-            icon="server"
-            path="/uniconfig"
-          />
-        )}
-        {enabledServices.get('uniresource_enabled') && (
-          <Panel label="Uniresource" description="Manage network devices." icon="hard-drive" path="/uniresource" />
-        )}
-      </HStack>
     </Container>
   );
 };

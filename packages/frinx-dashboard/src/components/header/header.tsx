@@ -40,19 +40,19 @@ const Header: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
               {enabledServices.get('uniflow_enabled') && (
                 <MenuItem as={Link} to="/uniflow">
                   <Icon size={20} as={FeatherIcon} icon="layers" color="brand.700" marginRight={2} />
-                  <Text fontWeight="bold">Uniflow</Text>
+                  <Text fontWeight="bold">UniFlow</Text>
                 </MenuItem>
               )}
               {enabledServices.get('uniconfig_enabled') && (
                 <MenuItem as={Link} to="/uniconfig">
                   <Icon size={20} as={FeatherIcon} icon="server" color="brand.700" marginRight={2} />
-                  <Text fontWeight="bold">Uniconfig</Text>
+                  <Text fontWeight="bold">UniConfig</Text>
                 </MenuItem>
               )}
               {enabledServices.get('uniresource_enabled') && (
                 <MenuItem as={Link} to="/uniresource">
-                  <Icon size={20} as={FeatherIcon} icon="package" color="brand.700" marginRight={2} />
-                  <Text fontWeight="bold">Uniresource</Text>
+                  <Icon size={20} as={FeatherIcon} icon="hard-drive" color="brand.700" marginRight={2} />
+                  <Text fontWeight="bold">UniResource</Text>
                 </MenuItem>
               )}
             </MenuList>

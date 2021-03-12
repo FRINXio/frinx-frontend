@@ -16,7 +16,7 @@ const UniflowActions: FC = () => {
           <Heading as="h4" size="sm" marginBottom={2}>
             Create workflow
           </Heading>
-          <Text marginBottom={2}>Use our builder to create a new workflow.</Text>
+          <Text marginBottom={2}>Create a workflow by using a workflow builder.</Text>
           <Button colorScheme="brand" size="sm" to="/uniflow/builder" as={Link}>
             Create
           </Button>

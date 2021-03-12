@@ -15,7 +15,7 @@ const UniconfigActions: FC = () => {
           <Heading as="h4" size="sm" marginBottom={2}>
             Mount device
           </Heading>
-          <Text marginBottom={2}>Mount new device in your network.</Text>
+          <Text marginBottom={2}>Connect network device to UniConfig.</Text>
           <Button colorScheme="brand" size="sm" to="/uniconfig/mount" as={Link}>
             Mount
           </Button>
