@@ -52,7 +52,7 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
             />
           )}
           {enabledServices.get('uniresource_enabled') && (
-            <Panel label="UniResource" description="Manage network devices." icon="hard-drive" path="/uniresource" />
+            <Panel label="UniResource" description="Manage logical resources." icon="hard-drive" path="/uniresource" />
           )}
         </HStack>
       </Box>
