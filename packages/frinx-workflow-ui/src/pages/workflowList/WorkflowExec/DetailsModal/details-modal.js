@@ -237,11 +237,11 @@ class DetailsModal extends Component {
         case 'TERMINATED':
           return (
             <ButtonGroup float="right">
-              <Button onClick={this.restartWfs.bind(this)} variant="outline" colorScheme="blue">
+              <Button onClick={this.restartWfs.bind(this)} colorScheme="whiteAlpha">
                 <i className="fas fa-redo" />
                 &nbsp;&nbsp;Restart
               </Button>
-              <Button onClick={this.retryWfs.bind(this)} variant="outline" colorScheme="blue">
+              <Button onClick={this.retryWfs.bind(this)} colorScheme="whiteAlpha">
                 <i className="fas fa-history" />
                 &nbsp;&nbsp;Retry
               </Button>
@@ -250,11 +250,11 @@ class DetailsModal extends Component {
         case 'RUNNING':
           return (
             <ButtonGroup float="right">
-              <Button onClick={this.terminateWfs.bind(this)} variant="outline" colorScheme="blue">
+              <Button onClick={this.terminateWfs.bind(this)} colorScheme="whiteAlpha">
                 <i className="fas fa-times" />
                 &nbsp;&nbsp;Terminate
               </Button>
-              <Button onClick={this.pauseWfs.bind(this)} variant="outline" colorScheme="blue">
+              <Button onClick={this.pauseWfs.bind(this)} colorScheme="whiteAlpha">
                 <i className="fas fa-pause" />
                 &nbsp;&nbsp;Pause
               </Button>
@@ -263,7 +263,7 @@ class DetailsModal extends Component {
         case 'PAUSED':
           return (
             <ButtonGroup float="right">
-              <Button onClick={this.resumeWfs.bind(this)} variant="outline" colorScheme="blue">
+              <Button onClick={this.resumeWfs.bind(this)} colorScheme="whiteAlpha">
                 <i className="fas fa-play" />
                 &nbsp;&nbsp;Resume
               </Button>
@@ -418,7 +418,7 @@ class DetailsModal extends Component {
     };
 
     return (
-      <Modal size="3xl" dialogClassName="modalWider" isOpen={this.state.show} onClose={this.handleClose}>
+      <Modal size="5xl" isOpen={this.state.show} onClose={this.handleClose}>
         <ModalOverlay />
         <ModalCloseButton />
         <TaskModal
@@ -433,12 +433,19 @@ class DetailsModal extends Component {
           </ModalHeader>
           <ModalBody>
             {headerInfo()}
-            <Tabs marginBottom={20} id="detailTabs">
+            <Tabs
+              value={this.state.activeTab}
+              onChange={(index) => {
+                this.setState({ activeTab: index });
+              }}
+              marginBottom={20}
+              id="detailTabs"
+            >
               <TabList>
                 <Tab>Task Details</Tab>
                 <Tab>Input/Output</Tab>
                 <Tab>JSON</Tab>
-                <Tab>Edit & Rerun</Tab>
+                <Tab value="editRerun">Edit & Rerun</Tab>
                 <Tab>Execution Flow</Tab>
               </TabList>
               <TabPanels>
@@ -464,33 +471,37 @@ class DetailsModal extends Component {
               </TabPanels>
             </Tabs>
           </ModalBody>
-          <ModalFooter>
-            <a
-              style={{ float: 'left', marginRight: '50px' }}
+          <ModalFooter justifyContent="space-between">
+            <Button
+              variant="link"
+              colorScheme="blue"
+              justifySelf="start"
               onClick={() => this.props.onWorkflowIdClick(this.state.wfIdRerun)}
             >
               {this.state.wfIdRerun}
-            </a>
-            {this.state.activeTab === 'editRerun' ? (
-              <Button
-                marginRight={4}
-                colorScheme={
-                  this.state.status === 'OK'
-                    ? 'green'
-                    : this.state.status === 'Executing...'
-                    ? 'teal'
-                    : this.state.status === 'Execute'
-                    ? 'blue'
-                    : 'red'
-                }
-                onClick={this.executeWorkflow.bind(this)}
-              >
-                {this.state.status}
-              </Button>
-            ) : null}
-            <Button colorScheme="gray" onClick={this.handleClose}>
-              Close
             </Button>
+            <Flex>
+              {this.state.activeTab === 3 ? (
+                <Button
+                  marginRight={4}
+                  colorScheme={
+                    this.state.status === 'OK'
+                      ? 'green'
+                      : this.state.status === 'Executing...'
+                      ? 'teal'
+                      : this.state.status === 'Execute'
+                      ? 'blue'
+                      : 'red'
+                  }
+                  onClick={this.executeWorkflow.bind(this)}
+                >
+                  {this.state.status}
+                </Button>
+              ) : null}
+              <Button colorScheme="gray" onClick={this.handleClose}>
+                Close
+              </Button>
+            </Flex>
           </ModalFooter>
         </ModalContent>
       </Modal>

@@ -67,17 +67,29 @@ const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
           <Icon as={FontAwesomeIcon} icon={faCogs} color="grey" />
           <Text>Workflows</Text>
 
-          <Button variant="outline" colorScheme="blue" onClick={onAddButtonClick}>
-            <Icon as={FontAwesomeIcon} icon={faPlus} />
-            &nbsp;&nbsp;New
+          <Button
+            variant="outline"
+            leftIcon={<Icon as={FontAwesomeIcon} icon={faPlus} />}
+            colorScheme="blue"
+            onClick={onAddButtonClick}
+          >
+            New
           </Button>
-          <Button variant="outline" colorScheme="blue" onClick={openFileUpload}>
-            <Icon as={FontAwesomeIcon} icon={faFileImport} />
-            &nbsp;&nbsp;Import
+          <Button
+            variant="outline"
+            leftIcon={<Icon as={FontAwesomeIcon} icon={faFileImport} />}
+            colorScheme="blue"
+            onClick={openFileUpload}
+          >
+            Import
           </Button>
-          <Button variant="outline" colorScheme="blue" onClick={() => exportFile()}>
-            <Icon as={FontAwesomeIcon} icon={faFileExport} />
-            &nbsp;&nbsp;Export
+          <Button
+            variant="outline"
+            leftIcon={<Icon as={FontAwesomeIcon} icon={faFileExport} />}
+            colorScheme="blue"
+            onClick={() => exportFile()}
+          >
+            Export
           </Button>
         </Stack>
       </Heading>

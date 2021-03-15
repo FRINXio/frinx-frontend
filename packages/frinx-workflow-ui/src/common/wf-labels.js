@@ -16,6 +16,8 @@ const WfLabels = (props: Props) => {
       size="sm"
       background={color}
       color="white"
+      marginRight={1}
+      marginBottom={1}
       cursor="pointer"
       {...props}
       onClick={(e) => {

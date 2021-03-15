@@ -7,6 +7,8 @@ function PaginationPages(props) {
   return (
     <>
       <Paginator
+        outerLimit={1}
+        innerLimit={1}
         currentPage={props.currentPage}
         onPageChange={(nextPage) => {
           props.changePageHandler(nextPage);
