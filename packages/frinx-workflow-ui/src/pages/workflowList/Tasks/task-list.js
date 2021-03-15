@@ -13,6 +13,7 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  Stack,
   Table,
   Tbody,
   Td,
@@ -90,22 +91,24 @@ const TaskList = () => {
           <Td>{e.retryCount}</Td>
           <Td>{e.retryLogic}</Td>
           <Td textAlign="center">
-            <IconButton
-              colorScheme="gray"
-              isRound
-              variant="outline"
-              title="Definition"
-              icon={<Icon as={FontAwesomeIcon} icon={faFileCode} />}
-              onClick={() => handleTaskModal(e.name)}
-            />
-            <IconButton
-              colorScheme="red"
-              isRound
-              variant="outline"
-              onClick={() => deleteTask(e.name)}
-              title="Delete"
-              icon={<Icon as={FontAwesomeIcon} icon={faTrash} />}
-            />
+            <Stack direction="row" spacing={1}>
+              <IconButton
+                colorScheme="gray"
+                isRound
+                variant="outline"
+                title="Definition"
+                icon={<Icon as={FontAwesomeIcon} icon={faFileCode} />}
+                onClick={() => handleTaskModal(e.name)}
+              />
+              <IconButton
+                colorScheme="red"
+                isRound
+                variant="outline"
+                onClick={() => deleteTask(e.name)}
+                title="Delete"
+                icon={<Icon as={FontAwesomeIcon} icon={faTrash} />}
+              />
+            </Stack>
           </Td>
         </Tr>
       );
@@ -205,7 +208,7 @@ const TaskList = () => {
     <PageContainer>
       {taskModalComp}
       {addTaskModal}
-      <Flex marginBottom={4}>
+      <Flex marginBottom={8}>
         <InputGroup>
           <InputLeftElement>
             <Icon as={FontAwesomeIcon} icon={faSearch} color="grey" />

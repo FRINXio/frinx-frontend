@@ -1,14 +1,24 @@
+/*
+  FIXME
+  This is just copy-pasted WorfklowDefs with removed functionality.
+  Find out better way to implement read only components. We probably
+  want to use something different than class inheritance.
+
+  https://reactjs.org/docs/composition-vs-inheritance.html
+
+*/
+
 // @flow
+import 'react-bootstrap-typeahead/css/Typeahead.css';
 import DefinitionModal from './DefinitonModal/DefinitionModal';
 import DependencyModal from './DependencyModal/DependencyModal';
 import DiagramModal from './DiagramModal/DiagramModal';
-import InputModal from './InputModal/InputModal';
+import InputModal from './InputModal/input-modal';
 import PageContainer from '../../../common/PageContainer';
 import PaginationPages from '../../../common/Pagination';
 import React, { useEffect, useState } from 'react';
-import SchedulingModal from '../Scheduling/SchedulingModal/SchedulingModal';
-import WfLabels from '../../../common/WfLabels';
-import WorkflowListViewModal from './WorkflowListViewModal/WorkflowListViewModal';
+import WfAutoComplete from '../../../common/wf-autocomplete';
+import WfLabels from '../../../common/wf-labels';
 import _ from 'lodash';
 import callbackUtils from '../../../utils/callbackUtils';
 import {
@@ -21,13 +31,6 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -46,18 +49,7 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Typeahead } from 'react-bootstrap-typeahead';
-import {
-  faClock,
-  faCodeBranch,
-  faEdit,
-  faFileCode,
-  faListUl,
-  faPlay,
-  faSearch,
-  faStar,
-  faTrash,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCodeBranch, faFileCode, faPlay, faSearch, faStar } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarOutlined } from '@fortawesome/free-regular-svg-icons';
 import { jsonParse } from '../../../common/utils';
 import { usePagination } from '../../../common/PaginationHook';
@@ -79,7 +71,7 @@ type Props = {
   onWorkflowIdClick: (wfId: string) => void,
 };
 
-const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) => {
+function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
   const [keywords, setKeywords] = useState('');
   const [labels, setLabels] = useState([]);
   const [data, setData] = useState([]);
@@ -88,9 +80,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const [diagramModal, setDiagramModal] = useState(false);
   const [inputModal, setInputModal] = useState(false);
   const [dependencyModal, setDependencyModal] = useState(false);
-  const [schedulingModal, setSchedulingModal] = useState(false);
-  const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
-  const [workflowListViewModal, setWorkflowListViewModal] = useState(false);
   const [allLabels, setAllLabels] = useState([]);
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
 
@@ -125,7 +114,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
             }
           });
     setItemList(results);
-  }, [keywords, labels, data]);
+  }, [keywords, labels, data, setItemList]);
 
   const getData = () => {
     const getWorkflows = callbackUtils.getWorkflowsCallback();
@@ -146,47 +135,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     setLabels(newLabels);
   };
 
-  const updateFavourite = (workflow) => {
-    let wfDescription = jsonParse(workflow.description);
-
-    // if workflow doesn't contain description attr. at all
-    if (!wfDescription) {
-      wfDescription = {
-        description: '',
-        labels: ['FAVOURITE'],
-      };
-    }
-    // if workflow has only description but no labels array
-    else if (wfDescription && !wfDescription.labels) {
-      wfDescription = {
-        ...wfDescription,
-        labels: ['FAVOURITE'],
-      };
-    }
-    // if workflow is already favourited (unfav.)
-    else if (wfDescription.labels.includes('FAVOURITE')) {
-      wfDescription.labels = wfDescription?.labels.filter((e) => e !== 'FAVOURITE');
-    }
-    // if workflow has correct description object, just add label
-    else {
-      wfDescription.labels.push('FAVOURITE');
-    }
-
-    workflow.description = JSON.stringify(wfDescription);
-
-    const putWorkflow = callbackUtils.putWorkflowCallback();
-    const getWorkflows = callbackUtils.getWorkflowsCallback();
-
-    putWorkflow([workflow]).then(() => {
-      getWorkflows().then((workflows) => {
-        const dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
-        const allLabels = getLabels(dataset);
-        setData(dataset);
-        setAllLabels(allLabels);
-      });
-    });
-  };
-
   const createLabels = ({ name, description }) => {
     const labelsDef = jsonParse(description)?.labels || [];
 
@@ -196,35 +144,10 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     });
   };
 
-  const deleteWorkflow = (workflow) => {
-    const deleteWorkflow = callbackUtils.deleteWorkflowCallback();
-
-    deleteWorkflow(workflow?.name, workflow?.version).then(() => {
-      getData();
-      setConfirmDeleteModal(false);
-    });
-  };
-
   const repeatButtons = (dataset) => {
     return (
       <Td textAlign="center">
-        <Stack direction="row" spacing={1}>
-          <IconButton
-            colorScheme="red"
-            isRound
-            variant="outline"
-            onClick={() => showConfirmDeleteModal(dataset)}
-            title="Delete"
-            icon={<Icon as={FontAwesomeIcon} icon={faTrash} />}
-          />
-          <IconButton
-            colorScheme="gray"
-            isRound
-            variant="outline"
-            title="Favourites"
-            icon={<Icon as={FontAwesomeIcon} icon={labels.includes('FAVOURITE') ? faStar : faStarOutlined} />}
-            onClick={() => updateFavourite(dataset)}
-          />
+        <Stack direction="row" spacing={1} justify="center">
           <IconButton
             colorScheme="gray"
             isRound
@@ -242,32 +165,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
             onClick={() => showDefinitionModal(dataset)}
           />
           <IconButton
-            colorScheme="gray"
-            isRound
-            variant="outline"
-            title="Workflow List"
-            icon={<Icon as={FontAwesomeIcon} icon={faListUl} />}
-            onClick={() => showWorkflowListViewModal(dataset)}
-          />
-          <IconButton
-            colorScheme="gray"
-            isRound
-            variant="outline"
-            title="Edit"
-            icon={<Icon as={FontAwesomeIcon} icon={faEdit} />}
-            onClick={() => {
-              onDefinitionClick(dataset.name, dataset.version);
-            }}
-          />
-          <IconButton
-            colorScheme="gray"
-            isRound
-            variant="outline"
-            title={dataset.hasSchedule ? 'Edit schedule' : 'Create schedule'}
-            icon={<Icon as={FontAwesomeIcon} icon={faClock} />}
-            onClick={() => showSchedulingModal(dataset)}
-          />
-          <IconButton
             colorScheme="blue"
             isRound
             title="Execute"
@@ -282,7 +179,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const filteredRows = () => {
     return pageItems.map((e) => {
       return (
-        <Tr key={`${e.name}-${e.version}`}>
+        <Tr>
           <Td>
             <Heading as="h6" size="xs">
               {e.name} / {e.version}
@@ -295,9 +192,10 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
           </Td>
           <Td>{createLabels(e)}</Td>
           <Td width={2} textAlign="center">
-            <Popover>
+            <Popover trigger="hover">
               <PopoverTrigger>
                 <Button size="sm" disabled={getDependencies(e).length === 0} onClick={() => showDependencyModal(e)}>
+                  {' '}
                   {getDependencies(e).length + ' '} Tree{' '}
                 </Button>
               </PopoverTrigger>
@@ -334,36 +232,9 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     setActiveWf(workflow);
   };
 
-  const onSchedulingModalClose = () => {
-    setSchedulingModal(false);
-    getData();
-  };
-
-  const showSchedulingModal = (workflow) => {
-    setSchedulingModal(!schedulingModal);
-    setActiveWf(workflow);
-  };
-
   const showDependencyModal = (workflow) => {
     setDependencyModal(!dependencyModal);
     setActiveWf(workflow);
-  };
-
-  const showConfirmDeleteModal = (workflow) => {
-    setConfirmDeleteModal(!confirmDeleteModal);
-    setActiveWf(workflow);
-  };
-
-  const showWorkflowListViewModal = (workflow) => {
-    setWorkflowListViewModal(!workflowListViewModal);
-    setActiveWf(workflow);
-  };
-
-  const getActiveWfScheduleName = () => {
-    if (activeWf != null && activeWf.expectedScheduleName != null) {
-      return activeWf.expectedScheduleName;
-    }
-    return null;
   };
 
   const getDependencies = (workflow) => {
@@ -388,30 +259,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     return diagramModal ? <DiagramModal wf={activeWf} modalHandler={showDiagramModal} show={diagramModal} /> : null;
   };
 
-  const renderWorkflowListViewModal = () => {
-    return workflowListViewModal ? (
-      <WorkflowListViewModal
-        wf={activeWf}
-        modalHandler={showWorkflowListViewModal}
-        show={workflowListViewModal}
-        data={data}
-        onDefinitionClick={onDefinitionClick}
-      />
-    ) : null;
-  };
-
-  const renderSchedulingModal = () => {
-    return (
-      <SchedulingModal
-        name={getActiveWfScheduleName()}
-        workflowName={activeWf?.name}
-        workflowVersion={activeWf?.version}
-        onClose={onSchedulingModalClose}
-        show={schedulingModal}
-      />
-    );
-  };
-
   const renderDependencyModal = () => {
     return dependencyModal ? (
       <DependencyModal
@@ -424,64 +271,26 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     ) : null;
   };
 
-  const renderConfirmDeleteModal = () => {
-    return confirmDeleteModal ? (
-      <Modal size="sm" isOpen={confirmDeleteModal} onClose={showConfirmDeleteModal}>
-        <ModalOverlay />
-        <ModalCloseButton />
-        <ModalContent>
-          <ModalHeader>Delete Workflow</ModalHeader>
-          <ModalBody>
-            <p>
-              Do you want to delete workflow <b>{activeWf?.name}</b> ?
-            </p>
-          </ModalBody>
-          <ModalFooter>
-            <Button marginRight={4} colorScheme="red" onClick={() => deleteWorkflow(activeWf)}>
-              <Icon as={FontAwesomeIcon} icon={faTrash} />
-              &nbsp;&nbsp;Delete
-            </Button>
-            <Button colorScheme="gray" onClick={() => showConfirmDeleteModal()}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    ) : null;
-  };
-
   return (
     <PageContainer>
       {renderDefinitionModal()}
       {renderInputModal()}
       {renderDiagramModal()}
       {renderDependencyModal()}
-      {renderSchedulingModal()}
-      {renderConfirmDeleteModal()}
-      {renderWorkflowListViewModal()}
-      <Grid templateColumns="40px 1fr 1fr" gap={4}>
+      <Grid templateColumns="40px 1fr 1fr" gap={4} marginBottom={8}>
         <IconButton
           colorScheme="blue"
-          height={8}
-          width={8}
+          height={9}
+          width={9}
           onClick={() => searchFavourites()}
           title="Favourites"
           icon={<Icon as={FontAwesomeIcon} icon={labels.includes('FAVOURITE') ? faStar : faStarOutlined} />}
         />
         <Box>
-          <Typeahead
-            id="typeaheadDefs"
-            selected={labels}
-            onChange={(e) => setLabels(e)}
-            clearButton
-            labelKey="name"
-            multiple
-            options={allLabels}
-            placeholder="Search by label."
-          />
+          <WfAutoComplete options={allLabels} onChange={setLabels} selected={labels} placeholder="Search by label." />
         </Box>
         <Box>
-          <InputGroup marginBottom={8}>
+          <InputGroup marginBottom={0}>
             <InputLeftElement>
               <Icon as={FontAwesomeIcon} icon={faSearch} color="grey" />
             </InputLeftElement>
@@ -514,6 +323,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
       </Table>
     </PageContainer>
   );
-};
+}
 
-export default WorkflowDefinitions;
+export default WorkflowDefs;

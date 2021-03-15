@@ -5,6 +5,7 @@ import callbackUtils from '../../../../utils/callbackUtils';
 import {
   Box,
   Button,
+  Flex,
   FormControl,
   FormHelperText,
   FormLabel,
@@ -286,25 +287,27 @@ function InputModal(props) {
             </Grid>
           </form>
         </ModalBody>
-        <ModalFooter>
-          <a style={{ float: 'left', marginRight: '50px' }} onClick={() => props.onWorkflowIdClick(wfId)}>
+        <ModalFooter justifyContent="space-between">
+          <Button variant="link" colorScheme="blue" justifySelf="start" onClick={() => props.onWorkflowIdClick(wfId)}>
             {wfId}
-          </a>
-          <Button
-            marginRight={4}
-            colorScheme={
-              status === 'OK' ? 'green' : status === 'Executing...' ? 'teal' : status === 'Execute' ? 'blue' : 'red'
-            }
-            onClick={executeWorkflow}
-          >
-            {status === 'Execute' ? <i className="fas fa-play" /> : null}
-            {status === 'Executing...' ? <i className="fas fa-spinner fa-spin" /> : null}
-            {status === 'OK' ? <i className="fas fa-check-circle" /> : null}
-            &nbsp;&nbsp;{status}
           </Button>
-          <Button colorScheme="gray" onClick={() => handleClose(false)}>
-            Close
-          </Button>
+          <Flex>
+            <Button
+              marginRight={4}
+              colorScheme={
+                status === 'OK' ? 'green' : status === 'Executing...' ? 'teal' : status === 'Execute' ? 'blue' : 'red'
+              }
+              onClick={executeWorkflow}
+            >
+              {status === 'Execute' ? <i className="fas fa-play" /> : null}
+              {status === 'Executing...' ? <i className="fas fa-spinner fa-spin" /> : null}
+              {status === 'OK' ? <i className="fas fa-check-circle" /> : null}
+              &nbsp;&nbsp;{status}
+            </Button>
+            <Button colorScheme="gray" onClick={() => handleClose(false)}>
+              Close
+            </Button>
+          </Flex>
         </ModalFooter>
       </ModalContent>
     </Modal>

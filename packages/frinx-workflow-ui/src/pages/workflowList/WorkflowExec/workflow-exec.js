@@ -3,12 +3,13 @@ import './WorkflowExec.css';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import * as bulkActions from '../../../store/actions/bulk';
 import * as searchActions from '../../../store/actions/searchExecs';
-import DetailsModal from './DetailsModal/DetailsModal';
+import DetailsModal from './DetailsModal/details-modal';
 import PageContainer from '../../../common/PageContainer';
 import PageCount from '../../../common/PageCount';
 import PageSelect from '../../../common/PageSelect';
 import React, { Component } from 'react';
-import WorkflowBulk from './WorkflowBulk/WorkflowBulk';
+import WfAutoComplete from '../../../common/wf-autocomplete';
+import WorkflowBulk from './WorkflowBulk/workflow-bulk';
 import moment from 'moment';
 import {
   Box,
@@ -27,7 +28,6 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { Typeahead } from 'react-bootstrap-typeahead';
 import { connect } from 'react-redux';
 
 class WorkflowExec extends Component {
@@ -447,15 +447,12 @@ class WorkflowExec extends Component {
           </ButtonGroup>
         </Flex>
 
-        <Grid templateColumns="1fr 1fr 40px" gap={4} marginBottom={12}>
+        <Grid templateColumns="1fr 1fr 40px" gap={4} marginBottom={8}>
           <Box flexGrow={1}>
-            <Typeahead
-              id="typeaheadExec"
-              selected={this.props.searchReducer.labels}
-              clearButton
-              onChange={(e) => this.changeLabels(e)}
-              labelKey="name"
+            <WfAutoComplete
               options={['RUNNING', 'COMPLETED', 'FAILED', 'TIMED_OUT', 'TERMINATED', 'PAUSED']}
+              onChange={(e) => this.changeLabels(e)}
+              selected={this.props.searchReducer.labels}
               placeholder="Search by status."
               ref={(ref) => (this._typeahead = ref)}
             />
@@ -483,7 +480,7 @@ class WorkflowExec extends Component {
           </Button>
         </Grid>
         <div className="execTableWrapper">
-          <Table background="white" ref={this.table} striped={this.state.allData} hover size="sm">
+          <Table background="white" ref={this.table} striped={this.state.allData} hover>
             <Thead>
               <Tr>
                 <Th> </Th>

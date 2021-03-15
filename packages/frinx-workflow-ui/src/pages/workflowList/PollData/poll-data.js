@@ -49,7 +49,7 @@ const PollData = () => {
           return false;
         });
     setItemList(results);
-  }, [keywords, data, setItemList]);
+  }, [keywords, data]);
 
   const sortArray = (key) => {
     const sortedArray = data;

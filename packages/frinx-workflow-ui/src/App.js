@@ -9,16 +9,16 @@ import { Redirect, Route, Switch, useRouteMatch, useParams } from 'react-router-
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import DiagramBuilder from './pages/diagramBuilder/DiagramBuilder';
-import WorkflowListHeader from './pages/workflowList/WorkflowListHeader';
+import WorkflowListHeader from './pages/workflowList/workflow-list-header';
 import buildReducer from './store/reducers/builder';
 import bulkReducer from './store/reducers/bulk';
 import searchReducer from './store/reducers/searchExecs';
-import WorkflowDefinitions from './pages/workflowList/WorkflowDefs/WorkflowDefinitions';
-import WorkflowExec from './pages/workflowList/WorkflowExec/WorkflowExec';
+import WorkflowDefinitions from './pages/workflowList/WorkflowDefs/workflow-definitions';
+import WorkflowExec from './pages/workflowList/WorkflowExec/workflow-exec';
 import Scheduling from './pages/workflowList/Scheduling/Scheduling';
-import EventListeners from './pages/workflowList/EventListeners/EventListeners';
-import TaskList from './pages/workflowList/Tasks/TaskList';
-import PollData from './pages/workflowList/PollData/PollData';
+import EventListeners from './pages/workflowList/EventListeners/event-listeners';
+import TaskList from './pages/workflowList/Tasks/task-list';
+import PollData from './pages/workflowList/PollData/poll-data';
 import { getUniflowApiProvider } from './UniflowApiProvider';
 
 const rootReducer = combineReducers({

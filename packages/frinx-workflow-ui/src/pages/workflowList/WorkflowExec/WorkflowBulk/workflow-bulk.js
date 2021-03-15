@@ -14,11 +14,14 @@ import {
   Button,
   Flex,
   Heading,
+  Icon,
   Progress,
   Spinner,
   Stack,
   Text,
 } from '@chakra-ui/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 
 class WorkflowBulk extends Component {
   constructor(props) {
@@ -55,7 +58,7 @@ class WorkflowBulk extends Component {
             <AccordionButton>
               <Box flex="1" textAlign="left">
                 Bulk Processing (click to expand)&nbsp;&nbsp;
-                <i className="fas fa-ellipsis-h" />
+                <Icon as={FontAwesomeIcon} icon={faEllipsisH} />
                 &nbsp;&nbsp; Displaying <b>{wfsCount}</b> workflows
               </Box>
               <AccordionIcon />

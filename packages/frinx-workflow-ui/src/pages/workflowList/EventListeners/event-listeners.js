@@ -15,6 +15,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Stack,
   Table,
   Tbody,
   Td,
@@ -180,16 +181,18 @@ const EventListeners = () => {
                 <Td>{e.event.split(':')[2]}</Td>
                 <Td>{e.actions[0].action}</Td>
                 <Td textAlign="center">
-                  <Button colorScheme="blue" onClick={() => setSelectedEvent(e)}>
-                    Edit
-                  </Button>
-                  <IconButton
-                    icon={<Icon as={FontAwesomeIcon} icon={faTrash} />}
-                    variant="outline"
-                    isRound
-                    colorScheme="red"
-                    onClick={() => deleteEvent(e.name)}
-                  />
+                  <Stack direction="row" spacing={1}>
+                    <Button colorScheme="blue" onClick={() => setSelectedEvent(e)}>
+                      Edit
+                    </Button>
+                    <IconButton
+                      icon={<Icon as={FontAwesomeIcon} icon={faTrash} />}
+                      variant="outline"
+                      isRound
+                      colorScheme="red"
+                      onClick={() => deleteEvent(e.name)}
+                    />
+                  </Stack>
                 </Td>
               </Tr>
             );
