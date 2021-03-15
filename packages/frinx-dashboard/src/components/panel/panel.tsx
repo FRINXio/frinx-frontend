@@ -1,13 +1,12 @@
 import React, { FC } from 'react';
-import { Box, Heading, Text, Link, Flex, Icon, WrapItem } from '@chakra-ui/react';
+import { Box, Heading, Text, Flex, Icon, LinkOverlay } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import FeatherIcon from 'feather-icons-react';
 
 type Props = {
   label: string;
   description: string;
-  icon: IconDefinition;
+  icon: string;
   path: string;
 };
 
@@ -15,16 +14,19 @@ const Panel: FC<Props> = (props) => {
   const { path, label, description, icon } = props;
 
   return (
-    <WrapItem
+    <Flex
+      as={Box}
+      // maxW="sm"
+      width="sm"
       padding={4}
-      alignItems="flex-start"
-      boxShadow="base"
-      background="white"
-      borderRadius="md"
+      rounded="md"
       _hover={{
-        boxShadow: 'md',
+        boxShadow: 'sm',
+        background: 'white',
       }}
-      width={72}
+      position="relative"
+      justifyContent="flex-start"
+      alignItems="center"
     >
       <Flex
         width={12}
@@ -34,24 +36,19 @@ const Panel: FC<Props> = (props) => {
         borderRadius="md"
         boxShadow="inner"
         background="brand.100"
+        fontSize="24px"
       >
-        <Icon as={FontAwesomeIcon} icon={icon} color="brand.700" />
+        <Icon as={FeatherIcon} icon={icon} color="brand.700" size={24} />
       </Flex>
-      <Box paddingLeft={4} flex={1}>
+      <Box marginLeft={4}>
         <Heading size="md" as="h2" marginBottom={1}>
-          <Link
-            to={path}
-            as={RouterLink}
-            _hover={{
-              textDecor: 'underline',
-            }}
-          >
+          <LinkOverlay to={path} as={RouterLink}>
             {label}
-          </Link>
+          </LinkOverlay>
         </Heading>
         <Text fontSize="sm">{description}</Text>
       </Box>
-    </WrapItem>
+    </Flex>
   );
 };
 

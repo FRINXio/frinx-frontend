@@ -3,6 +3,10 @@ declare module '*.png' {
   export default content;
 }
 
+declare module '*.svg' {
+  const content: string;
+  export default content;
+}
 declare module '*.inline.svg' {
   const content: 'svg';
   export default content;
@@ -10,14 +14,20 @@ declare module '*.inline.svg' {
 
 declare module 'react-notifications';
 
-interface DashboardApp {
+declare module 'feather-icons-react' {
+  const content: FC<{ icon: string; size: string }>;
+
+  export default content;
+}
+
+type DashboardApp = {
   init: () => Promise<DashboardApp>;
 
   render: () => void;
-}
+};
 
 /* eslint-disable @typescript-eslint/naming-convention */
-interface Window {
+type Window = {
   __CONFIG__: Readonly<{
     auth_enabled: boolean;
     auth_client_id: string;
@@ -32,5 +42,5 @@ interface Window {
   }>;
 
   dashboardApp: DashboardApp;
-}
+};
 /* eslint-enable */
