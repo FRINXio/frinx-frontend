@@ -14,17 +14,17 @@ import WorkflowDefinitionModal from './components/workflow-definition-modal/work
 import EditWorkflowForm from './components/edit-workflow-form/edit-workflow-form';
 import ActionsMenu from './components/actions-menu/actions-menu';
 import BgSvg from './img/bg.svg';
-import { convertDiagramWorkflow, convertWorkflow } from './helpers/workflow.helpers';
+import { createWorkflowHelper, deserializeId } from './helpers/workflow.helpers';
 import { NodeData, ExtendedTask, Workflow, CustomNodeType, TaskDefinition } from './helpers/types';
 import { useTaskActions } from './task-actions-context';
 import ExpandedWorkflowModal from './components/expanded-workflow-modal/expanded-workflow-modal';
 
 type Props = {
   onClose: () => void;
-  workflow: Workflow;
+  workflow: Workflow<ExtendedTask>;
   workflows: Workflow[];
   taskDefinitions: TaskDefinition[];
-  onWorkflowChange: (workflow: Workflow) => void;
+  onWorkflowChange: (workflow: Workflow<ExtendedTask>) => void;
   onWorkflowSave: (workflows: Workflow[]) => Promise<unknown>;
 };
 
@@ -33,18 +33,24 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
   const [isEditing, setIsEditing] = useState(false);
-  const schemaCtrlRef = useRef(useMemo(() => createDiagramController(convertWorkflow(workflow)), [workflow]));
+  const workflowCtrlRef = useRef(useMemo(() => createWorkflowHelper(workflow), [workflow]));
+  const schemaCtrlRef = useRef(useMemo(() => createDiagramController(workflow), [workflow]));
   const [schema, { onChange, addNode, removeNode }] = useSchema<NodeData>(
     useMemo(() => schemaCtrlRef.current.createSchemaFromWorkflow(), []),
   );
   const handleDeleteButtonClick = useCallback(
     (id: string) => {
+      // TODO: wait for the library update to fix a bug with removing node with links
+      onChange({
+        links: schema.links?.filter((l) => deserializeId(l.input).id !== id && deserializeId(l.output).id !== id) ?? [],
+        nodes: schema.nodes,
+      });
       const nodeToRemove = schema.nodes.find((node) => node.id === id);
       if (nodeToRemove) {
         removeNode(nodeToRemove);
       }
     },
-    [removeNode, schema.nodes],
+    [removeNode, schema.nodes, onChange, schema.links],
   );
   const { selectedTask, selectTask } = useTaskActions(handleDeleteButtonClick);
 
@@ -100,7 +106,7 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
             <Button
               colorScheme="blue"
               onClick={() => {
-                console.log(convertDiagramWorkflow(schema, workflow));
+                console.log(workflowCtrlRef.current.convertWorkflow(schema));
               }}
             >
               Save and execute
@@ -117,8 +123,14 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
         }}
       >
         <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
-        <Box flex={1} as={ScrollContainer}>
-          <Box position="relative" height="100%" width={4000}>
+        <Box flex={1}>
+          <Box
+            position="relative"
+            height="100%"
+            // style={{
+            //   width: schemaCtrlRef.current.getCanvasWidth(),
+            // }}
+          >
             <Diagram
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore

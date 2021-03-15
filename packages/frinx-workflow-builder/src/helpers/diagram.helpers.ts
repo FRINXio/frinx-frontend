@@ -1,17 +1,24 @@
 import { createSchema } from 'beautiful-react-diagrams';
 import { flatten } from 'lodash';
-import { Link } from 'beautiful-react-diagrams/@types/DiagramSchema';
+import { DiagramSchema, Link } from 'beautiful-react-diagrams/@types/DiagramSchema';
 import { v4 as uuid } from 'uuid';
 import TaskNode from '../components/nodes/task-node';
 import BaseNode from '../components/nodes/start-end-node';
 import DecisionNode from '../components/nodes/decision-node';
-import { CustomNodeType, ExtendedTask, Workflow, ExtendedDecisionTask } from './types';
+import { CustomNodeType, ExtendedTask, Workflow, ExtendedDecisionTask, NodeData } from './types';
 import { getTaskLabel } from './task.helpers';
 import unwrap from './unwrap';
 
 const NODE_WIDTH = 275;
-const MAIN_Y_AXIS_POSITON = 500;
-const DECISION_Y_AXIS_POSITON = 300;
+const MAIN_Y_AXIS_POSITON = 300;
+const DECISION_Y_AXIS_POSITON = 100;
+
+function serializeGenericId(id: string, type: 'input' | 'output'): string {
+  return JSON.stringify({ id, type });
+}
+function serializeDecisionId(id: string, type: string): string {
+  return JSON.stringify({ id, type });
+}
 
 function dropNullValues<T>(array: (T | null)[]): T[] {
   const result: T[] = [];
@@ -50,18 +57,18 @@ class DiagramController {
       render: DecisionNode,
       inputs: [
         {
-          id: task.id,
+          id: serializeGenericId(task.id, 'input'),
           alignment: 'left',
         },
       ],
       outputs: [
-        ...Object.keys(task.decisionCases).map((key) => {
+        ...Object.keys(task.decisionCases).map((_, index) => {
           return {
-            id: `${key}:${task.id}`,
+            id: serializeDecisionId(task.id, index.toString()),
           };
         }),
         {
-          id: `else:${task.id}`,
+          id: serializeDecisionId(task.id, 'else'),
         },
       ],
       data: {
@@ -78,13 +85,13 @@ class DiagramController {
       coordinates: [position.x, position.y],
       outputs: [
         {
-          id: task.id,
+          id: serializeGenericId(task.id, 'output'),
           alignment: 'right',
         },
       ],
       inputs: [
         {
-          id: task.id,
+          id: serializeGenericId(task.id, 'input'),
           alignment: 'left',
         },
       ],
@@ -99,7 +106,7 @@ class DiagramController {
       content: 'start',
       id: 'start',
       coordinates: [100, MAIN_Y_AXIS_POSITON],
-      outputs: [{ id: 'start', alignment: 'right' }],
+      outputs: [{ id: serializeGenericId('start', 'output'), alignment: 'right' }],
       render: BaseNode,
       data: undefined,
     };
@@ -110,7 +117,7 @@ class DiagramController {
       content: 'end',
       id: 'end',
       coordinates: [position.x, position.y],
-      inputs: [{ id: 'end', alignment: 'left' }],
+      inputs: [{ id: serializeGenericId('end', 'input'), alignment: 'left' }],
       render: BaseNode,
       data: undefined,
     };
@@ -136,13 +143,13 @@ class DiagramController {
       render: TaskNode,
       inputs: [
         {
-          id: task.id,
+          id: serializeGenericId(task.id, 'input'),
           alignment: 'left',
         },
       ],
       outputs: [
         {
-          id: task.id,
+          id: serializeGenericId(task.id, 'output'),
           alignment: 'right',
         },
       ],
@@ -230,7 +237,11 @@ class DiagramController {
     return dropNullValues(maybeLinks);
   };
 
-  createSchemaFromWorkflow = () => {
+  getCanvasWidth = (): number => {
+    return (this.taskIndex + 2) * 2 * NODE_WIDTH;
+  };
+
+  createSchemaFromWorkflow = (): DiagramSchema<NodeData> => {
     const nodesFromWorkflow = this.createNodesFromWorkflow();
     const nodes = [
       this.createStartNode(),

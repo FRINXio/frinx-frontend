@@ -1,9 +1,10 @@
 import React, { FC, useEffect, useState } from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
-import { TaskDefinition, Workflow } from './helpers/types';
+import { ExtendedTask, TaskDefinition, Workflow } from './helpers/types';
 import App from './app';
 import theme from './theme';
 import { TaskActionsProvider } from './task-actions-context';
+import { convertWorkflow } from './helpers/workflow.helpers';
 
 type Props = {
   name?: string;
@@ -24,14 +25,14 @@ const Root: FC<Props> = ({
   getWorkflowsCallback,
   getTaskDefinitionsCallback,
 }) => {
-  const [workflow, setWorkflow] = useState<Workflow | null>(null);
+  const [workflow, setWorkflow] = useState<Workflow<ExtendedTask> | null>(null);
   const [workflows, setWorkflows] = useState<Workflow[] | null>(null);
   const [taskDefinitions, setTaskDefinitions] = useState<TaskDefinition[] | null>(null);
 
   useEffect(() => {
     if (name != null && version != null) {
       getWorkflowCallback(name, version).then((wf) => {
-        setWorkflow(wf);
+        setWorkflow(convertWorkflow(wf));
       });
     }
   }, [name, version, getWorkflowCallback]);

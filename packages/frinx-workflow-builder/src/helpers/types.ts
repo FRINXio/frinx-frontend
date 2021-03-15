@@ -272,11 +272,10 @@ export type Workflow<T extends Task = Task> = {
   timeoutSeconds: number;
   variables: Record<string, unknown>;
 };
-export type NodeData =
-  | {
-      task: ExtendedTask;
-    }
-  | undefined;
+export type NodeData = {
+  task: ExtendedTask;
+};
+
 export type CustomNodeType = Node<NodeData>;
 
 export type TaskDefinition = {

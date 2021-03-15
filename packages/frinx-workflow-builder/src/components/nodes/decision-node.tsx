@@ -1,9 +1,10 @@
 import React, { FC } from 'react';
-import { Box, Flex, Heading, IconButton, Text, Theme, Tooltip, useTheme } from '@chakra-ui/react';
-import { EditIcon } from '@chakra-ui/icons';
+import { Box, Flex, Heading, Text, Theme, useTheme } from '@chakra-ui/react';
 import { CustomNodeType, ExtendedDecisionTask, ExtendedTask } from '../../helpers/types';
 import unwrap from '../../helpers/unwrap';
 import { getNodeColor } from './nodes.helpers';
+import { useTaskActions } from '../../task-actions-context';
+import NodeButtons from './node-buttons';
 
 const isDecisionTask = (task: ExtendedTask): task is ExtendedDecisionTask => {
   return task != null && task.type === 'DECISION';
@@ -12,59 +13,61 @@ const isDecisionTask = (task: ExtendedTask): task is ExtendedDecisionTask => {
 const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
   const theme = useTheme<Theme>();
   const { inputs, outputs, data } = props;
-  const { task, onEditBtnClick } = unwrap(data);
+  const { selectTask, selectedTask, setRemovedTaskId } = useTaskActions();
+  const { task } = unwrap(data);
 
   return (
     <Flex
       alignItems="stretch"
       background="white"
-      width={60}
+      width={64}
       borderWidth={2}
       borderStyle="solid"
-      borderColor={data?.isSelected ? 'blue.600' : 'gray.200'}
+      borderColor={task.id === selectedTask?.task.id ? 'blue.600' : 'gray.200'}
       borderTopColor={getNodeColor(task.label)}
       borderTopWidth={6}
       borderTopStyle="solid"
       overflow="hidden"
-      boxShadow={data?.isSelected ? undefined : 'base'}
+      boxShadow={task.id === selectedTask?.task.id ? undefined : 'base'}
       borderRadius="md"
     >
-      <Flex
-        width={10}
-        background="gray.200"
-        color="gray.700"
-        textAlign="center"
-        alignItems="center"
-        justifyContent="center"
-        textTransform="uppercase"
-        fontSize="xs"
-      >
+      <Flex background="gray.100" alignItems="stretch" width={10}>
         {inputs?.map((port) => {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          return React.cloneElement(port, null, 'in');
+          return React.cloneElement(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            port,
+            {
+              style: {
+                background: theme.colors.gray[200],
+                width: theme.space[12],
+                fontSize: theme.fontSizes.xs,
+                color: theme.colors.gray[700],
+                marginRight: 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textTransform: 'uppercase',
+              },
+            },
+            'in',
+          );
         })}
       </Flex>
 
       <Box flex={1}>
         <Flex alignItems="center" flex={1} paddingX={2} paddingY={1} height={8}>
-          <Heading as="h6" size="xs" textTransform="uppercase">
-            {task.label}
+          <Heading as="h6" size="xs" textTransform="uppercase" isTruncated title={task.name}>
+            {task.name}
           </Heading>
-          <Box marginLeft="auto">
-            <Tooltip label="Edit workflow">
-              <IconButton
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onEditBtnClick(data);
-                }}
-                aria-label="Edit workflow"
-                icon={<EditIcon />}
-                size="xs"
-                colorScheme="blue"
-              />
-            </Tooltip>
-          </Box>
+          <NodeButtons
+            onEditButtonClick={() => {
+              selectTask({ actionType: 'edit', task });
+            }}
+            onDeleteButtonClick={() => {
+              setRemovedTaskId(task.id);
+            }}
+          />
         </Flex>
         <Flex height={8} alignItems="center" justifyContent="center">
           <Text size="sm" color="gray.700" fontFamily="monospace">
@@ -73,7 +76,8 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
         </Flex>
       </Box>
       <Flex
-        width={10}
+        width={12}
+        flexBasis={12}
         // background="gray.200"
         marginLeft="auto"
         flexDirection="column"

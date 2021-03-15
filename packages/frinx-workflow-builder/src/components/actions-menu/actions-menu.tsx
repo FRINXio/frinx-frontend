@@ -16,7 +16,7 @@ const ActionsMenu: FC<Props> = ({ onShowDefinitionBtnClick, onNewWorkflowBtnClic
         Actions
       </MenuButton>
       <Portal>
-        <MenuList>
+        <MenuList zIndex="modal">
           <MenuItem>
             <Box as="span" fontSize="0.8em" marginRight={3} flexShrink={0} alignSelf="center">
               <Box as={FeatherIcon} size="1em" icon="save" flexShrink={0} lineHeight={4} verticalAlign="middle" />
