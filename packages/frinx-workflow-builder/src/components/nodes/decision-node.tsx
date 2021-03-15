@@ -15,6 +15,7 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
   const { inputs, outputs, data } = props;
   const { selectTask, selectedTask, setRemovedTaskId } = useTaskActions();
   const { task } = unwrap(data);
+  const borderColor = getNodeColor(unwrap(task).label);
 
   return (
     <Flex
@@ -23,8 +24,8 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
       width={64}
       borderWidth={2}
       borderStyle="solid"
-      borderColor={task.id === selectedTask?.task.id ? 'blue.600' : 'gray.200'}
-      borderTopColor={getNodeColor(task.label)}
+      borderColor={task.id === selectedTask?.task.id ? borderColor : 'gray.200'}
+      borderTopColor={borderColor}
       borderTopWidth={6}
       borderTopStyle="solid"
       overflow="hidden"

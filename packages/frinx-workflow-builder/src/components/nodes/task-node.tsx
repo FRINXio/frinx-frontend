@@ -11,6 +11,7 @@ const TaskNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
   const { selectTask, selectedTask, setRemovedTaskId } = useTaskActions();
   const theme = useTheme();
   const { task } = unwrap(data);
+  const borderColor = getNodeColor(unwrap(task).label);
 
   return (
     <Box
@@ -18,8 +19,8 @@ const TaskNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
       width={60}
       borderWidth={2}
       borderStyle="solid"
-      borderColor={task.id === selectedTask?.task.id ? 'blue.600' : 'gray.200'}
-      borderTopColor={getNodeColor(unwrap(task).label)}
+      borderColor={task.id === selectedTask?.task.id ? borderColor : 'gray.200'}
+      borderTopColor={borderColor}
       borderTopWidth={6}
       borderTopStyle="solid"
       overflow="hidden"

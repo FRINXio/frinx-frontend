@@ -80,7 +80,7 @@ const TaskForm: FC<Props> = ({ task, onClose, onFormSubmit }) => {
               </FormHelperText>
             </FormControl>
             <FormControl id="startDelay" my={6}>
-              <Box width={1 / 2}>
+              <Box width="50%">
                 <FormLabel>Start delay</FormLabel>
                 <Input
                   variant="filled"
