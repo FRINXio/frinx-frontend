@@ -11,9 +11,9 @@ export type Task = {
   inputData: {},
   outputData: {},
   workflowTask: {
-    description: string;
+    description: string,
     taskDefinition: {
-      description: string;
-    };
+      description: string,
+    },
   },
 };
