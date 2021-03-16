@@ -10,4 +10,10 @@ export type Task = {
   logs: {},
   inputData: {},
   outputData: {},
+  workflowTask: {
+    description: string;
+    taskDefinition: {
+      description: string;
+    };
+  },
 };
