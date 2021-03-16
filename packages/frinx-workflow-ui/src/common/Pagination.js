@@ -22,9 +22,9 @@ function PaginationPages(props) {
         }}
       >
         <Flex>
-          <Previous>{'<'}</Previous>
+          <Previous marginRight={1}>{'<'}</Previous>
           <PageGroup isInline align="center" />
-          <Next>{'>'}</Next>
+          <Next marginLeft={1}>{'>'}</Next>
         </Flex>
       </Paginator>
     </>
