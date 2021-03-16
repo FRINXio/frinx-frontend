@@ -134,13 +134,13 @@ const WfAutoComplete = forwardRef((props, ref) => {
       </InputGroup>
 
       {isOptionsVisible && (
-        <Box bg="white" position="absolute" w="100%" zIndex="1000" border="1px solid #fafafa">
+        <Box bg="white" position="absolute" w="100%" zIndex="dropdown" border="1px solid gray.50">
           <Box>
             {results.map((item, index) => {
               return (
                 <Box
                   padding={2}
-                  background={active == index ? '#fafafa' : 'white'}
+                  backgroundColor={active == index ? 'gray.50' : 'white'}
                   onMouseOver={() => {
                     setActive(index);
                   }}

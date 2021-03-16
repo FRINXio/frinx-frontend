@@ -32,7 +32,7 @@ import PageContainer from '../../../common/PageContainer';
 import PaginationPages from '../../../common/Pagination';
 import callbackUtils from '../../../utils/callbackUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { usePagination } from '../../../common/PaginationHook';
 
 const EventListeners = () => {
@@ -182,9 +182,13 @@ const EventListeners = () => {
                 <Td>{e.actions[0].action}</Td>
                 <Td textAlign="center">
                   <Stack direction="row" spacing={1}>
-                    <Button colorScheme="blue" onClick={() => setSelectedEvent(e)}>
-                      Edit
-                    </Button>
+                    <IconButton
+                      icon={<Icon as={FontAwesomeIcon} icon={faEdit} />}
+                      variant="outline"
+                      isRound
+                      colorScheme="gray"
+                      onClick={() => setSelectedEvent(e)}
+                    />
                     <IconButton
                       icon={<Icon as={FontAwesomeIcon} icon={faTrash} />}
                       variant="outline"
