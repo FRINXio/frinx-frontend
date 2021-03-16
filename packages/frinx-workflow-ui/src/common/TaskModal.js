@@ -4,12 +4,20 @@ import { Col, Container, Modal, Row, Tab, Tabs } from 'react-bootstrap';
 import Highlight from 'react-highlight.js';
 import UnescapeButton from './UnescapeButton';
 import type { Task } from './flowtypes';
+import { jsonParse } from './utils';
 
 type Props = {
   task: Task,
   show: boolean,
   handle: () => void,
 };
+
+function renderTaskDescription(task) {
+  return (
+    jsonParse(task?.workflowTask?.description)?.description ||
+    jsonParse(task?.workflowTask?.taskDefinition?.description)?.description
+  );
+}
 
 const TaskModal = (props: Props) => {
   let task = props.task;
@@ -44,6 +52,12 @@ const TaskModal = (props: Props) => {
                   <br />
                   <b>Poll Count:&nbsp;&nbsp;</b>
                   {task.pollCount}
+                </Col>
+              </Row>
+              <Row style={{ marginTop: '20px', marginBottom: '20px' }}>
+                <Col>
+                  <b>Description: </b>
+                  {renderTaskDescription(task)}
                 </Col>
               </Row>
               <hr />
