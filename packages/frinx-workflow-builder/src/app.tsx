@@ -11,6 +11,7 @@ import TaskForm from './components/task-form/task-form';
 import LeftMenu from './components/left-menu';
 import NewWorkflowModal from './components/new-workflow-modal/new-workflow-modal';
 import WorkflowDefinitionModal from './components/workflow-definition-modal/workflow-definition-modal';
+import ExecutionModal from './components/execution-modal/execution-modal';
 import EditWorkflowForm from './components/edit-workflow-form/edit-workflow-form';
 import ActionsMenu from './components/actions-menu/actions-menu';
 import BgSvg from './img/bg.svg';
@@ -18,6 +19,7 @@ import { createWorkflowHelper, deserializeId } from './helpers/workflow.helpers'
 import { NodeData, ExtendedTask, Workflow, CustomNodeType, TaskDefinition } from './helpers/types';
 import { useTaskActions } from './task-actions-context';
 import ExpandedWorkflowModal from './components/expanded-workflow-modal/expanded-workflow-modal';
+import callbackUtils from './callback-utils';
 
 type Props = {
   onClose: () => void;
@@ -25,14 +27,14 @@ type Props = {
   workflows: Workflow[];
   taskDefinitions: TaskDefinition[];
   onWorkflowChange: (workflow: Workflow<ExtendedTask>) => void;
-  onWorkflowSave: (workflows: Workflow[]) => Promise<unknown>;
 };
 
-const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions, onWorkflowSave }) => {
+const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions }) => {
   const theme = useTheme();
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
   const [isEditing, setIsEditing] = useState(false);
+  const [isInputModalShown, setIsInputModalShown] = useState(false);
   const workflowCtrlRef = useRef(useMemo(() => createWorkflowHelper(workflow), [workflow]));
   const schemaCtrlRef = useRef(useMemo(() => createDiagramController(workflow), [workflow]));
   const [schema, { onChange, addNode, removeNode }] = useSchema<NodeData>(
@@ -106,8 +108,11 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
             <Button
               colorScheme="blue"
               onClick={() => {
+                const onWorkflowSave = callbackUtils.saveWorkflowCallback();
                 // console.log(workflowCtrlRef.current.convertWorkflow(schema));
-                onWorkflowSave([workflowCtrlRef.current.convertWorkflow(schema)]);
+                onWorkflowSave([workflowCtrlRef.current.convertWorkflow(schema)]).then(() => {
+                  setIsInputModalShown(true);
+                });
               }}
             >
               Save and execute
@@ -206,6 +211,15 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
         onClose={workflowModalDisclosure.onClose}
         onConfirm={() => console.log('NEW WORKFLOW')}
       />
+      {isInputModalShown && (
+        <ExecutionModal
+          workflow={workflowCtrlRef.current.convertWorkflow(schema)}
+          onClose={() => setIsInputModalShown(false)}
+          shouldCloseAfterSubmit
+          isOpen={isInputModalShown}
+          onWorkflowIdClick={console.log}
+        />
+      )}
     </Flex>
   );
 };

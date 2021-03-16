@@ -43,6 +43,7 @@ function InputModal(props) {
       label: label,
       ...(inputParams ? inputParams[label] : null),
     }));
+    console.log({ labels, inputParams, workflowForm });
 
     if (definition.match(/\bEVENT_TASK\b/)) {
       getWaitingWorkflows().then((waitingWfs) => {

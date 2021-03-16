@@ -1,3 +1,4 @@
+// @flow
 // TODO types for callbacks
 
 class CallbackUtils {

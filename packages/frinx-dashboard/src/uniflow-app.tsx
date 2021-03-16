@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
-import { WorkflowBuilder } from '@frinx/workflow-builder/src';
+// import { WorkflowBuilder } from '@frinx/workflow-builder/src';
 import {
   getWorkflows,
   getWorkflow,
@@ -59,38 +59,50 @@ const callbacks = {
   registerSchedule,
 };
 
+type UniflowComponents = Omit<typeof import('@frinx/workflow-ui'), 'getUniflowApiProvider'> & {
+  UniflowApiProvider: FC;
+};
+type BuilderComponents = Omit<typeof import('@frinx/workflow-builder/src'), 'getBuilderApiProvider'> & {
+  BuilderApiProvider: FC;
+};
+
 const UniflowApp: FC = () => {
-  const [components, setComponents] = useState<typeof import('@frinx/workflow-ui') | null>(null);
+  const [components, setComponents] = useState<(UniflowComponents & BuilderComponents) | null>(null);
   const history = useHistory();
 
   useEffect(() => {
-    import('@frinx/workflow-ui').then((mod) => {
-      const {
-        ReduxProvider,
-        WorkflowListHeader,
-        WorkflowDefinitions,
-        WorkflowExec,
-        Scheduling,
-        EventListeners,
-        TaskList,
-        PollData,
-        DiagramBuilder,
-        getUniflowApiProvider,
-      } = mod;
-      setComponents({
-        ReduxProvider,
-        WorkflowListHeader,
-        WorkflowDefinitions,
-        WorkflowExec,
-        Scheduling,
-        EventListeners,
-        TaskList,
-        PollData,
-        DiagramBuilder,
-        getUniflowApiProvider,
-        UniflowApiProvider: getUniflowApiProvider(callbacks),
-      });
-    });
+    Promise.all([import('@frinx/workflow-ui'), import('@frinx/workflow-builder/src')]).then(
+      ([uniflowImport, builderImport]) => {
+        const {
+          ReduxProvider,
+          WorkflowListHeader,
+          WorkflowDefinitions,
+          WorkflowExec,
+          Scheduling,
+          EventListeners,
+          TaskList,
+          PollData,
+          DiagramBuilder,
+          getUniflowApiProvider,
+        } = uniflowImport;
+        const { WorkflowBuilder, getBuilderApiProvider } = builderImport;
+
+        setComponents({
+          ReduxProvider,
+          WorkflowListHeader,
+          WorkflowDefinitions,
+          WorkflowExec,
+          Scheduling,
+          EventListeners,
+          TaskList,
+          PollData,
+          DiagramBuilder,
+          UniflowApiProvider: getUniflowApiProvider(callbacks),
+          WorkflowBuilder,
+          BuilderApiProvider: getBuilderApiProvider(callbacks),
+        });
+      },
+    );
   }, []);
 
   if (components == null) {
@@ -107,6 +119,8 @@ const UniflowApp: FC = () => {
     TaskList,
     PollData,
     UniflowApiProvider,
+    WorkflowBuilder,
+    BuilderApiProvider,
   } = components;
 
   return (
@@ -123,14 +137,15 @@ const UniflowApp: FC = () => {
               const { match } = props;
 
               return (
-                <WorkflowBuilder
-                  name={match.params.name}
-                  version={match.params.version}
-                  getWorkflowCallback={getWorkflow}
-                  saveWorkflowCallback={putWorkflow}
-                  getWorkflowsCallback={getWorkflows}
-                  getTaskDefinitionsCallback={getTaskDefinitions}
-                />
+                <BuilderApiProvider>
+                  <WorkflowBuilder
+                    name={match.params.name}
+                    version={match.params.version}
+                    onClose={() => {
+                      history.push('/uniflow/definitions');
+                    }}
+                  />
+                </BuilderApiProvider>
               );
             }}
           />

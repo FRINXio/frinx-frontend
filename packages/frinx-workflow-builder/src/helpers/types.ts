@@ -259,7 +259,7 @@ export type Workflow<T extends Task = Task> = {
   name: string;
   description?: string;
   version: number;
-  inputParameters?: AnyJson;
+  inputParameters?: string[];
   outputParameters: AnyJson;
   failureWorkflow?: boolean;
   schemaVersion: 2;

@@ -5,49 +5,41 @@ import App from './app';
 import theme from './theme';
 import { TaskActionsProvider } from './task-actions-context';
 import { convertWorkflow } from './helpers/workflow.helpers';
+import callbackUtils from './callback-utils';
 
 type Props = {
   name?: string;
   version?: string;
   onClose: () => void;
-  saveWorkflowCallback: (workflows: Workflow[]) => Promise<unknown>;
-  getWorkflowCallback: (name: string, version: string) => Promise<Workflow>;
-  getWorkflowsCallback: () => Promise<Workflow[]>;
-  getTaskDefinitionsCallback: () => Promise<TaskDefinition[]>;
 };
 
-const Root: FC<Props> = ({
-  name,
-  version,
-  onClose,
-  saveWorkflowCallback,
-  getWorkflowCallback,
-  getWorkflowsCallback,
-  getTaskDefinitionsCallback,
-}) => {
+const Root: FC<Props> = ({ name, version, onClose }) => {
   const [workflow, setWorkflow] = useState<Workflow<ExtendedTask> | null>(null);
   const [workflows, setWorkflows] = useState<Workflow[] | null>(null);
   const [taskDefinitions, setTaskDefinitions] = useState<TaskDefinition[] | null>(null);
 
   useEffect(() => {
     if (name != null && version != null) {
-      getWorkflowCallback(name, version).then((wf) => {
+      const getWorkflow = callbackUtils.getWorkflowCallback();
+      getWorkflow(name, version).then((wf) => {
         setWorkflow(convertWorkflow(wf));
       });
     }
-  }, [name, version, getWorkflowCallback]);
+  }, [name, version]);
 
   useEffect(() => {
-    getWorkflowsCallback().then((wfs) => {
+    const getWorkflows = callbackUtils.getWorkflowsCallback();
+    getWorkflows().then((wfs) => {
       setWorkflows(wfs);
     });
-  }, [getWorkflowsCallback]);
+  }, []);
 
   useEffect(() => {
-    getTaskDefinitionsCallback().then((tsks) => {
+    const getTaskDefinitions = callbackUtils.getTaskDefinitionsCallback();
+    getTaskDefinitions().then((tsks) => {
       setTaskDefinitions(tsks);
     });
-  }, [getTaskDefinitionsCallback]);
+  }, []);
 
   // useEffect(() => {
   //   const styleTag = document.createElement('style');
@@ -62,7 +54,6 @@ const Root: FC<Props> = ({
           onClose={onClose}
           workflow={workflow}
           onWorkflowChange={setWorkflow}
-          onWorkflowSave={saveWorkflowCallback}
           workflows={workflows}
           taskDefinitions={taskDefinitions}
         />
