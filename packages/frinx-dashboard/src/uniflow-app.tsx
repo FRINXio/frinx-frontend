@@ -128,6 +128,8 @@ const UniflowApp: FC = () => {
                   version={match.params.version}
                   getWorkflowCallback={getWorkflow}
                   saveWorkflowCallback={putWorkflow}
+                  getWorkflowsCallback={getWorkflows}
+                  getTaskDefinitionsCallback={getTaskDefinitions}
                 />
               );
             }}

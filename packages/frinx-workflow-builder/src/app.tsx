@@ -28,7 +28,7 @@ type Props = {
   onWorkflowSave: (workflows: Workflow[]) => Promise<unknown>;
 };
 
-const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions }) => {
+const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions, onWorkflowSave }) => {
   const theme = useTheme();
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
@@ -106,7 +106,8 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
             <Button
               colorScheme="blue"
               onClick={() => {
-                console.log(workflowCtrlRef.current.convertWorkflow(schema));
+                // console.log(workflowCtrlRef.current.convertWorkflow(schema));
+                onWorkflowSave([workflowCtrlRef.current.convertWorkflow(schema)]);
               }}
             >
               Save and execute
