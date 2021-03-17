@@ -57,7 +57,7 @@ class Grapher extends Component<Props, StateType> {
 
     this.setSvgRef = (elem) => (this.svgElem = elem);
 
-    let starPoints = function(outerRadius, innerRadius) {
+    let starPoints = function (outerRadius, innerRadius) {
       let results = '';
       let angle = Math.PI / 8;
       for (let i = 0; i < 2 * 8; i++) {
@@ -74,7 +74,7 @@ class Grapher extends Component<Props, StateType> {
       return results;
     };
 
-    this.grapher.shapes().house = function(parent, bbox, node) {
+    this.grapher.shapes().house = function (parent, bbox, node) {
       let w = bbox.width,
         h = bbox.height,
         points = [
@@ -89,21 +89,21 @@ class Grapher extends Component<Props, StateType> {
         .attr(
           'points',
           points
-            .map(function(d) {
+            .map(function (d) {
               return d.x + ',' + d.y;
             })
             .join(' '),
         )
         .attr('transform', 'translate(' + -w / 2 + ',' + (h * 3) / 4 + ')');
 
-      node.intersect = function(point) {
+      node.intersect = function (point) {
         return dagreD3.intersect.polygon(node, points, point);
       };
 
       return shapeSvg;
     };
 
-    this.grapher.shapes().star = function(parent, bbox, node) {
+    this.grapher.shapes().star = function (parent, bbox, node) {
       let w = bbox.width,
         h = bbox.height,
         points = [
@@ -114,7 +114,7 @@ class Grapher extends Component<Props, StateType> {
           { x: 0, y: -h },
         ];
       let shapeSvg = parent.insert('polygon', ':first-child').attr('points', starPoints(w, h));
-      node.intersect = function(point) {
+      node.intersect = function (point) {
         return dagreD3.intersect.polygon(node, points, point);
       };
 
@@ -171,7 +171,7 @@ class Grapher extends Component<Props, StateType> {
       });
     });
 
-    g.nodes().forEach(function(v) {
+    g.nodes().forEach(function (v) {
       var node = g.node(v);
       if (node == null) {
         console.log('NO node found ' + v);
@@ -192,11 +192,11 @@ class Grapher extends Component<Props, StateType> {
     let innerGraph = this.state.innerGraph || [];
     let p = this;
 
-    let hideProps = function() {
+    let hideProps = function () {
       p.setState({ showSideBar: false });
     };
 
-    inner.selectAll('g.node').on('click', function(v) {
+    inner.selectAll('g.node').on('click', function (v) {
       if (innerGraph[v] != null) {
         let data = vertices[v].data;
 

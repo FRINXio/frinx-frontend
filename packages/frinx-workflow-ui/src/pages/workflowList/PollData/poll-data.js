@@ -42,12 +42,7 @@ const PollData = () => {
                 return true;
               }
             }
-            if (
-              e[searchedKeys[i]]
-                .toString()
-                .toLowerCase()
-                .includes(keywords.toLocaleLowerCase())
-            ) {
+            if (e[searchedKeys[i]].toString().toLowerCase().includes(keywords.toLocaleLowerCase())) {
               return true;
             }
           }

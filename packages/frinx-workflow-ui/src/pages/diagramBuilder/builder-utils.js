@@ -34,11 +34,7 @@ export const getTaskInputsRegex = (t) => {
   return inputParameters;
 };
 
-export const hash = () =>
-  Math.random()
-    .toString(36)
-    .toUpperCase()
-    .substr(2, 4);
+export const hash = () => Math.random().toString(36).toUpperCase().substr(2, 4);
 
 export const encode = (s) => {
   let out = [];
@@ -81,7 +77,7 @@ export const fn = (obj, key) => {
   if (_.has(obj, key)) return obj;
 
   return _.flatten(
-    _.map(obj, function(v) {
+    _.map(obj, function (v) {
       return typeof v == 'object' ? fn(v, key) : [];
     }),
     true,

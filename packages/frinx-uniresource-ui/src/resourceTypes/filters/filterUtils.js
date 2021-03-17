@@ -5,12 +5,7 @@ export const filterByQuery = (searchQuery, array) =>
         const searchedKeys = ['Name'];
 
         for (let i = 0; i < searchedKeys.length; i += 1) {
-          if (
-            e[searchedKeys[i]]
-              .toString()
-              .toLowerCase()
-              .includes(searchQuery.toLocaleLowerCase())
-          ) {
+          if (e[searchedKeys[i]].toString().toLowerCase().includes(searchQuery.toLocaleLowerCase())) {
             return true;
           }
         }

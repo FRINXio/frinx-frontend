@@ -54,7 +54,7 @@ const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
         zip.file(wf.name + '.json', JSON.stringify(wf, null, 2));
       });
 
-      zip.generateAsync({ type: 'blob' }).then(function(content) {
+      zip.generateAsync({ type: 'blob' }).then(function (content) {
         saveAs(content, 'workflows.zip');
       });
     });

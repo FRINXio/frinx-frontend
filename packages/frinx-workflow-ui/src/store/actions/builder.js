@@ -144,13 +144,7 @@ export const requestUpdateByQuery = (queryIn, labelsIn) => {
     // query filter
     if (queryIn && queryIn !== '') {
       withLabels.forEach((wf) => {
-        if (
-          wf['name'] &&
-          wf['name']
-            .toString()
-            .toUpperCase()
-            .indexOf(queryIn.toUpperCase()) !== -1
-        ) {
+        if (wf['name'] && wf['name'].toString().toUpperCase().indexOf(queryIn.toUpperCase()) !== -1) {
           toBeUpdated.push(wf);
         }
       });
