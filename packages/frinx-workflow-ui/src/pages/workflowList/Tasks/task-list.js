@@ -56,7 +56,12 @@ const TaskList = () => {
           ];
 
           for (let i = 0; i < searchedKeys.length; i += 1) {
-            if (e[searchedKeys[i]].toString().toLowerCase().includes(keywords.toLocaleLowerCase())) {
+            if (
+              e[searchedKeys[i]]
+                .toString()
+                .toLowerCase()
+                .includes(keywords.toLocaleLowerCase())
+            ) {
               return true;
             }
           }

@@ -1,5 +1,5 @@
-import { Box } from '@chakra-ui/layout';
 import React, { FC, useEffect, useState } from 'react';
+import { Box } from '@chakra-ui/react';
 import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
 // import { WorkflowBuilder } from '@frinx/workflow-builder/src';
 import {

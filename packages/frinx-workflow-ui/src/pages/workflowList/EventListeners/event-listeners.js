@@ -51,7 +51,12 @@ const EventListeners = () => {
       : eventListeners.filter((e) => {
           const searchedKeys = ['name', 'event'];
           for (let i = 0; i < searchedKeys.length; i += 1) {
-            if (e[searchedKeys[i]].toString().toLowerCase().includes(searchTerm.toLocaleLowerCase())) {
+            if (
+              e[searchedKeys[i]]
+                .toString()
+                .toLowerCase()
+                .includes(searchTerm.toLocaleLowerCase())
+            ) {
               return true;
             }
           }

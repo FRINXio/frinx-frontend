@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname, '../build')));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // serve UI static files
-app.get('/*', function (req, res) {
+app.get('/*', function(req, res) {
   res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
@@ -47,7 +47,7 @@ if (process.env.HTTPS == 'true') {
     app,
   );
 
-  server.listen(port, function () {
+  server.listen(port, function() {
     console.log('Server is listening at https://%s:%s', host, port);
     if (process.send) {
       process.send('online');
@@ -68,7 +68,7 @@ if (process.env.HTTPS == 'true') {
     }, parseInt(process.env.RENEW_PERIOD));
   }
 } else {
-  app.listen(port, host, function () {
+  app.listen(port, host, function() {
     console.log('Server is listening at http://%s:%s', host, port);
     if (process.send) {
       process.send('online');

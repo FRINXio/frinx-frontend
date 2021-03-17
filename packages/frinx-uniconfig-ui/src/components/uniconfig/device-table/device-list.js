@@ -49,7 +49,12 @@ const DeviceList = ({ onMountBtnClick, onDeviceClick, onEditClick }) => {
 
             // search for keywords in "searchedKeys"
             for (let i = 0; i < searchedKeys.length; i += 1) {
-              if (node[searchedKeys[i]]?.toString().toLowerCase().includes(query.toLocaleLowerCase())) {
+              if (
+                node[searchedKeys[i]]
+                  ?.toString()
+                  .toLowerCase()
+                  .includes(query.toLocaleLowerCase())
+              ) {
                 return true;
               }
             }
