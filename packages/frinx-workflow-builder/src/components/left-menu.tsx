@@ -1,5 +1,5 @@
 import React, { FC, memo } from 'react';
-import { Box, Flex, Heading, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Tooltip } from '@chakra-ui/react';
+import { Box, Flex, Heading, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { ExtendedTask, TaskDefinition, Workflow } from '../helpers/types';
 import { convertTaskDefinition, createSubWorkflowTask, createSystemTasks, createTask } from '../helpers/task.helpers';

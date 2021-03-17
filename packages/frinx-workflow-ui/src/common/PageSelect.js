@@ -1,6 +1,7 @@
 // @flow
 import React, { Component } from 'react';
-import Pagination from 'react-bootstrap/Pagination';
+import { Flex } from '@chakra-ui/react';
+import { Next, PageGroup, Paginator, Previous } from 'chakra-paginator';
 
 type Props = {
   viewedPage: number,
@@ -18,46 +19,28 @@ class PageSelect extends Component<Props, StateType> {
     super(props);
     this.state = {};
   }
-
-  setPages() {
-    let output = [];
-    let viewedPage = this.props.viewedPage;
-    let pagesCount = this.props.count;
-    let indent = this.props.indent ? this.props.indent : 2;
-    output.push(
-      <Pagination.Prev
-        key={'prev'}
-        disabled={viewedPage === 1 || pagesCount === 0}
-        onClick={(e) => {
-          if (viewedPage !== 1 && pagesCount !== 0) this.props.handler(viewedPage - 1);
-        }}
-      />,
-    );
-    for (let i = 1; i <= pagesCount; i++) {
-      if (i >= viewedPage - indent && i <= viewedPage + indent) {
-        output.push(
-          <Pagination.Item key={i} active={viewedPage === i} onClick={() => this.props.handler(i)}>
-            {' '}
-            {i}{' '}
-          </Pagination.Item>,
-        );
-      }
-    }
-    output.push(
-      <Pagination.Next
-        key={'next'}
-        disabled={viewedPage === pagesCount || pagesCount === 0}
-        onClick={() => {
-          if (viewedPage !== pagesCount && pagesCount !== 0) {
-            this.props.handler(viewedPage + 1);
-          }
-        }}
-      />,
-    );
-    return output;
-  }
   render() {
-    return <Pagination style={{ float: 'right' }}>{this.setPages()}</Pagination>;
+    return (
+      <Paginator
+        activeStyles={{
+          width: 45,
+        }}
+        normalStyles={{
+          width: 45,
+        }}
+        currentPage={this.props.viewedPage}
+        onPageChange={(nextPage) => {
+          this.props.handler(nextPage);
+        }}
+        pagesQuantity={this.props.count || 1}
+      >
+        <Flex>
+          <Previous>{'<'}</Previous>
+          <PageGroup isInline align="center" />
+          <Next>{'>'}</Next>
+        </Flex>
+      </Paginator>
+    );
   }
 }
 

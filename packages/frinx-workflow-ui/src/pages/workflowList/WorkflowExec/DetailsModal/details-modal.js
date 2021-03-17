@@ -1,13 +1,41 @@
 // @flow
-import Clipboard from 'clipboard';
-import moment from 'moment';
-import React, { Component } from 'react';
-import { Button, ButtonGroup, Card, Col, Form, Modal, Row, Tab, Table, Tabs } from 'react-bootstrap';
-import TaskModal from '../../../../common/TaskModal';
 import './DetailsModal.css';
-import WorkflowDia from './WorkflowDia/WorkflowDia';
+import Clipboard from 'clipboard';
+import React, { Component } from 'react';
+import TaskModal from '../../../../common/TaskModal';
 import UnescapeButton from '../../../../common/UnescapeButton';
+import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../../../utils/callbackUtils';
+import moment from 'moment';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Flex,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Grid,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Table,
+  Tabs,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
 
 new Clipboard('.clp');
 
@@ -44,8 +72,8 @@ class DetailsModal extends Component {
     const getWorkflowInstanceDetail = callbackUtils.getWorkflowInstanceDetailCallback();
 
     getWorkflowInstanceDetail(this.props.wfId).then((res) => {
-      let inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
-      let def = JSON.stringify(res);
+      const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
+      const def = JSON.stringify(res);
       let match = inputCaptureRegex.exec(def);
       let inputsArray = [];
 
@@ -126,34 +154,34 @@ class DetailsModal extends Component {
       return '';
     }
 
-    let total = end - start;
+    const total = end - start;
 
     return total / 1000;
   }
 
   taskTableData() {
-    let dataset = this.state.result.tasks || [];
+    const dataset = this.state.result.tasks || [];
 
     return dataset.map((row, i) => {
       return (
-        <tr key={`row-${i}`} id={`row-${i}`} className="clickable">
-          <td>{row['seq']}</td>
-          <td onClick={this.handleTaskDetail.bind(this, row)}>{row['taskType']}&nbsp;&nbsp;</td>
-          <td style={{ textAlign: 'center' }}>
+        <Tr key={`row-${i}`} id={`row-${i}`} className="clickable">
+          <Td>{row['seq']}</Td>
+          <Td onClick={this.handleTaskDetail.bind(this, row)}>{row['taskType']}&nbsp;&nbsp;</Td>
+          <Td style={{ textAlign: 'center' }}>
             {row['taskType'] === 'SUB_WORKFLOW' ? (
-              <Button variant="primary" onClick={() => this.props.onWorkflowIdClick(row.subWorkflowId)}>
+              <Button colorScheme="blue" onClick={() => this.props.onWorkflowIdClick(row.subWorkflowId)}>
                 <i className="fas fa-arrow-circle-right" />
               </Button>
             ) : null}
-          </td>
-          <td onClick={this.handleTaskDetail.bind(this, row)}>{row['referenceTaskName']}</td>
-          <td>
+          </Td>
+          <Td onClick={this.handleTaskDetail.bind(this, row)}>{row['referenceTaskName']}</Td>
+          <Td>
             {this.formatDate(row['startTime'])}
             <br />
             {this.formatDate(row['endTime'])}
-          </td>
-          <td>{row['status']}</td>
-        </tr>
+          </Td>
+          <Td>{row['status']}</Td>
+        </Tr>
       );
     });
   }
@@ -208,12 +236,12 @@ class DetailsModal extends Component {
         case 'FAILED':
         case 'TERMINATED':
           return (
-            <ButtonGroup style={{ float: 'right' }}>
-              <Button onClick={this.restartWfs.bind(this)} variant="outline-light">
+            <ButtonGroup float="right">
+              <Button onClick={this.restartWfs.bind(this)} colorScheme="whiteAlpha">
                 <i className="fas fa-redo" />
                 &nbsp;&nbsp;Restart
               </Button>
-              <Button onClick={this.retryWfs.bind(this)} variant="outline-light">
+              <Button onClick={this.retryWfs.bind(this)} colorScheme="whiteAlpha">
                 <i className="fas fa-history" />
                 &nbsp;&nbsp;Retry
               </Button>
@@ -221,12 +249,12 @@ class DetailsModal extends Component {
           );
         case 'RUNNING':
           return (
-            <ButtonGroup style={{ float: 'right' }}>
-              <Button onClick={this.terminateWfs.bind(this)} variant="outline-light">
+            <ButtonGroup float="right">
+              <Button onClick={this.terminateWfs.bind(this)} colorScheme="whiteAlpha">
                 <i className="fas fa-times" />
                 &nbsp;&nbsp;Terminate
               </Button>
-              <Button onClick={this.pauseWfs.bind(this)} variant="outline-light">
+              <Button onClick={this.pauseWfs.bind(this)} colorScheme="whiteAlpha">
                 <i className="fas fa-pause" />
                 &nbsp;&nbsp;Pause
               </Button>
@@ -234,8 +262,8 @@ class DetailsModal extends Component {
           );
         case 'PAUSED':
           return (
-            <ButtonGroup style={{ float: 'right' }}>
-              <Button onClick={this.resumeWfs.bind(this)} variant="outline-light">
+            <ButtonGroup float="right">
+              <Button onClick={this.resumeWfs.bind(this)} colorScheme="whiteAlpha">
                 <i className="fas fa-play" />
                 &nbsp;&nbsp;Resume
               </Button>
@@ -248,61 +276,61 @@ class DetailsModal extends Component {
 
     const headerInfo = () => (
       <div className="headerInfo">
-        <Row>
-          <Col md="auto">
+        <Grid gridTemplateColumns="1fr 1fr 1fr 1fr 1fr">
+          <Box md="auto">
             <div>
               <b>Total Time (sec)</b>
               <br />
               {this.execTime(this.state.result.endTime, this.state.result.startTime)}
             </div>
-          </Col>
-          <Col md="auto">
+          </Box>
+          <Box md="auto">
             <div>
               <b>Start Time</b>
               <br />
               {this.formatDate(this.state.result.startTime)}
             </div>
-          </Col>
-          <Col md="auto">
+          </Box>
+          <Box md="auto">
             <div>
               <b>End Time</b>
               <br />
               {this.formatDate(this.state.result.endTime)}
             </div>
-          </Col>
-          <Col md="auto">
+          </Box>
+          <Box md="auto">
             <div>
               <b>Status</b>
               <br />
               {this.state.result.status}
             </div>
-          </Col>
-          <Col>{actionButtons(this.state.result.status)}</Col>
-        </Row>
+          </Box>
+          <Box>{actionButtons(this.state.result.status)}</Box>
+        </Grid>
       </div>
     );
 
     const taskTable = () => (
       <div className="heightWrapper">
-        <Table className="tasktable" ref={this.table} size="sm" striped bordered hover>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Task Type</th>
-              <th style={{ width: '10px' }}>Subwf.</th>
-              <th>Task Ref. Name</th>
-              <th>Start/End Time</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>{this.taskTableData()}</tbody>
+        <Table size="sm" ref={this.table}>
+          <Thead>
+            <Tr>
+              <Th>#</Th>
+              <Th>Task Type</Th>
+              <Th style={{ width: '10px' }}>Subwf.</Th>
+              <Th>Task Ref. Name</Th>
+              <Th>Start/End Time</Th>
+              <Th>Status</Th>
+            </Tr>
+          </Thead>
+          <Tbody>{this.taskTableData()}</Tbody>
         </Table>
       </div>
     );
 
     const inputOutput = () => (
-      <Row>
-        <Col>
+      <Flex justifyContent="space-between">
+        <Box>
           <h4>
             Workflow Input&nbsp;&nbsp;
             <i title="copy to clipboard" className="clp far fa-clipboard clickable" data-clipboard-target="#wfinput" />
@@ -314,8 +342,8 @@ class DetailsModal extends Component {
               {JSON.stringify(this.state.result.input, null, 2)}
             </pre>
           </code>
-        </Col>
-        <Col>
+        </Box>
+        <Box>
           <h4>
             Workflow Output&nbsp;&nbsp;
             <i title="copy to clipboard" className="clp far fa-clipboard clickable" data-clipboard-target="#wfoutput" />
@@ -327,8 +355,8 @@ class DetailsModal extends Component {
               {JSON.stringify(this.state.result.output, null, 2)}
             </pre>
           </code>
-        </Col>
-      </Row>
+        </Box>
+      </Flex>
     );
 
     const wfJson = () => (
@@ -346,33 +374,32 @@ class DetailsModal extends Component {
     );
 
     const editRerun = () => {
-      let input = this.state.input.input || [];
-      let iPam = this.state.meta.inputParameters || [];
+      const input = this.state.input.input || [];
+      const iPam = this.state.meta.inputParameters || [];
 
-      let labels = this.state.inputsArray;
-      let values = [];
+      const labels = this.state.inputsArray;
+      const values = [];
       labels.forEach((label) => {
-        let key = Object.keys(input).findIndex((key) => key === label);
+        const key = Object.keys(input).findIndex((key) => key === label);
         key > -1 ? values.push(Object.values(input)[key]) : values.push('');
       });
-      let descs = iPam.map((param) => {
+      const descs = iPam.map((param) => {
         if (param.match(/\[(.*?)]/)) return param.match(/\[(.*?)]/)[1];
         else return '';
       });
       return labels.map((label, i) => {
         return (
-          <Col sm={6} key={`col1-${i}`}>
-            <Form.Group>
-              <Form.Label>{label}</Form.Label>
-              <Form.Control
-                type="input"
-                placeholder="Enter the input"
+          <Box key={`col1-${i}`}>
+            <FormControl>
+              <FormLabel>{label}</FormLabel>
+              <Input
                 onChange={(e) => this.handleInput(e, labels[i])}
+                placeholder="Enter the input"
                 value={values[i] ? (typeof values[i] === 'object' ? JSON.stringify(values[i]) : values[i]) : ''}
               />
-              <Form.Text className="text-muted">{descs[i]}</Form.Text>
-            </Form.Group>
-          </Col>
+              <FormHelperText className="text-muted">{descs[i]}</FormHelperText>
+            </FormControl>
+          </Box>
         );
       });
     };
@@ -391,83 +418,92 @@ class DetailsModal extends Component {
     };
 
     return (
-      <Modal dialogClassName="modalWider" show={this.state.show} onHide={this.handleClose}>
+      <Modal size="5xl" isOpen={this.state.show} onClose={this.handleClose}>
+        <ModalOverlay />
+        <ModalCloseButton />
         <TaskModal
           task={this.state.taskDetail}
           show={this.state.taskModal}
           handle={this.handleTaskDetail.bind(this, {})}
         />
-        <Modal.Header>
-          <Modal.Title>
+        <ModalContent>
+          <ModalHeader>
             Details of {this.state.meta.name ? this.state.meta.name : null} / {this.state.meta.version}
-          </Modal.Title>
-          <div>{parentWorkflowButton()}</div>
-        </Modal.Header>
-        <Modal.Body>
-          <Card.Body style={{ padding: '0px' }}>{headerInfo()}</Card.Body>
-          <Tabs
-            className="heightWrapper"
-            onSelect={(e) => this.setState({ activeTab: e })}
-            style={{ marginBottom: '20px' }}
-            id="detailTabs"
-          >
-            <Tab mountOnEnter eventKey="taskDetails" title="Task Details">
-              {taskTable()}
-            </Tab>
-            <Tab mountOnEnter eventKey="inputOutput" title="Input/Output">
-              {inputOutput()}
-            </Tab>
-            <Tab mountOnEnter eventKey="json" title="JSON">
-              {wfJson()}
-            </Tab>
-            <Tab
-              disabled={this.state.result.status === 'RUNNING'}
-              mountOnEnter
-              eventKey="editRerun"
-              title="Edit & Rerun"
+            <div>{parentWorkflowButton()}</div>
+          </ModalHeader>
+          <ModalBody>
+            {headerInfo()}
+            <Tabs
+              value={this.state.activeTab}
+              onChange={(index) => {
+                this.setState({ activeTab: index });
+              }}
+              marginBottom={20}
+              id="detailTabs"
             >
-              <h4>
-                Edit & Rerun Workflow&nbsp;&nbsp;
-                <i className="clp far fa-play-circle" />
-              </h4>
-              <div style={{ padding: '20px' }}>
-                <Form>
-                  <Row>{editRerun()}</Row>
-                </Form>
-              </div>
-            </Tab>
-            <Tab eventKey="execFlow" mountOnEnter title="Execution Flow">
-              <WorkflowDia meta={this.state.meta} wfe={this.state.result} subworkflows={this.state.subworkflows} />
-            </Tab>
-          </Tabs>
-        </Modal.Body>
-        <Modal.Footer>
-          <a
-            style={{ float: 'left', marginRight: '50px' }}
-            onClick={() => this.props.onWorkflowIdClick(this.state.wfIdRerun)}
-          >
-            {this.state.wfIdRerun}
-          </a>
-          {this.state.activeTab === 'editRerun' ? (
+              <TabList>
+                <Tab>Task Details</Tab>
+                <Tab>Input/Output</Tab>
+                <Tab>JSON</Tab>
+                <Tab value="editRerun">Edit & Rerun</Tab>
+                <Tab>Execution Flow</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel>{taskTable()}</TabPanel>
+                <TabPanel>{inputOutput()}</TabPanel>
+                <TabPanel>{wfJson()}</TabPanel>
+                <TabPanel>
+                  <h4>
+                    Edit & Rerun Workflow&nbsp;&nbsp;
+                    <i className="clp far fa-play-circle" />
+                  </h4>
+                  <Box padding={12}>
+                    <form>
+                      <Grid gridTemplateColumns="1fr 1fr" gap={4}>
+                        {editRerun()}
+                      </Grid>
+                    </form>
+                  </Box>
+                </TabPanel>
+                <TabPanel>
+                  <WorkflowDia meta={this.state.meta} wfe={this.state.result} subworkflows={this.state.subworkflows} />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </ModalBody>
+          <ModalFooter justifyContent="space-between">
             <Button
-              variant={
-                this.state.status === 'OK'
-                  ? 'success'
-                  : this.state.status === 'Executing...'
-                  ? 'info'
-                  : this.state.status === 'Execute'
-                  ? 'primary'
-                  : 'danger'
-              }
-              onClick={this.executeWorkflow.bind(this)}
+              variant="link"
+              colorScheme="blue"
+              justifySelf="start"
+              onClick={() => this.props.onWorkflowIdClick(this.state.wfIdRerun)}
             >
-              {this.state.status}
+              {this.state.wfIdRerun}
             </Button>
-          ) : null}
-          <Button variant="secondary" onClick={this.handleClose}>
-            Close
-          </Button>
-        </Modal.Footer>
+            <Flex>
+              {this.state.activeTab === 3 ? (
+                <Button
+                  marginRight={4}
+                  colorScheme={
+                    this.state.status === 'OK'
+                      ? 'green'
+                      : this.state.status === 'Executing...'
+                      ? 'teal'
+                      : this.state.status === 'Execute'
+                      ? 'blue'
+                      : 'red'
+                  }
+                  onClick={this.executeWorkflow.bind(this)}
+                >
+                  {this.state.status}
+                </Button>
+              ) : null}
+              <Button colorScheme="gray" onClick={this.handleClose}>
+                Close
+              </Button>
+            </Flex>
+          </ModalFooter>
+        </ModalContent>
       </Modal>
     );
   }

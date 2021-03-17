@@ -7,6 +7,7 @@ type FormItem = {
   description?: string;
   type?: string;
   constraint?: string;
+  options?: (string | boolean | number)[] | { value: string | number }[];
 };
 type Props = {
   item: FormItem;

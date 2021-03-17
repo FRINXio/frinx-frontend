@@ -22,9 +22,6 @@ export function renderInputParamForm(task: Task, setState: (p: InputParameters) 
     if (task.type === 'SIMPLE' && isHttpTaskInputParams(task.inputParameters)) {
       return <HTTPInputsForm params={task.inputParameters} onChange={setState} />;
     }
-    if (task.type === 'SIMPLE') {
-      return <GenericInputForm params={task.inputParameters} onChange={setState} />;
-    }
     if (isLambdaTaskInputParams(task.inputParameters)) {
       return <LambdaInputsForm params={task.inputParameters} onChange={setState} />;
     }
@@ -40,6 +37,7 @@ export function renderInputParamForm(task: Task, setState: (p: InputParameters) 
     if (task.type === 'EVENT') {
       return <EventInputForm params={task.inputParameters} onChange={setState} />;
     }
+    return <GenericInputForm params={task.inputParameters} onChange={setState} />;
   }
   return null;
 }

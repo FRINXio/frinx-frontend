@@ -2,8 +2,23 @@
 
 import AceEditor from 'react-ace';
 import React, { useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
 import callbackUtils from '../../../../utils/callbackUtils';
+import {
+  Button,
+  Checkbox,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Input,
+  Link,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+} from '@chakra-ui/react';
 
 const SchedulingModal = (props) => {
   const [schedule, setSchedule] = useState();
@@ -99,9 +114,9 @@ const SchedulingModal = (props) => {
   const getCrontabGuruUrl = () => {
     const url = 'https://crontab.guru/#' + getCronString().replace(/\s/g, '_');
     return (
-      <a target="_blank" href={url}>
+      <Link href={url} color="brand.500">
         crontab.guru
-      </a>
+      </Link>
     );
   };
 
@@ -139,7 +154,7 @@ const SchedulingModal = (props) => {
   const deleteButton = () => {
     if (found) {
       return (
-        <Button variant="danger" onClick={handleDelete} disabled={status != null}>
+        <Button colorScheme="red" onClick={handleDelete} disabled={status != null}>
           Delete
         </Button>
       );
@@ -147,57 +162,59 @@ const SchedulingModal = (props) => {
   };
 
   return (
-    <Modal size="lg" dialogClassName="modal-70w" show={props.show} onHide={handleClose} onShow={handleShow}>
-      <Modal.Header>
-        <Modal.Title>Schedule Details - {props.name}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form onSubmit={submitForm}>
-          <Form.Group>
-            <Form.Label>Cron</Form.Label>
-            <Form.Control
-              type="input"
-              onChange={(e) => setCronString(e.target.value)}
-              placeholder="Enter cron pattern"
-              value={getCronString()}
-            />
-            Verify using {getCrontabGuruUrl()}
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Enabled</Form.Label>
-            <Form.Control type="checkbox" onChange={(e) => setEnabled(e.target.checked)} checked={getEnabled()} />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Workflow Input</Form.Label>
-            <AceEditor
-              mode="javascript"
-              theme="tomorrow"
-              width="100%"
-              height="100px"
-              onChange={(data) => setWorkflowContext(data)}
-              fontSize={16}
-              value={getWorkflowContext()}
-              wrapEnabled={true}
-              setOptions={{
-                showPrintMargin: true,
-                highlightActiveLine: true,
-                showLineNumbers: true,
-                tabSize: 2,
-              }}
-            />
-          </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <pre>{error}</pre>
-        <Button variant="primary" onClick={submitForm} disabled={status != null}>
-          {found ? 'Update' : 'Create'}
-        </Button>
-        {deleteButton()}
-        <Button variant="secondary" onClick={handleClose}>
-          Close
-        </Button>
-      </Modal.Footer>
+    <Modal size="3xl" isOpen={props.show} onClose={handleClose} onShow={handleShow}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Schedule Details - {props.name} RM_allocate_resource_from_pool:1</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <form onSubmit={submitForm}>
+            <FormControl>
+              <FormLabel>Cron</FormLabel>
+              <Input
+                onChange={(e) => setCronString(e.target.value)}
+                placeholder="Enter cron pattern"
+                value={getCronString()}
+              />
+              <FormHelperText>Verify using {getCrontabGuruUrl()}</FormHelperText>
+            </FormControl>
+            <FormControl marginTop={5} marginBottom={5}>
+              <Checkbox onChange={(e) => setEnabled(e.target.checked)} isChecked={getEnabled()}>
+                Enabled
+              </Checkbox>
+            </FormControl>
+            <FormControl>
+              <FormLabel>Workflow Input</FormLabel>
+              <AceEditor
+                mode="javascript"
+                theme="tomorrow"
+                width="100%"
+                height="100px"
+                onChange={(data) => setWorkflowContext(data)}
+                fontSize={16}
+                value={getWorkflowContext()}
+                wrapEnabled={true}
+                setOptions={{
+                  showPrintMargin: true,
+                  highlightActiveLine: true,
+                  showLineNumbers: true,
+                  tabSize: 2,
+                }}
+              />
+            </FormControl>
+          </form>
+        </ModalBody>
+        <ModalFooter>
+          <pre>{error}</pre>
+          <Button marginRight={4} colorScheme="blue" onClick={submitForm} disabled={status != null}>
+            {found ? 'Update' : 'Create'}
+          </Button>
+          {deleteButton()}
+          <Button colorScheme="red" onClick={handleClose}>
+            Close
+          </Button>
+        </ModalFooter>
+      </ModalContent>
     </Modal>
   );
 };

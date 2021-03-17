@@ -351,8 +351,6 @@ export const isJSorPYTask = (task: Task): task is JSPythonTask =>
 
 export function createSystemTasks(): TaskLabel[] {
   return [
-    'start',
-    'end',
     'http',
     'graphql',
     'js',
@@ -381,8 +379,10 @@ export function getTaskLabel(t: Task): TaskLabel {
     case 'EVENT':
       return 'event';
     case 'FORK_JOIN':
+    case 'FORK_JOIN_DYNAMIC':
       return 'fork';
     case 'JOIN':
+    case 'EXCLUSIVE_JOIN':
       return 'join';
     case 'LAMBDA':
       return 'lambda';

@@ -2,7 +2,6 @@ import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 import 'beautiful-react-diagrams/styles.css';
 import Diagram, { useSchema } from 'beautiful-react-diagrams';
 import { Box, Button, Flex, Heading, HStack, Text, useDisclosure, useTheme } from '@chakra-ui/react';
-import ScrollContainer from 'react-indiana-drag-scroll';
 import produce, { castImmutable } from 'immer';
 import { createDiagramController } from './helpers/diagram.helpers';
 import unwrap from './helpers/unwrap';
@@ -12,7 +11,7 @@ import LeftMenu from './components/left-menu';
 import NewWorkflowModal from './components/new-workflow-modal/new-workflow-modal';
 import WorkflowDefinitionModal from './components/workflow-definition-modal/workflow-definition-modal';
 import ExecutionModal from './components/execution-modal/execution-modal';
-import EditWorkflowForm from './components/edit-workflow-form/edit-workflow-form';
+import WorkflowForm from './components/workflow-form/workflow-form';
 import ActionsMenu from './components/actions-menu/actions-menu';
 import BgSvg from './img/bg.svg';
 import { createWorkflowHelper, deserializeId } from './helpers/workflow.helpers';
@@ -26,16 +25,46 @@ type Props = {
   workflow: Workflow<ExtendedTask>;
   workflows: Workflow[];
   taskDefinitions: TaskDefinition[];
-  onWorkflowChange: (workflow: Workflow<ExtendedTask>) => void;
+  onWorkflowChange: (
+    workflow: Pick<
+      Workflow,
+      | 'name'
+      | 'description'
+      | 'version'
+      | 'ownerEmail'
+      | 'restartable'
+      | 'timeoutPolicy'
+      | 'timeoutSeconds'
+      | 'outputParameters'
+      | 'variables'
+    >,
+  ) => void;
+  onExecuteSuccessClick: (workflowId: string) => void;
+  onEditWorkflowClick: (name: string, version: string) => void;
+  onNewWorkflowClick: () => void;
+  onFileImport: (file: File) => void;
+  onFileExport: (workflow: Workflow) => void;
+  onWorkflowDelete: () => void;
 };
 
-const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions }) => {
+const App: FC<Props> = ({
+  workflow,
+  onWorkflowChange,
+  workflows,
+  taskDefinitions,
+  onExecuteSuccessClick,
+  onEditWorkflowClick,
+  onNewWorkflowClick,
+  onFileImport,
+  onFileExport,
+  onWorkflowDelete,
+}) => {
   const theme = useTheme();
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
   const [isEditing, setIsEditing] = useState(false);
   const [isInputModalShown, setIsInputModalShown] = useState(false);
-  const workflowCtrlRef = useRef(useMemo(() => createWorkflowHelper(workflow), [workflow]));
+  const workflowCtrlRef = useRef(useMemo(() => createWorkflowHelper(), []));
   const schemaCtrlRef = useRef(useMemo(() => createDiagramController(workflow), [workflow]));
   const [schema, { onChange, addNode, removeNode }] = useSchema<NodeData>(
     useMemo(() => schemaCtrlRef.current.createSchemaFromWorkflow(), []),
@@ -76,7 +105,7 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
   };
 
   return (
-    <Flex height="100vh" flexDirection="column">
+    <Flex height="100%" flexDirection="column">
       <Flex
         height={16}
         alignItems="center"
@@ -103,14 +132,22 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
                 onEditWorkflowBtnClick={() => {
                   setIsEditing(true);
                 }}
+                onSaveWorkflowBtnClick={() => {
+                  const onWorkflowSave = callbackUtils.saveWorkflowCallback();
+                  onWorkflowSave([workflowCtrlRef.current.convertWorkflow(schema, workflow)]);
+                }}
+                onFileImport={onFileImport}
+                onFileExport={() => {
+                  onFileExport(workflowCtrlRef.current.convertWorkflow(schema, workflow));
+                }}
+                onWorkflowDelete={onWorkflowDelete}
               />
             </Box>
             <Button
               colorScheme="blue"
               onClick={() => {
                 const onWorkflowSave = callbackUtils.saveWorkflowCallback();
-                // console.log(workflowCtrlRef.current.convertWorkflow(schema));
-                onWorkflowSave([workflowCtrlRef.current.convertWorkflow(schema)]).then(() => {
+                onWorkflowSave([workflowCtrlRef.current.convertWorkflow(schema, workflow)]).then(() => {
                   setIsInputModalShown(true);
                 });
               }}
@@ -130,13 +167,7 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
       >
         <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
         <Box flex={1}>
-          <Box
-            position="relative"
-            height="100%"
-            // style={{
-            //   width: schemaCtrlRef.current.getCanvasWidth(),
-            // }}
-          >
+          <Box position="relative" height="100%">
             <Diagram
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
@@ -150,7 +181,6 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
                 background: theme.colors.gray[100],
                 backgroundImage: `url(${BgSvg})`,
                 flex: 1,
-                // width: copiedSchema.nodes.length * 270,
               }}
             />
           </Box>
@@ -178,15 +208,17 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
               <Heading as="h2" size="md" mb={10}>
                 Edit workflow
               </Heading>
-              <EditWorkflowForm
+              <WorkflowForm
                 workflow={workflow}
                 onSubmit={(wf) => {
+                  console.log({ wf });
                   onWorkflowChange(wf);
                 }}
                 onClose={() => {
                   onWorkflowChange(workflow);
                   setIsEditing(false);
                 }}
+                canEditName={false}
               />
             </Box>
           </RightDrawer>
@@ -199,25 +231,28 @@ const App: FC<Props> = ({ workflow, onWorkflowChange, workflows, taskDefinitions
           }}
           workflowName={selectedTask.task.subWorkflowParam.name}
           workflowVersion={selectedTask.task.subWorkflowParam.version}
+          onEditBtnClick={onEditWorkflowClick}
         />
       )}
-      {/* <WorkflowDefinitionModal
-        isOpen={workflowDefinitionDisclosure.isOpen}
-        onClose={workflowDefinitionDisclosure.onClose}
-        // workflow={convertDiagramWorkflow(copiedSchema, workflow)}
-      /> */}
+      {workflowDefinitionDisclosure.isOpen && (
+        <WorkflowDefinitionModal
+          isOpen
+          onClose={workflowDefinitionDisclosure.onClose}
+          workflow={workflowCtrlRef.current.convertWorkflow(schema, workflow)}
+        />
+      )}
       <NewWorkflowModal
         isOpen={workflowModalDisclosure.isOpen}
         onClose={workflowModalDisclosure.onClose}
-        onConfirm={() => console.log('NEW WORKFLOW')}
+        onConfirm={onNewWorkflowClick}
       />
       {isInputModalShown && (
         <ExecutionModal
-          workflow={workflowCtrlRef.current.convertWorkflow(schema)}
+          workflow={workflowCtrlRef.current.convertWorkflow(schema, workflow)}
           onClose={() => setIsInputModalShown(false)}
           shouldCloseAfterSubmit
           isOpen={isInputModalShown}
-          onWorkflowIdClick={console.log}
+          onSuccessClick={onExecuteSuccessClick}
         />
       )}
     </Flex>

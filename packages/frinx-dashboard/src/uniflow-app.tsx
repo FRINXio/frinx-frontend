@@ -1,3 +1,4 @@
+import { Box } from '@chakra-ui/layout';
 import React, { FC, useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
 // import { WorkflowBuilder } from '@frinx/workflow-builder/src';
@@ -135,17 +136,30 @@ const UniflowApp: FC = () => {
             path="/uniflow/builder/:name?/:version?"
             render={(props: RouteComponentProps<{ name?: string; version?: string }>) => {
               const { match } = props;
+              const { params } = match;
 
               return (
-                <BuilderApiProvider>
-                  <WorkflowBuilder
-                    name={match.params.name}
-                    version={match.params.version}
-                    onClose={() => {
-                      history.push('/uniflow/definitions');
-                    }}
-                  />
-                </BuilderApiProvider>
+                <Box marginTop={-10}>
+                  <BuilderApiProvider>
+                    <WorkflowBuilder
+                      key={`${params.name}/${params.version}`}
+                      name={params.name}
+                      version={params.version}
+                      onClose={() => {
+                        history.push('/uniflow/definitions');
+                      }}
+                      onExecuteSuccessClick={(workflowId) => {
+                        history.push(`/uniflow/executed/${workflowId}`);
+                      }}
+                      onEditWorkflowClick={(name, version) => {
+                        history.push(`/uniflow/builder/${name}/${version}`);
+                      }}
+                      onNewWorkflowClick={() => {
+                        history.push('/uniflow/builder');
+                      }}
+                    />
+                  </BuilderApiProvider>
+                </Box>
               );
             }}
           />

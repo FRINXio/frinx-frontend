@@ -64,6 +64,10 @@ export type DynamicForkInputParams = {
   dynamic_tasks: string;
   dynamic_tasks_i: string;
 };
+export type ForkJoinDynamicInputParams = {
+  dynamic_tasks: string;
+  dynamic_tasks_i: string;
+};
 
 export type InputParameters =
   | WhileInputParams
@@ -88,7 +92,8 @@ export type TaskType =
   | 'DO_WHILE'
   | 'WHILE_END'
   | 'SUB_WORKFLOW'
-  | 'CUSTOM';
+  | 'CUSTOM'
+  | 'FORK_JOIN_DYNAMIC';
 
 type TaskValues = {
   name: string;
@@ -177,6 +182,9 @@ export type EndTask = BaseTask & {
 export type SimpleTask = BaseTask<Record<string, string>> & {
   type: 'SIMPLE';
 };
+export type ForkJoinDynamicTask = BaseTask<ForkJoinDynamicInputParams> & {
+  type: 'FORK_JOIN_DYNAMIC';
+};
 
 export type Task =
   | DecisionTask
@@ -260,7 +268,7 @@ export type Workflow<T extends Task = Task> = {
   description?: string;
   version: number;
   inputParameters?: string[];
-  outputParameters: AnyJson;
+  outputParameters: Record<string, string>;
   failureWorkflow?: boolean;
   schemaVersion: 2;
   restartable: boolean;

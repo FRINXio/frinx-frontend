@@ -24,12 +24,6 @@ class WorkflowHelper {
 
   links: Link[] | null = null;
 
-  workflow: Workflow<ExtendedTask>;
-
-  constructor(workflow: Workflow<ExtendedTask>) {
-    this.workflow = workflow;
-  }
-
   private getNextNodes(node: CustomNodeType, type: string): CustomNodeType[] {
     if (this.nodes == null || this.links == null) {
       throw new Error('diagramSchema is not set!');
@@ -118,10 +112,10 @@ class WorkflowHelper {
     return rootTasks;
   };
 
-  convertWorkflow = (schema: DiagramSchema<NodeData>): Workflow => {
+  convertWorkflow = (schema: DiagramSchema<NodeData>, workflow: Workflow<ExtendedTask>): Workflow => {
     this.setSchemaVaues(schema);
 
-    const { tasks, ...rest } = this.workflow;
+    const { tasks, ...rest } = workflow;
     return {
       ...rest,
       tasks: this.convertDiagramTasks(),
@@ -129,8 +123,8 @@ class WorkflowHelper {
   };
 }
 
-export function createWorkflowHelper(workflow: Workflow<ExtendedTask>): WorkflowHelper {
-  return new WorkflowHelper(workflow);
+export function createWorkflowHelper(): WorkflowHelper {
+  return new WorkflowHelper();
 }
 
 export function convertWorkflow(wf: Workflow): Workflow<ExtendedTask> {
@@ -142,5 +136,30 @@ export function convertWorkflow(wf: Workflow): Workflow<ExtendedTask> {
       id: uuid(),
       label: getTaskLabel(t),
     })),
+  };
+}
+
+export function createEmptyWorkflow(): Pick<
+  Workflow,
+  | 'name'
+  | 'description'
+  | 'version'
+  | 'ownerEmail'
+  | 'restartable'
+  | 'timeoutPolicy'
+  | 'timeoutSeconds'
+  | 'outputParameters'
+  | 'variables'
+> {
+  return {
+    name: '',
+    description: '',
+    version: 1,
+    ownerEmail: '',
+    restartable: true,
+    timeoutPolicy: 'ALERT_ONLY',
+    timeoutSeconds: 0,
+    outputParameters: {},
+    variables: {},
   };
 }

@@ -25,6 +25,7 @@ import {
 } from '@chakra-ui/react';
 import { Task, Workflow } from '../../helpers/types';
 import callbackUtils from '../../callback-utils';
+import unwrap from '../../helpers/unwrap';
 
 function jsonParse<T>(json?: string | null): T | null {
   if (json == null) {
@@ -50,15 +51,20 @@ const getInputs = (def: string): string[] => {
   return [...new Set(inputsArray)];
 };
 
-function getFormValues(workflow: Workflow): FormItem[] {
+function getFormValues(workflow: Workflow): Record<string, FormItem> {
   const definition = JSON.stringify(workflow, null, 2);
   const labels = getInputs(definition);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const inputParams = jsonParse<Record<string, any>>(workflow.inputParameters ? workflow.inputParameters[0] : null);
 
-  return labels.map((label) => ({
-    label,
-    ...(inputParams ? inputParams[label] : null),
-  }));
+  return labels.reduce((acc, curr) => {
+    // console.log(inputParams[curr], curr);
+    return {
+      ...acc,
+      [curr]: (inputParams ? inputParams[curr] : undefined) ?? { label: curr, value: '', type: 'string' },
+    };
+  }, {});
 }
 
 const getWaitingWorkflows = () => {
@@ -94,25 +100,33 @@ const getWaitingWorkflows = () => {
 
 type FormItem = {
   label: string;
-  value?: string;
   description?: string;
-  type?: string;
   constraint?: string;
-};
+} & (
+  | {
+      type: 'toggle';
+      value: string | number;
+      options: (string | boolean | number)[];
+    }
+  | { type: 'select'; value: string | number; options: { value: string | number }[] }
+  | { type: 'textarea'; value: string }
+  | { type: 'string'; value: string }
+);
 
 type Props = {
   workflow: Workflow<Task>;
   onClose: () => void;
   shouldCloseAfterSubmit: boolean;
   isOpen: boolean;
-  onWorkflowIdClick: (workflowId: string) => void;
+  onSuccessClick: (workflowId: string) => void;
 };
 
-const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, isOpen, onWorkflowIdClick }) => {
+const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, isOpen, onSuccessClick }) => {
   const [warning, setWarning] = useState<boolean[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [workflowForm, setWorkflowForm] = useState<FormItem[]>(getFormValues(workflow));
+  const [workflowForm, setWorkflowForm] = useState<Record<string, FormItem>>(getFormValues(workflow));
   const [waitingWfs, setWaitingWfs] = useState<unknown[]>([]);
+  const [workflowId, setWorkflowId] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
   const { name, version } = workflow;
   const description =
     jsonParse<{ description: string }>(workflow.description)?.description ||
@@ -130,114 +144,32 @@ const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, 
     }
   }, [workflow]);
 
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>, i: number) => {
-    const workflowFormCopy = [...workflowForm];
-    const warningCopy = [...warning];
-
-    workflowFormCopy[i].value = e.target.value;
-    warningCopy[i] = !!(workflowFormCopy[i].value?.match(/^\s.*$/) || workflowFormCopy[i].value?.match(/^.*\s$/));
-
-    setWorkflowForm(workflowFormCopy);
-    setWarning(warningCopy);
-  };
-
-  const handleTypeahead = (e, i) => {
-    const workflowFormCopy = [...workflowForm];
-    workflowFormCopy[i].value = e.toString();
-    setWorkflowForm(workflowFormCopy);
-  };
-
-  const handleSwitch = (e, i) => {
-    const workflowFormCopy = [...workflowForm];
-
-    workflowFormCopy[i].value = e == 'true';
-    setWorkflowForm(workflowFormCopy);
-  };
-
   const handleFormSubmit = (event: FormEvent) => {
     event.preventDefault();
     const payload = {
       name,
       version,
-      input: workflowForm.reduce((acc, curr) => {
-        const { label, value } = curr;
+      input: Object.keys(workflowForm).reduce((acc, curr) => {
+        const { value } = workflowForm[curr];
+
         return {
           ...acc,
-          [label]: typeof value === 'string' && value.startsWith('{') ? JSON.parse(value) : value,
+          [curr]: typeof value === 'string' && value.startsWith('{') ? JSON.parse(value) : value,
         };
       }, {}),
     };
 
     const executeWorkflow = callbackUtils.executeWorkflowCallback();
 
-    setIsLoading(true);
     executeWorkflow(payload).then((res) => {
-      setIsLoading(false);
-      setWfId(res.text);
+      setIsSuccess(true);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      setWorkflowId(res.text);
       if (shouldCloseAfterSubmit) {
         onClose();
       }
     });
-  };
-
-  const inputModel = (item, i) => {
-    switch (item.type) {
-      case 'workflow-id':
-        return null;
-      case 'task-refName':
-        return (
-          <Typeahead
-            id={`input-${item.i}`}
-            onChange={(e) => handleTypeahead(e, i)}
-            placeholder="Enter or select task reference name"
-            options={waitingWfs.map((w) => w.waitingTasks).flat()}
-            onInputChange={(e) => handleTypeahead(e, i)}
-            renderMenuItemChildren={(option) => (
-              <div>
-                {option}
-                <div>
-                  <small>name: {waitingWfs.find((w) => w.waitingTasks.includes(option))?.name}</small>
-                </div>
-              </div>
-            )}
-          />
-        );
-      case 'textarea':
-        return (
-          <FormControl placeholder="Enter the input" value={item.value} isInvalid={warning[i]}>
-            <Textarea
-              rows={2}
-              onChange={(e) => handleInput(e, i)}
-              value={workflowForm[i].value}
-              placeholder="Enter the input"
-            />
-          </FormControl>
-        );
-      case 'toggle':
-        return (
-          <RadioGroup value={item.value.toString()} onChange={(e) => handleSwitch(e, i)}>
-            <Stack direction="row" spacing={5}>
-              <Radio value={item?.options[0].toString()}>{item?.options[0].toString()}</Radio>
-              <Radio value={item?.options[1].toString()}>{item?.options[1].toString()}</Radio>
-            </Stack>
-          </RadioGroup>
-        );
-      case 'select':
-        // return <Dropdown options={item.options} onChange={(e) => handleSwitch(e.value, i)} value={item.value} />;
-        return (
-          <Select value={item.value} onChange={(e) => handleSwitch(e.target.value, i)}>
-            {item.options.map((option) => (
-              <option value={option.value}>{option.value}</option>
-            ))}
-          </Select>
-        );
-      default:
-        return (
-          <FormControl isInvalid={warning[i]}>
-            <Input onChange={(e) => handleInput(e, i)} value={item.value} placeholder="Enter the input" />
-          </FormControl>
-        );
-    }
   };
 
   return (
@@ -255,10 +187,120 @@ const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, 
         <form onSubmit={handleFormSubmit}>
           <ModalBody padding={30}>
             <Grid templateColumns="330px 330px" columnGap={30} rowGap={4}>
-              {workflowForm.map((item, i) => {
+              {Object.keys(workflowForm).map((label) => {
+                const item = workflowForm[label];
+
+                switch (item.type) {
+                  case 'toggle':
+                    return (
+                      <FormControl id={label} key={label}>
+                        <FormLabel>{label}</FormLabel>
+                        <RadioGroup
+                          id={label}
+                          name={label}
+                          value={item.value.toString()}
+                          onChange={(value) => {
+                            setWorkflowForm((s) => {
+                              return {
+                                ...s,
+                                [label]: {
+                                  ...item,
+                                  value,
+                                },
+                              };
+                            });
+                          }}
+                        >
+                          <Stack direction="row" spacing={5}>
+                            <Radio value={item.options[0].toString()}>{item.options[0].toString()}</Radio>
+                            <Radio value={item.options[1].toString()}>{item.options[1].toString()}</Radio>
+                          </Stack>
+                        </RadioGroup>
+                      </FormControl>
+                    );
+                  case 'textarea':
+                    return (
+                      <FormControl id={label} key={label}>
+                        <FormLabel>{label}</FormLabel>
+                        <Textarea
+                          variant="filled"
+                          id={label}
+                          name={label}
+                          value={item.value}
+                          onChange={(event) => {
+                            event.persist();
+                            setWorkflowForm((s) => {
+                              return {
+                                ...s,
+                                [label]: {
+                                  ...item,
+                                  value: event.target.value,
+                                },
+                              };
+                            });
+                          }}
+                        />
+                      </FormControl>
+                    );
+                  case 'select':
+                    return (
+                      <FormControl id={label} key={label}>
+                        <FormLabel>{label}</FormLabel>
+                        <Select
+                          value={item.value}
+                          onChange={(event) => {
+                            event.persist();
+                            setWorkflowForm((s) => {
+                              return {
+                                ...s,
+                                [label]: {
+                                  ...item,
+                                  value: event.target.value,
+                                },
+                              };
+                            });
+                          }}
+                        >
+                          {item.options.map((option) => (
+                            <option value={option.value} key={option.value}>
+                              {option.value}
+                            </option>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    );
+                  case 'string':
+                  default:
+                    return (
+                      <FormControl id={label} key={label}>
+                        <FormLabel>{label}</FormLabel>
+                        <Input
+                          variant="filled"
+                          type="text"
+                          id={label}
+                          name={label}
+                          value={item.value}
+                          onChange={(event) => {
+                            event.persist();
+                            setWorkflowForm((s) => {
+                              return {
+                                ...s,
+                                [label]: {
+                                  ...item,
+                                  value: event.target.value,
+                                },
+                              };
+                            });
+                          }}
+                        />
+                      </FormControl>
+                    );
+                }
+              })}
+              {/* {workflowForm.map((item, i) => {
                 return (
                   <Box key={item.label}>
-                    <FormControl>
+                    <FormControl id={item.label}>
                       <FormLabel>{item.label}</FormLabel>
                       {warning[i] ? (
                         <Box color="red" fontSize={12} float="right" marginTop={5}>
@@ -278,14 +320,26 @@ const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, 
                     </FormControl>
                   </Box>
                 );
-              })}
+              })} */}
             </Grid>
           </ModalBody>
           <ModalFooter justifyContent="space-between">
             <HStack spacing={2}>
-              <Button type="submit" colorScheme="blue" isLoading={isLoading}>
-                Execute
-              </Button>
+              {isSuccess ? (
+                <Button
+                  type="button"
+                  colorScheme="blue"
+                  onClick={() => {
+                    onSuccessClick(unwrap(workflowId));
+                  }}
+                >
+                  Continue to detail
+                </Button>
+              ) : (
+                <Button type="submit" colorScheme="blue" isLoading={!isSuccess}>
+                  Execute
+                </Button>
+              )}
               <Button colorScheme="gray" onClick={onClose}>
                 Close
               </Button>

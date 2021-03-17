@@ -9,6 +9,7 @@ export type Callbacks = {
   getWorkflowExecutions: (query?: string, start?: number, size?: string) => Promise<unknown>;
   getWorkflowInstanceDetail: (workflowId: number) => Promise<unknown>;
   executeWorkflow: (payload: WorkflowPayload) => Promise<unknown>;
+  deleteWorkflow: (name: string, version: string) => Promise<unknown>;
 };
 
 type WorkflowPayload = {
@@ -31,6 +32,8 @@ class CallbackUtils {
   private getWorkflowInstanceDetail: ((workflowId: number) => Promise<unknown>) | null = null;
 
   private executeWorkflow: ((payload: WorkflowPayload) => Promise<unknown>) | null = null;
+
+  private deleteWorkflow: ((name: string, version: string) => Promise<unknown>) | null = null;
 
   setCallbacks = (callbacks: Callbacks) => {
     if (this.getWorkflow == null) {
@@ -60,6 +63,10 @@ class CallbackUtils {
     if (this.executeWorkflow == null) {
       this.executeWorkflow = callbacks.executeWorkflow;
     }
+
+    if (this.deleteWorkflow == null) {
+      this.deleteWorkflow = callbacks.deleteWorkflow;
+    }
   };
 
   getWorkflowCallback = () => unwrap(this.getWorkflow);
@@ -75,6 +82,8 @@ class CallbackUtils {
   getWorkflowInstanceDetailCallback = () => unwrap(this.getWorkflowInstanceDetail);
 
   executeWorkflowCallback = () => unwrap(this.executeWorkflow);
+
+  deleteWorkflowCallback = () => unwrap(this.deleteWorkflow);
 }
 
 export default new CallbackUtils();

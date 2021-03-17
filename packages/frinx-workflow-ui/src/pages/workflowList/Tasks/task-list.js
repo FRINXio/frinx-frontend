@@ -1,14 +1,32 @@
 // @flow
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Input, Icon, Grid } from 'semantic-ui-react';
-import TaskModal from './TaskModal';
 import AddTaskModal from './AddTaskModal';
-import { taskDefinition } from '../../../constants';
-import { sortAscBy, sortDescBy } from '../workflowUtils';
-import PaginationPages from '../../../common/Pagination';
-import { usePagination } from '../../../common/PaginationHook';
 import PageContainer from '../../../common/PageContainer';
+import PaginationPages from '../../../common/Pagination';
+import React, { useEffect, useState } from 'react';
+import TaskModal from './TaskModal';
 import callbackUtils from '../../../utils/callbackUtils';
+import {
+  Button,
+  Flex,
+  Icon,
+  IconButton,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Stack,
+  Table,
+  Tbody,
+  Td,
+  Tfoot,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileCode, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { sortAscBy, sortDescBy } from '../workflowUtils';
+import { taskDefinition } from '../../../constants';
+import { usePagination } from '../../../common/PaginationHook';
 
 const TaskList = () => {
   const [keywords, setKeywords] = useState('');
@@ -28,7 +46,7 @@ const TaskList = () => {
     const results = !keywords
       ? data
       : data.filter((e) => {
-          let searchedKeys = [
+          const searchedKeys = [
             'name',
             'timeoutPolicy',
             'timeoutSeconds',
@@ -51,13 +69,13 @@ const TaskList = () => {
     const getTaskDefinitions = callbackUtils.getTaskDefinitionsCallback();
 
     getTaskDefinitions().then((taskDefinitions) => {
-      let data = taskDefinitions.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
+      const data = taskDefinitions.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
       setData(data);
     });
   };
 
   const handleTaskModal = (name) => {
-    let taskName = name !== undefined ? name : null;
+    const taskName = name !== undefined ? name : null;
     setTaskName(taskName);
     setTaskModal(!taskModal);
   };
@@ -65,18 +83,34 @@ const TaskList = () => {
   const filteredRows = () => {
     return pageItems.map((e) => {
       return (
-        <Table.Row key={e.name}>
-          <Table.Cell>{e.name}</Table.Cell>
-          <Table.Cell>{e.timeoutPolicy}</Table.Cell>
-          <Table.Cell>{e.timeoutSeconds}</Table.Cell>
-          <Table.Cell>{e.responseTimeoutSeconds}</Table.Cell>
-          <Table.Cell>{e.retryCount}</Table.Cell>
-          <Table.Cell>{e.retryLogic}</Table.Cell>
-          <Table.Cell style={{ textAlign: 'center' }}>
-            <Button title="Definition" basic circular icon="file code" onClick={() => handleTaskModal(e.name)} />
-            <Button title="Delete" basic circular negative icon="trash" onClick={() => deleteTask(e.name)} />
-          </Table.Cell>
-        </Table.Row>
+        <Tr key={e.name}>
+          <Td>{e.name}</Td>
+          <Td>{e.timeoutPolicy}</Td>
+          <Td>{e.timeoutSeconds}</Td>
+          <Td>{e.responseTimeoutSeconds}</Td>
+          <Td>{e.retryCount}</Td>
+          <Td>{e.retryLogic}</Td>
+          <Td textAlign="center">
+            <Stack direction="row" spacing={1}>
+              <IconButton
+                colorScheme="gray"
+                isRound
+                variant="outline"
+                title="Definition"
+                icon={<Icon as={FontAwesomeIcon} icon={faFileCode} />}
+                onClick={() => handleTaskModal(e.name)}
+              />
+              <IconButton
+                colorScheme="red"
+                isRound
+                variant="outline"
+                onClick={() => deleteTask(e.name)}
+                title="Delete"
+                icon={<Icon as={FontAwesomeIcon} icon={faTrash} />}
+              />
+            </Stack>
+          </Td>
+        </Tr>
       );
     });
   };
@@ -90,7 +124,7 @@ const TaskList = () => {
   };
 
   const sortArray = (key) => {
-    let sortedArray = data;
+    const sortedArray = data;
 
     sortedArray.sort(sorted ? sortDescBy(key) : sortAscBy(key));
     setSorted(!sorted);
@@ -103,26 +137,26 @@ const TaskList = () => {
 
   const taskTable = () => {
     return (
-      <Table celled compact sortable color="blue">
-        <Table.Header fullWidth>
-          <Table.Row>
-            <Table.HeaderCell onClick={() => sortArray('name')}>Name/Version</Table.HeaderCell>
-            <Table.HeaderCell onClick={() => sortArray('timeoutPolicy')}>Timeout Policy</Table.HeaderCell>
-            <Table.HeaderCell onClick={() => sortArray('timeoutSeconds')}>Timeout Seconds</Table.HeaderCell>
-            <Table.HeaderCell onClick={() => sortArray('responseTimeoutSeconds')}>Response Timeout</Table.HeaderCell>
-            <Table.HeaderCell onClick={() => sortArray('retryCount')}>Retry Count</Table.HeaderCell>
-            <Table.HeaderCell onClick={() => sortArray('retryLogic')}>Retry Logic</Table.HeaderCell>
-            <Table.HeaderCell textAlign="center">Actions</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>{filteredRows()}</Table.Body>
-        <Table.Footer>
-          <Table.Row>
-            <Table.HeaderCell colSpan="7">
+      <Table background="white">
+        <Thead>
+          <Tr>
+            <Th onClick={() => sortArray('name')}>Name/Version</Th>
+            <Th onClick={() => sortArray('timeoutPolicy')}>Timeout Policy</Th>
+            <Th onClick={() => sortArray('timeoutSeconds')}>Timeout Seconds</Th>
+            <Th onClick={() => sortArray('responseTimeoutSeconds')}>Response Timeout</Th>
+            <Th onClick={() => sortArray('retryCount')}>Retry Count</Th>
+            <Th onClick={() => sortArray('retryLogic')}>Retry Logic</Th>
+            <Th textAlign="center">Actions</Th>
+          </Tr>
+        </Thead>
+        <Tbody>{filteredRows()}</Tbody>
+        <Tfoot>
+          <Tr>
+            <Th>
               <PaginationPages totalPages={totalPages} currentPage={currentPage} changePageHandler={setCurrentPage} />
-            </Table.HeaderCell>
-          </Table.Row>
-        </Table.Footer>
+            </Th>
+          </Tr>
+        </Tfoot>
       </Table>
     );
   };
@@ -134,7 +168,7 @@ const TaskList = () => {
     });
 
   const addTask = () => {
-    Object.keys(taskBody).forEach((key, i) => {
+    Object.keys(taskBody).forEach((key) => {
       if (key === 'inputKeys' || key === 'outputKeys') {
         taskBody[key] = taskBody[key]
           .replace(/ /g, '')
@@ -156,11 +190,11 @@ const TaskList = () => {
     }
   };
 
-  let taskModalComp = taskModal ? (
+  const taskModalComp = taskModal ? (
     <TaskModal name={taskName} modalHandler={() => handleTaskModal()} show={taskModal} />
   ) : null;
 
-  let addTaskModal = showAddTaskModal ? (
+  const addTaskModal = showAddTaskModal ? (
     <AddTaskModal
       modalHandler={showAddNewTaskModal}
       show={showAddTaskModal}
@@ -174,21 +208,23 @@ const TaskList = () => {
     <PageContainer>
       {taskModalComp}
       {addTaskModal}
-      <Grid padded="horizontally">
-        <Grid.Row>
-          <Grid.Column width={15}>
-            <Input iconPosition="left" fluid icon placeholder="Search...">
-              <input value={keywords} onChange={(e) => setKeywords(e.target.value)} />
-              <Icon name="search" />
-            </Input>
-          </Grid.Column>
-          <Grid.Column width={1}>
-            <Button primary onClick={() => showAddNewTaskModal()}>
-              New
-            </Button>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+      <Flex marginBottom={8}>
+        <InputGroup>
+          <InputLeftElement>
+            <Icon as={FontAwesomeIcon} icon={faSearch} color="grey" />
+          </InputLeftElement>
+          <Input
+            value={keywords}
+            placeholder="Search..."
+            onChange={(e) => setKeywords(e.target.value)}
+            background="white"
+          />
+        </InputGroup>
+        <Button marginLeft={4} colorScheme="blue" onClick={() => showAddNewTaskModal()}>
+          New
+        </Button>
+      </Flex>
+
       {taskTable()}
     </PageContainer>
   );

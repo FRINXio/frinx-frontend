@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { Label } from 'semantic-ui-react';
+import { Tag } from '@chakra-ui/react';
 import { wfLabelsColor } from '../constants';
 
 type Props = {
@@ -10,20 +10,23 @@ type Props = {
 };
 
 const WfLabels = (props: Props) => {
-  let color = props.index >= wfLabelsColor.length ? wfLabelsColor[0] : wfLabelsColor[props.index];
+  const color = props.index >= wfLabelsColor.length ? wfLabelsColor[0] : wfLabelsColor[props.index];
   return (
-    <Label
+    <Tag
+      size="sm"
+      background={color}
+      color="white"
+      marginRight={1}
+      marginBottom={1}
+      cursor="pointer"
+      {...props}
       onClick={(e) => {
         e.stopPropagation();
         if (props.search) props.search();
       }}
-      circular
-      size="tiny"
-      style={{ backgroundColor: color, color: 'white', cursor: 'pointer' }}
-      {...props}
     >
       <p>{props.label}</p>
-    </Label>
+    </Tag>
   );
 };
 
