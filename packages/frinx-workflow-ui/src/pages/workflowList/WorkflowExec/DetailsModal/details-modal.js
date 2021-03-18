@@ -504,9 +504,6 @@ class DetailsModal extends Component {
                     {this.state.status}
                   </Button>
                 ) : null}
-                <Button colorScheme="gray" onClick={this.handleClose}>
-                  Close
-                </Button>
               </Flex>
             </ModalFooter>
           </ModalContent>
