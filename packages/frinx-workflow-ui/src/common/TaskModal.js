@@ -11,6 +11,7 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalHeader,
+  ModalOverlay,
   Tab,
   TabList,
   TabPanel,
@@ -29,8 +30,8 @@ const TaskModal = (props: Props) => {
   const task = props.task;
   const show = props.show;
   return (
-    <Modal marginTop={10} size="4xl" isOpen={show} onClose={props.handle}>
-      <ModalCloseButton />
+    <Modal marginTop={10} size="5xl" isOpen={show} onClose={props.handle}>
+      <ModalOverlay />
       <ModalContent>
         <ModalHeader>
           {task.taskType} ({task.status})
@@ -43,6 +44,7 @@ const TaskModal = (props: Props) => {
             {task.reasonForIncompletion}
           </div>
         </ModalHeader>
+        <ModalCloseButton />
         <ModalBody>
           <Tabs defaultIndex={0}>
             <TabList>
