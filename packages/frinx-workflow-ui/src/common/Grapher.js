@@ -1,10 +1,10 @@
 // @flow
-import React, { Component } from 'react';
-import dagreD3 from 'dagre-d3';
-import d3 from 'd3';
-import { Row, Col } from 'react-bootstrap';
 import Clipboard from 'clipboard';
+import React, { Component } from 'react';
 import TaskModal from './TaskModal';
+import d3 from 'd3';
+import dagreD3 from 'dagre-d3';
+import { Box, Flex } from '@chakra-ui/react';
 import type { Task } from './flowtypes';
 
 new Clipboard('.btn');
@@ -57,14 +57,14 @@ class Grapher extends Component<Props, StateType> {
 
     this.setSvgRef = (elem) => (this.svgElem = elem);
 
-    let starPoints = function (outerRadius, innerRadius) {
+    const starPoints = function (outerRadius, innerRadius) {
       let results = '';
-      let angle = Math.PI / 8;
+      const angle = Math.PI / 8;
       for (let i = 0; i < 2 * 8; i++) {
         // Use outer or inner radius depending on what iteration we are in.
-        let r = (i & 1) === 0 ? outerRadius : innerRadius;
-        let currX = Math.cos(i * angle) * r;
-        let currY = Math.sin(i * angle) * r;
+        const r = (i & 1) === 0 ? outerRadius : innerRadius;
+        const currX = Math.cos(i * angle) * r;
+        const currY = Math.sin(i * angle) * r;
         if (i === 0) {
           results = currX + ',' + currY;
         } else {
@@ -75,7 +75,7 @@ class Grapher extends Component<Props, StateType> {
     };
 
     this.grapher.shapes().house = function (parent, bbox, node) {
-      let w = bbox.width,
+      const w = bbox.width,
         h = bbox.height,
         points = [
           { x: 0, y: 0 },
@@ -84,7 +84,7 @@ class Grapher extends Component<Props, StateType> {
           { x: w / 2, y: (-h * 3) / 2 },
           { x: 0, y: -h },
         ];
-      let shapeSvg = parent
+      const shapeSvg = parent
         .insert('polygon', ':first-child')
         .attr(
           'points',
@@ -104,7 +104,7 @@ class Grapher extends Component<Props, StateType> {
     };
 
     this.grapher.shapes().star = function (parent, bbox, node) {
-      let w = bbox.width,
+      const w = bbox.width,
         h = bbox.height,
         points = [
           { x: 0, y: 0 },
@@ -113,7 +113,7 @@ class Grapher extends Component<Props, StateType> {
           { x: w / 2, y: (-h * 3) / 2 },
           { x: 0, y: -h },
         ];
-      let shapeSvg = parent.insert('polygon', ':first-child').attr('points', starPoints(w, h));
+      const shapeSvg = parent.insert('polygon', ':first-child').attr('points', starPoints(w, h));
       node.intersect = function (point) {
         return dagreD3.intersect.polygon(node, points, point);
       };
@@ -133,7 +133,7 @@ class Grapher extends Component<Props, StateType> {
   }
 
   getSubGraph() {
-    let subg = this.state.subGraph;
+    const subg = this.state.subGraph;
     if (subg == null) {
       return '';
     }
@@ -143,10 +143,10 @@ class Grapher extends Component<Props, StateType> {
   render() {
     const { layout, edges, vertices } = this.props;
 
-    let g = new dagreD3.graphlib.Graph().setGraph({ rankdir: layout });
+    const g = new dagreD3.graphlib.Graph().setGraph({ rankdir: layout });
 
-    for (let vk in vertices) {
-      let v = vertices[vk];
+    for (const vk in vertices) {
+      const v = vertices[vk];
       let l = v.name;
       if (!v.system) {
         l = v.name + '\n \n(' + v.ref + ')';
@@ -172,37 +172,37 @@ class Grapher extends Component<Props, StateType> {
     });
 
     g.nodes().forEach(function (v) {
-      var node = g.node(v);
+      const node = g.node(v);
       if (node == null) {
         console.log('NO node found ' + v);
       }
       node.rx = node.ry = 5;
     });
 
-    let svg = d3.select(this.svgElem);
-    let inner = svg.select('g');
+    const svg = d3.select(this.svgElem);
+    const inner = svg.select('g');
     inner.attr('transform', 'translate(20,20)');
     this.grapher(inner, g);
 
-    let w = g.graph().width + 200;
-    let h = g.graph().height + 50;
+    const w = g.graph().width + 200;
+    const h = g.graph().height + 50;
 
     svg.attr('width', w + 'px').attr('height', h + 'px');
 
-    let innerGraph = this.state.innerGraph || [];
-    let p = this;
+    const innerGraph = this.state.innerGraph || [];
+    const p = this;
 
-    let hideProps = function () {
+    const hideProps = function () {
       p.setState({ showSideBar: false });
     };
 
     inner.selectAll('g.node').on('click', function (v) {
       if (innerGraph[v] != null) {
-        let data = vertices[v].data;
+        const data = vertices[v].data;
 
-        let n = innerGraph[v].edges;
-        let vx = innerGraph[v].vertices;
-        let subg = { n: n, vx: vx, layout: layout };
+        const n = innerGraph[v].edges;
+        const vx = innerGraph[v].vertices;
+        const subg = { n: n, vx: vx, layout: layout };
 
         p.setState({
           selectedTask: data.task,
@@ -212,7 +212,7 @@ class Grapher extends Component<Props, StateType> {
           subGraphId: innerGraph[v].id,
         });
       } else if (vertices[v].tooltip != null) {
-        let data = vertices[v].data;
+        const data = vertices[v].data;
 
         if (data.taskType === 'final' || data.taskType === 'start') return;
 
@@ -225,27 +225,27 @@ class Grapher extends Component<Props, StateType> {
       }
     });
 
-    let showNodeDetails = () => (
+    const showNodeDetails = () => (
       <TaskModal task={this.state.selectedTask} show={this.state.showSideBar} handle={hideProps} />
     );
 
     return (
-      <Row>
+      <Flex>
         <div>{showNodeDetails()}</div>
-        <Col>
+        <Box>
           <div>
             <svg ref={this.setSvgRef}>
               <g transform="translate(20,20)" />
             </svg>
           </div>
-        </Col>
+        </Box>
 
         {this.props.def ? null : (
-          <Col>
+          <Box>
             <div>{/*{this.getSubGraph()}*/}</div>
-          </Col>
+          </Box>
         )}
-      </Row>
+      </Flex>
     );
   }
 }

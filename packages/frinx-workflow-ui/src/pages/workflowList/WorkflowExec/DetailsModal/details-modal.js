@@ -418,93 +418,97 @@ class DetailsModal extends Component {
     };
 
     return (
-      <Modal size="5xl" isOpen={this.state.show} onClose={this.handleClose}>
-        <ModalOverlay />
-        <ModalCloseButton />
+      <>
         <TaskModal
           task={this.state.taskDetail}
           show={this.state.taskModal}
           handle={this.handleTaskDetail.bind(this, {})}
         />
-        <ModalContent>
-          <ModalHeader>
-            Details of {this.state.meta.name ? this.state.meta.name : null} / {this.state.meta.version}
-            <div>{parentWorkflowButton()}</div>
-          </ModalHeader>
-          <ModalBody>
-            {headerInfo()}
-            <Tabs
-              value={this.state.activeTab}
-              onChange={(index) => {
-                this.setState({ activeTab: index });
-              }}
-              marginBottom={20}
-              id="detailTabs"
-            >
-              <TabList>
-                <Tab>Task Details</Tab>
-                <Tab>Input/Output</Tab>
-                <Tab>JSON</Tab>
-                <Tab value="editRerun">Edit & Rerun</Tab>
-                <Tab>Execution Flow</Tab>
-              </TabList>
-              <TabPanels>
-                <TabPanel>{taskTable()}</TabPanel>
-                <TabPanel>{inputOutput()}</TabPanel>
-                <TabPanel>{wfJson()}</TabPanel>
-                <TabPanel>
-                  <h4>
-                    Edit & Rerun Workflow&nbsp;&nbsp;
-                    <i className="clp far fa-play-circle" />
-                  </h4>
-                  <Box padding={12}>
-                    <form>
-                      <Grid gridTemplateColumns="1fr 1fr" gap={4}>
-                        {editRerun()}
-                      </Grid>
-                    </form>
-                  </Box>
-                </TabPanel>
-                <TabPanel>
-                  <WorkflowDia meta={this.state.meta} wfe={this.state.result} subworkflows={this.state.subworkflows} />
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          </ModalBody>
-          <ModalFooter justifyContent="space-between">
-            <Button
-              variant="link"
-              colorScheme="blue"
-              justifySelf="start"
-              onClick={() => this.props.onWorkflowIdClick(this.state.wfIdRerun)}
-            >
-              {this.state.wfIdRerun}
-            </Button>
-            <Flex>
-              {this.state.activeTab === 3 ? (
-                <Button
-                  marginRight={4}
-                  colorScheme={
-                    this.state.status === 'OK'
-                      ? 'green'
-                      : this.state.status === 'Executing...'
-                      ? 'teal'
-                      : this.state.status === 'Execute'
-                      ? 'blue'
-                      : 'red'
-                  }
-                  onClick={this.executeWorkflow.bind(this)}
-                >
-                  {this.state.status}
-                </Button>
-              ) : null}
-              <Button colorScheme="gray" onClick={this.handleClose}>
-                Close
+        <Modal size="5xl" isOpen={this.state.show && !this.state.taskModal} onClose={this.handleClose}>
+          <ModalOverlay />
+
+          <ModalContent>
+            <ModalHeader>
+              Details of {this.state.meta.name ? this.state.meta.name : null} / {this.state.meta.version}
+              <div>{parentWorkflowButton()}</div>
+            </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              {headerInfo()}
+              <Tabs
+                value={this.state.activeTab}
+                onChange={(index) => {
+                  this.setState({ activeTab: index });
+                }}
+                marginBottom={20}
+                id="detailTabs"
+              >
+                <TabList>
+                  <Tab>Task Details</Tab>
+                  <Tab>Input/Output</Tab>
+                  <Tab>JSON</Tab>
+                  <Tab value="editRerun">Edit & Rerun</Tab>
+                  <Tab>Execution Flow</Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel>{taskTable()}</TabPanel>
+                  <TabPanel>{inputOutput()}</TabPanel>
+                  <TabPanel>{wfJson()}</TabPanel>
+                  <TabPanel>
+                    <h4>
+                      Edit & Rerun Workflow&nbsp;&nbsp;
+                      <i className="clp far fa-play-circle" />
+                    </h4>
+                    <Box padding={12}>
+                      <form>
+                        <Grid gridTemplateColumns="1fr 1fr" gap={4}>
+                          {editRerun()}
+                        </Grid>
+                      </form>
+                    </Box>
+                  </TabPanel>
+                  <TabPanel>
+                    <WorkflowDia
+                      meta={this.state.meta}
+                      wfe={this.state.result}
+                      subworkflows={this.state.subworkflows}
+                    />
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </ModalBody>
+            <ModalFooter justifyContent="space-between">
+              <Button
+                variant="link"
+                colorScheme="blue"
+                justifySelf="start"
+                onClick={() => this.props.onWorkflowIdClick(this.state.wfIdRerun)}
+              >
+                {this.state.wfIdRerun}
               </Button>
-            </Flex>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+              <Flex>
+                {this.state.activeTab === 3 ? (
+                  <Button
+                    marginRight={4}
+                    colorScheme={
+                      this.state.status === 'OK'
+                        ? 'green'
+                        : this.state.status === 'Executing...'
+                        ? 'teal'
+                        : this.state.status === 'Execute'
+                        ? 'blue'
+                        : 'red'
+                    }
+                    onClick={this.executeWorkflow.bind(this)}
+                  >
+                    {this.state.status}
+                  </Button>
+                ) : null}
+              </Flex>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </>
     );
   }
 }
