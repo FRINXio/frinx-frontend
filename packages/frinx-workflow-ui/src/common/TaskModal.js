@@ -19,12 +19,20 @@ import {
   Tabs,
 } from '@chakra-ui/react';
 import type { Task } from './flowtypes';
+import { jsonParse } from './utils';
 
 type Props = {
   task: Task,
   show: boolean,
   handle: () => void,
 };
+
+function renderTaskDescription(task) {
+  return (
+    jsonParse(task?.workflowTask?.description)?.description ||
+    jsonParse(task?.workflowTask?.taskDefinition?.description)?.description
+  );
+}
 
 const TaskModal = (props: Props) => {
   const task = props.task;
@@ -66,6 +74,10 @@ const TaskModal = (props: Props) => {
                       <br />
                       <b>Poll Count:&nbsp;&nbsp;</b>
                       {task.pollCount}
+                    </Box>
+                    <Box>
+                      <b>Description: </b>
+                      {renderTaskDescription(task)}
                     </Box>
                   </Grid>
                   <hr />
