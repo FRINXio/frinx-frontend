@@ -23,7 +23,7 @@ export { Scheduling };
 export { EventListeners };
 export { TaskList };
 export { PollData };
-export { DiagramBuilder };
+// export { DiagramBuilder };
 
 export const menuLinks = [
   { label: 'Definitions', path: '/defs' },

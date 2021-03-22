@@ -94,7 +94,7 @@ export async function deleteTaskDefinition(name: string): Promise<TaskDefinition
 }
 
 // Returns single workflow based on name and version
-export async function getWorkflow(name: string, version: number): Promise<Workflow> {
+export async function getWorkflow(name: string, version: string): Promise<Workflow> {
   const response = await sendGetRequest(`/metadata/workflow/${name}/${version}`);
   // TODO: backend should return just 'Workflow' not '{result: Workflow}`
   const workflow = (response as { result: unknown }).result;
@@ -107,14 +107,14 @@ export async function getWorkflow(name: string, version: number): Promise<Workfl
 }
 
 // Delete workflow
-export async function deleteWorkflow(name: string, version: number): Promise<Workflow> {
+export async function deleteWorkflow(name: string, version: string): Promise<Workflow> {
   const workflow = await sendDeleteRequest(`/metadata/workflow/${name}/${version}`);
 
   return workflow as Workflow;
 }
 
 // Register/Update new workflows
-export async function putWorkflow(workflows: Array<Workflow>): Promise<Workflow[]> {
+export async function putWorkflow(workflows: Workflow[]): Promise<Workflow[]> {
   const workflow = await sendPutRequest('/metadata/', workflows);
 
   return workflow as Workflow[];

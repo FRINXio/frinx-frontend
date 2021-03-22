@@ -138,7 +138,7 @@ export class WorkflowDiagram {
       const putWorkflow = callbackUtils.putWorkflowCallback();
 
       this.registerEventHandlers(eventHandlers).then(() => {
-        putWorkflow([definition])
+        putWorkflow(definition)
           .then(() => {
             resolve(definition);
           })

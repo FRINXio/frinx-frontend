@@ -1,5 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
+import { Box } from '@chakra-ui/react';
 import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
+// import { WorkflowBuilder } from '@frinx/workflow-builder/src';
 import {
   getWorkflows,
   getWorkflow,
@@ -58,38 +60,50 @@ const callbacks = {
   registerSchedule,
 };
 
+type UniflowComponents = Omit<typeof import('@frinx/workflow-ui'), 'getUniflowApiProvider'> & {
+  UniflowApiProvider: FC;
+};
+type BuilderComponents = Omit<typeof import('@frinx/workflow-builder/src'), 'getBuilderApiProvider'> & {
+  BuilderApiProvider: FC;
+};
+
 const UniflowApp: FC = () => {
-  const [components, setComponents] = useState<typeof import('@frinx/workflow-ui') | null>(null);
+  const [components, setComponents] = useState<(UniflowComponents & BuilderComponents) | null>(null);
   const history = useHistory();
 
   useEffect(() => {
-    import('@frinx/workflow-ui').then((mod) => {
-      const {
-        ReduxProvider,
-        WorkflowListHeader,
-        WorkflowDefinitions,
-        WorkflowExec,
-        Scheduling,
-        EventListeners,
-        TaskList,
-        PollData,
-        DiagramBuilder,
-        getUniflowApiProvider,
-      } = mod;
-      setComponents({
-        ReduxProvider,
-        WorkflowListHeader,
-        WorkflowDefinitions,
-        WorkflowExec,
-        Scheduling,
-        EventListeners,
-        TaskList,
-        PollData,
-        DiagramBuilder,
-        getUniflowApiProvider,
-        UniflowApiProvider: getUniflowApiProvider(callbacks),
-      });
-    });
+    Promise.all([import('@frinx/workflow-ui'), import('@frinx/workflow-builder/src')]).then(
+      ([uniflowImport, builderImport]) => {
+        const {
+          ReduxProvider,
+          WorkflowListHeader,
+          WorkflowDefinitions,
+          WorkflowExec,
+          Scheduling,
+          EventListeners,
+          TaskList,
+          PollData,
+          DiagramBuilder,
+          getUniflowApiProvider,
+        } = uniflowImport;
+        const { WorkflowBuilder, getBuilderApiProvider } = builderImport;
+
+        setComponents({
+          ReduxProvider,
+          WorkflowListHeader,
+          WorkflowDefinitions,
+          WorkflowExec,
+          Scheduling,
+          EventListeners,
+          TaskList,
+          PollData,
+          DiagramBuilder,
+          UniflowApiProvider: getUniflowApiProvider(callbacks),
+          WorkflowBuilder,
+          BuilderApiProvider: getBuilderApiProvider(callbacks),
+        });
+      },
+    );
   }, []);
 
   if (components == null) {
@@ -105,8 +119,9 @@ const UniflowApp: FC = () => {
     EventListeners,
     TaskList,
     PollData,
-    DiagramBuilder,
     UniflowApiProvider,
+    WorkflowBuilder,
+    BuilderApiProvider,
   } = components;
 
   return (
@@ -121,23 +136,30 @@ const UniflowApp: FC = () => {
             path="/uniflow/builder/:name?/:version?"
             render={(props: RouteComponentProps<{ name?: string; version?: string }>) => {
               const { match } = props;
+              const { params } = match;
 
               return (
-                <DiagramBuilder
-                  name={match.params.name}
-                  version={match.params.version}
-                  onExitBtnClick={() => {
-                    history.push('/uniflow/definitions');
-                  }}
-                  onNewBtnClick={() => {
-                    history.push('/uniflow/builder');
-                    // this is an ugly hack for now
-                    window.location.reload();
-                  }}
-                  onWorkflowIdClick={(wfId: string) => {
-                    history.push(`/uniflow/executed/${wfId}`);
-                  }}
-                />
+                <Box marginTop={-10}>
+                  <BuilderApiProvider>
+                    <WorkflowBuilder
+                      key={`${params.name}/${params.version}`}
+                      name={params.name}
+                      version={params.version}
+                      onClose={() => {
+                        history.push('/uniflow/definitions');
+                      }}
+                      onExecuteSuccessClick={(workflowId) => {
+                        history.push(`/uniflow/executed/${workflowId}`);
+                      }}
+                      onEditWorkflowClick={(name, version) => {
+                        history.push(`/uniflow/builder/${name}/${version}`);
+                      }}
+                      onNewWorkflowClick={() => {
+                        history.push('/uniflow/builder');
+                      }}
+                    />
+                  </BuilderApiProvider>
+                </Box>
               );
             }}
           />

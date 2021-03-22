@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { Node } from 'beautiful-react-diagrams/@types/DiagramSchema';
+
 type AnyJson = JsonArray | JsonMap;
 type JsonMap = {
   [key: string]: AnyJson | string;
@@ -8,9 +10,8 @@ type JsonArray = Array<AnyJson | string>;
 export type WhileInputParams = {
   iterations: number;
 };
-export type DecisionInputParams = {
-  param: string;
-};
+export type DecisionInputParams = Record<string, string>;
+
 export type LambdaInputParams = {
   lambdaValue: string;
   scriptExpression: string;
@@ -63,6 +64,10 @@ export type DynamicForkInputParams = {
   dynamic_tasks: string;
   dynamic_tasks_i: string;
 };
+export type ForkJoinDynamicInputParams = {
+  dynamic_tasks: string;
+  dynamic_tasks_i: string;
+};
 
 export type InputParameters =
   | WhileInputParams
@@ -75,12 +80,6 @@ export type InputParameters =
   | RawInputParams
   | DynamicForkInputParams;
 
-export type WorkflowPayload = {
-  input: unknown;
-  name: string;
-  version: number;
-};
-
 export type TaskType =
   | 'DECISION'
   | 'EVENT'
@@ -92,67 +91,33 @@ export type TaskType =
   | 'TERMINATE'
   | 'DO_WHILE'
   | 'WHILE_END'
-  | 'SUB_WORKFLOW';
+  | 'SUB_WORKFLOW'
+  | 'CUSTOM'
+  | 'FORK_JOIN_DYNAMIC';
 
-export type TaskDefinition = {
-  name: string;
-  ownerEmail: string;
-  description?: string;
-  retryCount: number;
-  retryLogic: 'FIXED' | 'EXPONENTIAL_BACKOFF';
-  retryDelaySeconds: number;
-  timeoutPolicy: 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
-  timeoutSeconds: number;
-  responseTimeoutSeconds: number;
-  inputKeys?: string[];
-  outputKeys?: string[];
-  createTime?: number;
-  createdBy?: string;
-  rateLimitFrequencyInSeconds?: number;
-  rateLimitPerFrequency?: number;
-};
-
-export type ActionTypes = 'complete_task' | 'fail_task';
-
-export type ActionTargetTask = {
-  workflowId: string;
-  taskRefName: string;
-  output?: unknown;
-};
-
-export type ActionTargetWorkflow = {
-  workflowId: string;
-  taskRefName: string;
-  output?: unknown;
-};
-
-export type Action = {
-  action: string;
-  expandInLineJson: boolean;
-} & ({ [key in ActionTypes]: ActionTargetTask } | { start_workflow: ActionTargetWorkflow });
-
-export type EventListener = {
-  name: string;
-  event: string;
-  actions: Action[];
-  active?: boolean;
-};
-
-export type Queue = {
-  lastPollTime: number;
-  qsize: number;
-  queueName: string;
-  workerId: string;
-};
-
-export type BaseTask<T = undefined> = {
+type TaskValues = {
   name: string;
   taskReferenceName: string;
-  description?: string;
+  // ownerEmail: string;
+  // description?: string;
+  // retryCount: number;
+  // retryLogic: 'FIXED' | 'EXPONENTIAL_BACKOFF';
+  // retryDelaySeconds: number;
+  // timeoutPolicy: 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
+  // timeoutSeconds: number;
+  // pollTimeoutSeconds: number;
+  // responseTimeoutSeconds: number;
+  // inputKeys?: string[];
+  // outputKeys?: string[];
   optional: boolean;
   startDelay: number;
-  inputParameters: T;
 };
+
+type BaseTask<T = undefined> = T extends undefined
+  ? TaskValues
+  : TaskValues & {
+      inputParameters: T;
+    };
 
 export type DecisionTask = BaseTask<DecisionInputParams> & {
   type: 'DECISION';
@@ -198,9 +163,8 @@ export type WhileTask = BaseTask<WhileInputParams> & {
 export type WhileEndTask = BaseTask & {
   type: 'WHILE_END';
 };
-export type DynamicForkTask = BaseTask<DynamicForkInputParams> & {
+export type SubworkflowTask = BaseTask<DynamicForkInputParams> & {
   type: 'SUB_WORKFLOW';
-  asyncComplete: boolean;
   subWorkflowParam: {
     name: string;
     version: number;
@@ -215,19 +179,21 @@ export type StartTask = BaseTask & {
 export type EndTask = BaseTask & {
   type: 'END_TASK';
 };
-export type SimpleTask = BaseTask & {
+export type SimpleTask = BaseTask<Record<string, string>> & {
   type: 'SIMPLE';
+};
+export type ForkJoinDynamicTask = BaseTask<ForkJoinDynamicInputParams> & {
+  type: 'FORK_JOIN_DYNAMIC';
 };
 
 export type Task =
-  | SimpleTask
   | DecisionTask
   | EventTask
   | HTTPTask
   | GraphQLTask
   | ForkTask
   | JoinTask
-  | DynamicForkTask
+  | SubworkflowTask
   | WaitTask
   | LambdaTask
   | JSPythonTask
@@ -236,16 +202,73 @@ export type Task =
   | WhileEndTask
   | RawTask
   | StartTask
-  | EndTask;
+  | EndTask
+  | SimpleTask;
 
-export type ExtendedTask = Task & { id: string };
+export type TaskLabel =
+  | 'decision'
+  | 'while'
+  | 'end'
+  | 'event'
+  | 'fork'
+  | 'join'
+  | 'lambda'
+  | 'raw'
+  | 'start'
+  | 'sub workflow'
+  | 'terminate'
+  | 'wait'
+  | 'while end'
+  | 'graphql'
+  | 'http'
+  | 'js'
+  | 'py'
+  | 'simple'
+  | 'custom';
+
+export type ExtendedDecisionTask = DecisionTask & { id: string; label: TaskLabel };
+export type ExtendedEventTask = EventTask & { id: string; label: TaskLabel };
+export type ExtendedHTTPTask = HTTPTask & { id: string; label: TaskLabel };
+export type ExtendedGraphQLTask = GraphQLTask & { id: string; label: TaskLabel };
+export type ExtendedForkTask = ForkTask & { id: string; label: TaskLabel };
+export type ExtendedJoinTask = JoinTask & { id: string; label: TaskLabel };
+export type ExtendedSubworkflowTask = SubworkflowTask & { id: string; label: TaskLabel };
+export type ExtendedWaitTask = WaitTask & { id: string; label: TaskLabel };
+export type ExtendedLambdaTask = LambdaTask & { id: string; label: TaskLabel };
+export type ExtendedJSPythonTask = JSPythonTask & { id: string; label: TaskLabel };
+export type ExtendedTerminateTask = TerminateTask & { id: string; label: TaskLabel };
+export type ExtendedWhileTask = WhileTask & { id: string; label: TaskLabel };
+export type ExtendedWhileEndTask = WhileEndTask & { id: string; label: TaskLabel };
+export type ExtendedRawTask = RawTask & { id: string; label: TaskLabel };
+export type ExtendedStartTask = StartTask & { id: string; label: TaskLabel };
+export type ExtendedEndTask = EndTask & { id: string; label: TaskLabel };
+export type ExtendedSimpleTask = SimpleTask & { id: string; label: TaskLabel };
+
+export type ExtendedTask =
+  | ExtendedDecisionTask
+  | ExtendedEventTask
+  | ExtendedHTTPTask
+  | ExtendedGraphQLTask
+  | ExtendedForkTask
+  | ExtendedJoinTask
+  | ExtendedSubworkflowTask
+  | ExtendedWaitTask
+  | ExtendedLambdaTask
+  | ExtendedJSPythonTask
+  | ExtendedTerminateTask
+  | ExtendedWhileTask
+  | ExtendedWhileEndTask
+  | ExtendedRawTask
+  | ExtendedStartTask
+  | ExtendedEndTask
+  | ExtendedSimpleTask;
 
 export type Workflow<T extends Task = Task> = {
   name: string;
   description?: string;
   version: number;
-  inputParameters?: AnyJson;
-  outputParameters: AnyJson;
+  inputParameters?: string[];
+  outputParameters: Record<string, string>;
   failureWorkflow?: boolean;
   schemaVersion: 2;
   restartable: boolean;
@@ -256,4 +279,28 @@ export type Workflow<T extends Task = Task> = {
   timeoutPolicy: string;
   timeoutSeconds: number;
   variables: Record<string, unknown>;
+};
+export type NodeData = {
+  task: ExtendedTask;
+};
+
+export type CustomNodeType = Node<NodeData>;
+
+export type TaskDefinition = {
+  name: string;
+  description?: string;
+  retryCount: number;
+  timeoutSeconds: number;
+  pollTimeoutSeconds: number;
+  inputKeys?: string[];
+  outputKeys?: string[];
+  inputTemplate?: Record<string, string>;
+  timeoutPolicy: 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
+  retryLogic: 'FIXED' | 'EXPONENTIAL_BACKOFF';
+  retryDelaySeconds: number;
+  responseTimeoutSeconds: number;
+  concurrentExecLimit?: number;
+  rateLimitFrequencyInSeconds?: number;
+  rateLimitPerFrequency?: number;
+  ownerEmail: string;
 };
