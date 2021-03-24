@@ -1,4 +1,4 @@
-/* eslint-disable no-template-curly-in-string */
+/* eslint-disable */
 import { createElement } from 'react';
 import { render } from 'react-dom';
 import { getBuilderApiProvider } from './builder-api-provider';
@@ -281,4 +281,5 @@ const BuilderApiProvider = getBuilderApiProvider({
   getWorkflowInstanceDetail: () => Promise.resolve(),
 });
 
+// @ts-ignore
 render(createElement(BuilderApiProvider, null, createElement(Root, { name: '1', version: '2' })), mountElement);

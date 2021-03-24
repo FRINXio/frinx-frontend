@@ -86,19 +86,14 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
       <Flex
         width={10}
         flexBasis={12}
-        // background="gray.200"
         marginLeft="auto"
         flexDirection="column"
         alignItems="stretch"
         justifyContent="space-between"
       >
         {outputs?.map((port, i) => {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          // const [label] = port.props.id.split(':');
           const isVisible = nodeData.decisionCases[i] != null;
           const label = Object.keys(nodeData.task.decisionCases)[i] ?? 'else';
-          // console.log(nodeData.decisionCases[i]);
           return React.cloneElement(
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
