@@ -13,10 +13,8 @@
   "resolutions": {
     "chokidar": "^3.5.1",
     "core-js": "^3.9.1",
-    "css": "^3.0.0",
     "eslint": "^7.5.0",
     "highlight.js": "^10.7.1",
-    "source-map-resolve": "^0.6.0",
-    "workbox-webpack-plugin": "https://github.com/JurajRusnak/workbox#v6"
+    "source-map-resolve": "^0.6.0"
   }
 }
