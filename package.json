@@ -5,7 +5,8 @@
   ],
   "scripts": {
     "formatter:check": "prettier -l '*.md' 'packages/**/*.js' 'packages/**/*.ts' 'packages/**/*.tsx' 'packages/*/package.json' package.json",
-    "formatter": "prettier --write '*.md' 'packages/**/*.js' 'packages/**/*.ts' 'packages/**/*.tsx' 'packages/*/package.json' package.json"
+    "formatter": "prettier --write '*.md' 'packages/**/*.js' 'packages/**/*.ts' 'packages/**/*.tsx' 'packages/*/package.json' package.json",
+    "postinstall": "cd node_modules/beautiful-react-diagrams && npm install && npm run build && npm link ../../node_modules/react && cp _diagram-package.json node_modules/beautiful-react-diagrams/package.json"
   },
   "devDependencies": {
     "prettier": "^2.2.1"
