@@ -280,9 +280,14 @@ export type Workflow<T extends Task = Task> = {
   timeoutSeconds: number;
   variables: Record<string, unknown>;
 };
-export type NodeData = {
-  task: ExtendedTask;
-};
+export type NodeData =
+  | {
+      task: Exclude<ExtendedTask, ExtendedDecisionTask>;
+    }
+  | {
+      task: ExtendedDecisionTask;
+      decisionCases: Record<string, string>;
+    };
 
 export type CustomNodeType = Node<NodeData>;
 

@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
-import 'beautiful-react-diagrams/styles.css';
-import Diagram, { useSchema } from 'beautiful-react-diagrams';
+import 'beautiful-react-diagrams/dist/styles.css';
+import Diagram, { useSchema, Canvas, useCanvasState, CanvasControls } from 'beautiful-react-diagrams';
 import { Box, Button, Flex, Heading, HStack, Text, useDisclosure, useTheme } from '@chakra-ui/react';
 import produce, { castImmutable } from 'immer';
 import { createDiagramController } from './helpers/diagram.helpers';
@@ -69,6 +69,8 @@ const App: FC<Props> = ({
   const [schema, { onChange, addNode, removeNode }] = useSchema<NodeData>(
     useMemo(() => schemaCtrlRef.current.createSchemaFromWorkflow(), []),
   );
+  const [canvasStates, handlers] = useCanvasState(); // creates canvas state
+
   const handleDeleteButtonClick = useCallback(
     (id: string) => {
       // TODO: wait for the library update to fix a bug with removing node with links
@@ -168,21 +170,31 @@ const App: FC<Props> = ({
         <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
         <Box flex={1}>
           <Box position="relative" height="100%">
-            <Diagram
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              schema={schema}
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              onChange={onChange}
+            <Canvas
+              {...canvasStates}
+              {...handlers}
               style={{
-                boxShadow: 'none',
-                border: 'none',
                 background: theme.colors.gray[100],
-                backgroundImage: `url(${BgSvg})`,
-                flex: 1,
+                // backgroundImage: `url(${BgSvg})`,
               }}
-            />
+            >
+              <Diagram
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                schema={schema}
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                onChange={onChange}
+                style={{
+                  boxShadow: 'none',
+                  border: 'none',
+                  // background: theme.colors.gray[100],
+                  // backgroundImage: `url(${BgSvg})`,
+                  flex: 1,
+                }}
+              />
+              <CanvasControls />
+            </Canvas>
           </Box>
         </Box>
         {selectedTask?.task && selectedTask?.actionType === 'edit' && (

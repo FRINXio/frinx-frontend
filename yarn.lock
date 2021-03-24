@@ -4577,10 +4577,9 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
-beautiful-react-diagrams@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/beautiful-react-diagrams/-/beautiful-react-diagrams-0.5.1.tgz#9f350387b3cee94dce2aaf2e08b233feeacace4d"
-  integrity sha512-B5sw+L27acwcOv0BUqCOPSf29sFDLXm8Fn2Vl0s4IFn9lrwZU6uqKN6oVl1R+M/M6mvEP9ZxvuSyVPNS8mAEIg==
+"beautiful-react-diagrams@git+https://github.com/FRINXio/beautiful-react-diagrams#canvas":
+  version "0.6.0"
+  resolved "git+https://github.com/FRINXio/beautiful-react-diagrams#348aa2b367abfbe023ab80756747368ca74c442d"
   dependencies:
     beautiful-react-hooks "^0.31.0"
     classnames "^2.2.6"

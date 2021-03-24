@@ -6,16 +6,23 @@ import { getNodeColor } from './nodes.helpers';
 import { useTaskActions } from '../../task-actions-context';
 import NodeButtons from './node-buttons';
 
-const isDecisionTask = (task: ExtendedTask): task is ExtendedDecisionTask => {
+const isDecisionTask = (task: ExtendedTask | undefined): task is ExtendedDecisionTask => {
   return task != null && task.type === 'DECISION';
 };
 
 const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
   const theme = useTheme<Theme>();
   const { inputs, outputs, data } = props;
+  const nodeData = unwrap(data);
   const { selectTask, selectedTask, setRemovedTaskId } = useTaskActions();
-  const { task } = unwrap(data);
-  const borderColor = getNodeColor(unwrap(task).label);
+  const { task } = nodeData;
+  if (!isDecisionTask(task)) {
+    return null;
+  }
+  if (!('decisionCases' in nodeData)) {
+    return null;
+  }
+  const borderColor = getNodeColor(task.label);
 
   return (
     <Flex
@@ -56,7 +63,7 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
         })}
       </Flex>
 
-      <Box flex={1}>
+      <Box width={44}>
         <Flex alignItems="center" flex={1} paddingX={2} paddingY={1} height={8}>
           <Heading as="h6" size="xs" textTransform="uppercase" isTruncated title={task.name}>
             {task.name}
@@ -70,14 +77,14 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
             }}
           />
         </Flex>
-        <Flex height={8} alignItems="center" justifyContent="center">
+        <Flex height={8} alignItems="center" justifyContent="center" isTruncated>
           <Text size="sm" color="gray.700" fontFamily="monospace">
             {isDecisionTask(task) && <>if {task.caseValueParam} ==</>}
           </Text>
         </Flex>
       </Box>
       <Flex
-        width={12}
+        width={10}
         flexBasis={12}
         // background="gray.200"
         marginLeft="auto"
@@ -89,18 +96,21 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           // const [label] = port.props.id.split(':');
-          const label = Object.keys(data?.task.decisionCases)[i] ?? 'else';
+          const isVisible = nodeData.decisionCases[i] != null;
+          const label = Object.keys(nodeData.task.decisionCases)[i] ?? 'else';
+          // console.log(nodeData.decisionCases[i]);
           return React.cloneElement(
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             port,
             {
               style: {
+                display: isVisible ? 'flex' : 'none',
+                // display: 'flex',
                 background: theme.colors.gray[200],
                 color: theme.colors.gray[700],
                 fontSize: theme.fontSizes.xs,
                 height: theme.sizes[6],
-                display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               },
