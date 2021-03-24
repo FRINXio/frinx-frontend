@@ -22,7 +22,6 @@
     "cross-env": "5.0.5",
     "framer-motion": "^1.6.17",
     "lodash": "^4.17.20",
-    "react-scripts": "^4.0.3",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-diff-viewer": "^3.1.1",
@@ -79,10 +78,5 @@
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
-  },
-  "peerDependencies": {
-    "react": "^16.8.4",
-    "react-dom": "^16.8.4",
-    "react-router-dom": "^5.0.0"
   }
 }

@@ -33,8 +33,6 @@
     "start:dev": "webpack-dev-server --mode development",
     "build": "webpack --config ./webpack.config.js --progress --profile --colors",
     "relay": "relay-compiler --src ./ --schema ./data/schema.graphql --extensions js --verbose",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
     "eslint": "eslint --ext .js src",
     "formatter": "prettier --write 'src/*.js' 'src/**/*.js' package.json",
     "formatter:check": "prettier -l 'src/*.js' 'src/**/*.js' package.json"
@@ -71,7 +69,6 @@
     "html-loader": "^1.1.0",
     "jsdoc": "^3.6.3",
     "prettier": "^2.2.1",
-    "react-scripts": "^4.0.3",
     "relay-compiler": "^10.0.1",
     "relay-config": "^10.0.1",
     "sass": "^1.32.8",
