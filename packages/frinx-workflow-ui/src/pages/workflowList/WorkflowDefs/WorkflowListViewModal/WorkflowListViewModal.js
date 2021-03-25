@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import {
   Button,
-  // List,
-  ListIcon,
+  Icon,
+    List,
   ListItem,
   Modal,
   ModalBody,
@@ -12,11 +12,11 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  ModalOverlay,
+  ModalOverlay, Text,
 } from '@chakra-ui/react';
-import { Icon,  List } from 'semantic-ui-react';
 import { hash } from '../../../diagramBuilder/builder-utils';
 import { jsonParse } from '../../../../common/utils.js';
+
 
 function createWorkflowTree(tasks, allWorkflows) {
   return tasks.map((task) => {
@@ -101,7 +101,7 @@ const WorkflowListViewModal = (props) => {
 
   function renderExpandButton(task) {
     return (
-      <Button size="sm" marginLeft={4} colorScheme="blue" onClick={() => expandHideTask(task)}>
+      <Button size="sm" variant="outline" marginLeft={4} colorScheme="blue" onClick={() => expandHideTask(task)}>
         {expandedTasks.includes(task.taskReferenceName) ? 'Collapse' : 'Expand'}
       </Button>
     );
@@ -140,31 +140,25 @@ const WorkflowListViewModal = (props) => {
   function renderSubtasks(task) {
     if (task?.subtasks?.length > 0) {
       return (
-        <List.Item key={task.taskReferenceName} style={{ marginTop: '10px' }}>
-          <List.Icon
-            link
-            name={expandedTasks.includes(task.taskReferenceName) ? 'angle down' : 'angle right'}
-            onClick={() => expandHideTask(task)}
-          />
-          <List.Content>
-            <List.Header>{renderHeader(task)}</List.Header>
-            <List.Description>{task?.description}</List.Description>
-            {expandedTasks.includes(task.taskReferenceName) && (
-              <List.List>{task.subtasks.map((st) => renderSubtasks(st))}</List.List>
-            )}
-          </List.Content>
-        </List.Item>
+          <List key={task.taskReferenceName} marginTop={4}>
+            <ListItem>
+              <Text fontWeight='bold'>{renderHeader(task)}</Text>
+              <Text>{task?.description}</Text>
+              {expandedTasks.includes(task.taskReferenceName) && (
+                      <List marginLeft={5}>{task.subtasks.map((st) => renderSubtasks(st))}</List>
+                    )}
+            </ListItem>
+          </List>
       );
     }
 
     return (
-      <List.Item key={task.taskReferenceName} style={{ marginTop: '10px' }}>
-        <List.Icon name="angle right" style={{ opacity: 0 }} />
-        <List.Content>
-          <List.Header>{renderHeader(task)}</List.Header>
-          <List.Description>{task?.description}</List.Description>
-        </List.Content>
-      </List.Item>
+        <List key={task.taskReferenceName} marginTop={4}>
+          <ListItem>
+            <Text fontWeight='bold'>{renderHeader(task)}</Text>
+            <Text>{task?.description}</Text>
+          </ListItem>
+        </List>
     );
   }
 
@@ -184,7 +178,7 @@ const WorkflowListViewModal = (props) => {
           </div>
         </ModalHeader>
 
-        <ModalBody padding={20}>{renderWorkflowAsTree()}</ModalBody>
+        <ModalBody padding={10}>{renderWorkflowAsTree()}</ModalBody>
         <ModalFooter>
           <Button colorScheme="gray" onClick={props.modalHandler}>
             Close

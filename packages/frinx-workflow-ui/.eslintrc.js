@@ -54,3 +54,11 @@ module.exports.settings = {
     version: 'detect',
   },
 };
+module.exports.parserOptions = {
+  'ecmaVersion': 12,
+  'sourceType': 'module',
+  'ecmaFeatures': {
+    'jsx': true,
+    'modules': true
+  }
+}
