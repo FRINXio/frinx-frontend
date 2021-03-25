@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { GraphQLInputParams } from '../../helpers/types';
 import { Box, FormControl, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
 import AceEditor from 'react-ace';
+import { GraphQLInputParams } from '../../helpers/types';
 // import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-graphqlschema';
 import 'ace-builds/src-noconflict/theme-textmate';
@@ -29,6 +29,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
             event.persist();
             onChange({
               ...params,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               http_request: {
                 ...params.http_request,
                 uri: event.target.value,
@@ -57,6 +58,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
             event.persist();
             onChange({
               ...params,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               http_request: {
                 ...params.http_request,
                 contentType: event.target.value,
@@ -76,6 +78,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
               event.persist();
               onChange({
                 ...params,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 http_request: {
                   ...params.http_request,
                   timeout: Number(event.target.value),
@@ -96,6 +99,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
           onChange={(value) => {
             onChange({
               ...params,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               http_request: {
                 ...params.http_request,
                 headers: JSON.parse(value),
@@ -123,6 +127,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
           onChange={(value) => {
             onChange({
               ...params,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               http_request: {
                 ...params.http_request,
                 body: {
@@ -153,6 +158,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
           onChange={(value) => {
             onChange({
               ...params,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               http_request: {
                 ...params.http_request,
                 body: {

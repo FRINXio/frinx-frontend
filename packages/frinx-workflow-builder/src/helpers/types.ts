@@ -93,7 +93,8 @@ export type TaskType =
   | 'WHILE_END'
   | 'SUB_WORKFLOW'
   | 'CUSTOM'
-  | 'FORK_JOIN_DYNAMIC';
+  | 'FORK_JOIN_DYNAMIC'
+  | 'EXCLUSIVE_JOIN';
 
 type TaskValues = {
   name: string;
@@ -136,11 +137,11 @@ export type GraphQLTask = BaseTask<GraphQLInputParams> & {
   type: 'SIMPLE';
 };
 export type ForkTask = BaseTask & {
-  type: 'FORK_JOIN';
+  type: 'FORK_JOIN' | 'FORK_JOIN_DYNAMIC';
   forkTasks: Task[][];
 };
 export type JoinTask = BaseTask & {
-  type: 'JOIN';
+  type: 'JOIN' | 'EXCLUSIVE_JOIN';
   joinOn: string[];
 };
 export type WaitTask = BaseTask & {

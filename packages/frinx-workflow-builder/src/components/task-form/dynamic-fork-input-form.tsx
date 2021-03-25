@@ -8,6 +8,7 @@ type Props = {
 };
 
 const DynamicForkInputForm: FC<Props> = ({ params, onChange }) => {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const { dynamic_tasks, dynamic_tasks_i, expectedName, expectedType } = params;
 
   return (
@@ -22,6 +23,7 @@ const DynamicForkInputForm: FC<Props> = ({ params, onChange }) => {
             event.persist();
             onChange({
               ...params,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               dynamic_tasks: event.target.value,
             });
           }}
@@ -37,6 +39,7 @@ const DynamicForkInputForm: FC<Props> = ({ params, onChange }) => {
             event.persist();
             onChange({
               ...params,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               dynamic_tasks_i: event.target.value,
             });
           }}

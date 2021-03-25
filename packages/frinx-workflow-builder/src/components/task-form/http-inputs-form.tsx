@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { HTTPInputParams, HTTPMethod } from '../../helpers/types';
 import { Box, FormControl, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
 import AceEditor from 'react-ace';
+import { HTTPInputParams, HTTPMethod } from '../../helpers/types';
 // import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-textmate';
@@ -36,6 +36,7 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
             event.persist();
             onChange({
               ...params,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               http_request: {
                 ...params.http_request,
                 uri: event.target.value,
@@ -54,7 +55,9 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
             event.persist();
             onChange({
               ...params,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               http_request: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 ...params.http_request,
                 // we can safely cast this
                 method: event.target.value as HTTPMethod,
@@ -79,6 +82,7 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
             event.persist();
             onChange({
               ...params,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               http_request: {
                 ...params.http_request,
                 contentType: event.target.value,
@@ -98,6 +102,7 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
               event.persist();
               onChange({
                 ...params,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 http_request: {
                   ...params.http_request,
                   timeout: Number(event.target.value),
@@ -118,6 +123,7 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
           onChange={(value) => {
             onChange({
               ...params,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               http_request: {
                 ...params.http_request,
                 headers: JSON.parse(value),
@@ -145,6 +151,7 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
             onChange={(value) => {
               onChange({
                 ...params,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 http_request: {
                   ...params.http_request,
                   body: value,

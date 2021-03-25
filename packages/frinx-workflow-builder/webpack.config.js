@@ -50,22 +50,8 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.(css|scss})$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
-      },
-      {
-        test: /\.inline.svg$/,
-        use: [
-          {
-            loader: 'babel-loader',
-          },
-          {
-            loader: 'react-svg-loader',
-            options: {
-              jsx: true,
-            },
-          },
-        ],
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
       },
       {
         test: /\.(jpe?g|gif|png|svg|)$/i,

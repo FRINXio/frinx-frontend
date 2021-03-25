@@ -44,6 +44,7 @@ function createHTTPTask(label: TaskLabel): ExtendedHTTPTask {
     type: 'SIMPLE',
     taskReferenceName: `httpRequestTaskRef_${uuid()}`,
     inputParameters: {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       http_request: {
         contentType: 'application/json',
         method: 'GET',
@@ -63,6 +64,7 @@ function createGraphQLTask(label: TaskLabel): ExtendedGraphQLTask {
     type: 'SIMPLE',
     taskReferenceName: `graphQLTaskRef_${uuid()}`,
     inputParameters: {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       http_request: {
         contentType: 'application/json',
         method: 'POST',
@@ -283,7 +285,9 @@ export function createSubWorkflowTask(name: string, version: string): ExtendedSu
     inputParameters: {
       expectedName: '${workflow.input.expectedName}',
       expectedType: 'SIMPLE',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       dynamic_tasks: '${workflow.input.dynamic_tasks}',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       dynamic_tasks_i: '${workflow.input.dynamic_tasks_i}',
     },
     subWorkflowParam: {
