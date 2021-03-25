@@ -19,10 +19,10 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import AceEditor from 'react-ace';
-import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/ext-language_tools';
+
 import { useStateValue } from '../utils/StateProvider';
 
 const StyledMenu = withStyles({

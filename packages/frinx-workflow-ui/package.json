@@ -50,8 +50,6 @@
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-ace": "latest",
-    "react-bootstrap": "^1.0.0-beta.8",
-    "react-bootstrap-typeahead": "^3.4.5",
     "react-codemirror2": "^7.2.1",
     "react-contexify": "^4.1.1",
     "react-dropdown": "^1.6.4",
@@ -73,7 +71,6 @@
   "scripts": {
     "start": "webpack-dev-server --mode development",
     "transpile": "babel src -d lib --copy-files && mkdir -p build && cp -r lib/ package.json package-lock.json README.md build",
-    "debug": "PORT=3002 react-scripts --inspect-brk start",
     "build": "NODE_ENV=production webpack --mode production",
     "flow": "flow",
     "formatter": "prettier --write 'src/*.js' 'src/**/*.js' package.json",

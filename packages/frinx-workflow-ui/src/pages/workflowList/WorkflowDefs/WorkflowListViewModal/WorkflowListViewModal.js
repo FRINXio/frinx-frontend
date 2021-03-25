@@ -1,9 +1,22 @@
-import React, { useContext, useEffect, useState } from 'react';
+// @flow
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
-import { Modal } from 'react-bootstrap';
-import { List, Button, Icon } from 'semantic-ui-react';
-import { jsonParse } from '../../../../common/utils.js';
+import {
+  Button,
+  // List,
+  ListIcon,
+  ListItem,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+} from '@chakra-ui/react';
+import { Icon,  List } from 'semantic-ui-react';
 import { hash } from '../../../diagramBuilder/builder-utils';
+import { jsonParse } from '../../../../common/utils.js';
 
 function createWorkflowTree(tasks, allWorkflows) {
   return tasks.map((task) => {
@@ -88,7 +101,7 @@ const WorkflowListViewModal = (props) => {
 
   function renderExpandButton(task) {
     return (
-      <Button basic primary compact size="mini" style={{ marginLeft: '5px' }} onClick={() => expandHideTask(task)}>
+      <Button size="sm" marginLeft={4} colorScheme="blue" onClick={() => expandHideTask(task)}>
         {expandedTasks.includes(task.taskReferenceName) ? 'Collapse' : 'Expand'}
       </Button>
     );
@@ -158,22 +171,26 @@ const WorkflowListViewModal = (props) => {
   const renderWorkflowAsTree = () => <List>{workflowTree.map((t) => renderSubtasks(t))}</List>;
 
   return (
-    <Modal size="lg" dialogClassName="modal-70w" show={props.show} onHide={props.modalHandler}>
-      <Modal.Header>
-        <Modal.Title>
+    <Modal size="3xl" isOpen={props.show} onClose={props.modalHandler}>
+      <ModalOverlay />
+      <ModalCloseButton />
+
+      <ModalContent>
+        <ModalHeader>
           {props?.wf?.name}
           <br />
           <div style={{ fontSize: '18px' }}>
             <p className="text-muted">{jsonParse(props?.wf?.description)?.description}</p>
           </div>
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body style={{ padding: '30px' }}>{renderWorkflowAsTree()}</Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={props.modalHandler}>
-          Close
-        </Button>
-      </Modal.Footer>
+        </ModalHeader>
+
+        <ModalBody padding={20}>{renderWorkflowAsTree()}</ModalBody>
+        <ModalFooter>
+          <Button colorScheme="gray" onClick={props.modalHandler}>
+            Close
+          </Button>
+        </ModalFooter>
+      </ModalContent>
     </Modal>
   );
 };
