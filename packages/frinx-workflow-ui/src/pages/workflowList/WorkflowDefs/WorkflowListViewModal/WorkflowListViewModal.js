@@ -4,7 +4,7 @@ import _ from 'lodash';
 import {
   Button,
   Icon,
-    List,
+  List,
   ListItem,
   Modal,
   ModalBody,
@@ -12,11 +12,11 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  ModalOverlay, Text,
+  ModalOverlay,
+  Text,
 } from '@chakra-ui/react';
 import { hash } from '../../../diagramBuilder/builder-utils';
 import { jsonParse } from '../../../../common/utils.js';
-
 
 function createWorkflowTree(tasks, allWorkflows) {
   return tasks.map((task) => {
@@ -140,25 +140,25 @@ const WorkflowListViewModal = (props) => {
   function renderSubtasks(task) {
     if (task?.subtasks?.length > 0) {
       return (
-          <List key={task.taskReferenceName} marginTop={4}>
-            <ListItem>
-              <Text fontWeight='bold'>{renderHeader(task)}</Text>
-              <Text>{task?.description}</Text>
-              {expandedTasks.includes(task.taskReferenceName) && (
-                      <List marginLeft={5}>{task.subtasks.map((st) => renderSubtasks(st))}</List>
-                    )}
-            </ListItem>
-          </List>
+        <List key={task.taskReferenceName} marginTop={4}>
+          <ListItem>
+            <Text fontWeight="bold">{renderHeader(task)}</Text>
+            <Text>{task?.description}</Text>
+            {expandedTasks.includes(task.taskReferenceName) && (
+              <List marginLeft={5}>{task.subtasks.map((st) => renderSubtasks(st))}</List>
+            )}
+          </ListItem>
+        </List>
       );
     }
 
     return (
-        <List key={task.taskReferenceName} marginTop={4}>
-          <ListItem>
-            <Text fontWeight='bold'>{renderHeader(task)}</Text>
-            <Text>{task?.description}</Text>
-          </ListItem>
-        </List>
+      <List key={task.taskReferenceName} marginTop={4}>
+        <ListItem>
+          <Text fontWeight="bold">{renderHeader(task)}</Text>
+          <Text>{task?.description}</Text>
+        </ListItem>
+      </List>
     );
   }
 

@@ -27,7 +27,7 @@ import {
 import { jsonParse } from '../../../../common/utils';
 import { storeWorkflowId } from '../../../../store/actions/builder';
 import { useDispatch } from 'react-redux';
-import WfAutoComplete from "../../../../common/wf-autocomplete";
+import WfAutoComplete from '../../../../common/wf-autocomplete';
 
 const getInputs = (def) => {
   const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)}/gim;
@@ -176,16 +176,20 @@ function InputModal(props) {
     switch (item.type) {
       case 'workflow-id':
         return (
-            <WfAutoComplete onChange={(e) => handleTypeahead(e, i)}
-          placeholder="Enter or select workflow id"
-          options={waitingWfs.map((w) => w.id)}
-                            selected={workflowForm[i].value}/>
+          <WfAutoComplete
+            onChange={(e) => handleTypeahead(e, i)}
+            placeholder="Enter or select workflow id"
+            options={waitingWfs.map((w) => w.id)}
+            selected={workflowForm[i].value}
+          />
         );
       case 'task-refName':
         return (
-            <WfAutoComplete  onChange={(e) => handleTypeahead(e, i)}
-                             placeholder="Enter or select task reference name"
-                             options={waitingWfs.map((w) => w.waitingTasks).flat()} />
+          <WfAutoComplete
+            onChange={(e) => handleTypeahead(e, i)}
+            placeholder="Enter or select task reference name"
+            options={waitingWfs.map((w) => w.waitingTasks).flat()}
+          />
         );
       case 'textarea':
         return (

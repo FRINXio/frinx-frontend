@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import unescapeJs from 'unescape-js';
-import { Button } from "@chakra-ui/react";
+import { Button } from '@chakra-ui/react';
 
 const UnescapeButton = ({ target, size }) => {
   const [isUnescaped, setIsUnescaped] = useState(false);
