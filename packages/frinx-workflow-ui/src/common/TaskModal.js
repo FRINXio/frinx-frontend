@@ -85,7 +85,7 @@ const TaskModal = (props: Props) => {
                     <b>
                       Input
                       <i title="copy to clipboard" className="btn fa fa-clipboard" data-clipboard-target="#t_input" />
-                      <UnescapeButton size="tiny" target="t_input" />
+                      <UnescapeButton size="sm" target="t_input" />
                     </b>
                   </Flex>
                   <Flex>
@@ -99,7 +99,7 @@ const TaskModal = (props: Props) => {
                     <b>
                       Output
                       <i title="copy to clipboard" className="btn fa fa-clipboard" data-clipboard-target="#t_output" />
-                      <UnescapeButton size="tiny" target="t_output" />
+                      <UnescapeButton size="sm" target="t_output" />
                     </b>
                   </Flex>
                   <Flex>

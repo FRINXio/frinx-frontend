@@ -1,9 +1,22 @@
-import React, { useContext, useEffect, useState } from 'react';
+// @flow
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
-import { Modal } from 'react-bootstrap';
-import { List, Button, Icon } from 'semantic-ui-react';
-import { jsonParse } from '../../../../common/utils.js';
+import {
+  Button,
+  Icon,
+  List,
+  ListItem,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+} from '@chakra-ui/react';
 import { hash } from '../../../diagramBuilder/builder-utils';
+import { jsonParse } from '../../../../common/utils.js';
 
 function createWorkflowTree(tasks, allWorkflows) {
   return tasks.map((task) => {
@@ -88,7 +101,7 @@ const WorkflowListViewModal = (props) => {
 
   function renderExpandButton(task) {
     return (
-      <Button basic primary compact size="mini" style={{ marginLeft: '5px' }} onClick={() => expandHideTask(task)}>
+      <Button size="sm" variant="outline" marginLeft={4} colorScheme="blue" onClick={() => expandHideTask(task)}>
         {expandedTasks.includes(task.taskReferenceName) ? 'Collapse' : 'Expand'}
       </Button>
     );
@@ -127,53 +140,51 @@ const WorkflowListViewModal = (props) => {
   function renderSubtasks(task) {
     if (task?.subtasks?.length > 0) {
       return (
-        <List.Item key={task.taskReferenceName} style={{ marginTop: '10px' }}>
-          <List.Icon
-            link
-            name={expandedTasks.includes(task.taskReferenceName) ? 'angle down' : 'angle right'}
-            onClick={() => expandHideTask(task)}
-          />
-          <List.Content>
-            <List.Header>{renderHeader(task)}</List.Header>
-            <List.Description>{task?.description}</List.Description>
+        <List key={task.taskReferenceName} marginTop={4}>
+          <ListItem>
+            <Text fontWeight="bold">{renderHeader(task)}</Text>
+            <Text>{task?.description}</Text>
             {expandedTasks.includes(task.taskReferenceName) && (
-              <List.List>{task.subtasks.map((st) => renderSubtasks(st))}</List.List>
+              <List marginLeft={5}>{task.subtasks.map((st) => renderSubtasks(st))}</List>
             )}
-          </List.Content>
-        </List.Item>
+          </ListItem>
+        </List>
       );
     }
 
     return (
-      <List.Item key={task.taskReferenceName} style={{ marginTop: '10px' }}>
-        <List.Icon name="angle right" style={{ opacity: 0 }} />
-        <List.Content>
-          <List.Header>{renderHeader(task)}</List.Header>
-          <List.Description>{task?.description}</List.Description>
-        </List.Content>
-      </List.Item>
+      <List key={task.taskReferenceName} marginTop={4}>
+        <ListItem>
+          <Text fontWeight="bold">{renderHeader(task)}</Text>
+          <Text>{task?.description}</Text>
+        </ListItem>
+      </List>
     );
   }
 
   const renderWorkflowAsTree = () => <List>{workflowTree.map((t) => renderSubtasks(t))}</List>;
 
   return (
-    <Modal size="lg" dialogClassName="modal-70w" show={props.show} onHide={props.modalHandler}>
-      <Modal.Header>
-        <Modal.Title>
+    <Modal size="3xl" isOpen={props.show} onClose={props.modalHandler}>
+      <ModalOverlay />
+      <ModalCloseButton />
+
+      <ModalContent>
+        <ModalHeader>
           {props?.wf?.name}
           <br />
           <div style={{ fontSize: '18px' }}>
             <p className="text-muted">{jsonParse(props?.wf?.description)?.description}</p>
           </div>
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body style={{ padding: '30px' }}>{renderWorkflowAsTree()}</Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={props.modalHandler}>
-          Close
-        </Button>
-      </Modal.Footer>
+        </ModalHeader>
+
+        <ModalBody padding={10}>{renderWorkflowAsTree()}</ModalBody>
+        <ModalFooter>
+          <Button colorScheme="gray" onClick={props.modalHandler}>
+            Close
+          </Button>
+        </ModalFooter>
+      </ModalContent>
     </Modal>
   );
 };

@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { FormControl, FormLabel, Input, useTheme } from '@chakra-ui/react';
 import AceEditor from 'react-ace';
 import { LambdaInputParams } from '../../helpers/types';
-import 'ace-builds/webpack-resolver';
+// import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/theme-textmate';
 import 'ace-builds/src-noconflict/ext-language_tools';

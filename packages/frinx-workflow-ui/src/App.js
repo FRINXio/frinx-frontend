@@ -8,7 +8,6 @@ import { Provider } from 'react-redux';
 import { Redirect, Route, Switch, useRouteMatch, useParams } from 'react-router-dom';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
-import DiagramBuilder from './pages/diagramBuilder/DiagramBuilder';
 import WorkflowListHeader from './pages/workflowList/workflow-list-header';
 import buildReducer from './store/reducers/builder';
 import bulkReducer from './store/reducers/bulk';
@@ -44,11 +43,6 @@ function App() {
     <UniflowApiProvider>
       <Provider store={store}>
         <Switch>
-          <Route
-            exact
-            path={[path + '/builder', path + '/builder/:name/:version']}
-            render={(props) => <DiagramBuilder {...props} />}
-          />
           <>
             <WorkflowListHeader onAddButtonClick={() => {}} />
             <Route exact path={path + '/defs'}>
