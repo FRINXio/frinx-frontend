@@ -19,11 +19,9 @@
     "@fortawesome/free-solid-svg-icons": "^5.8.0",
     "@fortawesome/react-fontawesome": "^0.1.4",
     "codemirror": "^5.47.0",
-    "cross-env": "5.0.5",
     "framer-motion": "^1.6.17",
     "lodash": "^4.17.20",
-    "react-diff-viewer": "^3.1.1",
-    "react-window": "^1.8.6"
+    "react-diff-viewer": "^3.1.1"
   },
   "scripts": {
     "dev": "webpack-dev-server --mode development",
