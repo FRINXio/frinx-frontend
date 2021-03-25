@@ -10,7 +10,6 @@ import Scheduling from './pages/workflowList/Scheduling/Scheduling';
 import EventListeners from './pages/workflowList/EventListeners/event-listeners';
 import TaskList from './pages/workflowList/Tasks/task-list';
 import PollData from './pages/workflowList/PollData/poll-data';
-import DiagramBuilder from './pages/diagramBuilder/DiagramBuilder';
 
 export { ServiceUIApp };
 export { App as WorkflowApp };
@@ -23,7 +22,6 @@ export { Scheduling };
 export { EventListeners };
 export { TaskList };
 export { PollData };
-// export { DiagramBuilder };
 
 export const menuLinks = [
   { label: 'Definitions', path: '/defs' },

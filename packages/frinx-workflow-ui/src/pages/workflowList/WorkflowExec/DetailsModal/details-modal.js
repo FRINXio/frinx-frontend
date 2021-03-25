@@ -335,7 +335,7 @@ class DetailsModal extends Component {
             Workflow Input&nbsp;&nbsp;
             <i title="copy to clipboard" className="clp far fa-clipboard clickable" data-clipboard-target="#wfinput" />
             &nbsp;&nbsp;
-            <UnescapeButton size="tiny" target="wfinput" />
+            <UnescapeButton size="sm" target="wfinput" />
           </h4>
           <code>
             <pre id="wfinput" className="heightWrapper">
@@ -348,7 +348,7 @@ class DetailsModal extends Component {
             Workflow Output&nbsp;&nbsp;
             <i title="copy to clipboard" className="clp far fa-clipboard clickable" data-clipboard-target="#wfoutput" />
             &nbsp;&nbsp;
-            <UnescapeButton size="tiny" target="wfoutput" />
+            <UnescapeButton size="sm" target="wfoutput" />
           </h4>
           <code>
             <pre id="wfoutput" className="heightWrapper">

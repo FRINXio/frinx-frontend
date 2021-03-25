@@ -1,6 +1,5 @@
 // @flow
 import './WorkflowExec.css';
-import 'react-bootstrap-typeahead/css/Typeahead.css';
 import * as bulkActions from '../../../store/actions/bulk';
 import * as searchActions from '../../../store/actions/searchExecs';
 import DetailsModal from './DetailsModal/details-modal';

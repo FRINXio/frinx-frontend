@@ -24,10 +24,10 @@ import {
   Text,
   Textarea,
 } from '@chakra-ui/react';
-import { Typeahead } from 'react-bootstrap-typeahead';
 import { jsonParse } from '../../../../common/utils';
 import { storeWorkflowId } from '../../../../store/actions/builder';
 import { useDispatch } from 'react-redux';
+import WfAutoComplete from '../../../../common/wf-autocomplete';
 
 const getInputs = (def) => {
   const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)}/gim;
@@ -176,39 +176,19 @@ function InputModal(props) {
     switch (item.type) {
       case 'workflow-id':
         return (
-          <Typeahead
-            id={`input-${i}`}
+          <WfAutoComplete
             onChange={(e) => handleTypeahead(e, i)}
             placeholder="Enter or select workflow id"
             options={waitingWfs.map((w) => w.id)}
-            defaultSelected={workflowForm[i].value}
-            onInputChange={(e) => handleTypeahead(e, i)}
-            renderMenuItemChildren={(option) => (
-              <div>
-                {option}
-                <div>
-                  <small>name: {waitingWfs.find((w) => w.id === option)?.name}</small>
-                </div>
-              </div>
-            )}
+            selected={workflowForm[i].value}
           />
         );
       case 'task-refName':
         return (
-          <Typeahead
-            id={`input-${item.i}`}
+          <WfAutoComplete
             onChange={(e) => handleTypeahead(e, i)}
             placeholder="Enter or select task reference name"
             options={waitingWfs.map((w) => w.waitingTasks).flat()}
-            onInputChange={(e) => handleTypeahead(e, i)}
-            renderMenuItemChildren={(option) => (
-              <div>
-                {option}
-                <div>
-                  <small>name: {waitingWfs.find((w) => w.waitingTasks.includes(option))?.name}</small>
-                </div>
-              </div>
-            )}
           />
         );
       case 'textarea':

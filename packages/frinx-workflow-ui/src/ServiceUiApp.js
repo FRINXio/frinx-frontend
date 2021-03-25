@@ -12,7 +12,6 @@ import buildReducer from './store/reducers/builder';
 import bulkReducer from './store/reducers/bulk';
 import searchReducer from './store/reducers/searchExecs';
 import WorkflowDefsReadOnly from './pages/workflowList/WorkflowDefs/workflow-defs-read-only';
-import DiagramBuilder from './pages/diagramBuilder/DiagramBuilder';
 import WorkflowExec from './pages/workflowList/WorkflowExec/workflow-exec';
 import PageContainer from './common/PageContainer';
 
@@ -41,11 +40,6 @@ function ServiceUIApp(props) {
   return (
     <Provider store={store}>
       <Switch>
-        <Route
-          exact
-          path={[path + '/builder', path + '/builder/:name/:version']}
-          render={(props) => <DiagramBuilder {...props} />}
-        />
         <>
           <ServiceAppHeader />
           <Route exact path={path + '/defs'}>

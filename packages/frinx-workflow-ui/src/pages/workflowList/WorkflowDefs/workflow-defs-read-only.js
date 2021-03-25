@@ -9,7 +9,6 @@
 */
 
 // @flow
-import 'react-bootstrap-typeahead/css/Typeahead.css';
 import DefinitionModal from './DefinitonModal/DefinitionModal';
 import DependencyModal from './DependencyModal/DependencyModal';
 import DiagramModal from './DiagramModal/DiagramModal';
