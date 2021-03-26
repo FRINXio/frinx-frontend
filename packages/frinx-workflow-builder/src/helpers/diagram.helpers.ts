@@ -7,6 +7,8 @@ import DecisionNode from '../components/nodes/decision-node';
 import { CustomNodeType, ExtendedTask, Workflow, NodeData, DecisionTask, Task } from './types';
 import { getTaskLabel } from './task.helpers';
 import unwrap from './unwrap';
+import ReadOnlyTaskNode from '../components/nodes/read-only-task-node';
+import ReadOnlyDecisionNode from '../components/nodes/read-only-decision-node';
 
 const NODE_WIDTH = 275;
 const MAIN_Y_AXIS_POSITON = 300;
@@ -36,14 +38,17 @@ type Position = {
 class DiagramController {
   workflow: Workflow<ExtendedTask>;
 
+  isReadOnly: boolean;
+
   onDeleteBtnClick: ((id: string) => void) | undefined = undefined;
 
   private step = 0;
 
   private depth = 1;
 
-  constructor(workflow: Workflow<ExtendedTask>) {
+  constructor(workflow: Workflow<ExtendedTask>, isReadOnly = false) {
     this.workflow = workflow;
+    this.isReadOnly = isReadOnly;
   }
 
   createGenericTaskNode = (task: ExtendedTask, position: Position): CustomNodeType => {
@@ -53,7 +58,8 @@ class DiagramController {
         content: task.name,
         id: task.id,
         coordinates: [position.x, position.y],
-        render: DecisionNode,
+        render: this.isReadOnly ? ReadOnlyDecisionNode : DecisionNode,
+        disableDrag: this.isReadOnly,
         inputs: [
           {
             id: serializeGenericId(task.id, 'input'),
@@ -90,7 +96,8 @@ class DiagramController {
     return {
       content: task.name,
       id: task.id,
-      render: TaskNode,
+      render: this.isReadOnly ? ReadOnlyTaskNode : TaskNode,
+      disableDrag: this.isReadOnly,
       coordinates: [position.x, position.y],
       outputs: [
         {
@@ -300,10 +307,6 @@ class DiagramController {
     return dropNullValues(maybeLinks);
   };
 
-  getCanvasWidth = (): number => {
-    return (this.step + 2) * 2 * NODE_WIDTH;
-  };
-
   createSchemaFromWorkflow = (): DiagramSchema<NodeData> => {
     const nodesFromWorkflow = this.createNodesFromWorkflow();
     const nodes = [
@@ -312,7 +315,6 @@ class DiagramController {
       this.createEndNode({ x: NODE_WIDTH * (this.step + 1), y: MAIN_Y_AXIS_POSITON }),
     ];
     const links = this.createLinks(nodes);
-    // const links: Link[] = [];
 
     return createSchema({
       nodes,
@@ -321,6 +323,6 @@ class DiagramController {
   };
 }
 
-export function createDiagramController(workflow: Workflow<ExtendedTask>): DiagramController {
-  return new DiagramController(workflow);
+export function createDiagramController(workflow: Workflow<ExtendedTask>, isReadOnly?: boolean): DiagramController {
+  return new DiagramController(workflow, isReadOnly);
 }
