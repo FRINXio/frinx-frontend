@@ -68,27 +68,40 @@ module.exports = {
   ],
   externals: isDev
     ? undefined
-    : {
-        react: {
-          root: 'React',
-          commonjs2: 'react',
-          commonjs: 'react',
-          amd: 'react',
-          umd: 'react',
+    : [
+        {
+          react: {
+            root: 'React',
+            commonjs2: 'react',
+            commonjs: 'react',
+            amd: 'react',
+            umd: 'react',
+          },
+          'react-dom': {
+            root: 'ReactDOM',
+            commonjs2: 'react-dom',
+            commonjs: 'react-dom',
+            amd: 'react-dom',
+            umd: 'react-dom',
+          },
+          'react-router-dom': {
+            root: 'ReactRouterDOM',
+            commonjs2: 'react-router-dom',
+            commonjs: 'react-router-dom',
+            amd: 'react-router-dom',
+            umd: 'react-router-dom',
+          },
+          'framer-motion': {
+            root: 'FramerMotion',
+            commonjs2: 'framer-motion',
+            commonjs: 'framer-motion',
+            amd: 'framer-motion',
+            umd: 'framer-motion',
+          },
         },
-        'react-dom': {
-          root: 'ReactDOM',
-          commonjs2: 'react-dom',
-          commonjs: 'react-dom',
-          amd: 'react-dom',
-          umd: 'react-dom',
-        },
-        'react-router-dom': {
-          root: 'ReactRouterDOM',
-          commonjs2: 'react-router-dom',
-          commonjs: 'react-router-dom',
-          amd: 'react-router-dom',
-          umd: 'react-router-dom',
-        },
-      },
+        /@chakra-ui\/react\/.*/,
+        /@chakra-ui\/icons\/.*/,
+        /@emotion\/react\/.*/,
+        /@emotion\/styled\/.*/,
+      ],
 };
