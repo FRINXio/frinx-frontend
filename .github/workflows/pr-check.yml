@@ -18,6 +18,7 @@ jobs:
           image: node:fermium-alpine
           options: -v ${{ github.workspace }}:/work
           run: |
+            cd /work
             apk update
             apk add --virtual build-essential build-base gcc wget git
             cp yarn.lock yarn.lock.orig
