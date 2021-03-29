@@ -1,17 +1,18 @@
 import { createSchema } from 'beautiful-react-diagrams';
-import { flatten } from 'lodash';
 import { DiagramSchema, Link } from 'beautiful-react-diagrams/@types/DiagramSchema';
 import { v4 as uuid } from 'uuid';
 import TaskNode from '../components/nodes/task-node';
 import BaseNode from '../components/nodes/start-end-node';
 import DecisionNode from '../components/nodes/decision-node';
-import { CustomNodeType, ExtendedTask, Workflow, ExtendedDecisionTask, NodeData } from './types';
+import { CustomNodeType, ExtendedTask, Workflow, NodeData, DecisionTask, Task } from './types';
 import { getTaskLabel } from './task.helpers';
 import unwrap from './unwrap';
+import ReadOnlyTaskNode from '../components/nodes/read-only-task-node';
+import ReadOnlyDecisionNode from '../components/nodes/read-only-decision-node';
 
 const NODE_WIDTH = 275;
 const MAIN_Y_AXIS_POSITON = 300;
-const DECISION_Y_AXIS_POSITON = 100;
+const PREPARED_DECISION_CASES = 5;
 
 function serializeGenericId(id: string, type: 'input' | 'output'): string {
   return JSON.stringify({ id, type });
@@ -37,51 +38,66 @@ type Position = {
 class DiagramController {
   workflow: Workflow<ExtendedTask>;
 
+  isReadOnly: boolean;
+
   onDeleteBtnClick: ((id: string) => void) | undefined = undefined;
 
-  private taskIndex = 0;
+  private step = 0;
 
-  private dTasksIndex = 0;
+  private depth = 1;
 
-  private defaultTasksIndex = 0;
-
-  constructor(workflow: Workflow<ExtendedTask>) {
+  constructor(workflow: Workflow<ExtendedTask>, isReadOnly = false) {
     this.workflow = workflow;
+    this.isReadOnly = isReadOnly;
   }
 
-  createDecisionTaskNode = (task: ExtendedDecisionTask, position: Position): CustomNodeType => {
-    return {
-      content: task.name,
-      id: task.id,
-      coordinates: [position.x, position.y],
-      render: DecisionNode,
-      inputs: [
-        {
-          id: serializeGenericId(task.id, 'input'),
-          alignment: 'left',
-        },
-      ],
-      outputs: [
-        ...Object.keys(task.decisionCases).map((_, index) => {
-          return {
-            id: serializeDecisionId(task.id, index.toString()),
-          };
-        }),
-        {
-          id: serializeDecisionId(task.id, 'else'),
-        },
-      ],
-      data: {
-        task,
-      },
-    };
-  };
-
   createGenericTaskNode = (task: ExtendedTask, position: Position): CustomNodeType => {
+    if (task.type === 'DECISION') {
+      const keys = Object.keys(task.decisionCases);
+      return {
+        content: task.name,
+        id: task.id,
+        coordinates: [position.x, position.y],
+        render: this.isReadOnly ? ReadOnlyDecisionNode : DecisionNode,
+        disableDrag: this.isReadOnly,
+        inputs: [
+          {
+            id: serializeGenericId(task.id, 'input'),
+            alignment: 'left',
+          },
+        ],
+        outputs: [
+          ...Array.from(new Array(PREPARED_DECISION_CASES)).map((_, index) => {
+            return {
+              id: serializeDecisionId(task.id, index.toString()),
+            };
+          }),
+          {
+            id: serializeDecisionId(task.id, 'else'),
+          },
+        ],
+        data: {
+          task,
+          decisionCases: {
+            ...keys.reduce(
+              (acc, curr, index) => ({
+                [index.toString()]: curr,
+                ...acc,
+              }),
+              { [PREPARED_DECISION_CASES.toString()]: 'else' },
+            ),
+            ...Array.from(new Array(PREPARED_DECISION_CASES - keys.length)).reduce((acc, _, index) => {
+              return { ...acc, [(index + keys.length).toString()]: null };
+            }, {}),
+          },
+        },
+      };
+    }
     return {
       content: task.name,
       id: task.id,
-      render: TaskNode,
+      render: this.isReadOnly ? ReadOnlyTaskNode : TaskNode,
+      disableDrag: this.isReadOnly,
       coordinates: [position.x, position.y],
       outputs: [
         {
@@ -124,121 +140,178 @@ class DiagramController {
   };
 
   createTaskNode = (task: ExtendedTask): CustomNodeType => {
-    if (task.type === 'DECISION') {
-      return this.createDecisionTaskNode(task, { x: 100, y: 100 });
-    }
+    const nodeCoordinates = this.getDropAreaNodeCoordinates();
 
     if (task.type === 'START_TASK') {
       return this.createStartNode();
     }
 
     if (task.type === 'END_TASK') {
-      return this.createEndNode({ x: 100, y: 100 });
+      return this.createEndNode(nodeCoordinates);
     }
 
-    return {
-      content: task.name,
-      id: task.id,
-      coordinates: [100, 100],
-      render: TaskNode,
-      inputs: [
-        {
-          id: serializeGenericId(task.id, 'input'),
-          alignment: 'left',
-        },
-      ],
-      outputs: [
-        {
-          id: serializeGenericId(task.id, 'output'),
-          alignment: 'right',
-        },
-      ],
-      data: {
-        task,
-      },
-    };
+    return this.createGenericTaskNode(task, nodeCoordinates);
   };
+
+  createDecisionNodes(decisionTask: DecisionTask, position: Position): CustomNodeType[] {
+    const currentStep = this.step;
+    const decisionCaseTasks = Object.keys(decisionTask.decisionCases).map((key) => {
+      return decisionTask.decisionCases[key];
+    });
+    const decisionCaseNodes = decisionCaseTasks
+      .map((tasks, index) => {
+        this.step = currentStep;
+        return tasks
+          .map((tsk) => {
+            this.step += 1;
+            if (tsk.type === 'DECISION') {
+              this.depth += 1;
+              return this.createDecisionNodes(tsk, {
+                x: NODE_WIDTH * this.step,
+                y: this.depth * ((MAIN_Y_AXIS_POSITON / 4) * index),
+              });
+            }
+            return this.createGenericTaskNode(
+              { ...tsk, id: uuid(), label: getTaskLabel(tsk) },
+              {
+                x: NODE_WIDTH * this.step,
+                y: this.depth * ((MAIN_Y_AXIS_POSITON / 4) * index),
+              },
+            );
+          })
+          .flat();
+      })
+      .flat();
+    this.step = currentStep;
+    const defaultTasks = decisionTask.defaultCase
+      .map((tsk) => {
+        this.step += 1;
+        if (tsk.type === 'DECISION') {
+          this.depth += 1;
+          this.createDecisionNodes(tsk, {
+            x: NODE_WIDTH * this.step,
+            y: MAIN_Y_AXIS_POSITON + this.depth * (MAIN_Y_AXIS_POSITON / 4),
+          });
+        }
+        return this.createGenericTaskNode(
+          { ...tsk, id: uuid(), label: getTaskLabel(tsk) },
+          { x: NODE_WIDTH * this.step, y: MAIN_Y_AXIS_POSITON + this.depth * (MAIN_Y_AXIS_POSITON / 4) },
+        );
+      })
+      .flat();
+    this.depth -= 1;
+    this.step = currentStep + Math.max(...decisionCaseTasks.map((t) => t.length), defaultTasks.length);
+    const extendedTask = {
+      ...decisionTask,
+      id: uuid(),
+      label: getTaskLabel(decisionTask),
+    };
+    return [this.createGenericTaskNode(extendedTask, position), ...decisionCaseNodes, ...defaultTasks];
+  }
 
   createNodesFromWorkflow = (): CustomNodeType[] => {
     return this.workflow.tasks.reduce((acc, t) => {
-      this.taskIndex += 1;
+      this.step += 1;
       if (t.type === 'DECISION') {
-        this.dTasksIndex = this.taskIndex;
-        const dTasks = flatten(Object.keys(t.decisionCases).map((key) => t.decisionCases[key])).map((tsk) => {
-          this.dTasksIndex += 1;
-          this.taskIndex -= 1;
-          return this.createGenericTaskNode(
-            { ...tsk, id: uuid(), label: getTaskLabel(tsk) },
-            { x: NODE_WIDTH * this.dTasksIndex, y: DECISION_Y_AXIS_POSITON },
-          );
-        });
-        this.defaultTasksIndex = this.taskIndex + dTasks.length;
-        const defaultTasks = t.defaultCase.map((tsk) => {
-          this.defaultTasksIndex += 1;
-          this.taskIndex -= 1;
-          return this.createGenericTaskNode(
-            { ...tsk, id: uuid(), label: getTaskLabel(tsk) },
-            { x: NODE_WIDTH * this.defaultTasksIndex, y: MAIN_Y_AXIS_POSITON },
-          );
-        });
+        this.depth += 1;
         return [
           ...acc,
-          this.createDecisionTaskNode(t, {
-            x: NODE_WIDTH * (this.taskIndex + dTasks.length + defaultTasks.length),
+          ...this.createDecisionNodes(t, {
+            x: NODE_WIDTH * this.step,
             y: MAIN_Y_AXIS_POSITON,
           }),
-          ...dTasks,
-          ...defaultTasks,
         ];
       }
-      this.taskIndex += this.dTasksIndex + this.defaultTasksIndex;
-
+      // this.step += this.dTasksIndex + this.defaultTasksIndex;
       return [
         ...acc,
         this.createGenericTaskNode(t, {
-          x: NODE_WIDTH * this.taskIndex,
+          x: NODE_WIDTH * this.step,
           y: MAIN_Y_AXIS_POSITON,
         }),
       ];
     }, [] as CustomNodeType[]);
   };
 
+  getDecisionCasesLength = (decisionCases: Record<string, Task[]>): number => {
+    let result = 0;
+    Object.values(decisionCases).forEach((tasks) => {
+      tasks.forEach((task) => {
+        result += 1;
+        if (task.type === 'DECISION') {
+          result += this.getDecisionCasesLength(task.decisionCases);
+          result += this.getTasksLength(task.defaultCase);
+        }
+      });
+    });
+    return result;
+  };
+
+  getTasksLength = (tasks: Task[]): number => {
+    let result = 0;
+    tasks.forEach((task) => {
+      result += 1;
+      if (task.type === 'DECISION') {
+        result += this.getTasksLength(task.defaultCase);
+        result += this.getDecisionCasesLength(task.decisionCases);
+      }
+    });
+    return result;
+  };
+
+  getDropAreaNodeCoordinates = (): Position => ({
+    x: Math.floor(Math.random() * 200) + 100,
+    y: Math.floor(Math.random() * 100) + 100,
+  });
+
   createLinks = (nodes: CustomNodeType[]): Link[] => {
-    const state: Record<number, { id: string; type: 'input' | 'output' }> = {};
+    const state: Record<number, [{ id: string; type: 'input' | 'output' }]> = nodes.reduce(
+      (acc, _, index) => ({ ...acc, [index]: [] }),
+      {},
+    );
     const maybeLinks = nodes.reduce((acc, curr, index, array) => {
       if (curr.data?.task?.type === 'DECISION') {
-        const decisionCasesLength = Object.values(curr.data.task.decisionCases)[0].length;
-        const defaultTasksLenght = curr.data.task.defaultCase.length;
-        const nextNodeInputId = unwrap(nodes[index + decisionCasesLength + defaultTasksLenght + 1].inputs)[0].id;
-        state[index + decisionCasesLength] = { id: nextNodeInputId, type: 'output' };
-        state[index + decisionCasesLength + 1] = { id: unwrap(curr.outputs)[1].id, type: 'input' };
+        const { task } = curr.data;
+        const outputs = unwrap(curr.outputs);
+        const decisionCasesLength = this.getDecisionCasesLength(curr.data.task.decisionCases);
+        const defaultTasksLength = this.getTasksLength(curr.data.task.defaultCase);
+        const nextNodeInputId = unwrap(nodes[index + decisionCasesLength + defaultTasksLength + 1].inputs)[0].id;
+        let dTaskLength = 0;
+        Object.keys(task.decisionCases).forEach((key, idx) => {
+          if (dTaskLength !== 0) {
+            state[index + dTaskLength + 1].push({
+              id: outputs[idx].id,
+              type: 'input',
+            });
+          }
+          dTaskLength += this.getTasksLength(task.decisionCases[key]);
+          state[index + dTaskLength].push({ id: nextNodeInputId, type: 'output' });
+        });
+        // else
+        state[index + decisionCasesLength + 1].push({
+          id: outputs[outputs.length - 1].id,
+          type: 'input',
+        });
       }
-      let stateLink: Link | null = null;
-      if (state[index]) {
-        stateLink = {
-          input: state[index].type === 'output' ? unwrap(curr.outputs)[0].id : state[index].id,
-          output: state[index].type === 'output' ? state[index].id : unwrap(curr.inputs)[0].id,
-          className: 'nodeLink',
-        };
-      }
+      const stateLinks: Link[] = state[index].length
+        ? state[index].map((l) => ({
+            input: l.type === 'output' ? unwrap(curr.outputs)[0].id : l.id,
+            output: l.type === 'output' ? l.id : unwrap(curr.inputs)[0].id,
+          }))
+        : [];
       const nextNode = array[index + 1] ?? null;
-      const bla = state[index] && state[index].type === 'output';
+      const hasLink = state[index] && state[index].find((l) => l.type === 'output');
       const link: Link | null =
-        nextNode != null && !bla
+        nextNode != null && !hasLink
           ? {
               input: curr.outputs != null ? curr.outputs[0].id : '',
               output: nextNode?.inputs != null ? nextNode.inputs[0].id : '',
-              className: 'nodeLink',
             }
           : null;
-      return [...acc, link, stateLink];
+      return [...acc, link, ...stateLinks];
     }, [] as (Link | null)[]);
 
     return dropNullValues(maybeLinks);
-  };
-
-  getCanvasWidth = (): number => {
-    return (this.taskIndex + 2) * 2 * NODE_WIDTH;
   };
 
   createSchemaFromWorkflow = (): DiagramSchema<NodeData> => {
@@ -246,7 +319,7 @@ class DiagramController {
     const nodes = [
       this.createStartNode(),
       ...nodesFromWorkflow,
-      this.createEndNode({ x: NODE_WIDTH * (this.taskIndex + 1), y: MAIN_Y_AXIS_POSITON }),
+      this.createEndNode({ x: NODE_WIDTH * (this.step + 1), y: MAIN_Y_AXIS_POSITON }),
     ];
     const links = this.createLinks(nodes);
 
@@ -257,6 +330,6 @@ class DiagramController {
   };
 }
 
-export function createDiagramController(workflow: Workflow<ExtendedTask>): DiagramController {
-  return new DiagramController(workflow);
+export function createDiagramController(workflow: Workflow<ExtendedTask>, isReadOnly?: boolean): DiagramController {
+  return new DiagramController(workflow, isReadOnly);
 }

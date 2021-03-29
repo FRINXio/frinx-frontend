@@ -3,18 +3,15 @@ import { Box, Flex, Heading, Text, Theme, useTheme } from '@chakra-ui/react';
 import { CustomNodeType, ExtendedDecisionTask, ExtendedTask } from '../../helpers/types';
 import unwrap from '../../helpers/unwrap';
 import { getNodeColor } from './nodes.helpers';
-import { useTaskActions } from '../../task-actions-context';
-import NodeButtons from './node-buttons';
 
 const isDecisionTask = (task: ExtendedTask | undefined): task is ExtendedDecisionTask => {
   return task != null && task.type === 'DECISION';
 };
 
-const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
+const ReadOnlyDecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
   const theme = useTheme<Theme>();
   const { inputs, outputs, data } = props;
   const nodeData = unwrap(data);
-  const { selectTask, selectedTask, setRemovedTaskId } = useTaskActions();
   const { task } = nodeData;
   if (!isDecisionTask(task)) {
     return null;
@@ -31,12 +28,12 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
       width={64}
       borderWidth={2}
       borderStyle="solid"
-      borderColor={task.id === selectedTask?.task.id ? borderColor : 'gray.200'}
+      borderColor={borderColor}
       borderTopColor={borderColor}
       borderTopWidth={6}
       borderTopStyle="solid"
       overflow="hidden"
-      boxShadow={task.id === selectedTask?.task.id ? undefined : 'base'}
+      boxShadow="base"
       borderRadius="md"
     >
       <Flex background="gray.100" alignItems="stretch" width={10}>
@@ -68,14 +65,6 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
           <Heading as="h6" size="xs" textTransform="uppercase" isTruncated title={task.name}>
             {task.name}
           </Heading>
-          <NodeButtons
-            onEditButtonClick={() => {
-              selectTask({ actionType: 'edit', task });
-            }}
-            onDeleteButtonClick={() => {
-              setRemovedTaskId(task.id);
-            }}
-          />
         </Flex>
         <Flex height={8} alignItems="center" justifyContent="center" isTruncated>
           <Text size="sm" color="gray.700" fontFamily="monospace">
@@ -118,4 +107,4 @@ const DecisionNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
   );
 };
 
-export default DecisionNode;
+export default ReadOnlyDecisionNode;

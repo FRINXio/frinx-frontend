@@ -19,6 +19,7 @@ import {
   TabPanels,
   Tabs,
 } from '@chakra-ui/react';
+import { omitBy } from 'lodash';
 import produce from 'immer';
 import { InputParameters, ExtendedTask } from '../../helpers/types';
 import { renderInputParamForm } from './input-params-forms';
@@ -120,46 +121,55 @@ const TaskForm: FC<Props> = ({ task, onClose, onFormSubmit }) => {
             </FormControl>
             {taskState.type === 'DECISION' && (
               <>
-                <HStack spacing={2}>
-                  <FormControl>
-                    <InputGroup>
-                      <InputLeftAddon>if</InputLeftAddon>
-                      <Input
-                        type="text"
-                        value={taskState.caseValueParam}
-                        onChange={(event) => {
-                          event.persist();
-                          setTaskState((s) => {
-                            return {
-                              ...s,
-                              caseValueParam: event.target.value,
-                            };
-                          });
-                        }}
-                      />
-                    </InputGroup>
-                  </FormControl>
-                  <FormControl>
-                    <InputGroup>
-                      <InputLeftAddon>is equal to</InputLeftAddon>
-                      <Input
-                        type="text"
-                        value={Object.keys(taskState.decisionCases)[0]}
-                        onChange={(event) => {
-                          event.persist();
-                          setTaskState((s) => {
-                            return {
-                              ...s,
-                              decisionCases: {
-                                [event.target.value]: [],
-                              },
-                            };
-                          });
-                        }}
-                      />
-                    </InputGroup>
-                  </FormControl>
-                </HStack>
+                {Object.keys(taskState.decisionCases).map((key, index) => {
+                  return (
+                    // eslint-disable-next-line react/no-array-index-key
+                    <HStack spacing={2} key={index} marginY={2}>
+                      <FormControl>
+                        <InputGroup>
+                          <InputLeftAddon>if</InputLeftAddon>
+                          <Input
+                            type="text"
+                            value={taskState.caseValueParam}
+                            onChange={(event) => {
+                              event.persist();
+                              setTaskState((s) => {
+                                return {
+                                  ...s,
+                                  caseValueParam: event.target.value,
+                                };
+                              });
+                            }}
+                          />
+                        </InputGroup>
+                      </FormControl>
+                      <FormControl>
+                        <InputGroup>
+                          <InputLeftAddon>is equal to</InputLeftAddon>
+                          <Input
+                            type="text"
+                            value={key}
+                            onChange={(event) => {
+                              event.persist();
+                              setTaskState((s) => {
+                                if (s.type !== 'DECISION') {
+                                  return s;
+                                }
+                                return {
+                                  ...s,
+                                  decisionCases: {
+                                    ...omitBy(s.decisionCases, (_, k) => k === key),
+                                    [event.target.value]: s.decisionCases[key],
+                                  },
+                                };
+                              });
+                            }}
+                          />
+                        </InputGroup>
+                      </FormControl>
+                    </HStack>
+                  );
+                })}
               </>
             )}
             {taskState.type === 'EVENT' && (

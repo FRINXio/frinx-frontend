@@ -1,6 +1,7 @@
-/* eslint-disable no-template-curly-in-string */
+/* eslint-disable */
 import { createElement } from 'react';
 import { render } from 'react-dom';
+import { getBuilderApiProvider } from './builder-api-provider';
 import { HTTPTask, TaskDefinition, Workflow, SubworkflowTask } from './helpers/types';
 import Root from './root';
 
@@ -17,14 +18,14 @@ const workflow: Workflow = {
   version: 1,
   tasks: [
     {
-      name: 'decisionTask',
+      name: '1. decisionTask',
       type: 'DECISION',
       taskReferenceName: 'decisionTaskRef_1234',
       caseValueParam: 'param',
       decisionCases: {
         true: [
           ({
-            name: '1GLOBAL___HTTP_task',
+            name: '1. if[0]',
             taskReferenceName: 'httpRequestTaskRef_S3NY',
             inputParameters: {
               http_request: {
@@ -44,8 +45,109 @@ const workflow: Workflow = {
             optional: false,
             asyncComplete: false,
           } as unknown) as HTTPTask,
+          {
+            name: '1. if[1] decision',
+            type: 'DECISION',
+            taskReferenceName: 'decisionTaskRef_1234',
+            caseValueParam: 'param',
+            decisionCases: {
+              true: [
+                ({
+                  name: '2. if[0]',
+                  taskReferenceName: 'httpRequestTaskRef_S3NY',
+                  inputParameters: {
+                    http_request: {
+                      uri: '${workflow.input.uri}',
+                      method: 'GET',
+                      contentType: 'application/json',
+                      headers: {
+                        from: 'frinxUser',
+                        'x-auth-user-roles': 'OWNER',
+                        'x-tenant-id': 'frinx_test',
+                      },
+                      timeout: 3600,
+                    },
+                  },
+                  type: 'SIMPLE',
+                  startDelay: 0,
+                  optional: false,
+                  asyncComplete: false,
+                } as unknown) as HTTPTask,
+                ({
+                  name: '2. if[1]',
+                  taskReferenceName: 'httpRequestTaskRef_S3NY',
+                  inputParameters: {
+                    http_request: {
+                      uri: '${workflow.input.uri}',
+                      method: 'GET',
+                      contentType: 'application/json',
+                      headers: {
+                        from: 'frinxUser',
+                        'x-auth-user-roles': 'OWNER',
+                        'x-tenant-id': 'frinx_test',
+                      },
+                      timeout: 3600,
+                    },
+                  },
+                  type: 'SIMPLE',
+                  startDelay: 0,
+                  optional: false,
+                  asyncComplete: false,
+                } as unknown) as HTTPTask,
+              ],
+            },
+            defaultCase: [
+              ({
+                name: '2. else[0]',
+                taskReferenceName: 'httpRequestTaskRef_S3NZ',
+                inputParameters: {
+                  http_request: {
+                    uri: '${workflow.input.uri}',
+                    method: 'GET',
+                    contentType: 'application/json',
+                    headers: {
+                      from: 'frinxUser',
+                      'x-auth-user-roles': 'OWNER',
+                      'x-tenant-id': 'frinx_test',
+                    },
+                    timeout: 3600,
+                  },
+                },
+                type: 'SIMPLE',
+                startDelay: 0,
+                optional: false,
+                asyncComplete: false,
+              } as unknown) as HTTPTask,
+              ({
+                name: '2. else[1]',
+                taskReferenceName: 'httpRequestTaskRef_S3NZ',
+                inputParameters: {
+                  http_request: {
+                    uri: '${workflow.input.uri}',
+                    method: 'GET',
+                    contentType: 'application/json',
+                    headers: {
+                      from: 'frinxUser',
+                      'x-auth-user-roles': 'OWNER',
+                      'x-tenant-id': 'frinx_test',
+                    },
+                    timeout: 3600,
+                  },
+                },
+                type: 'SIMPLE',
+                startDelay: 0,
+                optional: false,
+                asyncComplete: false,
+              } as unknown) as HTTPTask,
+            ],
+            inputParameters: {
+              param: 'true',
+            },
+            optional: false,
+            startDelay: 0,
+          },
           ({
-            name: '11GLOBAL___HTTP_task',
+            name: '1. if[2]',
             taskReferenceName: 'httpRequestTaskRef_S3NY',
             inputParameters: {
               http_request: {
@@ -69,7 +171,7 @@ const workflow: Workflow = {
       },
       defaultCase: [
         ({
-          name: '2GLOBAL___HTTP_task',
+          name: '1. else[0]',
           taskReferenceName: 'httpRequestTaskRef_S3NZ',
           inputParameters: {
             http_request: {
@@ -90,7 +192,7 @@ const workflow: Workflow = {
           asyncComplete: false,
         } as unknown) as HTTPTask,
         ({
-          name: '22GLOBAL___HTTP_task',
+          name: '1. else[1]',
           taskReferenceName: 'httpRequestTaskRef_S3NZ',
           inputParameters: {
             http_request: {
@@ -118,7 +220,7 @@ const workflow: Workflow = {
       startDelay: 0,
     },
     ({
-      name: '3SUB_WORKFLOW_TASK',
+      name: '3. task',
       taskReferenceName: 'subWorkflowTaskRef_S3NZ',
       inputParameters: {
         foo: '${workflow.input.foo}',
@@ -168,15 +270,16 @@ const handleClose = () => {
   console.log('CLOSE');
 };
 
-render(
-  createElement(Root, {
-    onClose: handleClose,
-    getWorkflowCallback: getWorkflow,
-    saveWorkflowCallback: saveWorkflow,
-    getWorkflowsCallback: getWorkflows,
-    getTaskDefinitionsCallback: getTaskDefinitions,
-    name: '1',
-    version: '2',
-  }),
-  mountElement,
-);
+const BuilderApiProvider = getBuilderApiProvider({
+  getWorkflow,
+  getWorkflows,
+  getTaskDefinitions,
+  putWorkflow: saveWorkflow,
+  deleteWorkflow: () => Promise.resolve(),
+  executeWorkflow: () => Promise.resolve(),
+  getWorkflowExecutions: () => Promise.resolve(),
+  getWorkflowInstanceDetail: () => Promise.resolve(),
+});
+
+// @ts-ignore
+render(createElement(BuilderApiProvider, null, createElement(Root, { name: '1', version: '2' })), mountElement);

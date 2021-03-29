@@ -1,10 +1,8 @@
 // import Dropdown from 'react-dropdown';
 import React, { FC, FormEvent, useEffect, useState } from 'react';
 import {
-  Box,
   Button,
   FormControl,
-  FormHelperText,
   FormLabel,
   Grid,
   HStack,
@@ -56,10 +54,9 @@ function getFormValues(workflow: Workflow): Record<string, FormItem> {
   const labels = getInputs(definition);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const inputParams = jsonParse<Record<string, any>>(workflow.inputParameters ? workflow.inputParameters[0] : null);
+  const inputParams = jsonParse<Record<string, unknown>>(workflow.inputParameters ? workflow.inputParameters[0] : null);
 
   return labels.reduce((acc, curr) => {
-    // console.log(inputParams[curr], curr);
     return {
       ...acc,
       [curr]: (inputParams ? inputParams[curr] : undefined) ?? { label: curr, value: '', type: 'string' },
@@ -127,6 +124,7 @@ const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, 
   const [waitingWfs, setWaitingWfs] = useState<unknown[]>([]);
   const [workflowId, setWorkflowId] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { name, version } = workflow;
   const description =
     jsonParse<{ description: string }>(workflow.description)?.description ||
@@ -161,7 +159,9 @@ const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, 
 
     const executeWorkflow = callbackUtils.executeWorkflowCallback();
 
+    setIsLoading(true);
     executeWorkflow(payload).then((res) => {
+      setIsLoading(false);
       setIsSuccess(true);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -336,7 +336,7 @@ const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, 
                   Continue to detail
                 </Button>
               ) : (
-                <Button type="submit" colorScheme="blue" isLoading={!isSuccess}>
+                <Button type="submit" colorScheme="blue" isLoading={isLoading}>
                   Execute
                 </Button>
               )}

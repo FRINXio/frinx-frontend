@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { Box, Divider, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Portal } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
@@ -9,7 +9,7 @@ type Props = {
   onExpandButtonClick?: () => void;
 };
 
-const NodeButtons: FC<Props> = ({ onEditButtonClick, onDeleteButtonClick, onExpandButtonClick }) => {
+const NodeButtons: FC<Props> = memo(({ onEditButtonClick, onDeleteButtonClick, onExpandButtonClick }) => {
   return (
     <HStack marginLeft="auto" spacing={1}>
       <IconButton
@@ -61,6 +61,6 @@ const NodeButtons: FC<Props> = ({ onEditButtonClick, onDeleteButtonClick, onExpa
       </Box>
     </HStack>
   );
-};
+});
 
 export default NodeButtons;

@@ -92,26 +92,28 @@ const Root: FC<Props> = ({
 
   if (shouldCreateWorkflow) {
     return (
-      <Container maxWidth={1200}>
-        <Box background="white" paddingY={8} paddingX={4}>
-          <Heading as="h1" size="lg">
-            Create new workflow
-          </Heading>
-          <WorkflowForm
-            workflow={createEmptyWorkflow()}
-            onSubmit={(wf) => {
-              setWorkflow({
-                ...wf,
-                schemaVersion: 2,
-                tasks: [],
-                updateTime: 0,
-              });
-              setShouldCreateWorkflow(false);
-            }}
-            canEditName
-          />
-        </Box>
-      </Container>
+      <ChakraProvider theme={theme}>
+        <Container maxWidth={1200}>
+          <Box background="white" paddingY={8} paddingX={4}>
+            <Heading as="h1" size="lg">
+              Create new workflow
+            </Heading>
+            <WorkflowForm
+              workflow={createEmptyWorkflow()}
+              onSubmit={(wf) => {
+                setWorkflow({
+                  ...wf,
+                  schemaVersion: 2,
+                  tasks: [],
+                  updateTime: 0,
+                });
+                setShouldCreateWorkflow(false);
+              }}
+              canEditName
+            />
+          </Box>
+        </Container>
+      </ChakraProvider>
     );
   }
 

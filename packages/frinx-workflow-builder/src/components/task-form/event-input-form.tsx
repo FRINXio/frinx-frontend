@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { FormControl, FormLabel, Input } from '@chakra-ui/react';
-import { EventInputParams } from 'helpers/types';
+import { EventInputParams } from '../../helpers/types';
 
 type Props = {
   params: EventInputParams;

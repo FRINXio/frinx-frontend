@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
-import 'beautiful-react-diagrams/styles.css';
-import Diagram, { useSchema } from 'beautiful-react-diagrams';
+import 'beautiful-react-diagrams/dist/styles.css';
+import Diagram, { useSchema, Canvas, useCanvasState, CanvasControls } from 'beautiful-react-diagrams';
 import { Box, Button, Flex, Heading, HStack, Text, useDisclosure, useTheme } from '@chakra-ui/react';
 import produce, { castImmutable } from 'immer';
 import { createDiagramController } from './helpers/diagram.helpers';
@@ -13,7 +13,6 @@ import WorkflowDefinitionModal from './components/workflow-definition-modal/work
 import ExecutionModal from './components/execution-modal/execution-modal';
 import WorkflowForm from './components/workflow-form/workflow-form';
 import ActionsMenu from './components/actions-menu/actions-menu';
-import BgSvg from './img/bg.svg';
 import { createWorkflowHelper, deserializeId } from './helpers/workflow.helpers';
 import { NodeData, ExtendedTask, Workflow, CustomNodeType, TaskDefinition } from './helpers/types';
 import { useTaskActions } from './task-actions-context';
@@ -66,22 +65,21 @@ const App: FC<Props> = ({
   const [isInputModalShown, setIsInputModalShown] = useState(false);
   const workflowCtrlRef = useRef(useMemo(() => createWorkflowHelper(), []));
   const schemaCtrlRef = useRef(useMemo(() => createDiagramController(workflow), [workflow]));
-  const [schema, { onChange, addNode, removeNode }] = useSchema<NodeData>(
+  const [schema, { onChange, addNode }] = useSchema<NodeData>(
     useMemo(() => schemaCtrlRef.current.createSchemaFromWorkflow(), []),
   );
+  const [canvasStates, handlers] = useCanvasState(); // creates canvas state
+
   const handleDeleteButtonClick = useCallback(
     (id: string) => {
       // TODO: wait for the library update to fix a bug with removing node with links
+      // we use simple `onChange` instead of `removeNode` for now
       onChange({
         links: schema.links?.filter((l) => deserializeId(l.input).id !== id && deserializeId(l.output).id !== id) ?? [],
-        nodes: schema.nodes,
+        nodes: schema.nodes.filter((n) => n.id !== id),
       });
-      const nodeToRemove = schema.nodes.find((node) => node.id === id);
-      if (nodeToRemove) {
-        removeNode(nodeToRemove);
-      }
     },
-    [removeNode, schema.nodes, onChange, schema.links],
+    [schema.nodes, onChange, schema.links],
   );
   const { selectedTask, selectTask } = useTaskActions(handleDeleteButtonClick);
 
@@ -95,6 +93,7 @@ const App: FC<Props> = ({
     const copiedNodes = castImmutable(
       produce(schema.nodes, (acc) => {
         const index = acc.findIndex((n) => n.id === t.id);
+
         unwrap(acc[index].data).task = t;
 
         return acc;
@@ -162,27 +161,28 @@ const App: FC<Props> = ({
         position="relative"
         justifyContent="stretch"
         style={{
-          height: `calc(100vh - ${theme.space[24]})`,
+          height: `calc(100vh - ${theme.space[16]} - ${theme.space[16]})`, // viewport - app header - builder header
         }}
       >
         <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
         <Box flex={1}>
           <Box position="relative" height="100%">
-            <Diagram
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              schema={schema}
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              onChange={onChange}
-              style={{
-                boxShadow: 'none',
-                border: 'none',
-                background: theme.colors.gray[100],
-                backgroundImage: `url(${BgSvg})`,
-                flex: 1,
-              }}
-            />
+            <Canvas {...canvasStates} {...handlers}>
+              <Diagram
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                schema={schema}
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                onChange={onChange}
+                style={{
+                  boxShadow: 'none',
+                  border: 'none',
+                  flex: 1,
+                }}
+              />
+              <CanvasControls />
+            </Canvas>
           </Box>
         </Box>
         {selectedTask?.task && selectedTask?.actionType === 'edit' && (
@@ -211,7 +211,6 @@ const App: FC<Props> = ({
               <WorkflowForm
                 workflow={workflow}
                 onSubmit={(wf) => {
-                  console.log({ wf });
                   onWorkflowChange(wf);
                 }}
                 onClose={() => {
@@ -250,7 +249,7 @@ const App: FC<Props> = ({
         <ExecutionModal
           workflow={workflowCtrlRef.current.convertWorkflow(schema, workflow)}
           onClose={() => setIsInputModalShown(false)}
-          shouldCloseAfterSubmit
+          shouldCloseAfterSubmit={false}
           isOpen={isInputModalShown}
           onSuccessClick={onExecuteSuccessClick}
         />

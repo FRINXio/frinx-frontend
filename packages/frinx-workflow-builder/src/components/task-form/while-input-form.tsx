@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { FormControl, FormLabel, Input } from '@chakra-ui/react';
-import { WhileInputParams } from 'helpers/types';
+import { WhileInputParams } from '../../helpers/types';
 
 type Props = {
   params: WhileInputParams;

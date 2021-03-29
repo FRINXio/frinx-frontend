@@ -20,6 +20,6 @@
     "isolatedModules": true,
     "noEmit": false
   },
-  "include": ["custom.d.ts", "feather-icons-react.d.ts", "src", "*.ts", "*.js"],
+  "include": ["custom.d.ts", "feather-icons-react.d.ts", "src", "*.ts", "*.js", ".eslintrc.js"],
   "exclude": ["node_modules"]
 }
