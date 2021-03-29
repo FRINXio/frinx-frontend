@@ -16,6 +16,7 @@ jobs:
       - uses: addnab/docker-run-action@v3
         with:
           image: node:fermium-alpine
+          options: -v ${{ github.workspace }}:/work
           run: |
             apk update
             apk add --virtual build-essential build-base gcc wget git
