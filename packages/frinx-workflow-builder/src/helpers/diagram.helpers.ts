@@ -140,15 +140,17 @@ class DiagramController {
   };
 
   createTaskNode = (task: ExtendedTask): CustomNodeType => {
+    const nodeCoordinates = this.getDropAreaNodeCoordinates();
+
     if (task.type === 'START_TASK') {
       return this.createStartNode();
     }
 
     if (task.type === 'END_TASK') {
-      return this.createEndNode({ x: 100, y: 100 });
+      return this.createEndNode(nodeCoordinates);
     }
 
-    return this.createGenericTaskNode(task, { x: 100, y: 100 });
+    return this.createGenericTaskNode(task, nodeCoordinates);
   };
 
   createDecisionNodes(decisionTask: DecisionTask, position: Position): CustomNodeType[] {
@@ -256,6 +258,11 @@ class DiagramController {
     });
     return result;
   };
+
+  getDropAreaNodeCoordinates = (): Position => ({
+    x: Math.floor(Math.random() * 200) + 100,
+    y: Math.floor(Math.random() * 100) + 100,
+  });
 
   createLinks = (nodes: CustomNodeType[]): Link[] => {
     const state: Record<number, [{ id: string; type: 'input' | 'output' }]> = nodes.reduce(
