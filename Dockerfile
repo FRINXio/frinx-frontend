@@ -3,7 +3,7 @@ FROM nginx:alpine
 EXPOSE 8888
 
 # adding yarn + installing a bunch of stuff as a workaround for alpine bug suggested here https://gitlab.alpinelinux.org/alpine/aports/-/issues/11615
-RUN apk add -U --no-cache nghttp2-dev nodejs npm unzip yarn
+RUN apk add -U --no-cache nghttp2-dev nodejs npm unzip yarn git
 
 WORKDIR /frinx-frontend
 COPY . .
