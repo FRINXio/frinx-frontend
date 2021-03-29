@@ -124,6 +124,7 @@ const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, 
   const [waitingWfs, setWaitingWfs] = useState<unknown[]>([]);
   const [workflowId, setWorkflowId] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { name, version } = workflow;
   const description =
     jsonParse<{ description: string }>(workflow.description)?.description ||
@@ -158,7 +159,9 @@ const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, 
 
     const executeWorkflow = callbackUtils.executeWorkflowCallback();
 
+    setIsLoading(true);
     executeWorkflow(payload).then((res) => {
+      setIsLoading(false);
       setIsSuccess(true);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -333,7 +336,7 @@ const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, 
                   Continue to detail
                 </Button>
               ) : (
-                <Button type="submit" colorScheme="blue" isLoading={!isSuccess}>
+                <Button type="submit" colorScheme="blue" isLoading={isLoading}>
                   Execute
                 </Button>
               )}

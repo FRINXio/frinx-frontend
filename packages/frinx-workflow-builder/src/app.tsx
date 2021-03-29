@@ -249,7 +249,7 @@ const App: FC<Props> = ({
         <ExecutionModal
           workflow={workflowCtrlRef.current.convertWorkflow(schema, workflow)}
           onClose={() => setIsInputModalShown(false)}
-          shouldCloseAfterSubmit
+          shouldCloseAfterSubmit={false}
           isOpen={isInputModalShown}
           onSuccessClick={onExecuteSuccessClick}
         />
