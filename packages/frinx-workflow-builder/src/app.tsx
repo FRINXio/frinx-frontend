@@ -161,7 +161,7 @@ const App: FC<Props> = ({
         position="relative"
         justifyContent="stretch"
         style={{
-          height: `calc(100vh - ${theme.space[24]})`,
+          height: `calc(100vh - ${theme.space[16]} - ${theme.space[16]})`, // viewport - app header - builder header
         }}
       >
         <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
