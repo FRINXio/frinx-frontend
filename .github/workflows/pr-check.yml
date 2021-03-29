@@ -13,11 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: addnab/docker-run-action@v3
         with:
-          node-version: 12
-      - run: apt update
-      - run: apt install git
-      - run: yarn install
-      - run: yarn run formatter:check
-      - run: cd packages/frinx-dashboard && yarn run lint
+          image: node:fermium-alpine
+          run: |
+            apk update
+            apk add --virtual build-essential build-base gcc wget git
+            cp yarn.lock yarn.lock.orig
+            yarn install
+            cmp yarn.lock yarn.lock.orig
+            yarn run formatter:check
+            cd packages/frinx-dashboard && yarn run lint
