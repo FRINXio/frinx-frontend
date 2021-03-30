@@ -58,6 +58,7 @@ const DecisionInputForm: FC<Props> = ({ params, onChange }) => {
                 onChange={(event) => {
                   event.persist();
                   onChange({
+                    ...params,
                     [key]: event.target.value,
                   });
                 }}
