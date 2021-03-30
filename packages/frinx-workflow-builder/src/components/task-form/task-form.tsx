@@ -40,6 +40,7 @@ const TaskForm: FC<Props> = ({ task, onClose, onFormSubmit }) => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onFormSubmit(taskState);
+    onClose();
   };
 
   const handleUpdateInputParameters = (inputParameters: InputParameters) => {
