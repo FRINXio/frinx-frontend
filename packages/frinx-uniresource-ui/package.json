@@ -67,8 +67,8 @@
     "html-loader": "^1.1.0",
     "jsdoc": "^3.6.3",
     "prettier": "^2.2.1",
-    "react": "^16.8.4",
-    "react-dom": "^16.8.4",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "relay-compiler": "^10.0.1",
     "relay-config": "^10.0.1",
     "sass": "^1.32.8",
@@ -81,7 +81,7 @@
     "webpack-dev-server": "3.10.3"
   },
   "peerDependencies": {
-    "react": "^16.8.4",
-    "react-dom": "^16.8.4"
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0"
   }
 }
