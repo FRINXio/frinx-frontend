@@ -1,22 +1,19 @@
 module.exports = {
-  parser: '@babel/eslint-parser',
+  root: true,
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint', 'import'],
+  parserOptions: {
+    // we need to link to tsconfig.json with the full-path,
+    // otherwise eslint-in-vscode has problems finding it
+    // project: join(__dirname, 'tsconfig.json'),
+  },
   env: {
     browser: true,
-    es2021: true,
   },
-  extends: ['plugin:flowtype/recommended', 'airbnb', 'prettier', 'prettier/react'],
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
+  settings: {
+    'import/resolver': {
+      typescript: {},
     },
-    ecmaVersion: 12,
-    sourceType: 'module',
   },
-  plugins: ['react', 'flowtype'],
-  rules: {
-    'react/jsx-props-no-spreading': 'off',
-    'react/jsx-filename-extension': 'off',
-    'flowtype/no-types-missing-file-annotation': 'off',
-    'react/prop-types': 'off',
-  },
+  extends: ['@frinx/eslint-config-typescript'],
 };
