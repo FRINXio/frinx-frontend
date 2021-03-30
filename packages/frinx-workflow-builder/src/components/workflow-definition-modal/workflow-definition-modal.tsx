@@ -1,14 +1,10 @@
 import React, { FC } from 'react';
-import {
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  Textarea,
-} from '@chakra-ui/react';
+import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
 import { Workflow } from '../../helpers/types';
+import AceEditor from 'react-ace';
+import 'ace-builds/src-noconflict/mode-json';
+import 'ace-builds/src-noconflict/theme-textmate';
+import 'ace-builds/src-noconflict/ext-language_tools';
 
 type Props = {
   isOpen: boolean;
@@ -20,11 +16,20 @@ const WorkflowDefinitionModal: FC<Props> = ({ isOpen, onClose, workflow }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent maxW="48rem">
         <ModalHeader>Workflow definition</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Textarea value={JSON.stringify(workflow, null, 2)} readOnly height={96} />
+        <AceEditor
+          readOnly
+          mode="json"
+          theme="textmate"
+          wrapEnabled
+          value={JSON.stringify(workflow, null, 2)}
+          fontSize={16}
+          tabSize={2}
+          width="100%"
+        />
         </ModalBody>
       </ModalContent>
     </Modal>
