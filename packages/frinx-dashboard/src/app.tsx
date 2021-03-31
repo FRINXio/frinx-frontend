@@ -14,6 +14,10 @@ import UniconfigApp from './uniconfig-app';
 import { ServiceKey } from './types';
 import UniresourceApp from './uniresource-app';
 
+function getURLBaseName(): string {
+  return window.__CONFIG__.url_basename ?? '/';
+}
+
 function setMessages() {
   const urlParams = new URLSearchParams(window.location?.search);
   const message = urlParams.get('message');
@@ -48,7 +52,7 @@ const AppWithAuth: FC<{
   return (
     <MsalProvider instance={publicClientAppRef.current}>
       <ChakraProvider theme={theme}>
-        <BrowserRouter>
+        <BrowserRouter basename={getURLBaseName()}>
           <NotificationContainer correlationId="notificationContainer" />
           <Header isAuthEnabled enabledServices={enabledServices} />
           <Box paddingTop={10}>
@@ -93,7 +97,7 @@ const App: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
     <AppWithAuth enabledServices={enabledServices} />
   ) : (
     <ChakraProvider theme={theme}>
-      <BrowserRouter>
+      <BrowserRouter basename={getURLBaseName()}>
         <NotificationContainer correlationId="notificationContainer" />
         <Header isAuthEnabled={false} enabledServices={enabledServices} />
         <Box paddingTop={10}>

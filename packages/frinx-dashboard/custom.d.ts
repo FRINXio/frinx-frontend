@@ -39,6 +39,7 @@ type Window = {
     uniconfig_enabled: boolean;
     uniflow_enabled: boolean;
     usermanagement_enabled: boolean;
+    url_basename: string;
   }>;
 
   dashboardApp: DashboardApp;
