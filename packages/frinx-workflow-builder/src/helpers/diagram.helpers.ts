@@ -168,14 +168,14 @@ class DiagramController {
               this.depth += 1;
               return this.createDecisionNodes(tsk, {
                 x: NODE_WIDTH * this.step,
-                y: this.depth * ((MAIN_Y_AXIS_POSITON / 4) * index),
+                y: this.depth * ((position.y / 4) * index),
               });
             }
             return this.createGenericTaskNode(
               { ...tsk, id: uuid(), label: getTaskLabel(tsk) },
               {
                 x: NODE_WIDTH * this.step,
-                y: this.depth * ((MAIN_Y_AXIS_POSITON / 4) * index),
+                y: this.depth * ((position.y / 4) * index),
               },
             );
           })
@@ -187,15 +187,15 @@ class DiagramController {
       .map((tsk) => {
         this.step += 1;
         if (tsk.type === 'DECISION') {
-          this.depth += 1;
-          this.createDecisionNodes(tsk, {
+          this.depth -= 1;
+          return this.createDecisionNodes(tsk, {
             x: NODE_WIDTH * this.step,
-            y: MAIN_Y_AXIS_POSITON + this.depth * (MAIN_Y_AXIS_POSITON / 4),
+            y: position.y + this.depth * (position.y / 4),
           });
         }
         return this.createGenericTaskNode(
           { ...tsk, id: uuid(), label: getTaskLabel(tsk) },
-          { x: NODE_WIDTH * this.step, y: MAIN_Y_AXIS_POSITON + this.depth * (MAIN_Y_AXIS_POSITON / 4) },
+          { x: NODE_WIDTH * this.step, y: position.y + this.depth * (position.y / 4) },
         );
       })
       .flat();
