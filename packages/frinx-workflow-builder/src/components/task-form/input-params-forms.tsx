@@ -19,7 +19,7 @@ export function renderInputParamForm(task: Task, setState: (p: InputParameters) 
     if (task.type === 'SIMPLE' && isGraphQLTaskInputParams(task.inputParameters)) {
       return <GraphQLInputsForm params={task.inputParameters} onChange={setState} />;
     }
-    if (task.type === 'SIMPLE' && isHttpTaskInputParams(task.inputParameters)) {
+    if ((task.type === 'HTTP' || task.type === 'SIMPLE') && isHttpTaskInputParams(task.inputParameters)) {
       return <HTTPInputsForm params={task.inputParameters} onChange={setState} />;
     }
     if (isLambdaTaskInputParams(task.inputParameters)) {
