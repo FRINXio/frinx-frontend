@@ -26,9 +26,10 @@ import { ServiceKey } from '../../types';
 type Props = {
   isAuthEnabled: boolean;
   enabledServices: Map<ServiceKey, boolean>;
+  homePath: string;
 };
 
-const Header: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
+const Header: FC<Props> = ({ isAuthEnabled, enabledServices, homePath }) => {
   return (
     <Flex height={16} alignItems="center" px={4} boxShadow="md" position="relative" background="brand.600">
       <Box marginRight={4}>
@@ -63,7 +64,7 @@ const Header: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
         </Menu>
       </Box>
       <LinkBox>
-        <LinkOverlay as={NavLink} to="/">
+        <LinkOverlay as={NavLink} to={homePath}>
           <Image src={logo} alt="logo" height={10} />
           <VisuallyHidden>FRINX</VisuallyHidden>
         </LinkOverlay>

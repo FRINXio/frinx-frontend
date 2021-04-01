@@ -20,6 +20,6 @@
     "isolatedModules": true,
     "noEmit": false
   },
-  "include": ["custom.d.ts", "src", "*.ts", "*.js"],
+  "include": ["global.d.ts", "custom.d.ts", "src", "*.ts", "*.js"],
   "exclude": ["**/node_modules"]
 }
