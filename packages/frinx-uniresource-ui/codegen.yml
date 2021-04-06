@@ -1,0 +1,12 @@
+overwrite: true
+schema: "http://10.19.0.7/resourcemanager/graphql/query"
+generates:
+  src/generated/graphql.tsx:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"
+      - "urql-introspection"
+  ./graphql.schema.json:
+    plugins:
+      - "introspection"
