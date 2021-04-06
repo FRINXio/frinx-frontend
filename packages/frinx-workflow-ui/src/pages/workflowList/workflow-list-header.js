@@ -10,9 +10,10 @@ import { saveAs } from 'file-saver';
 
 type Props = {
   onAddButtonClick: () => void,
+  onImportSuccess: () => void,
 };
 
-const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
+const WorkflowListHeader = ({ onAddButtonClick, onImportSuccess }: Props) => {
   const importFiles = (e) => {
     const files = e.currentTarget.files;
     const fileList = [];
@@ -31,7 +32,7 @@ const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
         fileList.push(definition);
         if (!--count) {
           putWorkflow(fileList).then(() => {
-            window.location.reload();
+            onImportSuccess();
           });
         }
       };

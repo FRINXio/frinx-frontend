@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Box } from '@chakra-ui/react';
+import { v4 as uuid } from 'uuid';
 import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
 // import { WorkflowBuilder } from '@frinx/workflow-builder/src';
 import {
@@ -70,6 +71,7 @@ type BuilderComponents = Omit<typeof import('@frinx/workflow-builder/src'), 'get
 const UniflowApp: FC = () => {
   const [components, setComponents] = useState<(UniflowComponents & BuilderComponents) | null>(null);
   const history = useHistory();
+  const [key, setKey] = useState(uuid());
 
   useEffect(() => {
     Promise.all([import('@frinx/workflow-ui'), import('@frinx/workflow-builder/src')]).then(
@@ -168,6 +170,9 @@ const UniflowApp: FC = () => {
               onAddButtonClick={() => {
                 history.push('/uniflow/builder');
               }}
+              onImportSuccess={() => {
+                setKey(uuid());
+              }}
             />
             <Route exact path="/uniflow/definitions">
               <WorkflowDefinitions
@@ -177,6 +182,7 @@ const UniflowApp: FC = () => {
                 onWorkflowIdClick={(wfId: string) => {
                   history.push(`/uniflow/executed/${wfId}`);
                 }}
+                key={key}
               />
             </Route>
             <Route

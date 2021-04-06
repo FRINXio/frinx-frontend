@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import {
   Flex,
@@ -13,6 +13,9 @@ import {
   Icon,
   Text,
   Portal,
+  LinkBox,
+  LinkOverlay,
+  VisuallyHidden,
 } from '@chakra-ui/react';
 import { HamburgerIcon } from '@chakra-ui/icons';
 import UserNav from '../user-nav/user-nav';
@@ -23,16 +26,17 @@ import { ServiceKey } from '../../types';
 type Props = {
   isAuthEnabled: boolean;
   enabledServices: Map<ServiceKey, boolean>;
+  homePath: string;
 };
 
-const Header: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
+const Header: FC<Props> = ({ isAuthEnabled, enabledServices, homePath }) => {
   return (
     <Flex height={16} alignItems="center" px={4} boxShadow="md" position="relative" background="brand.600">
       <Box marginRight={4}>
         <Menu>
           <MenuButton colorScheme="brand" size="md" as={IconButton} icon={<HamburgerIcon />} />
           <Portal>
-            <MenuList>
+            <MenuList zIndex="tooltip">
               <MenuItem as={Link} to="/">
                 <Icon size={20} as={FeatherIcon} icon="grid" color="brand.700" marginRight={2} />
                 <Text fontWeight="bold">Dashboard</Text>
@@ -59,7 +63,12 @@ const Header: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
           </Portal>
         </Menu>
       </Box>
-      <Image src={logo} alt="logo" height={10} />
+      <LinkBox>
+        <LinkOverlay as={NavLink} to={homePath}>
+          <Image src={logo} alt="logo" height={10} />
+          <VisuallyHidden>FRINX</VisuallyHidden>
+        </LinkOverlay>
+      </LinkBox>
       <Box marginLeft={8} alignSelf="stretch">
         <AppMenu enabledServices={enabledServices} />
       </Box>

@@ -402,6 +402,8 @@ export function getTaskLabel(t: Task): TaskLabel {
       return 'while end';
     case 'SUB_WORKFLOW':
       return 'sub workflow';
+    case 'HTTP':
+      return 'http';
     case 'SIMPLE': {
       if (isGraphQLTask(t)) {
         return 'graphql';

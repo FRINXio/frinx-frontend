@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Route, Switch, Redirect, useHistory, useLocation, RouteComponentProps } from 'react-router-dom';
+import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
 import {
   getCliTopology,
   getNetconfTopology,
@@ -54,9 +54,6 @@ const callbacks = {
 
 const UniconfigApp: FC = () => {
   const history = useHistory();
-  const location = useLocation();
-  const query = new URLSearchParams(location.search);
-
   const [components, setComponents] = useState<typeof import('@frinx/uniconfig-ui') | null>(null);
 
   useEffect(() => {
@@ -116,7 +113,9 @@ const UniconfigApp: FC = () => {
         <Route
           exact
           path="/uniconfig/devices/:nodeId"
-          render={(props: RouteComponentProps<{ nodeId: string; topology: string }>) => {
+          render={(props: RouteComponentProps<{ nodeId: string }>) => {
+            const query = new URLSearchParams(props.location.search);
+
             return (
               <DeviceDetails
                 nodeId={props.match.params.nodeId}
@@ -133,13 +132,13 @@ const UniconfigApp: FC = () => {
           path="/uniconfig/mount"
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          render={(props: RouteComponentProps<void, void, { templateNode: unknown }>) => {
+          render={(props: RouteComponentProps<void, void, { templateNode?: { topologyId: string } }>) => {
             return (
               <MountDevice
                 onBackBtnClick={() => {
                   history.push('/uniconfig/devices');
                 }}
-                templateNode={props.location.state.templateNode}
+                templateNode={props.location.state?.templateNode ?? null}
               />
             );
           }}
