@@ -59,31 +59,38 @@ const PollData = () => {
     setData(sortedArray);
   };
 
-  const filteredRows = () => {
-    return pageItems.map((e) => {
-      return (
-        <Tr key={e.queueName}>
-          <Td>{e.queueName}</Td>
-          <Td>{e.qsize}</Td>
-          <Td>{moment(e.lastPollTime).format('MM/DD/YYYY, HH:mm:ss:SSS')}</Td>
-          <Td>{e.workerId}</Td>
-        </Tr>
-      );
-    });
-  };
-
   const pollTable = () => {
     return (
       <Table background="white">
         <Thead>
           <Tr>
             <Th onClick={() => sortArray('queueName')}>Name (Domain)</Th>
-            <Th onClick={() => sortArray('qsize')}>Size</Th>
-            <Th onClick={() => sortArray('lastPollTime')}>Last Poll Time</Th>
-            <Th onClick={() => sortArray('workerId')}>Last Polled By</Th>
+            <Th textAlign="center" onClick={() => sortArray('qsize')}>
+              Size
+            </Th>
+            <Th textAlign="center" onClick={() => sortArray('lastPollTime')}>
+              Last Poll Time
+            </Th>
+            <Th textAlign="center" onClick={() => sortArray('workerId')}>
+              Last Polled By
+            </Th>
           </Tr>
         </Thead>
-        <Tbody>{filteredRows()}</Tbody>
+        <Tbody>
+          {pageItems.map((e) => {
+            console.log(e);
+            return (
+              <Tr key={e.queueName}>
+                <Td>{e.queueName}</Td>
+                <Td textAlign="center">{e.qsize}</Td>
+                <Td textAlign="center">
+                  {e.lastPollTime ? moment(e.lastPollTime).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}
+                </Td>
+                <Td textAlign="center">{e.workerId}</Td>
+              </Tr>
+            );
+          })}
+        </Tbody>
         <Tfoot>
           <Tr>
             <Th>

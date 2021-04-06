@@ -31,7 +31,6 @@ const Scheduling = () => {
   const [activeRow, setActiveRow] = useState();
   const [pagesCount, setPagesCount] = useState(1);
   const [data, setData] = useState(undefined);
-  // TODO: display error in a box instead of alert
   const [error, setError] = useState(undefined);
   const [defaultPages, setDefaultPages] = useState(20);
   const [viewedPage, setViewedPage] = useState(1);
@@ -39,10 +38,8 @@ const Scheduling = () => {
   const refresh = () => {
     const getSchedules = callbackUtils.getSchedulesCallback();
 
-    getSchedules().then((res, err) => {
-      if (res && res.ok && Array.isArray(res.body)) {
-        const result = res.body;
-
+    getSchedules()
+      .then((result) => {
         const dataset = result.sort((a, b) =>
           a.workflowName > b.workflowName ? 1 : b.workflowName > a.workflowName ? -1 : 0,
         );
@@ -50,13 +47,10 @@ const Scheduling = () => {
         setData(dataset);
         setPagesCount(dataset.length % defaultPages ? ++size : size);
         deselectActiveRow();
-      } else {
-        const newError = err != null ? `Network error: ${err}` : `Wrong response: ${res}`;
-        setError(newError);
-        // TODO: display error in a box instead of alert
-        alert(newError);
-      }
-    });
+      })
+      .catch((err) => {
+        setError(`Network error: ${err}`);
+      });
   };
 
   useEffect(() => {
@@ -86,17 +80,15 @@ const Scheduling = () => {
   const deleteEntry = (schedulingEntry) => {
     const deleteSchedule = callbackUtils.deleteScheduleCallback();
 
-    deleteSchedule(schedulingEntry.name).then((res) => {
-      if (res && res.ok) {
+    deleteSchedule(schedulingEntry.name)
+      .then((res) => {
         deselectActiveRow();
         refresh();
-      } else {
-        // TODO: display error in a box instead of alert
+      })
+      .catch(() => {
         const newError = 'Network error';
         setError(newError);
-        alert(newError);
-      }
-    });
+      });
   };
 
   const flipShowSchedulingModal = () => {
