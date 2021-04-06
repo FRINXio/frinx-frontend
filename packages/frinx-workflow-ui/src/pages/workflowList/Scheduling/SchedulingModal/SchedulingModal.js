@@ -9,6 +9,7 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
+  HStack,
   Input,
   Link,
   Modal,
@@ -21,6 +22,7 @@ import {
 } from '@chakra-ui/react';
 
 const SchedulingModal = (props) => {
+  console.log(props);
   const [schedule, setSchedule] = useState();
   const [status, setStatus] = useState();
   const [error, setError] = useState();
@@ -153,16 +155,6 @@ const SchedulingModal = (props) => {
       });
   };
 
-  const deleteButton = () => {
-    if (found) {
-      return (
-        <Button colorScheme="red" onClick={handleDelete} disabled={status != null}>
-          Delete
-        </Button>
-      );
-    }
-  };
-
   return (
     <Modal size="3xl" isOpen={props.show} onClose={handleClose} onShow={handleShow}>
       <ModalOverlay />
@@ -208,11 +200,17 @@ const SchedulingModal = (props) => {
         </ModalBody>
         <ModalFooter>
           <pre>{error}</pre>
-          <Button marginRight={4} colorScheme="blue" onClick={submitForm} disabled={status != null}>
-            {found ? 'Update' : 'Create'}
-          </Button>
-          {deleteButton()}
-          <Button onClick={handleClose}>Close</Button>
+          <HStack spacing={2}>
+            <Button colorScheme="blue" onClick={submitForm} isDisabled={status != null}>
+              {found ? 'Update' : 'Create'}
+            </Button>
+            {found && (
+              <Button colorScheme="red" onClick={handleDelete} isDisabled={status != null}>
+                Delete
+              </Button>
+            )}
+            <Button onClick={handleClose}>Close</Button>
+          </HStack>
         </ModalFooter>
       </ModalContent>
     </Modal>
