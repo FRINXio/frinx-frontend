@@ -8,6 +8,10 @@ export async function apiFetch(path: string, options: RequestInit): Promise<unkn
     throw new Error(`apiFetch failed with http-code ${response.status}`);
   }
 
+  if (response.status === 201) {
+    return null;
+  }
+
   return response.json();
 }
 

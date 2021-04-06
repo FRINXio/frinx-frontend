@@ -30,7 +30,7 @@ const Scheduling = () => {
   const [showSchedulingModal, setShowSchedulingModal] = useState(false);
   const [activeRow, setActiveRow] = useState();
   const [pagesCount, setPagesCount] = useState(1);
-  const [data, setData] = useState(undefined);
+  const [data, setData] = useState(null);
   const [error, setError] = useState(undefined);
   const [defaultPages, setDefaultPages] = useState(20);
   const [viewedPage, setViewedPage] = useState(1);
@@ -67,7 +67,7 @@ const Scheduling = () => {
     if (deselectingCurrentRow) {
       deselectActiveRow();
     } else {
-      setActiveRow(i.toString());
+      setActiveRow(i);
     }
   };
 
@@ -81,7 +81,7 @@ const Scheduling = () => {
     const deleteSchedule = callbackUtils.deleteScheduleCallback();
 
     deleteSchedule(schedulingEntry.name)
-      .then((res) => {
+      .then(() => {
         deselectActiveRow();
         refresh();
       })
@@ -92,7 +92,7 @@ const Scheduling = () => {
   };
 
   const flipShowSchedulingModal = () => {
-    setShowSchedulingModal(!showSchedulingModal);
+    setShowSchedulingModal((s) => !s);
   };
 
   const onModalClose = () => {
@@ -101,22 +101,23 @@ const Scheduling = () => {
   };
 
   const getActiveScheduleName = () => {
+    console.log({ data, activeRow });
     if (activeRow != null && data[activeRow] != null) {
-      return data[activeRow]['name'];
+      return data[activeRow].name;
     }
     return null;
   };
 
   const getActiveWorkflowName = () => {
     if (activeRow != null && data[activeRow] != null) {
-      return data[activeRow]['workflowName'];
+      return data[activeRow].workflowName;
     }
     return null;
   };
 
   const getActiveWorkflowVersion = () => {
     if (activeRow != null && data[activeRow] != null) {
-      return data[activeRow]['workflowVersion'];
+      return data[activeRow].workflowVersion;
     }
     return null;
   };
@@ -174,6 +175,8 @@ const Scheduling = () => {
     }
     return output;
   };
+
+  console.log(getActiveScheduleName());
 
   return (
     <PageContainer>

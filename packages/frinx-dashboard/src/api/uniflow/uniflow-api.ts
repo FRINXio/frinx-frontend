@@ -40,9 +40,7 @@ export async function getSchedule(name: string): Promise<unknown> {
 // TODO: types, guards
 // Register workflow schedule
 export async function registerSchedule(name: string, schedule: unknown): Promise<unknown> {
-  const scheduled = await sendPutRequest(`/schedule/${name}`, schedule);
-
-  return scheduled;
+  return sendPutRequest(`/schedule/${name}`, schedule);
 }
 
 // TODO: types, guards
