@@ -1,7 +1,7 @@
 // @flow
 
 import AceEditor from 'react-ace';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import callbackUtils from '../../../../utils/callbackUtils';
 import {
   Button,
@@ -9,6 +9,7 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
+  HStack,
   Input,
   Link,
   Modal,
@@ -21,6 +22,7 @@ import {
 } from '@chakra-ui/react';
 
 const SchedulingModal = (props) => {
+  console.log(props);
   const [schedule, setSchedule] = useState();
   const [status, setStatus] = useState();
   const [error, setError] = useState();
@@ -28,36 +30,38 @@ const SchedulingModal = (props) => {
 
   const DEFAULT_CRON_STRING = '* * * * *';
 
+  useEffect(() => {
+    if (props.show) {
+      setSchedule(null);
+      setStatus(null);
+      setError(null);
+
+      const getSchedule = callbackUtils.getScheduleCallback();
+
+      getSchedule(props.name)
+        .then((res) => {
+          setFound(true);
+          setSchedule(res);
+        })
+        .catch(() => {
+          setFound(false);
+          setSchedule({
+            name: props.name,
+            workflowName: props.workflowName,
+            // workflowVersion must be string
+            workflowVersion: props.workflowVersion.toString(),
+            enabled: false,
+            cronString: DEFAULT_CRON_STRING,
+          });
+        });
+    }
+  }, [props.show]);
+
   const handleClose = () => {
     props.onClose();
   };
 
-  const handleShow = () => {
-    setSchedule(null);
-    setStatus(null);
-    setError(null);
-
-    const getSchedule = callbackUtils.getScheduleCallback();
-
-    getSchedule(props.name).then((res) => {
-      if (res && res.ok) {
-        // found in db
-        setFound(true);
-        setSchedule(res.body);
-      } else {
-        // not found, prepare new object to be created
-        setFound(false);
-        setSchedule({
-          name: props.name,
-          workflowName: props.workflowName,
-          // workflowVersion must be string
-          workflowVersion: props.workflowVersion + '',
-          enabled: false,
-          cronString: DEFAULT_CRON_STRING,
-        });
-      }
-    });
-  };
+  const handleShow = () => {};
 
   const submitForm = () => {
     setError(null);
@@ -65,14 +69,14 @@ const SchedulingModal = (props) => {
 
     const registerSchedule = callbackUtils.registerScheduleCallback();
 
-    registerSchedule(props.name, schedule).then((res, err) => {
-      if (res && res.ok) {
+    registerSchedule(props.name, schedule)
+      .then(() => {
         handleClose();
-      } else {
+      })
+      .catch((err) => {
         setStatus(null);
         setError('Request failed:' + err);
-      }
-    });
+      });
   };
 
   const setCronString = (str) => {
@@ -141,24 +145,14 @@ const SchedulingModal = (props) => {
 
     const deleteSchedule = callbackUtils.deleteScheduleCallback();
 
-    deleteSchedule(props.name).then((res, err) => {
-      if (res && res.ok) {
+    deleteSchedule(props.name)
+      .then(() => {
         handleClose();
-      } else {
+      })
+      .catch((err) => {
         setStatus(null);
         setError('Request failed:' + err);
-      }
-    });
-  };
-
-  const deleteButton = () => {
-    if (found) {
-      return (
-        <Button colorScheme="red" onClick={handleDelete} disabled={status != null}>
-          Delete
-        </Button>
-      );
-    }
+      });
   };
 
   return (
@@ -206,13 +200,17 @@ const SchedulingModal = (props) => {
         </ModalBody>
         <ModalFooter>
           <pre>{error}</pre>
-          <Button marginRight={4} colorScheme="blue" onClick={submitForm} disabled={status != null}>
-            {found ? 'Update' : 'Create'}
-          </Button>
-          {deleteButton()}
-          <Button colorScheme="red" onClick={handleClose}>
-            Close
-          </Button>
+          <HStack spacing={2}>
+            <Button colorScheme="blue" onClick={submitForm} isDisabled={status != null}>
+              {found ? 'Update' : 'Create'}
+            </Button>
+            {found && (
+              <Button colorScheme="red" onClick={handleDelete} isDisabled={status != null}>
+                Delete
+              </Button>
+            )}
+            <Button onClick={handleClose}>Close</Button>
+          </HStack>
         </ModalFooter>
       </ModalContent>
     </Modal>

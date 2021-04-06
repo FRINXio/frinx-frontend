@@ -30,8 +30,7 @@ const Scheduling = () => {
   const [showSchedulingModal, setShowSchedulingModal] = useState(false);
   const [activeRow, setActiveRow] = useState();
   const [pagesCount, setPagesCount] = useState(1);
-  const [data, setData] = useState(undefined);
-  // TODO: display error in a box instead of alert
+  const [data, setData] = useState(null);
   const [error, setError] = useState(undefined);
   const [defaultPages, setDefaultPages] = useState(20);
   const [viewedPage, setViewedPage] = useState(1);
@@ -39,24 +38,21 @@ const Scheduling = () => {
   const refresh = () => {
     const getSchedules = callbackUtils.getSchedulesCallback();
 
-    getSchedules().then((res, err) => {
-      if (res && res.ok && Array.isArray(res.body)) {
-        const result = res.body;
-
-        const dataset = result.sort((a, b) =>
-          a.workflowName > b.workflowName ? 1 : b.workflowName > a.workflowName ? -1 : 0,
-        );
-        let size = Math.floor(dataset.length / defaultPages);
-        setData(dataset);
-        setPagesCount(dataset.length % defaultPages ? ++size : size);
-        deselectActiveRow();
-      } else {
-        const newError = err != null ? `Network error: ${err}` : `Wrong response: ${res}`;
-        setError(newError);
-        // TODO: display error in a box instead of alert
-        alert(newError);
-      }
-    });
+    getSchedules()
+      .then((res) => {
+        if (Array.isArray(res)) {
+          const dataset = [...res].sort((a, b) =>
+            a.workflowName > b.workflowName ? 1 : b.workflowName > a.workflowName ? -1 : 0,
+          );
+          let size = Math.floor(dataset.length / defaultPages);
+          setData(dataset);
+          setPagesCount(dataset.length % defaultPages ? ++size : size);
+          deselectActiveRow();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   useEffect(() => {
@@ -73,7 +69,7 @@ const Scheduling = () => {
     if (deselectingCurrentRow) {
       deselectActiveRow();
     } else {
-      setActiveRow(i.toString());
+      setActiveRow(i);
     }
   };
 
@@ -100,7 +96,7 @@ const Scheduling = () => {
   };
 
   const flipShowSchedulingModal = () => {
-    setShowSchedulingModal(!showSchedulingModal);
+    setShowSchedulingModal((s) => !s);
   };
 
   const onModalClose = () => {
@@ -109,22 +105,23 @@ const Scheduling = () => {
   };
 
   const getActiveScheduleName = () => {
+    console.log({ data, activeRow });
     if (activeRow != null && data[activeRow] != null) {
-      return data[activeRow]['name'];
+      return data[activeRow].name;
     }
     return null;
   };
 
   const getActiveWorkflowName = () => {
     if (activeRow != null && data[activeRow] != null) {
-      return data[activeRow]['workflowName'];
+      return data[activeRow].workflowName;
     }
     return null;
   };
 
   const getActiveWorkflowVersion = () => {
     if (activeRow != null && data[activeRow] != null) {
-      return data[activeRow]['workflowVersion'];
+      return data[activeRow].workflowVersion;
     }
     return null;
   };
@@ -182,6 +179,8 @@ const Scheduling = () => {
     }
     return output;
   };
+
+  console.log(getActiveScheduleName());
 
   return (
     <PageContainer>
