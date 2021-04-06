@@ -39,19 +39,17 @@ const Scheduling = () => {
     const getSchedules = callbackUtils.getSchedulesCallback();
 
     getSchedules()
-      .then((res) => {
-        if (Array.isArray(res)) {
-          const dataset = [...res].sort((a, b) =>
-            a.workflowName > b.workflowName ? 1 : b.workflowName > a.workflowName ? -1 : 0,
-          );
-          let size = Math.floor(dataset.length / defaultPages);
-          setData(dataset);
-          setPagesCount(dataset.length % defaultPages ? ++size : size);
-          deselectActiveRow();
-        }
+      .then((result) => {
+        const dataset = result.sort((a, b) =>
+          a.workflowName > b.workflowName ? 1 : b.workflowName > a.workflowName ? -1 : 0,
+        );
+        let size = Math.floor(dataset.length / defaultPages);
+        setData(dataset);
+        setPagesCount(dataset.length % defaultPages ? ++size : size);
+        deselectActiveRow();
       })
       .catch((err) => {
-        console.log(err);
+        setError(`Network error: ${err}`);
       });
   };
 
@@ -82,17 +80,15 @@ const Scheduling = () => {
   const deleteEntry = (schedulingEntry) => {
     const deleteSchedule = callbackUtils.deleteScheduleCallback();
 
-    deleteSchedule(schedulingEntry.name).then((res) => {
-      if (res && res.ok) {
+    deleteSchedule(schedulingEntry.name)
+      .then(() => {
         deselectActiveRow();
         refresh();
-      } else {
-        // TODO: display error in a box instead of alert
+      })
+      .catch(() => {
         const newError = 'Network error';
         setError(newError);
-        alert(newError);
-      }
-    });
+      });
   };
 
   const flipShowSchedulingModal = () => {
@@ -105,7 +101,6 @@ const Scheduling = () => {
   };
 
   const getActiveScheduleName = () => {
-    console.log({ data, activeRow });
     if (activeRow != null && data[activeRow] != null) {
       return data[activeRow].name;
     }
@@ -179,8 +174,6 @@ const Scheduling = () => {
     }
     return output;
   };
-
-  console.log(getActiveScheduleName());
 
   return (
     <PageContainer>
