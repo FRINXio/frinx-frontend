@@ -142,7 +142,6 @@ class DetailsModal extends Component {
   }
 
   formatDate(dt) {
-    console.log(dt);
     if (dt == null || dt === '' || dt === 0) {
       return '-';
     }

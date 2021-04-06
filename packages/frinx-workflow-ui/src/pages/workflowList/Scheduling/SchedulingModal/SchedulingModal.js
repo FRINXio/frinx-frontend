@@ -22,7 +22,6 @@ import {
 } from '@chakra-ui/react';
 
 const SchedulingModal = (props) => {
-  console.log(props);
   const [schedule, setSchedule] = useState();
   const [status, setStatus] = useState();
   const [error, setError] = useState();

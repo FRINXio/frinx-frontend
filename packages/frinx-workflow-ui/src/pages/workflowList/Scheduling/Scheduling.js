@@ -101,7 +101,6 @@ const Scheduling = () => {
   };
 
   const getActiveScheduleName = () => {
-    console.log({ data, activeRow });
     if (activeRow != null && data[activeRow] != null) {
       return data[activeRow].name;
     }
@@ -175,8 +174,6 @@ const Scheduling = () => {
     }
     return output;
   };
-
-  console.log(getActiveScheduleName());
 
   return (
     <PageContainer>
