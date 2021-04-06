@@ -14,7 +14,6 @@ export type Scalars = {
   Map: any;
 };
 
-
 /** Output of creating set pool */
 export type CreateSetPoolPayload = {
   __typename?: 'CreateSetPoolPayload';
@@ -42,7 +41,7 @@ export type UpdateResourceTypeNamePayload = {
 /** Supported languages for allocation strategy scripts */
 export enum AllocationStrategyLang {
   Js = 'js',
-  Py = 'py'
+  Py = 'py',
 }
 
 /** Output of creating a nested singleton pool */
@@ -100,7 +99,6 @@ export type ResourcePool = Node & {
   id: Scalars['ID'];
 };
 
-
 /** A pool is an entity that contains allocated and free resources */
 export type ResourcePoolAllocatedResourcesArgs = {
   first?: Maybe<Scalars['Int']>;
@@ -150,70 +148,57 @@ export type Query = {
   node?: Maybe<Node>;
 };
 
-
 export type QueryQueryPoolCapacityArgs = {
   poolId: Scalars['ID'];
 };
-
 
 export type QueryQueryResourceArgs = {
   input: Scalars['Map'];
   poolId: Scalars['ID'];
 };
 
-
 export type QueryQueryResourcesArgs = {
   poolId: Scalars['ID'];
 };
-
 
 export type QueryQueryAllocationStrategyArgs = {
   allocationStrategyId: Scalars['ID'];
 };
 
-
 export type QueryQueryAllocationStrategiesArgs = {
   byName?: Maybe<Scalars['String']>;
 };
-
 
 export type QueryQueryResourceTypesArgs = {
   byName?: Maybe<Scalars['String']>;
 };
 
-
 export type QueryQueryResourcePoolArgs = {
   poolId: Scalars['ID'];
 };
-
 
 export type QueryQueryResourcePoolsArgs = {
   resourceTypeId?: Maybe<Scalars['ID']>;
   tags?: Maybe<TagOr>;
 };
 
-
 export type QueryQueryResourcePoolHierarchyPathArgs = {
   poolId: Scalars['ID'];
 };
-
 
 export type QueryQueryRootResourcePoolsArgs = {
   resourceTypeId?: Maybe<Scalars['ID']>;
   tags?: Maybe<TagOr>;
 };
 
-
 export type QueryQueryLeafResourcePoolsArgs = {
   resourceTypeId?: Maybe<Scalars['ID']>;
   tags?: Maybe<TagOr>;
 };
 
-
 export type QuerySearchPoolsByTagsArgs = {
   tags?: Maybe<TagOr>;
 };
-
 
 export type QueryNodeArgs = {
   id: Scalars['ID'];
@@ -323,7 +308,6 @@ export type ResourceType = Node & {
   id: Scalars['ID'];
 };
 
-
 /** Output of creating an allocating pool */
 export type CreateAllocatingPoolPayload = {
   __typename?: 'CreateAllocatingPoolPayload';
@@ -360,41 +344,33 @@ export type Mutation = {
   UpdateResourceTypeName: UpdateResourceTypeNamePayload;
 };
 
-
 export type MutationCreateTagArgs = {
   input: CreateTagInput;
 };
-
 
 export type MutationUpdateTagArgs = {
   input: UpdateTagInput;
 };
 
-
 export type MutationDeleteTagArgs = {
   input: DeleteTagInput;
 };
-
 
 export type MutationTagPoolArgs = {
   input: TagPoolInput;
 };
 
-
 export type MutationUntagPoolArgs = {
   input: UntagPoolInput;
 };
-
 
 export type MutationCreateAllocationStrategyArgs = {
   input?: Maybe<CreateAllocationStrategyInput>;
 };
 
-
 export type MutationDeleteAllocationStrategyArgs = {
   input?: Maybe<DeleteAllocationStrategyInput>;
 };
-
 
 export type MutationTestAllocationStrategyArgs = {
   allocationStrategyId: Scalars['ID'];
@@ -403,64 +379,52 @@ export type MutationTestAllocationStrategyArgs = {
   userInput: Scalars['Map'];
 };
 
-
 export type MutationClaimResourceArgs = {
   poolId: Scalars['ID'];
   description?: Maybe<Scalars['String']>;
   userInput: Scalars['Map'];
 };
 
-
 export type MutationFreeResourceArgs = {
   input: Scalars['Map'];
   poolId: Scalars['ID'];
 };
 
-
 export type MutationCreateSetPoolArgs = {
   input: CreateSetPoolInput;
 };
-
 
 export type MutationCreateNestedSetPoolArgs = {
   input: CreateNestedSetPoolInput;
 };
 
-
 export type MutationCreateSingletonPoolArgs = {
   input?: Maybe<CreateSingletonPoolInput>;
 };
-
 
 export type MutationCreateNestedSingletonPoolArgs = {
   input: CreateNestedSingletonPoolInput;
 };
 
-
 export type MutationCreateAllocatingPoolArgs = {
   input?: Maybe<CreateAllocatingPoolInput>;
 };
-
 
 export type MutationCreateNestedAllocatingPoolArgs = {
   input: CreateNestedAllocatingPoolInput;
 };
 
-
 export type MutationDeleteResourcePoolArgs = {
   input: DeleteResourcePoolInput;
 };
-
 
 export type MutationCreateResourceTypeArgs = {
   input: CreateResourceTypeInput;
 };
 
-
 export type MutationDeleteResourceTypeArgs = {
   input: DeleteResourceTypeInput;
 };
-
 
 export type MutationUpdateResourceTypeNameArgs = {
   input: UpdateResourceTypeNameInput;
@@ -551,7 +515,7 @@ export type OutputCursor = {
 export enum PoolType {
   Allocating = 'allocating',
   Set = 'set',
-  Singleton = 'singleton'
+  Singleton = 'singleton',
 }
 
 /** Helper entities for tag search */
@@ -621,2358 +585,2358 @@ export type UpdateTagInput = {
 };
 
 import { IntrospectionQuery } from 'graphql';
-export default {
-  "__schema": {
-    "queryType": {
-      "name": "Query"
+export default ({
+  __schema: {
+    queryType: {
+      name: 'Query',
     },
-    "mutationType": {
-      "name": "Mutation"
+    mutationType: {
+      name: 'Mutation',
     },
-    "subscriptionType": null,
-    "types": [
+    subscriptionType: null,
+    types: [
       {
-        "kind": "OBJECT",
-        "name": "CreateSetPoolPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'CreateSetPoolPayload',
+        fields: [
           {
-            "name": "pool",
-            "type": {
-              "kind": "OBJECT",
-              "name": "ResourcePool"
+            name: 'pool',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourcePool',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "CreateNestedSetPoolPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'CreateNestedSetPoolPayload',
+        fields: [
           {
-            "name": "pool",
-            "type": {
-              "kind": "OBJECT",
-              "name": "ResourcePool"
+            name: 'pool',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourcePool',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "CreateAllocationStrategyPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'CreateAllocationStrategyPayload',
+        fields: [
           {
-            "name": "strategy",
-            "type": {
-              "kind": "OBJECT",
-              "name": "AllocationStrategy"
+            name: 'strategy',
+            type: {
+              kind: 'OBJECT',
+              name: 'AllocationStrategy',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "UpdateResourceTypeNamePayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'UpdateResourceTypeNamePayload',
+        fields: [
           {
-            "name": "resourceTypeId",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'resourceTypeId',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "CreateNestedSingletonPoolPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'CreateNestedSingletonPoolPayload',
+        fields: [
           {
-            "name": "pool",
-            "type": {
-              "kind": "OBJECT",
-              "name": "ResourcePool"
+            name: 'pool',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourcePool',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "ResourcePool",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'ResourcePool',
+        fields: [
           {
-            "name": "AllocationStrategy",
-            "type": {
-              "kind": "OBJECT",
-              "name": "AllocationStrategy"
+            name: 'AllocationStrategy',
+            type: {
+              kind: 'OBJECT',
+              name: 'AllocationStrategy',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "Capacity",
-            "type": {
-              "kind": "OBJECT",
-              "name": "PoolCapacityPayload"
+            name: 'Capacity',
+            type: {
+              kind: 'OBJECT',
+              name: 'PoolCapacityPayload',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "Name",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'Name',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "ParentResource",
-            "type": {
-              "kind": "OBJECT",
-              "name": "Resource"
+            name: 'ParentResource',
+            type: {
+              kind: 'OBJECT',
+              name: 'Resource',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "PoolProperties",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'PoolProperties',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "PoolType",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'PoolType',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "ResourceType",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "ResourceType"
-              }
+            name: 'ResourceType',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'ResourceType',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "Resources",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "Resource"
-                  }
-                }
-              }
+            name: 'Resources',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'Resource',
+                  },
+                },
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "Tags",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "Tag"
-                  }
-                }
-              }
+            name: 'Tags',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'Tag',
+                  },
+                },
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "allocatedResources",
-            "type": {
-              "kind": "OBJECT",
-              "name": "ResourceConnection"
+            name: 'allocatedResources',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourceConnection',
             },
-            "args": [
+            args: [
               {
-                "name": "first",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
+                name: 'first',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
               },
               {
-                "name": "last",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
+                name: 'last',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
               },
               {
-                "name": "before",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
+                name: 'before',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
               },
               {
-                "name": "after",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'after',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "id",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'id',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": [
+        interfaces: [
           {
-            "kind": "INTERFACE",
-            "name": "Node"
-          }
-        ]
+            kind: 'INTERFACE',
+            name: 'Node',
+          },
+        ],
       },
       {
-        "kind": "OBJECT",
-        "name": "ResourceEdge",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'ResourceEdge',
+        fields: [
           {
-            "name": "cursor",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "OutputCursor"
-              }
+            name: 'cursor',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'OutputCursor',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "node",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Resource"
-              }
+            name: 'node',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'Resource',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "Query",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'Query',
+        fields: [
           {
-            "name": "QueryPoolCapacity",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "PoolCapacityPayload"
-              }
+            name: 'QueryPoolCapacity',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'PoolCapacityPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "poolId",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'poolId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "QueryPoolTypes",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
+            name: 'QueryPoolTypes',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "QueryResource",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Resource"
-              }
+            name: 'QueryResource',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'Resource',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
               },
               {
-                "name": "poolId",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'poolId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "QueryResources",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "Resource"
-                  }
-                }
-              }
+            name: 'QueryResources',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'Resource',
+                  },
+                },
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "poolId",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'poolId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "QueryAllocationStrategy",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "AllocationStrategy"
-              }
+            name: 'QueryAllocationStrategy',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'AllocationStrategy',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "allocationStrategyId",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'allocationStrategyId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "QueryAllocationStrategies",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "AllocationStrategy"
-                  }
-                }
-              }
+            name: 'QueryAllocationStrategies',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'AllocationStrategy',
+                  },
+                },
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "byName",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'byName',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "QueryResourceTypes",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "ResourceType"
-                  }
-                }
-              }
+            name: 'QueryResourceTypes',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'ResourceType',
+                  },
+                },
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "byName",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'byName',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "QueryResourcePool",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "ResourcePool"
-              }
+            name: 'QueryResourcePool',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'ResourcePool',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "poolId",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'poolId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "QueryResourcePools",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "ResourcePool"
-                  }
-                }
-              }
+            name: 'QueryResourcePools',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'ResourcePool',
+                  },
+                },
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "resourceTypeId",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
+                name: 'resourceTypeId',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
               },
               {
-                "name": "tags",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'tags',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "QueryResourcePoolHierarchyPath",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "ResourcePool"
-                  }
-                }
-              }
+            name: 'QueryResourcePoolHierarchyPath',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'ResourcePool',
+                  },
+                },
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "poolId",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'poolId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "QueryRootResourcePools",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "ResourcePool"
-                  }
-                }
-              }
+            name: 'QueryRootResourcePools',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'ResourcePool',
+                  },
+                },
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "resourceTypeId",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
+                name: 'resourceTypeId',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
               },
               {
-                "name": "tags",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'tags',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "QueryLeafResourcePools",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "ResourcePool"
-                  }
-                }
-              }
+            name: 'QueryLeafResourcePools',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'ResourcePool',
+                  },
+                },
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "resourceTypeId",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
+                name: 'resourceTypeId',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
               },
               {
-                "name": "tags",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'tags',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "SearchPoolsByTags",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "ResourcePool"
-                  }
-                }
-              }
+            name: 'SearchPoolsByTags',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'ResourcePool',
+                  },
+                },
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "tags",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'tags',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "QueryTags",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "Tag"
-                  }
-                }
-              }
+            name: 'QueryTags',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'Tag',
+                  },
+                },
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "node",
-            "type": {
-              "kind": "INTERFACE",
-              "name": "Node"
+            name: 'node',
+            type: {
+              kind: 'INTERFACE',
+              name: 'Node',
             },
-            "args": [
+            args: [
               {
-                "name": "id",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
-          }
+                name: 'id',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "Resource",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'Resource',
+        fields: [
           {
-            "name": "Description",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Any"
+            name: 'Description',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "NestedPool",
-            "type": {
-              "kind": "OBJECT",
-              "name": "ResourcePool"
+            name: 'NestedPool',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourcePool',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "ParentPool",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "ResourcePool"
-              }
+            name: 'ParentPool',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'ResourcePool',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "Properties",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'Properties',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "id",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'id',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": [
+        interfaces: [
           {
-            "kind": "INTERFACE",
-            "name": "Node"
-          }
-        ]
+            kind: 'INTERFACE',
+            name: 'Node',
+          },
+        ],
       },
       {
-        "kind": "OBJECT",
-        "name": "CreateTagPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'CreateTagPayload',
+        fields: [
           {
-            "name": "tag",
-            "type": {
-              "kind": "OBJECT",
-              "name": "Tag"
+            name: 'tag',
+            type: {
+              kind: 'OBJECT',
+              name: 'Tag',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "DeleteAllocationStrategyPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'DeleteAllocationStrategyPayload',
+        fields: [
           {
-            "name": "strategy",
-            "type": {
-              "kind": "OBJECT",
-              "name": "AllocationStrategy"
+            name: 'strategy',
+            type: {
+              kind: 'OBJECT',
+              name: 'AllocationStrategy',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "PageInfo",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'PageInfo',
+        fields: [
           {
-            "name": "endCursor",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "OutputCursor"
-              }
+            name: 'endCursor',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'OutputCursor',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "hasNextPage",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'hasNextPage',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "hasPreviousPage",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'hasPreviousPage',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "startCursor",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "OutputCursor"
-              }
+            name: 'startCursor',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'OutputCursor',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "Tag",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'Tag',
+        fields: [
           {
-            "name": "Pools",
-            "type": {
-              "kind": "LIST",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "ResourcePool"
-              }
+            name: 'Pools',
+            type: {
+              kind: 'LIST',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'ResourcePool',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "Tag",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'Tag',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "id",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'id',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": [
+        interfaces: [
           {
-            "kind": "INTERFACE",
-            "name": "Node"
-          }
-        ]
+            kind: 'INTERFACE',
+            name: 'Node',
+          },
+        ],
       },
       {
-        "kind": "OBJECT",
-        "name": "DeleteResourcePoolPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'DeleteResourcePoolPayload',
+        fields: [
           {
-            "name": "resourcePoolId",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'resourcePoolId',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "CreateResourceTypePayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'CreateResourceTypePayload',
+        fields: [
           {
-            "name": "resourceType",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "ResourceType"
-              }
+            name: 'resourceType',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'ResourceType',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "ResourceType",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'ResourceType',
+        fields: [
           {
-            "name": "Name",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'Name',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "Pools",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "ResourcePool"
-                  }
-                }
-              }
+            name: 'Pools',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'ResourcePool',
+                  },
+                },
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "PropertyTypes",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "PropertyType"
-                  }
-                }
-              }
+            name: 'PropertyTypes',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'PropertyType',
+                  },
+                },
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "id",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'id',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": [
+        interfaces: [
           {
-            "kind": "INTERFACE",
-            "name": "Node"
-          }
-        ]
+            kind: 'INTERFACE',
+            name: 'Node',
+          },
+        ],
       },
       {
-        "kind": "OBJECT",
-        "name": "CreateAllocatingPoolPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'CreateAllocatingPoolPayload',
+        fields: [
           {
-            "name": "pool",
-            "type": {
-              "kind": "OBJECT",
-              "name": "ResourcePool"
+            name: 'pool',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourcePool',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "DeleteResourceTypePayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'DeleteResourceTypePayload',
+        fields: [
           {
-            "name": "resourceTypeId",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'resourceTypeId',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "Mutation",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'Mutation',
+        fields: [
           {
-            "name": "CreateTag",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "CreateTagPayload"
-              }
+            name: 'CreateTag',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'CreateTagPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "UpdateTag",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "UpdateTagPayload"
-              }
+            name: 'UpdateTag',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'UpdateTagPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "DeleteTag",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "DeleteTagPayload"
-              }
+            name: 'DeleteTag',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'DeleteTagPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "TagPool",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "TagPoolPayload"
-              }
+            name: 'TagPool',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'TagPoolPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "UntagPool",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "UntagPoolPayload"
-              }
+            name: 'UntagPool',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'UntagPoolPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "CreateAllocationStrategy",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "CreateAllocationStrategyPayload"
-              }
+            name: 'CreateAllocationStrategy',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'CreateAllocationStrategyPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "DeleteAllocationStrategy",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "DeleteAllocationStrategyPayload"
-              }
+            name: 'DeleteAllocationStrategy',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'DeleteAllocationStrategyPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "TestAllocationStrategy",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'TestAllocationStrategy',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "allocationStrategyId",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
+                name: 'allocationStrategyId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
               },
               {
-                "name": "resourcePool",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
+                name: 'resourcePool',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
               },
               {
-                "name": "currentResources",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "LIST",
-                    "ofType": {
-                      "kind": "NON_NULL",
-                      "ofType": {
-                        "kind": "SCALAR",
-                        "name": "Any"
-                      }
-                    }
-                  }
-                }
+                name: 'currentResources',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'LIST',
+                    ofType: {
+                      kind: 'NON_NULL',
+                      ofType: {
+                        kind: 'SCALAR',
+                        name: 'Any',
+                      },
+                    },
+                  },
+                },
               },
               {
-                "name": "userInput",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'userInput',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "ClaimResource",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Resource"
-              }
+            name: 'ClaimResource',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'Resource',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "poolId",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
+                name: 'poolId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
               },
               {
-                "name": "description",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
+                name: 'description',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
               },
               {
-                "name": "userInput",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'userInput',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "FreeResource",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'FreeResource',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
               },
               {
-                "name": "poolId",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'poolId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "CreateSetPool",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "CreateSetPoolPayload"
-              }
+            name: 'CreateSetPool',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'CreateSetPoolPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "CreateNestedSetPool",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "CreateNestedSetPoolPayload"
-              }
+            name: 'CreateNestedSetPool',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'CreateNestedSetPoolPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "CreateSingletonPool",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "CreateSingletonPoolPayload"
-              }
+            name: 'CreateSingletonPool',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'CreateSingletonPoolPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "CreateNestedSingletonPool",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "CreateNestedSingletonPoolPayload"
-              }
+            name: 'CreateNestedSingletonPool',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'CreateNestedSingletonPoolPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "CreateAllocatingPool",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "CreateAllocatingPoolPayload"
-              }
+            name: 'CreateAllocatingPool',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'CreateAllocatingPoolPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "CreateNestedAllocatingPool",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "CreateNestedAllocatingPoolPayload"
-              }
+            name: 'CreateNestedAllocatingPool',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'CreateNestedAllocatingPoolPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "DeleteResourcePool",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "DeleteResourcePoolPayload"
-              }
+            name: 'DeleteResourcePool',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'DeleteResourcePoolPayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "CreateResourceType",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "CreateResourceTypePayload"
-              }
+            name: 'CreateResourceType',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'CreateResourceTypePayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "DeleteResourceType",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "DeleteResourceTypePayload"
-              }
+            name: 'DeleteResourceType',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'DeleteResourceTypePayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
           {
-            "name": "UpdateResourceTypeName",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "UpdateResourceTypeNamePayload"
-              }
+            name: 'UpdateResourceTypeName',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'UpdateResourceTypeNamePayload',
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "input",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
-          }
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "UpdateTagPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'UpdateTagPayload',
+        fields: [
           {
-            "name": "tag",
-            "type": {
-              "kind": "OBJECT",
-              "name": "Tag"
+            name: 'tag',
+            type: {
+              kind: 'OBJECT',
+              name: 'Tag',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "AllocationStrategy",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'AllocationStrategy',
+        fields: [
           {
-            "name": "Description",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Any"
+            name: 'Description',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "Lang",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'Lang',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "Name",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'Name',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "Script",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'Script',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "id",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'id',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": [
+        interfaces: [
           {
-            "kind": "INTERFACE",
-            "name": "Node"
-          }
-        ]
+            kind: 'INTERFACE',
+            name: 'Node',
+          },
+        ],
       },
       {
-        "kind": "OBJECT",
-        "name": "CreateSingletonPoolPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'CreateSingletonPoolPayload',
+        fields: [
           {
-            "name": "pool",
-            "type": {
-              "kind": "OBJECT",
-              "name": "ResourcePool"
+            name: 'pool',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourcePool',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "PoolCapacityPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'PoolCapacityPayload',
+        fields: [
           {
-            "name": "freeCapacity",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'freeCapacity',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "utilizedCapacity",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'utilizedCapacity',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "TagPoolPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'TagPoolPayload',
+        fields: [
           {
-            "name": "tag",
-            "type": {
-              "kind": "OBJECT",
-              "name": "Tag"
+            name: 'tag',
+            type: {
+              kind: 'OBJECT',
+              name: 'Tag',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "DeleteTagPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'DeleteTagPayload',
+        fields: [
           {
-            "name": "tagId",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'tagId',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "INTERFACE",
-        "name": "Node",
-        "fields": [
+        kind: 'INTERFACE',
+        name: 'Node',
+        fields: [
           {
-            "name": "id",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'id',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": [],
-        "possibleTypes": [
+        interfaces: [],
+        possibleTypes: [
           {
-            "kind": "OBJECT",
-            "name": "ResourcePool"
+            kind: 'OBJECT',
+            name: 'ResourcePool',
           },
           {
-            "kind": "OBJECT",
-            "name": "Resource"
+            kind: 'OBJECT',
+            name: 'Resource',
           },
           {
-            "kind": "OBJECT",
-            "name": "Tag"
+            kind: 'OBJECT',
+            name: 'Tag',
           },
           {
-            "kind": "OBJECT",
-            "name": "ResourceType"
+            kind: 'OBJECT',
+            name: 'ResourceType',
           },
           {
-            "kind": "OBJECT",
-            "name": "AllocationStrategy"
+            kind: 'OBJECT',
+            name: 'AllocationStrategy',
           },
           {
-            "kind": "OBJECT",
-            "name": "PropertyType"
-          }
-        ]
+            kind: 'OBJECT',
+            name: 'PropertyType',
+          },
+        ],
       },
       {
-        "kind": "OBJECT",
-        "name": "OutputCursor",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'OutputCursor',
+        fields: [
           {
-            "name": "ID",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'ID',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "PropertyType",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'PropertyType',
+        fields: [
           {
-            "name": "FloatVal",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'FloatVal',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "IntVal",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'IntVal',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "Mandatory",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'Mandatory',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "Name",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'Name',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "StringVal",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'StringVal',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "Type",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'Type',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "id",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'id',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": [
+        interfaces: [
           {
-            "kind": "INTERFACE",
-            "name": "Node"
-          }
-        ]
+            kind: 'INTERFACE',
+            name: 'Node',
+          },
+        ],
       },
       {
-        "kind": "OBJECT",
-        "name": "ResourceConnection",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'ResourceConnection',
+        fields: [
           {
-            "name": "edges",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "ResourceEdge"
-                }
-              }
+            name: 'edges',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'OBJECT',
+                  name: 'ResourceEdge',
+                },
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "pageInfo",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "PageInfo"
-              }
+            name: 'pageInfo',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'PageInfo',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "totalCount",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'totalCount',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "CreateNestedAllocatingPoolPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'CreateNestedAllocatingPoolPayload',
+        fields: [
           {
-            "name": "pool",
-            "type": {
-              "kind": "OBJECT",
-              "name": "ResourcePool"
+            name: 'pool',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourcePool',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "UntagPoolPayload",
-        "fields": [
+        kind: 'OBJECT',
+        name: 'UntagPoolPayload',
+        fields: [
           {
-            "name": "tag",
-            "type": {
-              "kind": "OBJECT",
-              "name": "Tag"
+            name: 'tag',
+            type: {
+              kind: 'OBJECT',
+              name: 'Tag',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "__Schema",
-        "fields": [
+        kind: 'OBJECT',
+        name: '__Schema',
+        fields: [
           {
-            "name": "description",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Any"
+            name: 'description',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "types",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "__Type"
-                  }
-                }
-              }
+            name: 'types',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: '__Type',
+                  },
+                },
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "queryType",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "__Type"
-              }
+            name: 'queryType',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: '__Type',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "mutationType",
-            "type": {
-              "kind": "OBJECT",
-              "name": "__Type"
+            name: 'mutationType',
+            type: {
+              kind: 'OBJECT',
+              name: '__Type',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "subscriptionType",
-            "type": {
-              "kind": "OBJECT",
-              "name": "__Type"
+            name: 'subscriptionType',
+            type: {
+              kind: 'OBJECT',
+              name: '__Type',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "directives",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "__Directive"
-                  }
-                }
-              }
+            name: 'directives',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: '__Directive',
+                  },
+                },
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "__Type",
-        "fields": [
+        kind: 'OBJECT',
+        name: '__Type',
+        fields: [
           {
-            "name": "kind",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'kind',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "name",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Any"
+            name: 'name',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "description",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Any"
+            name: 'description',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "specifiedByUrl",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Any"
+            name: 'specifiedByUrl',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "fields",
-            "type": {
-              "kind": "LIST",
-              "ofType": {
-                "kind": "NON_NULL",
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "__Field"
-                }
-              }
+            name: 'fields',
+            type: {
+              kind: 'LIST',
+              ofType: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: 'OBJECT',
+                  name: '__Field',
+                },
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "includeDeprecated",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'includeDeprecated',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "interfaces",
-            "type": {
-              "kind": "LIST",
-              "ofType": {
-                "kind": "NON_NULL",
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "__Type"
-                }
-              }
+            name: 'interfaces',
+            type: {
+              kind: 'LIST',
+              ofType: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: 'OBJECT',
+                  name: '__Type',
+                },
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "possibleTypes",
-            "type": {
-              "kind": "LIST",
-              "ofType": {
-                "kind": "NON_NULL",
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "__Type"
-                }
-              }
+            name: 'possibleTypes',
+            type: {
+              kind: 'LIST',
+              ofType: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: 'OBJECT',
+                  name: '__Type',
+                },
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "enumValues",
-            "type": {
-              "kind": "LIST",
-              "ofType": {
-                "kind": "NON_NULL",
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "__EnumValue"
-                }
-              }
+            name: 'enumValues',
+            type: {
+              kind: 'LIST',
+              ofType: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: 'OBJECT',
+                  name: '__EnumValue',
+                },
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "includeDeprecated",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'includeDeprecated',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "inputFields",
-            "type": {
-              "kind": "LIST",
-              "ofType": {
-                "kind": "NON_NULL",
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "__InputValue"
-                }
-              }
+            name: 'inputFields',
+            type: {
+              kind: 'LIST',
+              ofType: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: 'OBJECT',
+                  name: '__InputValue',
+                },
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "includeDeprecated",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'includeDeprecated',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "ofType",
-            "type": {
-              "kind": "OBJECT",
-              "name": "__Type"
+            name: 'ofType',
+            type: {
+              kind: 'OBJECT',
+              name: '__Type',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "__Field",
-        "fields": [
+        kind: 'OBJECT',
+        name: '__Field',
+        fields: [
           {
-            "name": "name",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'name',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "description",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Any"
+            name: 'description',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "args",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "__InputValue"
-                  }
-                }
-              }
+            name: 'args',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: '__InputValue',
+                  },
+                },
+              },
             },
-            "args": [
+            args: [
               {
-                "name": "includeDeprecated",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Any"
-                }
-              }
-            ]
+                name: 'includeDeprecated',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
           },
           {
-            "name": "type",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "__Type"
-              }
+            name: 'type',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: '__Type',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "isDeprecated",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'isDeprecated',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "deprecationReason",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Any"
+            name: 'deprecationReason',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "__InputValue",
-        "fields": [
+        kind: 'OBJECT',
+        name: '__InputValue',
+        fields: [
           {
-            "name": "name",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'name',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "description",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Any"
+            name: 'description',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "type",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "__Type"
-              }
+            name: 'type',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: '__Type',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "defaultValue",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Any"
+            name: 'defaultValue',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "isDeprecated",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'isDeprecated',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "deprecationReason",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Any"
+            name: 'deprecationReason',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "__EnumValue",
-        "fields": [
+        kind: 'OBJECT',
+        name: '__EnumValue',
+        fields: [
           {
-            "name": "name",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'name',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "description",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Any"
+            name: 'description',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "isDeprecated",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'isDeprecated',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "deprecationReason",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Any"
+            name: 'deprecationReason',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "OBJECT",
-        "name": "__Directive",
-        "fields": [
+        kind: 'OBJECT',
+        name: '__Directive',
+        fields: [
           {
-            "name": "name",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'name',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "description",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Any"
+            name: 'description',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "isRepeatable",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+            name: 'isRepeatable',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "locations",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
+            name: 'locations',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
             },
-            "args": []
+            args: [],
           },
           {
-            "name": "args",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "__InputValue"
-                  }
-                }
-              }
+            name: 'args',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: '__InputValue',
+                  },
+                },
+              },
             },
-            "args": []
-          }
+            args: [],
+          },
         ],
-        "interfaces": []
+        interfaces: [],
       },
       {
-        "kind": "SCALAR",
-        "name": "Any"
-      }
+        kind: 'SCALAR',
+        name: 'Any',
+      },
     ],
-    "directives": []
-  }
-} as unknown as IntrospectionQuery;
+    directives: [],
+  },
+} as unknown) as IntrospectionQuery;
