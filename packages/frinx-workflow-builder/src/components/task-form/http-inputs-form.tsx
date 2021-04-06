@@ -92,7 +92,7 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
         />
       </FormControl>
       <FormControl id="timeout" my={6}>
-        <Box w={1 / 2}>
+        <Box w="50%">
           <FormLabel>Timeout</FormLabel>
           <Input
             variant="filled"
@@ -147,7 +147,7 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
             name="body"
             theme="textmate"
             wrapEnabled
-            value={body ?? ''}
+            value={JSON.stringify(body, null, 2) ?? ''}
             onChange={(value) => {
               onChange({
                 ...params,

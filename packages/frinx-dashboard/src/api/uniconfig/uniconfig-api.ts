@@ -19,8 +19,8 @@ import {
   isCliDeviceTranslations,
 } from '../../helpers/types/uniconfig-type-guards';
 
-const BASE_CLI_URL = '/rests/data/network-topology:network-topology/topology=cli';
-const BASE_NETCONF_URL = '/rests/data/network-topology:network-topology/topology=topology-netconf';
+const BASE_CLI_URL = '/data/network-topology:network-topology/topology=cli';
+const BASE_NETCONF_URL = '/data/network-topology:network-topology/topology=topology-netconf';
 
 const CLI_TOPOLOGY_URL = `${BASE_CLI_URL}?content=nonconfig`;
 const NETCONF_TOPOLOGY_URL = `${BASE_NETCONF_URL}?content=nonconfig`;
@@ -115,7 +115,7 @@ export async function getNetconfTopology(): Promise<NetconfTopology> {
 
 export async function getCliDeviceTranslations(): Promise<CliDeviceTranslations> {
   const translations = await sendGetRequest(
-    `/rests/data/cli-translate-registry:available-cli-device-translations?content=nonconfig&depth=3`,
+    `/data/cli-translate-registry:available-cli-device-translations?content=nonconfig&depth=3`,
   );
 
   if (isCliDeviceTranslations(translations)) {
@@ -127,7 +127,7 @@ export async function getCliDeviceTranslations(): Promise<CliDeviceTranslations>
 
 export async function getCliConfigurationalDataStore(nodeId: string): Promise<unknown> {
   const datastore = await sendGetRequest(
-    `/rests/data/network-topology:network-topology/topology=uniconfig/node=${nodeId}/frinx-uniconfig-topology:configuration?content=config`,
+    `/data/network-topology:network-topology/topology=uniconfig/node=${nodeId}/frinx-uniconfig-topology:configuration?content=config`,
   );
 
   return datastore;
@@ -135,7 +135,7 @@ export async function getCliConfigurationalDataStore(nodeId: string): Promise<un
 
 export async function updateCliConfigurationalDataStore(nodeId: string, data: unknown): Promise<unknown> {
   const datastore = await sendPutRequest(
-    `/rests/data/network-topology:network-topology/topology=uniconfig/node=${nodeId}/frinx-uniconfig-topology:configuration`,
+    `/data/network-topology:network-topology/topology=uniconfig/node=${nodeId}/frinx-uniconfig-topology:configuration`,
     data,
   );
 
@@ -144,62 +144,62 @@ export async function updateCliConfigurationalDataStore(nodeId: string, data: un
 
 export async function getCliOperationalDataStore(nodeId: string): Promise<unknown> {
   const datastore = await sendGetRequest(
-    `/rests/data/network-topology:network-topology/topology=uniconfig/node=${nodeId}/frinx-uniconfig-topology:configuration?content=nonconfig`,
+    `/data/network-topology:network-topology/topology=uniconfig/node=${nodeId}/frinx-uniconfig-topology:configuration?content=nonconfig`,
   );
 
   return datastore;
 }
 
 export async function calculateDiff(target: unknown): Promise<unknown> {
-  const output = await sendPostRequest(`/rests/operations/uniconfig-manager:calculate-diff`, target);
+  const output = await sendPostRequest(`/operations/uniconfig-manager:calculate-diff`, target);
 
   return output;
 }
 
 export async function commitToNetwork(target: unknown): Promise<unknown> {
-  const output = await sendPostRequest(`/rests/operations/uniconfig-manager:commit`, target);
+  const output = await sendPostRequest(`/operations/uniconfig-manager:commit`, target);
 
   return output;
 }
 
 export async function dryRunCommit(target: unknown): Promise<unknown> {
-  const output = await sendPostRequest(`/rests/operations/dryrun-manager:dryrun-commit`, target);
+  const output = await sendPostRequest(`/operations/dryrun-manager:dryrun-commit`, target);
 
   return output;
 }
 
 export async function syncFromNetwork(target: unknown): Promise<unknown> {
-  const output = await sendPostRequest(`/rests/operations/uniconfig-manager:sync-from-network`, target);
+  const output = await sendPostRequest(`/operations/uniconfig-manager:sync-from-network`, target);
 
   return output;
 }
 
 export async function replaceConfigWithOperational(target: unknown): Promise<unknown> {
-  const output = await sendPostRequest(`/rests/operations/uniconfig-manager:replace-config-with-operational`, target);
+  const output = await sendPostRequest(`/operations/uniconfig-manager:replace-config-with-operational`, target);
 
   return output;
 }
 
 export async function getSnapshots(): Promise<unknown> {
-  const output = await sendGetRequest(`/rests/data/network-topology:network-topology?content=config`);
+  const output = await sendGetRequest(`/data/network-topology:network-topology?content=config`);
 
   return output;
 }
 
 export async function createSnapshot(target: unknown): Promise<unknown> {
-  const output = await sendPostRequest(`/rests/operations/snapshot-manager:create-snapshot`, target);
+  const output = await sendPostRequest(`/operations/snapshot-manager:create-snapshot`, target);
 
   return output;
 }
 
 export async function deleteSnapshot(target: unknown): Promise<unknown> {
-  const output = await sendPostRequest(`/rests/operations/snapshot-manager:delete-snapshot`, target);
+  const output = await sendPostRequest(`/operations/snapshot-manager:delete-snapshot`, target);
 
   return output;
 }
 
 export async function replaceConfigWithSnapshot(target: unknown): Promise<unknown> {
-  const output = await sendPostRequest(`/rests/operations/snapshot-manager:replace-config-with-snapshot`, target);
+  const output = await sendPostRequest(`/operations/snapshot-manager:replace-config-with-snapshot`, target);
 
   return output;
 }
