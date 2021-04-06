@@ -26,8 +26,8 @@ type DashboardApp = {
   render: () => void;
 };
 
-/* eslint-disable @typescript-eslint/naming-convention */
-type Window = {
+/* eslint-disable */
+interface Window {
   __CONFIG__: Readonly<{
     auth_enabled: boolean;
     auth_client_id: string;
@@ -43,5 +43,5 @@ type Window = {
   }>;
 
   dashboardApp: DashboardApp;
-};
+}
 /* eslint-enable */
