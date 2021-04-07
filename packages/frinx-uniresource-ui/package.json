@@ -2,6 +2,7 @@
   "name": "@frinx/uniresource-ui",
   "version": "0.0.1",
   "private": true,
+  "module": "src/index.js",
   "dependencies": {
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",

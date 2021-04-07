@@ -1,6 +1,6 @@
-import React, {FC} from 'react';
-import {useQuery} from "urql";
-import {ResourcePool} from "../generated/graphql";
+import React, { FC } from 'react';
+import { useQuery } from 'urql';
+import { ResourcePool } from '../generated/graphql';
 
 const query = `query QueryAllPools {
     QueryResourcePools{
@@ -28,20 +28,21 @@ const query = `query QueryAllPools {
 }`;
 
 const PoolsList: FC = () => {
-    const [result] = useQuery({
-        query
-    });
+  const [result] = useQuery({
+    query,
+  });
 
-    const {data} = result;
+  const { data } = result;
 
-    return (
-        <ul>
-            {data?.QueryResourcePools?.map((pool: ResourcePool) => (
-                <li key={pool.id}>{pool.Name}</li>
-            ))}
-        </ul>
-    )
-
+  return (
+    <ul>
+      {data?.QueryResourcePools?.map((pool: ResourcePool) => (
+        <li key={pool.id}>
+          {pool.Name} : {pool.PoolType.toString()}
+        </li>
+      ))}
+    </ul>
+  );
 };
 
 export default PoolsList;
