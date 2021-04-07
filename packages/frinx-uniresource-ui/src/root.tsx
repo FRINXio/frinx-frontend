@@ -1,27 +1,19 @@
-import {ChakraProvider, Heading} from '@chakra-ui/react';
-import {createClient, Provider} from 'urql';
-import React, {FC} from 'react';
-import PoolsList from "./components/pools-list";
-import StrategiesList from "./components/strategies-list";
-import CreateNewStrategy from "./components/CreateNewStrategy";
+import { ChakraProvider } from '@chakra-ui/react';
+import { createClient, Provider } from 'urql';
+import React, { FC } from 'react';
 
 const client = createClient({
-    url: 'http://10.19.0.7/resourcemanager/graphql/query',
+  url: 'http://10.19.0.7/resourcemanager/graphql/query',
 });
 
+type Props = { children: React.ReactNode };
 
-const Root: FC = () => {
-    return (
-        <Provider value={client}>
-            <ChakraProvider>
-                <Heading as="h1" size="xl">
-                    <PoolsList />
-                    <StrategiesList />
-                    <CreateNewStrategy />
-                </Heading>
-            </ChakraProvider>
-        </Provider>
-    );
+const Root: FC<Props> = ({ children }) => {
+  return (
+    <Provider value={client}>
+      <ChakraProvider>{children}</ChakraProvider>
+    </Provider>
+  );
 };
 
 export default Root;

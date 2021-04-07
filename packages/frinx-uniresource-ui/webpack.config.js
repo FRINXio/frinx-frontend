@@ -25,12 +25,12 @@ const plugins = [
 ];
 
 module.exports = {
-  entry: fullPath('src', 'index.ts'),
+  entry: path.resolve(__dirname, 'src/index.ts'),
   output: {
     path: fullPath('build'),
     filename: 'index.js',
     publicPath: '/',
-    library: 'frinxWorkflowBuilder',
+    library: 'frinxUniresourceUI',
     libraryTarget: 'umd',
   },
   devServer: {
