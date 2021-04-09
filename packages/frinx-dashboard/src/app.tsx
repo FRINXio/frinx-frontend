@@ -54,7 +54,7 @@ const AppWithAuth: FC<{
       <ChakraProvider theme={theme}>
         <BrowserRouter basename={getURLBaseName()}>
           <NotificationContainer correlationId="notificationContainer" />
-          <Header isAuthEnabled enabledServices={enabledServices} homePath={getURLBaseName()} />
+          <Header isAuthEnabled enabledServices={enabledServices} homePath="/" />
           <Box paddingTop={10}>
             <Switch>
               <Route path="/" exact>
@@ -99,7 +99,7 @@ const App: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
     <ChakraProvider theme={theme}>
       <BrowserRouter basename={getURLBaseName()}>
         <NotificationContainer correlationId="notificationContainer" />
-        <Header isAuthEnabled={false} enabledServices={enabledServices} homePath={getURLBaseName()} />
+        <Header isAuthEnabled={false} enabledServices={enabledServices} homePath="/" />
         <Box paddingTop={10}>
           <Switch>
             <Route path="/" exact>
