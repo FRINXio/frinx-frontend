@@ -14,28 +14,14 @@ export type Scalars = {
   Map: any;
 };
 
-/** Output of creating set pool */
-export type CreateSetPoolPayload = {
-  __typename?: 'CreateSetPoolPayload';
-  pool?: Maybe<ResourcePool>;
-};
-
-/** Output of creating a nested set pool */
-export type CreateNestedSetPoolPayload = {
-  __typename?: 'CreateNestedSetPoolPayload';
-  pool?: Maybe<ResourcePool>;
-};
-
-/** Output of creating a new allocation strategy */
-export type CreateAllocationStrategyPayload = {
-  __typename?: 'CreateAllocationStrategyPayload';
-  strategy?: Maybe<AllocationStrategy>;
-};
-
-/** Output of updating the name of a resource-type */
-export type UpdateResourceTypeNamePayload = {
-  __typename?: 'UpdateResourceTypeNamePayload';
-  resourceTypeId: Scalars['ID'];
+/** Represents an allocation strategy */
+export type AllocationStrategy = Node & {
+  __typename?: 'AllocationStrategy';
+  Description?: Maybe<Scalars['String']>;
+  Lang: AllocationStrategyLang;
+  Name: Scalars['String'];
+  Script: Scalars['String'];
+  id: Scalars['ID'];
 };
 
 /** Supported languages for allocation strategy scripts */
@@ -44,242 +30,53 @@ export enum AllocationStrategyLang {
   Py = 'py',
 }
 
-/** Output of creating a nested singleton pool */
-export type CreateNestedSingletonPoolPayload = {
-  __typename?: 'CreateNestedSingletonPoolPayload';
-  pool?: Maybe<ResourcePool>;
-};
-
-/** Input parameters for a call adding a tag to pool */
-export type TagPoolInput = {
-  tagId: Scalars['ID'];
-  poolId: Scalars['ID'];
-};
-
-/** Creating a new resource-type */
-export type CreateResourceTypeInput = {
-  /** name of the resource type AND property type (should they be different?) */
-  resourceName: Scalars['String'];
-  /**
-   * resourceProperties: Map! - for key "init" the value is the initial value of the property type (like 7)
-   *                          - for key "type" the value is the name of the type like "int"
-   */
-  resourceProperties: Scalars['Map'];
-};
-
-/** Convenience entity representing the identity of a pool in some calls */
-export type ResourcePoolInput = {
-  ResourcePoolName: Scalars['String'];
-  poolProperties: Scalars['Map'];
-};
-
-/** Input parameters for creating a set pool */
-export type CreateSetPoolInput = {
+/** Input parameters for creating an allocation pool */
+export type CreateAllocatingPoolInput = {
+  allocationStrategyId: Scalars['ID'];
   description?: Maybe<Scalars['String']>;
   poolDealocationSafetyPeriod: Scalars['Int'];
   poolName: Scalars['String'];
-  poolValues: Array<Scalars['Map']>;
+  poolProperties: Scalars['Map'];
+  poolPropertyTypes: Scalars['Map'];
   resourceTypeId: Scalars['ID'];
   tags?: Maybe<Array<Scalars['String']>>;
 };
 
-/** A pool is an entity that contains allocated and free resources */
-export type ResourcePool = Node & {
-  __typename?: 'ResourcePool';
-  AllocationStrategy?: Maybe<AllocationStrategy>;
-  Capacity?: Maybe<PoolCapacityPayload>;
-  Name: Scalars['String'];
-  ParentResource?: Maybe<Resource>;
-  PoolProperties: Scalars['Map'];
-  PoolType: PoolType;
-  ResourceType: ResourceType;
-  Resources: Array<Resource>;
-  Tags: Array<Tag>;
-  allocatedResources?: Maybe<ResourceConnection>;
-  id: Scalars['ID'];
+/** Output of creating an allocating pool */
+export type CreateAllocatingPoolPayload = {
+  __typename?: 'CreateAllocatingPoolPayload';
+  pool?: Maybe<ResourcePool>;
 };
 
-/** A pool is an entity that contains allocated and free resources */
-export type ResourcePoolAllocatedResourcesArgs = {
-  first?: Maybe<Scalars['Int']>;
-  last?: Maybe<Scalars['Int']>;
-  before?: Maybe<Scalars['String']>;
-  after?: Maybe<Scalars['String']>;
-};
-
-/** Input parameters for deleting an existing tag */
-export type DeleteTagInput = {
-  tagId: Scalars['ID'];
-};
-
-/** Input parameters for deleting an existing allocation strategy */
-export type DeleteAllocationStrategyInput = {
-  allocationStrategyId: Scalars['ID'];
-};
-
-/** A Relay-specific entity that holds information about the requested pagination page */
-export type ResourceEdge = {
-  __typename?: 'ResourceEdge';
-  cursor: OutputCursor;
-  node: Resource;
-};
-
-/** Input entity for deleting a pool */
-export type DeleteResourcePoolInput = {
-  resourcePoolId: Scalars['ID'];
-};
-
-export type Query = {
-  __typename?: 'Query';
-  QueryPoolCapacity: PoolCapacityPayload;
-  QueryPoolTypes: Array<PoolType>;
-  QueryResource: Resource;
-  QueryResources: Array<Resource>;
-  QueryAllocationStrategy: AllocationStrategy;
-  QueryAllocationStrategies: Array<AllocationStrategy>;
-  QueryResourceTypes: Array<ResourceType>;
-  QueryResourcePool: ResourcePool;
-  QueryResourcePools: Array<ResourcePool>;
-  QueryResourcePoolHierarchyPath: Array<ResourcePool>;
-  QueryRootResourcePools: Array<ResourcePool>;
-  QueryLeafResourcePools: Array<ResourcePool>;
-  SearchPoolsByTags: Array<ResourcePool>;
-  QueryTags: Array<Tag>;
-  node?: Maybe<Node>;
-};
-
-export type QueryQueryPoolCapacityArgs = {
-  poolId: Scalars['ID'];
-};
-
-export type QueryQueryResourceArgs = {
-  input: Scalars['Map'];
-  poolId: Scalars['ID'];
-};
-
-export type QueryQueryResourcesArgs = {
-  poolId: Scalars['ID'];
-};
-
-export type QueryQueryAllocationStrategyArgs = {
-  allocationStrategyId: Scalars['ID'];
-};
-
-export type QueryQueryAllocationStrategiesArgs = {
-  byName?: Maybe<Scalars['String']>;
-};
-
-export type QueryQueryResourceTypesArgs = {
-  byName?: Maybe<Scalars['String']>;
-};
-
-export type QueryQueryResourcePoolArgs = {
-  poolId: Scalars['ID'];
-};
-
-export type QueryQueryResourcePoolsArgs = {
-  resourceTypeId?: Maybe<Scalars['ID']>;
-  tags?: Maybe<TagOr>;
-};
-
-export type QueryQueryResourcePoolHierarchyPathArgs = {
-  poolId: Scalars['ID'];
-};
-
-export type QueryQueryRootResourcePoolsArgs = {
-  resourceTypeId?: Maybe<Scalars['ID']>;
-  tags?: Maybe<TagOr>;
-};
-
-export type QueryQueryLeafResourcePoolsArgs = {
-  resourceTypeId?: Maybe<Scalars['ID']>;
-  tags?: Maybe<TagOr>;
-};
-
-export type QuerySearchPoolsByTagsArgs = {
-  tags?: Maybe<TagOr>;
-};
-
-export type QueryNodeArgs = {
-  id: Scalars['ID'];
-};
-
-/** Input parameters for a call removing a tag from pool */
-export type UntagPoolInput = {
-  tagId: Scalars['ID'];
-  poolId: Scalars['ID'];
-};
-
-/** Represents an allocated resource */
-export type Resource = Node & {
-  __typename?: 'Resource';
-  Description?: Maybe<Scalars['String']>;
-  NestedPool?: Maybe<ResourcePool>;
-  ParentPool: ResourcePool;
-  Properties: Scalars['Map'];
-  id: Scalars['ID'];
-};
-
-/** Input parameters for creating a nested singleton pool */
-export type CreateNestedSingletonPoolInput = {
+/** Input parameters for creating a new allocation strategy */
+export type CreateAllocationStrategyInput = {
+  name: Scalars['String'];
   description?: Maybe<Scalars['String']>;
-  parentResourceId: Scalars['ID'];
-  poolName: Scalars['String'];
-  poolValues: Array<Maybe<Scalars['Map']>>;
-  resourceTypeId: Scalars['ID'];
-  tags?: Maybe<Array<Scalars['String']>>;
+  script: Scalars['String'];
+  lang: AllocationStrategyLang;
 };
 
-/** Input parameters for creating a new tag */
-export type CreateTagInput = {
-  tagText: Scalars['String'];
-};
-
-/** Output of creating a tag */
-export type CreateTagPayload = {
-  __typename?: 'CreateTagPayload';
-  tag?: Maybe<Tag>;
-};
-
-/** Output of deleting an existing allocation strategy */
-export type DeleteAllocationStrategyPayload = {
-  __typename?: 'DeleteAllocationStrategyPayload';
+/** Output of creating a new allocation strategy */
+export type CreateAllocationStrategyPayload = {
+  __typename?: 'CreateAllocationStrategyPayload';
   strategy?: Maybe<AllocationStrategy>;
 };
 
-/** Input parameters for deleting an existing resource-type */
-export type DeleteResourceTypeInput = {
+/** Input parameters for creating a nested allocation pool */
+export type CreateNestedAllocatingPoolInput = {
+  allocationStrategyId: Scalars['ID'];
+  description?: Maybe<Scalars['String']>;
+  parentResourceId: Scalars['ID'];
+  poolDealocationSafetyPeriod: Scalars['Int'];
+  poolName: Scalars['String'];
   resourceTypeId: Scalars['ID'];
+  tags?: Maybe<Array<Scalars['String']>>;
 };
 
-/** Holds information about the requested pagination page */
-export type PageInfo = {
-  __typename?: 'PageInfo';
-  endCursor: OutputCursor;
-  hasNextPage: Scalars['Boolean'];
-  hasPreviousPage: Scalars['Boolean'];
-  startCursor: OutputCursor;
-};
-
-/** Pools can be tagged for easier search */
-export type Tag = Node & {
-  __typename?: 'Tag';
-  Pools?: Maybe<Array<Maybe<ResourcePool>>>;
-  Tag: Scalars['String'];
-  id: Scalars['ID'];
-};
-
-/** Alternative representation of identity of a resource (i.e. alternative to resource ID) */
-export type ResourceInput = {
-  Properties: Scalars['Map'];
-  Status: Scalars['String'];
-  UpdatedAt: Scalars['String'];
-};
-
-/** Output entity for deleting a pool */
-export type DeleteResourcePoolPayload = {
-  __typename?: 'DeleteResourcePoolPayload';
-  resourcePoolId: Scalars['ID'];
+/** Output of creating a nested allocating pool */
+export type CreateNestedAllocatingPoolPayload = {
+  __typename?: 'CreateNestedAllocatingPoolPayload';
+  pool?: Maybe<ResourcePool>;
 };
 
 /** Input parameters for creating a nested set pool */
@@ -293,31 +90,129 @@ export type CreateNestedSetPoolInput = {
   tags?: Maybe<Array<Scalars['String']>>;
 };
 
+/** Output of creating a nested set pool */
+export type CreateNestedSetPoolPayload = {
+  __typename?: 'CreateNestedSetPoolPayload';
+  pool?: Maybe<ResourcePool>;
+};
+
+/** Input parameters for creating a nested singleton pool */
+export type CreateNestedSingletonPoolInput = {
+  description?: Maybe<Scalars['String']>;
+  parentResourceId: Scalars['ID'];
+  poolName: Scalars['String'];
+  poolValues: Array<Maybe<Scalars['Map']>>;
+  resourceTypeId: Scalars['ID'];
+  tags?: Maybe<Array<Scalars['String']>>;
+};
+
+/** Output of creating a nested singleton pool */
+export type CreateNestedSingletonPoolPayload = {
+  __typename?: 'CreateNestedSingletonPoolPayload';
+  pool?: Maybe<ResourcePool>;
+};
+
+/** Creating a new resource-type */
+export type CreateResourceTypeInput = {
+  /** name of the resource type AND property type (should they be different?) */
+  resourceName: Scalars['String'];
+  /**
+   * resourceProperties: Map! - for key "init" the value is the initial value of the property type (like 7)
+   *                          - for key "type" the value is the name of the type like "int"
+   */
+  resourceProperties: Scalars['Map'];
+};
+
 /** Output of creating a new resource-type */
 export type CreateResourceTypePayload = {
   __typename?: 'CreateResourceTypePayload';
   resourceType: ResourceType;
 };
 
-/** Describes the properties of a resource */
-export type ResourceType = Node & {
-  __typename?: 'ResourceType';
-  Name: Scalars['String'];
-  Pools: Array<ResourcePool>;
-  PropertyTypes: Array<PropertyType>;
-  id: Scalars['ID'];
+/** Input parameters for creating a set pool */
+export type CreateSetPoolInput = {
+  description?: Maybe<Scalars['String']>;
+  poolDealocationSafetyPeriod: Scalars['Int'];
+  poolName: Scalars['String'];
+  poolValues: Array<Scalars['Map']>;
+  resourceTypeId: Scalars['ID'];
+  tags?: Maybe<Array<Scalars['String']>>;
 };
 
-/** Output of creating an allocating pool */
-export type CreateAllocatingPoolPayload = {
-  __typename?: 'CreateAllocatingPoolPayload';
+/** Output of creating set pool */
+export type CreateSetPoolPayload = {
+  __typename?: 'CreateSetPoolPayload';
   pool?: Maybe<ResourcePool>;
+};
+
+/** Input parameters for creating a singleton pool */
+export type CreateSingletonPoolInput = {
+  description?: Maybe<Scalars['String']>;
+  poolName: Scalars['String'];
+  poolValues: Array<Scalars['Map']>;
+  resourceTypeId: Scalars['ID'];
+  tags?: Maybe<Array<Scalars['String']>>;
+};
+
+/** Output of creating a singleton pool */
+export type CreateSingletonPoolPayload = {
+  __typename?: 'CreateSingletonPoolPayload';
+  pool?: Maybe<ResourcePool>;
+};
+
+/** Input parameters for creating a new tag */
+export type CreateTagInput = {
+  tagText: Scalars['String'];
+};
+
+/** Output of creating a tag */
+export type CreateTagPayload = {
+  __typename?: 'CreateTagPayload';
+  tag?: Maybe<Tag>;
+};
+
+/** Input parameters for deleting an existing allocation strategy */
+export type DeleteAllocationStrategyInput = {
+  allocationStrategyId: Scalars['ID'];
+};
+
+/** Output of deleting an existing allocation strategy */
+export type DeleteAllocationStrategyPayload = {
+  __typename?: 'DeleteAllocationStrategyPayload';
+  strategy?: Maybe<AllocationStrategy>;
+};
+
+/** Input entity for deleting a pool */
+export type DeleteResourcePoolInput = {
+  resourcePoolId: Scalars['ID'];
+};
+
+/** Output entity for deleting a pool */
+export type DeleteResourcePoolPayload = {
+  __typename?: 'DeleteResourcePoolPayload';
+  resourcePoolId: Scalars['ID'];
+};
+
+/** Input parameters for deleting an existing resource-type */
+export type DeleteResourceTypeInput = {
+  resourceTypeId: Scalars['ID'];
 };
 
 /** Output of deleting a resource-type */
 export type DeleteResourceTypePayload = {
   __typename?: 'DeleteResourceTypePayload';
   resourceTypeId: Scalars['ID'];
+};
+
+/** Input parameters for deleting an existing tag */
+export type DeleteTagInput = {
+  tagId: Scalars['ID'];
+};
+
+/** Output of deleting a tag */
+export type DeleteTagPayload = {
+  __typename?: 'DeleteTagPayload';
+  tagId: Scalars['ID'];
 };
 
 export type Mutation = {
@@ -430,75 +325,6 @@ export type MutationUpdateResourceTypeNameArgs = {
   input: UpdateResourceTypeNameInput;
 };
 
-/** Output of updating a tag */
-export type UpdateTagPayload = {
-  __typename?: 'UpdateTagPayload';
-  tag?: Maybe<Tag>;
-};
-
-/** Represents an allocation strategy */
-export type AllocationStrategy = Node & {
-  __typename?: 'AllocationStrategy';
-  Description?: Maybe<Scalars['String']>;
-  Lang: AllocationStrategyLang;
-  Name: Scalars['String'];
-  Script: Scalars['String'];
-  id: Scalars['ID'];
-};
-
-/** Helper entities for tag search */
-export type TagAnd = {
-  matchesAll: Array<Scalars['String']>;
-};
-
-/** Input parameters for creating a singleton pool */
-export type CreateSingletonPoolInput = {
-  description?: Maybe<Scalars['String']>;
-  poolName: Scalars['String'];
-  poolValues: Array<Scalars['Map']>;
-  resourceTypeId: Scalars['ID'];
-  tags?: Maybe<Array<Scalars['String']>>;
-};
-
-/** Output of creating a singleton pool */
-export type CreateSingletonPoolPayload = {
-  __typename?: 'CreateSingletonPoolPayload';
-  pool?: Maybe<ResourcePool>;
-};
-
-/** Entity representing capacity of a pool */
-export type PoolCapacityPayload = {
-  __typename?: 'PoolCapacityPayload';
-  freeCapacity: Scalars['Float'];
-  utilizedCapacity: Scalars['Float'];
-};
-
-/** Output of adding a specific tag to a pool */
-export type TagPoolPayload = {
-  __typename?: 'TagPoolPayload';
-  tag?: Maybe<Tag>;
-};
-
-/** Input parameters for creating a new allocation strategy */
-export type CreateAllocationStrategyInput = {
-  name: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
-  script: Scalars['String'];
-  lang: AllocationStrategyLang;
-};
-
-/** Input parameters updating the name of a resource-type */
-export type UpdateResourceTypeNameInput = {
-  resourceTypeId: Scalars['ID'];
-  resourceName: Scalars['String'];
-};
-
-/** Output of deleting a tag */
-export type DeleteTagPayload = {
-  __typename?: 'DeleteTagPayload';
-  tagId: Scalars['ID'];
-};
-
 /** Interface for entities needed by the relay-framework */
 export type Node = {
   /** The ID of the entity */
@@ -511,39 +337,34 @@ export type OutputCursor = {
   ID: Scalars['String'];
 };
 
-/** Defines the type of pool */
-export enum PoolType {
-  Allocating = 'allocating',
-  Set = 'set',
-  Singleton = 'singleton',
-}
-
-/** Helper entities for tag search */
-export type TagOr = {
-  matchesAny: Array<TagAnd>;
+/** Entity representing capacity of a pool */
+export type PoolCapacityPayload = {
+  __typename?: 'PoolCapacityPayload';
+  freeCapacity: Scalars['Float'];
+  utilizedCapacity: Scalars['Float'];
 };
 
-/** Input parameters for creating a nested allocation pool */
-export type CreateNestedAllocatingPoolInput = {
-  allocationStrategyId: Scalars['ID'];
-  description?: Maybe<Scalars['String']>;
-  parentResourceId: Scalars['ID'];
-  poolDealocationSafetyPeriod: Scalars['Int'];
-  poolName: Scalars['String'];
-  resourceTypeId: Scalars['ID'];
-  tags?: Maybe<Array<Scalars['String']>>;
+/** A Relay-specific entity holding information about pagination */
+export type ResourceConnection = {
+  __typename?: 'ResourceConnection';
+  edges: Array<Maybe<ResourceEdge>>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int'];
 };
 
-/** Input parameters for creating an allocation pool */
-export type CreateAllocatingPoolInput = {
-  allocationStrategyId: Scalars['ID'];
-  description?: Maybe<Scalars['String']>;
-  poolDealocationSafetyPeriod: Scalars['Int'];
-  poolName: Scalars['String'];
-  poolProperties: Scalars['Map'];
-  poolPropertyTypes: Scalars['Map'];
-  resourceTypeId: Scalars['ID'];
-  tags?: Maybe<Array<Scalars['String']>>;
+/** Pools can be tagged for easier search */
+export type Tag = Node & {
+  __typename?: 'Tag';
+  Pools?: Maybe<Array<Maybe<ResourcePool>>>;
+  Tag: Scalars['String'];
+  id: Scalars['ID'];
+};
+
+/** A Relay-specific entity that holds information about the requested pagination page */
+export type ResourceEdge = {
+  __typename?: 'ResourceEdge';
+  cursor: OutputCursor;
+  node: Resource;
 };
 
 /** Defines the type of the property */
@@ -558,18 +379,70 @@ export type PropertyType = Node & {
   id: Scalars['ID'];
 };
 
-/** A Relay-specific entity holding information about pagination */
-export type ResourceConnection = {
-  __typename?: 'ResourceConnection';
-  edges: Array<Maybe<ResourceEdge>>;
-  pageInfo: PageInfo;
-  totalCount: Scalars['Int'];
+/** Output of adding a specific tag to a pool */
+export type TagPoolPayload = {
+  __typename?: 'TagPoolPayload';
+  tag?: Maybe<Tag>;
 };
 
-/** Output of creating a nested allocating pool */
-export type CreateNestedAllocatingPoolPayload = {
-  __typename?: 'CreateNestedAllocatingPoolPayload';
-  pool?: Maybe<ResourcePool>;
+/** Input parameters for a call adding a tag to pool */
+export type TagPoolInput = {
+  tagId: Scalars['ID'];
+  poolId: Scalars['ID'];
+};
+
+/** Convenience entity representing the identity of a pool in some calls */
+export type ResourcePoolInput = {
+  ResourcePoolName: Scalars['String'];
+  poolProperties: Scalars['Map'];
+};
+
+/** Represents an allocated resource */
+export type Resource = Node & {
+  __typename?: 'Resource';
+  Description?: Maybe<Scalars['String']>;
+  NestedPool?: Maybe<ResourcePool>;
+  ParentPool: ResourcePool;
+  Properties: Scalars['Map'];
+  id: Scalars['ID'];
+};
+
+/** Helper entities for tag search */
+export type TagOr = {
+  matchesAny: Array<TagAnd>;
+};
+
+/** Alternative representation of identity of a resource (i.e. alternative to resource ID) */
+export type ResourceInput = {
+  Properties: Scalars['Map'];
+  Status: Scalars['String'];
+  UpdatedAt: Scalars['String'];
+};
+
+/** Input parameters for a call removing a tag from pool */
+export type UntagPoolInput = {
+  tagId: Scalars['ID'];
+  poolId: Scalars['ID'];
+};
+
+/** Output of updating the name of a resource-type */
+export type UpdateResourceTypeNamePayload = {
+  __typename?: 'UpdateResourceTypeNamePayload';
+  resourceTypeId: Scalars['ID'];
+};
+
+/** Holds information about the requested pagination page */
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  endCursor: OutputCursor;
+  hasNextPage: Scalars['Boolean'];
+  hasPreviousPage: Scalars['Boolean'];
+  startCursor: OutputCursor;
+};
+
+/** Helper entities for tag search */
+export type TagAnd = {
+  matchesAll: Array<Scalars['String']>;
 };
 
 /** Output of removing a specific tag from a pool */
@@ -578,10 +451,137 @@ export type UntagPoolPayload = {
   tag?: Maybe<Tag>;
 };
 
+/** Defines the type of pool */
+export enum PoolType {
+  Allocating = 'allocating',
+  Set = 'set',
+  Singleton = 'singleton',
+}
+
+/** Input parameters updating the name of a resource-type */
+export type UpdateResourceTypeNameInput = {
+  resourceTypeId: Scalars['ID'];
+  resourceName: Scalars['String'];
+};
+
 /** Input parameters for updating an existing tag */
 export type UpdateTagInput = {
   tagId: Scalars['ID'];
   tagText: Scalars['String'];
+};
+
+/** A pool is an entity that contains allocated and free resources */
+export type ResourcePool = Node & {
+  __typename?: 'ResourcePool';
+  AllocationStrategy?: Maybe<AllocationStrategy>;
+  Capacity?: Maybe<PoolCapacityPayload>;
+  Name: Scalars['String'];
+  ParentResource?: Maybe<Resource>;
+  PoolProperties: Scalars['Map'];
+  PoolType: PoolType;
+  ResourceType: ResourceType;
+  Resources: Array<Resource>;
+  Tags: Array<Tag>;
+  allocatedResources?: Maybe<ResourceConnection>;
+  id: Scalars['ID'];
+};
+
+/** A pool is an entity that contains allocated and free resources */
+export type ResourcePoolAllocatedResourcesArgs = {
+  first?: Maybe<Scalars['Int']>;
+  last?: Maybe<Scalars['Int']>;
+  before?: Maybe<Scalars['String']>;
+  after?: Maybe<Scalars['String']>;
+};
+
+/** Describes the properties of a resource */
+export type ResourceType = Node & {
+  __typename?: 'ResourceType';
+  Name: Scalars['String'];
+  Pools: Array<ResourcePool>;
+  PropertyTypes: Array<PropertyType>;
+  id: Scalars['ID'];
+};
+
+/** Output of updating a tag */
+export type UpdateTagPayload = {
+  __typename?: 'UpdateTagPayload';
+  tag?: Maybe<Tag>;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  QueryPoolCapacity: PoolCapacityPayload;
+  QueryPoolTypes: Array<PoolType>;
+  QueryResource: Resource;
+  QueryResources: Array<Resource>;
+  QueryAllocationStrategy: AllocationStrategy;
+  QueryAllocationStrategies: Array<AllocationStrategy>;
+  QueryResourceTypes: Array<ResourceType>;
+  QueryResourcePool: ResourcePool;
+  QueryResourcePools: Array<ResourcePool>;
+  QueryResourcePoolHierarchyPath: Array<ResourcePool>;
+  QueryRootResourcePools: Array<ResourcePool>;
+  QueryLeafResourcePools: Array<ResourcePool>;
+  SearchPoolsByTags: Array<ResourcePool>;
+  QueryTags: Array<Tag>;
+  node?: Maybe<Node>;
+};
+
+export type QueryQueryPoolCapacityArgs = {
+  poolId: Scalars['ID'];
+};
+
+export type QueryQueryResourceArgs = {
+  input: Scalars['Map'];
+  poolId: Scalars['ID'];
+};
+
+export type QueryQueryResourcesArgs = {
+  poolId: Scalars['ID'];
+};
+
+export type QueryQueryAllocationStrategyArgs = {
+  allocationStrategyId: Scalars['ID'];
+};
+
+export type QueryQueryAllocationStrategiesArgs = {
+  byName?: Maybe<Scalars['String']>;
+};
+
+export type QueryQueryResourceTypesArgs = {
+  byName?: Maybe<Scalars['String']>;
+};
+
+export type QueryQueryResourcePoolArgs = {
+  poolId: Scalars['ID'];
+};
+
+export type QueryQueryResourcePoolsArgs = {
+  resourceTypeId?: Maybe<Scalars['ID']>;
+  tags?: Maybe<TagOr>;
+};
+
+export type QueryQueryResourcePoolHierarchyPathArgs = {
+  poolId: Scalars['ID'];
+};
+
+export type QueryQueryRootResourcePoolsArgs = {
+  resourceTypeId?: Maybe<Scalars['ID']>;
+  tags?: Maybe<TagOr>;
+};
+
+export type QueryQueryLeafResourcePoolsArgs = {
+  resourceTypeId?: Maybe<Scalars['ID']>;
+  tags?: Maybe<TagOr>;
+};
+
+export type QuerySearchPoolsByTagsArgs = {
+  tags?: Maybe<TagOr>;
+};
+
+export type QueryNodeArgs = {
+  id: Scalars['ID'];
 };
 
 import { IntrospectionQuery } from 'graphql';
@@ -597,661 +597,7 @@ export default ({
     types: [
       {
         kind: 'OBJECT',
-        name: 'CreateSetPoolPayload',
-        fields: [
-          {
-            name: 'pool',
-            type: {
-              kind: 'OBJECT',
-              name: 'ResourcePool',
-            },
-            args: [],
-          },
-        ],
-        interfaces: [],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'CreateNestedSetPoolPayload',
-        fields: [
-          {
-            name: 'pool',
-            type: {
-              kind: 'OBJECT',
-              name: 'ResourcePool',
-            },
-            args: [],
-          },
-        ],
-        interfaces: [],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'CreateAllocationStrategyPayload',
-        fields: [
-          {
-            name: 'strategy',
-            type: {
-              kind: 'OBJECT',
-              name: 'AllocationStrategy',
-            },
-            args: [],
-          },
-        ],
-        interfaces: [],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'UpdateResourceTypeNamePayload',
-        fields: [
-          {
-            name: 'resourceTypeId',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
-            },
-            args: [],
-          },
-        ],
-        interfaces: [],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'CreateNestedSingletonPoolPayload',
-        fields: [
-          {
-            name: 'pool',
-            type: {
-              kind: 'OBJECT',
-              name: 'ResourcePool',
-            },
-            args: [],
-          },
-        ],
-        interfaces: [],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'ResourcePool',
-        fields: [
-          {
-            name: 'AllocationStrategy',
-            type: {
-              kind: 'OBJECT',
-              name: 'AllocationStrategy',
-            },
-            args: [],
-          },
-          {
-            name: 'Capacity',
-            type: {
-              kind: 'OBJECT',
-              name: 'PoolCapacityPayload',
-            },
-            args: [],
-          },
-          {
-            name: 'Name',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'ParentResource',
-            type: {
-              kind: 'OBJECT',
-              name: 'Resource',
-            },
-            args: [],
-          },
-          {
-            name: 'PoolProperties',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'PoolType',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'ResourceType',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'ResourceType',
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'Resources',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'OBJECT',
-                    name: 'Resource',
-                  },
-                },
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'Tags',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'OBJECT',
-                    name: 'Tag',
-                  },
-                },
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'allocatedResources',
-            type: {
-              kind: 'OBJECT',
-              name: 'ResourceConnection',
-            },
-            args: [
-              {
-                name: 'first',
-                type: {
-                  kind: 'SCALAR',
-                  name: 'Any',
-                },
-              },
-              {
-                name: 'last',
-                type: {
-                  kind: 'SCALAR',
-                  name: 'Any',
-                },
-              },
-              {
-                name: 'before',
-                type: {
-                  kind: 'SCALAR',
-                  name: 'Any',
-                },
-              },
-              {
-                name: 'after',
-                type: {
-                  kind: 'SCALAR',
-                  name: 'Any',
-                },
-              },
-            ],
-          },
-          {
-            name: 'id',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
-            },
-            args: [],
-          },
-        ],
-        interfaces: [
-          {
-            kind: 'INTERFACE',
-            name: 'Node',
-          },
-        ],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'ResourceEdge',
-        fields: [
-          {
-            name: 'cursor',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'OutputCursor',
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'node',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'Resource',
-              },
-            },
-            args: [],
-          },
-        ],
-        interfaces: [],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'Query',
-        fields: [
-          {
-            name: 'QueryPoolCapacity',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'PoolCapacityPayload',
-              },
-            },
-            args: [
-              {
-                name: 'poolId',
-                type: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-            ],
-          },
-          {
-            name: 'QueryPoolTypes',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'QueryResource',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'Resource',
-              },
-            },
-            args: [
-              {
-                name: 'input',
-                type: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-              {
-                name: 'poolId',
-                type: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-            ],
-          },
-          {
-            name: 'QueryResources',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'OBJECT',
-                    name: 'Resource',
-                  },
-                },
-              },
-            },
-            args: [
-              {
-                name: 'poolId',
-                type: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-            ],
-          },
-          {
-            name: 'QueryAllocationStrategy',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'AllocationStrategy',
-              },
-            },
-            args: [
-              {
-                name: 'allocationStrategyId',
-                type: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-            ],
-          },
-          {
-            name: 'QueryAllocationStrategies',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'OBJECT',
-                    name: 'AllocationStrategy',
-                  },
-                },
-              },
-            },
-            args: [
-              {
-                name: 'byName',
-                type: {
-                  kind: 'SCALAR',
-                  name: 'Any',
-                },
-              },
-            ],
-          },
-          {
-            name: 'QueryResourceTypes',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'OBJECT',
-                    name: 'ResourceType',
-                  },
-                },
-              },
-            },
-            args: [
-              {
-                name: 'byName',
-                type: {
-                  kind: 'SCALAR',
-                  name: 'Any',
-                },
-              },
-            ],
-          },
-          {
-            name: 'QueryResourcePool',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'ResourcePool',
-              },
-            },
-            args: [
-              {
-                name: 'poolId',
-                type: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-            ],
-          },
-          {
-            name: 'QueryResourcePools',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'OBJECT',
-                    name: 'ResourcePool',
-                  },
-                },
-              },
-            },
-            args: [
-              {
-                name: 'resourceTypeId',
-                type: {
-                  kind: 'SCALAR',
-                  name: 'Any',
-                },
-              },
-              {
-                name: 'tags',
-                type: {
-                  kind: 'SCALAR',
-                  name: 'Any',
-                },
-              },
-            ],
-          },
-          {
-            name: 'QueryResourcePoolHierarchyPath',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'OBJECT',
-                    name: 'ResourcePool',
-                  },
-                },
-              },
-            },
-            args: [
-              {
-                name: 'poolId',
-                type: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-            ],
-          },
-          {
-            name: 'QueryRootResourcePools',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'OBJECT',
-                    name: 'ResourcePool',
-                  },
-                },
-              },
-            },
-            args: [
-              {
-                name: 'resourceTypeId',
-                type: {
-                  kind: 'SCALAR',
-                  name: 'Any',
-                },
-              },
-              {
-                name: 'tags',
-                type: {
-                  kind: 'SCALAR',
-                  name: 'Any',
-                },
-              },
-            ],
-          },
-          {
-            name: 'QueryLeafResourcePools',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'OBJECT',
-                    name: 'ResourcePool',
-                  },
-                },
-              },
-            },
-            args: [
-              {
-                name: 'resourceTypeId',
-                type: {
-                  kind: 'SCALAR',
-                  name: 'Any',
-                },
-              },
-              {
-                name: 'tags',
-                type: {
-                  kind: 'SCALAR',
-                  name: 'Any',
-                },
-              },
-            ],
-          },
-          {
-            name: 'SearchPoolsByTags',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'OBJECT',
-                    name: 'ResourcePool',
-                  },
-                },
-              },
-            },
-            args: [
-              {
-                name: 'tags',
-                type: {
-                  kind: 'SCALAR',
-                  name: 'Any',
-                },
-              },
-            ],
-          },
-          {
-            name: 'QueryTags',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'OBJECT',
-                    name: 'Tag',
-                  },
-                },
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'node',
-            type: {
-              kind: 'INTERFACE',
-              name: 'Node',
-            },
-            args: [
-              {
-                name: 'id',
-                type: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'SCALAR',
-                    name: 'Any',
-                  },
-                },
-              },
-            ],
-          },
-        ],
-        interfaces: [],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'Resource',
+        name: 'AllocationStrategy',
         fields: [
           {
             name: 'Description',
@@ -1262,26 +608,7 @@ export default ({
             args: [],
           },
           {
-            name: 'NestedPool',
-            type: {
-              kind: 'OBJECT',
-              name: 'ResourcePool',
-            },
-            args: [],
-          },
-          {
-            name: 'ParentPool',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'ResourcePool',
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'Properties',
+            name: 'Lang',
             type: {
               kind: 'NON_NULL',
               ofType: {
@@ -1291,191 +618,6 @@ export default ({
             },
             args: [],
           },
-          {
-            name: 'id',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
-            },
-            args: [],
-          },
-        ],
-        interfaces: [
-          {
-            kind: 'INTERFACE',
-            name: 'Node',
-          },
-        ],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'CreateTagPayload',
-        fields: [
-          {
-            name: 'tag',
-            type: {
-              kind: 'OBJECT',
-              name: 'Tag',
-            },
-            args: [],
-          },
-        ],
-        interfaces: [],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'DeleteAllocationStrategyPayload',
-        fields: [
-          {
-            name: 'strategy',
-            type: {
-              kind: 'OBJECT',
-              name: 'AllocationStrategy',
-            },
-            args: [],
-          },
-        ],
-        interfaces: [],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'PageInfo',
-        fields: [
-          {
-            name: 'endCursor',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'OutputCursor',
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'hasNextPage',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'hasPreviousPage',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'startCursor',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'OutputCursor',
-              },
-            },
-            args: [],
-          },
-        ],
-        interfaces: [],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'Tag',
-        fields: [
-          {
-            name: 'Pools',
-            type: {
-              kind: 'LIST',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'ResourcePool',
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'Tag',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'id',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
-            },
-            args: [],
-          },
-        ],
-        interfaces: [
-          {
-            kind: 'INTERFACE',
-            name: 'Node',
-          },
-        ],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'DeleteResourcePoolPayload',
-        fields: [
-          {
-            name: 'resourcePoolId',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
-            },
-            args: [],
-          },
-        ],
-        interfaces: [],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'CreateResourceTypePayload',
-        fields: [
-          {
-            name: 'resourceType',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'OBJECT',
-                name: 'ResourceType',
-              },
-            },
-            args: [],
-          },
-        ],
-        interfaces: [],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'ResourceType',
-        fields: [
           {
             name: 'Name',
             type: {
@@ -1488,35 +630,12 @@ export default ({
             args: [],
           },
           {
-            name: 'Pools',
+            name: 'Script',
             type: {
               kind: 'NON_NULL',
               ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'OBJECT',
-                    name: 'ResourcePool',
-                  },
-                },
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'PropertyTypes',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'NON_NULL',
-                  ofType: {
-                    kind: 'OBJECT',
-                    name: 'PropertyType',
-                  },
-                },
+                kind: 'SCALAR',
+                name: 'Any',
               },
             },
             args: [],
@@ -1557,10 +676,184 @@ export default ({
       },
       {
         kind: 'OBJECT',
+        name: 'CreateAllocationStrategyPayload',
+        fields: [
+          {
+            name: 'strategy',
+            type: {
+              kind: 'OBJECT',
+              name: 'AllocationStrategy',
+            },
+            args: [],
+          },
+        ],
+        interfaces: [],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'CreateNestedAllocatingPoolPayload',
+        fields: [
+          {
+            name: 'pool',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourcePool',
+            },
+            args: [],
+          },
+        ],
+        interfaces: [],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'CreateNestedSetPoolPayload',
+        fields: [
+          {
+            name: 'pool',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourcePool',
+            },
+            args: [],
+          },
+        ],
+        interfaces: [],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'CreateNestedSingletonPoolPayload',
+        fields: [
+          {
+            name: 'pool',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourcePool',
+            },
+            args: [],
+          },
+        ],
+        interfaces: [],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'CreateResourceTypePayload',
+        fields: [
+          {
+            name: 'resourceType',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'ResourceType',
+              },
+            },
+            args: [],
+          },
+        ],
+        interfaces: [],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'CreateSetPoolPayload',
+        fields: [
+          {
+            name: 'pool',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourcePool',
+            },
+            args: [],
+          },
+        ],
+        interfaces: [],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'CreateSingletonPoolPayload',
+        fields: [
+          {
+            name: 'pool',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourcePool',
+            },
+            args: [],
+          },
+        ],
+        interfaces: [],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'CreateTagPayload',
+        fields: [
+          {
+            name: 'tag',
+            type: {
+              kind: 'OBJECT',
+              name: 'Tag',
+            },
+            args: [],
+          },
+        ],
+        interfaces: [],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'DeleteAllocationStrategyPayload',
+        fields: [
+          {
+            name: 'strategy',
+            type: {
+              kind: 'OBJECT',
+              name: 'AllocationStrategy',
+            },
+            args: [],
+          },
+        ],
+        interfaces: [],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'DeleteResourcePoolPayload',
+        fields: [
+          {
+            name: 'resourcePoolId',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
+            },
+            args: [],
+          },
+        ],
+        interfaces: [],
+      },
+      {
+        kind: 'OBJECT',
         name: 'DeleteResourceTypePayload',
         fields: [
           {
             name: 'resourceTypeId',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
+            },
+            args: [],
+          },
+        ],
+        interfaces: [],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'DeleteTagPayload',
+        fields: [
+          {
+            name: 'tagId',
             type: {
               kind: 'NON_NULL',
               ofType: {
@@ -2072,65 +1365,9 @@ export default ({
         interfaces: [],
       },
       {
-        kind: 'OBJECT',
-        name: 'UpdateTagPayload',
+        kind: 'INTERFACE',
+        name: 'Node',
         fields: [
-          {
-            name: 'tag',
-            type: {
-              kind: 'OBJECT',
-              name: 'Tag',
-            },
-            args: [],
-          },
-        ],
-        interfaces: [],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'AllocationStrategy',
-        fields: [
-          {
-            name: 'Description',
-            type: {
-              kind: 'SCALAR',
-              name: 'Any',
-            },
-            args: [],
-          },
-          {
-            name: 'Lang',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'Name',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
-            },
-            args: [],
-          },
-          {
-            name: 'Script',
-            type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
-              },
-            },
-            args: [],
-          },
           {
             name: 'id',
             type: {
@@ -2143,22 +1380,46 @@ export default ({
             args: [],
           },
         ],
-        interfaces: [
+        interfaces: [],
+        possibleTypes: [
           {
-            kind: 'INTERFACE',
-            name: 'Node',
+            kind: 'OBJECT',
+            name: 'AllocationStrategy',
+          },
+          {
+            kind: 'OBJECT',
+            name: 'Tag',
+          },
+          {
+            kind: 'OBJECT',
+            name: 'PropertyType',
+          },
+          {
+            kind: 'OBJECT',
+            name: 'Resource',
+          },
+          {
+            kind: 'OBJECT',
+            name: 'ResourcePool',
+          },
+          {
+            kind: 'OBJECT',
+            name: 'ResourceType',
           },
         ],
       },
       {
         kind: 'OBJECT',
-        name: 'CreateSingletonPoolPayload',
+        name: 'OutputCursor',
         fields: [
           {
-            name: 'pool',
+            name: 'ID',
             type: {
-              kind: 'OBJECT',
-              name: 'ResourcePool',
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
             },
             args: [],
           },
@@ -2196,25 +1457,35 @@ export default ({
       },
       {
         kind: 'OBJECT',
-        name: 'TagPoolPayload',
+        name: 'ResourceConnection',
         fields: [
           {
-            name: 'tag',
+            name: 'edges',
             type: {
-              kind: 'OBJECT',
-              name: 'Tag',
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'OBJECT',
+                  name: 'ResourceEdge',
+                },
+              },
             },
             args: [],
           },
-        ],
-        interfaces: [],
-      },
-      {
-        kind: 'OBJECT',
-        name: 'DeleteTagPayload',
-        fields: [
           {
-            name: 'tagId',
+            name: 'pageInfo',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'PageInfo',
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'totalCount',
             type: {
               kind: 'NON_NULL',
               ofType: {
@@ -2228,9 +1499,31 @@ export default ({
         interfaces: [],
       },
       {
-        kind: 'INTERFACE',
-        name: 'Node',
+        kind: 'OBJECT',
+        name: 'Tag',
         fields: [
+          {
+            name: 'Pools',
+            type: {
+              kind: 'LIST',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'ResourcePool',
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'Tag',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
+            },
+            args: [],
+          },
           {
             name: 'id',
             type: {
@@ -2243,45 +1536,35 @@ export default ({
             args: [],
           },
         ],
-        interfaces: [],
-        possibleTypes: [
+        interfaces: [
           {
-            kind: 'OBJECT',
-            name: 'ResourcePool',
-          },
-          {
-            kind: 'OBJECT',
-            name: 'Resource',
-          },
-          {
-            kind: 'OBJECT',
-            name: 'Tag',
-          },
-          {
-            kind: 'OBJECT',
-            name: 'ResourceType',
-          },
-          {
-            kind: 'OBJECT',
-            name: 'AllocationStrategy',
-          },
-          {
-            kind: 'OBJECT',
-            name: 'PropertyType',
+            kind: 'INTERFACE',
+            name: 'Node',
           },
         ],
       },
       {
         kind: 'OBJECT',
-        name: 'OutputCursor',
+        name: 'ResourceEdge',
         fields: [
           {
-            name: 'ID',
+            name: 'cursor',
             type: {
               kind: 'NON_NULL',
               ofType: {
-                kind: 'SCALAR',
-                name: 'Any',
+                kind: 'OBJECT',
+                name: 'OutputCursor',
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'node',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'Resource',
               },
             },
             args: [],
@@ -2380,35 +1663,86 @@ export default ({
       },
       {
         kind: 'OBJECT',
-        name: 'ResourceConnection',
+        name: 'TagPoolPayload',
         fields: [
           {
-            name: 'edges',
+            name: 'tag',
             type: {
-              kind: 'NON_NULL',
-              ofType: {
-                kind: 'LIST',
-                ofType: {
-                  kind: 'OBJECT',
-                  name: 'ResourceEdge',
-                },
-              },
+              kind: 'OBJECT',
+              name: 'Tag',
+            },
+            args: [],
+          },
+        ],
+        interfaces: [],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'Resource',
+        fields: [
+          {
+            name: 'Description',
+            type: {
+              kind: 'SCALAR',
+              name: 'Any',
             },
             args: [],
           },
           {
-            name: 'pageInfo',
+            name: 'NestedPool',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourcePool',
+            },
+            args: [],
+          },
+          {
+            name: 'ParentPool',
             type: {
               kind: 'NON_NULL',
               ofType: {
                 kind: 'OBJECT',
-                name: 'PageInfo',
+                name: 'ResourcePool',
               },
             },
             args: [],
           },
           {
-            name: 'totalCount',
+            name: 'Properties',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'id',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
+            },
+            args: [],
+          },
+        ],
+        interfaces: [
+          {
+            kind: 'INTERFACE',
+            name: 'Node',
+          },
+        ],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'UpdateResourceTypeNamePayload',
+        fields: [
+          {
+            name: 'resourceTypeId',
             type: {
               kind: 'NON_NULL',
               ofType: {
@@ -2423,13 +1757,49 @@ export default ({
       },
       {
         kind: 'OBJECT',
-        name: 'CreateNestedAllocatingPoolPayload',
+        name: 'PageInfo',
         fields: [
           {
-            name: 'pool',
+            name: 'endCursor',
             type: {
-              kind: 'OBJECT',
-              name: 'ResourcePool',
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'OutputCursor',
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'hasNextPage',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'hasPreviousPage',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'startCursor',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'OutputCursor',
+              },
             },
             args: [],
           },
@@ -2447,6 +1817,636 @@ export default ({
               name: 'Tag',
             },
             args: [],
+          },
+        ],
+        interfaces: [],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'ResourcePool',
+        fields: [
+          {
+            name: 'AllocationStrategy',
+            type: {
+              kind: 'OBJECT',
+              name: 'AllocationStrategy',
+            },
+            args: [],
+          },
+          {
+            name: 'Capacity',
+            type: {
+              kind: 'OBJECT',
+              name: 'PoolCapacityPayload',
+            },
+            args: [],
+          },
+          {
+            name: 'Name',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'ParentResource',
+            type: {
+              kind: 'OBJECT',
+              name: 'Resource',
+            },
+            args: [],
+          },
+          {
+            name: 'PoolProperties',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'PoolType',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'ResourceType',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'ResourceType',
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'Resources',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'Resource',
+                  },
+                },
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'Tags',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'Tag',
+                  },
+                },
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'allocatedResources',
+            type: {
+              kind: 'OBJECT',
+              name: 'ResourceConnection',
+            },
+            args: [
+              {
+                name: 'first',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+              {
+                name: 'last',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+              {
+                name: 'before',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+              {
+                name: 'after',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
+          },
+          {
+            name: 'id',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
+            },
+            args: [],
+          },
+        ],
+        interfaces: [
+          {
+            kind: 'INTERFACE',
+            name: 'Node',
+          },
+        ],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'ResourceType',
+        fields: [
+          {
+            name: 'Name',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'Pools',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'ResourcePool',
+                  },
+                },
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'PropertyTypes',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'PropertyType',
+                  },
+                },
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'id',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'SCALAR',
+                name: 'Any',
+              },
+            },
+            args: [],
+          },
+        ],
+        interfaces: [
+          {
+            kind: 'INTERFACE',
+            name: 'Node',
+          },
+        ],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'UpdateTagPayload',
+        fields: [
+          {
+            name: 'tag',
+            type: {
+              kind: 'OBJECT',
+              name: 'Tag',
+            },
+            args: [],
+          },
+        ],
+        interfaces: [],
+      },
+      {
+        kind: 'OBJECT',
+        name: 'Query',
+        fields: [
+          {
+            name: 'QueryPoolCapacity',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'PoolCapacityPayload',
+              },
+            },
+            args: [
+              {
+                name: 'poolId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
+          },
+          {
+            name: 'QueryPoolTypes',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'QueryResource',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'Resource',
+              },
+            },
+            args: [
+              {
+                name: 'input',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+              {
+                name: 'poolId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
+          },
+          {
+            name: 'QueryResources',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'Resource',
+                  },
+                },
+              },
+            },
+            args: [
+              {
+                name: 'poolId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
+          },
+          {
+            name: 'QueryAllocationStrategy',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'AllocationStrategy',
+              },
+            },
+            args: [
+              {
+                name: 'allocationStrategyId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
+          },
+          {
+            name: 'QueryAllocationStrategies',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'AllocationStrategy',
+                  },
+                },
+              },
+            },
+            args: [
+              {
+                name: 'byName',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
+          },
+          {
+            name: 'QueryResourceTypes',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'ResourceType',
+                  },
+                },
+              },
+            },
+            args: [
+              {
+                name: 'byName',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
+          },
+          {
+            name: 'QueryResourcePool',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'OBJECT',
+                name: 'ResourcePool',
+              },
+            },
+            args: [
+              {
+                name: 'poolId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
+          },
+          {
+            name: 'QueryResourcePools',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'ResourcePool',
+                  },
+                },
+              },
+            },
+            args: [
+              {
+                name: 'resourceTypeId',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+              {
+                name: 'tags',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
+          },
+          {
+            name: 'QueryResourcePoolHierarchyPath',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'ResourcePool',
+                  },
+                },
+              },
+            },
+            args: [
+              {
+                name: 'poolId',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
+          },
+          {
+            name: 'QueryRootResourcePools',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'ResourcePool',
+                  },
+                },
+              },
+            },
+            args: [
+              {
+                name: 'resourceTypeId',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+              {
+                name: 'tags',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
+          },
+          {
+            name: 'QueryLeafResourcePools',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'ResourcePool',
+                  },
+                },
+              },
+            },
+            args: [
+              {
+                name: 'resourceTypeId',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+              {
+                name: 'tags',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
+          },
+          {
+            name: 'SearchPoolsByTags',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'ResourcePool',
+                  },
+                },
+              },
+            },
+            args: [
+              {
+                name: 'tags',
+                type: {
+                  kind: 'SCALAR',
+                  name: 'Any',
+                },
+              },
+            ],
+          },
+          {
+            name: 'QueryTags',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'LIST',
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'OBJECT',
+                    name: 'Tag',
+                  },
+                },
+              },
+            },
+            args: [],
+          },
+          {
+            name: 'node',
+            type: {
+              kind: 'INTERFACE',
+              name: 'Node',
+            },
+            args: [
+              {
+                name: 'id',
+                type: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: 'SCALAR',
+                    name: 'Any',
+                  },
+                },
+              },
+            ],
           },
         ],
         interfaces: [],

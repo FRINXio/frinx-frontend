@@ -3,7 +3,7 @@ import { createClient, Provider } from 'urql';
 import React, { FC } from 'react';
 
 const client = createClient({
-  url: 'http://10.19.0.7/resourcemanager/graphql/query',
+  url: 'http://10.19.0.7/api/uniresource/query',
 });
 
 type Props = { children: React.ReactNode };
