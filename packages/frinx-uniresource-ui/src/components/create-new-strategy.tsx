@@ -1,6 +1,11 @@
 import React, { FC, useState } from 'react';
 import { useMutation } from 'urql';
 import { Button, Input } from '@chakra-ui/react';
+import {
+  AllocationStrategyLang,
+  CreateAllocationStrategyPayload,
+  MutationCreateAllocationStrategyArgs,
+} from '../generated/graphql';
 
 const query = `
     mutation AddStrategyMutation($input: CreateAllocationStrategyInput!) {
@@ -16,14 +21,16 @@ const query = `
 `;
 
 const CreateNewStrategy: FC = () => {
-  const [result, addStrategy] = useMutation(query);
+  const [result, addStrategy] = useMutation<CreateAllocationStrategyPayload, MutationCreateAllocationStrategyArgs>(
+    query,
+  );
   const [value, setValue] = useState('');
 
   const sendMutation = () => {
     const variables = {
       input: {
         name: value,
-        lang: 'js',
+        lang: AllocationStrategyLang.Js,
         script:
           'function invoke() {log(JSON.stringify({respool: resourcePool.ResourcePoolName, currentRes: currentResources}));return {vlan: userInput.desiredVlan};}',
       },

@@ -1,34 +1,32 @@
 import React, { FC, useState } from 'react';
 import { useMutation } from 'urql';
 import { Button, Input } from '@chakra-ui/react';
-import { DeleteAllocationStrategyInput, DeleteAllocationStrategyPayload } from '../generated/graphql';
+import { DeleteResourcePoolInput, DeleteResourcePoolPayload } from '../generated/graphql';
 
 const query = `
-    mutation DeleteStrategyMutation($input: DeleteAllocationStrategyInput!) {
-        DeleteAllocationStrategy(input: $input) {
-          strategy {
-            id
-          }
+    mutation DeletePoolMutation($input: DeleteResourcePoolInput!) {
+        DeleteResourcePool(input: $input) {
+          resourcePoolId
         }
-  }
+      }
 `;
 
-const DeleteStrategy: FC = () => {
-  const [result, addStrategy] = useMutation<DeleteAllocationStrategyPayload, DeleteAllocationStrategyInput>(query);
+const DeletePool: FC = () => {
+  const [result, addStrategy] = useMutation<DeleteResourcePoolPayload, DeleteResourcePoolInput>(query);
   const [value, setValue] = useState('');
 
   const sendMutation = () => {
     // wrong types from schema
     const variables = {
       input: {
-        allocationStrategyId: value,
+        resourcePoolId: value,
       },
     };
     addStrategy(variables);
   };
   return (
     <div>
-      Strategy id
+      Pool id
       <Input
         value={value}
         onChange={(event) => {
@@ -41,4 +39,4 @@ const DeleteStrategy: FC = () => {
   );
 };
 
-export default DeleteStrategy;
+export default DeletePool;
