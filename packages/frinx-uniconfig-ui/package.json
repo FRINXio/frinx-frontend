@@ -16,6 +16,7 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "codemirror": "^5.56.0",
     "lodash": "^4.17.20",
+    "react-codemirror2": "^7.2.1",
     "react-diff-viewer": "^3.1.1"
   },
   "scripts": {
@@ -36,9 +37,9 @@
   ],
   "devDependencies": {
     "@babel/core": "^7.12.10",
+    "@babel/eslint-parser": "^7.13.10",
     "@babel/preset-flow": "^7.12.1",
     "@babel/preset-react": "^7.12.10",
-    "@babel/eslint-parser": "^7.13.10",
     "@chakra-ui/icons": "^1.0.3",
     "@chakra-ui/react": "^1.1.5",
     "@emotion/react": "^11.1.4",
