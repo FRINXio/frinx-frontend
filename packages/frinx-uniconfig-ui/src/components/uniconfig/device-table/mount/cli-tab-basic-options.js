@@ -229,211 +229,52 @@ const CliTab = ({ supportedDevices, templateNode }) => {
     },
   ];
 
-  const mountCliAdvTemplate = [
-    {
-      displayValue: 'Reconcile',
-      toggle: true,
-      key: 'node-extension:reconcile',
-      size: 4,
-    },
-    {
-      displayValue: 'Dry run',
-      toggle: true,
-      key: 'dryRun',
-      size: 4,
-      on: [
-        {
-          displayValue: 'Dry run journal size',
-          key: 'cli-topology:dry-run-journal-size',
-        },
-      ],
-      off: [],
-    },
-    {
-      displayValue: 'Lazy connection',
-      toggle: true,
-      key: 'lazyConnection',
-      size: 4,
-      on: [
-        {
-          displayValue: 'Command timeout',
-          key: 'cli-topology:command-timeout',
-        },
-        {
-          displayValue: 'Connection lazy timeout',
-          key: 'cli-topology:connection-lazy-timeout',
-        },
-        {
-          displayValue: 'Connection establish timeout',
-          key: 'cli-topology:connection-establish-timeout',
-        },
-      ],
-      off: [
-        {
-          displayValue: 'Keepalive delay',
-          key: 'cli-topology:keepalive-delay',
-        },
-        {
-          displayValue: 'Keepalive timeout',
-          key: 'cli-topology:keepalive-timeout',
-        },
-      ],
-    },
-    {
-      displayValue: 'Journal size',
-      key: 'cli-topology:journal-size',
-      size: 4,
-    },
-  ];
-
-  const renderBasicOptions = () =>
-    mountCliBasicTemplate.map(({ displayValue, description, size, select, options, key }) => {
-      return (
-        <GridItem key={displayValue} colSpan={size}>
-          {select ? (
-            <FormControl>
-              <FormLabel>{displayValue}</FormLabel>
-              <Select
-                placeholder={cliMountForm[key]}
-                value={cliMountForm[key]}
-                onChange={(e) => setCliMountForm((prev) => ({ ...prev, [key]: e.target.value }))}
-              >
-                {options?.map((o) => (
-                  <option key={`option-${o}`} value={o}>
-                    {o}
-                  </option>
-                ))}
-              </Select>
-              <FormHelperText>{description}</FormHelperText>
-            </FormControl>
-          ) : (
-            <FormControl>
-              <FormLabel>{displayValue}</FormLabel>
-              <InputGroup>
-                <Input
-                  value={cliMountForm[key]}
-                  type={displayValue === 'Password' && !showPassword ? 'password' : 'text'}
-                  onChange={(e) => setCliMountForm((prev) => ({ ...prev, [key]: e.target.value }))}
-                  placeholder={displayValue}
-                />
-                {displayValue === 'Password' && (
-                  <InputRightElement width="4.5rem">
-                    <Button h="1.75rem" size="sm" onClick={() => setShowPassword(!showPassword)}>
-                      {showPassword ? 'Hide' : 'Show'}
-                    </Button>
-                  </InputRightElement>
-                )}
-              </InputGroup>
-              <FormHelperText>{description}</FormHelperText>
-            </FormControl>
-          )}
-        </GridItem>
-      );
-    });
-
-  const renderToggles = () =>
-    mountCliAdvTemplate.map(({ displayValue, toggle, key, size }) => {
-      if (toggle) {
+  return (
+    <>
+      {mountCliBasicTemplate.map(({ displayValue, description, size, select, options, key }) => {
         return (
           <GridItem key={displayValue} colSpan={size}>
-            <FormControl display="flex" alignItems="center">
-              <FormLabel mb="0">{displayValue}</FormLabel>
-              <Switch
-                isChecked={cliMountAdvForm[key]}
-                onChange={(e) =>
-                  setCliMountAdvForm({
-                    ...cliMountAdvForm,
-                    [key]: e.target.checked,
-                  })
-                }
-              />
-            </FormControl>
+            {select ? (
+              <FormControl>
+                <FormLabel>{displayValue}</FormLabel>
+                <Select
+                  placeholder={cliMountForm[key]}
+                  value={cliMountForm[key]}
+                  onChange={(e) => setCliMountForm((prev) => ({ ...prev, [key]: e.target.value }))}
+                >
+                  {options?.map((o) => (
+                    <option key={`option-${o}`} value={o}>
+                      {o}
+                    </option>
+                  ))}
+                </Select>
+                <FormHelperText>{description}</FormHelperText>
+              </FormControl>
+            ) : (
+              <FormControl>
+                <FormLabel>{displayValue}</FormLabel>
+                <InputGroup>
+                  <Input
+                    value={cliMountForm[key]}
+                    type={displayValue === 'Password' && !showPassword ? 'password' : 'text'}
+                    onChange={(e) => setCliMountForm((prev) => ({ ...prev, [key]: e.target.value }))}
+                    placeholder={displayValue}
+                  />
+                  {displayValue === 'Password' && (
+                    <InputRightElement width="4.5rem">
+                      <Button h="1.75rem" size="sm" onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? 'Hide' : 'Show'}
+                      </Button>
+                    </InputRightElement>
+                  )}
+                </InputGroup>
+                <FormHelperText>{description}</FormHelperText>
+              </FormControl>
+            )}
           </GridItem>
         );
-      }
-    });
-
-  const renderAdvOptions = () =>
-    mountCliAdvTemplate.map(({ displayValue, description, size, key, toggle, on, off }) => {
-      // if field is type toggle, render its on/off subfields
-      if (toggle) {
-        return (cliMountAdvForm[key] ? on : off)?.map(({ displayValue, key }) => (
-          <GridItem key={displayValue} colSpan={size}>
-            <FormControl>
-              <FormLabel>{displayValue}</FormLabel>
-              <Input
-                value={cliMountAdvForm[key]}
-                onChange={(e) =>
-                  setCliMountAdvForm({
-                    ...cliMountAdvForm,
-                    [key]: e.target.value,
-                  })
-                }
-                placeholder={displayValue}
-              />
-              <FormHelperText>{description}</FormHelperText>
-            </FormControl>
-          </GridItem>
-        ));
-      }
-      return (
-        <GridItem key={displayValue} colSpan={size}>
-          <FormControl>
-            <FormLabel>{displayValue}</FormLabel>
-            <Input
-              value={cliMountAdvForm[key]}
-              onChange={(e) =>
-                setCliMountAdvForm({
-                  ...cliMountAdvForm,
-                  [key]: e.target.value,
-                })
-              }
-              placeholder={displayValue}
-            />
-            <FormHelperText>{description}</FormHelperText>
-          </FormControl>
-        </GridItem>
-      );
-    });
-
-  return (
-    <form onSubmit={mountCliDevice}>
-      <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={4}>
-        {renderBasicOptions()}
-      </Grid>
-      <Accordion allowToggle mt={8} mb={8}>
-        <AccordionItem>
-          <AccordionButton>
-            <Box flex="1" textAlign="left">
-              Advanced Settings
-            </Box>
-            <AccordionIcon />
-          </AccordionButton>
-          <AccordionPanel pb={4}>
-            <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={4}>
-              {renderToggles()}
-              {renderAdvOptions()}
-            </Grid>
-          </AccordionPanel>
-        </AccordionItem>
-        <AccordionItem>
-          <AccordionButton>
-            <Box flex="1" textAlign="left">
-              Output
-            </Box>
-            <AccordionIcon />
-          </AccordionButton>
-          <AccordionPanel pb={4}>
-            <Console outputConsole={outputConsole} />
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
-      <Stack direction="row" justify="flex-end">
-        <Button colorScheme="blue" type="submit">
-          Mount
-        </Button>
-      </Stack>
-    </form>
+      })}
+    </>
   );
 };
 

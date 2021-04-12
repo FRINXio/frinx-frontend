@@ -1,11 +1,11 @@
 // @flow
+import React, { useEffect, useState } from 'react';
 import DefinitionModal from './DefinitonModal/DefinitionModal';
 import DependencyModal from './DependencyModal/DependencyModal';
 import DiagramModal from './DiagramModal/DiagramModal';
 import InputModal from './InputModal/input-modal';
 import PageContainer from '../../../common/PageContainer';
 import PaginationPages from '../../../common/Pagination';
-import React, { useEffect, useState } from 'react';
 import SchedulingModal from '../Scheduling/SchedulingModal/SchedulingModal';
 import WfAutoComplete from '../../../common/wf-autocomplete';
 import WfLabels from '../../../common/wf-labels';
@@ -61,6 +61,8 @@ import {
 import { faStar as faStarOutlined } from '@fortawesome/free-regular-svg-icons';
 import { jsonParse } from '../../../common/utils';
 import { usePagination } from '../../../common/PaginationHook';
+import WorkflowActions from './workflow-actions';
+import WorkflowDefinitionsHeader from './workflow-definitions-header';
 
 const getLabels = (dataset) => {
   const labelsArr = dataset.map(({ description }) => {
@@ -74,6 +76,32 @@ const getLabels = (dataset) => {
     .sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
 };
 
+const Labels = (props: { wf: Workflow, labels: string[], onClick: (label: string) => void }) => {
+  const { wf, labels, onClick } = props;
+  const { name, description } = wf;
+  const labelsDef = jsonParse(description)?.labels || [];
+
+  return labelsDef.map((label, i) => {
+    const index = labels.findIndex((lab) => lab === label);
+    return (
+      <WfLabels
+        key={`${name}-${i}`}
+        label={label}
+        index={index}
+        onClick={() => {
+          onClick(label);
+        }}
+      />
+    );
+  });
+};
+
+type Workflow = {
+  name: string,
+  version: number,
+  description: string,
+  hasSchedule: boolean,
+};
 type Props = {
   onDefinitionClick: (name: string, version: string) => void,
   onWorkflowIdClick: (wfId: string) => void,
@@ -93,6 +121,8 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const [workflowListViewModal, setWorkflowListViewModal] = useState(false);
   const [allLabels, setAllLabels] = useState([]);
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
+
+  console.log({ labels });
 
   useEffect(() => {
     getData();
@@ -187,140 +217,12 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     });
   };
 
-  const createLabels = ({ name, description }) => {
-    const labelsDef = jsonParse(description)?.labels || [];
-
-    return labelsDef.map((label, i) => {
-      const index = allLabels.findIndex((lab) => lab === label);
-      return <WfLabels key={`${name}-${i}`} label={label} index={index} search={() => setLabels([...labels, label])} />;
-    });
-  };
-
   const deleteWorkflow = (workflow) => {
     const deleteWorkflow = callbackUtils.deleteWorkflowCallback();
 
     deleteWorkflow(workflow?.name, workflow?.version).then(() => {
       getData();
       setConfirmDeleteModal(false);
-    });
-  };
-
-  const repeatButtons = (dataset) => {
-    return (
-      <Td textAlign="center">
-        <Stack direction="row" spacing={1} justify="center">
-          <IconButton
-            colorScheme="red"
-            isRound
-            variant="outline"
-            onClick={() => showConfirmDeleteModal(dataset)}
-            title="Delete"
-            icon={<Icon as={FontAwesomeIcon} icon={faTrash} />}
-          />
-          <IconButton
-            colorScheme="gray"
-            isRound
-            variant="outline"
-            title="Favourites"
-            icon={
-              <Icon
-                as={FontAwesomeIcon}
-                icon={jsonParse(dataset?.description)?.labels?.includes('FAVOURITE') ? faStar : faStarOutlined}
-              />
-            }
-            onClick={() => updateFavourite(dataset)}
-          />
-          <IconButton
-            colorScheme="gray"
-            isRound
-            variant="outline"
-            title="Diagram"
-            icon={<Icon as={FontAwesomeIcon} icon={faCodeBranch} />}
-            onClick={() => showDiagramModal(dataset)}
-          />
-          <IconButton
-            colorScheme="gray"
-            isRound
-            variant="outline"
-            title="Definition"
-            icon={<Icon as={FontAwesomeIcon} icon={faFileCode} />}
-            onClick={() => showDefinitionModal(dataset)}
-          />
-          <IconButton
-            colorScheme="gray"
-            isRound
-            variant="outline"
-            title="Workflow List"
-            icon={<Icon as={FontAwesomeIcon} icon={faListUl} />}
-            onClick={() => showWorkflowListViewModal(dataset)}
-          />
-          <IconButton
-            colorScheme="gray"
-            isRound
-            variant="outline"
-            title="Edit"
-            icon={<Icon as={FontAwesomeIcon} icon={faEdit} />}
-            onClick={() => {
-              onDefinitionClick(dataset.name, dataset.version);
-            }}
-          />
-          <IconButton
-            colorScheme="gray"
-            isRound
-            variant="outline"
-            title={dataset.hasSchedule ? 'Edit schedule' : 'Create schedule'}
-            icon={<Icon as={FontAwesomeIcon} icon={faClock} />}
-            onClick={() => showSchedulingModal(dataset)}
-          />
-          <IconButton
-            colorScheme="blue"
-            isRound
-            title="Execute"
-            icon={<Icon as={FontAwesomeIcon} icon={faPlay} />}
-            onClick={() => showInputModal(dataset)}
-          />
-        </Stack>
-      </Td>
-    );
-  };
-
-  const filteredRows = () => {
-    return pageItems.map((e) => {
-      return (
-        <Tr key={`${e.name}-${e.version}`}>
-          <Td>
-            <Heading as="h6" size="xs">
-              {e.name} / {e.version}
-            </Heading>
-            <Text>
-              {jsonParse(e.description)?.description ||
-                (jsonParse(e.description)?.description !== '' && e.description) ||
-                'no description'}
-            </Text>
-          </Td>
-          <Td>{createLabels(e)}</Td>
-          <Td width={2} textAlign="center">
-            <Popover trigger="hover">
-              <PopoverTrigger>
-                <Button size="sm" disabled={getDependencies(e).length === 0} onClick={() => showDependencyModal(e)}>
-                  {getDependencies(e).length + ' '} Tree{' '}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent>
-                <PopoverArrow />
-                <PopoverCloseButton />
-                <PopoverHeader>Used directly in following workflows:</PopoverHeader>
-                <PopoverBody>
-                  {getDependencies(e).usedInWfs.map((wf) => (
-                    <p key={wf.name}>{wf.name}</p>
-                  ))}
-                </PopoverBody>
-              </PopoverContent>
-            </Popover>
-          </Td>
-          {repeatButtons(e)}
-        </Tr>
-      );
     });
   };
 
@@ -464,42 +366,96 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
       {renderSchedulingModal()}
       {renderConfirmDeleteModal()}
       {renderWorkflowListViewModal()}
-      <Grid templateColumns="40px 1fr 1fr" gap={4} marginBottom={8}>
-        <IconButton
-          colorScheme="blue"
-          height={9}
-          width={9}
-          onClick={() => searchFavourites()}
-          title="Favourites"
-          icon={<Icon as={FontAwesomeIcon} icon={labels.includes('FAVOURITE') ? faStar : faStarOutlined} />}
-        />
-        <Box>
-          <WfAutoComplete options={allLabels} onChange={setLabels} selected={labels} placeholder="Search by label." />
-        </Box>
-        <Box>
-          <InputGroup marginBottom={0}>
-            <InputLeftElement>
-              <Icon as={FontAwesomeIcon} icon={faSearch} color="grey" />
-            </InputLeftElement>
-            <Input
-              value={keywords}
-              onChange={(e) => setKeywords(e.target.value)}
-              placeholder="Search by keyword."
-              background="white"
-            />
-          </InputGroup>
-        </Box>
-      </Grid>
+      <WorkflowDefinitionsHeader allLabels={allLabels} />
       <Table background="white">
         <Thead>
           <Tr>
             <Th>Name/Version</Th>
             <Th>Labels</Th>
-            <Th textAlign="center">Included in</Th>
-            <Th textAlign="center">Actions</Th>
+            <Th>Included in</Th>
+            <Th>Actions</Th>
           </Tr>
         </Thead>
-        <Tbody>{filteredRows()}</Tbody>
+        <Tbody>
+          {pageItems.map((e) => {
+            return (
+              <Tr key={`${e.name}-${e.version}`} role="group">
+                <Td width={540}>
+                  <Heading as="h6" size="xs" marginBottom={1}>
+                    {e.name} / {e.version}
+                  </Heading>
+                  <Text fontStyle="italic" color="gray.600">
+                    {jsonParse(e.description)?.description ||
+                      (jsonParse(e.description)?.description !== '' && e.description) ||
+                      'no description'}
+                  </Text>
+                </Td>
+                <Td width={64}>
+                  <Labels
+                    labels={allLabels}
+                    wf={e}
+                    onClick={(label) => {
+                      setLabels((ls) => [...ls, label]);
+                    }}
+                  />
+                </Td>
+                <Td width={36}>
+                  <Popover trigger="hover">
+                    <PopoverTrigger>
+                      <Button
+                        size="sm"
+                        disabled={getDependencies(e).length === 0}
+                        onClick={() => showDependencyModal(e)}
+                      >
+                        {getDependencies(e).length + ' '} Tree{' '}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverHeader>Used directly in following workflows:</PopoverHeader>
+                      <PopoverBody>
+                        {getDependencies(e).usedInWfs.map((wf) => (
+                          <p key={wf.name}>{wf.name}</p>
+                        ))}
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
+                </Td>
+                <Td>
+                  <WorkflowActions
+                    isFavourite={jsonParse(e.description)?.labels?.includes('FAVOURITE') ?? false}
+                    hasSchedule={e.hasSchedule}
+                    onDeleteBtnClick={() => {
+                      showConfirmDeleteModal(e);
+                    }}
+                    onFavouriteBtnClick={() => {
+                      updateFavourite(e);
+                    }}
+                    onDiagramBtnClick={() => {
+                      showDiagramModal(e);
+                    }}
+                    onDefinitionBtnClick={() => {
+                      showDefinitionModal(e);
+                    }}
+                    onListBtnClick={() => {
+                      showWorkflowListViewModal(e);
+                    }}
+                    onEditBtnClick={() => {
+                      onDefinitionClick(e.name, e.version);
+                    }}
+                    onScheduleBtnClick={() => {
+                      showSchedulingModal(e);
+                    }}
+                    onExecuteBtnClick={() => {
+                      showInputModal(e);
+                    }}
+                  />
+                </Td>
+              </Tr>
+            );
+          })}
+        </Tbody>
         <Tfoot>
           <Tr>
             <Th>
