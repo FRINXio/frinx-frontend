@@ -38,14 +38,14 @@ const NestedPoolsList: FC = () => {
   };
 
   const NestedPool = ({ pool }: NestedPoolProps) => {
-    console.log(pool);
     const { id, Name, Resources } = pool;
-    // console.log(pool, Name, pool.pool.Name);
     return (
       <div>
         {Name} : {id}
         {Resources?.map((resource: Resource) => (
-          <Box key={resource.id} marginLeft={15}>{resource.NestedPool ? <NestedPool pool={resource.NestedPool} /> : null}</Box>
+          <Box key={resource.id} marginLeft={15}>
+            {resource.NestedPool ? <NestedPool pool={resource.NestedPool} /> : null}
+          </Box>
         ))}
       </div>
     );
@@ -62,7 +62,9 @@ const NestedPoolsList: FC = () => {
             {pool.Name} : {pool.id}
             {pool.Resources.length}
             {pool.Resources.map((resource: Resource) => (
-              <Box key={resource.id} marginLeft={15}>{resource.NestedPool ? <NestedPool pool={resource.NestedPool} /> : null}</Box>
+              <Box key={resource.id} marginLeft={15}>
+                {resource.NestedPool ? <NestedPool pool={resource.NestedPool} /> : null}
+              </Box>
             ))}
           </li>
         ))}
