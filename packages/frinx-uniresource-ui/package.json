@@ -14,7 +14,8 @@
     "type-check": "tsc --noEmit",
     "formatter:check": "prettier -l '**/*.ts' '**/*.tsx' '**/*.js' '**/*.jsx' '**/*.json' '**/*.md'",
     "formatter": "prettier --write '**/*.ts' '**/*.tsx' '**/*.js' '**/*.jsx' '**/*.json' '**/*.md'",
-    "codegen": "graphql-codegen --config codegen.yml"
+    "codegen": "graphql-codegen --config codegen.yml",
+    "codegen:clean": "rm -r src/__generated__"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",

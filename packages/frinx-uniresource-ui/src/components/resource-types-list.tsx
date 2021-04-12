@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { useQuery } from 'urql';
-import { ResourceType } from '../generated/graphql';
+import { Query } from '../__generated__/graphql';
 import CreateNewResourceType from './create-new-resource-type';
 import DeleteResourceType from './delete-resource-type';
 
@@ -21,7 +21,7 @@ const query = `query ResourceTypesQuery {
 `;
 
 const ResourceTypesList: FC = () => {
-  const [result] = useQuery({
+  const [result] = useQuery<Query>({
     query,
   });
 
@@ -32,7 +32,7 @@ const ResourceTypesList: FC = () => {
       <CreateNewResourceType />
       <DeleteResourceType />
       <ul>
-        {data?.QueryResourceTypes?.map((rt: ResourceType) => (
+        {data?.QueryResourceTypes?.map((rt) => (
           <li key={rt.id}>
             {rt.Name} : {rt.id}
           </li>

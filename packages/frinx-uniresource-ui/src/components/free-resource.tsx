@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { useMutation } from 'urql';
 import { Button } from '@chakra-ui/react';
-import { MutationFreeResourceArgs } from '../generated/graphql';
+import { MutationFreeResourceArgs } from '../__generated__/graphql';
 
 const query = `
     mutation FreeResourceMutation($poolId: ID!, $input: Map!) {

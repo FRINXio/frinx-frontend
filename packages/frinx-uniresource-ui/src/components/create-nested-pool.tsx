@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { useMutation } from 'urql';
 import { Button } from '@chakra-ui/react';
-import { CreateNestedSetPoolInput, CreateNestedSetPoolPayload } from '../generated/graphql';
+import { CreateNestedSetPoolPayload, MutationCreateNestedSetPoolArgs } from '../__generated__/graphql';
 
 const query = `
     mutation CreateNestedPoolMutation($input: CreateNestedSetPoolInput!) {
@@ -14,10 +14,9 @@ const query = `
 `;
 
 const CreateNestedPool: FC = () => {
-  const [result, addStrategy] = useMutation<CreateNestedSetPoolPayload, CreateNestedSetPoolInput>(query);
+  const [result, addStrategy] = useMutation<CreateNestedSetPoolPayload, MutationCreateNestedSetPoolArgs>(query);
 
   const sendMutation = () => {
-    // wrong types from schema
     const variables = {
       input: {
         parentResourceId: '17179869200',

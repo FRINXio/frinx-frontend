@@ -1,7 +1,8 @@
 import React, { FC } from 'react';
 import { useQuery } from 'urql';
 import { Box } from '@chakra-ui/react';
-import { Resource, ResourcePool } from '../generated/graphql';
+import { Query, Resource } from '../__generated__/graphql';
+import NestedPool from './nested-pool';
 
 const query = `query QueryAllPools {
     QueryRootResourcePools {
@@ -29,35 +30,19 @@ const query = `query QueryAllPools {
 }`;
 
 const NestedPoolsList: FC = () => {
-  const [result] = useQuery({
+  const [result] = useQuery<Query>({
     query,
   });
 
-  type NestedPoolProps = {
-    pool: ResourcePool;
-  };
-
-  const NestedPool = ({ pool }: NestedPoolProps) => {
-    const { id, Name, Resources } = pool;
-    return (
-      <div>
-        {Name} : {id}
-        {Resources?.map((resource: Resource) => (
-          <Box key={resource.id} marginLeft={15}>
-            {resource.NestedPool ? <NestedPool pool={resource.NestedPool} /> : null}
-          </Box>
-        ))}
-      </div>
-    );
-  };
-
   const { data } = result;
+
+  console.log(result);
 
   return (
     <div>
       NESTED
       <ul>
-        {data?.QueryRootResourcePools?.map((pool: ResourcePool) => (
+        {data?.QueryRootResourcePools?.map((pool) => (
           <li key={pool.id}>
             {pool.Name} : {pool.id}
             {pool.Resources.length}
