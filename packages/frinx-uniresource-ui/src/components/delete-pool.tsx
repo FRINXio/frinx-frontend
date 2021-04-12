@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import { useMutation } from 'urql';
 import { Button, Input } from '@chakra-ui/react';
-import { DeleteResourcePoolInput, DeleteResourcePoolPayload } from '../generated/graphql';
+import { DeleteResourcePoolPayload, MutationDeleteResourcePoolArgs } from '../__generated__/graphql';
 
 const query = `
     mutation DeletePoolMutation($input: DeleteResourcePoolInput!) {
@@ -12,11 +12,10 @@ const query = `
 `;
 
 const DeletePool: FC = () => {
-  const [result, addStrategy] = useMutation<DeleteResourcePoolPayload, DeleteResourcePoolInput>(query);
+  const [result, addStrategy] = useMutation<DeleteResourcePoolPayload, MutationDeleteResourcePoolArgs>(query);
   const [value, setValue] = useState('');
 
   const sendMutation = () => {
-    // wrong types from schema
     const variables = {
       input: {
         resourcePoolId: value,

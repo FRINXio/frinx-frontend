@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { useQuery } from 'urql';
-import { ResourcePool } from '../generated/graphql';
+import { Query } from '../__generated__/graphql';
 import DeletePool from './delete-pool';
 import ClaimResource from './claim-resource';
 import FreeResource from './free-resource';
@@ -33,7 +33,7 @@ const query = `query QueryAllPools {
 }`;
 
 const PoolsList: FC = () => {
-  const [result] = useQuery({
+  const [result] = useQuery<Query>({
     query,
   });
 
@@ -46,7 +46,7 @@ const PoolsList: FC = () => {
       <FreeResource />
       <CreateNestedPool />
       <ul>
-        {data?.QueryResourcePools?.map((pool: ResourcePool) => (
+        {data?.QueryResourcePools?.map((pool) => (
           <li key={pool.id}>
             {pool.Name} : {pool.PoolType.toString()} : {pool.id}
           </li>

@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { useQuery } from 'urql';
-import { AllocationStrategy } from '../generated/graphql';
 import CreateNewStrategy from './create-new-strategy';
 import DeleteStrategy from './delete-strategy';
+import { Query } from '../__generated__/graphql';
 
 const query = `query QueryAllocationStrategies {
     QueryAllocationStrategies{
@@ -13,7 +13,7 @@ const query = `query QueryAllocationStrategies {
 }`;
 
 const StrategiesList: FC = () => {
-  const [result] = useQuery({
+  const [result] = useQuery<Query>({
     query,
   });
 
@@ -28,7 +28,7 @@ const StrategiesList: FC = () => {
         <DeleteStrategy />
       </div>
       <ul>
-        {data?.QueryAllocationStrategies?.map((strategy: AllocationStrategy) => (
+        {data?.QueryAllocationStrategies?.map((strategy) => (
           <li key={strategy.id}>
             {strategy.Name} + {strategy.Lang}
           </li>

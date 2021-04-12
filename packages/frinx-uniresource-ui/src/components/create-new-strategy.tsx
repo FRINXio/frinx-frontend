@@ -5,7 +5,7 @@ import {
   AllocationStrategyLang,
   CreateAllocationStrategyPayload,
   MutationCreateAllocationStrategyArgs,
-} from '../generated/graphql';
+} from '../__generated__/graphql';
 
 const query = `
     mutation AddStrategyMutation($input: CreateAllocationStrategyInput!) {

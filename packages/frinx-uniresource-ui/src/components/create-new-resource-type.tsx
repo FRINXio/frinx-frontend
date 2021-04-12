@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import { useMutation } from 'urql';
 import { Button, Input } from '@chakra-ui/react';
-import { CreateResourceTypeInput, CreateResourceTypePayload } from '../generated/graphql';
+import { CreateResourceTypePayload, MutationCreateResourceTypeArgs } from '../__generated__/graphql';
 
 const query = `
     mutation AddResourceTypeMutation($input: CreateResourceTypeInput!) {
@@ -14,14 +14,14 @@ const query = `
 `;
 
 const CreateNewResourceType: FC = () => {
-  const [result, addStrategy] = useMutation<CreateResourceTypePayload, CreateResourceTypeInput>(query);
+  const [result, addStrategy] = useMutation<CreateResourceTypePayload, MutationCreateResourceTypeArgs>(query);
   const [value, setValue] = useState('');
 
   const sendMutation = () => {
     const variables = {
       input: {
         resourceName: value,
-        resourceProperties: new Map([]),
+        resourceProperties: {},
       },
     };
     addStrategy(variables);
