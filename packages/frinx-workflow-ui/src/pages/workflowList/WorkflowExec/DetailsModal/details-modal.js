@@ -4,6 +4,7 @@ import Clipboard from 'clipboard';
 import React, { Component } from 'react';
 import TaskModal from '../../../../common/TaskModal';
 import UnescapeButton from '../../../../common/UnescapeButton';
+import Highlight from 'react-highlight.js';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../../../utils/callbackUtils';
 import moment from 'moment';
@@ -24,6 +25,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  SimpleGrid,
   Tab,
   TabList,
   TabPanel,
@@ -35,7 +37,11 @@ import {
   Th,
   Thead,
   Tr,
+  IconButton,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
+import { CopyIcon } from '@chakra-ui/icons';
 
 new Clipboard('.clp');
 
@@ -328,48 +334,53 @@ class DetailsModal extends Component {
     );
 
     const inputOutput = () => (
-      <Flex justifyContent="space-between">
+      <SimpleGrid columns={2} spacing={4}>
         <Box>
-          <h4>
-            Workflow Input&nbsp;&nbsp;
-            <i title="copy to clipboard" className="clp far fa-clipboard clickable" data-clipboard-target="#wfinput" />
-            &nbsp;&nbsp;
+          <Stack direction="row" spacing={2} align="center" mb={2}>
+            <Text as="b" fontSize="sm">
+              Workflow Input
+            </Text>
+            <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#wfinput" />
             <UnescapeButton size="sm" target="wfinput" />
-          </h4>
-          <code>
-            <pre id="wfinput" className="heightWrapper">
+          </Stack>
+          <Highlight language="json" id="wfinput">
+            <pre id="wfinput" style={{ minHeight: '200px' }}>
               {JSON.stringify(this.state.result.input, null, 2)}
             </pre>
-          </code>
+          </Highlight>
         </Box>
         <Box>
-          <h4>
-            Workflow Output&nbsp;&nbsp;
-            <i title="copy to clipboard" className="clp far fa-clipboard clickable" data-clipboard-target="#wfoutput" />
-            &nbsp;&nbsp;
+          <Stack direction="row" spacing={2} align="center" mb={2}>
+            <Text as="b" fontSize="sm">
+              Workflow Output
+            </Text>
+            <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#wfoutput" />
             <UnescapeButton size="sm" target="wfoutput" />
-          </h4>
-          <code>
-            <pre id="wfoutput" className="heightWrapper">
+          </Stack>
+          <Highlight language="json">
+            <pre id="wfoutput" style={{ minHeight: '200px' }}>
               {JSON.stringify(this.state.result.output, null, 2)}
             </pre>
-          </code>
+          </Highlight>
         </Box>
-      </Flex>
+      </SimpleGrid>
     );
 
     const wfJson = () => (
-      <div>
-        <h4>
-          Workflow JSON&nbsp;&nbsp;
-          <i title="copy to clipboard" className="clp far fa-clipboard clickable" data-clipboard-target="#json" />
-        </h4>
-        <code>
-          <pre id="json" className="heightWrapper" style={{ backgroundColor: '#eaeef3' }}>
+      <Box>
+        <Stack direction="row" spacing={2} align="center" mb={2}>
+          <Text as="b" fontSize="sm">
+            Workflow JSON
+          </Text>
+          <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#json" />
+          <UnescapeButton size="sm" target="wfoutput" />
+        </Stack>
+        <Highlight language="json">
+          <pre id="json" style={{ minHeight: '200px' }}>
             {JSON.stringify(this.state.result, null, 2)}
           </pre>
-        </code>
-      </div>
+        </Highlight>
+      </Box>
     );
 
     const editRerun = () => {
@@ -454,11 +465,10 @@ class DetailsModal extends Component {
                   <TabPanel>{inputOutput()}</TabPanel>
                   <TabPanel>{wfJson()}</TabPanel>
                   <TabPanel>
-                    <h4>
-                      Edit & Rerun Workflow&nbsp;&nbsp;
-                      <i className="clp far fa-play-circle" />
-                    </h4>
-                    <Box padding={12}>
+                    <Text as="b" fontSize="sm">
+                      Edit & Rerun Workflow
+                    </Text>
+                    <Box>
                       <form>
                         <Grid gridTemplateColumns="1fr 1fr" gap={4}>
                           {editRerun()}
