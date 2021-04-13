@@ -1,23 +1,24 @@
 import React, { FC, useState } from 'react';
 import { useMutation } from 'urql';
 import { Button, Input } from '@chakra-ui/react';
+import gql from 'graphql-tag';
 import {
   AllocationStrategyLang,
   CreateAllocationStrategyPayload,
   MutationCreateAllocationStrategyArgs,
 } from '../__generated__/graphql';
 
-const query = `
-    mutation AddStrategyMutation($input: CreateAllocationStrategyInput!) {
-        CreateAllocationStrategy(input: $input) {
-            strategy {
-                id
-                Name
-                Lang
-                Script
-            }
-        }
+const query = gql`
+  mutation AddStrategyMutation($input: CreateAllocationStrategyInput!) {
+    CreateAllocationStrategy(input: $input) {
+      strategy {
+        id
+        Name
+        Lang
+        Script
+      }
     }
+  }
 `;
 
 const CreateNewStrategy: FC = () => {

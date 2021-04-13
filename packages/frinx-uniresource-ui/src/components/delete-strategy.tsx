@@ -1,15 +1,16 @@
 import React, { FC, useState } from 'react';
 import { useMutation } from 'urql';
 import { Button, Input } from '@chakra-ui/react';
+import gql from 'graphql-tag';
 import { DeleteAllocationStrategyPayload, MutationDeleteAllocationStrategyArgs } from '../__generated__/graphql';
 
-const query = `
-    mutation DeleteStrategyMutation($input: DeleteAllocationStrategyInput!) {
-        DeleteAllocationStrategy(input: $input) {
-          strategy {
-            id
-          }
-        }
+const query = gql`
+  mutation DeleteStrategyMutation($input: DeleteAllocationStrategyInput!) {
+    DeleteAllocationStrategy(input: $input) {
+      strategy {
+        id
+      }
+    }
   }
 `;
 

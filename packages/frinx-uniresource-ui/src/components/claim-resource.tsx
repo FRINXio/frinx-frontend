@@ -1,14 +1,15 @@
 import React, { FC } from 'react';
 import { useMutation } from 'urql';
 import { Button } from '@chakra-ui/react';
+import gql from 'graphql-tag';
 import { MutationClaimResourceArgs, Resource } from '../__generated__/graphql';
 
-const query = `
-    mutation ClaimResourceMutation($poolId: ID!, $description: String, $userInput: Map!) {
-        ClaimResource(poolId: $poolId, description: $description, userInput: $userInput) {
-          id
-        }
-      }
+const query = gql`
+  mutation ClaimResourceMutation($poolId: ID!, $description: String, $userInput: Map!) {
+    ClaimResource(poolId: $poolId, description: $description, userInput: $userInput) {
+      id
+    }
+  }
 `;
 
 const ClaimResource: FC = () => {

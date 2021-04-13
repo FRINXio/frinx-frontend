@@ -1,15 +1,15 @@
 import React, { FC, useState } from 'react';
-import { useMutation } from 'urql';
+import { gql, useMutation } from 'urql';
 import { Button, Input } from '@chakra-ui/react';
 import { CreateResourceTypePayload, MutationCreateResourceTypeArgs } from '../__generated__/graphql';
 
-const query = `
-    mutation AddResourceTypeMutation($input: CreateResourceTypeInput!) {
-        CreateResourceType(input: $input) {
-          resourceType {
-            Name
-          }
-        }
+const query = gql`
+  mutation AddResourceTypeMutation($input: CreateResourceTypeInput!) {
+    CreateResourceType(input: $input) {
+      resourceType {
+        Name
+      }
+    }
   }
 `;
 

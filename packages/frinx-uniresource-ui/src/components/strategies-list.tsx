@@ -1,19 +1,22 @@
 import React, { FC } from 'react';
 import { useQuery } from 'urql';
+import gql from 'graphql-tag';
 import CreateNewStrategy from './create-new-strategy';
 import DeleteStrategy from './delete-strategy';
-import { Query } from '../__generated__/graphql';
+import { QueryAllocationStrategiesQuery } from '../__generated__/graphql';
 
-const query = `query QueryAllocationStrategies {
-    QueryAllocationStrategies{
-       id
-       Name
-       Lang
+const query = gql`
+  query QueryAllocationStrategies {
+    QueryAllocationStrategies {
+      id
+      Name
+      Lang
     }
-}`;
+  }
+`;
 
 const StrategiesList: FC = () => {
-  const [result] = useQuery<Query>({
+  const [result] = useQuery<QueryAllocationStrategiesQuery>({
     query,
   });
 

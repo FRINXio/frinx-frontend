@@ -1,11 +1,16 @@
 overwrite: true
-schema: "http://10.19.0.7/api/uniresource/query"
+schema: 'http://10.19.0.7/api/uniresource/query'
+documents:
+  - './src/**/*.tsx'
+  - './src/**/*.ts'
 generates:
   src/__generated__/graphql.ts:
     plugins:
-      - "typescript"
-      - "typescript-urql"
-      - "urql-introspection"
-  src/__generated__/graphql.schema.json:
-    plugins:
-      - "introspection"
+      - 'typescript'
+      - 'typescript-operations'
+    config:
+      enumsAsTypes: true
+      avoidOptionals:
+        field: true
+        object: false
+        inputValue: false

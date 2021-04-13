@@ -1,10 +1,12 @@
+import gql from 'graphql-tag';
 import React, { FC } from 'react';
 import { useQuery } from 'urql';
-import { Query } from '../__generated__/graphql';
+import { ResourceTypesQueryQueryVariables } from '../__generated__/graphql';
 import CreateNewResourceType from './create-new-resource-type';
 import DeleteResourceType from './delete-resource-type';
 
-const query = `query ResourceTypesQuery {
+const query = gql`
+  query ResourceTypesQuery {
     QueryResourceTypes {
       id
       Name
@@ -21,7 +23,7 @@ const query = `query ResourceTypesQuery {
 `;
 
 const ResourceTypesList: FC = () => {
-  const [result] = useQuery<Query>({
+  const [result] = useQuery<ResourceTypesQueryQueryVariables>({
     query,
   });
 
