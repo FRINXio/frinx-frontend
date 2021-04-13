@@ -38,9 +38,11 @@ const CliTab = ({ supportedDevices, templateNode }) => {
   const [cliMountAdvForm, setCliMountAdvForm] = useState({
     dryRun: false,
     lazyConnection: false,
+    privilegedMode: false,
     'node-extension:reconcile': true,
     'cli-topology:journal-size': 150,
     'cli-topology:dry-run-journal-size': 150,
+    'cli-topology:secret': 'cisco',
     'cli-topology:command-timeout': 60,
     'cli-topology:connection-lazy-timeout': 60,
     'cli-topology:connection-establish-timeout': 60,
@@ -50,6 +52,7 @@ const CliTab = ({ supportedDevices, templateNode }) => {
   const [nodeId, setNodeId] = useState();
   const [outputConsole, setOutputConsole] = useState({ output: [], isRunning: false });
   const [showPassword, setShowPassword] = useState(false);
+  const [showSecret, setShowSecret] = useState(false);
   const toast = useToast();
 
   useEffect(() => {
@@ -85,6 +88,7 @@ const CliTab = ({ supportedDevices, templateNode }) => {
       ...cliMountAdvForm,
       dryRun: !!state['cli-topology:dry-run-journal-size'],
       lazyConnection: !!state['cli-topology:command-timeout'],
+      privilegedMode: !!state['cli-topology:secret'],
       ...state,
     });
   };
@@ -109,6 +113,10 @@ const CliTab = ({ supportedDevices, templateNode }) => {
       'cli-topology:dry-run-journal-size': parseInt(cliMountAdvForm['cli-topology:dry-run-journal-size']),
     };
 
+    const privilegedModeOn = {
+      'cli-topology:secret': cliMountAdvForm['cli-topology:secret'],
+    };
+
     const lazyConnectionOn = {
       'cli-topology:command-timeout': parseInt(cliMountAdvForm['cli-topology:command-timeout']),
       'cli-topology:connection-lazy-timeout': parseInt(cliMountAdvForm['cli-topology:connection-lazy-timeout']),
@@ -131,6 +139,7 @@ const CliTab = ({ supportedDevices, templateNode }) => {
           'cli-topology:dry-run-journal-size': parseInt(cliMountAdvForm['cli-topology:dry-run-journal-size']),
           ...(cliMountAdvForm.dryRun ? dryRunOn : null),
           ...(cliMountAdvForm.lazyConnection ? lazyConnectionOn : lazyConnectionOff),
+          ...(cliMountAdvForm.privilegedMode ? privilegedModeOn : null),
         },
       ],
     };
@@ -240,7 +249,23 @@ const CliTab = ({ supportedDevices, templateNode }) => {
       on: [
         {
           displayValue: 'Dry run journal size',
+          description:
+            'Creates dry-run mountpoint and defines number of commands in command history for dry-run mountpoint',
           key: 'cli-topology:dry-run-journal-size',
+        },
+      ],
+      off: [],
+    },
+    {
+      displayValue: 'Privileged mode',
+      toggle: true,
+      key: 'privilegedMode',
+      size: 4,
+      on: [
+        {
+          displayValue: 'Secret',
+          description: 'Used for entering privileged mode on cisco devices',
+          key: 'cli-topology:secret',
         },
       ],
       off: [],
@@ -253,30 +278,36 @@ const CliTab = ({ supportedDevices, templateNode }) => {
       on: [
         {
           displayValue: 'Command timeout',
+          description: 'Maximal time (in seconds) for command execution',
           key: 'cli-topology:command-timeout',
         },
         {
           displayValue: 'Connection lazy timeout',
+          description: 'Maximal time (in seconds) for connection to keep alive',
           key: 'cli-topology:connection-lazy-timeout',
         },
         {
           displayValue: 'Connection establish timeout',
+          description: 'Maximal time (in seconds) for connection establishment',
           key: 'cli-topology:connection-establish-timeout',
         },
       ],
       off: [
         {
           displayValue: 'Keepalive delay',
+          description: 'Delay (in seconds) between sending of keepalive messages over CLI session',
           key: 'cli-topology:keepalive-delay',
         },
         {
           displayValue: 'Keepalive timeout',
+          description: 'Close connection if keepalive response is not received within specified seconds',
           key: 'cli-topology:keepalive-timeout',
         },
       ],
     },
     {
       displayValue: 'Journal size',
+      description: 'Number of commands in command history',
       key: 'cli-topology:journal-size',
       size: 4,
     },
@@ -328,7 +359,7 @@ const CliTab = ({ supportedDevices, templateNode }) => {
       if (toggle) {
         return (
           <GridItem key={displayValue} colSpan={size}>
-            <FormControl display="flex" alignItems="center">
+            <FormControl display="flex" justifyContent="space-between" alignItems="center">
               <FormLabel mb="0">{displayValue}</FormLabel>
               <Switch
                 isChecked={cliMountAdvForm[key]}
@@ -349,20 +380,30 @@ const CliTab = ({ supportedDevices, templateNode }) => {
     mountCliAdvTemplate.map(({ displayValue, description, size, key, toggle, on, off }) => {
       // if field is type toggle, render its on/off subfields
       if (toggle) {
-        return (cliMountAdvForm[key] ? on : off)?.map(({ displayValue, key }) => (
+        return (cliMountAdvForm[key] ? on : off)?.map(({ displayValue, key, description }) => (
           <GridItem key={displayValue} colSpan={size}>
             <FormControl>
               <FormLabel>{displayValue}</FormLabel>
-              <Input
-                value={cliMountAdvForm[key]}
-                onChange={(e) =>
-                  setCliMountAdvForm({
-                    ...cliMountAdvForm,
-                    [key]: e.target.value,
-                  })
-                }
-                placeholder={displayValue}
-              />
+              <InputGroup>
+                <Input
+                  value={cliMountAdvForm[key]}
+                  type={displayValue === 'Secret' && !showSecret ? 'password' : 'text'}
+                  onChange={(e) =>
+                    setCliMountAdvForm({
+                      ...cliMountAdvForm,
+                      [key]: e.target.value,
+                    })
+                  }
+                  placeholder={displayValue}
+                />
+                {displayValue === 'Secret' && (
+                  <InputRightElement width="4.5rem">
+                    <Button h="1.75rem" size="sm" onClick={() => setShowSecret(!showSecret)}>
+                      {showSecret ? 'Hide' : 'Show'}
+                    </Button>
+                  </InputRightElement>
+                )}
+              </InputGroup>
               <FormHelperText>{description}</FormHelperText>
             </FormControl>
           </GridItem>
@@ -402,8 +443,10 @@ const CliTab = ({ supportedDevices, templateNode }) => {
             <AccordionIcon />
           </AccordionButton>
           <AccordionPanel pb={4}>
-            <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={4}>
+            <Grid templateColumns="repeat(12, 1fr)" columnGap={24} rowGap={4} mt={4}>
               {renderToggles()}
+            </Grid>
+            <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={12}>
               {renderAdvOptions()}
             </Grid>
           </AccordionPanel>
