@@ -1,14 +1,15 @@
 import React, { FC, useState } from 'react';
 import { useMutation } from 'urql';
 import { Button, Input } from '@chakra-ui/react';
+import gql from 'graphql-tag';
 import { DeleteResourcePoolPayload, MutationDeleteResourcePoolArgs } from '../__generated__/graphql';
 
-const query = `
-    mutation DeletePoolMutation($input: DeleteResourcePoolInput!) {
-        DeleteResourcePool(input: $input) {
-          resourcePoolId
-        }
-      }
+const query = gql`
+  mutation DeletePoolMutation($input: DeleteResourcePoolInput!) {
+    DeleteResourcePool(input: $input) {
+      resourcePoolId
+    }
+  }
 `;
 
 const DeletePool: FC = () => {

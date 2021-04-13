@@ -1,36 +1,34 @@
 import React, { FC } from 'react';
 import { useQuery } from 'urql';
 import { Box } from '@chakra-ui/react';
-import { Query, Resource } from '../__generated__/graphql';
+import gql from 'graphql-tag';
+import { QueryAllPoolsNestedQuery } from '../__generated__/graphql';
 import NestedPool from './nested-pool';
 
-const query = `query QueryAllPools {
+const query = gql`
+  query QueryAllPoolsNested {
     QueryRootResourcePools {
+      id
+      Name
+      Resources {
         id
-        Name
-        Resources {
+        Properties
+        NestedPool {
           id
-          Properties
-          NestedPool {
+          Name
+          PoolType
+          Resources {
             id
-            Name
-            PoolType
-            Resources {
-              id
-              Properties
-              NestedPool {
-                id
-                Name
-                PoolType
-              }
-            }
+            Properties
           }
         }
       }
-}`;
+    }
+  }
+`;
 
 const NestedPoolsList: FC = () => {
-  const [result] = useQuery<Query>({
+  const [result] = useQuery<QueryAllPoolsNestedQuery>({
     query,
   });
 
@@ -46,7 +44,7 @@ const NestedPoolsList: FC = () => {
           <li key={pool.id}>
             {pool.Name} : {pool.id}
             {pool.Resources.length}
-            {pool.Resources.map((resource: Resource) => (
+            {pool.Resources.map((resource) => (
               <Box key={resource.id} marginLeft={15}>
                 {resource.NestedPool ? <NestedPool pool={resource.NestedPool} /> : null}
               </Box>
