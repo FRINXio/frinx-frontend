@@ -219,6 +219,8 @@ const NetconfTab = ({ templateNode }) => {
       on: [
         {
           displayValue: 'Dry run journal size',
+          description:
+            'Creates dry-run mountpoint and defines number of commands in command history for dry-run mountpoint',
           key: 'netconf-node-topology:dry-run-journal-size',
         },
       ],
@@ -241,6 +243,7 @@ const NetconfTab = ({ templateNode }) => {
     },
     {
       displayValue: 'Keepalive delay',
+      description: 'Delay (in seconds) between sending of keepalive messages over CLI session',
       key: 'netconf-node-topology:keepalive-delay',
       size: 4,
     },
@@ -292,7 +295,7 @@ const NetconfTab = ({ templateNode }) => {
       if (toggle) {
         return (
           <GridItem key={displayValue} colSpan={size}>
-            <FormControl display="flex" alignItems="center">
+            <FormControl display="flex" justifyContent="space-between" alignItems="center">
               <FormLabel mb="0">{displayValue}</FormLabel>
               <Switch
                 isChecked={netconfMountAdvForm[key]}
@@ -314,7 +317,7 @@ const NetconfTab = ({ templateNode }) => {
     // if field is type toggle, render its on/off subfields
     mountNetconfAdvTemplate.map(({ displayValue, description, size, key, toggle, on, off }) => {
       if (toggle) {
-        return (netconfMountAdvForm[key] ? on : off)?.map(({ displayValue, key }) => (
+        return (netconfMountAdvForm[key] ? on : off)?.map(({ displayValue, key, description }) => (
           <GridItem key={displayValue} colSpan={size}>
             <FormControl>
               <FormLabel>{displayValue}</FormLabel>
@@ -357,8 +360,10 @@ const NetconfTab = ({ templateNode }) => {
             <AccordionIcon />
           </AccordionButton>
           <AccordionPanel pb={4}>
-            <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={4}>
+            <Grid templateColumns="repeat(12, 1fr)" columnGap={24} rowGap={4} mt={4}>
               {renderToggles()}
+            </Grid>
+            <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={12}>
               {renderAdvOptions()}
             </Grid>
           </AccordionPanel>
