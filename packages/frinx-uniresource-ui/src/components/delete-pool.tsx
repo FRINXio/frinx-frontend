@@ -1,6 +1,6 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { useMutation } from 'urql';
-import { Button, Input } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 import gql from 'graphql-tag';
 import { DeleteResourcePoolPayload, MutationDeleteResourcePoolArgs } from '../__generated__/graphql';
 
@@ -12,28 +12,23 @@ const query = gql`
   }
 `;
 
-const DeletePool: FC = () => {
+type DeletePoolProps = {
+  poolId: string
+}
+
+const DeletePool: FC<DeletePoolProps> = ({poolId}) => {
   const [, addStrategy] = useMutation<DeleteResourcePoolPayload, MutationDeleteResourcePoolArgs>(query);
-  const [value, setValue] = useState('');
 
   const sendMutation = () => {
     const variables = {
       input: {
-        resourcePoolId: value,
+        resourcePoolId: poolId,
       },
     };
     addStrategy(variables);
   };
   return (
     <div>
-      Pool id
-      <Input
-        value={value}
-        onChange={(event) => {
-          setValue(event.target.value);
-        }}
-        placeholder="Basic usage"
-      />
       <Button onClick={() => sendMutation()}>Delete</Button>
     </div>
   );
