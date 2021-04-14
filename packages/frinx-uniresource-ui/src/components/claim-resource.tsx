@@ -13,7 +13,7 @@ const query = gql`
 `;
 
 const ClaimResource: FC = () => {
-  const [result, addStrategy] = useMutation<Resource, MutationClaimResourceArgs>(query);
+  const [, addStrategy] = useMutation<Resource, MutationClaimResourceArgs>(query);
 
   const sendMutation = () => {
     const variables = {

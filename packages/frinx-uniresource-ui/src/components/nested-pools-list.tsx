@@ -34,8 +34,6 @@ const NestedPoolsList: FC = () => {
 
   const { data } = result;
 
-  console.log(result);
-
   return (
     <div>
       NESTED

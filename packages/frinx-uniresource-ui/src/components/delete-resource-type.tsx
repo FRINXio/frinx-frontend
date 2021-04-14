@@ -13,7 +13,7 @@ const query = gql`
 `;
 
 const DeleteResourceType: FC = () => {
-  const [result, addStrategy] = useMutation<DeleteResourceTypePayload, MutationDeleteResourceTypeArgs>(query);
+  const [, addStrategy] = useMutation<DeleteResourceTypePayload, MutationDeleteResourceTypeArgs>(query);
   const [value, setValue] = useState('');
 
   const sendMutation = () => {
