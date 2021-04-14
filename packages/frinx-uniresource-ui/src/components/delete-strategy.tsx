@@ -15,9 +15,7 @@ const query = gql`
 `;
 
 const DeleteStrategy: FC = () => {
-  const [result, addStrategy] = useMutation<DeleteAllocationStrategyPayload, MutationDeleteAllocationStrategyArgs>(
-    query,
-  );
+  const [, addStrategy] = useMutation<DeleteAllocationStrategyPayload, MutationDeleteAllocationStrategyArgs>(query);
   const [value, setValue] = useState('');
 
   const sendMutation = () => {

@@ -14,7 +14,7 @@ const query = gql`
 `;
 
 const CreateNewResourceType: FC = () => {
-  const [result, addStrategy] = useMutation<CreateResourceTypePayload, MutationCreateResourceTypeArgs>(query);
+  const [, addStrategy] = useMutation<CreateResourceTypePayload, MutationCreateResourceTypeArgs>(query);
   const [value, setValue] = useState('');
 
   const sendMutation = () => {

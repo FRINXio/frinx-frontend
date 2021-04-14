@@ -15,7 +15,7 @@ const query = gql`
 `;
 
 const CreateNestedPool: FC = () => {
-  const [result, addStrategy] = useMutation<CreateNestedSetPoolPayload, MutationCreateNestedSetPoolArgs>(query);
+  const [, addStrategy] = useMutation<CreateNestedSetPoolPayload, MutationCreateNestedSetPoolArgs>(query);
 
   const sendMutation = () => {
     const variables = {

@@ -11,7 +11,7 @@ const query = gql`
 `;
 
 const FreeResource: FC = () => {
-  const [result, addStrategy] = useMutation<string, MutationFreeResourceArgs>(query);
+  const [, addStrategy] = useMutation<string, MutationFreeResourceArgs>(query);
 
   const sendMutation = () => {
     const variables = {

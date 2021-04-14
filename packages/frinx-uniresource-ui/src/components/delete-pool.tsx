@@ -13,7 +13,7 @@ const query = gql`
 `;
 
 const DeletePool: FC = () => {
-  const [result, addStrategy] = useMutation<DeleteResourcePoolPayload, MutationDeleteResourcePoolArgs>(query);
+  const [, addStrategy] = useMutation<DeleteResourcePoolPayload, MutationDeleteResourcePoolArgs>(query);
   const [value, setValue] = useState('');
 
   const sendMutation = () => {
