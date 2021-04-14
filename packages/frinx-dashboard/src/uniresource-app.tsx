@@ -1,9 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
-import {Redirect, Route, RouteComponentProps, Switch, useHistory} from "react-router-dom";
+import {Redirect, Route, Switch} from "react-router-dom";
 
 const UniresourceApp: FC = () => {
   const [components, setComponents] = useState<typeof import('@frinx/uniresource-ui') | null>(null);
-  const history = useHistory();
 
   useEffect(() => {
     import('@frinx/uniresource-ui').then((mod) => {

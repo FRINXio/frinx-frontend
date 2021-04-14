@@ -1,15 +1,17 @@
+import { ChakraProvider } from '@chakra-ui/react';
 import { createClient, Provider } from 'urql';
 import React, { FC } from 'react';
-import PageContainer from './components/PageContainer';
 
 const client = createClient({
   url: 'http://10.19.0.7/api/uniresource/query',
 });
 
-const Root: FC = ({ children }) => {
+type Props = { children: React.ReactNode };
+
+const Root: FC<Props> = ({ children }) => {
   return (
     <Provider value={client}>
-      <PageContainer>{children}</PageContainer>
+      <ChakraProvider>{children}</ChakraProvider>
     </Provider>
   );
 };
