@@ -1,27 +1,9 @@
 // @flow
 import React, { useEffect, useState } from 'react';
-import DefinitionModal from './DefinitonModal/DefinitionModal';
-import DependencyModal from './DependencyModal/DependencyModal';
-import DiagramModal from './DiagramModal/DiagramModal';
-import InputModal from './InputModal/input-modal';
-import PageContainer from '../../../common/PageContainer';
-import PaginationPages from '../../../common/Pagination';
-import SchedulingModal from '../Scheduling/SchedulingModal/SchedulingModal';
-import WfAutoComplete from '../../../common/wf-autocomplete';
-import WfLabels from '../../../common/wf-labels';
-import WorkflowListViewModal from './WorkflowListViewModal/WorkflowListViewModal';
-import _ from 'lodash';
-import callbackUtils from '../../../utils/callbackUtils';
 import {
-  Box,
   Button,
-  Grid,
   Heading,
   Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -36,7 +18,6 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
-  Stack,
   Table,
   Tbody,
   Td,
@@ -47,18 +28,18 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faClock,
-  faCodeBranch,
-  faEdit,
-  faFileCode,
-  faListUl,
-  faPlay,
-  faSearch,
-  faStar,
-  faTrash,
-} from '@fortawesome/free-solid-svg-icons';
-import { faStar as faStarOutlined } from '@fortawesome/free-regular-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import _ from 'lodash';
+import DefinitionModal from './DefinitonModal/DefinitionModal';
+import DependencyModal from './DependencyModal/DependencyModal';
+import DiagramModal from './DiagramModal/DiagramModal';
+import InputModal from './InputModal/input-modal';
+import PageContainer from '../../../common/PageContainer';
+import PaginationPages from '../../../common/Pagination';
+import SchedulingModal from '../Scheduling/SchedulingModal/SchedulingModal';
+import WfLabels from '../../../common/wf-labels';
+import WorkflowListViewModal from './WorkflowListViewModal/WorkflowListViewModal';
+import callbackUtils from '../../../utils/callbackUtils';
 import { jsonParse } from '../../../common/utils';
 import { usePagination } from '../../../common/PaginationHook';
 import WorkflowActions from './workflow-actions';
@@ -85,7 +66,7 @@ const Labels = (props: { wf: Workflow, labels: string[], onClick: (label: string
     const index = labels.findIndex((lab) => lab === label);
     return (
       <WfLabels
-        key={`${name}-${i}`}
+        key={name}
         label={label}
         index={index}
         onClick={() => {
@@ -107,6 +88,22 @@ type Props = {
   onWorkflowIdClick: (wfId: string) => void,
 };
 
+function filterData(workflows: Workflow[], keywords: string, labels: string[]): Workflow[] {
+  if (keywords === '' && labels.length === 0) {
+    return workflows;
+  }
+  const keywordsArr = keywords.toUpperCase().split(' ');
+  return workflows.filter((wf) => {
+    const labelsArr = jsonParse(wf.description)?.labels;
+
+    if (labels.length) {
+      return _.difference(labels, labelsArr).length > 0;
+    }
+
+    return keywordsArr.find((k) => wf.name.toUpperCase().includes(k)) != null;
+  });
+}
+
 const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) => {
   const [keywords, setKeywords] = useState('');
   const [labels, setLabels] = useState([]);
@@ -121,8 +118,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const [workflowListViewModal, setWorkflowListViewModal] = useState(false);
   const [allLabels, setAllLabels] = useState([]);
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
-
-  console.log({ labels });
 
   useEffect(() => {
     getData();
@@ -154,8 +149,9 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
               return true;
             }
           });
+
     setItemList(results);
-  }, [keywords, labels, data]);
+  }, [keywords, labels, data, setItemList]);
 
   const getData = () => {
     const getWorkflows = callbackUtils.getWorkflowsCallback();
@@ -167,13 +163,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
         setAllLabels(getLabels(dataset));
       }
     });
-  };
-
-  const searchFavourites = () => {
-    const newLabels = [...labels];
-    const index = newLabels.findIndex((label) => label === 'FAVOURITE');
-    index > -1 ? newLabels.splice(index, 1) : newLabels.push('FAVOURITE');
-    setLabels(newLabels);
   };
 
   const updateFavourite = (workflow) => {
@@ -366,7 +355,13 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
       {renderSchedulingModal()}
       {renderConfirmDeleteModal()}
       {renderWorkflowListViewModal()}
-      <WorkflowDefinitionsHeader allLabels={allLabels} />
+      <WorkflowDefinitionsHeader
+        allLabels={allLabels}
+        keywords={keywords}
+        onKeywordsChange={setKeywords}
+        labels={labels}
+        onLabelsChange={setLabels}
+      />
       <Table background="white">
         <Thead>
           <Tr>

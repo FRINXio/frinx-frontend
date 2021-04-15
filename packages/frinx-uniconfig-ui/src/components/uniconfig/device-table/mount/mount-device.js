@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Box } from '@chakra-ui/react';
-import _ from 'lodash';
+import groupBy from 'lodash/groupBy';
 import CliTab from './cli-tab';
 import NetconfTab from './netconf-tab';
 import callbackUtils from '../../../../utils/callback.utils';
@@ -18,7 +18,7 @@ const MountDevice = ({ templateNode }) => {
     getCliDeviceTranslations().then((res) => {
       try {
         const supportedDevices = res['available-cli-device-translations']['available-cli-device-translation'];
-        const grouped = _.groupBy(supportedDevices, (device) => device['device-type']);
+        const grouped = groupBy(supportedDevices, (device) => device['device-type']);
         setSupportedDevices(grouped);
       } catch (e) {
         console.log(e);

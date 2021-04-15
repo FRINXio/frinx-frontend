@@ -1,53 +1,28 @@
 // @flow
-import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Icon,
-  IconButton,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Stack,
-} from '@chakra-ui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faClock,
-  faCodeBranch,
-  faEdit,
-  faFileCode,
-  faListUl,
-  faPlay,
-  faSearch,
-  faStar,
-  faTrash,
-} from '@fortawesome/free-solid-svg-icons';
-import { faStar as faStarOutlined } from '@fortawesome/free-regular-svg-icons';
+import React, { FC } from 'react';
+import { Box, Button, ButtonGroup, Menu, MenuButton, MenuItem, MenuList, Stack } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { jsonParse } from '../../../common/utils';
 
 type Workflow = {
-  name: string,
-  version: number,
-  description: string,
-  hasSchedule: boolean,
+  name: string;
+  version: number;
+  description: string;
+  hasSchedule: boolean;
 };
 type Props = {
-  isFavourite: boolean,
-  hasSchedule: boolean,
-  onDeleteBtnClick: () => void,
-  onFavouriteBtnClick: () => void,
-  onDiagramBtnClick: () => void,
-  onDefinitionBtnClick: () => void,
-  onListBtnClick: () => void,
-  onEditBtnClick: () => void,
-  onScheduleBtnClick: () => void,
-  onExecuteBtnClick: () => void,
+  isFavourite: boolean;
+  hasSchedule: boolean;
+  onDeleteBtnClick: () => void;
+  onFavouriteBtnClick: () => void;
+  onDiagramBtnClick: () => void;
+  onDefinitionBtnClick: () => void;
+  onListBtnClick: () => void;
+  onEditBtnClick: () => void;
+  onScheduleBtnClick: () => void;
+  onExecuteBtnClick: () => void;
 };
 
-const WorkflowActions = ({
+const WorkflowActions: FC<Props> = ({
   isFavourite,
   hasSchedule,
   onDeleteBtnClick,
@@ -58,7 +33,7 @@ const WorkflowActions = ({
   onEditBtnClick,
   onScheduleBtnClick,
   onExecuteBtnClick,
-}: Props) => {
+}) => {
   return (
     <Stack direction="row" spacing={4}>
       <ButtonGroup>

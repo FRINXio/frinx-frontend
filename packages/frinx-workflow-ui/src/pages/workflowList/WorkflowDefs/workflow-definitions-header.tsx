@@ -1,31 +1,25 @@
 // @flow
-import React, { useState } from 'react';
-import WfAutoComplete from '../../../common/wf-autocomplete';
-import _ from 'lodash';
+import React, { FC } from 'react';
 import { Box, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faStar } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarOutlined } from '@fortawesome/free-regular-svg-icons';
+import WfAutoComplete from '../../../common/wf-autocomplete';
 
-type Workflow = {
-  name: string;
-  version: number;
-  description: string;
-  hasSchedule: boolean;
-};
 type Props = {
   allLabels: string[];
+  keywords: string[];
+  onKeywordsChange: (keywords: string) => void;
+  labels: string[];
+  onLabelsChange: (labels: string[]) => void;
 };
 
-const WorkflowDefinitionsHeader = ({ allLabels }: Props) => {
-  const [keywords, setKeywords] = useState('');
-  const [labels, setLabels] = useState([]);
-
+const WorkflowDefinitionsHeader: FC<Props> = ({ allLabels, keywords, onKeywordsChange, labels, onLabelsChange }) => {
   const searchFavourites = () => {
     const newLabels = [...labels];
     const index = newLabels.findIndex((label) => label === 'FAVOURITE');
-    index > -1 ? newLabels.splice(index, 1) : newLabels.push('FAVOURITE');
-    setLabels(newLabels);
+    newLabels.splice(index, 1, index === -1 ? 'FAVOURITE' : undefined);
+    onLabelsChange(newLabels.filter((l) => l != null));
   };
 
   return (
@@ -42,7 +36,12 @@ const WorkflowDefinitionsHeader = ({ allLabels }: Props) => {
         />
       </Box>
       <Box flex={1}>
-        <WfAutoComplete options={allLabels} onChange={setLabels} selected={labels} placeholder="Search by label." />
+        <WfAutoComplete
+          options={allLabels}
+          onChange={onLabelsChange}
+          selected={labels}
+          placeholder="Search by label."
+        />
       </Box>
       <Box flex={1}>
         <InputGroup marginBottom={0}>
@@ -51,7 +50,7 @@ const WorkflowDefinitionsHeader = ({ allLabels }: Props) => {
           </InputLeftElement>
           <Input
             value={keywords}
-            onChange={(e) => setKeywords(e.target.value)}
+            onChange={(e) => onKeywordsChange(e.target.value)}
             placeholder="Search by keyword."
             background="white"
           />

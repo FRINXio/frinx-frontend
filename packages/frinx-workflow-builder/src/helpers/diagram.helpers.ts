@@ -275,7 +275,8 @@ class DiagramController {
         const outputs = unwrap(curr.outputs);
         const decisionCasesLength = this.getDecisionCasesLength(curr.data.task.decisionCases);
         const defaultTasksLength = this.getTasksLength(curr.data.task.defaultCase);
-        const nextNodeInputId = unwrap(nodes[index + decisionCasesLength + defaultTasksLength + 1].inputs)[0].id;
+        console.log({ task, decisionCasesLength, defaultTasksLength });
+        const nextNodeInputId = unwrap(nodes[index + defaultTasksLength + 1].inputs)[0].id;
         let dTaskLength = 0;
         Object.keys(task.decisionCases).forEach((key, idx) => {
           if (dTaskLength !== 0) {
@@ -287,6 +288,7 @@ class DiagramController {
           dTaskLength += this.getTasksLength(task.decisionCases[key]);
           state[index + dTaskLength].push({ id: nextNodeInputId, type: 'output' });
         });
+        console.log({ state, dTaskLength });
         // else
         state[index + decisionCasesLength + 1].push({
           id: outputs[outputs.length - 1].id,
