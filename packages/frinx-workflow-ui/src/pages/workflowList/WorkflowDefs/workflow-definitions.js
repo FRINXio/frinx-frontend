@@ -66,7 +66,7 @@ const Labels = (props: { wf: Workflow, labels: string[], onClick: (label: string
     const index = labels.findIndex((lab) => lab === label);
     return (
       <WfLabels
-        key={name}
+        key={label}
         label={label}
         index={index}
         onClick={() => {
@@ -87,22 +87,6 @@ type Props = {
   onDefinitionClick: (name: string, version: string) => void,
   onWorkflowIdClick: (wfId: string) => void,
 };
-
-function filterData(workflows: Workflow[], keywords: string, labels: string[]): Workflow[] {
-  if (keywords === '' && labels.length === 0) {
-    return workflows;
-  }
-  const keywordsArr = keywords.toUpperCase().split(' ');
-  return workflows.filter((wf) => {
-    const labelsArr = jsonParse(wf.description)?.labels;
-
-    if (labels.length) {
-      return _.difference(labels, labelsArr).length > 0;
-    }
-
-    return keywordsArr.find((k) => wf.name.toUpperCase().includes(k)) != null;
-  });
-}
 
 const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) => {
   const [keywords, setKeywords] = useState('');
@@ -151,7 +135,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
           });
 
     setItemList(results);
-  }, [keywords, labels, data, setItemList]);
+  }, [keywords, labels, data]);
 
   const getData = () => {
     const getWorkflows = callbackUtils.getWorkflowsCallback();

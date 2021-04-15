@@ -275,21 +275,33 @@ function createRawTask(label: TaskLabel): ExtendedRawTask {
   };
 }
 
-export function createSubWorkflowTask(name: string, version: string): ExtendedSubworkflowTask {
+function convertSubWorkflowTaskParams(params: string[]): Record<string, string> {
+  return params.reduce((acc, curr) => {
+    const values = JSON.parse(curr);
+    return {
+      ...acc,
+      ...Object.keys(values).reduce((accu, current) => {
+        return {
+          ...accu,
+          [current]: values[current].value,
+        };
+      }, {}),
+    };
+  }, {});
+}
+
+export function createSubWorkflowTask(
+  name: string,
+  version: string,
+  inputParameters?: string[],
+): ExtendedSubworkflowTask {
   return {
     id: uuid(),
     label: 'sub workflow',
     name,
     type: 'SUB_WORKFLOW',
     taskReferenceName: `${name}Ref_${uuid()}`,
-    inputParameters: {
-      expectedName: '${workflow.input.expectedName}',
-      expectedType: 'SIMPLE',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      dynamic_tasks: '${workflow.input.dynamic_tasks}',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      dynamic_tasks_i: '${workflow.input.dynamic_tasks_i}',
-    },
+    inputParameters: inputParameters ? convertSubWorkflowTaskParams(inputParameters) : {},
     subWorkflowParam: {
       name,
       version: Number(version),
