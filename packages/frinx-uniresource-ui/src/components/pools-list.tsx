@@ -1,8 +1,8 @@
-import React, { FC } from 'react';
+﻿import React, { FC } from 'react';
 import { useQuery } from 'urql';
 import gql from 'graphql-tag';
 import { Progress, Table, Tag, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
-import { QueryAllPoolsQuery } from '../__generated__/graphql';
+import { PoolCapacityPayload, QueryAllPoolsQuery } from '../__generated__/graphql';
 import CreateNestedPool from './create-nested-pool';
 import DeletePool from './delete-pool';
 
@@ -38,6 +38,13 @@ const PoolsList: FC = () => {
     query,
   });
 
+  function getCapacityValue(capacity: Pick<PoolCapacityPayload, 'freeCapacity' | 'utilizedCapacity'>) {
+    const { freeCapacity, utilizedCapacity } = capacity;
+    const totalCapacity = freeCapacity + utilizedCapacity;
+    if (totalCapacity === 0) return 0;
+    return (utilizedCapacity / totalCapacity) * 100;
+  }
+
   const { data } = result;
 
   return (
@@ -61,13 +68,14 @@ const PoolsList: FC = () => {
               <Td>{pool.PoolType}</Td>
               <Td>
                 {pool.Tags?.map((t) => (
-                  <Tag key={t.id} marginRight={1}>{t.Tag}</Tag>
+                  <Tag key={t.id} marginRight={1}>
+                    {t.Tag}
+                  </Tag>
                 ))}
               </Td>
               <Td>{pool.ResourceType?.Name}</Td>
               <Td>
-                {/* Static for now */}
-                <Progress size="xs" value={80} />
+                <Progress size="xs" value={pool.Capacity ? getCapacityValue(pool.Capacity) : 0} />
               </Td>
               <Td>
                 <DeletePool poolId={pool.id} />

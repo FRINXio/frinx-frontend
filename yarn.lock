@@ -1899,28 +1899,6 @@
     auto-bind "~4.0.0"
     tslib "~2.1.0"
 
-"@graphql-codegen/typescript-react-apollo@2.2.3":
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-react-apollo/-/typescript-react-apollo-2.2.3.tgz#d5f54e81235d29bb57daeeda4dd58500c4f9d1e4"
-  integrity sha512-6OjDJQfVwMDEqQkgoQ3Uixq3KRb0H+lSwcWWFmdWErYhe5k2F8niBUJ32FEwu0KIqqx3PhzdwmLcXpBTC5gtyg==
-  dependencies:
-    "@graphql-codegen/plugin-helpers" "^1.18.4"
-    "@graphql-codegen/visitor-plugin-common" "^1.19.1"
-    auto-bind "~4.0.0"
-    change-case-all "1.0.12"
-    tslib "~2.1.0"
-
-"@graphql-codegen/typescript-urql@^2.0.5":
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-urql/-/typescript-urql-2.0.5.tgz#606949679e44fd4ea29178d60d35b1e468a0b81b"
-  integrity sha512-D0uiKSDgKKJC+X5Fmrb882wSyNBo5C46YqAd3pYEGEFgaWkpTrvmSakQGrezJH0zflPTaqMBv8RJ4wyonuYYLA==
-  dependencies:
-    "@graphql-codegen/plugin-helpers" "^1.18.4"
-    "@graphql-codegen/visitor-plugin-common" "^1.19.1"
-    auto-bind "~4.0.0"
-    change-case-all "1.0.12"
-    tslib "~2.1.0"
-
 "@graphql-codegen/typescript@1.21.1", "@graphql-codegen/typescript@^1.21.1":
   version "1.21.1"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript/-/typescript-1.21.1.tgz#9bce3254b8ef30a6bf64e57ba3991f9be7a19b53"
@@ -1931,16 +1909,7 @@
     auto-bind "~4.0.0"
     tslib "~2.1.0"
 
-"@graphql-codegen/urql-introspection@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/urql-introspection/-/urql-introspection-1.0.0.tgz#aa8ea6020fe08e8de591b9e9a8928fb459e80a6f"
-  integrity sha512-0iaIeV9um8N69T/IuiFZu5Zc28BCSqVUWyH/cWHkBodo8KzDf9Q0z5onHKlyj4KpmTEXKjub/gtteeKbwr04Sg==
-  dependencies:
-    "@graphql-codegen/plugin-helpers" "^1.18.2"
-    "@urql/introspection" "0.1.2"
-    tslib "~2.1.0"
-
-"@graphql-codegen/visitor-plugin-common@^1.19.0", "@graphql-codegen/visitor-plugin-common@^1.19.1":
+"@graphql-codegen/visitor-plugin-common@^1.19.0":
   version "1.19.1"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-1.19.1.tgz#2584588351a343a2ad8cd76dde62eb2ec25abe18"
   integrity sha512-MJZXe5vXxV6PLOgHhQoz93gnjzJtbnVQXQKqVEcbyB9W8ImoKuTHsEf/eJ6yCL79f7X/2dnOOM84d5Osh1eaKg==
@@ -2558,11 +2527,6 @@
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.0"
     wonka "^4.0.14"
-
-"@urql/introspection@0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@urql/introspection/-/introspection-0.1.2.tgz#3d6fd5a79f9df6e379aaf2922fb753cc06f228fc"
-  integrity sha512-neUWngizFD2ajCrHJLT/KmkhB6dcJTvMn7cE3c2KB2Hk0y+bSXK/1KBQffaekAacHUwxgoLvYEL9Z68HkCuFvQ==
 
 "@webassemblyjs/ast@1.11.0":
   version "1.11.0"

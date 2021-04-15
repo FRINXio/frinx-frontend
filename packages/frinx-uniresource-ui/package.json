@@ -4,6 +4,7 @@
   "private": true,
   "module": "src/index.ts",
   "dependencies": {
+    "feather-icons-react": "^0.4.3",
     "graphql": "^15.5.0",
     "urql": "^2.0.1"
   },
