@@ -9,10 +9,10 @@ import {
   Stack,
   useToast,
 } from '@chakra-ui/react';
-import Console from './console';
+import Console from '../console';
 import React, { useEffect, useState } from 'react';
-import callbackUtils from '../../../../utils/callback.utils';
-import { useInterval } from '../../../common/use-interval';
+import callbackUtils from '../../../../../utils/callback.utils';
+import { useInterval } from '../../../../common/use-interval';
 import CliBasicForm from './cli-basic-form';
 import CliAdvForm from './cli-adv-form';
 
@@ -105,10 +105,6 @@ const CliTab = ({ supportedDevices, templateNode }) => {
 
     const privilegedModeOn = {
       'cli-topology:secret': cliAdvForm['cli-topology:secret'],
-    };
-
-    const privilegedModeOn = {
-      'cli-topology:secret': cliMountAdvForm['cli-topology:secret'],
     };
 
     const lazyConnectionOn = {

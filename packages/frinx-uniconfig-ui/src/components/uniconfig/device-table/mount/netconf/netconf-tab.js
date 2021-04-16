@@ -9,10 +9,10 @@ import {
   Stack,
   useToast,
 } from '@chakra-ui/react';
-import Console from './console';
+import Console from '../console';
 import React, { useEffect, useState } from 'react';
-import { useInterval } from '../../../common/use-interval';
-import callbackUtils from '../../../../utils/callback.utils';
+import { useInterval } from '../../../../common/use-interval';
+import callbackUtils from '../../../../../utils/callback.utils';
 import NetconfBasicForm from './netconf-basic-form';
 import NetconfAdvForm from './netconf-adv-form';
 

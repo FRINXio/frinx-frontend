@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Box } from '@chakra-ui/react';
 import _ from 'lodash';
-import CliTab from './cli-tab';
-import NetconfTab from './netconf-tab';
+import CliTab from './cli/cli-tab';
+import NetconfTab from './netconf/netconf-tab';
 import callbackUtils from '../../../../utils/callback.utils';
 
 const MountDevice = ({ templateNode }) => {
