@@ -107,10 +107,6 @@ const CliTab = ({ supportedDevices, templateNode }) => {
       'cli-topology:secret': cliAdvForm['cli-topology:secret'],
     };
 
-    const privilegedModeOn = {
-      'cli-topology:secret': cliMountAdvForm['cli-topology:secret'],
-    };
-
     const lazyConnectionOn = {
       'cli-topology:command-timeout': parseInt(cliAdvForm['cli-topology:command-timeout']),
       'cli-topology:connection-lazy-timeout': parseInt(cliAdvForm['cli-topology:connection-lazy-timeout']),
