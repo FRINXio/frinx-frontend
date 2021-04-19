@@ -165,7 +165,7 @@ export type WhileTask = BaseTask<WhileInputParams> & {
 export type WhileEndTask = BaseTask & {
   type: 'WHILE_END';
 };
-export type SubworkflowTask = BaseTask<DynamicForkInputParams> & {
+export type SubworkflowTask = BaseTask<Record<string, string>> & {
   type: 'SUB_WORKFLOW';
   subWorkflowParam: {
     name: string;

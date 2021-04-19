@@ -1,64 +1,21 @@
-/**
- * Copyright 2004-present Facebook. All Rights Reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @format
- */
+const { join } = require('path');
 
-// enforces copyright header to be present in every file
-// eslint-disable-next-line max-len
-
-module.exports.extends = ['prettier', 'prettier/react'];
-module.exports.overrides = [
-  {
-    env: {
-      node: true,
-    },
-    files: ['*'],
+module.exports = {
+  root: true,
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint', 'import'],
+  parserOptions: {
+    // we need to link to tsconfig.json with the full-path,
+    // otherwise eslint-in-vscode has problems finding it
+    project: join(__dirname, 'tsconfig.json'),
   },
-  {
-    files: ['.eslintrc.js'],
-    rules: {
-      quotes: ['warn', 'single'],
-    },
+  env: {
+    browser: true,
   },
-  {
-    env: {
-      jest: true,
-      node: true,
-    },
-    files: ['**/__mocks__/**/*.js', '**/__tests__/**/*.js', '**/tests/*.js', 'testHelpers.js', 'testData.js'],
-  },
-  {
-    env: {
-      node: true,
-    },
-    files: ['.eslintrc.js', 'babel.config.js', 'jest.config.js', 'jest.*.config.js', 'src/**/*.js'],
-    rules: {
-      'no-console': 'off',
+  settings: {
+    'import/resolver': {
+      typescript: {},
     },
   },
-  {
-    files: ['**/tgnms/**/*.js'],
-    rules: {
-      // tgnms doesn't want this because there's too many errors
-      'flowtype/no-weak-types': 'off',
-      'flowtype/require-valid-file-annotation': 'off',
-    },
-  },
-];
-module.exports.settings = {
-  react: {
-    version: 'detect',
-  },
-};
-module.exports.parserOptions = {
-  ecmaVersion: 12,
-  sourceType: 'module',
-  ecmaFeatures: {
-    jsx: true,
-    modules: true,
-  },
+  extends: ['@frinx/eslint-config-typescript'],
 };

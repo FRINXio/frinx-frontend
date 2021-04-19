@@ -136,18 +136,20 @@ const DeviceTable = ({ nodes, isChecked, updateNode, onDeviceClick, setIsChecked
               disabled={page === 0}
               onClick={() => setPage((prevPage) => prevPage - 1)}
             />
-            <Menu placement="top">
-              <MenuButton size="sm" as={Button} style={{ backgroundColor: '#d9e0e6' }}>
-                {page}
-              </MenuButton>
-              <MenuList>
-                {[...Array(nodes.length % rowsPerPage).keys()].map((page) => (
-                  <MenuItem key={`pageOption-${page}`} onClick={() => setPage(page)}>
-                    {page}
-                  </MenuItem>
-                ))}
-              </MenuList>
-            </Menu>
+            <Box>
+              <Menu placement="top">
+                <MenuButton size="sm" as={Button} style={{ backgroundColor: '#d9e0e6' }}>
+                  {page}
+                </MenuButton>
+                <MenuList>
+                  {[...Array(nodes.length % rowsPerPage).keys()].map((page) => (
+                    <MenuItem key={`pageOption-${page}`} onClick={() => setPage(page)}>
+                      {page}
+                    </MenuItem>
+                  ))}
+                </MenuList>
+              </Menu>
+            </Box>
             <IconButton
               size="sm"
               icon={<ChevronRightIcon />}

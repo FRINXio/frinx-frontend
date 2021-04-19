@@ -24,6 +24,29 @@ import React, { useEffect, useState } from 'react';
 import callbackUtils from '../../../../utils/callback.utils';
 import { useInterval } from '../../../common/use-interval';
 
+const INITIAL_CLI_MOUNT_FORM_VALUES = {
+  'network-topology:node-id': 'xr5',
+  'cli-topology:host': '192.168.1.215',
+  'cli-topology:port': '22',
+  'cli-topology:device-type': 'ios xr',
+  'cli-topology:device-version': '*',
+  'cli-topology:transport-type': 'ssh',
+  'cli-topology:username': 'cisco',
+  'cli-topology:password': 'cisco',
+};
+const INITIAL_CLI_ADVANCED_FORM_VALUES = {
+  dryRun: false,
+  lazyConnection: false,
+  'node-extension:reconcile': true,
+  'cli-topology:journal-size': 150,
+  'cli-topology:dry-run-journal-size': 150,
+  'cli-topology:command-timeout': 60,
+  'cli-topology:connection-lazy-timeout': 60,
+  'cli-topology:connection-establish-timeout': 60,
+  'cli-topology:keepalive-delay': 45,
+  'cli-topology:keepalive-timeout': 45,
+};
+
 const CliTab = ({ supportedDevices, templateNode }) => {
   const [cliMountForm, setCliMountForm] = useState({
     'network-topology:node-id': 'xr5',
@@ -108,7 +131,8 @@ const CliTab = ({ supportedDevices, templateNode }) => {
     return supportedDevices[deviceType]?.map((d) => d['device-version']);
   };
 
-  const mountCliDevice = async () => {
+  const mountCliDevice = async (event) => {
+    event.preventDefault();
     const dryRunOn = {
       'cli-topology:dry-run-journal-size': parseInt(cliMountAdvForm['cli-topology:dry-run-journal-size']),
     };
@@ -171,10 +195,10 @@ const CliTab = ({ supportedDevices, templateNode }) => {
     const connectionStatusString = `[${date}] ${connectionStatus}`;
     const connectedMessageString = `[${date}] ${connectedMessage}`;
 
-    setOutputConsole({
-      ...outputConsole,
-      output: [...outputConsole.output, connectionStatusString, connectedMessageString],
-    });
+    setOutputConsole((prev) => ({
+      ...prev,
+      output: [...prev.output, connectionStatusString, connectedMessageString],
+    }));
   };
 
   const mountCliBasicTemplate = [
@@ -320,7 +344,11 @@ const CliTab = ({ supportedDevices, templateNode }) => {
           {select ? (
             <FormControl>
               <FormLabel>{displayValue}</FormLabel>
-              <Select placeholder={cliMountForm[key]}>
+              <Select
+                placeholder={cliMountForm[key]}
+                value={cliMountForm[key]}
+                onChange={(e) => setCliMountForm((prev) => ({ ...prev, [key]: e.target.value }))}
+              >
                 {options?.map((o) => (
                   <option key={`option-${o}`} value={o}>
                     {o}
@@ -336,7 +364,7 @@ const CliTab = ({ supportedDevices, templateNode }) => {
                 <Input
                   value={cliMountForm[key]}
                   type={displayValue === 'Password' && !showPassword ? 'password' : 'text'}
-                  onChange={(e) => setCliMountForm({ ...cliMountForm, [key]: e.target.value })}
+                  onChange={(e) => setCliMountForm((prev) => ({ ...prev, [key]: e.target.value }))}
                   placeholder={displayValue}
                 />
                 {displayValue === 'Password' && (
@@ -430,7 +458,7 @@ const CliTab = ({ supportedDevices, templateNode }) => {
     });
 
   return (
-    <>
+    <form onSubmit={mountCliDevice}>
       <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={4}>
         {renderBasicOptions()}
       </Grid>
@@ -464,11 +492,11 @@ const CliTab = ({ supportedDevices, templateNode }) => {
         </AccordionItem>
       </Accordion>
       <Stack direction="row" justify="flex-end">
-        <Button colorScheme="blue" onClick={mountCliDevice}>
+        <Button colorScheme="blue" type="submit">
           Mount
         </Button>
       </Stack>
-    </>
+    </form>
   );
 };
 
