@@ -347,7 +347,10 @@ const CliTab = ({ supportedDevices, templateNode }) => {
               <Select
                 placeholder={cliMountForm[key]}
                 value={cliMountForm[key]}
-                onChange={(e) => setCliMountForm((prev) => ({ ...prev, [key]: e.target.value }))}
+                onChange={(e) => {
+                  e.persist();
+                  setCliMountForm((prev) => ({ ...prev, [key]: e.target.value }));
+                }}
               >
                 {options?.map((o) => (
                   <option key={`option-${o}`} value={o}>
@@ -364,7 +367,10 @@ const CliTab = ({ supportedDevices, templateNode }) => {
                 <Input
                   value={cliMountForm[key]}
                   type={displayValue === 'Password' && !showPassword ? 'password' : 'text'}
-                  onChange={(e) => setCliMountForm((prev) => ({ ...prev, [key]: e.target.value }))}
+                  onChange={(e) => {
+                    e.persist();
+                    setCliMountForm((prev) => ({ ...prev, [key]: e.target.value }));
+                  }}
                   placeholder={displayValue}
                 />
                 {displayValue === 'Password' && (
@@ -391,12 +397,13 @@ const CliTab = ({ supportedDevices, templateNode }) => {
               <FormLabel mb="0">{displayValue}</FormLabel>
               <Switch
                 isChecked={cliMountAdvForm[key]}
-                onChange={(e) =>
+                onChange={(e) => {
+                  e.persist();
                   setCliMountAdvForm({
                     ...cliMountAdvForm,
                     [key]: e.target.checked,
-                  })
-                }
+                  });
+                }}
               />
             </FormControl>
           </GridItem>
@@ -416,12 +423,13 @@ const CliTab = ({ supportedDevices, templateNode }) => {
                 <Input
                   value={cliMountAdvForm[key]}
                   type={displayValue === 'Secret' && !showSecret ? 'password' : 'text'}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    e.persist();
                     setCliMountAdvForm({
                       ...cliMountAdvForm,
                       [key]: e.target.value,
-                    })
-                  }
+                    });
+                  }}
                   placeholder={displayValue}
                 />
                 {displayValue === 'Secret' && (
@@ -443,12 +451,13 @@ const CliTab = ({ supportedDevices, templateNode }) => {
             <FormLabel>{displayValue}</FormLabel>
             <Input
               value={cliMountAdvForm[key]}
-              onChange={(e) =>
+              onChange={(e) => {
+                e.persist();
                 setCliMountAdvForm({
                   ...cliMountAdvForm,
                   [key]: e.target.value,
-                })
-              }
+                });
+              }}
               placeholder={displayValue}
             />
             <FormHelperText>{description}</FormHelperText>
