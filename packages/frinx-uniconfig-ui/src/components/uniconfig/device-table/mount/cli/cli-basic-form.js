@@ -11,7 +11,7 @@ import {
   Select,
   FormHelperText,
 } from '@chakra-ui/react';
-import FormInput from './form-input';
+import FormInput from '../../../../common/form-input';
 
 const CliBasicForm = ({ cliBasicForm, setCliBasicForm, supportedDevices, getDeviceTypeVersions }) => {
   const [showPassword, setShowPassword] = useState(false);

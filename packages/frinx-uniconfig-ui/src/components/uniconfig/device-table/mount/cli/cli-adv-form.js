@@ -10,7 +10,7 @@ import {
   InputRightElement,
   FormHelperText,
 } from '@chakra-ui/react';
-import FormInput from './form-input';
+import FormInput from '../../../../common/form-input';
 import CliAdvFormToggles from './cli-adv-form-toggles';
 
 const CliAdvForm = ({ cliAdvForm, setCliAdvForm }) => {
