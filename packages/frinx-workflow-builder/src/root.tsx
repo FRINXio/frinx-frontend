@@ -74,7 +74,7 @@ const Root: FC<Props> = ({
   };
 
   const handleFileExport = (wf: Workflow) => {
-    const parsedWf = JSON.stringify(wf);
+    const parsedWf = JSON.stringify(wf, null, 2);
     const textEncoder = new TextEncoder();
     const arrayBuffer = textEncoder.encode(parsedWf);
     const file = new Blob([arrayBuffer], { type: 'application/octet-stream' });
