@@ -8,6 +8,7 @@ import {
   ButtonGroup,
   Flex,
   Heading,
+  HStack,
   IconButton,
   Input,
   Menu,
@@ -80,42 +81,44 @@ const WorkflowListHeader = ({ onAddButtonClick, onImportSuccess }: Props) => {
           Workflows
         </Heading>
         <Box marginLeft="auto">
-          <ButtonGroup>
+          <HStack>
             <Button leftIcon={<SmallAddIcon />} colorScheme="blue" onClick={onAddButtonClick}>
               Create
             </Button>
-            <Menu isLazy>
-              <MenuButton as={IconButton} icon={<SettingsIcon />} variant="ghost" />
-              <MenuList>
-                <MenuItem onClick={openFileUpload}>
-                  <Box as="span" fontSize="sm" marginRight={3} flexShrink={0}>
-                    <Box
-                      as={FeatherIcon}
-                      size="1em"
-                      icon="file-plus"
-                      flexShrink={0}
-                      lineHeight={4}
-                      verticalAlign="middle"
-                    />
-                  </Box>
-                  Import workflow
-                </MenuItem>
-                <MenuItem onClick={exportFile}>
-                  <Box as="span" fontSize="sm" marginRight={3} flexShrink={0}>
-                    <Box
-                      as={FeatherIcon}
-                      size="1em"
-                      icon="download"
-                      flexShrink={0}
-                      lineHeight={4}
-                      verticalAlign="middle"
-                    />
-                  </Box>
-                  Export workflows
-                </MenuItem>
-              </MenuList>
-            </Menu>
-          </ButtonGroup>
+            <Box>
+              <Menu isLazy>
+                <MenuButton as={IconButton} icon={<SettingsIcon />} variant="ghost" />
+                <MenuList>
+                  <MenuItem onClick={openFileUpload}>
+                    <Box as="span" fontSize="sm" paddingRight={3} flexShrink={0}>
+                      <Box
+                        as={FeatherIcon}
+                        size="1em"
+                        icon="file-plus"
+                        flexShrink={0}
+                        lineHeight={4}
+                        verticalAlign="middle"
+                      />
+                    </Box>
+                    Import workflow
+                  </MenuItem>
+                  <MenuItem onClick={exportFile}>
+                    <Box as="span" fontSize="sm" paddingRight={3} flexShrink={0}>
+                      <Box
+                        as={FeatherIcon}
+                        size="1em"
+                        icon="download"
+                        flexShrink={0}
+                        lineHeight={4}
+                        verticalAlign="middle"
+                      />
+                    </Box>
+                    Export workflows
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            </Box>
+          </HStack>
         </Box>
       </Flex>
       <VisuallyHidden>

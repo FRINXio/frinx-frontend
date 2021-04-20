@@ -97,7 +97,7 @@ const LeftMenu: FC<Props> = memo(({ onTaskAdd, workflows, taskDefinitions }) => 
                     aria-label="Add task"
                     icon={<AddIcon />}
                     onClick={() => {
-                      onTaskAdd(createSubWorkflowTask(wf.name, wf.version.toString()));
+                      onTaskAdd(createSubWorkflowTask(wf.name, wf.version.toString(), wf.inputParameters));
                     }}
                   />
                 </Box>
