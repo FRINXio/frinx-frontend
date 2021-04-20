@@ -4,7 +4,6 @@ import Clipboard from 'clipboard';
 import React, { Component } from 'react';
 import TaskModal from '../../../../common/TaskModal';
 import UnescapeButton from '../../../../common/UnescapeButton';
-import Highlight from 'react-highlight.js';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../../../utils/callbackUtils';
 import moment from 'moment';
@@ -40,6 +39,7 @@ import {
   IconButton,
   Stack,
   Text,
+  Textarea,
 } from '@chakra-ui/react';
 import { CopyIcon } from '@chakra-ui/icons';
 
@@ -343,11 +343,13 @@ class DetailsModal extends Component {
             <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#wfinput" />
             <UnescapeButton size="sm" target="wfinput" />
           </Stack>
-          <Highlight language="json" id="wfinput">
-            <pre id="wfinput" style={{ minHeight: '200px' }}>
-              {JSON.stringify(this.state.result.input, null, 2)}
-            </pre>
-          </Highlight>
+          <Textarea
+            value={JSON.stringify(this.state.result.input, null, 2)}
+            isReadOnly={true}
+            id="wfinput"
+            variant="filled"
+            minH={200}
+          />
         </Box>
         <Box>
           <Stack direction="row" spacing={2} align="center" mb={2}>
@@ -357,11 +359,13 @@ class DetailsModal extends Component {
             <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#wfoutput" />
             <UnescapeButton size="sm" target="wfoutput" />
           </Stack>
-          <Highlight language="json">
-            <pre id="wfoutput" style={{ minHeight: '200px' }}>
-              {JSON.stringify(this.state.result.output, null, 2)}
-            </pre>
-          </Highlight>
+          <Textarea
+            value={JSON.stringify(this.state.result.output, null, 2)}
+            isReadOnly={true}
+            id="wfoutput"
+            variant="filled"
+            minH={200}
+          />
         </Box>
       </SimpleGrid>
     );
@@ -375,11 +379,13 @@ class DetailsModal extends Component {
           <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#json" />
           <UnescapeButton size="sm" target="wfoutput" />
         </Stack>
-        <Highlight language="json">
-          <pre id="json" style={{ minHeight: '200px' }}>
-            {JSON.stringify(this.state.result, null, 2)}
-          </pre>
-        </Highlight>
+        <Textarea
+          value={JSON.stringify(this.state.result, null, 2)}
+          isReadOnly={true}
+          id="json"
+          variant="filled"
+          minH={200}
+        />
       </Box>
     );
 
@@ -450,7 +456,6 @@ class DetailsModal extends Component {
                 onChange={(index) => {
                   this.setState({ activeTab: index });
                 }}
-                marginBottom={20}
                 id="detailTabs"
               >
                 <TabList>
