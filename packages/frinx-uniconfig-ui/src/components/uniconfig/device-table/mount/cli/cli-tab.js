@@ -16,31 +16,35 @@ import { useInterval } from '../../../../common/use-interval';
 import CliBasicForm from './cli-basic-form';
 import CliAdvForm from './cli-adv-form';
 
+const INITIAL_CLI_BASIC_FORM_VALUES = {
+  'network-topology:node-id': 'xr5',
+  'cli-topology:host': '192.168.1.215',
+  'cli-topology:port': '22',
+  'cli-topology:device-type': 'ios xr',
+  'cli-topology:device-version': '*',
+  'cli-topology:transport-type': 'ssh',
+  'cli-topology:username': 'cisco',
+  'cli-topology:password': 'cisco',
+};
+
+const INITIAL_CLI_ADVANCED_FORM_VALUES = {
+  dryRun: false,
+  lazyConnection: false,
+  privilegedMode: false,
+  'node-extension:reconcile': true,
+  'cli-topology:journal-size': 150,
+  'cli-topology:dry-run-journal-size': 150,
+  'cli-topology:secret': 'cisco',
+  'cli-topology:command-timeout': 60,
+  'cli-topology:connection-lazy-timeout': 60,
+  'cli-topology:connection-establish-timeout': 60,
+  'cli-topology:keepalive-delay': 45,
+  'cli-topology:keepalive-timeout': 45,
+};
+
 const CliTab = ({ supportedDevices, templateNode }) => {
-  const [cliBasicForm, setCliBasicForm] = useState({
-    'network-topology:node-id': 'xr5',
-    'cli-topology:host': '192.168.1.215',
-    'cli-topology:port': '22',
-    'cli-topology:device-type': 'ios xr',
-    'cli-topology:device-version': '*',
-    'cli-topology:transport-type': 'ssh',
-    'cli-topology:username': 'cisco',
-    'cli-topology:password': 'cisco',
-  });
-  const [cliAdvForm, setCliAdvForm] = useState({
-    dryRun: false,
-    lazyConnection: false,
-    privilegedMode: false,
-    'node-extension:reconcile': true,
-    'cli-topology:journal-size': 150,
-    'cli-topology:dry-run-journal-size': 150,
-    'cli-topology:secret': 'cisco',
-    'cli-topology:command-timeout': 60,
-    'cli-topology:connection-lazy-timeout': 60,
-    'cli-topology:connection-establish-timeout': 60,
-    'cli-topology:keepalive-delay': 45,
-    'cli-topology:keepalive-timeout': 45,
-  });
+  const [cliBasicForm, setCliBasicForm] = useState(INITIAL_CLI_BASIC_FORM_VALUES);
+  const [cliAdvForm, setCliAdvForm] = useState(INITIAL_CLI_ADVANCED_FORM_VALUES);
   const [nodeId, setNodeId] = useState();
   const [outputConsole, setOutputConsole] = useState({ output: [], isRunning: false });
   const toast = useToast();
@@ -140,7 +144,7 @@ const CliTab = ({ supportedDevices, templateNode }) => {
     const { status, statusText } = result;
 
     setNodeId(nodeId);
-    setOutputConsole({ ...outputConsole, isRunning: true });
+    setOutputConsole((prev) => ({ ...prev, isRunning: true }));
     toast({
       title: `${status} ${statusText}`,
       status: status.toString().startsWith('2') ? 'success' : 'error',
@@ -159,10 +163,10 @@ const CliTab = ({ supportedDevices, templateNode }) => {
     const connectionStatusString = `[${date}] ${connectionStatus}`;
     const connectedMessageString = `[${date}] ${connectedMessage}`;
 
-    setOutputConsole({
-      ...outputConsole,
-      output: [...outputConsole.output, connectionStatusString, connectedMessageString],
-    });
+    setOutputConsole((prev) => ({
+      ...prev,
+      output: [...prev.output, connectionStatusString, connectedMessageString],
+    }));
   };
 
   return (

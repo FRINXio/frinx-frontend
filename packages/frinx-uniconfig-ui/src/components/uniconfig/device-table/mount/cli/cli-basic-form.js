@@ -11,6 +11,7 @@ import {
   Select,
   FormHelperText,
 } from '@chakra-ui/react';
+import FormInput from './form-input';
 
 const CliBasicForm = ({ cliBasicForm, setCliBasicForm, supportedDevices, getDeviceTypeVersions }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,20 +19,25 @@ const CliBasicForm = ({ cliBasicForm, setCliBasicForm, supportedDevices, getDevi
   return (
     <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={4}>
       <GridItem colSpan={6}>
-        <FormControl>
-          <FormLabel>Node ID</FormLabel>
-          <Input
-            value={cliBasicForm['network-topology:node-id']}
-            onChange={(e) => setCliBasicForm({ ...cliBasicForm, ['network-topology:node-id']: e.target.value })}
-            placeholder="Node ID"
-          />
-          <FormHelperText>Unique identifier of device across all systems</FormHelperText>
-        </FormControl>
+        <FormInput
+          label="Node ID"
+          value={cliBasicForm['network-topology:node-id']}
+          onChange={(e) => {
+            e.persist();
+            setCliBasicForm((prev) => ({ ...prev, 'network-topology:node-id': e.target.value }));
+          }}
+          description="Unique identifier of device across all systems"
+        />
       </GridItem>
       <GridItem colSpan={2}>
         <FormControl>
           <FormLabel>Device type</FormLabel>
-          <Select placeholder={cliBasicForm['cli-topology:device-type']}>
+          <Select
+            onChange={(e) => {
+              e.persist();
+              setCliBasicForm((prev) => ({ ...prev, 'cli-topology:device-type': e.target.value }));
+            }}
+          >
             {Object.keys(supportedDevices)?.map((o) => (
               <option key={`option-${o}`} value={o}>
                 {o}
@@ -44,7 +50,12 @@ const CliBasicForm = ({ cliBasicForm, setCliBasicForm, supportedDevices, getDevi
       <GridItem colSpan={2}>
         <FormControl>
           <FormLabel>Device version</FormLabel>
-          <Select placeholder={cliBasicForm['cli-topology:device-version']}>
+          <Select
+            onChange={(e) => {
+              e.persist();
+              setCliBasicForm((prev) => ({ ...prev, 'cli-topology:device-version': e.target.value }));
+            }}
+          >
             {getDeviceTypeVersions(cliBasicForm['cli-topology:device-type'])?.map((o) => (
               <option key={`option-${o}`} value={o}>
                 {o}
@@ -57,7 +68,12 @@ const CliBasicForm = ({ cliBasicForm, setCliBasicForm, supportedDevices, getDevi
       <GridItem colSpan={2}>
         <FormControl>
           <FormLabel>Transport type</FormLabel>
-          <Select placeholder={cliBasicForm['cli-topology:transport-type']}>
+          <Select
+            onChange={(e) => {
+              e.persist();
+              setCliBasicForm((prev) => ({ ...prev, 'cli-topology:transport-type': e.target.value }));
+            }}
+          >
             {['ssh', 'telnet'].map((o) => (
               <option key={`option-${o}`} value={o}>
                 {o}
@@ -68,37 +84,37 @@ const CliBasicForm = ({ cliBasicForm, setCliBasicForm, supportedDevices, getDevi
         </FormControl>
       </GridItem>
       <GridItem colSpan={4}>
-        <FormControl>
-          <FormLabel>Host</FormLabel>
-          <Input
-            value={cliBasicForm['cli-topology:host']}
-            onChange={(e) => setCliBasicForm({ ...cliBasicForm, ['cli-topology:host']: e.target.value })}
-            placeholder="Host"
-          />
-          <FormHelperText>IP or hostname of the management endpoint on a device</FormHelperText>
-        </FormControl>
+        <FormInput
+          label="Host"
+          value={cliBasicForm['cli-topology:host']}
+          onChange={(e) => {
+            e.persist();
+            setCliBasicForm((prev) => ({ ...prev, 'cli-topology:host': e.target.value }));
+          }}
+          description="IP or hostname of the management endpoint on a device"
+        />
       </GridItem>
       <GridItem colSpan={2}>
-        <FormControl>
-          <FormLabel>Port</FormLabel>
-          <Input
-            value={cliBasicForm['cli-topology:port']}
-            onChange={(e) => setCliBasicForm({ ...cliBasicForm, ['cli-topology:port']: e.target.value })}
-            placeholder="Port"
-          />
-          <FormHelperText>TCP port</FormHelperText>
-        </FormControl>
+        <FormInput
+          label="Port"
+          value={cliBasicForm['cli-topology:port']}
+          onChange={(e) => {
+            e.persist();
+            setCliBasicForm((prev) => ({ ...prev, 'cli-topology:port': e.target.value }));
+          }}
+          description="TCP port"
+        />
       </GridItem>
       <GridItem colSpan={3}>
-        <FormControl>
-          <FormLabel>Username</FormLabel>
-          <Input
-            value={cliBasicForm['cli-topology:username']}
-            onChange={(e) => setCliBasicForm({ ...cliBasicForm, ['cli-topology:username']: e.target.value })}
-            placeholder="Username"
-          />
-          <FormHelperText>Username credential</FormHelperText>
-        </FormControl>
+        <FormInput
+          label="Username"
+          value={cliBasicForm['cli-topology:username']}
+          onChange={(e) => {
+            e.persist();
+            setCliBasicForm((prev) => ({ ...prev, 'cli-topology:username': e.target.value }));
+          }}
+          description="Username credential"
+        />
       </GridItem>
       <GridItem colSpan={3}>
         <FormControl>
@@ -107,7 +123,7 @@ const CliBasicForm = ({ cliBasicForm, setCliBasicForm, supportedDevices, getDevi
             <Input
               value={cliBasicForm['cli-topology:password']}
               type={!showPassword ? 'password' : 'text'}
-              onChange={(e) => setCliBasicForm({ ...cliBasicForm, ['cli-topology:password']: e.target.value })}
+              onChange={(e) => setCliBasicForm((prev) => ({ ...prev, 'cli-topology:password': e.target.value }))}
               placeholder="Password"
             />
             <InputRightElement width="4.5rem">

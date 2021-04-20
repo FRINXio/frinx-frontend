@@ -9,159 +9,86 @@ import {
   InputGroup,
   InputRightElement,
   FormHelperText,
-  Switch,
 } from '@chakra-ui/react';
+import FormInput from './form-input';
+import CliAdvFormToggles from './cli-adv-form-toggles';
 
 const CliAdvForm = ({ cliAdvForm, setCliAdvForm }) => {
   const [showSecret, setShowSecret] = useState(false);
 
-  const renderToggles = () => (
-    <Grid templateColumns="repeat(12, 1fr)" columnGap={24} rowGap={4} mt={4}>
-      <GridItem colSpan={4}>
-        <FormControl display="flex" justifyContent="space-between" alignItems="center">
-          <FormLabel mb="0">Reconcile</FormLabel>
-          <Switch
-            isChecked={cliAdvForm['node-extension:reconcile']}
-            onChange={(e) =>
-              setCliAdvForm({
-                ...cliAdvForm,
-                ['node-extension:reconcile']: e.target.checked,
-              })
-            }
-          />
-        </FormControl>
-      </GridItem>
-      <GridItem colSpan={4}>
-        <FormControl display="flex" justifyContent="space-between" alignItems="center">
-          <FormLabel mb="0">Dry run</FormLabel>
-          <Switch
-            isChecked={cliAdvForm.dryRun}
-            onChange={(e) =>
-              setCliAdvForm({
-                ...cliAdvForm,
-                dryRun: e.target.checked,
-              })
-            }
-          />
-        </FormControl>
-      </GridItem>
-      <GridItem colSpan={4}>
-        <FormControl display="flex" justifyContent="space-between" alignItems="center">
-          <FormLabel mb="0">Privileged mode</FormLabel>
-          <Switch
-            isChecked={cliAdvForm.privilegedMode}
-            onChange={(e) =>
-              setCliAdvForm({
-                ...cliAdvForm,
-                privilegedMode: e.target.checked,
-              })
-            }
-          />
-        </FormControl>
-      </GridItem>
-      <GridItem colSpan={4}>
-        <FormControl display="flex" justifyContent="space-between" alignItems="center">
-          <FormLabel mb="0">Lazy connection</FormLabel>
-          <Switch
-            isChecked={cliAdvForm.lazyConnection}
-            onChange={(e) =>
-              setCliAdvForm({
-                ...cliAdvForm,
-                lazyConnection: e.target.checked,
-              })
-            }
-          />
-        </FormControl>
-      </GridItem>
-    </Grid>
-  );
-
   return (
     <>
-      {renderToggles()}
+      <CliAdvFormToggles cliAdvForm={cliAdvForm} setCliAdvForm={setCliAdvForm} />
       <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={12}>
         <GridItem colSpan={4}>
-          <FormControl>
-            <FormLabel>Journal size</FormLabel>
-            <Input
-              value={cliAdvForm['cli-topology:journal-size']}
-              onChange={(e) => setCliAdvForm({ ...cliAdvForm, ['cli-topology:journal-size']: e.target.value })}
-              placeholder="Journal size"
-            />
-            <FormHelperText>Number of commands in command history</FormHelperText>
-          </FormControl>
+          <FormInput
+            label="Journal size"
+            value={cliAdvForm['cli-topology:journal-size']}
+            onChange={(e) => {
+              e.persist();
+              setCliAdvForm((prev) => ({ ...prev, 'cli-topology:journal-size': e.target.value }));
+            }}
+            description="Number of commands in command history"
+          />
         </GridItem>
         {cliAdvForm.lazyConnection
           ? [
-              <GridItem colSpan={4}>
-                <FormControl>
-                  <FormLabel>Command timeout</FormLabel>
-                  <Input
-                    value={cliAdvForm['cli-topology:command-timeout']}
-                    onChange={(e) => setCliAdvForm({ ...cliAdvForm, ['cli-topology:command-timeout']: e.target.value })}
-                    placeholder="Command timeout"
-                  />
-                  <FormHelperText>Maximal time (in seconds) for command execution</FormHelperText>
-                </FormControl>
+              <GridItem key="cli-topology:command-timeout" colSpan={4}>
+                <FormInput
+                  label="Command timeout"
+                  value={cliAdvForm['cli-topology:command-timeout']}
+                  onChange={(e) => {
+                    e.persist();
+                    setCliAdvForm((prev) => ({ ...prev, 'cli-topology:command-timeout': e.target.value }));
+                  }}
+                  description="Maximal time (in seconds) for command execution"
+                />
               </GridItem>,
-              <GridItem colSpan={4}>
-                <FormControl>
-                  <FormLabel>Connection lazy timeout</FormLabel>
-                  <Input
-                    value={cliAdvForm['cli-topology:connection-lazy-timeout']}
-                    onChange={(e) =>
-                      setCliAdvForm({ ...cliAdvForm, ['cli-topology:connection-lazy-timeout']: e.target.value })
-                    }
-                    placeholder="Connection lazy timeout"
-                  />
-                  <FormHelperText>Maximal time (in seconds) for connection to keep alive</FormHelperText>
-                </FormControl>
+              <GridItem key="cli-topology:connection-lazy-timeout" colSpan={4}>
+                <FormInput
+                  label="Connection lazy timeout"
+                  value={cliAdvForm['cli-topology:connection-lazy-timeout']}
+                  onChange={(e) => {
+                    e.persist();
+                    setCliAdvForm((prev) => ({ ...prev, 'cli-topology:connection-lazy-timeout': e.target.value }));
+                  }}
+                  description="Maximal time (in seconds) for connection to keep alive"
+                />
               </GridItem>,
-              <GridItem colSpan={4}>
-                <FormControl>
-                  <FormLabel>Connection establish timeout</FormLabel>
-                  <Input
-                    value={cliAdvForm['cli-topology:connection-establish-timeout']}
-                    onChange={(e) =>
-                      setCliAdvForm({
-                        ...cliAdvForm,
-                        ['cli-topology:connection-establish-timeout']: e.target.value,
-                      })
-                    }
-                    placeholder="Connection establish timeout"
-                  />
-                  <FormHelperText>Maximal time (in seconds) for connection establishment</FormHelperText>
-                </FormControl>
+              <GridItem key="cli-topology:connection-establish-timeout" colSpan={4}>
+                <FormInput
+                  label="Connection establish timeout"
+                  value={cliAdvForm['cli-topology:connection-establish-timeout']}
+                  onChange={(e) => {
+                    e.persist();
+                    setCliAdvForm((prev) => ({ ...prev, 'cli-topology:connection-establish-timeout': e.target.value }));
+                  }}
+                  description="Maximal time (in seconds) for connection establishment"
+                />
               </GridItem>,
             ]
           : [
-              <GridItem colSpan={4}>
-                <FormControl>
-                  <FormLabel>Keepalive delay</FormLabel>
-                  <Input
-                    value={cliAdvForm['cli-topology:keepalive-delay']}
-                    onChange={(e) => setCliAdvForm({ ...cliAdvForm, ['cli-topology:keepalive-delay']: e.target.value })}
-                    placeholder="Keepalive delay"
-                  />
-                  <FormHelperText>
-                    Delay (in seconds) between sending of keepalive messages over CLI session
-                  </FormHelperText>
-                </FormControl>
+              <GridItem key="cli-topology:keepalive-delay" colSpan={4}>
+                <FormInput
+                  label="Keepalive delay"
+                  value={cliAdvForm['cli-topology:keepalive-delay']}
+                  onChange={(e) => {
+                    e.persist();
+                    setCliAdvForm((prev) => ({ ...prev, 'cli-topology:keepalive-delay': e.target.value }));
+                  }}
+                  description="Delay (in seconds) between sending of keepalive messages over CLI session"
+                />
               </GridItem>,
-              <GridItem colSpan={4}>
-                <FormControl>
-                  <FormLabel>Keepalive timeout</FormLabel>
-                  <Input
-                    value={cliAdvForm['cli-topology:keepalive-timeout']}
-                    onChange={(e) =>
-                      setCliAdvForm({ ...cliAdvForm, ['cli-topology:keepalive-timeout']: e.target.value })
-                    }
-                    placeholder="Keepalive timeout"
-                  />
-                  <FormHelperText>
-                    Close connection if keepalive response is not received within specified seconds
-                  </FormHelperText>
-                </FormControl>
+              <GridItem key="cli-topology:keepalive-timeout" colSpan={4}>
+                <FormInput
+                  label="Keepalive timeout"
+                  value={cliAdvForm['cli-topology:keepalive-timeout']}
+                  onChange={(e) => {
+                    e.persist();
+                    setCliAdvForm((prev) => ({ ...prev, 'cli-topology:keepalive-timeout': e.target.value }));
+                  }}
+                  description="Close connection if keepalive response is not received within specified seconds"
+                />
               </GridItem>,
             ]}
         {cliAdvForm.privilegedMode && (
@@ -172,7 +99,10 @@ const CliAdvForm = ({ cliAdvForm, setCliAdvForm }) => {
                 <Input
                   value={cliAdvForm['cli-topology:secret']}
                   type={!showSecret ? 'password' : 'text'}
-                  onChange={(e) => setCliAdvForm({ ...cliAdvForm, ['cli-topology:secret']: e.target.value })}
+                  onChange={(e) => {
+                    e.persist();
+                    setCliAdvForm((prev) => ({ ...prev, 'cli-topology:secret': e.target.value }));
+                  }}
                   placeholder="Secret"
                 />
                 <InputRightElement width="4.5rem">
@@ -187,19 +117,15 @@ const CliAdvForm = ({ cliAdvForm, setCliAdvForm }) => {
         )}
         {cliAdvForm.dryRun && (
           <GridItem colSpan={4}>
-            <FormControl>
-              <FormLabel>Dry run journal size</FormLabel>
-              <Input
-                value={cliAdvForm['cli-topology:dry-run-journal-size']}
-                onChange={(e) =>
-                  setCliAdvForm({ ...cliAdvForm, ['cli-topology:dry-run-journal-size']: e.target.value })
-                }
-                placeholder="Dry run journal size"
-              />
-              <FormHelperText>
-                Creates dry-run mountpoint and defines number of commands in command history for dry-run mountpoint
-              </FormHelperText>
-            </FormControl>
+            <FormInput
+              label="Dry run journal size"
+              value={cliAdvForm['cli-topology:dry-run-journal-size']}
+              onChange={(e) => {
+                e.persist();
+                setCliAdvForm((prev) => ({ ...prev, 'cli-topology:dry-run-journal-size': e.target.value }));
+              }}
+              description="Creates dry-run mountpoint and defines number of commands in command history for dry-run mountpoint"
+            />
           </GridItem>
         )}
       </Grid>
