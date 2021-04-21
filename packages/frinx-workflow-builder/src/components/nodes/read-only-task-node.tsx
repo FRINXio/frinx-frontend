@@ -11,7 +11,6 @@ const ReadOnlyTaskNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
   const theme = useTheme();
   const { task } = unwrap(data);
   const borderColor = getNodeColor(task.label);
-  console.log({ task });
 
   return (
     <Box

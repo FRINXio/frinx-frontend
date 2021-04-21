@@ -20,7 +20,6 @@ import {
   ExtendedSubworkflowTask,
   ExtendedHTTPTask,
   ExtendedGraphQLTask,
-  ExtendedJSPythonTask,
   InputParameters,
   HTTPInputParams,
   GraphQLInputParams,
@@ -40,7 +39,7 @@ function createHTTPTask(label: TaskLabel): ExtendedHTTPTask {
   return {
     id: uuid(),
     label,
-    name: 'GLOBAL___HTTP_task',
+    name: 'HTTP_task',
     type: 'SIMPLE',
     taskReferenceName: `httpRequestTaskRef_${uuid()}`,
     inputParameters: {
@@ -60,7 +59,7 @@ function createGraphQLTask(label: TaskLabel): ExtendedGraphQLTask {
   return {
     id: uuid(),
     label,
-    name: 'GLOBAL___HTTP_task',
+    name: 'HTTP_task',
     type: 'SIMPLE',
     taskReferenceName: `graphQLTaskRef_${uuid()}`,
     inputParameters: {
@@ -80,41 +79,7 @@ function createGraphQLTask(label: TaskLabel): ExtendedGraphQLTask {
     ...DEFAULT_TASK_OPTIONS,
   };
 }
-function createJSTask(label: TaskLabel): ExtendedJSPythonTask {
-  return {
-    id: uuid(),
-    label,
-    name: 'GLOBAL__JS',
-    type: 'SIMPLE',
-    taskReferenceName: `lambdaJsTaskRef_${uuid()}`,
-    inputParameters: {
-      lambdaValue: '${workflow.input.lambdaValue}',
-      scriptExpression: `if inputData["lambdaValue"] == "1":
-        return {"testValue": True}
-      else:
-        return {"testValue": False}`,
-    },
-    ...DEFAULT_TASK_OPTIONS,
-  };
-}
-function createPYTask(label: TaskLabel): ExtendedJSPythonTask {
-  return {
-    id: uuid(),
-    label,
-    name: 'GLOBAL__PY',
-    type: 'SIMPLE',
-    taskReferenceName: `lambdaJsTaskRef_${uuid()}`,
-    inputParameters: {
-      lambdaValue: '${workflow.input.lambdaValue}',
-      scriptExpression: `if ($.lambdaValue == 1) {
-        return {testvalue: true};
-        } else {
-        return {testvalue: false};
-        }`,
-    },
-    ...DEFAULT_TASK_OPTIONS,
-  };
-}
+
 function createLambdaTask(label: TaskLabel): ExtendedLambdaTask {
   return {
     id: uuid(),
@@ -316,10 +281,6 @@ export function createTask(taskLabel: TaskLabel): ExtendedTask {
       return createHTTPTask(taskLabel);
     case 'graphql':
       return createGraphQLTask(taskLabel);
-    case 'js':
-      return createJSTask(taskLabel);
-    case 'py':
-      return createPYTask(taskLabel);
     case 'lambda':
       return createLambdaTask(taskLabel);
     case 'start':
@@ -363,14 +324,12 @@ export const isHttpTask = (task: Task): task is HTTPTask =>
 export const isGraphQLTask = (task: Task): task is GraphQLTask =>
   task.type === 'SIMPLE' && 'inputParameters' in task && isGraphQLTaskInputParams(task.inputParameters);
 export const isJSorPYTask = (task: Task): task is JSPythonTask =>
-  task.type === 'SIMPLE' && 'inputParameters' in task && isLambdaTaskInputParams(task.inputParameters);
+  task.type === 'LAMBDA' && 'inputParameters' in task && isLambdaTaskInputParams(task.inputParameters);
 
 export function createSystemTasks(): TaskLabel[] {
   return [
     'http',
     'graphql',
-    'js',
-    'py',
     'lambda',
     'decision',
     'event',
@@ -434,8 +393,43 @@ export function getTaskLabel(t: Task): TaskLabel {
   }
 }
 
-export function convertTaskDefinition(taskDefinition: TaskDefinition): ExtendedSimpleTask {
+function createGenericInputParams(inputKeys?: string[]): Record<string, string> {
+  return (
+    inputKeys?.reduce((acc, curr) => {
+      return { ...acc, [curr]: `\${workflow.input.${curr}}` };
+    }, {}) ?? {}
+  );
+}
+
+function createHTTPInputParams(): HTTPInputParams {
+  return {
+    /* eslint-disable-next-line @typescript-eslint/naming-convention */
+    http_request: {
+      method: 'GET',
+      contentType: 'application/json',
+      timeout: 3600,
+      uri: '${workflow.input.uri}',
+      headers: {},
+    },
+  };
+}
+
+export function convertTaskDefinition(taskDefinition: TaskDefinition): ExtendedSimpleTask | ExtendedHTTPTask {
   const { name, inputKeys } = taskDefinition;
+
+  if (name === 'HTTP_task') {
+    return {
+      id: uuid(),
+      name,
+      label: 'simple',
+      type: 'SIMPLE',
+      taskReferenceName: `${name}RefName_${uuid()}`,
+      optional: false,
+      startDelay: 0,
+      inputParameters: createHTTPInputParams(),
+    };
+  }
+
   return {
     id: uuid(),
     name,
@@ -444,9 +438,6 @@ export function convertTaskDefinition(taskDefinition: TaskDefinition): ExtendedS
     taskReferenceName: `${name}RefName_${uuid()}`,
     optional: false,
     startDelay: 0,
-    inputParameters:
-      inputKeys?.reduce((acc, curr) => {
-        return { ...acc, [curr]: `\${workflow.input.${curr}}` };
-      }, {}) ?? {},
+    inputParameters: createGenericInputParams(inputKeys),
   };
 }

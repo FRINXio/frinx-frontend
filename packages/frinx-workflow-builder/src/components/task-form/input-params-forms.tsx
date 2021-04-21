@@ -1,19 +1,26 @@
 import React, { ReactNode } from 'react';
 import DecisionInputForm from './decision-input-form';
 import EventInputForm from './event-input-form';
-import GraphQLInputsForm from './graphql-inputs-form';
-import HTTPInputsForm from './http-inputs-form';
-import LambdaInputsForm from './lambda-inputs-form';
+import GraphQLInputsForm from './graphql-input-form';
+import HTTPInputsForm from './http-input-form';
+import LambdaInputsForm from './lambda-input-form';
 import TerminateInputForm from './terminate-input-form';
 import WhileInputForm from './while-input-form';
 import GenericInputForm from './generic-input-form';
-import { InputParameters, Task } from '../../helpers/types';
+import { ExtendedTask, InputParameters } from '../../helpers/types';
 import { isGraphQLTaskInputParams, isHttpTaskInputParams, isLambdaTaskInputParams } from '../../helpers/task.helpers';
+import RawInputForm from './raw-input-form';
 
-export function renderInputParamForm(task: Task, setState: (p: InputParameters) => void): ReactNode | null {
+export function renderInputParamForm(task: ExtendedTask, setState: (p: InputParameters) => void): ReactNode | null {
   if ('inputParameters' in task) {
     if (task.type === 'DECISION') {
       return <DecisionInputForm params={task.inputParameters} onChange={setState} />;
+    }
+    if (task.type === 'LAMBDA') {
+      return <LambdaInputsForm params={task.inputParameters} onChange={setState} />;
+    }
+    if (task.type === 'HTTP') {
+      return <HTTPInputsForm params={task.inputParameters} onChange={setState} />;
     }
     if (task.type === 'SIMPLE') {
       if (isGraphQLTaskInputParams(task.inputParameters)) {
@@ -27,9 +34,6 @@ export function renderInputParamForm(task: Task, setState: (p: InputParameters) 
       }
       return <GenericInputForm params={task.inputParameters} onChange={setState} />;
     }
-    if (task.type === 'HTTP') {
-      return <HTTPInputsForm params={task.inputParameters} onChange={setState} />;
-    }
     if (task.type === 'SUB_WORKFLOW') {
       return <GenericInputForm params={task.inputParameters} onChange={setState} />;
     }
@@ -42,7 +46,10 @@ export function renderInputParamForm(task: Task, setState: (p: InputParameters) 
     if (task.type === 'EVENT') {
       return <EventInputForm params={task.inputParameters} onChange={setState} />;
     }
-    return <GenericInputForm params={task.inputParameters} onChange={setState} />;
+    if (task.type === 'RAW') {
+      return <RawInputForm params={task.inputParameters} onChange={setState} />;
+    }
+    return null;
   }
   return null;
 }
