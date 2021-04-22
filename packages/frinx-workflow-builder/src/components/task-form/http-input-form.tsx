@@ -1,20 +1,27 @@
 import React, { FC } from 'react';
 import { Box, FormControl, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
 import AceEditor from 'react-ace';
-import { GraphQLInputParams } from '../../helpers/types';
-// import 'ace-builds/webpack-resolver';
-import 'ace-builds/src-noconflict/mode-graphqlschema';
+import { HTTPInputParams, HTTPMethod } from '../../helpers/types';
+import 'ace-builds/webpack-resolver';
+import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-textmate';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
 type Props = {
-  params: GraphQLInputParams;
-  onChange: (params: GraphQLInputParams) => void;
+  params: HTTPInputParams;
+  onChange: (p: HTTPInputParams) => void;
 };
 
-const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
-  const { contentType, method, uri, body, timeout, headers } = params.http_request;
-  const { query, variables } = body;
+function getBodyFromRequest(params: HTTPInputParams): string | null {
+  if (params.http_request.method !== 'GET') {
+    return params.http_request.body;
+  }
+  return null;
+}
+
+const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
+  const { contentType, method, uri, timeout, headers } = params.http_request;
+  const body = getBodyFromRequest(params);
   const theme = useTheme();
 
   return (
@@ -40,7 +47,25 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
       </FormControl>
       <FormControl id="method" my={6}>
         <FormLabel>Method</FormLabel>
-        <Select variant="filled" isDisabled name="method" defaultValue={method}>
+        <Select
+          variant="filled"
+          name="method"
+          value={method}
+          onChange={(event) => {
+            event.persist();
+            const eventValue = event.target.value as HTTPMethod;
+            onChange({
+              ...params,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
+              http_request: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                ...params.http_request,
+                // we can safely cast this
+                method: eventValue,
+              },
+            });
+          }}
+        >
           {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((m) => (
             <option key={m} value={m}>
               {m}
@@ -68,7 +93,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
         />
       </FormControl>
       <FormControl id="timeout" my={6}>
-        <Box w={1 / 2}>
+        <Box w="50%">
           <FormLabel>Timeout</FormLabel>
           <Input
             variant="filled"
@@ -109,77 +134,47 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
           enableBasicAutocompletion
           tabSize={2}
           fontSize={16}
-          width="100%"
           height="100px"
           style={{
             borderRadius: theme.radii.md,
           }}
         />
       </FormControl>
-      <FormControl id="query" my={6}>
-        <FormLabel>GraphQL query</FormLabel>
-        <AceEditor
-          mode="graphql"
-          name="query"
-          theme="textmate"
-          wrapEnabled
-          value={query}
-          onChange={(value) => {
-            onChange({
-              ...params,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              http_request: {
-                ...params.http_request,
-                body: {
-                  ...params.http_request.body,
-                  query: value,
+      {method !== 'GET' && (
+        <FormControl id="body" my={6}>
+          <FormLabel>Body</FormLabel>
+          <AceEditor
+            mode="json"
+            name="body"
+            theme="textmate"
+            wrapEnabled
+            value={JSON.stringify(body, null, 2) ?? ''}
+            onChange={(value) => {
+              if (params.http_request.method === 'GET') {
+                return;
+              }
+              onChange({
+                ...params,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                http_request: {
+                  ...params.http_request,
+                  body: value,
                 },
-              },
-            });
-          }}
-          enableBasicAutocompletion
-          tabSize={2}
-          fontSize={16}
-          width="100%"
-          height="200px"
-          style={{
-            borderRadius: theme.radii.md,
-          }}
-        />
-      </FormControl>
-      <FormControl id="variables">
-        <FormLabel>Variables</FormLabel>
-        <AceEditor
-          mode="json"
-          name="variables"
-          theme="textmate"
-          wrapEnabled
-          value={JSON.stringify(variables, null, 2)}
-          onChange={(value) => {
-            onChange({
-              ...params,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              http_request: {
-                ...params.http_request,
-                body: {
-                  ...params.http_request.body,
-                  variables: JSON.parse(value),
-                },
-              },
-            });
-          }}
-          enableBasicAutocompletion
-          tabSize={2}
-          fontSize={16}
-          width="100%"
-          height="100px"
-          style={{
-            borderRadius: theme.radii.md,
-          }}
-        />
-      </FormControl>
+              });
+            }}
+            enableBasicAutocompletion
+            tabSize={2}
+            fontSize={16}
+            width="100%"
+            height="200px"
+            style={{
+              borderRadius: theme.radii.md,
+            }}
+          />
+        </FormControl>
+      )}
     </>
   );
 };
 
-export default GraphQLInputsForm;
+export default HTTPInputsForm;
