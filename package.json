@@ -4,13 +4,21 @@
     "packages/*"
   ],
   "scripts": {
+    "lint": "yarn workspaces run lint",
+    "type-check:dashboard": "cd packages/frinx-dashboard && yarn run type-check",
+    "type-check:workflow-builder": "cd packages/frinx-workflow-builder && yarn run type-check",
+    "type-check": "run-s type-check:dashboard type-check:workflow-builder",
     "formatter:check": "prettier -l '*.md' 'packages/**/*.js' 'packages/**/*.ts' 'packages/**/*.tsx' 'packages/*/package.json' package.json",
     "formatter": "prettier --write '*.md' 'packages/**/*.js' 'packages/**/*.ts' 'packages/**/*.tsx' 'packages/*/package.json' package.json",
     "postinstall": "cp _diagram-package.json node_modules/beautiful-react-diagrams/package.json && cd node_modules/beautiful-react-diagrams && npm install && npm run build && npm link ../../node_modules/react",
-    "dedubcheck": "dedubcheck"
+    "dedubcheck": "dedubcheck",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "dedubcheck": "^0.0.6",
+    "husky": ">=6",
+    "lint-staged": ">=10",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.2.1"
   },
   "resolutions": {
@@ -19,5 +27,8 @@
     "eslint": "^7.22.0",
     "highlight.js": "^10.7.1",
     "source-map-resolve": "^0.6.0"
+  },
+  "lint-staged": {
+    "**/*.+(js|jsx|ts|tsx|json|css)": "prettier --write"
   }
 }
