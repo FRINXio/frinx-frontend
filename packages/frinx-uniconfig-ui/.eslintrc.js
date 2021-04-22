@@ -1,3 +1,4 @@
+// FIXME duplicit eslint config
 module.exports = {
   root: true,
   extends: ['airbnb', 'plugin:react-hooks/recommended', 'prettier', 'prettier/react'],

@@ -70,6 +70,8 @@ const App: FC<Props> = ({
   );
   const [canvasStates, handlers] = useCanvasState(); // creates canvas state
 
+  console.log('fail');
+
   const handleDeleteButtonClick = useCallback(
     (id: string) => {
       // TODO: wait for the library update to fix a bug with removing node with links

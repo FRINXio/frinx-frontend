@@ -5,6 +5,7 @@
   ],
   "scripts": {
     "lint": "yarn workspaces run lint",
+    "lint:fix": "yarn workspaces run lint --fix",
     "type-check:dashboard": "cd packages/frinx-dashboard && yarn run type-check",
     "type-check:workflow-builder": "cd packages/frinx-workflow-builder && yarn run type-check",
     "type-check": "run-s type-check:dashboard type-check:workflow-builder",
@@ -27,8 +28,5 @@
     "eslint": "^7.22.0",
     "highlight.js": "^10.7.1",
     "source-map-resolve": "^0.6.0"
-  },
-  "lint-staged": {
-    "**/*.+(js|jsx|ts|tsx|json|css)": "prettier --write"
   }
 }
