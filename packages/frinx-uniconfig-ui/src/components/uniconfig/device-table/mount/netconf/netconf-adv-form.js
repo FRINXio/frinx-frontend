@@ -7,75 +7,14 @@ import {
   GridItem,
   Input,
   FormHelperText,
-  Switch,
   Textarea,
 } from '@chakra-ui/react';
+import NetconfAdvFormToggles from './netconf-adv-form-toggles';
 
 const NetconfAdvForm = ({ netconfAdvForm, setNetconfAdvForm }) => {
-  const renderToggles = () => (
-    <Grid templateColumns="repeat(12, 1fr)" columnGap={24} rowGap={4} mt={4}>
-      <GridItem colSpan={4}>
-        <FormControl display="flex" justifyContent="space-between" alignItems="center">
-          <FormLabel mb="0">Reconcile</FormLabel>
-          <Switch
-            isChecked={netconfAdvForm['node-extension:reconcile']}
-            onChange={(e) =>
-              setNetconfAdvForm({
-                ...netconfAdvForm,
-                ['node-extension:reconcile']: e.target.checked,
-              })
-            }
-          />
-        </FormControl>
-      </GridItem>
-      <GridItem colSpan={4}>
-        <FormControl display="flex" justifyContent="space-between" alignItems="center">
-          <FormLabel mb="0">Dry run</FormLabel>
-          <Switch
-            isChecked={netconfAdvForm.dryRun}
-            onChange={(e) =>
-              setNetconfAdvForm({
-                ...netconfAdvForm,
-                dryRun: e.target.checked,
-              })
-            }
-          />
-        </FormControl>
-      </GridItem>
-      <GridItem colSpan={4}>
-        <FormControl display="flex" justifyContent="space-between" alignItems="center">
-          <FormLabel mb="0">TCP Only</FormLabel>
-          <Switch
-            isChecked={netconfAdvForm['netconf-node-topology:tcp-only']}
-            onChange={(e) =>
-              setNetconfAdvForm({
-                ...netconfAdvForm,
-                ['netconf-node-topology:tcp-only']: e.target.checked,
-              })
-            }
-          />
-        </FormControl>
-      </GridItem>
-      <GridItem colSpan={4}>
-        <FormControl display="flex" justifyContent="space-between" alignItems="center">
-          <FormLabel mb="0">Override capabilities</FormLabel>
-          <Switch
-            isChecked={netconfAdvForm['netconf-node-topology:override']}
-            onChange={(e) =>
-              setNetconfAdvForm({
-                ...netconfAdvForm,
-                ['netconf-node-topology:override']: e.target.checked,
-              })
-            }
-          />
-        </FormControl>
-      </GridItem>
-    </Grid>
-  );
-
   return (
     <>
-      {renderToggles()}
+      <NetconfAdvFormToggles netconfAdvForm={netconfAdvForm} setNetconfAdvForm={setNetconfAdvForm} />
       <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={4}>
         <GridItem colSpan={4}>
           <FormControl>
@@ -83,7 +22,7 @@ const NetconfAdvForm = ({ netconfAdvForm, setNetconfAdvForm }) => {
             <Input
               value={netconfAdvForm['netconf-node-topology:keepalive-delay']}
               onChange={(e) =>
-                setNetconfAdvForm({ ...netconfAdvForm, ['netconf-node-topology:keepalive-delay']: e.target.value })
+                setNetconfAdvForm({ ...netconfAdvForm, 'netconf-node-topology:keepalive-delay': e.target.value })
               }
               placeholder="Keepalive delay"
             />
@@ -99,7 +38,7 @@ const NetconfAdvForm = ({ netconfAdvForm, setNetconfAdvForm }) => {
                 onChange={(e) =>
                   setNetconfAdvForm({
                     ...netconfAdvForm,
-                    ['netconf-node-topology:dry-run-journal-size']: e.target.value,
+                    'netconf-node-topology:dry-run-journal-size': e.target.value,
                   })
                 }
                 placeholder="Dry run journal size"
@@ -117,7 +56,7 @@ const NetconfAdvForm = ({ netconfAdvForm, setNetconfAdvForm }) => {
                 onChange={(e) =>
                   setNetconfAdvForm({
                     ...netconfAdvForm,
-                    ['netconf-node-topology:yang-module-capabilities']: e.target.value,
+                    'netconf-node-topology:yang-module-capabilities': e.target.value,
                   })
                 }
                 placeholder="Capabilities"
