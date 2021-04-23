@@ -141,7 +141,7 @@ const UniflowApp: FC = () => {
               const { params } = match;
 
               return (
-                <Box marginTop={-10}>
+                <Box marginTop={-10} height="calc(100vh - 64px)">
                   <BuilderApiProvider>
                     <WorkflowBuilder
                       key={`${params.name}/${params.version}`}
