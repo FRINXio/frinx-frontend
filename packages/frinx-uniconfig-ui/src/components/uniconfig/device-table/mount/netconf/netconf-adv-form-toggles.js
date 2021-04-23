@@ -20,12 +20,12 @@ const NetconfAdvFormToggles = ({ netconfAdvForm, setNetconfAdvForm }) => (
     <GridItem colSpan={4}>
       <FormSwitch
         label="Dry run"
-        isChecked={netconfAdvForm.dryRun}
+        isChecked={netconfAdvForm.hasDryRun}
         onChange={(e) => {
           e.persist();
           setNetconfAdvForm((prev) => ({
             ...prev,
-            dryRun: e.target.checked,
+            hasDryRun: e.target.checked,
           }));
         }}
       />

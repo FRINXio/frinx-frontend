@@ -16,54 +16,77 @@ import callbackUtils from '../../../../../utils/callback.utils';
 import NetconfBasicForm from './netconf-basic-form';
 import NetconfAdvForm from './netconf-adv-form';
 
-function jsonParse(data) {
+const INITIAL_NETCONF_BASIC_FORM_VALUES = {
+  'node-id': 'xr5',
+  'netconf-node-topology:host': '192.168.1.213',
+  'netconf-node-topology:port': 830,
+  'netconf-node-topology:username': 'cisco',
+  'netconf-node-topology:password': 'cisco',
+};
+
+const INITIAL_NETCONF_ADVANCED_FORM_VALUES = {
+  hasDryRun: false,
+  'netconf-node-topology:tcp-only': false,
+  'netconf-node-topology:keepalive-delay': 0,
+  'node-extension:reconcile': false,
+  'netconf-node-topology:override': false,
+  'netconf-node-topology:dry-run-journal-size': 180,
+  'netconf-node-topology:yang-module-capabilities': '{"capability": []}',
+  'uniconfig-config:uniconfig-native-enabled': false,
+  'uniconfig-config:blacklist': {
+    'uniconfig-config:path': [
+      'openconfig-interfaces:interfaces',
+      'ietf-interfaces:interfaces',
+      'openconfig-vlan:vlans',
+      'openconfig-routing-policy:routing-policy',
+    ],
+  },
+};
+
+const jsonParse = (data) => {
   try {
     return JSON.parse(data);
   } catch (e) {
     return data;
   }
-}
+};
+
+const getNetconfBasicFormFromNodeState = (state) => {
+  return {
+    ...netconfBasicForm,
+    ...state,
+  };
+};
+
+const getNetconfAdvFormFromNodeState = (state) => {
+  return {
+    ...netconfAdvForm,
+    dryRun: !!state['netconf-node-topology:dry-run-journal-size'],
+    'netconf-node-topology:yang-module-capabilities': JSON.stringify(
+      state['netconf-node-topology:yang-module-capabilities'],
+      null,
+      2,
+    ),
+    ...state,
+  };
+};
 
 const NetconfTab = ({ templateNode }) => {
-  const [netconfBasicForm, setNetconfBasicForm] = useState({
-    'node-id': 'xr5',
-    'netconf-node-topology:host': '192.168.1.213',
-    'netconf-node-topology:port': 830,
-    'netconf-node-topology:username': 'cisco',
-    'netconf-node-topology:password': 'cisco',
-  });
-  const [netconfAdvForm, setNetconfAdvForm] = useState({
-    dryRun: false,
-    'netconf-node-topology:tcp-only': false,
-    'netconf-node-topology:keepalive-delay': 0,
-    'node-extension:reconcile': false,
-    'netconf-node-topology:override': false,
-    'netconf-node-topology:dry-run-journal-size': 180,
-    'netconf-node-topology:yang-module-capabilities': '{"capability": []}',
-    'uniconfig-config:uniconfig-native-enabled': false,
-    'uniconfig-config:blacklist': {
-      'uniconfig-config:path': [
-        'openconfig-interfaces:interfaces',
-        'ietf-interfaces:interfaces',
-        'openconfig-vlan:vlans',
-        'openconfig-routing-policy:routing-policy',
-      ],
-    },
-  });
+  const [netconfBasicForm, setNetconfBasicForm] = useState(INITIAL_NETCONF_BASIC_FORM_VALUES);
+  const [netconfAdvForm, setNetconfAdvForm] = useState(INITIAL_NETCONF_ADVANCED_FORM_VALUES);
   const [nodeId, setNodeId] = useState();
   const [outputConsole, setOutputConsole] = useState({ output: [], isRunning: false });
   const toast = useToast();
 
-  useEffect(() => {
-    templateNode?.topologyId === 'topology-netconf' && setNodeTemplate(templateNode);
+  useEffect(async () => {
+    const { nodeId, topologyId } = templateNode;
+
+    if (topologyId === 'topology-netconf') {
+      setFormsFromNode(nodeId);
+    }
   }, [templateNode]);
 
-  const setNodeTemplate = async (templateNode) => {
-    if (!templateNode) {
-      return null;
-    }
-    const { nodeId } = templateNode;
-
+  const getNetconfNodeState = async (nodeId) => {
     const getNetconfConfigurationalState = callbackUtils.getNetconfConfigurationalStateCallback();
     const state = await getNetconfConfigurationalState(nodeId);
 
@@ -76,21 +99,17 @@ const NetconfTab = ({ templateNode }) => {
       });
     }
 
-    setNetconfBasicForm({
-      ...netconfBasicForm,
-      ...state,
-    });
+    return state;
+  };
 
-    setNetconfAdvForm({
-      ...netconfAdvForm,
-      dryRun: !!state['netconf-node-topology:dry-run-journal-size'],
-      ['netconf-node-topology:yang-module-capabilities']: JSON.stringify(
-        state['netconf-node-topology:yang-module-capabilities'],
-        null,
-        2,
-      ),
-      ...state,
-    });
+  const setFormsFromNode = async (nodeId) => {
+    const state = await getNetconfNodeState(nodeId);
+
+    const netconfBasicForm = getNetconfBasicFormFromNodeState(state);
+    const netconfAdvForm = getNetconfAdvFormFromNodeState(state);
+
+    setNetconfBasicForm(netconfBasicForm);
+    setNetconfAdvForm(netconfAdvForm);
   };
 
   // interval to check node connection status when console is open
@@ -127,7 +146,7 @@ const NetconfTab = ({ templateNode }) => {
           'netconf-node-topology:tcp-only': netconfAdvForm['netconf-node-topology:tcp-only'],
           'netconf-node-topology:keepalive-delay': parseInt(netconfAdvForm['netconf-node-topology:keepalive-delay']),
           'netconf-node-topology:override': netconfAdvForm['netconf-node-topology:override'],
-          ...(netconfAdvForm.dryRun ? dryRunOn : null),
+          ...(netconfAdvForm.hasDryRun ? dryRunOn : null),
           ...(netconfAdvForm['netconf-node-topology:override'] ? overrideCapabilitiesOn : null),
           ...(netconfAdvForm['uniconfig-config:uniconfig-native-enabled'] ? uniconfigNativeOn : null),
         },
