@@ -42,6 +42,33 @@ const INITIAL_CLI_ADVANCED_FORM_VALUES = {
   'cli-topology:keepalive-timeout': 45,
 };
 
+const getCliBasicFormFromNodeState = (state) => {
+  return {
+    ...cliBasicForm,
+    'network-topology:node-id': state['node-id'],
+    'cli-topology:device-version': state['cli-topology:device-version'].replace('x', '*'),
+    ...state,
+  };
+};
+
+const getCliAdvFormFromNodeState = (state) => {
+  return {
+    ...cliAdvForm,
+    hasDryRun: !!state['cli-topology:dry-run-journal-size'],
+    hasLazyConnection: !!state['cli-topology:command-timeout'],
+    hasPrivilegedMode: !!state['cli-topology:secret'],
+    ...state,
+  };
+};
+
+const getDeviceTypeVersions = (supportedDevices, deviceType) => {
+  if (supportedDevices[deviceType] == null) {
+    return [];
+  }
+
+  return supportedDevices[deviceType].map((d) => d['device-version']);
+};
+
 const CliTab = ({ supportedDevices, templateNode }) => {
   const [cliBasicForm, setCliBasicForm] = useState(INITIAL_CLI_BASIC_FORM_VALUES);
   const [cliAdvForm, setCliAdvForm] = useState(INITIAL_CLI_ADVANCED_FORM_VALUES);
@@ -49,16 +76,15 @@ const CliTab = ({ supportedDevices, templateNode }) => {
   const [outputConsole, setOutputConsole] = useState({ output: [], isRunning: false });
   const toast = useToast();
 
-  useEffect(() => {
-    templateNode?.topologyId === 'cli' && setNodeTemplate(templateNode);
+  useEffect(async () => {
+    const { nodeId, topologyId } = templateNode;
+
+    if (topologyId === 'cli') {
+      setFormsFromNode(nodeId);
+    }
   }, [templateNode]);
 
-  const setNodeTemplate = async (templateNode) => {
-    if (!templateNode) {
-      return null;
-    }
-    const { nodeId } = templateNode;
-
+  const getCliNodeState = async (nodeId) => {
     const getCliConfigurationalState = callbackUtils.getCliConfigurationalStateCallback();
     const state = await getCliConfigurationalState(nodeId);
 
@@ -71,20 +97,17 @@ const CliTab = ({ supportedDevices, templateNode }) => {
       });
     }
 
-    setCliBasicForm({
-      ...cliBasicForm,
-      'network-topology:node-id': state['node-id'],
-      'cli-topology:device-version': state['cli-topology:device-version'].replace('x', '*'),
-      ...state,
-    });
+    return state;
+  };
 
-    setCliAdvForm({
-      ...cliAdvForm,
-      hasDryRun: !!state['cli-topology:dry-run-journal-size'],
-      hasLazyConnection: !!state['cli-topology:command-timeout'],
-      hasPrivilegedMode: !!state['cli-topology:secret'],
-      ...state,
-    });
+  const setFormsFromNode = async (nodeId) => {
+    const state = await getCliNodeState(nodeId);
+
+    const cliBasicForm = getCliBasicFormFromNodeState(state);
+    const cliAdvForm = getCliAdvFormFromNodeState(state);
+
+    setCliBasicForm(cliBasicForm);
+    setCliAdvForm(cliAdvForm);
   };
 
   // interval to check node connection status when console is open
@@ -94,13 +117,6 @@ const CliTab = ({ supportedDevices, templateNode }) => {
     },
     outputConsole.isRunning ? 2000 : null,
   );
-
-  const getDeviceTypeVersions = (deviceType) => {
-    if (!cliBasicForm['cli-topology:device-type']) {
-      return [];
-    }
-    return supportedDevices[deviceType]?.map((d) => d['device-version']);
-  };
 
   const mountCliDevice = async () => {
     const dryRunOn = {

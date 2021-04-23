@@ -14,7 +14,7 @@ import {
 import FormInput from '../../../../common/form-input';
 
 const CliBasicForm = ({ cliBasicForm, setCliBasicForm, supportedDevices, getDeviceTypeVersions }) => {
-  const [showPassword, setShowPassword] = useState(false);
+  const [shouldShowPassword, setShouldShowPassword] = useState(false);
 
   return (
     <Grid templateColumns="repeat(12, 1fr)" gap={4} mt={4}>
@@ -56,7 +56,7 @@ const CliBasicForm = ({ cliBasicForm, setCliBasicForm, supportedDevices, getDevi
               setCliBasicForm((prev) => ({ ...prev, 'cli-topology:device-version': e.target.value }));
             }}
           >
-            {getDeviceTypeVersions(cliBasicForm['cli-topology:device-type'])?.map((o) => (
+            {getDeviceTypeVersions(supportedDevices, cliBasicForm['cli-topology:device-type']).map((o) => (
               <option key={`option-${o}`} value={o}>
                 {o}
               </option>
@@ -122,13 +122,13 @@ const CliBasicForm = ({ cliBasicForm, setCliBasicForm, supportedDevices, getDevi
           <InputGroup>
             <Input
               value={cliBasicForm['cli-topology:password']}
-              type={!showPassword ? 'password' : 'text'}
+              type={!shouldShowPassword ? 'password' : 'text'}
               onChange={(e) => setCliBasicForm((prev) => ({ ...prev, 'cli-topology:password': e.target.value }))}
               placeholder="Password"
             />
             <InputRightElement width="4.5rem">
-              <Button h="1.75rem" size="sm" onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? 'Hide' : 'Show'}
+              <Button h="1.75rem" size="sm" onClick={() => setShouldShowPassword(!shouldShowPassword)}>
+                {shouldShowPassword ? 'Hide' : 'Show'}
               </Button>
             </InputRightElement>
           </InputGroup>
