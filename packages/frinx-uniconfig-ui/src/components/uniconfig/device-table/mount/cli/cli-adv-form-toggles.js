@@ -20,12 +20,12 @@ const CliAdvFormToggles = ({ cliAdvForm, setCliAdvForm }) => (
     <GridItem colSpan={4}>
       <FormSwitch
         label="Dry run"
-        isChecked={cliAdvForm.dryRun}
+        isChecked={cliAdvForm.hasDryRun}
         onChange={(e) => {
           e.persist();
           setCliAdvForm((prev) => ({
             ...prev,
-            dryRun: e.target.checked,
+            hasDryRun: e.target.checked,
           }));
         }}
       />
@@ -33,12 +33,12 @@ const CliAdvFormToggles = ({ cliAdvForm, setCliAdvForm }) => (
     <GridItem colSpan={4}>
       <FormSwitch
         label="Privileged mode"
-        isChecked={cliAdvForm.privilegedMode}
+        isChecked={cliAdvForm.hasPrivilegedMode}
         onChange={(e) => {
           e.persist();
           setCliAdvForm((prev) => ({
             ...prev,
-            privilegedMode: e.target.checked,
+            hasPrivilegedMode: e.target.checked,
           }));
         }}
       />
@@ -46,12 +46,12 @@ const CliAdvFormToggles = ({ cliAdvForm, setCliAdvForm }) => (
     <GridItem colSpan={4}>
       <FormSwitch
         label="Lazy connection"
-        isChecked={cliAdvForm.lazyConnection}
+        isChecked={cliAdvForm.hasLazyConnection}
         onChange={(e) => {
           e.persist();
           setCliAdvForm((prev) => ({
             ...prev,
-            lazyConnection: e.target.checked,
+            hasLazyConnection: e.target.checked,
           }));
         }}
       />

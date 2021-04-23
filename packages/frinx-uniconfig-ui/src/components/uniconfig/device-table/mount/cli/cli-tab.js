@@ -28,9 +28,9 @@ const INITIAL_CLI_BASIC_FORM_VALUES = {
 };
 
 const INITIAL_CLI_ADVANCED_FORM_VALUES = {
-  dryRun: false,
-  lazyConnection: false,
-  privilegedMode: false,
+  hasDryRun: false,
+  hasLazyConnection: false,
+  hasPrivilegedMode: false,
   'node-extension:reconcile': true,
   'cli-topology:journal-size': 150,
   'cli-topology:dry-run-journal-size': 150,
@@ -80,9 +80,9 @@ const CliTab = ({ supportedDevices, templateNode }) => {
 
     setCliAdvForm({
       ...cliAdvForm,
-      dryRun: !!state['cli-topology:dry-run-journal-size'],
-      lazyConnection: !!state['cli-topology:command-timeout'],
-      privilegedMode: !!state['cli-topology:secret'],
+      hasDryRun: !!state['cli-topology:dry-run-journal-size'],
+      hasLazyConnection: !!state['cli-topology:command-timeout'],
+      hasPrivilegedMode: !!state['cli-topology:secret'],
       ...state,
     });
   };
@@ -129,9 +129,9 @@ const CliTab = ({ supportedDevices, templateNode }) => {
           'node-extension:reconcile': cliAdvForm['node-extension:reconcile'],
           'cli-topology:journal-size': cliAdvForm['cli-topology:journal-size'],
           'cli-topology:dry-run-journal-size': parseInt(cliAdvForm['cli-topology:dry-run-journal-size']),
-          ...(cliAdvForm.dryRun ? dryRunOn : null),
-          ...(cliAdvForm.lazyConnection ? lazyConnectionOn : lazyConnectionOff),
-          ...(cliAdvForm.privilegedMode ? privilegedModeOn : null),
+          ...(cliAdvForm.hasDryRun ? dryRunOn : null),
+          ...(cliAdvForm.hasLazyConnection ? lazyConnectionOn : lazyConnectionOff),
+          ...(cliAdvForm.hasPrivilegedMode ? privilegedModeOn : null),
         },
       ],
     };
