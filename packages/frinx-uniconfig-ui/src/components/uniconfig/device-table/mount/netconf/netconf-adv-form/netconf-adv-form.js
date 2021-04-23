@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, GridItem } from '@chakra-ui/react';
 import NetconfAdvFormToggles from './netconf-adv-form-toggles';
-import FormInput from '../../../../common/form-input';
+import FormInput from '../../../../../common/form-input';
 import NetconfDryRunForm from './netconf-dry-run-from';
 import NetconfCapabilitiesForm from './netconf-capabilities-form';
 

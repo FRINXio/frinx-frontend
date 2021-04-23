@@ -13,8 +13,8 @@ import Console from '../console';
 import React, { useEffect, useState } from 'react';
 import { useInterval } from '../../../../common/use-interval';
 import callbackUtils from '../../../../../utils/callback.utils';
-import NetconfBasicForm from './netconf-basic-form';
-import NetconfAdvForm from './netconf-adv-form';
+import NetconfBasicForm from './netconf-basic-form/netconf-basic-form';
+import NetconfAdvForm from './netconf-adv-form/netconf-adv-form';
 
 const INITIAL_NETCONF_BASIC_FORM_VALUES = {
   'node-id': 'xr5',

@@ -13,8 +13,8 @@ import Console from '../console';
 import React, { useEffect, useState } from 'react';
 import callbackUtils from '../../../../../utils/callback.utils';
 import { useInterval } from '../../../../common/use-interval';
-import CliBasicForm from './cli-basic-form';
-import CliAdvForm from './cli-adv-form';
+import CliBasicForm from './cli-basic-form/cli-basic-form';
+import CliAdvForm from './cli-adv-form/cli-adv-form';
 
 const INITIAL_CLI_BASIC_FORM_VALUES = {
   'network-topology:node-id': 'xr5',

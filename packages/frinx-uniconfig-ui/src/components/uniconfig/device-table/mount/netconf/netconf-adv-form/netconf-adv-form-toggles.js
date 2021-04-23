@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, GridItem } from '@chakra-ui/react';
-import FormSwitch from '../../../../common/form-switch';
+import FormSwitch from '../../../../../common/form-switch';
 
 const NetconfAdvFormToggles = ({ netconfAdvForm, setNetconfAdvForm }) => (
   <Grid templateColumns="repeat(12, 1fr)" columnGap={24} rowGap={4} mt={4}>

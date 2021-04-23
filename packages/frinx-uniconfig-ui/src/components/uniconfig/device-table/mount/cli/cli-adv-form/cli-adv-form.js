@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, GridItem } from '@chakra-ui/react';
-import FormInput from '../../../../common/form-input';
+import FormInput from '../../../../../common/form-input';
 import CliAdvFormToggles from './cli-adv-form-toggles';
 import CliKeepaliveForm from './cli-keepalive-form';
 import CliLazyConnectionForm from './cli-lazy-connection-form';
@@ -28,7 +28,9 @@ const CliAdvForm = ({ cliAdvForm, setCliAdvForm }) => {
         ) : (
           <CliKeepaliveForm setCliAdvForm={setCliAdvForm} cliAdvForm={cliAdvForm} />
         )}
-        {cliAdvForm.hasPrivilegedMode && <CliPrivilegedModeForm setCliAdvForm={setCliAdvForm} cliAdvForm={cliAdvForm} />}
+        {cliAdvForm.hasPrivilegedMode && (
+          <CliPrivilegedModeForm setCliAdvForm={setCliAdvForm} cliAdvForm={cliAdvForm} />
+        )}
         {cliAdvForm.hasDryRun && <CliDryRunForm setCliAdvForm={setCliAdvForm} cliAdvForm={cliAdvForm} />}
       </Grid>
     </>

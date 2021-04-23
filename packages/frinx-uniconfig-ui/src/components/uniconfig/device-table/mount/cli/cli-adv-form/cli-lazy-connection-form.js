@@ -1,6 +1,6 @@
 import React from 'react';
 import { GridItem } from '@chakra-ui/react';
-import FormInput from '../../../../common/form-input';
+import FormInput from '../../../../../common/form-input';
 
 const CliLazyConnectionForm = ({ cliAdvForm, setCliAdvForm }) => (
   <>

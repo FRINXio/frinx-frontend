@@ -10,7 +10,7 @@ import {
   InputRightElement,
   FormHelperText,
 } from '@chakra-ui/react';
-import FormInput from '../../../../common/form-input';
+import FormInput from '../../../../../common/form-input';
 
 const NetconfBasicForm = ({ netconfBasicForm, setNetconfBasicForm }) => {
   const [shouldShowPassword, setShouldShowPassword] = useState(false);
