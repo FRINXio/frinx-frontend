@@ -2,10 +2,10 @@ import React from 'react';
 import { Grid, GridItem } from '@chakra-ui/react';
 import FormInput from '../../../../common/form-input';
 import CliAdvFormToggles from './cli-adv-form-toggles';
-import KeepaliveForm from './keepalive-form';
-import LazyConnectionForm from './lazy-connection-form';
-import PrivilegedModeForm from './privileged-mode-form';
-import DryRunForm from './dry-run-form';
+import CliKeepaliveForm from './cli-keepalive-form';
+import CliLazyConnectionForm from './cli-lazy-connection-form';
+import CliPrivilegedModeForm from './cli-privileged-mode-form';
+import CliDryRunForm from './cli-dry-run-form';
 
 const CliAdvForm = ({ cliAdvForm, setCliAdvForm }) => {
   return (
@@ -24,12 +24,12 @@ const CliAdvForm = ({ cliAdvForm, setCliAdvForm }) => {
           />
         </GridItem>
         {cliAdvForm.hasLazyConnection ? (
-          <LazyConnectionForm setCliAdvForm={setCliAdvForm} cliAdvForm={cliAdvForm} />
+          <CliLazyConnectionForm setCliAdvForm={setCliAdvForm} cliAdvForm={cliAdvForm} />
         ) : (
-          <KeepaliveForm setCliAdvForm={setCliAdvForm} cliAdvForm={cliAdvForm} />
+          <CliKeepaliveForm setCliAdvForm={setCliAdvForm} cliAdvForm={cliAdvForm} />
         )}
-        {cliAdvForm.hasPrivilegedMode && <PrivilegedModeForm setCliAdvForm={setCliAdvForm} cliAdvForm={cliAdvForm} />}
-        {cliAdvForm.hasDryRun && <DryRunForm setCliAdvForm={setCliAdvForm} cliAdvForm={cliAdvForm} />}
+        {cliAdvForm.hasPrivilegedMode && <CliPrivilegedModeForm setCliAdvForm={setCliAdvForm} cliAdvForm={cliAdvForm} />}
+        {cliAdvForm.hasDryRun && <CliDryRunForm setCliAdvForm={setCliAdvForm} cliAdvForm={cliAdvForm} />}
       </Grid>
     </>
   );

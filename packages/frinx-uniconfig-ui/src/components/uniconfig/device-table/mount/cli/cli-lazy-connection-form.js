@@ -2,7 +2,7 @@ import React from 'react';
 import { GridItem } from '@chakra-ui/react';
 import FormInput from '../../../../common/form-input';
 
-const LazyConnectionForm = ({ cliAdvForm, setCliAdvForm }) => (
+const CliLazyConnectionForm = ({ cliAdvForm, setCliAdvForm }) => (
   <>
     <GridItem key="cli-topology:command-timeout" colSpan={4}>
       <FormInput
@@ -40,4 +40,4 @@ const LazyConnectionForm = ({ cliAdvForm, setCliAdvForm }) => (
   </>
 );
 
-export default LazyConnectionForm;
+export default CliLazyConnectionForm;

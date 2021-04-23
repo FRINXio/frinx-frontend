@@ -10,7 +10,7 @@ import {
   FormHelperText,
 } from '@chakra-ui/react';
 
-const PrivilegedModeForm = ({ cliAdvForm, setCliAdvForm, colSpan }) => {
+const CliPrivilegedModeForm = ({ cliAdvForm, setCliAdvForm, colSpan }) => {
   const [shouldShowSecret, setShouldShowSecret] = useState(false);
 
   return (
@@ -39,4 +39,4 @@ const PrivilegedModeForm = ({ cliAdvForm, setCliAdvForm, colSpan }) => {
   );
 };
 
-export default PrivilegedModeForm;
+export default CliPrivilegedModeForm;

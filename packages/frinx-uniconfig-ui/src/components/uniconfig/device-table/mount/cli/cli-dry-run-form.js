@@ -2,7 +2,7 @@ import React from 'react';
 import { GridItem } from '@chakra-ui/react';
 import FormInput from '../../../../common/form-input';
 
-const DryRunForm = ({ cliAdvForm, setCliAdvForm }) => (
+const CliDryRunForm = ({ cliAdvForm, setCliAdvForm }) => (
   <GridItem colSpan={4}>
     <FormInput
       label="Dry run journal size"
@@ -16,4 +16,4 @@ const DryRunForm = ({ cliAdvForm, setCliAdvForm }) => (
   </GridItem>
 );
 
-export default DryRunForm;
+export default CliDryRunForm;

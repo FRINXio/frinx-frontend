@@ -2,7 +2,7 @@ import React from 'react';
 import { GridItem } from '@chakra-ui/react';
 import FormInput from '../../../../common/form-input';
 
-const KeepaliveForm = ({ cliAdvForm, setCliAdvForm }) => (
+const CliKeepaliveForm = ({ cliAdvForm, setCliAdvForm }) => (
   <>
     <GridItem key="cli-topology:keepalive-delay" colSpan={4}>
       <FormInput
@@ -29,4 +29,4 @@ const KeepaliveForm = ({ cliAdvForm, setCliAdvForm }) => (
   </>
 );
 
-export default KeepaliveForm;
+export default CliKeepaliveForm;
