@@ -4,7 +4,11 @@
   "private": true,
   "module": "src/index.ts",
   "dependencies": {
+    "ace-builds": "^1.4.12",
+    "feather-icons-react": "^0.4.3",
     "graphql": "^15.5.0",
+    "match-sorter": "^6.3.0",
+    "react-ace": "^9.4.0",
     "urql": "^2.0.1"
   },
   "scripts": {

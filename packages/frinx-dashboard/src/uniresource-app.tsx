@@ -1,8 +1,9 @@
 import React, { FC, useEffect, useState } from 'react';
-import {Redirect, Route, Switch} from "react-router-dom";
+import {Redirect, Route, Switch, useHistory} from "react-router-dom";
 
 const UniresourceApp: FC = () => {
   const [components, setComponents] = useState<typeof import('@frinx/uniresource-ui') | null>(null);
+  const history = useHistory();
 
   useEffect(() => {
     import('@frinx/uniresource-ui').then((mod) => {
@@ -10,13 +11,17 @@ const UniresourceApp: FC = () => {
         PoolsList,
         StrategiesList,
         ResourceTypesList,
-        UniresourceAppProvider
+        UniresourceAppProvider,
+        CreateNestedPool,
+        CreateNewStrategy
       } = mod;
       setComponents({
         PoolsList,
         StrategiesList,
         ResourceTypesList,
-        UniresourceAppProvider
+        UniresourceAppProvider,
+        CreateNestedPool,
+        CreateNewStrategy
       });
     });
   }, []);
@@ -29,7 +34,9 @@ const UniresourceApp: FC = () => {
     PoolsList,
     StrategiesList,
     ResourceTypesList,
-    UniresourceAppProvider
+    UniresourceAppProvider,
+    CreateNestedPool,
+    CreateNewStrategy
   } = components;
 
   return (
@@ -38,11 +45,21 @@ const UniresourceApp: FC = () => {
           <Route exact path="/uniresource">
             <Redirect to="/uniresource/pools" />
           </Route>
+          <Route exact path="/uniresource/pools/new">
+            <CreateNestedPool />
+          </Route>
           <Route exact path="/uniresource/pools">
             <PoolsList />
           </Route>
+          <Route exact path="/uniresource/strategies/new">
+            <CreateNewStrategy onSaveButtonClick={() => {
+              history.push('/uniresource/strategies');
+            }} />
+          </Route>
           <Route exact path="/uniresource/strategies">
-            <StrategiesList />
+            <StrategiesList onAddButtonClick={() => {
+              history.push('/uniresource/strategies/new');
+            }} />
           </Route>
           <Route exact path="/uniresource/resourceTypes">
             <ResourceTypesList />

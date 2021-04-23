@@ -1,8 +1,18 @@
 import React, { FC, useState } from 'react';
 import { useMutation } from 'urql';
-import { Button, Input } from '@chakra-ui/react';
+import { Box, Button, Container, FormControl, FormLabel, Heading, Input, Select } from '@chakra-ui/react';
 import gql from 'graphql-tag';
-import { CreateAllocationStrategyPayload, MutationCreateAllocationStrategyArgs } from '../__generated__/graphql';
+import AceEditor from 'react-ace';
+import {
+  AllocationStrategyLang,
+  CreateAllocationStrategyPayload,
+  MutationCreateAllocationStrategyArgs,
+} from '../__generated__/graphql';
+import 'ace-builds/webpack-resolver';
+import 'ace-builds/src-noconflict/mode-javascript';
+import 'ace-builds/src-noconflict/mode-python';
+import 'ace-builds/src-noconflict/theme-tomorrow';
+import 'ace-builds/src-noconflict/ext-language_tools';
 
 const query = gql`
   mutation AddStrategyMutation($input: CreateAllocationStrategyInput!) {
@@ -17,32 +27,98 @@ const query = gql`
   }
 `;
 
-const CreateNewStrategy: FC = () => {
-  const [, addStrategy] = useMutation<CreateAllocationStrategyPayload, MutationCreateAllocationStrategyArgs>(query);
-  const [value, setValue] = useState('');
+type Props = {
+  onSaveButtonClick: () => void;
+};
 
-  const sendMutation = () => {
+const CreateNewStrategy: FC<Props> = ({ onSaveButtonClick }) => {
+  const [{ data }, addStrategy] = useMutation<
+    CreateAllocationStrategyPayload,
+    MutationCreateAllocationStrategyArgs
+  >(query);
+  const [name, setName] = useState('');
+  const [lang, setLang] = useState<AllocationStrategyLang>('js');
+
+  const [script, setScript] = useState(
+    'function invoke() {\n' +
+      '        log(JSON.stringify({respool: resourcePool.ResourcePoolName, currentRes: currentResources}));\n' +
+      '        return {vlan: userInput.desiredVlan};\n' +
+      '    }\n' +
+      '\n',
+  );
+
+  const sendMutation = async () => {
     const variables = {
       input: {
-        name: value,
-        lang: 'js' as const,
-        script:
-          'function invoke() {log(JSON.stringify({respool: resourcePool.ResourcePoolName, currentRes: currentResources}));return {vlan: userInput.desiredVlan};}',
+        name,
+        lang,
+        script,
       },
     };
-    addStrategy(variables);
+    // TODO validation
+    await addStrategy(variables);
+    if (data) onSaveButtonClick();
   };
   return (
     <div>
-      Strategy name
-      <Input
-        value={value}
-        onChange={(event) => {
-          setValue(event.target.value);
-        }}
-        placeholder="Basic usage"
-      />
-      <Button onClick={() => sendMutation()}>Add new Strategy</Button>
+      <Container maxWidth={1200} padding={0}>
+        <Box background="white" paddingY={8} paddingX={4}>
+          <Heading as="h1" size="lg">
+            Create new Strategy
+          </Heading>
+          <form>
+            <FormControl my={6}>
+              <FormLabel>Name</FormLabel>
+              <Input
+                value={name}
+                onChange={(event) => {
+                  setName(event.target.value);
+                }}
+                placeholder="Enter name"
+              />
+            </FormControl>
+            <FormControl>
+              <Select
+                value={lang}
+                placeholder="Select option"
+                backgroundColor="white"
+                w="120px"
+                // TODO proper casting
+                onChange={(event) => setLang(event.target.value as AllocationStrategyLang)}
+              >
+                <option key="js_createnewstrategy" value="js">
+                  Javascript
+                </option>
+                <option key="py_createnewstrategy" value="py">
+                  Python
+                </option>
+              </Select>
+            </FormControl>
+            <FormControl my={6}>
+              <AceEditor
+                height="450px"
+                width="100%"
+                mode={lang === 'js' ? 'javascript' : 'python'}
+                theme="tomorrow"
+                editorProps={{ $blockScrolling: true }}
+                value={script}
+                fontSize={16}
+                onChange={setScript}
+                setOptions={{
+                  enableBasicAutocompletion: true,
+                  enableLiveAutocompletion: true,
+                  enableSnippets: true,
+                  showLineNumbers: true,
+                  tabSize: 2,
+                }}
+              />
+            </FormControl>
+          </form>
+          <Button colorScheme="blue" onClick={() => sendMutation()}>
+            Create Nested Pool
+          </Button>
+        </Box>
+      </Container>
     </div>
   );
 };
