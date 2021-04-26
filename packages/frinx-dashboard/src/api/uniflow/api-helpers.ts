@@ -48,6 +48,9 @@ export async function sendDeleteRequest(path: string, body?: unknown): Promise<u
   const options = {
     method: 'DELETE',
     body: JSON.stringify(body),
+    headers: {
+      'content-type': 'application/json',
+    },
   };
   return apiFetch(path, options);
 }
