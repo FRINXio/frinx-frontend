@@ -17,7 +17,7 @@ const ConnectionStatusBadge = ({ node, checkConnectionStatus }) => {
     <Tooltip label="Click to update status" aria-label="A tooltip">
       <Badge
         colorScheme={getColor(node.connectionStatus)}
-        onClick={() => checkConnectionStatus(node)}
+        onClick={() => checkConnectionStatus(node.topologyId, node.nodeId)}
         style={{ cursor: 'pointer' }}
       >
         {node.connectionStatus}
