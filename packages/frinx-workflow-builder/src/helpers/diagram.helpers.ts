@@ -275,7 +275,7 @@ class DiagramController {
         const outputs = unwrap(curr.outputs);
         const decisionCasesLength = this.getDecisionCasesLength(curr.data.task.decisionCases);
         const defaultTasksLength = this.getTasksLength(curr.data.task.defaultCase);
-        const nextNodeInputId = unwrap(nodes[index + defaultTasksLength + 1].inputs)[0].id;
+        const nextNodeInputId = unwrap(nodes[index + decisionCasesLength + defaultTasksLength + 1].inputs)[0].id;
         let dTaskLength = 0;
         Object.keys(task.decisionCases).forEach((key, idx) => {
           if (dTaskLength !== 0) {
