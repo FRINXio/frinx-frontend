@@ -16,7 +16,7 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@frinx/uniconfig-ui": "^1.1.9",
     "@frinx/uniresource-ui": "^1.0.0",
-    "@frinx/workflow-builder": "^0.0.1",
+    "@frinx/workflow-builder": "^0.0.2",
     "@frinx/workflow-ui": "^1.2.3",
     "@types/node": "^14.14.10",
     "@types/react": "^17.0.0",
