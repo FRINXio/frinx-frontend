@@ -70,10 +70,12 @@ class DiagramController {
           ...Array.from(new Array(PREPARED_DECISION_CASES)).map((_, index) => {
             return {
               id: serializeDecisionId(task.id, index.toString()),
+              alignment: 'right' as const,
             };
           }),
           {
             id: serializeDecisionId(task.id, 'else'),
+            alignment: 'right',
           },
         ],
         data: {
