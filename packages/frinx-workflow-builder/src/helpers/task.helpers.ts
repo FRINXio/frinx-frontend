@@ -52,7 +52,7 @@ function createHTTPTask(label: TaskLabel): ExtendedHTTPTask {
     label,
     name: 'HTTP_task',
     type: 'SIMPLE',
-    taskReferenceName: `httpRequestTaskRef_${getRandomString(4)}`,
+    taskReferenceName: `http_${getRandomString(4)}`,
     inputParameters: {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       http_request: {
@@ -72,7 +72,7 @@ function createGraphQLTask(label: TaskLabel): ExtendedGraphQLTask {
     label,
     name: 'HTTP_task',
     type: 'SIMPLE',
-    taskReferenceName: `graphQLTaskRef_${getRandomString(4)}`,
+    taskReferenceName: `graphql_${getRandomString(4)}`,
     inputParameters: {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       http_request: {
@@ -96,7 +96,7 @@ function createLambdaTask(label: TaskLabel): ExtendedLambdaTask {
     id: uuid(),
     label,
     name: 'LAMBDA_TASK',
-    taskReferenceName: `lambdaTaskRef_${getRandomString(4)}`,
+    taskReferenceName: `lambda_${getRandomString(4)}`,
     type: 'LAMBDA',
     inputParameters: {
       lambdaValue: '${workflow.input.lambdaValue}',
@@ -118,7 +118,7 @@ function createStartEndTask(
     label,
     name,
     type: name,
-    taskReferenceName: `startTaskRef_${getRandomString(4)}`,
+    taskReferenceName: `start_${getRandomString(4)}`,
     ...DEFAULT_TASK_OPTIONS,
   };
 }
@@ -129,7 +129,7 @@ function createForkTask(label: TaskLabel): ExtendedForkTask {
     label,
     name: 'forkTask',
     type: 'FORK_JOIN',
-    taskReferenceName: `forkTaskRef_${getRandomString(4)}`,
+    taskReferenceName: `fork_${getRandomString(4)}`,
     forkTasks: [],
     ...DEFAULT_TASK_OPTIONS,
   };
@@ -141,7 +141,7 @@ function createJoinTask(label: TaskLabel): ExtendedJoinTask {
     label,
     name: 'joinTask',
     type: 'JOIN',
-    taskReferenceName: `joinTaskRef_${getRandomString(4)}`,
+    taskReferenceName: `join_${getRandomString(4)}`,
     joinOn: [],
     ...DEFAULT_TASK_OPTIONS,
   };
@@ -153,7 +153,7 @@ function createWhileTask(label: TaskLabel): ExtendedWhileTask {
     label,
     name: 'whileTask',
     type: 'DO_WHILE',
-    taskReferenceName: `whileTaskRef_${getRandomString(4)}`,
+    taskReferenceName: `while_${getRandomString(4)}`,
     loopOver: [],
     loopCondition: '',
     inputParameters: {
@@ -169,7 +169,7 @@ function createWhileEndTask(label: TaskLabel): ExtendedWhileEndTask {
     label,
     name: 'whileEndTask',
     type: 'WHILE_END',
-    taskReferenceName: `whileEndTaskRef_${getRandomString(4)}`,
+    taskReferenceName: `whileEnd_${getRandomString(4)}`,
     ...DEFAULT_TASK_OPTIONS,
   };
 }
@@ -180,7 +180,7 @@ function createDecisionTask(label: TaskLabel): ExtendedDecisionTask {
     label,
     name: 'decisionTask',
     type: 'DECISION',
-    taskReferenceName: `decisionTaskRef_${getRandomString(4)}`,
+    taskReferenceName: `decision_${getRandomString(4)}`,
     caseValueParam: 'param',
     decisionCases: {
       true: [],
@@ -200,7 +200,7 @@ function createTerminateTask(label: TaskLabel): ExtendedTerminateTask {
     label,
     name: 'terminateTask',
     type: 'TERMINATE',
-    taskReferenceName: `terminateTaskRef_${getRandomString(4)}`,
+    taskReferenceName: `terminate_${getRandomString(4)}`,
     inputParameters: {
       terminationStatus: 'COMPLETED',
       workflowOutput: 'Expected workflow output',
@@ -215,7 +215,7 @@ function createEventTask(label: TaskLabel): ExtendedEventTask {
     label,
     name: 'eventTask',
     type: 'EVENT',
-    taskReferenceName: `eventTaskRef_${getRandomString(4)}`,
+    taskReferenceName: `event_${getRandomString(4)}`,
     sink: 'conductor',
     inputParameters: {
       targetWorkflowId: '${workflow.input.targetWorkflowId}',
@@ -232,7 +232,7 @@ function createWaitTask(label: TaskLabel): ExtendedWaitTask {
     label,
     name: 'waitTask',
     type: 'WAIT',
-    taskReferenceName: `waitTaskRef_${getRandomString(4)}`,
+    taskReferenceName: `wait_${getRandomString(4)}`,
     ...DEFAULT_TASK_OPTIONS,
   };
 }
@@ -243,7 +243,7 @@ function createRawTask(label: TaskLabel): ExtendedRawTask {
     label,
     name: 'rawTask',
     type: 'RAW',
-    taskReferenceName: `rawTaskRef_${getRandomString(4)}`,
+    taskReferenceName: `raw_${getRandomString(4)}`,
     inputParameters: {
       raw: '',
     },

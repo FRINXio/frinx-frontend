@@ -23,55 +23,49 @@ const BaseNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
       </Box>
       <Flex>
         {inputs?.map((port) => {
-          return (
-            <Flex background="gray.200">
-              {React.cloneElement(
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                port,
-                {
-                  style: {
-                    background: theme.colors.gray[200],
-                    width: theme.space[12],
-                    height: theme.space[6],
-                    fontSize: theme.fontSizes.xs,
-                    color: theme.colors.gray[700],
-                    marginRight: 'auto',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    textTransform: 'uppercase',
-                  },
-                },
-                'in',
-              )}
-            </Flex>
+          return React.cloneElement(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            port,
+            {
+              style: {
+                background: theme.colors.gray[200],
+                width: theme.space[12],
+                height: theme.space[6],
+                fontSize: theme.fontSizes.xs,
+                color: theme.colors.gray[700],
+                marginRight: 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textTransform: 'uppercase',
+              },
+            },
+            'in',
           );
         })}
+      </Flex>
+      <Flex justifyContent="flex-end">
         {outputs?.map((port) => {
-          return (
-            <Flex background="gray.200">
-              {React.cloneElement(
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                port,
-                {
-                  style: {
-                    background: theme.colors.gray[200],
-                    width: theme.space[12],
-                    height: theme.space[6],
-                    fontSize: theme.fontSizes.xs,
-                    color: theme.colors.gray[700],
-                    marginLeft: 'auto',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    textTransform: 'uppercase',
-                  },
-                },
-                'out',
-              )}
-            </Flex>
+          return React.cloneElement(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            port,
+            {
+              style: {
+                background: theme.colors.gray[200],
+                width: theme.space[12],
+                height: theme.space[6],
+                fontSize: theme.fontSizes.xs,
+                color: theme.colors.gray[700],
+                marginLeft: 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textTransform: 'uppercase',
+              },
+            },
+            'out',
           );
         })}
       </Flex>
