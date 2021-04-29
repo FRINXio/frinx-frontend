@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 import 'beautiful-react-diagrams/dist/styles.css';
 import Diagram, { useSchema, Canvas, useCanvasState, CanvasControls } from 'beautiful-react-diagrams';
-import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure, useTheme } from '@chakra-ui/react';
+import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
 import produce, { castImmutable } from 'immer';
 import { createDiagramController } from './helpers/diagram.helpers';
 import unwrap from './helpers/unwrap';
@@ -58,7 +58,6 @@ const App: FC<Props> = ({
   onFileExport,
   onWorkflowDelete,
 }) => {
-  const theme = useTheme();
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
   const [isEditing, setIsEditing] = useState(false);
