@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import React, { useState } from 'react';
 import UnescapeButton from './UnescapeButton';
 import {
   Box,
@@ -20,10 +20,12 @@ import {
   Stack,
   IconButton,
   Divider,
+  Button,
 } from '@chakra-ui/react';
 import type { Task } from './flowtypes';
 import { jsonParse } from './utils';
 import { CopyIcon } from '@chakra-ui/icons';
+import unescapeJs from 'unescape-js';
 
 type Props = {
   task: Task,
@@ -39,6 +41,13 @@ function renderTaskDescription(task) {
 }
 
 const TaskModal = ({ task, show, handle }: Props) => {
+  const [isEscaped, setIsEscaped] = useState(true);
+  const { inputData, outputData, logs } = task;
+
+  function getUnescapedJSON(data) {
+    return isEscaped ? JSON.stringify(data, null, 2) : unescapeJs(JSON.stringify(data, null, 2));
+  }
+
   return (
     <Modal marginTop={10} size="5xl" isOpen={show} onClose={handle}>
       <ModalOverlay />
@@ -82,15 +91,11 @@ const TaskModal = ({ task, show, handle }: Props) => {
                         Input
                       </Text>
                       <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#t_input" />
-                      <UnescapeButton size="sm" target="t_input" />
+                      <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
+                        {isEscaped ? 'Unescape' : 'Escape'}
+                      </Button>
                     </Stack>
-                    <Textarea
-                      value={JSON.stringify(task.inputData, null, 2)}
-                      isReadOnly={true}
-                      id="t_input"
-                      variant="filled"
-                      minH={200}
-                    />
+                    <Textarea value={getUnescapedJSON(inputData)} isReadOnly={true} id="t_input" variant="filled" minH={200} />
                   </Box>
                   <Box>
                     <Stack direction="row" spacing={2} align="center" mb={2}>
@@ -98,15 +103,11 @@ const TaskModal = ({ task, show, handle }: Props) => {
                         Output
                       </Text>
                       <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#t_output" />
-                      <UnescapeButton size="sm" target="t_output" />
+                      <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
+                        {isEscaped ? 'Unescape' : 'Escape'}
+                      </Button>
                     </Stack>
-                    <Textarea
-                      value={JSON.stringify(task.outputData, null, 2)}
-                      isReadOnly={true}
-                      id="t_output"
-                      variant="filled"
-                      minH={200}
-                    />
+                    <Textarea value={getUnescapedJSON(outputData)} isReadOnly={true} id="t_output" variant="filled" minH={200} />
                   </Box>
                 </SimpleGrid>
               </TabPanel>
@@ -117,15 +118,11 @@ const TaskModal = ({ task, show, handle }: Props) => {
                       JSON
                     </Text>
                     <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#t_json" />
-                    <UnescapeButton size="sm" target="t_json" />
+                    <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
+                      {isEscaped ? 'Unescape' : 'Escape'}
+                    </Button>
                   </Stack>
-                  <Textarea
-                    value={JSON.stringify(task, null, 2)}
-                    isReadOnly={true}
-                    id="t_json"
-                    variant="filled"
-                    minH={300}
-                  />
+                  <Textarea value={getUnescapedJSON(task)} isReadOnly={true} id="t_json" variant="filled" minH={300} />
                 </Box>
               </TabPanel>
               <TabPanel>
@@ -135,9 +132,11 @@ const TaskModal = ({ task, show, handle }: Props) => {
                       Logs
                     </Text>
                     <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#t_logs" />
-                    <UnescapeButton size="sm" target="t_logs" />
+                    <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
+                      {isEscaped ? 'Unescape' : 'Escape'}
+                    </Button>
                   </Stack>
-                  <Textarea value={JSON.stringify(task.logs, null, 2)} isReadOnly={true} id="t_logs" variant="filled" />
+                  <Textarea value={getUnescapedJSON(logs)} isReadOnly={true} id="t_logs" variant="filled" />
                 </Box>
               </TabPanel>
             </TabPanels>

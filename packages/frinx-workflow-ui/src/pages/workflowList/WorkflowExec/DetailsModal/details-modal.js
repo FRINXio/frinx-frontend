@@ -3,10 +3,10 @@ import './DetailsModal.css';
 import Clipboard from 'clipboard';
 import React, { Component } from 'react';
 import TaskModal from '../../../../common/TaskModal';
-import UnescapeButton from '../../../../common/UnescapeButton';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../../../utils/callbackUtils';
 import moment from 'moment';
+import unescapeJs from 'unescape-js';
 import {
   Box,
   Button,
@@ -62,6 +62,7 @@ class DetailsModal extends Component {
       taskDetail: {},
       taskModal: false,
       wfIdRerun: '',
+      isEscaped: true,
     };
     this.handleClose = this.handleClose.bind(this);
   }
@@ -111,6 +112,10 @@ class DetailsModal extends Component {
         });
       }
     });
+  }
+
+  getUnescapedJSON(data) {
+    return this.state.isEscaped ? JSON.stringify(data, null, 2) : unescapeJs(JSON.stringify(data, null, 2));
   }
 
   handleClose() {
@@ -333,61 +338,59 @@ class DetailsModal extends Component {
       </div>
     );
 
-    const inputOutput = () => (
-      <SimpleGrid columns={2} spacing={4}>
-        <Box>
-          <Stack direction="row" spacing={2} align="center" mb={2}>
-            <Text as="b" fontSize="sm">
-              Workflow Input
-            </Text>
-            <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#wfinput" />
-            <UnescapeButton size="sm" target="wfinput" />
-          </Stack>
-          <Textarea
-            value={JSON.stringify(this.state.result.input, null, 2)}
-            isReadOnly={true}
-            id="wfinput"
-            variant="filled"
-            minH={200}
-          />
-        </Box>
-        <Box>
-          <Stack direction="row" spacing={2} align="center" mb={2}>
-            <Text as="b" fontSize="sm">
-              Workflow Output
-            </Text>
-            <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#wfoutput" />
-            <UnescapeButton size="sm" target="wfoutput" />
-          </Stack>
-          <Textarea
-            value={JSON.stringify(this.state.result.output, null, 2)}
-            isReadOnly={true}
-            id="wfoutput"
-            variant="filled"
-            minH={200}
-          />
-        </Box>
-      </SimpleGrid>
-    );
+    const inputOutput = () => {
+      const { isEscaped, result } = this.state;
+      const input = result.input || '';
+      const output = result.output || '';
 
-    const wfJson = () => (
-      <Box>
-        <Stack direction="row" spacing={2} align="center" mb={2}>
-          <Text as="b" fontSize="sm">
-            Workflow JSON
-          </Text>
-          <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#json" />
-          <UnescapeButton size="sm" target="wfoutput" />
-        </Stack>
-        <Textarea
-          value={JSON.stringify(this.state.result, null, 2)}
-          isReadOnly={true}
-          id="json"
-          variant="filled"
-          minH={200}
-        />
-      </Box>
-    );
+      return (
+        <SimpleGrid columns={2} spacing={4}>
+          <Box>
+            <Stack direction="row" spacing={2} align="center" mb={2}>
+              <Text as="b" fontSize="sm">
+                Workflow Input
+              </Text>
+              <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#wfinput" />
+              <Button size="sm" onClick={() => this.setState((prevState) => ({ isEscaped: !prevState.isEscaped }))}>
+                {isEscaped ? 'Unescape' : 'Escape'}
+              </Button>
+            </Stack>
+            <Textarea value={this.getUnescapedJSON(input)} isReadOnly={true} id="wfinput" variant="filled" minH={200} />
+          </Box>
+          <Box>
+            <Stack direction="row" spacing={2} align="center" mb={2}>
+              <Text as="b" fontSize="sm">
+                Workflow Output
+              </Text>
+              <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#wfoutput" />
+              <Button size="sm" onClick={() => this.setState((prevState) => ({ isEscaped: !prevState.isEscaped }))}>
+                {isEscaped ? 'Unescape' : 'Escape'}
+              </Button>
+            </Stack>
+            <Textarea value={this.getUnescapedJSON(output)} isReadOnly={true} id="wfoutput" variant="filled" minH={200} />
+          </Box>
+        </SimpleGrid>
+      );
+    };
+
+    const wfJson = () => {
+      const { isEscaped, result } = this.state;
+
+      return (
+        <Box>
+          <Stack direction="row" spacing={2} align="center" mb={2}>
+            <Text as="b" fontSize="sm">
+              Workflow JSON
+            </Text>
+            <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#json" />
+            <Button size="sm" onClick={() => this.setState((prevState) => ({ isEscaped: !prevState.isEscaped }))}>
+                {isEscaped ? 'Unescape' : 'Escape'}
+              </Button>
+          </Stack>
+          <Textarea value={this.getUnescapedJSON(result)} isReadOnly={true} id="json" variant="filled" minH={200} />
+        </Box>
+      );
+    };
 
     const editRerun = () => {
       const input = this.state.input.input || [];
