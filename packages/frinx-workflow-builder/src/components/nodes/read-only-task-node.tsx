@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Box, Flex, Heading, useTheme } from '@chakra-ui/react';
+import { Box, Flex, Heading, Tooltip, useTheme } from '@chakra-ui/react';
 import { CustomNodeType } from '../../helpers/types';
 import { getNodeColor } from './nodes.helpers';
 import unwrap from '../../helpers/unwrap';
@@ -27,8 +27,8 @@ const ReadOnlyTaskNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
       borderRadius="md"
     >
       <Flex px={2} py={1} fontSize="sm" fontWeight="medium" alignItems="center">
-        <Heading as="h6" size="xs" textTransform="uppercase" isTruncated marginRight={2} title={task.name}>
-          {task.name}
+        <Heading as="h6" size="xs" textTransform="uppercase" isTruncated marginRight={2} cursor="default">
+          <Tooltip label={task.taskReferenceName}>{task.taskReferenceName}</Tooltip>
         </Heading>
       </Flex>
       <Flex background="gray.100">
