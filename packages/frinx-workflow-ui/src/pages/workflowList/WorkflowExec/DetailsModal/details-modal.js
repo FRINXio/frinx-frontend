@@ -209,9 +209,9 @@ class DetailsModal extends Component {
     });
   }
 
-  handleTaskDetail(row) {
+  handleTaskDetail = (row) => {
     this.setState({ taskDetail: row, taskModal: !this.state.taskModal });
-  }
+  };
 
   terminateWfs() {
     const terminateWorkflows = callbackUtils.terminateWorkflowsCallback();
