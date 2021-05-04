@@ -1,224 +1,196 @@
-// @flow
-import PageContainer from '../../../common/PageContainer';
-import PageCount from '../../../common/PageCount';
-import PageSelect from '../../../common/PageSelect';
 import React, { useEffect, useState } from 'react';
-import SchedulingModal from './SchedulingModal/SchedulingModal';
-import callbackUtils from '../../../utils/callbackUtils';
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
   Button,
-  Flex,
-  Icon,
-  IconButton,
+  Heading,
+  Box,
+  ButtonGroup,
+  Stack,
+  FormControl,
+  Switch,
   Table,
   Tbody,
   Td,
+  Tfoot,
   Th,
   Thead,
   Tr,
+  Tag,
+  Code,
+  useToast,
 } from '@chakra-ui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import sortBy from 'lodash/sortBy';
+import FeatherIcon from 'feather-icons-react';
+import PageContainer from '../../../common/PageContainer';
+import PaginationPages from '../../../common/Pagination';
+import { usePagination } from '../../../common/PaginationHook';
+import callbackUtils from '../../../utils/callbackUtils';
+import SchedulingModal from './SchedulingModal/SchedulingModal';
 
-const Scheduling = () => {
-  const [showSchedulingModal, setShowSchedulingModal] = useState(false);
-  const [activeRow, setActiveRow] = useState();
-  const [pagesCount, setPagesCount] = useState(1);
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(undefined);
-  const [defaultPages, setDefaultPages] = useState(20);
-  const [viewedPage, setViewedPage] = useState(1);
+function Scheduling() {
+  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
+  const [selectedWorkflow, setSelectedWorkflow] = useState();
+  const [isSchedulingModalOpen, setIsSchedulingModalOpen] = useState(false);
+  const toast = useToast();
 
-  const refresh = () => {
+  function getData() {
     const getSchedules = callbackUtils.getSchedulesCallback();
 
     getSchedules()
-      .then((result) => {
-        const dataset = result.sort((a, b) =>
-          a.workflowName > b.workflowName ? 1 : b.workflowName > a.workflowName ? -1 : 0,
-        );
-        let size = Math.floor(dataset.length / defaultPages);
-        setData(dataset);
-        setPagesCount(dataset.length % defaultPages ? ++size : size);
-        deselectActiveRow();
+      .then((schedules) => {
+        setItemList(sortBy(schedules, ['name']));
       })
       .catch((err) => {
-        setError(`Network error: ${err}`);
+        toast({
+          title: err?.message,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        });
       });
-  };
+  }
 
   useEffect(() => {
-    // do network request just once
-    refresh();
+    getData();
   }, []);
 
-  const deselectActiveRow = () => {
-    setActiveRow(null);
-  };
+  function onEdit(workflow) {
+    setSelectedWorkflow(workflow);
+    setIsSchedulingModalOpen(true);
+  }
 
-  const changeActiveRow = (i) => {
-    const deselectingCurrentRow = activeRow == i;
-    if (deselectingCurrentRow) {
-      deselectActiveRow();
-    } else {
-      setActiveRow(i);
-    }
-  };
+  function onSchedulingModalClose() {
+    getData();
+    setIsSchedulingModalOpen(false);
+  }
 
-  const setCountPages = (defaultPages, pagesCount) => {
-    setDefaultPages(defaultPages);
-    setPagesCount(pagesCount);
-    setViewedPage(1);
-  };
+  function onScheduleUpdate(newScheduledWf) {
+    const registerSchedule = callbackUtils.registerScheduleCallback();
 
-  const deleteEntry = (schedulingEntry) => {
-    const deleteSchedule = callbackUtils.deleteScheduleCallback();
-
-    deleteSchedule(schedulingEntry.name)
-      .then(() => {
-        deselectActiveRow();
-        refresh();
+    registerSchedule(newScheduledWf.name, newScheduledWf)
+      .then((res) => {
+        toast({
+          title: res?.message,
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        });
+        getData();
       })
-      .catch(() => {
-        const newError = 'Network error';
-        setError(newError);
+      .catch((err) => {
+        toast({
+          title: err?.message,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        });
       });
-  };
+  }
 
-  const flipShowSchedulingModal = () => {
-    setShowSchedulingModal((s) => !s);
-  };
+  function onScheduleEnable(scheduledWf) {
+    const newScheduledWf = {
+      ...scheduledWf,
+      enabled: !scheduledWf.enabled,
+    };
+    onScheduleUpdate(newScheduledWf);
+  }
 
-  const onModalClose = () => {
-    flipShowSchedulingModal();
-    refresh();
-  };
-
-  const getActiveScheduleName = () => {
-    if (activeRow != null && data[activeRow] != null) {
-      return data[activeRow].name;
+  function getStatusTagColor(status) {
+    switch (status) {
+      case 'COMPLETED':
+        return 'green';
+      case 'RUNNING':
+        return 'cyan';
+      case 'FAILED':
+        return 'red';
+      default:
+        return null;
     }
-    return null;
-  };
-
-  const getActiveWorkflowName = () => {
-    if (activeRow != null && data[activeRow] != null) {
-      return data[activeRow].workflowName;
-    }
-    return null;
-  };
-
-  const getActiveWorkflowVersion = () => {
-    if (activeRow != null && data[activeRow] != null) {
-      return data[activeRow].workflowVersion;
-    }
-    return null;
-  };
-
-  const getDataLength = () => {
-    if (data != null) {
-      return data.length;
-    }
-    return null;
-  };
-
-  const repeat = () => {
-    const output = [];
-    if (data != null) {
-      for (let i = 0; i < data.length; i++) {
-        if (i >= (viewedPage - 1) * defaultPages && i < viewedPage * defaultPages) {
-          output.push(
-            <div className="wfRow" key={i}>
-              <AccordionItem onClick={changeActiveRow.bind(this, i)}>
-                <h2>
-                  <AccordionButton>
-                    <Box flex="1" textAlign="left">
-                      <b>{data[i]['workflowName']}</b> v.{data[i]['workflowVersion']}
-                      <br />
-                      <div className="description">{data[i]['cronString']}</div>
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel padding={0}>
-                  <div
-                    style={{
-                      background: 'linear-gradient(-120deg, rgb(0, 147, 255) 0%, rgb(0, 118, 203) 100%)',
-                      padding: '15px',
-                      marginBottom: '10px',
-                    }}
-                  >
-                    <Button variant="outline" color="white" colorScheme="whiteAlpha" onClick={flipShowSchedulingModal}>
-                      Edit
-                    </Button>
-                    <IconButton
-                      icon={<Icon as={FontAwesomeIcon} icon={faTrashAlt} />}
-                      variant="outline"
-                      float="right"
-                      colorScheme="red"
-                      onClick={deleteEntry.bind(this, data[i])}
-                    />
-                  </div>
-                </AccordionPanel>
-              </AccordionItem>
-            </div>,
-          );
-        }
-      }
-    }
-    return output;
-  };
+  }
 
   return (
     <PageContainer>
-      <SchedulingModal
-        name={getActiveScheduleName()}
-        workflowName={getActiveWorkflowName()}
-        workflowVersion={getActiveWorkflowVersion()}
-        onClose={onModalClose}
-        show={showSchedulingModal}
-      />
-      <Button variant="outline" size="sm" colorScheme="blue" onClick={() => refresh()} marginBottom={5}>
-        <i className="fas fa-sync" />
-        &nbsp;&nbsp;Refresh
-      </Button>
-
-      <div className="scrollWrapper" style={{ maxHeight: '650px' }}>
-        <Table background="white">
-          <Thead>
-            <Tr>
-              <Th>Name/Cron</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            <Tr>
-              <Td padding={0}>
-                <Accordion allowToggle activeKey={activeRow}>
-                  {repeat()}
-                </Accordion>
+      {isSchedulingModalOpen && (
+        <SchedulingModal
+          scheduledWorkflow={selectedWorkflow}
+          name={selectedWorkflow.name}
+          workflowName={selectedWorkflow.workflowName}
+          workflowVersion={selectedWorkflow.workflowVersion}
+          isOpen={isSchedulingModalOpen}
+          onClose={onSchedulingModalClose}
+        />
+      )}
+      <Table background="white">
+        <Thead>
+          <Tr>
+            <Th>Active</Th>
+            <Th>Name/Version</Th>
+            <Th>Last Status</Th>
+            <Th>Cron expression</Th>
+            <Th>Actions</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {pageItems.map((item) => (
+            <Tr key={item.name} role="group">
+              <Td>
+                <FormControl display="flex" alignItems="center">
+                  <Switch isChecked={!!item.enabled} onChange={() => onScheduleEnable(item)} />
+                </FormControl>
+              </Td>
+              <Td>
+                <Heading as="h6" size="xs">
+                  {item.name}
+                </Heading>
+              </Td>
+              <Td>
+                <Tag colorScheme={getStatusTagColor(item.status)}>{item.status || '-'}</Tag>
+              </Td>
+              <Td>
+                <Code>{item.cronString}</Code>
+              </Td>
+              <Td>
+                <Stack direction="row" spacing={4}>
+                  <ButtonGroup>
+                    <Button colorScheme="red" size="sm" variant="outline">
+                      <Box as="span" flexShrink={0} alignSelf="center">
+                        <Box
+                          as={FeatherIcon}
+                          size="1em"
+                          icon="trash-2"
+                          flexShrink={0}
+                          lineHeight={4}
+                          verticalAlign="middle"
+                        />
+                      </Box>
+                    </Button>
+                    <Button colorScheme="black" size="sm" variant="outline" onClick={() => onEdit(item)}>
+                      <Box as="span" flexShrink={0} alignSelf="center">
+                        <Box
+                          as={FeatherIcon}
+                          size="1em"
+                          icon="edit"
+                          flexShrink={0}
+                          lineHeight={4}
+                          verticalAlign="middle"
+                        />
+                      </Box>
+                    </Button>
+                  </ButtonGroup>
+                </Stack>
               </Td>
             </Tr>
-          </Tbody>
-        </Table>
-      </div>
-      <Box marginTop={4}>
-        <Flex justifyContent="space-between">
-          <Box sm={2}>
-            <PageCount dataSize={getDataLength()} defaultPages={defaultPages} handler={setCountPages.bind(this)} />
-          </Box>
-          <Box sm={2}>
-            <PageSelect viewedPage={viewedPage} count={pagesCount} handler={setViewedPage} />
-          </Box>
-        </Flex>
-      </Box>
+          ))}
+        </Tbody>
+        <Tfoot>
+          <Tr>
+            <Th>
+              <PaginationPages totalPages={totalPages} currentPage={currentPage} changePageHandler={setCurrentPage} />
+            </Th>
+          </Tr>
+        </Tfoot>
+      </Table>
     </PageContainer>
   );
-};
+}
 
 export default Scheduling;
