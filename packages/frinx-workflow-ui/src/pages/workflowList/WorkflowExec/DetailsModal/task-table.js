@@ -46,6 +46,7 @@ const TaskTable = ({ tasks, onTaskClick, onWorkflowIdClick }: Props) => {
               onClick={() => {
                 onTaskClick(task);
               }}
+              cursor="pointer"
             >
               <Tooltip label={task.taskType}>
                 <Text isTruncated maxWidth={32}>
@@ -69,6 +70,7 @@ const TaskTable = ({ tasks, onTaskClick, onWorkflowIdClick }: Props) => {
               onClick={() => {
                 onTaskClick(task);
               }}
+              cursor="pointer"
             >
               <Tooltip label={task.referenceTaskName}>
                 <Text isTruncated maxWidth={32}>
