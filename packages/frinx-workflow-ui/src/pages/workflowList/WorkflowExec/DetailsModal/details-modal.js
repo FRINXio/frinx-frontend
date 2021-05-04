@@ -40,8 +40,11 @@ import {
   Stack,
   Text,
   Textarea,
+  Tooltip,
 } from '@chakra-ui/react';
 import { CopyIcon } from '@chakra-ui/icons';
+import { resetToDefaultWorkflow } from '../../../../store/actions/builder';
+import TaskTable from './task-table';
 
 new Clipboard('.clp');
 
@@ -175,22 +178,32 @@ class DetailsModal extends Component {
     return dataset.map((row, i) => {
       return (
         <Tr key={`row-${i}`} id={`row-${i}`} className="clickable">
-          <Td>{row['seq']}</Td>
-          <Td onClick={this.handleTaskDetail.bind(this, row)}>{row['taskType']}&nbsp;&nbsp;</Td>
+          <Td>{row.seq}</Td>
+          <Td onClick={this.handleTaskDetail.bind(this, row)}>
+            <Tooltip label={row.taskType}>
+              <Text isTruncated maxWidth={32}>
+                {row.taskType}
+              </Text>
+            </Tooltip>
+          </Td>
           <Td style={{ textAlign: 'center' }}>
-            {row['taskType'] === 'SUB_WORKFLOW' ? (
+            {row.taskType === 'SUB_WORKFLOW' ? (
               <Button colorScheme="blue" onClick={() => this.props.onWorkflowIdClick(row.subWorkflowId)}>
                 <i className="fas fa-arrow-circle-right" />
               </Button>
             ) : null}
           </Td>
-          <Td onClick={this.handleTaskDetail.bind(this, row)}>{row['referenceTaskName']}</Td>
-          <Td>
-            {this.formatDate(row['startTime'])}
-            <br />
-            {this.formatDate(row['endTime'])}
+          <Td onClick={this.handleTaskDetail.bind(this, row)}>
+            <Text isTruncated maxWidth={32}>
+              {row.referenceTaskName}
+            </Text>
           </Td>
-          <Td>{row['status']}</Td>
+          <Td>
+            {this.formatDate(row.startTime)}
+            <br />
+            {this.formatDate(row.endTime)}
+          </Td>
+          <Td>{row.status}</Td>
         </Tr>
       );
     });
@@ -367,7 +380,13 @@ class DetailsModal extends Component {
                 {isEscaped ? 'Unescape' : 'Escape'}
               </Button>
             </Stack>
-            <Textarea value={this.getUnescapedJSON(output)} isReadOnly={true} id="wfoutput" variant="filled" minH={200} />
+            <Textarea
+              value={this.getUnescapedJSON(output)}
+              isReadOnly={true}
+              id="wfoutput"
+              variant="filled"
+              minH={200}
+            />
           </Box>
         </SimpleGrid>
       );
@@ -384,8 +403,8 @@ class DetailsModal extends Component {
             </Text>
             <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#json" />
             <Button size="sm" onClick={() => this.setState((prevState) => ({ isEscaped: !prevState.isEscaped }))}>
-                {isEscaped ? 'Unescape' : 'Escape'}
-              </Button>
+              {isEscaped ? 'Unescape' : 'Escape'}
+            </Button>
           </Stack>
           <Textarea value={this.getUnescapedJSON(result)} isReadOnly={true} id="json" variant="filled" minH={200} />
         </Box>
@@ -436,6 +455,8 @@ class DetailsModal extends Component {
       }
     };
 
+    const { result } = this.state;
+
     return (
       <>
         <TaskModal
@@ -459,7 +480,6 @@ class DetailsModal extends Component {
                 onChange={(index) => {
                   this.setState({ activeTab: index });
                 }}
-                id="detailTabs"
               >
                 <TabList>
                   <Tab>Task Details</Tab>
@@ -469,7 +489,13 @@ class DetailsModal extends Component {
                   <Tab>Execution Flow</Tab>
                 </TabList>
                 <TabPanels>
-                  <TabPanel>{taskTable()}</TabPanel>
+                  <TabPanel>
+                    <TaskTable
+                      tasks={result.tasks ?? []}
+                      onTaskClick={this.handleTaskDetail}
+                      onWorkflowIdClick={this.props.onWorkflowIdClick}
+                    />
+                  </TabPanel>
                   <TabPanel>{inputOutput()}</TabPanel>
                   <TabPanel>{wfJson()}</TabPanel>
                   <TabPanel>
