@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import { createSchema } from 'beautiful-react-diagrams';
 import { DiagramSchema, Link } from 'beautiful-react-diagrams/@types/DiagramSchema';
 import { v4 as uuid } from 'uuid';
@@ -9,6 +10,7 @@ import { getTaskLabel } from './task.helpers';
 import unwrap from './unwrap';
 import ReadOnlyTaskNode from '../components/nodes/read-only-task-node';
 import ReadOnlyDecisionNode from '../components/nodes/read-only-decision-node';
+import LinkLabel from '../components/link-label/link-label';
 
 const NODE_WIDTH = 275;
 const MAIN_Y_AXIS_POSITON = 300;
@@ -299,6 +301,8 @@ class DiagramController {
         ? state[index].map((l) => ({
             input: l.type === 'output' ? unwrap(curr.outputs)[0].id : l.id,
             output: l.type === 'output' ? l.id : unwrap(curr.inputs)[0].id,
+            label: createElement(LinkLabel),
+            className: 'custom-link',
           }))
         : [];
       const nextNode = array[index + 1] ?? null;
@@ -308,6 +312,8 @@ class DiagramController {
           ? {
               input: curr.outputs != null ? curr.outputs[0].id : '',
               output: nextNode?.inputs != null ? nextNode.inputs[0].id : '',
+              label: createElement(LinkLabel),
+              className: 'custom-link',
             }
           : null;
       return [...acc, link, ...stateLinks];
