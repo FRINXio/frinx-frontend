@@ -250,7 +250,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
       </Box>
       <Divider my={6} />
       <HStack spacing={2} align="center">
-        <Button type="submit" colorScheme="blue">
+        <Button type="submit" colorScheme="blue" isDisabled={isNameInvalid}>
           Save changes
         </Button>
         {onClose && <Button onClick={onClose}>Cancel</Button>}
