@@ -20,7 +20,6 @@ import {
   ExtendedSubworkflowTask,
   ExtendedHTTPTask,
   ExtendedGraphQLTask,
-  ExtendedJSPythonTask,
   InputParameters,
   HTTPInputParams,
   GraphQLInputParams,
@@ -36,13 +35,24 @@ const DEFAULT_TASK_OPTIONS: Pick<Task, 'optional' | 'startDelay'> = {
   optional: false,
 };
 
+function getRandomString(length: number): string {
+  return window
+    .btoa(
+      Array.from(window.crypto.getRandomValues(new Uint8Array(length * 2)))
+        .map((b) => String.fromCharCode(b))
+        .join(''),
+    )
+    .replace(/[+/]/g, '')
+    .substring(0, length);
+}
+
 function createHTTPTask(label: TaskLabel): ExtendedHTTPTask {
   return {
     id: uuid(),
     label,
-    name: 'GLOBAL___HTTP_task',
+    name: 'HTTP_task',
     type: 'SIMPLE',
-    taskReferenceName: `httpRequestTaskRef_${uuid()}`,
+    taskReferenceName: `http_${getRandomString(4)}`,
     inputParameters: {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       http_request: {
@@ -60,9 +70,9 @@ function createGraphQLTask(label: TaskLabel): ExtendedGraphQLTask {
   return {
     id: uuid(),
     label,
-    name: 'GLOBAL___HTTP_task',
+    name: 'HTTP_task',
     type: 'SIMPLE',
-    taskReferenceName: `graphQLTaskRef_${uuid()}`,
+    taskReferenceName: `graphql_${getRandomString(4)}`,
     inputParameters: {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       http_request: {
@@ -80,47 +90,13 @@ function createGraphQLTask(label: TaskLabel): ExtendedGraphQLTask {
     ...DEFAULT_TASK_OPTIONS,
   };
 }
-function createJSTask(label: TaskLabel): ExtendedJSPythonTask {
-  return {
-    id: uuid(),
-    label,
-    name: 'GLOBAL__JS',
-    type: 'SIMPLE',
-    taskReferenceName: `lambdaJsTaskRef_${uuid()}`,
-    inputParameters: {
-      lambdaValue: '${workflow.input.lambdaValue}',
-      scriptExpression: `if inputData["lambdaValue"] == "1":
-        return {"testValue": True}
-      else:
-        return {"testValue": False}`,
-    },
-    ...DEFAULT_TASK_OPTIONS,
-  };
-}
-function createPYTask(label: TaskLabel): ExtendedJSPythonTask {
-  return {
-    id: uuid(),
-    label,
-    name: 'GLOBAL__PY',
-    type: 'SIMPLE',
-    taskReferenceName: `lambdaJsTaskRef_${uuid()}`,
-    inputParameters: {
-      lambdaValue: '${workflow.input.lambdaValue}',
-      scriptExpression: `if ($.lambdaValue == 1) {
-        return {testvalue: true};
-        } else {
-        return {testvalue: false};
-        }`,
-    },
-    ...DEFAULT_TASK_OPTIONS,
-  };
-}
+
 function createLambdaTask(label: TaskLabel): ExtendedLambdaTask {
   return {
     id: uuid(),
     label,
     name: 'LAMBDA_TASK',
-    taskReferenceName: `lambdaTaskRef_${uuid()}`,
+    taskReferenceName: `lambda_${getRandomString(4)}`,
     type: 'LAMBDA',
     inputParameters: {
       lambdaValue: '${workflow.input.lambdaValue}',
@@ -142,7 +118,7 @@ function createStartEndTask(
     label,
     name,
     type: name,
-    taskReferenceName: `startTaskRef_${uuid()}`,
+    taskReferenceName: `start_${getRandomString(4)}`,
     ...DEFAULT_TASK_OPTIONS,
   };
 }
@@ -153,7 +129,7 @@ function createForkTask(label: TaskLabel): ExtendedForkTask {
     label,
     name: 'forkTask',
     type: 'FORK_JOIN',
-    taskReferenceName: `forkTaskRef_${uuid()}`,
+    taskReferenceName: `fork_${getRandomString(4)}`,
     forkTasks: [],
     ...DEFAULT_TASK_OPTIONS,
   };
@@ -165,7 +141,7 @@ function createJoinTask(label: TaskLabel): ExtendedJoinTask {
     label,
     name: 'joinTask',
     type: 'JOIN',
-    taskReferenceName: `joinTaskRef_${uuid()}`,
+    taskReferenceName: `join_${getRandomString(4)}`,
     joinOn: [],
     ...DEFAULT_TASK_OPTIONS,
   };
@@ -177,7 +153,7 @@ function createWhileTask(label: TaskLabel): ExtendedWhileTask {
     label,
     name: 'whileTask',
     type: 'DO_WHILE',
-    taskReferenceName: `whileTaskRef_${uuid()}`,
+    taskReferenceName: `while_${getRandomString(4)}`,
     loopOver: [],
     loopCondition: '',
     inputParameters: {
@@ -193,7 +169,7 @@ function createWhileEndTask(label: TaskLabel): ExtendedWhileEndTask {
     label,
     name: 'whileEndTask',
     type: 'WHILE_END',
-    taskReferenceName: `whileEndTaskRef_${uuid()}`,
+    taskReferenceName: `whileEnd_${getRandomString(4)}`,
     ...DEFAULT_TASK_OPTIONS,
   };
 }
@@ -204,7 +180,7 @@ function createDecisionTask(label: TaskLabel): ExtendedDecisionTask {
     label,
     name: 'decisionTask',
     type: 'DECISION',
-    taskReferenceName: `decisionTaskRef_${uuid()}`,
+    taskReferenceName: `decision_${getRandomString(4)}`,
     caseValueParam: 'param',
     decisionCases: {
       true: [],
@@ -224,7 +200,7 @@ function createTerminateTask(label: TaskLabel): ExtendedTerminateTask {
     label,
     name: 'terminateTask',
     type: 'TERMINATE',
-    taskReferenceName: `terminateTaskRef_${uuid()}`,
+    taskReferenceName: `terminate_${getRandomString(4)}`,
     inputParameters: {
       terminationStatus: 'COMPLETED',
       workflowOutput: 'Expected workflow output',
@@ -239,7 +215,7 @@ function createEventTask(label: TaskLabel): ExtendedEventTask {
     label,
     name: 'eventTask',
     type: 'EVENT',
-    taskReferenceName: `eventTaskRef_${uuid()}`,
+    taskReferenceName: `event_${getRandomString(4)}`,
     sink: 'conductor',
     inputParameters: {
       targetWorkflowId: '${workflow.input.targetWorkflowId}',
@@ -256,7 +232,7 @@ function createWaitTask(label: TaskLabel): ExtendedWaitTask {
     label,
     name: 'waitTask',
     type: 'WAIT',
-    taskReferenceName: `waitTaskRef_${uuid()}`,
+    taskReferenceName: `wait_${getRandomString(4)}`,
     ...DEFAULT_TASK_OPTIONS,
   };
 }
@@ -267,7 +243,7 @@ function createRawTask(label: TaskLabel): ExtendedRawTask {
     label,
     name: 'rawTask',
     type: 'RAW',
-    taskReferenceName: `rawTaskRef_${uuid()}`,
+    taskReferenceName: `raw_${getRandomString(4)}`,
     inputParameters: {
       raw: '',
     },
@@ -275,21 +251,33 @@ function createRawTask(label: TaskLabel): ExtendedRawTask {
   };
 }
 
-export function createSubWorkflowTask(name: string, version: string): ExtendedSubworkflowTask {
+function convertSubWorkflowTaskParams(params: string[]): Record<string, string> {
+  return params.reduce((acc, curr) => {
+    const values = JSON.parse(curr);
+    return {
+      ...acc,
+      ...Object.keys(values).reduce((accu, current) => {
+        return {
+          ...accu,
+          [current]: values[current].value,
+        };
+      }, {}),
+    };
+  }, {});
+}
+
+export function createSubWorkflowTask(
+  name: string,
+  version: string,
+  inputParameters?: string[],
+): ExtendedSubworkflowTask {
   return {
     id: uuid(),
     label: 'sub workflow',
     name,
     type: 'SUB_WORKFLOW',
-    taskReferenceName: `${name}Ref_${uuid()}`,
-    inputParameters: {
-      expectedName: '${workflow.input.expectedName}',
-      expectedType: 'SIMPLE',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      dynamic_tasks: '${workflow.input.dynamic_tasks}',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      dynamic_tasks_i: '${workflow.input.dynamic_tasks_i}',
-    },
+    taskReferenceName: `${name}Ref_${getRandomString(4)}`,
+    inputParameters: inputParameters ? convertSubWorkflowTaskParams(inputParameters) : {},
     subWorkflowParam: {
       name,
       version: Number(version),
@@ -304,10 +292,6 @@ export function createTask(taskLabel: TaskLabel): ExtendedTask {
       return createHTTPTask(taskLabel);
     case 'graphql':
       return createGraphQLTask(taskLabel);
-    case 'js':
-      return createJSTask(taskLabel);
-    case 'py':
-      return createPYTask(taskLabel);
     case 'lambda':
       return createLambdaTask(taskLabel);
     case 'start':
@@ -351,14 +335,12 @@ export const isHttpTask = (task: Task): task is HTTPTask =>
 export const isGraphQLTask = (task: Task): task is GraphQLTask =>
   task.type === 'SIMPLE' && 'inputParameters' in task && isGraphQLTaskInputParams(task.inputParameters);
 export const isJSorPYTask = (task: Task): task is JSPythonTask =>
-  task.type === 'SIMPLE' && 'inputParameters' in task && isLambdaTaskInputParams(task.inputParameters);
+  task.type === 'LAMBDA' && 'inputParameters' in task && isLambdaTaskInputParams(task.inputParameters);
 
 export function createSystemTasks(): TaskLabel[] {
   return [
     'http',
     'graphql',
-    'js',
-    'py',
     'lambda',
     'decision',
     'event',
@@ -402,6 +384,8 @@ export function getTaskLabel(t: Task): TaskLabel {
       return 'while end';
     case 'SUB_WORKFLOW':
       return 'sub workflow';
+    case 'HTTP':
+      return 'http';
     case 'SIMPLE': {
       if (isGraphQLTask(t)) {
         return 'graphql';
@@ -420,19 +404,51 @@ export function getTaskLabel(t: Task): TaskLabel {
   }
 }
 
-export function convertTaskDefinition(taskDefinition: TaskDefinition): ExtendedSimpleTask {
+function createGenericInputParams(inputKeys?: string[]): Record<string, string> {
+  return (
+    inputKeys?.reduce((acc, curr) => {
+      return { ...acc, [curr]: `\${workflow.input.${curr}}` };
+    }, {}) ?? {}
+  );
+}
+
+function createHTTPInputParams(): HTTPInputParams {
+  return {
+    /* eslint-disable-next-line @typescript-eslint/naming-convention */
+    http_request: {
+      method: 'GET',
+      contentType: 'application/json',
+      timeout: 3600,
+      uri: '${workflow.input.uri}',
+      headers: {},
+    },
+  };
+}
+
+export function convertTaskDefinition(taskDefinition: TaskDefinition): ExtendedSimpleTask | ExtendedHTTPTask {
   const { name, inputKeys } = taskDefinition;
+
+  if (name === 'HTTP_task') {
+    return {
+      id: uuid(),
+      name,
+      label: 'simple',
+      type: 'SIMPLE',
+      taskReferenceName: `${name}RefName_${getRandomString(4)}`,
+      optional: false,
+      startDelay: 0,
+      inputParameters: createHTTPInputParams(),
+    };
+  }
+
   return {
     id: uuid(),
     name,
     label: 'simple',
     type: 'SIMPLE',
-    taskReferenceName: `${name}RefName_${uuid()}`,
+    taskReferenceName: `${name}RefName_${getRandomString(4)}`,
     optional: false,
     startDelay: 0,
-    inputParameters:
-      inputKeys?.reduce((acc, curr) => {
-        return { ...acc, [curr]: `\${workflow.input.${curr}}` };
-      }, {}) ?? {},
+    inputParameters: createGenericInputParams(inputKeys),
   };
 }

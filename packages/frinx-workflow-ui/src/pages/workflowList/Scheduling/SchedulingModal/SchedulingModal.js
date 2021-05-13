@@ -1,14 +1,12 @@
-// @flow
-
 import AceEditor from 'react-ace';
-import React, { useState } from 'react';
-import callbackUtils from '../../../../utils/callbackUtils';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Checkbox,
   FormControl,
   FormHelperText,
   FormLabel,
+  HStack,
   Input,
   Link,
   Modal,
@@ -19,100 +17,65 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
+import callbackUtils from '../../../../utils/callbackUtils';
 
-const SchedulingModal = (props) => {
-  const [schedule, setSchedule] = useState();
+const DEFAULT_CRON_STRING = '* * * * *';
+
+const SchedulingModal = ({ name, workflowName, workflowVersion, isOpen, onClose }) => {
+  const [scheduledWf, setScheduledWf] = useState();
   const [status, setStatus] = useState();
-  const [error, setError] = useState();
   const [found, setFound] = useState();
+  const [error, setError] = useState();
 
-  const DEFAULT_CRON_STRING = '* * * * *';
-
-  const handleClose = () => {
-    props.onClose();
-  };
-
-  const handleShow = () => {
-    setSchedule(null);
-    setStatus(null);
-    setError(null);
-
+  useEffect(() => {
     const getSchedule = callbackUtils.getScheduleCallback();
 
-    getSchedule(props.name).then((res) => {
-      if (res && res.ok) {
-        // found in db
+    getSchedule(name)
+      .then((schedule) => {
         setFound(true);
-        setSchedule(res.body);
-      } else {
-        // not found, prepare new object to be created
+        setScheduledWf(schedule);
+      })
+      .catch(() => {
         setFound(false);
-        setSchedule({
-          name: props.name,
-          workflowName: props.workflowName,
+        setScheduledWf({
+          name,
+          workflowName,
           // workflowVersion must be string
-          workflowVersion: props.workflowVersion + '',
+          workflowVersion: workflowVersion.toString(),
           enabled: false,
           cronString: DEFAULT_CRON_STRING,
         });
-      }
-    });
-  };
+      });
+  }, []);
 
-  const submitForm = () => {
-    setError(null);
+  const onRegisterSchedule = () => {
     setStatus('Submitting');
 
     const registerSchedule = callbackUtils.registerScheduleCallback();
 
-    registerSchedule(props.name, schedule).then((res, err) => {
-      if (res && res.ok) {
-        handleClose();
-      } else {
+    registerSchedule(name, scheduledWf)
+      .then(() => {
+        onClose();
+      })
+      .catch((err) => {
         setStatus(null);
-        setError('Request failed:' + err);
-      }
-    });
-  };
-
-  const setCronString = (str) => {
-    const mySchedule = {
-      ...schedule,
-      cronString: str,
-    };
-    setSchedule(mySchedule);
-  };
-
-  const setEnabled = (enabled) => {
-    const mySchedule = {
-      ...schedule,
-      enabled: enabled,
-    };
-    setSchedule(mySchedule);
+        setError(err);
+      });
   };
 
   const setWorkflowContext = (workflowContext) => {
     try {
-      workflowContext = JSON.parse(workflowContext);
-      const mySchedule = {
-        ...schedule,
-        workflowContext: workflowContext,
+      const myScheduleWf = {
+        ...scheduledWf,
+        workflowContext: JSON.parse(workflowContext),
       };
-      setSchedule(mySchedule);
+      setScheduledWf(myScheduleWf);
     } catch (e) {}
   };
 
-  const getCronString = () => {
-    if (schedule != null) {
-      if (schedule.cronString != null) {
-        return schedule.cronString;
-      }
-    }
-    return DEFAULT_CRON_STRING;
-  };
-
   const getCrontabGuruUrl = () => {
-    const url = 'https://crontab.guru/#' + getCronString().replace(/\s/g, '_');
+    const cronString = scheduledWf?.cronString || DEFAULT_CRON_STRING;
+    const url = 'https://crontab.guru/#' + cronString.replace(/\s/g, '_');
     return (
       <Link href={url} color="brand.500">
         crontab.guru
@@ -120,99 +83,64 @@ const SchedulingModal = (props) => {
     );
   };
 
-  const getEnabled = () => {
-    if (schedule != null) {
-      if (typeof schedule.enabled === 'boolean') {
-        return schedule.enabled;
-      } // backend does not send this property when disabled
-    }
-    return false;
-  };
-
-  const getWorkflowContext = () => {
-    if (schedule) {
-      return JSON.stringify(schedule.workflowContext, null, 2);
-    }
-  };
-
-  const handleDelete = () => {
-    setError(null);
-    setStatus('Deleting');
-
-    const deleteSchedule = callbackUtils.deleteScheduleCallback();
-
-    deleteSchedule(props.name).then((res, err) => {
-      if (res && res.ok) {
-        handleClose();
-      } else {
-        setStatus(null);
-        setError('Request failed:' + err);
-      }
-    });
-  };
-
-  const deleteButton = () => {
-    if (found) {
-      return (
-        <Button colorScheme="red" onClick={handleDelete} disabled={status != null}>
-          Delete
-        </Button>
-      );
-    }
-  };
-
   return (
-    <Modal size="3xl" isOpen={props.show} onClose={handleClose} onShow={handleShow}>
+    <Modal size="3xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Schedule Details - {props.name} RM_allocate_resource_from_pool:1</ModalHeader>
+        <ModalHeader>Schedule Details - {scheduledWf?.name}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <form onSubmit={submitForm}>
-            <FormControl>
-              <FormLabel>Cron</FormLabel>
-              <Input
-                onChange={(e) => setCronString(e.target.value)}
-                placeholder="Enter cron pattern"
-                value={getCronString()}
-              />
-              <FormHelperText>Verify using {getCrontabGuruUrl()}</FormHelperText>
-            </FormControl>
-            <FormControl marginTop={5} marginBottom={5}>
-              <Checkbox onChange={(e) => setEnabled(e.target.checked)} isChecked={getEnabled()}>
-                Enabled
-              </Checkbox>
-            </FormControl>
-            <FormControl>
-              <FormLabel>Workflow Input</FormLabel>
-              <AceEditor
-                mode="javascript"
-                theme="tomorrow"
-                width="100%"
-                height="100px"
-                onChange={(data) => setWorkflowContext(data)}
-                fontSize={16}
-                value={getWorkflowContext()}
-                wrapEnabled={true}
-                setOptions={{
-                  showPrintMargin: true,
-                  highlightActiveLine: true,
-                  showLineNumbers: true,
-                  tabSize: 2,
-                }}
-              />
-            </FormControl>
-          </form>
+          <FormControl>
+            <FormLabel>Cron Expression</FormLabel>
+            <Input
+              value={scheduledWf?.cronString || DEFAULT_CRON_STRING}
+              onChange={(e) => {
+                e.persist();
+                setScheduledWf((prev) => ({ ...prev, cronString: e.target.value }));
+              }}
+              placeholder="Enter cron expression"
+            />
+            <FormHelperText>Verify using {getCrontabGuruUrl()}</FormHelperText>
+          </FormControl>
+          <FormControl marginTop={5} marginBottom={5}>
+            <Checkbox
+              onChange={(e) => {
+                e.persist();
+                setScheduledWf((prev) => ({ ...prev, enabled: e.target.checked }));
+              }}
+              isChecked={scheduledWf?.enabled || false}
+            >
+              Enabled
+            </Checkbox>
+          </FormControl>
+          <FormControl>
+            <FormLabel>Workflow Context</FormLabel>
+            <AceEditor
+              mode="javascript"
+              theme="tomorrow"
+              width="100%"
+              height="100px"
+              onChange={(data) => setWorkflowContext(data)}
+              fontSize={16}
+              value={JSON.stringify(scheduledWf?.workflowContext, null, 2)}
+              wrapEnabled
+              setOptions={{
+                showPrintMargin: true,
+                highlightActiveLine: true,
+                showLineNumbers: true,
+                tabSize: 2,
+              }}
+            />
+          </FormControl>
         </ModalBody>
         <ModalFooter>
-          <pre>{error}</pre>
-          <Button marginRight={4} colorScheme="blue" onClick={submitForm} disabled={status != null}>
-            {found ? 'Update' : 'Create'}
-          </Button>
-          {deleteButton()}
-          <Button colorScheme="red" onClick={handleClose}>
-            Close
-          </Button>
+          <HStack spacing={2}>
+            <pre>{error?.message}</pre>
+            <Button colorScheme="blue" onClick={onRegisterSchedule} isDisabled={status != null}>
+              {found ? 'Update' : 'Create'}
+            </Button>
+            <Button onClick={onClose}>Close</Button>
+          </HStack>
         </ModalFooter>
       </ModalContent>
     </Modal>

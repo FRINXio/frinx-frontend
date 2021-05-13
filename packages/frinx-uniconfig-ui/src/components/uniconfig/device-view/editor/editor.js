@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Stack, Text, Badge, Box } from '@chakra-ui/react';
 import { Controlled as CodeMirror } from 'react-codemirror2';
+import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/fold/foldgutter';
 import 'codemirror/addon/fold/foldgutter.css';
 import 'codemirror/addon/fold/brace-fold';

@@ -5,7 +5,7 @@ import { wfLabelsColor } from '../constants';
 
 type Props = {
   index: number,
-  search: () => void,
+  onClick: () => void,
   label: string,
 };
 
@@ -19,10 +19,11 @@ const WfLabels = (props: Props) => {
       marginRight={1}
       marginBottom={1}
       cursor="pointer"
-      {...props}
       onClick={(e) => {
         e.stopPropagation();
-        if (props.search) props.search();
+        if (props.onClick) {
+          props.onClick();
+        }
       }}
     >
       <p>{props.label}</p>

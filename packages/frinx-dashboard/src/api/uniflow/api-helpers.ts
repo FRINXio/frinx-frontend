@@ -8,6 +8,10 @@ export async function apiFetch(path: string, options: RequestInit): Promise<unkn
     throw new Error(`apiFetch failed with http-code ${response.status}`);
   }
 
+  if (response.status === 201) {
+    return null;
+  }
+
   return response.json();
 }
 
@@ -44,6 +48,9 @@ export async function sendDeleteRequest(path: string, body?: unknown): Promise<u
   const options = {
     method: 'DELETE',
     body: JSON.stringify(body),
+    headers: {
+      'content-type': 'application/json',
+    },
   };
   return apiFetch(path, options);
 }
