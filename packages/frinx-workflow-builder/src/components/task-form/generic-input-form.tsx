@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { FormControl, FormLabel, Input } from '@chakra-ui/react';
+import { FormControl, FormLabel, Input, Textarea } from '@chakra-ui/react';
 
 type Props = {
   params: Record<string, string>;
@@ -15,18 +15,33 @@ const GenericInputForm: FC<Props> = ({ params, onChange }) => {
         return (
           <FormControl id={key} my={6} key={key}>
             <FormLabel>{key}</FormLabel>
-            <Input
-              name={key}
-              variant="filled"
-              value={value}
-              onChange={(event) => {
-                event.persist();
-                onChange({
-                  ...params,
-                  [key]: event.target.value,
-                });
-              }}
-            />
+            {key === 'template' ? (
+              <Textarea
+                name={key}
+                variant="filled"
+                value={value}
+                onChange={(event) => {
+                  event.persist();
+                  onChange({
+                    ...params,
+                    [key]: event.target.value,
+                  });
+                }}
+              />
+            ) : (
+              <Input
+                name={key}
+                variant="filled"
+                value={value}
+                onChange={(event) => {
+                  event.persist();
+                  onChange({
+                    ...params,
+                    [key]: event.target.value,
+                  });
+                }}
+              />
+            )}
           </FormControl>
         );
       })}

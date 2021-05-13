@@ -12,7 +12,7 @@ type Props = {
 
 const LeftMenu: FC<Props> = memo(({ onTaskAdd, workflows, taskDefinitions }) => {
   return (
-    <Box background="white" width={96} boxShadow="base" height="100%" px={6} py={10}>
+    <Box background="white" boxShadow="base" px={6} py={10} height="100%">
       <Tabs display="flex" flexDirection="column" height="100%" isLazy>
         <TabList>
           <Tab>System tasks</Tab>
@@ -97,7 +97,7 @@ const LeftMenu: FC<Props> = memo(({ onTaskAdd, workflows, taskDefinitions }) => 
                     aria-label="Add task"
                     icon={<AddIcon />}
                     onClick={() => {
-                      onTaskAdd(createSubWorkflowTask(wf.name, wf.version.toString()));
+                      onTaskAdd(createSubWorkflowTask(wf.name, wf.version.toString(), wf.inputParameters));
                     }}
                   />
                 </Box>

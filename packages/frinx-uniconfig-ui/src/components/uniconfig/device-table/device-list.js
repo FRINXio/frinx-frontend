@@ -81,9 +81,7 @@ const DeviceList = ({ onMountBtnClick, onDeviceClick, onEditClick }) => {
     setNodes([...nodesCli, ...nodesNetconf]);
   };
 
-  const updateNode = async (node) => {
-    const { nodeId, topologyId } = node;
-
+  const updateNode = async (topologyId, nodeId) => {
     const getCliOperationalState = callbackUtils.getCliOperationalStateCallback();
     const getNetconfOperationalState = callbackUtils.getNetconfOperationalStateCallback();
 

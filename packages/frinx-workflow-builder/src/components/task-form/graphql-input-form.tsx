@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Box, FormControl, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
 import AceEditor from 'react-ace';
 import { GraphQLInputParams } from '../../helpers/types';
-// import 'ace-builds/webpack-resolver';
+import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-graphqlschema';
 import 'ace-builds/src-noconflict/theme-textmate';
 import 'ace-builds/src-noconflict/ext-language_tools';

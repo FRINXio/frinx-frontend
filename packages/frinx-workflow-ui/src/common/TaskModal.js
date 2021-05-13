@@ -1,11 +1,8 @@
 // @flow
-import Highlight from 'react-highlight.js';
-import React from 'react';
+import React, { useState } from 'react';
 import UnescapeButton from './UnescapeButton';
 import {
   Box,
-  Flex,
-  Grid,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -17,9 +14,18 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  SimpleGrid,
+  Text,
+  Textarea,
+  Stack,
+  IconButton,
+  Divider,
+  Button,
 } from '@chakra-ui/react';
 import type { Task } from './flowtypes';
 import { jsonParse } from './utils';
+import { CopyIcon } from '@chakra-ui/icons';
+import unescapeJs from 'unescape-js';
 
 type Props = {
   task: Task,
@@ -34,23 +40,20 @@ function renderTaskDescription(task) {
   );
 }
 
-const TaskModal = (props: Props) => {
-  const task = props.task;
-  const show = props.show;
+const TaskModal = ({ task, show, handle }: Props) => {
+  const [isEscaped, setIsEscaped] = useState(true);
+  const { inputData, outputData, logs } = task;
+
+  function getUnescapedJSON(data) {
+    return isEscaped ? JSON.stringify(data, null, 2) : unescapeJs(JSON.stringify(data, null, 2));
+  }
+
   return (
-    <Modal marginTop={10} size="5xl" isOpen={show} onClose={props.handle}>
+    <Modal marginTop={10} size="5xl" isOpen={show} onClose={handle}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
           {task.taskType} ({task.status})
-          <div
-            style={{
-              color: '#ff0000',
-              display: task.status === 'FAILED' ? '' : 'none',
-            }}
-          >
-            {task.reasonForIncompletion}
-          </div>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -62,86 +65,79 @@ const TaskModal = (props: Props) => {
             </TabList>
             <TabPanels>
               <TabPanel>
+                <SimpleGrid columns={2} spacing={4} mb={4}>
+                  <Box>
+                    <b>Task Ref. Name: </b>
+                    {task.referenceTaskName}
+                  </Box>
+                  <Box>
+                    <b>Callback After: </b>
+                    {task.callbackAfterSeconds ? task.callbackAfterSeconds : 0} (second)
+                  </Box>
+                  <Box>
+                    <b>Poll Count: </b>
+                    {task.pollCount}
+                  </Box>
+                  <Box>
+                    <b>Description: </b>
+                    {renderTaskDescription(task)}
+                  </Box>
+                </SimpleGrid>
+                <Divider />
+                <SimpleGrid columns={2} spacing={4} mt={4}>
+                  <Box>
+                    <Stack direction="row" spacing={2} align="center" mb={2}>
+                      <Text as="b" fontSize="sm">
+                        Input
+                      </Text>
+                      <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#t_input" />
+                      <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
+                        {isEscaped ? 'Unescape' : 'Escape'}
+                      </Button>
+                    </Stack>
+                    <Textarea value={getUnescapedJSON(inputData)} isReadOnly={true} id="t_input" variant="filled" minH={200} />
+                  </Box>
+                  <Box>
+                    <Stack direction="row" spacing={2} align="center" mb={2}>
+                      <Text as="b" fontSize="sm">
+                        Output
+                      </Text>
+                      <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#t_output" />
+                      <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
+                        {isEscaped ? 'Unescape' : 'Escape'}
+                      </Button>
+                    </Stack>
+                    <Textarea value={getUnescapedJSON(outputData)} isReadOnly={true} id="t_output" variant="filled" minH={200} />
+                  </Box>
+                </SimpleGrid>
+              </TabPanel>
+              <TabPanel>
                 <Box>
-                  <Grid gridTemplateColumns="1fr auto" marginTop={20} marginBottom={20}>
-                    <Box>
-                      <b>Task Ref. Name:&nbsp;&nbsp;</b>
-                      {task.referenceTaskName}
-                    </Box>
-                    <Box>
-                      <b>Callback After:&nbsp;&nbsp;</b>
-                      {task.callbackAfterSeconds ? task.callbackAfterSeconds : 0} (second)
-                      <br />
-                      <b>Poll Count:&nbsp;&nbsp;</b>
-                      {task.pollCount}
-                    </Box>
-                    <Box>
-                      <b>Description: </b>
-                      {renderTaskDescription(task)}
-                    </Box>
-                  </Grid>
-                  <hr />
-                  <Flex marginBottom={10}>
-                    <b>
-                      Input
-                      <i title="copy to clipboard" className="btn fa fa-clipboard" data-clipboard-target="#t_input" />
-                      <UnescapeButton size="sm" target="t_input" />
-                    </b>
-                  </Flex>
-                  <Flex>
-                    <code>
-                      <pre style={{ width: '770px' }} id="t_input">
-                        <Highlight language="json">{JSON.stringify(task.inputData, null, 3)}</Highlight>
-                      </pre>
-                    </code>
-                  </Flex>
-                  <Flex marginBottom={10}>
-                    <b>
-                      Output
-                      <i title="copy to clipboard" className="btn fa fa-clipboard" data-clipboard-target="#t_output" />
-                      <UnescapeButton size="sm" target="t_output" />
-                    </b>
-                  </Flex>
-                  <Flex>
-                    <code>
-                      <pre style={{ width: '770px' }} id="t_output">
-                        <Highlight language="json">{JSON.stringify(task.outputData, null, 3)}</Highlight>
-                      </pre>
-                    </code>
-                  </Flex>
+                  <Stack direction="row" spacing={2} align="center" mb={2}>
+                    <Text as="b" fontSize="sm">
+                      JSON
+                    </Text>
+                    <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#t_json" />
+                    <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
+                      {isEscaped ? 'Unescape' : 'Escape'}
+                    </Button>
+                  </Stack>
+                  <Textarea value={getUnescapedJSON(task)} isReadOnly={true} id="t_json" variant="filled" minH={300} />
                 </Box>
               </TabPanel>
               <TabPanel>
-                <br />
-                <b>
-                  JSON
-                  <i title="copy to clipboard" className="btn fa fa-clipboard" data-clipboard-target="#t_json" />
-                </b>
-
-                <code>
-                  <pre
-                    style={{
-                      maxHeight: '500px',
-                      marginTop: '20px',
-                      backgroundColor: '#eaeef3',
-                    }}
-                    id="t_json"
-                  >
-                    {JSON.stringify(task, null, 3)}
-                  </pre>
-                </code>
-              </TabPanel>
-              <TabPanel>
-                <br />
-                <b>
-                  Logs
-                  <i title="copy to clipboard" className="btn fa fa-clipboard" data-clipboard-target="#t_logs" />
-                </b>
-                <code>
-                  <pre style={{ maxHeight: '500px', marginTop: '20px' }} id="t_logs">
-                    <Highlight language="json">{JSON.stringify(task.logs, null, 3)}</Highlight>
-                  </pre>
-                </code>
+                <Box>
+                  <Stack direction="row" spacing={2} align="center" mb={2}>
+                    <Text as="b" fontSize="sm">
+                      Logs
+                    </Text>
+                    <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#t_logs" />
+                    <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
+                      {isEscaped ? 'Unescape' : 'Escape'}
+                    </Button>
+                  </Stack>
+                  <Textarea value={getUnescapedJSON(logs)} isReadOnly={true} id="t_logs" variant="filled" />
+                </Box>
               </TabPanel>
             </TabPanels>
           </Tabs>

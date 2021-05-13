@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Box, FormControl, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
 import AceEditor from 'react-ace';
 import { HTTPInputParams, HTTPMethod } from '../../helpers/types';
-// import 'ace-builds/webpack-resolver';
+import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-textmate';
 import 'ace-builds/src-noconflict/ext-language_tools';
@@ -53,6 +53,7 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
           value={method}
           onChange={(event) => {
             event.persist();
+            const eventValue = event.target.value as HTTPMethod;
             onChange({
               ...params,
               // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -60,7 +61,7 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 ...params.http_request,
                 // we can safely cast this
-                method: event.target.value as HTTPMethod,
+                method: eventValue,
               },
             });
           }}
@@ -92,7 +93,7 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
         />
       </FormControl>
       <FormControl id="timeout" my={6}>
-        <Box w={1 / 2}>
+        <Box w="50%">
           <FormLabel>Timeout</FormLabel>
           <Input
             variant="filled"
@@ -147,8 +148,11 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
             name="body"
             theme="textmate"
             wrapEnabled
-            value={body ?? ''}
+            value={JSON.stringify(body, null, 2) ?? ''}
             onChange={(value) => {
+              if (params.http_request.method === 'GET') {
+                return;
+              }
               onChange({
                 ...params,
                 // eslint-disable-next-line @typescript-eslint/naming-convention

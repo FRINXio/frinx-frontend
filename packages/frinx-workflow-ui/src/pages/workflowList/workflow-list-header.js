@@ -1,47 +1,61 @@
 // @flow
 import PageContainer from '../../common/PageContainer';
-import React from 'react';
+import React, { useRef } from 'react';
 import callbackUtils from '../../utils/callbackUtils';
-import { Button, Heading, Icon, Stack, Text } from '@chakra-ui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { JSZip } from 'jszip';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Flex,
+  Heading,
+  HStack,
+  IconButton,
+  Input,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  VisuallyHidden,
+} from '@chakra-ui/react';
+import { SettingsIcon, SmallAddIcon } from '@chakra-ui/icons';
+import JSZip from 'jszip';
 import { faCogs, faFileExport, faFileImport, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { saveAs } from 'file-saver';
+import FeatherIcon from 'feather-icons-react';
 
 type Props = {
   onAddButtonClick: () => void,
+  onImportSuccess: () => void,
 };
 
-const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
-  const importFiles = (e) => {
-    const files = e.currentTarget.files;
-    const fileList = [];
-    let count = files.length;
-
-    Object.keys(files).forEach((i) => {
-      readFile(files[i]);
+function readFile(file: File) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener('load', (event) => {
+      resolve(JSON.parse(event.target.result));
     });
 
-    function readFile(file) {
-      const reader = new FileReader();
-      const putWorkflow = callbackUtils.putWorkflowCallback();
+    reader.addEventListener('error', (err) => {
+      reject(err);
+    });
+    reader.readAsBinaryString(file);
+  });
+}
 
-      reader.onload = (e) => {
-        const definition = JSON.parse(e.target.result);
-        fileList.push(definition);
-        if (!--count) {
-          putWorkflow(fileList).then(() => {
-            window.location.reload();
-          });
-        }
-      };
-      reader.readAsBinaryString(file);
-    }
+const WorkflowListHeader = ({ onAddButtonClick, onImportSuccess }: Props) => {
+  const inputRef = useRef();
+
+  const importFiles = async (e) => {
+    const { files } = e.currentTarget;
+    const readFiles = await Promise.all(Array.from(files).map((f) => readFile(f)));
+    const putWorkflow = callbackUtils.putWorkflowCallback();
+    putWorkflow(readFiles).then(() => {
+      onImportSuccess();
+    });
   };
 
   const openFileUpload = () => {
-    document.getElementById('upload-files').click();
-    document.getElementById('upload-files').addEventListener('change', importFiles);
+    inputRef.current?.click();
   };
 
   const exportFile = () => {
@@ -62,38 +76,54 @@ const WorkflowListHeader = ({ onAddButtonClick }: Props) => {
 
   return (
     <PageContainer>
-      <Heading as="h1" marginBottom={20}>
-        <Stack spacing={4} direction="row">
-          <Icon as={FontAwesomeIcon} icon={faCogs} color="grey" />
-          <Text>Workflows</Text>
-
-          <Button
-            variant="outline"
-            leftIcon={<Icon as={FontAwesomeIcon} icon={faPlus} />}
-            colorScheme="blue"
-            onClick={onAddButtonClick}
-          >
-            New
-          </Button>
-          <Button
-            variant="outline"
-            leftIcon={<Icon as={FontAwesomeIcon} icon={faFileImport} />}
-            colorScheme="blue"
-            onClick={openFileUpload}
-          >
-            Import
-          </Button>
-          <Button
-            variant="outline"
-            leftIcon={<Icon as={FontAwesomeIcon} icon={faFileExport} />}
-            colorScheme="blue"
-            onClick={() => exportFile()}
-          >
-            Export
-          </Button>
-        </Stack>
-      </Heading>
-      <input id="upload-files" multiple type="file" hidden />
+      <Flex as="header" alignItems="center" marginBottom={5}>
+        <Heading as="h1" size="lg">
+          Workflows
+        </Heading>
+        <Box marginLeft="auto">
+          <HStack>
+            <Button leftIcon={<SmallAddIcon />} colorScheme="blue" onClick={onAddButtonClick}>
+              Create
+            </Button>
+            <Box>
+              <Menu isLazy>
+                <MenuButton as={IconButton} icon={<SettingsIcon />} variant="ghost" />
+                <MenuList>
+                  <MenuItem onClick={openFileUpload}>
+                    <Box as="span" fontSize="sm" paddingRight={3} flexShrink={0}>
+                      <Box
+                        as={FeatherIcon}
+                        size="1em"
+                        icon="file-plus"
+                        flexShrink={0}
+                        lineHeight={4}
+                        verticalAlign="middle"
+                      />
+                    </Box>
+                    Import workflow
+                  </MenuItem>
+                  <MenuItem onClick={exportFile}>
+                    <Box as="span" fontSize="sm" paddingRight={3} flexShrink={0}>
+                      <Box
+                        as={FeatherIcon}
+                        size="1em"
+                        icon="download"
+                        flexShrink={0}
+                        lineHeight={4}
+                        verticalAlign="middle"
+                      />
+                    </Box>
+                    Export workflows
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            </Box>
+          </HStack>
+        </Box>
+      </Flex>
+      <VisuallyHidden>
+        <Input id="upload-files" multiple type="file" ref={inputRef} onChange={importFiles} />
+      </VisuallyHidden>
     </PageContainer>
   );
 };
