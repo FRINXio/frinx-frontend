@@ -25,6 +25,7 @@ const CreateNestedPool: FC = () => {
         poolName: 'NestedTest1',
         resourceTypeId: '25769803777',
         poolValues: [],
+        tags: ['tag1', 'tag2'],
       },
     };
     addStrategy(variables);
