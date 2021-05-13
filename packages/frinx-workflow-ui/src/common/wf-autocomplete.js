@@ -15,7 +15,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { matchSorter } from 'match-sorter';
 
-const WfAutoComplete = forwardRef((props, ref) => {
+type Props = {
+  options: string[],
+  onChange: (labels: string[]) => void,
+  selected: string[],
+  placeholder: string,
+};
+
+const WfAutoComplete = forwardRef((props: Props, ref) => {
   const [query, setQuery] = React.useState('');
   const [active, setActive] = React.useState(0);
   const [isOptionsVisible, setOptionsVisible] = React.useState(false);
@@ -81,16 +88,16 @@ const WfAutoComplete = forwardRef((props, ref) => {
   );
 
   return (
-    <Box marginBottom={4} position="relative">
+    <Box position="relative">
       <InputGroup marginBottom={0}>
         {selected && selected.length > 0 && (
           <InputLeftAddon bg="white">
             {selected.map((item, index) => {
               return (
                 <Tag
+                  key={item}
                   size="sm"
                   cursor="pointer"
-                  {...props}
                   onClick={() => {
                     onChange([...selected.slice(0, index), ...selected.slice(index + 1, selected.length)]);
                   }}
@@ -139,6 +146,7 @@ const WfAutoComplete = forwardRef((props, ref) => {
             {results.map((item, index) => {
               return (
                 <Box
+                  key={item}
                   padding={2}
                   backgroundColor={active == index ? 'gray.50' : 'white'}
                   onMouseOver={() => {

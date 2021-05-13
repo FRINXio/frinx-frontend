@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import { createSchema } from 'beautiful-react-diagrams';
 import { DiagramSchema, Link } from 'beautiful-react-diagrams/@types/DiagramSchema';
 import { v4 as uuid } from 'uuid';
@@ -9,6 +10,7 @@ import { getTaskLabel } from './task.helpers';
 import unwrap from './unwrap';
 import ReadOnlyTaskNode from '../components/nodes/read-only-task-node';
 import ReadOnlyDecisionNode from '../components/nodes/read-only-decision-node';
+import LinkLabel from '../components/link-label/link-label';
 
 const NODE_WIDTH = 275;
 const MAIN_Y_AXIS_POSITON = 300;
@@ -70,10 +72,12 @@ class DiagramController {
           ...Array.from(new Array(PREPARED_DECISION_CASES)).map((_, index) => {
             return {
               id: serializeDecisionId(task.id, index.toString()),
+              alignment: 'right' as const,
             };
           }),
           {
             id: serializeDecisionId(task.id, 'else'),
+            alignment: 'right',
           },
         ],
         data: {
@@ -168,14 +172,14 @@ class DiagramController {
               this.depth += 1;
               return this.createDecisionNodes(tsk, {
                 x: NODE_WIDTH * this.step,
-                y: this.depth * ((MAIN_Y_AXIS_POSITON / 4) * index),
+                y: this.depth * ((position.y / 4) * index),
               });
             }
             return this.createGenericTaskNode(
               { ...tsk, id: uuid(), label: getTaskLabel(tsk) },
               {
                 x: NODE_WIDTH * this.step,
-                y: this.depth * ((MAIN_Y_AXIS_POSITON / 4) * index),
+                y: this.depth * ((position.y / 4) * index),
               },
             );
           })
@@ -187,15 +191,15 @@ class DiagramController {
       .map((tsk) => {
         this.step += 1;
         if (tsk.type === 'DECISION') {
-          this.depth += 1;
-          this.createDecisionNodes(tsk, {
+          this.depth -= 1;
+          return this.createDecisionNodes(tsk, {
             x: NODE_WIDTH * this.step,
-            y: MAIN_Y_AXIS_POSITON + this.depth * (MAIN_Y_AXIS_POSITON / 4),
+            y: position.y + this.depth * (position.y / 4),
           });
         }
         return this.createGenericTaskNode(
           { ...tsk, id: uuid(), label: getTaskLabel(tsk) },
-          { x: NODE_WIDTH * this.step, y: MAIN_Y_AXIS_POSITON + this.depth * (MAIN_Y_AXIS_POSITON / 4) },
+          { x: NODE_WIDTH * this.step, y: position.y + this.depth * (position.y / 4) },
         );
       })
       .flat();
@@ -297,6 +301,8 @@ class DiagramController {
         ? state[index].map((l) => ({
             input: l.type === 'output' ? unwrap(curr.outputs)[0].id : l.id,
             output: l.type === 'output' ? l.id : unwrap(curr.inputs)[0].id,
+            label: createElement(LinkLabel),
+            className: 'custom-link',
           }))
         : [];
       const nextNode = array[index + 1] ?? null;
@@ -306,6 +312,8 @@ class DiagramController {
           ? {
               input: curr.outputs != null ? curr.outputs[0].id : '',
               output: nextNode?.inputs != null ? nextNode.inputs[0].id : '',
+              label: createElement(LinkLabel),
+              className: 'custom-link',
             }
           : null;
       return [...acc, link, ...stateLinks];

@@ -3,10 +3,10 @@ import './DetailsModal.css';
 import Clipboard from 'clipboard';
 import React, { Component } from 'react';
 import TaskModal from '../../../../common/TaskModal';
-import UnescapeButton from '../../../../common/UnescapeButton';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../../../utils/callbackUtils';
 import moment from 'moment';
+import unescapeJs from 'unescape-js';
 import {
   Box,
   Button,
@@ -24,6 +24,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  SimpleGrid,
   Tab,
   TabList,
   TabPanel,
@@ -35,7 +36,15 @@ import {
   Th,
   Thead,
   Tr,
+  IconButton,
+  Stack,
+  Text,
+  Textarea,
+  Tooltip,
 } from '@chakra-ui/react';
+import { CopyIcon } from '@chakra-ui/icons';
+import { resetToDefaultWorkflow } from '../../../../store/actions/builder';
+import TaskTable from './task-table';
 
 new Clipboard('.clp');
 
@@ -56,6 +65,7 @@ class DetailsModal extends Component {
       taskDetail: {},
       taskModal: false,
       wfIdRerun: '',
+      isEscaped: true,
     };
     this.handleClose = this.handleClose.bind(this);
   }
@@ -107,6 +117,10 @@ class DetailsModal extends Component {
     });
   }
 
+  getUnescapedJSON(data) {
+    return this.state.isEscaped ? JSON.stringify(data, null, 2) : unescapeJs(JSON.stringify(data, null, 2));
+  }
+
   handleClose() {
     this.setState({ show: false });
     this.props.modalHandler();
@@ -142,7 +156,6 @@ class DetailsModal extends Component {
   }
 
   formatDate(dt) {
-    console.log(dt);
     if (dt == null || dt === '' || dt === 0) {
       return '-';
     }
@@ -165,30 +178,40 @@ class DetailsModal extends Component {
     return dataset.map((row, i) => {
       return (
         <Tr key={`row-${i}`} id={`row-${i}`} className="clickable">
-          <Td>{row['seq']}</Td>
-          <Td onClick={this.handleTaskDetail.bind(this, row)}>{row['taskType']}&nbsp;&nbsp;</Td>
+          <Td>{row.seq}</Td>
+          <Td onClick={this.handleTaskDetail.bind(this, row)}>
+            <Tooltip label={row.taskType}>
+              <Text isTruncated maxWidth={32}>
+                {row.taskType}
+              </Text>
+            </Tooltip>
+          </Td>
           <Td style={{ textAlign: 'center' }}>
-            {row['taskType'] === 'SUB_WORKFLOW' ? (
+            {row.taskType === 'SUB_WORKFLOW' ? (
               <Button colorScheme="blue" onClick={() => this.props.onWorkflowIdClick(row.subWorkflowId)}>
                 <i className="fas fa-arrow-circle-right" />
               </Button>
             ) : null}
           </Td>
-          <Td onClick={this.handleTaskDetail.bind(this, row)}>{row['referenceTaskName']}</Td>
-          <Td>
-            {this.formatDate(row['startTime'])}
-            <br />
-            {this.formatDate(row['endTime'])}
+          <Td onClick={this.handleTaskDetail.bind(this, row)}>
+            <Text isTruncated maxWidth={32}>
+              {row.referenceTaskName}
+            </Text>
           </Td>
-          <Td>{row['status']}</Td>
+          <Td>
+            {this.formatDate(row.startTime)}
+            <br />
+            {this.formatDate(row.endTime)}
+          </Td>
+          <Td>{row.status}</Td>
         </Tr>
       );
     });
   }
 
-  handleTaskDetail(row) {
+  handleTaskDetail = (row) => {
     this.setState({ taskDetail: row, taskModal: !this.state.taskModal });
-  }
+  };
 
   terminateWfs() {
     const terminateWorkflows = callbackUtils.terminateWorkflowsCallback();
@@ -328,50 +351,65 @@ class DetailsModal extends Component {
       </div>
     );
 
-    const inputOutput = () => (
-      <Flex justifyContent="space-between">
-        <Box>
-          <h4>
-            Workflow Input&nbsp;&nbsp;
-            <i title="copy to clipboard" className="clp far fa-clipboard clickable" data-clipboard-target="#wfinput" />
-            &nbsp;&nbsp;
-            <UnescapeButton size="sm" target="wfinput" />
-          </h4>
-          <code>
-            <pre id="wfinput" className="heightWrapper">
-              {JSON.stringify(this.state.result.input, null, 2)}
-            </pre>
-          </code>
-        </Box>
-        <Box>
-          <h4>
-            Workflow Output&nbsp;&nbsp;
-            <i title="copy to clipboard" className="clp far fa-clipboard clickable" data-clipboard-target="#wfoutput" />
-            &nbsp;&nbsp;
-            <UnescapeButton size="sm" target="wfoutput" />
-          </h4>
-          <code>
-            <pre id="wfoutput" className="heightWrapper">
-              {JSON.stringify(this.state.result.output, null, 2)}
-            </pre>
-          </code>
-        </Box>
-      </Flex>
-    );
+    const inputOutput = () => {
+      const { isEscaped, result } = this.state;
+      const input = result.input || '';
+      const output = result.output || '';
 
-    const wfJson = () => (
-      <div>
-        <h4>
-          Workflow JSON&nbsp;&nbsp;
-          <i title="copy to clipboard" className="clp far fa-clipboard clickable" data-clipboard-target="#json" />
-        </h4>
-        <code>
-          <pre id="json" className="heightWrapper" style={{ backgroundColor: '#eaeef3' }}>
-            {JSON.stringify(this.state.result, null, 2)}
-          </pre>
-        </code>
-      </div>
-    );
+      return (
+        <SimpleGrid columns={2} spacing={4}>
+          <Box>
+            <Stack direction="row" spacing={2} align="center" mb={2}>
+              <Text as="b" fontSize="sm">
+                Workflow Input
+              </Text>
+              <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#wfinput" />
+              <Button size="sm" onClick={() => this.setState((prevState) => ({ isEscaped: !prevState.isEscaped }))}>
+                {isEscaped ? 'Unescape' : 'Escape'}
+              </Button>
+            </Stack>
+            <Textarea value={this.getUnescapedJSON(input)} isReadOnly={true} id="wfinput" variant="filled" minH={200} />
+          </Box>
+          <Box>
+            <Stack direction="row" spacing={2} align="center" mb={2}>
+              <Text as="b" fontSize="sm">
+                Workflow Output
+              </Text>
+              <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#wfoutput" />
+              <Button size="sm" onClick={() => this.setState((prevState) => ({ isEscaped: !prevState.isEscaped }))}>
+                {isEscaped ? 'Unescape' : 'Escape'}
+              </Button>
+            </Stack>
+            <Textarea
+              value={this.getUnescapedJSON(output)}
+              isReadOnly={true}
+              id="wfoutput"
+              variant="filled"
+              minH={200}
+            />
+          </Box>
+        </SimpleGrid>
+      );
+    };
+
+    const wfJson = () => {
+      const { isEscaped, result } = this.state;
+
+      return (
+        <Box>
+          <Stack direction="row" spacing={2} align="center" mb={2}>
+            <Text as="b" fontSize="sm">
+              Workflow JSON
+            </Text>
+            <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#json" />
+            <Button size="sm" onClick={() => this.setState((prevState) => ({ isEscaped: !prevState.isEscaped }))}>
+              {isEscaped ? 'Unescape' : 'Escape'}
+            </Button>
+          </Stack>
+          <Textarea value={this.getUnescapedJSON(result)} isReadOnly={true} id="json" variant="filled" minH={200} />
+        </Box>
+      );
+    };
 
     const editRerun = () => {
       const input = this.state.input.input || [];
@@ -417,6 +455,8 @@ class DetailsModal extends Component {
       }
     };
 
+    const { result } = this.state;
+
     return (
       <>
         <TaskModal
@@ -440,8 +480,6 @@ class DetailsModal extends Component {
                 onChange={(index) => {
                   this.setState({ activeTab: index });
                 }}
-                marginBottom={20}
-                id="detailTabs"
               >
                 <TabList>
                   <Tab>Task Details</Tab>
@@ -451,15 +489,20 @@ class DetailsModal extends Component {
                   <Tab>Execution Flow</Tab>
                 </TabList>
                 <TabPanels>
-                  <TabPanel>{taskTable()}</TabPanel>
+                  <TabPanel>
+                    <TaskTable
+                      tasks={result.tasks ?? []}
+                      onTaskClick={this.handleTaskDetail}
+                      onWorkflowIdClick={this.props.onWorkflowIdClick}
+                    />
+                  </TabPanel>
                   <TabPanel>{inputOutput()}</TabPanel>
                   <TabPanel>{wfJson()}</TabPanel>
                   <TabPanel>
-                    <h4>
-                      Edit & Rerun Workflow&nbsp;&nbsp;
-                      <i className="clp far fa-play-circle" />
-                    </h4>
-                    <Box padding={12}>
+                    <Text as="b" fontSize="sm">
+                      Edit & Rerun Workflow
+                    </Text>
+                    <Box>
                       <form>
                         <Grid gridTemplateColumns="1fr 1fr" gap={4}>
                           {editRerun()}

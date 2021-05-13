@@ -6,6 +6,7 @@ import {
   Divider,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Heading,
   HStack,
@@ -17,38 +18,31 @@ import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import { omitBy } from 'lodash';
 import { Workflow } from '../../helpers/types';
 
+type PartialWorkflow = Pick<
+  Workflow,
+  | 'name'
+  | 'description'
+  | 'version'
+  | 'ownerEmail'
+  | 'restartable'
+  | 'timeoutPolicy'
+  | 'timeoutSeconds'
+  | 'outputParameters'
+  | 'variables'
+>;
 type Props = {
-  workflow: Pick<
-    Workflow,
-    | 'name'
-    | 'description'
-    | 'version'
-    | 'ownerEmail'
-    | 'restartable'
-    | 'timeoutPolicy'
-    | 'timeoutSeconds'
-    | 'outputParameters'
-    | 'variables'
-  >;
-  onSubmit: (
-    workflow: Pick<
-      Workflow,
-      | 'name'
-      | 'description'
-      | 'version'
-      | 'ownerEmail'
-      | 'restartable'
-      | 'timeoutPolicy'
-      | 'timeoutSeconds'
-      | 'outputParameters'
-      | 'variables'
-    >,
-  ) => void;
+  workflow: PartialWorkflow;
+  onSubmit: (workflow: PartialWorkflow) => void;
   canEditName: boolean;
+  workflows: Workflow[];
   onClose?: () => void;
 };
 
-const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, canEditName }) => {
+function getNameValidation(workflows: Workflow[], name: string): boolean {
+  return workflows.find((wf) => wf.name === name) != null;
+}
+
+const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEditName }) => {
   const [workflowState, setWorkflowState] = useState(workflow);
   const {
     name,
@@ -61,6 +55,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, canEditName }) =
     outputParameters,
   } = workflowState;
   const [newParam, setNewParam] = useState<string>('');
+  const isNameInvalid = getNameValidation(workflows, name);
 
   return (
     <form
@@ -69,7 +64,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, canEditName }) =
         onSubmit(workflowState);
       }}
     >
-      <FormControl my={6}>
+      <FormControl my={6} isInvalid={isNameInvalid}>
         <FormLabel>Name</FormLabel>
         <Input
           isDisabled={!canEditName}
@@ -83,6 +78,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, canEditName }) =
             }));
           }}
         />
+        <FormErrorMessage>Workflow name should be unique, choose a different one</FormErrorMessage>
       </FormControl>
       <FormControl id="description" my={6}>
         <FormLabel>Description</FormLabel>
@@ -254,7 +250,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, canEditName }) =
       </Box>
       <Divider my={6} />
       <HStack spacing={2} align="center">
-        <Button type="submit" colorScheme="blue">
+        <Button type="submit" colorScheme="blue" isDisabled={isNameInvalid}>
           Save changes
         </Button>
         {onClose && <Button onClick={onClose}>Cancel</Button>}

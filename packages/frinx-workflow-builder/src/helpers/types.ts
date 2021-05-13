@@ -94,7 +94,8 @@ export type TaskType =
   | 'SUB_WORKFLOW'
   | 'CUSTOM'
   | 'FORK_JOIN_DYNAMIC'
-  | 'EXCLUSIVE_JOIN';
+  | 'EXCLUSIVE_JOIN'
+  | 'HTTP';
 
 type TaskValues = {
   name: string;
@@ -131,7 +132,7 @@ export type EventTask = BaseTask<EventInputParams> & {
   sink: string;
 };
 export type HTTPTask = BaseTask<HTTPInputParams> & {
-  type: 'SIMPLE';
+  type: 'SIMPLE' | 'HTTP';
 };
 export type GraphQLTask = BaseTask<GraphQLInputParams> & {
   type: 'SIMPLE';
@@ -164,7 +165,7 @@ export type WhileTask = BaseTask<WhileInputParams> & {
 export type WhileEndTask = BaseTask & {
   type: 'WHILE_END';
 };
-export type SubworkflowTask = BaseTask<DynamicForkInputParams> & {
+export type SubworkflowTask = BaseTask<Record<string, string>> & {
   type: 'SUB_WORKFLOW';
   subWorkflowParam: {
     name: string;

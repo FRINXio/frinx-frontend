@@ -47,14 +47,15 @@ class WorkflowExec extends Component {
       timeout: 0,
       sort: [2, 2, 2],
     };
-    this.table = React.createRef();
   }
 
-  componentWillMount() {
-    if (this.props.query) this.props.updateByQuery(this.props.query);
-    this.state.allData
-      ? this.props.fetchNewData(this.state.viewedPage, this.state.defaultPages)
-      : this.props.fetchParentWorkflows(this.state.viewedPage, this.state.defaultPages);
+  componentDidMount() {
+    if (this.props.query) {
+      this.props.updateByQuery(this.props.query);
+    }
+    const fetchFn = this.state.allData ? this.props.fetchNewData : this.props.fetchParentWorkflows;
+
+    fetchFn(this.state.viewedPage, this.state.defaultPages);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -479,7 +480,7 @@ class WorkflowExec extends Component {
           </Button>
         </Grid>
         <div className="execTableWrapper">
-          <Table background="white" ref={this.table} striped={this.state.allData} hover>
+          <Table background="white" variant={this.state.allData ? 'striped' : 'simple'}>
             <Thead>
               <Tr>
                 <Th> </Th>

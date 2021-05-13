@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 import 'beautiful-react-diagrams/dist/styles.css';
 import Diagram, { useSchema, Canvas, useCanvasState, CanvasControls } from 'beautiful-react-diagrams';
-import { Box, Button, Flex, Heading, HStack, Text, useDisclosure, useTheme } from '@chakra-ui/react';
+import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
 import produce, { castImmutable } from 'immer';
 import { createDiagramController } from './helpers/diagram.helpers';
 import unwrap from './helpers/unwrap';
@@ -58,7 +58,6 @@ const App: FC<Props> = ({
   onFileExport,
   onWorkflowDelete,
 }) => {
-  const theme = useTheme();
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
   const [isEditing, setIsEditing] = useState(false);
@@ -104,125 +103,120 @@ const App: FC<Props> = ({
   };
 
   return (
-    <Flex height="100%" flexDirection="column">
-      <Flex
-        height={16}
-        alignItems="center"
-        px={4}
-        boxShadow="base"
-        position="relative"
-        zIndex="modal"
-        background="white"
-      >
-        <Box>
-          <Heading size="lg" mb={2}>
-            {name}
-          </Heading>
-          <Text color="gray.700" size="sm">
-            {/* {JSON.parse(description).description} */}
-          </Text>
-        </Box>
-        <Box ml="auto">
-          <HStack spacing={2}>
-            <Box>
-              <ActionsMenu
-                onShowDefinitionBtnClick={workflowDefinitionDisclosure.onOpen}
-                onNewWorkflowBtnClick={workflowModalDisclosure.onOpen}
-                onEditWorkflowBtnClick={() => {
-                  setIsEditing(true);
-                }}
-                onSaveWorkflowBtnClick={() => {
-                  const onWorkflowSave = callbackUtils.saveWorkflowCallback();
-                  onWorkflowSave([workflowCtrlRef.current.convertWorkflow(schema, workflow)]);
-                }}
-                onFileImport={onFileImport}
-                onFileExport={() => {
-                  onFileExport(workflowCtrlRef.current.convertWorkflow(schema, workflow));
-                }}
-                onWorkflowDelete={onWorkflowDelete}
-              />
-            </Box>
-            <Button
-              colorScheme="blue"
-              onClick={() => {
-                const onWorkflowSave = callbackUtils.saveWorkflowCallback();
-                onWorkflowSave([workflowCtrlRef.current.convertWorkflow(schema, workflow)]).then(() => {
-                  setIsInputModalShown(true);
-                });
-              }}
-            >
-              Save and execute
-            </Button>
-          </HStack>
-        </Box>
-      </Flex>
-      <Flex
-        flex={1}
-        position="relative"
-        justifyContent="stretch"
-        style={{
-          height: `calc(100vh - ${theme.space[16]} - ${theme.space[16]})`, // viewport - app header - builder header
-        }}
-      >
-        <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
-        <Box flex={1}>
-          <Box position="relative" height="100%">
-            <Canvas {...canvasStates} {...handlers}>
-              <Diagram
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                schema={schema}
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                onChange={onChange}
-                style={{
-                  boxShadow: 'none',
-                  border: 'none',
-                  flex: 1,
-                }}
-              />
-              <CanvasControls />
-            </Canvas>
+    <>
+      <Grid templateColumns="384px 1fr" templateRows="64px 1fr" minHeight="100%" maxHeight="100%">
+        <Flex
+          // height={16}
+          alignItems="center"
+          px={4}
+          boxShadow="base"
+          position="relative"
+          zIndex="modal"
+          background="white"
+          gridColumnStart={1}
+          gridColumnEnd={3}
+        >
+          <Box>
+            <Heading size="lg" mb={2}>
+              {name}
+            </Heading>
+            <Text color="gray.700" size="sm">
+              {/* {JSON.parse(description).description} */}
+            </Text>
           </Box>
+          <Box ml="auto">
+            <HStack spacing={2}>
+              <Box>
+                <ActionsMenu
+                  onShowDefinitionBtnClick={workflowDefinitionDisclosure.onOpen}
+                  onNewWorkflowBtnClick={workflowModalDisclosure.onOpen}
+                  onEditWorkflowBtnClick={() => {
+                    setIsEditing(true);
+                  }}
+                  onSaveWorkflowBtnClick={() => {
+                    const onWorkflowSave = callbackUtils.saveWorkflowCallback();
+                    onWorkflowSave([workflowCtrlRef.current.convertWorkflow(schema, workflow)]);
+                  }}
+                  onFileImport={onFileImport}
+                  onFileExport={() => {
+                    onFileExport(workflowCtrlRef.current.convertWorkflow(schema, workflow));
+                  }}
+                  onWorkflowDelete={onWorkflowDelete}
+                />
+              </Box>
+              <Button
+                colorScheme="blue"
+                onClick={() => {
+                  const onWorkflowSave = callbackUtils.saveWorkflowCallback();
+                  onWorkflowSave([workflowCtrlRef.current.convertWorkflow(schema, workflow)]).then(() => {
+                    setIsInputModalShown(true);
+                  });
+                }}
+              >
+                Save and execute
+              </Button>
+            </HStack>
+          </Box>
+        </Flex>
+        <Box minHeight="60vh" maxHeight="100vh">
+          <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
         </Box>
-        {selectedTask?.task && selectedTask?.actionType === 'edit' && (
-          <RightDrawer>
-            <Box px={6} py={10}>
-              <Heading as="h2" size="md" mb={10}>
-                {selectedTask.task.name}
-              </Heading>
-              <TaskForm
-                key={selectedTask.task.id}
-                task={selectedTask.task}
-                onClose={() => {
-                  selectTask(null);
-                }}
-                onFormSubmit={handleFormSubmit}
-              />
-            </Box>
-          </RightDrawer>
-        )}
-        {isEditing && (
-          <RightDrawer>
-            <Box px={6} py={10}>
-              <Heading as="h2" size="md" mb={10}>
-                Edit workflow
-              </Heading>
-              <WorkflowForm
-                workflow={workflow}
-                onSubmit={(wf) => {
-                  onWorkflowChange(wf);
-                }}
-                onClose={() => {
-                  onWorkflowChange(workflow);
-                  setIsEditing(false);
-                }}
-                canEditName={false}
-              />
-            </Box>
-          </RightDrawer>
-        )}
-      </Flex>
+        <Box minHeight="60vh" maxHeight="100vh" position="relative">
+          <Canvas {...canvasStates} {...handlers}>
+            <Diagram
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              schema={schema}
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              onChange={onChange}
+              style={{
+                boxShadow: 'none',
+                border: 'none',
+                flex: 1,
+              }}
+            />
+            <CanvasControls />
+          </Canvas>
+          {selectedTask?.task && selectedTask?.actionType === 'edit' && (
+            <RightDrawer>
+              <Box px={6} py={10}>
+                <Heading as="h2" size="md" mb={10}>
+                  {selectedTask.task.name}
+                </Heading>
+                <TaskForm
+                  key={selectedTask.task.id}
+                  task={selectedTask.task}
+                  onClose={() => {
+                    selectTask(null);
+                  }}
+                  onFormSubmit={handleFormSubmit}
+                />
+              </Box>
+            </RightDrawer>
+          )}
+          {isEditing && (
+            <RightDrawer>
+              <Box px={6} py={10}>
+                <Heading as="h2" size="md" mb={10}>
+                  Edit workflow
+                </Heading>
+                <WorkflowForm
+                  workflow={workflow}
+                  onSubmit={(wf) => {
+                    onWorkflowChange(wf);
+                  }}
+                  onClose={() => {
+                    onWorkflowChange(workflow);
+                    setIsEditing(false);
+                  }}
+                  canEditName={false}
+                />
+              </Box>
+            </RightDrawer>
+          )}
+        </Box>
+      </Grid>
       {selectedTask?.actionType === 'expand' && (
         <ExpandedWorkflowModal
           onClose={() => {
@@ -254,7 +248,7 @@ const App: FC<Props> = ({
           onSuccessClick={onExecuteSuccessClick}
         />
       )}
-    </Flex>
+    </>
   );
 };
 

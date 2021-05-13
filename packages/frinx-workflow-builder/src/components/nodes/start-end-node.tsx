@@ -1,9 +1,10 @@
 import React, { FC } from 'react';
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex, Text, useTheme } from '@chakra-ui/react';
 import { CustomNodeType } from '../../helpers/types';
 
 const BaseNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
   const { inputs, outputs, content } = props;
+  const theme = useTheme();
 
   return (
     <Box
@@ -22,81 +23,49 @@ const BaseNode: FC<Omit<CustomNodeType, 'coordinates'>> = (props) => {
       </Box>
       <Flex>
         {inputs?.map((port) => {
-          return (
-            <Flex
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              key={port.key}
-              width={12}
-              height={6}
-              background="gray.200"
-              color="gray.700"
-              marginRight="auto"
-              textAlign="center"
-              alignItems="center"
-              justifyContent="center"
-              textTransform="uppercase"
-              fontSize="xs"
-              position="relative"
-              _hover={{
-                background: 'gray.300',
-              }}
-            >
-              {React.cloneElement(
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                port,
-                {
-                  style: {
-                    position: 'absolute',
-                    inset: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  },
-                },
-                'in',
-              )}
-            </Flex>
+          return React.cloneElement(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            port,
+            {
+              style: {
+                background: theme.colors.gray[200],
+                width: theme.space[12],
+                height: theme.space[6],
+                fontSize: theme.fontSizes.xs,
+                color: theme.colors.gray[700],
+                marginRight: 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textTransform: 'uppercase',
+              },
+            },
+            'in',
           );
         })}
+      </Flex>
+      <Flex justifyContent="flex-end">
         {outputs?.map((port) => {
-          return (
-            <Flex
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              key={port.key}
-              width={12}
-              height={6}
-              background="gray.200"
-              color="gray.700"
-              marginLeft="auto"
-              textAlign="center"
-              alignItems="center"
-              justifyContent="center"
-              textTransform="uppercase"
-              fontSize="xs"
-              position="relative"
-              _hover={{
-                background: 'gray.300',
-              }}
-            >
-              {React.cloneElement(
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                port,
-                {
-                  style: {
-                    position: 'absolute',
-                    inset: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  },
-                },
-                'out',
-              )}
-            </Flex>
+          return React.cloneElement(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            port,
+            {
+              style: {
+                background: theme.colors.gray[200],
+                width: theme.space[12],
+                height: theme.space[6],
+                fontSize: theme.fontSizes.xs,
+                color: theme.colors.gray[700],
+                marginLeft: 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textTransform: 'uppercase',
+              },
+            },
+            'out',
           );
         })}
       </Flex>

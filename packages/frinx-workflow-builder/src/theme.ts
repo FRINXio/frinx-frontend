@@ -15,6 +15,9 @@ const theme = extendTheme({
           stroke: 'red',
         },
       },
+      '.custom-link:hover .custom-link-label': {
+        opacity: 0.8,
+      },
     },
   },
   colors: {

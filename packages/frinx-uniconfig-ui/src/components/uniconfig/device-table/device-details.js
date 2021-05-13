@@ -120,12 +120,22 @@ const DeviceDetails = ({ topology, nodeId }) => {
   const fetchDevice = async (topologyId, nodeId) => {
     const getCliOperationalState = callbackUtils.getCliOperationalStateCallback();
     const getNetconfOperationalState = callbackUtils.getNetconfOperationalStateCallback();
+    let node = null;
 
-    const node = topologyId === 'cli' ? await getCliOperationalState(nodeId) : await getNetconfOperationalState(nodeId);
+    try {
+      if (topologyId === 'cli') {
+        node = await getCliOperationalState(nodeId);
+      } else {
+        node = await getNetconfOperationalState(nodeId);
+      }
+    } catch (e) {
+      // TODO: better error hanlding,
+      // API's 404 returns body, we are only returing error
 
-    if (!node) {
+      // TODO: toast has issues "updating unmount component"
       return toast({
         title: `${nodeId} is not available`,
+        description: `${e.message}`,
         status: 'warning',
         duration: 9000,
         isClosable: true,
@@ -157,7 +167,11 @@ const DeviceDetails = ({ topology, nodeId }) => {
                     {displayValue}:
                   </Heading>
                   <Text fontSize="lg">
-                    {value === 'connectionStatus' ? <ConnectionStatusBadge node={node} /> : node[value]}
+                    {value === 'connectionStatus' ? (
+                      <ConnectionStatusBadge node={node} checkConnectionStatus={fetchDevice} />
+                    ) : (
+                      node[value]
+                    )}
                   </Text>
                 </Flex>
               ))}

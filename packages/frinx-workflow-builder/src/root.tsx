@@ -74,7 +74,7 @@ const Root: FC<Props> = ({
   };
 
   const handleFileExport = (wf: Workflow) => {
-    const parsedWf = JSON.stringify(wf);
+    const parsedWf = JSON.stringify(wf, null, 2);
     const textEncoder = new TextEncoder();
     const arrayBuffer = textEncoder.encode(parsedWf);
     const file = new Blob([arrayBuffer], { type: 'application/octet-stream' });
@@ -90,7 +90,7 @@ const Root: FC<Props> = ({
     }
   };
 
-  if (shouldCreateWorkflow) {
+  if (shouldCreateWorkflow && workflows != null) {
     return (
       <ChakraProvider theme={theme}>
         <Container maxWidth={1200}>
@@ -100,6 +100,7 @@ const Root: FC<Props> = ({
             </Heading>
             <WorkflowForm
               workflow={createEmptyWorkflow()}
+              workflows={workflows}
               onSubmit={(wf) => {
                 setWorkflow({
                   ...wf,
