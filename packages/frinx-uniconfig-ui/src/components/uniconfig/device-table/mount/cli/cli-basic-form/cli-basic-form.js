@@ -33,6 +33,7 @@ const CliBasicForm = ({ cliBasicForm, setCliBasicForm, supportedDevices, getDevi
         <FormControl>
           <FormLabel>Device type</FormLabel>
           <Select
+            value={cliBasicForm['cli-topology:device-type']}
             onChange={(e) => {
               e.persist();
               setCliBasicForm((prev) => ({ ...prev, 'cli-topology:device-type': e.target.value }));
