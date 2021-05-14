@@ -26,8 +26,8 @@ const Editor = ({ isReadOnly, isModified, isParsable, currentState, setCurrentLo
       name="uniconfig_editor"
       width="100%"
       fontSize={16}
-      wrapEnabled={true}
       readOnly={isReadOnly}
+      showPrintMargin={false}
     />
   </>
 );
