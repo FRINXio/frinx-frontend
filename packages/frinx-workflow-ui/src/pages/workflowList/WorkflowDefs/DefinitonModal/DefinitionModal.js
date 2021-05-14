@@ -1,5 +1,3 @@
-// @flow
-import Highlight from 'react-highlight.js';
 import React from 'react';
 import {
   Button,
@@ -11,30 +9,24 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
+import Editor from '../../../../common/editor';
 
-const DefinitionModal = (props) => {
-  return (
-    <Modal size="3xl" scrollBehavior="inside" isOpen={props.show} onClose={props.modalHandler}>
-      <ModalOverlay />
-      <ModalCloseButton />
-      <ModalContent>
-        <ModalHeader>{props.wf.name}</ModalHeader>
-        <ModalBody>
-          <code style={{ fontSize: '17px' }}>
-            <pre style={{ maxHeight: '600px' }}>
-              <Highlight language="json">{JSON.stringify(props.wf, null, 2)}</Highlight>
-            </pre>
-          </code>
-        </ModalBody>
-
-        <ModalFooter>
-          <Button colorScheme="gray" onClick={props.modalHandler}>
-            Close
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  );
-};
+const DefinitionModal = ({ show, wf, modalHandler }) => (
+  <Modal size="3xl" scrollBehavior="inside" isOpen={show} onClose={modalHandler}>
+    <ModalOverlay />
+    <ModalCloseButton />
+    <ModalContent>
+      <ModalHeader>{wf.name}</ModalHeader>
+      <ModalBody>
+        <Editor name="workflow_details_editor" value={JSON.stringify(wf, null, 2)} isReadOnly={true} />
+      </ModalBody>
+      <ModalFooter>
+        <Button colorScheme="gray" onClick={modalHandler}>
+          Close
+        </Button>
+      </ModalFooter>
+    </ModalContent>
+  </Modal>
+);
 
 export default DefinitionModal;

@@ -1,4 +1,3 @@
-import AceEditor from 'react-ace';
 import React, { useEffect, useState } from 'react';
 import {
   Button,
@@ -18,6 +17,7 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import callbackUtils from '../../../../utils/callbackUtils';
+import Editor from '../../../../common/editor';
 
 const DEFAULT_CRON_STRING = '* * * * *';
 
@@ -115,21 +115,11 @@ const SchedulingModal = ({ name, workflowName, workflowVersion, isOpen, onClose 
           </FormControl>
           <FormControl>
             <FormLabel>Workflow Context</FormLabel>
-            <AceEditor
-              mode="javascript"
-              theme="tomorrow"
-              width="100%"
-              height="100px"
+            <Editor
+              name="schedule_editor"
               onChange={(data) => setWorkflowContext(data)}
-              fontSize={16}
               value={JSON.stringify(scheduledWf?.workflowContext, null, 2)}
-              wrapEnabled
-              setOptions={{
-                showPrintMargin: true,
-                highlightActiveLine: true,
-                showLineNumbers: true,
-                tabSize: 2,
-              }}
+              height="200px"
             />
           </FormControl>
         </ModalBody>
