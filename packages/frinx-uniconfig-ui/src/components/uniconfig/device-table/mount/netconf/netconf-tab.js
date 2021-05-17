@@ -78,11 +78,13 @@ const NetconfTab = ({ templateNode }) => {
   const [outputConsole, setOutputConsole] = useState({ output: [], isRunning: false });
   const toast = useToast();
 
-  useEffect(async () => {
-    const { nodeId, topologyId } = templateNode;
+  useEffect(() => {
+    if (templateNode != null) {
+      const { nodeId, topologyId } = templateNode;
 
-    if (topologyId === 'topology-netconf') {
-      setFormsFromNode(nodeId);
+      if (topologyId === 'topology-netconf') {
+        setFormsFromNode(nodeId);
+      }
     }
   }, [templateNode]);
 
