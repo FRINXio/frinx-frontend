@@ -5,8 +5,8 @@ import { ResourceTypesQueryQuery } from '../__generated__/graphql';
 import CreateNewResourceType from './create-new-resource-type';
 import DeleteResourceType from './delete-resource-type';
 
-const query = gql`
-  query ResourceTypesQuery {
+const RESOURCE_TYPES_QUERY = gql`
+  query ResourceTypes {
     QueryResourceTypes {
       id
       Name
@@ -24,7 +24,7 @@ const query = gql`
 
 const ResourceTypesList: FC = () => {
   const [result] = useQuery<ResourceTypesQueryQuery>({
-    query,
+    query: RESOURCE_TYPES_QUERY,
   });
 
   const { data } = result;

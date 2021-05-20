@@ -1,11 +1,12 @@
+const { join } = require('path');
+
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'import'],
+  extends: ['@frinx/eslint-config-typescript'],
   parserOptions: {
-    // we need to link to tsconfig.json with the full-path,
-    // otherwise eslint-in-vscode has problems finding it
-    // project: join(__dirname, 'tsconfig.json'),
+    project: join(__dirname, 'tsconfig.json'),
   },
   env: {
     browser: true,
@@ -15,5 +16,4 @@ module.exports = {
       typescript: {},
     },
   },
-  extends: ['@frinx/eslint-config-typescript'],
 };
