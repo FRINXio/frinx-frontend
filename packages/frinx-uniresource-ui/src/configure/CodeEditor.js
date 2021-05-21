@@ -6,12 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-
-// eslint-disable-next-line no-unused-vars
-// // import ace from 'ace-builds/src-min-noconflict/ace';
-// import 'ace-builds/src-noconflict/mode-javascript';
-// import 'ace-builds/src-noconflict/theme-tomorrow';
-import AceEditor from 'react-ace';
+import Editor from '../components/common/Editor';
 
 const styles = () => ({
   root: {
@@ -57,15 +52,11 @@ const CodeEditor = (props: Props) => {
           <MenuItem value="py">Python</MenuItem>
         </Select>
       </div>
-
-      <AceEditor
+      <Editor
         height="300px"
-        width="100%"
-        mode="javascript"
-        theme="tomorrow"
+        ode="javascript"
         onChange={onChange}
         name="UNIQUE_ID_OF_DIV"
-        editorProps={{ $blockScrolling: true }}
         value={editorValue}
         fontSize={16}
         setOptions={{

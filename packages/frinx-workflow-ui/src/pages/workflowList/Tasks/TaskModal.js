@@ -1,37 +1,23 @@
-// @flow
-import Highlight from 'react-highlight.js';
 import React, { useEffect, useState } from 'react';
 import callbackUtils from '../../../utils/callbackUtils';
 import {
-  Box,
   Button,
-  Flex,
   Modal,
+  Text,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Table,
-  Tabs,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
 } from '@chakra-ui/react';
 import { jsonParse } from '../../../common/utils';
+import Editor from '../../../common/editor';
 
-const TaskModal = (props) => {
+const TaskModal = ({ name, modalHandler, show }) => {
   const [response, setResponse] = useState({});
 
   useEffect(() => {
-    const name = props.name;
     const getTaskDefinition = callbackUtils.getTaskDefinitionCallback();
 
     getTaskDefinition(name).then((definition) => {
@@ -39,94 +25,22 @@ const TaskModal = (props) => {
         setResponse(definition);
       }
     });
-  }, [props.name]);
-
-  const handleClose = () => {
-    props.modalHandler();
-  };
-
-  const renderKeys = (variable) => {
-    const output = [];
-    const keys = response[variable] ? response[variable] : 0;
-    for (let i = 0; i < keys.length; i++) {
-      output.push(
-        <Tr key={`${variable}-${i}`}>
-          <Td>{keys[i]}</Td>
-        </Tr>,
-      );
-    }
-    return output;
-  };
-
-  const iokeys = () => (
-    <Flex>
-      <Box>
-        <Table striped hover size="sm">
-          <Thead>
-            <Tr>
-              <Th>Input keys</Th>
-            </Tr>
-          </Thead>
-          <Tbody>{renderKeys('inputKeys')}</Tbody>
-        </Table>
-      </Box>
-      <Box>
-        <Table striped hover size="sm">
-          <Thead>
-            <Tr>
-              <Th>Output keys</Th>
-            </Tr>
-          </Thead>
-          <tbody>{renderKeys('outputKeys')}</tbody>
-        </Table>
-      </Box>
-    </Flex>
-  );
-
-  const def = () => (
-    <div>
-      <h4>
-        Task JSON&nbsp;&nbsp;
-        <i title="copy to clipboard" className="clp far fa-clipboard clickable" data-clipboard-target="#json" />
-      </h4>
-      <code>
-        <pre id="json" className="heightWrapper">
-          <Highlight language="json">{JSON.stringify(response, null, 2)}</Highlight>
-        </pre>
-      </code>
-    </div>
-  );
+  }, [name]);
 
   return (
-    <Modal size="3xl" dialogClassName="modalWider" isOpen={props.show} onClose={handleClose}>
+    <Modal size="3xl" isOpen={show} onClose={modalHandler}>
       <ModalOverlay />
       <ModalCloseButton />
       <ModalContent>
-        <ModalHeader>
-          Details of {response.name ? response.name : null}
-          <br />
-          <p className="text-muted">{jsonParse(response.description)?.description || response.description}</p>
-        </ModalHeader>
+        <ModalHeader>Details of {response?.name}</ModalHeader>
         <ModalBody>
-          <Tabs marginBottom={20}>
-            <TabList>
-              <Tab>Task JSON</Tab>
-              <Tab>Input/Output</Tab>
-            </TabList>
-            <TabPanels>
-              <TabPanel mountOnEnter eventKey="JSON" title="Task JSON">
-                {def()}
-              </TabPanel>
-              {response.outputKeys || response.outputKeys ? (
-                <TabPanel mountOnEnter eventKey="inputOutput" title="Input/Output">
-                  {iokeys()}
-                </TabPanel>
-              ) : null}
-            </TabPanels>
-          </Tabs>
+          <Text color="gray.500" mb={4}>
+            {jsonParse(response.description)?.description || response.description}
+          </Text>
+          <Editor name="task_details_editor" value={JSON.stringify(response, null, 2)} isReadOnly={true} />
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="gray" onClick={handleClose}>
+          <Button colorScheme="gray" onClick={modalHandler}>
             Close
           </Button>
         </ModalFooter>

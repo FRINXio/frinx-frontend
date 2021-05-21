@@ -100,10 +100,11 @@ function createLambdaTask(label: TaskLabel): ExtendedLambdaTask {
     type: 'LAMBDA',
     inputParameters: {
       lambdaValue: '${workflow.input.lambdaValue}',
-      scriptExpression: `if inputData["lambdaValue"] == "1":
-        return {"testValue": True}
-      else:
-        return {"testValue": False}`,
+      scriptExpression: `if ($.lambdaValue == 1) { 
+  return { testvalue: true } 
+} else { 
+  return { testvalue: false } 
+}`,
     },
     ...DEFAULT_TASK_OPTIONS,
   };

@@ -23,7 +23,7 @@ const Oper = ({ isLoading, showDiff, currentOperState, currentConfigState, syncF
           splitView={false}
         />
       ) : (
-        <Editor readOnly={true} currentState={JSON.stringify(currentOperState, null, 2)} />
+        <Editor isReadOnly={true} currentState={JSON.stringify(currentOperState, null, 2)} />
       )
     ) : (
       <Stack>

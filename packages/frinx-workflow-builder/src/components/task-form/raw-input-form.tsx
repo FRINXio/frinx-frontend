@@ -1,11 +1,7 @@
 import React, { FC } from 'react';
 import { FormControl, FormLabel, useTheme } from '@chakra-ui/react';
-import AceEditor from 'react-ace';
 import { RawInputParams } from '../../helpers/types';
-import 'ace-builds/webpack-resolver';
-import 'ace-builds/src-noconflict/mode-json';
-import 'ace-builds/src-noconflict/theme-textmate';
-import 'ace-builds/src-noconflict/ext-language_tools';
+import Editor from '../common/editor';
 
 type Props = {
   params: RawInputParams;
@@ -20,10 +16,9 @@ const RawInputForm: FC<Props> = ({ params, onChange }) => {
     <>
       <FormControl id="raw" my={6}>
         <FormLabel>Raw</FormLabel>
-        <AceEditor
+        <Editor
+          name="raw-editor"
           mode="javascript"
-          theme="textmate"
-          wrapEnabled
           value={raw}
           onChange={(value) => {
             onChange({
@@ -32,9 +27,6 @@ const RawInputForm: FC<Props> = ({ params, onChange }) => {
             });
           }}
           enableBasicAutocompletion
-          fontSize={16}
-          tabSize={2}
-          width="100%"
           height="200px"
           style={{
             borderRadius: theme.radii.md,

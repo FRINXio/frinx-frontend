@@ -1,11 +1,7 @@
 import React, { FC } from 'react';
 import { Box, FormControl, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
-import AceEditor from 'react-ace';
 import { HTTPInputParams, HTTPMethod } from '../../helpers/types';
-import 'ace-builds/webpack-resolver';
-import 'ace-builds/src-noconflict/mode-json';
-import 'ace-builds/src-noconflict/theme-textmate';
-import 'ace-builds/src-noconflict/ext-language_tools';
+import Editor from '../common/editor';
 
 type Props = {
   params: HTTPInputParams;
@@ -115,11 +111,8 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
       </FormControl>
       <FormControl id="headers">
         <FormLabel>Headers</FormLabel>
-        <AceEditor
-          mode="json"
+        <Editor
           name="headers"
-          theme="textmate"
-          wrapEnabled
           value={JSON.stringify(headers, null, 2)}
           onChange={(value) => {
             onChange({
@@ -132,8 +125,6 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
             });
           }}
           enableBasicAutocompletion
-          tabSize={2}
-          fontSize={16}
           height="100px"
           style={{
             borderRadius: theme.radii.md,
@@ -143,11 +134,8 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
       {method !== 'GET' && (
         <FormControl id="body" my={6}>
           <FormLabel>Body</FormLabel>
-          <AceEditor
-            mode="json"
+          <Editor
             name="body"
-            theme="textmate"
-            wrapEnabled
             value={JSON.stringify(body, null, 2) ?? ''}
             onChange={(value) => {
               if (params.http_request.method === 'GET') {
@@ -163,9 +151,6 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
               });
             }}
             enableBasicAutocompletion
-            tabSize={2}
-            fontSize={16}
-            width="100%"
             height="200px"
             style={{
               borderRadius: theme.radii.md,

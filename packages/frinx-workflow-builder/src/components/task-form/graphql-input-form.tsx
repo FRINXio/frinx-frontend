@@ -1,11 +1,7 @@
 import React, { FC } from 'react';
 import { Box, FormControl, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
-import AceEditor from 'react-ace';
 import { GraphQLInputParams } from '../../helpers/types';
-import 'ace-builds/webpack-resolver';
-import 'ace-builds/src-noconflict/mode-graphqlschema';
-import 'ace-builds/src-noconflict/theme-textmate';
-import 'ace-builds/src-noconflict/ext-language_tools';
+import Editor from '../common/editor';
 
 type Props = {
   params: GraphQLInputParams;
@@ -90,11 +86,8 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
       </FormControl>
       <FormControl id="headers">
         <FormLabel>Headers</FormLabel>
-        <AceEditor
-          mode="json"
+        <Editor
           name="headers"
-          theme="textmate"
-          wrapEnabled
           value={JSON.stringify(headers, null, 2)}
           onChange={(value) => {
             onChange({
@@ -106,10 +99,6 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
               },
             });
           }}
-          enableBasicAutocompletion
-          tabSize={2}
-          fontSize={16}
-          width="100%"
           height="100px"
           style={{
             borderRadius: theme.radii.md,
@@ -118,11 +107,9 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
       </FormControl>
       <FormControl id="query" my={6}>
         <FormLabel>GraphQL query</FormLabel>
-        <AceEditor
+        <Editor
           mode="graphql"
           name="query"
-          theme="textmate"
-          wrapEnabled
           value={query}
           onChange={(value) => {
             onChange({
@@ -138,9 +125,6 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
             });
           }}
           enableBasicAutocompletion
-          tabSize={2}
-          fontSize={16}
-          width="100%"
           height="200px"
           style={{
             borderRadius: theme.radii.md,
@@ -149,11 +133,8 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
       </FormControl>
       <FormControl id="variables">
         <FormLabel>Variables</FormLabel>
-        <AceEditor
-          mode="json"
+        <Editor
           name="variables"
-          theme="textmate"
-          wrapEnabled
           value={JSON.stringify(variables, null, 2)}
           onChange={(value) => {
             onChange({
@@ -169,9 +150,6 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
             });
           }}
           enableBasicAutocompletion
-          tabSize={2}
-          fontSize={16}
-          width="100%"
           height="100px"
           style={{
             borderRadius: theme.radii.md,
