@@ -24,16 +24,13 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/theme-tomorrow';
-import AceEditor from 'react-ace';
 import PageContainer from '../../../common/PageContainer';
 import PaginationPages from '../../../common/Pagination';
 import callbackUtils from '../../../utils/callbackUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { usePagination } from '../../../common/PaginationHook';
+import Editor from '../../../common/editor';
 
 const EventListeners = () => {
   const [eventListeners, setEventListeners] = useState([]);
@@ -119,21 +116,10 @@ const EventListeners = () => {
       <ModalContent>
         <ModalHeader>Edit {selectedEvent?.name}</ModalHeader>
         <ModalBody>
-          <AceEditor
-            mode="javascript"
-            theme="tomorrow"
-            width="100%"
-            height="300px"
+          <Editor
+            name="event_listener_editor"
             onChange={(data) => parseJSON(data)}
-            fontSize={16}
             value={JSON.stringify(selectedEvent, null, 2)}
-            wrapEnabled={true}
-            setOptions={{
-              showPrintMargin: true,
-              highlightActiveLine: true,
-              showLineNumbers: true,
-              tabSize: 2,
-            }}
           />
         </ModalBody>
         <ModalFooter>

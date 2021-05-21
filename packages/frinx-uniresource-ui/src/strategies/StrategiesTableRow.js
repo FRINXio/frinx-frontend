@@ -24,6 +24,7 @@ import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
 import { useStateValue } from '../utils/StateProvider';
+import Editor from '../components/common/Editor';
 
 const StyledMenu = withStyles({
   paper: {
@@ -117,14 +118,10 @@ const StrategiesTableRow = (props: Props) => {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={isOpen} timeout="auto" unmountOnExit>
             <Box margin={1}>
-              <AceEditor
-                className={classes.editor}
+              <Editor
                 height="450px"
-                width="100%"
                 mode="javascript"
-                theme="tomorrow"
                 name={id}
-                editorProps={{ $blockScrolling: true }}
                 value={Script}
                 readOnly
                 fontSize={16}

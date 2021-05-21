@@ -10,11 +10,7 @@ import { useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
-
-import AceEditor from 'react-ace';
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/theme-tomorrow';
-import 'ace-builds/src-noconflict/ext-language_tools';
+import Editor from '../components/common/Editor';
 
 const styles = () => ({
   root: {
@@ -91,15 +87,11 @@ const AllocationStrategiesItem = (props: Props) => {
             <div>{`Lang: ${Lang}`}</div>
             <div>
               <div>
-                <AceEditor
-                  className={classes.editor}
+                <Editor
                   height="150px"
-                  width="100%"
                   mode="javascript"
-                  theme="tomorrow"
                   onChange={onChange}
                   name="UNIQUE_ID_OF_DIV"
-                  editorProps={{ $blockScrolling: true }}
                   value={editorValue}
                   readOnly
                   fontSize={16}
