@@ -46,12 +46,12 @@ const NetconfAdvFormToggles = ({ netconfAdvForm, setNetconfAdvForm }) => (
     <GridItem colSpan={4}>
       <FormSwitch
         label="Override capabilities"
-        isChecked={netconfAdvForm['netconf-node-topology:override']}
+        isChecked={netconfAdvForm.override}
         onChange={(e) => {
           e.persist();
           setNetconfAdvForm((prev) => ({
             ...prev,
-            'netconf-node-topology:override': e.target.checked,
+            override: e.target.checked,
           }));
         }}
       />
