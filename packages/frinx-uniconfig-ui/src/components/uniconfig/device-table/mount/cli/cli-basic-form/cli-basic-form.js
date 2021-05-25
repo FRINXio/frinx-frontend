@@ -124,7 +124,10 @@ const CliBasicForm = ({ cliBasicForm, setCliBasicForm, supportedDevices, getDevi
             <Input
               value={cliBasicForm['cli-topology:password']}
               type={!shouldShowPassword ? 'password' : 'text'}
-              onChange={(e) => setCliBasicForm((prev) => ({ ...prev, 'cli-topology:password': e.target.value }))}
+              onChange={(e) => {
+                e.persist();
+                setCliBasicForm((prev) => ({ ...prev, 'cli-topology:password': e.target.value }));
+              }}
               placeholder="Password"
             />
             <InputRightElement width="4.5rem">
