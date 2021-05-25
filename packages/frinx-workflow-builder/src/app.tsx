@@ -7,7 +7,7 @@ import { createDiagramController } from './helpers/diagram.helpers';
 import unwrap from './helpers/unwrap';
 import RightDrawer from './components/right-drawer';
 import TaskForm from './components/task-form/task-form';
-import LeftMenu from './components/left-menu';
+import LeftMenu from './components/left-menu/left-menu';
 import NewWorkflowModal from './components/new-workflow-modal/new-workflow-modal';
 import WorkflowDefinitionModal from './components/workflow-definition-modal/workflow-definition-modal';
 import ExecutionModal from './components/execution-modal/execution-modal';
