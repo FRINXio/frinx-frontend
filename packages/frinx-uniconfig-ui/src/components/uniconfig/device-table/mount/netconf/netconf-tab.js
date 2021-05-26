@@ -26,10 +26,10 @@ const INITIAL_NETCONF_BASIC_FORM_VALUES = {
 
 const INITIAL_NETCONF_ADVANCED_FORM_VALUES = {
   hasDryRun: false,
+  override: false,
   'netconf-node-topology:tcp-only': false,
   'netconf-node-topology:keepalive-delay': 0,
   'node-extension:reconcile': false,
-  'netconf-node-topology:override': false,
   'netconf-node-topology:dry-run-journal-size': 180,
   'netconf-node-topology:yang-module-capabilities': '{"capability": []}',
   'uniconfig-config:uniconfig-native-enabled': false,
@@ -78,11 +78,13 @@ const NetconfTab = ({ templateNode }) => {
   const [outputConsole, setOutputConsole] = useState({ output: [], isRunning: false });
   const toast = useToast();
 
-  useEffect(async () => {
-    const { nodeId, topologyId } = templateNode;
+  useEffect(() => {
+    if (templateNode != null) {
+      const { nodeId, topologyId } = templateNode;
 
-    if (topologyId === 'topology-netconf') {
-      setFormsFromNode(nodeId);
+      if (topologyId === 'topology-netconf') {
+        setFormsFromNode(nodeId);
+      }
     }
   }, [templateNode]);
 
@@ -145,9 +147,8 @@ const NetconfTab = ({ templateNode }) => {
           'node-extension:reconcile': netconfAdvForm['node-extension:reconcile'],
           'netconf-node-topology:tcp-only': netconfAdvForm['netconf-node-topology:tcp-only'],
           'netconf-node-topology:keepalive-delay': parseInt(netconfAdvForm['netconf-node-topology:keepalive-delay']),
-          'netconf-node-topology:override': netconfAdvForm['netconf-node-topology:override'],
           ...(netconfAdvForm.hasDryRun ? dryRunOn : null),
-          ...(netconfAdvForm['netconf-node-topology:override'] ? overrideCapabilitiesOn : null),
+          ...(netconfAdvForm.override ? overrideCapabilitiesOn : null),
           ...(netconfAdvForm['uniconfig-config:uniconfig-native-enabled'] ? uniconfigNativeOn : null),
         },
       ],

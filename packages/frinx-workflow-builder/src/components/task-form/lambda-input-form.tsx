@@ -1,11 +1,7 @@
 import React, { FC } from 'react';
 import { FormControl, FormLabel, Input, useTheme } from '@chakra-ui/react';
-import AceEditor from 'react-ace';
 import { LambdaInputParams } from '../../helpers/types';
-import 'ace-builds/webpack-resolver';
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/theme-textmate';
-import 'ace-builds/src-noconflict/ext-language_tools';
+import Editor from '../common/editor';
 
 type Props = {
   params: LambdaInputParams;
@@ -35,10 +31,9 @@ const LambdaInputsForm: FC<Props> = ({ params, onChange }) => {
       </FormControl>
       <FormControl id="scriptExpression" my={6}>
         <FormLabel>Script expression</FormLabel>
-        <AceEditor
+        <Editor
+          name="lambda-editor"
           mode="javascript"
-          theme="textmate"
-          wrapEnabled
           value={scriptExpression}
           onChange={(value) => {
             onChange({
@@ -47,9 +42,6 @@ const LambdaInputsForm: FC<Props> = ({ params, onChange }) => {
             });
           }}
           enableBasicAutocompletion
-          fontSize={16}
-          tabSize={2}
-          width="100%"
           height="200px"
           style={{
             borderRadius: theme.radii.md,

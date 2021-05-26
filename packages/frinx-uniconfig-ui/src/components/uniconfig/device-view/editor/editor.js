@@ -1,49 +1,35 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Stack, Text, Badge, Box } from '@chakra-ui/react';
-import { Controlled as CodeMirror } from 'react-codemirror2';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/addon/fold/foldgutter';
-import 'codemirror/addon/fold/foldgutter.css';
-import 'codemirror/addon/fold/brace-fold';
-require('codemirror/mode/javascript/javascript');
+import AceEditor from 'react-ace';
 
-const Editor = ({ isReadOnly, isModified, isParsable, currentState, setCurrentLocalConfigState }) => {
-  const codemirrorRef = useRef();
+import 'ace-builds/src-noconflict/mode-json';
+import 'ace-builds/src-noconflict/theme-textmate';
 
-  useEffect(() => {
-    // workaround to deal with CodeMirror css import order and overwriting
-    codemirrorRef.current.editor.display.wrapper.style.height = '500px';
-  }, []);
-
-  return (
-    <>
-      <Box bg="#EDF2F7" w="100%" h="30px" p={4}>
-        <Stack h="100%" isInline={true} align="center">
-          <Text fontSize="md">{isReadOnly ? 'Operational datastore' : 'Configurational datastore'}</Text>
-          {isModified && (
-            <Badge variant="outline" colorScheme="yellow">
-              Modified
-            </Badge>
-          )}
-          {isParsable === false && <Badge colorScheme="red">Could not parse JSON. Check syntax.</Badge>}
-        </Stack>
-      </Box>
-
-      <CodeMirror
-        value={currentState}
-        ref={codemirrorRef}
-        onBeforeChange={(editor, data, value) => setCurrentLocalConfigState(value)}
-        options={{
-          mode: 'application/ld+json',
-          lineNumbers: true,
-          lineWrapping: true,
-          readOnly: isReadOnly,
-          foldGutter: true,
-          gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-        }}
-      />
-    </>
-  );
-};
+const Editor = ({ isReadOnly, isModified, isParsable, currentState, setCurrentLocalConfigState }) => (
+  <>
+    <Box bg="#EDF2F7" w="100%" h="30px" p={4}>
+      <Stack h="100%" isInline={true} align="center">
+        <Text fontSize="md">{isReadOnly ? 'Operational datastore' : 'Configurational datastore'}</Text>
+        {isModified && (
+          <Badge variant="outline" colorScheme="yellow">
+            Modified
+          </Badge>
+        )}
+        {isParsable === false && <Badge colorScheme="red">Could not parse JSON. Check syntax.</Badge>}
+      </Stack>
+    </Box>
+    <AceEditor
+      mode="json"
+      theme="textmate"
+      value={currentState}
+      onChange={setCurrentLocalConfigState}
+      name="uniconfig_editor"
+      width="100%"
+      fontSize={16}
+      readOnly={isReadOnly}
+      showPrintMargin={false}
+    />
+  </>
+);
 
 export default Editor;

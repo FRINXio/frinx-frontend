@@ -76,11 +76,13 @@ const CliTab = ({ supportedDevices, templateNode }) => {
   const [outputConsole, setOutputConsole] = useState({ output: [], isRunning: false });
   const toast = useToast();
 
-  useEffect(async () => {
-    const { nodeId, topologyId } = templateNode;
+  useEffect(() => {
+    if (templateNode != null) {
+      const { nodeId, topologyId } = templateNode;
 
-    if (topologyId === 'cli') {
-      setFormsFromNode(nodeId);
+      if (topologyId === 'cli') {
+        setFormsFromNode(nodeId);
+      }
     }
   }, [templateNode]);
 
