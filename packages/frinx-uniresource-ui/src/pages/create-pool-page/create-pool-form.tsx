@@ -1,4 +1,4 @@
-import React, { FC, VoidFunctionComponent } from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Box,
@@ -59,18 +59,22 @@ type Pool = {
   id: string;
   name: string;
 };
+type AllocStrategy = {
+  id: string;
+  name: string;
+};
 
 type Props = {
   onFormSubmit: (values: FormValues) => void;
   resourceTypes: ResourceType[];
   pools: Pool[];
+  allocStrategies: AllocStrategy[];
 };
 
-const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTypes, pools }) => {
+const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTypes, pools, allocStrategies }) => {
   const {
     register,
     handleSubmit,
-    getValues,
     watch,
     formState: { isSubmitting },
   } = useForm<FormValues>({
@@ -141,6 +145,21 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
         <FormControl id="dealocationSafetyPeriod" marginY={5}>
           <FormLabel>Dealocation safety period</FormLabel>
           <Input type="text" {...register('dealocationSafetyPeriod')} placeholder="Enter dealocation safety period" />
+        </FormControl>
+      )}
+      {poolType === 'allocating' && (
+        <FormControl id="allocationStrategyId" marginY={5}>
+          <FormLabel>Allocation strategy</FormLabel>
+          <Select {...register('allocationStrategyId')}>
+            <option value="" disabled>
+              Select allocation strategy
+            </option>
+            {allocStrategies.map((as) => (
+              <option key={as.id} value={as.id}>
+                {as.name}
+              </option>
+            ))}
+          </Select>
         </FormControl>
       )}
       <FormControl>

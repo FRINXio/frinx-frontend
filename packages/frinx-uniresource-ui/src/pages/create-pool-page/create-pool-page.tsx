@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Client, useClient, useMutation, useQuery } from 'urql';
+import { Client, useClient, useQuery } from 'urql';
 import { Box, Flex, Heading, Spinner } from '@chakra-ui/react';
 import gql from 'graphql-tag';
 import {
@@ -15,10 +15,11 @@ import {
   CreateSetPoolMutationVariables,
   CreateSingletonPoolMutation,
   CreateSingletonPoolMutationVariables,
+  SelectAllocationStrategiesQuery,
   SelectPoolsQuery,
   SelectResourceTypesQuery,
 } from '../../__generated__/graphql';
-import CreatePoolForm from '../../components/create-pool-form';
+import CreatePoolForm from './create-pool-form';
 
 const CREATE_SET_POOL_MUTATION = gql`
   mutation CreateSetPool($input: CreateSetPoolInput!) {
@@ -86,6 +87,14 @@ const SELECT_RESOURCE_TYPES_QUERY = gql`
 const SELECT_POOLS_QUERY = gql`
   query SelectPools {
     QueryResourcePools {
+      id
+      Name
+    }
+  }
+`;
+const SELECT_ALLOCATION_STRATEGIES_QUERY = gql`
+  query SelectAllocationStrategies {
+    QueryAllocationStrategies {
       id
       Name
     }
@@ -170,6 +179,7 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
   }
   switch (values.poolType) {
     case 'set':
+      console.log(mutationFn.toString());
       return mutationFn<CreateSetPoolMutation, CreateSetPoolMutationVariables>(CREATE_SET_POOL_MUTATION, {
         input: {
           poolName: values.name,
@@ -214,12 +224,13 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
 const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
   const client = useClient();
   const [{ data: poolsData, fetching: poolsFetching }] = useQuery<SelectPoolsQuery>({ query: SELECT_POOLS_QUERY });
+  const [{ data: allocStratData, fetching: allocStratFetching }] = useQuery<SelectAllocationStrategiesQuery>({
+    query: SELECT_ALLOCATION_STRATEGIES_QUERY,
+  });
   const [{ data, fetching }] = useQuery<SelectResourceTypesQuery>({ query: SELECT_RESOURCE_TYPES_QUERY });
 
   const handleFormSubmit = (values: FormValues) => {
-    console.log(values);
-    return;
-    createPool(client.mutation, values)
+    createPool(client.mutation.bind(client), values)
       .toPromise()
       .then(() => {
         console.log('success');
@@ -227,16 +238,17 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
       });
   };
 
-  if (fetching || poolsFetching) {
+  if (fetching || poolsFetching || allocStratFetching) {
     return <Spinner size="xl" />;
   }
 
-  if (data == null || poolsData == null) {
+  if (data == null || poolsData == null || allocStratData == null) {
     return null;
   }
 
   const resourceTypes = data.QueryResourceTypes.map((rt) => ({ id: rt.id, name: rt.Name }));
   const pools = poolsData.QueryResourcePools.map((p) => ({ id: p.id, name: p.Name }));
+  const allocStrategies = allocStratData.QueryAllocationStrategies.map((as) => ({ id: as.id, name: as.Name }));
 
   return (
     <>
@@ -246,7 +258,12 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
         </Heading>
       </Flex>
       <Box background="white" paddingY={8} paddingX={4}>
-        <CreatePoolForm onFormSubmit={handleFormSubmit} resourceTypes={resourceTypes} pools={pools} />
+        <CreatePoolForm
+          onFormSubmit={handleFormSubmit}
+          resourceTypes={resourceTypes}
+          pools={pools}
+          allocStrategies={allocStrategies}
+        />
       </Box>
     </>
   );
