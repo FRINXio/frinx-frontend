@@ -56,6 +56,19 @@ const NetconfAdvFormToggles = ({ netconfAdvForm, setNetconfAdvForm }) => (
         }}
       />
     </GridItem>
+    <GridItem colSpan={4}>
+      <FormSwitch
+        label="UniConfig native"
+        isChecked={netconfAdvForm['uniconfig-config:uniconfig-native-enabled']}
+        onChange={(e) => {
+          e.persist();
+          setNetconfAdvForm((prev) => ({
+            ...prev,
+            'uniconfig-config:uniconfig-native-enabled': e.target.checked,
+          }));
+        }}
+      />
+    </GridItem>
   </Grid>
 );
 
