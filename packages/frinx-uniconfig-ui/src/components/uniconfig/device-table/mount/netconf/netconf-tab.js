@@ -32,7 +32,7 @@ const INITIAL_NETCONF_ADVANCED_FORM_VALUES = {
   'node-extension:reconcile': false,
   'netconf-node-topology:dry-run-journal-size': 180,
   'netconf-node-topology:yang-module-capabilities': '{"capability": []}',
-  'uniconfig-config:uniconfig-native-enabled': false,
+  'uniconfig-config:uniconfig-native-enabled': true,
   'uniconfig-config:blacklist': {
     'uniconfig-config:path': [
       'openconfig-interfaces:interfaces',
