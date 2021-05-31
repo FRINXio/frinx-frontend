@@ -1,11 +1,11 @@
 import React from 'react';
-import { Grid, GridItem } from '@chakra-ui/react';
+import { Box, Flex, FormControl, FormHelperText, FormLabel, Grid, GridItem, Switch, Textarea } from '@chakra-ui/react';
 import NetconfAdvFormToggles from './netconf-adv-form-toggles';
 import FormInput from '../../../../../common/form-input';
 import NetconfDryRunForm from './netconf-dry-run-from';
 import NetconfCapabilitiesForm from './netconf-capabilities-form';
 
-const NetconfAdvForm = ({ netconfAdvForm, setNetconfAdvForm }) => {
+const NetconfAdvForm = ({ netconfAdvForm, setNetconfAdvForm, setBlacklistEnabled, isBlacklistEnabled }) => {
   return (
     <>
       <NetconfAdvFormToggles netconfAdvForm={netconfAdvForm} setNetconfAdvForm={setNetconfAdvForm} />
@@ -28,6 +28,35 @@ const NetconfAdvForm = ({ netconfAdvForm, setNetconfAdvForm }) => {
           <NetconfCapabilitiesForm netconfAdvForm={netconfAdvForm} setNetconfAdvForm={setNetconfAdvForm} />
         )}
       </Grid>
+      <Box marginTop={6}>
+        <FormControl>
+          <Flex>
+            <FormLabel>Blacklist</FormLabel>
+            <Switch
+              isChecked={isBlacklistEnabled}
+              onChange={(e) => {
+                e.persist();
+                setBlacklistEnabled(e.target.checked);
+              }}
+            />
+          </Flex>
+          <Textarea
+            isDisabled={!isBlacklistEnabled}
+            value={netconfAdvForm['uniconfig-config:blacklist']['uniconfig-config:path'].join()}
+            onChange={(e) => {
+              e.persist();
+              setNetconfAdvForm((prev) => ({
+                ...prev,
+                'uniconfig-config:blacklist': {
+                  ...prev['uniconfig-config:blacklist'],
+                  'uniconfig-config:path': e.target.value.split(','),
+                },
+              }));
+            }}
+          />
+          <FormHelperText>List of blacklisted root paths that should not be read from the device</FormHelperText>
+        </FormControl>
+      </Box>
     </>
   );
 };
