@@ -16,11 +16,11 @@ export const getOsVersion = (node_id) => {
 
 export const createNodeObject = async (topology, node) => {
   if (topology === 'cli') {
-    let osVersion = await getOsVersion(node['node-id']);
+    const osVersion = await getOsVersion(node['node-id']);
     return {
       topologyId: topology,
       nodeId: node['node-id'],
-      osVersion: osVersion,
+      osVersion,
       connectionStatus: osVersion === null ? 'unmounting' : node['cli-topology:connection-status'],
       connectedMessage: node['cli-topology:connected-message'],
       commitErrorPatterns: node['cli-topology:default-commit-error-patterns'],
