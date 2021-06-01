@@ -74,6 +74,7 @@ const getNetconfAdvFormFromNodeState = (state) => {
 const NetconfTab = ({ templateNode }) => {
   const [netconfBasicForm, setNetconfBasicForm] = useState(INITIAL_NETCONF_BASIC_FORM_VALUES);
   const [netconfAdvForm, setNetconfAdvForm] = useState(INITIAL_NETCONF_ADVANCED_FORM_VALUES);
+  const [isBlacklistEnabled, setBlacklistEnabled] = useState(false);
   const [nodeId, setNodeId] = useState();
   const [outputConsole, setOutputConsole] = useState({ output: [], isRunning: false });
   const toast = useToast();
@@ -137,7 +138,6 @@ const NetconfTab = ({ templateNode }) => {
 
     const uniconfigNativeOn = {
       'uniconfig-config:uniconfig-native-enabled': netconfAdvForm['uniconfig-config:uniconfig-native-enabled'],
-      'uniconfig-config:blacklist': netconfAdvForm['uniconfig-config:blacklist'],
     };
 
     const payload = {
@@ -150,6 +150,11 @@ const NetconfTab = ({ templateNode }) => {
           ...(netconfAdvForm.hasDryRun ? dryRunOn : null),
           ...(netconfAdvForm.override ? overrideCapabilitiesOn : null),
           ...(netconfAdvForm['uniconfig-config:uniconfig-native-enabled'] ? uniconfigNativeOn : null),
+          ...(isBlacklistEnabled
+            ? {
+                'uniconfig-config:blacklist': netconfAdvForm['uniconfig-config:blacklist'],
+              }
+            : null),
         },
       ],
     };
@@ -199,7 +204,12 @@ const NetconfTab = ({ templateNode }) => {
             <AccordionIcon />
           </AccordionButton>
           <AccordionPanel pb={4}>
-            <NetconfAdvForm netconfAdvForm={netconfAdvForm} setNetconfAdvForm={setNetconfAdvForm} />
+            <NetconfAdvForm
+              netconfAdvForm={netconfAdvForm}
+              setNetconfAdvForm={setNetconfAdvForm}
+              isBlacklistEnabled={isBlacklistEnabled}
+              setBlacklistEnabled={setBlacklistEnabled}
+            />
           </AccordionPanel>
         </AccordionItem>
         <AccordionItem>
