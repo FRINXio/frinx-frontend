@@ -27,10 +27,22 @@ const getOsVersions = (nodes) => {
 
 async function tryCatch(fn, defaultValue) {
   try {
-    return fn();
+    const value = await fn();
+    return value;
   } catch (e) {
     return Promise.resolve(defaultValue);
   }
+}
+
+function makeNodes(topology) {
+  if (topology?.node == null) {
+    return [];
+  }
+  return Promise.all(
+    topology.node.map(async (node) => {
+      return createNodeObject(topology['topology-id'], node);
+    }),
+  );
 }
 
 const DeviceList = ({ onMountBtnClick, onDeviceClick, onEditClick }) => {
@@ -74,17 +86,9 @@ const DeviceList = ({ onMountBtnClick, onDeviceClick, onEditClick }) => {
     const topologyCli = await tryCatch(getCliTopology, []);
     const topologyNetconf = await tryCatch(getNetconfTopology, []);
 
-    const nodesCli = await Promise.all(
-      (topologyCli?.topology[0]?.node || []).map(async (node) => {
-        return createNodeObject(topologyCli?.topology[0]['topology-id'], node);
-      }),
-    );
+    const nodesCli = topologyCli?.topology ? await makeNodes(topologyCli?.topology[0]) : [];
 
-    const nodesNetconf = await Promise.all(
-      (topologyNetconf?.topology[0]?.node || []).map(async (node) => {
-        return createNodeObject(topologyNetconf?.topology[0]['topology-id'], node);
-      }),
-    );
+    const nodesNetconf = topologyNetconf?.topology ? await makeNodes(topologyNetconf?.topology[0]) : [];
 
     setNodes([...nodesCli, ...nodesNetconf]);
   };
