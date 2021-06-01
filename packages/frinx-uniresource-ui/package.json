@@ -16,6 +16,8 @@
     "dev": "webpack serve --mode development",
     "lint": "eslint --ext .ts,.tsx src",
     "type-check": "tsc --noEmit",
+    "generate:declaration": "tsc --emitDeclarationOnly",
+    "build": "NODE_ENV=production",
     "formatter:check": "prettier -l '**/*.ts' '**/*.tsx' '**/*.js' '**/*.jsx' '**/*.json' '**/*.md'",
     "formatter": "prettier --write '**/*.ts' '**/*.tsx' '**/*.js' '**/*.jsx' '**/*.json' '**/*.md'",
     "codegen": "graphql-codegen --config codegen.yml",

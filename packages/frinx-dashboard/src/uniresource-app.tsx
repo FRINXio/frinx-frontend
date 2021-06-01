@@ -32,15 +32,8 @@ const UniresourceApp: FC = () => {
     return null;
   }
 
-  const {
-    PoolsPage,
-    CreatePoolPage,
-    StrategiesList,
-    ResourceTypesList,
-    UniresourceAppProvider,
-    CreateNestedPool,
-    CreateNewStrategy,
-  } = components;
+  const { PoolsPage, CreatePoolPage, StrategiesList, ResourceTypesList, UniresourceAppProvider, CreateNewStrategy } =
+    components;
 
   return (
     <UniresourceAppProvider>
@@ -56,7 +49,11 @@ const UniresourceApp: FC = () => {
           />
         </Route>
         <Route exact path="/uniresource/pools">
-          <PoolsPage />
+          <PoolsPage
+            onNewPoolBtnClick={() => {
+              history.push('/uniresource/pools/new');
+            }}
+          />
         </Route>
         <Route exact path="/uniresource/strategies/new">
           <CreateNewStrategy

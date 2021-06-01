@@ -20,6 +20,6 @@
     "isolatedModules": true,
     "noEmit": false
   },
-  "include": ["custom.d.ts", "src", "*.ts", "*.js"],
+  "include": ["custom.d.ts", "src"],
   "exclude": ["**/node_modules", "**/__generated__/**", ".eslintrc.js"]
 }

@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import React, { FC } from 'react';
 import { useQuery } from 'urql';
-import { ResourceTypesQueryQuery } from '../__generated__/graphql';
+import { ResourceTypesQuery } from '../__generated__/graphql';
 import CreateNewResourceType from './create-new-resource-type';
 import DeleteResourceType from './delete-resource-type';
 
@@ -23,7 +23,7 @@ const RESOURCE_TYPES_QUERY = gql`
 `;
 
 const ResourceTypesList: FC = () => {
-  const [result] = useQuery<ResourceTypesQueryQuery>({
+  const [result] = useQuery<ResourceTypesQuery>({
     query: RESOURCE_TYPES_QUERY,
   });
 
