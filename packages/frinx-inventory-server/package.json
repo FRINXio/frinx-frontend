@@ -12,8 +12,9 @@
   "license": "MIT",
   "scripts": {
     "build:babel": "cross-env NODE_ENV=production babel --extensions .ts ./src --out-dir ./build/babel",
+    "build:pack": "cross-env NODE_ENV=production ncc build build/babel/server.js -o build/pack",
     "build:clear": "rimraf build",
-    "build": "run-s build:clear build:babel",
+    "build": "run-s build:clear build:babel build:pack",
     "dev": "cross-env DEBUG='frinx-inventory-server' DEBUG_COLORS=true DOTENV_CONFIG_PATH=./.env nodemon --exec 'node -r dotenv/config -r ./babel-register-ts.js' -- ./src/server.ts",
     "lint": "eslint --ext .ts 'src/**/*.ts' --max-warnings 0",
     "type-check": "tsc"
@@ -32,6 +33,7 @@
     "@frinx/eslint-config-typescript-base": "^18.2.1-build.2",
     "@typescript-eslint/eslint-plugin": "^4.15.0",
     "@typescript-eslint/parser": "^4.15.0",
+    "@vercel/ncc": "^0.28.6",
     "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
     "eslint": "^7.17.0",
