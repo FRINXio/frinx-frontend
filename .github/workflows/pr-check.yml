@@ -27,3 +27,4 @@ jobs:
             yarn run formatter:check
             yarn run dedubcheck
             cd packages/frinx-dashboard && yarn run lint
+            cd packages/frinx-inventory-server && yarn run lint
