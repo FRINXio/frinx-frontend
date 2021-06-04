@@ -90,6 +90,9 @@ typings/
 packages/frinx-dashboard/build
 packages/frinx-workflow-ui/dist
 
+dist
+build
+
 # yarn files
 /.yarn/*
 !/.yarn/releases
