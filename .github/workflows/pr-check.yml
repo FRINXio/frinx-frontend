@@ -26,4 +26,5 @@ jobs:
             cmp yarn.lock yarn.lock.orig
             yarn run formatter:check
             yarn run dedubcheck
-            cd packages/frinx-dashboard && yarn run lint
+            cd /work/packages/frinx-dashboard && yarn run lint
+            cd /work/packages/frinx-inventory-server && yarn run lint
