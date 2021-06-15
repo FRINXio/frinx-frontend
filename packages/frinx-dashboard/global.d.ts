@@ -20,6 +20,7 @@ declare interface Window {
     uniflow_enabled: boolean;
     usermanagement_enabled: boolean;
     url_basename: string;
+    inventory_api_url: string;
   }>;
 
   dashboardApp: DashboardApp;
