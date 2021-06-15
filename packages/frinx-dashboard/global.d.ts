@@ -4,6 +4,8 @@ declare type DashboardApp = {
   render: () => void;
 };
 
+declare const COMMIT_HASH: string;
+
 /* eslint-disable */
 declare interface Window {
   __CONFIG__: Readonly<{
