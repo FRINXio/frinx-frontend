@@ -16,7 +16,7 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "ace-builds": "^1.4.12",
     "lodash": "^4.17.20",
-    "react-ace": "^9.4.0",
+    "react-ace": "^9.2.1",
     "react-diff-viewer": "^3.1.1"
   },
   "scripts": {
