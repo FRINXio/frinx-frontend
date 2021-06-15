@@ -13,6 +13,7 @@ import UniflowApp from './uniflow-app';
 import UniconfigApp from './uniconfig-app';
 import { ServiceKey } from './types';
 import UniresourceApp from './uniresource-app';
+import InventoryApp from './inventory-app';
 
 function getURLBaseName(): string {
   return window.__CONFIG__.url_basename ?? '/';
@@ -75,6 +76,9 @@ const AppWithAuth: FC<{
                   <UniresourceApp />
                 </Route>
               )}
+              <Route path="/inventory">
+                <InventoryApp />
+              </Route>
             </Switch>
           </Box>
         </BrowserRouter>

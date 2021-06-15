@@ -1,17 +1,17 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Flex, Heading } from '@chakra-ui/react';
+import { Container, Flex, Heading } from '@chakra-ui/react';
 import DeviceTable from './device-table';
 
 const DeviceList: VoidFunctionComponent = () => {
   return (
-    <>
-      <Flex marginBottom={16}>
-        <Heading as="h1" size="lg">
+    <Container maxWidth={1280}>
+      <Flex justify="space-between" align="center" marginBottom={6}>
+        <Heading as="h2" size="3xl">
           Devices
         </Heading>
       </Flex>
       <DeviceTable />
-    </>
+    </Container>
   );
 };
 

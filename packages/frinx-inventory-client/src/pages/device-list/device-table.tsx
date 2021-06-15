@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Badge, Button, HStack, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { Badge, HStack, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 import { SettingsIcon, InfoIcon } from '@chakra-ui/icons';
 
 const SAMPLE_DEVICES = [
