@@ -32,6 +32,9 @@ const plugins = [
     scriptLoading: 'blocking',
   }),
   new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+  new webpack.DefinePlugin({
+    COMMIT_HASH: JSON.stringify(process.env.COMMIT_HASH),
+  }),
 ];
 
 module.exports = {

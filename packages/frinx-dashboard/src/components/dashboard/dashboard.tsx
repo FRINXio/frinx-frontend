@@ -1,10 +1,9 @@
 import React, { FC } from 'react';
-import { Box, Container, Heading, HStack } from '@chakra-ui/react';
+import { Box, Code, Container, Heading, HStack } from '@chakra-ui/react';
 import Panel from '../panel/panel';
 import { ServiceKey } from '../../types';
 import UniflowActions from './uniflow-actions';
 import UniconfigActions from './uniconfig-actions';
-import packageJson from '../../../package.json';
 
 type Props = {
   enabledServices: Map<ServiceKey, boolean>;
@@ -64,8 +63,8 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
           </HStack>
         </Box>
       </Container>
-      <Box bg="gray.200" bottom={0} position="fixed" w="100%" pl={4}>
-        v{packageJson.version}
+      <Box bg="gray.200" bottom={0} position="fixed" paddingX={4} fontSize="sm">
+        <Code>{COMMIT_HASH}</Code>
       </Box>
     </>
   );
