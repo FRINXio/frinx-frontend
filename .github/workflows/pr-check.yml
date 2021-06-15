@@ -28,3 +28,4 @@ jobs:
             yarn run dedubcheck
             cd /work/packages/frinx-dashboard && yarn run lint
             cd /work/packages/frinx-inventory-server && yarn run lint
+            cd /work/packages/frinx-inventory-client && yarn run lint
