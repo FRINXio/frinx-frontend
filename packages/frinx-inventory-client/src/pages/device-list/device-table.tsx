@@ -1,29 +1,15 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Badge, HStack, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 import { SettingsIcon, InfoIcon } from '@chakra-ui/icons';
+import { Device } from '../../helpers/types';
 
-const SAMPLE_DEVICES = [
-  {
-    name: 'Sample device 1',
-    vendor: 'CISCO',
-    model: '1234',
-    host: '127.0.0.1:123',
-    zone: 123,
-    status: 'INSTALLED',
-  },
-  {
-    name: 'Sample device 2',
-    vendor: 'NOKIA',
-    model: 'abcde',
-    host: '127.0.0.1:301',
-    zone: 456,
-    status: 'N/A',
-  },
-];
+type Props = {
+  devices: Device[];
+};
 
-const DeviceTable: VoidFunctionComponent = () => {
+const DeviceTable: VoidFunctionComponent<Props> = ({ devices }) => {
   return (
-    <Table colorScheme="blue">
+    <Table background="white" size="lg">
       <Thead>
         <Tr>
           <Th>Name</Th>
@@ -36,8 +22,8 @@ const DeviceTable: VoidFunctionComponent = () => {
         </Tr>
       </Thead>
       <Tbody>
-        {SAMPLE_DEVICES.map((device) => (
-          <Tr>
+        {devices.map((device) => (
+          <Tr key={device.id}>
             <Td>
               <Text as="span" fontWeight={600}>
                 {device.name}
