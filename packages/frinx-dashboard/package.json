@@ -30,10 +30,10 @@
     "uuid": "^8.3.2"
   },
   "scripts": {
-    "dev": "run-s dev:webpack",
+    "dev": "COMMIT_HASH=$(git rev-parse HEAD) run-s relay dev:webpack",
     "dev:webpack": "webpack serve --mode development",
     "build:webpack": "NODE_ENV=production webpack --mode production",
-    "build": "run-s relay build:webpack",
+    "build": "COMMIT_HASH=$(git rev-parse HEAD) run-s relay build:webpack",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc --noEmit"
   },

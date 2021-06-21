@@ -9,7 +9,7 @@ const Editor = ({ isReadOnly, isModified, isParsable, currentState, setCurrentLo
   <>
     <Box bg="#EDF2F7" w="100%" h="30px" p={4}>
       <Stack h="100%" isInline={true} align="center">
-        <Text fontSize="md">{isReadOnly ? 'Operational datastore' : 'Configurational datastore'}</Text>
+        <Text fontSize="md">{isReadOnly ? 'Operational datastore' : 'Configuration datastore'}</Text>
         {isModified && (
           <Badge variant="outline" colorScheme="yellow">
             Modified
