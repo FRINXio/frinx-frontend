@@ -88,16 +88,22 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
         <FormLabel>Headers</FormLabel>
         <Editor
           name="headers"
-          value={JSON.stringify(headers, null, 2)}
+          value={JSON.stringify(headers)}
           onChange={(value) => {
-            onChange({
-              ...params,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              http_request: {
-                ...params.http_request,
-                headers: JSON.parse(value),
-              },
-            });
+            try {
+              const parsedValue = JSON.parse(value);
+
+              onChange({
+                ...params,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                http_request: {
+                  ...params.http_request,
+                  headers: parsedValue,
+                },
+              });
+            } catch (error) {
+              console.log(error.message);
+            }
           }}
           height="100px"
           style={{
@@ -137,17 +143,23 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
           name="variables"
           value={JSON.stringify(variables, null, 2)}
           onChange={(value) => {
-            onChange({
-              ...params,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              http_request: {
-                ...params.http_request,
-                body: {
-                  ...params.http_request.body,
-                  variables: JSON.parse(value),
+            try {
+              const parsedValue = JSON.parse(value);
+
+              onChange({
+                ...params,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                http_request: {
+                  ...params.http_request,
+                  body: {
+                    ...params.http_request.body,
+                    variables: parsedValue,
+                  },
                 },
-              },
-            });
+              });
+            } catch (error) {
+              console.log(error.message);
+            }
           }}
           enableBasicAutocompletion
           height="100px"
