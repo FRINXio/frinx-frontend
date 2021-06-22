@@ -108,7 +108,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
       <FormControl id="query" my={6}>
         <FormLabel>GraphQL query</FormLabel>
         <Editor
-          mode="graphql"
+          mode="graphqlschema"
           name="query"
           value={query}
           onChange={(value) => {
