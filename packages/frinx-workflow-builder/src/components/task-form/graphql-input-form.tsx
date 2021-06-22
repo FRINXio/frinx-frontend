@@ -87,6 +87,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
       <FormControl id="headers">
         <FormLabel>Headers</FormLabel>
         <Editor
+          mode="json"
           name="headers"
           value={JSON.stringify(headers)}
           onChange={(value) => {
@@ -140,6 +141,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
       <FormControl id="variables">
         <FormLabel>Variables</FormLabel>
         <Editor
+          mode="json"
           name="variables"
           value={JSON.stringify(variables, null, 2)}
           onChange={(value) => {
