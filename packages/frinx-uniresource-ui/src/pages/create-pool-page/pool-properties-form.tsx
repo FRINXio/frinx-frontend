@@ -1,19 +1,6 @@
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import isEqual from 'lodash/isEqual';
-import {
-  FormControl,
-  FormLabel,
-  Input,
-  Button,
-  IconButton,
-  InputGroup,
-  InputRightElement,
-  HStack,
-  InputLeftElement,
-  Tooltip,
-  Select,
-} from '@chakra-ui/react';
-import { DeleteIcon, CheckIcon, AddIcon } from '@chakra-ui/icons';
+import React, { useState, VoidFunctionComponent } from 'react';
+import { FormControl, Input, IconButton, HStack, Select } from '@chakra-ui/react';
+import { DeleteIcon, AddIcon } from '@chakra-ui/icons';
 
 type PoolProperties = Record<string, string>;
 type PoolPropertyTypes = Record<string, 'int' | 'string'>;
@@ -30,7 +17,6 @@ const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
   poolPropertyTypes,
   onDeleteBtnClick,
 }) => {
-  // const [poolProperties, setPoolProperties] = useState<Record<string, { type: 'int' | 'string'; value: string }>>({});
   const [type, setType] = useState<'int' | 'string'>('int');
   const [key, setKey] = useState('');
   const [value, setValue] = useState('');

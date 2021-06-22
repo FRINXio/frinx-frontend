@@ -37,6 +37,9 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick }) => {
         <Tbody>
           {pools.map((pool) => {
             const capacityValue = pool.Capacity ? getCapacityValue(pool.Capacity) : 0;
+            const { freeCapacity, utilizedCapacity } = pool.Capacity;
+            const totalCapacity = freeCapacity + utilizedCapacity;
+
             return (
               <Tr key={pool.id}>
                 <Td>{pool.Name}</Td>
@@ -52,7 +55,7 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick }) => {
                 <Td isNumeric>
                   <Progress size="xs" value={capacityValue} />
                   <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
-                    {capacityValue} / 1
+                    {freeCapacity} / {totalCapacity}
                   </Text>
                 </Td>
                 <Td>

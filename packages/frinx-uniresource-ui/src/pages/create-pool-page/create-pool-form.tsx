@@ -1,9 +1,9 @@
 import React, { useCallback, VoidFunctionComponent } from 'react';
+import omitBy from 'lodash/omitBy';
 import { useFormik } from 'formik';
 import { Box, Button, Divider, FormControl, FormLabel, Heading, HStack, Input, Select, Switch } from '@chakra-ui/react';
 import PoolValuesForm from './pool-values-form';
 import PoolPropertiesForm from './pool-properties-form';
-import { omitBy } from 'lodash';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
 type FormValues = {
@@ -39,6 +39,8 @@ const INITIAL_VALUES: FormValues = {
   poolType: 'set',
   poolValues: [],
   parentResourceId: undefined,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   allocationStrategyId: '',
   poolProperties: {},
   poolPropertyTypes: {},
@@ -104,8 +106,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
     },
     [setFieldValue, values],
   );
-
-  console.log(values);
 
   return (
     <form onSubmit={handleSubmit}>
