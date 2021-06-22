@@ -64,7 +64,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
         />
       </FormControl>
       <FormControl id="timeout" my={6}>
-        <Box w={1 / 2}>
+        <Box w="50%">
           <FormLabel>Timeout</FormLabel>
           <Input
             variant="filled"
