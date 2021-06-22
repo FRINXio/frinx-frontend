@@ -1,5 +1,5 @@
 import Root from './root';
-import PoolsPage from './pages/pools-page';
+import PoolsPage from './pages/pools-page/pools-page';
 import CreatePoolPage from './pages/create-pool-page/create-pool-page';
 
 import StrategiesList from './components/strategies-list';

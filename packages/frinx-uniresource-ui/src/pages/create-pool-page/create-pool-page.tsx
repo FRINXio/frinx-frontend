@@ -112,7 +112,8 @@ type FormValues = {
       poolType: 'allocating';
       dealocationSafetyPeriod: number;
       allocationStrategyId: string;
-      poolProperties: Record<string, string>[];
+      poolProperties: Record<string, string>;
+      poolPropertyTypes: Record<string, 'int' | 'string'>;
     }
   | { poolType: 'set'; dealocationSafetyPeriod: number; poolValues: Record<string, string>[] }
   | { poolType: 'singleton'; poolValues: Record<string, string>[] }
@@ -122,7 +123,7 @@ type FormValues = {
         isNested: true;
         parentResourceId: string;
       }
-    | { isNested: false }
+    | { isNested: false; parentResourceId: undefined }
   );
 
 type Props = {
@@ -142,9 +143,10 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
               poolName: values.name,
               description: values.description,
               resourceTypeId: values.resourceTypeId,
-              poolValues: [],
+              poolValues: values.poolValues,
             },
           },
+          { additionalTypenames: ['ResourcePool'] },
         );
       case 'allocating':
         return mutationFn<CreateNestedAllocationPoolMutation, CreateNestedAllocationPoolMutationVariables>(
@@ -159,6 +161,7 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
               allocationStrategyId: values.allocationStrategyId,
             },
           },
+          { additionalTypenames: ['ResourcePool'] },
         );
       case 'singleton':
         return mutationFn<CreateNestedSingletonPoolMutation, CreateNestedSingletonPoolMutationVariables>(
@@ -169,9 +172,10 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
               poolName: values.name,
               description: values.description,
               resourceTypeId: values.resourceTypeId,
-              poolValues: [],
+              poolValues: values.poolValues,
             },
           },
+          { additionalTypenames: ['ResourcePool'] },
         );
       default:
         throw new Error('should never happen');
@@ -179,16 +183,19 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
   }
   switch (values.poolType) {
     case 'set':
-      console.log(mutationFn.toString());
-      return mutationFn<CreateSetPoolMutation, CreateSetPoolMutationVariables>(CREATE_SET_POOL_MUTATION, {
-        input: {
-          poolName: values.name,
-          description: values.description,
-          poolDealocationSafetyPeriod: values.dealocationSafetyPeriod,
-          resourceTypeId: values.resourceTypeId,
-          poolValues: [],
+      return mutationFn<CreateSetPoolMutation, CreateSetPoolMutationVariables>(
+        CREATE_SET_POOL_MUTATION,
+        {
+          input: {
+            poolName: values.name,
+            description: values.description,
+            poolDealocationSafetyPeriod: values.dealocationSafetyPeriod,
+            resourceTypeId: values.resourceTypeId,
+            poolValues: values.poolValues,
+          },
         },
-      });
+        { additionalTypenames: ['ResourcePool'] },
+      );
     case 'allocating':
       return mutationFn<CreateAllocationPoolMutation, CreateAllocationPoolMutationVariables>(
         CREATE_ALLOCATING_POOL_MUTATION,
@@ -199,10 +206,11 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
             poolDealocationSafetyPeriod: values.dealocationSafetyPeriod,
             resourceTypeId: values.resourceTypeId,
             allocationStrategyId: values.allocationStrategyId,
-            poolProperties: [],
-            poolPropertyTypes: [],
+            poolProperties: values.poolProperties,
+            poolPropertyTypes: values.poolPropertyTypes,
           },
         },
+        { additionalTypenames: ['ResourcePool'] },
       );
     case 'singleton':
       return mutationFn<CreateSingletonPoolMutation, CreateSingletonPoolMutationVariables>(
@@ -212,9 +220,10 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
             poolName: values.name,
             description: values.description,
             resourceTypeId: values.resourceTypeId,
-            poolValues: [],
+            poolValues: values.poolValues,
           },
         },
+        { additionalTypenames: ['ResourcePool'] },
       );
     default:
       throw new Error('should never happen');
@@ -233,7 +242,6 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
     createPool(client.mutation.bind(client), values)
       .toPromise()
       .then(() => {
-        console.log('success');
         onCreateSuccess();
       });
   };

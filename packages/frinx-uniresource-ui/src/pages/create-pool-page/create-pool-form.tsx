@@ -1,20 +1,9 @@
-import React, { VoidFunctionComponent } from 'react';
-import { useForm } from 'react-hook-form';
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  Heading,
-  HStack,
-  Input,
-  Select,
-  Switch,
-  useRadio,
-  useRadioGroup,
-  UseRadioProps,
-} from '@chakra-ui/react';
+import React, { useCallback, VoidFunctionComponent } from 'react';
+import { useFormik } from 'formik';
+import { Box, Button, Divider, FormControl, FormLabel, Heading, HStack, Input, Select, Switch } from '@chakra-ui/react';
+import PoolValuesForm from './pool-values-form';
+import PoolPropertiesForm from './pool-properties-form';
+import { omitBy } from 'lodash';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
 type FormValues = {
@@ -27,7 +16,8 @@ type FormValues = {
       poolType: 'allocating';
       dealocationSafetyPeriod: number;
       allocationStrategyId: string;
-      poolProperties: Record<string, string>[];
+      poolProperties: Record<string, string>;
+      poolPropertyTypes: Record<string, 'int' | 'string'>;
     }
   | { poolType: 'set'; dealocationSafetyPeriod: number; poolValues: Record<string, string>[] }
   | { poolType: 'singleton'; poolValues: Record<string, string>[] }
@@ -49,6 +39,9 @@ const INITIAL_VALUES: FormValues = {
   poolType: 'set',
   poolValues: [],
   parentResourceId: undefined,
+  allocationStrategyId: '',
+  poolProperties: {},
+  poolPropertyTypes: {},
 };
 
 type ResourceType = {
@@ -72,42 +65,59 @@ type Props = {
 };
 
 const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTypes, pools, allocStrategies }) => {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { isSubmitting },
-  } = useForm<FormValues>({
-    defaultValues: INITIAL_VALUES,
+  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue } = useFormik<FormValues>({
+    initialValues: INITIAL_VALUES,
+    onSubmit: (data) => {
+      onFormSubmit(data);
+    },
   });
-  const isNested = watch('isNested');
-  const poolType = watch('poolType');
+  const { isNested, poolType, resourceTypeId, parentResourceId } = values;
+  const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.name ?? null;
+
+  const handleFormValuesChange = useCallback(
+    (pValues) => {
+      setFieldValue('poolValues', pValues);
+    },
+    [setFieldValue],
+  );
+  const handlePoolPropertiesChange = useCallback(
+    (pProperties) => {
+      if (values.poolType === 'allocating') {
+        setFieldValue('poolProperties', { ...values.poolProperties, [pProperties.key]: pProperties.value });
+        setFieldValue('poolPropertyTypes', { ...values.poolPropertyTypes, [pProperties.key]: pProperties.type });
+      }
+    },
+    [setFieldValue, values],
+  );
+  const handleDeleteProperty = useCallback(
+    (key: string) => {
+      if (values.poolType === 'allocating') {
+        setFieldValue(
+          'poolProperties',
+          omitBy(values.poolProperties, (_, k) => k === key),
+        );
+        setFieldValue(
+          'poolPropertyTypes',
+          omitBy(values.poolPropertyTypes, (_, k) => k === key),
+        );
+      }
+    },
+    [setFieldValue, values],
+  );
+
+  console.log(values);
 
   return (
-    <form
-      onSubmit={handleSubmit((values) => {
-        onFormSubmit(values);
-      })}
-    >
-      <FormControl id="poolType">
-        <FormLabel>Pool type</FormLabel>
-        <Select {...register('poolType')}>
-          {['set', 'allocating', 'singleton'].map((o) => (
-            <option value={o} key={o}>
-              {o}
-            </option>
-          ))}
-        </Select>
-      </FormControl>
+    <form onSubmit={handleSubmit}>
       <HStack spacing={4} marginY={5}>
         <FormControl id="isNested">
           <FormLabel>Nested</FormLabel>
-          <Switch {...register('isNested')} />
+          <Switch onChange={handleChange} name="isNested" isChecked={isNested} />
         </FormControl>
         {isNested && (
           <FormControl id="parentResourceId">
             <FormLabel>Parent pool</FormLabel>
-            <Select {...register('parentResourceId')}>
+            <Select name="parentResourceId" onChange={handleChange} value={parentResourceId}>
               <option value="" disabled>
                 Select parent pool
               </option>
@@ -120,37 +130,61 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
           </FormControl>
         )}
       </HStack>
+      <HStack spacing={2} marginY={5}>
+        <FormControl id="poolType">
+          <FormLabel>Pool type</FormLabel>
+          <Select name="poolType" value={poolType} onChange={handleChange}>
+            {['set', 'allocating', 'singleton'].map((o) => (
+              <option value={o} key={o}>
+                {o}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl id="resourceTypeId">
+          <FormLabel>Resource type</FormLabel>
+          <Select name="resourceTypeId" value={resourceTypeId} onChange={handleChange}>
+            <option value="" disabled>
+              Select resource type
+            </option>
+            {resourceTypes.map((rt) => (
+              <option value={rt.id} key={rt.id}>
+                {rt.name}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+      </HStack>
       <FormControl id="name" marginY={5}>
         <FormLabel>Name</FormLabel>
-        <Input type="text" {...register('name')} placeholder="Enter name" />
+        <Input type="text" onChange={handleChange} name="name" value={values.name} placeholder="Enter name" />
       </FormControl>
       <FormControl id="description" marginY={5}>
         <FormLabel>Descripton</FormLabel>
-        <Input type="text" {...register('description')} placeholder="Enter description" />
+        <Input
+          type="text"
+          onChange={handleChange}
+          name="description"
+          value={values.description}
+          placeholder="Enter description"
+        />
       </FormControl>
-      <FormControl id="resourceTypeId" marginY={5}>
-        <FormLabel>Resource type</FormLabel>
-        <Select {...register('resourceTypeId')}>
-          <option value="" disabled>
-            Select resource type
-          </option>
-          {resourceTypes.map((rt) => (
-            <option value={rt.id} key={rt.id}>
-              {rt.name}
-            </option>
-          ))}
-        </Select>
-      </FormControl>
-      {poolType !== 'singleton' && (
+      {values.poolType !== 'singleton' && (
         <FormControl id="dealocationSafetyPeriod" marginY={5}>
           <FormLabel>Dealocation safety period</FormLabel>
-          <Input type="text" {...register('dealocationSafetyPeriod')} placeholder="Enter dealocation safety period" />
+          <Input
+            type="text"
+            onChange={handleChange}
+            name="dealocationSafetyPeriod"
+            value={values.dealocationSafetyPeriod}
+            placeholder="Enter dealocation safety period"
+          />
         </FormControl>
       )}
-      {poolType === 'allocating' && (
+      {values.poolType === 'allocating' && (
         <FormControl id="allocationStrategyId" marginY={5}>
           <FormLabel>Allocation strategy</FormLabel>
-          <Select {...register('allocationStrategyId')}>
+          <Select onChange={handleChange} name="allocationStrategyId" values={values.allocationStrategyId}>
             <option value="" disabled>
               Select allocation strategy
             </option>
@@ -162,8 +196,41 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
           </Select>
         </FormControl>
       )}
-      <FormControl>
-        <Button type="submit" colorScheme="blue">
+      {values.poolType !== 'allocating' && resourceTypeName != null && (
+        <>
+          <Divider marginY={5} orientation="horizontal" color="gray.200" />
+          <Box width="50%">
+            <Heading as="h4" size="md">
+              Set pool values
+            </Heading>
+            <PoolValuesForm
+              onChange={handleFormValuesChange}
+              resourceTypeName={resourceTypeName}
+              existingPoolValues={values.poolValues}
+            />
+          </Box>
+          <Divider marginY={5} orientation="horizontal" color="gray.200" />
+        </>
+      )}
+      {values.poolType === 'allocating' && (
+        <>
+          <Divider marginY={5} orientation="horizontal" color="gray.200" />
+          <Box>
+            <Heading as="h4" size="md">
+              Set pool properties
+            </Heading>
+            <PoolPropertiesForm
+              poolProperties={values.poolProperties}
+              poolPropertyTypes={values.poolPropertyTypes}
+              onChange={handlePoolPropertiesChange}
+              onDeleteBtnClick={handleDeleteProperty}
+            />
+          </Box>
+          <Divider marginY={5} orientation="horizontal" color="gray.200" />
+        </>
+      )}
+      <FormControl marginY={5}>
+        <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
           Create pool
         </Button>
       </FormControl>

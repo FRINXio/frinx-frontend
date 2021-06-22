@@ -1,10 +1,14 @@
-import React, { FunctionComponent } from 'react';
-import { useQuery } from 'urql';
+import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import { useMutation, useQuery } from 'urql';
 import gql from 'graphql-tag';
 import { Box, Button, Flex, Heading, Spinner } from '@chakra-ui/react';
 import { SmallAddIcon } from '@chakra-ui/icons';
-import { QueryAllPoolsQuery } from '../__generated__/graphql';
-import PoolsTable from '../components/pools-table';
+import {
+  DeletePoolMutation,
+  DeletePoolMutationMutationVariables,
+  QueryAllPoolsQuery,
+} from '../../__generated__/graphql';
+import PoolsTable from './pools-table';
 
 const POOLS_QUERY = gql`
   query QueryAllPools {
@@ -32,15 +36,32 @@ const POOLS_QUERY = gql`
     }
   }
 `;
+const DELETE_POOL_MUTATION = gql`
+  mutation DeletePool($input: DeleteResourcePoolInput!) {
+    DeleteResourcePool(input: $input) {
+      resourcePoolId
+    }
+  }
+`;
 
 type Props = {
   onNewPoolBtnClick: () => void;
 };
 
-const PoolsList: FunctionComponent<Props> = ({ onNewPoolBtnClick }) => {
+const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick }) => {
+  const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [{ data, fetching, error }] = useQuery<QueryAllPoolsQuery>({
     query: POOLS_QUERY,
+    context,
   });
+  const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
+
+  const handleDeleteBtnClick = useCallback(
+    (id: string) => {
+      deletePool({ input: { resourcePoolId: id } }, { additionalTypenames: ['ResourcePool'] });
+    },
+    [deletePool],
+  );
 
   if (fetching) {
     return <Spinner size="xl" />;
@@ -66,9 +87,9 @@ const PoolsList: FunctionComponent<Props> = ({ onNewPoolBtnClick }) => {
           </Button>
         </Box>
       </Flex>
-      <PoolsTable pools={data?.QueryResourcePools} />
+      <PoolsTable pools={data?.QueryResourcePools} onDeleteBtnClick={handleDeleteBtnClick} />
     </>
   );
 };
 
-export default PoolsList;
+export default PoolsPage;
