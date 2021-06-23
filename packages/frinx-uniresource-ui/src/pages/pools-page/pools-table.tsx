@@ -36,7 +36,7 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick }) => {
         </Thead>
         <Tbody>
           {pools.map((pool) => {
-            const capacityValue = pool.Capacity ? getCapacityValue(pool.Capacity) : 0;
+            const capacityValue = getCapacityValue(pool.Capacity);
             const { freeCapacity, utilizedCapacity } = pool.Capacity;
             const totalCapacity = freeCapacity + utilizedCapacity;
 
