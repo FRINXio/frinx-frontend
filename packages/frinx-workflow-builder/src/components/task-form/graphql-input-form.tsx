@@ -103,7 +103,8 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
                 },
               });
             } catch (error) {
-              console.log(error.message);
+              // eslint-disable-next-line no-console
+              console.error(error.message);
             }
           }}
           height="100px"
@@ -160,7 +161,8 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
                 },
               });
             } catch (error) {
-              console.log(error.message);
+              // eslint-disable-next-line no-console
+              console.error(error.message);
             }
           }}
           enableBasicAutocompletion
