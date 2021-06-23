@@ -17,6 +17,10 @@ import {
 } from '@chakra-ui/react';
 import { SettingsIcon, InfoIcon, ChevronRightIcon, ChevronLeftIcon } from '@chakra-ui/icons';
 
+function getPaginatedResult(array, pageSize, pageNumber) {
+  return array.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+}
+
 const DeviceTable = ({ nodes, isChecked, updateNode, onDeviceClick, setIsChecked, onEditClick }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -67,7 +71,7 @@ const DeviceTable = ({ nodes, isChecked, updateNode, onDeviceClick, setIsChecked
           </GridItem>
         </Grid>
       </Box>
-      {nodes.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((node, i) => (
+      {getPaginatedResult(nodes, rowsPerPage, page).map((node, i) => (
         <Box key={`tableRow-${i}`} boxShadow="base" borderRadius="md" bg="white" w="100%" h="100%" p={4} marginTop={4}>
           <Grid templateColumns="repeat(16, 1fr)" spacing={4}>
             <GridItem colSpan={1}>
