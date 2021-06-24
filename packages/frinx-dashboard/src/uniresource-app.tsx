@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 
 const UniresourceApp: FC = () => {
   const [components, setComponents] = useState<typeof import('@frinx/uniresource-ui') | null>(null);
@@ -8,20 +8,22 @@ const UniresourceApp: FC = () => {
   useEffect(() => {
     import('@frinx/uniresource-ui').then((mod) => {
       const {
-        ResourceTypes,
-        Pools,
-        ResourceList,
-        PoolDetailPage,
-        AllocationStrategies,
-        ResourceManagerStateWrapper,
+        PoolsPage,
+        CreatePoolPage,
+        StrategiesList,
+        ResourceTypesList,
+        UniresourceAppProvider,
+        CreateNestedPool,
+        CreateNewStrategy,
       } = mod;
       setComponents({
-        ResourceTypes,
-        Pools,
-        ResourceList,
-        PoolDetailPage,
-        AllocationStrategies,
-        ResourceManagerStateWrapper,
+        PoolsPage,
+        CreatePoolPage,
+        StrategiesList,
+        ResourceTypesList,
+        UniresourceAppProvider,
+        CreateNestedPool,
+        CreateNewStrategy,
       });
     });
   }, []);
@@ -30,59 +32,48 @@ const UniresourceApp: FC = () => {
     return null;
   }
 
-  const {
-    ResourceTypes,
-    Pools,
-    ResourceList,
-    PoolDetailPage,
-    AllocationStrategies,
-    ResourceManagerStateWrapper,
-  } = components;
+  const { PoolsPage, CreatePoolPage, StrategiesList, ResourceTypesList, UniresourceAppProvider, CreateNewStrategy } =
+    components;
 
   return (
-    <ResourceManagerStateWrapper>
+    <UniresourceAppProvider>
       <Switch>
         <Route exact path="/uniresource">
           <Redirect to="/uniresource/pools" />
         </Route>
-        <Route
-          exact
-          path="/uniresource/pools/:id"
-          render={(props: RouteComponentProps<{ id: string }>) => {
-            const { id } = props.match.params;
-            return (
-              <PoolDetailPage
-                id={id}
-                onBreadcrumbLinkClick={(routeId: string) => {
-                  history.push(`/uniresource/pools/${routeId}`);
-                }}
-              />
-            );
-          }}
-        />
+        <Route exact path="/uniresource/pools/new">
+          <CreatePoolPage
+            onCreateSuccess={() => {
+              history.push('/uniresource/pools');
+            }}
+          />
+        </Route>
         <Route exact path="/uniresource/pools">
-          <Pools
-            onDetailClick={(id: string) => {
-              history.push(`/uniresource/pools/${id}`);
+          <PoolsPage
+            onNewPoolBtnClick={() => {
+              history.push('/uniresource/pools/new');
+            }}
+          />
+        </Route>
+        <Route exact path="/uniresource/strategies/new">
+          <CreateNewStrategy
+            onSaveButtonClick={() => {
+              history.push('/uniresource/strategies');
             }}
           />
         </Route>
         <Route exact path="/uniresource/strategies">
-          <AllocationStrategies />
+          <StrategiesList
+            onAddButtonClick={() => {
+              history.push('/uniresource/strategies/new');
+            }}
+          />
         </Route>
         <Route exact path="/uniresource/resourceTypes">
-          <ResourceTypes />
+          <ResourceTypesList />
         </Route>
-        <Route
-          exact
-          path="/uniresource/resources/:id"
-          render={(props: RouteComponentProps<{ id: string }>) => {
-            const { id } = props.match.params;
-            return <ResourceList id={id} />;
-          }}
-        />
       </Switch>
-    </ResourceManagerStateWrapper>
+    </UniresourceAppProvider>
   );
 };
 

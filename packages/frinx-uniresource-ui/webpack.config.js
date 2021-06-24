@@ -1,68 +1,77 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-const HtmlWebPackPlugin = require('html-webpack-plugin');
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
+const HtmlWebPackPlugin = require('html-webpack-plugin');
+/* eslint-enable */
+
+const ENVIRONMENT = process.env.NODE_ENV || 'development';
+
+const isProd = ENVIRONMENT === 'production';
+const isDev = ENVIRONMENT === 'development';
+
+if (!(isProd || isDev)) {
+  throw new Error('webpack: isProd or isDev has to be true');
+}
+
+function fullPath(...parts) {
+  return path.join(__dirname, ...parts);
+}
+
+const plugins = [
+  new HtmlWebPackPlugin({
+    template: fullPath('src', 'index.html'),
+    inject: true,
+    filename: 'index.html',
+  }),
+];
 
 module.exports = {
-  devServer: {
-    historyApiFallback: { index: '/resourcemanager/frontend/' },
-    inline: true,
-    injectClient: false,
-    hot: true,
-    open: true,
-    port: 5001,
-    host: '0.0.0.0',
-    disableHostCheck: true,
-  },
+  entry: path.resolve(__dirname, 'src/index.ts'),
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: fullPath('build'),
     filename: 'index.js',
-    library: 'frinxUniResourceUI',
-    libraryTarget: 'umd',
     publicPath: '/',
+    library: 'frinxUniresourceUI',
+    libraryTarget: 'umd',
   },
-  devtool: 'source-map',
+  devServer: {
+    historyApiFallback: true,
+    inline: true,
+    open: false,
+    disableHostCheck: true,
+    port: 3000,
+    contentBase: fullPath('static'),
+  },
+  devtool: isDev ? 'eval-cheap-module-source-map' : false,
   module: {
     rules: [
       {
-        test: /\.(css|scss})$/,
-        loader: 'style-loader!css-loader!sass-loader',
-      },
-      {
-        test: /\.m?js$/,
-        exclude: /(node_modules)/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env'],
-          },
-        },
+        test: /\.tsx?$/,
+        use: 'babel-loader',
+        exclude: /node_modules/,
       },
       {
         test: /\.(jpe?g|gif|png|svg|)$/i,
         use: [
           {
-            loader: 'file-loader',
+            loader: 'url-loader',
           },
         ],
       },
       {
         test: /\.(woff|woff2|ttf|eot)$/,
-        use: 'file-loader?name=fonts/[name].[ext]!static',
-      },
-      {
-        test: /\.html$/,
-        use: [
-          {
-            loader: 'html-loader',
-          },
-        ],
+        use: 'url-loader',
       },
     ],
   },
-  plugins: [
-    new HtmlWebPackPlugin({
-      template: './public/index.html',
-      filename: './index.html',
-    }),
-  ],
+  plugins,
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js', '.jsx'],
+  },
+  context: fullPath('src'),
+  externals: isDev
+    ? undefined
+    : {
+        react: 'react',
+        reactDOM: 'react-dom',
+      },
 };

@@ -16,7 +16,7 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@frinx/inventory-client": "^0.0.1",
     "@frinx/uniconfig-ui": "^2.0.0",
-    "@frinx/uniresource-ui": "^1.0.0",
+    "@frinx/uniresource-ui": "^0.0.1",
     "@frinx/workflow-builder": "^1.0.0",
     "@frinx/workflow-ui": "^2.0.0",
     "@types/node": "^14.14.10",
@@ -31,13 +31,12 @@
     "uuid": "^8.3.2"
   },
   "scripts": {
-    "dev": "COMMIT_HASH=$(git rev-parse HEAD) run-s relay dev:webpack",
+    "dev": "COMMIT_HASH=$(git rev-parse HEAD) run-s dev:webpack",
     "dev:webpack": "webpack serve --mode development",
     "build:webpack": "NODE_ENV=production webpack --mode production",
-    "build": "COMMIT_HASH=$(git rev-parse HEAD) run-s relay build:webpack",
+    "build": "COMMIT_HASH=$(git rev-parse HEAD) run-s build:webpack",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
-    "type-check": "tsc --noEmit",
-    "relay": "cd ../frinx-uniresource-ui && yarn run relay"
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",

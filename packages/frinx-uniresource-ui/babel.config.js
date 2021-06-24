@@ -1,15 +1,37 @@
 module.exports = (api) => {
+  const plugins = [
+    '@babel/plugin-proposal-object-rest-spread',
+    '@babel/plugin-proposal-nullish-coalescing-operator',
+    '@babel/plugin-proposal-optional-chaining',
+    '@babel/plugin-proposal-class-properties',
+  ];
+
+  if (api.env('development')) {
+    api.cache(true);
+  } else {
+    api.cache(false);
+  }
+
   return {
-    presets: ['@babel/preset-env', '@babel/preset-react', '@babel/flow'],
-    plugins: [
+    presets: [
       [
-        'relay',
+        '@babel/env',
         {
-          schema: './data/schema.graphql',
+          targets: {
+            browsers: ['last 4 chrome versions', 'last 4 firefox versions'],
+          },
         },
       ],
-      '@babel/plugin-proposal-class-properties',
-      '@babel/plugin-transform-runtime',
+      '@babel/preset-react',
+      [
+        '@babel/preset-typescript',
+        {
+          isTSX: true,
+          allExtensions: true,
+        },
+      ],
     ],
+    comments: true,
+    plugins,
   };
 };
