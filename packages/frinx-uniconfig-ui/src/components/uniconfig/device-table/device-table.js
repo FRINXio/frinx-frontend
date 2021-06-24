@@ -22,7 +22,7 @@ function getPaginatedResult(array, pageSize, pageNumber) {
 }
 
 const DeviceTable = ({ nodes, isChecked, updateNode, onDeviceClick, setIsChecked, onEditClick }) => {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const checkNode = (node) => {
@@ -132,36 +132,50 @@ const DeviceTable = ({ nodes, isChecked, updateNode, onDeviceClick, setIsChecked
           <Text size="md" color="gray.500">
             {nodes.length} nodes total
           </Text>
-          <Stack spacing={2} direction="row" justify="flex-end">
-            <IconButton
-              size="sm"
-              icon={<ChevronLeftIcon />}
-              style={{ backgroundColor: '#d9e0e6' }}
-              disabled={page === 0}
-              onClick={() => setPage((prevPage) => prevPage - 1)}
-            />
-            <Box>
-              <Menu placement="top">
-                <MenuButton size="sm" as={Button} style={{ backgroundColor: '#d9e0e6' }}>
-                  {page}
-                </MenuButton>
-                <MenuList>
-                  {[...Array(nodes.length % rowsPerPage).keys()].map((page) => (
-                    <MenuItem key={`pageOption-${page}`} onClick={() => setPage(page)}>
-                      {page}
-                    </MenuItem>
-                  ))}
-                </MenuList>
-              </Menu>
-            </Box>
-            <IconButton
-              size="sm"
-              icon={<ChevronRightIcon />}
-              style={{ backgroundColor: '#d9e0e6' }}
-              disabled={nodes.length % rowsPerPage <= page + 1}
-              onClick={() => setPage((prevPage) => prevPage + 1)}
-            />
-          </Stack>
+          {nodes.length > rowsPerPage ? (
+            <Stack spacing={2} direction="row" justify="flex-end">
+              <IconButton
+                size="sm"
+                icon={<ChevronLeftIcon />}
+                style={{ backgroundColor: '#d9e0e6' }}
+                isDisabled={page === 1}
+                onClick={() => {
+                  setPage((prevPage) => prevPage - 1);
+                }}
+              />
+              <Box>
+                <Menu placement="top">
+                  <MenuButton size="sm" as={Button} style={{ backgroundColor: '#d9e0e6' }}>
+                    {page}
+                  </MenuButton>
+                  <MenuList>
+                    {Array.from(new Array(Math.ceil(nodes.length / rowsPerPage))).map((_, index) => {
+                      const page = index + 1;
+                      return (
+                        <MenuItem
+                          key={page}
+                          onClick={() => {
+                            setPage(page);
+                          }}
+                        >
+                          {page}
+                        </MenuItem>
+                      );
+                    })}
+                  </MenuList>
+                </Menu>
+              </Box>
+              <IconButton
+                size="sm"
+                icon={<ChevronRightIcon />}
+                style={{ backgroundColor: '#d9e0e6' }}
+                isDisabled={Math.ceil(nodes.length / rowsPerPage) === page}
+                onClick={() => {
+                  setPage((prevPage) => prevPage + 1);
+                }}
+              />
+            </Stack>
+          ) : null}
         </Flex>
       </Box>
     </>
