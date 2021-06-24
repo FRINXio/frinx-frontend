@@ -12,7 +12,8 @@
     "match-sorter": "^6.3.0",
     "react-ace": "^9.4.0",
     "react-hook-form": "^7.6.0",
-    "urql": "^2.0.1"
+    "urql": "^2.0.1",
+    "yup": "^0.32.9"
   },
   "scripts": {
     "dev": "webpack serve --mode development",
