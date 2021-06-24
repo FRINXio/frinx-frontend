@@ -1,7 +1,20 @@
-import React, { useCallback, VoidFunctionComponent } from 'react';
+import React, { useCallback, VoidFunctionComponent, useState, useEffect } from 'react';
 import omitBy from 'lodash/omitBy';
 import { useFormik } from 'formik';
-import { Box, Button, Divider, FormControl, FormLabel, Heading, HStack, Input, Select, Switch } from '@chakra-ui/react';
+import * as yup from 'yup';
+import {
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Heading,
+  HStack,
+  Input,
+  Select,
+  Switch,
+} from '@chakra-ui/react';
 import PoolValuesForm from './pool-values-form';
 import PoolPropertiesForm from './pool-properties-form';
 
@@ -10,25 +23,15 @@ type FormValues = {
   name: string;
   description: string;
   resourceTypeId: string;
+  allocationStrategyId?: string;
+  poolProperties?: Record<string, string>;
+  poolPropertyTypes?: Record<string, 'int' | 'string'>;
+  dealocationSafetyPeriod?: number;
   poolType: PoolType;
-} & (
-  | {
-      poolType: 'allocating';
-      dealocationSafetyPeriod: number;
-      allocationStrategyId: string;
-      poolProperties: Record<string, string>;
-      poolPropertyTypes: Record<string, 'int' | 'string'>;
-    }
-  | { poolType: 'set'; dealocationSafetyPeriod: number; poolValues: Record<string, string>[] }
-  | { poolType: 'singleton'; poolValues: Record<string, string>[] }
-) &
-  (
-    | {
-        isNested: true;
-        parentResourceId: string;
-      }
-    | { isNested: false; parentResourceId: undefined }
-  );
+  poolValues: Record<string, string>[];
+  isNested: false;
+  parentResourceId?: undefined;
+};
 
 const INITIAL_VALUES: FormValues = {
   name: '',
@@ -66,10 +69,39 @@ type Props = {
   allocStrategies: AllocStrategy[];
 };
 
+const defaultPoolSchema = yup.object({
+  name: yup.string().required('Name is a required field'),
+  description: yup.string().notRequired(),
+  resourceTypeId: yup.string().required('Resource type is required field'),
+});
+
+const allocatingPoolSchema = yup.object({
+  dealocationSafetyPeriod: yup
+    .number()
+    .integer('Dealocation safety period is not a number')
+    .required(' Dealocation safety period is required field'),
+  allocationStrategyId: yup.string().required('Allocation strategy is required field'),
+  poolProperties: yup.object().notRequired(),
+  poolPropertyTypes: yup.object().notRequired(),
+});
+
+const setTypePoolSchema = yup.object({
+  dealocationSafetyPeriod: yup
+    .number()
+    .integer('Dealocation safety period is not a number')
+    .required(' Dealocation safety period is required field'),
+});
+
+const nestedPoolSchema = yup.object({
+  parentResourceId: yup.string().required('Parent resource type is required field'),
+});
+
 const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTypes, pools, allocStrategies }) => {
-  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue } = useFormik<FormValues>({
+  const [poolSchema, setPoolSchema] = useState(defaultPoolSchema);
+  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors, isValid } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
-    onSubmit: (data) => {
+    validationSchema: poolSchema,
+    onSubmit: async (data) => {
       onFormSubmit(data);
     },
   });
@@ -107,6 +139,28 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
     [setFieldValue, values],
   );
 
+  useEffect(() => {
+    setPoolSchema(defaultPoolSchema);
+    switch (values.poolType) {
+      case 'allocating':
+        setPoolSchema(defaultPoolSchema.concat(allocatingPoolSchema));
+        break;
+
+      case 'set':
+        setPoolSchema(defaultPoolSchema.concat(setTypePoolSchema));
+        break;
+
+      default:
+        setPoolSchema(defaultPoolSchema);
+        break;
+    }
+    if (isNested) {
+      setPoolSchema(defaultPoolSchema.concat(nestedPoolSchema));
+    }
+  }, [isNested, values.poolType]);
+
+  console.log(errors);
+
   return (
     <form onSubmit={handleSubmit}>
       <HStack spacing={4} marginY={5}>
@@ -115,7 +169,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
           <Switch onChange={handleChange} name="isNested" isChecked={isNested} />
         </FormControl>
         {isNested && (
-          <FormControl id="parentResourceId">
+          <FormControl id="parentResourceId" isInvalid={!!errors && !!errors.parentResourceId}>
             <FormLabel>Parent pool</FormLabel>
             <Select name="parentResourceId" onChange={handleChange} value={parentResourceId}>
               <option value="" disabled>
@@ -127,6 +181,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
                 </option>
               ))}
             </Select>
+            {errors.parentResourceId && <FormErrorMessage>{errors.parentResourceId}</FormErrorMessage>}
           </FormControl>
         )}
       </HStack>
@@ -155,9 +210,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
           </Select>
         </FormControl>
       </HStack>
-      <FormControl id="name" marginY={5}>
+      <FormControl id="name" marginY={5} isInvalid={!!errors.name}>
         <FormLabel>Name</FormLabel>
         <Input type="text" onChange={handleChange} name="name" value={values.name} placeholder="Enter name" />
+        <FormErrorMessage>{errors.name}</FormErrorMessage>
       </FormControl>
       <FormControl id="description" marginY={5}>
         <FormLabel>Descripton</FormLabel>
@@ -179,6 +235,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
             value={values.dealocationSafetyPeriod}
             placeholder="Enter dealocation safety period"
           />
+          {!!errors.dealocationSafetyPeriod && <FormErrorMessage>{errors.dealocationSafetyPeriod}</FormErrorMessage>}
         </FormControl>
       )}
       {values.poolType === 'allocating' && (
@@ -220,8 +277,8 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
               Set pool properties
             </Heading>
             <PoolPropertiesForm
-              poolProperties={values.poolProperties}
-              poolPropertyTypes={values.poolPropertyTypes}
+              poolProperties={values.poolProperties as Record<string, string>}
+              poolPropertyTypes={values.poolPropertyTypes as Record<string, 'int' | 'string'>}
               onChange={handlePoolPropertiesChange}
               onDeleteBtnClick={handleDeleteProperty}
             />
@@ -230,7 +287,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
         </>
       )}
       <FormControl marginY={5}>
-        <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
+        <Button type="submit" colorScheme="blue" isLoading={isSubmitting} disabled={!isValid}>
           Create pool
         </Button>
       </FormControl>
