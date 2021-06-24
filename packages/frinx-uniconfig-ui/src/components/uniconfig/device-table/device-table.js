@@ -37,6 +37,8 @@ const DeviceTable = ({ nodes, isChecked, updateNode, onDeviceClick, setIsChecked
     setIsChecked(newChecked);
   };
 
+  const numberOfPages = Math.ceil(nodes.length / rowsPerPage);
+
   return (
     <>
       <Box boxShadow="base" borderRadius="md" bg="white" w="100%" h="100%" p={4} marginTop={4}>
@@ -137,7 +139,8 @@ const DeviceTable = ({ nodes, isChecked, updateNode, onDeviceClick, setIsChecked
               <IconButton
                 size="sm"
                 icon={<ChevronLeftIcon />}
-                style={{ backgroundColor: '#d9e0e6' }}
+                colorScheme="blackAlpha"
+                variant="outline"
                 isDisabled={page === 1}
                 onClick={() => {
                   setPage((prevPage) => prevPage - 1);
@@ -145,11 +148,11 @@ const DeviceTable = ({ nodes, isChecked, updateNode, onDeviceClick, setIsChecked
               />
               <Box>
                 <Menu placement="top">
-                  <MenuButton size="sm" as={Button} style={{ backgroundColor: '#d9e0e6' }}>
+                  <MenuButton size="sm" as={Button} colorScheme="blackAlpha" variant="outline">
                     {page}
                   </MenuButton>
                   <MenuList>
-                    {Array.from(new Array(Math.ceil(nodes.length / rowsPerPage))).map((_, index) => {
+                    {Array.from(new Array(numberOfPages)).map((_, index) => {
                       const page = index + 1;
                       return (
                         <MenuItem
@@ -168,8 +171,9 @@ const DeviceTable = ({ nodes, isChecked, updateNode, onDeviceClick, setIsChecked
               <IconButton
                 size="sm"
                 icon={<ChevronRightIcon />}
-                style={{ backgroundColor: '#d9e0e6' }}
-                isDisabled={Math.ceil(nodes.length / rowsPerPage) === page}
+                variant="outline"
+                colorScheme="blackAlpha"
+                isDisabled={numberOfPages === page}
                 onClick={() => {
                   setPage((prevPage) => prevPage + 1);
                 }}
