@@ -211,6 +211,7 @@ const App: FC<Props> = ({
                     setIsEditing(false);
                   }}
                   canEditName={false}
+                  workflows={workflows}
                 />
               </Box>
             </RightDrawer>

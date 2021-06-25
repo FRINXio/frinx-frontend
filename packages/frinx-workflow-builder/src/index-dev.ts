@@ -24,7 +24,7 @@ const workflow: Workflow = {
       caseValueParam: 'param',
       decisionCases: {
         true: [
-          ({
+          {
             name: '1. if[0]',
             taskReferenceName: 'httpRequestTaskRef_S3NY',
             inputParameters: {
@@ -44,7 +44,7 @@ const workflow: Workflow = {
             startDelay: 0,
             optional: false,
             asyncComplete: false,
-          } as unknown) as HTTPTask,
+          } as unknown as HTTPTask,
           {
             name: '1. if[1] decision',
             type: 'DECISION',
@@ -52,7 +52,7 @@ const workflow: Workflow = {
             caseValueParam: 'param',
             decisionCases: {
               true: [
-                ({
+                {
                   name: '2. if[0]',
                   taskReferenceName: 'httpRequestTaskRef_S3NY',
                   inputParameters: {
@@ -72,8 +72,8 @@ const workflow: Workflow = {
                   startDelay: 0,
                   optional: false,
                   asyncComplete: false,
-                } as unknown) as HTTPTask,
-                ({
+                } as unknown as HTTPTask,
+                {
                   name: '2. if[1]',
                   taskReferenceName: 'httpRequestTaskRef_S3NY',
                   inputParameters: {
@@ -93,11 +93,11 @@ const workflow: Workflow = {
                   startDelay: 0,
                   optional: false,
                   asyncComplete: false,
-                } as unknown) as HTTPTask,
+                } as unknown as HTTPTask,
               ],
             },
             defaultCase: [
-              ({
+              {
                 name: '2. else[0]',
                 taskReferenceName: 'httpRequestTaskRef_S3NZ',
                 inputParameters: {
@@ -117,8 +117,8 @@ const workflow: Workflow = {
                 startDelay: 0,
                 optional: false,
                 asyncComplete: false,
-              } as unknown) as HTTPTask,
-              ({
+              } as unknown as HTTPTask,
+              {
                 name: '2. else[1]',
                 taskReferenceName: 'httpRequestTaskRef_S3NZ',
                 inputParameters: {
@@ -138,7 +138,7 @@ const workflow: Workflow = {
                 startDelay: 0,
                 optional: false,
                 asyncComplete: false,
-              } as unknown) as HTTPTask,
+              } as unknown as HTTPTask,
             ],
             inputParameters: {
               param: 'true',
@@ -146,7 +146,7 @@ const workflow: Workflow = {
             optional: false,
             startDelay: 0,
           },
-          ({
+          {
             name: '1. if[2]',
             taskReferenceName: 'httpRequestTaskRef_S3NY',
             inputParameters: {
@@ -166,11 +166,11 @@ const workflow: Workflow = {
             startDelay: 0,
             optional: false,
             asyncComplete: false,
-          } as unknown) as HTTPTask,
+          } as unknown as HTTPTask,
         ],
       },
       defaultCase: [
-        ({
+        {
           name: '1. else[0]',
           taskReferenceName: 'httpRequestTaskRef_S3NZ',
           inputParameters: {
@@ -190,8 +190,8 @@ const workflow: Workflow = {
           startDelay: 0,
           optional: false,
           asyncComplete: false,
-        } as unknown) as HTTPTask,
-        ({
+        } as unknown as HTTPTask,
+        {
           name: '1. else[1]',
           taskReferenceName: 'httpRequestTaskRef_S3NZ',
           inputParameters: {
@@ -211,7 +211,7 @@ const workflow: Workflow = {
           startDelay: 0,
           optional: false,
           asyncComplete: false,
-        } as unknown) as HTTPTask,
+        } as unknown as HTTPTask,
       ],
       inputParameters: {
         param: 'true',
@@ -219,7 +219,7 @@ const workflow: Workflow = {
       optional: false,
       startDelay: 0,
     },
-    ({
+    {
       name: '3. task',
       taskReferenceName: 'subWorkflowTaskRef_S3NZ',
       inputParameters: {
@@ -233,7 +233,7 @@ const workflow: Workflow = {
       startDelay: 0,
       optional: false,
       asyncComplete: false,
-    } as unknown) as SubworkflowTask,
+    } as unknown as SubworkflowTask,
   ],
   inputParameters: [],
   outputParameters: {},
