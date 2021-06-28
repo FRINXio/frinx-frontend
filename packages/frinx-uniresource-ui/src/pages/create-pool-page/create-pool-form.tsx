@@ -72,7 +72,7 @@ type Props = {
 const defaultPoolSchema = yup.object({
   name: yup.string().required('Please enter a name'),
   description: yup.string().notRequired(),
-  resourceTypeId: yup.string().required('Please enter a resource type'),
+  resourceTypeId: yup.string().matches(/(default)/, 'Please enter a resource type'),
 });
 
 const allocatingPoolSchema = yup.object({
@@ -93,12 +93,12 @@ const setTypePoolSchema = yup.object({
 });
 
 const nestedPoolSchema = yup.object({
-  parentResourceId: yup.string().required('Parent resource type is required field'),
+  parentResourceId: yup.string().required('Please enter a parent resource type'),
 });
 
 const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTypes, pools, allocStrategies }) => {
   const [poolSchema, setPoolSchema] = useState(defaultPoolSchema);
-  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors, isValid } = useFormik<FormValues>({
+  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: poolSchema,
     onSubmit: async (data) => {
@@ -167,7 +167,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
           <Switch onChange={handleChange} name="isNested" isChecked={isNested} />
         </FormControl>
         {isNested && (
-          <FormControl id="parentResourceId" isInvalid={!!errors && !!errors.parentResourceId}>
+          <FormControl id="parentResourceId" isInvalid={errors.parentResourceId !== null}>
             <FormLabel>Parent pool</FormLabel>
             <Select name="parentResourceId" onChange={handleChange} value={parentResourceId}>
               <option value="" disabled>
@@ -179,7 +179,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
                 </option>
               ))}
             </Select>
-            {errors.parentResourceId && <FormErrorMessage>{errors.parentResourceId}</FormErrorMessage>}
+            <FormErrorMessage>{errors.parentResourceId}</FormErrorMessage>
           </FormControl>
         )}
       </HStack>
@@ -197,7 +197,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
         <FormControl id="resourceTypeId">
           <FormLabel>Resource type</FormLabel>
           <Select name="resourceTypeId" value={resourceTypeId} onChange={handleChange}>
-            <option value="" disabled>
+            <option value="default" disabled>
               Select resource type
             </option>
             {resourceTypes.map((rt) => (
@@ -206,6 +206,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
               </option>
             ))}
           </Select>
+          <FormErrorMessage>{errors.resourceTypeId}</FormErrorMessage>
         </FormControl>
       </HStack>
       <FormControl id="name" marginY={5} isInvalid={!!errors.name}>
@@ -233,7 +234,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
             value={values.dealocationSafetyPeriod}
             placeholder="Enter dealocation safety period"
           />
-          {!!errors.dealocationSafetyPeriod && <FormErrorMessage>{errors.dealocationSafetyPeriod}</FormErrorMessage>}
+          <FormErrorMessage>{errors.dealocationSafetyPeriod}</FormErrorMessage>
         </FormControl>
       )}
       {values.poolType === 'allocating' && (
@@ -249,6 +250,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
               </option>
             ))}
           </Select>
+          <FormErrorMessage>{errors.allocationStrategyId}</FormErrorMessage>
         </FormControl>
       )}
       {values.poolType !== 'allocating' && resourceTypeName != null && (
@@ -285,7 +287,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
         </>
       )}
       <FormControl marginY={5}>
-        <Button type="submit" colorScheme="blue" isLoading={isSubmitting} disabled={!isValid}>
+        <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
           Create pool
         </Button>
       </FormControl>
