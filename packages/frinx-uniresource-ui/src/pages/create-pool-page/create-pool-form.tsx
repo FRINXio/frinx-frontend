@@ -159,8 +159,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
     }
   }, [isNested, values.poolType]);
 
-  console.log(errors);
-
   return (
     <form onSubmit={handleSubmit}>
       <HStack spacing={4} marginY={5}>
