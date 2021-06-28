@@ -281,14 +281,16 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   };
 
   const renderSchedulingModal = () => {
-    return schedulingModal && (
-      <SchedulingModal
-        name={getActiveWfScheduleName()}
-        workflowName={activeWf?.name}
-        workflowVersion={activeWf?.version}
-        onClose={onSchedulingModalClose}
-        isOpen={schedulingModal}
-      />
+    return (
+      schedulingModal && (
+        <SchedulingModal
+          name={getActiveWfScheduleName()}
+          workflowName={activeWf?.name}
+          workflowVersion={activeWf?.version}
+          onClose={onSchedulingModalClose}
+          isOpen={schedulingModal}
+        />
+      )
     );
   };
 
