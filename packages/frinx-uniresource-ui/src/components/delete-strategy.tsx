@@ -13,10 +13,7 @@ import {
 } from '@chakra-ui/react';
 import gql from 'graphql-tag';
 import FeatherIcon from 'feather-icons-react';
-import {
-  DeleteAllocationStrategyPayload,
-  MutationDeleteAllocationStrategyArgs,
-} from '../__generated__/graphql';
+import { DeleteAllocationStrategyPayload, MutationDeleteAllocationStrategyArgs } from '../__generated__/graphql';
 
 const query = gql`
   mutation DeleteStrategyMutation($input: DeleteAllocationStrategyInput!) {
