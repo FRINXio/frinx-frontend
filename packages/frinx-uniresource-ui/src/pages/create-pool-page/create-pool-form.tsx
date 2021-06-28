@@ -70,17 +70,17 @@ type Props = {
 };
 
 const defaultPoolSchema = yup.object({
-  name: yup.string().required('Name is a required field'),
+  name: yup.string().required('Please enter a name'),
   description: yup.string().notRequired(),
-  resourceTypeId: yup.string().required('Resource type is required field'),
+  resourceTypeId: yup.string().required('Please enter a resource type'),
 });
 
 const allocatingPoolSchema = yup.object({
   dealocationSafetyPeriod: yup
     .number()
-    .integer('Dealocation safety period is not a number')
-    .required(' Dealocation safety period is required field'),
-  allocationStrategyId: yup.string().required('Allocation strategy is required field'),
+    .integer('Please enter a dealocation safety period as a number')
+    .required('Please enter a dealocation safety period'),
+  allocationStrategyId: yup.string().required('Please enter an allocation strategy'),
   poolProperties: yup.object().notRequired(),
   poolPropertyTypes: yup.object().notRequired(),
 });
@@ -88,8 +88,8 @@ const allocatingPoolSchema = yup.object({
 const setTypePoolSchema = yup.object({
   dealocationSafetyPeriod: yup
     .number()
-    .integer('Dealocation safety period is not a number')
-    .required(' Dealocation safety period is required field'),
+    .integer('Please enter a dealocation safety period as a number')
+    .required('Please enter a dealocation safety period'),
 });
 
 const nestedPoolSchema = yup.object({
