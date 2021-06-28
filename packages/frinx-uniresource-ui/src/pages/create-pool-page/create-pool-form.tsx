@@ -72,7 +72,7 @@ type Props = {
 const defaultPoolSchema = yup.object({
   name: yup.string().required('Please enter a name'),
   description: yup.string().notRequired(),
-  resourceTypeId: yup.string().matches(/(default)/, 'Please enter a resource type'),
+  resourceTypeId: yup.string().matches(/()/, { message: 'Please enter resource type', excludeEmptyString: false }),
 });
 
 const allocatingPoolSchema = yup.object({
@@ -93,7 +93,9 @@ const setTypePoolSchema = yup.object({
 });
 
 const nestedPoolSchema = yup.object({
-  parentResourceId: yup.string().required('Please enter a parent resource type'),
+  parentResourceId: yup
+    .string()
+    .matches(/()/, { message: 'Please enter parent resource type', excludeEmptyString: false }),
 });
 
 const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTypes, pools, allocStrategies }) => {
@@ -159,6 +161,8 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
     }
   }, [isNested, values.poolType]);
 
+  console.log(errors.parentResourceId);
+
   return (
     <form onSubmit={handleSubmit}>
       <HStack spacing={4} marginY={5}>
@@ -167,7 +171,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
           <Switch onChange={handleChange} name="isNested" isChecked={isNested} />
         </FormControl>
         {isNested && (
-          <FormControl id="parentResourceId" isInvalid={errors.parentResourceId !== null}>
+          <FormControl id="parentResourceId" isInvalid={errors.parentResourceId !== undefined}>
             <FormLabel>Parent pool</FormLabel>
             <Select name="parentResourceId" onChange={handleChange} value={parentResourceId}>
               <option value="" disabled>
@@ -194,7 +198,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
             ))}
           </Select>
         </FormControl>
-        <FormControl id="resourceTypeId">
+        <FormControl id="resourceTypeId" isInvalid={errors.resourceTypeId !== undefined}>
           <FormLabel>Resource type</FormLabel>
           <Select name="resourceTypeId" value={resourceTypeId} onChange={handleChange}>
             <option value="default" disabled>
@@ -209,7 +213,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
           <FormErrorMessage>{errors.resourceTypeId}</FormErrorMessage>
         </FormControl>
       </HStack>
-      <FormControl id="name" marginY={5} isInvalid={!!errors.name}>
+      <FormControl id="name" marginY={5} isInvalid={errors.name !== undefined}>
         <FormLabel>Name</FormLabel>
         <Input type="text" onChange={handleChange} name="name" value={values.name} placeholder="Enter name" />
         <FormErrorMessage>{errors.name}</FormErrorMessage>
@@ -225,7 +229,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
         />
       </FormControl>
       {values.poolType !== 'singleton' && (
-        <FormControl id="dealocationSafetyPeriod" marginY={5}>
+        <FormControl id="dealocationSafetyPeriod" marginY={5} isInvalid={errors.dealocationSafetyPeriod !== undefined}>
           <FormLabel>Dealocation safety period</FormLabel>
           <Input
             type="text"
@@ -238,7 +242,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
         </FormControl>
       )}
       {values.poolType === 'allocating' && (
-        <FormControl id="allocationStrategyId" marginY={5}>
+        <FormControl id="allocationStrategyId" marginY={5} isInvalid={errors.allocationStrategyId !== undefined}>
           <FormLabel>Allocation strategy</FormLabel>
           <Select onChange={handleChange} name="allocationStrategyId" values={values.allocationStrategyId}>
             <option value="" disabled>
