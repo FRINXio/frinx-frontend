@@ -1,8 +1,8 @@
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { useMutation, useQuery } from 'urql';
 import gql from 'graphql-tag';
-import { Box, Button, Flex, Heading, Spinner } from '@chakra-ui/react';
-import { SmallAddIcon } from '@chakra-ui/icons';
+import { Box, Button, Flex, Heading, Spinner, Icon } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
@@ -82,8 +82,8 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick }) => {
           Pools
         </Heading>
         <Box marginLeft="auto">
-          <Button leftIcon={<SmallAddIcon />} colorScheme="blue" onClick={onNewPoolBtnClick}>
-            Create pool
+          <Button icon={<Icon size={20} as={FeatherIcon} icon="plus" />} colorScheme="blue" onClick={onNewPoolBtnClick}>
+            Create Pool
           </Button>
         </Box>
       </Flex>

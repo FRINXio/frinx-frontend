@@ -10,20 +10,20 @@ const UniresourceApp: FC = () => {
       const {
         PoolsPage,
         CreatePoolPage,
-        StrategiesList,
+        StrategiesPage,
         ResourceTypesList,
         UniresourceAppProvider,
         CreateNestedPool,
-        CreateNewStrategy,
+        CreateStrategyPage,
       } = mod;
       setComponents({
         PoolsPage,
         CreatePoolPage,
-        StrategiesList,
+        StrategiesPage,
         ResourceTypesList,
         UniresourceAppProvider,
         CreateNestedPool,
-        CreateNewStrategy,
+        CreateStrategyPage,
       });
     });
   }, []);
@@ -32,7 +32,7 @@ const UniresourceApp: FC = () => {
     return null;
   }
 
-  const { PoolsPage, CreatePoolPage, StrategiesList, ResourceTypesList, UniresourceAppProvider, CreateNewStrategy } =
+  const { PoolsPage, CreatePoolPage, StrategiesPage, ResourceTypesList, UniresourceAppProvider, CreateStrategyPage } =
     components;
 
   return (
@@ -56,14 +56,14 @@ const UniresourceApp: FC = () => {
           />
         </Route>
         <Route exact path="/uniresource/strategies/new">
-          <CreateNewStrategy
+          <CreateStrategyPage
             onSaveButtonClick={() => {
               history.push('/uniresource/strategies');
             }}
           />
         </Route>
         <Route exact path="/uniresource/strategies">
-          <StrategiesList
+          <StrategiesPage
             onAddButtonClick={() => {
               history.push('/uniresource/strategies/new');
             }}
