@@ -44,18 +44,10 @@ function getNameValidation(workflows: Workflow[], name: string): boolean {
 
 const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEditName }) => {
   const [workflowState, setWorkflowState] = useState(workflow);
-  const {
-    name,
-    description,
-    version,
-    restartable,
-    ownerEmail,
-    timeoutPolicy,
-    timeoutSeconds,
-    outputParameters,
-  } = workflowState;
+  const { name, description, version, restartable, ownerEmail, timeoutPolicy, timeoutSeconds, outputParameters } =
+    workflowState;
   const [newParam, setNewParam] = useState<string>('');
-  const isNameInvalid = getNameValidation(workflows, name);
+  const isNameInvalid = canEditName ? getNameValidation(workflows, name) : false;
 
   return (
     <form

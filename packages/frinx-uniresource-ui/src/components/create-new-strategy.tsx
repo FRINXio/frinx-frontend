@@ -32,10 +32,9 @@ type Props = {
 };
 
 const CreateNewStrategy: FC<Props> = ({ onSaveButtonClick }) => {
-  const [{ data }, addStrategy] = useMutation<
-    CreateAllocationStrategyPayload,
-    MutationCreateAllocationStrategyArgs
-  >(query);
+  const [{ data }, addStrategy] = useMutation<CreateAllocationStrategyPayload, MutationCreateAllocationStrategyArgs>(
+    query,
+  );
   const [name, setName] = useState('');
   const [lang, setLang] = useState<AllocationStrategyLang>('js');
 

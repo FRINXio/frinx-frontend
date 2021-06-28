@@ -87,17 +87,25 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
       <FormControl id="headers">
         <FormLabel>Headers</FormLabel>
         <Editor
+          mode="json"
           name="headers"
-          value={JSON.stringify(headers, null, 2)}
+          value={JSON.stringify(headers)}
           onChange={(value) => {
-            onChange({
-              ...params,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              http_request: {
-                ...params.http_request,
-                headers: JSON.parse(value),
-              },
-            });
+            try {
+              const parsedValue = JSON.parse(value);
+
+              onChange({
+                ...params,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                http_request: {
+                  ...params.http_request,
+                  headers: parsedValue,
+                },
+              });
+            } catch (error) {
+              // eslint-disable-next-line no-console
+              console.error(error.message);
+            }
           }}
           height="100px"
           style={{
@@ -108,7 +116,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
       <FormControl id="query" my={6}>
         <FormLabel>GraphQL query</FormLabel>
         <Editor
-          mode="graphql"
+          mode="graphqlschema"
           name="query"
           value={query}
           onChange={(value) => {
@@ -134,20 +142,28 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
       <FormControl id="variables">
         <FormLabel>Variables</FormLabel>
         <Editor
+          mode="json"
           name="variables"
           value={JSON.stringify(variables, null, 2)}
           onChange={(value) => {
-            onChange({
-              ...params,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              http_request: {
-                ...params.http_request,
-                body: {
-                  ...params.http_request.body,
-                  variables: JSON.parse(value),
+            try {
+              const parsedValue = JSON.parse(value);
+
+              onChange({
+                ...params,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                http_request: {
+                  ...params.http_request,
+                  body: {
+                    ...params.http_request.body,
+                    variables: parsedValue,
+                  },
                 },
-              },
-            });
+              });
+            } catch (error) {
+              // eslint-disable-next-line no-console
+              console.error(error.message);
+            }
           }}
           enableBasicAutocompletion
           height="100px"
