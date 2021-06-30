@@ -18,14 +18,15 @@ jobs:
           image: node:fermium-alpine
           options: -v ${{ github.workspace }}:/work
           run: |
-            cd /work
-            apk update
-            apk add --virtual build-essential build-base gcc wget git
-            cp yarn.lock yarn.lock.orig
-            yarn install
-            cmp yarn.lock yarn.lock.orig
-            yarn run formatter:check
-            yarn run dedubcheck
-            cd /work/packages/frinx-dashboard && yarn run lint
-            cd /work/packages/frinx-inventory-server && yarn run lint
+            cd /work && \
+            apk update && \
+            apk add --virtual build-essential build-base gcc wget git && \
+            cp yarn.lock yarn.lock.orig && \
+            yarn install && \
+            cmp yarn.lock yarn.lock.orig && \
+            yarn run formatter:check && \
+            yarn run dedubcheck && \
+            cd /work/packages/frinx-dashboard && yarn run lint && \
+            cd /work/packages/frinx-workflow-builder && yarn run lint && \
+            cd /work/packages/frinx-inventory-server && yarn run lint && \
             cd /work/packages/frinx-inventory-client && yarn run lint
