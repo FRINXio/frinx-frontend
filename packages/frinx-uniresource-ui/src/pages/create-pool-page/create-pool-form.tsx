@@ -1,7 +1,20 @@
-import React, { useCallback, VoidFunctionComponent } from 'react';
+import React, { useCallback, VoidFunctionComponent, useState, useEffect } from 'react';
 import omitBy from 'lodash/omitBy';
 import { useFormik } from 'formik';
-import { Box, Button, Divider, FormControl, FormLabel, Heading, HStack, Input, Select, Switch } from '@chakra-ui/react';
+import * as yup from 'yup';
+import {
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Heading,
+  HStack,
+  Input,
+  Select,
+  Switch,
+} from '@chakra-ui/react';
 import PoolValuesForm from './pool-values-form';
 import PoolPropertiesForm from './pool-properties-form';
 
@@ -10,25 +23,15 @@ type FormValues = {
   name: string;
   description: string;
   resourceTypeId: string;
+  allocationStrategyId?: string;
+  poolProperties?: Record<string, string>;
+  poolPropertyTypes?: Record<string, 'int' | 'string'>;
+  dealocationSafetyPeriod?: number;
   poolType: PoolType;
-} & (
-  | {
-      poolType: 'allocating';
-      dealocationSafetyPeriod: number;
-      allocationStrategyId: string;
-      poolProperties: Record<string, string>;
-      poolPropertyTypes: Record<string, 'int' | 'string'>;
-    }
-  | { poolType: 'set'; dealocationSafetyPeriod: number; poolValues: Record<string, string>[] }
-  | { poolType: 'singleton'; poolValues: Record<string, string>[] }
-) &
-  (
-    | {
-        isNested: true;
-        parentResourceId: string;
-      }
-    | { isNested: false; parentResourceId: undefined }
-  );
+  poolValues: Record<string, string>[];
+  isNested: false;
+  parentResourceId?: undefined;
+};
 
 const INITIAL_VALUES: FormValues = {
   name: '',
@@ -66,13 +69,61 @@ type Props = {
   allocStrategies: AllocStrategy[];
 };
 
+function getSchema(poolType: string, isNested: boolean) {
+  switch (poolType) {
+    case 'allocating':
+      return yup.object({
+        name: yup.string().required('Please enter a name'),
+        description: yup.string().notRequired(),
+        resourceTypeId: yup.string().required('Please enter resource type'),
+        dealocationSafetyPeriod: yup
+          .number()
+          .min(0, 'Please enter positive number')
+          .required('Please enter a dealocation safety period')
+          .typeError('Please enter a number'),
+        allocationStrategyId: yup.string().required('Please enter an allocation strategy'),
+        poolProperties: yup.object({
+          type: yup.string().required('Please enter type of property'),
+          key: yup.string().required('Please enter key of property'),
+          value: yup.string().required('Please enter value of property'),
+        }),
+        poolPropertyTypes: yup.object().required(),
+        ...(isNested && { parentResourceId: yup.string().required('Please enter parent resource type') }),
+      });
+
+    case 'set':
+      return yup.object({
+        name: yup.string().required('Please enter a name'),
+        description: yup.string().notRequired(),
+        resourceTypeId: yup.string().required('Please enter resource type'),
+        dealocationSafetyPeriod: yup
+          .number()
+          .min(0, 'Please enter positive number')
+          .required('Please enter a dealocation safety period')
+          .typeError('Please enter a number'),
+        ...(isNested && { parentResourceId: yup.string().required('Please enter parent resource type') }),
+      });
+
+    default:
+      return yup.object({
+        name: yup.string().required('Please enter a name'),
+        description: yup.string().notRequired(),
+        resourceTypeId: yup.string().required('Please enter resource type'),
+        ...(isNested && { parentResourceId: yup.string().required('Please enter parent resource type') }),
+      });
+  }
+}
+
 const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTypes, pools, allocStrategies }) => {
-  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue } = useFormik<FormValues>({
+  const [poolSchema, setPoolSchema] = useState(getSchema(INITIAL_VALUES.poolType, INITIAL_VALUES.isNested));
+  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
-    onSubmit: (data) => {
+    validationSchema: poolSchema,
+    onSubmit: async (data) => {
       onFormSubmit(data);
     },
   });
+
   const { isNested, poolType, resourceTypeId, parentResourceId } = values;
   const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.name ?? null;
 
@@ -107,6 +158,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
     [setFieldValue, values],
   );
 
+  useEffect(() => {
+    setPoolSchema(getSchema(values.poolType, isNested));
+  }, [isNested, values.poolType]);
+
   return (
     <form onSubmit={handleSubmit}>
       <HStack spacing={4} marginY={5}>
@@ -115,18 +170,21 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
           <Switch onChange={handleChange} name="isNested" isChecked={isNested} />
         </FormControl>
         {isNested && (
-          <FormControl id="parentResourceId">
+          <FormControl id="parentResourceId" isInvalid={errors.parentResourceId !== undefined}>
             <FormLabel>Parent pool</FormLabel>
-            <Select name="parentResourceId" onChange={handleChange} value={parentResourceId}>
-              <option value="" disabled>
-                Select parent pool
-              </option>
+            <Select
+              name="parentResourceId"
+              onChange={handleChange}
+              value={parentResourceId}
+              placeholder="Select parent resource type"
+            >
               {pools.map((pool) => (
                 <option value={pool.id} key={pool.id}>
                   {pool.name}
                 </option>
               ))}
             </Select>
+            <FormErrorMessage>{errors.parentResourceId}</FormErrorMessage>
           </FormControl>
         )}
       </HStack>
@@ -141,23 +199,27 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
             ))}
           </Select>
         </FormControl>
-        <FormControl id="resourceTypeId">
+        <FormControl id="resourceTypeId" isInvalid={errors.resourceTypeId !== undefined}>
           <FormLabel>Resource type</FormLabel>
-          <Select name="resourceTypeId" value={resourceTypeId} onChange={handleChange}>
-            <option value="" disabled>
-              Select resource type
-            </option>
+          <Select
+            name="resourceTypeId"
+            value={resourceTypeId}
+            onChange={handleChange}
+            placeholder="Select resource type"
+          >
             {resourceTypes.map((rt) => (
               <option value={rt.id} key={rt.id}>
                 {rt.name}
               </option>
             ))}
           </Select>
+          <FormErrorMessage>{errors.resourceTypeId}</FormErrorMessage>
         </FormControl>
       </HStack>
-      <FormControl id="name" marginY={5}>
+      <FormControl id="name" marginY={5} isInvalid={errors.name !== undefined}>
         <FormLabel>Name</FormLabel>
         <Input type="text" onChange={handleChange} name="name" value={values.name} placeholder="Enter name" />
+        <FormErrorMessage>{errors.name}</FormErrorMessage>
       </FormControl>
       <FormControl id="description" marginY={5}>
         <FormLabel>Descripton</FormLabel>
@@ -170,7 +232,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
         />
       </FormControl>
       {values.poolType !== 'singleton' && (
-        <FormControl id="dealocationSafetyPeriod" marginY={5}>
+        <FormControl id="dealocationSafetyPeriod" marginY={5} isInvalid={errors.dealocationSafetyPeriod !== undefined}>
           <FormLabel>Dealocation safety period</FormLabel>
           <Input
             type="text"
@@ -179,21 +241,25 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
             value={values.dealocationSafetyPeriod}
             placeholder="Enter dealocation safety period"
           />
+          <FormErrorMessage>{errors.dealocationSafetyPeriod}</FormErrorMessage>
         </FormControl>
       )}
       {values.poolType === 'allocating' && (
-        <FormControl id="allocationStrategyId" marginY={5}>
+        <FormControl id="allocationStrategyId" marginY={5} isInvalid={errors.allocationStrategyId !== undefined}>
           <FormLabel>Allocation strategy</FormLabel>
-          <Select onChange={handleChange} name="allocationStrategyId" values={values.allocationStrategyId}>
-            <option value="" disabled>
-              Select allocation strategy
-            </option>
+          <Select
+            onChange={handleChange}
+            name="allocationStrategyId"
+            values={values.allocationStrategyId}
+            placeholder="Select allocation strategy"
+          >
             {allocStrategies.map((as) => (
               <option key={as.id} value={as.id}>
                 {as.name}
               </option>
             ))}
           </Select>
+          <FormErrorMessage>{errors.allocationStrategyId}</FormErrorMessage>
         </FormControl>
       )}
       {values.poolType !== 'allocating' && resourceTypeName != null && (
@@ -220,8 +286,8 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
               Set pool properties
             </Heading>
             <PoolPropertiesForm
-              poolProperties={values.poolProperties}
-              poolPropertyTypes={values.poolPropertyTypes}
+              poolProperties={values.poolProperties as Record<string, string>}
+              poolPropertyTypes={values.poolPropertyTypes as Record<string, 'int' | 'string'>}
               onChange={handlePoolPropertiesChange}
               onDeleteBtnClick={handleDeleteProperty}
             />
