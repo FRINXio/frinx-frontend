@@ -93,6 +93,9 @@ function getSchema(poolType: string, isNested: boolean) {
 
     case 'set':
       return yup.object({
+        name: yup.string().required('Please enter a name'),
+        description: yup.string().notRequired(),
+        resourceTypeId: yup.string().required('Please enter resource type'),
         dealocationSafetyPeriod: yup
           .number()
           .min(0, 'Please enter positive number')
@@ -112,7 +115,7 @@ function getSchema(poolType: string, isNested: boolean) {
 }
 
 const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTypes, pools, allocStrategies }) => {
-  const [poolSchema, setPoolSchema] = useState({});
+  const [poolSchema, setPoolSchema] = useState(getSchema(INITIAL_VALUES.poolType, INITIAL_VALUES.isNested));
   const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: poolSchema,
