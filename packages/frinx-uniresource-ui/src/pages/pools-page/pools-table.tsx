@@ -19,6 +19,12 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   }
   return (utilizedCapacity / totalCapacity) * 100;
 }
+function getTotalCapacity(capacity: PoolCapacityPayload | null): PoolCapacityPayload {
+  if (capacity == null) {
+    return { freeCapacity: 0, utilizedCapacity: 0 };
+  }
+  return capacity;
+}
 
 const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick }) => {
   return (
@@ -37,7 +43,7 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick }) => {
         <Tbody>
           {pools.map((pool) => {
             const capacityValue = getCapacityValue(pool.Capacity);
-            const { freeCapacity, utilizedCapacity } = pool.Capacity ?? { freeCapacity: 0, utilizedCapacity: 0 };
+            const { freeCapacity, utilizedCapacity } = getTotalCapacity(pool.Capacity);
             const totalCapacity = freeCapacity + utilizedCapacity;
 
             return (
