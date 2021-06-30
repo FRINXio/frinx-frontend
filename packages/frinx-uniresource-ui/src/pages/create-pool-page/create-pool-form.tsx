@@ -69,41 +69,50 @@ type Props = {
   allocStrategies: AllocStrategy[];
 };
 
-const defaultPoolSchema = yup.object({
-  name: yup.string().required('Please enter a name'),
-  description: yup.string().notRequired(),
-  resourceTypeId: yup.string().required('Please enter resource type'),
-});
+function getSchema(poolType: string, isNested: boolean) {
+  switch (poolType) {
+    case 'allocating':
+      return yup.object({
+        name: yup.string().required('Please enter a name'),
+        description: yup.string().notRequired(),
+        resourceTypeId: yup.string().required('Please enter resource type'),
+        dealocationSafetyPeriod: yup
+          .number()
+          .min(0, 'Please enter positive number')
+          .required('Please enter a dealocation safety period')
+          .typeError('Please enter a number'),
+        allocationStrategyId: yup.string().required('Please enter an allocation strategy'),
+        poolProperties: yup.object({
+          type: yup.string().required('Please enter type of property'),
+          key: yup.string().required('Please enter key of property'),
+          value: yup.string().required('Please enter value of property'),
+        }),
+        poolPropertyTypes: yup.object().required(),
+        ...(isNested && { parentResourceId: yup.string().required('Please enter parent resource type') }),
+      });
 
-const allocatingPoolSchema = yup.object({
-  dealocationSafetyPeriod: yup
-    .number()
-    .min(0, 'Please enter positive number')
-    .required('Please enter a dealocation safety period')
-    .typeError('Please enter a number'),
-  allocationStrategyId: yup.string().required('Please enter an allocation strategy'),
-  poolProperties: yup.object({
-    type: yup.string().required('Please enter type of property'),
-    key: yup.string().required('Please enter key of property'),
-    value: yup.string().required('Please enter value of property'),
-  }),
-  poolPropertyTypes: yup.object().required(),
-});
+    case 'set':
+      return yup.object({
+        dealocationSafetyPeriod: yup
+          .number()
+          .min(0, 'Please enter positive number')
+          .required('Please enter a dealocation safety period')
+          .typeError('Please enter a number'),
+        ...(isNested && { parentResourceId: yup.string().required('Please enter parent resource type') }),
+      });
 
-const setTypePoolSchema = yup.object({
-  dealocationSafetyPeriod: yup
-    .number()
-    .min(0, 'Please enter positive number')
-    .required('Please enter a dealocation safety period')
-    .typeError('Please enter a number'),
-});
-
-const nestedPoolSchema = yup.object({
-  parentResourceId: yup.string().required('Please enter parent resource type'),
-});
+    default:
+      return yup.object({
+        name: yup.string().required('Please enter a name'),
+        description: yup.string().notRequired(),
+        resourceTypeId: yup.string().required('Please enter resource type'),
+        ...(isNested && { parentResourceId: yup.string().required('Please enter parent resource type') }),
+      });
+  }
+}
 
 const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTypes, pools, allocStrategies }) => {
-  const [poolSchema, setPoolSchema] = useState(defaultPoolSchema);
+  const [poolSchema, setPoolSchema] = useState({});
   const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: poolSchema,
@@ -111,6 +120,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
       onFormSubmit(data);
     },
   });
+
   const { isNested, poolType, resourceTypeId, parentResourceId } = values;
   const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.name ?? null;
 
@@ -146,23 +156,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
   );
 
   useEffect(() => {
-    setPoolSchema(defaultPoolSchema);
-    switch (values.poolType) {
-      case 'allocating':
-        setPoolSchema(defaultPoolSchema.concat(allocatingPoolSchema));
-        break;
-
-      case 'set':
-        setPoolSchema(defaultPoolSchema.concat(setTypePoolSchema));
-        break;
-
-      default:
-        setPoolSchema(defaultPoolSchema);
-        break;
-    }
-    if (isNested) {
-      setPoolSchema(defaultPoolSchema.concat(nestedPoolSchema));
-    }
+    setPoolSchema(getSchema(values.poolType, isNested));
   }, [isNested, values.poolType]);
 
   return (
