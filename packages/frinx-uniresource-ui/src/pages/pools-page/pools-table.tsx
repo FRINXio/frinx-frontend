@@ -8,22 +8,21 @@ type Props = {
   onDeleteBtnClick: (id: string) => void;
 };
 
+function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
+  if (capacity == null) {
+    return 0;
+  }
+  return capacity.freeCapacity + capacity.utilizedCapacity;
+}
 function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   if (capacity == null) {
     return 0;
   }
-  const { freeCapacity, utilizedCapacity } = capacity;
-  const totalCapacity = freeCapacity + utilizedCapacity;
+  const totalCapacity = getTotalCapacity(capacity);
   if (totalCapacity === 0) {
     return 0;
   }
-  return (utilizedCapacity / totalCapacity) * 100;
-}
-function getTotalCapacity(capacity: PoolCapacityPayload | null): PoolCapacityPayload {
-  if (capacity == null) {
-    return { freeCapacity: 0, utilizedCapacity: 0 };
-  }
-  return capacity;
+  return (capacity.utilizedCapacity / totalCapacity) * 100;
 }
 
 const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick }) => {
@@ -42,9 +41,9 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick }) => {
         </Thead>
         <Tbody>
           {pools.map((pool) => {
-            const capacityValue = getCapacityValue(pool.Capacity);
-            const { freeCapacity, utilizedCapacity } = getTotalCapacity(pool.Capacity);
-            const totalCapacity = freeCapacity + utilizedCapacity;
+            const { Capacity } = pool;
+            const capacityValue = getCapacityValue(Capacity);
+            const totalCapacity = getTotalCapacity(Capacity);
 
             return (
               <Tr key={pool.id}>
@@ -69,7 +68,7 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick }) => {
                 <Td isNumeric>
                   <Progress size="xs" value={capacityValue} />
                   <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
-                    {freeCapacity} / {totalCapacity}
+                    {Capacity?.freeCapacity ?? 0} / {totalCapacity}
                   </Text>
                 </Td>
                 <Td>
