@@ -15,6 +15,9 @@ import {
   MenuItem,
   MenuList,
   Portal,
+  FormControl,
+  Input,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
@@ -41,6 +44,15 @@ const ActionsMenu: FC<Props> = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const cancelRef = useRef<HTMLDivElement>();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  const {
+    isOpen: shouldShowCloneModal,
+    onClose: closeCloneWorkflowModal,
+    onOpen: openCloneWorkflowModal,
+  } = useDisclosure();
+  const cloneInputRef = useRef<HTMLInputElement | null>(null);
+  const cancelCloneRef = useRef();
+
   return (
     <>
       <AlertDialog
@@ -75,6 +87,38 @@ const ActionsMenu: FC<Props> = ({
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
+
+      <AlertDialog
+        isOpen={shouldShowCloneModal}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        leastDestructiveRef={cancelCloneRef}
+        onClose={closeCloneWorkflowModal}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader>Clone Workflow</AlertDialogHeader>
+            <AlertDialogBody>
+              <FormControl>
+                <Input placeholder="Please enter name of workflow" ref={cloneInputRef} />
+              </FormControl>
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                onClick={closeCloneWorkflowModal}
+              >
+                Cancel
+              </Button>
+              <Button colorScheme="blue" ml={4}>
+                Clone
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+
       <input
         type="file"
         style={{ display: 'none' }}
@@ -144,6 +188,14 @@ const ActionsMenu: FC<Props> = ({
                   />
                 </Box>
                 Export workflow
+              </MenuItem>
+            </MenuGroup>
+            <MenuGroup>
+              <MenuItem onClick={openCloneWorkflowModal}>
+                <Box as="span" fontSize="sm" marginRight={3} flexShrink={0}>
+                  <Box as={FeatherIcon} size="1em" icon="copy" flexShrink={0} lineHeight={4} verticalAlign="middle" />
+                </Box>
+                Clone workflow
               </MenuItem>
             </MenuGroup>
             <MenuGroup title="Edit">
