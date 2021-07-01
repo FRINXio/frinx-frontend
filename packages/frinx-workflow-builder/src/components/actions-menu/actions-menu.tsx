@@ -18,9 +18,11 @@ import {
   FormControl,
   Input,
   useDisclosure,
+  FormErrorMessage,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
+import * as yup from 'yup';
 
 type Props = {
   onShowDefinitionBtnClick: () => void;
@@ -43,6 +45,9 @@ const ActionsMenu: FC<Props> = ({
   onWorkflowDelete,
   onWorkflowClone,
 }) => {
+  const wfName = yup.string().required('Please enter name of the clone');
+  const [wfNameError, setWfNameError] = useState(null);
+
   const inputRef = useRef<HTMLInputElement | null>(null);
   const cancelRef = useRef<HTMLDivElement>();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -56,10 +61,17 @@ const ActionsMenu: FC<Props> = ({
   const cancelCloneRef = useRef();
 
   const handleOnCloneWorkflow = () => {
-    const wfName = cloneInputRef.current?.value;
-    if (!wfName) return;
+    const workflowName = cloneInputRef.current?.value;
 
-    onWorkflowClone(wfName);
+    wfName
+      .validate(workflowName)
+      .then(onWorkflowClone)
+      .catch((err) => setWfNameError(err.errors));
+  };
+
+  const handleCloseWorkflowCloneModal = () => {
+    setWfNameError(null);
+    closeCloneWorkflowModal();
   };
 
   return (
@@ -102,21 +114,22 @@ const ActionsMenu: FC<Props> = ({
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         leastDestructiveRef={cancelCloneRef}
-        onClose={closeCloneWorkflowModal}
+        onClose={handleCloseWorkflowCloneModal}
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader>Clone Workflow</AlertDialogHeader>
             <AlertDialogBody>
-              <FormControl>
+              <FormControl isInvalid={wfNameError !== null}>
                 <Input placeholder="Please enter name of workflow" ref={cloneInputRef} />
+                <FormErrorMessage>{wfNameError}</FormErrorMessage>
               </FormControl>
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                onClick={closeCloneWorkflowModal}
+                onClick={handleCloseWorkflowCloneModal}
               >
                 Cancel
               </Button>
