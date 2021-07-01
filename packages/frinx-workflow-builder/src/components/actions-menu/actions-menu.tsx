@@ -30,6 +30,7 @@ type Props = {
   onFileImport: (file: File) => void;
   onFileExport: () => void;
   onWorkflowDelete: () => void;
+  onWorkflowClone: (name: string) => void;
 };
 
 const ActionsMenu: FC<Props> = ({
@@ -40,6 +41,7 @@ const ActionsMenu: FC<Props> = ({
   onFileImport,
   onFileExport,
   onWorkflowDelete,
+  onWorkflowClone,
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const cancelRef = useRef<HTMLDivElement>();
@@ -52,6 +54,13 @@ const ActionsMenu: FC<Props> = ({
   } = useDisclosure();
   const cloneInputRef = useRef<HTMLInputElement | null>(null);
   const cancelCloneRef = useRef();
+
+  const handleOnCloneWorkflow = () => {
+    const wfName = cloneInputRef.current?.value;
+    if (!wfName) return;
+
+    onWorkflowClone(wfName);
+  };
 
   return (
     <>
@@ -111,7 +120,7 @@ const ActionsMenu: FC<Props> = ({
               >
                 Cancel
               </Button>
-              <Button colorScheme="blue" ml={4}>
+              <Button colorScheme="blue" ml={4} onClick={handleOnCloneWorkflow}>
                 Clone
               </Button>
             </AlertDialogFooter>

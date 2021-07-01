@@ -44,6 +44,7 @@ type Props = {
   onFileImport: (file: File) => void;
   onFileExport: (workflow: Workflow) => void;
   onWorkflowDelete: () => void;
+  onWorkflowClone: (workflow: Workflow, name: string) => void;
 };
 
 const App: FC<Props> = ({
@@ -57,6 +58,7 @@ const App: FC<Props> = ({
   onFileImport,
   onFileExport,
   onWorkflowDelete,
+  onWorkflowClone,
 }) => {
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
@@ -102,6 +104,11 @@ const App: FC<Props> = ({
     onChange({ nodes: copiedNodes });
   };
 
+  const handleWorkflowClone = (wfName: string) => {
+    const wf: Workflow = workflowCtrlRef.current.convertWorkflow(schema, workflow);
+    onWorkflowClone(wf, wfName);
+  };
+
   return (
     <>
       <Grid templateColumns="384px 1fr" templateRows="64px 1fr" minHeight="100%" maxHeight="100%">
@@ -142,6 +149,7 @@ const App: FC<Props> = ({
                     onFileExport(workflowCtrlRef.current.convertWorkflow(schema, workflow));
                   }}
                   onWorkflowDelete={onWorkflowDelete}
+                  onWorkflowClone={handleWorkflowClone}
                 />
               </Box>
               <Button
