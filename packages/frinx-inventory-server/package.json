@@ -13,7 +13,7 @@
     "build": "run-s build:clear build:babel build:pack",
     "dev": "cross-env DEBUG='frinx-inventory-server' DEBUG_COLORS=true DOTENV_CONFIG_PATH=./.env nodemon --exec 'node -r dotenv/config -r ./babel-register-ts.js' -- ./src/server.ts",
     "lint": "eslint --ext .ts 'src/**/*.ts' --max-warnings 0",
-    "type-check": "tsc"
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",
