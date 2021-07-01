@@ -1,7 +1,9 @@
+import join from 'url-join';
+
 const INVENTORY_API_URL = window.__CONFIG__.inventory_api_url;
 
 export async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
-  const url = `${INVENTORY_API_URL}${path}`;
+  const url = join(INVENTORY_API_URL, path);
   const response = await fetch(url, options);
 
   if (!response.ok) {
