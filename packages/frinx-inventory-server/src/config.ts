@@ -11,6 +11,7 @@ function envString(key: string): string {
 const config = {
   host: envString('HOST'),
   port: envString('PORT'),
+  dbURL: envString('DB_URL'),
 };
 
 export default config;

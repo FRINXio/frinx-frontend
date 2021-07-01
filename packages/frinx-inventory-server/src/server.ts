@@ -15,7 +15,7 @@ process.on('unhandledRejection', (error) => {
 });
 
 const app = express();
-app.use(express.json({ limit: '30mb' }));
+app.use(express.json({ limit: '50mb' }));
 
 app.use('/', makeAPIHandler());
 
