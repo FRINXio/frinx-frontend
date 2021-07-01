@@ -1,5 +1,7 @@
 import React, { FC, useRef, useState } from 'react';
 import {
+  Alert,
+  AlertIcon,
   AlertDialog,
   AlertDialogBody,
   AlertDialogContent,
@@ -60,12 +62,27 @@ const ActionsMenu: FC<Props> = ({
   const cloneInputRef = useRef<HTMLInputElement | null>(null);
   const cancelCloneRef = useRef();
 
-  const handleOnCloneWorkflow = () => {
+  const { isOpen: isOpenedSuccessModal, onClose: closeSuccessModal, onOpen: openSuccessModal } = useDisclosure();
+  const cancelSuccessRef = useRef();
+
+  const handleCloseSuccessModal = () => {
+    closeSuccessModal();
+  };
+
+  const handleCloneWorkflow = () => {
     const workflowName = cloneInputRef.current?.value;
 
     wfName
       .validate(workflowName)
-      .then(onWorkflowClone)
+      .then((value) => {
+        onWorkflowClone(value);
+        closeCloneWorkflowModal();
+        openSuccessModal();
+
+        setTimeout(() => {
+          closeSuccessModal();
+        }, 1000);
+      })
       .catch((err) => setWfNameError(err.errors));
   };
 
@@ -76,6 +93,21 @@ const ActionsMenu: FC<Props> = ({
 
   return (
     <>
+      <AlertDialog
+        isOpen={isOpenedSuccessModal}
+        onClose={handleCloseSuccessModal}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        leastDestructiveRef={cancelSuccessRef}
+      >
+        <AlertDialogOverlay>
+          <Alert status="success" variant="left-accent">
+            <AlertIcon />
+            Successfully cloned workflow!
+          </Alert>
+        </AlertDialogOverlay>
+      </AlertDialog>
+
       <AlertDialog
         isOpen={isAlertOpen}
         onClose={() => {
@@ -126,14 +158,8 @@ const ActionsMenu: FC<Props> = ({
               </FormControl>
             </AlertDialogBody>
             <AlertDialogFooter>
-              <Button
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                onClick={handleCloseWorkflowCloneModal}
-              >
-                Cancel
-              </Button>
-              <Button colorScheme="blue" ml={4} onClick={handleOnCloneWorkflow}>
+              <Button onClick={handleCloseWorkflowCloneModal}>Cancel</Button>
+              <Button colorScheme="blue" ml={4} onClick={handleCloneWorkflow}>
                 Clone
               </Button>
             </AlertDialogFooter>
