@@ -1,0 +1,91 @@
+import React, { VoidFunctionComponent } from 'react';
+import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
+import { useFormik } from 'formik';
+import AceEditor from 'react-ace';
+import { AllocationStrategyLang } from '../../__generated__/graphql';
+import 'ace-builds/webpack-resolver';
+import 'ace-builds/src-noconflict/mode-javascript';
+import 'ace-builds/src-noconflict/mode-python';
+import 'ace-builds/src-noconflict/theme-tomorrow';
+import 'ace-builds/src-noconflict/ext-language_tools';
+
+function getDefaultScriptValue(): string {
+  return `function invoke() {
+  log(JSON.stringify({ respool: resourcePool.ResourcePoolName, currentRes: currentResources }));
+  return { vlan: userInput.desiredVlan };
+}`;
+}
+
+const INITIAL_VALUES: FormValues = {
+  name: '',
+  lang: 'js',
+  script: getDefaultScriptValue(),
+};
+
+type FormValues = {
+  name: string;
+  lang: AllocationStrategyLang;
+  script: string;
+};
+type Props = {
+  onFormSubmit: (values: FormValues) => void;
+};
+
+const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
+  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue } = useFormik({
+    initialValues: INITIAL_VALUES,
+    onSubmit: (data) => {
+      onFormSubmit(data);
+    },
+  });
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <FormControl marginY={5} id="name">
+        <FormLabel>Name</FormLabel>
+        <Input name="name" id="name" value={values.name} onChange={handleChange} placeholder="Enter name" />
+      </FormControl>
+      <FormControl id="lang" marginY={5}>
+        <Select
+          id="lang"
+          name="lang"
+          value={values.lang}
+          onChange={handleChange}
+          placeholder="Select option"
+          width={60}
+        >
+          <option value="js">Javascript</option>
+          <option value="py">Python</option>
+        </Select>
+      </FormControl>
+      <FormControl marginY={5}>
+        <AceEditor
+          height="450px"
+          width="100%"
+          mode={values.lang === 'js' ? 'javascript' : 'python'}
+          theme="tomorrow"
+          editorProps={{ $blockScrolling: true }}
+          value={values.script}
+          fontSize={16}
+          onChange={(value) => {
+            setFieldValue('script', value);
+          }}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: true,
+            showLineNumbers: true,
+            tabSize: 2,
+          }}
+        />
+      </FormControl>
+      <FormControl marginY={5}>
+        <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
+          Create strategy
+        </Button>
+      </FormControl>
+    </form>
+  );
+};
+
+export default CreateStrategyForm;
