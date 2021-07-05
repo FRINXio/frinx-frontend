@@ -210,6 +210,11 @@ class DetailsModal extends Component {
   }
 
   handleTaskDetail = (row) => {
+    if (isEmpty(row)) {
+      this.setState({ taskDetail: this.state.taskDetail, taskModal: !this.state.taskModal });
+      return;
+    }
+
     this.setState({ taskDetail: row, taskModal: !this.state.taskModal });
   };
 
