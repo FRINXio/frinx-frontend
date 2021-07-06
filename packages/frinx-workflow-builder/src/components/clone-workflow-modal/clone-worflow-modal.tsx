@@ -69,7 +69,7 @@ const CloneWorkflowModal: FC<Props> = ({ onWorkflowClone, isOpen, onClose }) => 
     >
       <AlertDialogOverlay>
         <AlertDialogContent>
-          <AlertDialogHeader>Clone Workflow</AlertDialogHeader>
+          <AlertDialogHeader>Save as</AlertDialogHeader>
           <AlertDialogBody>
             <form onSubmit={handleCloneWorkflow}>
               <FormControl isInvalid={wfNameError !== null}>
@@ -81,7 +81,7 @@ const CloneWorkflowModal: FC<Props> = ({ onWorkflowClone, isOpen, onClose }) => 
           <AlertDialogFooter>
             <Button onClick={handleCloneModalClose}>Cancel</Button>
             <Button colorScheme="blue" ml={4} onClick={handleCloneWorkflow}>
-              Clone
+              Save
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
