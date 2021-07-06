@@ -13,14 +13,17 @@ import {
 } from '@chakra-ui/react';
 import { isEmpty } from 'lodash';
 import React, { FC, FormEvent, useRef, useState } from 'react';
+import { Workflow } from '../../helpers/types';
+import { isWorkflowNameAvailable } from '../../helpers/workflow.helpers';
 
 type Props = {
   onWorkflowClone: (name: string) => void;
   isOpen: boolean;
   onClose: () => void;
+  workflows: Workflow[];
 };
 
-const CloneWorkflowModal: FC<Props> = ({ onWorkflowClone, isOpen, onClose }) => {
+const CloneWorkflowModal: FC<Props> = ({ onWorkflowClone, isOpen, onClose, workflows }) => {
   const [wfNameError, setWfNameError] = useState<string | null>(null);
   const toast = useToast();
 
@@ -41,6 +44,11 @@ const CloneWorkflowModal: FC<Props> = ({ onWorkflowClone, isOpen, onClose }) => 
 
     if (!workflowName) {
       setWfNameError('Please enter name of workflow');
+      return;
+    }
+
+    if (!isWorkflowNameAvailable(workflows, workflowName)) {
+      setWfNameError('Please enter another name');
       return;
     }
 

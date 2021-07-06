@@ -150,6 +150,7 @@ const App: FC<Props> = ({
                   }}
                   onWorkflowDelete={onWorkflowDelete}
                   onWorkflowClone={handleWorkflowClone}
+                  workflows={workflows}
                 />
               </Box>
               <Button

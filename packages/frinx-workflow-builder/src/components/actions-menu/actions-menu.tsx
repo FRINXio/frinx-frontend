@@ -20,6 +20,7 @@ import {
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import CloneWorkflowModal from '../clone-workflow-modal/clone-worflow-modal';
+import { Workflow } from '../../helpers/types';
 
 type Props = {
   onShowDefinitionBtnClick: () => void;
@@ -30,6 +31,7 @@ type Props = {
   onFileExport: () => void;
   onWorkflowDelete: () => void;
   onWorkflowClone: (name: string) => void;
+  workflows: Workflow[];
 };
 
 const ActionsMenu: FC<Props> = ({
@@ -41,6 +43,7 @@ const ActionsMenu: FC<Props> = ({
   onFileExport,
   onWorkflowDelete,
   onWorkflowClone,
+  workflows,
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const cancelRef = useRef<HTMLDivElement>();
@@ -91,6 +94,7 @@ const ActionsMenu: FC<Props> = ({
         onWorkflowClone={handleWorkflowClone}
         isOpen={isCloneModalOpen}
         onClose={handleCloseCloneModal}
+        workflows={workflows}
       />
 
       <input
