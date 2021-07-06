@@ -1,6 +1,6 @@
 ﻿import React, { FunctionComponent } from 'react';
-import { IconButton, Progress, Table, Tag, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
-import { DeleteIcon } from '@chakra-ui/icons';
+import { IconButton, Progress, Table, Tag, Tbody, Td, Text, Th, Thead, Tr, Icon } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 import { PoolCapacityPayload, QueryAllPoolsQuery } from '../../__generated__/graphql';
 
 type Props = {
@@ -8,16 +8,21 @@ type Props = {
   onDeleteBtnClick: (id: string) => void;
 };
 
+function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
+  if (capacity == null) {
+    return 0;
+  }
+  return capacity.freeCapacity + capacity.utilizedCapacity;
+}
 function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   if (capacity == null) {
     return 0;
   }
-  const { freeCapacity, utilizedCapacity } = capacity;
-  const totalCapacity = freeCapacity + utilizedCapacity;
+  const totalCapacity = getTotalCapacity(capacity);
   if (totalCapacity === 0) {
     return 0;
   }
-  return (utilizedCapacity / totalCapacity) * 100;
+  return (capacity.utilizedCapacity / totalCapacity) * 100;
 }
 
 const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick }) => {
@@ -36,13 +41,17 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick }) => {
         </Thead>
         <Tbody>
           {pools.map((pool) => {
-            const capacityValue = getCapacityValue(pool.Capacity);
-            const { freeCapacity, utilizedCapacity } = pool.Capacity;
-            const totalCapacity = freeCapacity + utilizedCapacity;
+            const { Capacity } = pool;
+            const capacityValue = getCapacityValue(Capacity);
+            const totalCapacity = getTotalCapacity(Capacity);
 
             return (
               <Tr key={pool.id}>
-                <Td>{pool.Name}</Td>
+                <Td>
+                  <Text as="span" fontWeight={600}>
+                    {pool.Name}
+                  </Text>
+                </Td>
                 <Td>{pool.PoolType}</Td>
                 <Td>
                   {pool.Tags?.map((t) => (
@@ -51,20 +60,23 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick }) => {
                     </Tag>
                   ))}
                 </Td>
-                <Td>{pool.ResourceType?.Name}</Td>
+                <Td>
+                  <Text as="span" fontFamily="monospace" color="red">
+                    {pool.ResourceType?.Name}
+                  </Text>
+                </Td>
                 <Td isNumeric>
                   <Progress size="xs" value={capacityValue} />
                   <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
-                    {freeCapacity} / {totalCapacity}
+                    {Capacity?.freeCapacity ?? 0} / {totalCapacity}
                   </Text>
                 </Td>
                 <Td>
                   <IconButton
-                    icon={<DeleteIcon />}
-                    aria-label="delete"
-                    type="button"
-                    colorScheme="red"
                     variant="outline"
+                    colorScheme="red"
+                    aria-label="delete"
+                    icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
                     onClick={() => {
                       onDeleteBtnClick(pool.id);
                     }}
