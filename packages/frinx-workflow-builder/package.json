@@ -28,8 +28,7 @@
     "lodash": "^4.17.20",
     "minisearch": "^3.0.2",
     "react-ace": "^9.2.1",
-    "uuid": "^8.3.2",
-    "yup": "^0.32.9"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",

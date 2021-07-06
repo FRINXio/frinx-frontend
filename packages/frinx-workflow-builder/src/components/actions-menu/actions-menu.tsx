@@ -1,7 +1,5 @@
 import React, { FC, useRef, useState } from 'react';
 import {
-  Alert,
-  AlertIcon,
   AlertDialog,
   AlertDialogBody,
   AlertDialogContent,
@@ -17,14 +15,11 @@ import {
   MenuItem,
   MenuList,
   Portal,
-  FormControl,
-  Input,
   useDisclosure,
-  FormErrorMessage,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
-import * as yup from 'yup';
+import CloneWorkflowModal from '../clone-modal/clone-worflow-modal';
 
 type Props = {
   onShowDefinitionBtnClick: () => void;
@@ -47,67 +42,18 @@ const ActionsMenu: FC<Props> = ({
   onWorkflowDelete,
   onWorkflowClone,
 }) => {
-  const wfName = yup.string().required('Please enter name of the clone');
-  const [wfNameError, setWfNameError] = useState(null);
-
   const inputRef = useRef<HTMLInputElement | null>(null);
   const cancelRef = useRef<HTMLDivElement>();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
-  const {
-    isOpen: shouldShowCloneModal,
-    onClose: closeCloneWorkflowModal,
-    onOpen: openCloneWorkflowModal,
-  } = useDisclosure();
-  const cloneInputRef = useRef<HTMLInputElement | null>(null);
-  const cancelCloneRef = useRef();
+  const { isOpen: isCloneModalOpen, onClose: handleCloseCloneModal, onOpen: handleOpenCloneModal } = useDisclosure();
 
-  const { isOpen: isOpenedSuccessModal, onClose: closeSuccessModal, onOpen: openSuccessModal } = useDisclosure();
-  const cancelSuccessRef = useRef();
-
-  const handleCloseSuccessModal = () => {
-    closeSuccessModal();
-  };
-
-  const handleCloneWorkflow = () => {
-    const workflowName = cloneInputRef.current?.value;
-
-    wfName
-      .validate(workflowName)
-      .then((value) => {
-        onWorkflowClone(value);
-        closeCloneWorkflowModal();
-        openSuccessModal();
-
-        setTimeout(() => {
-          closeSuccessModal();
-        }, 1000);
-      })
-      .catch((err) => setWfNameError(err.errors));
-  };
-
-  const handleCloseWorkflowCloneModal = () => {
-    setWfNameError(null);
-    closeCloneWorkflowModal();
+  const handleWorkflowClone = (name: string) => {
+    onWorkflowClone(name);
   };
 
   return (
     <>
-      <AlertDialog
-        isOpen={isOpenedSuccessModal}
-        onClose={handleCloseSuccessModal}
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        leastDestructiveRef={cancelSuccessRef}
-      >
-        <AlertDialogOverlay>
-          <Alert status="success" variant="left-accent">
-            <AlertIcon />
-            Successfully cloned workflow!
-          </Alert>
-        </AlertDialogOverlay>
-      </AlertDialog>
-
       <AlertDialog
         isOpen={isAlertOpen}
         onClose={() => {
@@ -141,31 +87,11 @@ const ActionsMenu: FC<Props> = ({
         </AlertDialogOverlay>
       </AlertDialog>
 
-      <AlertDialog
-        isOpen={shouldShowCloneModal}
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        leastDestructiveRef={cancelCloneRef}
-        onClose={handleCloseWorkflowCloneModal}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader>Clone Workflow</AlertDialogHeader>
-            <AlertDialogBody>
-              <FormControl isInvalid={wfNameError !== null}>
-                <Input placeholder="Please enter name of workflow" ref={cloneInputRef} />
-                <FormErrorMessage>{wfNameError}</FormErrorMessage>
-              </FormControl>
-            </AlertDialogBody>
-            <AlertDialogFooter>
-              <Button onClick={handleCloseWorkflowCloneModal}>Cancel</Button>
-              <Button colorScheme="blue" ml={4} onClick={handleCloneWorkflow}>
-                Clone
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+      <CloneWorkflowModal
+        onWorkflowClone={handleWorkflowClone}
+        isOpen={isCloneModalOpen}
+        onClose={handleCloseCloneModal}
+      />
 
       <input
         type="file"
@@ -193,6 +119,14 @@ const ActionsMenu: FC<Props> = ({
               </Box>
               Save workflow
             </MenuItem>
+            <MenuGroup>
+              <MenuItem onClick={handleOpenCloneModal}>
+                <Box as="span" fontSize="sm" marginRight={3} flexShrink={0}>
+                  <Box as={FeatherIcon} size="1em" icon="copy" flexShrink={0} lineHeight={4} verticalAlign="middle" />
+                </Box>
+                Save as
+              </MenuItem>
+            </MenuGroup>
             <MenuItem onClick={onShowDefinitionBtnClick}>
               <Box as="span" fontSize="sm" marginRight={3} flexShrink={0}>
                 <Box as={FeatherIcon} size="1em" icon="code" flexShrink={0} lineHeight={4} verticalAlign="middle" />
@@ -236,14 +170,6 @@ const ActionsMenu: FC<Props> = ({
                   />
                 </Box>
                 Export workflow
-              </MenuItem>
-            </MenuGroup>
-            <MenuGroup>
-              <MenuItem onClick={openCloneWorkflowModal}>
-                <Box as="span" fontSize="sm" marginRight={3} flexShrink={0}>
-                  <Box as={FeatherIcon} size="1em" icon="copy" flexShrink={0} lineHeight={4} verticalAlign="middle" />
-                </Box>
-                Clone workflow
               </MenuItem>
             </MenuGroup>
             <MenuGroup title="Edit">
