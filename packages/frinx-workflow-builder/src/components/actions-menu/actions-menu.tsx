@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
-import CloneWorkflowModal from '../clone-modal/clone-worflow-modal';
+import CloneWorkflowModal from '../clone-workflow-modal/clone-worflow-modal';
 
 type Props = {
   onShowDefinitionBtnClick: () => void;
