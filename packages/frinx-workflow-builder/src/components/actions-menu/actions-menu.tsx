@@ -15,9 +15,12 @@ import {
   MenuItem,
   MenuList,
   Portal,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
+import CloneWorkflowModal from '../clone-workflow-modal/clone-worflow-modal';
+import { Workflow } from '../../helpers/types';
 
 type Props = {
   onShowDefinitionBtnClick: () => void;
@@ -27,6 +30,8 @@ type Props = {
   onFileImport: (file: File) => void;
   onFileExport: () => void;
   onWorkflowDelete: () => void;
+  onWorkflowClone: (name: string) => void;
+  workflows: Workflow[];
 };
 
 const ActionsMenu: FC<Props> = ({
@@ -37,10 +42,19 @@ const ActionsMenu: FC<Props> = ({
   onFileImport,
   onFileExport,
   onWorkflowDelete,
+  onWorkflowClone,
+  workflows,
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const cancelRef = useRef<HTMLDivElement>();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  const { isOpen: isCloneModalOpen, onClose: handleCloseCloneModal, onOpen: handleOpenCloneModal } = useDisclosure();
+
+  const handleWorkflowClone = (name: string) => {
+    onWorkflowClone(name);
+  };
+
   return (
     <>
       <AlertDialog
@@ -75,6 +89,14 @@ const ActionsMenu: FC<Props> = ({
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
+
+      <CloneWorkflowModal
+        onWorkflowClone={handleWorkflowClone}
+        isOpen={isCloneModalOpen}
+        onClose={handleCloseCloneModal}
+        workflows={workflows}
+      />
+
       <input
         type="file"
         style={{ display: 'none' }}
@@ -101,6 +123,14 @@ const ActionsMenu: FC<Props> = ({
               </Box>
               Save workflow
             </MenuItem>
+            <MenuGroup>
+              <MenuItem onClick={handleOpenCloneModal}>
+                <Box as="span" fontSize="sm" marginRight={3} flexShrink={0}>
+                  <Box as={FeatherIcon} size="1em" icon="copy" flexShrink={0} lineHeight={4} verticalAlign="middle" />
+                </Box>
+                Save as
+              </MenuItem>
+            </MenuGroup>
             <MenuItem onClick={onShowDefinitionBtnClick}>
               <Box as="span" fontSize="sm" marginRight={3} flexShrink={0}>
                 <Box as={FeatherIcon} size="1em" icon="code" flexShrink={0} lineHeight={4} verticalAlign="middle" />

@@ -81,6 +81,13 @@ const Root: FC<Props> = ({
     saveAs(file, `${wf.name}.json`);
   };
 
+  const handleWorkflowClone = (wf: Workflow, wfName: string) => {
+    const updatedWorkflow: Workflow = { ...wf, name: wfName };
+    const cloneWorkflow = callbackUtils.saveWorkflowCallback();
+
+    cloneWorkflow([updatedWorkflow]);
+  };
+
   const handleWorkflowDelete = () => {
     if (workflow != null) {
       const deleteWorkflow = callbackUtils.deleteWorkflowCallback();
@@ -139,6 +146,7 @@ const Root: FC<Props> = ({
           onFileImport={handleFileImport}
           onFileExport={handleFileExport}
           onWorkflowDelete={handleWorkflowDelete}
+          onWorkflowClone={handleWorkflowClone}
         />
       </TaskActionsProvider>
     </ChakraProvider>

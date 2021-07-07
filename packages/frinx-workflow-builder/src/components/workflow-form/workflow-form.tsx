@@ -17,6 +17,7 @@ import {
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import { omitBy } from 'lodash';
 import { Workflow } from '../../helpers/types';
+import { isWorkflowNameAvailable } from '../../helpers/workflow.helpers';
 
 type PartialWorkflow = Pick<
   Workflow,
@@ -38,16 +39,12 @@ type Props = {
   onClose?: () => void;
 };
 
-function getNameValidation(workflows: Workflow[], name: string): boolean {
-  return workflows.find((wf) => wf.name === name) != null;
-}
-
 const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEditName }) => {
   const [workflowState, setWorkflowState] = useState(workflow);
   const { name, description, version, restartable, ownerEmail, timeoutPolicy, timeoutSeconds, outputParameters } =
     workflowState;
   const [newParam, setNewParam] = useState<string>('');
-  const isNameInvalid = canEditName ? getNameValidation(workflows, name) : false;
+  const isNameInvalid = canEditName ? isWorkflowNameAvailable(workflows, name) : false;
 
   return (
     <form
