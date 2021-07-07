@@ -209,7 +209,12 @@ class DetailsModal extends Component {
     });
   }
 
-  handleTaskDetail = (row) => {
+  handleTaskDetail = (row = {}) => {
+    if (isEmpty(row)) {
+      this.setState({ taskDetail: this.state.taskDetail, taskModal: !this.state.taskModal });
+      return;
+    }
+
     this.setState({ taskDetail: row, taskModal: !this.state.taskModal });
   };
 
@@ -459,11 +464,7 @@ class DetailsModal extends Component {
 
     return (
       <>
-        <TaskModal
-          task={this.state.taskDetail}
-          show={this.state.taskModal}
-          handle={this.handleTaskDetail.bind(this, {})}
-        />
+        <TaskModal task={this.state.taskDetail} show={this.state.taskModal} handle={this.handleTaskDetail.bind(this)} />
         <Modal size="5xl" isOpen={this.state.show && !this.state.taskModal} onClose={this.handleClose}>
           <ModalOverlay />
 
