@@ -18,7 +18,7 @@ export async function createDevice(params: DeviceParams): Promise<{ id: number }
   const mountParameters = params.mountParameters ? JSON.parse(params.mountParameters) : null;
   const result = await pool.query<DBDevice>(
     `INSERT INTO device_inventory(id, name, uniconfig_zone, mount_parameters) VALUES(DEFAULT, $1, $2, $3) RETURNING *`,
-    [name, Number(zoneId), mountParameters ?? null],
+    [name, Number(zoneId), mountParameters],
   );
   return result.rows[0];
 }
