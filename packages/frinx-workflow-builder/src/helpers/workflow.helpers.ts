@@ -163,3 +163,7 @@ export function createEmptyWorkflow(): Pick<
     variables: {},
   };
 }
+
+export function isWorkflowNameAvailable(workflows: Workflow[], name: string): boolean {
+  return workflows.every((wf) => wf.name !== name);
+}
