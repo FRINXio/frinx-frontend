@@ -1,17 +1,10 @@
 import { RequestHandler, Router } from 'express';
-import { convertDBExtendedDevice } from './api.helpers';
-import { getDevices } from './db';
+import { convertDBExtendedDevice, convertDBExtendedZone, decodeDeviceParams } from './api.helpers';
+import { createDevice, getDevices, getZones } from './db';
 import { asyncHandler } from './helpers';
 
 function makeAPIHandler(): RequestHandler {
   const router = Router();
-
-  router.get(
-    '/',
-    asyncHandler(async (_, res) => {
-      res.status(200).send({ hello: 'world' });
-    }),
-  );
 
   router.get(
     '/devices',
@@ -19,6 +12,24 @@ function makeAPIHandler(): RequestHandler {
       const dbDevices = await getDevices();
       const devices = dbDevices.map(convertDBExtendedDevice);
       res.status(200).json(devices);
+    }),
+  );
+
+  router.post(
+    '/devices',
+    asyncHandler(async (req, res) => {
+      const params = decodeDeviceParams(req.body);
+      await createDevice(params);
+      res.status(201).end();
+    }),
+  );
+
+  router.get(
+    '/zones',
+    asyncHandler(async (_, res) => {
+      const dbZones = await getZones();
+      const zones = dbZones.map(convertDBExtendedZone);
+      res.status(200).json(zones);
     }),
   );
 

@@ -36,7 +36,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({ devices }) => {
                 {device.host}
               </Text>
             </Td>
-            <Td>{device.zone}</Td>
+            <Td>{device.zone.name}</Td>
             <Td>
               <Badge colorScheme={device.status === 'INSTALLED' ? 'green' : 'yellow'}>{device.status}</Badge>
             </Td>

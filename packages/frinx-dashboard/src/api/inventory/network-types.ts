@@ -18,7 +18,11 @@ export const DeviceOutputValidator = t.type({
   vendor: t.union([t.string, t.null]),
   model: t.union([t.string, t.null]),
   host: t.union([t.string, t.null]),
-  zoneName: t.union([t.string, t.null]),
+  zone: t.type({
+    id: t.string,
+    name: t.string,
+    tenant: t.string,
+  }),
   status: t.union([t.literal('N/A'), t.literal('INSTALLED')]),
 });
 export const DevicesOutputValidator = t.array(DeviceOutputValidator);
