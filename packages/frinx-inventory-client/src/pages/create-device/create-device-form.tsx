@@ -57,7 +57,7 @@ const CreateDeviceForm: FC<Props> = ({ device, onSubmit, mountParameters }) => {
           placeholder="Enter name of device"
           onChange={(event) => {
             event.persist();
-            setDeviceState((device) => ({ ...device, name: event.target.value }));
+            setDeviceState((dvc) => ({ ...dvc, name: event.target.value }));
           }}
           name="name"
           value={deviceState.name}
@@ -70,8 +70,8 @@ const CreateDeviceForm: FC<Props> = ({ device, onSubmit, mountParameters }) => {
         <Select
           onChange={(event) => {
             event.persist();
-            const zone = zones.find((zone) => zone.id === event.target.value);
-            setDeviceState((device) => ({ ...device, zone }));
+            const zone = zones.find((zn) => zn.id === event.target.value);
+            setDeviceState((dvc) => ({ ...dvc, zone }));
           }}
           name="zone"
           placeholder="Select zone of device"
@@ -106,6 +106,7 @@ const CreateDeviceForm: FC<Props> = ({ device, onSubmit, mountParameters }) => {
               const parsedParams = JSON.parse(value);
               setMountParams(parsedParams);
             } catch (error) {
+              // eslint-disable-next-line no-console
               console.error('Bad JSON format');
             }
           }}
