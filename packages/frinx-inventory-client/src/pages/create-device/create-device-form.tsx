@@ -1,11 +1,11 @@
 import { Button, Divider, FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
-import React, { FC, FormEvent, useRef, useState } from 'react';
+import React, { FC, FormEvent, useState } from 'react';
 import Editor from 'react-ace';
 import { Device, Zone } from '../../helpers/types';
 
 type Props = {
   device: Device;
-  mountParameters: {};
+  mountParameters: string;
   onSubmit: (device: Device, mountParameters: string) => void;
 };
 
@@ -38,8 +38,6 @@ const CreateDeviceForm: FC<Props> = ({ device, onSubmit, mountParameters }) => {
         return { ...prevState, zone: 'Please enter zone of device' };
       });
     }
-
-    console.log(mountParams);
 
     if (!deviceState.name || !deviceState.zone) return;
 
@@ -88,6 +86,7 @@ const CreateDeviceForm: FC<Props> = ({ device, onSubmit, mountParameters }) => {
       </FormControl>
 
       <FormControl my={6}>
+        <FormLabel>Mount parameters</FormLabel>
         <Editor
           height="450px"
           width="100%"
