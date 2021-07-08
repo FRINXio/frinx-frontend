@@ -116,7 +116,7 @@ const CreateDeviceForm: FC<Props> = ({ device, onSubmit, mountParameters }) => {
 
       <Divider my={6} />
       <Button type="submit" colorScheme="blue" onClick={handleSubmit}>
-        Create device
+        Add device
       </Button>
     </form>
   );
