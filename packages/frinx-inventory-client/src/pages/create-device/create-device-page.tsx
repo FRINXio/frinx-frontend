@@ -6,6 +6,7 @@ import { Device } from '../../helpers/types';
 
 const CreateDevicePage: FC = () => {
   const handleSubmit = (device: Device, mountParams: string) => {
+    // eslint-disable-next-line no-console
     console.log(device, mountParams);
   };
 
