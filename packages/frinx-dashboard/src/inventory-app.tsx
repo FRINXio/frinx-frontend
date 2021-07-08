@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import { getDevices } from './api/inventory/inventory-api';
 
 const callbacks = {
@@ -12,6 +12,9 @@ type InventoryComponents = Omit<typeof import('@frinx/inventory-client/src'), 'g
 
 const InventoryApp: FC = () => {
   const [components, setComponents] = useState<InventoryComponents | null>(null);
+  const history = useHistory();
+
+  const handleAddButtonClick = () => history.push('/inventory/new');
 
   useEffect(() => {
     import('@frinx/inventory-client/src').then((mod) => {
@@ -34,9 +37,9 @@ const InventoryApp: FC = () => {
     <InventoryAPIProvider>
       <Switch>
         <Route exact path="/inventory">
-          <DeviceList />
+          <DeviceList onAddButtonClick={handleAddButtonClick} />
         </Route>
-        <Route exact path="/inventory/create-device">
+        <Route exact path="/inventory/new">
           <CreateDevicePage />
         </Route>
       </Switch>

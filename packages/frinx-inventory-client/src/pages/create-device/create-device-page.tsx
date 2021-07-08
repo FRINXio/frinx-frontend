@@ -12,8 +12,8 @@ const CreateDevicePage: FC = () => {
 
   return (
     <Container maxWidth={1280}>
-      <Heading size="3xl" as="h2">
-        Create device
+      <Heading size="3xl" as="h2" mb={2}>
+        Add device
       </Heading>
       <Box background="white" boxShadow="base" px={4} py={2} height="100%">
         <CreateDeviceForm device={createEmptyDevice()} onSubmit={handleSubmit} mountParameters="" />
