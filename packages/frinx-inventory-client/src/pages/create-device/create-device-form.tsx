@@ -5,7 +5,7 @@ import { Device, Zone } from '../../helpers/types';
 
 type Props = {
   device: Device;
-  mountParameters: string;
+  mountParameters: {};
   onSubmit: (device: Device, mountParameters: string) => void;
 };
 
@@ -102,7 +102,15 @@ const CreateDeviceForm: FC<Props> = ({ device, onSubmit, mountParameters }) => {
             showLineNumbers: true,
             tabSize: 2,
           }}
-          value={JSON.stringify(mountParams)}
+          onChange={(value) => {
+            try {
+              const parsedParams = JSON.parse(value);
+              setMountParams(parsedParams);
+            } catch (error) {
+              console.error('Bad JSON format');
+            }
+          }}
+          value={JSON.stringify(mountParams, null, 2)}
         />
       </FormControl>
 
