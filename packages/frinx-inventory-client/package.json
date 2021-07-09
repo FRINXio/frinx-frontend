@@ -19,7 +19,9 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "feather-icons-react": "^0.4.3",
-    "react-ace": "^9.2.1"
+    "formik": "^2.2.9",
+    "react-ace": "^9.2.1",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
