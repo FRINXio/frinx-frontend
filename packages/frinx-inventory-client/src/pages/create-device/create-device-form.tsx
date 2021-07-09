@@ -20,7 +20,7 @@ const deviceSchema = yup.object({
   mountParameters: yup.string(),
 });
 
-const zones = [{ name: 'jozko', tenant: 'vajda', id: '1234' }] as Zone[];
+const zones = [] as Zone[];
 
 const CreateDeviceForm: FC<Props> = ({ onFormSubmit }) => {
   const { errors, values, handleSubmit, handleChange, setFieldValue, isSubmitting } = useFormik<Device>({
