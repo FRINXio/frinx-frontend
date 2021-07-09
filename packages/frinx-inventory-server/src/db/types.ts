@@ -39,7 +39,5 @@ export type DBTenant = {
 export type DBExtendedZone = {
   id: number;
   name: string;
-  tenant: number;
-  tenant_id: number | null;
-  tenant_name: string;
+  tenant_id: string;
 };
