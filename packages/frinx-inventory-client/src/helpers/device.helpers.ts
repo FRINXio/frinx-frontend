@@ -13,5 +13,6 @@ export function createEmptyDevice(): Device {
     } as Zone,
     model: '',
     status: 'N/A',
+    mountParameters: '',
   };
 }
