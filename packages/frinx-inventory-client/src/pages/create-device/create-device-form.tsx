@@ -3,29 +3,38 @@ import React, { FC } from 'react';
 import Editor from 'react-ace';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { Device, Zone } from '../../helpers/types';
-import { createEmptyDevice } from '../../helpers/device.helpers';
+import { Zone } from '../../helpers/types';
 
 type Props = {
-  onFormSubmit: (device: Device) => void;
+  onFormSubmit: (device: FormValues) => void;
+};
+
+type FormValues = {
+  name: string;
+  zoneId: string;
+  mountParameters: string;
 };
 
 const deviceSchema = yup.object({
   name: yup.string().required('Please enter name of device'),
-  zone: yup.object({
-    id: yup.string(),
-    name: yup.string().required('Please enter zone of device'),
-    tenant: yup.string(),
-  }),
+  zoneId: yup.string().required('Please enter zone of device'),
   mountParameters: yup.string(),
 });
 
-const zones = [] as Zone[];
+const INITIAL_VALUES: FormValues = {
+  name: '',
+  zoneId: '',
+  mountParameters: '{}',
+};
+
+const zones = [{ id: 'oijcosd', name: 'jozko', tenant: 'vajda' }] as Zone[];
 
 const CreateDeviceForm: FC<Props> = ({ onFormSubmit }) => {
-  const { errors, values, handleSubmit, handleChange, setFieldValue, isSubmitting } = useFormik<Device>({
-    initialValues: createEmptyDevice(),
+  const { errors, values, handleSubmit, handleChange, isSubmitting, setFieldValue } = useFormik<FormValues>({
+    initialValues: INITIAL_VALUES,
     validationSchema: deviceSchema,
+    validateOnChange: false,
+    validateOnBlur: false,
     onSubmit: (data) => {
       onFormSubmit(data);
     },
@@ -39,16 +48,23 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit }) => {
         <FormErrorMessage>{errors.name}</FormErrorMessage>
       </FormControl>
 
-      <FormControl id="zone" marginY={5} isInvalid={errors.zone?.name !== undefined}>
+      <FormControl id="zone" marginY={5} isInvalid={errors.zoneId !== undefined}>
         <FormLabel>Zone</FormLabel>
-        <Select onChange={handleChange} name="zone" placeholder="Select zone of device">
+        <Select
+          onChange={(event) => {
+            event.persist();
+            setFieldValue('zoneId', event.target.value);
+          }}
+          name="zone"
+          placeholder="Select zone of device"
+        >
           {zones.map((zone: Zone) => (
             <option key={zone.id} value={zone.id}>
               {zone.name}
             </option>
           ))}
         </Select>
-        <FormErrorMessage>{errors.zone?.name}</FormErrorMessage>
+        <FormErrorMessage>{errors.zoneId}</FormErrorMessage>
       </FormControl>
 
       <FormControl my={6}>
@@ -67,16 +83,8 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit }) => {
             showLineNumbers: true,
             tabSize: 2,
           }}
-          onChange={(value) => {
-            try {
-              const parsedParams = JSON.parse(value);
-              setFieldValue('mountParameters', parsedParams);
-            } catch (error) {
-              // eslint-disable-next-line no-console
-              console.error('Bad JSON format');
-            }
-          }}
-          value={JSON.stringify(values.mountParameters, null, 2)}
+          onChange={(event) => setFieldValue('mountParameters', event)}
+          value={values.mountParameters}
         />
       </FormControl>
 
