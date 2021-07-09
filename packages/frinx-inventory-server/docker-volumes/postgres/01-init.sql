@@ -2,17 +2,13 @@ CREATE DATABASE "frinx";
 
 \c "frinx";
 
-CREATE TABLE IF NOT EXISTS tenants (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE
-);
-
 CREATE TABLE IF NOT EXISTS uniconfig_zones (
     id SERIAL PRIMARY KEY,
     name VARCHAR(250) NOT NULL UNIQUE,
-    tenant INTEGER,
-    FOREIGN KEY (tenant) REFERENCES tenants(id) ON DELETE CASCADE
+    tenant_id VARCHAR(64)
 );
+
+CREATE INDEX idx_uniconfig_zones_tenant_id ON uniconfig_zones(tenant_id);
 
 CREATE TABLE IF NOT EXISTS device_inventory (
     id SERIAL PRIMARY KEY,

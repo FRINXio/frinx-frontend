@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
-import { DBExtendedZone, DBTenant, DBUniconfigZone } from './types';
-import { ZoneParams } from '../api.helpers';
+import { DBExtendedZone, DBUniconfigZone } from './types';
+import { ZoneParams } from '../api/api.helpers';
 
 export default class Zone {
   private pool: Pool;
@@ -9,47 +9,34 @@ export default class Zone {
     this.pool = pool;
   }
 
-  getAll = async (): Promise<DBExtendedZone[]> => {
-    const result = await this.pool.query<DBExtendedZone>(
-      'SELECT * FROM uniconfig_zones AS z LEFT JOIN (SELECT tenants.id AS tenant_id, tenants.name AS tenant_name FROM tenants) AS t ON z.tenant=t.tenant_id',
-    );
+  getAll = async (tenantId: string): Promise<DBExtendedZone[]> => {
+    const result = await this.pool.query<DBExtendedZone>('SELECT * FROM uniconfig_zones WHERE tenant_id = $1', [
+      tenantId,
+    ]);
     return result.rows;
   };
 
-  getById = async (id: number): Promise<DBExtendedZone> => {
-    const result = await this.pool.query(
-      'SELECT * FROM uniconfig_zones AS z LEFT JOIN (SELECT tenants.id AS tenant_id, tenants.name AS tenant_name FROM tenants) AS t ON z.tenant=t.tenant_id WHERE id = $1',
-      [id],
+  getById = async (id: number, tenantId: string): Promise<DBExtendedZone> => {
+    const result = await this.pool.query('SELECT * FROM uniconfig_zones WHERE id = $1 AND tenant_id = $2', [
+      id,
+      tenantId,
+    ]);
+    return result.rows[0];
+  };
+
+  create = async (params: ZoneParams, tenantId: string): Promise<{ id: number }> => {
+    const result = await this.pool.query<DBUniconfigZone>(
+      'INSERT INTO uniconfig_zones(name, tenant_id) VALUES($1, $2) RETURNING *',
+      [params.name, tenantId],
     );
     return result.rows[0];
   };
 
-  create = async (params: ZoneParams): Promise<{ id: number }> => {
-    const client = await this.pool.connect();
-    try {
-      await client.query('BEGIN');
-      const { name, tenantName } = params;
-      const tenantResult = await client.query<DBTenant>(
-        'INSERT INTO tenants(id, name) VALUES(DEFAULT, $1) RETURNING *',
-        [tenantName],
-      );
-      const [{ id: tenantId }] = tenantResult.rows;
-      const zoneResult = await client.query<DBUniconfigZone>(
-        'INSERT INTO uniconfig_zones(id, name, tenant) VALUES(DEFAULT, $1, $2) RETURNING *',
-        [name, tenantId],
-      );
-      await client.query('COMMIT');
-      return zoneResult.rows[0];
-    } catch (e) {
-      client.query('ROLLBACK');
-      throw e;
-    } finally {
-      client.release();
-    }
-  };
-
-  deleteById = async (id: number): Promise<{ id: number }> => {
-    const result = await this.pool.query<DBUniconfigZone>('DELETE FROM uniconfig_zones WHERE id = $1', [id]);
+  deleteById = async (id: number, tenantId: string): Promise<{ id: number }> => {
+    const result = await this.pool.query<DBUniconfigZone>(
+      'DELETE FROM uniconfig_zones WHERE id = $1 AND tenant_id = $2 RETURNING *',
+      [id, tenantId],
+    );
     return result.rows[0];
   };
 }

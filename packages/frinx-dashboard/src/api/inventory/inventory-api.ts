@@ -1,8 +1,7 @@
-import { decodeDeviceOutput, DevicesOutput } from './network-types';
-import { sendGetRequest } from './api-helpers';
-import { sendPostRequest } from '../uniflow/api-helpers';
+import { decodeDeviceOutput, decodeZonesOutput, Device, Zone } from './network-types';
+import { sendGetRequest, sendPostRequest } from './api-helpers';
 
-export async function getDevices(): Promise<DevicesOutput> {
+export async function getDevices(): Promise<Device[]> {
   const json = await sendGetRequest('/devices');
   const data = decodeDeviceOutput(json);
 
@@ -17,4 +16,11 @@ export type AddDeviceParams = {
 
 export async function addDevice(params: AddDeviceParams): Promise<void> {
   await sendPostRequest('/devices', params);
+}
+
+export async function getZones(): Promise<Zone[]> {
+  const json = await sendGetRequest('/zones');
+  const data = decodeZonesOutput(json);
+
+  return data;
 }
