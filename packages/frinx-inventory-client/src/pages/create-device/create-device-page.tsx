@@ -1,10 +1,15 @@
 import { Container, Heading, Box } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import CreateDeviceForm from './create-device-form';
-import { Device } from '../../helpers/types';
+
+type FormValues = {
+  name: string;
+  zoneId: string;
+  mountParameters: string;
+};
 
 const CreateDevicePage: FC = () => {
-  const handleSubmit = (device: Device) => {
+  const handleSubmit = (device: FormValues) => {
     // eslint-disable-next-line no-console
     console.log(device);
   };
