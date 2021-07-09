@@ -26,7 +26,7 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit }) => {
   const { errors, values, handleSubmit, handleChange, setFieldValue, isSubmitting } = useFormik<Device>({
     initialValues: createEmptyDevice(),
     validationSchema: deviceSchema,
-    onSubmit: async (data) => {
+    onSubmit: (data) => {
       onFormSubmit(data);
     },
   });
