@@ -1,88 +1,54 @@
 import { Button, Divider, FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
-import React, { FC, FormEvent, useState } from 'react';
+import React, { FC } from 'react';
 import Editor from 'react-ace';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import { Device, Zone } from '../../helpers/types';
+import { createEmptyDevice } from '../../helpers/device.helpers';
 
 type Props = {
-  device: Device;
-  mountParameters: string;
-  onSubmit: (device: Device, mountParameters: string) => void;
+  onFormSubmit: (device: Device) => void;
 };
 
-type DeviceValidationErrors = {
-  name: string | null;
-  zone: string | null;
-};
+const deviceSchema = yup.object({
+  name: yup.string().required('Please enter name of device'),
+  zone: yup.object({
+    id: yup.string(),
+    name: yup.string().required('Please enter zone of device'),
+    tenant: yup.string(),
+  }),
+  mountParameters: yup.string(),
+});
 
-const INITIAL_DEVICE_VALIDATION_ERRORS = {
-  name: null,
-  zone: null,
-};
+const zones = [{ name: 'jozko', tenant: 'vajda', id: '1234' }] as Zone[];
 
-const zones = [] as Zone[];
-
-const CreateDeviceForm: FC<Props> = ({ device, onSubmit, mountParameters }) => {
-  const [deviceState, setDeviceState] = useState(device);
-  const [mountParams, setMountParams] = useState(mountParameters);
-
-  const [errors, setErrors] = useState<DeviceValidationErrors>(INITIAL_DEVICE_VALIDATION_ERRORS);
-
-  const handleSubmit = () => {
-    if (!deviceState.name) {
-      setErrors((prevState) => {
-        return { ...prevState, name: 'Please enter name of device' };
-      });
-    }
-    if (!deviceState.zone.id) {
-      setErrors((prevState) => {
-        return { ...prevState, zone: 'Please enter zone of device' };
-      });
-    }
-
-    if (!deviceState.name || !deviceState.zone) return;
-
-    onSubmit(deviceState, mountParams);
-  };
+const CreateDeviceForm: FC<Props> = ({ onFormSubmit }) => {
+  const { errors, values, handleSubmit, handleChange, setFieldValue, isSubmitting } = useFormik<Device>({
+    initialValues: createEmptyDevice(),
+    validationSchema: deviceSchema,
+    onSubmit: async (data) => {
+      onFormSubmit(data);
+    },
+  });
 
   return (
-    <form
-      onSubmit={(e: FormEvent) => {
-        e.preventDefault();
-        handleSubmit();
-      }}
-    >
-      <FormControl id="name" my={6} isInvalid={errors.name !== null}>
+    <form onSubmit={handleSubmit}>
+      <FormControl id="name" my={6} isInvalid={errors.name !== undefined}>
         <FormLabel>Name</FormLabel>
-        <Input
-          placeholder="Enter name of device"
-          onChange={(event) => {
-            event.persist();
-            setDeviceState((dvc) => ({ ...dvc, name: event.target.value }));
-          }}
-          name="name"
-          value={deviceState.name}
-        />
+        <Input placeholder="Enter name of device" onChange={handleChange} name="name" value={values.name} />
         <FormErrorMessage>{errors.name}</FormErrorMessage>
       </FormControl>
 
-      <FormControl id="zone" marginY={5} isInvalid={errors.zone !== null}>
+      <FormControl id="zone" marginY={5} isInvalid={errors.zone?.name !== undefined}>
         <FormLabel>Zone</FormLabel>
-        <Select
-          onChange={(event) => {
-            event.persist();
-            const zone = zones.find((zn) => zn.id === event.target.value);
-            setDeviceState((dvc) => ({ ...dvc, zone }));
-          }}
-          name="zone"
-          placeholder="Select zone of device"
-        >
+        <Select onChange={handleChange} name="zone" placeholder="Select zone of device">
           {zones.map((zone: Zone) => (
-            <option key={zone.id} value={zone.id} selected={zones.length === 1}>
+            <option key={zone.id} value={zone.id}>
               {zone.name}
             </option>
           ))}
         </Select>
-        <FormErrorMessage>{errors.zone}</FormErrorMessage>
+        <FormErrorMessage>{errors.zone?.name}</FormErrorMessage>
       </FormControl>
 
       <FormControl my={6}>
@@ -104,20 +70,22 @@ const CreateDeviceForm: FC<Props> = ({ device, onSubmit, mountParameters }) => {
           onChange={(value) => {
             try {
               const parsedParams = JSON.parse(value);
-              setMountParams(parsedParams);
+              setFieldValue('mountParameters', parsedParams);
             } catch (error) {
               // eslint-disable-next-line no-console
               console.error('Bad JSON format');
             }
           }}
-          value={JSON.stringify(mountParams, null, 2)}
+          value={JSON.stringify(values.mountParameters, null, 2)}
         />
       </FormControl>
 
       <Divider my={6} />
-      <Button type="submit" colorScheme="blue" onClick={handleSubmit}>
-        Add device
-      </Button>
+      <FormControl>
+        <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
+          Add device
+        </Button>
+      </FormControl>
     </form>
   );
 };
