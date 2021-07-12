@@ -10,5 +10,6 @@ export type Device = {
   model: string | null;
   host: string | null;
   zone: Zone;
+  mountParameters: string;
   status: 'INSTALLED' | 'N/A';
 };
