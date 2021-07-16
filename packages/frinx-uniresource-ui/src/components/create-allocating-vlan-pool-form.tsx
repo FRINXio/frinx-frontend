@@ -57,7 +57,8 @@ const poolSchema = yup.object({
       .typeError('Please enter a number'),
     to: yup
       .number()
-      .min(0, 'Please enter positive number')
+      .min(1, 'Please enter positive number')
+      .max(4095, 'Please enter number smaller than 4095')
       .required('Please enter a to property')
       .typeError('Please enter a number'),
   }),

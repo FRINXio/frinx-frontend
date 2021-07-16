@@ -16,6 +16,7 @@ const UniresourceApp: FC = () => {
         CreateNestedPool,
         CreateStrategyPage,
         CreateAllocatingIpv4PrefixPoolPage,
+        CreateAllocatingVlanPoolPage,
       } = mod;
       setComponents({
         PoolsPage,
@@ -26,6 +27,7 @@ const UniresourceApp: FC = () => {
         CreateNestedPool,
         CreateStrategyPage,
         CreateAllocatingIpv4PrefixPoolPage,
+        CreateAllocatingVlanPoolPage,
       });
     });
   }, []);
@@ -42,6 +44,7 @@ const UniresourceApp: FC = () => {
     UniresourceAppProvider,
     CreateStrategyPage,
     CreateAllocatingIpv4PrefixPoolPage,
+    CreateAllocatingVlanPoolPage,
   } = components;
 
   return (
@@ -64,8 +67,11 @@ const UniresourceApp: FC = () => {
             }}
           />
         </Route>
-        <Route exact path="/uniresource/pools/new/allocating">
+        <Route exact path="/uniresource/pools/new/allocating/ipv4-prefix">
           <CreateAllocatingIpv4PrefixPoolPage />
+        </Route>
+        <Route exact path="/uniresource/pools/new/allocating/vlan">
+          <CreateAllocatingVlanPoolPage />
         </Route>
         <Route exact path="/uniresource/strategies/new">
           <CreateStrategyPage
