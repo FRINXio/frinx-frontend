@@ -18,6 +18,15 @@ import * as yup from 'yup';
 import PoolPropertiesForm from '../pages/create-pool-page/pool-properties-form';
 
 const ALLOCATION_STRATEGY_QUERY = gql`
+  query QueryAllocationStrategyByName {
+    QueryAllocationStrategies(byName: "ipv4_prefix") {
+      Name
+      id
+    }
+  }
+`;
+
+const RESOURCE_TYPE_QUERY = gql`
   query QueryResourceTypeByName {
     QueryResourceTypes(byName: "ipv4_prefix") {
       Name
@@ -30,6 +39,7 @@ type FormValues = {
   poolName: string;
   dealocationSafetyPeriod: number;
   allocationStrategyId: string;
+  resourceTypeId: string;
   poolProperties?: Record<string, string>;
   poolPropertyTypes?: Record<string, 'int' | 'string'>;
 };
@@ -38,6 +48,7 @@ const INITIAL_VALUES: FormValues = {
   poolName: '',
   dealocationSafetyPeriod: 120,
   allocationStrategyId: '',
+  resourceTypeId: '',
   poolProperties: { address: '10.0.0.0', prefix: '16' },
   poolPropertyTypes: { address: 'string', prefix: 'int' },
 };
@@ -60,7 +71,11 @@ type Props = {
 };
 
 const CreateAllocatingIpv4PrefixPoolForm: FC<Props> = ({ onFormSubmit }) => {
-  const [{ data: queryData, fetching }] = useQuery({
+  const [{ data: resourceTypeData, fetching }] = useQuery({
+    query: RESOURCE_TYPE_QUERY,
+  });
+
+  const [{ data: allocationStrategy }] = useQuery({
     query: ALLOCATION_STRATEGY_QUERY,
   });
 
@@ -68,8 +83,9 @@ const CreateAllocatingIpv4PrefixPoolForm: FC<Props> = ({ onFormSubmit }) => {
     initialValues: INITIAL_VALUES,
     validationSchema: poolSchema,
     onSubmit: async (data) => {
-      const allocationStrategyId = await queryData?.QueryResourceTypes[0].id;
-      onFormSubmit({ ...data, allocationStrategyId });
+      const resourceTypeId = await resourceTypeData?.QueryResourceTypes[0].id;
+      const allocationStrategyId = await allocationStrategy?.QueryAllocationStrategies[0].id;
+      onFormSubmit({ ...data, resourceTypeId, allocationStrategyId });
     },
   });
 

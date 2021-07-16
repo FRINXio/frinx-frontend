@@ -18,6 +18,15 @@ import * as yup from 'yup';
 import PoolPropertiesForm from '../pages/create-pool-page/pool-properties-form';
 
 const ALLOCATION_STRATEGY_QUERY = gql`
+  query QueryAllocationStrategyByName {
+    QueryAllocationStrategies(byName: "vlan") {
+      Name
+      id
+    }
+  }
+`;
+
+const RESOURCE_TYPE_QUERY = gql`
   query QueryResourceTypeByName {
     QueryResourceTypes(byName: "vlan") {
       Name
@@ -30,6 +39,7 @@ type FormValues = {
   poolName: string;
   dealocationSafetyPeriod: number;
   allocationStrategyId: string;
+  resourceTypeId: string;
   poolProperties?: Record<string, string>;
   poolPropertyTypes?: Record<string, 'int'>;
 };
@@ -38,6 +48,7 @@ const INITIAL_VALUES: FormValues = {
   poolName: '',
   dealocationSafetyPeriod: 120,
   allocationStrategyId: '',
+  resourceTypeId: '',
   poolProperties: { from: '0', to: '4095' },
   poolPropertyTypes: { from: 'int', to: 'int' },
 };
@@ -69,7 +80,11 @@ type Props = {
 };
 
 const CreateAllocatingVlanPoolForm: FC<Props> = ({ onFormSubmit }) => {
-  const [{ data: queryData, fetching }] = useQuery({
+  const [{ data: resourceTypeData, fetching }] = useQuery({
+    query: RESOURCE_TYPE_QUERY,
+  });
+
+  const [{ data: allocationStrategy }] = useQuery({
     query: ALLOCATION_STRATEGY_QUERY,
   });
 
@@ -77,8 +92,9 @@ const CreateAllocatingVlanPoolForm: FC<Props> = ({ onFormSubmit }) => {
     initialValues: INITIAL_VALUES,
     validationSchema: poolSchema,
     onSubmit: async (data) => {
-      const allocationStrategyId = await queryData?.QueryResourceTypes[0].id;
-      onFormSubmit({ ...data, allocationStrategyId });
+      const resourceTypeId = await resourceTypeData?.QueryResourceTypes[0].id;
+      const allocationStrategyId = await allocationStrategy?.QueryAllocationStrategies[0].id;
+      onFormSubmit({ ...data, resourceTypeId, allocationStrategyId });
     },
   });
 
