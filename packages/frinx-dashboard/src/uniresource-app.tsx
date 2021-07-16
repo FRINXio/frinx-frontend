@@ -15,6 +15,7 @@ const UniresourceApp: FC = () => {
         UniresourceAppProvider,
         CreateNestedPool,
         CreateStrategyPage,
+        CreateAllocatingIpv4PrefixPoolPage,
       } = mod;
       setComponents({
         PoolsPage,
@@ -24,6 +25,7 @@ const UniresourceApp: FC = () => {
         UniresourceAppProvider,
         CreateNestedPool,
         CreateStrategyPage,
+        CreateAllocatingIpv4PrefixPoolPage,
       });
     });
   }, []);
@@ -32,8 +34,15 @@ const UniresourceApp: FC = () => {
     return null;
   }
 
-  const { PoolsPage, CreatePoolPage, StrategiesPage, ResourceTypesList, UniresourceAppProvider, CreateStrategyPage } =
-    components;
+  const {
+    PoolsPage,
+    CreatePoolPage,
+    StrategiesPage,
+    ResourceTypesList,
+    UniresourceAppProvider,
+    CreateStrategyPage,
+    CreateAllocatingIpv4PrefixPoolPage,
+  } = components;
 
   return (
     <UniresourceAppProvider>
@@ -54,6 +63,9 @@ const UniresourceApp: FC = () => {
               history.push('/uniresource/pools/new');
             }}
           />
+        </Route>
+        <Route exact path="/uniresource/pools/new/allocating">
+          <CreateAllocatingIpv4PrefixPoolPage />
         </Route>
         <Route exact path="/uniresource/strategies/new">
           <CreateStrategyPage
