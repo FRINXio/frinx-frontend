@@ -32,10 +32,20 @@ const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
               <Input isReadOnly name="type" value={pType} />
             </FormControl>
             <FormControl id="key">
-              <Input isReadOnly name="key" value={pKey} />
+              <Input name="key" value={pKey} isReadOnly />
             </FormControl>
-            <FormControl id="value">
-              <Input isReadOnly name="value" value={pValue} />
+            <FormControl id={pKey}>
+              <Input
+                name={pKey}
+                onChange={(e) =>
+                  onChange({
+                    key: pKey,
+                    type: pType,
+                    value: e.target.value,
+                  })
+                }
+                value={pValue}
+              />
             </FormControl>
             <IconButton
               colorScheme="red"
