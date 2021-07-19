@@ -6,13 +6,16 @@ import {
   FormErrorMessage,
   FormLabel,
   Heading,
+  HStack,
   Input,
+  Select,
   Spinner,
+  Switch,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import gql from 'graphql-tag';
 import { omitBy } from 'lodash';
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useState, useEffect, useRef } from 'react';
 import { useQuery } from 'urql';
 import * as yup from 'yup';
 import PoolPropertiesForm from '../pages/create-pool-page/pool-properties-form';
@@ -35,6 +38,15 @@ const RESOURCE_TYPE_QUERY = gql`
   }
 `;
 
+const POSSIBLE_PARENT_POOLS_QUERY = gql`
+  query QueryPossibleParentPools($resourceTypeId: ID!) {
+    QueryResourcePools(resourceTypeId: $resourceTypeId) {
+      Name
+      id
+    }
+  }
+`;
+
 type FormValues = {
   poolName: string;
   dealocationSafetyPeriod: number;
@@ -42,6 +54,8 @@ type FormValues = {
   resourceTypeId: string;
   poolProperties?: Record<string, string>;
   poolPropertyTypes?: Record<string, 'int'>;
+  parentResourceId: undefined;
+  isNested: boolean;
 };
 
 const INITIAL_VALUES: FormValues = {
@@ -51,52 +65,97 @@ const INITIAL_VALUES: FormValues = {
   resourceTypeId: '',
   poolProperties: { from: '0', to: '4095' },
   poolPropertyTypes: { from: 'int', to: 'int' },
+  parentResourceId: undefined,
+  isNested: false,
 };
 
-const poolSchema = yup.object({
-  poolName: yup.string().required('Please enter name of pool'),
-  dealocationSafetyPeriod: yup
-    .number()
-    .min(0, 'Please enter positive number')
-    .required('Please enter a dealocation safety period')
-    .typeError('Please enter a number'),
-  poolProperties: yup.object({
-    from: yup
+const getPoolSchema = (isNested: boolean) => {
+  const poolSchema = yup.object({
+    poolName: yup.string().required('Please enter name of pool'),
+    dealocationSafetyPeriod: yup
       .number()
       .min(0, 'Please enter positive number')
-      .required('Please enter a from property')
+      .required('Please enter a dealocation safety period')
       .typeError('Please enter a number'),
-    to: yup
-      .number()
-      .min(1, 'Please enter positive number')
-      .max(4095, 'Please enter number smaller than 4095')
-      .required('Please enter a to property')
-      .typeError('Please enter a number'),
-  }),
-});
+    poolProperties: yup.object({
+      from: yup
+        .number()
+        .min(0, 'Please enter positive number')
+        .required('Please enter a from property')
+        .typeError('Please enter a number'),
+      to: yup
+        .number()
+        .min(1, 'Please enter number bigger than 0')
+        .max(4095, 'Please enter number smaller than 4096')
+        .required('Please enter a to property')
+        .typeError('Please enter a number'),
+      ...(isNested && { parentResourceId: yup.string().required('Please enter parent resource type') }),
+    }),
+  });
+
+  return poolSchema;
+};
 
 type Props = {
   onFormSubmit: (values: FormValues) => void;
 };
 
+type Pool = {
+  id: string;
+  name: string;
+};
+
 const CreateAllocatingVlanPoolForm: FC<Props> = ({ onFormSubmit }) => {
+  const resourceTypeId = useRef('');
+  const allocationStrategyId = useRef('');
+
+  const [poolSchema, setPoolSchema] = useState(getPoolSchema(INITIAL_VALUES.isNested));
+  const [pools, setPools] = useState([] as Pool[]);
+
   const [{ data: resourceTypeData, fetching }] = useQuery({
     query: RESOURCE_TYPE_QUERY,
   });
-
   const [{ data: allocationStrategy }] = useQuery({
     query: ALLOCATION_STRATEGY_QUERY,
   });
 
+  useEffect(() => {
+    resourceTypeId.current = resourceTypeData?.QueryResourceTypes[0].id;
+    allocationStrategyId.current = allocationStrategy?.QueryAllocationStrategies[0].id;
+  }, [allocationStrategy?.QueryAllocationStrategies, resourceTypeData?.QueryResourceTypes]);
+
+  const [result] = useQuery({
+    query: POSSIBLE_PARENT_POOLS_QUERY,
+    variables: { resourceTypeId },
+  });
+
+  const { data: possibleParentPools, fetching: possibleParentPoolsFetching } = result;
+
+  useEffect(() => {
+    if (possibleParentPools) {
+      setPools(
+        possibleParentPools?.QueryResourcePools.map((pool) => {
+          return { ...pool, name: pool.Name };
+        }),
+      );
+    }
+  }, [possibleParentPools]);
+
   const { values, errors, handleChange, handleSubmit, setFieldValue } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: poolSchema,
-    onSubmit: async (data) => {
-      const resourceTypeId = await resourceTypeData?.QueryResourceTypes[0].id;
-      const allocationStrategyId = await allocationStrategy?.QueryAllocationStrategies[0].id;
-      onFormSubmit({ ...data, resourceTypeId, allocationStrategyId });
+    onSubmit: (data) => {
+      onFormSubmit({
+        ...data,
+        resourceTypeId: resourceTypeId.current,
+        allocationStrategyId: allocationStrategyId.current,
+      });
     },
   });
+
+  useEffect(() => {
+    setPoolSchema(getPoolSchema(values.isNested));
+  }, [values.isNested]);
 
   const handlePoolPropertiesChange = useCallback(
     (pProperties) => {
@@ -105,6 +164,7 @@ const CreateAllocatingVlanPoolForm: FC<Props> = ({ onFormSubmit }) => {
     },
     [setFieldValue, values],
   );
+
   const handleDeleteProperty = useCallback(
     (key: string) => {
       setFieldValue(
@@ -119,12 +179,38 @@ const CreateAllocatingVlanPoolForm: FC<Props> = ({ onFormSubmit }) => {
     [setFieldValue, values],
   );
 
-  if (fetching) {
+  if (fetching || possibleParentPoolsFetching) {
     return <Spinner size="xl" />;
   }
 
   return (
     <form onSubmit={handleSubmit}>
+      {possibleParentPools && (
+        <HStack spacing={4} marginY={5}>
+          <FormControl id="isNested">
+            <FormLabel>Nested</FormLabel>
+            <Switch onChange={handleChange} name="isNested" isChecked={values.isNested} />
+          </FormControl>
+          {values.isNested && (
+            <FormControl id="parentResourceId" isInvalid={errors.parentResourceId !== undefined}>
+              <FormLabel>Parent pool</FormLabel>
+              <Select
+                name="parentResourceId"
+                onChange={handleChange}
+                value={values.parentResourceId}
+                placeholder="Select parent resource type"
+              >
+                {pools.map((pool) => (
+                  <option value={pool.id} key={pool.id}>
+                    {pool.name}
+                  </option>
+                ))}
+              </Select>
+              <FormErrorMessage>{errors.parentResourceId}</FormErrorMessage>
+            </FormControl>
+          )}
+        </HStack>
+      )}
       <FormControl id="poolName" marginY={5} isInvalid={errors.poolName !== undefined}>
         <FormLabel>Name</FormLabel>
         <Input type="text" onChange={handleChange} name="poolName" placeholder="Enter name" value={values.poolName} />
