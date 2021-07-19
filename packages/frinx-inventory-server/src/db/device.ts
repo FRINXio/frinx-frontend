@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { DeviceParams } from '../api/api.helpers';
+import { CreateDeviceParams, DBEditDeviceParams } from '../api/api.helpers';
 import { DBDevice, DBExtendedDevice } from './types';
 
 export default class Device {
@@ -25,12 +25,21 @@ export default class Device {
     return result.rows[0];
   };
 
-  create = async (params: DeviceParams): Promise<{ id: number }> => {
+  create = async (params: CreateDeviceParams): Promise<{ id: number }> => {
     const { name, zoneId } = params;
     const mountParameters = params.mountParameters ? JSON.parse(params.mountParameters) : null;
     const result = await this.pool.query<DBDevice>(
       `INSERT INTO device_inventory(id, name, uniconfig_zone, mount_parameters) VALUES(DEFAULT, $1, $2, $3) RETURNING *`,
       [name, Number(zoneId), mountParameters],
+    );
+    return result.rows[0];
+  };
+
+  updateById = async (deviceId: number, params: DBEditDeviceParams): Promise<{ id: number }> => {
+    const mountParameters = params.mountParameters ? JSON.parse(params.mountParameters) : null;
+    const result = await this.pool.query<DBDevice>(
+      'UPDATE device_inventory SET name = $1, mount_parameters = $2 WHERE id = $3',
+      [params.name, mountParameters, deviceId],
     );
     return result.rows[0];
   };

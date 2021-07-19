@@ -7,6 +7,10 @@ import { DBExtendedDevice, DBExtendedZone } from '../db/types';
 import APIError from '../errors/api-error';
 import { HttpStatusCode } from '../errors/base-error';
 
+function optional<T, U>(type: t.Type<T, U>) {
+  return t.union([type, t.void]);
+}
+
 // normally expressjs handles errors thrown in the url-handler.
 // but, when it happens during async code, it does not catch it.
 // we have to wrap all those into a `.catch()` code,
@@ -24,6 +28,11 @@ export function asyncHandler(
     });
   };
 }
+
+export type JSONPrimitive = string | number | boolean | null;
+export type JSONValue = JSONPrimitive | JSONObject | JSONArray;
+export type JSONObject = { [key: string]: JSONValue };
+export type JSONArray = JSONValue[];
 
 export type ApiZone = {
   id: string;
@@ -74,12 +83,32 @@ export function extractResult<A>(result: Either<t.Errors, A>): A {
 const CreateDeviceParamsValidator = t.type({
   name: t.string,
   zoneId: t.string,
-  mountParameters: t.union([t.string, t.void]),
+  mountParameters: optional(t.string),
 });
-export type DeviceParams = t.TypeOf<typeof CreateDeviceParamsValidator>;
+export type CreateDeviceParams = t.TypeOf<typeof CreateDeviceParamsValidator>;
 
-export function decodeDeviceParams(value: unknown): DeviceParams {
+export function decodeCreateDeviceParams(value: unknown): CreateDeviceParams {
   return extractResult(CreateDeviceParamsValidator.decode(value));
+}
+
+const EditDeviceParamsValidator = t.type({
+  name: optional(t.string),
+  mountParameters: optional(t.string),
+});
+export type EditDeviceParams = t.TypeOf<typeof EditDeviceParamsValidator>;
+
+export function decodeEditDeviceParams(value: unknown): EditDeviceParams {
+  return extractResult(EditDeviceParamsValidator.decode(value));
+}
+
+export type DBEditDeviceParams = { name: string; mountParameters: string | null };
+
+export function convertEditDeviceParams(params: EditDeviceParams, device: DBExtendedDevice): DBEditDeviceParams {
+  const deviceMountParameters = device.mount_parameters != null ? JSON.stringify(device.mount_parameters) : null;
+  return {
+    name: params.name ?? device.name,
+    mountParameters: params.mountParameters ?? deviceMountParameters,
+  };
 }
 
 const CreateZoneParamsValidator = t.type({
@@ -89,4 +118,31 @@ export type ZoneParams = t.TypeOf<typeof CreateZoneParamsValidator>;
 
 export function decodeZoneParams(value: unknown): ZoneParams {
   return extractResult(CreateZoneParamsValidator.decode(value));
+}
+
+export function prepareInstallParameters(deviceName: string, mountParameters: JSONObject): JSONValue {
+  return {
+    input: {
+      'node-id': deviceName,
+      ...mountParameters,
+    },
+  };
+}
+
+const MountParamsValidator = t.union([
+  t.type({
+    cli: t.unknown,
+  }),
+  t.type({
+    netconf: t.unknown,
+  }),
+]);
+type MountParams = t.TypeOf<typeof MountParamsValidator>;
+
+export function decodeMountParams(value: unknown): MountParams {
+  return extractResult(MountParamsValidator.decode(value));
+}
+
+export function getConnectionType(mountParameters: MountParams): 'cli' | 'netconf' {
+  return Object.keys(mountParameters)[0] as 'cli' | 'netconf';
 }
