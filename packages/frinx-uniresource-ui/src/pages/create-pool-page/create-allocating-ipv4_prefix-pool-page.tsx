@@ -36,7 +36,11 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
   });
 }
 
-const CreateAllocatingPoolPage: FC = () => {
+type Props = {
+  onCreateSuccess: () => void;
+};
+
+const CreateAllocatingPoolPage: FC<Props> = ({ onCreateSuccess }) => {
   const client = useClient();
   const toast = useToast({
     title: 'Successfully created pool',
@@ -48,7 +52,10 @@ const CreateAllocatingPoolPage: FC = () => {
   const handleFormSubmit = (data: FormValues) => {
     createPool(client.mutation.bind(client), data)
       .toPromise()
-      .then(() => toast());
+      .then(() => {
+        toast();
+        onCreateSuccess();
+      });
   };
 
   return (
