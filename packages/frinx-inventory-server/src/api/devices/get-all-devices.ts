@@ -35,7 +35,6 @@ export default function getAllDevices(router: Router): void {
       }
 
       const convertedDevices = dbDevices.map(convertDBExtendedDevice);
-      console.log({ installedDevices });
       const devices = addDeviceInstallStatus(convertedDevices, installedDevices.output.nodes ?? []);
 
       res.status(200).json(devices);
