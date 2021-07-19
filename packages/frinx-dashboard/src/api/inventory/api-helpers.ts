@@ -22,6 +22,7 @@ export async function sendGetRequest(path: string): Promise<unknown> {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
+      'x-tenant-id': 'frinx',
     },
   };
   return apiFetch(path, options);
@@ -33,6 +34,7 @@ export async function sendPostRequest(path: string, body: unknown): Promise<unkn
     body: JSON.stringify(body),
     headers: {
       'Content-Type': 'application/json',
+      'x-tenant-id': 'frinx',
     },
   };
   return apiFetch(path, options);
@@ -44,6 +46,7 @@ export async function sendPutRequest(path: string, body: unknown): Promise<unkno
     body: JSON.stringify(body),
     headers: {
       'Content-Type': 'application/json',
+      'x-tenant-id': 'frinx',
     },
   };
   return apiFetch(path, options);
@@ -55,6 +58,7 @@ export async function sendDeleteRequest(path: string, body?: unknown): Promise<u
     body: JSON.stringify(body),
     headers: {
       'Content-Type': 'application/json',
+      'x-tenant-id': 'frinx',
     },
   };
   return apiFetch(path, options);

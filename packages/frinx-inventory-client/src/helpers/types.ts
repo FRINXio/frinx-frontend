@@ -1,7 +1,6 @@
 export type Zone = {
   id: string;
   name: string;
-  tenant: string;
 };
 export type Device = {
   id: string;
