@@ -68,10 +68,18 @@ const UniresourceApp: FC = () => {
           />
         </Route>
         <Route exact path="/uniresource/pools/new/allocating/ipv4-prefix">
-          <CreateAllocatingIpv4PrefixPoolPage />
+          <CreateAllocatingIpv4PrefixPoolPage
+            onCreateSuccess={() => {
+              history.push('/uniresource');
+            }}
+          />
         </Route>
         <Route exact path="/uniresource/pools/new/allocating/vlan">
-          <CreateAllocatingVlanPoolPage />
+          <CreateAllocatingVlanPoolPage
+            onCreateSuccess={() => {
+              history.push('/uniresource');
+            }}
+          />
         </Route>
         <Route exact path="/uniresource/strategies/new">
           <CreateStrategyPage
