@@ -144,5 +144,9 @@ export function decodeMountParams(value: unknown): MountParams {
 }
 
 export function getConnectionType(mountParameters: MountParams): 'cli' | 'netconf' {
-  return Object.keys(mountParameters)[0] as 'cli' | 'netconf';
+  const type = Object.keys(mountParameters)[0];
+  if (type !== 'cli' && type !== 'netconf') {
+    throw new APIError('INTERNAL SERVER ERROR', HttpStatusCode.INTERNAL_SERVER, true, 'invalid mountParameters');
+  }
+  return type;
 }

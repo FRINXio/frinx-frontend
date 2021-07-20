@@ -11,4 +11,4 @@ COPY public.device_inventory (id, name, uniconfig_zone, role, management_ip, mod
 1	mnd-gt0002-cpe4.test	1	l2-cpe	1.2.3.4	3930	saos	6	ciena	{"protocol": "ssh", "port": "22", "parsing-engine": "one-line-parser"}	admin	admin
 2	mnd-gt0002-cpe5.test	1	l2-cpe	1.2.3.5	3931	saos	7	ciena	{"protocol": "ssh", "port": "22", "parsing-engine": "one-line-parser"}	admin	admin
 \.
-SELECT pg_catalog.setval('public.uniconfig_zones_id_seq', 1, true);
+SELECT pg_catalog.setval('public.uniconfig_zones_id_seq', 2, true);
