@@ -6,6 +6,7 @@ import TaskModal from '../../../../common/TaskModal';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../../../utils/callbackUtils';
 import moment from 'moment';
+import isEmpty from 'lodash/isEmpty';
 import unescapeJs from 'unescape-js';
 import {
   Box,
