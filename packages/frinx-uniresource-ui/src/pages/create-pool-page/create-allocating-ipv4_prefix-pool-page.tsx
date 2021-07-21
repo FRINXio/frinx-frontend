@@ -1,10 +1,15 @@
-import { Flex, Heading, Box, useToast } from '@chakra-ui/react';
+import { Flex, Heading, Box, useToast, Spinner } from '@chakra-ui/react';
 import gql from 'graphql-tag';
-import React, { FC } from 'react';
-import { Client, useClient } from 'urql';
-import CreateAllocatingIpv4PrefixPoolForm from '../../components/create-allocating-ipv4_prefix-pool-form';
+import React, { FC, useEffect, useState } from 'react';
+import { Client, useClient, useQuery } from 'urql';
+import CreateAllocatingIpv4PrefixPoolForm from './create-allocating-ipv4_prefix-pool-form';
 
-import { CreateAllocationPoolMutation } from '../../__generated__/graphql';
+import {
+  CreateAllocationPoolMutation,
+  PossibleParentPoolsQuery,
+  ResourceTypeByNameQuery,
+  AllocationStrategyByNameQuery,
+} from '../../__generated__/graphql';
 
 const CREATE_ALLOCATING_POOL_MUTATION = gql`
   mutation CreateAllocationPool($input: CreateAllocatingPoolInput!) {
@@ -12,6 +17,33 @@ const CREATE_ALLOCATING_POOL_MUTATION = gql`
       pool {
         id
       }
+    }
+  }
+`;
+
+const ALLOCATION_STRATEGY_QUERY = gql`
+  query AllocationStrategyByName {
+    QueryAllocationStrategies(byName: "ipv4_prefix") {
+      Name
+      id
+    }
+  }
+`;
+
+const RESOURCE_TYPE_QUERY = gql`
+  query ResourceTypeByName {
+    QueryResourceTypes(byName: "ipv4_prefix") {
+      Name
+      id
+    }
+  }
+`;
+
+const POSSIBLE_PARENT_POOLS_QUERY = gql`
+  query PossibleParentPools($resourceTypeId: ID!) {
+    QueryResourcePools(resourceTypeId: $resourceTypeId) {
+      Name
+      id
     }
   }
 `;
@@ -49,6 +81,35 @@ const CreateAllocatingPoolPage: FC<Props> = ({ onCreateSuccess }) => {
     status: 'success',
   });
 
+  const [possibleParentPools, setPossibleParentPools] = useState([]);
+
+  const [{ data: resourceTypeData, fetching: fetchingResourceType }] = useQuery<ResourceTypeByNameQuery>({
+    query: RESOURCE_TYPE_QUERY,
+  });
+  const [{ data: allocationStrategy, fetching: fetchingAllocationStrategy }] = useQuery<AllocationStrategyByNameQuery>({
+    query: ALLOCATION_STRATEGY_QUERY,
+  });
+
+  const resourceTypeId = resourceTypeData?.QueryResourceTypes[0].id;
+  const allocationStrategyId = allocationStrategy?.QueryAllocationStrategies[0].id;
+
+  const [result] = useQuery<PossibleParentPoolsQuery>({
+    query: POSSIBLE_PARENT_POOLS_QUERY,
+    variables: { resourceTypeId },
+  });
+
+  const { data: parentPools, fetching: fetchingPossibleParentPools } = result;
+
+  useEffect(() => {
+    if (possibleParentPools) {
+      setPossibleParentPools(
+        parentPools?.QueryResourcePools.map((pool) => {
+          return { ...pool, name: pool.Name };
+        }),
+      );
+    }
+  }, [possibleParentPools, parentPools]);
+
   const handleFormSubmit = (data: FormValues) => {
     createPool(client.mutation.bind(client), data)
       .toPromise()
@@ -58,6 +119,10 @@ const CreateAllocatingPoolPage: FC<Props> = ({ onCreateSuccess }) => {
       });
   };
 
+  if (fetchingResourceType || fetchingAllocationStrategy || fetchingPossibleParentPools) {
+    return <Spinner size="xl" />;
+  }
+
   return (
     <>
       <Flex as="header" alignItems="center" marginBottom={5}>
@@ -66,7 +131,12 @@ const CreateAllocatingPoolPage: FC<Props> = ({ onCreateSuccess }) => {
         </Heading>
       </Flex>
       <Box background="white" paddingY={8} paddingX={4}>
-        <CreateAllocatingIpv4PrefixPoolForm onFormSubmit={handleFormSubmit} />
+        <CreateAllocatingIpv4PrefixPoolForm
+          onFormSubmit={handleFormSubmit}
+          resourceTypeId={resourceTypeId}
+          allocationStrategyId={allocationStrategyId}
+          possibleParentPools={possibleParentPools}
+        />
       </Box>
     </>
   );

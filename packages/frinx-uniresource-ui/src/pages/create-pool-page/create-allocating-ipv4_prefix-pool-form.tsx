@@ -9,43 +9,13 @@ import {
   HStack,
   Input,
   Select,
-  Spinner,
   Switch,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
-import gql from 'graphql-tag';
 import { omitBy } from 'lodash';
-import React, { FC, useCallback, useState, useEffect, useRef } from 'react';
-import { useQuery } from 'urql';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import * as yup from 'yup';
-import PoolPropertiesForm from '../pages/create-pool-page/pool-properties-form';
-
-const ALLOCATION_STRATEGY_QUERY = gql`
-  query QueryAllocationStrategyByName {
-    QueryAllocationStrategies(byName: "vlan") {
-      Name
-      id
-    }
-  }
-`;
-
-const RESOURCE_TYPE_QUERY = gql`
-  query QueryResourceTypeByName {
-    QueryResourceTypes(byName: "vlan") {
-      Name
-      id
-    }
-  }
-`;
-
-const POSSIBLE_PARENT_POOLS_QUERY = gql`
-  query QueryPossibleParentPools($resourceTypeId: ID!) {
-    QueryResourcePools(resourceTypeId: $resourceTypeId) {
-      Name
-      id
-    }
-  }
-`;
+import PoolPropertiesForm from './pool-properties-form';
 
 type FormValues = {
   poolName: string;
@@ -53,7 +23,7 @@ type FormValues = {
   allocationStrategyId: string;
   resourceTypeId: string;
   poolProperties?: Record<string, string>;
-  poolPropertyTypes?: Record<string, 'int'>;
+  poolPropertyTypes?: Record<string, 'int' | 'string'>;
   parentResourceId: undefined;
   isNested: boolean;
 };
@@ -63,8 +33,8 @@ const INITIAL_VALUES: FormValues = {
   dealocationSafetyPeriod: 120,
   allocationStrategyId: '',
   resourceTypeId: '',
-  poolProperties: { from: '0', to: '4095' },
-  poolPropertyTypes: { from: 'int', to: 'int' },
+  poolProperties: { address: '10.0.0.0', prefix: '16' },
+  poolPropertyTypes: { address: 'string', prefix: 'int' },
   parentResourceId: undefined,
   isNested: false,
 };
@@ -78,19 +48,10 @@ const getPoolSchema = (isNested: boolean) => {
       .required('Please enter a dealocation safety period')
       .typeError('Please enter a number'),
     poolProperties: yup.object({
-      from: yup
-        .number()
-        .min(0, 'Please enter positive number')
-        .required('Please enter a from property')
-        .typeError('Please enter a number'),
-      to: yup
-        .number()
-        .min(1, 'Please enter number bigger than 0')
-        .max(4095, 'Please enter number smaller than 4096')
-        .required('Please enter a to property')
-        .typeError('Please enter a number'),
-      ...(isNested && { parentResourceId: yup.string().required('Please enter parent resource type') }),
+      address: yup.string().required('Please enter address'),
+      prefix: yup.string().required('Please enter prefix'),
     }),
+    ...(isNested && { parentResourceId: yup.string().required('Please enter parent resource type') }),
   });
 
   return poolSchema;
@@ -98,6 +59,9 @@ const getPoolSchema = (isNested: boolean) => {
 
 type Props = {
   onFormSubmit: (values: FormValues) => void;
+  resourceTypeId: string;
+  allocationStrategyId: string;
+  possibleParentPools: Pool[];
 };
 
 type Pool = {
@@ -105,50 +69,22 @@ type Pool = {
   name: string;
 };
 
-const CreateAllocatingVlanPoolForm: FC<Props> = ({ onFormSubmit }) => {
-  const resourceTypeId = useRef('');
-  const allocationStrategyId = useRef('');
-
+const CreateAllocatingIpv4PrefixPoolForm: FC<Props> = ({
+  onFormSubmit,
+  resourceTypeId,
+  allocationStrategyId,
+  possibleParentPools,
+}) => {
   const [poolSchema, setPoolSchema] = useState(getPoolSchema(INITIAL_VALUES.isNested));
-  const [pools, setPools] = useState([] as Pool[]);
-
-  const [{ data: resourceTypeData, fetching }] = useQuery({
-    query: RESOURCE_TYPE_QUERY,
-  });
-  const [{ data: allocationStrategy }] = useQuery({
-    query: ALLOCATION_STRATEGY_QUERY,
-  });
-
-  useEffect(() => {
-    resourceTypeId.current = resourceTypeData?.QueryResourceTypes[0].id;
-    allocationStrategyId.current = allocationStrategy?.QueryAllocationStrategies[0].id;
-  }, [allocationStrategy?.QueryAllocationStrategies, resourceTypeData?.QueryResourceTypes]);
-
-  const [result] = useQuery({
-    query: POSSIBLE_PARENT_POOLS_QUERY,
-    variables: { resourceTypeId },
-  });
-
-  const { data: possibleParentPools, fetching: possibleParentPoolsFetching } = result;
-
-  useEffect(() => {
-    if (possibleParentPools) {
-      setPools(
-        possibleParentPools?.QueryResourcePools.map((pool) => {
-          return { ...pool, name: pool.Name };
-        }),
-      );
-    }
-  }, [possibleParentPools]);
 
   const { values, errors, handleChange, handleSubmit, setFieldValue } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: poolSchema,
-    onSubmit: (data) => {
+    onSubmit: async (data) => {
       onFormSubmit({
         ...data,
-        resourceTypeId: resourceTypeId.current,
-        allocationStrategyId: allocationStrategyId.current,
+        resourceTypeId,
+        allocationStrategyId,
       });
     },
   });
@@ -164,7 +100,6 @@ const CreateAllocatingVlanPoolForm: FC<Props> = ({ onFormSubmit }) => {
     },
     [setFieldValue, values],
   );
-
   const handleDeleteProperty = useCallback(
     (key: string) => {
       setFieldValue(
@@ -178,10 +113,6 @@ const CreateAllocatingVlanPoolForm: FC<Props> = ({ onFormSubmit }) => {
     },
     [setFieldValue, values],
   );
-
-  if (fetching || possibleParentPoolsFetching) {
-    return <Spinner size="xl" />;
-  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -200,7 +131,7 @@ const CreateAllocatingVlanPoolForm: FC<Props> = ({ onFormSubmit }) => {
                 value={values.parentResourceId}
                 placeholder="Select parent resource type"
               >
-                {pools.map((pool) => (
+                {possibleParentPools.map((pool) => (
                   <option value={pool.id} key={pool.id}>
                     {pool.name}
                   </option>
@@ -234,7 +165,7 @@ const CreateAllocatingVlanPoolForm: FC<Props> = ({ onFormSubmit }) => {
         </Heading>
         <PoolPropertiesForm
           poolProperties={values.poolProperties as Record<string, string>}
-          poolPropertyTypes={values.poolPropertyTypes as Record<string, 'int'>}
+          poolPropertyTypes={values.poolPropertyTypes as Record<string, 'int' | 'string'>}
           onChange={handlePoolPropertiesChange}
           onDeleteBtnClick={handleDeleteProperty}
         />
@@ -248,4 +179,4 @@ const CreateAllocatingVlanPoolForm: FC<Props> = ({ onFormSubmit }) => {
   );
 };
 
-export default CreateAllocatingVlanPoolForm;
+export default CreateAllocatingIpv4PrefixPoolForm;
