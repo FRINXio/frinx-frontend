@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { device, zone } from '../../db';
 import BadRequestError from '../../errors/bad-request-error';
-import { asyncHandler, decodeDeviceParams } from '../api.helpers';
+import { asyncHandler, decodeCreateDeviceParams } from '../api.helpers';
 
 export default function postDevice(router: Router): void {
   router.post(
@@ -13,7 +13,7 @@ export default function postDevice(router: Router): void {
         throw new BadRequestError('tenant id is missing');
       }
       const tenantId = headers['x-tenant-id'] as string;
-      const params = decodeDeviceParams(body);
+      const params = decodeCreateDeviceParams(body);
 
       const dbZone = await zone.getById(Number(params.zoneId), tenantId);
 

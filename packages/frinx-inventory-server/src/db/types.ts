@@ -17,7 +17,7 @@ export type DBDevice = {
   serial_number: string | null;
   vendor: string | null;
   uniconfig_zone: number | null;
-  mount_parameters: JSONValue | null;
+  mount_parameters: JSONObject | null;
   username: string | null;
   password: string | null;
 };

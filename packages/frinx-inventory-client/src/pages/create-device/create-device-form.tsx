@@ -6,6 +6,7 @@ import * as yup from 'yup';
 import { Zone } from '../../helpers/types';
 
 type Props = {
+  zones: Zone[];
   onFormSubmit: (device: FormValues) => void;
 };
 
@@ -27,9 +28,7 @@ const INITIAL_VALUES: FormValues = {
   mountParameters: '{}',
 };
 
-const zones = [{ id: 'oijcosd', name: 'jozko', tenant: 'vajda' }] as Zone[];
-
-const CreateDeviceForm: FC<Props> = ({ onFormSubmit }) => {
+const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones }) => {
   const { errors, values, handleSubmit, handleChange, isSubmitting, setFieldValue } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: deviceSchema,
@@ -58,7 +57,7 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit }) => {
           name="zone"
           placeholder="Select zone of device"
         >
-          {zones.map((zone: Zone) => (
+          {zones.map((zone) => (
             <option key={zone.id} value={zone.id}>
               {zone.name}
             </option>

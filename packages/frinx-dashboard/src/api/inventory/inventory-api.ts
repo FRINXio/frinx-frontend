@@ -24,3 +24,11 @@ export async function getZones(): Promise<Zone[]> {
 
   return data;
 }
+
+export async function installDevice(deviceId: string): Promise<void> {
+  await sendPostRequest(`/devices/${deviceId}/install`, undefined);
+}
+
+export async function uninstallDevice(deviceId: string): Promise<void> {
+  await sendPostRequest(`/devices/${deviceId}/uninstall`, undefined);
+}

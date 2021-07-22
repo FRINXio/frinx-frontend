@@ -15,7 +15,6 @@ export default function extractResult<A>(result: Either<t.Errors, A>): A {
 export const ZoneOutputValidator = t.type({
   id: t.string,
   name: t.string,
-  tenant: t.string,
 });
 export const ZonesOutputValidator = t.array(ZoneOutputValidator);
 export type Zone = t.TypeOf<typeof ZoneOutputValidator>;
