@@ -2,6 +2,7 @@ import { Flex, Heading, Box, useToast, Spinner } from '@chakra-ui/react';
 import gql from 'graphql-tag';
 import React, { FC } from 'react';
 import { useMutation, useQuery } from 'urql';
+import { isEmpty } from 'lodash';
 import CreateAllocatingVlanPoolForm from './create-allocating-vlan-pool-form';
 
 import {
@@ -52,13 +53,15 @@ const POSSIBLE_PARENT_POOLS_QUERY = gql`
 
 const getParentPools = (parentPools: GetVlanParentPoolsQuery | undefined, resourceTypeId: string): Pool[] | null => {
   if (parentPools) {
-    return parentPools.QueryResourcePools.map((pool) => {
+    const result = parentPools.QueryResourcePools.map((pool) => {
       return {
         name: pool.Name,
         id: pool.id,
         resourceTypeId: pool.ResourceType.id,
       };
     }).filter((pool) => pool.resourceTypeId === resourceTypeId);
+
+    return isEmpty(result) ? null : result;
   }
 
   return null;
