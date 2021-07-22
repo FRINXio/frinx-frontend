@@ -9,11 +9,25 @@ import {
   GetIpv4ParentPoolsQuery,
   GetIpv4ResourceTypeQuery,
   GetIpv4AllocationStrategyQuery,
+  CreateAllocatingPoolPayload,
+  MutationCreateAllocatingPoolArgs,
+  CreateNestedAllocatingPoolPayload,
+  MutationCreateNestedAllocatingPoolArgs,
 } from '../../__generated__/graphql';
 
 const CREATE_ALLOCATING_POOL_MUTATION = gql`
-  mutation CreateAllocationPool($input: CreateAllocatingPoolInput!) {
+  mutation CreateIPv4AllocationPool($input: CreateAllocatingPoolInput!) {
     CreateAllocatingPool(input: $input) {
+      pool {
+        id
+      }
+    }
+  }
+`;
+
+const CREATE_NESTED_ALLOCATING_POOL = gql`
+  mutation CreateNestedIPv4AllocationPool($input: CreateNestedAllocatingPoolInput!) {
+    CreateNestedAllocatingPool(input: $input) {
       pool {
         id
       }
@@ -51,15 +65,9 @@ const POSSIBLE_PARENT_POOLS_QUERY = gql`
   }
 `;
 
-const getParentPools = (parentPools: GetIpv4ParentPoolsQuery | undefined, resourceTypeId: string): Pool[] | null => {
+const getParentPools = (parentPools: GetIpv4ParentPoolsQuery | undefined, resourceTypeId: string) => {
   if (parentPools) {
-    const result = parentPools.QueryResourcePools.map((pool) => {
-      return {
-        name: pool.Name,
-        id: pool.id,
-        resourceTypeId: pool.ResourceType.id,
-      };
-    }).filter((pool) => pool.resourceTypeId === resourceTypeId);
+    const result = parentPools.QueryResourcePools.filter((pool) => pool.ResourceType.id === resourceTypeId);
 
     return isEmpty(result) ? null : result;
   }
@@ -69,25 +77,27 @@ const getParentPools = (parentPools: GetIpv4ParentPoolsQuery | undefined, resour
 
 type FormValues = {
   poolName: string;
-  dealocationSafetyPeriod: number;
+  poolDealocationSafetyPeriod: number;
   allocationStrategyId: string;
-  poolProperties?: Record<string, string>;
-  poolPropertyTypes?: Record<string, 'int' | 'string'>;
+  resourceTypeId: string;
+  poolProperties: Record<string, string>;
+  poolPropertyTypes: Record<string, 'int' | 'string'>;
+  parentResourceId?: undefined;
 };
 
 type Props = {
   onCreateSuccess: () => void;
 };
 
-type Pool = {
-  id: string;
-  name: string;
-  resourceTypeId: string;
-};
-
 const CreateAllocatingIPv4PoolPage: FC<Props> = ({ onCreateSuccess }) => {
   const toast = useToast();
-  const [, createPool] = useMutation(CREATE_ALLOCATING_POOL_MUTATION);
+  const [, createPool] = useMutation<CreateAllocatingPoolPayload, MutationCreateAllocatingPoolArgs>(
+    CREATE_ALLOCATING_POOL_MUTATION,
+  );
+
+  const [, createNestedPool] = useMutation<CreateNestedAllocatingPoolPayload, MutationCreateNestedAllocatingPoolArgs>(
+    CREATE_NESTED_ALLOCATING_POOL,
+  );
 
   const [{ data: resourceTypeData, fetching: resourceTypeFetching }] = useQuery<GetIpv4ResourceTypeQuery>({
     query: RESOURCE_TYPE_QUERY,
@@ -115,25 +125,59 @@ const CreateAllocatingIPv4PoolPage: FC<Props> = ({ onCreateSuccess }) => {
   const allocationStrategyId = allocationStrategy.QueryAllocationStrategies[0].id;
   const possibleParentPools = getParentPools(parentPools, resourceTypeId);
 
-  const handleFormSubmit = (data: FormValues) => {
-    createPool(data)
-      .then(() => {
-        toast({
-          title: 'Successfully created pool',
-          duration: 1500,
-          isClosable: true,
-          status: 'success',
-        });
-        onCreateSuccess();
+  const handleFormSubmit = (data: FormValues, isNested: boolean) => {
+    const allocatingPool = {
+      input: data,
+    };
+
+    if (isNested) {
+      const { input: nestedPool } = allocatingPool;
+      createNestedPool({
+        input: {
+          allocationStrategyId: nestedPool.allocationStrategyId,
+          parentResourceId: nestedPool.parentResourceId || '',
+          poolName: nestedPool.poolName,
+          resourceTypeId: nestedPool.resourceTypeId,
+          poolDealocationSafetyPeriod: nestedPool.poolDealocationSafetyPeriod,
+        },
       })
-      .catch(() => {
-        toast({
-          title: 'There was a problem with addition of pool',
-          duration: 1500,
-          isClosable: true,
-          status: 'error',
+        .then(() => {
+          toast({
+            title: 'Successfully created nested pool',
+            duration: 1500,
+            isClosable: true,
+            status: 'success',
+          });
+          onCreateSuccess();
+        })
+        .catch(() => {
+          toast({
+            title: 'There was a problem with addition of nested pool',
+            duration: 1500,
+            isClosable: true,
+            status: 'error',
+          });
         });
-      });
+    } else {
+      createPool(allocatingPool)
+        .then(() => {
+          toast({
+            title: 'Successfully created pool',
+            duration: 1500,
+            isClosable: true,
+            status: 'success',
+          });
+          onCreateSuccess();
+        })
+        .catch(() => {
+          toast({
+            title: 'There was a problem with addition of pool',
+            duration: 1500,
+            isClosable: true,
+            status: 'error',
+          });
+        });
+    }
   };
 
   return (
