@@ -19,30 +19,27 @@ import PoolPropertiesForm from './pool-properties-form';
 
 type FormValues = {
   poolName: string;
-  dealocationSafetyPeriod: number;
+  poolDealocationSafetyPeriod: number;
   allocationStrategyId: string;
   resourceTypeId: string;
-  poolProperties?: Record<string, string>;
-  poolPropertyTypes?: Record<string, 'int' | 'string'>;
-  parentResourceId: undefined;
-  isNested: boolean;
+  poolProperties: Record<string, string>;
+  poolPropertyTypes: Record<string, 'int' | 'string'>;
+  parentResourceId?: undefined;
 };
 
 const INITIAL_VALUES: FormValues = {
   poolName: '',
-  dealocationSafetyPeriod: 120,
+  poolDealocationSafetyPeriod: 120,
   allocationStrategyId: '',
   resourceTypeId: '',
   poolProperties: { address: '10.0.0.0', prefix: '16' },
   poolPropertyTypes: { address: 'string', prefix: 'int' },
-  parentResourceId: undefined,
-  isNested: false,
 };
 
 const getPoolSchema = (isNested: boolean) => {
   const poolSchema = yup.object({
     poolName: yup.string().required('Please enter name of pool'),
-    dealocationSafetyPeriod: yup
+    poolDealocationSafetyPeriod: yup
       .number()
       .min(0, 'Please enter positive number')
       .required('Please enter a dealocation safety period')
@@ -58,7 +55,7 @@ const getPoolSchema = (isNested: boolean) => {
 };
 
 type Props = {
-  onFormSubmit: (values: FormValues) => void;
+  onFormSubmit: (values: FormValues, isNested: boolean) => void;
   resourceTypeId: string;
   allocationStrategyId: string;
   possibleParentPools: Pool[] | null;
@@ -66,7 +63,10 @@ type Props = {
 
 type Pool = {
   id: string;
-  name: string;
+  Name: string;
+  ResourceType: {
+    id: string;
+  };
 };
 
 const CreateAllocatingIpv4PrefixPoolForm: FC<Props> = ({
@@ -75,23 +75,27 @@ const CreateAllocatingIpv4PrefixPoolForm: FC<Props> = ({
   allocationStrategyId,
   possibleParentPools,
 }) => {
-  const [poolSchema, setPoolSchema] = useState(getPoolSchema(INITIAL_VALUES.isNested));
+  const [isNested, setIsNested] = useState(false);
+  const [poolSchema, setPoolSchema] = useState(getPoolSchema(isNested));
 
   const { values, errors, handleChange, handleSubmit, setFieldValue } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: poolSchema,
     onSubmit: async (data) => {
-      onFormSubmit({
-        ...data,
-        resourceTypeId,
-        allocationStrategyId,
-      });
+      onFormSubmit(
+        {
+          ...data,
+          resourceTypeId,
+          allocationStrategyId,
+        },
+        isNested,
+      );
     },
   });
 
   useEffect(() => {
-    setPoolSchema(getPoolSchema(values.isNested));
-  }, [values.isNested]);
+    setPoolSchema(getPoolSchema(isNested));
+  }, [isNested]);
 
   const handlePoolPropertiesChange = useCallback(
     (pProperties) => {
@@ -120,9 +124,9 @@ const CreateAllocatingIpv4PrefixPoolForm: FC<Props> = ({
         <HStack spacing={4} marginY={5}>
           <FormControl id="isNested">
             <FormLabel>Nested</FormLabel>
-            <Switch onChange={handleChange} name="isNested" isChecked={values.isNested} />
+            <Switch onChange={() => setIsNested(!isNested)} name="isNested" isChecked={isNested} />
           </FormControl>
-          {values.isNested && (
+          {isNested && (
             <FormControl id="parentResourceId" isInvalid={errors.parentResourceId !== undefined}>
               <FormLabel>Parent pool</FormLabel>
               <Select
@@ -133,7 +137,7 @@ const CreateAllocatingIpv4PrefixPoolForm: FC<Props> = ({
               >
                 {possibleParentPools.map((pool) => (
                   <option value={pool.id} key={pool.id}>
-                    {pool.name}
+                    {pool.Name}
                   </option>
                 ))}
               </Select>
@@ -147,31 +151,39 @@ const CreateAllocatingIpv4PrefixPoolForm: FC<Props> = ({
         <Input type="text" onChange={handleChange} name="poolName" placeholder="Enter name" value={values.poolName} />
         <FormErrorMessage>{errors.poolName}</FormErrorMessage>
       </FormControl>
-      <FormControl id="dealocationSafetyPeriod" marginY={5} isInvalid={errors.dealocationSafetyPeriod !== undefined}>
+      <FormControl
+        id="poolDealocationSafetyPeriod"
+        marginY={5}
+        isInvalid={errors.poolDealocationSafetyPeriod !== undefined}
+      >
         <FormLabel>Pool dealocation safety period</FormLabel>
         <Input
           type="number"
-          value={values.dealocationSafetyPeriod}
+          value={values.poolDealocationSafetyPeriod}
           onChange={handleChange}
-          name="dealocationSafetyPeriod"
+          name="poolDealocationSafetyPeriod"
           placeholder="Enter dealocation safety period"
         />
-        <FormErrorMessage>{errors.dealocationSafetyPeriod}</FormErrorMessage>
+        <FormErrorMessage>{errors.poolDealocationSafetyPeriod}</FormErrorMessage>
       </FormControl>
       <Divider marginY={5} orientation="horizontal" color="gray.200" />
-      <Box>
-        <Heading as="h4" size="md">
-          Set pool properties
-        </Heading>
-        <PoolPropertiesForm
-          poolProperties={values.poolProperties as Record<string, string>}
-          poolPropertyTypes={values.poolPropertyTypes as Record<string, 'int' | 'string'>}
-          onChange={handlePoolPropertiesChange}
-          onDeleteBtnClick={handleDeleteProperty}
-        />
-        <FormErrorMessage>{errors.poolProperties}</FormErrorMessage>
-      </Box>
-      <Divider marginY={5} orientation="horizontal" color="gray.200" />
+      {!isNested && (
+        <>
+          <Box>
+            <Heading as="h4" size="md">
+              Set pool properties
+            </Heading>
+            <PoolPropertiesForm
+              poolProperties={values.poolProperties as Record<string, string>}
+              poolPropertyTypes={values.poolPropertyTypes as Record<string, 'int' | 'string'>}
+              onChange={handlePoolPropertiesChange}
+              onDeleteBtnClick={handleDeleteProperty}
+            />
+            <FormErrorMessage>{errors.poolProperties}</FormErrorMessage>
+          </Box>
+          <Divider marginY={5} orientation="horizontal" color="gray.200" />
+        </>
+      )}
       <Button type="submit" colorScheme="blue">
         Create pool
       </Button>
