@@ -2,7 +2,6 @@ import { Flex, Heading, Box, useToast, Spinner } from '@chakra-ui/react';
 import gql from 'graphql-tag';
 import React, { FC } from 'react';
 import { useMutation, useQuery } from 'urql';
-import { isEmpty } from 'lodash';
 import CreateAllocatingIpv4PrefixPoolForm from './create-allocating-ipv4_prefix-pool-form';
 
 import {
@@ -51,6 +50,20 @@ const POSSIBLE_PARENT_POOLS_QUERY = gql`
   }
 `;
 
+const getParentPools = (parentPools: GetIpv4ParentPoolsQuery | undefined, resourceTypeId: string): Pool[] | null => {
+  if (parentPools) {
+    return parentPools.QueryResourcePools.map((pool) => {
+      return {
+        name: pool.Name,
+        id: pool.id,
+        resourceTypeId: pool.ResourceType.id,
+      };
+    }).filter((pool) => pool.resourceTypeId === resourceTypeId);
+  }
+
+  return null;
+};
+
 type FormValues = {
   poolName: string;
   dealocationSafetyPeriod: number;
@@ -70,7 +83,6 @@ type Pool = {
 };
 
 const CreateAllocatingIPv4PoolPage: FC<Props> = ({ onCreateSuccess }) => {
-  let possibleParentPools: Pool[] | null = null;
   const toast = useToast();
   const [, createPool] = useMutation(CREATE_ALLOCATING_POOL_MUTATION);
 
@@ -98,18 +110,7 @@ const CreateAllocatingIPv4PoolPage: FC<Props> = ({ onCreateSuccess }) => {
 
   const resourceTypeId = resourceTypeData.QueryResourceTypes[0].id;
   const allocationStrategyId = allocationStrategy.QueryAllocationStrategies[0].id;
-
-  if (parentPools != null) {
-    const pools = parentPools.QueryResourcePools.map((pool) => {
-      return {
-        name: pool.Name,
-        id: pool.id,
-        resourceTypeId: pool.ResourceType.id,
-      };
-    }).filter((pool) => pool.resourceTypeId === resourceTypeId);
-
-    possibleParentPools = !isEmpty(pools) ? pools : null;
-  }
+  const possibleParentPools = getParentPools(parentPools, resourceTypeId);
 
   const handleFormSubmit = (data: FormValues) => {
     createPool(data)
