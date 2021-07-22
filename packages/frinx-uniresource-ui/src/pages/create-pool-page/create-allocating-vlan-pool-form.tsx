@@ -70,12 +70,13 @@ type Props = {
   onFormSubmit: (values: FormValues) => void;
   resourceTypeId: string;
   allocationStrategyId: string;
-  possibleParentPools: Pool[];
+  possibleParentPools: Pool[] | null;
 };
 
 type Pool = {
   id: string;
   name: string;
+  resourceTypeId: string;
 };
 
 const CreateAllocatingVlanPoolForm: FC<Props> = ({
