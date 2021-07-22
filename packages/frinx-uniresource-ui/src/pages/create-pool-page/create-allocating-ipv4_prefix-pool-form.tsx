@@ -61,7 +61,7 @@ type Props = {
   onFormSubmit: (values: FormValues) => void;
   resourceTypeId: string;
   allocationStrategyId: string;
-  possibleParentPools: Pool[];
+  possibleParentPools: Pool[] | null;
 };
 
 type Pool = {

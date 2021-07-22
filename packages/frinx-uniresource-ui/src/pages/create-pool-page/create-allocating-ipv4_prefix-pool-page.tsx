@@ -1,14 +1,14 @@
 import { Flex, Heading, Box, useToast, Spinner } from '@chakra-ui/react';
 import gql from 'graphql-tag';
-import React, { FC, useEffect, useState } from 'react';
-import { Client, useClient, useQuery } from 'urql';
+import React, { FC } from 'react';
+import { useMutation, useQuery } from 'urql';
+import { isEmpty } from 'lodash';
 import CreateAllocatingIpv4PrefixPoolForm from './create-allocating-ipv4_prefix-pool-form';
 
 import {
-  CreateAllocationPoolMutation,
-  PossibleParentPoolsQuery,
-  ResourceTypeByNameQuery,
-  AllocationStrategyByNameQuery,
+  GetIpv4ParentPoolsQuery,
+  GetIpv4ResourceTypeQuery,
+  GetIpv4AllocationStrategyQuery,
 } from '../../__generated__/graphql';
 
 const CREATE_ALLOCATING_POOL_MUTATION = gql`
@@ -22,7 +22,7 @@ const CREATE_ALLOCATING_POOL_MUTATION = gql`
 `;
 
 const ALLOCATION_STRATEGY_QUERY = gql`
-  query AllocationStrategyByName {
+  query GetIpv4AllocationStrategy {
     QueryAllocationStrategies(byName: "ipv4_prefix") {
       Name
       id
@@ -31,7 +31,7 @@ const ALLOCATION_STRATEGY_QUERY = gql`
 `;
 
 const RESOURCE_TYPE_QUERY = gql`
-  query ResourceTypeByName {
+  query GetIpv4ResourceType {
     QueryResourceTypes(byName: "ipv4_prefix") {
       Name
       id
@@ -40,10 +40,13 @@ const RESOURCE_TYPE_QUERY = gql`
 `;
 
 const POSSIBLE_PARENT_POOLS_QUERY = gql`
-  query PossibleParentPools($resourceTypeId: ID!) {
-    QueryResourcePools(resourceTypeId: $resourceTypeId) {
-      Name
+  query GetIpv4ParentPools {
+    QueryResourcePools {
       id
+      Name
+      ResourceType {
+        id
+      }
     }
   }
 `;
@@ -56,72 +59,78 @@ type FormValues = {
   poolPropertyTypes?: Record<string, 'int' | 'string'>;
 };
 
-function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnType<Client['mutation']> {
-  return mutationFn<CreateAllocationPoolMutation>(CREATE_ALLOCATING_POOL_MUTATION, {
-    input: {
-      poolName: values.poolName,
-      poolProperties: values.poolProperties,
-      allocationStrategyId: values.allocationStrategyId,
-      dealocationSafetyPeriod: values.dealocationSafetyPeriod,
-      poolPropertyTypes: values.poolPropertyTypes,
-    },
-  });
-}
-
 type Props = {
   onCreateSuccess: () => void;
 };
 
-const CreateAllocatingPoolPage: FC<Props> = ({ onCreateSuccess }) => {
-  const client = useClient();
-  const toast = useToast({
-    title: 'Successfully created pool',
-    duration: 1500,
-    isClosable: true,
-    status: 'success',
-  });
+type Pool = {
+  id: string;
+  name: string;
+  resourceTypeId: string;
+};
 
-  const [possibleParentPools, setPossibleParentPools] = useState([]);
+const CreateAllocatingIPv4PoolPage: FC<Props> = ({ onCreateSuccess }) => {
+  let possibleParentPools: Pool[] | null = null;
+  const toast = useToast();
+  const [, createPool] = useMutation(CREATE_ALLOCATING_POOL_MUTATION);
 
-  const [{ data: resourceTypeData, fetching: fetchingResourceType }] = useQuery<ResourceTypeByNameQuery>({
+  const [{ data: resourceTypeData, fetching: resourceTypeFetching }] = useQuery<GetIpv4ResourceTypeQuery>({
     query: RESOURCE_TYPE_QUERY,
   });
-  const [{ data: allocationStrategy, fetching: fetchingAllocationStrategy }] = useQuery<AllocationStrategyByNameQuery>({
-    query: ALLOCATION_STRATEGY_QUERY,
-  });
-
-  const resourceTypeId = resourceTypeData?.QueryResourceTypes[0].id;
-  const allocationStrategyId = allocationStrategy?.QueryAllocationStrategies[0].id;
-
-  const [result] = useQuery<PossibleParentPoolsQuery>({
+  const [{ data: allocationStrategy, fetching: allocationStrategyFetching }] = useQuery<GetIpv4AllocationStrategyQuery>(
+    {
+      query: ALLOCATION_STRATEGY_QUERY,
+    },
+  );
+  const [result] = useQuery<GetIpv4ParentPoolsQuery>({
     query: POSSIBLE_PARENT_POOLS_QUERY,
-    variables: { resourceTypeId },
   });
 
-  const { data: parentPools, fetching: fetchingPossibleParentPools } = result;
+  const { data: parentPools, fetching: parentPoolsFetching } = result;
 
-  useEffect(() => {
-    if (possibleParentPools) {
-      setPossibleParentPools(
-        parentPools?.QueryResourcePools.map((pool) => {
-          return { ...pool, name: pool.Name };
-        }),
-      );
-    }
-  }, [possibleParentPools, parentPools]);
+  if (resourceTypeFetching || allocationStrategyFetching || parentPoolsFetching) {
+    return <Spinner variant="xl" />;
+  }
+
+  if (resourceTypeData == null || allocationStrategy == null) {
+    return null;
+  }
+
+  const resourceTypeId = resourceTypeData.QueryResourceTypes[0].id;
+  const allocationStrategyId = allocationStrategy.QueryAllocationStrategies[0].id;
+
+  if (parentPools != null) {
+    const pools = parentPools.QueryResourcePools.map((pool) => {
+      return {
+        name: pool.Name,
+        id: pool.id,
+        resourceTypeId: pool.ResourceType.id,
+      };
+    }).filter((pool) => pool.resourceTypeId === resourceTypeId);
+
+    possibleParentPools = !isEmpty(pools) ? pools : null;
+  }
 
   const handleFormSubmit = (data: FormValues) => {
-    createPool(client.mutation.bind(client), data)
-      .toPromise()
+    createPool(data)
       .then(() => {
-        toast();
+        toast({
+          title: 'Successfully created pool',
+          duration: 1500,
+          isClosable: true,
+          status: 'success',
+        });
         onCreateSuccess();
+      })
+      .catch(() => {
+        toast({
+          title: 'There was a problem with addition of pool',
+          duration: 1500,
+          isClosable: true,
+          status: 'error',
+        });
       });
   };
-
-  if (fetchingResourceType || fetchingAllocationStrategy || fetchingPossibleParentPools) {
-    return <Spinner size="xl" />;
-  }
 
   return (
     <>
@@ -142,4 +151,4 @@ const CreateAllocatingPoolPage: FC<Props> = ({ onCreateSuccess }) => {
   );
 };
 
-export default CreateAllocatingPoolPage;
+export default CreateAllocatingIPv4PoolPage;
