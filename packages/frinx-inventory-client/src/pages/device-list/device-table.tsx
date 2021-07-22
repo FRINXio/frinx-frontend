@@ -1,10 +1,10 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Badge, Button, HStack, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
-import { Device } from '../../helpers/types';
+import { DevicesQuery } from '../../__generated__/graphql';
 
 type Props = {
-  devices: Device[];
+  devices: DevicesQuery['devices']['edges'];
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
   isLoading: boolean;
@@ -30,7 +30,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
         </Tr>
       </Thead>
       <Tbody>
-        {devices.map((device) => {
+        {devices.map(({ node: device }) => {
           const isInstalled = device.status === 'INSTALLED';
 
           return (
@@ -44,10 +44,10 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               <Td>{device.model}</Td>
               <Td>
                 <Text as="span" fontFamily="monospace" color="red">
-                  {device.host}
+                  {device.address}
                 </Text>
               </Td>
-              <Td>{device.zone.name}</Td>
+              <Td>{device.zone?.name}</Td>
               <Td minWidth={200}>
                 <Badge colorScheme={isInstalled ? 'green' : 'yellow'}>{device.status}</Badge>
               </Td>
@@ -58,7 +58,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                       size="xs"
                       colorScheme="yellow"
                       leftIcon={<MinusIcon />}
-                      isDisabled={isLoading}
+                      isLoading={isLoading}
                       onClick={() => {
                         onUninstallButtonClick(device.id);
                       }}
@@ -70,7 +70,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                       size="xs"
                       colorScheme="green"
                       leftIcon={<AddIcon />}
-                      isDisabled={isLoading}
+                      isLoading={isLoading}
                       onClick={() => {
                         onInstallButtonClick(device.id);
                       }}

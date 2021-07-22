@@ -3,10 +3,10 @@ import React, { FC } from 'react';
 import Editor from 'react-ace';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { Zone } from '../../helpers/types';
+import { ZonesQuery } from '../../__generated__/graphql';
 
 type Props = {
-  zones: Zone[];
+  zones: ZonesQuery['zones']['edges'];
   onFormSubmit: (device: FormValues) => void;
 };
 
@@ -57,7 +57,7 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones }) => {
           name="zone"
           placeholder="Select zone of device"
         >
-          {zones.map((zone) => (
+          {zones.map(({ node: zone }) => (
             <option key={zone.id} value={zone.id}>
               {zone.name}
             </option>
