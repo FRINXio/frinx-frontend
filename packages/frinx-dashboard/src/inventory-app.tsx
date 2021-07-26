@@ -24,7 +24,7 @@ const InventoryApp: FC = () => {
   const { DeviceList, CreateDevicePage, InventoryAPIProvider } = components;
 
   return (
-    <InventoryAPIProvider url="http://localhost:4000/graphql">
+    <InventoryAPIProvider url={window.__CONFIG__.inventory_api_url}>
       <Switch>
         <Route exact path="/inventory">
           <DeviceList
