@@ -1,6 +1,5 @@
 // @flow
 import React, { useState } from 'react';
-import UnescapeButton from './UnescapeButton';
 import {
   Box,
   Modal,
@@ -25,15 +24,15 @@ import {
 import type { Task } from './flowtypes';
 import { jsonParse } from './utils';
 import { CopyIcon } from '@chakra-ui/icons';
-import unescapeJs from 'unescape-js';
+import { unescape } from 'lodash';
 
 type Props = {
-  task: Task,
-  show: boolean,
-  handle: () => void,
+  task: Task;
+  show: boolean;
+  handle: () => void;
 };
 
-function renderTaskDescription(task) {
+function renderTaskDescription(task: Task) {
   return (
     jsonParse(task?.workflowTask?.description)?.description ||
     jsonParse(task?.workflowTask?.taskDefinition?.description)?.description
@@ -44,12 +43,12 @@ const TaskModal = ({ task, show, handle }: Props) => {
   const [isEscaped, setIsEscaped] = useState(true);
   const { inputData, outputData, logs } = task;
 
-  function getUnescapedJSON(data) {
-    return isEscaped ? JSON.stringify(data, null, 2) : unescapeJs(JSON.stringify(data, null, 2));
+  function getUnescapedJSON(data: Task | Object) {
+    return isEscaped ? JSON.stringify(data, null, 2) : unescape(JSON.stringify(data, null, 2));
   }
 
   return (
-    <Modal marginTop={10} size="5xl" isOpen={show} onClose={handle}>
+    <Modal size="5xl" isOpen={show} onClose={handle}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -84,44 +83,56 @@ const TaskModal = ({ task, show, handle }: Props) => {
                   </Box>
                 </SimpleGrid>
                 <Divider />
-                <SimpleGrid columns={2} spacing={4} mt={4}>
-                  <Box>
-                    <Stack direction="row" spacing={2} align="center" mb={2}>
-                      <Text as="b" fontSize="sm">
-                        Input
-                      </Text>
-                      <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#t_input" />
-                      <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
-                        {isEscaped ? 'Unescape' : 'Escape'}
-                      </Button>
-                    </Stack>
-                    <Textarea
-                      value={getUnescapedJSON(inputData)}
-                      isReadOnly={true}
-                      id="t_input"
-                      variant="filled"
-                      minH={200}
+                <Box>
+                  <Stack direction="row" spacing={2} align="center" mb={2} mt={2}>
+                    <Text as="b" fontSize="sm">
+                      Input
+                    </Text>
+                    <IconButton
+                      aria-label="Copy summary input"
+                      icon={<CopyIcon />}
+                      size="sm"
+                      className="clp"
+                      data-clipboard-target="#t_input"
                     />
-                  </Box>
-                  <Box>
-                    <Stack direction="row" spacing={2} align="center" mb={2}>
-                      <Text as="b" fontSize="sm">
-                        Output
-                      </Text>
-                      <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#t_output" />
-                      <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
-                        {isEscaped ? 'Unescape' : 'Escape'}
-                      </Button>
-                    </Stack>
-                    <Textarea
-                      value={getUnescapedJSON(outputData)}
-                      isReadOnly={true}
-                      id="t_output"
-                      variant="filled"
-                      minH={200}
+                    <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
+                      {isEscaped ? 'Unescape' : 'Escape'}
+                    </Button>
+                  </Stack>
+                  <Textarea
+                    fontFamily="monospace"
+                    value={getUnescapedJSON(inputData)}
+                    isReadOnly
+                    id="t_input"
+                    variant="filled"
+                    minH={200}
+                  />
+                </Box>
+                <Box>
+                  <Stack direction="row" spacing={2} align="center" mb={2} mt={2}>
+                    <Text as="b" fontSize="sm">
+                      Output
+                    </Text>
+                    <IconButton
+                      aria-label="Copy summary output"
+                      icon={<CopyIcon />}
+                      size="sm"
+                      className="clp"
+                      data-clipboard-target="#t_output"
                     />
-                  </Box>
-                </SimpleGrid>
+                    <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
+                      {isEscaped ? 'Unescape' : 'Escape'}
+                    </Button>
+                  </Stack>
+                  <Textarea
+                    fontFamily="monospace"
+                    value={getUnescapedJSON(outputData)}
+                    isReadOnly
+                    id="t_output"
+                    variant="filled"
+                    minH={200}
+                  />
+                </Box>
               </TabPanel>
               <TabPanel>
                 <Box>
@@ -129,7 +140,13 @@ const TaskModal = ({ task, show, handle }: Props) => {
                     <Text as="b" fontSize="sm">
                       JSON
                     </Text>
-                    <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#t_json" />
+                    <IconButton
+                      aria-label="Copy JSON"
+                      icon={<CopyIcon />}
+                      size="sm"
+                      className="clp"
+                      data-clipboard-target="#t_json"
+                    />
                     <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
                       {isEscaped ? 'Unescape' : 'Escape'}
                     </Button>
@@ -143,7 +160,13 @@ const TaskModal = ({ task, show, handle }: Props) => {
                     <Text as="b" fontSize="sm">
                       Logs
                     </Text>
-                    <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#t_logs" />
+                    <IconButton
+                      aria-label="Copy logs"
+                      icon={<CopyIcon />}
+                      size="sm"
+                      className="clp"
+                      data-clipboard-target="#t_logs"
+                    />
                     <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
                       {isEscaped ? 'Unescape' : 'Escape'}
                     </Button>
