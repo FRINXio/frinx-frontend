@@ -151,7 +151,14 @@ const TaskModal = ({ task, show, handle }: Props) => {
                       {isEscaped ? 'Unescape' : 'Escape'}
                     </Button>
                   </Stack>
-                  <Textarea value={getUnescapedJSON(task)} isReadOnly={true} id="t_json" variant="filled" minH={300} />
+                  <Textarea
+                    fontFamily="monospace"
+                    value={getUnescapedJSON(task)}
+                    isReadOnly={true}
+                    id="t_json"
+                    variant="filled"
+                    minH={300}
+                  />
                 </Box>
               </TabPanel>
               <TabPanel>
@@ -171,7 +178,13 @@ const TaskModal = ({ task, show, handle }: Props) => {
                       {isEscaped ? 'Unescape' : 'Escape'}
                     </Button>
                   </Stack>
-                  <Textarea value={getUnescapedJSON(logs)} isReadOnly={true} id="t_logs" variant="filled" />
+                  <Textarea
+                    fontFamily="monospace"
+                    value={getUnescapedJSON(logs)}
+                    isReadOnly={true}
+                    id="t_logs"
+                    variant="filled"
+                  />
                 </Box>
               </TabPanel>
             </TabPanels>
