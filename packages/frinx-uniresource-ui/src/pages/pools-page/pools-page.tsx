@@ -1,8 +1,23 @@
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { useMutation, useQuery } from 'urql';
 import gql from 'graphql-tag';
-import { Box, Button, Flex, Heading, Spinner, Icon } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Icon,
+  IconButton,
+  useDisclosure,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Link,
+  Progress,
+} from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
+import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
@@ -63,13 +78,7 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick }) => {
     [deletePool],
   );
 
-  if (fetching) {
-    return <Spinner size="xl" />;
-  }
-
-  if (data == null) {
-    return null;
-  }
+  const { isOpen, onToggle } = useDisclosure();
 
   if (error != null) {
     return <div>{error.message}</div>;
@@ -82,12 +91,45 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick }) => {
           Pools
         </Heading>
         <Box marginLeft="auto">
-          <Button icon={<Icon size={20} as={FeatherIcon} icon="plus" />} colorScheme="blue" onClick={onNewPoolBtnClick}>
+          <Button
+            mr={2}
+            icon={<Icon size={20} as={FeatherIcon} icon="plus" />}
+            colorScheme="blue"
+            onClick={onNewPoolBtnClick}
+          >
             Create Pool
           </Button>
+          <Menu colorScheme="blue">
+            <MenuButton
+              rounded="lg"
+              fontSize="small"
+              // textColor="gray"
+              as={IconButton}
+              aria-label="Options"
+              icon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
+              onClick={onToggle}
+            />
+            <MenuList>
+              <MenuItem as={Link} href="/uniresource/pools/new/allocating/ipv4-prefix">
+                IPv4 prefix pool
+              </MenuItem>
+              <MenuItem as={Link} href="/uniresource/pools/new/allocating/vlan">
+                Vlan pool
+              </MenuItem>
+            </MenuList>
+          </Menu>
         </Box>
       </Flex>
-      <PoolsTable pools={data?.QueryResourcePools} onDeleteBtnClick={handleDeleteBtnClick} />
+      <Box position="relative">
+        <Box position="absolute" top={0} left={0} right={0}>
+          {fetching && <Progress isIndeterminate size="xs" />}
+        </Box>
+        <PoolsTable
+          pools={data?.QueryResourcePools || null}
+          isLoading={fetching}
+          onDeleteBtnClick={handleDeleteBtnClick}
+        />
+      </Box>
     </>
   );
 };

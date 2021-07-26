@@ -4,8 +4,9 @@ import FeatherIcon from 'feather-icons-react';
 import { PoolCapacityPayload, QueryAllPoolsQuery } from '../../__generated__/graphql';
 
 type Props = {
-  pools: QueryAllPoolsQuery['QueryResourcePools'];
+  pools: QueryAllPoolsQuery['QueryResourcePools'] | null;
   onDeleteBtnClick: (id: string) => void;
+  isLoading: boolean;
 };
 
 function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
@@ -25,7 +26,7 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   return (capacity.utilizedCapacity / totalCapacity) * 100;
 }
 
-const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick }) => {
+const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoading }) => {
   return (
     <>
       <Table background="white">
@@ -40,51 +41,57 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick }) => {
           </Tr>
         </Thead>
         <Tbody>
-          {pools.map((pool) => {
-            const { Capacity } = pool;
-            const capacityValue = getCapacityValue(Capacity);
-            const totalCapacity = getTotalCapacity(Capacity);
+          {!isLoading && !pools && (
+            <Tr textAlign="center">
+              <Td>There are no data</Td>
+            </Tr>
+          )}
+          {pools &&
+            pools.map((pool) => {
+              const { Capacity } = pool;
+              const capacityValue = getCapacityValue(Capacity);
+              const totalCapacity = getTotalCapacity(Capacity);
 
-            return (
-              <Tr key={pool.id}>
-                <Td>
-                  <Text as="span" fontWeight={600}>
-                    {pool.Name}
-                  </Text>
-                </Td>
-                <Td>{pool.PoolType}</Td>
-                <Td>
-                  {pool.Tags?.map((t) => (
-                    <Tag key={t.id} marginRight={1}>
-                      {t.Tag}
-                    </Tag>
-                  ))}
-                </Td>
-                <Td>
-                  <Text as="span" fontFamily="monospace" color="red">
-                    {pool.ResourceType?.Name}
-                  </Text>
-                </Td>
-                <Td isNumeric>
-                  <Progress size="xs" value={capacityValue} />
-                  <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
-                    {Capacity?.freeCapacity ?? 0} / {totalCapacity}
-                  </Text>
-                </Td>
-                <Td>
-                  <IconButton
-                    variant="outline"
-                    colorScheme="red"
-                    aria-label="delete"
-                    icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
-                    onClick={() => {
-                      onDeleteBtnClick(pool.id);
-                    }}
-                  />
-                </Td>
-              </Tr>
-            );
-          })}
+              return (
+                <Tr key={pool.id}>
+                  <Td>
+                    <Text as="span" fontWeight={600}>
+                      {pool.Name}
+                    </Text>
+                  </Td>
+                  <Td>{pool.PoolType}</Td>
+                  <Td>
+                    {pool.Tags?.map((t) => (
+                      <Tag key={t.id} marginRight={1}>
+                        {t.Tag}
+                      </Tag>
+                    ))}
+                  </Td>
+                  <Td>
+                    <Text as="span" fontFamily="monospace" color="red">
+                      {pool.ResourceType?.Name}
+                    </Text>
+                  </Td>
+                  <Td isNumeric>
+                    <Progress size="xs" value={capacityValue} />
+                    <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
+                      {Capacity?.freeCapacity ?? 0} / {totalCapacity}
+                    </Text>
+                  </Td>
+                  <Td>
+                    <IconButton
+                      variant="outline"
+                      colorScheme="red"
+                      aria-label="delete"
+                      icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
+                      onClick={() => {
+                        onDeleteBtnClick(pool.id);
+                      }}
+                    />
+                  </Td>
+                </Tr>
+              );
+            })}
         </Tbody>
       </Table>
     </>
