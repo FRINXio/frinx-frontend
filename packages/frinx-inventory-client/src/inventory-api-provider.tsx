@@ -1,13 +1,22 @@
-import React, { createContext, FC } from 'react';
-import callbackUtils, { Callbacks } from './callback-utils';
+import React, { createContext, FC, useRef } from 'react';
+import { Provider, createClient } from 'urql';
 
 export const InventoryAPIContext = createContext(false);
 
-const InventoryAPIProvider: FC = ({ children }) => {
-  return <InventoryAPIContext.Provider value>{children}</InventoryAPIContext.Provider>;
+export type Props = {
+  url: string;
 };
 
-export function getInventoryAPIProvider(callbacks: Callbacks): FC {
-  callbackUtils.setCallbacks(callbacks);
-  return InventoryAPIProvider;
-}
+export const InventoryAPIProvider: FC<Props> = ({ children, url }) => {
+  const { current: clientRef } = useRef(
+    createClient({
+      url,
+      // fetchOptions: {
+      //   headers: {
+      //     'x-tenant-id': 'frinx',
+      //   },
+      // },
+    }),
+  );
+  return <Provider value={clientRef}>{children}</Provider>;
+};

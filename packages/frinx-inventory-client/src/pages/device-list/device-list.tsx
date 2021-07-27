@@ -1,61 +1,116 @@
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { VoidFunctionComponent } from 'react';
+import { gql, useMutation, useQuery } from 'urql';
 import { Box, Button, Container, Flex, Heading, Progress, useToast } from '@chakra-ui/react';
 import DeviceTable from './device-table';
-import callbackUtils from '../../callback-utils';
-import { Device } from '../../helpers/types';
+import {
+  DevicesQuery,
+  DevicesQueryVariables,
+  InstallDeviceMutation,
+  InstallDeviceMutationVariables,
+  UninstallDeviceMutation,
+  UninstallDeviceMutationVariables,
+} from '../../__generated__/graphql';
+
+const DEVICES_QUERY = gql`
+  query Devices {
+    devices {
+      edges {
+        node {
+          id
+          name
+          model
+          vendor
+          address
+          status
+          zone {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+const INSTALL_DEVICE_MUTATION = gql`
+  mutation InstallDevice($id: String!) {
+    installDevice(id: $id) {
+      device {
+        id
+        status
+      }
+    }
+  }
+`;
+const UNINSTALL_DEVICE_MUTATION = gql`
+  mutation UninstallDevice($id: String!) {
+    uninstallDevice(id: $id) {
+      device {
+        id
+        status
+      }
+    }
+  }
+`;
 
 type Props = {
   onAddButtonClick: () => void;
 };
 
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick }) => {
-  const [devices, setDevices] = useState<Device[] | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
+  const [{ data, fetching, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({ query: DEVICES_QUERY });
+  const [{ fetching: isInstalLoading }, installDevice] = useMutation<
+    InstallDeviceMutation,
+    InstallDeviceMutationVariables
+  >(INSTALL_DEVICE_MUTATION);
+  const [{ fetching: isUninstallLoading }, uninstallDevice] = useMutation<
+    UninstallDeviceMutation,
+    UninstallDeviceMutationVariables
+  >(UNINSTALL_DEVICE_MUTATION);
 
-  const fetchAndSetData = () => {
-    const getDevices = callbackUtils.getDevicesCallback();
+  if (fetching) {
+    return (
+      <Box position="relative">
+        <Box position="absolute" top={0} right={0} left={0}>
+          <Progress size="xs" isIndeterminate />
+        </Box>
+      </Box>
+    );
+  }
 
-    getDevices().then((dvcs) => {
-      setDevices(dvcs);
-    });
-  };
-
-  useEffect(() => {
-    fetchAndSetData();
-  }, []);
+  if (error || data == null) {
+    return null;
+  }
 
   const handleInstallButtonClick = (deviceId: string) => {
-    const installDevice = callbackUtils.getInstallDeviceCallback();
-    setIsLoading(true);
-    installDevice(deviceId).then(() => {
-      setIsLoading(false);
+    installDevice({
+      id: deviceId,
+    }).then(() => {
       toast({
         position: 'top-right',
+        variant: 'subtle',
         status: 'success',
-        variant: 'green',
-        title: 'Device was installed succesfully',
+        title: 'Device succesfully installed',
       });
-      fetchAndSetData();
     });
   };
 
   const handleUninstallButtonClick = (deviceId: string) => {
-    const uninstallDevice = callbackUtils.getUninstallDeviceCallback();
-    setIsLoading(true);
-    uninstallDevice(deviceId).then(() => {
-      setIsLoading(false);
+    uninstallDevice({
+      id: deviceId,
+    }).then(() => {
       toast({
         position: 'top-right',
+        variant: 'subtle',
         status: 'success',
-        variant: 'green',
-        title: 'Device was uninstalled succesfully',
+        title: 'Device succesfully uninstalled',
       });
-      fetchAndSetData();
     });
   };
 
-  return devices != null ? (
+  const { devices } = data;
+
+  return (
     <Container maxWidth={1280}>
       <Flex justify="space-between" align="center" marginBottom={6}>
         <Heading as="h2" size="3xl">
@@ -66,20 +121,20 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick }) => {
         </Button>
       </Flex>
       <Box position="relative">
-        {isLoading && (
+        {false && (
           <Box position="absolute" top={0} right={0} left={0}>
             <Progress size="xs" isIndeterminate />
           </Box>
         )}
         <DeviceTable
-          devices={devices}
+          devices={devices.edges}
           onInstallButtonClick={handleInstallButtonClick}
           onUninstallButtonClick={handleUninstallButtonClick}
-          isLoading={isLoading}
+          isLoading={isInstalLoading || isUninstallLoading}
         />
       </Box>
     </Container>
-  ) : null;
+  );
 };
 
 export default DeviceList;
