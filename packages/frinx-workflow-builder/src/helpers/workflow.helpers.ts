@@ -84,19 +84,25 @@ class WorkflowHelper {
       const { node, tasks, parentTasks } = unwrap(stack.shift());
       const t = node.data?.task ?? null;
       const task = t ? this.stripId(t) : null;
+
       if (task?.type === 'DECISION') {
         tasks.push(task);
         task.decisionCases[Object.keys(task.decisionCases)[0]] = [];
         task.defaultCase = [];
+
         const dTasks = task.decisionCases[Object.keys(task.decisionCases)[0]];
         const [firstOutputNode] = this.getNextNodes(node, '0');
+
         stack.unshift({ node: firstOutputNode, tasks: dTasks, parentTasks: tasks });
+
         const [secondOutputNode] = this.getNextNodes(node, 'else');
         const defaultTasks = task.defaultCase;
+
         stack.unshift({ node: secondOutputNode, tasks: defaultTasks, parentTasks: tasks });
       } else if (node.id !== 'end') {
         if (!visitedNodes.has(node)) {
           const [nextNode] = this.getNextNodes(node, 'output');
+
           if (this.getNextNodes(node, 'input').length === 2) {
             parentTasks.push(this.stripId(unwrap(node.data?.task)));
             stack.unshift({ node: nextNode, tasks: parentTasks, parentTasks });
