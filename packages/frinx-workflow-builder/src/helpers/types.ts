@@ -142,8 +142,13 @@ export type ForkTask = BaseTask & {
   forkTasks: Task[][];
 };
 export type JoinTask = BaseTask & {
-  type: 'JOIN' | 'EXCLUSIVE_JOIN';
+  type: 'JOIN';
   joinOn: string[];
+};
+export type ExclusiveJoinTask = BaseTask & {
+  type: 'EXCLUSIVE_JOIN';
+  joinOn: string[];
+  defaultExclusiveJoinTask: string[];
 };
 export type WaitTask = BaseTask & {
   type: 'WAIT';
@@ -195,6 +200,7 @@ export type Task =
   | GraphQLTask
   | ForkTask
   | JoinTask
+  | ExclusiveJoinTask
   | SubworkflowTask
   | WaitTask
   | LambdaTask
@@ -214,6 +220,7 @@ export type TaskLabel =
   | 'event'
   | 'fork'
   | 'join'
+  | 'exclusive join'
   | 'lambda'
   | 'raw'
   | 'start'
@@ -234,6 +241,7 @@ export type ExtendedHTTPTask = HTTPTask & { id: string; label: TaskLabel };
 export type ExtendedGraphQLTask = GraphQLTask & { id: string; label: TaskLabel };
 export type ExtendedForkTask = ForkTask & { id: string; label: TaskLabel };
 export type ExtendedJoinTask = JoinTask & { id: string; label: TaskLabel };
+export type ExtendedExclusiveJoinTask = ExclusiveJoinTask & { id: string; label: TaskLabel };
 export type ExtendedSubworkflowTask = SubworkflowTask & { id: string; label: TaskLabel };
 export type ExtendedWaitTask = WaitTask & { id: string; label: TaskLabel };
 export type ExtendedLambdaTask = LambdaTask & { id: string; label: TaskLabel };
@@ -253,6 +261,7 @@ export type ExtendedTask =
   | ExtendedGraphQLTask
   | ExtendedForkTask
   | ExtendedJoinTask
+  | ExtendedExclusiveJoinTask
   | ExtendedSubworkflowTask
   | ExtendedWaitTask
   | ExtendedLambdaTask
