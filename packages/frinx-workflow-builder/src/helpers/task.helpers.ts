@@ -28,6 +28,7 @@ import {
   ExtendedTask,
   TaskDefinition,
   ExtendedSimpleTask,
+  ExtendedExclusiveJoinTask,
 } from './types';
 
 const DEFAULT_TASK_OPTIONS: Pick<Task, 'optional' | 'startDelay'> = {
@@ -144,6 +145,19 @@ function createJoinTask(label: TaskLabel): ExtendedJoinTask {
     type: 'JOIN',
     taskReferenceName: `join_${getRandomString(4)}`,
     joinOn: [],
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
+
+function createExclusiveJoinTask(label: TaskLabel): ExtendedExclusiveJoinTask {
+  return {
+    id: uuid(),
+    label,
+    name: 'exclusiveJoinTask',
+    type: 'EXCLUSIVE_JOIN',
+    taskReferenceName: `exclusiveJoin_${getRandomString(4)}`,
+    joinOn: [],
+    defaultExclusiveJoinTask: [],
     ...DEFAULT_TASK_OPTIONS,
   };
 }
@@ -303,6 +317,8 @@ export function createTask(taskLabel: TaskLabel): ExtendedTask {
       return createForkTask(taskLabel);
     case 'join':
       return createJoinTask(taskLabel);
+    case 'exclusive join':
+      return createExclusiveJoinTask(taskLabel);
     case 'while':
       return createWhileTask(taskLabel);
     case 'while end':
@@ -348,6 +364,7 @@ export function createSystemTasks(): TaskLabel[] {
     'while',
     'fork',
     'join',
+    'exclusive join',
     'raw',
     'terminate',
     'wait',
@@ -369,8 +386,9 @@ export function getTaskLabel(t: Task): TaskLabel {
     case 'FORK_JOIN_DYNAMIC':
       return 'fork';
     case 'JOIN':
-    case 'EXCLUSIVE_JOIN':
       return 'join';
+    case 'EXCLUSIVE_JOIN':
+      return 'exclusive join';
     case 'LAMBDA':
       return 'lambda';
     case 'RAW':
