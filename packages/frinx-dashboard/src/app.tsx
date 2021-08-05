@@ -124,6 +124,9 @@ const App: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
                 <UniresourceApp />
               </Route>
             )}
+            <Route path="/inventory">
+              <InventoryApp />
+            </Route>
           </Switch>
         </Box>
       </BrowserRouter>
