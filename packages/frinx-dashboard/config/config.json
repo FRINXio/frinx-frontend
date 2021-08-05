@@ -10,5 +10,6 @@
   "uniflow_enabled": true,
   "usermanagement_enabled": false,
   "url_basename": "/",
-  "inventory_api_url": "http://localhost:4000/graphql"
+  "inventory_api_url": "http://localhost:4000/graphql",
+  "uniresource_api_url": "http://localhost:4000/graphql"
 }

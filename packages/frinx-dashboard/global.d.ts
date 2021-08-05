@@ -21,6 +21,7 @@ declare interface Window {
     usermanagement_enabled: boolean;
     url_basename: string;
     inventory_api_url: string;
+    uniresource_api_url: string;
   }>;
 
   dashboardApp: DashboardApp;
