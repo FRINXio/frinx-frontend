@@ -48,7 +48,7 @@ const UniresourceApp: FC = () => {
   } = components;
 
   return (
-    <UniresourceAppProvider>
+    <UniresourceAppProvider url={window.__CONFIG__.uniresource_api_url}>
       <Switch>
         <Route exact path="/uniresource">
           <Redirect to="/uniresource/pools" />

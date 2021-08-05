@@ -1,14 +1,19 @@
 import { createClient, Provider } from 'urql';
-import React, { FC } from 'react';
+import React, { FC, useRef } from 'react';
 import PageContainer from './components/page-container';
 
-const client = createClient({
-  url: 'http://localhost:4000/api/uniresource/query',
-});
+type Props = {
+  url: string;
+};
 
-const Root: FC = ({ children }) => {
+const Root: FC<Props> = ({ children, url }) => {
+  const { current: urqlClient } = useRef(
+    createClient({
+      url,
+    }),
+  );
   return (
-    <Provider value={client}>
+    <Provider value={urqlClient}>
       <PageContainer>{children}</PageContainer>
     </Provider>
   );
