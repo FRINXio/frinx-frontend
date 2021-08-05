@@ -18,6 +18,7 @@ import { NodeData, ExtendedTask, Workflow, CustomNodeType, TaskDefinition } from
 import { useTaskActions } from './task-actions-context';
 import ExpandedWorkflowModal from './components/expanded-workflow-modal/expanded-workflow-modal';
 import callbackUtils from './callback-utils';
+import { useWorkflowTasks } from './helpers/task.helpers';
 
 type Props = {
   onClose: () => void;
@@ -84,7 +85,10 @@ const App: FC<Props> = ({
   );
   const { selectedTask, selectTask } = useTaskActions(handleDeleteButtonClick);
 
-  const { name } = workflow;
+  const { name, tasks } = workflow;
+  const { updateList } = useWorkflowTasks();
+
+  updateList(tasks);
 
   const handleAddButtonClick = (t: ExtendedTask) => {
     addNode(schemaCtrlRef.current.createTaskNode(t));

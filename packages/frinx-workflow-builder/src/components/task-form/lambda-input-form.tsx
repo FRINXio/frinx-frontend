@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { FormControl, FormLabel, Input, useTheme } from '@chakra-ui/react';
 import { LambdaInputParams } from '../../helpers/types';
 import Editor from '../common/editor';
+import { useWorkflowTasks } from '../../helpers/task.helpers';
 
 type Props = {
   params: LambdaInputParams;
@@ -11,6 +12,9 @@ type Props = {
 const LambdaInputsForm: FC<Props> = ({ params, onChange }) => {
   const { lambdaValue, scriptExpression } = params;
   const theme = useTheme();
+  const { tasks } = useWorkflowTasks();
+
+  console.log(tasks);
 
   return (
     <>

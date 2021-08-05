@@ -1,4 +1,5 @@
 /* eslint-disable no-template-curly-in-string */
+import { useCallback } from 'react';
 import { v4 as uuid } from 'uuid';
 import {
   Task,
@@ -469,5 +470,21 @@ export function convertTaskDefinition(taskDefinition: TaskDefinition): ExtendedS
     optional: false,
     startDelay: 0,
     inputParameters: createGenericInputParams(inputKeys),
+  };
+}
+
+let hookTasks: ExtendedTask[] = [];
+
+export function useWorkflowTasks(): {
+  tasks: ExtendedTask[];
+  updateList(list: ExtendedTask[]): void;
+} {
+  const updateTasksList = useCallback((updatedList: ExtendedTask[]) => {
+    hookTasks = updatedList;
+  }, []);
+
+  return {
+    tasks: hookTasks,
+    updateList: updateTasksList,
   };
 }
