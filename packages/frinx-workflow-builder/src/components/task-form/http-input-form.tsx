@@ -25,25 +25,31 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
   const [uriVal, setUriVal] = useState(uri);
   const { tasks } = useWorkflowTasks();
 
+  const handleOnChange = (updatedRefName: string) => {
+    setUriVal(updatedRefName);
+
+    onChange({
+      ...params,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      http_request: {
+        ...params.http_request,
+        uri: updatedRefName,
+      },
+    });
+  };
+
   return (
     <>
       <FormControl id="uri" my={6}>
         <FormLabel>URI</FormLabel>
-        <AutocompleteTaskReferenceName tasks={tasks} propChildren="input.uri" onChange={setUriVal}>
+        <AutocompleteTaskReferenceName tasks={tasks} inputValue={uriVal} onChange={handleOnChange}>
           <Input
             variant="filled"
             name="uri"
             value={uriVal}
             onChange={(event) => {
               event.persist();
-              onChange({
-                ...params,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                http_request: {
-                  ...params.http_request,
-                  uri: event.target.value,
-                },
-              });
+              handleOnChange(event.target.value);
             }}
           />
         </AutocompleteTaskReferenceName>

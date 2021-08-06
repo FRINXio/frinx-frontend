@@ -16,21 +16,27 @@ const LambdaInputsForm: FC<Props> = ({ params, onChange }) => {
   const { tasks } = useWorkflowTasks();
   const [lambdaVal, setLambdaValue] = useState(lambdaValue);
 
+  const handleOnChange = (updatedRefName: string) => {
+    setLambdaValue(updatedRefName);
+
+    onChange({
+      ...params,
+      lambdaValue: updatedRefName,
+    });
+  };
+
   return (
     <>
       <FormControl id="lambdaValue" my={6}>
         <FormLabel>Lambda value</FormLabel>
-        <AutocompleteTaskReferenceName tasks={tasks} onChange={setLambdaValue} propChildren="input.lambdaValue">
+        <AutocompleteTaskReferenceName tasks={tasks} onChange={handleOnChange} inputValue={lambdaVal}>
           <Input
             name="lambdaValue"
             variant="filled"
             value={lambdaVal}
             onChange={(event) => {
               event.persist();
-              onChange({
-                ...params,
-                lambdaValue: event.target.value,
-              });
+              handleOnChange(event.target.value);
             }}
           />
         </AutocompleteTaskReferenceName>

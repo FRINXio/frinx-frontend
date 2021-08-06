@@ -1,6 +1,8 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { FormControl, FormLabel, Input } from '@chakra-ui/react';
 import { EventInputParams } from '../../helpers/types';
+import AutocompleteTaskReferenceName from '../autocomplete-task-reference-name/autocomplete-task-reference-name';
+import { useWorkflowTasks } from '../../helpers/task.helpers';
 
 type Props = {
   params: EventInputParams;
@@ -9,6 +11,17 @@ type Props = {
 
 const EventInputForm: FC<Props> = ({ params, onChange }) => {
   const { action, targetTaskRefName, targetWorkflowId } = params;
+
+  const { tasks } = useWorkflowTasks();
+  const [targetTaskRefNameVal, setTargetTaskRefName] = useState(targetTaskRefName);
+  const [targetWorkflowIdVal, setTargetWorkflowId] = useState(targetWorkflowId);
+
+  const handleOnChange = (updatedRefName: string, key: string) => {
+    // eslint-disable-next-line no-unused-expressions
+    key === 'targetTaskRefName' ? setTargetTaskRefName(updatedRefName) : setTargetWorkflowId(updatedRefName);
+
+    onChange({ ...params, [key]: updatedRefName });
+  };
 
   return (
     <>
@@ -29,33 +42,39 @@ const EventInputForm: FC<Props> = ({ params, onChange }) => {
       </FormControl>
       <FormControl id="targetTaskRefName" my={6}>
         <FormLabel>Target taskRefName</FormLabel>
-        <Input
-          name="targetTaskRefName"
-          variant="filled"
-          value={targetTaskRefName}
-          onChange={(event) => {
-            event.persist();
-            onChange({
-              ...params,
-              targetTaskRefName: event.target.value,
-            });
-          }}
-        />
+        <AutocompleteTaskReferenceName
+          tasks={tasks}
+          onChange={(updatedRefName) => handleOnChange(updatedRefName, 'targetTaskRefName')}
+          inputValue={targetTaskRefNameVal}
+        >
+          <Input
+            name="targetTaskRefName"
+            variant="filled"
+            value={targetTaskRefNameVal}
+            onChange={(event) => {
+              event.persist();
+              handleOnChange(event.target.value, 'targetTaskRefName');
+            }}
+          />
+        </AutocompleteTaskReferenceName>
       </FormControl>
       <FormControl id="targetWorkflowId" my={6}>
         <FormLabel>Target workflow ID</FormLabel>
-        <Input
-          name="targetWorkflowId"
-          variant="filled"
-          value={targetWorkflowId}
-          onChange={(event) => {
-            event.persist();
-            onChange({
-              ...params,
-              targetWorkflowId: event.target.value,
-            });
-          }}
-        />
+        <AutocompleteTaskReferenceName
+          tasks={tasks}
+          onChange={(updatedRefName) => handleOnChange(updatedRefName, 'targetWorkflowId')}
+          inputValue={targetWorkflowIdVal}
+        >
+          <Input
+            name="targetWorkflowId"
+            variant="filled"
+            value={targetWorkflowIdVal}
+            onChange={(event) => {
+              event.persist();
+              handleOnChange(event.target.value, 'targetWorkflowId');
+            }}
+          />
+        </AutocompleteTaskReferenceName>
       </FormControl>
     </>
   );

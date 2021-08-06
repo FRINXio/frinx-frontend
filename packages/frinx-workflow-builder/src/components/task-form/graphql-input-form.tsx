@@ -18,25 +18,31 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
   const [uriVal, setUriVal] = useState(uri);
   const { tasks } = useWorkflowTasks();
 
+  const handleOnChange = (updatedInputValue: string): void => {
+    setUriVal(updatedInputValue);
+
+    onChange({
+      ...params,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      http_request: {
+        ...params.http_request,
+        uri: updatedInputValue,
+      },
+    });
+  };
+
   return (
     <>
       <FormControl id="uri" my={6}>
         <FormLabel>URI</FormLabel>
-        <AutocompleteTaskReferenceName tasks={tasks} onChange={setUriVal} propChildren="input.uri">
+        <AutocompleteTaskReferenceName tasks={tasks} onChange={handleOnChange} inputValue={uriVal}>
           <Input
             variant="filled"
             name="uri"
             value={uriVal}
             onChange={(event) => {
               event.persist();
-              onChange({
-                ...params,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                http_request: {
-                  ...params.http_request,
-                  uri: event.target.value,
-                },
-              });
+              handleOnChange(event.target.value);
             }}
           />
         </AutocompleteTaskReferenceName>
