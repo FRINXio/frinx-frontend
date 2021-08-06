@@ -14,8 +14,6 @@ const LambdaInputsForm: FC<Props> = ({ params, onChange }) => {
   const theme = useTheme();
   const { tasks } = useWorkflowTasks();
 
-  console.log(tasks);
-
   return (
     <>
       <FormControl id="lambdaValue" my={6}>

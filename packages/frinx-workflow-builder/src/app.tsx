@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import 'beautiful-react-diagrams/dist/styles.css';
 import Diagram, { useSchema, Canvas, useCanvasState, CanvasControls } from 'beautiful-react-diagrams';
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
@@ -86,12 +86,15 @@ const App: FC<Props> = ({
   const { selectedTask, selectTask } = useTaskActions(handleDeleteButtonClick);
 
   const { name, tasks } = workflow;
-  const { updateList } = useWorkflowTasks();
+  const { updateTaskList, setTaskList } = useWorkflowTasks();
 
-  updateList(tasks);
+  useEffect(() => {
+    setTaskList(tasks);
+  }, [tasks, setTaskList]);
 
   const handleAddButtonClick = (t: ExtendedTask) => {
     addNode(schemaCtrlRef.current.createTaskNode(t));
+    updateTaskList(t);
   };
 
   const handleFormSubmit = (t: ExtendedTask) => {

@@ -477,14 +477,20 @@ let hookTasks: ExtendedTask[] = [];
 
 export function useWorkflowTasks(): {
   tasks: ExtendedTask[];
-  updateList(list: ExtendedTask[]): void;
+  updateTaskList(tasks: ExtendedTask | ExtendedTask[]): void;
+  setTaskList(tasks: ExtendedTask[]): void;
 } {
-  const updateTasksList = useCallback((updatedList: ExtendedTask[]) => {
-    hookTasks = updatedList;
+  const setTasksList = useCallback((tasks: ExtendedTask[]) => {
+    hookTasks = tasks;
+  }, []);
+
+  const updateTaskList = useCallback((tasks: ExtendedTask | ExtendedTask[]) => {
+    hookTasks = hookTasks.concat(tasks);
   }, []);
 
   return {
     tasks: hookTasks,
-    updateList: updateTasksList,
+    setTaskList: setTasksList,
+    updateTaskList,
   };
 }
