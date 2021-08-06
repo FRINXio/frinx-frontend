@@ -16,12 +16,12 @@ const LambdaInputsForm: FC<Props> = ({ params, onChange }) => {
   const { tasks } = useWorkflowTasks();
   const [lambdaVal, setLambdaValue] = useState(lambdaValue);
 
-  const handleOnChange = (updatedRefName: string) => {
-    setLambdaValue(updatedRefName);
+  const handleOnChange = (updatedInputValue: string) => {
+    setLambdaValue(updatedInputValue);
 
     onChange({
       ...params,
-      lambdaValue: updatedRefName,
+      lambdaValue: updatedInputValue,
     });
   };
 

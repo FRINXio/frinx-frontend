@@ -16,11 +16,11 @@ const EventInputForm: FC<Props> = ({ params, onChange }) => {
   const [targetTaskRefNameVal, setTargetTaskRefName] = useState(targetTaskRefName);
   const [targetWorkflowIdVal, setTargetWorkflowId] = useState(targetWorkflowId);
 
-  const handleOnChange = (updatedRefName: string, key: string) => {
+  const handleOnChange = (updatedInputValue: string, key: string) => {
     // eslint-disable-next-line no-unused-expressions
-    key === 'targetTaskRefName' ? setTargetTaskRefName(updatedRefName) : setTargetWorkflowId(updatedRefName);
+    key === 'targetTaskRefName' ? setTargetTaskRefName(updatedInputValue) : setTargetWorkflowId(updatedInputValue);
 
-    onChange({ ...params, [key]: updatedRefName });
+    onChange({ ...params, [key]: updatedInputValue });
   };
 
   return (
@@ -44,7 +44,7 @@ const EventInputForm: FC<Props> = ({ params, onChange }) => {
         <FormLabel>Target taskRefName</FormLabel>
         <AutocompleteTaskReferenceName
           tasks={tasks}
-          onChange={(updatedRefName) => handleOnChange(updatedRefName, 'targetTaskRefName')}
+          onChange={(updatedInputValue) => handleOnChange(updatedInputValue, 'targetTaskRefName')}
           inputValue={targetTaskRefNameVal}
         >
           <Input
@@ -62,7 +62,7 @@ const EventInputForm: FC<Props> = ({ params, onChange }) => {
         <FormLabel>Target workflow ID</FormLabel>
         <AutocompleteTaskReferenceName
           tasks={tasks}
-          onChange={(updatedRefName) => handleOnChange(updatedRefName, 'targetWorkflowId')}
+          onChange={(updatedInputValue) => handleOnChange(updatedInputValue, 'targetWorkflowId')}
           inputValue={targetWorkflowIdVal}
         >
           <Input

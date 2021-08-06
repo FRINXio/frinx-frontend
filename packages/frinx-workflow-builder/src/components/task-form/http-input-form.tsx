@@ -25,15 +25,15 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
   const [uriVal, setUriVal] = useState(uri);
   const { tasks } = useWorkflowTasks();
 
-  const handleOnChange = (updatedRefName: string) => {
-    setUriVal(updatedRefName);
+  const handleOnChange = (updatedInputValue: string) => {
+    setUriVal(updatedInputValue);
 
     onChange({
       ...params,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       http_request: {
         ...params.http_request,
-        uri: updatedRefName,
+        uri: updatedInputValue,
       },
     });
   };
