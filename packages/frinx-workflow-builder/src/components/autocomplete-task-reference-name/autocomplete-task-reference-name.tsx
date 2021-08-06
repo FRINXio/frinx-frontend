@@ -4,11 +4,16 @@ import { ExtendedTask } from '../../helpers/types';
 
 type Props = {
   tasks: ExtendedTask | ExtendedTask[];
-  autocompleteTaskRefName: (taskRefName: string) => void;
+  onChange: (updatedInputValue: string) => void;
+  propChildren: string;
 };
 
-const AutocompleteTaskReferenceName: FC<Props> = ({ tasks, autocompleteTaskRefName, children }) => {
+const AutocompleteTaskReferenceName: FC<Props> = ({ tasks, children, onChange, propChildren }) => {
   const tasksList: ExtendedTask[] = Array.isArray(tasks) ? tasks : [tasks];
+
+  const autocompleteTaskRefName = (taskRefName: string): void => {
+    onChange('${'.concat(`${taskRefName}.${propChildren}`));
+  };
 
   return (
     <InputGroup>

@@ -16,15 +16,11 @@ const LambdaInputsForm: FC<Props> = ({ params, onChange }) => {
   const { tasks } = useWorkflowTasks();
   const [lambdaVal, setLambdaValue] = useState(lambdaValue);
 
-  const autocompleteTaskRefName = (taskReferenceName: string): void => {
-    setLambdaValue('${'.concat(`${taskReferenceName}.input.lambdaValue}`));
-  };
-
   return (
     <>
       <FormControl id="lambdaValue" my={6}>
         <FormLabel>Lambda value</FormLabel>
-        <AutocompleteTaskReferenceName tasks={tasks} autocompleteTaskRefName={autocompleteTaskRefName}>
+        <AutocompleteTaskReferenceName tasks={tasks} onChange={setLambdaValue} propChildren="input.lambdaValue">
           <Input
             name="lambdaValue"
             variant="filled"

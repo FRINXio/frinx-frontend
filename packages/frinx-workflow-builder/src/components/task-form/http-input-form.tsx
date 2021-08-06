@@ -1,7 +1,9 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { Box, FormControl, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
 import { HTTPInputParams, HTTPMethod } from '../../helpers/types';
 import Editor from '../common/editor';
+import AutocompleteTaskReferenceName from '../autocomplete-task-reference-name/autocomplete-task-reference-name';
+import { useWorkflowTasks } from '../../helpers/task.helpers';
 
 type Props = {
   params: HTTPInputParams;
@@ -20,26 +22,31 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
   const body = getBodyFromRequest(params);
   const theme = useTheme();
 
+  const [uriVal, setUriVal] = useState(uri);
+  const { tasks } = useWorkflowTasks();
+
   return (
     <>
       <FormControl id="uri" my={6}>
         <FormLabel>URI</FormLabel>
-        <Input
-          variant="filled"
-          name="uri"
-          value={uri}
-          onChange={(event) => {
-            event.persist();
-            onChange({
-              ...params,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              http_request: {
-                ...params.http_request,
-                uri: event.target.value,
-              },
-            });
-          }}
-        />
+        <AutocompleteTaskReferenceName tasks={tasks} propChildren="input.uri" onChange={setUriVal}>
+          <Input
+            variant="filled"
+            name="uri"
+            value={uriVal}
+            onChange={(event) => {
+              event.persist();
+              onChange({
+                ...params,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                http_request: {
+                  ...params.http_request,
+                  uri: event.target.value,
+                },
+              });
+            }}
+          />
+        </AutocompleteTaskReferenceName>
       </FormControl>
       <FormControl id="method" my={6}>
         <FormLabel>Method</FormLabel>
