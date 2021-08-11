@@ -3,7 +3,7 @@ import { Box, Code, Container, Heading, HStack } from '@chakra-ui/react';
 import Panel from '../panel/panel';
 import { ServiceKey } from '../../types';
 import UniflowActions from './uniflow-actions';
-import UniconfigActions from './uniconfig-actions';
+import InventoryActions from './inventory-actions';
 
 type Props = {
   enabledServices: Map<ServiceKey, boolean>;
@@ -21,12 +21,12 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
             <UniflowActions />
           </Box>
         )}
-        {enabledServices.get('uniconfig_enabled') && (
+        {enabledServices.get('inventory_enabled') && (
           <Box>
             <Heading as="h2" size="md" marginBottom={4}>
-              UniConfig
+              Device Inventory
             </Heading>
-            <UniconfigActions />
+            <InventoryActions />
           </Box>
         )}
         <Box marginTop={20}>
@@ -44,12 +44,12 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
                 path="/uniflow"
               />
             )}
-            {enabledServices.get('uniconfig_enabled') && (
+            {enabledServices.get('inventory_enabled') && (
               <Panel
-                label="UniConfig"
+                label="Device Inventory"
                 description="Manage network device configurations."
                 icon="server"
-                path="/uniconfig"
+                path="/inventory"
               />
             )}
             {enabledServices.get('uniresource_enabled') && (
