@@ -18,6 +18,7 @@ declare interface Window {
     uniresource_enabled: boolean;
     uniconfig_enabled: boolean;
     uniflow_enabled: boolean;
+    inventory_enabled: boolean;
     usermanagement_enabled: boolean;
     url_basename: string;
     inventory_api_url: string;
