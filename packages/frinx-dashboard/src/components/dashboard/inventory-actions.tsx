@@ -13,11 +13,11 @@ const InventoryActions: FC = () => {
         </Box>
         <Box flex={1} paddingY={2}>
           <Heading as="h4" size="sm" marginBottom={2}>
-            Mount device
+            Add new device
           </Heading>
-          <Text marginBottom={2}>Connect network device to UniConfig.</Text>
+          <Text marginBottom={2}>Connect network device to Device Inventory.</Text>
           <Button colorScheme="brand" size="sm" to="/inventory/new" as={Link}>
-            Mount
+            Add device
           </Button>
         </Box>
       </Flex>
@@ -27,7 +27,7 @@ const InventoryActions: FC = () => {
         </Box>
         <Box flex={1} paddingY={2}>
           <Heading as="h4" size="sm" marginBottom={2}>
-            Browse devices
+            Explore & configure devices
           </Heading>
           <Text marginBottom={2}>Browse and manage network devices.</Text>
           <Button colorScheme="brand" size="sm" to="/inventory" as={Link}>
