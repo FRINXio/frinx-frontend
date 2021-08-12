@@ -1,6 +1,7 @@
-import { InputGroup, InputLeftAddon, Menu, MenuButton, MenuList, MenuItem, Text } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
+import { Text, ListItem, Box } from '@chakra-ui/react';
 import { ExtendedTask } from '../../helpers/types';
+import './autocomplete-task-reference-name.css';
 
 type Props = {
   tasks: ExtendedTask | ExtendedTask[];
@@ -10,6 +11,7 @@ type Props = {
 
 const AutocompleteTaskReferenceName: FC<Props> = ({ tasks, children, onChange, inputValue }) => {
   const tasksList: ExtendedTask[] = Array.isArray(tasks) ? tasks : [tasks];
+  const [isInputActive, setIsInputActive] = useState(false);
 
   const autocompleteTaskRefName = (taskRefName: string): void => {
     const inputValArr = inputValue.split('');
@@ -25,23 +27,30 @@ const AutocompleteTaskReferenceName: FC<Props> = ({ tasks, children, onChange, i
   };
 
   return (
-    <InputGroup>
-      <InputLeftAddon>
-        <Menu>
-          <MenuButton as={Text} cursor="pointer">
-            Hints
-          </MenuButton>
-          <MenuList>
-            {tasksList.map((task) => (
-              <MenuItem key={task.id} onClick={() => autocompleteTaskRefName(task.taskReferenceName)}>
-                {task.taskReferenceName}
-              </MenuItem>
-            ))}
-          </MenuList>
-        </Menu>
-      </InputLeftAddon>
+    <Box
+      className="autocomplete"
+      onClick={() => setIsInputActive(true)}
+      onBlur={() => {
+        setTimeout(() => setIsInputActive(false), 150);
+      }}
+    >
       {children}
-    </InputGroup>
+      {isInputActive && (
+        <ul className="autocomplete-items">
+          {tasksList.map((task) => (
+            <ListItem
+              key={task.id}
+              onClick={() => {
+                autocompleteTaskRefName(task.taskReferenceName);
+              }}
+              onBlur={() => setIsInputActive(false)}
+            >
+              <Text>{task.taskReferenceName}</Text>
+            </ListItem>
+          ))}
+        </ul>
+      )}
+    </Box>
   );
 };
 
