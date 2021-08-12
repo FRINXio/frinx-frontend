@@ -1,5 +1,5 @@
-import React, { FC, useState } from 'react';
-import { Text, ListItem, Box } from '@chakra-ui/react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
+import { Text, ListItem, Box, List } from '@chakra-ui/react';
 import { ExtendedTask } from '../../helpers/types';
 import './autocomplete-task-reference-name.css';
 
@@ -10,21 +10,24 @@ type Props = {
 };
 
 const AutocompleteTaskReferenceName: FC<Props> = ({ tasks, children, onChange, inputValue }) => {
-  const tasksList: ExtendedTask[] = Array.isArray(tasks) ? tasks : [tasks];
+  const tasksList: ExtendedTask[] = useMemo(() => {
+    return Array.isArray(tasks) ? tasks : [tasks];
+  }, [tasks]) as ExtendedTask[];
+  const [filteredTasks, setFilteredTasks] = useState(tasksList);
   const [isInputActive, setIsInputActive] = useState(false);
 
   const autocompleteTaskRefName = (taskRefName: string): void => {
-    const inputValArr = inputValue.split('');
-    const firstLetterOfRefName = inputValue.split('').findIndex((letter) => letter === '{') + 1;
-    const lastLetterOfRefName = inputValue.split('').findIndex((letter) => letter === '.');
-
-    const firtsPartOfInputValue = inputValArr.slice(0, firstLetterOfRefName);
-    const lastPartOfInputValue = inputValArr.slice(lastLetterOfRefName);
-
-    const result = [...firtsPartOfInputValue, ...taskRefName, ...lastPartOfInputValue];
-
-    onChange(result.join(''));
+    onChange('${'.concat(taskRefName));
   };
+
+  useEffect(() => {
+    setFilteredTasks(() => {
+      return tasksList.filter((task) => {
+        const inputVal = inputValue.replace('${', '');
+        return task.taskReferenceName.toLowerCase().includes(inputVal.toLowerCase());
+      });
+    });
+  }, [inputValue, tasksList]);
 
   return (
     <Box
@@ -36,8 +39,8 @@ const AutocompleteTaskReferenceName: FC<Props> = ({ tasks, children, onChange, i
     >
       {children}
       {isInputActive && (
-        <ul className="autocomplete-items">
-          {tasksList.map((task) => (
+        <List className="autocomplete-items">
+          {filteredTasks.map((task) => (
             <ListItem
               key={task.id}
               onClick={() => {
@@ -48,7 +51,7 @@ const AutocompleteTaskReferenceName: FC<Props> = ({ tasks, children, onChange, i
               <Text>{task.taskReferenceName}</Text>
             </ListItem>
           ))}
-        </ul>
+        </List>
       )}
     </Box>
   );
