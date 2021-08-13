@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
-import { Box, Code, Container, Heading, HStack } from '@chakra-ui/react';
+import { Box, Code, Container, Heading, HStack, List, ListItem } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 import Panel from '../panel/panel';
 import { ServiceKey } from '../../types';
 import UniflowActions from './uniflow-actions';
@@ -61,6 +62,25 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
               />
             )}
           </HStack>
+        </Box>
+        <Box marginTop={20}>
+          <Box as="header" marginBottom={4}>
+            <Heading as="h2" size="md">
+              Docs
+            </Heading>
+          </Box>
+          <List mb={10}>
+            {/* <ListItem>
+              <p>
+                <Link to="/api/uniconfig">UniConfig</Link>
+              </p>
+            </ListItem> */}
+            <ListItem>
+              <p>
+                <Link to="/api/inventory">Device inventory</Link>
+              </p>
+            </ListItem>
+          </List>
         </Box>
       </Container>
       <Box bg="gray.200" bottom={0} position="fixed" paddingX={4} fontSize="sm">
