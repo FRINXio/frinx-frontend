@@ -25,7 +25,7 @@ const DeviceConfig: FC = () => {
     return <Progress size="xs" isIndeterminate mt={-10} />;
   }
 
-  if (error || !data || !data.dataStore.config || !data.dataStore.operational) {
+  if (error || data == null) {
     return null;
   }
 

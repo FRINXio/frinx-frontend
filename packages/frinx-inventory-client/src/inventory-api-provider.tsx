@@ -11,11 +11,11 @@ export const InventoryAPIProvider: FC<Props> = ({ children, url }) => {
   const { current: clientRef } = useRef(
     createClient({
       url,
-      fetchOptions: {
-        headers: {
-          'x-tenant-id': 'frinx',
-        },
-      },
+      // fetchOptions: {
+      //   headers: {
+      //     'x-tenant-id': 'frinx',
+      //   },
+      // },
     }),
   );
   return <Provider value={clientRef}>{children}</Provider>;
