@@ -25,6 +25,7 @@
     "formik": "^2.2.9",
     "graphql": "^15.5.0",
     "react-ace": "^9.2.1",
+    "react-router-dom": "^5.2.0",
     "urql": "^2.0.4",
     "yup": "^0.32.9"
   },
