@@ -2,7 +2,6 @@ import { Container, Grid, GridItem, Text, Progress } from '@chakra-ui/react';
 import AceEditor from 'react-ace';
 import React, { FC } from 'react';
 import { useQuery, gql } from 'urql';
-import { useParams } from 'react-router-dom';
 import { DataStore } from '../../__generated__/graphql';
 
 const QUERY_DATA_STORE = gql`
@@ -14,8 +13,11 @@ const QUERY_DATA_STORE = gql`
   }
 `;
 
-const DeviceConfig: FC = () => {
-  const { deviceId } = useParams<{ deviceId: string }>();
+type Props = {
+  deviceId: string;
+};
+
+const DeviceConfig: FC<Props> = ({ deviceId }) => {
   const [{ data, fetching, error }] = useQuery<DataStore>({
     query: QUERY_DATA_STORE,
     variables: { deviceId },

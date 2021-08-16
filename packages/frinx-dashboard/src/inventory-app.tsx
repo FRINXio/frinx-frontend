@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import { Route, RouteComponentProps, Switch, useHistory } from 'react-router-dom';
 
 type InventoryComponents = typeof import('@frinx/inventory-client/src');
 const InventoryApp: FC = () => {
@@ -32,6 +32,9 @@ const InventoryApp: FC = () => {
             onAddButtonClick={() => {
               history.push('/inventory/new');
             }}
+            onSettingsButtonClick={(deviceId) => {
+              history.push(`/inventory/config/${deviceId}`);
+            }}
           />
         </Route>
         <Route exact path="/inventory/new">
@@ -41,9 +44,15 @@ const InventoryApp: FC = () => {
             }}
           />
         </Route>
-        <Route exact path="/inventory/config/:deviceId">
-          <DeviceConfig />
-        </Route>
+        <Route
+          exact
+          path="/inventory/config/:deviceId"
+          render={(props: RouteComponentProps<{ deviceId: string }>) => {
+            const { match } = props;
+            const { params } = match;
+            return <DeviceConfig deviceId={params.deviceId} />;
+          }}
+        />
       </Switch>
     </InventoryAPIProvider>
   );
