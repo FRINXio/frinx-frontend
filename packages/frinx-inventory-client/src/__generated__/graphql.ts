@@ -34,6 +34,12 @@ export type AddZonePayload = {
   zone: Zone;
 };
 
+export type DataStore = {
+  __typename?: 'DataStore';
+  config: Maybe<Scalars['String']>;
+  operational: Maybe<Scalars['String']>;
+};
+
 export type DeleteDevicePayload = {
   __typename?: 'DeleteDevicePayload';
   device: Maybe<Device>;
@@ -129,6 +135,7 @@ export type Query = {
   node: Maybe<Node>;
   devices: DevicesConnection;
   zones: ZonesConnection;
+  dataStore: Maybe<DataStore>;
 };
 
 
@@ -150,6 +157,11 @@ export type QueryZonesArgs = {
   after?: Maybe<Scalars['String']>;
   last?: Maybe<Scalars['Int']>;
   before?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryDataStoreArgs = {
+  deviceId: Scalars['String'];
 };
 
 export type UninstallDevicePayload = {
@@ -222,6 +234,19 @@ export type ZonesQuery = (
       ) }
     )> }
   ) }
+);
+
+export type QueryDataStoreQueryVariables = Exact<{
+  deviceId: Scalars['String'];
+}>;
+
+
+export type QueryDataStoreQuery = (
+  { __typename?: 'Query' }
+  & { dataStore: Maybe<(
+    { __typename?: 'DataStore' }
+    & Pick<DataStore, 'config' | 'operational'>
+  )> }
 );
 
 export type DevicesQueryVariables = Exact<{ [key: string]: never; }>;
