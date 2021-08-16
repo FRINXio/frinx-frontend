@@ -1,13 +1,13 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Badge, Button, HStack, Icon, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 import { AddIcon, MinusIcon, SettingsIcon } from '@chakra-ui/icons';
-import { Link } from 'react-router-dom';
 import { DevicesQuery } from '../../__generated__/graphql';
 
 type Props = {
   devices: DevicesQuery['devices']['edges'];
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
+  onSettingsButtonClick: (deviceId: string) => void;
   isLoading: boolean;
 };
 
@@ -15,6 +15,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   devices,
   onInstallButtonClick,
   onUninstallButtonClick,
+  onSettingsButtonClick,
   isLoading,
 }) => {
   return (
@@ -83,9 +84,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 </HStack>
               </Td>
               <Td>
-                <Link to={`/inventory/config/${device.id}`}>
-                  <Icon size={20} as={SettingsIcon} cursor="pointer" />
-                </Link>
+                <Icon size={20} as={SettingsIcon} cursor="pointer" onClick={() => onSettingsButtonClick(device.id)} />
               </Td>
             </Tr>
           );
