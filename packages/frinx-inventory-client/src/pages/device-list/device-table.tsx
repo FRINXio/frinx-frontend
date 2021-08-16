@@ -1,6 +1,7 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Badge, Button, HStack, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
-import { AddIcon, MinusIcon } from '@chakra-ui/icons';
+import { Badge, Button, HStack, Icon, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { AddIcon, MinusIcon, SettingsIcon } from '@chakra-ui/icons';
+import { Link } from 'react-router-dom';
 import { DevicesQuery } from '../../__generated__/graphql';
 
 type Props = {
@@ -27,6 +28,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           <Th>Zone</Th>
           <Th>Status</Th>
           <Th>Actions</Th>
+          <Th>Config</Th>
         </Tr>
       </Thead>
       <Tbody>
@@ -79,6 +81,11 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     </Button>
                   )}
                 </HStack>
+              </Td>
+              <Td>
+                <Link to={`/inventory/config/${device.id}`}>
+                  <Icon size={20} as={SettingsIcon} cursor="pointer" />
+                </Link>
               </Td>
             </Tr>
           );
