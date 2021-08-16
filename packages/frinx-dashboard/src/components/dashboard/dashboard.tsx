@@ -70,11 +70,17 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
             </Heading>
           </Box>
           <List mb={10}>
-            {/* <ListItem>
+            <ListItem>
               <p>
-                <Link to="/api/uniconfig">UniConfig</Link>
+                <a
+                  href="https://editor.swagger.io/?url=https://gist.githubusercontent.com/marosmars/4951c0395837cc04cae374c2a01eb209/raw/fb2e3d579679753b424f86170b54135bec668768/uniconfig_427.yaml"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  UniConfig
+                </a>
               </p>
-            </ListItem> */}
+            </ListItem>
             <ListItem>
               <p>
                 <Link to="/api/inventory">Device inventory</Link>
