@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Badge, Button, HStack, Icon, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { Badge, Button, HStack, IconButton, Icon, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 import { AddIcon, MinusIcon, SettingsIcon } from '@chakra-ui/icons';
 import { DevicesQuery } from '../../__generated__/graphql';
 
@@ -84,7 +84,13 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 </HStack>
               </Td>
               <Td>
-                <Icon size={20} as={SettingsIcon} cursor="pointer" onClick={() => onSettingsButtonClick(device.id)} />
+                <IconButton
+                  aria-label="config"
+                  isDisabled={device.status !== 'INSTALLED'}
+                  variant="unstyled"
+                  icon={<Icon size={20} as={SettingsIcon} />}
+                  onClick={() => onSettingsButtonClick(device.id)}
+                />
               </Td>
             </Tr>
           );
