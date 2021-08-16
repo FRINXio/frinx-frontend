@@ -34,6 +34,11 @@ export type AddZonePayload = {
   zone: Zone;
 };
 
+export type CommitConfigPayload = {
+  __typename?: 'CommitConfigPayload';
+  isOk: Maybe<Scalars['Boolean']>;
+};
+
 export type DataStore = {
   __typename?: 'DataStore';
   config: Maybe<Scalars['String']>;
@@ -85,6 +90,8 @@ export type Mutation = {
   installDevice: InstallDevicePayload;
   uninstallDevice: UninstallDevicePayload;
   addZone: AddZonePayload;
+  updateDataStore: UpdateDataStorePayload;
+  commitConfig: CommitConfigPayload;
 };
 
 
@@ -116,6 +123,17 @@ export type MutationUninstallDeviceArgs = {
 
 export type MutationAddZoneArgs = {
   input: AddZoneInput;
+};
+
+
+export type MutationUpdateDataStoreArgs = {
+  deviceId: Scalars['String'];
+  input: UpdateDataStoreInput;
+};
+
+
+export type MutationCommitConfigArgs = {
+  deviceId: Scalars['String'];
 };
 
 export type Node = {
@@ -167,6 +185,15 @@ export type QueryDataStoreArgs = {
 export type UninstallDevicePayload = {
   __typename?: 'UninstallDevicePayload';
   device: Device;
+};
+
+export type UpdateDataStoreInput = {
+  config: Scalars['String'];
+};
+
+export type UpdateDataStorePayload = {
+  __typename?: 'UpdateDataStorePayload';
+  dataStore: DataStore;
 };
 
 export type UpdateDeviceInput = {
@@ -247,6 +274,36 @@ export type QueryDataStoreQuery = (
     { __typename?: 'DataStore' }
     & Pick<DataStore, 'config' | 'operational'>
   )> }
+);
+
+export type UpdateDataStoreMutationVariables = Exact<{
+  deviceId: Scalars['String'];
+  config: UpdateDataStoreInput;
+}>;
+
+
+export type UpdateDataStoreMutation = (
+  { __typename?: 'Mutation' }
+  & { updateDataStore: (
+    { __typename?: 'UpdateDataStorePayload' }
+    & { dataStore: (
+      { __typename?: 'DataStore' }
+      & Pick<DataStore, 'config' | 'operational'>
+    ) }
+  ) }
+);
+
+export type CommitDataStoreConfigMutationVariables = Exact<{
+  deviceId: Scalars['String'];
+}>;
+
+
+export type CommitDataStoreConfigMutation = (
+  { __typename?: 'Mutation' }
+  & { commitConfig: (
+    { __typename?: 'CommitConfigPayload' }
+    & Pick<CommitConfigPayload, 'isOk'>
+  ) }
 );
 
 export type DevicesQueryVariables = Exact<{ [key: string]: never; }>;
