@@ -23,7 +23,7 @@ import {
   UpdateDataStoreMutationVariables,
 } from '../../__generated__/graphql';
 
-const QUERY_DATA_STORE = gql`
+const DATA_STORE_QUERY = gql`
   query queryDataStore($deviceId: String!) {
     dataStore(deviceId: $deviceId) {
       config
@@ -32,9 +32,9 @@ const QUERY_DATA_STORE = gql`
   }
 `;
 
-const UPDATE_DATA_STORE = gql`
-  mutation updateDataStore($deviceId: String!, $config: UpdateDataStoreInput!) {
-    updateDataStore(deviceId: $deviceId, input: $config) {
+const UPDATE_DATA_STORE_MUTATION = gql`
+  mutation updateDataStore($deviceId: String!, $input: UpdateDataStoreInput!) {
+    updateDataStore(deviceId: $deviceId, input: $input) {
       dataStore {
         config
         operational
@@ -43,7 +43,7 @@ const UPDATE_DATA_STORE = gql`
   }
 `;
 
-const COMMIT_DATA_STORE = gql`
+const COMMIT_DATA_STORE_MUTATION = gql`
   mutation commitDataStoreConfig($deviceId: String!) {
     commitConfig(deviceId: $deviceId) {
       isOk
@@ -56,41 +56,48 @@ type Props = {
 };
 
 const DeviceConfig: FC<Props> = ({ deviceId }) => {
-  const [{ data, fetching, error }] = useQuery<QueryDataStoreQuery, QueryDataStoreQueryVariables>({
-    query: QUERY_DATA_STORE,
+  const [{ data, fetching, error }, executeQuery] = useQuery<QueryDataStoreQuery, QueryDataStoreQueryVariables>({
+    query: DATA_STORE_QUERY,
     variables: { deviceId },
   });
-  const [, updateDataStore] = useMutation<UpdateDataStoreMutation, UpdateDataStoreMutationVariables>(UPDATE_DATA_STORE);
-  const [, commitConfig] = useMutation<CommitDataStoreConfigMutation, CommitDataStoreConfigMutationVariables>(
-    COMMIT_DATA_STORE,
+  const [, updateDataStore] = useMutation<UpdateDataStoreMutation, UpdateDataStoreMutationVariables>(
+    UPDATE_DATA_STORE_MUTATION,
   );
-
+  const [, commitConfig] = useMutation<CommitDataStoreConfigMutation, CommitDataStoreConfigMutationVariables>(
+    COMMIT_DATA_STORE_MUTATION,
+  );
   const [config, setConfig] = useState<string>();
-  const [operational, setOperational] = useState<string>();
   const toast = useToast();
+
+  useEffect(() => {
+    if (data != null && data.dataStore != null) {
+      setConfig(JSON.stringify(JSON.parse(data.dataStore.config ?? ''), null, 2));
+    }
+  }, [data]);
 
   const handleOnSaveConfig = async () => {
     const { data: responseData, error: responseError } = await updateDataStore({
       deviceId,
-      config: { config: JSON.stringify(config) },
+      input: { config: JSON.stringify(JSON.parse(config ?? ''), null, 0) },
     });
 
-    if (responseError != null && responseData != null) {
-      setConfig(responseData.updateDataStore.dataStore.config);
-      setOperational(responseData.updateDataStore.dataStore.operational);
+    if (responseError != null) {
+      toast({
+        title: 'Failed to update config data store',
+        isClosable: true,
+        duration: 2000,
+        status: 'error',
+      });
+    }
+
+    if (responseData != null) {
+      executeQuery();
 
       toast({
         title: 'Successfully updated config data store',
         isClosable: true,
         duration: 2000,
         status: 'success',
-      });
-    } else {
-      toast({
-        title: 'Failed to update config data store',
-        isClosable: true,
-        duration: 2000,
-        status: 'error',
       });
     }
   };
@@ -115,19 +122,12 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     }
   };
 
-  useEffect(() => {
-    if (data) {
-      setConfig(JSON.stringify(JSON.parse(data.dataStore.config), null, 2));
-      setOperational(JSON.stringify(JSON.parse(data.dataStore.operational), null, 2));
-    }
-  }, [data]);
-
   if (fetching) {
     return <Progress size="xs" isIndeterminate mt={-10} />;
   }
 
-  if (error || data == null) {
-    return null;
+  if (error != null) {
+    return <div>{error.message}</div>;
   }
 
   return (
@@ -155,14 +155,22 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
             mode="json"
             value={config}
             theme="tomorrow"
-            onChange={(val: string) => setConfig(val)}
+            onChange={(val) => {
+              setConfig(val);
+            }}
           />
         </GridItem>
         <GridItem w="100%">
           <Box my={4}>
             <Text>Operational data store</Text>
           </Box>
-          <AceEditor width="100%" mode="json" value={operational} theme="tomorrow" readOnly />
+          <AceEditor
+            width="100%"
+            mode="json"
+            value={JSON.stringify(JSON.parse(data?.dataStore?.operational ?? ''), null, 2)}
+            theme="tomorrow"
+            readOnly
+          />
         </GridItem>
       </Grid>
     </Container>

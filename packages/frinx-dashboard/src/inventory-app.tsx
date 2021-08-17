@@ -8,12 +8,12 @@ const InventoryApp: FC = () => {
 
   useEffect(() => {
     import('@frinx/inventory-client/src').then((mod) => {
-      const { DeviceList, CreateDevicePage, InventoryAPIProvider, DeviceConfig } = mod;
+      const { DeviceList, CreateDevicePage, InventoryAPIProvider, DeviceConfigPage } = mod;
       setComponents({
         DeviceList,
         CreateDevicePage,
         InventoryAPIProvider,
-        DeviceConfig,
+        DeviceConfigPage,
       });
     });
   }, []);
@@ -22,7 +22,7 @@ const InventoryApp: FC = () => {
     return null;
   }
 
-  const { DeviceList, CreateDevicePage, InventoryAPIProvider, DeviceConfig } = components;
+  const { DeviceList, CreateDevicePage, InventoryAPIProvider, DeviceConfigPage } = components;
 
   return (
     <InventoryAPIProvider url={window.__CONFIG__.inventory_api_url}>
@@ -50,7 +50,7 @@ const InventoryApp: FC = () => {
           render={(props: RouteComponentProps<{ deviceId: string }>) => {
             const { match } = props;
             const { params } = match;
-            return <DeviceConfig deviceId={params.deviceId} />;
+            return <DeviceConfigPage deviceId={params.deviceId} />;
           }}
         />
       </Switch>
