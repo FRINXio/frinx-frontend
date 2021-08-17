@@ -25,6 +25,16 @@ export type AddDevicePayload = {
   device: Device;
 };
 
+export type AddSnapshotInput = {
+  name: Scalars['String'];
+  deviceId: Scalars['String'];
+};
+
+export type AddSnapshotPayload = {
+  __typename?: 'AddSnapshotPayload';
+  snapshot: Maybe<Snapshot>;
+};
+
 export type AddZoneInput = {
   name: Scalars['String'];
 };
@@ -36,13 +46,14 @@ export type AddZonePayload = {
 
 export type CommitConfigPayload = {
   __typename?: 'CommitConfigPayload';
-  isOk: Maybe<Scalars['Boolean']>;
+  isOk: Scalars['Boolean'];
 };
 
 export type DataStore = {
   __typename?: 'DataStore';
-  config: Maybe<Scalars['String']>;
-  operational: Maybe<Scalars['String']>;
+  config: Scalars['String'];
+  operational: Scalars['String'];
+  snapshots: Array<Snapshot>;
 };
 
 export type DeleteDevicePayload = {
@@ -92,6 +103,8 @@ export type Mutation = {
   addZone: AddZonePayload;
   updateDataStore: UpdateDataStorePayload;
   commitConfig: CommitConfigPayload;
+  resetConfig: ResetConfigPayload;
+  addSnapshot: Maybe<AddSnapshotPayload>;
 };
 
 
@@ -134,6 +147,16 @@ export type MutationUpdateDataStoreArgs = {
 
 export type MutationCommitConfigArgs = {
   deviceId: Scalars['String'];
+};
+
+
+export type MutationResetConfigArgs = {
+  deviceId: Scalars['String'];
+};
+
+
+export type MutationAddSnapshotArgs = {
+  input: AddSnapshotInput;
 };
 
 export type Node = {
@@ -180,6 +203,16 @@ export type QueryZonesArgs = {
 
 export type QueryDataStoreArgs = {
   deviceId: Scalars['String'];
+};
+
+export type ResetConfigPayload = {
+  __typename?: 'ResetConfigPayload';
+  dataStore: DataStore;
+};
+
+export type Snapshot = {
+  __typename?: 'Snapshot';
+  name: Maybe<Scalars['String']>;
 };
 
 export type UninstallDevicePayload = {
@@ -304,6 +337,38 @@ export type CommitDataStoreConfigMutation = (
     { __typename?: 'CommitConfigPayload' }
     & Pick<CommitConfigPayload, 'isOk'>
   ) }
+);
+
+export type ResetConfigMutationVariables = Exact<{
+  deviceId: Scalars['String'];
+}>;
+
+
+export type ResetConfigMutation = (
+  { __typename?: 'Mutation' }
+  & { resetConfig: (
+    { __typename?: 'ResetConfigPayload' }
+    & { dataStore: (
+      { __typename?: 'DataStore' }
+      & Pick<DataStore, 'config' | 'operational'>
+    ) }
+  ) }
+);
+
+export type AddSnapshotMutationVariables = Exact<{
+  input: AddSnapshotInput;
+}>;
+
+
+export type AddSnapshotMutation = (
+  { __typename?: 'Mutation' }
+  & { addSnapshot: Maybe<(
+    { __typename?: 'AddSnapshotPayload' }
+    & { snapshot: Maybe<(
+      { __typename?: 'Snapshot' }
+      & Pick<Snapshot, 'name'>
+    )> }
+  )> }
 );
 
 export type DevicesQueryVariables = Exact<{ [key: string]: never; }>;
