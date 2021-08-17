@@ -278,7 +278,7 @@ export type QueryDataStoreQuery = (
 
 export type UpdateDataStoreMutationVariables = Exact<{
   deviceId: Scalars['String'];
-  config: UpdateDataStoreInput;
+  input: UpdateDataStoreInput;
 }>;
 
 
