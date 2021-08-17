@@ -192,14 +192,16 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
       return;
     }
 
-    const { error: responseError } = await addSnapshot({ input: { name: snapshotName, deviceId } });
-    if (responseError != null) {
+    const { data: responseData } = await addSnapshot({ input: { name: snapshotName, deviceId } });
+    if (responseData != null) {
       toast({
         duration: 2000,
         isClosable: true,
         status: 'success',
         title: 'Successfully created snapshot',
       });
+
+      onClose();
     } else {
       toast({
         duration: 2000,
