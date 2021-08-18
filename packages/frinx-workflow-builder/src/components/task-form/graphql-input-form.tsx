@@ -37,6 +37,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
         <FormLabel>URI</FormLabel>
         <AutocompleteTaskReferenceName tasks={tasks} onChange={handleOnChange} inputValue={uriVal}>
           <Input
+            autoComplete="off"
             variant="filled"
             name="uri"
             value={uriVal}

@@ -48,6 +48,7 @@ const EventInputForm: FC<Props> = ({ params, onChange }) => {
           inputValue={targetTaskRefNameVal}
         >
           <Input
+            autoComplete="off"
             name="targetTaskRefName"
             variant="filled"
             value={targetTaskRefNameVal}
@@ -62,10 +63,13 @@ const EventInputForm: FC<Props> = ({ params, onChange }) => {
         <FormLabel>Target workflow ID</FormLabel>
         <AutocompleteTaskReferenceName
           tasks={tasks}
-          onChange={(updatedInputValue) => handleOnChange(updatedInputValue, 'targetWorkflowId')}
+          onChange={(updatedInputValue) => {
+            handleOnChange(updatedInputValue, 'targetWorkflowId');
+          }}
           inputValue={targetWorkflowIdVal}
         >
           <Input
+            autoComplete="off"
             name="targetWorkflowId"
             variant="filled"
             value={targetWorkflowIdVal}

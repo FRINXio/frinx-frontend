@@ -31,6 +31,7 @@ const LambdaInputsForm: FC<Props> = ({ params, onChange }) => {
         <FormLabel>Lambda value</FormLabel>
         <AutocompleteTaskReferenceName tasks={tasks} onChange={handleOnChange} inputValue={lambdaVal}>
           <Input
+            autoComplete="off"
             name="lambdaValue"
             variant="filled"
             value={lambdaVal}

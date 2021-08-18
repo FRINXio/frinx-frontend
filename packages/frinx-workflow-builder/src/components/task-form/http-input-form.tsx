@@ -44,6 +44,7 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange }) => {
         <FormLabel>URI</FormLabel>
         <AutocompleteTaskReferenceName tasks={tasks} inputValue={uriVal} onChange={handleOnChange}>
           <Input
+            autoComplete="off"
             variant="filled"
             name="uri"
             value={uriVal}
