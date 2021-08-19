@@ -64,6 +64,7 @@ const App: FC<Props> = ({
   const workflowModalDisclosure = useDisclosure();
   const [isEditing, setIsEditing] = useState(false);
   const [isInputModalShown, setIsInputModalShown] = useState(false);
+  const [workflowTasks, setWorkflowTasks] = useState(workflow.tasks);
   const workflowCtrlRef = useRef(useMemo(() => createWorkflowHelper(), []));
   const schemaCtrlRef = useRef(useMemo(() => createDiagramController(workflow), [workflow]));
   const [schema, { onChange, addNode }] = useSchema<NodeData>(
@@ -88,6 +89,7 @@ const App: FC<Props> = ({
 
   const handleAddButtonClick = (t: ExtendedTask) => {
     addNode(schemaCtrlRef.current.createTaskNode(t));
+    setWorkflowTasks((prevTasks) => [...prevTasks, t]);
   };
 
   const handleFormSubmit = (t: ExtendedTask) => {
@@ -200,6 +202,7 @@ const App: FC<Props> = ({
                     selectTask(null);
                   }}
                   onFormSubmit={handleFormSubmit}
+                  tasks={workflowTasks}
                 />
               </Box>
             </RightDrawer>

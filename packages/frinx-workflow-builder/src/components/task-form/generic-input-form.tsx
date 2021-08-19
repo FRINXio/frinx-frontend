@@ -1,16 +1,34 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { FormControl, FormLabel, Input, Textarea } from '@chakra-ui/react';
+import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-name/autocomplete-task-reference-name-menu';
+import { ExtendedTask } from '../../helpers/types';
 
 type Props = {
   params: Record<string, string>;
+  tasks: ExtendedTask[];
+  task: ExtendedTask;
   onChange: (p: Record<string, string>) => void;
 };
 
-const GenericInputForm: FC<Props> = ({ params, onChange }) => {
+const GenericInputForm: FC<Props> = ({ params, onChange, tasks, task }) => {
+  const [inputsValue, setInputsValue] = useState(params);
+
+  const handleOnInputFieldChange = (fieldName: string, value: string) => {
+    const updatedInputs = {
+      ...inputsValue,
+      [fieldName]: value,
+    };
+    setInputsValue(updatedInputs);
+
+    onChange({
+      ...updatedInputs,
+    });
+  };
+
   return (
     <>
-      {Object.keys(params).map((key) => {
-        const value = params[key];
+      {Object.keys(inputsValue).map((key) => {
+        const value = inputsValue[key];
 
         return (
           <FormControl id={key} my={6} key={key}>
@@ -29,18 +47,25 @@ const GenericInputForm: FC<Props> = ({ params, onChange }) => {
                 }}
               />
             ) : (
-              <Input
-                name={key}
-                variant="filled"
-                value={value}
-                onChange={(event) => {
-                  event.persist();
-                  onChange({
-                    ...params,
-                    [key]: event.target.value,
-                  });
+              <AutocompleteTaskReferenceNameMenu
+                inputValue={value}
+                tasks={tasks}
+                task={task}
+                onChange={(val) => {
+                  handleOnInputFieldChange(key, val);
                 }}
-              />
+              >
+                <Input
+                  autoComplete="off"
+                  name={key}
+                  variant="filled"
+                  value={value}
+                  onChange={(event) => {
+                    event.persist();
+                    handleOnInputFieldChange(key, event.target.value);
+                  }}
+                />
+              </AutocompleteTaskReferenceNameMenu>
             )}
           </FormControl>
         );

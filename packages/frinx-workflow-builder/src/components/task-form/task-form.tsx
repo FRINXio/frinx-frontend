@@ -26,11 +26,12 @@ import { renderInputParamForm } from './input-params-forms';
 
 type Props = {
   task: ExtendedTask;
+  tasks: ExtendedTask[];
   onClose: () => void;
   onFormSubmit: (task: ExtendedTask) => void;
 };
 
-const TaskForm: FC<Props> = ({ task, onClose, onFormSubmit }) => {
+const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
   const [taskState, setTaskState] = useState(task);
 
   useEffect(() => {
@@ -194,7 +195,7 @@ const TaskForm: FC<Props> = ({ task, onClose, onFormSubmit }) => {
             )}
           </TabPanel>
           {'inputParameters' in taskState && (
-            <TabPanel>{renderInputParamForm(taskState, handleUpdateInputParameters)}</TabPanel>
+            <TabPanel>{renderInputParamForm(taskState, handleUpdateInputParameters, tasks)}</TabPanel>
           )}
         </TabPanels>
       </Tabs>
