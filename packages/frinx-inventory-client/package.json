@@ -2,7 +2,8 @@
   "name": "@frinx/inventory-client",
   "version": "0.0.1",
   "main": "dist/index.js",
-  "module": "src/index.js",
+  "module": "src/index.ts",
+  "typings": "index.d.ts",
   "files": [
     "dist/*"
   ],

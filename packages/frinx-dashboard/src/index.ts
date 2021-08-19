@@ -8,13 +8,13 @@ import { ServiceKey } from './types';
 
 const ALL_SERVICES: ServiceKey[] = [
   'uniflow_enabled' as const,
-  'uniconfig_enabled' as const,
+  'inventory_enabled' as const,
   'uniresource_enabled' as const,
   // 'usermanagement_enabled' as const,
 ];
 const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
   ['uniflow_enabled', () => import('@frinx/workflow-ui')],
-  ['uniconfig_enabled', () => import('@frinx/uniconfig-ui')],
+  ['inventory_enabled', () => import('@frinx/inventory-client')],
   ['uniresource_enabled', () => import('@frinx/uniresource-ui')],
   ['usermanagement_enabled', () => import('@frinx/workflow-ui')],
 ]);
@@ -22,7 +22,9 @@ const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
 class DashboardApp {
   private enabledServices: Map<ServiceKey, boolean> = new Map(
     // eslint-disable-next-line no-underscore-dangle
-    ALL_SERVICES.map((service) => [service, window.__CONFIG__[service]]),
+    ALL_SERVICES.map((service) => {
+      return [service, window.__CONFIG__[service]];
+    }),
   );
 
   private isInitialized = false;

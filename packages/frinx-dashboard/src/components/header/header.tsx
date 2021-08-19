@@ -46,10 +46,10 @@ const Header: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
                   <Text fontWeight="bold">UniFlow</Text>
                 </MenuItem>
               )}
-              {enabledServices.get('uniconfig_enabled') && (
-                <MenuItem as={Link} to="/uniconfig">
+              {enabledServices.get('inventory_enabled') && (
+                <MenuItem as={Link} to="/inventory">
                   <Icon size={20} as={FeatherIcon} icon="server" color="brand.700" marginRight={2} />
-                  <Text fontWeight="bold">UniConfig</Text>
+                  <Text fontWeight="bold">Device Inventory</Text>
                 </MenuItem>
               )}
               {enabledServices.get('uniresource_enabled') && (

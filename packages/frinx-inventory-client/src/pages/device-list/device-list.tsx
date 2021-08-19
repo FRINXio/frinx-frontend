@@ -54,9 +54,10 @@ const UNINSTALL_DEVICE_MUTATION = gql`
 
 type Props = {
   onAddButtonClick: () => void;
+  onSettingsButtonClick: (deviceId: string) => void;
 };
 
-const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick }) => {
+const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick }) => {
   const toast = useToast();
   const [{ data, fetching, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({ query: DEVICES_QUERY });
   const [{ fetching: isInstalLoading }, installDevice] = useMutation<
@@ -130,6 +131,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick }) => {
           devices={devices.edges}
           onInstallButtonClick={handleInstallButtonClick}
           onUninstallButtonClick={handleUninstallButtonClick}
+          onSettingsButtonClick={onSettingsButtonClick}
           isLoading={isInstalLoading || isUninstallLoading}
         />
       </Box>

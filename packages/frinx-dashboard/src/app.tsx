@@ -10,7 +10,6 @@ import 'react-notifications/lib/notifications.css';
 import { createPublicClientApp } from './auth-helpers';
 import theme from './theme';
 import UniflowApp from './uniflow-app';
-import UniconfigApp from './uniconfig-app';
 import { ServiceKey } from './types';
 import UniresourceApp from './uniresource-app';
 import InventoryApp from './inventory-app';
@@ -66,9 +65,9 @@ const AppWithAuth: FC<{
                   <UniflowApp />
                 </Route>
               )}
-              {enabledServices.get('uniconfig_enabled') && (
-                <Route path="/uniconfig">
-                  <UniconfigApp />
+              {enabledServices.get('inventory_enabled') && (
+                <Route path="/inventory">
+                  <InventoryApp />
                 </Route>
               )}
               {enabledServices.get('uniresource_enabled') && (
@@ -76,9 +75,6 @@ const AppWithAuth: FC<{
                   <UniresourceApp />
                 </Route>
               )}
-              <Route path="/inventory">
-                <InventoryApp />
-              </Route>
             </Switch>
           </Box>
         </BrowserRouter>
@@ -114,9 +110,9 @@ const App: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
                 <UniflowApp />
               </Route>
             )}
-            {enabledServices.get('uniconfig_enabled') && (
-              <Route path="/uniconfig">
-                <UniconfigApp />
+            {enabledServices.get('inventory_enabled') && (
+              <Route path="/inventory">
+                <InventoryApp />
               </Route>
             )}
             {enabledServices.get('uniresource_enabled') && (
@@ -124,9 +120,6 @@ const App: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
                 <UniresourceApp />
               </Route>
             )}
-            <Route path="/inventory">
-              <InventoryApp />
-            </Route>
           </Switch>
         </Box>
       </BrowserRouter>

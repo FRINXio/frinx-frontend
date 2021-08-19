@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import { Route, RouteComponentProps, Switch, useHistory } from 'react-router-dom';
 
 type InventoryComponents = typeof import('@frinx/inventory-client/src');
 const InventoryApp: FC = () => {
@@ -8,11 +8,12 @@ const InventoryApp: FC = () => {
 
   useEffect(() => {
     import('@frinx/inventory-client/src').then((mod) => {
-      const { DeviceList, CreateDevicePage, InventoryAPIProvider } = mod;
+      const { DeviceList, CreateDevicePage, InventoryAPIProvider, DeviceConfigPage } = mod;
       setComponents({
         DeviceList,
         CreateDevicePage,
         InventoryAPIProvider,
+        DeviceConfigPage,
       });
     });
   }, []);
@@ -21,7 +22,7 @@ const InventoryApp: FC = () => {
     return null;
   }
 
-  const { DeviceList, CreateDevicePage, InventoryAPIProvider } = components;
+  const { DeviceList, CreateDevicePage, InventoryAPIProvider, DeviceConfigPage } = components;
 
   return (
     <InventoryAPIProvider url={window.__CONFIG__.inventory_api_url}>
@@ -30,6 +31,9 @@ const InventoryApp: FC = () => {
           <DeviceList
             onAddButtonClick={() => {
               history.push('/inventory/new');
+            }}
+            onSettingsButtonClick={(deviceId) => {
+              history.push(`/inventory/config/${deviceId}`);
             }}
           />
         </Route>
@@ -40,6 +44,15 @@ const InventoryApp: FC = () => {
             }}
           />
         </Route>
+        <Route
+          exact
+          path="/inventory/config/:deviceId"
+          render={(props: RouteComponentProps<{ deviceId: string }>) => {
+            const { match } = props;
+            const { params } = match;
+            return <DeviceConfigPage deviceId={params.deviceId} />;
+          }}
+        />
       </Switch>
     </InventoryAPIProvider>
   );
