@@ -7,6 +7,7 @@ import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-na
 type Props = {
   params: HTTPInputParams;
   tasks: ExtendedTask[];
+  task: ExtendedTask;
   onChange: (p: HTTPInputParams) => void;
 };
 
@@ -17,7 +18,7 @@ function getBodyFromRequest(params: HTTPInputParams): string | null {
   return null;
 }
 
-const HTTPInputsForm: FC<Props> = ({ params, onChange, tasks }) => {
+const HTTPInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
   const { contentType, method, uri, timeout, headers } = params.http_request;
   const body = getBodyFromRequest(params);
   const theme = useTheme();
@@ -41,7 +42,7 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange, tasks }) => {
     <>
       <FormControl id="uri" my={6}>
         <FormLabel>URI</FormLabel>
-        <AutocompleteTaskReferenceNameMenu tasks={tasks} inputValue={uriVal} onChange={handleOnChange}>
+        <AutocompleteTaskReferenceNameMenu tasks={tasks} task={task} inputValue={uriVal} onChange={handleOnChange}>
           <Input
             autoComplete="off"
             variant="filled"

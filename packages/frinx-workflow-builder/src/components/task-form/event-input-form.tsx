@@ -6,18 +6,22 @@ import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-na
 type Props = {
   params: EventInputParams;
   tasks: ExtendedTask[];
+  task: ExtendedTask;
   onChange: (p: EventInputParams) => void;
 };
 
-const EventInputForm: FC<Props> = ({ params, onChange, tasks }) => {
+const EventInputForm: FC<Props> = ({ params, onChange, tasks, task }) => {
   const { action, targetTaskRefName, targetWorkflowId } = params;
 
   const [targetTaskRefNameVal, setTargetTaskRefName] = useState(targetTaskRefName);
   const [targetWorkflowIdVal, setTargetWorkflowId] = useState(targetWorkflowId);
 
   const handleOnChange = (updatedInputValue: string, key: string) => {
-    // eslint-disable-next-line no-unused-expressions
-    key === 'targetTaskRefName' ? setTargetTaskRefName(updatedInputValue) : setTargetWorkflowId(updatedInputValue);
+    if (key === 'targetTaskRefName') {
+      setTargetTaskRefName(updatedInputValue);
+    } else {
+      setTargetWorkflowId(updatedInputValue);
+    }
 
     onChange({ ...params, [key]: updatedInputValue });
   };
@@ -43,6 +47,7 @@ const EventInputForm: FC<Props> = ({ params, onChange, tasks }) => {
         <FormLabel>Target taskRefName</FormLabel>
         <AutocompleteTaskReferenceNameMenu
           tasks={tasks}
+          task={task}
           onChange={(updatedInputValue) => handleOnChange(updatedInputValue, 'targetTaskRefName')}
           inputValue={targetTaskRefNameVal}
         >
@@ -62,6 +67,7 @@ const EventInputForm: FC<Props> = ({ params, onChange, tasks }) => {
         <FormLabel>Target workflow ID</FormLabel>
         <AutocompleteTaskReferenceNameMenu
           tasks={tasks}
+          task={task}
           onChange={(updatedInputValue) => {
             handleOnChange(updatedInputValue, 'targetWorkflowId');
           }}

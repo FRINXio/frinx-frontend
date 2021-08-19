@@ -6,10 +6,11 @@ import { ExtendedTask } from '../../helpers/types';
 type Props = {
   params: Record<string, string>;
   tasks: ExtendedTask[];
+  task: ExtendedTask;
   onChange: (p: Record<string, string>) => void;
 };
 
-const GenericInputForm: FC<Props> = ({ params, onChange, tasks }) => {
+const GenericInputForm: FC<Props> = ({ params, onChange, tasks, task }) => {
   const [inputsValue, setInputsValue] = useState(params);
 
   const handleOnInputFieldChange = (fieldName: string, value: string) => {
@@ -49,6 +50,7 @@ const GenericInputForm: FC<Props> = ({ params, onChange, tasks }) => {
               <AutocompleteTaskReferenceNameMenu
                 inputValue={value}
                 tasks={tasks}
+                task={task}
                 onChange={(val) => {
                   handleOnInputFieldChange(key, val);
                 }}

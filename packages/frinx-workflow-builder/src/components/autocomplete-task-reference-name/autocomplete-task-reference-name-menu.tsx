@@ -4,11 +4,12 @@ import { ExtendedTask } from '../../helpers/types';
 
 type Props = {
   tasks: ExtendedTask[];
+  task: ExtendedTask;
   onChange: (updatedInputValue: string) => void;
   inputValue: string;
 };
 
-const AutocompleteTaskReferenceNameMenu: FC<Props> = ({ tasks, children, onChange, inputValue }) => {
+const AutocompleteTaskReferenceNameMenu: FC<Props> = ({ tasks, task, children, onChange, inputValue }) => {
   const tasksList: ExtendedTask[] = tasks;
   const [isInputActive, setIsInputActive] = useState(false);
 
@@ -16,15 +17,18 @@ const AutocompleteTaskReferenceNameMenu: FC<Props> = ({ tasks, children, onChang
     onChange('${'.concat(taskRefName));
   };
 
-  const filteredTasks = tasksList.filter((task) => {
+  const filteredTasks = tasksList.filter((t) => {
     const inputVal = inputValue.replace('${', '');
-    return task.taskReferenceName.toLowerCase().includes(inputVal.toLowerCase()) && task.taskReferenceName !== inputVal;
+    return (
+      t.taskReferenceName.toLowerCase().includes(inputVal.toLowerCase()) &&
+      t.taskReferenceName !== inputVal &&
+      t.taskReferenceName !== task.taskReferenceName
+    );
   });
 
   return (
     <Box
       position="relative"
-      display="inline-block"
       onClick={() => setIsInputActive(true)}
       onBlur={() => {
         setTimeout(() => setIsInputActive(false), 150);
@@ -43,21 +47,21 @@ const AutocompleteTaskReferenceNameMenu: FC<Props> = ({ tasks, children, onChang
           listStyleType="none"
           borderBottom="1px solid #e9e9e9"
         >
-          {filteredTasks.map((task, i) => (
+          {filteredTasks.map((t, i) => (
             <ListItem
               padding={4}
               cursor="pointer"
               backgroundColor="#fff"
               _hover={{ backgroundColor: '#e9e9e9' }}
-              key={task.id}
+              key={t.id}
               borderBottomRadius={i === filteredTasks.length - 1 ? 0 : 2}
               borderBottom={i === filteredTasks.length - 1 ? '' : '1px solid #e9e9e9'}
               onClick={() => {
-                autocompleteTaskRefName(task.taskReferenceName);
+                autocompleteTaskRefName(t.taskReferenceName);
               }}
               onBlur={() => setIsInputActive(false)}
             >
-              <Text>{task.taskReferenceName}</Text>
+              <Text>{t.taskReferenceName}</Text>
             </ListItem>
           ))}
         </List>

@@ -7,10 +7,11 @@ import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-na
 type Props = {
   params: GraphQLInputParams;
   tasks: ExtendedTask[];
+  task: ExtendedTask;
   onChange: (params: GraphQLInputParams) => void;
 };
 
-const GraphQLInputsForm: FC<Props> = ({ params, onChange, tasks }) => {
+const GraphQLInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
   const { contentType, method, uri, body, timeout, headers } = params.http_request;
   const { query, variables } = body;
   const theme = useTheme();
@@ -34,7 +35,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange, tasks }) => {
     <>
       <FormControl id="uri" my={6}>
         <FormLabel>URI</FormLabel>
-        <AutocompleteTaskReferenceNameMenu tasks={tasks} onChange={handleOnChange} inputValue={uriVal}>
+        <AutocompleteTaskReferenceNameMenu tasks={tasks} task={task} onChange={handleOnChange} inputValue={uriVal}>
           <Input
             autoComplete="off"
             variant="filled"

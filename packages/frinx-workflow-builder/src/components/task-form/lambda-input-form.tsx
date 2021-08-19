@@ -7,10 +7,11 @@ import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-na
 type Props = {
   params: LambdaInputParams;
   tasks: ExtendedTask[];
+  task: ExtendedTask;
   onChange: (p: LambdaInputParams) => void;
 };
 
-const LambdaInputsForm: FC<Props> = ({ params, onChange, tasks }) => {
+const LambdaInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
   const { lambdaValue, scriptExpression } = params;
   const theme = useTheme();
   const [lambdaVal, setLambdaValue] = useState(lambdaValue);
@@ -28,7 +29,7 @@ const LambdaInputsForm: FC<Props> = ({ params, onChange, tasks }) => {
     <>
       <FormControl id="lambdaValue" my={6}>
         <FormLabel>Lambda value</FormLabel>
-        <AutocompleteTaskReferenceNameMenu tasks={tasks} onChange={handleOnChange} inputValue={lambdaVal}>
+        <AutocompleteTaskReferenceNameMenu tasks={tasks} onChange={handleOnChange} inputValue={lambdaVal} task={task}>
           <Input
             autoComplete="off"
             name="lambdaValue"
