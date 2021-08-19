@@ -1,16 +1,16 @@
 import React, { FC, useState } from 'react';
 import { FormControl, FormLabel, Input, Textarea } from '@chakra-ui/react';
-import AutocompleteTaskReferenceName from '../autocomplete-task-reference-name/autocomplete-task-reference-name';
-import { useWorkflowTasks } from '../../helpers/task.helpers';
+import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-name/autocomplete-task-reference-name-menu';
+import { ExtendedTask } from '../../helpers/types';
 
 type Props = {
   params: Record<string, string>;
+  tasks: ExtendedTask[];
   onChange: (p: Record<string, string>) => void;
 };
 
-const GenericInputForm: FC<Props> = ({ params, onChange }) => {
+const GenericInputForm: FC<Props> = ({ params, onChange, tasks }) => {
   const [inputsValue, setInputsValue] = useState(params);
-  const { tasks } = useWorkflowTasks();
 
   const handleOnInputFieldChange = (fieldName: string, value: string) => {
     const updatedInputs = {
@@ -46,7 +46,7 @@ const GenericInputForm: FC<Props> = ({ params, onChange }) => {
                 }}
               />
             ) : (
-              <AutocompleteTaskReferenceName
+              <AutocompleteTaskReferenceNameMenu
                 inputValue={value}
                 tasks={tasks}
                 onChange={(val) => {
@@ -63,7 +63,7 @@ const GenericInputForm: FC<Props> = ({ params, onChange }) => {
                     handleOnInputFieldChange(key, event.target.value);
                   }}
                 />
-              </AutocompleteTaskReferenceName>
+              </AutocompleteTaskReferenceNameMenu>
             )}
           </FormControl>
         );

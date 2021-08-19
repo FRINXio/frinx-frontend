@@ -1,18 +1,17 @@
 import React, { FC, useState } from 'react';
 import { FormControl, FormLabel, Input } from '@chakra-ui/react';
-import { EventInputParams } from '../../helpers/types';
-import AutocompleteTaskReferenceName from '../autocomplete-task-reference-name/autocomplete-task-reference-name';
-import { useWorkflowTasks } from '../../helpers/task.helpers';
+import { EventInputParams, ExtendedTask } from '../../helpers/types';
+import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-name/autocomplete-task-reference-name-menu';
 
 type Props = {
   params: EventInputParams;
+  tasks: ExtendedTask[];
   onChange: (p: EventInputParams) => void;
 };
 
-const EventInputForm: FC<Props> = ({ params, onChange }) => {
+const EventInputForm: FC<Props> = ({ params, onChange, tasks }) => {
   const { action, targetTaskRefName, targetWorkflowId } = params;
 
-  const { tasks } = useWorkflowTasks();
   const [targetTaskRefNameVal, setTargetTaskRefName] = useState(targetTaskRefName);
   const [targetWorkflowIdVal, setTargetWorkflowId] = useState(targetWorkflowId);
 
@@ -42,7 +41,7 @@ const EventInputForm: FC<Props> = ({ params, onChange }) => {
       </FormControl>
       <FormControl id="targetTaskRefName" my={6}>
         <FormLabel>Target taskRefName</FormLabel>
-        <AutocompleteTaskReferenceName
+        <AutocompleteTaskReferenceNameMenu
           tasks={tasks}
           onChange={(updatedInputValue) => handleOnChange(updatedInputValue, 'targetTaskRefName')}
           inputValue={targetTaskRefNameVal}
@@ -57,11 +56,11 @@ const EventInputForm: FC<Props> = ({ params, onChange }) => {
               handleOnChange(event.target.value, 'targetTaskRefName');
             }}
           />
-        </AutocompleteTaskReferenceName>
+        </AutocompleteTaskReferenceNameMenu>
       </FormControl>
       <FormControl id="targetWorkflowId" my={6}>
         <FormLabel>Target workflow ID</FormLabel>
-        <AutocompleteTaskReferenceName
+        <AutocompleteTaskReferenceNameMenu
           tasks={tasks}
           onChange={(updatedInputValue) => {
             handleOnChange(updatedInputValue, 'targetWorkflowId');
@@ -78,7 +77,7 @@ const EventInputForm: FC<Props> = ({ params, onChange }) => {
               handleOnChange(event.target.value, 'targetWorkflowId');
             }}
           />
-        </AutocompleteTaskReferenceName>
+        </AutocompleteTaskReferenceNameMenu>
       </FormControl>
     </>
   );

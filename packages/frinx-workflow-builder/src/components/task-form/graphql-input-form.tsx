@@ -1,22 +1,21 @@
 import React, { FC, useState } from 'react';
 import { Box, FormControl, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
-import { GraphQLInputParams } from '../../helpers/types';
+import { ExtendedTask, GraphQLInputParams } from '../../helpers/types';
 import Editor from '../common/editor';
-import AutocompleteTaskReferenceName from '../autocomplete-task-reference-name/autocomplete-task-reference-name';
-import { useWorkflowTasks } from '../../helpers/task.helpers';
+import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-name/autocomplete-task-reference-name-menu';
 
 type Props = {
   params: GraphQLInputParams;
+  tasks: ExtendedTask[];
   onChange: (params: GraphQLInputParams) => void;
 };
 
-const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
+const GraphQLInputsForm: FC<Props> = ({ params, onChange, tasks }) => {
   const { contentType, method, uri, body, timeout, headers } = params.http_request;
   const { query, variables } = body;
   const theme = useTheme();
 
   const [uriVal, setUriVal] = useState(uri);
-  const { tasks } = useWorkflowTasks();
 
   const handleOnChange = (updatedInputValue: string): void => {
     setUriVal(updatedInputValue);
@@ -35,7 +34,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
     <>
       <FormControl id="uri" my={6}>
         <FormLabel>URI</FormLabel>
-        <AutocompleteTaskReferenceName tasks={tasks} onChange={handleOnChange} inputValue={uriVal}>
+        <AutocompleteTaskReferenceNameMenu tasks={tasks} onChange={handleOnChange} inputValue={uriVal}>
           <Input
             autoComplete="off"
             variant="filled"
@@ -46,7 +45,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
               handleOnChange(event.target.value);
             }}
           />
-        </AutocompleteTaskReferenceName>
+        </AutocompleteTaskReferenceNameMenu>
       </FormControl>
       <FormControl id="method" my={6}>
         <FormLabel>Method</FormLabel>

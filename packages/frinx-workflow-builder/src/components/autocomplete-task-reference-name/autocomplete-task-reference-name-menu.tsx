@@ -1,32 +1,25 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { Text, ListItem, Box, List } from '@chakra-ui/react';
 import { ExtendedTask } from '../../helpers/types';
 
 type Props = {
-  tasks: ExtendedTask | ExtendedTask[];
+  tasks: ExtendedTask[];
   onChange: (updatedInputValue: string) => void;
   inputValue: string;
 };
 
-const AutocompleteTaskReferenceName: FC<Props> = ({ tasks, children, onChange, inputValue }) => {
-  const tasksList: ExtendedTask[] = useMemo(() => {
-    return Array.isArray(tasks) ? tasks : [tasks];
-  }, [tasks]) as ExtendedTask[];
-  const [filteredTasks, setFilteredTasks] = useState(tasksList);
+const AutocompleteTaskReferenceNameMenu: FC<Props> = ({ tasks, children, onChange, inputValue }) => {
+  const tasksList: ExtendedTask[] = tasks;
   const [isInputActive, setIsInputActive] = useState(false);
 
   const autocompleteTaskRefName = (taskRefName: string): void => {
     onChange('${'.concat(taskRefName));
   };
 
-  useEffect(() => {
-    setFilteredTasks(() => {
-      return tasksList.filter((task) => {
-        const inputVal = inputValue.replace('${', '');
-        return task.taskReferenceName.toLowerCase().includes(inputVal.toLowerCase());
-      });
-    });
-  }, [inputValue, tasksList]);
+  const filteredTasks = tasksList.filter((task) => {
+    const inputVal = inputValue.replace('${', '');
+    return task.taskReferenceName.toLowerCase().includes(inputVal.toLowerCase()) && task.taskReferenceName !== inputVal;
+  });
 
   return (
     <Box
@@ -73,4 +66,4 @@ const AutocompleteTaskReferenceName: FC<Props> = ({ tasks, children, onChange, i
   );
 };
 
-export default AutocompleteTaskReferenceName;
+export default AutocompleteTaskReferenceNameMenu;

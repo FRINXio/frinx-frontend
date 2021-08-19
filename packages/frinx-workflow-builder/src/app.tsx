@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 import 'beautiful-react-diagrams/dist/styles.css';
 import Diagram, { useSchema, Canvas, useCanvasState, CanvasControls } from 'beautiful-react-diagrams';
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
@@ -18,7 +18,6 @@ import { NodeData, ExtendedTask, Workflow, CustomNodeType, TaskDefinition } from
 import { useTaskActions } from './task-actions-context';
 import ExpandedWorkflowModal from './components/expanded-workflow-modal/expanded-workflow-modal';
 import callbackUtils from './callback-utils';
-import { useWorkflowTasks } from './helpers/task.helpers';
 
 type Props = {
   onClose: () => void;
@@ -86,15 +85,9 @@ const App: FC<Props> = ({
   const { selectedTask, selectTask } = useTaskActions(handleDeleteButtonClick);
 
   const { name, tasks } = workflow;
-  const { updateTaskList, setTaskList } = useWorkflowTasks();
-
-  useEffect(() => {
-    setTaskList(tasks);
-  }, [tasks, setTaskList]);
 
   const handleAddButtonClick = (t: ExtendedTask) => {
     addNode(schemaCtrlRef.current.createTaskNode(t));
-    updateTaskList(t);
   };
 
   const handleFormSubmit = (t: ExtendedTask) => {
@@ -207,6 +200,7 @@ const App: FC<Props> = ({
                     selectTask(null);
                   }}
                   onFormSubmit={handleFormSubmit}
+                  tasks={tasks}
                 />
               </Box>
             </RightDrawer>
