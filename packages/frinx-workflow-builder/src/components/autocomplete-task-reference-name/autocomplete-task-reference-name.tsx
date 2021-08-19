@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Text, ListItem, Box, List } from '@chakra-ui/react';
 import { ExtendedTask } from '../../helpers/types';
-import './autocomplete-task-reference-name.css';
 
 type Props = {
   tasks: ExtendedTask | ExtendedTask[];
@@ -31,7 +30,8 @@ const AutocompleteTaskReferenceName: FC<Props> = ({ tasks, children, onChange, i
 
   return (
     <Box
-      className="autocomplete"
+      position="relative"
+      display="inline-block"
       onClick={() => setIsInputActive(true)}
       onBlur={() => {
         setTimeout(() => setIsInputActive(false), 150);
@@ -39,10 +39,26 @@ const AutocompleteTaskReferenceName: FC<Props> = ({ tasks, children, onChange, i
     >
       {children}
       {isInputActive && (
-        <List className="autocomplete-items">
-          {filteredTasks.map((task) => (
+        <List
+          borderX="1px solid #e9e9e9"
+          position="absolute"
+          borderTop="none"
+          zIndex="99"
+          top="100%"
+          left={0}
+          right={0}
+          listStyleType="none"
+          borderBottom="1px solid #e9e9e9"
+        >
+          {filteredTasks.map((task, i) => (
             <ListItem
+              padding={4}
+              cursor="pointer"
+              backgroundColor="#fff"
+              _hover={{ backgroundColor: '#e9e9e9' }}
               key={task.id}
+              borderBottomRadius={i === filteredTasks.length - 1 ? 0 : 2}
+              borderBottom={i === filteredTasks.length - 1 ? '' : '1px solid #e9e9e9'}
               onClick={() => {
                 autocompleteTaskRefName(task.taskReferenceName);
               }}
