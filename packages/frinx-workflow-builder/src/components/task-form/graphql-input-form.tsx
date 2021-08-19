@@ -1,38 +1,52 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { Box, FormControl, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
-import { GraphQLInputParams } from '../../helpers/types';
+import { ExtendedTask, GraphQLInputParams } from '../../helpers/types';
 import Editor from '../common/editor';
+import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-name/autocomplete-task-reference-name-menu';
 
 type Props = {
   params: GraphQLInputParams;
+  tasks: ExtendedTask[];
+  task: ExtendedTask;
   onChange: (params: GraphQLInputParams) => void;
 };
 
-const GraphQLInputsForm: FC<Props> = ({ params, onChange }) => {
+const GraphQLInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
   const { contentType, method, uri, body, timeout, headers } = params.http_request;
   const { query, variables } = body;
   const theme = useTheme();
+
+  const [uriVal, setUriVal] = useState(uri);
+
+  const handleOnChange = (updatedInputValue: string): void => {
+    setUriVal(updatedInputValue);
+
+    onChange({
+      ...params,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      http_request: {
+        ...params.http_request,
+        uri: updatedInputValue,
+      },
+    });
+  };
 
   return (
     <>
       <FormControl id="uri" my={6}>
         <FormLabel>URI</FormLabel>
-        <Input
-          variant="filled"
-          name="uri"
-          value={uri}
-          onChange={(event) => {
-            event.persist();
-            onChange({
-              ...params,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              http_request: {
-                ...params.http_request,
-                uri: event.target.value,
-              },
-            });
-          }}
-        />
+        <AutocompleteTaskReferenceNameMenu tasks={tasks} task={task} onChange={handleOnChange} inputValue={uriVal}>
+          <Input
+            autoComplete="off"
+            variant="filled"
+            name="uri"
+            value={uriVal}
+            onChange={(event) => {
+              event.persist();
+              handleOnChange(event.target.value);
+            }}
+          />
+        </AutocompleteTaskReferenceNameMenu>
       </FormControl>
       <FormControl id="method" my={6}>
         <FormLabel>Method</FormLabel>
