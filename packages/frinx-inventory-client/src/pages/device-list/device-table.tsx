@@ -1,12 +1,13 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Badge, Button, HStack, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
-import { AddIcon, MinusIcon } from '@chakra-ui/icons';
+import { Badge, Button, HStack, IconButton, Icon, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { AddIcon, MinusIcon, SettingsIcon } from '@chakra-ui/icons';
 import { DevicesQuery } from '../../__generated__/graphql';
 
 type Props = {
   devices: DevicesQuery['devices']['edges'];
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
+  onSettingsButtonClick: (deviceId: string) => void;
   isLoading: boolean;
 };
 
@@ -14,6 +15,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   devices,
   onInstallButtonClick,
   onUninstallButtonClick,
+  onSettingsButtonClick,
   isLoading,
 }) => {
   return (
@@ -27,6 +29,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           <Th>Zone</Th>
           <Th>Status</Th>
           <Th>Actions</Th>
+          <Th>Config</Th>
         </Tr>
       </Thead>
       <Tbody>
@@ -79,6 +82,15 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     </Button>
                   )}
                 </HStack>
+              </Td>
+              <Td>
+                <IconButton
+                  aria-label="config"
+                  isDisabled={device.status !== 'INSTALLED'}
+                  variant="unstyled"
+                  icon={<Icon size={20} as={SettingsIcon} />}
+                  onClick={() => onSettingsButtonClick(device.id)}
+                />
               </Td>
             </Tr>
           );

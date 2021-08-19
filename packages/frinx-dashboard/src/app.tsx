@@ -75,9 +75,6 @@ const AppWithAuth: FC<{
                   <UniresourceApp />
                 </Route>
               )}
-              <Route path="/inventory">
-                <InventoryApp />
-              </Route>
             </Switch>
           </Box>
         </BrowserRouter>

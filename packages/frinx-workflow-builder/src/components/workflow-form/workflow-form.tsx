@@ -44,7 +44,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
   const { name, description, version, restartable, ownerEmail, timeoutPolicy, timeoutSeconds, outputParameters } =
     workflowState;
   const [newParam, setNewParam] = useState<string>('');
-  const isNameInvalid = canEditName ? isWorkflowNameAvailable(workflows, name) : false;
+  const isNameInvalid = canEditName ? !isWorkflowNameAvailable(workflows, name) : false;
 
   return (
     <form
@@ -239,7 +239,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
       </Box>
       <Divider my={6} />
       <HStack spacing={2} align="center">
-        <Button type="submit" colorScheme="blue" isDisabled={isNameInvalid}>
+        <Button type="submit" colorScheme="blue" isDisabled={isNameInvalid && name.trim().length === 0}>
           Save changes
         </Button>
         {onClose && <Button onClick={onClose}>Cancel</Button>}

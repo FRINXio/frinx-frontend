@@ -61,9 +61,11 @@ const DELETE_POOL_MUTATION = gql`
 
 type Props = {
   onNewPoolBtnClick: () => void;
+  onNewIpv4PrefixBtnClick: () => void;
+  onNewVlanBtnClick: () => void;
 };
 
-const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick }) => {
+const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onNewIpv4PrefixBtnClick, onNewVlanBtnClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [{ data, fetching, error }] = useQuery<QueryAllPoolsQuery>({
     query: POOLS_QUERY,
@@ -110,10 +112,10 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick }) => {
               onClick={onToggle}
             />
             <MenuList>
-              <MenuItem as={Link} href="/uniresource/pools/new/allocating/ipv4-prefix">
+              <MenuItem as={Link} onClick={onNewIpv4PrefixBtnClick}>
                 IPv4 prefix pool
               </MenuItem>
-              <MenuItem as={Link} href="/uniresource/pools/new/allocating/vlan">
+              <MenuItem as={Link} onClick={onNewVlanBtnClick}>
                 Vlan pool
               </MenuItem>
             </MenuList>

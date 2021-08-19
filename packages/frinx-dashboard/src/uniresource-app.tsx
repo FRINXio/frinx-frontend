@@ -65,6 +65,12 @@ const UniresourceApp: FC = () => {
             onNewPoolBtnClick={() => {
               history.push('/uniresource/pools/new');
             }}
+            onNewIpv4PrefixBtnClick={() => {
+              history.push('/uniresource/pools/new/allocating/ipv4-prefix');
+            }}
+            onNewVlanBtnClick={() => {
+              history.push('/uniresource/pools/new/allocating/vlan');
+            }}
           />
         </Route>
         <Route exact path="/uniresource/pools/new/allocating/ipv4-prefix">

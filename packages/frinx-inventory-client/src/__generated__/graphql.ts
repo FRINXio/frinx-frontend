@@ -34,6 +34,17 @@ export type AddZonePayload = {
   zone: Zone;
 };
 
+export type CommitConfigPayload = {
+  __typename?: 'CommitConfigPayload';
+  isOk: Maybe<Scalars['Boolean']>;
+};
+
+export type DataStore = {
+  __typename?: 'DataStore';
+  config: Maybe<Scalars['String']>;
+  operational: Maybe<Scalars['String']>;
+};
+
 export type DeleteDevicePayload = {
   __typename?: 'DeleteDevicePayload';
   device: Maybe<Device>;
@@ -79,6 +90,8 @@ export type Mutation = {
   installDevice: InstallDevicePayload;
   uninstallDevice: UninstallDevicePayload;
   addZone: AddZonePayload;
+  updateDataStore: UpdateDataStorePayload;
+  commitConfig: CommitConfigPayload;
 };
 
 
@@ -112,6 +125,17 @@ export type MutationAddZoneArgs = {
   input: AddZoneInput;
 };
 
+
+export type MutationUpdateDataStoreArgs = {
+  deviceId: Scalars['String'];
+  input: UpdateDataStoreInput;
+};
+
+
+export type MutationCommitConfigArgs = {
+  deviceId: Scalars['String'];
+};
+
 export type Node = {
   id: Scalars['ID'];
 };
@@ -129,6 +153,7 @@ export type Query = {
   node: Maybe<Node>;
   devices: DevicesConnection;
   zones: ZonesConnection;
+  dataStore: Maybe<DataStore>;
 };
 
 
@@ -152,9 +177,23 @@ export type QueryZonesArgs = {
   before?: Maybe<Scalars['String']>;
 };
 
+
+export type QueryDataStoreArgs = {
+  deviceId: Scalars['String'];
+};
+
 export type UninstallDevicePayload = {
   __typename?: 'UninstallDevicePayload';
   device: Device;
+};
+
+export type UpdateDataStoreInput = {
+  config: Scalars['String'];
+};
+
+export type UpdateDataStorePayload = {
+  __typename?: 'UpdateDataStorePayload';
+  dataStore: DataStore;
 };
 
 export type UpdateDeviceInput = {
@@ -221,6 +260,49 @@ export type ZonesQuery = (
         & Pick<Zone, 'id' | 'name'>
       ) }
     )> }
+  ) }
+);
+
+export type QueryDataStoreQueryVariables = Exact<{
+  deviceId: Scalars['String'];
+}>;
+
+
+export type QueryDataStoreQuery = (
+  { __typename?: 'Query' }
+  & { dataStore: Maybe<(
+    { __typename?: 'DataStore' }
+    & Pick<DataStore, 'config' | 'operational'>
+  )> }
+);
+
+export type UpdateDataStoreMutationVariables = Exact<{
+  deviceId: Scalars['String'];
+  input: UpdateDataStoreInput;
+}>;
+
+
+export type UpdateDataStoreMutation = (
+  { __typename?: 'Mutation' }
+  & { updateDataStore: (
+    { __typename?: 'UpdateDataStorePayload' }
+    & { dataStore: (
+      { __typename?: 'DataStore' }
+      & Pick<DataStore, 'config' | 'operational'>
+    ) }
+  ) }
+);
+
+export type CommitDataStoreConfigMutationVariables = Exact<{
+  deviceId: Scalars['String'];
+}>;
+
+
+export type CommitDataStoreConfigMutation = (
+  { __typename?: 'Mutation' }
+  & { commitConfig: (
+    { __typename?: 'CommitConfigPayload' }
+    & Pick<CommitConfigPayload, 'isOk'>
   ) }
 );
 
