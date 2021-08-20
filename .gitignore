@@ -93,8 +93,6 @@ packages/frinx-workflow-ui/dist
 dist
 build
 
-packages/frinx-inventory-client/src/__generated__
-
 # yarn files
 /.yarn/*
 !/.yarn/releases
