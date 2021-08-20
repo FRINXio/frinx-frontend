@@ -17,6 +17,8 @@ import {
   AddSnapshotMutationVariables,
   ApplySnapshotMutation,
   ApplySnapshotMutationVariables,
+  SyncFromNetworkMutation,
+  SyncFromNetworkMutationVariables,
 } from '../../__generated__/graphql';
 import DiffOutputModal from './diff-output-modal';
 
@@ -82,6 +84,16 @@ const APPLY_SNAPSHOT_MUTATION = gql`
   }
 `;
 
+const SYNC_FROM_NETWORK_MUTATION = gql`
+  mutation syncFromNetwork($deviceId: String!) {
+    syncFromNetwork(deviceId: $deviceId) {
+      dataStore {
+        operational
+      }
+    }
+  }
+`;
+
 type Props = {
   deviceId: string;
 };
@@ -100,6 +112,9 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
   const [, resetConfig] = useMutation<ResetConfigMutation, ResetConfigMutationVariables>(RESET_CONFIG_MUTATION);
   const [, addSnapshot] = useMutation<AddSnapshotMutation, AddSnapshotMutationVariables>(ADD_SNAPSHOT_MUTATION);
   const [, applySnapshot] = useMutation<ApplySnapshotMutation, ApplySnapshotMutationVariables>(APPLY_SNAPSHOT_MUTATION);
+  const [, syncFromNetwork] = useMutation<SyncFromNetworkMutation, SyncFromNetworkMutationVariables>(
+    SYNC_FROM_NETWORK_MUTATION,
+  );
 
   const [config, setConfig] = useState<string>();
   const toast = useToast();
@@ -194,7 +209,6 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
 
   const handleOnApplySnapshot = async (name: string) => {
     const { error: responseError } = await applySnapshot({ input: { name, deviceId } });
-
     const hasError = responseError != null;
 
     toast({
@@ -202,6 +216,18 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
       isClosable: true,
       status: hasError ? 'error' : 'success',
       title: hasError ? 'Failed to apply snapshot' : 'Successfully applied snapshot',
+    });
+  };
+
+  const handleSyncBtnClick = async () => {
+    const { error: responseError } = await syncFromNetwork({ deviceId });
+    const hasError = responseError != null;
+
+    toast({
+      duration: 2000,
+      isClosable: true,
+      status: hasError ? 'error' : 'success',
+      title: hasError ? 'Failed to sync from network' : 'Successfully synced from network',
     });
   };
 
@@ -250,6 +276,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
             onRefreshBtnClick={() => {
               reexecuteQuery({ requestPolicy: 'network-only' });
             }}
+            onSyncBtnClick={handleSyncBtnClick}
           />
         </Box>
       </Container>
