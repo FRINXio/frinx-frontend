@@ -38,7 +38,7 @@ const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId }) =>
     return null;
   }
 
-  const { output } = data.calculatedDiff;
+  const output = data?.calculatedDiff.output ?? '';
 
   return (
     <Modal isOpen onClose={onClose} size="6xl">

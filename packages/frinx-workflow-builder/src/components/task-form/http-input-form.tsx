@@ -66,8 +66,11 @@ const HTTPInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
             const eventValue = event.target.value as HTTPMethod;
             onChange({
               ...params,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              // eslint-disable-next-line
               http_request: {
+                //
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 ...params.http_request,
                 // we can safely cast this

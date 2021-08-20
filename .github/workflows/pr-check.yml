@@ -27,6 +27,8 @@ jobs:
             yarn run formatter:check && \
             yarn run dedubcheck && \
             cd /work/packages/frinx-dashboard && yarn run lint && \
+            cd /work/packages/frinx-workflow-builder && yarn run type-check && \
             cd /work/packages/frinx-workflow-builder && yarn run lint && \
-            cd /work/packages/frinx-inventory-server && yarn run lint && \
-            cd /work/packages/frinx-inventory-client && yarn run lint
+            cd /work/packages/frinx-inventory-client && yarn run codegen && \
+            cd /work/packages/frinx-inventory-client && yarn run type-check && \
+            cd /work/packages/frinx-inventory-client && yarn run lint && \
