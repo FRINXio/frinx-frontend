@@ -367,10 +367,12 @@ class WorkflowExec extends Component {
   }
 
   changeLabels(e) {
-    this.props.updateByLabel(e[0]);
+    this.props.updateByLabel(e);
     if (this.state.allData) {
+      console.log('all', this.state);
       this.props.fetchNewData(1, this.state.defaultPages);
     } else {
+      console.log('not all', this.state);
       this.state.openParentWfs.forEach((parent) => this.showChildrenWorkflows(parent, null, null));
       this.update([], []);
       this.props.updateSize(1);
@@ -452,7 +454,7 @@ class WorkflowExec extends Component {
             <WfAutoComplete
               options={['RUNNING', 'COMPLETED', 'FAILED', 'TIMED_OUT', 'TERMINATED', 'PAUSED']}
               onChange={(e) => this.changeLabels(e)}
-              selected={this.props.searchReducer.labels}
+              selected={this.props.searchReducer.label}
               placeholder="Search by status."
               ref={(ref) => (this._typeahead = ref)}
             />

@@ -16,17 +16,17 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { matchSorter } from 'match-sorter';
 
 type Props = {
-  options: string[],
-  onChange: (labels: string[]) => void,
-  selected: string[],
-  placeholder: string,
+  options: string[];
+  onChange: (labels: string[]) => void;
+  selected: string[];
+  placeholder: string;
 };
 
 const WfAutoComplete = forwardRef((props: Props, ref) => {
   const [query, setQuery] = React.useState('');
   const [active, setActive] = React.useState(0);
   const [isOptionsVisible, setOptionsVisible] = React.useState(false);
-  const eventRef = React.useRef(null);
+  const eventRef = React.useRef<null | string>(null);
 
   useImperativeHandle(ref, () => ({
     clear() {
@@ -131,6 +131,7 @@ const WfAutoComplete = forwardRef((props: Props, ref) => {
         {selected && selected.length > 0 && (
           <InputRightElement>
             <IconButton
+              aria-label="Clear"
               variant="ghost"
               colorScheme="gray"
               icon={<Icon as={FontAwesomeIcon} icon={faTimes} />}
@@ -146,7 +147,7 @@ const WfAutoComplete = forwardRef((props: Props, ref) => {
             {results.map((item, index) => {
               return (
                 <Box
-                  key={item}
+                  key={index}
                   padding={2}
                   backgroundColor={active == index ? 'gray.50' : 'white'}
                   onMouseOver={() => {
@@ -157,8 +158,8 @@ const WfAutoComplete = forwardRef((props: Props, ref) => {
                   }}
                   onClick={(e) => {
                     e.preventDefault();
-                    if (!selected?.includes(item.value)) {
-                      onChange([...selected, item.value]);
+                    if (!selected || !selected.includes(item.value)) {
+                      onChange([item.value]);
                       setQuery('');
                     }
                     setOptionsVisible(false);
