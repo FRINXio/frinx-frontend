@@ -46,7 +46,7 @@ const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId }) =>
       <ModalContent>
         <ModalHeader>Calculated diff output</ModalHeader>
         <ModalCloseButton />
-        <ModalBody pb={6}>
+        <ModalBody overflowX="auto">
           <pre>
             <code>{JSON.stringify(JSON.parse(output), null, 2)}</code>
           </pre>

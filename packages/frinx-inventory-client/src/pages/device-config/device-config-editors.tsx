@@ -26,6 +26,7 @@ type Props = {
   onConfigSaveBtnClick: () => void;
   onReplaceBtnClick: () => void;
   onRefreshBtnClick: () => void;
+  onSyncBtnClick: () => void;
 };
 
 const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
@@ -35,6 +36,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
   onConfigSaveBtnClick,
   onRefreshBtnClick,
   onReplaceBtnClick,
+  onSyncBtnClick,
 }) => {
   return (
     <Box>
@@ -84,7 +86,12 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
             </Heading>
           </Box>
           <Flex justifyContent="flex-end" paddingX={4} paddingY={2}>
-            <Button size="sm" colorScheme="blue" leftIcon={<Icon size={20} as={FeatherIcon} icon="refresh-ccw" />}>
+            <Button
+              size="sm"
+              colorScheme="blue"
+              leftIcon={<Icon size={20} as={FeatherIcon} icon="refresh-ccw" />}
+              onClick={onSyncBtnClick}
+            >
               Sync from network
             </Button>
           </Flex>

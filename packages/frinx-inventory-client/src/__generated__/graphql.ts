@@ -73,8 +73,8 @@ export type CommitConfigPayload = {
 
 export type DataStore = {
   __typename?: 'DataStore';
-  config: Scalars['String'];
-  operational: Scalars['String'];
+  config: Maybe<Scalars['String']>;
+  operational: Maybe<Scalars['String']>;
   snapshots: Array<Snapshot>;
 };
 
@@ -128,6 +128,7 @@ export type Mutation = {
   resetConfig: ResetConfigPayload;
   addSnapshot: Maybe<AddSnapshotPayload>;
   applySnapshot: ApplySnapshotPayload;
+  syncFromNetwork: SyncFromNetworkPayload;
 };
 
 
@@ -185,6 +186,11 @@ export type MutationAddSnapshotArgs = {
 
 export type MutationApplySnapshotArgs = {
   input: ApplySnapshotInput;
+};
+
+
+export type MutationSyncFromNetworkArgs = {
+  deviceId: Scalars['String'];
 };
 
 export type Node = {
@@ -248,6 +254,11 @@ export type Snapshot = {
   __typename?: 'Snapshot';
   name: Scalars['String'];
   createdAt: Scalars['String'];
+};
+
+export type SyncFromNetworkPayload = {
+  __typename?: 'SyncFromNetworkPayload';
+  dataStore: Maybe<DataStore>;
 };
 
 export type UninstallDevicePayload = {
@@ -420,6 +431,22 @@ export type ApplySnapshotMutation = (
   & { applySnapshot: (
     { __typename?: 'ApplySnapshotPayload' }
     & Pick<ApplySnapshotPayload, 'isOk' | 'output'>
+  ) }
+);
+
+export type SyncFromNetworkMutationVariables = Exact<{
+  deviceId: Scalars['String'];
+}>;
+
+
+export type SyncFromNetworkMutation = (
+  { __typename?: 'Mutation' }
+  & { syncFromNetwork: (
+    { __typename?: 'SyncFromNetworkPayload' }
+    & { dataStore: Maybe<(
+      { __typename?: 'DataStore' }
+      & Pick<DataStore, 'operational'>
+    )> }
   ) }
 );
 
