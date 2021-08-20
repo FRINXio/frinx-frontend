@@ -30,4 +30,4 @@ jobs:
             cd /work/packages/frinx-workflow-builder && yarn run type-check && \
             cd /work/packages/frinx-workflow-builder && yarn run lint && \
             cd /work/packages/frinx-inventory-client && yarn run type-check && \
-            cd /work/packages/frinx-inventory-client && yarn run lint && \
+            cd /work/packages/frinx-inventory-client && yarn run lint
