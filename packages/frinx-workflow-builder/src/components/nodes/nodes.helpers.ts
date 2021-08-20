@@ -15,7 +15,10 @@ const NODE_COLOR_MAP: Record<TaskLabel, string> = {
   event: 'purple.300',
   wait: 'pink.200',
   raw: 'green.200',
-  'dynamic fork': 'cyan.300',
+  'exclusive join': 'cyan.300',
+  'sub workflow': 'cyan.400',
+  custom: 'cyan.300',
+  simple: 'gray.400',
   start: 'green.100',
   end: 'red.100',
 };
