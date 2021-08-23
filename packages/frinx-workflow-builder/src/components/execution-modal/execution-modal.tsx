@@ -1,4 +1,5 @@
 /* eslint-disable */
+// @ts-nocheck
 import React, { FC, FormEvent, useEffect, useState } from 'react';
 import {
   Button,
