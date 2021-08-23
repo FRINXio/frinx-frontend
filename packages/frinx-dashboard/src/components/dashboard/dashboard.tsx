@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { Box, Code, Container, Heading, HStack, List, ListItem } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
 import Panel from '../panel/panel';
 import { ServiceKey } from '../../types';
 import UniflowActions from './uniflow-actions';
@@ -72,18 +71,14 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
           <List mb={10}>
             <ListItem>
               <p>
-                <a
-                  href="https://editor.swagger.io/?url=https://gist.githubusercontent.com/marosmars/4951c0395837cc04cae374c2a01eb209/raw/fb2e3d579679753b424f86170b54135bec668768/uniconfig_427.yaml"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href={`${window.__CONFIG__.uniconfig_api_docs_url}`} rel="noopener noreferrer">
                   UniConfig
                 </a>
               </p>
             </ListItem>
             <ListItem>
               <p>
-                <Link to="/api/inventory">Device inventory</Link>
+                <a href={`${window.__CONFIG__.inventory_api_url}`}>Device inventory</a>
               </p>
             </ListItem>
           </List>
