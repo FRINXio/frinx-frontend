@@ -15,6 +15,7 @@ declare interface Window {
     conductor_api_url: string;
     uniconfig_api_url: string;
     uniconfig_auth: string;
+    uniconfig_api_docs_url: string;
     uniresource_enabled: boolean;
     uniconfig_enabled: boolean;
     uniflow_enabled: boolean;
