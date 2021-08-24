@@ -16,6 +16,7 @@ type SelectedLabelsProps = {
 
 type LabelOptionsProps = {
   labels: string[];
+  selectedLabels: string[];
   onAdd: (label: string) => void;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 };
@@ -46,16 +47,27 @@ const SelectedLabels: FC<SelectedLabelsProps> = ({ labels, onRemove }): JSX.Elem
   );
 };
 
-const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, onChange }): JSX.Element => {
+const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, onChange, selectedLabels }): JSX.Element => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     onChange(event);
   };
 
+  const filteredLabels = labels.filter((label) => selectedLabels.indexOf(label) === -1);
+
   return (
     <Box position="relative">
-      <Input onClick={onOpen} placeholder="Search by status" onBlur={onClose} onChange={handleOnChange} />
+      <Input
+        onClick={onOpen}
+        placeholder="Search by status"
+        onChange={handleOnChange}
+        onBlur={() => {
+          setTimeout(() => {
+            onClose();
+          }, 150);
+        }}
+      />
       {isOpen && (
         <Box
           bg="white"
@@ -67,7 +79,7 @@ const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, onChange }): JSX.E
           borderColor="gray.100"
         >
           <Box>
-            {labels.map((label, index) => {
+            {filteredLabels.map((label, index) => {
               return (
                 <Box
                   _hover={{ bg: 'gray.100' }}
@@ -105,7 +117,7 @@ const SearchByLabelInput: FC<Props> = ({ labels, selectedLabels, onAdd, onRemove
   return (
     <InputGroup>
       <SelectedLabels labels={selectedLabels} onRemove={handleOnRemove} />
-      <LabelOptions labels={labels} onAdd={handleOnAdd} onChange={onChange} />
+      <LabelOptions labels={labels} selectedLabels={selectedLabels} onAdd={handleOnAdd} onChange={onChange} />
     </InputGroup>
   );
 };

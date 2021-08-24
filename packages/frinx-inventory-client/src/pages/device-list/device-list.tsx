@@ -12,7 +12,7 @@ import {
 } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 
-const LABELS = ['label', 'hostname', 'ip', 'mac'];
+const LABELS = ['label', 'hostname', 'ip', 'mac', 'ciena'];
 
 const DEVICES_QUERY = gql`
   query Devices {
@@ -62,8 +62,8 @@ type Props = {
 
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick }) => {
   const toast = useToast();
-  const [selectedLabels, setSelectedLabels] = useState<string[]>(['']);
-  const [labels, setLabels] = useState<string[]>([]);
+  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
+  const [labels, setLabels] = useState<string[]>(LABELS);
   const [{ data, fetching, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({ query: DEVICES_QUERY });
   const [{ fetching: isInstalLoading }, installDevice] = useMutation<
     InstallDeviceMutation,
@@ -120,7 +120,16 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     setLabels(LABELS.filter((l) => l.includes(e.target.value)));
   };
 
-  const { devices } = data!;
+  const { devices } = data;
+
+  const filteredDevicesByLabel = devices.edges.filter((edge) => {
+    const { node } = edge;
+    const { vendor } = node;
+    if (selectedLabels.length === 0) {
+      return true;
+    }
+    return selectedLabels.includes(vendor!);
+  });
 
   return (
     <Container maxWidth={1280}>
@@ -142,7 +151,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
         />
       </Box>
       <DeviceTable
-        devices={devices.edges}
+        devices={filteredDevicesByLabel}
         onInstallButtonClick={handleInstallButtonClick}
         onUninstallButtonClick={handleUninstallButtonClick}
         onSettingsButtonClick={onSettingsButtonClick}
