@@ -410,6 +410,22 @@ export type ZonesQuery = (
   ) }
 );
 
+export type CreateLabelMutationVariables = Exact<{
+  input: CreateLabelInput;
+}>;
+
+
+export type CreateLabelMutation = (
+  { __typename?: 'Mutation' }
+  & { newLabel: (
+    { __typename?: 'CreateLabelPayload' }
+    & { label: Maybe<(
+      { __typename?: 'Label' }
+      & Pick<Label, 'id' | 'name' | 'createdAt' | 'updatedAt'>
+    )> }
+  ) }
+);
+
 export type QueryDataStoreQueryVariables = Exact<{
   deviceId: Scalars['String'];
 }>;

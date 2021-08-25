@@ -1,4 +1,4 @@
-import { Button, Divider, FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
+import { Button, Divider, FormControl, FormErrorMessage, FormLabel, Input, InputGroup, Select } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import Editor from 'react-ace';
 import { useFormik } from 'formik';
@@ -7,13 +7,14 @@ import { ZonesQuery } from '../../__generated__/graphql';
 
 type Props = {
   zones: ZonesQuery['zones']['edges'];
-  onFormSubmit: (device: FormValues) => void;
+  onFormSubmit: (device: FormValues) => Promise<void>;
 };
 
 type FormValues = {
   name: string;
   zoneId: string;
   mountParameters: string;
+  labels: string;
 };
 
 const deviceSchema = yup.object({
@@ -26,6 +27,7 @@ const INITIAL_VALUES: FormValues = {
   name: '',
   zoneId: '',
   mountParameters: '{}',
+  labels: '',
 };
 
 const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones }) => {
@@ -64,6 +66,13 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones }) => {
           ))}
         </Select>
         <FormErrorMessage>{errors.zoneId}</FormErrorMessage>
+      </FormControl>
+
+      <FormControl my={6}>
+        <FormLabel>Labels</FormLabel>
+        <InputGroup>
+          <Input value={values.labels} name="labels" placeholder="Enter labels" onChange={handleChange} />
+        </InputGroup>
       </FormControl>
 
       <FormControl my={6}>
