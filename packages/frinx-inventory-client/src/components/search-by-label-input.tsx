@@ -1,12 +1,11 @@
 import { InputGroup, InputLeftAddon, Tag, TagCloseButton, Input, useDisclosure, Box } from '@chakra-ui/react';
-import React, { ChangeEvent, FC } from 'react';
+import React, { FC } from 'react';
 
 type Props = {
   labels: string[];
   selectedLabels: string[];
   onRemove: (label: string) => void;
   onAdd: (label: string) => void;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 type SelectedLabelsProps = {
@@ -18,7 +17,6 @@ type LabelOptionsProps = {
   labels: string[];
   selectedLabels: string[];
   onAdd: (label: string) => void;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 const SelectedLabels: FC<SelectedLabelsProps> = ({ labels, onRemove }): JSX.Element => {
@@ -47,21 +45,20 @@ const SelectedLabels: FC<SelectedLabelsProps> = ({ labels, onRemove }): JSX.Elem
   );
 };
 
-const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, onChange, selectedLabels }): JSX.Element => {
+const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, selectedLabels }): JSX.Element => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [filteredLabels, setFilteredLabels] = React.useState(labels);
 
-  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange(event);
+  const handleOnLabelInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilteredLabels(labels.filter((l) => l.includes(e.target.value) && selectedLabels.indexOf(l) === -1));
   };
-
-  const filteredLabels = labels.filter((label) => selectedLabels.indexOf(label) === -1);
 
   return (
     <Box position="relative">
       <Input
         onClick={onOpen}
         placeholder="Search by status"
-        onChange={handleOnChange}
+        onChange={handleOnLabelInputChange}
         onBlur={() => {
           setTimeout(() => {
             onClose();
@@ -105,7 +102,7 @@ const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, onChange, selected
   );
 };
 
-const SearchByLabelInput: FC<Props> = ({ labels, selectedLabels, onAdd, onRemove, onChange }): JSX.Element => {
+const SearchByLabelInput: FC<Props> = ({ labels, selectedLabels, onAdd, onRemove }): JSX.Element => {
   const handleOnAdd = (label: string): void => {
     onAdd(label);
   };
@@ -117,7 +114,7 @@ const SearchByLabelInput: FC<Props> = ({ labels, selectedLabels, onAdd, onRemove
   return (
     <InputGroup>
       <SelectedLabels labels={selectedLabels} onRemove={handleOnRemove} />
-      <LabelOptions labels={labels} selectedLabels={selectedLabels} onAdd={handleOnAdd} onChange={onChange} />
+      <LabelOptions labels={labels} selectedLabels={selectedLabels} onAdd={handleOnAdd} />
     </InputGroup>
   );
 };

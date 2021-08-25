@@ -1,4 +1,4 @@
-import React, { useState, VoidFunctionComponent } from 'react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { Box, Button, Container, Flex, Heading, Progress, useToast } from '@chakra-ui/react';
 import DeviceTable from './device-table';
@@ -9,14 +9,15 @@ import {
   InstallDeviceMutationVariables,
   UninstallDeviceMutation,
   UninstallDeviceMutationVariables,
+  LabelsQuery,
 } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 
 const LABELS = ['label', 'hostname', 'ip', 'mac', 'ciena'];
 
 const DEVICES_QUERY = gql`
-  query Devices {
-    devices {
+  query Devices($labelIds: [String!]) {
+    devices(filter: { labelIds: $labelIds }) {
       edges {
         node {
           id
@@ -54,6 +55,18 @@ const UNINSTALL_DEVICE_MUTATION = gql`
     }
   }
 `;
+const LABELS_QUERY = gql`
+  query labels {
+    labels {
+      edges {
+        node {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
 
 type Props = {
   onAddButtonClick: () => void;
@@ -63,8 +76,10 @@ type Props = {
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick }) => {
   const toast = useToast();
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
-  const [labels, setLabels] = useState<string[]>(LABELS);
-  const [{ data, fetching, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({ query: DEVICES_QUERY });
+  const [{ data, fetching, error }, reexecuteQueryDevices] = useQuery<DevicesQuery, DevicesQueryVariables>({
+    query: DEVICES_QUERY,
+  });
+  const [{ data: labelsData }] = useQuery<LabelsQuery>({ query: LABELS_QUERY });
   const [{ fetching: isInstalLoading }, installDevice] = useMutation<
     InstallDeviceMutation,
     InstallDeviceMutationVariables
@@ -74,11 +89,17 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     UninstallDeviceMutationVariables
   >(UNINSTALL_DEVICE_MUTATION);
 
+  // useEffect(() => {
+  //   reexecuteQueryDevices({
+  //     variables: { labelIds: selectedLabels },
+  //   });
+  // }, [selectedLabels, labelsData, reexecuteQueryDevices]);
+
   if (fetching) {
     return <Progress size="xs" isIndeterminate mt={-10} />;
   }
 
-  if (error || data == null) {
+  if (error || data == null || labelsData == null) {
     return null;
   }
 
@@ -116,20 +137,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     setSelectedLabels(selectedLabels.concat(label));
   };
 
-  const handleOnLabelInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLabels(LABELS.filter((l) => l.includes(e.target.value)));
-  };
-
   const { devices } = data;
-
-  const filteredDevicesByLabel = devices.edges.filter((edge) => {
-    const { node } = edge;
-    const { vendor } = node;
-    if (selectedLabels.length === 0) {
-      return true;
-    }
-    return selectedLabels.includes(vendor!);
-  });
 
   return (
     <Container maxWidth={1280}>
@@ -143,15 +151,14 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
       </Flex>
       <Box mb={4}>
         <SearchByLabelInput
-          labels={labels}
+          labels={LABELS}
           onRemove={handleLabelRemoval}
           onAdd={handleLabelAddition}
           selectedLabels={selectedLabels}
-          onChange={handleOnLabelInputChange}
         />
       </Box>
       <DeviceTable
-        devices={filteredDevicesByLabel}
+        devices={devices.edges}
         onInstallButtonClick={handleInstallButtonClick}
         onUninstallButtonClick={handleUninstallButtonClick}
         onSettingsButtonClick={onSettingsButtonClick}
