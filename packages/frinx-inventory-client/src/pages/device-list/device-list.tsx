@@ -1,4 +1,4 @@
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { Box, Button, Container, Flex, Heading, Progress, useToast } from '@chakra-ui/react';
 import DeviceTable from './device-table';
@@ -75,10 +75,11 @@ type Props = {
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick }) => {
   const toast = useToast();
   const [selectedLabels, setSelectedLabels] = useState<Label[]>([]);
-  const [{ data, fetching, error }, reexecuteQueryDevices] = useQuery<DevicesQuery, DevicesQueryVariables>({
+  const [{ data, fetching, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
+    variables: { labelIds: selectedLabels.map((label) => label.id) },
   });
-  const [{ data: labelsData }] = useQuery<LabelsQuery>({ query: LABELS_QUERY });
+  const [{ data: labelsData, fetching: fetchingLabels }] = useQuery<LabelsQuery>({ query: LABELS_QUERY });
   const [{ fetching: isInstalLoading }, installDevice] = useMutation<
     InstallDeviceMutation,
     InstallDeviceMutationVariables
@@ -88,14 +89,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     UninstallDeviceMutationVariables
   >(UNINSTALL_DEVICE_MUTATION);
 
-  useEffect(() => {
-    reexecuteQueryDevices({
-      requestPolicy: 'network-only',
-      variables: { labelIds: selectedLabels.map((label) => label.id) },
-    });
-  }, [selectedLabels, labelsData, reexecuteQueryDevices]);
-
-  if (fetching) {
+  if (fetching || fetchingLabels) {
     return <Progress size="xs" isIndeterminate mt={-10} />;
   }
 

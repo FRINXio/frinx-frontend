@@ -156,7 +156,7 @@ const SearchByLabelInput: FC<Props> = ({ labels, selectedLabels, onAdd, onRemove
   };
 
   const handleOnLabelInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilteredLabels(labelList.filter((l) => l.name.includes(e.target.value)));
+    setFilteredLabels(labelList.filter((l) => l.name.toLowerCase().includes(e.target.value.toLowerCase())));
   };
 
   const handleOnAdd = (label: Label): void => {
