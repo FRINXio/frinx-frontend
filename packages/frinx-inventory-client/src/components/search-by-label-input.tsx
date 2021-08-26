@@ -69,11 +69,24 @@ const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, onLabelCreate, onC
   return (
     <Box position="relative">
       <InputGroup>
-        <Input onClick={onOpen} placeholder="Search by status" onChange={onChange} />
-        <InputRightAddon onClick={onToggle}>
-          {!isOpen && <Icon as={ChevronDownIcon} />}
-          {isOpen && <Icon as={ChevronUpIcon} />}
-        </InputRightAddon>
+        <Input
+          onClick={onOpen}
+          placeholder="Search by label"
+          onChange={onChange}
+          onBlur={() => {
+            if (!onLabelCreate) {
+              setTimeout(() => {
+                onClose();
+              }, 150);
+            }
+          }}
+        />
+        {onLabelCreate && (
+          <InputRightAddon onClick={onToggle}>
+            {!isOpen && <Icon as={ChevronDownIcon} />}
+            {isOpen && <Icon as={ChevronUpIcon} />}
+          </InputRightAddon>
+        )}
       </InputGroup>
       {isOpen && (
         <Box
