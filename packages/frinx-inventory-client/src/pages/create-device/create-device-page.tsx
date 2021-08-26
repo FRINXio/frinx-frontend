@@ -1,4 +1,4 @@
-import { Container, Heading, Box, useToast } from '@chakra-ui/react';
+import { Container, Heading, Box, useToast, Progress } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import {
@@ -8,6 +8,9 @@ import {
   ZonesQueryVariables,
   CreateLabelMutation,
   CreateLabelMutationVariables,
+  LabelsQuery,
+  LabelsQueryVariables,
+  Label,
 } from '../../__generated__/graphql';
 import CreateDeviceForm from './create-device-form';
 
@@ -55,11 +58,24 @@ const CREATE_LABEL = gql`
   }
 `;
 
+const LABELS_QUERY = gql`
+  query Labels {
+    labels {
+      edges {
+        node {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
 type FormValues = {
   name: string;
   zoneId: string;
   mountParameters: string;
-  labels: string;
+  labels: string[];
 };
 type Props = {
   onAddDeviceSuccess: () => void;
@@ -69,27 +85,23 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
   const toast = useToast();
   const [, addDevice] = useMutation<AddDeviceMutation, AddDeviceMutationVariables>(ADD_DEVICE_MUTATION);
   const [, createLabel] = useMutation<CreateLabelMutation, CreateLabelMutationVariables>(CREATE_LABEL);
-  const [{ data, fetching, error }] = useQuery<ZonesQuery, ZonesQueryVariables>({ query: ZONES_QUERY });
+  const [{ data, fetching }] = useQuery<ZonesQuery, ZonesQueryVariables>({ query: ZONES_QUERY });
+  const [{ data: labelsData, fetching: fetchingLabels }] = useQuery<LabelsQuery, LabelsQueryVariables>({
+    query: LABELS_QUERY,
+  });
+
+  const handleOnCreateLabel = async (labelName: string) => {
+    const result = await createLabel({ input: { name: labelName } });
+    return result.data?.newLabel.label as Label;
+  };
 
   const handleSubmit = async (values: FormValues) => {
-    const labels = await Promise.all(
-      values.labels.split(',').map(async (label) => {
-        const { data: createdLabel } = await createLabel({ input: { name: label } });
-
-        if (createdLabel == null) return null;
-
-        return createdLabel.newLabel;
-      }),
-    );
     addDevice({
       input: {
         name: values.name,
         mountParameters: values.mountParameters,
         zoneId: values.zoneId,
-        labelIds: [...labels].filter(Boolean).map((label) => {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          return label!.label!.id;
-        }),
+        labelIds: values.labels,
       },
     }).then(() => {
       toast({
@@ -102,8 +114,8 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
     });
   };
 
-  if (fetching || error) {
-    return null;
+  if (fetching || fetchingLabels) {
+    return <Progress size="xs" isIndeterminate mt={-10} />;
   }
 
   const zones = data?.zones.edges ?? [];
@@ -114,7 +126,14 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
         Add device
       </Heading>
       <Box background="white" boxShadow="base" px={4} py={2} height="100%">
-        {zones != null && <CreateDeviceForm onFormSubmit={handleSubmit} zones={zones} />}
+        {zones != null && (
+          <CreateDeviceForm
+            onFormSubmit={handleSubmit}
+            zones={zones}
+            labels={labelsData?.labels.edges}
+            onLabelCreate={handleOnCreateLabel}
+          />
+        )}
       </Box>
     </Container>
   );

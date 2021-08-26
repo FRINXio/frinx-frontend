@@ -1,20 +1,23 @@
-import { Button, Divider, FormControl, FormErrorMessage, FormLabel, Input, InputGroup, Select } from '@chakra-ui/react';
+import { Button, Divider, FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import Editor from 'react-ace';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { ZonesQuery } from '../../__generated__/graphql';
+import { Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
+import SearchByLabelInput from '../../components/search-by-label-input';
 
 type Props = {
   zones: ZonesQuery['zones']['edges'];
+  labels: LabelsQuery['labels']['edges'] | undefined;
   onFormSubmit: (device: FormValues) => Promise<void>;
+  onLabelCreate: (labelName: string) => Promise<Label>;
 };
 
 type FormValues = {
   name: string;
   zoneId: string;
   mountParameters: string;
-  labels: string;
+  labels: string[];
 };
 
 const deviceSchema = yup.object({
@@ -27,19 +30,35 @@ const INITIAL_VALUES: FormValues = {
   name: '',
   zoneId: '',
   mountParameters: '{}',
-  labels: '',
+  labels: [],
 };
 
-const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones }) => {
+const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreate }) => {
+  const [selectedLabels, setSelectedLabels] = React.useState<Label[]>([]);
   const { errors, values, handleSubmit, handleChange, isSubmitting, setFieldValue } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: deviceSchema,
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: (data) => {
-      onFormSubmit(data);
+      const updatedData = { ...data, labels: selectedLabels.map((label) => label.id) };
+      onFormSubmit(updatedData);
     },
   });
+
+  const handleLabelRemoval = (label: Label) => {
+    setSelectedLabels(selectedLabels.filter((l) => l.id !== label.id));
+  };
+
+  const handleLabelCreation = (labelName: string) => {
+    onLabelCreate(labelName).then((label) => {
+      setSelectedLabels(selectedLabels.concat(label));
+    });
+  };
+
+  const handleLabelAddition = (label: Label) => {
+    setSelectedLabels(selectedLabels.concat(label));
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -70,9 +89,13 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones }) => {
 
       <FormControl my={6}>
         <FormLabel>Labels</FormLabel>
-        <InputGroup>
-          <Input value={values.labels} name="labels" placeholder="Enter labels" onChange={handleChange} />
-        </InputGroup>
+        <SearchByLabelInput
+          labels={labels?.map((l) => l.node as Label)}
+          onRemove={handleLabelRemoval}
+          onAdd={handleLabelAddition}
+          selectedLabels={selectedLabels}
+          onLabelCreate={handleLabelCreation}
+        />
       </FormControl>
 
       <FormControl my={6}>

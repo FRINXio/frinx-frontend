@@ -1,4 +1,17 @@
-import { InputGroup, InputLeftAddon, Tag, TagCloseButton, Input, useDisclosure, Box } from '@chakra-ui/react';
+import { AddIcon, ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
+import {
+  InputGroup,
+  InputLeftAddon,
+  Tag,
+  TagCloseButton,
+  Input,
+  useDisclosure,
+  Box,
+  HStack,
+  Icon,
+  IconButton,
+  InputRightAddon,
+} from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { Label } from '../__generated__/graphql';
 
@@ -7,6 +20,7 @@ type Props = {
   selectedLabels: Label[];
   onRemove: (label: Label) => void;
   onAdd: (label: Label) => void;
+  onLabelCreate?: (label: string) => void;
 };
 
 type SelectedLabelsProps = {
@@ -15,9 +29,11 @@ type SelectedLabelsProps = {
 };
 
 type LabelOptionsProps = {
-  labels: Label[];
+  labels: Label[] | undefined;
   selectedLabels: Label[];
   onAdd: (label: Label) => void;
+  onLabelCreate?: (label: string) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const SelectedLabels: FC<SelectedLabelsProps> = ({ labels, onRemove }): JSX.Element => {
@@ -46,26 +62,19 @@ const SelectedLabels: FC<SelectedLabelsProps> = ({ labels, onRemove }): JSX.Elem
   );
 };
 
-const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, selectedLabels }): JSX.Element => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [filteredLabels, setFilteredLabels] = React.useState(labels);
-
-  const handleOnLabelInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilteredLabels(labels.filter((l) => l.name.includes(e.target.value) && !selectedLabels.includes(l)));
-  };
+const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, onLabelCreate, onChange }): JSX.Element => {
+  const { isOpen, onOpen, onClose, onToggle } = useDisclosure();
+  const labelNameInputRef = React.useRef<HTMLInputElement | null>(null);
 
   return (
     <Box position="relative">
-      <Input
-        onClick={onOpen}
-        placeholder="Search by status"
-        onChange={handleOnLabelInputChange}
-        onBlur={() => {
-          setTimeout(() => {
-            onClose();
-          }, 150);
-        }}
-      />
+      <InputGroup>
+        <Input onClick={onOpen} placeholder="Search by status" onChange={onChange} />
+        <InputRightAddon onClick={onToggle}>
+          {!isOpen && <Icon as={ChevronDownIcon} />}
+          {isOpen && <Icon as={ChevronUpIcon} />}
+        </InputRightAddon>
+      </InputGroup>
       {isOpen && (
         <Box
           bg="white"
@@ -74,10 +83,14 @@ const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, selectedLabels }):
           zIndex="dropdown"
           borderBottomRadius={6}
           borderX="1px"
+          borderBottom="1px"
+          borderBottomColor="gray.100"
           borderColor="gray.100"
+          maxHeight="200px"
+          overflowY="scroll"
         >
-          <Box>
-            {filteredLabels.map((label, index) => {
+          {labels &&
+            labels.map((label) => {
               return (
                 <Box
                   _hover={{ bg: 'gray.100' }}
@@ -88,7 +101,6 @@ const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, selectedLabels }):
                   }}
                   cursor="pointer"
                   borderBottom="1px"
-                  borderBottomRadius={index === labels.length - 1 ? 6 : 0}
                   borderBottomColor="gray.100"
                   padding={4}
                 >
@@ -96,31 +108,65 @@ const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, selectedLabels }):
                 </Box>
               );
             })}
-          </Box>
+          {onLabelCreate && (
+            <Box bg="white" borderBottomRadius={6}>
+              <InputGroup>
+                <HStack>
+                  <Input ref={labelNameInputRef} placeholder="Create label" />
+                  <IconButton
+                    aria-label="Create label"
+                    icon={<Icon size={20} as={AddIcon} />}
+                    onClick={() => {
+                      const labelName = labelNameInputRef.current?.value.trim();
+                      if (labelName?.length !== 0) onLabelCreate(labelName as string);
+                      onClose();
+                    }}
+                  />
+                </HStack>
+              </InputGroup>
+            </Box>
+          )}
         </Box>
       )}
     </Box>
   );
 };
 
-const SearchByLabelInput: FC<Props> = ({ labels, selectedLabels, onAdd, onRemove }): JSX.Element => {
+const SearchByLabelInput: FC<Props> = ({ labels, selectedLabels, onAdd, onRemove, onLabelCreate }) => {
+  const [filteredLabels, setFilteredLabels] = React.useState(labels);
+
+  const labelList = labels ?? [];
+
+  const handleOnLabelAdd = (label: Label) => {
+    const labelIndex = labelList.indexOf(label);
+    setFilteredLabels([...labelList.slice(0, labelIndex), ...labelList.slice(labelIndex + 1)]);
+  };
+
+  const handleOnLabelInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilteredLabels(labelList.filter((l) => l.name.includes(e.target.value)));
+  };
+
   const handleOnAdd = (label: Label): void => {
+    handleOnLabelAdd(label);
     onAdd(label);
   };
 
   const handleOnRemove = (label: Label): void => {
+    setFilteredLabels(filteredLabels?.concat(label));
     onRemove(label);
   };
 
   return (
-    <>
-      {labels && (
-        <InputGroup>
-          <SelectedLabels labels={selectedLabels} onRemove={handleOnRemove} />
-          <LabelOptions labels={labels} selectedLabels={selectedLabels} onAdd={handleOnAdd} />
-        </InputGroup>
-      )}
-    </>
+    <InputGroup>
+      <SelectedLabels labels={selectedLabels} onRemove={handleOnRemove} />
+      <LabelOptions
+        labels={filteredLabels}
+        selectedLabels={selectedLabels}
+        onAdd={handleOnAdd}
+        onLabelCreate={onLabelCreate}
+        onChange={handleOnLabelInputChange}
+      />
+    </InputGroup>
   );
 };
 
