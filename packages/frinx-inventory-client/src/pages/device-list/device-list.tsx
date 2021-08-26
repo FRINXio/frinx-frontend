@@ -24,7 +24,6 @@ const DEVICES_QUERY = gql`
           model
           vendor
           address
-          status
           zone {
             id
             name
@@ -93,7 +92,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     return <Progress size="xs" isIndeterminate mt={-10} />;
   }
 
-  if (error || data == null) {
+  if (error) {
     return null;
   }
 
@@ -131,8 +130,6 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     setSelectedLabels(selectedLabels.concat(label));
   };
 
-  const { devices } = data;
-
   return (
     <Container maxWidth={1280}>
       <Flex justify="space-between" align="center" marginBottom={6}>
@@ -152,7 +149,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
         />
       </Box>
       <DeviceTable
-        devices={devices.edges}
+        devices={data?.devices.edges}
         onInstallButtonClick={handleInstallButtonClick}
         onUninstallButtonClick={handleUninstallButtonClick}
         onSettingsButtonClick={onSettingsButtonClick}
