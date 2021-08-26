@@ -10,10 +10,9 @@ import {
   UninstallDeviceMutation,
   UninstallDeviceMutationVariables,
   LabelsQuery,
+  Label,
 } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
-
-const LABELS = ['label', 'hostname', 'ip', 'mac', 'ciena'];
 
 const DEVICES_QUERY = gql`
   query Devices($labelIds: [String!]) {
@@ -75,7 +74,7 @@ type Props = {
 
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick }) => {
   const toast = useToast();
-  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
+  const [selectedLabels, setSelectedLabels] = useState<Label[]>([]);
   const [{ data, fetching, error }, reexecuteQueryDevices] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
   });
@@ -89,17 +88,18 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     UninstallDeviceMutationVariables
   >(UNINSTALL_DEVICE_MUTATION);
 
-  // useEffect(() => {
-  //   reexecuteQueryDevices({
-  //     variables: { labelIds: selectedLabels },
-  //   });
-  // }, [selectedLabels, labelsData, reexecuteQueryDevices]);
+  useEffect(() => {
+    reexecuteQueryDevices({
+      requestPolicy: 'network-only',
+      variables: { labelIds: selectedLabels.map((label) => label.id) },
+    });
+  }, [selectedLabels, labelsData, reexecuteQueryDevices]);
 
   if (fetching) {
     return <Progress size="xs" isIndeterminate mt={-10} />;
   }
 
-  if (error || data == null || labelsData == null) {
+  if (error || data == null) {
     return null;
   }
 
@@ -129,11 +129,11 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     });
   };
 
-  const handleLabelRemoval = (label: string) => {
-    setSelectedLabels(selectedLabels.filter((l) => l !== label));
+  const handleLabelRemoval = (label: Label) => {
+    setSelectedLabels(selectedLabels.filter((l) => l.id !== label.id));
   };
 
-  const handleLabelAddition = (label: string) => {
+  const handleLabelAddition = (label: Label) => {
     setSelectedLabels(selectedLabels.concat(label));
   };
 
@@ -151,7 +151,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
       </Flex>
       <Box mb={4}>
         <SearchByLabelInput
-          labels={LABELS}
+          labels={labelsData?.labels.edges.map((l) => l.node as Label)}
           onRemove={handleLabelRemoval}
           onAdd={handleLabelAddition}
           selectedLabels={selectedLabels}

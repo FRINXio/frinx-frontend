@@ -1,22 +1,23 @@
 import { InputGroup, InputLeftAddon, Tag, TagCloseButton, Input, useDisclosure, Box } from '@chakra-ui/react';
 import React, { FC } from 'react';
+import { Label } from '../__generated__/graphql';
 
 type Props = {
-  labels: string[];
-  selectedLabels: string[];
-  onRemove: (label: string) => void;
-  onAdd: (label: string) => void;
+  labels: Label[] | undefined;
+  selectedLabels: Label[];
+  onRemove: (label: Label) => void;
+  onAdd: (label: Label) => void;
 };
 
 type SelectedLabelsProps = {
-  labels: string[];
-  onRemove: (label: string) => void;
+  labels: Label[];
+  onRemove: (label: Label) => void;
 };
 
 type LabelOptionsProps = {
-  labels: string[];
-  selectedLabels: string[];
-  onAdd: (label: string) => void;
+  labels: Label[];
+  selectedLabels: Label[];
+  onAdd: (label: Label) => void;
 };
 
 const SelectedLabels: FC<SelectedLabelsProps> = ({ labels, onRemove }): JSX.Element => {
@@ -27,14 +28,14 @@ const SelectedLabels: FC<SelectedLabelsProps> = ({ labels, onRemove }): JSX.Elem
           {labels.map((item) => {
             return (
               <Tag
-                key={item}
+                key={item.id}
                 size="sm"
                 cursor="pointer"
                 onClick={() => {
                   onRemove(item);
                 }}
               >
-                <p>{item}</p>
+                <p>{item.name}</p>
                 <TagCloseButton />
               </Tag>
             );
@@ -50,7 +51,7 @@ const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, selectedLabels }):
   const [filteredLabels, setFilteredLabels] = React.useState(labels);
 
   const handleOnLabelInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilteredLabels(labels.filter((l) => l.includes(e.target.value) && selectedLabels.indexOf(l) === -1));
+    setFilteredLabels(labels.filter((l) => l.name.includes(e.target.value) && !selectedLabels.includes(l)));
   };
 
   return (
@@ -80,7 +81,7 @@ const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, selectedLabels }):
               return (
                 <Box
                   _hover={{ bg: 'gray.100' }}
-                  key={label}
+                  key={label.id}
                   onClick={() => {
                     onAdd(label);
                     onClose();
@@ -91,7 +92,7 @@ const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, selectedLabels }):
                   borderBottomColor="gray.100"
                   padding={4}
                 >
-                  {label}
+                  {label.name}
                 </Box>
               );
             })}
@@ -103,19 +104,23 @@ const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, selectedLabels }):
 };
 
 const SearchByLabelInput: FC<Props> = ({ labels, selectedLabels, onAdd, onRemove }): JSX.Element => {
-  const handleOnAdd = (label: string): void => {
+  const handleOnAdd = (label: Label): void => {
     onAdd(label);
   };
 
-  const handleOnRemove = (label: string): void => {
+  const handleOnRemove = (label: Label): void => {
     onRemove(label);
   };
 
   return (
-    <InputGroup>
-      <SelectedLabels labels={selectedLabels} onRemove={handleOnRemove} />
-      <LabelOptions labels={labels} selectedLabels={selectedLabels} onAdd={handleOnAdd} />
-    </InputGroup>
+    <>
+      {labels && (
+        <InputGroup>
+          <SelectedLabels labels={selectedLabels} onRemove={handleOnRemove} />
+          <LabelOptions labels={labels} selectedLabels={selectedLabels} onAdd={handleOnAdd} />
+        </InputGroup>
+      )}
+    </>
   );
 };
 
