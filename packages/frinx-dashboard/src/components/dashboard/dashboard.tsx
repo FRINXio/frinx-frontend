@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Box, Code, Container, Heading, HStack, List, ListItem } from '@chakra-ui/react';
+import { Box, Code, Container, Heading, HStack } from '@chakra-ui/react';
 import Panel from '../panel/panel';
 import { ServiceKey } from '../../types';
 import UniflowActions from './uniflow-actions';
@@ -65,23 +65,25 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
         <Box marginTop={20}>
           <Box as="header" marginBottom={4}>
             <Heading as="h2" size="md">
-              Docs
+              Documentation
             </Heading>
           </Box>
-          <List mb={10}>
-            <ListItem>
-              <p>
-                <a href={`${window.__CONFIG__.uniconfig_api_docs_url}`} rel="noopener noreferrer">
-                  UniConfig
-                </a>
-              </p>
-            </ListItem>
-            <ListItem>
-              <p>
-                <a href={`${window.__CONFIG__.inventory_api_url}`}>Device inventory</a>
-              </p>
-            </ListItem>
-          </List>
+          <HStack spacing={4}>
+            <Panel
+              label="UniConfig"
+              description="Learn more about UniConfig API using Swagger."
+              icon="book"
+              path={window.__CONFIG__.uniconfig_api_docs_url}
+              isLinkExternal
+            />
+            <Panel
+              label="Device Inventory"
+              description="Execute and inspect queries with GraphQL Playground."
+              icon="book"
+              path={window.__CONFIG__.inventory_api_url}
+              isLinkExternal
+            />
+          </HStack>
         </Box>
       </Container>
       <Box bg="gray.200" bottom={0} position="fixed" paddingX={4} fontSize="sm">
