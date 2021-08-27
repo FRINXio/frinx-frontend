@@ -127,7 +127,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   };
 
   const handleLabelAddition = (label: Pick<Label, 'id' | 'name'>) => {
-    setSelectedLabels(selectedLabels.concat(label));
+    setSelectedLabels((prev) => prev.concat(label));
   };
 
   const labels = labelsData?.labels?.edges ?? [];

@@ -57,7 +57,7 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreat
   };
 
   const handleLabelAddition = (label: Pick<Label, 'id' | 'name'>) => {
-    setSelectedLabels(selectedLabels.concat(label));
+    setSelectedLabels((prev) => prev.concat(label));
   };
 
   return (

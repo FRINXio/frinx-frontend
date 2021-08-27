@@ -22,6 +22,16 @@ const SearchByLabelInput: FC<Props> = ({ labels, selectedLabels, onAdd, onRemove
     setFilteredLabels([...labelList.slice(0, labelIndex), ...labelList.slice(labelIndex + 1)]);
   };
 
+  const handleOnLabelRemove = (label: Pick<Label, 'id' | 'name'>) => {
+    setFilteredLabels((prev) => {
+      if (!prev.includes(label)) {
+        return [...prev, label];
+      } else {
+        return prev;
+      }
+    });
+  };
+
   const handleOnLabelInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilteredLabels(labelList.filter((l) => l.name.toLowerCase().includes(e.target.value.toLowerCase())));
   };
@@ -32,7 +42,7 @@ const SearchByLabelInput: FC<Props> = ({ labels, selectedLabels, onAdd, onRemove
   };
 
   const handleOnRemove = (label: Pick<Label, 'id' | 'name'>): void => {
-    setFilteredLabels(filteredLabels?.concat(label));
+    handleOnLabelRemove(label);
     onRemove(label);
   };
 
