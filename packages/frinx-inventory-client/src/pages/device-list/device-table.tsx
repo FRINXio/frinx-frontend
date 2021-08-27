@@ -1,19 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import {
-  Badge,
-  Button,
-  HStack,
-  IconButton,
-  Icon,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  Center,
-} from '@chakra-ui/react';
+import { Badge, Button, HStack, IconButton, Icon, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 import { AddIcon, MinusIcon, SettingsIcon } from '@chakra-ui/icons';
 import { DevicesQuery } from '../../__generated__/graphql';
 
@@ -49,7 +35,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
       <Tbody>
         {(devices == null || devices.length === 0) && (
           <Tr>
-            <Center m={6}>There are no devices!</Center>
+            <Td>There are no devices!</Td>
           </Tr>
         )}
         {devices &&

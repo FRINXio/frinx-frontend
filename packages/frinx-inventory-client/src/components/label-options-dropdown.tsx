@@ -1,6 +1,6 @@
 import { ChevronDownIcon, ChevronUpIcon, AddIcon } from '@chakra-ui/icons';
 import { Box, HStack, Icon, IconButton, Input, InputGroup, InputRightAddon, useDisclosure } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { Label } from '../__generated__/graphql';
 
 type LabelOptionsProps = {
@@ -11,9 +11,22 @@ type LabelOptionsProps = {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, onLabelCreate, onChange }): JSX.Element => {
+const LabelOptions: FC<LabelOptionsProps> = ({
+  labels,
+  selectedLabels,
+  onAdd,
+  onLabelCreate,
+  onChange,
+}): JSX.Element => {
   const { isOpen, onOpen, onClose, onToggle } = useDisclosure();
   const labelNameInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  // clean up on unmount
+  useEffect(() => {
+    return () => {
+      onClose();
+    };
+  }, [onClose]);
 
   return (
     <Box position="relative">
@@ -52,24 +65,26 @@ const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, onLabelCreate, onC
           overflowY="scroll"
         >
           {labels &&
-            labels.map((label) => {
-              return (
-                <Box
-                  _hover={{ bg: 'gray.100' }}
-                  key={label.id}
-                  onClick={() => {
-                    onAdd(label);
-                    onClose();
-                  }}
-                  cursor="pointer"
-                  borderBottom="1px"
-                  borderBottomColor="gray.100"
-                  padding={4}
-                >
-                  {label.name}
-                </Box>
-              );
-            })}
+            labels
+              .filter((label) => !selectedLabels.includes(label))
+              .map((label) => {
+                return (
+                  <Box
+                    _hover={{ bg: 'gray.100' }}
+                    key={label.id}
+                    onClick={() => {
+                      onAdd(label);
+                      onClose();
+                    }}
+                    cursor="pointer"
+                    borderBottom="1px"
+                    borderBottomColor="gray.100"
+                    padding={4}
+                  >
+                    {label.name}
+                  </Box>
+                );
+              })}
           {onLabelCreate && (
             <Box bg="white" borderBottomRadius={6}>
               <InputGroup>

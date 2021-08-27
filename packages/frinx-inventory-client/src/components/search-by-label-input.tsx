@@ -1,7 +1,7 @@
 import { InputGroup } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { Label, LabelsQuery } from '../__generated__/graphql';
-import LabelOptions from './label-options-dropdown';
+import LabelOptionsDropdown from './label-options-dropdown';
 import SelectedLabels from './selected-labels';
 
 type Props = {
@@ -39,7 +39,7 @@ const SearchByLabelInput: FC<Props> = ({ labels, selectedLabels, onAdd, onRemove
   return (
     <InputGroup>
       <SelectedLabels labels={selectedLabels} onRemove={handleOnRemove} />
-      <LabelOptions
+      <LabelOptionsDropdown
         labels={filteredLabels}
         selectedLabels={selectedLabels}
         onAdd={handleOnAdd}
