@@ -10,7 +10,7 @@ type SelectedLabelsProps = {
 const SelectedLabels: FC<SelectedLabelsProps> = ({ labels, onRemove }): JSX.Element => {
   return (
     <>
-      {labels && labels.length > 0 && (
+      {labels.length > 0 && (
         <InputLeftAddon bg="white">
           {labels.map((item) => {
             return (

@@ -45,8 +45,7 @@ const LabelOptions: FC<LabelOptionsProps> = ({
         />
         {onLabelCreate && (
           <InputRightAddon onClick={onToggle}>
-            {!isOpen && <Icon as={ChevronDownIcon} />}
-            {isOpen && <Icon as={ChevronUpIcon} />}
+            {isOpen ? <Icon as={ChevronUpIcon} /> : <Icon as={ChevronDownIcon} />}
           </InputRightAddon>
         )}
       </InputGroup>
@@ -64,27 +63,28 @@ const LabelOptions: FC<LabelOptionsProps> = ({
           maxHeight="200px"
           overflowY="scroll"
         >
-          {labels &&
-            labels
-              .filter((label) => !selectedLabels.includes(label))
-              .map((label) => {
-                return (
-                  <Box
-                    _hover={{ bg: 'gray.100' }}
-                    key={label.id}
-                    onClick={() => {
-                      onAdd(label);
-                      onClose();
-                    }}
-                    cursor="pointer"
-                    borderBottom="1px"
-                    borderBottomColor="gray.100"
-                    padding={4}
-                  >
-                    {label.name}
-                  </Box>
-                );
-              })}
+          {labels
+            .filter((label) => !selectedLabels.includes(label))
+            .map((label) => {
+              return (
+                <Box
+                  _hover={{ bg: 'gray.100' }}
+                  key={label.id}
+                  onClick={() => {
+                    onOpen();
+                    onAdd(label);
+                    onClose();
+                  }}
+                  cursor="pointer"
+                  borderBottom="1px"
+                  borderBottomColor="gray.100"
+                  padding={4}
+                  onBlur={onClose}
+                >
+                  {label.name}
+                </Box>
+              );
+            })}
           {onLabelCreate && (
             <Box bg="white" borderBottomRadius={6}>
               <InputGroup>
@@ -95,7 +95,9 @@ const LabelOptions: FC<LabelOptionsProps> = ({
                     icon={<Icon size={20} as={AddIcon} />}
                     onClick={() => {
                       const labelName = labelNameInputRef.current?.value.trim();
-                      if (labelName && labelName?.length !== 0) onLabelCreate(labelName);
+                      if (labelName && labelName?.length !== 0) {
+                        onLabelCreate(labelName);
+                      }
                       onClose();
                     }}
                   />

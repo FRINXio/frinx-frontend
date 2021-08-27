@@ -26,9 +26,8 @@ const SearchByLabelInput: FC<Props> = ({ labels, selectedLabels, onAdd, onRemove
     setFilteredLabels((prev) => {
       if (!prev.includes(label)) {
         return [...prev, label];
-      } else {
-        return prev;
       }
+      return prev;
     });
   };
 
