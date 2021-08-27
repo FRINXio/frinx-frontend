@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, VoidFunctionComponent } from 'react';
 import { Box, Heading, Text, Flex, Icon, LinkOverlay } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
@@ -8,11 +8,25 @@ type Props = {
   description: string;
   icon: string;
   path: string;
+  isLinkExternal?: boolean;
 };
 
-const Panel: FC<Props> = (props) => {
-  const { path, label, description, icon } = props;
+const LinkOverlayComponent: FC<{ isLinkExternal?: boolean; path: string }> = ({ isLinkExternal, path, children }) => {
+  if (isLinkExternal) {
+    return (
+      <LinkOverlay as="a" href={path}>
+        {children}
+      </LinkOverlay>
+    );
+  }
+  return (
+    <LinkOverlay as={RouterLink} to={path}>
+      {children}
+    </LinkOverlay>
+  );
+};
 
+const Panel: VoidFunctionComponent<Props> = ({ path, label, description, icon, isLinkExternal }) => {
   return (
     <Flex
       as={Box}
@@ -42,9 +56,9 @@ const Panel: FC<Props> = (props) => {
       </Flex>
       <Box marginLeft={4}>
         <Heading size="md" as="h2" marginBottom={1}>
-          <LinkOverlay to={path} as={RouterLink}>
+          <LinkOverlayComponent isLinkExternal={isLinkExternal} path={path}>
             {label}
-          </LinkOverlay>
+          </LinkOverlayComponent>
         </Heading>
         <Text fontSize="sm">{description}</Text>
       </Box>
