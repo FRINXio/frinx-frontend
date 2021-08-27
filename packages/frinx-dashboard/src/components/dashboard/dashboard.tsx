@@ -62,6 +62,29 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
             )}
           </HStack>
         </Box>
+        <Box marginTop={20}>
+          <Box as="header" marginBottom={4}>
+            <Heading as="h2" size="md">
+              Documentation
+            </Heading>
+          </Box>
+          <HStack spacing={4}>
+            <Panel
+              label="UniConfig"
+              description="Learn more about UniConfig API using Swagger."
+              icon="book"
+              path={window.__CONFIG__.uniconfig_api_docs_url}
+              isLinkExternal
+            />
+            <Panel
+              label="Device Inventory"
+              description="Execute and inspect queries with GraphQL Playground."
+              icon="book"
+              path={window.__CONFIG__.inventory_api_url}
+              isLinkExternal
+            />
+          </HStack>
+        </Box>
       </Container>
       <Box bg="gray.200" bottom={0} position="fixed" paddingX={4} fontSize="sm">
         <Code>{COMMIT_HASH}</Code>
