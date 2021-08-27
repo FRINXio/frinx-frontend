@@ -3,8 +3,8 @@ import React, { FC } from 'react';
 import { Label } from '../__generated__/graphql';
 
 type SelectedLabelsProps = {
-  labels: Label[];
-  onRemove: (label: Label) => void;
+  labels: Pick<Label, 'id' | 'name'>[];
+  onRemove: (label: Pick<Label, 'id' | 'name'>) => void;
 };
 
 const SelectedLabels: FC<SelectedLabelsProps> = ({ labels, onRemove }): JSX.Element => {

@@ -73,7 +73,7 @@ type Props = {
 
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick }) => {
   const toast = useToast();
-  const [selectedLabels, setSelectedLabels] = useState<Label[]>([]);
+  const [selectedLabels, setSelectedLabels] = useState<Pick<Label, 'id' | 'name'>[]>([]);
   const [{ data, fetching, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
     variables: { labelIds: selectedLabels.map((label) => label.id) },
@@ -122,13 +122,15 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     });
   };
 
-  const handleLabelRemoval = (label: Label) => {
+  const handleLabelRemoval = (label: Pick<Label, 'id' | 'name'>) => {
     setSelectedLabels(selectedLabels.filter((l) => l.id !== label.id));
   };
 
-  const handleLabelAddition = (label: Label) => {
+  const handleLabelAddition = (label: Pick<Label, 'id' | 'name'>) => {
     setSelectedLabels(selectedLabels.concat(label));
   };
+
+  const labels = labelsData?.labels?.edges ?? [];
 
   return (
     <Container maxWidth={1280}>
@@ -142,7 +144,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
       </Flex>
       <Box mb={4}>
         <SearchByLabelInput
-          labels={labelsData?.labels.edges.map((l) => l.node as Label)}
+          labels={labels}
           onRemove={handleLabelRemoval}
           onAdd={handleLabelAddition}
           selectedLabels={selectedLabels}

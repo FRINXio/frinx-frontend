@@ -4,9 +4,9 @@ import React, { FC } from 'react';
 import { Label } from '../__generated__/graphql';
 
 type LabelOptionsProps = {
-  labels: Label[];
-  selectedLabels: Label[];
-  onAdd: (label: Label) => void;
+  labels: Pick<Label, 'id' | 'name'>[];
+  selectedLabels: Pick<Label, 'id' | 'name'>[];
+  onAdd: (label: Pick<Label, 'id' | 'name'>) => void;
   onLabelCreate?: (label: string) => void;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
@@ -80,7 +80,7 @@ const LabelOptions: FC<LabelOptionsProps> = ({ labels, onAdd, onLabelCreate, onC
                     icon={<Icon size={20} as={AddIcon} />}
                     onClick={() => {
                       const labelName = labelNameInputRef.current?.value.trim();
-                      if (labelName?.length !== 0) onLabelCreate(labelName as string);
+                      if (labelName && labelName?.length !== 0) onLabelCreate(labelName);
                       onClose();
                     }}
                   />
