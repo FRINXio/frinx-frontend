@@ -119,6 +119,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
   }
 
   const zones = data?.zones.edges ?? [];
+  const labels = labelsData?.labels.edges ?? [];
 
   return (
     <Container maxWidth={1280}>
@@ -130,7 +131,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
           <CreateDeviceForm
             onFormSubmit={handleSubmit}
             zones={zones}
-            labels={labelsData?.labels.edges}
+            labels={labels}
             onLabelCreate={handleOnCreateLabel}
           />
         )}

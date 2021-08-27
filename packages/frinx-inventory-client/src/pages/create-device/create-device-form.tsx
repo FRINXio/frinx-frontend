@@ -8,7 +8,7 @@ import SearchByLabelInput from '../../components/search-by-label-input';
 
 type Props = {
   zones: ZonesQuery['zones']['edges'];
-  labels: LabelsQuery['labels']['edges'] | undefined;
+  labels: LabelsQuery['labels']['edges'];
   onFormSubmit: (device: FormValues) => Promise<void>;
   onLabelCreate: (labelName: string) => Promise<Label>;
 };
@@ -34,7 +34,7 @@ const INITIAL_VALUES: FormValues = {
 };
 
 const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreate }) => {
-  const [selectedLabels, setSelectedLabels] = React.useState<Label[]>([]);
+  const [selectedLabels, setSelectedLabels] = React.useState<Pick<Label, 'id' | 'name'>[]>([]);
   const { errors, values, handleSubmit, handleChange, isSubmitting, setFieldValue } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: deviceSchema,
@@ -46,7 +46,7 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreat
     },
   });
 
-  const handleLabelRemoval = (label: Label) => {
+  const handleLabelRemoval = (label: Pick<Label, 'id' | 'name'>) => {
     setSelectedLabels(selectedLabels.filter((l) => l.id !== label.id));
   };
 
@@ -56,7 +56,7 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreat
     });
   };
 
-  const handleLabelAddition = (label: Label) => {
+  const handleLabelAddition = (label: Pick<Label, 'id' | 'name'>) => {
     setSelectedLabels(selectedLabels.concat(label));
   };
 
@@ -90,7 +90,7 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreat
       <FormControl my={6}>
         <FormLabel>Labels</FormLabel>
         <SearchByLabelInput
-          labels={labels?.map((l) => l.node as Label)}
+          labels={labels}
           onRemove={handleLabelRemoval}
           onAdd={handleLabelAddition}
           selectedLabels={selectedLabels}
