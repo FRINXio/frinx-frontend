@@ -1,61 +1,42 @@
-import { InputGroup } from '@chakra-ui/react';
+import { CUIAutoComplete, Item } from 'chakra-ui-autocomplete';
 import React, { FC } from 'react';
-import { Label, LabelsQuery } from '../__generated__/graphql';
-import LabelOptionsDropdown from './label-options-dropdown';
-import SelectedLabels from './selected-labels';
+import { LabelsQuery } from '../__generated__/graphql';
 
 type Props = {
   labels: LabelsQuery['labels']['edges'];
-  selectedLabels: Pick<Label, 'id' | 'name'>[];
-  onRemove: (label: Pick<Label, 'id' | 'name'>) => void;
-  onAdd: (label: Pick<Label, 'id' | 'name'>) => void;
-  onLabelCreate?: (label: string) => void;
+  selectedLabels: Item[];
+  disableCreateItem?: boolean;
+  onSelectionChange: (labels?: Item[]) => void;
+  onLabelCreate?: (label: Item) => void;
 };
 
-const SearchByLabelInput: FC<Props> = ({ labels, selectedLabels, onAdd, onRemove, onLabelCreate }) => {
-  const [filteredLabels, setFilteredLabels] = React.useState(labels.map(({ node }) => node));
+const SearchByLabelInput: FC<Props> = ({
+  labels,
+  selectedLabels,
+  onLabelCreate,
+  disableCreateItem = false,
+  onSelectionChange,
+}) => {
+  const labelList =
+    labels.map(({ node: l }) => {
+      return { label: l.name, value: l.id };
+    }) ?? [];
 
-  const labelList = labels.map(({ node: l }) => l) ?? [];
-
-  const handleOnLabelAdd = (label: Pick<Label, 'id' | 'name'>) => {
-    const labelIndex = labelList.indexOf(label);
-    setFilteredLabels([...labelList.slice(0, labelIndex), ...labelList.slice(labelIndex + 1)]);
-  };
-
-  const handleOnLabelRemove = (label: Pick<Label, 'id' | 'name'>) => {
-    setFilteredLabels((prev) => {
-      if (!prev.includes(label)) {
-        return [...prev, label];
-      }
-      return prev;
-    });
-  };
-
-  const handleOnLabelInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilteredLabels(labelList.filter((l) => l.name.toLowerCase().includes(e.target.value.toLowerCase())));
-  };
-
-  const handleOnAdd = (label: Pick<Label, 'id' | 'name'>): void => {
-    handleOnLabelAdd(label);
-    onAdd(label);
-  };
-
-  const handleOnRemove = (label: Pick<Label, 'id' | 'name'>): void => {
-    handleOnLabelRemove(label);
-    onRemove(label);
-  };
+  const selectedLabelList = selectedLabels.map(({ label, value }) => {
+    return { label, value };
+  });
 
   return (
-    <InputGroup>
-      <SelectedLabels labels={selectedLabels} onRemove={handleOnRemove} />
-      <LabelOptionsDropdown
-        labels={filteredLabels}
-        selectedLabels={selectedLabels}
-        onAdd={handleOnAdd}
-        onLabelCreate={onLabelCreate}
-        onChange={handleOnLabelInputChange}
-      />
-    </InputGroup>
+    <CUIAutoComplete
+      label="Choose labels"
+      placeholder="Type a label"
+      onCreateItem={onLabelCreate}
+      items={labelList}
+      selectedItems={selectedLabelList}
+      onSelectedItemsChange={(changes) => onSelectionChange(changes.selectedItems)}
+      disableCreateItem={disableCreateItem}
+      hideToggleButton
+    />
   );
 };
 

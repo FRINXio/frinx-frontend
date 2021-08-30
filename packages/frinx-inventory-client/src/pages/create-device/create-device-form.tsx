@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 import Editor from 'react-ace';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { Item } from 'chakra-ui-autocomplete';
 import { Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 
@@ -34,30 +35,28 @@ const INITIAL_VALUES: FormValues = {
 };
 
 const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreate }) => {
-  const [selectedLabels, setSelectedLabels] = React.useState<Pick<Label, 'id' | 'name'>[]>([]);
+  const [selectedLabels, setSelectedLabels] = React.useState<Item[]>([]);
   const { errors, values, handleSubmit, handleChange, isSubmitting, setFieldValue } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: deviceSchema,
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: (data) => {
-      const updatedData = { ...data, labels: selectedLabels.map((label) => label.id) };
+      const updatedData = { ...data, labels: selectedLabels.map((label) => label.value) };
       onFormSubmit(updatedData);
     },
   });
 
-  const handleLabelRemoval = (label: Pick<Label, 'id' | 'name'>) => {
-    setSelectedLabels(selectedLabels.filter((l) => l.id !== label.id));
-  };
-
-  const handleLabelCreation = (labelName: string) => {
-    onLabelCreate(labelName).then((label) => {
-      setSelectedLabels(selectedLabels.concat(label));
+  const handleLabelCreation = (labelName: Item) => {
+    onLabelCreate(labelName.label).then((label) => {
+      setSelectedLabels(selectedLabels.concat({ label: label.name, value: label.id }));
     });
   };
 
-  const handleLabelAddition = (label: Pick<Label, 'id' | 'name'>) => {
-    setSelectedLabels((prev) => prev.concat(label));
+  const handleOnSelectionChange = (selectedItems?: Item[]) => {
+    if (selectedItems) {
+      setSelectedLabels([...new Set(selectedItems)]);
+    }
   };
 
   return (
@@ -88,13 +87,11 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreat
       </FormControl>
 
       <FormControl my={6}>
-        <FormLabel>Labels</FormLabel>
         <SearchByLabelInput
           labels={labels}
-          onRemove={handleLabelRemoval}
-          onAdd={handleLabelAddition}
           selectedLabels={selectedLabels}
           onLabelCreate={handleLabelCreation}
+          onSelectionChange={handleOnSelectionChange}
         />
       </FormControl>
 

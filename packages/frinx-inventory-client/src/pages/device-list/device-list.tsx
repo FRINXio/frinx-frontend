@@ -1,6 +1,7 @@
 import React, { useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { Box, Button, Container, Flex, Heading, Progress, useToast } from '@chakra-ui/react';
+import { Item } from 'chakra-ui-autocomplete';
 import DeviceTable from './device-table';
 import {
   DevicesQuery,
@@ -10,7 +11,6 @@ import {
   UninstallDeviceMutation,
   UninstallDeviceMutationVariables,
   LabelsQuery,
-  Label,
 } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 
@@ -73,10 +73,10 @@ type Props = {
 
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick }) => {
   const toast = useToast();
-  const [selectedLabels, setSelectedLabels] = useState<Pick<Label, 'id' | 'name'>[]>([]);
+  const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [{ data, fetching, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
-    variables: { labelIds: selectedLabels.map((label) => label.id) },
+    variables: { labelIds: selectedLabels.map((label) => label.value) },
   });
   const [{ data: labelsData, fetching: fetchingLabels }] = useQuery<LabelsQuery>({ query: LABELS_QUERY });
   const [{ fetching: isInstalLoading }, installDevice] = useMutation<
@@ -122,12 +122,10 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     });
   };
 
-  const handleLabelRemoval = (label: Pick<Label, 'id' | 'name'>) => {
-    setSelectedLabels(selectedLabels.filter((l) => l.id !== label.id));
-  };
-
-  const handleLabelAddition = (label: Pick<Label, 'id' | 'name'>) => {
-    setSelectedLabels((prev) => prev.concat(label));
+  const handleOnSelectionChange = (selectedItems?: Item[]) => {
+    if (selectedItems) {
+      setSelectedLabels([...new Set(selectedItems)]);
+    }
   };
 
   const labels = labelsData?.labels?.edges ?? [];
@@ -145,9 +143,9 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
       <Box mb={4}>
         <SearchByLabelInput
           labels={labels}
-          onRemove={handleLabelRemoval}
-          onAdd={handleLabelAddition}
           selectedLabels={selectedLabels}
+          onSelectionChange={handleOnSelectionChange}
+          disableCreateItem
         />
       </Box>
       <DeviceTable
