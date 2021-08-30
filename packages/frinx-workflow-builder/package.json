@@ -21,7 +21,7 @@
     "@types/react-dom": "^17.0.0",
     "@types/uuid": "^8.3.0",
     "ace-builds": "^1.4.12",
-    "beautiful-react-diagrams": "git+https://github.com/FRINXio/beautiful-react-diagrams#canvas-2",
+    "beautiful-react-diagrams": "FRINXio/beautiful-react-diagrams#canvas-2",
     "feather-icons-react": "^0.4.3",
     "file-saver": "^2.0.5",
     "immer": "^8.0.0",
