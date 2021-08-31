@@ -14,6 +14,7 @@ export type Scalars = {
 export type AddDeviceInput = {
   name: Scalars['String'];
   zoneId: Scalars['String'];
+  labelIds?: Maybe<Array<Scalars['String']>>;
   mountParameters?: Maybe<Scalars['String']>;
   model?: Maybe<Scalars['String']>;
   vendor?: Maybe<Scalars['String']>;
@@ -71,6 +72,15 @@ export type CommitConfigPayload = {
   output: Scalars['String'];
 };
 
+export type CreateLabelInput = {
+  name: Scalars['String'];
+};
+
+export type CreateLabelPayload = {
+  __typename?: 'CreateLabelPayload';
+  label: Maybe<Label>;
+};
+
 export type DataStore = {
   __typename?: 'DataStore';
   config: Maybe<Scalars['String']>;
@@ -87,11 +97,29 @@ export type Device = Node & {
   __typename?: 'Device';
   id: Scalars['ID'];
   name: Scalars['String'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
   model: Maybe<Scalars['String']>;
   vendor: Maybe<Scalars['String']>;
   address: Maybe<Scalars['String']>;
+  source: Maybe<DeviceSource>;
   status: Maybe<DeviceStatus>;
-  zone: Maybe<Zone>;
+  zone: Zone;
+  labels: LabelConnection;
+};
+
+
+export type DeviceLabelsArgs = {
+  first?: Maybe<Scalars['Int']>;
+  after?: Maybe<Scalars['String']>;
+  last?: Maybe<Scalars['Int']>;
+  before?: Maybe<Scalars['String']>;
+};
+
+export type DeviceConnection = {
+  __typename?: 'DeviceConnection';
+  edges: Array<DeviceEdge>;
+  pageInfo: PageInfo;
 };
 
 export type DeviceEdge = {
@@ -100,19 +128,40 @@ export type DeviceEdge = {
   cursor: Scalars['String'];
 };
 
+export type DeviceSource =
+  | 'MANUAL'
+  | 'DISCOVERED'
+  | 'IMPORTED';
+
 export type DeviceStatus =
   | 'INSTALLED'
   | 'NOT_INSTALLED';
 
-export type DevicesConnection = {
-  __typename?: 'DevicesConnection';
-  edges: Array<DeviceEdge>;
-  pageInfo: PageInfo;
+export type FilterDevicesInput = {
+  labelIds?: Maybe<Array<Scalars['String']>>;
 };
 
 export type InstallDevicePayload = {
   __typename?: 'InstallDevicePayload';
   device: Device;
+};
+
+export type Label = Node & {
+  __typename?: 'Label';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
+};
+
+export type LabelConnection = {
+  __typename?: 'LabelConnection';
+  edges: Array<LabelEdge>;
+};
+
+export type LabelEdge = {
+  __typename?: 'LabelEdge';
+  node: Label;
 };
 
 export type Mutation = {
@@ -129,6 +178,7 @@ export type Mutation = {
   addSnapshot: Maybe<AddSnapshotPayload>;
   applySnapshot: ApplySnapshotPayload;
   syncFromNetwork: SyncFromNetworkPayload;
+  createLabel: CreateLabelPayload;
 };
 
 
@@ -193,6 +243,11 @@ export type MutationSyncFromNetworkArgs = {
   deviceId: Scalars['String'];
 };
 
+
+export type MutationCreateLabelArgs = {
+  input: CreateLabelInput;
+};
+
 export type Node = {
   id: Scalars['ID'];
 };
@@ -208,10 +263,11 @@ export type PageInfo = {
 export type Query = {
   __typename?: 'Query';
   node: Maybe<Node>;
-  devices: DevicesConnection;
+  devices: DeviceConnection;
   zones: ZonesConnection;
   dataStore: Maybe<DataStore>;
   calculatedDiff: CalculatedDiffPayload;
+  labels: LabelConnection;
 };
 
 
@@ -225,6 +281,7 @@ export type QueryDevicesArgs = {
   after?: Maybe<Scalars['String']>;
   last?: Maybe<Scalars['Int']>;
   before?: Maybe<Scalars['String']>;
+  filter?: Maybe<FilterDevicesInput>;
 };
 
 
@@ -243,6 +300,14 @@ export type QueryDataStoreArgs = {
 
 export type QueryCalculatedDiffArgs = {
   deviceId: Scalars['String'];
+};
+
+
+export type QueryLabelsArgs = {
+  first?: Maybe<Scalars['Int']>;
+  after?: Maybe<Scalars['String']>;
+  last?: Maybe<Scalars['Int']>;
+  before?: Maybe<Scalars['String']>;
 };
 
 export type ResetConfigPayload = {
@@ -280,6 +345,7 @@ export type UpdateDeviceInput = {
   model?: Maybe<Scalars['String']>;
   vendor?: Maybe<Scalars['String']>;
   address?: Maybe<Scalars['String']>;
+  labelIds?: Maybe<Array<Scalars['String']>>;
 };
 
 export type UpdateDevicePayload = {
@@ -291,6 +357,8 @@ export type Zone = Node & {
   __typename?: 'Zone';
   id: Scalars['ID'];
   name: Scalars['String'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
 };
 
 export type ZoneEdge = {
@@ -317,10 +385,10 @@ export type AddDeviceMutation = (
     & { device: (
       { __typename?: 'Device' }
       & Pick<Device, 'id' | 'name' | 'model' | 'address' | 'vendor' | 'status'>
-      & { zone: Maybe<(
+      & { zone: (
         { __typename?: 'Zone' }
         & Pick<Zone, 'id' | 'name'>
-      )> }
+      ) }
     ) }
   ) }
 );
@@ -338,6 +406,22 @@ export type ZonesQuery = (
         { __typename?: 'Zone' }
         & Pick<Zone, 'id' | 'name'>
       ) }
+    )> }
+  ) }
+);
+
+export type CreateLabelMutationVariables = Exact<{
+  input: CreateLabelInput;
+}>;
+
+
+export type CreateLabelMutation = (
+  { __typename?: 'Mutation' }
+  & { newLabel: (
+    { __typename?: 'CreateLabelPayload' }
+    & { label: Maybe<(
+      { __typename?: 'Label' }
+      & Pick<Label, 'id' | 'name' | 'createdAt' | 'updatedAt'>
     )> }
   ) }
 );
@@ -463,22 +547,24 @@ export type CalculatedDiffQuery = (
   ) }
 );
 
-export type DevicesQueryVariables = Exact<{ [key: string]: never; }>;
+export type DevicesQueryVariables = Exact<{
+  labelIds?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+}>;
 
 
 export type DevicesQuery = (
   { __typename?: 'Query' }
   & { devices: (
-    { __typename?: 'DevicesConnection' }
+    { __typename?: 'DeviceConnection' }
     & { edges: Array<(
       { __typename?: 'DeviceEdge' }
       & { node: (
         { __typename?: 'Device' }
         & Pick<Device, 'id' | 'name' | 'model' | 'vendor' | 'address' | 'status'>
-        & { zone: Maybe<(
+        & { zone: (
           { __typename?: 'Zone' }
           & Pick<Zone, 'id' | 'name'>
-        )> }
+        ) }
       ) }
     )> }
   ) }
@@ -513,5 +599,22 @@ export type UninstallDeviceMutation = (
       { __typename?: 'Device' }
       & Pick<Device, 'id' | 'status'>
     ) }
+  ) }
+);
+
+export type LabelsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LabelsQuery = (
+  { __typename?: 'Query' }
+  & { labels: (
+    { __typename?: 'LabelConnection' }
+    & { edges: Array<(
+      { __typename?: 'LabelEdge' }
+      & { node: (
+        { __typename?: 'Label' }
+        & Pick<Label, 'id' | 'name'>
+      ) }
+    )> }
   ) }
 );

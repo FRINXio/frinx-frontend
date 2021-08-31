@@ -3,17 +3,22 @@ import React, { FC } from 'react';
 import Editor from 'react-ace';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { ZonesQuery } from '../../__generated__/graphql';
+import { Item } from 'chakra-ui-autocomplete';
+import { Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
+import SearchByLabelInput from '../../components/search-by-label-input';
 
 type Props = {
   zones: ZonesQuery['zones']['edges'];
-  onFormSubmit: (device: FormValues) => void;
+  labels: LabelsQuery['labels']['edges'];
+  onFormSubmit: (device: FormValues) => Promise<void>;
+  onLabelCreate: (labelName: string) => Promise<Label>;
 };
 
 type FormValues = {
   name: string;
   zoneId: string;
   mountParameters: string;
+  labels: string[];
 };
 
 const deviceSchema = yup.object({
@@ -26,18 +31,33 @@ const INITIAL_VALUES: FormValues = {
   name: '',
   zoneId: '',
   mountParameters: '{}',
+  labels: [],
 };
 
-const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones }) => {
+const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreate }) => {
+  const [selectedLabels, setSelectedLabels] = React.useState<Item[]>([]);
   const { errors, values, handleSubmit, handleChange, isSubmitting, setFieldValue } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: deviceSchema,
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: (data) => {
-      onFormSubmit(data);
+      const updatedData = { ...data, labels: selectedLabels.map((label) => label.value) };
+      onFormSubmit(updatedData);
     },
   });
+
+  const handleLabelCreation = (labelName: Item) => {
+    onLabelCreate(labelName.label).then((label) => {
+      setSelectedLabels(selectedLabels.concat({ label: label.name, value: label.id }));
+    });
+  };
+
+  const handleOnSelectionChange = (selectedItems?: Item[]) => {
+    if (selectedItems) {
+      setSelectedLabels([...new Set(selectedItems)]);
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -64,6 +84,15 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones }) => {
           ))}
         </Select>
         <FormErrorMessage>{errors.zoneId}</FormErrorMessage>
+      </FormControl>
+
+      <FormControl my={6}>
+        <SearchByLabelInput
+          labels={labels}
+          selectedLabels={selectedLabels}
+          onLabelCreate={handleLabelCreation}
+          onSelectionChange={handleOnSelectionChange}
+        />
       </FormControl>
 
       <FormControl my={6}>
