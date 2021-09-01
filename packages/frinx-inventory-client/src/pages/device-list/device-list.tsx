@@ -74,11 +74,11 @@ type Props = {
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick }) => {
   const toast = useToast();
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
-  const [{ data, fetching, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
+  const [{ data, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
     variables: { labelIds: selectedLabels.map((label) => label.value) },
   });
-  const [{ data: labelsData, fetching: fetchingLabels }] = useQuery<LabelsQuery>({ query: LABELS_QUERY });
+  const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<LabelsQuery>({ query: LABELS_QUERY });
   const [{ fetching: isInstalLoading }, installDevice] = useMutation<
     InstallDeviceMutation,
     InstallDeviceMutationVariables
@@ -88,7 +88,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     UninstallDeviceMutationVariables
   >(UNINSTALL_DEVICE_MUTATION);
 
-  if (fetching || fetchingLabels) {
+  if ((isFetchingDevices && data == null) || isFetchingLabels) {
     return <Progress size="xs" isIndeterminate mt={-10} />;
   }
 
