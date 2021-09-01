@@ -11,10 +11,21 @@ export type Scalars = {
   Float: number;
 };
 
+export type AddBlueprintInput = {
+  name: Scalars['String'];
+  template: Scalars['String'];
+};
+
+export type AddBlueprintPayload = {
+  __typename?: 'AddBlueprintPayload';
+  blueprint: Blueprint;
+};
+
 export type AddDeviceInput = {
   name: Scalars['String'];
   zoneId: Scalars['String'];
   labelIds?: Maybe<Array<Scalars['String']>>;
+  serviceState?: Maybe<DeviceServiceState>;
   mountParameters?: Maybe<Scalars['String']>;
   model?: Maybe<Scalars['String']>;
   vendor?: Maybe<Scalars['String']>;
@@ -24,6 +35,16 @@ export type AddDeviceInput = {
 export type AddDevicePayload = {
   __typename?: 'AddDevicePayload';
   device: Device;
+};
+
+export type AddLocationInput = {
+  name: Scalars['String'];
+  countryId: Scalars['String'];
+};
+
+export type AddLocationPayload = {
+  __typename?: 'AddLocationPayload';
+  location: Location;
 };
 
 export type AddSnapshotInput = {
@@ -56,6 +77,28 @@ export type ApplySnapshotPayload = {
   output: Scalars['String'];
 };
 
+export type Blueprint = Node & {
+  __typename?: 'Blueprint';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
+  template: Scalars['String'];
+};
+
+export type BlueprintConnection = {
+  __typename?: 'BlueprintConnection';
+  edges: Array<BlueprintEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int'];
+};
+
+export type BlueprintEdge = {
+  __typename?: 'BlueprintEdge';
+  node: Blueprint;
+  cursor: Scalars['String'];
+};
+
 export type CalculatedDiffPayload = {
   __typename?: 'CalculatedDiffPayload';
   output: Maybe<Scalars['String']>;
@@ -70,6 +113,26 @@ export type CommitConfigPayload = {
   __typename?: 'CommitConfigPayload';
   isOk: Scalars['Boolean'];
   output: Scalars['String'];
+};
+
+export type Country = Node & {
+  __typename?: 'Country';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  code: Scalars['String'];
+};
+
+export type CountryConnection = {
+  __typename?: 'CountryConnection';
+  edges: Array<CountryEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int'];
+};
+
+export type CountryEdge = {
+  __typename?: 'CountryEdge';
+  node: Country;
+  cursor: Scalars['String'];
 };
 
 export type CreateLabelInput = {
@@ -93,6 +156,11 @@ export type DeleteDevicePayload = {
   device: Maybe<Device>;
 };
 
+export type DeleteLabelPayload = {
+  __typename?: 'DeleteLabelPayload';
+  label: Maybe<Label>;
+};
+
 export type Device = Node & {
   __typename?: 'Device';
   id: Scalars['ID'];
@@ -102,10 +170,12 @@ export type Device = Node & {
   model: Maybe<Scalars['String']>;
   vendor: Maybe<Scalars['String']>;
   address: Maybe<Scalars['String']>;
-  source: Maybe<DeviceSource>;
-  status: Maybe<DeviceStatus>;
+  source: DeviceSource;
+  serviceState: DeviceServiceState;
+  isInstalled: Scalars['Boolean'];
   zone: Zone;
   labels: LabelConnection;
+  location: Maybe<Location>;
 };
 
 
@@ -120,6 +190,7 @@ export type DeviceConnection = {
   __typename?: 'DeviceConnection';
   edges: Array<DeviceEdge>;
   pageInfo: PageInfo;
+  totalCount: Scalars['Int'];
 };
 
 export type DeviceEdge = {
@@ -128,14 +199,15 @@ export type DeviceEdge = {
   cursor: Scalars['String'];
 };
 
+export type DeviceServiceState =
+  | 'PLANNING'
+  | 'IN_SERVICE'
+  | 'OUT_OF_SERVICE';
+
 export type DeviceSource =
   | 'MANUAL'
   | 'DISCOVERED'
   | 'IMPORTED';
-
-export type DeviceStatus =
-  | 'INSTALLED'
-  | 'NOT_INSTALLED';
 
 export type FilterDevicesInput = {
   labelIds?: Maybe<Array<Scalars['String']>>;
@@ -157,11 +229,36 @@ export type Label = Node & {
 export type LabelConnection = {
   __typename?: 'LabelConnection';
   edges: Array<LabelEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int'];
 };
 
 export type LabelEdge = {
   __typename?: 'LabelEdge';
   node: Label;
+  cursor: Scalars['String'];
+};
+
+export type Location = Node & {
+  __typename?: 'Location';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
+  country: Scalars['String'];
+};
+
+export type LocationConnection = {
+  __typename?: 'LocationConnection';
+  edges: Array<LocationEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int'];
+};
+
+export type LocationEdge = {
+  __typename?: 'LocationEdge';
+  node: Location;
+  cursor: Scalars['String'];
 };
 
 export type Mutation = {
@@ -179,6 +276,9 @@ export type Mutation = {
   applySnapshot: ApplySnapshotPayload;
   syncFromNetwork: SyncFromNetworkPayload;
   createLabel: CreateLabelPayload;
+  deleteLabel: DeleteLabelPayload;
+  addLocation: AddLocationPayload;
+  addBlueprint: AddBlueprintPayload;
 };
 
 
@@ -248,6 +348,21 @@ export type MutationCreateLabelArgs = {
   input: CreateLabelInput;
 };
 
+
+export type MutationDeleteLabelArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationAddLocationArgs = {
+  input: AddLocationInput;
+};
+
+
+export type MutationAddBlueprintArgs = {
+  input: AddBlueprintInput;
+};
+
 export type Node = {
   id: Scalars['ID'];
 };
@@ -268,6 +383,9 @@ export type Query = {
   dataStore: Maybe<DataStore>;
   calculatedDiff: CalculatedDiffPayload;
   labels: LabelConnection;
+  countries: CountryConnection;
+  locations: LocationConnection;
+  blueprints: BlueprintConnection;
 };
 
 
@@ -310,6 +428,30 @@ export type QueryLabelsArgs = {
   before?: Maybe<Scalars['String']>;
 };
 
+
+export type QueryCountriesArgs = {
+  first?: Maybe<Scalars['Int']>;
+  after?: Maybe<Scalars['String']>;
+  last?: Maybe<Scalars['Int']>;
+  before?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryLocationsArgs = {
+  first?: Maybe<Scalars['Int']>;
+  after?: Maybe<Scalars['String']>;
+  last?: Maybe<Scalars['Int']>;
+  before?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryBlueprintsArgs = {
+  first?: Maybe<Scalars['Int']>;
+  after?: Maybe<Scalars['String']>;
+  last?: Maybe<Scalars['Int']>;
+  before?: Maybe<Scalars['String']>;
+};
+
 export type ResetConfigPayload = {
   __typename?: 'ResetConfigPayload';
   dataStore: DataStore;
@@ -346,6 +488,8 @@ export type UpdateDeviceInput = {
   vendor?: Maybe<Scalars['String']>;
   address?: Maybe<Scalars['String']>;
   labelIds?: Maybe<Array<Scalars['String']>>;
+  serviceState?: Maybe<DeviceServiceState>;
+  locationId?: Maybe<Scalars['String']>;
 };
 
 export type UpdateDevicePayload = {
@@ -371,6 +515,7 @@ export type ZonesConnection = {
   __typename?: 'ZonesConnection';
   edges: Array<ZoneEdge>;
   pageInfo: PageInfo;
+  totalCount: Scalars['Int'];
 };
 
 export type AddDeviceMutationVariables = Exact<{
@@ -384,7 +529,7 @@ export type AddDeviceMutation = (
     { __typename?: 'AddDevicePayload' }
     & { device: (
       { __typename?: 'Device' }
-      & Pick<Device, 'id' | 'name' | 'model' | 'address' | 'vendor' | 'status'>
+      & Pick<Device, 'id' | 'name' | 'model' | 'address' | 'vendor'>
       & { zone: (
         { __typename?: 'Zone' }
         & Pick<Zone, 'id' | 'name'>
@@ -422,6 +567,23 @@ export type CreateLabelMutation = (
     & { label: Maybe<(
       { __typename?: 'Label' }
       & Pick<Label, 'id' | 'name' | 'createdAt' | 'updatedAt'>
+    )> }
+  ) }
+);
+
+export type LabelsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LabelsQuery = (
+  { __typename?: 'Query' }
+  & { labels: (
+    { __typename?: 'LabelConnection' }
+    & { edges: Array<(
+      { __typename?: 'LabelEdge' }
+      & { node: (
+        { __typename?: 'Label' }
+        & Pick<Label, 'id' | 'name'>
+      ) }
     )> }
   ) }
 );
@@ -560,7 +722,7 @@ export type DevicesQuery = (
       { __typename?: 'DeviceEdge' }
       & { node: (
         { __typename?: 'Device' }
-        & Pick<Device, 'id' | 'name' | 'model' | 'vendor' | 'address' | 'status'>
+        & Pick<Device, 'id' | 'name' | 'model' | 'vendor' | 'address' | 'serviceState'>
         & { zone: (
           { __typename?: 'Zone' }
           & Pick<Zone, 'id' | 'name'>
@@ -581,7 +743,7 @@ export type InstallDeviceMutation = (
     { __typename?: 'InstallDevicePayload' }
     & { device: (
       { __typename?: 'Device' }
-      & Pick<Device, 'id' | 'status'>
+      & Pick<Device, 'id' | 'serviceState'>
     ) }
   ) }
 );
@@ -597,7 +759,7 @@ export type UninstallDeviceMutation = (
     { __typename?: 'UninstallDevicePayload' }
     & { device: (
       { __typename?: 'Device' }
-      & Pick<Device, 'id' | 'status'>
+      & Pick<Device, 'id' | 'serviceState'>
     ) }
   ) }
 );

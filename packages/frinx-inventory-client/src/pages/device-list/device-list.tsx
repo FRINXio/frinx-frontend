@@ -24,6 +24,7 @@ const DEVICES_QUERY = gql`
           model
           vendor
           address
+          serviceState
           zone {
             id
             name
@@ -38,7 +39,7 @@ const INSTALL_DEVICE_MUTATION = gql`
     installDevice(id: $id) {
       device {
         id
-        status
+        serviceState
       }
     }
   }
@@ -48,7 +49,7 @@ const UNINSTALL_DEVICE_MUTATION = gql`
     uninstallDevice(id: $id) {
       device {
         id
-        status
+        serviceState
       }
     }
   }

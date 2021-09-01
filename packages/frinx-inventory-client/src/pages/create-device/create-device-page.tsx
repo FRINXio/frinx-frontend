@@ -23,7 +23,6 @@ const ADD_DEVICE_MUTATION = gql`
         model
         address
         vendor
-        status
         zone {
           id
           name
