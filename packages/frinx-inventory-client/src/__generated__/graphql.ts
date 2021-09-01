@@ -571,22 +571,6 @@ export type CreateLabelMutation = (
   ) }
 );
 
-export type LabelsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type LabelsQuery = (
-  { __typename?: 'Query' }
-  & { labels: (
-    { __typename?: 'LabelConnection' }
-    & { edges: Array<(
-      { __typename?: 'LabelEdge' }
-      & { node: (
-        { __typename?: 'Label' }
-        & Pick<Label, 'id' | 'name'>
-      ) }
-    )> }
-  ) }
-);
 
 export type QueryDataStoreQueryVariables = Exact<{
   deviceId: Scalars['String'];
