@@ -12,3 +12,9 @@ export type Device = {
   mountParameters: string;
   status: 'INSTALLED' | 'N/A';
 };
+
+export enum ServiceState {
+  PLANNING = 'PLANNING',
+  IN_SERVICE = 'IN_SERVICE',
+  OUT_OF_SERVICE = 'OUT_OF_SERVICE',
+}

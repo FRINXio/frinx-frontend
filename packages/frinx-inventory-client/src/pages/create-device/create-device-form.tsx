@@ -6,6 +6,13 @@ import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
 import { Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
+import { ServiceState } from '../../helpers/types';
+
+const serviceStateOptions = [
+  { value: ServiceState.PLANNING, label: 'Planning' },
+  { value: ServiceState.IN_SERVICE, label: 'In Service' },
+  { value: ServiceState.OUT_OF_SERVICE, label: 'Out of Service' },
+];
 
 type Props = {
   zones: ZonesQuery['zones']['edges'];
@@ -19,6 +26,7 @@ type FormValues = {
   zoneId: string;
   mountParameters: string;
   labels: string[];
+  serviceState: ServiceState;
 };
 
 const deviceSchema = yup.object({
@@ -32,6 +40,7 @@ const INITIAL_VALUES: FormValues = {
   zoneId: '',
   mountParameters: '{}',
   labels: [],
+  serviceState: ServiceState.PLANNING,
 };
 
 const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreate }) => {
@@ -84,6 +93,25 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreat
           ))}
         </Select>
         <FormErrorMessage>{errors.zoneId}</FormErrorMessage>
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>Service state</FormLabel>
+        <Select
+          onChange={(event) => {
+            event.persist();
+            setFieldValue('serviceState', event.target.value);
+          }}
+          name="serviceState"
+          placeholder="Select service state"
+          defaultValue={ServiceState.PLANNING}
+        >
+          {serviceStateOptions.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </Select>
       </FormControl>
 
       <FormControl my={6}>
