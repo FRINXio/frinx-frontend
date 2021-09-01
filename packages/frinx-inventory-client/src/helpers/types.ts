@@ -9,8 +9,8 @@ export type Device = {
   model: string | null;
   host: string | null;
   zone: Zone;
+  serviceState: ServiceState;
   mountParameters: string;
-  status: 'INSTALLED' | 'N/A';
 };
 
 export enum ServiceState {

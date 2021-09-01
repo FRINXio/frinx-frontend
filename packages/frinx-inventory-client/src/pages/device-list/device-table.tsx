@@ -2,6 +2,7 @@ import React, { VoidFunctionComponent } from 'react';
 import { Badge, Button, HStack, IconButton, Icon, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 import { AddIcon, MinusIcon, SettingsIcon } from '@chakra-ui/icons';
 import { DevicesQuery } from '../../__generated__/graphql';
+import { ServiceState } from '../../helpers/types';
 
 type Props = {
   devices: DevicesQuery['devices']['edges'] | undefined;
@@ -23,11 +24,8 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
       <Thead>
         <Tr>
           <Th>Name</Th>
-          <Th>Vendor</Th>
-          <Th>Model</Th>
-          <Th>Address</Th>
           <Th>Zone</Th>
-          <Th>Status</Th>
+          <Th>Service state</Th>
           <Th>Actions</Th>
           <Th>Config</Th>
         </Tr>
@@ -40,7 +38,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
         )}
         {devices &&
           devices.map(({ node: device }) => {
-            const isInstalled = device.status === 'INSTALLED';
+            const isInstalled = device.serviceState === ServiceState.IN_SERVICE;
 
             return (
               <Tr key={device.id}>
@@ -49,16 +47,9 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     {device.name}
                   </Text>
                 </Td>
-                <Td>{device.vendor}</Td>
-                <Td>{device.model}</Td>
-                <Td>
-                  <Text as="span" fontFamily="monospace" color="red">
-                    {device.address}
-                  </Text>
-                </Td>
                 <Td>{device.zone?.name}</Td>
                 <Td minWidth={200}>
-                  <Badge colorScheme={isInstalled ? 'green' : 'yellow'}>{device.status}</Badge>
+                  <Badge colorScheme={isInstalled ? 'green' : 'yellow'}>{device.serviceState}</Badge>
                 </Td>
                 <Td minWidth={200}>
                   <HStack spacing={2}>
@@ -92,7 +83,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 <Td>
                   <IconButton
                     aria-label="config"
-                    isDisabled={device.status !== 'INSTALLED'}
+                    isDisabled={device.serviceState !== ServiceState.IN_SERVICE}
                     variant="unstyled"
                     icon={<Icon size={20} as={SettingsIcon} />}
                     onClick={() => onSettingsButtonClick(device.id)}
