@@ -13,6 +13,7 @@ export type Device = {
   mountParameters: string;
 };
 
+// eslint-disable-next-line no-shadow
 export enum ServiceState {
   PLANNING = 'PLANNING',
   IN_SERVICE = 'IN_SERVICE',
