@@ -1,4 +1,4 @@
-import React, { useState, VoidFunctionComponent } from 'react';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { Box, Button, Container, Flex, Heading, Progress, useToast } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
@@ -76,11 +76,13 @@ type Props = {
 };
 
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick }) => {
+  const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const toast = useToast();
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [{ data, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
     variables: { labelIds: selectedLabels.map((label) => label.value) },
+    context,
   });
   const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY });
   const [{ fetching: isInstalLoading }, installDevice] = useMutation<

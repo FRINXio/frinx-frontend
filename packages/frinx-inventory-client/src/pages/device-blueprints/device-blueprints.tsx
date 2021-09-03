@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Container,
   Flex,
   Heading,
@@ -14,7 +15,7 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import React, { VoidFunctionComponent } from 'react';
+import React, { useMemo, VoidFunctionComponent } from 'react';
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import { gql, useQuery } from 'urql';
@@ -35,8 +36,17 @@ const BLUEPRINTS_QUERY = gql`
   }
 `;
 
-const DeviceBlueprints: VoidFunctionComponent = () => {
-  const [{ data, fetching, error }] = useQuery<BlueprintsQuery, BlueprintsQueryVariables>({ query: BLUEPRINTS_QUERY });
+type Props = {
+  onAddButtonClick: () => void;
+};
+
+const DeviceBlueprints: VoidFunctionComponent<Props> = ({ onAddButtonClick }) => {
+  const context = useMemo(() => ({ additionalTypenames: ['Blueprint'] }), []);
+
+  const [{ data, fetching, error }] = useQuery<BlueprintsQuery, BlueprintsQueryVariables>({
+    query: BLUEPRINTS_QUERY,
+    context,
+  });
 
   if (fetching || data == null) {
     return null;
@@ -52,6 +62,9 @@ const DeviceBlueprints: VoidFunctionComponent = () => {
         <Heading as="h2" size="3xl">
           Device blueprints
         </Heading>
+        <Button colorScheme="blue" onClick={onAddButtonClick}>
+          Add blueprint
+        </Button>
       </Flex>
       <Box position="relative">
         {fetching && data != null && (

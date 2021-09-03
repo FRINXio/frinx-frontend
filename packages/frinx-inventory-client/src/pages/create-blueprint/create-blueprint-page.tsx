@@ -16,11 +16,26 @@ const ADD_BLUEPRINT_MUTATION = gql`
   }
 `;
 
-const CreateBlueprintPage: VoidFunctionComponent = () => {
+type FormValues = {
+  name: string;
+  template: string;
+};
+type Props = {
+  onCreateSuccess: () => void;
+};
+
+const CreateBlueprintPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
   const [, addBlueprint] = useMutation<AddBlueprintMutation, AddBlueprintMutationVariables>(ADD_BLUEPRINT_MUTATION);
 
-  const handleFormSubmit = () => {
-    addBlueprint();
+  const handleFormSubmit = (values: FormValues) => {
+    addBlueprint({
+      input: {
+        name: values.name,
+        template: values.template,
+      },
+    }).then(() => {
+      onCreateSuccess();
+    });
   };
 
   return (
