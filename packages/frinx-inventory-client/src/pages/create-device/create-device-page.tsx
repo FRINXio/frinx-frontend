@@ -13,6 +13,7 @@ import {
   LabelsQuery,
   LabelsQueryVariables,
   Label,
+  DeviceServiceState,
 } from '../../__generated__/graphql';
 import CreateDeviceForm from './create-device-form';
 
@@ -88,6 +89,7 @@ type FormValues = {
   zoneId: string;
   mountParameters: string;
   labels: string[];
+  serviceState: DeviceServiceState;
 };
 type Props = {
   onAddDeviceSuccess: () => void;
@@ -122,6 +124,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
         mountParameters: values.mountParameters,
         zoneId: values.zoneId,
         labelIds: values.labels,
+        serviceState: values.serviceState,
       },
     }).then(() => {
       toast({
