@@ -21,9 +21,8 @@ const DEVICES_QUERY = gql`
         node {
           id
           name
-          model
-          vendor
-          address
+          createdAt
+          isInstalled
           zone {
             id
             name
@@ -38,7 +37,7 @@ const INSTALL_DEVICE_MUTATION = gql`
     installDevice(id: $id) {
       device {
         id
-        status
+        isInstalled
       }
     }
   }
@@ -48,7 +47,7 @@ const UNINSTALL_DEVICE_MUTATION = gql`
     uninstallDevice(id: $id) {
       device {
         id
-        status
+        isInstalled
       }
     }
   }
@@ -88,8 +87,14 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     UninstallDeviceMutationVariables
   >(UNINSTALL_DEVICE_MUTATION);
 
-  if (fetching || fetchingLabels) {
-    return <Progress size="xs" isIndeterminate mt={-10} />;
+  if ((fetching && data == null) || fetchingLabels) {
+    return (
+      <Box position="relative">
+        <Box position="absolute" top={0} right={0} left={0}>
+          <Progress size="xs" isIndeterminate />
+        </Box>
+      </Box>
+    );
   }
 
   if (error) {
@@ -140,21 +145,29 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
           Add device
         </Button>
       </Flex>
-      <Box mb={4}>
-        <SearchByLabelInput
-          labels={labels}
-          selectedLabels={selectedLabels}
-          onSelectionChange={handleOnSelectionChange}
-          disableCreateItem
+      <Box position="relative">
+        {fetching && data != null && (
+          <Box position="absolute" top={0} right={0} left={0}>
+            <Progress size="xs" isIndeterminate />
+          </Box>
+        )}
+
+        <Box mb={4}>
+          <SearchByLabelInput
+            labels={labels}
+            selectedLabels={selectedLabels}
+            onSelectionChange={handleOnSelectionChange}
+            disableCreateItem
+          />
+        </Box>
+        <DeviceTable
+          devices={data?.devices.edges}
+          onInstallButtonClick={handleInstallButtonClick}
+          onUninstallButtonClick={handleUninstallButtonClick}
+          onSettingsButtonClick={onSettingsButtonClick}
+          isLoading={isInstalLoading || isUninstallLoading}
         />
       </Box>
-      <DeviceTable
-        devices={data?.devices.edges}
-        onInstallButtonClick={handleInstallButtonClick}
-        onUninstallButtonClick={handleUninstallButtonClick}
-        onSettingsButtonClick={onSettingsButtonClick}
-        isLoading={isInstalLoading || isUninstallLoading}
-      />
     </Container>
   );
 };
