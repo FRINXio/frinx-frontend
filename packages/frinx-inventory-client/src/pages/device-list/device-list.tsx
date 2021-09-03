@@ -10,7 +10,7 @@ import {
   InstallDeviceMutationVariables,
   UninstallDeviceMutation,
   UninstallDeviceMutationVariables,
-  LabelsQuery,
+  FilterLabelsQuery,
 } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 
@@ -58,7 +58,7 @@ const UNINSTALL_DEVICE_MUTATION = gql`
   }
 `;
 const LABELS_QUERY = gql`
-  query labels {
+  query FilterLabels {
     labels {
       edges {
         node {
@@ -82,7 +82,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     query: DEVICES_QUERY,
     variables: { labelIds: selectedLabels.map((label) => label.value) },
   });
-  const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<LabelsQuery>({ query: LABELS_QUERY });
+  const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY });
   const [{ fetching: isInstalLoading }, installDevice] = useMutation<
     InstallDeviceMutation,
     InstallDeviceMutationVariables

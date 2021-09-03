@@ -814,10 +814,10 @@ export type UninstallDeviceMutation = (
   ) }
 );
 
-export type LabelsQueryVariables = Exact<{ [key: string]: never; }>;
+export type FilterLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type LabelsQuery = (
+export type FilterLabelsQuery = (
   { __typename?: 'Query' }
   & { labels: (
     { __typename?: 'LabelConnection' }
