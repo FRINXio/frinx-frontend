@@ -23,6 +23,7 @@ const DEVICES_QUERY = gql`
           name
           createdAt
           isInstalled
+          serviceState
           zone {
             id
             name
@@ -37,7 +38,9 @@ const INSTALL_DEVICE_MUTATION = gql`
     installDevice(id: $id) {
       device {
         id
+        createdAt
         isInstalled
+        serviceState
       }
     }
   }
@@ -47,7 +50,9 @@ const UNINSTALL_DEVICE_MUTATION = gql`
     uninstallDevice(id: $id) {
       device {
         id
+        createdAt
         isInstalled
+        serviceState
       }
     }
   }
@@ -73,11 +78,11 @@ type Props = {
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick }) => {
   const toast = useToast();
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
-  const [{ data, fetching, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
+  const [{ data, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
     variables: { labelIds: selectedLabels.map((label) => label.value) },
   });
-  const [{ data: labelsData, fetching: fetchingLabels }] = useQuery<LabelsQuery>({ query: LABELS_QUERY });
+  const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<LabelsQuery>({ query: LABELS_QUERY });
   const [{ fetching: isInstalLoading }, installDevice] = useMutation<
     InstallDeviceMutation,
     InstallDeviceMutationVariables
@@ -87,7 +92,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     UninstallDeviceMutationVariables
   >(UNINSTALL_DEVICE_MUTATION);
 
-  if ((fetching && data == null) || fetchingLabels) {
+  if ((isFetchingDevices && data == null) || isFetchingLabels) {
     return (
       <Box position="relative">
         <Box position="absolute" top={0} right={0} left={0}>
@@ -146,7 +151,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
         </Button>
       </Flex>
       <Box position="relative">
-        {fetching && data != null && (
+        {isFetchingDevices && data != null && (
           <Box position="absolute" top={0} right={0} left={0}>
             <Progress size="xs" isIndeterminate />
           </Box>

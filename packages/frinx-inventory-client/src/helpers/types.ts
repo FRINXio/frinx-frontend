@@ -9,6 +9,13 @@ export type Device = {
   model: string | null;
   host: string | null;
   zone: Zone;
+  serviceState: ServiceState;
   mountParameters: string;
-  status: 'INSTALLED' | 'N/A';
 };
+
+// eslint-disable-next-line no-shadow
+export enum ServiceState {
+  PLANNING = 'PLANNING',
+  IN_SERVICE = 'IN_SERVICE',
+  OUT_OF_SERVICE = 'OUT_OF_SERVICE',
+}

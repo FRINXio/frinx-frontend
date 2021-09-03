@@ -22,9 +22,6 @@ const ADD_DEVICE_MUTATION = gql`
       device {
         id
         name
-        model
-        address
-        vendor
         isInstalled
         zone {
           id

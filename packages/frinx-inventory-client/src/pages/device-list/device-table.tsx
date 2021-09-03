@@ -41,6 +41,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           <Th>Name</Th>
           <Th>Created</Th>
           <Th>Zone</Th>
+          <Th>Service state</Th>
           <Th>Status</Th>
           <Th>Actions</Th>
           <Th>Config</Th>
@@ -67,6 +68,9 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 </Tooltip>
               </Td>
               <Td>{device.zone?.name}</Td>
+              <Td minWidth={200}>
+                <Badge>{device.serviceState}</Badge>
+              </Td>
               <Td minWidth={200}>
                 <Badge colorScheme={isInstalled ? 'green' : 'yellow'}>{status}</Badge>
               </Td>
