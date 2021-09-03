@@ -13,13 +13,14 @@ import {
   Text,
   Th,
   Thead,
+  Tooltip,
   Tr,
 } from '@chakra-ui/react';
-import React, { useMemo, VoidFunctionComponent } from 'react';
-import { format } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
-import { gql, useQuery } from 'urql';
+import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
+import React, { useMemo, VoidFunctionComponent } from 'react';
+import { gql, useQuery } from 'urql';
+import { getLocalDateFromUTC } from '../../helpers/time.helpers';
 import { BlueprintsQuery, BlueprintsQueryVariables } from '../../__generated__/graphql';
 
 const BLUEPRINTS_QUERY = gql`
@@ -83,6 +84,8 @@ const DeviceBlueprints: VoidFunctionComponent<Props> = ({ onAddButtonClick }) =>
         </Thead>
         <Tbody>
           {blueprints.edges.map(({ node: blueprint }) => {
+            const localDate = getLocalDateFromUTC(blueprint.createdAt);
+
             return (
               <Tr key={blueprint.id}>
                 <Td>
@@ -91,10 +94,11 @@ const DeviceBlueprints: VoidFunctionComponent<Props> = ({ onAddButtonClick }) =>
                   </Text>
                 </Td>
                 <Td>
-                  {format(
-                    utcToZonedTime(blueprint.createdAt, Intl.DateTimeFormat().resolvedOptions().timeZone),
-                    'dd/mm/yyyy, k:m',
-                  )}
+                  <Tooltip label={format(localDate, 'dd/MM/yyyy, k:mm')}>
+                    <Text as="span" fontSize="sm" color="blackAlpha.700">
+                      {formatDistanceToNow(localDate)} ago
+                    </Text>
+                  </Tooltip>
                 </Td>
                 <Td>
                   <IconButton

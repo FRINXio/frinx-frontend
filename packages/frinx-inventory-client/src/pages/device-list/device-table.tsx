@@ -61,7 +61,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 </Text>
               </Td>
               <Td>
-                <Tooltip label={format(localDate, 'dd/mm/yyyy, k:mm')}>
+                <Tooltip label={format(localDate, 'dd/MM/yyyy, k:mm')}>
                   <Text as="span" fontSize="sm" color="blackAlpha.700">
                     {formatDistanceToNow(localDate)} ago
                   </Text>
