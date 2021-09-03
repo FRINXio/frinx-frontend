@@ -772,7 +772,7 @@ export type DevicesQuery = (
       { __typename?: 'DeviceEdge' }
       & { node: (
         { __typename?: 'Device' }
-        & Pick<Device, 'id' | 'name' | 'serviceState'>
+        & Pick<Device, 'id' | 'name' | 'createdAt' | 'isInstalled' | 'serviceState'>
         & { zone: (
           { __typename?: 'Zone' }
           & Pick<Zone, 'id' | 'name'>
@@ -793,7 +793,7 @@ export type InstallDeviceMutation = (
     { __typename?: 'InstallDevicePayload' }
     & { device: (
       { __typename?: 'Device' }
-      & Pick<Device, 'id' | 'isInstalled' | 'serviceState'>
+      & Pick<Device, 'id' | 'createdAt' | 'isInstalled' | 'serviceState'>
     ) }
   ) }
 );
@@ -809,7 +809,7 @@ export type UninstallDeviceMutation = (
     { __typename?: 'UninstallDevicePayload' }
     & { device: (
       { __typename?: 'Device' }
-      & Pick<Device, 'id' | 'isInstalled' | 'serviceState'>
+      & Pick<Device, 'id' | 'createdAt' | 'isInstalled' | 'serviceState'>
     ) }
   ) }
 );
