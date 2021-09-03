@@ -2529,6 +2529,11 @@
   resolved "https://registry.yarnpkg.com/@types/json-stable-stringify/-/json-stable-stringify-1.0.33.tgz#099b0712d824d15e2660c20e1c16e6a8381f308c"
   integrity sha512-qEWiQff6q2tA5gcJGWwzplQcXdJtm+0oy6IHGHzlOf3eFAkGE/FIPXZK9ofWgNSHVp8AFFI33PJJshS0ei3Gvw==
 
+"@types/json-templates@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/json-templates/-/json-templates-3.0.0.tgz#0b5b59e141a244ac9a9946bc7ff1ccf52715bec9"
+  integrity sha512-oaCQfpgz/tL6s20Qs/UW4l1kBg8z48GbmwE74K2y6JG0Uud5BN36Fxev3HOhuJcbH+TpbfaK3cZuhuZ9bxrqeA==
+
 "@types/jsonwebtoken@^8.5.0":
   version "8.5.5"
   resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-8.5.5.tgz#da5f2f4baee88f052ef3e4db4c1a0afb46cff22c"
@@ -3863,7 +3868,6 @@ batch@0.6.1:
 
 beautiful-react-diagrams@FRINXio/beautiful-react-diagrams#canvas-2:
   version "0.6.3"
-  uid "5fb7a8977c20fef5e7bb7307f963b014caa22d24"
   resolved "https://codeload.github.com/FRINXio/beautiful-react-diagrams/tar.gz/5fb7a8977c20fef5e7bb7307f963b014caa22d24"
   dependencies:
     beautiful-react-hooks "^0.31.0"
@@ -5082,6 +5086,11 @@ dedubcheck@^0.0.6:
   integrity sha512-7wnEgfbQV5jPv25mApVkAcNksU7kE/gc0EjvEH69xZvlhNZ3lyCZelQ/0/LqkwlWG5CLxDAAy9vkfQziGIwbbA==
   dependencies:
     lodash "*"
+
+dedupe@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/dedupe/-/dedupe-3.0.2.tgz#c7c9d5534167b69dc07bd21d093882abbe88b0a9"
+  integrity sha512-1BmvzpTdYjyvzTMgd8+A7R9jNJh8GfvVZJqREZpqq7OpePtVFNdw56FjsHFdC35ROSng6y+h4qFYO/VkiKEztg==
 
 deep-equal@^1.0.1:
   version "1.1.1"
@@ -7545,6 +7554,14 @@ json-stable-stringify@^1.0.1:
   dependencies:
     jsonify "~0.0.0"
 
+json-templates@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/json-templates/-/json-templates-4.1.0.tgz#5b8e9a9f0f77d5107214b77f06412ae9b884c278"
+  integrity sha512-Xjcnphott7Kj09zTSvszDVMXNa6utrQjXR25oxFMGKRNuX9wYQsJgKeQWVAxHE26I8lPUriIJ9nba1fCCBiI4Q==
+  dependencies:
+    dedupe "^3.0.2"
+    object-path "^0.11.4"
+
 json-to-pretty-yaml@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/json-to-pretty-yaml/-/json-to-pretty-yaml-1.2.2.tgz#f4cd0bd0a5e8fe1df25aaf5ba118b099fd992d5b"
@@ -8488,6 +8505,11 @@ object-keys@^1.0.12, object-keys@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-1.1.1.tgz#1c47f272df277f3b1daf061677d9c82e2322c60e"
   integrity sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==
+
+object-path@^0.11.4:
+  version "0.11.7"
+  resolved "https://registry.yarnpkg.com/object-path/-/object-path-0.11.7.tgz#5f211161f34bb395e4b13a5f565b79d933b6f65d"
+  integrity sha512-T4evaK9VfGGQskXBDILcn6F90ZD+WO3OwRFFQ2rmZdUH4vQeDBpiolTpVlPY2yj5xSepyILTjDyM6UvbbdHMZw==
 
 object-visit@^1.0.0:
   version "1.0.1"

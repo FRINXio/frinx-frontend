@@ -1,4 +1,4 @@
-import React, { useState, VoidFunctionComponent } from 'react';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { Box, Button, Container, Flex, Heading, Progress, useToast } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
@@ -10,7 +10,7 @@ import {
   InstallDeviceMutationVariables,
   UninstallDeviceMutation,
   UninstallDeviceMutationVariables,
-  LabelsQuery,
+  FilterLabelsQuery,
 } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 
@@ -21,9 +21,8 @@ const DEVICES_QUERY = gql`
         node {
           id
           name
-          model
-          vendor
-          address
+          createdAt
+          isInstalled
           serviceState
           zone {
             id
@@ -39,6 +38,8 @@ const INSTALL_DEVICE_MUTATION = gql`
     installDevice(id: $id) {
       device {
         id
+        createdAt
+        isInstalled
         serviceState
       }
     }
@@ -49,13 +50,15 @@ const UNINSTALL_DEVICE_MUTATION = gql`
     uninstallDevice(id: $id) {
       device {
         id
+        createdAt
+        isInstalled
         serviceState
       }
     }
   }
 `;
 const LABELS_QUERY = gql`
-  query labels {
+  query FilterLabels {
     labels {
       edges {
         node {
@@ -73,13 +76,15 @@ type Props = {
 };
 
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick }) => {
+  const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const toast = useToast();
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [{ data, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
     variables: { labelIds: selectedLabels.map((label) => label.value) },
+    context,
   });
-  const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<LabelsQuery>({ query: LABELS_QUERY });
+  const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY });
   const [{ fetching: isInstalLoading }, installDevice] = useMutation<
     InstallDeviceMutation,
     InstallDeviceMutationVariables
@@ -90,7 +95,13 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   >(UNINSTALL_DEVICE_MUTATION);
 
   if ((isFetchingDevices && data == null) || isFetchingLabels) {
-    return <Progress size="xs" isIndeterminate mt={-10} />;
+    return (
+      <Box position="relative">
+        <Box position="absolute" top={0} right={0} left={0}>
+          <Progress size="xs" isIndeterminate />
+        </Box>
+      </Box>
+    );
   }
 
   if (error) {
@@ -141,21 +152,29 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
           Add device
         </Button>
       </Flex>
-      <Box mb={4}>
-        <SearchByLabelInput
-          labels={labels}
-          selectedLabels={selectedLabels}
-          onSelectionChange={handleOnSelectionChange}
-          disableCreateItem
+      <Box position="relative">
+        {isFetchingDevices && data != null && (
+          <Box position="absolute" top={0} right={0} left={0}>
+            <Progress size="xs" isIndeterminate />
+          </Box>
+        )}
+
+        <Box mb={4}>
+          <SearchByLabelInput
+            labels={labels}
+            selectedLabels={selectedLabels}
+            onSelectionChange={handleOnSelectionChange}
+            disableCreateItem
+          />
+        </Box>
+        <DeviceTable
+          devices={data?.devices.edges}
+          onInstallButtonClick={handleInstallButtonClick}
+          onUninstallButtonClick={handleUninstallButtonClick}
+          onSettingsButtonClick={onSettingsButtonClick}
+          isLoading={isInstalLoading || isUninstallLoading}
         />
       </Box>
-      <DeviceTable
-        devices={data?.devices.edges}
-        onInstallButtonClick={handleInstallButtonClick}
-        onUninstallButtonClick={handleUninstallButtonClick}
-        onSettingsButtonClick={onSettingsButtonClick}
-        isLoading={isInstalLoading || isUninstallLoading}
-      />
     </Container>
   );
 };

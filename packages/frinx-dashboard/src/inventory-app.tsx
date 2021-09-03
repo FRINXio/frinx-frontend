@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Route, RouteComponentProps, Switch, useHistory } from 'react-router-dom';
+import { Redirect, Route, RouteComponentProps, Switch, useHistory } from 'react-router-dom';
 
 type InventoryComponents = typeof import('@frinx/inventory-client/src');
 const InventoryApp: FC = () => {
@@ -8,12 +8,21 @@ const InventoryApp: FC = () => {
 
   useEffect(() => {
     import('@frinx/inventory-client/src').then((mod) => {
-      const { DeviceList, CreateDevicePage, InventoryAPIProvider, DeviceConfigPage } = mod;
+      const {
+        DeviceList,
+        CreateDevicePage,
+        InventoryAPIProvider,
+        DeviceConfigPage,
+        DeviceBlueprints,
+        CreateBlueprintPage,
+      } = mod;
       setComponents({
         DeviceList,
         CreateDevicePage,
         InventoryAPIProvider,
         DeviceConfigPage,
+        DeviceBlueprints,
+        CreateBlueprintPage,
       });
     });
   }, []);
@@ -22,12 +31,22 @@ const InventoryApp: FC = () => {
     return null;
   }
 
-  const { DeviceList, CreateDevicePage, InventoryAPIProvider, DeviceConfigPage } = components;
+  const {
+    DeviceList,
+    CreateDevicePage,
+    InventoryAPIProvider,
+    DeviceConfigPage,
+    DeviceBlueprints,
+    CreateBlueprintPage,
+  } = components;
 
   return (
     <InventoryAPIProvider url={window.__CONFIG__.inventory_api_url}>
       <Switch>
         <Route exact path="/inventory">
+          <Redirect to="/inventory/devices" />
+        </Route>
+        <Route exact path="/inventory/devices">
           <DeviceList
             onAddButtonClick={() => {
               history.push('/inventory/new');
@@ -53,6 +72,20 @@ const InventoryApp: FC = () => {
             return <DeviceConfigPage deviceId={params.deviceId} />;
           }}
         />
+        <Route exact path="/inventory/blueprints">
+          <DeviceBlueprints
+            onAddButtonClick={() => {
+              history.push('/inventory/blueprints/new');
+            }}
+          />
+        </Route>
+        <Route exact path="/inventory/blueprints/new">
+          <CreateBlueprintPage
+            onCreateSuccess={() => {
+              history.push('/inventory/blueprints');
+            }}
+          />
+        </Route>
       </Switch>
     </InventoryAPIProvider>
   );

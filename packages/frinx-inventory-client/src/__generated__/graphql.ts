@@ -518,6 +518,22 @@ export type ZonesConnection = {
   totalCount: Scalars['Int'];
 };
 
+export type AddBlueprintMutationVariables = Exact<{
+  input: AddBlueprintInput;
+}>;
+
+
+export type AddBlueprintMutation = (
+  { __typename?: 'Mutation' }
+  & { addBlueprint: (
+    { __typename?: 'AddBlueprintPayload' }
+    & { blueprint: (
+      { __typename?: 'Blueprint' }
+      & Pick<Blueprint, 'id' | 'createdAt' | 'name'>
+    ) }
+  ) }
+);
+
 export type AddDeviceMutationVariables = Exact<{
   input: AddDeviceInput;
 }>;
@@ -529,7 +545,7 @@ export type AddDeviceMutation = (
     { __typename?: 'AddDevicePayload' }
     & { device: (
       { __typename?: 'Device' }
-      & Pick<Device, 'id' | 'name' | 'model' | 'address' | 'vendor'>
+      & Pick<Device, 'id' | 'name' | 'isInstalled'>
       & { zone: (
         { __typename?: 'Zone' }
         & Pick<Zone, 'id' | 'name'>
@@ -555,6 +571,23 @@ export type ZonesQuery = (
   ) }
 );
 
+export type DeviceBlueprintsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DeviceBlueprintsQuery = (
+  { __typename?: 'Query' }
+  & { blueprints: (
+    { __typename?: 'BlueprintConnection' }
+    & { edges: Array<(
+      { __typename?: 'BlueprintEdge' }
+      & { node: (
+        { __typename?: 'Blueprint' }
+        & Pick<Blueprint, 'id' | 'name' | 'template'>
+      ) }
+    )> }
+  ) }
+);
+
 export type CreateLabelMutationVariables = Exact<{
   input: CreateLabelInput;
 }>;
@@ -571,6 +604,39 @@ export type CreateLabelMutation = (
   ) }
 );
 
+export type LabelsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LabelsQuery = (
+  { __typename?: 'Query' }
+  & { labels: (
+    { __typename?: 'LabelConnection' }
+    & { edges: Array<(
+      { __typename?: 'LabelEdge' }
+      & { node: (
+        { __typename?: 'Label' }
+        & Pick<Label, 'id' | 'name'>
+      ) }
+    )> }
+  ) }
+);
+
+export type BlueprintsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type BlueprintsQuery = (
+  { __typename?: 'Query' }
+  & { blueprints: (
+    { __typename?: 'BlueprintConnection' }
+    & { edges: Array<(
+      { __typename?: 'BlueprintEdge' }
+      & { node: (
+        { __typename?: 'Blueprint' }
+        & Pick<Blueprint, 'id' | 'createdAt' | 'name'>
+      ) }
+    )> }
+  ) }
+);
 
 export type QueryDataStoreQueryVariables = Exact<{
   deviceId: Scalars['String'];
@@ -706,7 +772,7 @@ export type DevicesQuery = (
       { __typename?: 'DeviceEdge' }
       & { node: (
         { __typename?: 'Device' }
-        & Pick<Device, 'id' | 'name' | 'model' | 'vendor' | 'address' | 'serviceState'>
+        & Pick<Device, 'id' | 'name' | 'createdAt' | 'isInstalled' | 'serviceState'>
         & { zone: (
           { __typename?: 'Zone' }
           & Pick<Zone, 'id' | 'name'>
@@ -727,7 +793,7 @@ export type InstallDeviceMutation = (
     { __typename?: 'InstallDevicePayload' }
     & { device: (
       { __typename?: 'Device' }
-      & Pick<Device, 'id' | 'serviceState'>
+      & Pick<Device, 'id' | 'createdAt' | 'isInstalled' | 'serviceState'>
     ) }
   ) }
 );
@@ -743,15 +809,15 @@ export type UninstallDeviceMutation = (
     { __typename?: 'UninstallDevicePayload' }
     & { device: (
       { __typename?: 'Device' }
-      & Pick<Device, 'id' | 'serviceState'>
+      & Pick<Device, 'id' | 'createdAt' | 'isInstalled' | 'serviceState'>
     ) }
   ) }
 );
 
-export type LabelsQueryVariables = Exact<{ [key: string]: never; }>;
+export type FilterLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type LabelsQuery = (
+export type FilterLabelsQuery = (
   { __typename?: 'Query' }
   & { labels: (
     { __typename?: 'LabelConnection' }

@@ -64,7 +64,7 @@ const DeviceConfigActions: VoidFunctionComponent<Props> = ({
                   <Text as="span" fontSize="xs" color="gray.700">
                     {format(
                       utcToZonedTime(snapshot.createdAt, Intl.DateTimeFormat().resolvedOptions().timeZone),
-                      'dd/mm/yyyy, k:m',
+                      'dd/MM/yyyy, k:m',
                     )}
                   </Text>
                 </Box>

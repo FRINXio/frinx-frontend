@@ -199,6 +199,50 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
             </Link>
           </Route>
         )}
+        {enabledServices.get('inventory_enabled') && (
+          <Route path="/inventory">
+            <Link
+              to="/inventory/devices"
+              as={NavLink}
+              exact
+              color="brand.50"
+              display="flex"
+              alignItems="center"
+              paddingX={4}
+              borderBottomWidth={4}
+              borderColor="transparent"
+              borderStyle="solid"
+              _hover={{
+                borderColor: 'brand.50',
+              }}
+              _active={{
+                background: 'brand.800',
+              }}
+            >
+              Devices
+            </Link>
+            <Link
+              to="/inventory/blueprints"
+              as={NavLink}
+              exact
+              color="brand.50"
+              display="flex"
+              alignItems="center"
+              paddingX={4}
+              borderBottomWidth={4}
+              borderColor="transparent"
+              borderStyle="solid"
+              _hover={{
+                borderColor: 'brand.50',
+              }}
+              _active={{
+                background: 'brand.800',
+              }}
+            >
+              Blueprints
+            </Link>
+          </Route>
+        )}
       </Switch>
     </Flex>
   );

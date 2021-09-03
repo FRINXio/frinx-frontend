@@ -1,11 +1,12 @@
-import { Button, Divider, FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
-import React, { FC } from 'react';
-import Editor from 'react-ace';
+import { Button, Divider, FormControl, FormErrorMessage, FormLabel, Input, Select, Switch } from '@chakra-ui/react';
 import { useFormik } from 'formik';
+import React, { useState, VoidFunctionComponent } from 'react';
+import Editor from 'react-ace';
 import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
-import { Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
+import { DeviceBlueprintsQuery, Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
+import BlueprintForm from './blueprint-form';
 import { ServiceState } from '../../helpers/types';
 
 const serviceStateOptions = [
@@ -17,8 +18,9 @@ const serviceStateOptions = [
 type Props = {
   zones: ZonesQuery['zones']['edges'];
   labels: LabelsQuery['labels']['edges'];
+  blueprints: DeviceBlueprintsQuery['blueprints']['edges'];
   onFormSubmit: (device: FormValues) => Promise<void>;
-  onLabelCreate: (labelName: string) => Promise<Label>;
+  onLabelCreate: (labelName: string) => Promise<Label | null>;
 };
 
 type FormValues = {
@@ -43,8 +45,9 @@ const INITIAL_VALUES: FormValues = {
   serviceState: ServiceState.PLANNING,
 };
 
-const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreate }) => {
+const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, labels, onLabelCreate, blueprints }) => {
   const [selectedLabels, setSelectedLabels] = React.useState<Item[]>([]);
+  const [isUsingBlueprints, setIsUsingBlueprints] = useState(false);
   const { errors, values, handleSubmit, handleChange, isSubmitting, setFieldValue } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: deviceSchema,
@@ -58,7 +61,9 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreat
 
   const handleLabelCreation = (labelName: Item) => {
     onLabelCreate(labelName.label).then((label) => {
-      setSelectedLabels(selectedLabels.concat({ label: label.name, value: label.id }));
+      if (label != null) {
+        setSelectedLabels(selectedLabels.concat({ label: label.name, value: label.id }));
+      }
     });
   };
 
@@ -76,7 +81,7 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreat
         <FormErrorMessage>{errors.name}</FormErrorMessage>
       </FormControl>
 
-      <FormControl id="zone" marginY={5} isInvalid={errors.zoneId !== undefined}>
+      <FormControl id="zone" marginY={6} isInvalid={errors.zoneId !== undefined}>
         <FormLabel>Zone</FormLabel>
         <Select
           onChange={(event) => {
@@ -122,27 +127,51 @@ const CreateDeviceForm: FC<Props> = ({ onFormSubmit, zones, labels, onLabelCreat
           onSelectionChange={handleOnSelectionChange}
         />
       </FormControl>
-
-      <FormControl my={6}>
-        <FormLabel>Mount parameters</FormLabel>
-        <Editor
-          height="450px"
-          width="100%"
-          mode="json"
-          theme="tomorrow"
-          editorProps={{ $blockScrolling: true }}
-          fontSize={16}
-          setOptions={{
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: true,
-            enableSnippets: true,
-            showLineNumbers: true,
-            tabSize: 2,
+      <FormControl>
+        <FormLabel>Use blueprint?</FormLabel>
+        <Switch
+          size="lg"
+          id="isUsingBlueprints"
+          isChecked={isUsingBlueprints}
+          onChange={(event) => {
+            event.persist();
+            setIsUsingBlueprints(event.target.checked);
           }}
-          onChange={(event) => setFieldValue('mountParameters', event)}
-          value={values.mountParameters}
         />
       </FormControl>
+
+      {isUsingBlueprints ? (
+        <BlueprintForm
+          blueprints={blueprints}
+          onFormSubmit={(mParameters) => {
+            setFieldValue('mountParameters', mParameters);
+            setIsUsingBlueprints(false);
+          }}
+        />
+      ) : (
+        <FormControl my={6}>
+          <FormLabel>Mount parameters</FormLabel>
+          <Editor
+            height="450px"
+            width="100%"
+            mode="json"
+            theme="tomorrow"
+            editorProps={{ $blockScrolling: true }}
+            fontSize={16}
+            setOptions={{
+              enableBasicAutocompletion: true,
+              enableLiveAutocompletion: true,
+              enableSnippets: true,
+              showLineNumbers: true,
+              tabSize: 2,
+            }}
+            onChange={(value) => {
+              setFieldValue('mountParameters', value);
+            }}
+            value={JSON.stringify(JSON.parse(values.mountParameters), null, 2)}
+          />
+        </FormControl>
+      )}
 
       <Divider my={6} />
       <FormControl>
