@@ -1,50 +1,43 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 type PaginationArgs = {
   first?: number;
-  after?: string;
+  after?: string | null;
   last?: number;
-  before?: string;
+  before?: string | null;
 };
 
 type CallbackFunctions = {
-  onResponse: (pageInfo: unknown) => void;
-  nextPage: () => void;
-  previousPage: () => void;
+  nextPage: (cursor: string | null) => () => void;
+  previousPage: (cursor: string | null) => () => void;
 };
 
 export function usePagination(devicesPerPage = 20): [PaginationArgs, CallbackFunctions] {
-  const startCursor = useRef(undefined);
-  const endCursor = useRef(undefined);
   const [state, setState] = useState<PaginationArgs>({
     first: devicesPerPage,
     after: undefined,
     last: undefined,
     before: undefined,
   });
-  const onResponse = useCallback((pageInfo) => {
-    startCursor.current = pageInfo.startCursor;
-    endCursor.current = pageInfo.endCursor;
-  }, []);
   const nextPage = useCallback(
-    () =>
+    (cursor: string | null) => () =>
       setState({
         first: devicesPerPage,
-        after: endCursor.current,
+        after: cursor,
         last: undefined,
         before: undefined,
       }),
     [devicesPerPage],
   );
   const previousPage = useCallback(
-    () =>
+    (cursor: string | null) => () =>
       setState({
         first: undefined,
         after: undefined,
         last: devicesPerPage,
-        before: startCursor.current,
+        before: cursor,
       }),
     [devicesPerPage],
   );
-  return [state, { onResponse, nextPage, previousPage }];
+  return [state, { nextPage, previousPage }];
 }

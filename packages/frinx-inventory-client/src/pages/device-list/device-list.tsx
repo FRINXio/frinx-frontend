@@ -1,4 +1,4 @@
-import React, { useMemo, useState, VoidFunctionComponent, useEffect } from 'react';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { Box, Button, Container, Flex, Heading, Progress, useToast } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
@@ -87,7 +87,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const toast = useToast();
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
-  const [paginationArgs, { onResponse, nextPage, previousPage }] = usePagination();
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
   const [{ data, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
     variables: { labelIds: selectedLabels.map((label) => label.value), ...paginationArgs },
@@ -102,13 +102,6 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     UninstallDeviceMutation,
     UninstallDeviceMutationVariables
   >(UNINSTALL_DEVICE_MUTATION);
-
-  // used with usePagination hook to update pagination state (cursors...) on each data change
-  useEffect(() => {
-    if (data) {
-      onResponse(data.devices.pageInfo);
-    }
-  }, [data, onResponse]);
 
   if ((isFetchingDevices && data == null) || isFetchingLabels) {
     return (
@@ -193,8 +186,8 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
 
         {data && (
           <Pagination
-            onPrevious={previousPage}
-            onNext={nextPage}
+            onPrevious={previousPage(data.devices.pageInfo.startCursor)}
+            onNext={nextPage(data.devices.pageInfo.endCursor)}
             hasNextPage={data.devices.pageInfo.hasNextPage}
             hasPreviousPage={data.devices.pageInfo.hasPreviousPage}
           />
