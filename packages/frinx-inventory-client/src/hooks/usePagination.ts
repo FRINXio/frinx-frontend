@@ -1,4 +1,4 @@
-import {  useState,  useRef, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 
 type PaginationArgs = {
   first?: number;
@@ -8,10 +8,10 @@ type PaginationArgs = {
 };
 
 type CallbackFunctions = {
-    onResponse: (pageInfo: unknown) => void;
-    nextPage: () => void;
-    previousPage: () => void;
-}
+  onResponse: (pageInfo: unknown) => void;
+  nextPage: () => void;
+  previousPage: () => void;
+};
 
 export function usePagination(devicesPerPage = 20): [PaginationArgs, CallbackFunctions] {
   const startCursor = useRef(undefined);
@@ -47,4 +47,4 @@ export function usePagination(devicesPerPage = 20): [PaginationArgs, CallbackFun
     [devicesPerPage],
   );
   return [state, { onResponse, nextPage, previousPage }];
-};
+}
