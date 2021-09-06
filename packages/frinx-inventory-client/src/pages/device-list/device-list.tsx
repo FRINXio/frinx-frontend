@@ -1,4 +1,4 @@
-import React, { useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { Box, Button, Container, Flex, Heading, Progress, useToast } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
@@ -11,6 +11,8 @@ import {
   UninstallDeviceMutation,
   UninstallDeviceMutationVariables,
   FilterLabelsQuery,
+  DeleteDeviceMutation,
+  DeleteDeviceMutationVariables,
 } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 
@@ -69,6 +71,15 @@ const LABELS_QUERY = gql`
     }
   }
 `;
+const DELETE_DEVICE_MUTATION = gql`
+  mutation DeleteDevice($deviceId: String!) {
+    deleteDevice(id: $deviceId) {
+      device {
+        id
+      }
+    }
+  }
+`;
 
 type Props = {
   onAddButtonClick: () => void;
@@ -79,20 +90,62 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const toast = useToast();
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
+  const [installLoadingMap, setInstallLoadingMap] = useState<Record<string, boolean>>({});
   const [{ data, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
     variables: { labelIds: selectedLabels.map((label) => label.value) },
     context,
   });
   const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY });
-  const [{ fetching: isInstalLoading }, installDevice] = useMutation<
+  const [{ data: installDeviceData, error: installDeviceError }, installDevice] = useMutation<
     InstallDeviceMutation,
     InstallDeviceMutationVariables
   >(INSTALL_DEVICE_MUTATION);
-  const [{ fetching: isUninstallLoading }, uninstallDevice] = useMutation<
-    UninstallDeviceMutation,
-    UninstallDeviceMutationVariables
-  >(UNINSTALL_DEVICE_MUTATION);
+  const [, uninstallDevice] = useMutation<UninstallDeviceMutation, UninstallDeviceMutationVariables>(
+    UNINSTALL_DEVICE_MUTATION,
+  );
+  const [{ data: deleteDeviceData, error: deleteDeviceError }, deleteDevice] = useMutation<
+    DeleteDeviceMutation,
+    DeleteDeviceMutationVariables
+  >(DELETE_DEVICE_MUTATION);
+
+  useEffect(() => {
+    if (installDeviceData) {
+      toast({
+        position: 'top-right',
+        variant: 'subtle',
+        status: 'success',
+        title: 'Device succesfully installed',
+      });
+    }
+    if (installDeviceError) {
+      toast({
+        position: 'top-right',
+        variant: 'subtle',
+        status: 'error',
+        title: 'Device could not be installed',
+      });
+    }
+  }, [installDeviceData, installDeviceError, toast]);
+
+  useEffect(() => {
+    if (deleteDeviceData) {
+      toast({
+        position: 'top-right',
+        variant: 'subtle',
+        status: 'success',
+        title: 'Device succesfully deleted',
+      });
+    }
+    if (deleteDeviceError) {
+      toast({
+        position: 'top-right',
+        variant: 'subtle',
+        status: 'error',
+        title: 'Device could not be deleted',
+      });
+    }
+  }, [deleteDeviceData, deleteDeviceError, toast]);
 
   if ((isFetchingDevices && data == null) || isFetchingLabels) {
     return (
@@ -105,31 +158,65 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   }
 
   if (error) {
-    return null;
+    return <div>{error.toString()}</div>;
   }
 
   const handleInstallButtonClick = (deviceId: string) => {
+    setInstallLoadingMap((m) => {
+      return {
+        ...m,
+        [deviceId]: true,
+      };
+    });
     installDevice({
       id: deviceId,
     }).then(() => {
-      toast({
-        position: 'top-right',
-        variant: 'subtle',
-        status: 'success',
-        title: 'Device succesfully installed',
+      setInstallLoadingMap((m) => {
+        return {
+          ...m,
+          [deviceId]: false,
+        };
       });
     });
   };
 
   const handleUninstallButtonClick = (deviceId: string) => {
+    setInstallLoadingMap((m) => {
+      return {
+        ...m,
+        [deviceId]: true,
+      };
+    });
     uninstallDevice({
       id: deviceId,
+    })
+      .then(() => {
+        toast({
+          position: 'top-right',
+          variant: 'subtle',
+          status: 'success',
+          title: 'Device succesfully uninstalled',
+        });
+      })
+      .finally(() => {
+        setInstallLoadingMap((m) => {
+          return {
+            ...m,
+            [deviceId]: false,
+          };
+        });
+      });
+  };
+
+  const handleDeleteBtnClick = (deviceId: string) => {
+    deleteDevice({
+      deviceId,
     }).then(() => {
       toast({
         position: 'top-right',
         variant: 'subtle',
         status: 'success',
-        title: 'Device succesfully uninstalled',
+        title: 'Device succesfully deleted',
       });
     });
   };
@@ -168,11 +255,12 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
           />
         </Box>
         <DeviceTable
-          devices={data?.devices.edges}
+          devices={data?.devices.edges ?? []}
           onInstallButtonClick={handleInstallButtonClick}
           onUninstallButtonClick={handleUninstallButtonClick}
           onSettingsButtonClick={onSettingsButtonClick}
-          isLoading={isInstalLoading || isUninstallLoading}
+          onDeleteBtnClick={handleDeleteBtnClick}
+          installLoadingMap={installLoadingMap}
         />
       </Box>
     </Container>

@@ -830,3 +830,19 @@ export type FilterLabelsQuery = (
     )> }
   ) }
 );
+
+export type DeleteDeviceMutationVariables = Exact<{
+  deviceId: Scalars['String'];
+}>;
+
+
+export type DeleteDeviceMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteDevice: (
+    { __typename?: 'DeleteDevicePayload' }
+    & { device: Maybe<(
+      { __typename?: 'Device' }
+      & Pick<Device, 'id'>
+    )> }
+  ) }
+);
