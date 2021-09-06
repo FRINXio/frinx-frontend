@@ -1,3 +1,4 @@
+import { EditDevicePage } from '@frinx/inventory-client/src';
 import React, { FC, useEffect, useState } from 'react';
 import { Redirect, Route, RouteComponentProps, Switch, useHistory } from 'react-router-dom';
 
@@ -23,6 +24,7 @@ const InventoryApp: FC = () => {
         DeviceConfigPage,
         DeviceBlueprints,
         CreateBlueprintPage,
+        EditDevicePage,
       });
     });
   }, []);
@@ -63,6 +65,14 @@ const InventoryApp: FC = () => {
             }}
           />
         </Route>
+        <Route
+          exact
+          path="/inventory/edit/:deviceId"
+          render={(props: RouteComponentProps<{ deviceId: string }>) => {
+            const { deviceId } = props.match.params;
+            return <EditDevicePage deviceId={deviceId} onSuccess={() => history.replace('/inventory/devices')} />;
+          }}
+        />
         <Route
           exact
           path="/inventory/config/:deviceId"

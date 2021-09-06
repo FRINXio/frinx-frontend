@@ -830,3 +830,65 @@ export type FilterLabelsQuery = (
     )> }
   ) }
 );
+
+export type DeviceQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeviceQuery = (
+  { __typename?: 'Query' }
+  & { device: Maybe<(
+    { __typename?: 'Blueprint' }
+    & Pick<Blueprint, 'id'>
+  ) | (
+    { __typename?: 'Country' }
+    & Pick<Country, 'id'>
+  ) | (
+    { __typename?: 'Device' }
+    & Pick<Device, 'name' | 'serviceState' | 'id'>
+    & { zone: (
+      { __typename?: 'Zone' }
+      & Pick<Zone, 'id' | 'name'>
+    ), labels: (
+      { __typename?: 'LabelConnection' }
+      & { edges: Array<(
+        { __typename?: 'LabelEdge' }
+        & { node: (
+          { __typename?: 'Label' }
+          & Pick<Label, 'id' | 'name'>
+        ) }
+      )> }
+    ) }
+  ) | (
+    { __typename?: 'Label' }
+    & Pick<Label, 'id'>
+  ) | (
+    { __typename?: 'Location' }
+    & Pick<Location, 'id'>
+  ) | (
+    { __typename?: 'Zone' }
+    & Pick<Zone, 'id'>
+  )> }
+);
+
+export type UpdateDeviceMutationVariables = Exact<{
+  id: Scalars['String'];
+  input: UpdateDeviceInput;
+}>;
+
+
+export type UpdateDeviceMutation = (
+  { __typename?: 'Mutation' }
+  & { updateDevice: (
+    { __typename?: 'UpdateDevicePayload' }
+    & { device: Maybe<(
+      { __typename?: 'Device' }
+      & Pick<Device, 'id' | 'name' | 'isInstalled'>
+      & { zone: (
+        { __typename?: 'Zone' }
+        & Pick<Zone, 'id' | 'name'>
+      ) }
+    )> }
+  ) }
+);
