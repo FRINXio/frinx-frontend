@@ -761,6 +761,10 @@ export type CalculatedDiffQuery = (
 
 export type DevicesQueryVariables = Exact<{
   labelIds?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+  first?: Maybe<Scalars['Int']>;
+  after?: Maybe<Scalars['String']>;
+  last?: Maybe<Scalars['Int']>;
+  before?: Maybe<Scalars['String']>;
 }>;
 
 
@@ -778,7 +782,10 @@ export type DevicesQuery = (
           & Pick<Zone, 'id' | 'name'>
         ) }
       ) }
-    )> }
+    )>, pageInfo: (
+      { __typename?: 'PageInfo' }
+      & Pick<PageInfo, 'startCursor' | 'endCursor' | 'hasNextPage' | 'hasPreviousPage'>
+    ) }
   ) }
 );
 
