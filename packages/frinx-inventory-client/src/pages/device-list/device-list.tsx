@@ -1,4 +1,4 @@
-import React, { useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { useMemo, useState, VoidFunctionComponent, useEffect } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { Box, Button, Container, Flex, Heading, Progress, useToast } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
@@ -13,10 +13,12 @@ import {
   FilterLabelsQuery,
 } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
+import Pagination from '../../components/pagination';
+import { usePagination } from '../../hooks/usePagination';
 
 const DEVICES_QUERY = gql`
-  query Devices($labelIds: [String!]) {
-    devices(filter: { labelIds: $labelIds }) {
+  query Devices($labelIds: [String!], $first: Int, $after: String, $last: Int, $before: String) {
+    devices(filter: { labelIds: $labelIds }, first: $first, after: $after, last: $last, before: $before) {
       edges {
         node {
           id
@@ -29,6 +31,12 @@ const DEVICES_QUERY = gql`
             name
           }
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
       }
     }
   }
@@ -79,9 +87,10 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const toast = useToast();
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
+  const [paginationArgs, { onResponse, nextPage, previousPage }] = usePagination();
   const [{ data, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
-    variables: { labelIds: selectedLabels.map((label) => label.value) },
+    variables: { labelIds: selectedLabels.map((label) => label.value), ...paginationArgs },
     context,
   });
   const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY });
@@ -93,6 +102,13 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     UninstallDeviceMutation,
     UninstallDeviceMutationVariables
   >(UNINSTALL_DEVICE_MUTATION);
+
+  // used with usePagination hook to update pagination state (cursors...) on each data change
+  useEffect(() => {
+    if (data) {
+      onResponse(data.devices.pageInfo);
+    }
+  }, [data, onResponse]);
 
   if ((isFetchingDevices && data == null) || isFetchingLabels) {
     return (
@@ -174,6 +190,15 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
           onSettingsButtonClick={onSettingsButtonClick}
           isLoading={isInstalLoading || isUninstallLoading}
         />
+
+        {data && (
+          <Pagination
+            onPrevious={previousPage}
+            onNext={nextPage}
+            hasNextPage={data.devices.pageInfo.hasNextPage}
+            hasPreviousPage={data.devices.pageInfo.hasPreviousPage}
+          />
+        )}
       </Box>
     </Container>
   );
