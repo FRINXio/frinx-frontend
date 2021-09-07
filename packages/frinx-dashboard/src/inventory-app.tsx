@@ -74,7 +74,15 @@ const InventoryApp: FC = () => {
           path="/inventory/:deviceId/edit"
           render={(props: RouteComponentProps<{ deviceId: string }>) => {
             const { deviceId } = props.match.params;
-            return <EditDevicePage deviceId={deviceId} onSuccess={() => history.replace('/inventory/devices')} />;
+            return (
+              <EditDevicePage
+                deviceId={deviceId}
+                onSuccess={() => history.replace('/inventory/devices')}
+                onEditCancelButtonClick={() => {
+                  history.replace('/inventory/devices');
+                }}
+              />
+            );
           }}
         />
         <Route

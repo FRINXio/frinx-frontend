@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import Editor from 'react-ace';
 
 import { Item } from 'chakra-ui-autocomplete';
-import { Button, Divider, FormControl, FormLabel, Select } from '@chakra-ui/react';
+import { Button, Divider, FormControl, FormLabel, HStack, Select } from '@chakra-ui/react';
 
 import { ServiceState, serviceStateOptions } from '../../helpers/types';
 import { Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
@@ -26,6 +26,7 @@ type Props = {
   zones: ZonesQuery['zones']['edges'];
   onUpdate: (values: FormValues) => void;
   onLabelCreate: (label: string) => Promise<Label | null>;
+  onCancel: () => void;
 };
 
 const EditDeviceFormSchema = yup.object().shape({
@@ -41,6 +42,7 @@ const EditDeviceForm: FC<Props> = ({
   serviceState,
   onUpdate,
   onLabelCreate,
+  onCancel,
 }): JSX.Element => {
   const INITIAL_VALUES = {
     zoneId,
@@ -151,9 +153,14 @@ const EditDeviceForm: FC<Props> = ({
 
       <Divider my={6} />
       <FormControl>
-        <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
-          Edit device
-        </Button>
+        <HStack justify="flex-end">
+          <Button onClick={onCancel} colorScheme="gray" ml={3}>
+            Cancel
+          </Button>
+          <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
+            Edit device
+          </Button>
+        </HStack>
       </FormControl>
     </form>
   );

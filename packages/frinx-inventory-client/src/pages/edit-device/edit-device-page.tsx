@@ -98,6 +98,7 @@ const LABELS_QUERY = gql`
 type Props = {
   deviceId: string;
   onSuccess: () => void;
+  onEditCancelButtonClick: () => void;
 };
 
 type FormValues = {
@@ -107,7 +108,7 @@ type FormValues = {
   serviceState: ServiceState;
 };
 
-const EditDevicePage: FC<Props> = ({ deviceId, onSuccess }) => {
+const EditDevicePage: FC<Props> = ({ deviceId, onSuccess, onEditCancelButtonClick }) => {
   const toast = useToast();
 
   const [, updateDevice] = useMutation<UpdateDeviceMutation, UpdateDeviceMutationVariables>(UPDATE_DEVICE_MUTATION);
@@ -176,7 +177,7 @@ const EditDevicePage: FC<Props> = ({ deviceId, onSuccess }) => {
   const mappedZones = zones?.zones.edges ?? [];
 
   return (
-    <Container maxWidth={1280}>
+    <Container maxWidth={1280} mb={4}>
       <Heading as="h2" size="md" marginBottom={4}>
         Edit {name}
       </Heading>
@@ -186,6 +187,7 @@ const EditDevicePage: FC<Props> = ({ deviceId, onSuccess }) => {
           labels={mappedLabels}
           onLabelCreate={handleOnLabelCreate}
           onUpdate={handleOnUpdateDevice}
+          onCancel={onEditCancelButtonClick}
           zones={mappedZones}
           mountParameters={mountParameters}
           zoneId={zone?.id}
