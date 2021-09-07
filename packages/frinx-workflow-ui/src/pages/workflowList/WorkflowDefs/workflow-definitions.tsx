@@ -113,7 +113,8 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
         ? data
         : data.filter((e) => {
             const searchedKeys = ['name'];
-            const queryWords = keywords.toUpperCase().split(' ');
+            const queryWords = keywords.toUpperCase();
+            const wfName = e.name.toUpperCase();
             const labelsArr = jsonParse(e.description)?.labels;
 
             // if labels are used and wf doesnt contain selected labels => filter out
@@ -124,14 +125,11 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
             }
 
             // search for keywords in "searchedKeys"
-            for (let i = 0; i < searchedKeys.length; i += 1) {
-              for (let j = 0; j < queryWords.length; j += 1) {
-                if (searchedKeys[i].toString().toUpperCase().indexOf(queryWords[j]) === -1) {
-                  return false;
-                }
-              }
+            if (wfName.includes(queryWords)) {
               return true;
             }
+
+            return false;
           });
 
     setItemList(results);
