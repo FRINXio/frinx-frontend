@@ -40,7 +40,7 @@ const DEVICE_QUERY = gql`
   }
 `;
 
-const ADD_DEVICE_MUTATION = gql`
+const UPDATE_DEVICE_MUTATION = gql`
   mutation UpdateDevice($id: String!, $input: UpdateDeviceInput!) {
     updateDevice(id: $id, input: $input) {
       device {
@@ -110,7 +110,7 @@ type FormValues = {
 const EditDevicePage: FC<Props> = ({ deviceId, onSuccess }) => {
   const toast = useToast();
 
-  const [, updateDevice] = useMutation<UpdateDeviceMutation, UpdateDeviceMutationVariables>(ADD_DEVICE_MUTATION);
+  const [, updateDevice] = useMutation<UpdateDeviceMutation, UpdateDeviceMutationVariables>(UPDATE_DEVICE_MUTATION);
   const [{ data: deviceData, fetching: isLoadingDevice }] = useQuery({
     query: DEVICE_QUERY,
     variables: { id: deviceId },

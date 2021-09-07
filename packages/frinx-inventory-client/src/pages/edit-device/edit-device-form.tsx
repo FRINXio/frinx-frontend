@@ -152,7 +152,7 @@ const EditDeviceForm: FC<Props> = ({
       <Divider my={6} />
       <FormControl>
         <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
-          Add device
+          Edit device
         </Button>
       </FormControl>
     </form>

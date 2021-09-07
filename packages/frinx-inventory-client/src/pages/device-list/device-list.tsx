@@ -81,9 +81,10 @@ const LABELS_QUERY = gql`
 type Props = {
   onAddButtonClick: () => void;
   onSettingsButtonClick: (deviceId: string) => void;
+  onEditButtonClick: (deviceId: string) => void;
 };
 
-const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick }) => {
+const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick, onEditButtonClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const toast = useToast();
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
@@ -181,6 +182,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
           onInstallButtonClick={handleInstallButtonClick}
           onUninstallButtonClick={handleUninstallButtonClick}
           onSettingsButtonClick={onSettingsButtonClick}
+          onEditDeviceButtonClick={onEditButtonClick}
           isLoading={isInstalLoading || isUninstallLoading}
         />
 

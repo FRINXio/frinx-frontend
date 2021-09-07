@@ -1,4 +1,4 @@
-import { AddIcon, MinusIcon, SettingsIcon } from '@chakra-ui/icons';
+import { AddIcon, EditIcon, MinusIcon, SettingsIcon } from '@chakra-ui/icons';
 import {
   Badge,
   Button,
@@ -21,10 +21,11 @@ import { DevicesQuery } from '../../__generated__/graphql';
 
 type Props = {
   devices: DevicesQuery['devices']['edges'] | undefined;
+  isLoading: boolean;
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
   onSettingsButtonClick: (deviceId: string) => void;
-  isLoading: boolean;
+  onEditDeviceButtonClick: (deviceId: string) => void;
 };
 
 const DeviceTable: VoidFunctionComponent<Props> = ({
@@ -32,6 +33,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   onInstallButtonClick,
   onUninstallButtonClick,
   onSettingsButtonClick,
+  onEditDeviceButtonClick,
   isLoading,
 }) => {
   return (
@@ -45,6 +47,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           <Th>Status</Th>
           <Th>Actions</Th>
           <Th>Config</Th>
+          <Th>Edit</Th>
         </Tr>
       </Thead>
       <Tbody>
@@ -56,9 +59,15 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           return (
             <Tr key={device.id}>
               <Td>
-                <Text as="span" fontWeight={600}>
-                  {device.name}
-                </Text>
+                {isInstalled ? (
+                  <Text as="span" fontWeight={600} cursor="pointer" onClick={() => onEditDeviceButtonClick(device.id)}>
+                    {device.name}
+                  </Text>
+                ) : (
+                  <Text as="span" fontWeight={600}>
+                    {device.name}
+                  </Text>
+                )}
               </Td>
               <Td>
                 <Tooltip label={format(localDate, 'dd/MM/yyyy, k:mm')}>
@@ -110,6 +119,15 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                   variant="unstyled"
                   icon={<Icon size={20} as={SettingsIcon} />}
                   onClick={() => onSettingsButtonClick(device.id)}
+                />
+              </Td>
+              <Td>
+                <IconButton
+                  aria-label="edit"
+                  isDisabled={!isInstalled}
+                  variant="unstyled"
+                  icon={<Icon size={20} as={EditIcon} />}
+                  onClick={() => onEditDeviceButtonClick(device.id)}
                 />
               </Td>
             </Tr>
