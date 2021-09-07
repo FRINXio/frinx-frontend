@@ -15,10 +15,12 @@ import {
   DeleteDeviceMutationVariables,
 } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
+import Pagination from '../../components/pagination';
+import { usePagination } from '../../hooks/usePagination';
 
 const DEVICES_QUERY = gql`
-  query Devices($labelIds: [String!]) {
-    devices(filter: { labelIds: $labelIds }) {
+  query Devices($labelIds: [String!], $first: Int, $after: String, $last: Int, $before: String) {
+    devices(filter: { labelIds: $labelIds }, first: $first, after: $after, last: $last, before: $before) {
       edges {
         node {
           id
@@ -31,6 +33,12 @@ const DEVICES_QUERY = gql`
             name
           }
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
       }
     }
   }
@@ -91,9 +99,10 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   const toast = useToast();
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [installLoadingMap, setInstallLoadingMap] = useState<Record<string, boolean>>({});
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
   const [{ data, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
-    variables: { labelIds: selectedLabels.map((label) => label.value) },
+    variables: { labelIds: selectedLabels.map((label) => label.value), ...paginationArgs },
     context,
   });
   const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY });
@@ -262,6 +271,15 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
           onDeleteBtnClick={handleDeleteBtnClick}
           installLoadingMap={installLoadingMap}
         />
+
+        {data && (
+          <Pagination
+            onPrevious={previousPage(data.devices.pageInfo.startCursor)}
+            onNext={nextPage(data.devices.pageInfo.endCursor)}
+            hasNextPage={data.devices.pageInfo.hasNextPage}
+            hasPreviousPage={data.devices.pageInfo.hasPreviousPage}
+          />
+        )}
       </Box>
     </Container>
   );
