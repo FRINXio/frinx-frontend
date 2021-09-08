@@ -29,6 +29,18 @@ export type GraphQLInputParams = {
     timeout: number;
   };
 };
+export type KafkaPublishInputParams = {
+  kafka_request: {
+    topic: string;
+    value: string;
+    requestTimeoutMs?: number;
+    maxBlockMs?: number;
+    bootStrapServers: string;
+    headers: Record<string, string>;
+    key: string;
+    keySerializer: string;
+  };
+};
 export type TerminateInputParams = {
   terminationStatus: string;
   workflowOutput: string;
@@ -74,6 +86,7 @@ export type InputParameters =
   | DecisionInputParams
   | LambdaInputParams
   | GraphQLInputParams
+  | KafkaPublishInputParams
   | TerminateInputParams
   | HTTPInputParams
   | EventInputParams
@@ -95,7 +108,8 @@ export type TaskType =
   | 'CUSTOM'
   | 'FORK_JOIN_DYNAMIC'
   | 'EXCLUSIVE_JOIN'
-  | 'HTTP';
+  | 'HTTP'
+  | 'KAFKA_PUBLISH';
 
 type TaskValues = {
   name: string;
@@ -136,6 +150,9 @@ export type HTTPTask = BaseTask<HTTPInputParams> & {
 };
 export type GraphQLTask = BaseTask<GraphQLInputParams> & {
   type: 'SIMPLE';
+};
+export type KafkaPublishTask = BaseTask<KafkaPublishInputParams> & {
+  type: 'KAFKA_PUBLISH';
 };
 export type ForkTask = BaseTask & {
   type: 'FORK_JOIN' | 'FORK_JOIN_DYNAMIC';
@@ -198,6 +215,7 @@ export type Task =
   | EventTask
   | HTTPTask
   | GraphQLTask
+  | KafkaPublishTask
   | ForkTask
   | JoinTask
   | ExclusiveJoinTask
@@ -233,12 +251,14 @@ export type TaskLabel =
   | 'js'
   | 'py'
   | 'simple'
+  | 'kafka publish'
   | 'custom';
 
 export type ExtendedDecisionTask = DecisionTask & { id: string; label: TaskLabel };
 export type ExtendedEventTask = EventTask & { id: string; label: TaskLabel };
 export type ExtendedHTTPTask = HTTPTask & { id: string; label: TaskLabel };
 export type ExtendedGraphQLTask = GraphQLTask & { id: string; label: TaskLabel };
+export type ExtendedKafkaPublishTask = KafkaPublishTask & { id: string; label: TaskLabel };
 export type ExtendedForkTask = ForkTask & { id: string; label: TaskLabel };
 export type ExtendedJoinTask = JoinTask & { id: string; label: TaskLabel };
 export type ExtendedExclusiveJoinTask = ExclusiveJoinTask & { id: string; label: TaskLabel };
@@ -272,7 +292,8 @@ export type ExtendedTask =
   | ExtendedRawTask
   | ExtendedStartTask
   | ExtendedEndTask
-  | ExtendedSimpleTask;
+  | ExtendedSimpleTask
+  | ExtendedKafkaPublishTask;
 
 export type Workflow<T extends Task = Task> = {
   name: string;
