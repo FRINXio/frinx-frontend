@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { FormControl, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
-import { ExtendedTask, KafkaPublishInputParams, HTTPMethod } from '../../helpers/types';
+import { ExtendedTask, KafkaPublishInputParams } from '../../helpers/types';
 import Editor from '../common/editor';
 
 type Props = {
@@ -10,11 +10,14 @@ type Props = {
   onChange: (p: KafkaPublishInputParams) => void;
 };
 
-const serializerOptions = new Map([
-  ['org.apache.kafka.common.serialization.IntegerSerializer', 'IntegerSerializer'],
-  ['org.apache.kafka.common.serialization.LongSerializer', 'LongSerializer'],
-  ['org.apache.kafka.common.serialization.StringSerializer', 'StringSerializer'],
-]);
+// eslint-disable-next-line no-shadow
+enum SerializerEnum {
+  IntegerSerializer = 'org.apache.kafka.common.serialization.IntegerSerializer',
+  LongSerializer = 'org.apache.kafka.common.serialization.LongSerializer',
+  StringSerializer = 'org.apache.kafka.common.serialization.StringSerializer',
+}
+
+type SerializerEnumKeys = keyof typeof SerializerEnum;
 
 const KafkaPublishInputsForm: FC<Props> = ({ params, onChange }) => {
   const { topic, key, value, keySerializer, requestTimeoutMs, maxBlockMs, bootStrapServers, headers } =
@@ -87,11 +90,10 @@ const KafkaPublishInputsForm: FC<Props> = ({ params, onChange }) => {
           value={keySerializer}
           onChange={(event) => {
             event.persist();
-            const eventValue = event.target.value as HTTPMethod;
+            const eventValue = event.target.value as SerializerEnumKeys;
             onChange({
               ...params,
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
               // eslint-disable-next-line
               kafka_request: {
                 //
@@ -103,11 +105,11 @@ const KafkaPublishInputsForm: FC<Props> = ({ params, onChange }) => {
             });
           }}
         >
-          {[...serializerOptions.entries()].map((entry) => {
-            const [k, v] = entry;
+          {[...Object.entries(SerializerEnum)].map((e) => {
+            const [k, v] = e;
             return (
               <option key={k} value={v}>
-                {v}
+                {k}
               </option>
             );
           })}
