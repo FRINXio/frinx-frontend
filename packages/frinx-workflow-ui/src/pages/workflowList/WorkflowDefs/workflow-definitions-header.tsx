@@ -18,7 +18,7 @@ const WorkflowDefinitionsHeader: FC<Props> = ({ allLabels, keywords, onKeywordsC
   const searchFavourites = () => {
     const newLabels = [...labels];
     const index = newLabels.findIndex((label) => label === 'FAVOURITE');
-    newLabels.splice(index, 1, index === -1 ? 'FAVOURITE' : undefined);
+    newLabels.splice(index, 1, index === -1 ? 'FAVOURITE' : '');
     onLabelsChange(newLabels.filter((l) => l != null));
   };
 
