@@ -15,28 +15,22 @@ export default function useResponseToasts({
   failureMessage,
 }: UseResponseToastsProps): void {
   const toast = useToast();
-  const successToastId = 'success-toast-id';
-  const failureToastId = 'failure-toast-id';
   useEffect(() => {
     if (isSuccess) {
-      if (!toast.isActive(successToastId)) {
-        toast({
-          position: 'top-right',
-          variant: 'subtle',
-          status: 'success',
-          title: successMessage,
-        });
-      }
+      toast({
+        position: 'top-right',
+        variant: 'subtle',
+        status: 'success',
+        title: successMessage,
+      });
     }
     if (isFailure) {
-      if (!toast.isActive(failureToastId)) {
-        toast({
-          position: 'top-right',
-          variant: 'subtle',
-          status: 'error',
-          title: failureMessage,
-        });
-      }
+      toast({
+        position: 'top-right',
+        variant: 'subtle',
+        status: 'error',
+        title: failureMessage,
+      });
     }
   }, [isSuccess, isFailure, successMessage, failureMessage, toast]);
 }
