@@ -78,7 +78,7 @@ const InventoryApp: FC = () => {
               <EditDevicePage
                 deviceId={deviceId}
                 onSuccess={() => history.replace('/inventory/devices')}
-                onEditCancelButtonClick={() => {
+                onCancelButtonClick={() => {
                   history.replace('/inventory/devices');
                 }}
               />
