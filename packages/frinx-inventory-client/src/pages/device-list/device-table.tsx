@@ -59,15 +59,9 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           return (
             <Tr key={device.id}>
               <Td>
-                {isInstalled ? (
-                  <Text as="span" fontWeight={600} cursor="pointer" onClick={() => onEditDeviceButtonClick(device.id)}>
-                    {device.name}
-                  </Text>
-                ) : (
-                  <Text as="span" fontWeight={600}>
-                    {device.name}
-                  </Text>
-                )}
+                <Text as="span" fontWeight={600}>
+                  {device.name}
+                </Text>
               </Td>
               <Td>
                 <Tooltip label={format(localDate, 'dd/MM/yyyy, k:mm')}>
@@ -124,7 +118,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               <Td>
                 <IconButton
                   aria-label="edit"
-                  isDisabled={!isInstalled}
+                  isDisabled={isInstalled}
                   variant="unstyled"
                   icon={<Icon size={20} as={EditIcon} />}
                   onClick={() => onEditDeviceButtonClick(device.id)}
