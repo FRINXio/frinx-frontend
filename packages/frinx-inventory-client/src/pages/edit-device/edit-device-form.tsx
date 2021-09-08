@@ -100,7 +100,7 @@ const EditDeviceForm: FC<Props> = ({
         <FormErrorMessage>{errors.zoneId}</FormErrorMessage>
       </FormControl> */}
 
-      <FormControl>
+      <FormControl my={6}>
         <FormLabel>Service state</FormLabel>
         <Select
           onChange={(event) => {
@@ -153,7 +153,7 @@ const EditDeviceForm: FC<Props> = ({
 
       <Divider my={6} />
       <FormControl>
-        <HStack justify="flex-end">
+        <HStack>
           <Button onClick={onCancel} colorScheme="gray" ml={3}>
             Cancel
           </Button>

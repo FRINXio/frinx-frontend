@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 
-import { Container, Heading, Progress, useToast } from '@chakra-ui/react';
+import { Box, Container, Heading, Progress, useToast } from '@chakra-ui/react';
 import EditDeviceForm from './edit-device-form';
 import {
   CreateLabelMutation,
@@ -177,23 +177,25 @@ const EditDevicePage: FC<Props> = ({ deviceId, onSuccess, onEditCancelButtonClic
   const mappedZones = zones?.zones.edges ?? [];
 
   return (
-    <Container maxWidth={1280} mb={4}>
-      <Heading as="h2" size="md" marginBottom={4}>
+    <Container maxWidth={1280}>
+      <Heading size="3xl" as="h2" mb={6}>
         Edit {name}
       </Heading>
 
       {!isLoadingForm && (
-        <EditDeviceForm
-          labels={mappedLabels}
-          onLabelCreate={handleOnLabelCreate}
-          onUpdate={handleOnUpdateDevice}
-          onCancel={onEditCancelButtonClick}
-          zones={mappedZones}
-          mountParameters={mountParameters}
-          zoneId={zone?.id}
-          serviceState={serviceState}
-          initialSelectedLabels={labelEdges}
-        />
+        <Box background="white" boxShadow="base" px={4} py={2} position="relative">
+          <EditDeviceForm
+            labels={mappedLabels}
+            onLabelCreate={handleOnLabelCreate}
+            onUpdate={handleOnUpdateDevice}
+            onCancel={onEditCancelButtonClick}
+            zones={mappedZones}
+            mountParameters={mountParameters}
+            zoneId={zone?.id}
+            serviceState={serviceState}
+            initialSelectedLabels={labelEdges}
+          />
+        </Box>
       )}
     </Container>
   );
