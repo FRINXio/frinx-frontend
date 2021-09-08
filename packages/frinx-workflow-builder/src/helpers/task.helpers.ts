@@ -30,6 +30,7 @@ import {
   TaskDefinition,
   ExtendedSimpleTask,
   ExtendedExclusiveJoinTask,
+  SerializerEnum,
 } from './types';
 
 const DEFAULT_TASK_OPTIONS: Pick<Task, 'optional' | 'startDelay'> = {
@@ -107,7 +108,7 @@ function createKafkaPublishTask(label: TaskLabel): ExtendedKafkaPublishTask {
         bootStrapServers: '',
         headers: {},
         key: '',
-        keySerializer: 'org.apache.kafka.common.serialization.StringSerializer',
+        keySerializer: SerializerEnum.StringSerializer,
       },
     },
     ...DEFAULT_TASK_OPTIONS,

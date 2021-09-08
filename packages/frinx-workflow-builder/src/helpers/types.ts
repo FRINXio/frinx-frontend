@@ -29,6 +29,7 @@ export type GraphQLInputParams = {
     timeout: number;
   };
 };
+
 export type KafkaPublishInputParams = {
   kafka_request: {
     topic: string;
@@ -38,7 +39,7 @@ export type KafkaPublishInputParams = {
     bootStrapServers: string;
     headers: Record<string, string>;
     key: string;
-    keySerializer: string;
+    keySerializer: SerializerEnum;
   };
 };
 export type TerminateInputParams = {
@@ -341,3 +342,10 @@ export type TaskDefinition = {
   rateLimitPerFrequency?: number;
   ownerEmail: string;
 };
+
+// eslint-disable-next-line no-shadow
+export enum SerializerEnum {
+  IntegerSerializer = 'org.apache.kafka.common.serialization.IntegerSerializer',
+  LongSerializer = 'org.apache.kafka.common.serialization.LongSerializer',
+  StringSerializer = 'org.apache.kafka.common.serialization.StringSerializer',
+}

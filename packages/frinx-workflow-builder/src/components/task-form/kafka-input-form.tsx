@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { FormControl, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
-import { ExtendedTask, KafkaPublishInputParams } from '../../helpers/types';
+import { ExtendedTask, KafkaPublishInputParams, SerializerEnum } from '../../helpers/types';
 import Editor from '../common/editor';
 
 type Props = {
@@ -9,15 +9,6 @@ type Props = {
   task: ExtendedTask;
   onChange: (p: KafkaPublishInputParams) => void;
 };
-
-// eslint-disable-next-line no-shadow
-enum SerializerEnum {
-  IntegerSerializer = 'org.apache.kafka.common.serialization.IntegerSerializer',
-  LongSerializer = 'org.apache.kafka.common.serialization.LongSerializer',
-  StringSerializer = 'org.apache.kafka.common.serialization.StringSerializer',
-}
-
-type SerializerEnumKeys = keyof typeof SerializerEnum;
 
 const KafkaPublishInputsForm: FC<Props> = ({ params, onChange }) => {
   const { topic, key, value, keySerializer, requestTimeoutMs, maxBlockMs, bootStrapServers, headers } =
@@ -90,7 +81,7 @@ const KafkaPublishInputsForm: FC<Props> = ({ params, onChange }) => {
           value={keySerializer}
           onChange={(event) => {
             event.persist();
-            const eventValue = event.target.value as SerializerEnumKeys;
+            const eventValue = event.target.value as SerializerEnum;
             onChange({
               ...params,
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
