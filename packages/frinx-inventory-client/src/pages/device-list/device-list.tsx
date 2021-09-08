@@ -1,8 +1,10 @@
-import { Box, Button, Container, Flex, Heading, Progress, useToast } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, Progress, useDisclosure, useToast } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
+import ConfirmDeleteModal from '../../components/confirm-delete-modal';
 import Pagination from '../../components/pagination';
+import unwrap from '../../helpers/unwrap';
 import { usePagination } from '../../hooks/use-pagination';
 import useResponseToasts from '../../hooks/user-response-toasts';
 import {
@@ -98,6 +100,8 @@ type Props = {
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const toast = useToast();
+  const deleteModalDisclosure = useDisclosure();
+  const [deviceIdToDelete, setDeviceIdToDelete] = useState<string | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [installLoadingMap, setInstallLoadingMap] = useState<Record<string, boolean>>({});
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
@@ -207,9 +211,8 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   };
 
   const handleDeleteBtnClick = (deviceId: string) => {
-    deleteDevice({
-      deviceId,
-    });
+    setDeviceIdToDelete(deviceId);
+    deleteModalDisclosure.onOpen();
   };
 
   const handleOnSelectionChange = (selectedItems?: Item[]) => {
@@ -221,51 +224,67 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   const labels = labelsData?.labels?.edges ?? [];
 
   return (
-    <Container maxWidth={1280}>
-      <Flex justify="space-between" align="center" marginBottom={6}>
-        <Heading as="h2" size="3xl">
-          Devices
-        </Heading>
-        <Button colorScheme="blue" onClick={onAddButtonClick}>
-          Add device
-        </Button>
-      </Flex>
-      <Box position="relative">
-        {isFetchingDevices && deviceData != null && (
-          <Box position="absolute" top={0} right={0} left={0}>
-            <Progress size="xs" isIndeterminate />
-          </Box>
-        )}
+    <>
+      <ConfirmDeleteModal
+        isOpen={deleteModalDisclosure.isOpen}
+        onClose={deleteModalDisclosure.onClose}
+        onConfirmBtnClick={() => {
+          deleteDevice({
+            deviceId: unwrap(deviceIdToDelete),
+          }).then(() => {
+            deleteModalDisclosure.onClose();
+          });
+        }}
+        title="Delete device"
+      >
+        Are you sure? You can&apos;t undo this action afterwards.
+      </ConfirmDeleteModal>
+      <Container maxWidth={1280}>
+        <Flex justify="space-between" align="center" marginBottom={6}>
+          <Heading as="h2" size="3xl">
+            Devices
+          </Heading>
+          <Button colorScheme="blue" onClick={onAddButtonClick}>
+            Add device
+          </Button>
+        </Flex>
+        <Box position="relative">
+          {isFetchingDevices && deviceData != null && (
+            <Box position="absolute" top={0} right={0} left={0}>
+              <Progress size="xs" isIndeterminate />
+            </Box>
+          )}
 
-        <Box>
-          <DeviceFilter
-            labels={labels}
-            selectedLabels={selectedLabels}
-            onSelectionChange={handleOnSelectionChange}
-            isCreationDisabled
-          />
-        </Box>
-        <DeviceTable
-          devices={deviceData?.devices.edges ?? []}
-          onInstallButtonClick={handleInstallButtonClick}
-          onUninstallButtonClick={handleUninstallButtonClick}
-          onSettingsButtonClick={onSettingsButtonClick}
-          onDeleteBtnClick={handleDeleteBtnClick}
-          installLoadingMap={installLoadingMap}
-        />
-
-        {deviceData && (
-          <Box marginTop={4} paddingX={4}>
-            <Pagination
-              onPrevious={previousPage(deviceData.devices.pageInfo.startCursor)}
-              onNext={nextPage(deviceData.devices.pageInfo.endCursor)}
-              hasNextPage={deviceData.devices.pageInfo.hasNextPage}
-              hasPreviousPage={deviceData.devices.pageInfo.hasPreviousPage}
+          <Box>
+            <DeviceFilter
+              labels={labels}
+              selectedLabels={selectedLabels}
+              onSelectionChange={handleOnSelectionChange}
+              isCreationDisabled
             />
           </Box>
-        )}
-      </Box>
-    </Container>
+          <DeviceTable
+            devices={deviceData?.devices.edges ?? []}
+            onInstallButtonClick={handleInstallButtonClick}
+            onUninstallButtonClick={handleUninstallButtonClick}
+            onSettingsButtonClick={onSettingsButtonClick}
+            onDeleteBtnClick={handleDeleteBtnClick}
+            installLoadingMap={installLoadingMap}
+          />
+
+          {deviceData && (
+            <Box marginTop={4} paddingX={4}>
+              <Pagination
+                onPrevious={previousPage(deviceData.devices.pageInfo.startCursor)}
+                onNext={nextPage(deviceData.devices.pageInfo.endCursor)}
+                hasNextPage={deviceData.devices.pageInfo.hasNextPage}
+                hasPreviousPage={deviceData.devices.pageInfo.hasPreviousPage}
+              />
+            </Box>
+          )}
+        </Box>
+      </Container>
+    </>
   );
 };
 
