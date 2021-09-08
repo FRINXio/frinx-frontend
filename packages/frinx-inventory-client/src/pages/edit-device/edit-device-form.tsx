@@ -121,7 +121,7 @@ const EditDeviceForm: FC<Props> = ({
 
       <FormControl my={6}>
         <SearchByLabelInput
-          labels={labels}
+          items={labels}
           selectedLabels={selectedLabels}
           onLabelCreate={handleLabelCreation}
           onSelectionChange={handleOnSelectionChange}

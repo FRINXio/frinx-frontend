@@ -115,7 +115,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, l
 
       <FormControl my={6}>
         <SearchByLabelInput
-          labels={labels}
+          items={labels}
           selectedLabels={selectedLabels}
           onLabelCreate={handleLabelCreation}
           onSelectionChange={handleOnSelectionChange}

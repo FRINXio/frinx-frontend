@@ -1,20 +1,25 @@
+import { Box, Button, Container, Flex, Heading, Progress, useDisclosure, useToast } from '@chakra-ui/react';
+import { Item } from 'chakra-ui-autocomplete';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
-import { Box, Button, Container, Flex, Heading, Progress, useToast } from '@chakra-ui/react';
-import { Item } from 'chakra-ui-autocomplete';
-import DeviceTable from './device-table';
+import ConfirmDeleteModal from '../../components/confirm-delete-modal';
+import Pagination from '../../components/pagination';
+import unwrap from '../../helpers/unwrap';
+import { usePagination } from '../../hooks/use-pagination';
+import useResponseToasts from '../../hooks/user-response-toasts';
 import {
+  DeleteDeviceMutation,
+  DeleteDeviceMutationVariables,
   DevicesQuery,
   DevicesQueryVariables,
+  FilterLabelsQuery,
   InstallDeviceMutation,
   InstallDeviceMutationVariables,
   UninstallDeviceMutation,
   UninstallDeviceMutationVariables,
-  FilterLabelsQuery,
 } from '../../__generated__/graphql';
-import SearchByLabelInput from '../../components/search-by-label-input';
-import Pagination from '../../components/pagination';
-import { usePagination } from '../../hooks/usePagination';
+import DeviceFilter from './device-filters';
+import DeviceTable from './device-table';
 
 const DEVICES_QUERY = gql`
   query Devices($labelIds: [String!], $first: Int, $after: String, $last: Int, $before: String) {
@@ -77,6 +82,15 @@ const LABELS_QUERY = gql`
     }
   }
 `;
+const DELETE_DEVICE_MUTATION = gql`
+  mutation DeleteDevice($deviceId: String!) {
+    deleteDevice(id: $deviceId) {
+      device {
+        id
+      }
+    }
+  }
+`;
 
 type Props = {
   onAddButtonClick: () => void;
@@ -87,24 +101,56 @@ type Props = {
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick, onEditButtonClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const toast = useToast();
+  const deleteModalDisclosure = useDisclosure();
+  const [deviceIdToDelete, setDeviceIdToDelete] = useState<string | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
+  const [installLoadingMap, setInstallLoadingMap] = useState<Record<string, boolean>>({});
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
-  const [{ data, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
+  const [{ data: deviceData, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
     variables: { labelIds: selectedLabels.map((label) => label.value), ...paginationArgs },
     context,
   });
   const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY });
-  const [{ fetching: isInstalLoading }, installDevice] = useMutation<
+  const [{ data: installDeviceData, error: installDeviceError }, installDevice] = useMutation<
     InstallDeviceMutation,
     InstallDeviceMutationVariables
   >(INSTALL_DEVICE_MUTATION);
-  const [{ fetching: isUninstallLoading }, uninstallDevice] = useMutation<
+  const [{ data: uninstallDeviceData, error: uninstallDeviceError }, uninstallDevice] = useMutation<
     UninstallDeviceMutation,
     UninstallDeviceMutationVariables
   >(UNINSTALL_DEVICE_MUTATION);
+  const [{ data: deleteDeviceData, error: deleteDeviceError }, deleteDevice] = useMutation<
+    DeleteDeviceMutation,
+    DeleteDeviceMutationVariables
+  >(DELETE_DEVICE_MUTATION);
+  const isInstallSuccesfull = installDeviceData != null;
+  const isInstallFailed = installDeviceError != null;
+  const isUninstallSuccesfull = uninstallDeviceData != null;
+  const isUninstallFailed = uninstallDeviceError != null;
+  const isDeleteSuccessful = deleteDeviceData != null;
+  const isDeleteFailed = deleteDeviceError != null;
 
-  if ((isFetchingDevices && data == null) || isFetchingLabels) {
+  useResponseToasts({
+    isSuccess: isInstallSuccesfull,
+    isFailure: isInstallFailed,
+    successMessage: 'Device succesfully installed',
+    failureMessage: 'Device could not be installed',
+  });
+  useResponseToasts({
+    isSuccess: isUninstallSuccesfull,
+    isFailure: isUninstallFailed,
+    successMessage: 'Device succesfully uninstalled',
+    failureMessage: 'Device could not be uninstalled',
+  });
+  useResponseToasts({
+    isSuccess: isDeleteSuccessful,
+    isFailure: isDeleteFailed,
+    successMessage: 'Device succesfully deleted',
+    failureMessage: 'Device could not be deleted',
+  });
+
+  if ((isFetchingDevices && deviceData == null) || isFetchingLabels) {
     return (
       <Box position="relative">
         <Box position="absolute" top={0} right={0} left={0}>
@@ -115,33 +161,59 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   }
 
   if (error) {
-    return null;
+    return <div>{error.toString()}</div>;
   }
 
   const handleInstallButtonClick = (deviceId: string) => {
+    setInstallLoadingMap((m) => {
+      return {
+        ...m,
+        [deviceId]: true,
+      };
+    });
     installDevice({
       id: deviceId,
     }).then(() => {
-      toast({
-        position: 'top-right',
-        variant: 'subtle',
-        status: 'success',
-        title: 'Device succesfully installed',
+      setInstallLoadingMap((m) => {
+        return {
+          ...m,
+          [deviceId]: false,
+        };
       });
     });
   };
 
   const handleUninstallButtonClick = (deviceId: string) => {
+    setInstallLoadingMap((m) => {
+      return {
+        ...m,
+        [deviceId]: true,
+      };
+    });
     uninstallDevice({
       id: deviceId,
-    }).then(() => {
-      toast({
-        position: 'top-right',
-        variant: 'subtle',
-        status: 'success',
-        title: 'Device succesfully uninstalled',
+    })
+      .then(() => {
+        toast({
+          position: 'top-right',
+          variant: 'subtle',
+          status: 'success',
+          title: 'Device succesfully uninstalled',
+        });
+      })
+      .finally(() => {
+        setInstallLoadingMap((m) => {
+          return {
+            ...m,
+            [deviceId]: false,
+          };
+        });
       });
-    });
+  };
+
+  const handleDeleteBtnClick = (deviceId: string) => {
+    setDeviceIdToDelete(deviceId);
+    deleteModalDisclosure.onOpen();
   };
 
   const handleOnSelectionChange = (selectedItems?: Item[]) => {
@@ -153,49 +225,68 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   const labels = labelsData?.labels?.edges ?? [];
 
   return (
-    <Container maxWidth={1280}>
-      <Flex justify="space-between" align="center" marginBottom={6}>
-        <Heading as="h2" size="3xl">
-          Devices
-        </Heading>
-        <Button colorScheme="blue" onClick={onAddButtonClick}>
-          Add device
-        </Button>
-      </Flex>
-      <Box position="relative">
-        {isFetchingDevices && data != null && (
-          <Box position="absolute" top={0} right={0} left={0}>
-            <Progress size="xs" isIndeterminate />
+    <>
+      <ConfirmDeleteModal
+        isOpen={deleteModalDisclosure.isOpen}
+        onClose={deleteModalDisclosure.onClose}
+        onConfirmBtnClick={() => {
+          deleteDevice({
+            deviceId: unwrap(deviceIdToDelete),
+          }).then(() => {
+            deleteModalDisclosure.onClose();
+          });
+        }}
+        title="Delete device"
+      >
+        Are you sure? You can&apos;t undo this action afterwards.
+      </ConfirmDeleteModal>
+      <Container maxWidth={1280}>
+        <Flex justify="space-between" align="center" marginBottom={6}>
+          <Heading as="h2" size="3xl">
+            Devices
+          </Heading>
+          <Button colorScheme="blue" onClick={onAddButtonClick}>
+            Add device
+          </Button>
+        </Flex>
+        <Box position="relative">
+          {isFetchingDevices && deviceData != null && (
+            <Box position="absolute" top={0} right={0} left={0}>
+              <Progress size="xs" isIndeterminate />
+            </Box>
+          )}
+
+          <Box>
+            <DeviceFilter
+              labels={labels}
+              selectedLabels={selectedLabels}
+              onSelectionChange={handleOnSelectionChange}
+              isCreationDisabled
+            />
           </Box>
-        )}
-
-        <Box mb={4}>
-          <SearchByLabelInput
-            labels={labels}
-            selectedLabels={selectedLabels}
-            onSelectionChange={handleOnSelectionChange}
-            disableCreateItem
+          <DeviceTable
+            devices={deviceData?.devices.edges ?? []}
+            onInstallButtonClick={handleInstallButtonClick}
+            onUninstallButtonClick={handleUninstallButtonClick}
+            onSettingsButtonClick={onSettingsButtonClick}
+            onDeleteBtnClick={handleDeleteBtnClick}
+            onEditDeviceButtonClick={onEditButtonClick}
+            installLoadingMap={installLoadingMap}
           />
+
+          {deviceData && (
+            <Box marginTop={4} paddingX={4}>
+              <Pagination
+                onPrevious={previousPage(deviceData.devices.pageInfo.startCursor)}
+                onNext={nextPage(deviceData.devices.pageInfo.endCursor)}
+                hasNextPage={deviceData.devices.pageInfo.hasNextPage}
+                hasPreviousPage={deviceData.devices.pageInfo.hasPreviousPage}
+              />
+            </Box>
+          )}
         </Box>
-        <DeviceTable
-          devices={data?.devices.edges}
-          onInstallButtonClick={handleInstallButtonClick}
-          onUninstallButtonClick={handleUninstallButtonClick}
-          onSettingsButtonClick={onSettingsButtonClick}
-          onEditDeviceButtonClick={onEditButtonClick}
-          isLoading={isInstalLoading || isUninstallLoading}
-        />
-
-        {data && (
-          <Pagination
-            onPrevious={previousPage(data.devices.pageInfo.startCursor)}
-            onNext={nextPage(data.devices.pageInfo.endCursor)}
-            hasNextPage={data.devices.pageInfo.hasNextPage}
-            hasPreviousPage={data.devices.pageInfo.hasPreviousPage}
-          />
-        )}
-      </Box>
-    </Container>
+      </Container>
+    </>
   );
 };
 
