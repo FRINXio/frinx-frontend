@@ -1,42 +1,58 @@
+import { Box } from '@chakra-ui/react';
 import { CUIAutoComplete, Item } from 'chakra-ui-autocomplete';
 import React, { FC } from 'react';
 import { LabelsQuery } from '../__generated__/graphql';
 
 type Props = {
-  labels: LabelsQuery['labels']['edges'];
+  items: LabelsQuery['labels']['edges'];
   selectedLabels: Item[];
-  disableCreateItem?: boolean;
+  isCreationDisabled?: boolean;
   onSelectionChange: (labels?: Item[]) => void;
   onLabelCreate?: (label: Item) => void;
+  labelText?: string;
 };
 
 const SearchByLabelInput: FC<Props> = ({
-  labels,
+  items,
   selectedLabels,
   onLabelCreate,
-  disableCreateItem = false,
+  isCreationDisabled = false,
   onSelectionChange,
+  labelText = 'Select labels',
 }) => {
-  const labelList =
-    labels.map(({ node: l }) => {
-      return { label: l.name, value: l.id };
-    }) ?? [];
+  const labelList = items.map(({ node: l }) => {
+    return { label: l.name, value: l.id };
+  });
 
   const selectedLabelList = selectedLabels.map(({ label, value }) => {
     return { label, value };
   });
 
   return (
-    <CUIAutoComplete
-      label="Choose labels"
-      placeholder="Type a label"
-      onCreateItem={onLabelCreate}
-      items={labelList}
-      selectedItems={selectedLabelList}
-      onSelectedItemsChange={(changes) => onSelectionChange(changes.selectedItems)}
-      disableCreateItem={disableCreateItem}
-      hideToggleButton
-    />
+    // autocomplete lib has some weird styling at the bottom
+    <Box position="relative" paddingBottom={selectedLabelList.length ? 0 : '28px'}>
+      <CUIAutoComplete
+        label={labelText}
+        labelStyleProps={{
+          marginBottom: 0,
+        }}
+        inputStyleProps={{
+          variant: 'filled',
+        }}
+        placeholder="Start typing..."
+        onCreateItem={onLabelCreate}
+        items={labelList}
+        selectedItems={selectedLabelList}
+        onSelectedItemsChange={(changes) => onSelectionChange(changes.selectedItems)}
+        disableCreateItem={isCreationDisabled}
+        hideToggleButton
+        listStyleProps={{
+          position: 'absolute',
+          right: 0,
+          left: 0,
+        }}
+      />
+    </Box>
   );
 };
 
