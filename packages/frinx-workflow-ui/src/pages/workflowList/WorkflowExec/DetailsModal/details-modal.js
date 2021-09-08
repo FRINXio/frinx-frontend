@@ -7,7 +7,6 @@ import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../../../utils/callbackUtils';
 import moment from 'moment';
 import isEmpty from 'lodash/isEmpty';
-import unescapeJs from 'unescape-js';
 import {
   Box,
   Button,
@@ -44,8 +43,8 @@ import {
   Tooltip,
 } from '@chakra-ui/react';
 import { CopyIcon } from '@chakra-ui/icons';
-import { resetToDefaultWorkflow } from '../../../../store/actions/builder';
 import TaskTable from './task-table';
+import { escape, unescape } from 'lodash';
 
 new Clipboard('.clp');
 
@@ -69,6 +68,7 @@ class DetailsModal extends Component {
       isEscaped: true,
     };
     this.handleClose = this.handleClose.bind(this);
+    this.copyToClipBoard = this.copyToClipBoard.bind(this);
   }
 
   componentDidMount() {
@@ -119,7 +119,7 @@ class DetailsModal extends Component {
   }
 
   getUnescapedJSON(data) {
-    return this.state.isEscaped ? JSON.stringify(data, null, 2) : unescapeJs(JSON.stringify(data, null, 2));
+    return this.state.isEscaped ? escape(JSON.stringify(data, null, 2)) : unescape(JSON.stringify(data, null, 2));
   }
 
   handleClose() {
@@ -259,6 +259,10 @@ class DetailsModal extends Component {
     });
   }
 
+  copyToClipBoard = (text) => {
+    navigator.clipboard.writeText(this.getUnescapedJSON(text));
+  };
+
   render() {
     const actionButtons = (status) => {
       switch (status) {
@@ -369,7 +373,13 @@ class DetailsModal extends Component {
               <Text as="b" fontSize="sm">
                 Workflow Input
               </Text>
-              <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#wfinput" />
+              <IconButton
+                icon={<CopyIcon />}
+                size="sm"
+                className="clp"
+                data-clipboard-target="#wfinput"
+                onClick={() => this.copyToClipBoard(input)}
+              />
               <Button size="sm" onClick={() => this.setState((prevState) => ({ isEscaped: !prevState.isEscaped }))}>
                 {isEscaped ? 'Unescape' : 'Escape'}
               </Button>
@@ -381,7 +391,13 @@ class DetailsModal extends Component {
               <Text as="b" fontSize="sm">
                 Workflow Output
               </Text>
-              <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#wfoutput" />
+              <IconButton
+                icon={<CopyIcon />}
+                size="sm"
+                className="clp"
+                data-clipboard-target="#wfoutput"
+                onClick={() => this.copyToClipBoard(output)}
+              />
               <Button size="sm" onClick={() => this.setState((prevState) => ({ isEscaped: !prevState.isEscaped }))}>
                 {isEscaped ? 'Unescape' : 'Escape'}
               </Button>
