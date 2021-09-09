@@ -68,7 +68,6 @@ class DetailsModal extends Component {
       isEscaped: true,
     };
     this.handleClose = this.handleClose.bind(this);
-    this.copyToClipBoard = this.copyToClipBoard.bind(this);
   }
 
   componentDidMount() {
@@ -378,7 +377,7 @@ class DetailsModal extends Component {
                 size="sm"
                 className="clp"
                 data-clipboard-target="#wfinput"
-                onClick={() => this.copyToClipBoard(input)}
+                onClick={this.copyToClipBoard.bind(this, input)}
               />
               <Button size="sm" onClick={() => this.setState((prevState) => ({ isEscaped: !prevState.isEscaped }))}>
                 {isEscaped ? 'Unescape' : 'Escape'}
@@ -396,7 +395,7 @@ class DetailsModal extends Component {
                 size="sm"
                 className="clp"
                 data-clipboard-target="#wfoutput"
-                onClick={() => this.copyToClipBoard(output)}
+                onClick={this.copyToClipBoard.bind(this, output)}
               />
               <Button size="sm" onClick={() => this.setState((prevState) => ({ isEscaped: !prevState.isEscaped }))}>
                 {isEscaped ? 'Unescape' : 'Escape'}
