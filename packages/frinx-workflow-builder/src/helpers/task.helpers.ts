@@ -20,6 +20,7 @@ import {
   ExtendedSubworkflowTask,
   ExtendedHTTPTask,
   ExtendedGraphQLTask,
+  ExtendedKafkaPublishTask,
   InputParameters,
   HTTPInputParams,
   GraphQLInputParams,
@@ -29,6 +30,7 @@ import {
   TaskDefinition,
   ExtendedSimpleTask,
   ExtendedExclusiveJoinTask,
+  SerializerEnum,
 } from './types';
 
 const DEFAULT_TASK_OPTIONS: Pick<Task, 'optional' | 'startDelay'> = {
@@ -91,7 +93,27 @@ function createGraphQLTask(label: TaskLabel): ExtendedGraphQLTask {
     ...DEFAULT_TASK_OPTIONS,
   };
 }
-
+function createKafkaPublishTask(label: TaskLabel): ExtendedKafkaPublishTask {
+  return {
+    id: uuid(),
+    label,
+    name: 'kafkaPublish_task',
+    type: 'KAFKA_PUBLISH',
+    taskReferenceName: `kafka_${getRandomString(4)}`,
+    inputParameters: {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      kafka_request: {
+        topic: '',
+        value: '',
+        bootStrapServers: '',
+        headers: {},
+        key: '',
+        keySerializer: SerializerEnum.StringSerializer,
+      },
+    },
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
 function createLambdaTask(label: TaskLabel): ExtendedLambdaTask {
   return {
     id: uuid(),
@@ -333,6 +355,8 @@ export function createTask(taskLabel: TaskLabel): ExtendedTask {
       return createWaitTask(taskLabel);
     case 'raw':
       return createRawTask(taskLabel);
+    case 'kafka publish':
+      return createKafkaPublishTask(taskLabel);
     default:
       throw new Error('should never happen');
   }
@@ -369,6 +393,7 @@ export function createSystemTasks(): TaskLabel[] {
     'terminate',
     'wait',
     'while end',
+    'kafka publish',
   ];
 }
 
@@ -405,6 +430,8 @@ export function getTaskLabel(t: Task): TaskLabel {
       return 'sub workflow';
     case 'HTTP':
       return 'http';
+    case 'KAFKA_PUBLISH':
+      return 'kafka publish';
     case 'SIMPLE': {
       if (isGraphQLTask(t)) {
         return 'graphql';
