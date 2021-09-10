@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 
-import { Box, Container, Heading, Progress, useToast } from '@chakra-ui/react';
+import { Box, Container, Heading, Progress } from '@chakra-ui/react';
 import EditDeviceForm from './edit-device-form';
 import {
   CreateLabelMutation,
@@ -15,6 +15,7 @@ import {
   ZonesQueryVariables,
 } from '../../__generated__/graphql';
 import { ServiceState } from '../../helpers/types';
+import useResponseToasts from '../../hooks/user-response-toasts';
 
 const DEVICE_QUERY = gql`
   query Device($id: ID!) {
@@ -109,9 +110,10 @@ type FormValues = {
 };
 
 const EditDevicePage: FC<Props> = ({ deviceId, onSuccess, onCancelButtonClick }) => {
-  const toast = useToast();
-
-  const [, updateDevice] = useMutation<UpdateDeviceMutation, UpdateDeviceMutationVariables>(UPDATE_DEVICE_MUTATION);
+  const [{ data: updateDeviceData, error: updateDeviceError }, updateDevice] = useMutation<
+    UpdateDeviceMutation,
+    UpdateDeviceMutationVariables
+  >(UPDATE_DEVICE_MUTATION);
   const [{ data: deviceData, fetching: isLoadingDevice }] = useQuery({
     query: DEVICE_QUERY,
     variables: { id: deviceId },
@@ -121,6 +123,16 @@ const EditDevicePage: FC<Props> = ({ deviceId, onSuccess, onCancelButtonClick })
     query: LABELS_QUERY,
   });
   const [, createLabel] = useMutation<CreateLabelMutation, CreateLabelMutationVariables>(CREATE_LABEL);
+
+  const isUpdateSuccessfull = updateDeviceData != null;
+  const isUpdateFailed = updateDeviceError != null;
+
+  useResponseToasts({
+    isSuccess: isUpdateSuccessfull,
+    isFailure: isUpdateFailed,
+    successMessage: 'Device succesfully deleted',
+    failureMessage: 'Device could not be deleted',
+  });
 
   const handleOnLabelCreate = async (labelName: string): Promise<Label | null> => {
     const result = await createLabel({
@@ -140,25 +152,9 @@ const EditDevicePage: FC<Props> = ({ deviceId, onSuccess, onCancelButtonClick })
         mountParameters: values.mountParameters,
         serviceState: values.serviceState,
       },
-    })
-      .then(() => {
-        toast({
-          position: 'top-right',
-          status: 'success',
-          variant: 'subtle',
-          title: 'Device succesfully added',
-        });
-
-        onSuccess();
-      })
-      .catch((error) => {
-        toast({
-          position: 'top-right',
-          status: 'error',
-          variant: 'subtle',
-          title: error.message,
-        });
-      });
+    }).then(() => {
+      onSuccess();
+    });
   };
 
   if (isLoadingDevice) {

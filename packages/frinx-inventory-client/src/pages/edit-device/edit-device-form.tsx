@@ -1,5 +1,5 @@
 import { useFormik } from 'formik';
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import * as yup from 'yup';
 import Editor from 'react-ace';
 
@@ -44,12 +44,14 @@ const EditDeviceForm: FC<Props> = ({
   onLabelCreate,
   onCancel,
 }): JSX.Element => {
-  const INITIAL_VALUES = {
-    zoneId,
-    mountParameters,
-    labels: initialSelectedLabels.map(({ node: { id } }) => id),
-    serviceState,
-  };
+  const INITIAL_VALUES = useMemo(() => {
+    return {
+      zoneId,
+      mountParameters,
+      labels: initialSelectedLabels.map(({ node: { id } }) => id),
+      serviceState,
+    };
+  }, [zoneId, mountParameters, initialSelectedLabels, serviceState]);
 
   const [selectedLabels, setSelectedLabels] = React.useState<Item[]>(
     initialSelectedLabels.map(({ node: { id, name } }) => ({ value: id, label: name })),

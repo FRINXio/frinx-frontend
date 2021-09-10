@@ -79,9 +79,18 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                   <IconButton
                     aria-label="config"
                     size="sm"
+                    variant="unstyled"
                     isDisabled={!isInstalled}
                     icon={<Icon size={12} as={SettingsIcon} />}
                     onClick={() => onSettingsButtonClick(device.id)}
+                  />
+                  <IconButton
+                    aria-label="edit"
+                    size="sm"
+                    variant="unstyled"
+                    isDisabled={isInstalled}
+                    icon={<Icon size={12} as={EditIcon} />}
+                    onClick={() => onEditDeviceButtonClick(device.id)}
                   />
                   <IconButton
                     aria-label="Delete device"
@@ -92,13 +101,6 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     onClick={() => {
                       onDeleteBtnClick(device.id);
                     }}
-                  />
-                  <IconButton
-                    aria-label="edit"
-                    isDisabled={isInstalled}
-                    variant="unstyled"
-                    icon={<Icon size={20} as={EditIcon} />}
-                    onClick={() => onEditDeviceButtonClick(device.id)}
                   />
                 </HStack>
               </Td>
