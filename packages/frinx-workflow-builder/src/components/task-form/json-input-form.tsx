@@ -23,7 +23,7 @@ const JsonJQInputsForm: FC<Props> = ({ params, onChange, onValidation }) => {
     } catch {
       onValidation(false);
     }
-  }, [inputParams, onChange, onValidation]);
+  }, [inputParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
