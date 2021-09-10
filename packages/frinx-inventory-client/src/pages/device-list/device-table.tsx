@@ -1,4 +1,4 @@
-import { SettingsIcon } from '@chakra-ui/icons';
+import { EditIcon, SettingsIcon } from '@chakra-ui/icons';
 import { Badge, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
 import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
@@ -9,11 +9,12 @@ import InstallButton from './install-button';
 
 type Props = {
   devices: DevicesQuery['devices']['edges'];
+  installLoadingMap: Record<string, boolean>;
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
   onSettingsButtonClick: (deviceId: string) => void;
   onDeleteBtnClick: (deviceId: string) => void;
-  installLoadingMap: Record<string, boolean>;
+  onEditDeviceButtonClick: (deviceId: string) => void;
 };
 
 const DeviceTable: VoidFunctionComponent<Props> = ({
@@ -22,6 +23,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   onUninstallButtonClick,
   onSettingsButtonClick,
   onDeleteBtnClick,
+  onEditDeviceButtonClick,
   installLoadingMap,
 }) => {
   return (
@@ -77,9 +79,18 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                   <IconButton
                     aria-label="config"
                     size="sm"
+                    variant="unstyled"
                     isDisabled={!isInstalled}
                     icon={<Icon size={12} as={SettingsIcon} />}
                     onClick={() => onSettingsButtonClick(device.id)}
+                  />
+                  <IconButton
+                    aria-label="edit"
+                    size="sm"
+                    variant="unstyled"
+                    isDisabled={isInstalled}
+                    icon={<Icon size={12} as={EditIcon} />}
+                    onClick={() => onEditDeviceButtonClick(device.id)}
                   />
                   <IconButton
                     aria-label="Delete device"
