@@ -4,6 +4,7 @@ import { InventoryAPIProvider } from './inventory-api-provider';
 import DeviceConfigPage from './pages/device-config/device-config-page';
 import DeviceBlueprints from './pages/device-blueprints/device-blueprints';
 import CreateBlueprintPage from './pages/create-blueprint/create-blueprint-page';
+import EditDevicePage from './pages/edit-device/edit-device-page';
 
-export { DeviceList, CreateDevicePage, DeviceConfigPage, DeviceBlueprints, CreateBlueprintPage };
+export { DeviceList, CreateDevicePage, DeviceConfigPage, DeviceBlueprints, CreateBlueprintPage, EditDevicePage };
 export { InventoryAPIProvider };

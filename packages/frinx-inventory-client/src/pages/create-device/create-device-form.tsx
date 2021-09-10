@@ -7,13 +7,7 @@ import { Item } from 'chakra-ui-autocomplete';
 import { DeviceBlueprintsQuery, Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 import BlueprintForm from './blueprint-form';
-import { ServiceState } from '../../helpers/types';
-
-const serviceStateOptions = [
-  { value: ServiceState.PLANNING, label: 'Planning' },
-  { value: ServiceState.IN_SERVICE, label: 'In Service' },
-  { value: ServiceState.OUT_OF_SERVICE, label: 'Out of Service' },
-];
+import { ServiceState, serviceStateOptions } from '../../helpers/types';
 
 type Props = {
   zones: ZonesQuery['zones']['edges'];
@@ -168,7 +162,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, l
             onChange={(value) => {
               setFieldValue('mountParameters', value);
             }}
-            value={JSON.stringify(JSON.parse(values.mountParameters), null, 2)}
+            value={values.mountParameters}
           />
         </FormControl>
       )}

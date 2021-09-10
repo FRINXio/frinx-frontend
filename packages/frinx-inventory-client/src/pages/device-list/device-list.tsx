@@ -95,9 +95,10 @@ const DELETE_DEVICE_MUTATION = gql`
 type Props = {
   onAddButtonClick: () => void;
   onSettingsButtonClick: (deviceId: string) => void;
+  onEditButtonClick: (deviceId: string) => void;
 };
 
-const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick }) => {
+const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick, onEditButtonClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const toast = useToast();
   const deleteModalDisclosure = useDisclosure();
@@ -269,6 +270,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
             onUninstallButtonClick={handleUninstallButtonClick}
             onSettingsButtonClick={onSettingsButtonClick}
             onDeleteBtnClick={handleDeleteBtnClick}
+            onEditDeviceButtonClick={onEditButtonClick}
             installLoadingMap={installLoadingMap}
           />
 
