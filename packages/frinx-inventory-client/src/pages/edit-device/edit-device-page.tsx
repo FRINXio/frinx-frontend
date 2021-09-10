@@ -130,8 +130,8 @@ const EditDevicePage: FC<Props> = ({ deviceId, onSuccess, onCancelButtonClick })
   useResponseToasts({
     isSuccess: isUpdateSuccessfull,
     isFailure: isUpdateFailed,
-    successMessage: 'Device succesfully deleted',
-    failureMessage: 'Device could not be deleted',
+    successMessage: 'Device succesfully edited',
+    failureMessage: 'Device could not be edited',
   });
 
   const handleOnLabelCreate = async (labelName: string): Promise<Label | null> => {
