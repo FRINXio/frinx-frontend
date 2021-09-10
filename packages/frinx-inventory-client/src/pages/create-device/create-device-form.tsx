@@ -162,7 +162,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, l
             onChange={(value) => {
               setFieldValue('mountParameters', value);
             }}
-            value={JSON.stringify(JSON.parse(values.mountParameters), null, 2)}
+            value={values.mountParameters}
           />
         </FormControl>
       )}
