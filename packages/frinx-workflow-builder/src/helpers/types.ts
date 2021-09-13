@@ -129,8 +129,8 @@ type TaskValues = {
   // responseTimeoutSeconds: number;
   // inputKeys?: string[];
   // outputKeys?: string[];
-  optional?: boolean;
-  startDelay?: number;
+  optional: boolean;
+  startDelay: number;
 };
 
 type BaseTask<T = undefined> = T extends undefined
