@@ -42,6 +42,7 @@ export type KafkaPublishInputParams = {
     keySerializer: SerializerEnum;
   };
 };
+export type JsonJQInputParams = Record<string, unknown>;
 export type TerminateInputParams = {
   terminationStatus: string;
   workflowOutput: string;
@@ -88,6 +89,7 @@ export type InputParameters =
   | LambdaInputParams
   | GraphQLInputParams
   | KafkaPublishInputParams
+  | JsonJQInputParams
   | TerminateInputParams
   | HTTPInputParams
   | EventInputParams
@@ -110,7 +112,8 @@ export type TaskType =
   | 'FORK_JOIN_DYNAMIC'
   | 'EXCLUSIVE_JOIN'
   | 'HTTP'
-  | 'KAFKA_PUBLISH';
+  | 'KAFKA_PUBLISH'
+  | 'JSON_JQ';
 
 type TaskValues = {
   name: string;
@@ -154,6 +157,10 @@ export type GraphQLTask = BaseTask<GraphQLInputParams> & {
 };
 export type KafkaPublishTask = BaseTask<KafkaPublishInputParams> & {
   type: 'KAFKA_PUBLISH';
+};
+export type JsonJQTask = BaseTask<JsonJQInputParams> & {
+  type: 'JSON_JQ_TRANSFORM';
+  queryExpression: string;
 };
 export type ForkTask = BaseTask & {
   type: 'FORK_JOIN' | 'FORK_JOIN_DYNAMIC';
@@ -217,6 +224,7 @@ export type Task =
   | HTTPTask
   | GraphQLTask
   | KafkaPublishTask
+  | JsonJQTask
   | ForkTask
   | JoinTask
   | ExclusiveJoinTask
@@ -253,6 +261,7 @@ export type TaskLabel =
   | 'py'
   | 'simple'
   | 'kafka publish'
+  | 'json jq'
   | 'custom';
 
 export type ExtendedDecisionTask = DecisionTask & { id: string; label: TaskLabel };
@@ -260,6 +269,7 @@ export type ExtendedEventTask = EventTask & { id: string; label: TaskLabel };
 export type ExtendedHTTPTask = HTTPTask & { id: string; label: TaskLabel };
 export type ExtendedGraphQLTask = GraphQLTask & { id: string; label: TaskLabel };
 export type ExtendedKafkaPublishTask = KafkaPublishTask & { id: string; label: TaskLabel };
+export type ExtendedJsonJQTask = JsonJQTask & { id: string; label: TaskLabel };
 export type ExtendedForkTask = ForkTask & { id: string; label: TaskLabel };
 export type ExtendedJoinTask = JoinTask & { id: string; label: TaskLabel };
 export type ExtendedExclusiveJoinTask = ExclusiveJoinTask & { id: string; label: TaskLabel };
@@ -294,7 +304,8 @@ export type ExtendedTask =
   | ExtendedStartTask
   | ExtendedEndTask
   | ExtendedSimpleTask
-  | ExtendedKafkaPublishTask;
+  | ExtendedKafkaPublishTask
+  | ExtendedJsonJQTask;
 
 export type Workflow<T extends Task = Task> = {
   name: string;
