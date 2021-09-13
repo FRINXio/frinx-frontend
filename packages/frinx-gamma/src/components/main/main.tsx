@@ -1,13 +1,7 @@
 import React, { FC } from 'react';
-import { Container, Box, Table, Tr, Th, Td, Tbody, Thead } from '@chakra-ui/react';
-import Panel from '../panel/panel';
-import { ServiceKey } from '../../types';
+import { Box, Table, Tr, Th, Td, Tbody, Thead } from '@chakra-ui/react';
 
-type Props = {
-  enabledServices: Map<ServiceKey, boolean>;
-};
-
-const Dashboard: FC<Props> = ({ enabledServices }) => {
+const Main: FC = () => {
   return (
     <Box padding={6}>
       <Table background="white" size="lg">
@@ -31,4 +25,4 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
   );
 };
 
-export default Dashboard;
+export default Main;
