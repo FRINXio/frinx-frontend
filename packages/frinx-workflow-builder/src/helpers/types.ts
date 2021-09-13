@@ -160,7 +160,6 @@ export type KafkaPublishTask = BaseTask<KafkaPublishInputParams> & {
 };
 export type JsonJQTask = BaseTask<JsonJQInputParams> & {
   type: 'JSON_JQ_TRANSFORM';
-  queryExpression: string;
 };
 export type ForkTask = BaseTask & {
   type: 'FORK_JOIN' | 'FORK_JOIN_DYNAMIC';

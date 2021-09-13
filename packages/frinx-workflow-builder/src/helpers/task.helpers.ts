@@ -122,8 +122,9 @@ function createJsonJQTask(label: TaskLabel): ExtendedJsonJQTask {
     name: 'jsonJQ_task',
     type: 'JSON_JQ_TRANSFORM',
     taskReferenceName: `jsonJQ_${getRandomString(4)}`,
-    queryExpression: '',
-    inputParameters: {},
+    inputParameters: {
+      queryExpression: '',
+    },
     ...DEFAULT_TASK_OPTIONS,
   };
 }
