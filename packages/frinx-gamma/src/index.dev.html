@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!--# include file="inc.shtml" -->
+    <script type="text/javascript">
+      window.__CONFIG__ = {
+        auth_enabled: true,
+        auth_client_id: '366fab79-6c61-4a24-8c2c-b2be2f48fe35',
+        auth_redirect_url: 'http://localhost:3000',
+        conductor_api_url: 'http://localhost:4000/api/uniflow',
+        uniconfig_api_url: 'http://localhost:4000/api/uniconfig',
+        uniconfig_auth: 'Basic YWRtaW46YWRtaW4=',
+        uniresource_enabled: true,
+        uniconfig_enabled: true,
+        inventory_enabled: true,
+        uniflow_enabled: true,
+        usermanagement_enabled: false,
+        url_basename: '/',
+        inventory_api_url: 'http://localhost:4001/graphql',
+        uniresource_api_url: 'http://localhost:4000/graphql',
+        uniconfig_api_docs_url:
+          'https://editor.swagger.io/?url=https://gist.githubusercontent.com/marosmars/4951c0395837cc04cae374c2a01eb209/raw/fb2e3d579679753b424f86170b54135bec668768/uniconfig_427.yaml',
+      };
+    </script>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="FRINX dashboard" />
+    <title>FRINX Dashboard</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="text/javascript" src="/static/bundle.js"></script>
+    <script type="text/javascript">
+      window.gammaApp.init().then((app) => {
+        app.render();
+      });
+    </script>
+  </body>
+</html>
