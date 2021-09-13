@@ -129,8 +129,8 @@ type TaskValues = {
   // responseTimeoutSeconds: number;
   // inputKeys?: string[];
   // outputKeys?: string[];
-  optional: boolean;
-  startDelay: number;
+  optional?: boolean;
+  startDelay?: number;
 };
 
 type BaseTask<T = undefined> = T extends undefined
@@ -160,7 +160,6 @@ export type KafkaPublishTask = BaseTask<KafkaPublishInputParams> & {
 };
 export type JsonJQTask = BaseTask<JsonJQInputParams> & {
   type: 'JSON_JQ_TRANSFORM';
-  queryExpression: string;
 };
 export type ForkTask = BaseTask & {
   type: 'FORK_JOIN' | 'FORK_JOIN_DYNAMIC';
