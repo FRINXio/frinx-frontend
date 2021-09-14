@@ -198,25 +198,6 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
                 />
               </FormControl>
             )}
-            {taskState.type === 'JSON_JQ_TRANSFORM' && (
-              <FormControl id="queryExpression">
-                <FormLabel>Query Expression</FormLabel>
-                <Input
-                  type="text"
-                  name="queryExpression"
-                  value={taskState.queryExpression}
-                  onChange={(event) => {
-                    event.persist();
-                    setTaskState((s) => {
-                      return {
-                        ...s,
-                        queryExpression: event.target.value,
-                      };
-                    });
-                  }}
-                />
-              </FormControl>
-            )}
           </TabPanel>
           {'inputParameters' in taskState && (
             <TabPanel>{renderInputParamForm(taskState, handleUpdateInputParameters, tasks, handleValidation)}</TabPanel>
