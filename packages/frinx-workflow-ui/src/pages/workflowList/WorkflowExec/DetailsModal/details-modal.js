@@ -117,8 +117,22 @@ class DetailsModal extends Component {
     });
   }
 
+  escapeJson(obj) {
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        if (typeof obj[key] === 'object') {
+          this.escapeJson.bind(this)(obj[key]);
+        } else {
+          obj[key] = this.state.isEscaped ? unescape(obj[key]) : obj[key];
+        }
+      }
+    }
+
+    return obj;
+  }
+
   getUnescapedJSON(data) {
-    return this.state.isEscaped ? escape(JSON.stringify(data, null, 2)) : unescape(JSON.stringify(data, null, 2));
+    return JSON.stringify(this.escapeJson.bind(this)(data), null, 2);
   }
 
   handleClose() {
