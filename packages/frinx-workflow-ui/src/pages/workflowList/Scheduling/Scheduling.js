@@ -66,7 +66,7 @@ function Scheduling() {
   function onScheduleUpdate(newScheduledWf) {
     const registerSchedule = callbackUtils.registerScheduleCallback();
 
-    registerSchedule(newScheduledWf.name, newScheduledWf)
+    registerSchedule(newScheduledWf.name, newScheduledWf.version, newScheduledWf)
       .then((res) => {
         toast({
           title: res?.message,
@@ -93,6 +93,27 @@ function Scheduling() {
     };
     onScheduleUpdate(newScheduledWf);
   }
+
+  const handleDeleteBtnClick = (workflow) => {
+    const deleteSchedule = callbackUtils.deleteScheduleCallback();
+    deleteSchedule(workflow.name, workflow.version)
+      .then(() => {
+        toast({
+          title: 'Deleted successfuly',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        });
+      })
+      .catch((err) => {
+        toast({
+          title: err?.message,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        });
+      });
+  };
 
   function getStatusTagColor(status) {
     switch (status) {
@@ -151,7 +172,14 @@ function Scheduling() {
               <Td>
                 <Stack direction="row" spacing={4}>
                   <ButtonGroup>
-                    <Button colorScheme="red" size="sm" variant="outline">
+                    <Button
+                      colorScheme="red"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        handleDeleteBtnClick(item);
+                      }}
+                    >
                       <Box as="span" flexShrink={0} alignSelf="center">
                         <Box
                           as={FeatherIcon}
