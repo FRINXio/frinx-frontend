@@ -12,23 +12,6 @@ const Main: FC = () => {
     extranetVpns: ['vpn1'],
   };
 
-  // const customerNames = [
-  //   { value: 'ibm', label: 'IBM' },
-  //   { value: 'att', label: 'At&T' },
-  //   { value: 'orange', label: 'Orange' },
-  //   { value: 'vodafone', label: 'Vodafone' },
-  //   { value: 'google', label: 'Google' },
-  //   { value: 'Amazon', label: 'Amazon' },
-  // ];
-
-  // const extranetVpns = [
-  //   { value: 'vpn1', label: 'vpn1' },
-  //   { value: 'vpn2', label: 'vpn2' },
-  //   { value: 'vpn3', label: 'vpn3' },
-  //   { value: 'vpn4', label: 'vpn4' },
-  //   { value: 'vpn5', label: 'vpn5' },
-  // ];
-
   const extranetVpns = ['vpn1', 'vpn2', 'vpn3', 'vpn4', 'vpn5'];
 
   const handleSubmit = (service: VpnService) => {
