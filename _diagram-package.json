@@ -1,6 +1,6 @@
 {
   "name": "beautiful-react-diagrams",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "A tiny collection of lightweight React components to build diagrams with ease",
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
