@@ -31,22 +31,22 @@ export async function getSchedules(): Promise<unknown> {
 
 // TODO: types, guards
 // Get workflow schedule
-export async function getSchedule(name: string): Promise<unknown> {
-  const scheduled = await sendGetRequest(`/schedule/${name}`);
+export async function getSchedule(name: string, version: number): Promise<unknown> {
+  const scheduled = await sendGetRequest(`/schedule/${name}:${version}`);
 
   return scheduled;
 }
 
 // TODO: types, guards
 // Register workflow schedule
-export async function registerSchedule(name: string, schedule: unknown): Promise<unknown> {
-  return sendPutRequest(`/schedule/${name}`, schedule);
+export async function registerSchedule(name: string, version: number, schedule: unknown): Promise<unknown> {
+  return sendPutRequest(`/schedule/${name}:${version}`, schedule);
 }
 
 // TODO: types, guards
 // Delete workflow schedule
-export async function deleteSchedule(name: string): Promise<unknown> {
-  const scheduled = await sendDeleteRequest(`/schedule/${name}`);
+export async function deleteSchedule(name: string, version: number): Promise<unknown> {
+  const scheduled = await sendDeleteRequest(`/schedule/${name}:${version}`);
 
   return scheduled;
 }
