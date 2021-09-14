@@ -63,10 +63,14 @@ function Scheduling() {
     setIsSchedulingModalOpen(false);
   }
 
-  function onScheduleUpdate(newScheduledWf) {
+  function onScheduleEnable(scheduledWf) {
+    const newScheduledWf = {
+      ...scheduledWf,
+      enabled: !scheduledWf.enabled,
+    };
     const registerSchedule = callbackUtils.registerScheduleCallback();
 
-    registerSchedule(newScheduledWf.name, newScheduledWf.version, newScheduledWf)
+    registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, newScheduledWf)
       .then((res) => {
         toast({
           title: res?.message,
@@ -86,17 +90,9 @@ function Scheduling() {
       });
   }
 
-  function onScheduleEnable(scheduledWf) {
-    const newScheduledWf = {
-      ...scheduledWf,
-      enabled: !scheduledWf.enabled,
-    };
-    onScheduleUpdate(newScheduledWf);
-  }
-
   const handleDeleteBtnClick = (workflow) => {
     const deleteSchedule = callbackUtils.deleteScheduleCallback();
-    deleteSchedule(workflow.name, workflow.version)
+    deleteSchedule(workflow.workflowName, workflow.workflowVersion)
       .then(() => {
         toast({
           title: 'Deleted successfuly',
@@ -104,6 +100,7 @@ function Scheduling() {
           duration: 9000,
           isClosable: true,
         });
+        getData();
       })
       .catch((err) => {
         toast({
