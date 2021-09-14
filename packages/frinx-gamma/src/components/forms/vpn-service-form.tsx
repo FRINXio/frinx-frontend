@@ -135,7 +135,10 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, onSubmit, onCancel }
           }}
         >
           <option value="1000">1000</option>
-          <option value="ipv6">ipv6</option>
+          <option value="2000">2000</option>
+          <option value="5000">5000</option>
+          <option value="10000">10000</option>
+          <option value="1000000">1000000</option>
         </Select>
       </FormControl>
 
