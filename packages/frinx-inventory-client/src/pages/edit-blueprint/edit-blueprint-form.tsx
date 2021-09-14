@@ -2,15 +2,16 @@ import { FormControl, FormLabel, Input, FormErrorMessage, Textarea, Divider, But
 import React, { FC } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { isEmpty, omitBy } from 'lodash';
 
 const blueprintSchema = yup.object({
-  name: yup.string().required('Please enter name'),
-  template: yup.string().required('Please enter template'),
+  name: yup.string(),
+  template: yup.string(),
 });
 
 export type FormValues = {
-  name: string;
-  template: string;
+  name?: string;
+  template?: string;
 };
 
 type Props = {
@@ -20,14 +21,19 @@ type Props = {
 };
 
 const EditBlueprintForm: FC<Props> = ({ initialValues, onSubmit, onCancel }) => {
-  const { values, handleChange, isSubmitting, submitForm, errors } = useFormik<FormValues>({
+  const { values, handleChange, isSubmitting, handleSubmit, errors } = useFormik<FormValues>({
     initialValues,
     validationSchema: blueprintSchema,
-    onSubmit,
+    onSubmit: (data: FormValues) => {
+      const omittedData = omitBy(data, (value) => {
+        return isEmpty(value.trim());
+      });
+      onSubmit(omittedData);
+    },
   });
 
   return (
-    <form onSubmit={submitForm}>
+    <form onSubmit={handleSubmit}>
       <FormControl id="name" my={6} isInvalid={errors.name != null}>
         <FormLabel>Name</FormLabel>
         <Input type="text" value={values.name} onChange={handleChange} />
