@@ -14,10 +14,7 @@ export type FormValues = {
 };
 
 type Props = {
-  initialValues: {
-    name: string;
-    template: string;
-  };
+  initialValues: FormValues;
   onSubmit: (values: FormValues) => void;
   onCancel: () => void;
 };
