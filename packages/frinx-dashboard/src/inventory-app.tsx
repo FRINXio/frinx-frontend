@@ -16,6 +16,7 @@ const InventoryApp: FC = () => {
         DeviceBlueprints,
         CreateBlueprintPage,
         EditDevicePage,
+        EditBlueprintPage,
       } = mod;
       setComponents({
         DeviceList,
@@ -25,6 +26,7 @@ const InventoryApp: FC = () => {
         DeviceBlueprints,
         CreateBlueprintPage,
         EditDevicePage,
+        EditBlueprintPage,
       });
     });
   }, []);
@@ -41,6 +43,7 @@ const InventoryApp: FC = () => {
     DeviceBlueprints,
     CreateBlueprintPage,
     EditDevicePage,
+    EditBlueprintPage,
   } = components;
 
   return (
@@ -99,6 +102,9 @@ const InventoryApp: FC = () => {
             onAddButtonClick={() => {
               history.push('/inventory/blueprints/new');
             }}
+            onEditBlueprintButtonClick={(blueprintId) => {
+              history.push(`/inventory/blueprints/${blueprintId}/edit`);
+            }}
           />
         </Route>
         <Route exact path="/inventory/blueprints/new">
@@ -108,6 +114,22 @@ const InventoryApp: FC = () => {
             }}
           />
         </Route>
+        <Route
+          exact
+          path="/inventory/blueprints/:blueprintId/edit"
+          render={(props: RouteComponentProps<{ blueprintId: string }>) => {
+            const { blueprintId } = props.match.params;
+            return (
+              <EditBlueprintPage
+                blueprintId={blueprintId}
+                onSuccess={() => history.push('/inventory/blueprints')}
+                onCancel={() => {
+                  history.push('/inventory/blueprints');
+                }}
+              />
+            );
+          }}
+        />
       </Switch>
     </InventoryAPIProvider>
   );
