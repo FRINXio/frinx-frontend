@@ -49,7 +49,7 @@ module.exports = {
     inline: true,
     open: false,
     disableHostCheck: true,
-    port: 3000,
+    port: 3001,
     contentBase: fullPath('static'),
   },
   devtool: isDev ? 'eval-cheap-module-source-map' : false,

@@ -1,26 +1,37 @@
 import React, { FC } from 'react';
-import { Box, Table, Tr, Th, Td, Tbody, Thead } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
+import VpnServiceForm from '../forms/vpn-service-form';
+import { DefaultCVlanEnum, VpnService } from '../forms/service-types';
 
 const Main: FC = () => {
+  const vpnService: VpnService = {
+    customerName: '',
+    defaultCVlan: DefaultCVlanEnum.L3VPN,
+    vpnServiceTopology: 'any-any',
+    maximumRoutes: 1000,
+    extranetVpns: ['vpn1'],
+  };
+
+  const extranetVpns = ['vpn1', 'vpn2', 'vpn3', 'vpn4', 'vpn5'];
+
+  const handleSubmit = (service: VpnService) => {
+    // eslint-disable-next-line no-console
+    console.log('submit clicked', service);
+  };
+
+  const handleCancel = () => {
+    // eslint-disable-next-line no-console
+    console.log('cancel clicked');
+  };
+
   return (
-    <Box padding={6}>
-      <Table background="white" size="lg">
-        <Thead>
-          <Tr>
-            <Th>Name</Th>
-            <Th>Created</Th>
-            <Th>Zone</Th>
-            <Th>Service state</Th>
-            <Th>Installation</Th>
-            <Th>Actions</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          <Tr>
-            <Td colSpan={6}>some service data</Td>
-          </Tr>
-        </Tbody>
-      </Table>
+    <Box padding={6} margin={6} background="white">
+      <VpnServiceForm
+        service={vpnService}
+        onSubmit={handleSubmit}
+        extranetVpns={extranetVpns}
+        onCancel={handleCancel}
+      />
     </Box>
   );
 };
