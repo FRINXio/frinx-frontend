@@ -53,7 +53,10 @@ const SchedulingModal = ({ name, workflowName, workflowVersion, isOpen, onClose 
 
     const registerSchedule = callbackUtils.registerScheduleCallback();
 
-    registerSchedule(name, workflowVersion, scheduledWf)
+    registerSchedule(name, workflowVersion, {
+      ...scheduledWf,
+      name: `${name}:${workflowVersion}`,
+    })
       .then(() => {
         onClose();
       })
