@@ -17,7 +17,7 @@ type Props = {
 };
 
 const CreateBlueprintForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
-  const { values, handleChange, isSubmitting, submitForm, errors } = useFormik<FormValues>({
+  const { values, handleChange, isSubmitting, handleSubmit, errors } = useFormik<FormValues>({
     initialValues: {
       name: '',
       template: '',
@@ -27,7 +27,7 @@ const CreateBlueprintForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => 
   });
 
   return (
-    <form onSubmit={submitForm}>
+    <form onSubmit={handleSubmit}>
       <FormControl id="name" my={6} isInvalid={errors.name != null}>
         <FormLabel>Name</FormLabel>
         <Input type="text" value={values.name} onChange={handleChange} />

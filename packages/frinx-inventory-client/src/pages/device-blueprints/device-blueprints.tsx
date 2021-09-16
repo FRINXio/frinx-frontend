@@ -1,9 +1,11 @@
+import { EditIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
   Container,
   Flex,
   Heading,
+  HStack,
   Icon,
   IconButton,
   Progress,
@@ -39,9 +41,10 @@ const BLUEPRINTS_QUERY = gql`
 
 type Props = {
   onAddButtonClick: () => void;
+  onEditBlueprintButtonClick: (blueprintId: string) => void;
 };
 
-const DeviceBlueprints: VoidFunctionComponent<Props> = ({ onAddButtonClick }) => {
+const DeviceBlueprints: VoidFunctionComponent<Props> = ({ onAddButtonClick, onEditBlueprintButtonClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['Blueprint'] }), []);
 
   const [{ data, fetching, error }] = useQuery<BlueprintsQuery, BlueprintsQueryVariables>({
@@ -101,12 +104,21 @@ const DeviceBlueprints: VoidFunctionComponent<Props> = ({ onAddButtonClick }) =>
                   </Tooltip>
                 </Td>
                 <Td>
-                  <IconButton
-                    colorScheme="red"
-                    size="sm"
-                    aria-label="Delete blueprint"
-                    icon={<Icon size={20} as={FeatherIcon} icon="trash-2" />}
-                  />
+                  <HStack spacing={2}>
+                    <IconButton
+                      aria-label="edit"
+                      size="sm"
+                      variant="unstyled"
+                      icon={<Icon size={12} as={EditIcon} />}
+                      onClick={() => onEditBlueprintButtonClick(blueprint.id)}
+                    />
+                    <IconButton
+                      colorScheme="red"
+                      size="sm"
+                      aria-label="Delete blueprint"
+                      icon={<Icon size={20} as={FeatherIcon} icon="trash-2" />}
+                    />
+                  </HStack>
                 </Td>
               </Tr>
             );
