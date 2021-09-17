@@ -24,7 +24,7 @@ import {
 import type { Task } from './flowtypes';
 import { jsonParse } from './utils';
 import { CopyIcon } from '@chakra-ui/icons';
-import { unescape } from 'lodash';
+import unescapeJs from 'unescape-js';
 
 type Props = {
   task: Task;
@@ -44,7 +44,23 @@ const TaskModal = ({ task, show, handle }: Props) => {
   const { inputData, outputData, logs } = task;
 
   function getUnescapedJSON(data: Task | Object) {
-    return isEscaped ? JSON.stringify(data, null, 2) : unescape(JSON.stringify(data, null, 2));
+    const jsonString = JSON.stringify(data, null, 2);
+
+    if (!jsonString) {
+      return;
+    }
+
+    return isEscaped
+      ? jsonString
+          .replace(/\\n/g, '\\n')
+          .replace(/\\'/g, "\\'")
+          .replace(/\\"/g, '\\"')
+          .replace(/\\&/g, '\\&')
+          .replace(/\\r/g, '\\r')
+          .replace(/\\t/g, '\\t')
+          .replace(/\\b/g, '\\b')
+          .replace(/\\f/g, '\\f')
+      : unescapeJs(jsonString);
   }
 
   return (
