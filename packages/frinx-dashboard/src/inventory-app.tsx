@@ -15,6 +15,8 @@ const InventoryApp: FC = () => {
         DeviceConfigPage,
         DeviceBlueprints,
         CreateBlueprintPage,
+        EditDevicePage,
+        EditBlueprintPage,
       } = mod;
       setComponents({
         DeviceList,
@@ -23,6 +25,8 @@ const InventoryApp: FC = () => {
         DeviceConfigPage,
         DeviceBlueprints,
         CreateBlueprintPage,
+        EditDevicePage,
+        EditBlueprintPage,
       });
     });
   }, []);
@@ -38,6 +42,8 @@ const InventoryApp: FC = () => {
     DeviceConfigPage,
     DeviceBlueprints,
     CreateBlueprintPage,
+    EditDevicePage,
+    EditBlueprintPage,
   } = components;
 
   return (
@@ -54,6 +60,9 @@ const InventoryApp: FC = () => {
             onSettingsButtonClick={(deviceId) => {
               history.push(`/inventory/config/${deviceId}`);
             }}
+            onEditButtonClick={(deviceId) => {
+              history.push(`/inventory/${deviceId}/edit`);
+            }}
           />
         </Route>
         <Route exact path="/inventory/new">
@@ -63,6 +72,22 @@ const InventoryApp: FC = () => {
             }}
           />
         </Route>
+        <Route
+          exact
+          path="/inventory/:deviceId/edit"
+          render={(props: RouteComponentProps<{ deviceId: string }>) => {
+            const { deviceId } = props.match.params;
+            return (
+              <EditDevicePage
+                deviceId={deviceId}
+                onSuccess={() => history.replace('/inventory/devices')}
+                onCancelButtonClick={() => {
+                  history.replace('/inventory/devices');
+                }}
+              />
+            );
+          }}
+        />
         <Route
           exact
           path="/inventory/config/:deviceId"
@@ -77,6 +102,9 @@ const InventoryApp: FC = () => {
             onAddButtonClick={() => {
               history.push('/inventory/blueprints/new');
             }}
+            onEditBlueprintButtonClick={(blueprintId) => {
+              history.push(`/inventory/blueprints/${blueprintId}/edit`);
+            }}
           />
         </Route>
         <Route exact path="/inventory/blueprints/new">
@@ -86,6 +114,22 @@ const InventoryApp: FC = () => {
             }}
           />
         </Route>
+        <Route
+          exact
+          path="/inventory/blueprints/:blueprintId/edit"
+          render={(props: RouteComponentProps<{ blueprintId: string }>) => {
+            const { blueprintId } = props.match.params;
+            return (
+              <EditBlueprintPage
+                blueprintId={blueprintId}
+                onSuccess={() => history.push('/inventory/blueprints')}
+                onCancel={() => {
+                  history.push('/inventory/blueprints');
+                }}
+              />
+            );
+          }}
+        />
       </Switch>
     </InventoryAPIProvider>
   );

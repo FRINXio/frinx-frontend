@@ -50,6 +50,7 @@ const SearchByLabelInput: FC<Props> = ({
           position: 'absolute',
           right: 0,
           left: 0,
+          zIndex: 100,
         }}
       />
     </Box>
