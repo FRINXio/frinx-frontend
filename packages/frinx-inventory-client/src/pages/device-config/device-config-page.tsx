@@ -103,18 +103,28 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     query: DATA_STORE_QUERY,
     variables: { deviceId },
   });
-  const [, updateDataStore] = useMutation<UpdateDataStoreMutation, UpdateDataStoreMutationVariables>(
-    UPDATE_DATA_STORE_MUTATION,
+  const [{ fetching: isUpdateStoreLoading }, updateDataStore] = useMutation<
+    UpdateDataStoreMutation,
+    UpdateDataStoreMutationVariables
+  >(UPDATE_DATA_STORE_MUTATION);
+  const [{ fetching: isCommitLoading }, commitConfig] = useMutation<
+    CommitDataStoreConfigMutation,
+    CommitDataStoreConfigMutationVariables
+  >(COMMIT_DATA_STORE_MUTATION);
+  const [{ fetching: isResetLoading }, resetConfig] = useMutation<ResetConfigMutation, ResetConfigMutationVariables>(
+    RESET_CONFIG_MUTATION,
   );
-  const [, commitConfig] = useMutation<CommitDataStoreConfigMutation, CommitDataStoreConfigMutationVariables>(
-    COMMIT_DATA_STORE_MUTATION,
+  const [{ fetching: isAddLoading }, addSnapshot] = useMutation<AddSnapshotMutation, AddSnapshotMutationVariables>(
+    ADD_SNAPSHOT_MUTATION,
   );
-  const [, resetConfig] = useMutation<ResetConfigMutation, ResetConfigMutationVariables>(RESET_CONFIG_MUTATION);
-  const [, addSnapshot] = useMutation<AddSnapshotMutation, AddSnapshotMutationVariables>(ADD_SNAPSHOT_MUTATION);
-  const [, applySnapshot] = useMutation<ApplySnapshotMutation, ApplySnapshotMutationVariables>(APPLY_SNAPSHOT_MUTATION);
-  const [, syncFromNetwork] = useMutation<SyncFromNetworkMutation, SyncFromNetworkMutationVariables>(
-    SYNC_FROM_NETWORK_MUTATION,
-  );
+  const [{ fetching: isApplySnapshotLoading }, applySnapshot] = useMutation<
+    ApplySnapshotMutation,
+    ApplySnapshotMutationVariables
+  >(APPLY_SNAPSHOT_MUTATION);
+  const [{ fetching: isSyncLoading }, syncFromNetwork] = useMutation<
+    SyncFromNetworkMutation,
+    SyncFromNetworkMutationVariables
+  >(SYNC_FROM_NETWORK_MUTATION);
 
   const [config, setConfig] = useState<string>();
   const toast = useToast();
@@ -210,7 +220,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
   const handleOnApplySnapshot = async (name: string) => {
     const { error: responseError } = await applySnapshot({ input: { name, deviceId } });
     const hasError = responseError != null;
-
+    reexecuteQuery({ requestPolicy: 'network-only' });
     toast({
       duration: 2000,
       isClosable: true,
@@ -249,6 +259,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
         isOpen={isSnapshotModalOpen}
         onClose={onSnapshotModalClose}
         onFormSubmit={handleOnAddSnapshot}
+        isLoading={isAddLoading}
       />
       {isDiffModalOpen && <DiffOutputModal onClose={onDiffModalClose} deviceId={deviceId} />}
       <Container maxWidth={1280}>
@@ -263,6 +274,8 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
             handleOnCommitConfig(true);
           }}
           onCalculateDiffBtnClick={onDiffModalOpen}
+          isApplySnapshotLoading={isApplySnapshotLoading}
+          isCommitLoading={isCommitLoading}
         />
         <Box background="white" padding={4}>
           <DeviceConfigEditors
@@ -277,6 +290,9 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
               reexecuteQuery({ requestPolicy: 'network-only' });
             }}
             onSyncBtnClick={handleSyncBtnClick}
+            isResetLoading={isResetLoading}
+            isUpdateStoreLoading={isUpdateStoreLoading}
+            isSyncLoading={isSyncLoading}
           />
         </Box>
       </Container>
