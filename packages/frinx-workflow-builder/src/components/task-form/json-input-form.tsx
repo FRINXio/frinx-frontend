@@ -41,7 +41,7 @@ const JsonJQInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
               key: updatedInputValue,
             });
           }}
-          inputValue={params.key}
+          inputValue={params.key || ''}
         >
           <Input
             type="text"
