@@ -63,10 +63,14 @@ function Scheduling() {
     setIsSchedulingModalOpen(false);
   }
 
-  function onScheduleUpdate(newScheduledWf) {
+  function onScheduleEnable(scheduledWf) {
+    const newScheduledWf = {
+      ...scheduledWf,
+      enabled: !scheduledWf.enabled,
+    };
     const registerSchedule = callbackUtils.registerScheduleCallback();
 
-    registerSchedule(newScheduledWf.name, newScheduledWf)
+    registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, newScheduledWf)
       .then((res) => {
         toast({
           title: res?.message,
@@ -86,13 +90,27 @@ function Scheduling() {
       });
   }
 
-  function onScheduleEnable(scheduledWf) {
-    const newScheduledWf = {
-      ...scheduledWf,
-      enabled: !scheduledWf.enabled,
-    };
-    onScheduleUpdate(newScheduledWf);
-  }
+  const handleDeleteBtnClick = (workflow) => {
+    const deleteSchedule = callbackUtils.deleteScheduleCallback();
+    deleteSchedule(workflow.workflowName, workflow.workflowVersion)
+      .then(() => {
+        toast({
+          title: 'Deleted successfuly',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        });
+        getData();
+      })
+      .catch((err) => {
+        toast({
+          title: err?.message,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        });
+      });
+  };
 
   function getStatusTagColor(status) {
     switch (status) {
@@ -151,7 +169,14 @@ function Scheduling() {
               <Td>
                 <Stack direction="row" spacing={4}>
                   <ButtonGroup>
-                    <Button colorScheme="red" size="sm" variant="outline">
+                    <Button
+                      colorScheme="red"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        handleDeleteBtnClick(item);
+                      }}
+                    >
                       <Box as="span" flexShrink={0} alignSelf="center">
                         <Box
                           as={FeatherIcon}

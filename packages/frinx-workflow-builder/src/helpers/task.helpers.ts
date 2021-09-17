@@ -21,6 +21,7 @@ import {
   ExtendedHTTPTask,
   ExtendedGraphQLTask,
   ExtendedKafkaPublishTask,
+  ExtendedJsonJQTask,
   InputParameters,
   HTTPInputParams,
   GraphQLInputParams,
@@ -110,6 +111,19 @@ function createKafkaPublishTask(label: TaskLabel): ExtendedKafkaPublishTask {
         key: '',
         keySerializer: SerializerEnum.StringSerializer,
       },
+    },
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
+function createJsonJQTask(label: TaskLabel): ExtendedJsonJQTask {
+  return {
+    id: uuid(),
+    label,
+    name: 'jsonJQ_task',
+    type: 'JSON_JQ_TRANSFORM',
+    taskReferenceName: `jsonJQ_${getRandomString(4)}`,
+    inputParameters: {
+      queryExpression: '',
     },
     ...DEFAULT_TASK_OPTIONS,
   };
@@ -357,6 +371,8 @@ export function createTask(taskLabel: TaskLabel): ExtendedTask {
       return createRawTask(taskLabel);
     case 'kafka publish':
       return createKafkaPublishTask(taskLabel);
+    case 'json jq':
+      return createJsonJQTask(taskLabel);
     default:
       throw new Error('should never happen');
   }
@@ -394,6 +410,7 @@ export function createSystemTasks(): TaskLabel[] {
     'wait',
     'while end',
     'kafka publish',
+    'json jq',
   ];
 }
 
@@ -432,6 +449,8 @@ export function getTaskLabel(t: Task): TaskLabel {
       return 'http';
     case 'KAFKA_PUBLISH':
       return 'kafka publish';
+    case 'JSON_JQ_TRANSFORM':
+      return 'json jq';
     case 'SIMPLE': {
       if (isGraphQLTask(t)) {
         return 'graphql';
