@@ -3881,8 +3881,8 @@ batch@0.6.1:
   integrity sha1-3DQxT05nkxgJP8dgJyUl+UvyXBY=
 
 beautiful-react-diagrams@FRINXio/beautiful-react-diagrams#canvas-3:
-  version "0.6.4"
-  resolved "https://codeload.github.com/FRINXio/beautiful-react-diagrams/tar.gz/1a29460389367bddc700e1da127112163e256297"
+  version "0.6.5"
+  resolved "https://codeload.github.com/FRINXio/beautiful-react-diagrams/tar.gz/7d0a403ae764ebd439439faf14c7b6962c61277a"
   dependencies:
     beautiful-react-hooks "^0.31.0"
     classnames "^2.2.6"

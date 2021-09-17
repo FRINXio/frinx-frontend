@@ -33,7 +33,15 @@ export function renderInputParamForm(
       return <KafkaInputsForm params={task.inputParameters} onChange={setState} tasks={tasks} task={task} />;
     }
     if (task.type === 'JSON_JQ_TRANSFORM') {
-      return <JsonInputsForm params={task.inputParameters} onChange={setState} onValidation={setIsValid} />;
+      return (
+        <JsonInputsForm
+          params={task.inputParameters}
+          onChange={setState}
+          onValidation={setIsValid}
+          tasks={tasks}
+          task={task}
+        />
+      );
     }
     if (task.type === 'SIMPLE') {
       if (isGraphQLTaskInputParams(task.inputParameters)) {
