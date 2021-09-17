@@ -31,10 +31,7 @@ const plugins = [
     filename: isDev ? 'index.html' : 'index.shtml',
     scriptLoading: 'blocking',
   }),
-  new webpack.IgnorePlugin({
-    resourceRegExp: /^\.\/locale$/,
-    contextRegExp: /moment$/,
-  }),
+  new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   new webpack.DefinePlugin({
     COMMIT_HASH: JSON.stringify(process.env.COMMIT_HASH),
   }),
