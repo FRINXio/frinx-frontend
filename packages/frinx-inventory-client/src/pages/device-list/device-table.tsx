@@ -1,30 +1,20 @@
-import { AddIcon, MinusIcon, SettingsIcon } from '@chakra-ui/icons';
-import {
-  Badge,
-  Button,
-  HStack,
-  Icon,
-  IconButton,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tooltip,
-  Tr,
-} from '@chakra-ui/react';
+import { EditIcon, SettingsIcon } from '@chakra-ui/icons';
+import { Badge, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
 import { format, formatDistanceToNow } from 'date-fns';
+import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { getLocalDateFromUTC } from '../../helpers/time.helpers';
 import { DevicesQuery } from '../../__generated__/graphql';
+import InstallButton from './install-button';
 
 type Props = {
-  devices: DevicesQuery['devices']['edges'] | undefined;
+  devices: DevicesQuery['devices']['edges'];
+  installLoadingMap: Record<string, boolean>;
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
   onSettingsButtonClick: (deviceId: string) => void;
-  isLoading: boolean;
+  onDeleteBtnClick: (deviceId: string) => void;
+  onEditDeviceButtonClick: (deviceId: string) => void;
 };
 
 const DeviceTable: VoidFunctionComponent<Props> = ({
@@ -32,7 +22,9 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   onInstallButtonClick,
   onUninstallButtonClick,
   onSettingsButtonClick,
-  isLoading,
+  onDeleteBtnClick,
+  onEditDeviceButtonClick,
+  installLoadingMap,
 }) => {
   return (
     <Table background="white" size="lg">
@@ -42,16 +34,15 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           <Th>Created</Th>
           <Th>Zone</Th>
           <Th>Service state</Th>
-          <Th>Status</Th>
+          <Th>Installation</Th>
           <Th>Actions</Th>
-          <Th>Config</Th>
         </Tr>
       </Thead>
       <Tbody>
-        {devices?.map(({ node: device }) => {
+        {devices.map(({ node: device }) => {
           const { isInstalled } = device;
-          const status = isInstalled ? 'INSTALLED' : 'N/A';
           const localDate = getLocalDateFromUTC(device.createdAt);
+          const isLoading = installLoadingMap[device.id] ?? false;
 
           return (
             <Tr key={device.id}>
@@ -72,45 +63,46 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 <Badge>{device.serviceState}</Badge>
               </Td>
               <Td minWidth={200}>
-                <Badge colorScheme={isInstalled ? 'green' : 'yellow'}>{status}</Badge>
+                <InstallButton
+                  isInstalled={isInstalled}
+                  isLoading={isLoading}
+                  onInstalClick={() => {
+                    onInstallButtonClick(device.id);
+                  }}
+                  onUninstallClick={() => {
+                    onUninstallButtonClick(device.id);
+                  }}
+                />
               </Td>
               <Td minWidth={200}>
                 <HStack spacing={2}>
-                  {isInstalled ? (
-                    <Button
-                      size="xs"
-                      colorScheme="yellow"
-                      leftIcon={<MinusIcon />}
-                      isLoading={isLoading}
-                      onClick={() => {
-                        onUninstallButtonClick(device.id);
-                      }}
-                    >
-                      Uninstall
-                    </Button>
-                  ) : (
-                    <Button
-                      size="xs"
-                      colorScheme="green"
-                      leftIcon={<AddIcon />}
-                      isLoading={isLoading}
-                      onClick={() => {
-                        onInstallButtonClick(device.id);
-                      }}
-                    >
-                      Install
-                    </Button>
-                  )}
+                  <IconButton
+                    aria-label="config"
+                    size="sm"
+                    variant="unstyled"
+                    isDisabled={!isInstalled}
+                    icon={<Icon size={12} as={SettingsIcon} />}
+                    onClick={() => onSettingsButtonClick(device.id)}
+                  />
+                  <IconButton
+                    aria-label="edit"
+                    size="sm"
+                    variant="unstyled"
+                    isDisabled={isInstalled}
+                    icon={<Icon size={12} as={EditIcon} />}
+                    onClick={() => onEditDeviceButtonClick(device.id)}
+                  />
+                  <IconButton
+                    aria-label="Delete device"
+                    size="sm"
+                    isDisabled={isInstalled}
+                    colorScheme="red"
+                    icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
+                    onClick={() => {
+                      onDeleteBtnClick(device.id);
+                    }}
+                  />
                 </HStack>
-              </Td>
-              <Td>
-                <IconButton
-                  aria-label="config"
-                  isDisabled={!isInstalled}
-                  variant="unstyled"
-                  icon={<Icon size={20} as={SettingsIcon} />}
-                  onClick={() => onSettingsButtonClick(device.id)}
-                />
               </Td>
             </Tr>
           );

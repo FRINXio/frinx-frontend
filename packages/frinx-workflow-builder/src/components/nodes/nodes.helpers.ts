@@ -21,6 +21,8 @@ const NODE_COLOR_MAP: Record<TaskLabel, string> = {
   simple: 'gray.400',
   start: 'green.100',
   end: 'red.100',
+  'kafka publish': 'teal.600',
+  'json jq': 'teal.400',
 };
 
 export function getNodeColor(label: TaskLabel): string {

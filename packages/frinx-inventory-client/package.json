@@ -29,6 +29,7 @@
     "formik": "^2.2.9",
     "graphql": "^15.5.0",
     "json-templates": "^4.1.0",
+    "lodash": "^4.17.20",
     "react-ace": "^9.2.1",
     "urql": "^2.0.4",
     "yup": "^0.32.9"
@@ -42,8 +43,8 @@
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
     "@babel/preset-typescript": "^7.12.7",
-    "@chakra-ui/icons": "^1.0.3",
-    "@chakra-ui/react": "^1.1.5",
+    "@chakra-ui/icons": "^1.0.15",
+    "@chakra-ui/react": "^1.6.7",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
     "@frinx/eslint-config-typescript": "^18.2.1-build.2",
@@ -72,8 +73,8 @@
     "webpack-cli": "^4.3.1"
   },
   "peerDependencies": {
-    "@chakra-ui/icons": "^1.0.3",
-    "@chakra-ui/react": "^1.1.5",
+    "@chakra-ui/icons": "^1.0.15",
+    "@chakra-ui/react": "^1.6.7",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
     "framer-motion": "^4.1.3",

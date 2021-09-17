@@ -40,8 +40,8 @@
     "@babel/eslint-parser": "^7.13.10",
     "@babel/preset-flow": "^7.12.1",
     "@babel/preset-react": "^7.12.10",
-    "@chakra-ui/icons": "^1.0.3",
-    "@chakra-ui/react": "^1.1.5",
+    "@chakra-ui/icons": "^1.0.15",
+    "@chakra-ui/react": "^1.6.7",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
     "babel-loader": "^8.2.2",
@@ -75,8 +75,8 @@
     "webpack-dev-server": "^3.11.2"
   },
   "peerDependencies": {
-    "@chakra-ui/icons": "^1.0.3",
-    "@chakra-ui/react": "^1.1.5",
+    "@chakra-ui/icons": "^1.0.15",
+    "@chakra-ui/react": "^1.6.7",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
     "framer-motion": "^4.1.3",

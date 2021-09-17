@@ -30,7 +30,7 @@ const SchedulingModal = ({ name, workflowName, workflowVersion, isOpen, onClose 
   useEffect(() => {
     const getSchedule = callbackUtils.getScheduleCallback();
 
-    getSchedule(name)
+    getSchedule(name, workflowVersion)
       .then((schedule) => {
         setFound(true);
         setScheduledWf(schedule);
@@ -53,7 +53,10 @@ const SchedulingModal = ({ name, workflowName, workflowVersion, isOpen, onClose 
 
     const registerSchedule = callbackUtils.registerScheduleCallback();
 
-    registerSchedule(name, scheduledWf)
+    registerSchedule(name, workflowVersion, {
+      ...scheduledWf,
+      name: `${name}:${workflowVersion}`,
+    })
       .then(() => {
         onClose();
       })

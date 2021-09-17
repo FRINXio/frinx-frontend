@@ -2,6 +2,8 @@ import React, { ReactNode } from 'react';
 import DecisionInputForm from './decision-input-form';
 import EventInputForm from './event-input-form';
 import GraphQLInputsForm from './graphql-input-form';
+import KafkaInputsForm from './kafka-input-form';
+import JsonInputsForm from './json-input-form';
 import HTTPInputsForm from './http-input-form';
 import LambdaInputsForm from './lambda-input-form';
 import TerminateInputForm from './terminate-input-form';
@@ -15,6 +17,7 @@ export function renderInputParamForm(
   task: ExtendedTask,
   setState: (p: InputParameters) => void,
   tasks: ExtendedTask[],
+  setIsValid: (isValid: boolean) => void,
 ): ReactNode | null {
   if ('inputParameters' in task) {
     if (task.type === 'DECISION') {
@@ -25,6 +28,12 @@ export function renderInputParamForm(
     }
     if (task.type === 'HTTP') {
       return <HTTPInputsForm params={task.inputParameters} onChange={setState} tasks={tasks} task={task} />;
+    }
+    if (task.type === 'KAFKA_PUBLISH') {
+      return <KafkaInputsForm params={task.inputParameters} onChange={setState} tasks={tasks} task={task} />;
+    }
+    if (task.type === 'JSON_JQ_TRANSFORM') {
+      return <JsonInputsForm params={task.inputParameters} onChange={setState} onValidation={setIsValid} />;
     }
     if (task.type === 'SIMPLE') {
       if (isGraphQLTaskInputParams(task.inputParameters)) {
