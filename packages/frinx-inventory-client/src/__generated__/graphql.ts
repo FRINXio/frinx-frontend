@@ -279,6 +279,7 @@ export type Mutation = {
   deleteLabel: DeleteLabelPayload;
   addLocation: AddLocationPayload;
   addBlueprint: AddBlueprintPayload;
+  updateBlueprint: UpdateBlueprintPayload;
 };
 
 
@@ -361,6 +362,12 @@ export type MutationAddLocationArgs = {
 
 export type MutationAddBlueprintArgs = {
   input: AddBlueprintInput;
+};
+
+
+export type MutationUpdateBlueprintArgs = {
+  id: Scalars['String'];
+  input: UpdateBlueprintInput;
 };
 
 export type Node = {
@@ -471,6 +478,16 @@ export type SyncFromNetworkPayload = {
 export type UninstallDevicePayload = {
   __typename?: 'UninstallDevicePayload';
   device: Device;
+};
+
+export type UpdateBlueprintInput = {
+  name?: Maybe<Scalars['String']>;
+  template?: Maybe<Scalars['String']>;
+};
+
+export type UpdateBlueprintPayload = {
+  __typename?: 'UpdateBlueprintPayload';
+  blueprint: Blueprint;
 };
 
 export type UpdateDataStoreInput = {
@@ -851,6 +868,51 @@ export type DeleteDeviceMutation = (
       { __typename?: 'Device' }
       & Pick<Device, 'id'>
     )> }
+  ) }
+);
+
+export type BlueprintQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type BlueprintQuery = (
+  { __typename?: 'Query' }
+  & { blueprint: Maybe<(
+    { __typename?: 'Blueprint' }
+    & Pick<Blueprint, 'name' | 'template' | 'id'>
+  ) | (
+    { __typename?: 'Country' }
+    & Pick<Country, 'id'>
+  ) | (
+    { __typename?: 'Device' }
+    & Pick<Device, 'id'>
+  ) | (
+    { __typename?: 'Label' }
+    & Pick<Label, 'id'>
+  ) | (
+    { __typename?: 'Location' }
+    & Pick<Location, 'id'>
+  ) | (
+    { __typename?: 'Zone' }
+    & Pick<Zone, 'id'>
+  )> }
+);
+
+export type UpdateBlueprintMutationVariables = Exact<{
+  id: Scalars['String'];
+  input: UpdateBlueprintInput;
+}>;
+
+
+export type UpdateBlueprintMutation = (
+  { __typename?: 'Mutation' }
+  & { updateBlueprint: (
+    { __typename?: 'UpdateBlueprintPayload' }
+    & { blueprint: (
+      { __typename?: 'Blueprint' }
+      & Pick<Blueprint, 'id' | 'name' | 'template'>
+    ) }
   ) }
 );
 
