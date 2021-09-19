@@ -124,7 +124,7 @@ function createJsonJQTask(label: TaskLabel): ExtendedJsonJQTask {
     taskReferenceName: `jsonJQ_${getRandomString(4)}`,
     inputParameters: {
       key: '${workflow.output.result}',
-      queryExpression: '.key',
+      queryExpression: '.key | ',
     },
     ...DEFAULT_TASK_OPTIONS,
   };
