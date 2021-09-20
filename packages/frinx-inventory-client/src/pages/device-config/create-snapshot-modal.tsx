@@ -18,9 +18,10 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   onFormSubmit: (name: string) => void;
+  isLoading: boolean;
 };
 
-const CreateSnapshotModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, onFormSubmit }) => {
+const CreateSnapshotModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, onFormSubmit, isLoading }) => {
   const [snapshotName, setSnapshotName] = useState('');
   const [isDirty, setIsDirty] = useState(false);
   const isSnapshotNameInvalid = snapshotName === '' && isDirty;
@@ -38,6 +39,7 @@ const CreateSnapshotModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, on
           onSubmit={(event) => {
             event.preventDefault();
             onFormSubmit(snapshotName);
+            onClose();
           }}
         >
           <ModalHeader>Create snapshot</ModalHeader>
@@ -51,7 +53,7 @@ const CreateSnapshotModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, on
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} type="submit">
+            <Button colorScheme="blue" mr={3} type="submit" isLoading={isLoading}>
               Create
             </Button>
             <Button

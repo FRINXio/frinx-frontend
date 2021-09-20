@@ -25,6 +25,8 @@ type Props = {
   onCommitBtnClick: () => void;
   onDryRunBtnClick: () => void;
   onCalculateDiffBtnClick: () => void;
+  isCommitLoading: boolean;
+  isApplySnapshotLoading: boolean;
 };
 
 const DeviceConfigActions: VoidFunctionComponent<Props> = ({
@@ -34,6 +36,8 @@ const DeviceConfigActions: VoidFunctionComponent<Props> = ({
   onCommitBtnClick,
   onDryRunBtnClick,
   onCalculateDiffBtnClick,
+  isApplySnapshotLoading,
+  isCommitLoading,
 }) => {
   return (
     <Flex background="gray.300" paddingX={4} paddingY={2}>
@@ -53,6 +57,7 @@ const DeviceConfigActions: VoidFunctionComponent<Props> = ({
             {snapshots.map((snapshot) => (
               <MenuItem
                 key={snapshot.name}
+                isDisabled={isApplySnapshotLoading}
                 onClick={() => {
                   onLoadSnapshotClick(snapshot.name);
                 }}
@@ -80,6 +85,7 @@ const DeviceConfigActions: VoidFunctionComponent<Props> = ({
         </Button>
         <Button
           onClick={onCommitBtnClick}
+          isLoading={isCommitLoading}
           colorScheme="blue"
           leftIcon={<Icon size={20} as={FeatherIcon} icon="server" />}
         >
