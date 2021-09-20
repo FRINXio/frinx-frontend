@@ -170,6 +170,7 @@ export type Device = Node & {
   model: Maybe<Scalars['String']>;
   vendor: Maybe<Scalars['String']>;
   address: Maybe<Scalars['String']>;
+  mountParameters: Maybe<Scalars['String']>;
   source: DeviceSource;
   serviceState: DeviceServiceState;
   isInstalled: Scalars['Boolean'];
@@ -931,7 +932,7 @@ export type DeviceQuery = (
     & Pick<Country, 'id'>
   ) | (
     { __typename?: 'Device' }
-    & Pick<Device, 'name' | 'serviceState' | 'id'>
+    & Pick<Device, 'name' | 'serviceState' | 'mountParameters' | 'id'>
     & { zone: (
       { __typename?: 'Zone' }
       & Pick<Zone, 'id' | 'name'>
