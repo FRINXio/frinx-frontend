@@ -12,6 +12,7 @@ export type AddressFamily = 'ipv4' | 'ipv6';
 export type MaximumRoutes = 1000 | 2000 | 5000 | 10000 | 1000000;
 
 export type VpnService = {
+  vpnId?: string;
   customerName: string;
   vpnServiceTopology: VpnServiceTopology;
   defaultCVlan: DefaultCVlanEnum;

@@ -1,7 +1,9 @@
 import { Box, ChakraProvider } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import Main from './components/main/main';
+import Main from './components/pages/main/main';
+import CreateVpnService from './components/pages/create-vpn-service/create-vpn-service';
+import EditVpnService from './components/pages/edit-vpn-service/edit-vpn-service';
 import theme from './theme';
 
 function getURLBaseName(): string {
@@ -16,6 +18,12 @@ const App: FC = () => {
           <Switch>
             <Route path="/" exact>
               <Main />
+            </Route>
+            <Route path="/add-vpn-service" exact>
+              <CreateVpnService />
+            </Route>
+            <Route path="/edit-vpn-service" exact>
+              <EditVpnService />
             </Route>
           </Switch>
         </Box>
