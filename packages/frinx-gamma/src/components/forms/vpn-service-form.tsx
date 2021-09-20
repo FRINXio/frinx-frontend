@@ -1,4 +1,4 @@
-import React, { FC, FormEvent, useState } from 'react';
+import React, { FC, FormEvent, useEffect, useState } from 'react';
 import {
   Flex,
   HStack,
@@ -17,21 +17,42 @@ import {
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { VpnServiceTopology, DefaultCVlanEnum, VpnService, MaximumRoutes } from './service-types';
+import Autocomplete from '../autocomplete/autocomplete';
 
 type Props = {
+  mode: 'add' | 'edit';
+  services: VpnService[];
   service: VpnService;
   extranetVpns: string[];
-  onSubmit: (p: VpnService) => void;
+  onSubmit: (s: VpnService) => void;
   onCancel: () => void;
+  onServiceChange?: (s: VpnService) => void;
 };
 
-const VpnServiceForm: FC<Props> = ({ extranetVpns, service, onSubmit, onCancel }) => {
+const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSubmit, onCancel, onServiceChange }) => {
   const [serviceState, setServiceState] = useState(service);
   const [extranetVpnSelect, setExtranetVpnSelect] = useState<string | null>(null);
+
+  useEffect(() => {
+    setServiceState({
+      ...service,
+    });
+  }, [service]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(serviceState);
+  };
+
+  const handleCustomerChange = (customerName: string) => {
+    setServiceState({
+      ...serviceState,
+      customerName,
+    });
+    if (onServiceChange) {
+      const [newService] = services.filter((s) => s.customerName === customerName);
+      onServiceChange(newService);
+    }
   };
 
   const handleExtranetVpnAdd = () => {
@@ -58,22 +79,35 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, onSubmit, onCancel }
     return !serviceState.extranetVpns.includes(ev);
   });
 
+  const customerNames = services.map((s) => s.customerName).filter((s) => s !== serviceState.customerName);
+
   return (
     <form onSubmit={handleSubmit}>
       <FormControl id="topic" my={6}>
         <FormLabel>Customer Name</FormLabel>
-        <Input
-          variant="filled"
-          name="topic"
-          value={serviceState.customerName}
-          onChange={(event) => {
-            setServiceState({
-              ...serviceState,
-              customerName: event.target.value,
-            });
-          }}
-        />
+        {mode === 'add' ? (
+          <>
+            <Input
+              variant="filled"
+              name="topic"
+              value={serviceState.customerName}
+              onChange={(event) => {
+                setServiceState({
+                  ...serviceState,
+                  customerName: event.target.value,
+                });
+              }}
+            />
+          </>
+        ) : (
+          <Autocomplete
+            items={customerNames}
+            selectedItem={serviceState.customerName}
+            onChange={handleCustomerChange}
+          />
+        )}
       </FormControl>
+
       <FormControl id="vpnServiceTopology" my={6}>
         <FormLabel>Vpn Service Topology</FormLabel>
         <Select
