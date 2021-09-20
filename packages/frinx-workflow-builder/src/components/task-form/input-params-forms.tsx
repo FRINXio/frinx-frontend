@@ -17,7 +17,6 @@ export function renderInputParamForm(
   task: ExtendedTask,
   setState: (p: InputParameters) => void,
   tasks: ExtendedTask[],
-  setIsValid: (isValid: boolean) => void,
 ): ReactNode | null {
   if ('inputParameters' in task) {
     if (task.type === 'DECISION') {
@@ -33,15 +32,7 @@ export function renderInputParamForm(
       return <KafkaInputsForm params={task.inputParameters} onChange={setState} tasks={tasks} task={task} />;
     }
     if (task.type === 'JSON_JQ_TRANSFORM') {
-      return (
-        <JsonInputsForm
-          params={task.inputParameters}
-          onChange={setState}
-          onValidation={setIsValid}
-          tasks={tasks}
-          task={task}
-        />
-      );
+      return <JsonInputsForm params={task.inputParameters} onChange={setState} tasks={tasks} task={task} />;
     }
     if (task.type === 'SIMPLE') {
       if (isGraphQLTaskInputParams(task.inputParameters)) {
