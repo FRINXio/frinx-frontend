@@ -51,7 +51,7 @@ const EditBlueprintForm: FC<Props> = ({ initialValues, onSubmit, onCancel }) => 
             Cancel
           </Button>
           <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
-            Edit blueprint
+            Save changes
           </Button>
         </HStack>
       </FormControl>

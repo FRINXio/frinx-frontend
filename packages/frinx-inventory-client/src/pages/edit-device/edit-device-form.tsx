@@ -6,23 +6,23 @@ import Editor from 'react-ace';
 import { Item } from 'chakra-ui-autocomplete';
 import { Button, Divider, FormControl, FormLabel, HStack, Select } from '@chakra-ui/react';
 
-import { ServiceState, serviceStateOptions } from '../../helpers/types';
-import { Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
+import { serviceStateOptions } from '../../helpers/types';
+import { DeviceServiceState, Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 
 type FormValues = {
   zoneId: string;
   mountParameters: string;
   labels: string[];
-  serviceState: ServiceState;
+  serviceState: DeviceServiceState;
 };
 
 type Props = {
   zoneId: string;
-  mountParameters: string;
+  mountParameters: string | null;
   labels: LabelsQuery['labels']['edges'];
   initialSelectedLabels: LabelsQuery['labels']['edges'];
-  serviceState: ServiceState;
+  serviceState: DeviceServiceState;
   zones: ZonesQuery['zones']['edges'];
   onUpdate: (values: FormValues) => void;
   onLabelCreate: (label: string) => Promise<Label | null>;
@@ -47,7 +47,7 @@ const EditDeviceForm: FC<Props> = ({
   const INITIAL_VALUES = useMemo(() => {
     return {
       zoneId,
-      mountParameters,
+      mountParameters: mountParameters ?? '',
       labels: initialSelectedLabels.map(({ node: { id } }) => id),
       serviceState,
     };
@@ -160,7 +160,7 @@ const EditDeviceForm: FC<Props> = ({
             Cancel
           </Button>
           <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
-            Edit device
+            Save changes
           </Button>
         </HStack>
       </FormControl>
