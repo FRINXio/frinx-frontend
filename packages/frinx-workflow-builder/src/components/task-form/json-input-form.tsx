@@ -8,7 +8,6 @@ type Props = {
   tasks: ExtendedTask[];
   task: ExtendedTask;
   onChange: (p: JsonJQInputParams) => void;
-  onValidation: (isValid: boolean) => void;
 };
 
 const JsonJQInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
@@ -19,12 +18,12 @@ const JsonJQInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
         <Input
           type="text"
           name="queryExpression"
-          value={params.queryExpression.replace(/^\.key/, '')}
+          value={params.queryExpression.replace(/^\.key( \| )?/, '')}
           onChange={(event) => {
             event.persist();
             onChange({
               ...params,
-              queryExpression: `.key${event.target.value}`,
+              queryExpression: `.key | ${event.target.value}`,
             });
           }}
         />
