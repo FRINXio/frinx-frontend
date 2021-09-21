@@ -118,6 +118,10 @@ class DetailsModal extends Component {
     });
   }
 
+  copyToClipBoard(textToCopy) {
+    navigator.clipboard.writeText(JSON.stringify(textToCopy));
+  }
+
   getUnescapedJSON(data) {
     return this.state.isEscaped
       ? JSON.stringify(data, null, 2)
@@ -379,7 +383,12 @@ class DetailsModal extends Component {
               <Text as="b" fontSize="sm">
                 Workflow Input
               </Text>
-              <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#wfinput" />
+              <IconButton
+                icon={<CopyIcon />}
+                size="sm"
+                className="clp"
+                onClick={() => this.copyToClipBoard.bind(this)(input)}
+              />
               <Button size="sm" onClick={() => this.setState((prevState) => ({ isEscaped: !prevState.isEscaped }))}>
                 {isEscaped ? 'Unescape' : 'Escape'}
               </Button>
@@ -391,7 +400,12 @@ class DetailsModal extends Component {
               <Text as="b" fontSize="sm">
                 Workflow Output
               </Text>
-              <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#wfoutput" />
+              <IconButton
+                icon={<CopyIcon />}
+                size="sm"
+                className="clp"
+                onClick={() => this.copyToClipBoard.bind(this)(output)}
+              />
               <Button size="sm" onClick={() => this.setState((prevState) => ({ isEscaped: !prevState.isEscaped }))}>
                 {isEscaped ? 'Unescape' : 'Escape'}
               </Button>
@@ -417,7 +431,12 @@ class DetailsModal extends Component {
             <Text as="b" fontSize="sm">
               Workflow JSON
             </Text>
-            <IconButton icon={<CopyIcon />} size="sm" className="clp" data-clipboard-target="#json" />
+            <IconButton
+              icon={<CopyIcon />}
+              size="sm"
+              className="clp"
+              onClick={this.copyToClipBoard.bind(this)(result)}
+            />
             <Button size="sm" onClick={() => this.setState((prevState) => ({ isEscaped: !prevState.isEscaped }))}>
               {isEscaped ? 'Unescape' : 'Escape'}
             </Button>
