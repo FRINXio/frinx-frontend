@@ -33,7 +33,7 @@ const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflows }) =>
     minisearch.addAll(workflows);
   }, [workflows, minisearch]);
 
-  const searchFn = throttle(() => getFilteredResults(minisearch.search(searchTerm), workflows), 60);
+  const searchFn = throttle(() => getFilteredResults(minisearch.search(searchTerm, { prefix: true }), workflows), 60);
   const result = searchTerm.length > 2 ? searchFn() : workflows;
 
   return (
