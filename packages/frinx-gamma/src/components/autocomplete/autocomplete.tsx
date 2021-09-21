@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { Text, ListItem, Box, List, Input } from '@chakra-ui/react';
 
 type Item = string;
@@ -10,9 +10,13 @@ type Props = {
 };
 
 const AutocompleteMenu: FC<Props> = ({ items, selectedItem, onChange }) => {
-  const itemList: Item[] = items;
+  //   const itemList: Item[] = items;
   const [isInputActive, setIsInputActive] = useState(false);
   const [inputValue, setInputValue] = useState(selectedItem);
+
+  useEffect(() => {
+    setInputValue(selectedItem);
+  }, [selectedItem]);
 
   const autocompleteItem = (item: string): void => {
     setInputValue(item);
@@ -23,7 +27,7 @@ const AutocompleteMenu: FC<Props> = ({ items, selectedItem, onChange }) => {
     setInputValue(event.target.value);
   };
 
-  const filteredItems = itemList.filter((item: string) => {
+  const filteredItems = items.filter((item: string) => {
     return item !== selectedItem;
   });
 

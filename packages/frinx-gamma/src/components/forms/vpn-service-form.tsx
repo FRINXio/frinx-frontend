@@ -15,9 +15,11 @@ import {
   TagLabel,
   TagCloseButton,
 } from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
+import { AddIcon, CloseIcon } from '@chakra-ui/icons';
+import { uniq } from 'lodash';
 import { VpnServiceTopology, DefaultCVlanEnum, VpnService, MaximumRoutes } from './service-types';
 import Autocomplete from '../autocomplete/autocomplete';
+import unwrap from '../../helpers/unwrap';
 
 type Props = {
   mode: 'add' | 'edit';
@@ -28,6 +30,14 @@ type Props = {
   onCancel: () => void;
   onServiceChange?: (s: VpnService) => void;
 };
+
+const getDefaultVpnService = (): VpnService => ({
+  customerName: '',
+  defaultCVlan: DefaultCVlanEnum.L3VPN,
+  vpnServiceTopology: 'any-any',
+  maximumRoutes: 1000,
+  extranetVpns: [],
+});
 
 const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSubmit, onCancel, onServiceChange }) => {
   const [serviceState, setServiceState] = useState(service);
@@ -45,12 +55,15 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
   };
 
   const handleCustomerChange = (customerName: string) => {
-    setServiceState({
-      ...serviceState,
-      customerName,
-    });
     if (onServiceChange) {
       const [newService] = services.filter((s) => s.customerName === customerName);
+      onServiceChange(newService);
+    }
+  };
+
+  const handleVpnIdChange = (vpnId: string) => {
+    if (onServiceChange) {
+      const [newService] = services.filter((s) => s.vpnId === vpnId);
       onServiceChange(newService);
     }
   };
@@ -75,21 +88,41 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
     });
   };
 
+  const handleDeselectCustomerName = () => {
+    setServiceState(getDefaultVpnService());
+  };
+
   const filteredExtranetVpns = extranetVpns.filter((ev) => {
     return !serviceState.extranetVpns.includes(ev);
   });
 
-  const customerNames = services.map((s) => s.customerName).filter((s) => s !== serviceState.customerName);
+  const customerNames = uniq(services.map((s) => s.customerName).filter((s) => s !== serviceState.customerName));
+  const vpnIds =
+    mode === 'edit'
+      ? services
+          // first we filter all services with vpn-id that belongs to selected customer (if set)
+          .filter((s) => {
+            return serviceState.customerName ? service.customerName === s.customerName : true;
+          })
+          .map((s) => unwrap(s.vpnId))
+          .filter((s) => s !== serviceState.vpnId)
+      : [];
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl id="topic" my={6}>
+      {mode === 'edit' && (
+        <FormControl id="vpnId" my={6}>
+          <FormLabel>Vpn ID</FormLabel>
+          <Autocomplete items={vpnIds} selectedItem={serviceState.vpnId || ''} onChange={handleVpnIdChange} />
+        </FormControl>
+      )}
+      <FormControl id="customerName" my={6}>
         <FormLabel>Customer Name</FormLabel>
         {mode === 'add' ? (
           <>
             <Input
               variant="filled"
-              name="topic"
+              name="customerName"
               value={serviceState.customerName}
               onChange={(event) => {
                 setServiceState({
@@ -100,11 +133,25 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
             />
           </>
         ) : (
-          <Autocomplete
-            items={customerNames}
-            selectedItem={serviceState.customerName}
-            onChange={handleCustomerChange}
-          />
+          <Flex>
+            <Box flex="1">
+              <Autocomplete
+                items={customerNames}
+                selectedItem={serviceState.customerName}
+                onChange={handleCustomerChange}
+              />
+            </Box>
+            <Box marginLeft={4} alignSelf="center">
+              <IconButton
+                size="sm"
+                aria-label="Deselect Customer Name"
+                icon={<CloseIcon />}
+                onClick={() => {
+                  handleDeselectCustomerName();
+                }}
+              />
+            </Box>
+          </Flex>
         )}
       </FormControl>
 
