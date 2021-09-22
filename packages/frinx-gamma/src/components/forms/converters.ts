@@ -1,4 +1,5 @@
 import { VpnService, DefaultCVlanEnum, VpnServiceTopology } from './service-types';
+import { VpnSite } from './site-types';
 import { VpnServicesOutput } from '../../api/unistore/network-types';
 
 export function apiVpnServiceToClientVpnService(apiVpnService: VpnServicesOutput): VpnService[] {
@@ -14,4 +15,10 @@ export function apiVpnServiceToClientVpnService(apiVpnService: VpnServicesOutput
       }),
     };
   });
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function apiVpnSiteToClientVpnSite(apiVpnSite: VpnServicesOutput): VpnSite[] {
+  // TODO: to be defined
+  return [];
 }

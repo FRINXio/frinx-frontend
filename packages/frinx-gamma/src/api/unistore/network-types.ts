@@ -34,3 +34,13 @@ export type VpnServicesOutput = t.TypeOf<typeof VpnServicesOutputValidator>;
 export function decodeVpnServicesOutput(value: unknown): VpnServicesOutput {
   return extractResult(VpnServicesOutputValidator.decode(value));
 }
+
+const VpnSitesOutputValidator = t.type({
+  'vpn-site': t.array(t.string),
+});
+
+export type VpnSitesOutput = t.TypeOf<typeof VpnSitesOutputValidator>;
+
+export function decodeVpnSiteOutput(value: unknown): VpnSitesOutput {
+  return extractResult(VpnSitesOutputValidator.decode(value));
+}

@@ -7,12 +7,17 @@ const Main: FC = () => {
     <Box padding={6} margin={6} background="white">
       <Box>
         <ChakraLink as={Link} to="/add-vpn-service">
-          Add Service
+          Create VPN Service
         </ChakraLink>
       </Box>
       <Box>
         <ChakraLink as={Link} to="/edit-vpn-service">
-          Edit Service
+          Edit VPN Service
+        </ChakraLink>
+      </Box>
+      <Box>
+        <ChakraLink as={Link} to="/add-vpn-site">
+          Create VPN Site
         </ChakraLink>
       </Box>
     </Box>

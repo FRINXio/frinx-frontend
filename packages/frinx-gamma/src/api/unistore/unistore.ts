@@ -6,3 +6,9 @@ export async function getVpnServices(): Promise<VpnServicesOutput> {
   const data = decodeVpnServicesOutput(json);
   return data;
 }
+
+export async function getVpnSites(): Promise<VpnServicesOutput> {
+  const json = await sendGetRequest('/vpn-data.json');
+  const data = decodeVpnServicesOutput(json);
+  return data;
+}
