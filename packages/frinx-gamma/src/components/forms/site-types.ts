@@ -14,12 +14,14 @@ export type SiteDevice = {
   managementIP: string;
 };
 
+export type SiteManagementType = 'provider-managed' | 'co-managed' | 'customer-managed';
+
 export type VpnSite = {
   siteId?: string;
   customerLocations: CustomerLocation[];
   siteDevices: SiteDevice[];
-  siteManagementType: 'provider-managed' | 'co-managed' | 'customer-managed';
+  siteManagementType: SiteManagementType;
   siteVpnFlavor: 'single' | 'sub' | 'nni';
   siteServiceQosProfile: string;
-  enableBgpPicFastReroute: 'yes' | 'no';
+  enableBgpPicFastReroute: boolean;
 };

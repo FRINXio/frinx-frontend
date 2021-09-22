@@ -12,7 +12,7 @@ const defaultVpnSite: VpnSite = {
   siteManagementType: 'provider-managed',
   siteVpnFlavor: 'single',
   siteServiceQosProfile: '',
-  enableBgpPicFastReroute: 'no',
+  enableBgpPicFastReroute: false,
 };
 
 const CreateVpnSitePage: FC = () => {
