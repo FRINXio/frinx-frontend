@@ -16,6 +16,7 @@ import { v4 as uuid4 } from 'uuid';
 import { CustomerLocation, SiteDevice, SiteManagementType, VpnSite } from './site-types';
 import CustomerLocationForm from './customer-location-form';
 import SiteDeviceForm from './site-device-form';
+import Autocomplete from '../autocomplete/autocomplete';
 import unwrap from '../../helpers/unwrap';
 
 type Props = {
@@ -40,6 +41,8 @@ const getDefaultSiteDevice = (): SiteDevice => ({
   locationId: '',
   managementIP: '',
 });
+
+const getQosProfileNames = (): string[] => ['profile1', 'profile2', 'profile3'];
 
 const VpnSiteForm: FC<Props> = ({ site, onSubmit, onCancel }) => {
   const [siteState, setSiteState] = useState(site);
@@ -101,6 +104,15 @@ const VpnSiteForm: FC<Props> = ({ site, onSubmit, onCancel }) => {
       siteDevices: newSiteDevices,
     });
   };
+
+  const handleProfileNameChange = (profileName: string) => {
+    console.log('test');
+    setSiteState({
+      ...siteState,
+      siteServiceQosProfile: profileName,
+    });
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <FormControl id="customer-locations" my={6}>
@@ -188,6 +200,15 @@ const VpnSiteForm: FC<Props> = ({ site, onSubmit, onCancel }) => {
           <option value="co-managed">co-managed</option>
           <option value="customer-managed">customer-managed</option>
         </Select>
+      </FormControl>
+
+      <FormControl id="site-service-qos-profile" my={6}>
+        <FormLabel>Site Service QOS Profile</FormLabel>
+        <Autocomplete
+          items={getQosProfileNames()}
+          selectedItem={siteState.siteServiceQosProfile}
+          onChange={handleProfileNameChange}
+        />
       </FormControl>
 
       <FormControl id="enable-bgp-pic-fast-reroute" my={6}>

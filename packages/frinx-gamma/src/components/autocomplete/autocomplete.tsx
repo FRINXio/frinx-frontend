@@ -1,5 +1,6 @@
 import React, { FC, useState, useEffect } from 'react';
 import { Text, ListItem, Box, List, Input } from '@chakra-ui/react';
+import Fuse from 'fuse.js';
 
 type Item = string;
 
@@ -14,22 +15,38 @@ const AutocompleteMenu: FC<Props> = ({ items, selectedItem, onChange }) => {
   const [isInputActive, setIsInputActive] = useState(false);
   const [inputValue, setInputValue] = useState(selectedItem);
 
+  // const fuse = new Fuse(items, {
+  //   threshold: 0.4,
+  //   shouldSort: false,
+  // });
+
   useEffect(() => {
     setInputValue(selectedItem);
   }, [selectedItem]);
 
   const autocompleteItem = (item: string): void => {
+    console.log('autocompleteItem: ', item);
     setInputValue(item);
     onChange(item);
   };
 
   const handleInputValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('inputValueChanged', inputValue);
     setInputValue(event.target.value);
   };
 
-  const filteredItems = items.filter((item: string) => {
-    return item !== selectedItem;
-  });
+  // const searchedItems = inputValue ? fuse.search(inputValue).map((fr) => fr.item) : items;
+
+  const filteredItems = items
+    .filter((item) => {
+      return item !== selectedItem;
+    })
+    .filter((item) => {
+      return item.toLowerCase().startsWith(inputValue.toLowerCase());
+    });
+
+  console.log(filteredItems);
+  console.log('render autocomplete', inputValue, isInputActive);
 
   return (
     <Box
@@ -66,11 +83,18 @@ const AutocompleteMenu: FC<Props> = ({ items, selectedItem, onChange }) => {
               key={`autocomplete-item-${t}`}
               borderBottomRadius={i === filteredItems.length - 1 ? 0 : 2}
               borderBottom={i === filteredItems.length - 1 ? '' : '1px solid #e9e9e9'}
-              onChange={() => autocompleteItem(t)}
-              onClick={() => {
+              onChange={(event) => {
+                event.persist();
                 autocompleteItem(t);
               }}
-              onBlur={() => setIsInputActive(false)}
+              onClick={(event) => {
+                event.persist();
+                autocompleteItem(t);
+              }}
+              onBlur={(event) => {
+                event.persist();
+                setIsInputActive(false);
+              }}
             >
               <Text>{t}</Text>
             </ListItem>
