@@ -36,7 +36,7 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import { CopyIcon } from '@chakra-ui/icons';
-import TaskTable, { TableTaskType } from './task-table';
+import TaskTable from './task-table';
 import useResponseToasts from '../../../../hooks/use-response-toasts';
 import { Task } from '../../../../common/flowtypes';
 
@@ -58,7 +58,7 @@ type WfDetails = {
   };
   result: {
     status: Status;
-    tasks: TableTaskType[];
+    tasks: Task[];
     startTime: Date | number | string;
     endTime: Date | number | string;
     input: string;
@@ -268,11 +268,12 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
       return '';
     }
 
+    const endTime = new Date(end).getTime();
+
     if (start == null || start === 0 || isEmpty(start)) {
-      return end;
+      return endTime / 1000;
     }
 
-    const endTime = new Date(end).getTime();
     const startTime = new Date(start).getTime();
 
     const total = endTime - startTime;
@@ -603,6 +604,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
                     tasks={details.result?.tasks ?? []}
                     onTaskClick={handleTaskDetail}
                     onWorkflowClick={onWorkflowIdClick}
+                    formatDate={formatDate}
                   />
                 </TabPanel>
                 <TabPanel>{inputOutput()}</TabPanel>

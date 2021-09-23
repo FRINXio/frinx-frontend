@@ -16,4 +16,10 @@ export type Task = {
       description: string,
     },
   },
+  // seq: number;
+  // referenceTaskName: string;
+  // subWorkflowId: string;
+  // startTime: number;
+  // endTime: number;
+  // status: string;
 };

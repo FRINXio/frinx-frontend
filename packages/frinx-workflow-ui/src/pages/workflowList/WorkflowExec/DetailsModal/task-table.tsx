@@ -1,31 +1,16 @@
 // @flow
-import React from 'react';
+import React, { FC } from 'react';
 import { Button, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
-import moment from 'moment';
+import { Task } from '../../../../common/flowtypes';
 
-export type TableTaskType = {
-  taskType: string,
-  seq: number,
-  referenceTaskName: string,
-  subWorkflowId: string,
-  startTime: number,
-  endTime: number,
-  status: string,
-};
 type Props = {
-  tasks: TableTaskType[],
-  onTaskClick: (Task) => void,
-  onWorkflowClick: (string) => void,
+  tasks: Task[];
+  onTaskClick: (task: Task) => void;
+  onWorkflowClick: (wfId: string) => void;
+  formatDate: (date: number | string) => string;
 };
 
-function formatDate(date?: string | number): string {
-  if (!date) {
-    return '-';
-  }
-  return moment(date).format('MM/DD/YYYY, HH:mm:ss:SSS');
-}
-
-const TaskTable = ({ tasks, onTaskClick, onWorkflowIdClick }: Props) => {
+const TaskTable: FC<Props> = ({ tasks, onTaskClick, onWorkflowClick, formatDate }) => {
   return (
     <Table size="sm">
       <Thead>
@@ -59,7 +44,7 @@ const TaskTable = ({ tasks, onTaskClick, onWorkflowIdClick }: Props) => {
                 <Button
                   colorScheme="blue"
                   onClick={() => {
-                    onWorkflowIdClick(task.subWorkflowId);
+                    onWorkflowClick(task.subWorkflowId);
                   }}
                 >
                   <i className="fas fa-arrow-circle-right" />
