@@ -15,7 +15,7 @@ type Task = {
 type Props = {
   tasks: Task[],
   onTaskClick: (Task) => void,
-  onWorkflowIdClick: (string) => void,
+  onWorkflowClick: (string) => void,
 };
 
 function formatDate(date?: string | number): string {
