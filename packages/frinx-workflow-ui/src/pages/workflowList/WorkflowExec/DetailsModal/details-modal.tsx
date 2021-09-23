@@ -36,7 +36,7 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import { CopyIcon } from '@chakra-ui/icons';
-import TaskTable from './task-table';
+import TaskTable, { TableTaskType } from './task-table';
 import useResponseToasts from '../../../../hooks/use-response-toasts';
 import { Task } from '../../../../common/flowtypes';
 
@@ -58,26 +58,50 @@ type WfDetails = {
   };
   result: {
     status: Status;
-    tasks: any[];
-    startTime: Date | number | null;
-    endTime: Date | number | null;
+    tasks: TableTaskType[];
+    startTime: Date | number | string;
+    endTime: Date | number | string;
     input: string;
     output: string;
   } | null;
   wfId: string;
   input: {
-    input: string[];
+    input: {
+      [key: string]: string;
+    };
   } | null;
   activeTab: number;
   status: 'Execute' | 'OK' | 'Executing...';
-  timeout: number | undefined;
+  timeouts: number[];
   parentWfId: string;
-  inputsArray: any[];
+  inputsArray: string[];
   taskDetail: Task | null;
   shouldShowTaskModal: boolean;
   wfIdRerun: string;
   isEscaped: boolean;
   subworkflows: any[];
+};
+
+const INITIAL_STATE: WfDetails = {
+  shouldShow: true,
+  meta: {
+    name: '',
+    version: '',
+    inputParameters: [],
+  },
+  result: null,
+  wfId: '',
+  input: null,
+  activeTab: 1,
+  status: 'Execute',
+  timeouts: [],
+  parentWfId: '',
+  inputsArray: [],
+  taskDetail: null,
+  shouldShowTaskModal: false,
+  wfIdRerun: '',
+  isEscaped: true,
+  subworkflows: [],
 };
 
 const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refreshTable }) => {
@@ -90,33 +114,15 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
     failureMessage: 'Copying to clipboard was not successfull',
   });
 
-  const [details, setDetails] = useState<WfDetails>({
-    shouldShow: true,
-    meta: {
-      name: '',
-      version: '',
-      inputParameters: [],
-    },
-    result: null,
-    wfId: '',
-    input: null,
-    activeTab: 1,
-    status: 'Execute',
-    timeout: undefined,
-    parentWfId: '',
-    inputsArray: [],
-    taskDetail: null,
-    shouldShowTaskModal: false,
-    wfIdRerun: '',
-    isEscaped: true,
-    subworkflows: [],
-  });
+  const [details, setDetails] = useState<WfDetails>(INITIAL_STATE);
 
   useEffect(() => {
     getData();
 
     return () => {
-      clearTimeout(details.timeout);
+      details.timeouts.forEach((timeout) => {
+        clearTimeout(timeout);
+      });
     };
   }, []);
 
@@ -160,7 +166,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
             ...prev,
             // used window.setTimeout because if we use only setTimeout
             // then there is clash between types we can send to clearTimeout
-            timeout: window.setTimeout(() => getData(), 2000),
+            timeouts: [...prev.timeouts, window.setTimeout(() => getData(), 2000)],
           };
         });
       }
@@ -208,15 +214,8 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
 
     const executeWorkflow = callbackUtils.executeWorkflowCallback();
 
-    executeWorkflow(details.input).then((res: any) => {
-      setDetails((prev) => {
-        return {
-          ...prev,
-          status: 'OK',
-          wfIdRerun: res.text,
-        };
-      });
-      setTimeout(() => {
+    executeWorkflow(details.input).then((res: { text: string }) => {
+      const setStatus = window.setTimeout(() => {
         setDetails((prev) => {
           return {
             ...prev,
@@ -225,11 +224,20 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
         });
         refreshTable();
       }, 1000);
+
+      setDetails((prev) => {
+        return {
+          ...prev,
+          status: 'OK',
+          wfIdRerun: res.text,
+          timeouts: [...prev.timeouts, setStatus],
+        };
+      });
     });
   };
 
-  const handleInput = (e: ChangeEvent<HTMLInputElement>, key: number) => {
-    let wfForm = details.input?.input ?? [];
+  const handleInput = (e: ChangeEvent<HTMLInputElement>, key: string) => {
+    let wfForm = details.input?.input ?? ({} as any);
     wfForm[key] = e.target.value;
     setDetails((prev) => {
       return {
@@ -242,23 +250,32 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
     });
   };
 
-  const formatDate = (dt: Date | number | undefined | null) => {
-    if (dt == null || dt === 0) {
+  const formatDate = (dt: Date | number | undefined | null | string) => {
+    try {
+      if (isEmpty(dt)) {
+        throw new Error();
+      }
+
+      const resultTime = moment(dt).format('MM/DD/YYYY, HH:mm:ss:SSS');
+      return resultTime;
+    } catch (error) {
       return '-';
     }
-    return moment(dt).format('MM/DD/YYYY, HH:mm:ss:SSS');
   };
 
-  const execTime = (end: number | undefined, start: number | undefined) => {
-    if (end == null || end === 0) {
+  const execTime = (end: Date | number | string | undefined, start: Date | number | string | undefined) => {
+    if (end == null || end === 0 || isEmpty(end)) {
       return '';
     }
 
-    if (start == null || start === 0) {
+    if (start == null || start === 0 || isEmpty(start)) {
       return end;
     }
 
-    const total = end - start;
+    const endTime = new Date(end).getTime();
+    const startTime = new Date(start).getTime();
+
+    const total = endTime - startTime;
 
     return total / 1000;
   };
@@ -374,10 +391,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
           <div>
             <b>Total Time (sec)</b>
             <br />
-            {execTime(
-              new Date(details.result?.endTime ?? '').getTime(),
-              new Date(details.result?.startTime ?? '').getTime(),
-            )}
+            {execTime(details.result?.endTime, details.result?.startTime)}
           </div>
         </Box>
         <Box md="auto">
@@ -500,20 +514,29 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
   };
 
   const editRerun = () => {
-    const input = details.input?.input ?? [];
-    const iPam: string[] = details.meta.inputParameters || [];
-
+    const input = details.input?.input ?? {};
+    const iPam = details.meta.inputParameters || [];
     const labels = details.inputsArray;
-    const values: any[] = [];
-    labels.forEach((label) => {
+    const values: string[] = [];
+
+    labels.forEach((label: string) => {
       const key = Object.keys(input).findIndex((key) => key === label);
       key > -1 ? values.push(Object.values(input)[key]) : values.push('');
     });
-    const descs = iPam.map((param: string) => {
-      if (param.match(/\[(.*?)]/) && param.match(/\[(.*?)]/)?.length) return param.match(/\[(.*?)]/)![1];
-      else return '';
+
+    const matchParam = (param: string) => {
+      return param.match(/\[(.*?)]/);
+    };
+
+    const descriptions = iPam.map((param: string) => {
+      if (matchParam(param) && matchParam(param)?.length) {
+        return matchParam(param)![1];
+      }
+
+      return '';
     });
-    return labels.map((label, i) => {
+
+    return labels.map((label: string, i) => {
       return (
         <Box key={`col1-${i}`}>
           <FormControl>
@@ -523,7 +546,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
               placeholder="Enter the input"
               value={values[i] ? (typeof values[i] === 'object' ? JSON.stringify(values[i]) : values[i]) : ''}
             />
-            <FormHelperText className="text-muted">{descs[i]}</FormHelperText>
+            <FormHelperText className="text-muted">{descriptions[i]}</FormHelperText>
           </FormControl>
         </Box>
       );
@@ -540,11 +563,11 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
     }
   };
 
-  const { result, taskDetail, shouldShowTaskModal } = details;
-
   return (
     <>
-      {taskDetail != null && <TaskModal task={taskDetail} show={shouldShowTaskModal} handle={handleTaskDetail} />}
+      {details.taskDetail != null && (
+        <TaskModal task={details.taskDetail} show={details.shouldShowTaskModal} handle={handleTaskDetail} />
+      )}
       <Modal size="5xl" isOpen={details.shouldShow && !details.shouldShowTaskModal} onClose={handleClose}>
         <ModalOverlay />
 
@@ -577,7 +600,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
               <TabPanels>
                 <TabPanel>
                   <TaskTable
-                    tasks={result?.tasks ?? []}
+                    tasks={details.result?.tasks ?? []}
                     onTaskClick={handleTaskDetail}
                     onWorkflowClick={onWorkflowIdClick}
                   />

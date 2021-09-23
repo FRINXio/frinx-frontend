@@ -3,7 +3,7 @@ import React from 'react';
 import { Button, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
 import moment from 'moment';
 
-type Task = {
+export type TableTaskType = {
   taskType: string,
   seq: number,
   referenceTaskName: string,
@@ -13,7 +13,7 @@ type Task = {
   status: string,
 };
 type Props = {
-  tasks: Task[],
+  tasks: TableTaskType[],
   onTaskClick: (Task) => void,
   onWorkflowClick: (string) => void,
 };
