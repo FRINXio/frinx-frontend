@@ -44,7 +44,7 @@ type Props = {
   wfId: string;
   modalHandler: () => void;
   refreshTable: () => void;
-  onWorkflowClick: (wfId: string) => void;
+  onWorkflowIdClick: (wfId: string) => void;
 };
 
 type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED';
@@ -80,7 +80,7 @@ type WfDetails = {
   subworkflows: any[];
 };
 
-const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowClick, refreshTable }) => {
+const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refreshTable }) => {
   const [isCopiedSuccessfully, setIsCopiedSuccessfully] = useState(false);
   const [isCoppiedFailed, setIsCoppiedFailed] = useState(false);
   useResponseToasts({
@@ -533,7 +533,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowClick, refreshT
   const parentWorkflowButton = () => {
     if (details.parentWfId) {
       return (
-        <Button style={{ margin: '2px', display: 'inline' }} onClick={() => onWorkflowClick(details.parentWfId)}>
+        <Button style={{ margin: '2px', display: 'inline' }} onClick={() => onWorkflowIdClick(details.parentWfId)}>
           Parent
         </Button>
       );
@@ -579,7 +579,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowClick, refreshT
                   <TaskTable
                     tasks={result?.tasks ?? []}
                     onTaskClick={handleTaskDetail}
-                    onWorkflowClick={onWorkflowClick}
+                    onWorkflowClick={onWorkflowIdClick}
                   />
                 </TabPanel>
                 <TabPanel>{inputOutput()}</TabPanel>
@@ -607,7 +607,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowClick, refreshT
               variant="link"
               colorScheme="blue"
               justifySelf="start"
-              onClick={() => onWorkflowClick(details.wfIdRerun)}
+              onClick={() => onWorkflowIdClick(details.wfIdRerun)}
             >
               {details.wfIdRerun}
             </Button>
