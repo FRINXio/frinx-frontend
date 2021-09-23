@@ -106,7 +106,6 @@ const VpnSiteForm: FC<Props> = ({ site, onSubmit, onCancel }) => {
   };
 
   const handleProfileNameChange = (profileName: string) => {
-    console.log('test');
     setSiteState({
       ...siteState,
       siteServiceQosProfile: profileName,

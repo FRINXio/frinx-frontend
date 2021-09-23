@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState, useMemo } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Container, Box, Flex, Heading, Button } from '@chakra-ui/react';
 import { useHistory } from 'react-router';
 import VpnServiceForm from '../../forms/vpn-service-form';
@@ -54,8 +54,6 @@ const CreateVpnServicePage: FC = () => {
     console.log('customer name change', service);
     setSelectedService(service);
   };
-
-  console.log('render form');
 
   return (
     <Container>

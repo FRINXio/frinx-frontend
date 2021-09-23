@@ -110,12 +110,12 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* {mode === 'edit' && (
+      {mode === 'edit' && (
         <FormControl id="vpnId" my={6}>
           <FormLabel>Vpn ID</FormLabel>
           <Autocomplete items={vpnIds} selectedItem={serviceState.vpnId || ''} onChange={handleVpnIdChange} />
         </FormControl>
-      )} */}
+      )}
       <FormControl id="customerName" my={6}>
         <FormLabel>Customer Name</FormLabel>
         {mode === 'add' ? (

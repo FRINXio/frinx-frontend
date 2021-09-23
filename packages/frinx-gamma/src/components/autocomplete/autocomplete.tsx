@@ -1,6 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
 import { Text, ListItem, Box, List, Input } from '@chakra-ui/react';
-import Fuse from 'fuse.js';
 
 type Item = string;
 
@@ -11,31 +10,21 @@ type Props = {
 };
 
 const AutocompleteMenu: FC<Props> = ({ items, selectedItem, onChange }) => {
-  //   const itemList: Item[] = items;
   const [isInputActive, setIsInputActive] = useState(false);
   const [inputValue, setInputValue] = useState(selectedItem);
-
-  // const fuse = new Fuse(items, {
-  //   threshold: 0.4,
-  //   shouldSort: false,
-  // });
 
   useEffect(() => {
     setInputValue(selectedItem);
   }, [selectedItem]);
 
   const autocompleteItem = (item: string): void => {
-    console.log('autocompleteItem: ', item);
     setInputValue(item);
     onChange(item);
   };
 
   const handleInputValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('inputValueChanged', inputValue);
     setInputValue(event.target.value);
   };
-
-  // const searchedItems = inputValue ? fuse.search(inputValue).map((fr) => fr.item) : items;
 
   const filteredItems = items
     .filter((item) => {
@@ -44,9 +33,6 @@ const AutocompleteMenu: FC<Props> = ({ items, selectedItem, onChange }) => {
     .filter((item) => {
       return item.toLowerCase().startsWith(inputValue.toLowerCase());
     });
-
-  console.log(filteredItems);
-  console.log('render autocomplete', inputValue, isInputActive);
 
   return (
     <Box
