@@ -1,6 +1,6 @@
 // @flow
 import './DetailsModal.css';
-import React, { ChangeEvent, ChangeEventHandler, FC, useEffect, useState } from 'react';
+import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import TaskModal from '../../../../common/TaskModal';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../../../utils/callbackUtils';
@@ -29,18 +29,11 @@ import {
   TabList,
   TabPanel,
   TabPanels,
-  Table,
   Tabs,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
   IconButton,
   Stack,
   Text,
   Textarea,
-  Tooltip,
 } from '@chakra-ui/react';
 import { CopyIcon } from '@chakra-ui/icons';
 import TaskTable from './task-table';
