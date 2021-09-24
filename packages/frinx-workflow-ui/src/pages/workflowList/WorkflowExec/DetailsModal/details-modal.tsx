@@ -1,7 +1,7 @@
 // @flow
 import './DetailsModal.css';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
-import TaskModal from '../../../../common/TaskModal';
+import TaskModal from '../../../../common/task-modal';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../../../utils/callbackUtils';
 import moment from 'moment';
