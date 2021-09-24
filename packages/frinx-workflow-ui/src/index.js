@@ -5,7 +5,7 @@ import WorkflowListHeader from './pages/workflow-list/workflow-list-header';
 import WorkflowDefinitions from './pages/workflow-list/WorkflowDefs/workflow-definitions';
 import ReduxProvider from './ReduxProvider';
 import { getUniflowApiProvider } from './UniflowApiProvider';
-import WorkflowExec from './pages/workflow-list/WorkflowExec/workflow-exec';
+import WorkflowExec from './pages/workflow-list/workflow-exec/workflow-exec';
 import Scheduling from './pages/workflow-list/Scheduling/Scheduling';
 import EventListeners from './pages/workflow-list/EventListeners/event-listeners';
 import TaskList from './pages/workflow-list/Tasks/task-list';

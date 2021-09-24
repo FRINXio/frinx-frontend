@@ -12,7 +12,7 @@ import buildReducer from './store/reducers/builder';
 import bulkReducer from './store/reducers/bulk';
 import searchReducer from './store/reducers/searchExecs';
 import WorkflowDefsReadOnly from './pages/workflow-list/WorkflowDefs/workflow-defs-read-only';
-import WorkflowExec from './pages/workflow-list/WorkflowExec/workflow-exec';
+import WorkflowExec from './pages/workflow-list/workflow-exec/workflow-exec';
 import PageContainer from './common/PageContainer';
 
 const rootReducer = combineReducers({
