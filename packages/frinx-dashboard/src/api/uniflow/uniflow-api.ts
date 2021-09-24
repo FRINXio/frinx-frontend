@@ -158,8 +158,8 @@ export async function getQueues(): Promise<Queue[]> {
 
 // TODO: Just copy-pasted for now, needs rework in uniflow-api
 // Returns list of running workflows
-export async function getWorkflowExecutions(query = 'status:"RUNNING"', start = 0, size = ''): Promise<unknown> {
-  const executions = sendGetRequest(`/executions/?q=&h=&freeText=${query}&start=${start}&size=${size}`);
+export async function getWorkflowExecutions(workflowId = '*', label = 'status:"RUNNING"', start = 0, size = ''): Promise<unknown> {
+  const executions = sendGetRequest(`/executions/?workflowId=${workflowId}&status=${label}&start=${start}&size=${size}`);
 
   return executions;
 }
@@ -168,10 +168,11 @@ export async function getWorkflowExecutions(query = 'status:"RUNNING"', start = 
 // Returns list of running workflows in hierarchical strucutre
 export async function getWorkflowExecutionsHierarchical(
   query: string,
+  label: string,
   start?: number,
   size?: string,
 ): Promise<unknown> {
-  const executions = sendGetRequest(`/hierarchical/?freeText=${query}&start=${start}&size=${size}`);
+  const executions = sendGetRequest(`/hierarchical/?workflowId=${query}&status=${label}&start=${start}&size=${size}`);
 
   return executions;
 }
