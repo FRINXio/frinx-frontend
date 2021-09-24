@@ -1,5 +1,3 @@
-// @flow
-
 export type Task = {
   taskType: string;
   status: string;

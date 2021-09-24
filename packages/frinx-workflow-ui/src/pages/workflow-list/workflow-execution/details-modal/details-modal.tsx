@@ -1,4 +1,3 @@
-// @flow
 import './DetailsModal.css';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import TaskModal from '../../../../common/task-modal';
