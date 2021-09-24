@@ -105,10 +105,9 @@ const INITIAL_STATE: WfDetails = {
 
 const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refreshTable }) => {
   const [isCopiedSuccessfully, setIsCopiedSuccessfully] = useState(false);
-  const [isCoppiedFailed, setIsCoppiedFailed] = useState(false);
   useResponseToasts({
     isSuccess: isCopiedSuccessfully,
-    isFailure: isCoppiedFailed,
+    isFailure: !isCopiedSuccessfully,
     successMessage: 'Copied to clipboard',
     failureMessage: 'Copying to clipboard was not successfull',
   });
@@ -176,7 +175,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
     navigator.clipboard
       .writeText(JSON.stringify(textToCopy))
       .then(() => setIsCopiedSuccessfully(true))
-      .catch(() => setIsCoppiedFailed(true));
+      .catch(() => setIsCopiedSuccessfully(false));
   };
 
   const getUnescapedJSON = (data: any) => {
