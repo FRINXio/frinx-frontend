@@ -2,7 +2,7 @@
 import './WorkflowExec.css';
 import * as bulkActions from '../../../store/actions/bulk';
 import * as searchActions from '../../../store/actions/searchExecs';
-import DetailsModal from './DetailsModal/details-modal';
+import DetailsModal from './details-modal/details-modal';
 import PageContainer from '../../../common/PageContainer';
 import PageCount from '../../../common/PageCount';
 import PageSelect from '../../../common/PageSelect';
