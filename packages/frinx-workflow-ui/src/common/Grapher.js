@@ -5,7 +5,7 @@ import TaskModal from './TaskModal';
 import d3 from 'd3';
 import dagreD3 from 'dagre-d3';
 import { Box, Flex } from '@chakra-ui/react';
-import type { Task } from './flowtypes';
+import type { Task } from '../types/task';
 
 new Clipboard('.btn');
 

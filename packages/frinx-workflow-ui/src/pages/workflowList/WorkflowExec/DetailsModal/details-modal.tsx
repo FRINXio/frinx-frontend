@@ -38,7 +38,7 @@ import {
 import { CopyIcon } from '@chakra-ui/icons';
 import TaskTable from './task-table';
 import useResponseToasts from '../../../../hooks/use-response-toasts';
-import { Task } from '../../../../common/flowtypes';
+import { Task } from '../../../../types/task';
 
 type Props = {
   wfId: string;
