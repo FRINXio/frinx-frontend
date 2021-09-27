@@ -1,4 +1,4 @@
-export type VpnServiceTopology = 'any-any' | 'hub-spoke' | 'hub-spoke-disjointed';
+export type VpnServiceTopology = 'any-to-any' | 'hub-spoke' | 'hub-spoke-disjointed' | 'custom';
 
 // eslint-disable-next-line no-shadow
 export enum DefaultCVlanEnum {

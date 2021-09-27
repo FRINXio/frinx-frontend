@@ -16,6 +16,8 @@ declare interface Window {
     uniconfig_api_url: string;
     uniconfig_auth: string;
     uniconfig_api_docs_url: string;
+    unistore_api_url: string;
+    unistore_auth: string;
     uniresource_enabled: boolean;
     uniconfig_enabled: boolean;
     uniflow_enabled: boolean;
