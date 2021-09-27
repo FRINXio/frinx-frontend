@@ -1,7 +1,8 @@
-const CONDUCTOR_API_URL = window.__CONFIG__.conductor_api_url;
+const UNISTORE_API_URL = window.__CONFIG__.unistore_api_url;
+const UNISTORE_AUTH = window.__CONFIG__.unistore_auth;
 
 export async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
-  const url = `${CONDUCTOR_API_URL}${path}`;
+  const url = `${UNISTORE_API_URL}${path}`;
   const response = await fetch(url, options);
 
   if (!response.ok) {
@@ -18,6 +19,10 @@ export async function apiFetch(path: string, options: RequestInit): Promise<unkn
 export async function sendGetRequest(path: string): Promise<unknown> {
   const options = {
     method: 'GET',
+    headers: {
+      'content-type': 'application/json',
+      authorization: UNISTORE_AUTH,
+    },
   };
   return apiFetch(path, options);
 }
@@ -39,6 +44,7 @@ export async function sendPutRequest(path: string, body: unknown): Promise<unkno
     body: JSON.stringify(body),
     headers: {
       'content-type': 'application/json',
+      authorization: UNISTORE_AUTH,
     },
   };
   return apiFetch(path, options);
@@ -50,6 +56,7 @@ export async function sendDeleteRequest(path: string, body?: unknown): Promise<u
     body: JSON.stringify(body),
     headers: {
       'content-type': 'application/json',
+      authorization: UNISTORE_AUTH,
     },
   };
   return apiFetch(path, options);
