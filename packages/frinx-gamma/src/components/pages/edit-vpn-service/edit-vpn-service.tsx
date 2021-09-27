@@ -3,7 +3,7 @@ import { Container, Box, Flex, Heading, Button } from '@chakra-ui/react';
 import { useHistory } from 'react-router';
 import VpnServiceForm from '../../forms/vpn-service-form';
 import { DefaultCVlanEnum, VpnService } from '../../forms/service-types';
-import {getVpnServices, putVpnServices, deleteVpnServices} from '../../../api/unistore/unistore';
+import { getVpnServices, putVpnServices, deleteVpnServices } from '../../../api/unistore/unistore';
 import { apiVpnServiceToClientVpnService } from '../../forms/converters';
 
 const defaultVpnService: VpnService = {
@@ -36,7 +36,7 @@ const CreateVpnServicePage: FC = () => {
     console.log('submit clicked', service);
     const output = putVpnServices(service);
     // eslint-disable-next-line no-console
-    console.log(output)
+    console.log(output);
     history.push('/');
   };
 
@@ -51,7 +51,7 @@ const CreateVpnServicePage: FC = () => {
     console.log('delete clicked', selectedService);
     const output = deleteVpnServices(selectedService);
     // eslint-disable-next-line no-console
-    console.log(output)
+    console.log(output);
     history.push('/');
   };
 
