@@ -1,7 +1,8 @@
-import { Box, Flex, Icon, IconButton, Input, InputGroup, InputProps, InputRightElement } from '@chakra-ui/react';
-import { useCombobox } from 'downshift';
+import { Icon, IconButton, Input, InputGroup, InputProps, InputRightElement } from '@chakra-ui/react';
+import { useCombobox, UseComboboxStateChange } from 'downshift';
 import FeatherIcon from 'feather-icons-react';
 import React, { FC, useState } from 'react';
+import AutocompleteMenu from './autocomplete-menu';
 
 type Item = string;
 type Props = {
@@ -20,6 +21,20 @@ function getStrippedInputProps(inputProps: InputProps): Omit<InputProps, 'id' | 
 
 const Autocomplete2: FC<Props> = ({ items, onChange, inputVariant, selectedItem }) => {
   const [inputItems, setInputItems] = useState(items);
+
+  const onSelectedItemChange = (changes: UseComboboxStateChange<string>) => {
+    onChange(changes.selectedItem);
+  };
+
+  const onInputValueChange = ({ inputValue }: UseComboboxStateChange<string>) => {
+    setInputItems(() => {
+      if (inputValue) {
+        return items.filter((item) => item.toLowerCase().includes(inputValue.toLowerCase()));
+      }
+      return items;
+    });
+  };
+
   const {
     isOpen,
     getToggleButtonProps,
@@ -30,18 +45,9 @@ const Autocomplete2: FC<Props> = ({ items, onChange, inputVariant, selectedItem 
     getItemProps,
   } = useCombobox({
     items: inputItems,
-    onSelectedItemChange: (changes) => {
-      onChange(changes.selectedItem);
-    },
+    onSelectedItemChange,
     selectedItem: selectedItem ?? '',
-    onInputValueChange: ({ inputValue }) => {
-      setInputItems(() => {
-        if (inputValue) {
-          return items.filter((item) => item.toLowerCase().includes(inputValue.toLowerCase()));
-        }
-        return items;
-      });
-    },
+    onInputValueChange,
   });
 
   return (
@@ -58,55 +64,13 @@ const Autocomplete2: FC<Props> = ({ items, onChange, inputVariant, selectedItem 
             icon={<Icon as={FeatherIcon} icon={isOpen ? 'chevron-up' : 'chevron-down'} />}
           />
         </InputRightElement>
-        <Box
-          {...getMenuProps()}
-          position="absolute"
-          top="100%"
-          right="0"
-          left="0"
-          zIndex="dropdown"
-          transform="translateY(6px)"
-        >
-          {isOpen && (
-            <Box
-              paddingY={2}
-              background="white"
-              borderRadius="md"
-              borderColor="gray.200"
-              borderWidth="1px"
-              borderStyle="solid"
-              outline="#000 2px"
-              outlineOffset="2px"
-              boxShadow="sm"
-              maxHeight={60}
-              overflowY="auto"
-            >
-              {inputItems.map((item, index) => {
-                return (
-                  <Flex
-                    as="button"
-                    type="button"
-                    key={item}
-                    alignItems="center"
-                    paddingY={1.5}
-                    paddingX={3}
-                    width="100%"
-                    minHeight={12}
-                    outline="#000 2px"
-                    outlineOffset="2px"
-                    background={highlightedIndex === index ? 'gray.200' : 'transparent'}
-                    _hover={{
-                      background: 'gray.100',
-                    }}
-                    {...getItemProps({ item, index })}
-                  >
-                    {item}
-                  </Flex>
-                );
-              })}
-            </Box>
-          )}
-        </Box>
+        <AutocompleteMenu
+          items={inputItems}
+          menuProps={getMenuProps()}
+          highlightedIndex={highlightedIndex}
+          getItemProps={getItemProps}
+          isOpen={isOpen}
+        />
       </InputGroup>
     </>
   );
