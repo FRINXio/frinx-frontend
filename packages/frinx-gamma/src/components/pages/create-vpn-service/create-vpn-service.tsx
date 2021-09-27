@@ -3,8 +3,8 @@ import { Container, Box, Heading } from '@chakra-ui/react';
 import { useHistory } from 'react-router';
 import VpnServiceForm from '../../forms/vpn-service-form';
 import { DefaultCVlanEnum, VpnService } from '../../forms/service-types';
-import {getVpnServices, putVpnServices} from '../../../api/unistore/unistore';
-import {generateVpnId} from '../../../api/uniresource/uniresource';
+import { getVpnServices, putVpnServices } from '../../../api/unistore/unistore';
+import { generateVpnId } from '../../../api/uniresource/uniresource';
 import { apiVpnServiceToClientVpnService } from '../../forms/converters';
 
 const defaultVpnService: VpnService = {
@@ -37,7 +37,8 @@ const CreateVpnServicePage: FC = () => {
     // eslint-disable-next-line no-param-reassign
     service.vpnId = await generateVpnId();
     const output = putVpnServices(service);
-    console.log(output)
+    // eslint-disable-next-line no-console
+    console.log(output);
     history.push('/');
   };
 
