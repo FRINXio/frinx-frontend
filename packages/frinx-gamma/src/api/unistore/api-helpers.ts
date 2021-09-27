@@ -1,4 +1,5 @@
 const UNISTORE_API_URL = window.__CONFIG__.unistore_api_url;
+const UNISTORE_AUTH = window.__CONFIG__.unistore_auth;
 
 export async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
   const url = `${UNISTORE_API_URL}${path}`;
@@ -20,7 +21,7 @@ export async function sendGetRequest(path: string): Promise<unknown> {
     method: 'GET',
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic YWRtaW46YWRtaW4=',
+      authorization: UNISTORE_AUTH,
     },
   };
   return apiFetch(path, options);
@@ -43,7 +44,7 @@ export async function sendPutRequest(path: string, body: unknown): Promise<unkno
     body: JSON.stringify(body),
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic YWRtaW46YWRtaW4=',
+      authorization: UNISTORE_AUTH,
     },
   };
   return apiFetch(path, options);
@@ -55,7 +56,7 @@ export async function sendDeleteRequest(path: string, body?: unknown): Promise<u
     body: JSON.stringify(body),
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic YWRtaW46YWRtaW4=',
+      authorization: UNISTORE_AUTH,
     },
   };
   return apiFetch(path, options);
