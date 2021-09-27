@@ -13,21 +13,24 @@ export function extractResult<A>(result: Either<t.Errors, A>): A {
 }
 
 const VpnServicesOutputValidator = t.type({
-  'vpn-service': t.array(
-    t.type({
-      'vpn-id': t.string,
-      'customer-name': t.string,
-      'extranet-vpns': t.type({
-        'extranet-vpn': t.array(
-          t.type({
-            'vpn-id': t.string,
-            'local-sites-role': t.string,
+    'vpn-services': t.type({
+      'vpn-service': t.array(
+        t.type({
+          'vpn-id': t.string,
+          'customer-name': t.string,
+          'extranet-vpns': t.type({
+              // TODO extranet-vpns can be empty
+            'extranet-vpn': t.array(
+              t.type({
+                'vpn-id': t.string,
+                'local-sites-role': t.string,
+              }),
+            ),
           }),
-        ),
-      }),
-      'vpn-service-topology': t.string,
-    }),
-  ),
+          'vpn-service-topology': t.string,
+        }),
+      ),
+    })
 });
 export type VpnServicesOutput = t.TypeOf<typeof VpnServicesOutputValidator>;
 

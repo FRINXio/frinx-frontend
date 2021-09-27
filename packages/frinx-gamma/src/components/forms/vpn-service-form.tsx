@@ -34,7 +34,7 @@ type Props = {
 const getDefaultVpnService = (): VpnService => ({
   customerName: '',
   defaultCVlan: DefaultCVlanEnum.L3VPN,
-  vpnServiceTopology: 'any-any',
+  vpnServiceTopology: 'any-to-any',
   maximumRoutes: 1000,
   extranetVpns: [],
 });
@@ -170,7 +170,7 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
             });
           }}
         >
-          <option value="any-any">any-any</option>
+          <option value="any-to-any">any-to-any</option>
           <option value="hub-spoke">hub-spoke</option>
           <option value="hub-spoke-disjointed">hub-spoke-disjointed</option>
         </Select>

@@ -3,13 +3,13 @@ import { Container, Box, Flex, Heading, Button } from '@chakra-ui/react';
 import { useHistory } from 'react-router';
 import VpnServiceForm from '../../forms/vpn-service-form';
 import { DefaultCVlanEnum, VpnService } from '../../forms/service-types';
-import { getVpnServices } from '../../../api/unistore/unistore';
+import {getVpnServices, putVpnServices, deleteVpnServices} from '../../../api/unistore/unistore';
 import { apiVpnServiceToClientVpnService } from '../../forms/converters';
 
 const defaultVpnService: VpnService = {
   customerName: '',
   defaultCVlan: DefaultCVlanEnum.L3VPN,
-  vpnServiceTopology: 'any-any',
+  vpnServiceTopology: 'any-to-any',
   maximumRoutes: 1000,
   extranetVpns: [],
 };
@@ -34,6 +34,9 @@ const CreateVpnServicePage: FC = () => {
   const handleSubmit = (service: VpnService) => {
     // eslint-disable-next-line no-console
     console.log('submit clicked', service);
+    const output = putVpnServices(service);
+    // eslint-disable-next-line no-console
+    console.log(output)
     history.push('/');
   };
 
@@ -46,6 +49,9 @@ const CreateVpnServicePage: FC = () => {
   const handleDelete = () => {
     // eslint-disable-next-line no-console
     console.log('delete clicked', selectedService);
+    const output = deleteVpnServices(selectedService);
+    // eslint-disable-next-line no-console
+    console.log(output)
     history.push('/');
   };
 
