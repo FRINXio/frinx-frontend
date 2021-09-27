@@ -20,6 +20,7 @@ import { uniq } from 'lodash';
 import { VpnServiceTopology, DefaultCVlanEnum, VpnService, MaximumRoutes } from './service-types';
 import Autocomplete from '../autocomplete/autocomplete';
 import unwrap from '../../helpers/unwrap';
+import Autocomplete2 from '../autocomplete-2/autocomplete-2';
 
 type Props = {
   mode: 'add' | 'edit';
@@ -61,7 +62,7 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
     }
   };
 
-  const handleVpnIdChange = (vpnId: string) => {
+  const handleVpnIdChange = (vpnId?: string | null) => {
     if (onServiceChange) {
       const [newService] = services.filter((s) => s.vpnId === vpnId);
       onServiceChange(newService);
@@ -113,7 +114,8 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
       {mode === 'edit' && (
         <FormControl id="vpnId" my={6}>
           <FormLabel>Vpn ID</FormLabel>
-          <Autocomplete items={vpnIds} selectedItem={serviceState.vpnId || ''} onChange={handleVpnIdChange} />
+          {/* <Autocomplete items={vpnIds} selectedItem={serviceState.vpnId || ''} onChange={handleVpnIdChange} /> */}
+          <Autocomplete2 items={vpnIds} selectedItem={serviceState.vpnId} onChange={handleVpnIdChange} />
         </FormControl>
       )}
       <FormControl id="customerName" my={6}>
