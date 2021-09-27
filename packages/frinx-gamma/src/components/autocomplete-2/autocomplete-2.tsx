@@ -1,7 +1,7 @@
 import { Icon, IconButton, Input, InputGroup, InputProps, InputRightElement } from '@chakra-ui/react';
 import { useCombobox, UseComboboxStateChange } from 'downshift';
 import FeatherIcon from 'feather-icons-react';
-import React, { FC, useState } from 'react';
+import React, { useState, VoidFunctionComponent } from 'react';
 import AutocompleteMenu from './autocomplete-menu';
 
 type Item = string;
@@ -19,7 +19,7 @@ function getStrippedInputProps(inputProps: InputProps): Omit<InputProps, 'id' | 
   return rest;
 }
 
-const Autocomplete2: FC<Props> = ({ items, onChange, inputVariant, selectedItem }) => {
+const Autocomplete2: VoidFunctionComponent<Props> = ({ items, onChange, inputVariant, selectedItem }) => {
   const [inputItems, setInputItems] = useState(items);
 
   const onSelectedItemChange = (changes: UseComboboxStateChange<string>) => {

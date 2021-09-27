@@ -1,5 +1,5 @@
 import { Box, Flex } from '@chakra-ui/react';
-import React, { FC, HTMLAttributes } from 'react';
+import React, { HTMLAttributes, VoidFunctionComponent } from 'react';
 
 type Item = string;
 type Props = {
@@ -10,7 +10,13 @@ type Props = {
   getItemProps: (options: { item: string; index: number }) => HTMLAttributes<HTMLElement>;
 };
 
-const AutocompleteMenu: FC<Props> = ({ items, menuProps, isOpen, highlightedIndex, getItemProps }) => {
+const AutocompleteMenu: VoidFunctionComponent<Props> = ({
+  items,
+  menuProps,
+  isOpen,
+  highlightedIndex,
+  getItemProps,
+}) => {
   return (
     <Box {...menuProps} position="absolute" top="100%" right="0" left="0" zIndex="dropdown" transform="translateY(6px)">
       {isOpen && (
