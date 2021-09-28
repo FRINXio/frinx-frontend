@@ -18,6 +18,7 @@ import CustomerLocationForm from './customer-location-form';
 import SiteDeviceForm from './site-device-form';
 import Autocomplete from '../autocomplete/autocomplete';
 import unwrap from '../../helpers/unwrap';
+import Autocomplete2 from '../autocomplete-2/autocomplete-2';
 
 type Props = {
   mode: 'add' | 'edit';
@@ -44,7 +45,7 @@ const getDefaultSiteDevice = (): SiteDevice => ({
 
 const getQosProfileNames = (): string[] => ['profile1', 'profile2', 'profile3'];
 
-const VpnSiteForm: FC<Props> = ({ site, onSubmit, onCancel }) => {
+const VpnSiteForm: FC<Props> = ({ mode, site, sites, onSubmit, onCancel, onSiteChange }) => {
   const [siteState, setSiteState] = useState(site);
   const [customerLocationsForm, setCustomerLocationsForm] = useState<CustomerLocation | null>(null); // eslint-disable-line @typescript-eslint/no-unused-vars
 
@@ -112,8 +113,24 @@ const VpnSiteForm: FC<Props> = ({ site, onSubmit, onCancel }) => {
     });
   };
 
+  const handleSiteIdChange = (siteId?: string | null) => {
+    if (onSiteChange) {
+      const [newSite] = sites.filter((s) => s.siteId === siteId);
+      onSiteChange(newSite);
+    }
+  };
+
+  const siteIds = mode === 'edit' ? sites.map((s) => unwrap(s.siteId)).filter((s) => s !== siteState.siteId) : [];
+
   return (
     <form onSubmit={handleSubmit}>
+      {mode === 'edit' && (
+        <FormControl id="siteId" my={6}>
+          <FormLabel>Site ID</FormLabel>
+          {/* <Autocomplete items={vpnIds} selectedItem={serviceState.vpnId || ''} onChange={handleVpnIdChange} /> */}
+          <Autocomplete2 items={siteIds} selectedItem={siteState.siteId} onChange={handleSiteIdChange} />
+        </FormControl>
+      )}
       <FormControl id="customer-locations" my={6}>
         <FormLabel>Cutomer Locations</FormLabel>
         <Box

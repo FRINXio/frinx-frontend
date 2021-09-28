@@ -17,7 +17,7 @@ const AutocompleteMenu: FC<Props> = ({ items, selectedItem, onChange }) => {
     setInputValue(selectedItem);
   }, [selectedItem]);
 
-  const autocompleteItem = (item: string): void => {
+  const autocompleteItem = (item: string) => {
     setInputValue(item);
     onChange(item);
   };
@@ -42,12 +42,7 @@ const AutocompleteMenu: FC<Props> = ({ items, selectedItem, onChange }) => {
         setTimeout(() => setIsInputActive(false), 150);
       }}
     >
-      <Input
-        name="inputValue"
-        value={inputValue}
-        onChange={handleInputValueChange}
-        onBlur={() => setInputValue(selectedItem)}
-      />
+      <Input name="inputValue" value={inputValue} onChange={handleInputValueChange} />
       {isInputActive && (
         <List
           borderX="1px solid #e9e9e9"
@@ -75,12 +70,17 @@ const AutocompleteMenu: FC<Props> = ({ items, selectedItem, onChange }) => {
               }}
               onClick={(event) => {
                 event.persist();
+                setIsInputActive(false);
                 autocompleteItem(t);
               }}
-              onBlur={(event) => {
-                event.persist();
-                setIsInputActive(false);
-              }}
+              // onBlur={(event) => {
+              // console.log('blur');
+              // event.persist();
+              // event.stopPropagation();
+              // console.log(selectedItem);
+              // setInputValue(selectedItem);
+              // setIsInputActive(false);
+              // }}
             >
               <Text>{t}</Text>
             </ListItem>
