@@ -1,183 +1,186 @@
-{
-  "vpn-service": [
-    {
-      "vpn-id": "CUST_1001",
-      "customer-name": "Customer 1001",
-      "extranet-vpns": {
-        "extranet-vpn": [
-          {
-            "vpn-id": "MGMT",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          },
-          {
-            "vpn-id": "SIP889",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          }
-        ]
+{ 
+  "vpn-services":
+  {
+    "vpn-service": [
+      {
+        "vpn-id": "CUST_1001",
+        "customer-name": "Customer 1001",
+        "extranet-vpns": {
+          "extranet-vpn": [
+            {
+              "vpn-id": "MGMT",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            },
+            {
+              "vpn-id": "SIP889",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            }
+          ]
+        },
+        "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
       },
-      "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
-    },
-    {
-      "vpn-id": "CUST_2001",
-      "customer-name": "Customer 1001",
-      "extranet-vpns": {
-        "extranet-vpn": [
-          {
-            "vpn-id": "MGMT",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          }
-        ]
+      {
+        "vpn-id": "CUST_2001",
+        "customer-name": "Customer 1001",
+        "extranet-vpns": {
+          "extranet-vpn": [
+            {
+              "vpn-id": "MGMT",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            }
+          ]
+        },
+        "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
       },
-      "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
-    },
-    {
-      "vpn-id": "CUST_1000",
-      "customer-name": "Customer 1000",
-      "extranet-vpns": {
-        "extranet-vpn": [
-          {
-            "vpn-id": "MGMT",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          }
-        ]
+      {
+        "vpn-id": "CUST_1000",
+        "customer-name": "Customer 1000",
+        "extranet-vpns": {
+          "extranet-vpn": [
+            {
+              "vpn-id": "MGMT",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            }
+          ]
+        },
+        "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
       },
-      "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
-    },
-    {
-      "vpn-id": "CUST_1003",
-      "customer-name": "Customer 1003",
-      "extranet-vpns": {
-        "extranet-vpn": [
-          {
-            "vpn-id": "MGMT",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          },
-          {
-            "vpn-id": "SIP889",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          }
-        ]
+      {
+        "vpn-id": "CUST_1003",
+        "customer-name": "Customer 1003",
+        "extranet-vpns": {
+          "extranet-vpn": [
+            {
+              "vpn-id": "MGMT",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            },
+            {
+              "vpn-id": "SIP889",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            }
+          ]
+        },
+        "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
       },
-      "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
-    },
-    {
-      "vpn-id": "CUST_1002",
-      "customer-name": "Customer 1002",
-      "extranet-vpns": {
-        "extranet-vpn": [
-          {
-            "vpn-id": "MGMT",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          },
-          {
-            "vpn-id": "SIP889",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          }
-        ]
+      {
+        "vpn-id": "CUST_1002",
+        "customer-name": "Customer 1002",
+        "extranet-vpns": {
+          "extranet-vpn": [
+            {
+              "vpn-id": "MGMT",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            },
+            {
+              "vpn-id": "SIP889",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            }
+          ]
+        },
+        "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
       },
-      "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
-    },
-    {
-      "vpn-id": "CUST_1005",
-      "customer-name": "Customer 1005",
-      "extranet-vpns": {
-        "extranet-vpn": [
-          {
-            "vpn-id": "MGMT",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          },
-          {
-            "vpn-id": "SIP889",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          }
-        ]
+      {
+        "vpn-id": "CUST_1005",
+        "customer-name": "Customer 1005",
+        "extranet-vpns": {
+          "extranet-vpn": [
+            {
+              "vpn-id": "MGMT",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            },
+            {
+              "vpn-id": "SIP889",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            }
+          ]
+        },
+        "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
       },
-      "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
-    },
-    {
-      "vpn-id": "CUST_1004",
-      "customer-name": "Customer 1004",
-      "extranet-vpns": {
-        "extranet-vpn": [
-          {
-            "vpn-id": "MGMT",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          },
-          {
-            "vpn-id": "SIP889",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          }
-        ]
+      {
+        "vpn-id": "CUST_1004",
+        "customer-name": "Customer 1004",
+        "extranet-vpns": {
+          "extranet-vpn": [
+            {
+              "vpn-id": "MGMT",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            },
+            {
+              "vpn-id": "SIP889",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            }
+          ]
+        },
+        "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
       },
-      "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
-    },
-    {
-      "vpn-id": "CUST_1007",
-      "customer-name": "Customer 1007",
-      "extranet-vpns": {
-        "extranet-vpn": [
-          {
-            "vpn-id": "MGMT",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          },
-          {
-            "vpn-id": "SIP889",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          }
-        ]
+      {
+        "vpn-id": "CUST_1007",
+        "customer-name": "Customer 1007",
+        "extranet-vpns": {
+          "extranet-vpn": [
+            {
+              "vpn-id": "MGMT",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            },
+            {
+              "vpn-id": "SIP889",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            }
+          ]
+        },
+        "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
       },
-      "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
-    },
-    {
-      "vpn-id": "CUST_1006",
-      "customer-name": "Customer 1006",
-      "extranet-vpns": {
-        "extranet-vpn": [
-          {
-            "vpn-id": "MGMT",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          },
-          {
-            "vpn-id": "SIP889",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          }
-        ]
+      {
+        "vpn-id": "CUST_1006",
+        "customer-name": "Customer 1006",
+        "extranet-vpns": {
+          "extranet-vpn": [
+            {
+              "vpn-id": "MGMT",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            },
+            {
+              "vpn-id": "SIP889",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            }
+          ]
+        },
+        "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
       },
-      "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
-    },
-    {
-      "vpn-id": "CUST_1009",
-      "customer-name": "Customer 1009",
-      "extranet-vpns": {
-        "extranet-vpn": [
-          {
-            "vpn-id": "MGMT",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          },
-          {
-            "vpn-id": "SIP889",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          }
-        ]
+      {
+        "vpn-id": "CUST_1009",
+        "customer-name": "Customer 1009",
+        "extranet-vpns": {
+          "extranet-vpn": [
+            {
+              "vpn-id": "MGMT",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            },
+            {
+              "vpn-id": "SIP889",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            }
+          ]
+        },
+        "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
       },
-      "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
-    },
-    {
-      "vpn-id": "CUST_1008",
-      "customer-name": "Customer 1008",
-      "extranet-vpns": {
-        "extranet-vpn": [
-          {
-            "vpn-id": "MGMT",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          },
-          {
-            "vpn-id": "SIP889",
-            "local-sites-role": "gamma-l3vpn-svc:spoke-role"
-          }
-        ]
-      },
-      "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
-    }
-  ]
+      {
+        "vpn-id": "CUST_1008",
+        "customer-name": "Customer 1008",
+        "extranet-vpns": {
+          "extranet-vpn": [
+            {
+              "vpn-id": "MGMT",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            },
+            {
+              "vpn-id": "SIP889",
+              "local-sites-role": "gamma-l3vpn-svc:spoke-role"
+            }
+          ]
+        },
+        "vpn-service-topology": "gamma-l3vpn-svc:any-to-any"
+      }
+    ]
+  }
 }

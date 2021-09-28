@@ -4,6 +4,8 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Main from './components/pages/main/main';
 import CreateVpnService from './components/pages/create-vpn-service/create-vpn-service';
 import EditVpnService from './components/pages/edit-vpn-service/edit-vpn-service';
+import CreateVpnSite from './components/pages/create-vpn-site/create-vpn-site';
+import EditVpnSite from './components/pages/edit-vpn-site/edit-vpn-site';
 import theme from './theme';
 
 function getURLBaseName(): string {
@@ -24,6 +26,12 @@ const App: FC = () => {
             </Route>
             <Route path="/edit-vpn-service" exact>
               <EditVpnService />
+            </Route>
+            <Route path="/add-vpn-site" exact>
+              <CreateVpnSite />
+            </Route>
+            <Route path="/edit-vpn-site" exact>
+              <EditVpnSite />
             </Route>
           </Switch>
         </Box>

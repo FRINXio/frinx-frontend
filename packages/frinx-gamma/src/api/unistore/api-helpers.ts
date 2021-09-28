@@ -9,7 +9,7 @@ export async function apiFetch(path: string, options: RequestInit): Promise<unkn
     throw new Error(`apiFetch failed with http-code ${response.status}`);
   }
 
-  if (response.status === 201) {
+  if (response.status === 201 || response.status === 204) {
     return null;
   }
 
@@ -33,6 +33,7 @@ export async function sendPostRequest(path: string, body: unknown): Promise<unkn
     body: JSON.stringify(body),
     headers: {
       'content-type': 'application/json',
+      authorization: UNISTORE_AUTH,
     },
   };
   return apiFetch(path, options);

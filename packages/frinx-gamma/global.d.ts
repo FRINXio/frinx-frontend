@@ -13,6 +13,8 @@ declare interface Window {
     auth_client_id: string;
     auth_redirect_url: string;
     conductor_api_url: string;
+    unistore_api_url: string;
+    yang_module: string;
     uniconfig_api_url: string;
     uniconfig_auth: string;
     uniconfig_api_docs_url: string;

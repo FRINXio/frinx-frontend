@@ -10,7 +10,6 @@ type Props = {
 };
 
 const AutocompleteMenu: FC<Props> = ({ items, selectedItem, onChange }) => {
-  //   const itemList: Item[] = items;
   const [isInputActive, setIsInputActive] = useState(false);
   const [inputValue, setInputValue] = useState(selectedItem);
 
@@ -18,7 +17,7 @@ const AutocompleteMenu: FC<Props> = ({ items, selectedItem, onChange }) => {
     setInputValue(selectedItem);
   }, [selectedItem]);
 
-  const autocompleteItem = (item: string): void => {
+  const autocompleteItem = (item: string) => {
     setInputValue(item);
     onChange(item);
   };
@@ -27,9 +26,13 @@ const AutocompleteMenu: FC<Props> = ({ items, selectedItem, onChange }) => {
     setInputValue(event.target.value);
   };
 
-  const filteredItems = items.filter((item: string) => {
-    return item !== selectedItem;
-  });
+  const filteredItems = items
+    .filter((item) => {
+      return item !== selectedItem;
+    })
+    .filter((item) => {
+      return item.toLowerCase().startsWith(inputValue.toLowerCase());
+    });
 
   return (
     <Box
@@ -39,12 +42,7 @@ const AutocompleteMenu: FC<Props> = ({ items, selectedItem, onChange }) => {
         setTimeout(() => setIsInputActive(false), 150);
       }}
     >
-      <Input
-        name="inputValue"
-        value={inputValue}
-        onChange={handleInputValueChange}
-        onBlur={() => setInputValue(selectedItem)}
-      />
+      <Input name="inputValue" value={inputValue} onChange={handleInputValueChange} />
       {isInputActive && (
         <List
           borderX="1px solid #e9e9e9"
@@ -66,11 +64,23 @@ const AutocompleteMenu: FC<Props> = ({ items, selectedItem, onChange }) => {
               key={`autocomplete-item-${t}`}
               borderBottomRadius={i === filteredItems.length - 1 ? 0 : 2}
               borderBottom={i === filteredItems.length - 1 ? '' : '1px solid #e9e9e9'}
-              onChange={() => autocompleteItem(t)}
-              onClick={() => {
+              onChange={(event) => {
+                event.persist();
                 autocompleteItem(t);
               }}
-              onBlur={() => setIsInputActive(false)}
+              onClick={(event) => {
+                event.persist();
+                setIsInputActive(false);
+                autocompleteItem(t);
+              }}
+              // onBlur={(event) => {
+              // console.log('blur');
+              // event.persist();
+              // event.stopPropagation();
+              // console.log(selectedItem);
+              // setInputValue(selectedItem);
+              // setIsInputActive(false);
+              // }}
             >
               <Text>{t}</Text>
             </ListItem>

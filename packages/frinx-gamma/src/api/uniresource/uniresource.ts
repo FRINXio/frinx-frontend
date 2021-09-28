@@ -9,6 +9,10 @@ export function getRandomString(length: number): string {
     .substring(0, length);
 }
 
-export async function generateVpnId(): Promise<string> {
+export function generateVpnId(): string {
   return `VPN_${getRandomString(8)}`;
+}
+
+export function generateSiteId(): string {
+  return `SITE_${getRandomString(8)}`;
 }
