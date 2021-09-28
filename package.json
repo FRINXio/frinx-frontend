@@ -3,6 +3,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "engines": {
+    "node": ">=14"
+  },
   "scripts": {
     "formatter:check": "prettier -l '*.md' 'packages/**/*.js' 'packages/**/*.ts' 'packages/**/*.tsx' 'packages/*/package.json' package.json",
     "formatter": "prettier --write '*.md' 'packages/**/*.js' 'packages/**/*.ts' 'packages/**/*.tsx' 'packages/*/package.json' package.json",
@@ -19,12 +22,5 @@
   "devDependencies": {
     "dedubcheck": "^0.0.6",
     "prettier": "^2.2.1"
-  },
-  "resolutions": {
-    "chokidar": "^3.5.1",
-    "core-js": "^3.9.1",
-    "eslint": "^7.22.0",
-    "highlight.js": "^10.7.1",
-    "source-map-resolve": "^0.6.0"
   }
 }
