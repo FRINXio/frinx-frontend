@@ -21,14 +21,19 @@ export const updateQuery = (query) => {
 };
 
 const createQuery = ({ query, label }) => {
-  return {workflowId: query, label: label};
+  return { workflowId: query, label: label };
 };
 
 export const fetchNewData = (viewedPage, defaultPages) => {
   return (dispatch, getState) => {
     let q = createQuery(getState().searchReducer);
     let page = (viewedPage - 1) * defaultPages;
-    const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback(q.workflowId, q.label, page, defaultPages);
+    const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback(
+      q.workflowId,
+      q.label,
+      page,
+      defaultPages,
+    );
 
     getWorkflowExecutions(q.workflowId, q.label, page, defaultPages).then((res) => {
       if (res.result) {
