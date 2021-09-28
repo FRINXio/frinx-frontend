@@ -1,15 +1,15 @@
 // @flow
 import App from './App';
 import ServiceUIApp from './ServiceUiApp';
-import WorkflowListHeader from './pages/workflowList/workflow-list-header';
-import WorkflowDefinitions from './pages/workflowList/WorkflowDefs/workflow-definitions';
+import WorkflowListHeader from './pages/workflow-list/workflow-list-header';
+import WorkflowDefinitions from './pages/workflow-list/WorkflowDefs/workflow-definitions';
 import ReduxProvider from './ReduxProvider';
 import { getUniflowApiProvider } from './UniflowApiProvider';
-import WorkflowExec from './pages/workflowList/WorkflowExec/workflow-exec';
-import Scheduling from './pages/workflowList/Scheduling/Scheduling';
-import EventListeners from './pages/workflowList/EventListeners/event-listeners';
-import TaskList from './pages/workflowList/Tasks/task-list';
-import PollData from './pages/workflowList/PollData/poll-data';
+import WorkflowExec from './pages/workflow-list/workflow-execution/workflow-exec';
+import Scheduling from './pages/workflow-list/Scheduling/Scheduling';
+import EventListeners from './pages/workflow-list/EventListeners/event-listeners';
+import TaskList from './pages/workflow-list/Tasks/task-list';
+import PollData from './pages/workflow-list/PollData/poll-data';
 
 export { ServiceUIApp };
 export { App as WorkflowApp };
