@@ -27,6 +27,9 @@ type Props = {
   onReplaceBtnClick: () => void;
   onRefreshBtnClick: () => void;
   onSyncBtnClick: () => void;
+  isUpdateStoreLoading: boolean;
+  isResetLoading: boolean;
+  isSyncLoading: boolean;
 };
 
 const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
@@ -37,6 +40,9 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
   onRefreshBtnClick,
   onReplaceBtnClick,
   onSyncBtnClick,
+  isResetLoading,
+  isUpdateStoreLoading,
+  isSyncLoading,
 }) => {
   return (
     <Box>
@@ -51,6 +57,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
             <ButtonGroup size="sm" isAttached>
               <Button
                 colorScheme="blue"
+                isLoading={isUpdateStoreLoading}
                 leftIcon={<Icon size={20} as={FeatherIcon} icon="save" />}
                 onClick={onConfigSaveBtnClick}
               >
@@ -63,7 +70,9 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
                 <MenuButton as={IconButton} icon={<ChevronDownIcon />} />
                 <Portal>
                   <MenuList zIndex="tooltip">
-                    <MenuItem onClick={onReplaceBtnClick}>Replace with operational</MenuItem>
+                    <MenuItem isDisabled={isResetLoading} onClick={onReplaceBtnClick}>
+                      Replace with operational
+                    </MenuItem>
                   </MenuList>
                 </Portal>
               </Menu>
@@ -89,6 +98,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
             <Button
               size="sm"
               colorScheme="blue"
+              isLoading={isSyncLoading}
               leftIcon={<Icon size={20} as={FeatherIcon} icon="refresh-ccw" />}
               onClick={onSyncBtnClick}
             >

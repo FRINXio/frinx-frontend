@@ -33,7 +33,10 @@ const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions }) 
     minisearch.addAll(taskDefinitions);
   }, [taskDefinitions, minisearch]);
 
-  const searchFn = throttle(() => getFilteredResults(minisearch.search(searchTerm), taskDefinitions), 60);
+  const searchFn = throttle(
+    () => getFilteredResults(minisearch.search(searchTerm, { prefix: true }), taskDefinitions),
+    60,
+  );
 
   const result = searchTerm.length > 2 ? searchFn() : taskDefinitions;
 

@@ -119,7 +119,17 @@ class DetailsModal extends Component {
   }
 
   getUnescapedJSON(data) {
-    return this.state.isEscaped ? JSON.stringify(data, null, 2) : unescapeJs(JSON.stringify(data, null, 2));
+    return this.state.isEscaped
+      ? JSON.stringify(data, null, 2)
+          .replace(/\\n/g, '\\n')
+          .replace(/\\'/g, "\\'")
+          .replace(/\\"/g, '\\"')
+          .replace(/\\&/g, '\\&')
+          .replace(/\\r/g, '\\r')
+          .replace(/\\t/g, '\\t')
+          .replace(/\\b/g, '\\b')
+          .replace(/\\f/g, '\\f')
+      : unescapeJs(JSON.stringify(data, null, 2));
   }
 
   handleClose() {

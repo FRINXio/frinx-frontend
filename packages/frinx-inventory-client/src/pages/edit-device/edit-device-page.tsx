@@ -6,6 +6,9 @@ import EditDeviceForm from './edit-device-form';
 import {
   CreateLabelMutation,
   CreateLabelMutationVariables,
+  DeviceQuery,
+  DeviceQueryVariables,
+  DeviceServiceState,
   Label,
   LabelsQuery,
   LabelsQueryVariables,
@@ -14,7 +17,6 @@ import {
   ZonesQuery,
   ZonesQueryVariables,
 } from '../../__generated__/graphql';
-import { ServiceState } from '../../helpers/types';
 import useResponseToasts from '../../hooks/user-response-toasts';
 
 const DEVICE_QUERY = gql`
@@ -24,6 +26,7 @@ const DEVICE_QUERY = gql`
       ... on Device {
         name
         serviceState
+        mountParameters
         zone {
           id
           name
@@ -106,7 +109,7 @@ type FormValues = {
   zoneId: string;
   mountParameters: string;
   labels: string[];
-  serviceState: ServiceState;
+  serviceState: DeviceServiceState;
 };
 
 const EditDevicePage: FC<Props> = ({ deviceId, onSuccess, onCancelButtonClick }) => {
@@ -114,7 +117,7 @@ const EditDevicePage: FC<Props> = ({ deviceId, onSuccess, onCancelButtonClick })
     UpdateDeviceMutation,
     UpdateDeviceMutationVariables
   >(UPDATE_DEVICE_MUTATION);
-  const [{ data: deviceData, fetching: isLoadingDevice }] = useQuery({
+  const [{ data: deviceData, fetching: isLoadingDevice }] = useQuery<DeviceQuery, DeviceQueryVariables>({
     query: DEVICE_QUERY,
     variables: { id: deviceId },
   });
@@ -161,6 +164,16 @@ const EditDevicePage: FC<Props> = ({ deviceId, onSuccess, onCancelButtonClick })
     return <Progress size="xs" isIndeterminate mt={-10} />;
   }
 
+  if (deviceData == null || deviceData?.device == null) {
+    return null;
+  }
+
+  const { device } = deviceData;
+
+  if (device.__typename !== 'Device') {
+    return null;
+  }
+
   const isLoadingForm = (isLoadingZones && zones == null) || (isLoadingLabels && labels == null);
   const {
     name,
@@ -168,7 +181,7 @@ const EditDevicePage: FC<Props> = ({ deviceId, onSuccess, onCancelButtonClick })
     zone,
     serviceState,
     labels: { edges: labelEdges },
-  } = deviceData?.device ?? { name: '', mountParameters: [], zone: null, serviceState: '', labels: { edges: [] } };
+  } = device;
   const mappedLabels = labels?.labels.edges ?? [];
   const mappedZones = zones?.zones.edges ?? [];
 

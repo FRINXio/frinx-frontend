@@ -42,7 +42,11 @@ export type KafkaPublishInputParams = {
     keySerializer: SerializerEnum;
   };
 };
-export type JsonJQInputParams = Record<string, unknown>;
+
+export type JsonJQInputParams = {
+  key: string;
+  queryExpression: string;
+};
 export type TerminateInputParams = {
   terminationStatus: string;
   workflowOutput: string;

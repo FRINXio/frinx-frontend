@@ -1,23 +1,24 @@
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
-import 'beautiful-react-diagrams/dist/styles.css';
-import Diagram, { useSchema, Canvas, useCanvasState, CanvasControls } from 'beautiful-react-diagrams';
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
+import Diagram, { Canvas, CanvasControls, useCanvasState, useSchema } from 'beautiful-react-diagrams';
+import 'beautiful-react-diagrams/dist/styles.css';
 import produce, { castImmutable } from 'immer';
-import { createDiagramController } from './helpers/diagram.helpers';
-import unwrap from './helpers/unwrap';
-import RightDrawer from './components/right-drawer';
-import TaskForm from './components/task-form/task-form';
+import { uniqBy } from 'lodash';
+import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
+import callbackUtils from './callback-utils';
+import ActionsMenu from './components/actions-menu/actions-menu';
+import ExecutionModal from './components/execution-modal/execution-modal';
+import ExpandedWorkflowModal from './components/expanded-workflow-modal/expanded-workflow-modal';
 import LeftMenu from './components/left-menu/left-menu';
 import NewWorkflowModal from './components/new-workflow-modal/new-workflow-modal';
+import RightDrawer from './components/right-drawer';
+import TaskForm from './components/task-form/task-form';
 import WorkflowDefinitionModal from './components/workflow-definition-modal/workflow-definition-modal';
-import ExecutionModal from './components/execution-modal/execution-modal';
 import WorkflowForm from './components/workflow-form/workflow-form';
-import ActionsMenu from './components/actions-menu/actions-menu';
+import { createDiagramController } from './helpers/diagram.helpers';
+import { CustomNodeType, ExtendedTask, NodeData, TaskDefinition, Workflow } from './helpers/types';
+import unwrap from './helpers/unwrap';
 import { createWorkflowHelper, deserializeId } from './helpers/workflow.helpers';
-import { NodeData, ExtendedTask, Workflow, CustomNodeType, TaskDefinition } from './helpers/types';
 import { useTaskActions } from './task-actions-context';
-import ExpandedWorkflowModal from './components/expanded-workflow-modal/expanded-workflow-modal';
-import callbackUtils from './callback-utils';
 
 type Props = {
   onClose: () => void;
@@ -111,6 +112,14 @@ const App: FC<Props> = ({
     onWorkflowClone(wf, wfName);
   };
 
+  const usedSchema = useMemo(() => {
+    const { nodes, links } = schema;
+    return {
+      links,
+      nodes: uniqBy(nodes, (n) => n.id),
+    };
+  }, [schema]);
+
   return (
     <>
       <Grid templateColumns="384px 1fr" templateRows="64px 1fr" minHeight="100%" maxHeight="100%">
@@ -177,7 +186,7 @@ const App: FC<Props> = ({
             <Diagram
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
-              schema={schema}
+              schema={usedSchema}
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               onChange={onChange}
