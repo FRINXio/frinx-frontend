@@ -33,7 +33,6 @@ type Props = {
 
 const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
   const [taskState, setTaskState] = useState(task);
-  const [isValid, setIsValid] = useState(true);
 
   useEffect(() => {
     setTaskState(task);
@@ -53,10 +52,6 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
         }
       });
     });
-  };
-
-  const handleValidation = (isValidInputParams: boolean) => {
-    setIsValid(isValidInputParams);
   };
 
   return (
@@ -200,13 +195,13 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
             )}
           </TabPanel>
           {'inputParameters' in taskState && (
-            <TabPanel>{renderInputParamForm(taskState, handleUpdateInputParameters, tasks, handleValidation)}</TabPanel>
+            <TabPanel>{renderInputParamForm(taskState, handleUpdateInputParameters, tasks)}</TabPanel>
           )}
         </TabPanels>
       </Tabs>
       <Divider my={4} />
       <Stack direction="row" spacing={2} align="center">
-        <Button type="submit" colorScheme="blue" isDisabled={!isValid}>
+        <Button type="submit" colorScheme="blue">
           Save changes
         </Button>
         <Button onClick={onClose}>Cancel</Button>
