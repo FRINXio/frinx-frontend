@@ -13,6 +13,7 @@ import NewWorkflowModal from './components/new-workflow-modal/new-workflow-modal
 import RightDrawer from './components/right-drawer';
 import TaskForm from './components/task-form/task-form';
 import WorkflowDefinitionModal from './components/workflow-definition-modal/workflow-definition-modal';
+import WorkflowEditorModal from './components/workflow-editor-modal/workflow-editor-modal';
 import WorkflowForm from './components/workflow-form/workflow-form';
 import { createDiagramController } from './helpers/diagram.helpers';
 import { CustomNodeType, ExtendedTask, NodeData, TaskDefinition, Workflow } from './helpers/types';
@@ -63,6 +64,7 @@ const App: FC<Props> = ({
 }) => {
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
+  const workflowEditorDisclosure = useDisclosure();
   const [isEditing, setIsEditing] = useState(false);
   const [isInputModalShown, setIsInputModalShown] = useState(false);
   const [workflowTasks, setWorkflowTasks] = useState(workflow.tasks);
@@ -120,6 +122,10 @@ const App: FC<Props> = ({
     };
   }, [schema]);
 
+  const handleWorkflowEditorSave = (editedWorkflow: string) => {
+    console.log(editedWorkflow);
+  };
+
   return (
     <>
       <Grid templateColumns="384px 1fr" templateRows="64px 1fr" minHeight="100%" maxHeight="100%">
@@ -148,6 +154,7 @@ const App: FC<Props> = ({
                 <ActionsMenu
                   onShowDefinitionBtnClick={workflowDefinitionDisclosure.onOpen}
                   onNewWorkflowBtnClick={workflowModalDisclosure.onOpen}
+                  onWorkflowEditorBtnClick={workflowEditorDisclosure.onOpen}
                   onEditWorkflowBtnClick={() => {
                     setIsEditing(true);
                   }}
@@ -268,6 +275,14 @@ const App: FC<Props> = ({
           shouldCloseAfterSubmit={false}
           isOpen={isInputModalShown}
           onSuccessClick={onExecuteSuccessClick}
+        />
+      )}
+      {workflowEditorDisclosure.isOpen && (
+        <WorkflowEditorModal
+          workflow={workflowCtrlRef.current.convertWorkflow(schema, workflow)}
+          isOpen={workflowEditorDisclosure.isOpen}
+          onSave={handleWorkflowEditorSave}
+          onClose={workflowEditorDisclosure.onClose}
         />
       )}
     </>

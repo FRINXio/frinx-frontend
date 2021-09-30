@@ -31,6 +31,7 @@ type Props = {
   onFileExport: () => void;
   onWorkflowDelete: () => void;
   onWorkflowClone: (name: string) => void;
+  onWorkflowEditorBtnClick: () => void;
   workflows: Workflow[];
 };
 
@@ -43,6 +44,7 @@ const ActionsMenu: FC<Props> = ({
   onFileExport,
   onWorkflowDelete,
   onWorkflowClone,
+  onWorkflowEditorBtnClick,
   workflows,
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -182,6 +184,12 @@ const ActionsMenu: FC<Props> = ({
                   <Box as={FeatherIcon} size="1em" icon="edit" flexShrink={0} lineHeight={4} verticalAlign="middle" />
                 </Box>
                 Edit workflow
+              </MenuItem>
+              <MenuItem onClick={onWorkflowEditorBtnClick}>
+                <Box as="span" fontSize="sm" marginRight={3} flexShrink={0}>
+                  <Box as={FeatherIcon} size="1em" icon="code" flexShrink={0} lineHeight={4} verticalAlign="middle" />
+                </Box>
+                Workflow editor
               </MenuItem>
             </MenuGroup>
             <Divider my={2} />
