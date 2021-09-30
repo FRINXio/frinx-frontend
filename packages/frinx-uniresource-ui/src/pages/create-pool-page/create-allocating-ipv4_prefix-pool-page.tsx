@@ -77,6 +77,7 @@ const getParentPools = (parentPools: GetIpv4ParentPoolsQuery | undefined, resour
 
 type FormValues = {
   poolName: string;
+  tags: string[];
   poolDealocationSafetyPeriod: number;
   allocationStrategyId: string;
   resourceTypeId: string;

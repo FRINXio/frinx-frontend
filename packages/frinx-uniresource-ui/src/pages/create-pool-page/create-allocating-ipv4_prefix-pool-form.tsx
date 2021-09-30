@@ -15,10 +15,13 @@ import { useFormik } from 'formik';
 import { omitBy } from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import * as yup from 'yup';
+import SearchByTagInput from '../../components/search-by-tag-input';
+import { useTagsInput } from '../../hooks/use-tags-input';
 import PoolPropertiesForm from './pool-properties-form';
 
 type FormValues = {
   poolName: string;
+  tags: string[];
   poolDealocationSafetyPeriod: number;
   allocationStrategyId: string;
   resourceTypeId: string;
@@ -29,6 +32,7 @@ type FormValues = {
 
 const INITIAL_VALUES: FormValues = {
   poolName: '',
+  tags: [],
   poolDealocationSafetyPeriod: 120,
   allocationStrategyId: '',
   resourceTypeId: '',
@@ -77,6 +81,7 @@ const CreateAllocatingIpv4PrefixPoolForm: FC<Props> = ({
 }) => {
   const [isNested, setIsNested] = useState(false);
   const [poolSchema, setPoolSchema] = useState(getPoolSchema(isNested));
+  const { selectedTags, handleOnSelectionChange, handleTagCreation } = useTagsInput();
 
   const { values, errors, handleChange, handleSubmit, setFieldValue } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
@@ -87,6 +92,7 @@ const CreateAllocatingIpv4PrefixPoolForm: FC<Props> = ({
           ...data,
           resourceTypeId,
           allocationStrategyId,
+          tags: selectedTags.map((tag) => tag.label),
         },
         isNested,
       );
@@ -150,6 +156,13 @@ const CreateAllocatingIpv4PrefixPoolForm: FC<Props> = ({
         <FormLabel>Name</FormLabel>
         <Input type="text" onChange={handleChange} name="poolName" placeholder="Enter name" value={values.poolName} />
         <FormErrorMessage>{errors.poolName}</FormErrorMessage>
+      </FormControl>
+      <FormControl marginY={5}>
+        <SearchByTagInput
+          onSelectionChange={handleOnSelectionChange}
+          selectedTags={selectedTags}
+          onTagCreate={handleTagCreation}
+        />
       </FormControl>
       <FormControl
         id="poolDealocationSafetyPeriod"
