@@ -4144,7 +4144,7 @@ chakra-paginator@^0.6.3:
   dependencies:
     lodash.union "^4.6.0"
 
-chakra-ui-autocomplete@1.4.3, chakra-ui-autocomplete@^1.4.3:
+chakra-ui-autocomplete@^1.4.3:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/chakra-ui-autocomplete/-/chakra-ui-autocomplete-1.4.3.tgz#99bc9e7e19fe61cb92eaec59f843d30ef4fe6f1b"
   integrity sha512-PrR7GiBvO0rIiOTDmmPWNzd3xaUXcoto4uvYuLa7gLh0OyHXN2x1jsJZASVXwN6CflaFrGyr+oO7RHPaeBSS2Q==
