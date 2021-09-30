@@ -19,6 +19,7 @@ import { Item } from 'chakra-ui-autocomplete';
 import PoolValuesForm from './pool-values-form';
 import PoolPropertiesForm from './pool-properties-form';
 import SearchByTagInput from '../../components/search-by-tag-input';
+import { useTagsInput } from '../../hooks/use-tags-input';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
 type FormValues = {
@@ -122,7 +123,7 @@ function getSchema(poolType: string, isNested: boolean) {
 }
 
 const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTypes, pools, allocStrategies }) => {
-  const [selectedLabels, setSelectedLabels] = React.useState<Item[]>([]);
+  const { selectedTags, handleTagCreation, handleOnSelectionChange } = useTagsInput();
   const [poolSchema, setPoolSchema] = useState(getSchema(INITIAL_VALUES.poolType, INITIAL_VALUES.isNested));
   const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
@@ -130,7 +131,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
     onSubmit: async (data) => {
       const updatedData: FormValues = {
         ...data,
-        tags: selectedLabels.map(({ label }: Item) => label),
+        tags: selectedTags.map(({ label }: Item) => label),
       };
       onFormSubmit(updatedData);
     },
@@ -173,16 +174,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
   useEffect(() => {
     setPoolSchema(getSchema(values.poolType, isNested));
   }, [isNested, values.poolType]);
-
-  const handleLabelCreation = (labelName: Item) => {
-    setSelectedLabels(selectedLabels.concat({ label: labelName.label, value: labelName.value }));
-  };
-
-  const handleOnSelectionChange = (selectedItems?: Item[]) => {
-    if (selectedItems) {
-      setSelectedLabels([...new Set(selectedItems)]);
-    }
-  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -245,8 +236,8 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
       </FormControl>
       <FormControl my={5}>
         <SearchByTagInput
-          selectedLabels={selectedLabels}
-          onLabelCreate={handleLabelCreation}
+          selectedTags={selectedTags}
+          onTagCreate={handleTagCreation}
           onSelectionChange={handleOnSelectionChange}
         />
       </FormControl>

@@ -3,29 +3,29 @@ import { CUIAutoComplete, Item } from 'chakra-ui-autocomplete';
 import React, { FC } from 'react';
 
 type Props = {
-  selectedLabels: Item[];
+  selectedTags: Item[];
   isCreationDisabled?: boolean;
   onSelectionChange: (labels?: Item[]) => void;
-  onLabelCreate?: (label: Item) => void;
-  labelText?: string;
+  onTagCreate?: (label: Item) => void;
+  tagText?: string;
 };
 
 const SearchByTagInput: FC<Props> = ({
-  selectedLabels,
-  onLabelCreate,
+  selectedTags,
+  onTagCreate,
   isCreationDisabled = false,
   onSelectionChange,
-  labelText = 'Select labels',
+  tagText = 'Select tags',
 }) => {
-  const selectedLabelList = selectedLabels.map(({ label, value }) => {
+  const selectedTagList = selectedTags.map(({ label, value }) => {
     return { label, value };
   });
 
   return (
     // autocomplete lib has some weird styling at the bottom
-    <Box position="relative" paddingBottom={selectedLabelList.length ? 0 : '28px'}>
+    <Box position="relative" paddingBottom={0}>
       <CUIAutoComplete
-        label={labelText}
+        label={tagText}
         labelStyleProps={{
           marginBottom: 0,
         }}
@@ -33,9 +33,9 @@ const SearchByTagInput: FC<Props> = ({
           variant: 'filled',
         }}
         placeholder="Start typing..."
-        onCreateItem={onLabelCreate}
+        onCreateItem={onTagCreate}
         items={[]}
-        selectedItems={selectedLabelList}
+        selectedItems={selectedTagList}
         onSelectedItemsChange={(changes) => onSelectionChange(changes.selectedItems)}
         disableCreateItem={isCreationDisabled}
         hideToggleButton
