@@ -4144,21 +4144,10 @@ chakra-paginator@^0.6.3:
   dependencies:
     lodash.union "^4.6.0"
 
-chakra-ui-autocomplete@^1.4.3:
+chakra-ui-autocomplete@1.4.3, chakra-ui-autocomplete@^1.4.3:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/chakra-ui-autocomplete/-/chakra-ui-autocomplete-1.4.3.tgz#99bc9e7e19fe61cb92eaec59f843d30ef4fe6f1b"
   integrity sha512-PrR7GiBvO0rIiOTDmmPWNzd3xaUXcoto4uvYuLa7gLh0OyHXN2x1jsJZASVXwN6CflaFrGyr+oO7RHPaeBSS2Q==
-  dependencies:
-    "@chakra-ui/icons" "^1.0.3"
-    downshift "^6.0.6"
-    match-sorter "^4.2.1"
-    react-highlight-words "^0.16.0"
-    react-use "^15.3.4"
-
-chakra-ui-autocomplete@^1.4.4:
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/chakra-ui-autocomplete/-/chakra-ui-autocomplete-1.4.4.tgz#c83fcbe6f8fc91135490ceac64628a8c22bf03a1"
-  integrity sha512-LM//BgJp6Lb83OgGRYojZHJBUUc9CrWguk8Rts78tnfLF+esH3fdW/H/9y3UaR6ESLECxzhA8B4yGT6firy21Q==
   dependencies:
     "@chakra-ui/icons" "^1.0.3"
     downshift "^6.0.6"
