@@ -283,6 +283,7 @@ const App: FC<Props> = ({
           isOpen={workflowEditorDisclosure.isOpen}
           onSave={handleWorkflowEditorSave}
           onClose={workflowEditorDisclosure.onClose}
+          onChange={(value) => console.log(value)}
         />
       )}
     </>

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useRef } from 'react';
 import {
   Modal,
   ModalBody,
@@ -26,7 +26,22 @@ const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave, onC
     onClose();
   };
 
-  const handleChange = () => onChange(JSON.stringify(workflow));
+  const parsedWorkflow = useRef(
+    Object.fromEntries(
+      Object.entries(workflow).map((item) => {
+        if (typeof item[1] !== 'string') return [item[0], item[1]];
+
+        try {
+          const parsedValue = JSON.parse(item[1]);
+          return [item[0], parsedValue];
+        } catch (error) {
+          return [item[0], item[1]];
+        }
+      }),
+    ),
+  );
+
+  const handleChange = (value: string) => onChange(JSON.stringify(value));
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
@@ -35,7 +50,7 @@ const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave, onC
         <ModalHeader>Workflow editor</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Editor value={JSON.stringify(workflow, null, 2)} onChange={handleChange} />
+          <Editor mode="json" value={JSON.stringify(parsedWorkflow.current, null, 2)} onChange={handleChange} />
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="gray" onClick={onClose} marginRight={2}>
