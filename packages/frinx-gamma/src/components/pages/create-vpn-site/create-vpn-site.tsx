@@ -14,6 +14,7 @@ const defaultVpnSite: VpnSite = {
   siteVpnFlavor: 'site-vpn-flavor-single',
   siteServiceQosProfile: '',
   enableBgpPicFastReroute: false,
+  siteNetworkAccesses: [],
 };
 
 const CreateVpnSitePage: FC = () => {
