@@ -68,7 +68,7 @@ const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave }) =
         <ModalCloseButton />
         <ModalBody>
           <Editor mode="json" value={editedWorkflow} onChange={handleChange} />
-          {!isJsonValid && <p color="red">Bad JSON</p>}
+          {!isJsonValid && <p>Bad JSON</p>}
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="gray" onClick={onClose} marginRight={2}>
