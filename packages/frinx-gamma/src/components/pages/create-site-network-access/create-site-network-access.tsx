@@ -6,7 +6,7 @@ import { generateNetworkAccessId } from '../../../api/uniresource/uniresource';
 import { apiVpnSitesToClientVpnSite, apiProviderIdentifiersToClientIdentifers } from '../../forms/converters';
 import { VpnSite, SiteNetworkAccess, AccessPriority } from '../../forms/site-types';
 import SiteNetworkAccessForm from '../../forms/site-network-access-form';
-import SiteInfo from './site-info';
+// import SiteInfo from './site-info';
 import Autocomplete2 from '../../autocomplete-2/autocomplete-2';
 import unwrap from '../../../helpers/unwrap';
 
@@ -66,12 +66,6 @@ const CreateSiteNetAccessPage: FC = () => {
     // eslint-disable-next-line no-console
     console.log('submit clicked', s);
 
-    // const editedSite = unwrap(selectedSite);
-    // const newNetworkAccesses = [...editedSite.siteNetworkAccesses, networkAccess];
-    // const siteWithNewNetworkAccesses = {
-    //   ...editedSite,
-    //   siteNetworkAccesses: newNetworkAccesses,
-    // };
     await editVpnSite(s);
     // eslint-disable-next-line no-console
     console.log('site saved: network access added to site');
@@ -104,7 +98,7 @@ const CreateSiteNetAccessPage: FC = () => {
             />
             {selectedSite && (
               <>
-                <SiteInfo site={selectedSite} />
+                {/* <SiteInfo site={selectedSite} /> */}
                 <SiteNetworkAccessForm
                   mode="add"
                   qosProfiles={qosProfiles}
