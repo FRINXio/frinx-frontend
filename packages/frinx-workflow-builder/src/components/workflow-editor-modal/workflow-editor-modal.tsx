@@ -1,4 +1,4 @@
-import React, { FC, useRef } from 'react';
+import React, { FC, useState } from 'react';
 import {
   Modal,
   ModalBody,
@@ -9,39 +9,56 @@ import {
   ModalOverlay,
   Button,
 } from '@chakra-ui/react';
-import { Workflow } from '../../helpers/types';
+import { ExtendedTask, Workflow } from '../../helpers/types';
 import Editor from '../common/editor';
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (workflow: string) => void;
-  onChange: (workflow: string) => void;
-  workflow: Workflow;
+  onSave: (workflow: Workflow<ExtendedTask>) => void;
+  workflow: Workflow<ExtendedTask>;
 };
 
-const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave, onChange }) => {
+const parseWorkflow = (workflow: Workflow<ExtendedTask>) => {
+  const workflowEntries = Object.entries(workflow);
+  const result = Object.fromEntries(
+    workflowEntries.map((item) => {
+      if (typeof item[1] !== 'string') return [item[0], item[1]];
+
+      try {
+        const parsedValue = JSON.parse(item[1]);
+        return [item[0], parsedValue];
+      } catch (error) {
+        return [item[0], item[1]];
+      }
+    }),
+  );
+  return result;
+};
+
+const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave }) => {
+  const [editedWorkflow, setEditedWorkflow] = useState(JSON.stringify(parseWorkflow(workflow), null, 2));
+  const [isJsonValid, setIsJsonValid] = useState(true);
+
   const handleSave = () => {
-    onSave(JSON.stringify(workflow));
-    onClose();
+    try {
+      const parsedWorkflow = JSON.parse(editedWorkflow);
+      setIsJsonValid(true);
+      onSave(parsedWorkflow);
+      onClose();
+    } catch (error) {
+      setIsJsonValid(false);
+    }
   };
 
-  const parsedWorkflow = useRef(
-    Object.fromEntries(
-      Object.entries(workflow).map((item) => {
-        if (typeof item[1] !== 'string') return [item[0], item[1]];
-
-        try {
-          const parsedValue = JSON.parse(item[1]);
-          return [item[0], parsedValue];
-        } catch (error) {
-          return [item[0], item[1]];
-        }
-      }),
-    ),
-  );
-
-  const handleChange = (value: string) => onChange(JSON.stringify(value));
+  const handleChange = (value: string) => {
+    try {
+      setEditedWorkflow(value);
+      setIsJsonValid(true);
+    } catch (error) {
+      setIsJsonValid(false);
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
@@ -50,7 +67,8 @@ const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave, onC
         <ModalHeader>Workflow editor</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Editor mode="json" value={JSON.stringify(parsedWorkflow.current, null, 2)} onChange={handleChange} />
+          <Editor mode="json" value={editedWorkflow} onChange={handleChange} />
+          {!isJsonValid && <p color="red">Bad JSON</p>}
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="gray" onClick={onClose} marginRight={2}>

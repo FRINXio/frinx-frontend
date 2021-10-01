@@ -122,10 +122,6 @@ const App: FC<Props> = ({
     };
   }, [schema]);
 
-  const handleWorkflowEditorSave = (editedWorkflow: string) => {
-    console.log(editedWorkflow);
-  };
-
   return (
     <>
       <Grid templateColumns="384px 1fr" templateRows="64px 1fr" minHeight="100%" maxHeight="100%">
@@ -279,11 +275,10 @@ const App: FC<Props> = ({
       )}
       {workflowEditorDisclosure.isOpen && (
         <WorkflowEditorModal
-          workflow={workflowCtrlRef.current.convertWorkflow(schema, workflow)}
+          workflow={workflow}
           isOpen={workflowEditorDisclosure.isOpen}
-          onSave={handleWorkflowEditorSave}
+          onSave={(editedWorkflow) => onWorkflowChange(editedWorkflow)}
           onClose={workflowEditorDisclosure.onClose}
-          onChange={(value) => console.log(value)}
         />
       )}
     </>
