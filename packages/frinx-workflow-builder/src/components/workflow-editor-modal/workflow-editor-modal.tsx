@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { ExtendedTask, Workflow } from '../../helpers/types';
 import Editor from '../common/editor';
+import useResponseToasts from '../../hooks/use-response-toasts';
 
 type Props = {
   isOpen: boolean;
@@ -39,6 +40,12 @@ const parseWorkflow = (workflow: Workflow<ExtendedTask>) => {
 const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave }) => {
   const [editedWorkflow, setEditedWorkflow] = useState(JSON.stringify(parseWorkflow(workflow), null, 2));
   const [isJsonValid, setIsJsonValid] = useState(true);
+  useResponseToasts({
+    isSuccess: isJsonValid,
+    isFailure: !isJsonValid,
+    failureMessage: 'Cannot edit workflow. Try again please',
+    successMessage: 'Workflow has been successfully edited',
+  });
 
   const handleSave = () => {
     try {
