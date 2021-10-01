@@ -6,6 +6,7 @@ import CreateVpnService from './components/pages/create-vpn-service/create-vpn-s
 import EditVpnService from './components/pages/edit-vpn-service/edit-vpn-service';
 import CreateVpnSite from './components/pages/create-vpn-site/create-vpn-site';
 import EditVpnSite from './components/pages/edit-vpn-site/edit-vpn-site';
+import CreateSiteNetAccess from './components/pages/create-site-network-access/create-site-network-access';
 import theme from './theme';
 
 function getURLBaseName(): string {
@@ -32,6 +33,9 @@ const App: FC = () => {
             </Route>
             <Route path="/edit-vpn-site" exact>
               <EditVpnSite />
+            </Route>
+            <Route path="/add-site-network-access" exact>
+              <CreateSiteNetAccess />
             </Route>
           </Switch>
         </Box>

@@ -1,10 +1,27 @@
 import { VpnService, DefaultCVlanEnum, VpnServiceTopology } from './service-types';
-import { CountryCode, SiteManagementType, SiteVpnFlavor, VpnSite } from './site-types';
+import {
+  CountryCode,
+  SiteManagementType,
+  SiteVpnFlavor,
+  VpnSite,
+  SiteNetworkAccess,
+  SiteNetworkAccessType,
+  AccessPriority,
+  MaximumRoutes,
+  ProviderIdentifiers,
+  RoutingProtocols,
+  RoutingProtocolType,
+  LanTag,
+} from './site-types';
 import {
   VpnServicesOutput,
   VpnSitesOutput,
+  SiteNetworkAccessOutput,
+  ValidProviderIdentifiersOutput,
+  RoutingProtocolsOutput,
   CreateVpnServiceInput,
   CreateVpnSiteInput,
+  CreateNetworkAccessInput,
 } from '../../api/unistore/network-types';
 import unwrap from '../../helpers/unwrap';
 
@@ -49,7 +66,54 @@ export function clientVpnServiceToApiVpnService(clientVpnService: VpnService): C
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function apiRoutingProtocolToClientRoutingProtocol(routingProtocol: RoutingProtocolsOutput): RoutingProtocols {
+  return {
+    type: routingProtocol['routing-protocol'][0].type as RoutingProtocolType,
+    vrrp: 'ipv4',
+    static: routingProtocol['routing-protocol'][0].static['cascaded-lan-prefixes']['ipv4-lan-prefixes'].map((p) => {
+      return {
+        lan: p.lan,
+        lanTag: p['lan-tag'] as LanTag,
+        nextHop: p['next-hop'],
+      };
+    }),
+    bgp: {
+      addressFamily: 'ipv4',
+      autonomousSystem: routingProtocol['routing-protocol'][0].bgp['autonomous-system'],
+      bgpProfile: routingProtocol['routing-protocol'][0].bgp['bgp-profiles']['bgp-profile'][0].profile,
+    },
+  };
+}
+
+export function apiSiteNetworkAccessToClientSiteNetworkAccess(
+  networkAccess: SiteNetworkAccessOutput | void,
+): SiteNetworkAccess[] {
+  if (!networkAccess) {
+    return [];
+  }
+
+  return networkAccess['site-network-access'].map((access) => {
+    return {
+      siteNetworkAccessId: access['site-network-access-id'],
+      siteNetworkAccessType: access['site-network-access-type'] as SiteNetworkAccessType,
+      accessPriority: String(access.availability['access-priority']) as AccessPriority,
+      maximumRoutes: access['maximum-routes']['address-family'][0]['maximum-routes'] as MaximumRoutes,
+      locationReference: access['location-reference'] || null,
+      deviceReference: access['device-reference'] || null,
+      routingProtocols: [apiRoutingProtocolToClientRoutingProtocol(access['routing-protocols'])],
+    };
+  });
+}
+
+export function apiProviderIdentifiersToClientIdentifers(
+  identifiers: ValidProviderIdentifiersOutput,
+): ProviderIdentifiers {
+  return {
+    bfdIdentifiers: identifiers['valid-provider-identifiers']['bfd-profile-identifier'].map((i) => i.id),
+    qosIdentifiers: identifiers['valid-provider-identifiers']['qos-profile-identifier'].map((i) => i.id),
+  };
+}
+
 export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[] {
   return apiVpnSite.sites.site.map((site) => {
     const managementType: unknown = site.management.type.split(':')[1];
@@ -79,8 +143,59 @@ export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[
       siteVpnFlavor: siteVpnFlavor as SiteVpnFlavor,
       siteServiceQosProfile: '',
       enableBgpPicFastReroute: site['traffic-protection'].enabled,
+      siteNetworkAccesses: apiSiteNetworkAccessToClientSiteNetworkAccess(site['site-network-accesses']),
     };
   });
+}
+
+function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAccess[]): CreateNetworkAccessInput {
+  return {
+    'site-network-access': networkAccesses.map((access) => {
+      return {
+        'site-network-access-id': access.siteNetworkAccessId,
+        'site-network-access-type': access.siteNetworkAccessType,
+        availability: {
+          'access-priority': Number(access.accessPriority),
+        },
+        'location-reference': access.locationReference || undefined,
+        'device-reference': access.deviceReference || undefined,
+        'maximum-routes': {
+          'address-family': [
+            {
+              af: 'ipv4',
+              'maximum-routes': access.maximumRoutes,
+            },
+          ],
+        },
+        'routing-protocols': {
+          'routing-protocol': [
+            {
+              type: access.routingProtocols[0].type,
+              bgp: {
+                'bgp-profiles': { 'bgp-profile': [{ profile: access.routingProtocols[0].bgp.bgpProfile || '' }] },
+                'address-family': ['ipv4'],
+                'autonomous-system': access.routingProtocols[0].bgp.autonomousSystem,
+              },
+              static: {
+                'cascaded-lan-prefixes': {
+                  'ipv4-lan-prefixes': access.routingProtocols[0].static.map((s) => {
+                    return {
+                      lan: s.lan,
+                      'lan-tag': s.lanTag,
+                      'next-hop': s.nextHop,
+                    };
+                  }),
+                },
+              },
+              vrrp: {
+                'address-family': [access.routingProtocols[0].vrrp],
+              },
+            },
+          ],
+        },
+      };
+    }),
+  };
 }
 
 export function clientVpnSiteToApiVpnSite(vpnSite: VpnSite): CreateVpnSiteInput {
@@ -105,7 +220,7 @@ export function clientVpnSiteToApiVpnSite(vpnSite: VpnSite): CreateVpnSiteInput 
     };
   });
 
-  return {
+  const output: CreateVpnSiteInput = {
     site: [
       {
         'site-id': unwrap(vpnSite.siteId),
@@ -144,4 +259,10 @@ export function clientVpnSiteToApiVpnSite(vpnSite: VpnSite): CreateVpnSiteInput 
       },
     ],
   };
+
+  if (vpnSite.siteNetworkAccesses.length) {
+    output.site[0]['site-network-accesses'] = clientNetworkAccessToApiNetworkAccess(vpnSite.siteNetworkAccesses);
+  }
+
+  return output;
 }

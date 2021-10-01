@@ -25,6 +25,11 @@ const Main: FC = () => {
           Edit VPN Site
         </ChakraLink>
       </Box>
+      <Box>
+        <ChakraLink as={Link} to="/add-site-network-access">
+          Create Site Net Access
+        </ChakraLink>
+      </Box>
     </Box>
   );
 };

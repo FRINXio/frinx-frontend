@@ -16,3 +16,7 @@ export function generateVpnId(): string {
 export function generateSiteId(): string {
   return `SITE_${getRandomString(8)}`;
 }
+
+export function generateNetworkAccessId(): string {
+  return `NETWORK_ACCESS_${getRandomString(8)}`;
+}

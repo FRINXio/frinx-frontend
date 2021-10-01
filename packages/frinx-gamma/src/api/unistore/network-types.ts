@@ -1,6 +1,7 @@
 import { Either, fold } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
+import { MaximumRoutes } from '../../components/forms/site-types';
 
 // TODO: should go to config
 const YANG_MODULE = 'gamma-l3vpn-svc';
@@ -78,7 +79,7 @@ const SiteDevicesValidator = t.type({
 const MaximumRoutesValidator = t.type({
   'address-family': t.array(
     t.type({
-      af: t.string,
+      af: t.literal('ipv4'),
       'maximum-routes': t.number,
     }),
   ),
@@ -153,89 +154,97 @@ const ServiceValidator = t.type({
   }),
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const SiteNetworkAccesssesValidator = t.type({
-  'site-network-access': t.array(
+const RoutingProtocolsValidator = t.type({
+  'routing-protocol': t.array(
     t.type({
-      'site-network-access-id': t.string,
-      'ip-connection': t.type({
-        oam: t.type({
-          bfd: t.type({
-            enabled: t.boolean,
-            'profile-name': t.string,
-          }),
-        }),
-        ipv4: t.type({
-          'address-allocation-type': t.string,
-          addresses: t.type({
-            'customer-address': t.string,
-            'prefix-length': t.number,
-            'provider-address': t.string,
-          }),
+      type: t.string,
+      vrrp: t.type({
+        'address-family': t.array(t.string),
+      }),
+      static: t.type({
+        'cascaded-lan-prefixes': t.type({
+          'ipv4-lan-prefixes': t.array(
+            t.type({
+              lan: t.string,
+              'next-hop': t.string,
+              'lan-tag': t.string,
+            }),
+          ),
         }),
       }),
-      'maximum-routes': MaximumRoutesValidator,
-      'location-reference': t.string,
-      'vpn-attachment': VpnValidator,
-      availability: t.type({
-        'access-priority': t.number,
-      }),
-      'site-network-access-type': t.string,
-      bearer: t.type({
-        'always-on': t.boolean,
-        'bearer-reference': t.string,
-        'requested-c-vlan': t.number,
-        'requested-type': t.type({
-          'requested-type': t.string,
-          strict: t.boolean,
+      bgp: t.type({
+        'bgp-profiles': t.type({
+          'bgp-profile': t.array(
+            t.type({
+              profile: t.string,
+            }),
+          ),
         }),
-      }),
-      service: t.type({
-        'svc-input-bandwidth': t.number,
-        'svc-mtu': t.number,
-        'svc-output-bandwidth': t.number,
-      }),
-      'routing-protocols': t.type({
-        'routing-protocol': t.array(
-          t.type({
-            type: t.string,
-            vrrp: optional(
-              t.type({
-                'address-family': t.array(t.string),
-              }),
-            ),
-            static: optional(
-              t.type({
-                'cascaded-lan-prefixes': t.type({
-                  'ipv4-lan-prefixes': t.array(
-                    t.type({
-                      lan: t.string,
-                      'next-hop': t.string,
-                      'lan-tag': t.string,
-                    }),
-                  ),
-                }),
-              }),
-            ),
-            bgp: optional(
-              t.type({
-                'bgp-profiles': t.type({
-                  'bgp-profile': t.array(
-                    t.type({
-                      profile: t.string,
-                    }),
-                  ),
-                }),
-                'autonomous-system': t.number,
-                'address-family': t.array(t.string),
-              }),
-            ),
-          }),
-        ),
+        'autonomous-system': t.number,
+        'address-family': t.array(t.string),
       }),
     }),
   ),
 });
+
+export type RoutingProtocolsOutput = t.TypeOf<typeof RoutingProtocolsValidator>;
+
+export function decodeRoutingProtocolsOutput(value: unknown): RoutingProtocolsOutput {
+  return extractResult(RoutingProtocolsValidator.decode(value));
+}
+
+const SiteNetworkAccessValidator = t.type({
+  'site-network-access': t.array(
+    t.type({
+      'site-network-access-id': t.string,
+      'site-network-access-type': t.string,
+      // 'ip-connection': t.type({
+      //   oam: t.type({
+      //     bfd: t.type({
+      //       enabled: t.boolean,
+      //       'profile-name': t.string,
+      //     }),
+      //   }),
+      //   ipv4: t.type({
+      //     'address-allocation-type': t.string,
+      //     addresses: t.type({
+      //       'customer-address': t.string,
+      //       'prefix-length': t.number,
+      //       'provider-address': t.string,
+      //     }),
+      //   }),
+      // }),
+      'maximum-routes': MaximumRoutesValidator,
+      'location-reference': optional(t.string),
+      'device-reference': optional(t.string),
+      // 'vpn-attachment': VpnValidator,
+      availability: t.type({
+        'access-priority': t.number,
+      }),
+      // bearer: t.type({
+      //   'always-on': t.boolean,
+      //   'bearer-reference': t.string,
+      //   'requested-c-vlan': t.number,
+      //   'requested-type': t.type({
+      //     'requested-type': t.string,
+      //     strict: t.boolean,
+      //   }),
+      // }),
+      // service: t.type({
+      //   'svc-input-bandwidth': t.number,
+      //   'svc-mtu': t.number,
+      //   'svc-output-bandwidth': t.number,
+      // }),
+      'routing-protocols': RoutingProtocolsValidator,
+    }),
+  ),
+});
+
+export type SiteNetworkAccessOutput = t.TypeOf<typeof SiteNetworkAccessValidator>;
+
+export function decodeSiteNetworkAccessOutput(value: unknown): SiteNetworkAccessOutput {
+  return extractResult(SiteNetworkAccessValidator.decode(value));
+}
 
 const VpnSitesOutputValidator = t.type({
   sites: t.type({
@@ -243,7 +252,7 @@ const VpnSitesOutputValidator = t.type({
       t.type({
         'site-id': t.string,
         devices: SiteDevicesValidator,
-        // 'site-network-accesses': SiteNetworkAccesssesValidator,
+        'site-network-accesses': optional(SiteNetworkAccessValidator),
         // 'maximum-routes': MaximumRoutesValidator,
         'site-vpn-flavor': SiteVpnFlavorValidator,
         'traffic-protection': t.type({
@@ -264,6 +273,56 @@ export function decodeVpnSitesOutput(value: unknown): VpnSitesOutput {
   return extractResult(VpnSitesOutputValidator.decode(value));
 }
 
+export type CreateRoutingProtocolsInput = {
+  'routing-protocol': [
+    {
+      type: 'bgp' | 'vrrp' | 'static';
+      vrrp: {
+        'address-family': ['ipv4'];
+      };
+      static: {
+        'cascaded-lan-prefixes': {
+          'ipv4-lan-prefixes': {
+            lan: string;
+            'next-hop': string;
+            'lan-tag': string;
+          }[];
+        };
+      };
+      bgp: {
+        'bgp-profiles': {
+          'bgp-profile': [
+            {
+              profile: string;
+            },
+          ];
+        };
+        'autonomous-system': number;
+        'address-family': ['ipv4'];
+      };
+    },
+  ];
+};
+
+export type CreateNetworkAccessInput = {
+  'site-network-access': {
+    'site-network-access-id': string;
+    'site-network-access-type': string;
+    availability: {
+      'access-priority': number;
+    };
+    'maximum-routes': {
+      'address-family': {
+        af: 'ipv4';
+        'maximum-routes': MaximumRoutes;
+      }[];
+    };
+    'routing-protocols': CreateRoutingProtocolsInput;
+    'location-reference'?: string;
+    'device-reference'?: string;
+  }[];
+};
+
 export type CreateVpnSiteInput = {
   site: [
     {
@@ -277,9 +336,7 @@ export type CreateVpnSiteInput = {
           location: string;
         }[];
       };
-      // 'site-network-accesses': {
-      //   'site-network-access': string[];
-      // };
+      'site-network-accesses'?: CreateNetworkAccessInput;
       // 'maximum-routes': {
       //   'address-family': {
       //     af: 'ipv4';
@@ -340,3 +397,24 @@ export type CreateVpnSiteInput = {
     },
   ];
 };
+
+const ValidProviderIdentifiersOutputValidator = t.type({
+  'valid-provider-identifiers': t.type({
+    'qos-profile-identifier': t.array(
+      t.type({
+        id: t.string,
+      }),
+    ),
+    'bfd-profile-identifier': t.array(
+      t.type({
+        id: t.string,
+      }),
+    ),
+  }),
+});
+
+export type ValidProviderIdentifiersOutput = t.TypeOf<typeof ValidProviderIdentifiersOutputValidator>;
+
+export function decodeValidProviderIdentifiersOutput(value: unknown): ValidProviderIdentifiersOutput {
+  return extractResult(ValidProviderIdentifiersOutputValidator.decode(value));
+}

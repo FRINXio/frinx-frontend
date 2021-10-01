@@ -7,18 +7,19 @@ import { apiVpnSitesToClientVpnSite } from '../../forms/converters';
 import { VpnSite } from '../../forms/site-types';
 import unwrap from '../../../helpers/unwrap';
 
-const defaultVpnSite: VpnSite = {
+const getDefaultVpnSite = (): VpnSite => ({
   customerLocations: [],
   siteDevices: [],
   siteManagementType: 'provider-managed',
   siteVpnFlavor: 'site-vpn-flavor-single',
   siteServiceQosProfile: '',
   enableBgpPicFastReroute: false,
-};
+  siteNetworkAccesses: [],
+});
 
 const EditVpnSitePage: FC = () => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
-  const [selectedSite, setSelectedSite] = useState<VpnSite>(defaultVpnSite);
+  const [selectedSite, setSelectedSite] = useState<VpnSite>(getDefaultVpnSite());
   const history = useHistory();
 
   useEffect(() => {
@@ -64,7 +65,7 @@ const EditVpnSitePage: FC = () => {
       <Box padding={6} margin={6} background="white">
         <Flex justifyContent="space-between" alignItems="center">
           <Heading size="md">Edit VPN Site</Heading>
-          <Button onClick={handleDelete} colorScheme="red" isDisabled={selectedSite.siteId == null}>
+          <Button onClick={handleDelete} colorScheme="red" isDisabled={!selectedSite}>
             Delete
           </Button>
         </Flex>

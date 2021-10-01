@@ -1,7 +1,14 @@
 import { sendDeleteRequest, sendPostRequest, sendGetRequest, sendPutRequest } from './api-helpers';
 import { VpnService } from '../../components/forms/service-types';
 import { VpnSite } from '../../components/forms/site-types';
-import { decodeVpnServicesOutput, decodeVpnSitesOutput, VpnServicesOutput, VpnSitesOutput } from './network-types';
+import {
+  decodeVpnServicesOutput,
+  decodeVpnSitesOutput,
+  decodeValidProviderIdentifiersOutput,
+  VpnServicesOutput,
+  VpnSitesOutput,
+  ValidProviderIdentifiersOutput,
+} from './network-types';
 import { clientVpnServiceToApiVpnService, clientVpnSiteToApiVpnSite } from '../../components/forms/converters';
 
 const UNICONFIG_SERVICE_URL =
@@ -74,4 +81,12 @@ export async function editVpnSite(vpnSite: VpnSite): Promise<void> {
 
 export async function deleteVpnSite(vpnSiteId: string): Promise<void> {
   await sendDeleteRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${vpnSiteId}}`);
+}
+
+export async function getValidProviderIdentifiers(): Promise<ValidProviderIdentifiersOutput> {
+  const json = await sendGetRequest(
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-profiles/valid-provider-identifiers`,
+  );
+  const data = decodeValidProviderIdentifiersOutput(json);
+  return data;
 }
