@@ -142,6 +142,7 @@ const VpnPoliciesValidator = t.type({
   ),
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ServiceValidator = t.type({
   qos: t.type({
     'qos-profile': t.type({
@@ -221,20 +222,29 @@ const SiteNetworkAccessValidator = t.type({
       availability: t.type({
         'access-priority': t.number,
       }),
-      // bearer: t.type({
-      //   'always-on': t.boolean,
-      //   'bearer-reference': t.string,
-      //   'requested-c-vlan': t.number,
-      //   'requested-type': t.type({
-      //     'requested-type': t.string,
-      //     strict: t.boolean,
-      //   }),
-      // }),
-      // service: t.type({
-      //   'svc-input-bandwidth': t.number,
-      //   'svc-mtu': t.number,
-      //   'svc-output-bandwidth': t.number,
-      // }),
+      bearer: t.type({
+        'always-on': t.boolean,
+        'bearer-reference': t.string,
+        'requested-c-vlan': t.number,
+        'requested-type': t.type({
+          'requested-type': t.string,
+          strict: t.boolean,
+        }),
+      }),
+
+      service: t.type({
+        'svc-input-bandwidth': t.number,
+        'svc-output-bandwidth': t.number,
+        qos: t.type({
+          'qos-profile': t.type({
+            'qos-profile': t.array(
+              t.type({
+                profile: t.string,
+              }),
+            ),
+          }),
+        }),
+      }),
       'routing-protocols': RoutingProtocolsValidator,
     }),
   ),
@@ -261,7 +271,7 @@ const VpnSitesOutputValidator = t.type({
         management: ManagementValidator,
         locations: LocationsValidator,
         // 'vpn-policies': VpnPoliciesValidator,
-        service: ServiceValidator,
+        // service: ServiceValidator,
       }),
     ),
   }),
@@ -320,6 +330,28 @@ export type CreateNetworkAccessInput = {
     'routing-protocols': CreateRoutingProtocolsInput;
     'location-reference'?: string;
     'device-reference'?: string;
+    bearer: {
+      'always-on': boolean;
+      'bearer-reference': string;
+      'requested-c-vlan': number;
+      'requested-type': {
+        'requested-type': string;
+        strict: boolean;
+      };
+    };
+    service: {
+      'svc-input-bandwidth': number;
+      'svc-output-bandwidth': number;
+      qos: {
+        'qos-profile': {
+          'qos-profile': [
+            {
+              profile: string;
+            },
+          ];
+        };
+      };
+    };
   }[];
 };
 
@@ -383,17 +415,6 @@ export type CreateVpnSiteInput = {
       //     }[];
       //   }[];
       // };
-      service: {
-        qos: {
-          'qos-profile': {
-            'qos-profile': [
-              {
-                profile: string;
-              },
-            ];
-          };
-        };
-      };
     },
   ];
 };

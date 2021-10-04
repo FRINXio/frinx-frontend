@@ -7,6 +7,7 @@ import {
   VpnSite,
   SiteNetworkAccess,
   SiteNetworkAccessType,
+  RequestedCVlan,
 } from './site-types';
 import Autocomplete2 from '../autocomplete-2/autocomplete-2';
 import unwrap from '../../helpers/unwrap';
@@ -18,12 +19,13 @@ type Props = {
   selectedNetworkAccess: SiteNetworkAccess | null;
   qosProfiles: string[];
   bfdProfiles: string[];
+  bandwidths: number[];
   onSubmit: (s: VpnSite) => void;
   onCancel: () => void;
   onNetworkAccessChange?: (s: SiteNetworkAccess) => void;
 };
 
-const SiteNetAccessForm: FC<Props> = ({ site, selectedNetworkAccess, onSubmit, onCancel }) => {
+const SiteNetAccessForm: FC<Props> = ({ site, selectedNetworkAccess, qosProfiles, bandwidths, onSubmit, onCancel }) => {
   const [siteState, setSiteState] = useState(site);
   const [networkAccessState, setNetworkAccessState] = useState(selectedNetworkAccess);
 
@@ -123,6 +125,101 @@ const SiteNetAccessForm: FC<Props> = ({ site, selectedNetworkAccess, onSubmit, o
           />
         </FormControl>
       )}
+
+      <FormControl id="bearer-c-vlan" my={6}>
+        <FormLabel>Bearer - Requested C Vlan</FormLabel>
+        <Select
+          variant="filled"
+          name="bearer-c-vlan"
+          value={networkAccessState.bearer.requestedCLan}
+          onChange={(event) => {
+            // eslint-disable-next-line no-console
+            console.log(event.target.value);
+            setNetworkAccessState({
+              ...networkAccessState,
+              [networkAccessState.bearer.requestedCLan]: event.target.value as unknown as RequestedCVlan,
+            });
+          }}
+        >
+          {[...Object.entries(RequestedCVlan)].map((e) => {
+            const [k, v] = e;
+            return (
+              <option key={k} value={v}>
+                {k}
+              </option>
+            );
+          })}
+        </Select>
+      </FormControl>
+
+      <FormControl id="svc-input-bandwidth" my={6}>
+        <FormLabel>SVC Input Bandwidth</FormLabel>
+        <Select
+          variant="filled"
+          name="svc-input-bandwith"
+          type="number"
+          value={networkAccessState.service.svcInputBandwidth}
+          onChange={(event) => {
+            setNetworkAccessState({
+              ...networkAccessState,
+              service: {
+                ...networkAccessState.service,
+                svcInputBandwidth: Number(event.target.value),
+              },
+            });
+          }}
+        >
+          {bandwidths.map((b) => (
+            <option key={`input-bandwith-key-${b}`}>{b}</option>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl id="svc-output-bandwidth" my={6}>
+        <FormLabel>SVC Output Bandwidth</FormLabel>
+        <Select
+          variant="filled"
+          name="svc-output-bandwith"
+          value={networkAccessState.service.svcOutputBandwidth}
+          onChange={(event) => {
+            setNetworkAccessState({
+              ...networkAccessState,
+              service: {
+                ...networkAccessState.service,
+                svcOutputBandwidth: Number(event.target.value),
+              },
+            });
+          }}
+        >
+          {bandwidths.map((b) => (
+            <option key={`output-bandwith-key-${b}`}>{b}</option>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl id="qos-profile" my={6}>
+        <FormLabel>QOS Profile</FormLabel>
+        <Select
+          variant="filled"
+          name="qos-profile"
+          value={networkAccessState.service.qosProfiles[0]}
+          onChange={(event) => {
+            setNetworkAccessState({
+              ...networkAccessState,
+              service: {
+                ...networkAccessState.service,
+                qosProfiles: [unwrap(event.target.value)],
+              },
+            });
+          }}
+        >
+          {qosProfiles.map((p) => (
+            <option key={`qos-profile-${p}`} value={p}>
+              {p}
+            </option>
+          ))}
+        </Select>
+      </FormControl>
 
       <FormControl id="maximum-routes" my={6}>
         <FormLabel>Maximum Routes</FormLabel>{' '}

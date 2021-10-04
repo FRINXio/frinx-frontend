@@ -32,6 +32,14 @@ export enum AccessPriority {
   'Backup 4G' = '60',
 }
 
+// eslint-disable-next-line no-shadow
+export enum RequestedCVlan {
+  l3vpn = '400',
+  Pseudowire = '100',
+  'Local Internet Breakout' = '200',
+  DMZ = '300',
+}
+
 export type MaximumRoutes = 1000 | 2000 | 5000 | 10000;
 
 export type RoutingProtocolType = 'vrrp' | 'bgp' | 'static';
@@ -54,6 +62,22 @@ export type RoutingProtocols = {
   bgp: BgpRoutingType;
 };
 
+export type Bearer = {
+  alwaysOn: boolean;
+  bearerReference: string;
+  requestedCLan: RequestedCVlan;
+  requestedType: {
+    requestedType: string;
+    strict: boolean;
+  };
+};
+
+export type Service = {
+  svcInputBandwidth: number;
+  svcOutputBandwidth: number;
+  qosProfiles: [string];
+};
+
 export type SiteNetworkAccess = {
   siteNetworkAccessId: string;
   siteNetworkAccessType: SiteNetworkAccessType;
@@ -62,6 +86,8 @@ export type SiteNetworkAccess = {
   routingProtocols: [RoutingProtocols];
   locationReference: string | null;
   deviceReference: string | null;
+  bearer: Bearer;
+  service: Service;
 };
 
 export type VpnSite = {
