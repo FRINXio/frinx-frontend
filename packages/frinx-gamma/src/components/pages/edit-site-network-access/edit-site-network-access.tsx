@@ -1,64 +1,22 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Container, Box, Heading, FormControl, FormLabel } from '@chakra-ui/react';
+import { Container, Flex, Button, Box, Heading, FormControl, FormLabel } from '@chakra-ui/react';
 import { useHistory } from 'react-router';
 import { getVpnSites, editVpnSite, getValidProviderIdentifiers } from '../../../api/unistore/unistore';
-import { generateNetworkAccessId } from '../../../api/uniresource/uniresource';
 import { apiVpnSitesToClientVpnSite, apiProviderIdentifiersToClientIdentifers } from '../../forms/converters';
-import { VpnSite, SiteNetworkAccess, AccessPriority, RequestedCVlan } from '../../forms/site-types';
+import { VpnSite, SiteNetworkAccess } from '../../forms/site-types';
 import SiteNetworkAccessForm from '../../forms/site-network-access-form';
-// import SiteInfo from './site-info';
 import Autocomplete2 from '../../autocomplete-2/autocomplete-2';
 import unwrap from '../../../helpers/unwrap';
-
-const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
-  siteNetworkAccessId: generateNetworkAccessId(),
-  siteNetworkAccessType: 'point-to-point',
-  maximumRoutes: 1000,
-  accessPriority: AccessPriority['Primary Ethernet'],
-  locationReference: null,
-  deviceReference: null,
-  routingProtocols: [
-    {
-      type: 'static',
-      vrrp: 'ipv4',
-      bgp: {
-        addressFamily: 'ipv4',
-        autonomousSystem: 0,
-        bgpProfile: null,
-      },
-      static: [
-        {
-          lanTag: 'lan',
-          lan: '10.0.0.1/0',
-          nextHop: '10.0.0.3',
-        },
-      ],
-    },
-  ],
-  bearer: {
-    alwaysOn: false,
-    bearerReference: '',
-    requestedCLan: RequestedCVlan.l3vpn,
-    requestedType: {
-      requestedType: 'dotlat',
-      strict: false,
-    },
-  },
-  service: {
-    svcInputBandwidth: 1000,
-    svcOutputBandwidth: 1000,
-    qosProfiles: [''],
-  },
-});
 
 // TODO: to be defined
 const getBandwidths = async () => {
   return [1000, 2000, 5000, 10000];
 };
 
-const CreateSiteNetAccessPage: FC = () => {
+const EditSiteNetAccessPage: FC = () => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
+  const [selectedNetworkAccess, setSelectedNetworkAccess] = useState<SiteNetworkAccess | null>(null);
   const [bfdProfiles, setBfdProfiles] = useState<string[]>([]);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const [bandwiths, setBandwiths] = useState<number[]>([]);
@@ -106,12 +64,55 @@ const CreateSiteNetAccessPage: FC = () => {
     console.log('site changed');
     const site = vpnSites?.filter((s) => s.siteId === siteId).pop();
     setSelectedSite(site || null);
+    setSelectedNetworkAccess(null);
+  };
+
+  const handleDelete = () => {
+    // eslint-disable-next-line no-console
+    console.log('delete clicked', selectedSite, selectedNetworkAccess);
+    if (!selectedSite || !selectedNetworkAccess) {
+      return;
+    }
+    const newNetowrkAccesses = selectedSite.siteNetworkAccesses.filter((access) => {
+      return access.siteNetworkAccessId !== selectedNetworkAccess.siteNetworkAccessId;
+    });
+
+    const newSite = {
+      ...selectedSite,
+      siteNetworkAccesses: newNetowrkAccesses,
+    };
+    const output = editVpnSite(newSite);
+
+    // eslint-disable-next-line no-console
+    console.log(output);
+    history.push('/');
+  };
+
+  const handleSiteNetworkChange = (networkAccessId?: string | null) => {
+    // eslint-disable-next-line no-console
+    console.log('site network change');
+    if (!selectedSite) {
+      return;
+    }
+    const networkAccess = selectedSite.siteNetworkAccesses
+      .filter((access) => access.siteNetworkAccessId === networkAccessId)
+      .pop();
+    setSelectedNetworkAccess(networkAccess || null);
   };
 
   return (
     <Container>
       <Box padding={6} margin={6} background="white">
-        <Heading size="md">Create Site Network Access</Heading>
+        <Flex justifyContent="space-between" alignItems="center">
+          <Heading size="md">Edit Site Network Access</Heading>
+          <Button
+            onClick={handleDelete}
+            colorScheme="red"
+            isDisabled={selectedNetworkAccess?.siteNetworkAccessId == null}
+          >
+            Delete
+          </Button>
+        </Flex>
         {vpnSites && (
           <>
             <FormControl id="selected-site" my={6}>
@@ -123,8 +124,17 @@ const CreateSiteNetAccessPage: FC = () => {
               />
             </FormControl>
             {selectedSite && (
+              <FormControl id="select-network-access" my={6}>
+                <FormLabel>Select Network Access:</FormLabel>
+                <Autocomplete2
+                  items={selectedSite.siteNetworkAccesses.map((access) => access.siteNetworkAccessId)}
+                  selectedItem={selectedNetworkAccess?.siteNetworkAccessId}
+                  onChange={handleSiteNetworkChange}
+                />
+              </FormControl>
+            )}
+            {selectedSite && selectedNetworkAccess && (
               <>
-                {/* <SiteInfo site={selectedSite} /> */}
                 <SiteNetworkAccessForm
                   mode="add"
                   qosProfiles={qosProfiles}
@@ -132,7 +142,7 @@ const CreateSiteNetAccessPage: FC = () => {
                   bandwidths={bandwiths}
                   sites={vpnSites}
                   site={selectedSite}
-                  selectedNetworkAccess={getDefaultNetworkAccess()}
+                  selectedNetworkAccess={selectedNetworkAccess}
                   onSubmit={handleSubmit}
                   onCancel={handleCancel}
                 />
@@ -145,4 +155,4 @@ const CreateSiteNetAccessPage: FC = () => {
   );
 };
 
-export default CreateSiteNetAccessPage;
+export default EditSiteNetAccessPage;

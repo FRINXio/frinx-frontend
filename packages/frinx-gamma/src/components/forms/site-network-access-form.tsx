@@ -25,7 +25,26 @@ type Props = {
   onNetworkAccessChange?: (s: SiteNetworkAccess) => void;
 };
 
-const SiteNetAccessForm: FC<Props> = ({ site, selectedNetworkAccess, qosProfiles, bandwidths, onSubmit, onCancel }) => {
+function getEditedNetworkAccesses(
+  networkAccesses: SiteNetworkAccess[],
+  editedNetworkAccess: SiteNetworkAccess,
+): SiteNetworkAccess[] {
+  const oldNetworkAccesses = [...networkAccesses];
+
+  return oldNetworkAccesses.map((access) => {
+    return access.siteNetworkAccessId === editedNetworkAccess.siteNetworkAccessId ? editedNetworkAccess : access;
+  });
+}
+
+const SiteNetAccessForm: FC<Props> = ({
+  mode,
+  site,
+  selectedNetworkAccess,
+  qosProfiles,
+  bandwidths,
+  onSubmit,
+  onCancel,
+}) => {
   const [siteState, setSiteState] = useState(site);
   const [networkAccessState, setNetworkAccessState] = useState(selectedNetworkAccess);
 
@@ -52,7 +71,10 @@ const SiteNetAccessForm: FC<Props> = ({ site, selectedNetworkAccess, qosProfiles
       return;
     }
     const oldNetworkAccesses = siteState.siteNetworkAccesses || [];
-    const newNetworkAccesses = [...oldNetworkAccesses, networkAccessState];
+    const newNetworkAccesses =
+      mode === 'add'
+        ? [...oldNetworkAccesses, networkAccessState]
+        : getEditedNetworkAccesses(oldNetworkAccesses, networkAccessState);
     onSubmit({
       ...siteState,
       siteNetworkAccesses: newNetworkAccesses,
@@ -137,7 +159,10 @@ const SiteNetAccessForm: FC<Props> = ({ site, selectedNetworkAccess, qosProfiles
             console.log(event.target.value);
             setNetworkAccessState({
               ...networkAccessState,
-              [networkAccessState.bearer.requestedCLan]: event.target.value as unknown as RequestedCVlan,
+              bearer: {
+                ...networkAccessState.bearer,
+                requestedCLan: event.target.value as unknown as RequestedCVlan,
+              },
             });
           }}
         >
