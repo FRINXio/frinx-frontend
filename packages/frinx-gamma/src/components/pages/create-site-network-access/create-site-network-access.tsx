@@ -4,7 +4,7 @@ import { useHistory } from 'react-router';
 import { getVpnSites, editVpnSite, getValidProviderIdentifiers } from '../../../api/unistore/unistore';
 import { generateNetworkAccessId } from '../../../api/uniresource/uniresource';
 import { apiVpnSitesToClientVpnSite, apiProviderIdentifiersToClientIdentifers } from '../../forms/converters';
-import { VpnSite, SiteNetworkAccess, AccessPriority } from '../../forms/site-types';
+import { VpnSite, SiteNetworkAccess, AccessPriority, RequestedCVlan } from '../../forms/site-types';
 import SiteNetworkAccessForm from '../../forms/site-network-access-form';
 // import SiteInfo from './site-info';
 import Autocomplete2 from '../../autocomplete-2/autocomplete-2';
@@ -35,13 +35,32 @@ const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
       ],
     },
   ],
+  bearer: {
+    alwaysOn: false,
+    bearerReference: '',
+    requestedCLan: RequestedCVlan.l3vpn,
+    requestedType: {
+      requestedType: 'dotlat',
+      strict: false,
+    },
+  },
+  service: {
+    svcInputBandwidth: 1000,
+    svcOutputBandwidth: 1000,
+    qosProfiles: [''],
+  },
 });
+
+const getBandwidths = async () => {
+  return [1000, 2000, 5000, 10000];
+};
 
 const CreateSiteNetAccessPage: FC = () => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const [bfdProfiles, setBfdProfiles] = useState<string[]>([]);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
+  const [bandwiths, setBandwiths] = useState<number[]>([]);
 
   const history = useHistory();
 
@@ -54,9 +73,12 @@ const CreateSiteNetAccessPage: FC = () => {
       const profiles = await getValidProviderIdentifiers();
       const clientProfiles = apiProviderIdentifiersToClientIdentifers(profiles);
 
+      const bandwithsResponse = await getBandwidths();
+
       setVpnSites(clientVpnSites);
       setBfdProfiles(clientProfiles.bfdIdentifiers);
       setQosProfiles(clientProfiles.qosIdentifiers);
+      setBandwiths(bandwithsResponse);
     };
 
     fetchData();
@@ -103,6 +125,7 @@ const CreateSiteNetAccessPage: FC = () => {
                   mode="add"
                   qosProfiles={qosProfiles}
                   bfdProfiles={bfdProfiles}
+                  bandwidths={bandwiths}
                   sites={vpnSites}
                   site={selectedSite}
                   selectedNetworkAccess={getDefaultNetworkAccess()}

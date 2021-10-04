@@ -12,6 +12,7 @@ import {
   RoutingProtocols,
   RoutingProtocolType,
   LanTag,
+  RequestedCVlan,
 } from './site-types';
 import {
   VpnServicesOutput,
@@ -93,6 +94,8 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
   }
 
   return networkAccess['site-network-access'].map((access) => {
+    const apiQosProfiles = access.service.qos['qos-profile']['qos-profile'];
+    const [clientQosProfile] = apiQosProfiles.length ? apiQosProfiles.map((p) => p.profile) : [''];
     return {
       siteNetworkAccessId: access['site-network-access-id'],
       siteNetworkAccessType: access['site-network-access-type'] as SiteNetworkAccessType,
@@ -101,6 +104,20 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
       locationReference: access['location-reference'] || null,
       deviceReference: access['device-reference'] || null,
       routingProtocols: [apiRoutingProtocolToClientRoutingProtocol(access['routing-protocols'])],
+      bearer: {
+        alwaysOn: access.bearer['always-on'],
+        bearerReference: access.bearer['bearer-reference'],
+        requestedCLan: String(access.bearer['requested-c-vlan']) as RequestedCVlan,
+        requestedType: {
+          requestedType: access.bearer['requested-type']['requested-type'],
+          strict: access.bearer['requested-type'].strict,
+        },
+      },
+      service: {
+        qosProfiles: [clientQosProfile],
+        svcInputBandwidth: access.service['svc-input-bandwidth'],
+        svcOutputBandwidth: access.service['svc-output-bandwidth'],
+      },
     };
   });
 }
@@ -166,6 +183,28 @@ function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAcces
               'maximum-routes': access.maximumRoutes,
             },
           ],
+        },
+        bearer: {
+          'always-on': access.bearer.alwaysOn,
+          'bearer-reference': access.bearer.bearerReference,
+          'requested-type': {
+            'requested-type': access.bearer.requestedType.requestedType,
+            strict: access.bearer.requestedType.strict,
+          },
+          'requested-c-vlan': Number(access.bearer.requestedCLan),
+        },
+        service: {
+          'svc-input-bandwidth': access.service.svcInputBandwidth,
+          'svc-output-bandwidth': access.service.svcOutputBandwidth,
+          qos: {
+            'qos-profile': {
+              'qos-profile': [
+                {
+                  profile: access.service.qosProfiles[0],
+                },
+              ],
+            },
+          },
         },
         'routing-protocols': {
           'routing-protocol': [
@@ -245,17 +284,6 @@ export function clientVpnSiteToApiVpnSite(vpnSite: VpnSite): CreateVpnSiteInput 
         // 'vpn-policies': {
         //   'vpn-policy': [],
         // },
-        service: {
-          qos: {
-            'qos-profile': {
-              'qos-profile': [
-                {
-                  profile: vpnSite.siteServiceQosProfile,
-                },
-              ],
-            },
-          },
-        },
       },
     ],
   };
