@@ -1,0 +1,32 @@
+import { ValidProviderIdentifiersOutput, VpnServicesOutput, VpnSitesOutput } from './api/unistore/network-types';
+import { VpnService } from './components/forms/service-types';
+import { VpnSite } from './components/forms/site-types';
+
+export type Callbacks = {
+  getVpnServices: () => Promise<VpnServicesOutput>;
+  editVpnServices: (body: VpnService) => Promise<unknown>;
+  deleteVpnService: (id: string) => Promise<unknown>;
+  createVpnService: (body: VpnService) => Promise<void>;
+  getVpnSites: () => Promise<VpnSitesOutput>;
+  createVpnSite: (body: VpnSite) => Promise<void>;
+  editVpnSite: (body: VpnSite) => Promise<void>;
+  deleteVpnSite: (id: string) => Promise<void>;
+  getValidProviderIdentifiers: () => Promise<ValidProviderIdentifiersOutput>;
+};
+
+class CallbackUtils {
+  private callbacks: Callbacks | null = null;
+
+  setCallbacks(callbacks: Callbacks) {
+    this.callbacks = callbacks;
+  }
+
+  get getCallbacks() {
+    if (this.callbacks == null) {
+      throw new Error('callbacks not set');
+    }
+    return this.callbacks;
+  }
+}
+
+export default new CallbackUtils();
