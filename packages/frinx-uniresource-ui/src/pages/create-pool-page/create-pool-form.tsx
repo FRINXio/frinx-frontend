@@ -15,14 +15,18 @@ import {
   Select,
   Switch,
 } from '@chakra-ui/react';
+import { Item } from 'chakra-ui-autocomplete';
 import PoolValuesForm from './pool-values-form';
 import PoolPropertiesForm from './pool-properties-form';
+import SearchByTagInput from '../../components/search-by-tag-input';
+import { useTagsInput } from '../../hooks/use-tags-input';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
 type FormValues = {
   name: string;
   description: string;
   resourceTypeId: string;
+  tags: string[];
   allocationStrategyId?: string;
   poolProperties?: Record<string, string>;
   poolPropertyTypes?: Record<string, 'int' | 'string'>;
@@ -47,6 +51,7 @@ const INITIAL_VALUES: FormValues = {
   allocationStrategyId: '',
   poolProperties: {},
   poolPropertyTypes: {},
+  tags: [],
 };
 
 type ResourceType = {
@@ -76,6 +81,7 @@ function getSchema(poolType: string, isNested: boolean) {
         name: yup.string().required('Please enter a name'),
         description: yup.string().notRequired(),
         resourceTypeId: yup.string().required('Please enter resource type'),
+        tags: yup.array(),
         dealocationSafetyPeriod: yup
           .number()
           .min(0, 'Please enter positive number')
@@ -96,6 +102,7 @@ function getSchema(poolType: string, isNested: boolean) {
         name: yup.string().required('Please enter a name'),
         description: yup.string().notRequired(),
         resourceTypeId: yup.string().required('Please enter resource type'),
+        tags: yup.array(),
         dealocationSafetyPeriod: yup
           .number()
           .min(0, 'Please enter positive number')
@@ -108,6 +115,7 @@ function getSchema(poolType: string, isNested: boolean) {
       return yup.object({
         name: yup.string().required('Please enter a name'),
         description: yup.string().notRequired(),
+        tags: yup.array(),
         resourceTypeId: yup.string().required('Please enter resource type'),
         ...(isNested && { parentResourceId: yup.string().required('Please enter parent resource type') }),
       });
@@ -115,12 +123,17 @@ function getSchema(poolType: string, isNested: boolean) {
 }
 
 const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTypes, pools, allocStrategies }) => {
+  const { selectedTags, handleTagCreation, handleOnSelectionChange } = useTagsInput();
   const [poolSchema, setPoolSchema] = useState(getSchema(INITIAL_VALUES.poolType, INITIAL_VALUES.isNested));
   const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: poolSchema,
     onSubmit: async (data) => {
-      onFormSubmit(data);
+      const updatedData: FormValues = {
+        ...data,
+        tags: selectedTags.map(({ label }: Item) => label),
+      };
+      onFormSubmit(updatedData);
     },
   });
 
@@ -220,6 +233,13 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
         <FormLabel>Name</FormLabel>
         <Input type="text" onChange={handleChange} name="name" value={values.name} placeholder="Enter name" />
         <FormErrorMessage>{errors.name}</FormErrorMessage>
+      </FormControl>
+      <FormControl my={5}>
+        <SearchByTagInput
+          selectedTags={selectedTags}
+          onTagCreate={handleTagCreation}
+          onSelectionChange={handleOnSelectionChange}
+        />
       </FormControl>
       <FormControl id="description" marginY={5}>
         <FormLabel>Descripton</FormLabel>
