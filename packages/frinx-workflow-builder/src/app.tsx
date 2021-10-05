@@ -277,7 +277,7 @@ const App: FC<Props> = ({
         <WorkflowEditorModal
           workflow={workflow}
           isOpen={workflowEditorDisclosure.isOpen}
-          onSave={(editedWorkflow) => onWorkflowChange(editedWorkflow)}
+          onSave={onWorkflowChange}
           onClose={workflowEditorDisclosure.onClose}
         />
       )}
