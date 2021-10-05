@@ -30,6 +30,11 @@ const Main: FC = () => {
           Create Site Net Access
         </ChakraLink>
       </Box>
+      <Box>
+        <ChakraLink as={Link} to="/edit-site-network-access">
+          Edit Site Net Access
+        </ChakraLink>
+      </Box>
     </Box>
   );
 };
