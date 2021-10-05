@@ -58,8 +58,8 @@ export type BgpRoutingType = {
 export type RoutingProtocols = {
   type: RoutingProtocolType;
   vrrp: VrrpRoutingType;
-  static: StaticRoutingType[];
-  bgp: BgpRoutingType;
+  static?: StaticRoutingType[];
+  bgp?: BgpRoutingType;
 };
 
 export type Bearer = {

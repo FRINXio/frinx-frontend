@@ -106,6 +106,9 @@ const SiteNetAccessForm: FC<Props> = ({
   const locationIds = siteState.customerLocations.map((l) => unwrap(l.locationId));
   const deviceIds = siteState.siteDevices.map((d) => unwrap(d.deviceId));
 
+  const bgpProfile = networkAccessState.routingProtocols[0].bgp;
+  // const staticProfile = networkAccessState.routingProtocols[0].static;
+
   return (
     <form onSubmit={handleSubmit}>
       <FormControl id="service-network-access-type" my={6}>
@@ -291,22 +294,29 @@ const SiteNetAccessForm: FC<Props> = ({
         </Select>
       </FormControl>
 
-      <FormControl id="bgp-profile" my={6}>
-        <FormLabel>Bgp Profile</FormLabel>{' '}
+      <FormControl id="bgp-profile-autonomous-system" my={6}>
+        <FormLabel>Bgp Profile - Autonomous System</FormLabel>
         <Input
           variant="filled"
           name="bgpProfile"
-          value={networkAccessState.routingProtocols[0].bgp.autonomousSystem}
+          value={bgpProfile ? bgpProfile.autonomousSystem : 0}
           onChange={(event) => {
+            const bgp = networkAccessState.routingProtocols[0].bgp
+              ? {
+                  ...networkAccessState.routingProtocols[0].bgp,
+                  autonomousSystem: Number(event.target.value),
+                }
+              : {
+                  addressFamily: 'ipv4' as const,
+                  autonomousSystem: Number(event.target.value),
+                  bgpProfile: null,
+                };
             setNetworkAccessState({
               ...networkAccessState,
               routingProtocols: [
                 {
                   ...networkAccessState.routingProtocols[0],
-                  bgp: {
-                    ...networkAccessState.routingProtocols[0].bgp,
-                    autonomousSystem: Number(event.target.value),
-                  },
+                  bgp,
                 },
               ],
             });
