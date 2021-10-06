@@ -7,7 +7,7 @@ import { apiVpnSitesToClientVpnSite, apiProviderIdentifiersToClientIdentifers } 
 import { VpnSite, SiteNetworkAccess, AccessPriority, RequestedCVlan } from '../../forms/site-types';
 import SiteNetworkAccessForm from '../../forms/site-network-access-form';
 // import SiteInfo from './site-info';
-import Autocomplete2 from '../../autocomplete-2/autocomplete-2';
+import Autocomplete2, { Item } from '../../autocomplete-2/autocomplete-2';
 import unwrap from '../../../helpers/unwrap';
 
 const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
@@ -101,12 +101,21 @@ const CreateSiteNetAccessPage: FC = () => {
     history.push('/');
   };
 
-  const handleSiteChange = (siteId?: string | null) => {
+  const handleSiteItemChange = (item?: Item | null) => {
     // eslint-disable-next-line no-console
     console.log('site changed');
-    const site = vpnSites?.filter((s) => s.siteId === siteId).pop();
+    const site = vpnSites?.filter((s) => s.siteId === item?.value).pop();
     setSelectedSite(site || null);
   };
+
+  const vpnItems = vpnSites
+    ? vpnSites.map((s) => ({
+        value: unwrap(s.siteId),
+        label: unwrap(s.siteId),
+      }))
+    : [];
+
+  const [selectedVpnItem] = vpnItems.filter((item) => item.value === selectedSite?.siteId);
 
   return (
     <Container>
@@ -116,11 +125,7 @@ const CreateSiteNetAccessPage: FC = () => {
           <>
             <FormControl id="selected-site" my={6}>
               <FormLabel>Select site:</FormLabel>
-              <Autocomplete2
-                items={vpnSites.map((s) => unwrap(s.siteId))}
-                selectedItem={selectedSite?.siteId}
-                onChange={handleSiteChange}
-              />
+              <Autocomplete2 items={vpnItems} selectedItem={selectedVpnItem} onChange={handleSiteItemChange} />
             </FormControl>
             {selectedSite && (
               <>

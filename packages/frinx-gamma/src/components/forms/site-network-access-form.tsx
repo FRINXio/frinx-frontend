@@ -9,7 +9,7 @@ import {
   SiteNetworkAccessType,
   RequestedCVlan,
 } from './site-types';
-import Autocomplete2 from '../autocomplete-2/autocomplete-2';
+import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 import unwrap from '../../helpers/unwrap';
 
 type Props = {
@@ -81,20 +81,20 @@ const SiteNetAccessForm: FC<Props> = ({
     });
   };
 
-  const handleLocationChange = (locationId?: string | null) => {
+  const handleLocationChange = (item?: Item | null) => {
     if (networkAccessState) {
       setNetworkAccessState({
         ...networkAccessState,
-        locationReference: unwrap(locationId),
+        locationReference: unwrap(item).value,
       });
     }
   };
 
-  const handleDeviceChange = (deviceId?: string | null) => {
+  const handleDeviceChange = (item?: Item | null) => {
     if (networkAccessState) {
       setNetworkAccessState({
         ...networkAccessState,
-        deviceReference: unwrap(deviceId),
+        deviceReference: unwrap(item).value,
       });
     }
   };
@@ -103,8 +103,23 @@ const SiteNetAccessForm: FC<Props> = ({
     return null;
   }
 
-  const locationIds = siteState.customerLocations.map((l) => unwrap(l.locationId));
-  const deviceIds = siteState.siteDevices.map((d) => unwrap(d.deviceId));
+  const locationItems = siteState.customerLocations.map((l) => {
+    const id = unwrap(l.locationId);
+    return {
+      value: id,
+      label: id,
+    };
+  });
+  const [selectedLocation] = locationItems.filter((item) => item.value === networkAccessState.locationReference);
+
+  const deviceItems = siteState.siteDevices.map((d) => {
+    const id = unwrap(d.deviceId);
+    return {
+      value: id,
+      label: id,
+    };
+  });
+  const [selectedDevice] = deviceItems.filter((item) => item.value === networkAccessState.deviceReference);
 
   const bgpProfile = networkAccessState.routingProtocols[0].bgp;
   // const staticProfile = networkAccessState.routingProtocols[0].static;
@@ -134,20 +149,12 @@ const SiteNetAccessForm: FC<Props> = ({
       {siteState.siteManagementType === 'customer-managed' ? (
         <FormControl id="location-id" my={6}>
           <FormLabel>Locations</FormLabel>
-          <Autocomplete2
-            items={locationIds}
-            selectedItem={networkAccessState.locationReference}
-            onChange={handleLocationChange}
-          />
+          <Autocomplete2 items={locationItems} selectedItem={selectedLocation} onChange={handleLocationChange} />
         </FormControl>
       ) : (
         <FormControl id="device-id" my={6}>
           <FormLabel>Devices</FormLabel>
-          <Autocomplete2
-            items={deviceIds}
-            selectedItem={networkAccessState.deviceReference}
-            onChange={handleDeviceChange}
-          />
+          <Autocomplete2 items={deviceItems} selectedItem={selectedDevice} onChange={handleDeviceChange} />
         </FormControl>
       )}
 

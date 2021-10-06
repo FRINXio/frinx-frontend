@@ -4,12 +4,15 @@ import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
 import AutocompleteMenu from './autocomplete-menu';
 
-type Item = string;
+export type Item = {
+  label: string;
+  value: string;
+};
 type Props = {
   items: Item[];
-  onChange: (item?: string | null) => void;
+  onChange: (item?: Item | null) => void;
   inputVariant?: InputProps['variant'];
-  selectedItem: string | null | undefined;
+  selectedItem: Item | null | undefined;
 };
 
 // we wanna remove 'id' and 'name' from props returned from `useCombobox`
@@ -22,14 +25,14 @@ function getStrippedInputProps(inputProps: InputProps): Omit<InputProps, 'id' | 
 const Autocomplete2: VoidFunctionComponent<Props> = ({ items, onChange, inputVariant, selectedItem }) => {
   const [inputItems, setInputItems] = useState(items);
 
-  const onSelectedItemChange = (changes: UseComboboxStateChange<string>) => {
+  const onSelectedItemChange = (changes: UseComboboxStateChange<Item>) => {
     onChange(changes.selectedItem);
   };
 
-  const onInputValueChange = ({ inputValue }: UseComboboxStateChange<string>) => {
+  const onInputValueChange = ({ inputValue }: UseComboboxStateChange<Item>) => {
     setInputItems(() => {
       if (inputValue) {
-        return items.filter((item) => item.toLowerCase().includes(inputValue.toLowerCase()));
+        return items.filter((item) => item.value.toLowerCase().includes(inputValue.toLowerCase()));
       }
       return items;
     });
@@ -46,8 +49,9 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({ items, onChange, inputVar
   } = useCombobox({
     items: inputItems,
     onSelectedItemChange,
-    selectedItem: selectedItem ?? '',
+    selectedItem: selectedItem ?? null,
     onInputValueChange,
+    itemToString: (item) => (item ? item.value : ''),
   });
 
   return (

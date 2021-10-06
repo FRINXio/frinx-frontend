@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { Container, Box, Flex, Heading, Button, FormControl, FormLabel } from '@chakra-ui/react';
 import { useHistory } from 'react-router';
 import VpnServiceForm from '../../forms/vpn-service-form';
-import Autocomplete2 from '../../autocomplete-2/autocomplete-2';
+import Autocomplete2, { Item } from '../../autocomplete-2/autocomplete-2';
 // import Autocomplete from '../../autocomplete/autocomplete';
 import { VpnService } from '../../forms/service-types';
 import { getVpnServices, editVpnServices, deleteVpnService } from '../../../api/unistore/unistore';
@@ -58,11 +58,11 @@ const CreateVpnServicePage: FC = () => {
     setSelectedService(service);
   };
 
-  const handleVpnIdChange = (vpnId?: string | null) => {
+  const handleVpnItemChange = (item?: Item | null) => {
     if (!vpnServices) {
       return;
     }
-    const [newService] = vpnServices.filter((s) => s.vpnId === vpnId);
+    const [newService] = vpnServices.filter((s) => s.vpnId === item?.value);
     setSelectedService(newService);
   };
 
@@ -71,7 +71,15 @@ const CreateVpnServicePage: FC = () => {
     return null;
   }
 
-  const vpnIds = vpnServices.map((s) => unwrap(s.vpnId));
+  const vpnItems = vpnServices.map((s) => {
+    const id = unwrap(s.vpnId);
+    return {
+      value: id,
+      label: `${id} (${s.customerName})`,
+    };
+  });
+
+  const [selectedVpnItem] = vpnItems.filter((item) => item.value === selectedService?.vpnId);
 
   return (
     <Container>
@@ -84,7 +92,7 @@ const CreateVpnServicePage: FC = () => {
         </Flex>
         <FormControl id="vpnId" my={6}>
           <FormLabel>Vpn ID</FormLabel>
-          <Autocomplete2 items={vpnIds} selectedItem={selectedService?.vpnId} onChange={handleVpnIdChange} />
+          <Autocomplete2 items={vpnItems} selectedItem={selectedVpnItem} onChange={handleVpnItemChange} />
         </FormControl>
         {vpnServices && selectedService && (
           <VpnServiceForm

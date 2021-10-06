@@ -15,9 +15,9 @@ import {
   TagCloseButton,
 } from '@chakra-ui/react';
 import { AddIcon, CloseIcon } from '@chakra-ui/icons';
-import { uniq } from 'lodash';
+import { uniqBy } from 'lodash';
 import { VpnServiceTopology, DefaultCVlanEnum, VpnService, MaximumRoutes } from './service-types';
-import Autocomplete2 from '../autocomplete-2/autocomplete-2';
+import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 
 type Props = {
   mode: 'add' | 'edit';
@@ -52,17 +52,17 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
     onSubmit(serviceState);
   };
 
-  const handleCustomerChange = (customerName?: string | null) => {
+  const handleCustomerChange = (customerName?: Item | null) => {
     if (!customerName) {
       return;
     }
     const [newService] =
       mode === 'edit'
-        ? services.filter((s) => s.customerName === customerName)
+        ? services.filter((s) => s.customerName === customerName.value)
         : [
             {
               ...serviceState,
-              customerName,
+              customerName: customerName.value,
             },
           ];
     setServiceState(newService);
@@ -99,7 +99,15 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
     return !serviceState.extranetVpns.includes(ev);
   });
 
-  const customerNames = uniq(services.map((s) => s.customerName));
+  const customerItems = uniqBy(
+    services.map((s) => ({
+      value: s.customerName,
+      label: s.customerName,
+    })),
+    'value',
+  );
+
+  const [selectedCustomerItem] = customerItems.filter((ci) => ci.value === serviceState.customerName);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -107,11 +115,7 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
         <FormLabel>Customer Name</FormLabel>
         <Flex>
           <Box flex="1">
-            <Autocomplete2
-              items={customerNames}
-              selectedItem={serviceState.customerName}
-              onChange={handleCustomerChange}
-            />
+            <Autocomplete2 items={customerItems} selectedItem={selectedCustomerItem} onChange={handleCustomerChange} />
           </Box>
           <Box marginLeft={4} alignSelf="center">
             <IconButton

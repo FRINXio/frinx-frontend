@@ -18,7 +18,7 @@ import CustomerLocationForm from './customer-location-form';
 import SiteDeviceForm from './site-device-form';
 import Autocomplete from '../autocomplete/autocomplete';
 import unwrap from '../../helpers/unwrap';
-import Autocomplete2 from '../autocomplete-2/autocomplete-2';
+import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 
 type Props = {
   mode: 'add' | 'edit';
@@ -113,14 +113,24 @@ const VpnSiteForm: FC<Props> = ({ mode, site, sites, onSubmit, onCancel, onSiteC
     });
   };
 
-  const handleSiteIdChange = (siteId?: string | null) => {
+  const handleSiteItemChange = (item?: Item | null) => {
     if (onSiteChange) {
-      const [newSite] = sites.filter((s) => s.siteId === siteId);
+      const [newSite] = sites.filter((s) => s.siteId === item?.value);
       onSiteChange(newSite);
     }
   };
 
-  const siteIds = mode === 'edit' ? sites.map((s) => unwrap(s.siteId)).filter((s) => s !== siteState.siteId) : [];
+  const siteItems =
+    mode === 'edit'
+      ? sites
+          .map((s) => ({
+            value: unwrap(s.siteId),
+            label: unwrap(s.siteId),
+          }))
+          .filter((s) => s.value !== siteState.siteId)
+      : [];
+
+  const [selectedSiteItem] = siteItems.filter((item) => item.value === siteState.siteId);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -128,7 +138,7 @@ const VpnSiteForm: FC<Props> = ({ mode, site, sites, onSubmit, onCancel, onSiteC
         <FormControl id="siteId" my={6}>
           <FormLabel>Site ID</FormLabel>
           {/* <Autocomplete items={vpnIds} selectedItem={serviceState.vpnId || ''} onChange={handleVpnIdChange} /> */}
-          <Autocomplete2 items={siteIds} selectedItem={siteState.siteId} onChange={handleSiteIdChange} />
+          <Autocomplete2 items={siteItems} selectedItem={selectedSiteItem} onChange={handleSiteItemChange} />
         </FormControl>
       )}
       <FormControl id="customer-locations" my={6}>
