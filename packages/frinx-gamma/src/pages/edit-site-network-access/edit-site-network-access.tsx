@@ -1,7 +1,7 @@
 import { Box, Button, Container, Flex, FormControl, FormLabel, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import unwrap from '../../helpers/unwrap';
-import Autocomplete2 from '../../components/autocomplete-2/autocomplete-2';
+import Autocomplete2, { Item } from '../../components/autocomplete-2/autocomplete-2';
 import {
   apiProviderIdentifiersToClientIdentifers,
   apiVpnSitesToClientVpnSite,
@@ -66,10 +66,10 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
     onCancel();
   };
 
-  const handleSiteChange = (siteId?: string | null) => {
+  const handleSiteItemChange = (item?: Item | null) => {
     // eslint-disable-next-line no-console
     console.log('site changed');
-    const site = vpnSites?.filter((s) => s.siteId === siteId).pop();
+    const site = vpnSites?.filter((s) => s.siteId === item?.value).pop();
     setSelectedSite(site || null);
     setSelectedNetworkAccess(null);
   };
@@ -96,17 +96,35 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
     onSuccess();
   };
 
-  const handleSiteNetworkChange = (networkAccessId?: string | null) => {
+  const handleSiteNetworkItemChange = (item?: Item | null) => {
     // eslint-disable-next-line no-console
     console.log('site network change');
     if (!selectedSite) {
       return;
     }
     const networkAccess = selectedSite.siteNetworkAccesses
-      .filter((access) => access.siteNetworkAccessId === networkAccessId)
+      .filter((access) => access.siteNetworkAccessId === item?.value)
       .pop();
     setSelectedNetworkAccess(networkAccess || null);
   };
+
+  const siteItems = vpnSites
+    ? vpnSites.map((s) => ({
+        value: unwrap(s.siteId),
+        label: unwrap(s.siteId),
+      }))
+    : [];
+  const [selectedSiteItem] = siteItems.filter((item) => item.value === selectedSite?.siteId);
+
+  const networkAccessItems = selectedSite
+    ? selectedSite.siteNetworkAccesses.map((access) => ({
+        value: access.siteNetworkAccessId,
+        label: access.siteNetworkAccessId,
+      }))
+    : [];
+  const [selectedNetworkAccessItem] = networkAccessItems.filter(
+    (item) => item.value === selectedNetworkAccess?.siteNetworkAccessId,
+  );
 
   return (
     <Container>
@@ -125,19 +143,15 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
           <>
             <FormControl id="selected-site" my={6}>
               <FormLabel>Select site:</FormLabel>
-              <Autocomplete2
-                items={vpnSites.map((s) => unwrap(s.siteId))}
-                selectedItem={selectedSite?.siteId}
-                onChange={handleSiteChange}
-              />
+              <Autocomplete2 items={siteItems} selectedItem={selectedSiteItem} onChange={handleSiteItemChange} />
             </FormControl>
             {selectedSite && (
               <FormControl id="select-network-access" my={6}>
                 <FormLabel>Select Network Access:</FormLabel>
                 <Autocomplete2
-                  items={selectedSite.siteNetworkAccesses.map((access) => access.siteNetworkAccessId)}
-                  selectedItem={selectedNetworkAccess?.siteNetworkAccessId}
-                  onChange={handleSiteNetworkChange}
+                  items={networkAccessItems}
+                  selectedItem={selectedNetworkAccessItem}
+                  onChange={handleSiteNetworkItemChange}
                 />
               </FormControl>
             )}

@@ -1,7 +1,10 @@
 import { Box, Button, Container, Flex, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import unwrap from '../../helpers/unwrap';
-import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
+import {
+  apiVpnSitesToClientVpnSite,
+  apiProviderIdentifiersToClientIdentifers,
+} from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
 import callbackUtils from '../../callback-utils';
@@ -24,6 +27,7 @@ type Props = {
 const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [selectedSite, setSelectedSite] = useState<VpnSite>(getDefaultVpnSite());
+  const [qosProfiles, setQosProfiles] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,6 +35,10 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
       const sites = await callbacks.getVpnSites();
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
       setVpnSites(clientVpnSites);
+
+      const profiles = await callbacks.getValidProviderIdentifiers();
+      const clientProfiles = apiProviderIdentifiersToClientIdentifers(profiles);
+      setQosProfiles(clientProfiles.qosIdentifiers);
     };
 
     fetchData();
@@ -80,6 +88,7 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
             mode="edit"
             sites={vpnSites}
             site={selectedSite}
+            qosProfiles={qosProfiles}
             onSubmit={handleSubmit}
             onCancel={handleCancel}
             onSiteChange={handleSiteChange}

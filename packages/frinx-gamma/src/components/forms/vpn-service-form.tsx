@@ -9,18 +9,15 @@ import {
   Stack,
   FormControl,
   FormLabel,
-  Input,
   Select,
   IconButton,
   TagLabel,
   TagCloseButton,
 } from '@chakra-ui/react';
 import { AddIcon, CloseIcon } from '@chakra-ui/icons';
-import { uniq } from 'lodash';
+import { uniqBy } from 'lodash';
 import { VpnServiceTopology, DefaultCVlanEnum, VpnService, MaximumRoutes } from './service-types';
-import Autocomplete from '../autocomplete/autocomplete';
-import unwrap from '../../helpers/unwrap';
-import Autocomplete2 from '../autocomplete-2/autocomplete-2';
+import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 
 type Props = {
   mode: 'add' | 'edit';
@@ -55,16 +52,21 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
     onSubmit(serviceState);
   };
 
-  const handleCustomerChange = (customerName: string) => {
-    if (onServiceChange) {
-      const [newService] = services.filter((s) => s.customerName === customerName);
-      onServiceChange(newService);
+  const handleCustomerChange = (customerName?: Item | null) => {
+    if (!customerName) {
+      return;
     }
-  };
-
-  const handleVpnIdChange = (vpnId?: string | null) => {
+    const [newService] =
+      mode === 'edit'
+        ? services.filter((s) => s.customerName === customerName.value)
+        : [
+            {
+              ...serviceState,
+              customerName: customerName.value,
+            },
+          ];
+    setServiceState(newService);
     if (onServiceChange) {
-      const [newService] = services.filter((s) => s.vpnId === vpnId);
       onServiceChange(newService);
     }
   };
@@ -97,66 +99,34 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
     return !serviceState.extranetVpns.includes(ev);
   });
 
-  const customerNames = uniq(services.map((s) => s.customerName).filter((s) => s !== serviceState.customerName));
-  const vpnIds =
-    mode === 'edit'
-      ? services
-          // first we filter all services with vpn-id that belongs to selected customer (if set)
-          .filter((s) => {
-            return serviceState.customerName ? service.customerName === s.customerName : true;
-          })
-          .map((s) => unwrap(s.vpnId))
-          .filter((s) => s !== serviceState.vpnId)
-      : [];
+  const customerItems = uniqBy(
+    services.map((s) => ({
+      value: s.customerName,
+      label: s.customerName,
+    })),
+    'value',
+  );
+
+  const [selectedCustomerItem] = customerItems.filter((ci) => ci.value === serviceState.customerName);
 
   return (
     <form onSubmit={handleSubmit}>
-      {mode === 'edit' && (
-        <FormControl id="vpnId" my={6}>
-          <FormLabel>Vpn ID</FormLabel>
-          {/* <Autocomplete items={vpnIds} selectedItem={serviceState.vpnId || ''} onChange={handleVpnIdChange} /> */}
-          <Autocomplete2 items={vpnIds} selectedItem={serviceState.vpnId} onChange={handleVpnIdChange} />
-        </FormControl>
-      )}
       <FormControl id="customerName" my={6}>
         <FormLabel>Customer Name</FormLabel>
-        {mode === 'add' ? (
-          <>
-            <Input
-              variant="filled"
-              name="customerName"
-              value={serviceState.customerName}
-              onChange={(event) => {
-                setServiceState({
-                  ...serviceState,
-                  customerName: event.target.value,
-                });
-              }}
+        <Flex>
+          <Box flex="1">
+            <Autocomplete2 items={customerItems} selectedItem={selectedCustomerItem} onChange={handleCustomerChange} />
+          </Box>
+          <Box marginLeft={4} alignSelf="center">
+            <IconButton
+              size="sm"
+              aria-label="Deselect Customer Name"
+              icon={<CloseIcon />}
+              onClick={handleDeselectCustomerName}
             />
-          </>
-        ) : (
-          <Flex>
-            <Box flex="1">
-              <Autocomplete
-                items={customerNames}
-                selectedItem={serviceState.customerName}
-                onChange={handleCustomerChange}
-              />
-            </Box>
-            <Box marginLeft={4} alignSelf="center">
-              <IconButton
-                size="sm"
-                aria-label="Deselect Customer Name"
-                icon={<CloseIcon />}
-                onClick={() => {
-                  handleDeselectCustomerName();
-                }}
-              />
-            </Box>
-          </Flex>
-        )}
+          </Box>
+        </Flex>
       </FormControl>
-
       <FormControl id="vpnServiceTopology" my={6}>
         <FormLabel>Vpn Service Topology</FormLabel>
         <Select

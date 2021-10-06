@@ -38,6 +38,7 @@ const VpnServicesOutputValidator = t.type({
           ),
         }),
         'vpn-service-topology': t.string,
+        'default-c-vlan': t.number,
       }),
     ),
   }),
@@ -160,31 +161,37 @@ const RoutingProtocolsValidator = t.type({
   'routing-protocol': t.array(
     t.type({
       type: t.string,
-      vrrp: t.type({
-        'address-family': t.array(t.string),
-      }),
-      static: t.type({
-        'cascaded-lan-prefixes': t.type({
-          'ipv4-lan-prefixes': t.array(
-            t.type({
-              lan: t.string,
-              'next-hop': t.string,
-              'lan-tag': t.string,
-            }),
-          ),
+      vrrp: optional(
+        t.type({
+          'address-family': t.array(t.string),
         }),
-      }),
-      bgp: t.type({
-        'bgp-profiles': t.type({
-          'bgp-profile': t.array(
-            t.type({
-              profile: t.string,
-            }),
-          ),
+      ),
+      static: optional(
+        t.type({
+          'cascaded-lan-prefixes': t.type({
+            'ipv4-lan-prefixes': t.array(
+              t.type({
+                lan: t.string,
+                'next-hop': t.string,
+                'lan-tag': t.string,
+              }),
+            ),
+          }),
         }),
-        'autonomous-system': t.number,
-        'address-family': t.array(t.string),
-      }),
+      ),
+      bgp: optional(
+        t.type({
+          'bgp-profiles': t.type({
+            'bgp-profile': t.array(
+              t.type({
+                profile: t.string,
+              }),
+            ),
+          }),
+          'autonomous-system': t.number,
+          'address-family': t.array(t.string),
+        }),
+      ),
     }),
   ),
 });
@@ -291,7 +298,7 @@ export type CreateRoutingProtocolsInput = {
       vrrp: {
         'address-family': ['ipv4'];
       };
-      static: {
+      static?: {
         'cascaded-lan-prefixes': {
           'ipv4-lan-prefixes': {
             lan: string;
@@ -300,7 +307,7 @@ export type CreateRoutingProtocolsInput = {
           }[];
         };
       };
-      bgp: {
+      bgp?: {
         'bgp-profiles': {
           'bgp-profile': [
             {

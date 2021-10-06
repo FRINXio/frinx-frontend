@@ -1,7 +1,10 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import callbackUtils from '../../callback-utils';
-import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
+import {
+  apiVpnSitesToClientVpnSite,
+  apiProviderIdentifiersToClientIdentifers,
+} from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
 import { generateSiteId } from '../../helpers/id-helpers';
@@ -23,6 +26,7 @@ type Props = {
 
 const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
+  const [qosProfiles, setQosProfiles] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,6 +34,10 @@ const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
       const sites = await callbacks.getVpnSites();
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
       setVpnSites(clientVpnSites);
+
+      const profiles = await callbacks.getValidProviderIdentifiers();
+      const clientProfiles = apiProviderIdentifiersToClientIdentifers(profiles);
+      setQosProfiles(clientProfiles.qosIdentifiers);
     };
 
     fetchData();
@@ -61,7 +69,14 @@ const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Create VPN Site</Heading>
         {vpnSites && (
-          <VpnSiteForm mode="add" sites={[]} site={defaultVpnSite} onSubmit={handleSubmit} onCancel={handleCancel} />
+          <VpnSiteForm
+            mode="add"
+            sites={[]}
+            site={defaultVpnSite}
+            qosProfiles={qosProfiles}
+            onSubmit={handleSubmit}
+            onCancel={handleCancel}
+          />
         )}
       </Box>
     </Container>

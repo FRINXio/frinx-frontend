@@ -1,13 +1,16 @@
 import { Box, Flex } from '@chakra-ui/react';
 import React, { HTMLAttributes, VoidFunctionComponent } from 'react';
 
-type Item = string;
+type Item = {
+  label: string;
+  value: string;
+};
 type Props = {
   items: Item[];
   menuProps: HTMLAttributes<HTMLElement>;
   isOpen: boolean;
   highlightedIndex: number;
-  getItemProps: (options: { item: string; index: number }) => HTMLAttributes<HTMLElement>;
+  getItemProps: (options: { item: Item; index: number }) => HTMLAttributes<HTMLElement>;
 };
 
 const AutocompleteMenu: VoidFunctionComponent<Props> = ({
@@ -38,7 +41,7 @@ const AutocompleteMenu: VoidFunctionComponent<Props> = ({
               <Flex
                 as="button"
                 type="button"
-                key={item}
+                key={item.value}
                 alignItems="center"
                 paddingY={1.5}
                 paddingX={3}
@@ -52,7 +55,7 @@ const AutocompleteMenu: VoidFunctionComponent<Props> = ({
                 }}
                 {...getItemProps({ item, index })}
               >
-                {item}
+                {item.label}
               </Flex>
             );
           })}

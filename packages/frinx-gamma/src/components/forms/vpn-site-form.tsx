@@ -18,12 +18,13 @@ import CustomerLocationForm from './customer-location-form';
 import SiteDeviceForm from './site-device-form';
 import Autocomplete from '../autocomplete/autocomplete';
 import unwrap from '../../helpers/unwrap';
-import Autocomplete2 from '../autocomplete-2/autocomplete-2';
+import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 
 type Props = {
   mode: 'add' | 'edit';
   sites: VpnSite[];
   site: VpnSite;
+  qosProfiles: string[];
   onSubmit: (s: VpnSite) => void;
   onCancel: () => void;
   onSiteChange?: (s: VpnSite) => void;
@@ -43,9 +44,7 @@ const getDefaultSiteDevice = (): SiteDevice => ({
   managementIP: '',
 });
 
-const getQosProfileNames = (): string[] => ['profile1', 'profile2', 'profile3'];
-
-const VpnSiteForm: FC<Props> = ({ mode, site, sites, onSubmit, onCancel, onSiteChange }) => {
+const VpnSiteForm: FC<Props> = ({ mode, site, sites, qosProfiles, onSubmit, onCancel, onSiteChange }) => {
   const [siteState, setSiteState] = useState(site);
   const [customerLocationsForm, setCustomerLocationsForm] = useState<CustomerLocation | null>(null); // eslint-disable-line @typescript-eslint/no-unused-vars
 
@@ -113,14 +112,24 @@ const VpnSiteForm: FC<Props> = ({ mode, site, sites, onSubmit, onCancel, onSiteC
     });
   };
 
-  const handleSiteIdChange = (siteId?: string | null) => {
+  const handleSiteItemChange = (item?: Item | null) => {
     if (onSiteChange) {
-      const [newSite] = sites.filter((s) => s.siteId === siteId);
+      const [newSite] = sites.filter((s) => s.siteId === item?.value);
       onSiteChange(newSite);
     }
   };
 
-  const siteIds = mode === 'edit' ? sites.map((s) => unwrap(s.siteId)).filter((s) => s !== siteState.siteId) : [];
+  const siteItems =
+    mode === 'edit'
+      ? sites
+          .map((s) => ({
+            value: unwrap(s.siteId),
+            label: unwrap(s.siteId),
+          }))
+          .filter((s) => s.value !== siteState.siteId)
+      : [];
+
+  const [selectedSiteItem] = siteItems.filter((item) => item.value === siteState.siteId);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -128,7 +137,7 @@ const VpnSiteForm: FC<Props> = ({ mode, site, sites, onSubmit, onCancel, onSiteC
         <FormControl id="siteId" my={6}>
           <FormLabel>Site ID</FormLabel>
           {/* <Autocomplete items={vpnIds} selectedItem={serviceState.vpnId || ''} onChange={handleVpnIdChange} /> */}
-          <Autocomplete2 items={siteIds} selectedItem={siteState.siteId} onChange={handleSiteIdChange} />
+          <Autocomplete2 items={siteItems} selectedItem={selectedSiteItem} onChange={handleSiteItemChange} />
         </FormControl>
       )}
       <FormControl id="customer-locations" my={6}>
@@ -221,7 +230,7 @@ const VpnSiteForm: FC<Props> = ({ mode, site, sites, onSubmit, onCancel, onSiteC
       <FormControl id="site-service-qos-profile" my={6}>
         <FormLabel>Site Service QOS Profile</FormLabel>
         <Autocomplete
-          items={getQosProfileNames()}
+          items={qosProfiles}
           selectedItem={siteState.siteServiceQosProfile}
           onChange={handleProfileNameChange}
         />

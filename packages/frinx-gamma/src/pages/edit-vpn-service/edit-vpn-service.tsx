@@ -1,18 +1,11 @@
-import { Box, Button, Container, Flex, Heading } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, FormControl, FormLabel, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import unwrap from '../../helpers/unwrap';
 import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
-import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
+import { VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
 import callbackUtils from '../../callback-utils';
-
-const defaultVpnService: VpnService = {
-  customerName: '',
-  defaultCVlan: DefaultCVlanEnum.L3VPN,
-  vpnServiceTopology: 'any-to-any',
-  maximumRoutes: 1000,
-  extranetVpns: [],
-};
+import Autocomplete2, { Item } from '../../components/autocomplete-2/autocomplete-2';
 
 const extranetVpns = ['MGMT', 'SIP889'];
 
@@ -23,7 +16,7 @@ type Props = {
 
 const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
-  const [selectedService, setSelectedService] = useState<VpnService>(defaultVpnService);
+  const [selectedService, setSelectedService] = useState<VpnService | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,6 +46,10 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
   };
 
   const handleDelete = () => {
+    if (!selectedService) {
+      return;
+    }
+
     // eslint-disable-next-line no-console
     console.log('delete clicked', selectedService);
     const callbacks = callbackUtils.getCallbacks;
@@ -64,20 +61,47 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
 
   const handleServiceChange = (service: VpnService) => {
     // eslint-disable-next-line no-console
-    console.log('customer name change', service);
+    console.log('customer changed');
     setSelectedService(service);
   };
+
+  const handleVpnItemChange = (item?: Item | null) => {
+    if (!vpnServices) {
+      return;
+    }
+    const [newService] = vpnServices.filter((s) => s.vpnId === item?.value);
+    setSelectedService(newService);
+  };
+
+  // TODO: add some loading state
+  if (!vpnServices) {
+    return null;
+  }
+
+  const vpnItems = vpnServices.map((s) => {
+    const id = unwrap(s.vpnId);
+    return {
+      value: id,
+      label: `${id} (${s.customerName})`,
+    };
+  });
+
+  const [selectedVpnItem] = vpnItems.filter((item) => item.value === selectedService?.vpnId);
 
   return (
     <Container>
       <Box padding={6} margin={6} background="white">
         <Flex justifyContent="space-between" alignItems="center">
           <Heading size="md">Edit VPN Service</Heading>
-          <Button onClick={handleDelete} colorScheme="red" isDisabled={selectedService.vpnId == null}>
+          <Button onClick={handleDelete} colorScheme="red" isDisabled={selectedService?.vpnId == null}>
             Delete
           </Button>
         </Flex>
-        {vpnServices && (
+        <FormControl id="vpnId" my={6}>
+          <FormLabel>Vpn ID</FormLabel>
+          <Autocomplete2 items={vpnItems} selectedItem={selectedVpnItem} onChange={handleVpnItemChange} />
+        </FormControl>
+        {vpnServices && selectedService && (
           <VpnServiceForm
             mode="edit"
             services={vpnServices}
