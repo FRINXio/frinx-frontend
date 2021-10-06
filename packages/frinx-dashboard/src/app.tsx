@@ -92,6 +92,11 @@ const App: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
                 <UniresourceApp />
               </Route>
             )}
+            {enabledServices.get('gamma_enabled') && (
+              <Route path="/gamma">
+                <GammaApp />
+              </Route>
+            )}
           </Switch>
         </Box>
       </BrowserRouter>
