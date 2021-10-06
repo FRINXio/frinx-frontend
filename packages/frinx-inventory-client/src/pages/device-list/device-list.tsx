@@ -19,6 +19,7 @@ import {
   UninstallDeviceMutationVariables,
 } from '../../__generated__/graphql';
 import DeviceFilter from './device-filters';
+import DeviceSelectBox from './device-select-box';
 import DeviceTable from './device-table';
 
 const DEVICES_QUERY = gql`
@@ -105,6 +106,8 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   const [deviceIdToDelete, setDeviceIdToDelete] = useState<string | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [installLoadingMap, setInstallLoadingMap] = useState<Record<string, boolean>>({});
+  const [areSelectedAll, setAreSelectedAll] = useState<boolean>(false);
+  const [selectedDevices, setSelectedDevices] = useState<string[]>([]);
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
   const [{ data: deviceData, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
@@ -222,6 +225,34 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     }
   };
 
+  const handleDeviceSelection = (deviceId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedDevices((prev) => {
+        const result = prev.concat(deviceId);
+
+        if (deviceData != null && result.length === deviceData.devices.edges.length) {
+          setAreSelectedAll(true);
+        }
+        return result;
+      });
+    } else {
+      setSelectedDevices(selectedDevices.filter((selectedDeviceId) => selectedDeviceId !== deviceId));
+      setAreSelectedAll(false);
+    }
+  };
+
+  const handleSelectionOfAllDevices = (checked: boolean) => {
+    if (checked) {
+      if (deviceData != null) {
+        setSelectedDevices(deviceData.devices.edges.map(({ node }) => node.id));
+      }
+    } else {
+      setSelectedDevices([]);
+    }
+
+    setAreSelectedAll(checked);
+  };
+
   const labels = labelsData?.labels?.edges ?? [];
 
   return (
@@ -256,22 +287,30 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
             </Box>
           )}
 
-          <Box>
+          <Box background="white" paddingX={4} paddingTop={4} paddingBottom={0} marginBottom={4}>
             <DeviceFilter
               labels={labels}
               selectedLabels={selectedLabels}
               onSelectionChange={handleOnSelectionChange}
               isCreationDisabled
             />
+            <DeviceSelectBox
+              devicesAmount={deviceData?.devices.edges.length ?? null}
+              areSelectedAll={areSelectedAll}
+              selectedDevicesAmount={selectedDevices.length}
+              onSelectAll={handleSelectionOfAllDevices}
+            />
           </Box>
           <DeviceTable
             devices={deviceData?.devices.edges ?? []}
+            selectedDevices={selectedDevices}
             onInstallButtonClick={handleInstallButtonClick}
             onUninstallButtonClick={handleUninstallButtonClick}
             onSettingsButtonClick={onSettingsButtonClick}
             onDeleteBtnClick={handleDeleteBtnClick}
             onEditDeviceButtonClick={onEditButtonClick}
             installLoadingMap={installLoadingMap}
+            onDeviceSelection={handleDeviceSelection}
           />
 
           {deviceData && (
