@@ -2,9 +2,9 @@ import React, { FC, useEffect, useState } from 'react';
 import { Container, Box, Heading } from '@chakra-ui/react';
 import { useHistory } from 'react-router';
 import VpnSiteForm from '../../forms/vpn-site-form';
-import { createVpnSite, getVpnSites } from '../../../api/unistore/unistore';
+import { createVpnSite, getVpnSites, getValidProviderIdentifiers } from '../../../api/unistore/unistore';
 import { generateSiteId } from '../../../api/uniresource/uniresource';
-import { apiVpnSitesToClientVpnSite } from '../../forms/converters';
+import { apiVpnSitesToClientVpnSite, apiProviderIdentifiersToClientIdentifers } from '../../forms/converters';
 import { VpnSite } from '../../forms/site-types';
 
 const defaultVpnSite: VpnSite = {
@@ -19,6 +19,7 @@ const defaultVpnSite: VpnSite = {
 
 const CreateVpnSitePage: FC = () => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
+  const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const history = useHistory();
 
   useEffect(() => {
@@ -26,6 +27,10 @@ const CreateVpnSitePage: FC = () => {
       const sites = await getVpnSites();
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
       setVpnSites(clientVpnSites);
+
+      const profiles = await getValidProviderIdentifiers();
+      const clientProfiles = apiProviderIdentifiersToClientIdentifers(profiles);
+      setQosProfiles(clientProfiles.qosIdentifiers);
     };
 
     fetchData();
@@ -56,7 +61,14 @@ const CreateVpnSitePage: FC = () => {
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Create VPN Site</Heading>
         {vpnSites && (
-          <VpnSiteForm mode="add" sites={[]} site={defaultVpnSite} onSubmit={handleSubmit} onCancel={handleCancel} />
+          <VpnSiteForm
+            mode="add"
+            sites={[]}
+            site={defaultVpnSite}
+            qosProfiles={qosProfiles}
+            onSubmit={handleSubmit}
+            onCancel={handleCancel}
+          />
         )}
       </Box>
     </Container>

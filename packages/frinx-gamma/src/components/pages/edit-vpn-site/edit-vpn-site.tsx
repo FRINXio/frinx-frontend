@@ -2,8 +2,8 @@ import React, { FC, useEffect, useState } from 'react';
 import { Flex, Button, Container, Box, Heading } from '@chakra-ui/react';
 import { useHistory } from 'react-router';
 import VpnSiteForm from '../../forms/vpn-site-form';
-import { getVpnSites, deleteVpnSite, editVpnSite } from '../../../api/unistore/unistore';
-import { apiVpnSitesToClientVpnSite } from '../../forms/converters';
+import { getVpnSites, deleteVpnSite, editVpnSite, getValidProviderIdentifiers } from '../../../api/unistore/unistore';
+import { apiVpnSitesToClientVpnSite, apiProviderIdentifiersToClientIdentifers } from '../../forms/converters';
 import { VpnSite } from '../../forms/site-types';
 import unwrap from '../../../helpers/unwrap';
 
@@ -20,6 +20,7 @@ const getDefaultVpnSite = (): VpnSite => ({
 const EditVpnSitePage: FC = () => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [selectedSite, setSelectedSite] = useState<VpnSite>(getDefaultVpnSite());
+  const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const history = useHistory();
 
   useEffect(() => {
@@ -27,6 +28,10 @@ const EditVpnSitePage: FC = () => {
       const sites = await getVpnSites();
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
       setVpnSites(clientVpnSites);
+
+      const profiles = await getValidProviderIdentifiers();
+      const clientProfiles = apiProviderIdentifiersToClientIdentifers(profiles);
+      setQosProfiles(clientProfiles.qosIdentifiers);
     };
 
     fetchData();
@@ -74,6 +79,7 @@ const EditVpnSitePage: FC = () => {
             mode="edit"
             sites={vpnSites}
             site={selectedSite}
+            qosProfiles={qosProfiles}
             onSubmit={handleSubmit}
             onCancel={handleCancel}
             onSiteChange={handleSiteChange}

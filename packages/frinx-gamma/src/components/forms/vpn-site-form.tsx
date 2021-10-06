@@ -24,6 +24,7 @@ type Props = {
   mode: 'add' | 'edit';
   sites: VpnSite[];
   site: VpnSite;
+  qosProfiles: string[];
   onSubmit: (s: VpnSite) => void;
   onCancel: () => void;
   onSiteChange?: (s: VpnSite) => void;
@@ -43,9 +44,7 @@ const getDefaultSiteDevice = (): SiteDevice => ({
   managementIP: '',
 });
 
-const getQosProfileNames = (): string[] => ['profile1', 'profile2', 'profile3'];
-
-const VpnSiteForm: FC<Props> = ({ mode, site, sites, onSubmit, onCancel, onSiteChange }) => {
+const VpnSiteForm: FC<Props> = ({ mode, site, sites, qosProfiles, onSubmit, onCancel, onSiteChange }) => {
   const [siteState, setSiteState] = useState(site);
   const [customerLocationsForm, setCustomerLocationsForm] = useState<CustomerLocation | null>(null); // eslint-disable-line @typescript-eslint/no-unused-vars
 
@@ -231,7 +230,7 @@ const VpnSiteForm: FC<Props> = ({ mode, site, sites, onSubmit, onCancel, onSiteC
       <FormControl id="site-service-qos-profile" my={6}>
         <FormLabel>Site Service QOS Profile</FormLabel>
         <Autocomplete
-          items={getQosProfileNames()}
+          items={qosProfiles}
           selectedItem={siteState.siteServiceQosProfile}
           onChange={handleProfileNameChange}
         />
