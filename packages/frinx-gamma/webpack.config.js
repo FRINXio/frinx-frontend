@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
-const HtmlWebPackPlugin = require('html-webpack-plugin');
 /* eslint-enable */
 
 const ENVIRONMENT = process.env.NODE_ENV || 'development';
@@ -16,16 +15,8 @@ function fullPath(...parts) {
   return path.join(__dirname, ...parts);
 }
 
-const plugins = [
-  new HtmlWebPackPlugin({
-    template: fullPath('src', 'index.html'),
-    inject: true,
-    filename: 'index.html',
-  }),
-];
-
 module.exports = {
-  entry: isDev ? fullPath('src/index-dev.ts') : fullPath('src', 'index.ts'),
+  entry: fullPath('src', 'index.ts'),
   output: {
     path: fullPath('build'),
     filename: 'index.js',
@@ -67,7 +58,6 @@ module.exports = {
       },
     ],
   },
-  plugins,
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
   },
