@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { createPublicClientApp } from './auth-helpers';
 import Dashboard from './components/dashboard/dashboard';
 import Header from './components/header/header';
+import GammaApp from './gamma-app';
 import InventoryApp from './inventory-app';
 import theme from './theme';
 import { ServiceKey } from './types';
@@ -44,6 +45,11 @@ const AppWithAuth: FC<{
               {enabledServices.get('uniresource_enabled') && (
                 <Route path="/uniresource">
                   <UniresourceApp />
+                </Route>
+              )}
+              {enabledServices.get('gamma_enabled') && (
+                <Route path="/gamma">
+                  <GammaApp />
                 </Route>
               )}
             </Switch>

@@ -1,30 +1,30 @@
-import { VpnService, DefaultCVlanEnum, VpnServiceTopology } from './service-types';
+import unwrap from '../../helpers/unwrap';
 import {
-  CountryCode,
-  SiteManagementType,
-  SiteVpnFlavor,
-  VpnSite,
-  SiteNetworkAccess,
-  SiteNetworkAccessType,
   AccessPriority,
-  MaximumRoutes,
-  ProviderIdentifiers,
-  RoutingProtocols,
-  RoutingProtocolType,
-  LanTag,
-  RequestedCVlan,
-} from './site-types';
-import {
-  VpnServicesOutput,
-  VpnSitesOutput,
-  SiteNetworkAccessOutput,
-  ValidProviderIdentifiersOutput,
-  RoutingProtocolsOutput,
+  CountryCode,
+  CreateNetworkAccessInput,
   CreateVpnServiceInput,
   CreateVpnSiteInput,
-  CreateNetworkAccessInput,
-} from '../../network-types';
-import unwrap from '../../helpers/unwrap';
+  DefaultCVlanEnum,
+  LanTag,
+  MaximumRoutes,
+  ProviderIdentifiers,
+  RequestedCVlan,
+  RoutingProtocols,
+  RoutingProtocolsOutput,
+  RoutingProtocolType,
+  SiteManagementType,
+  SiteNetworkAccess,
+  SiteNetworkAccessOutput,
+  SiteNetworkAccessType,
+  SiteVpnFlavor,
+  ValidProviderIdentifiersOutput,
+  VpnService,
+  VpnServicesOutput,
+  VpnServiceTopology,
+  VpnSite,
+  VpnSitesOutput,
+} from './network-types';
 
 export function apiVpnServiceToClientVpnService(apiVpnService: VpnServicesOutput): VpnService[] {
   return apiVpnService['vpn-services']['vpn-service'].map((vpn) => {
