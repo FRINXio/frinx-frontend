@@ -1,11 +1,10 @@
-import React, { FC, useEffect, useState } from 'react';
-import { Flex, Button, Container, Box, Heading } from '@chakra-ui/react';
-import { useHistory } from 'react-router';
-import VpnSiteForm from '../../forms/vpn-site-form';
-import { getVpnSites, deleteVpnSite, editVpnSite } from '../../../api/unistore/unistore';
-import { apiVpnSitesToClientVpnSite } from '../../forms/converters';
-import { VpnSite } from '../../forms/site-types';
-import unwrap from '../../../helpers/unwrap';
+import { Box, Button, Container, Flex, Heading } from '@chakra-ui/react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import unwrap from '../../helpers/unwrap';
+import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
+import { VpnSite } from '../../components/forms/site-types';
+import VpnSiteForm from '../../components/forms/vpn-site-form';
+import callbackUtils from '../../callback-utils';
 
 const getDefaultVpnSite = (): VpnSite => ({
   customerLocations: [],
@@ -17,14 +16,19 @@ const getDefaultVpnSite = (): VpnSite => ({
   siteNetworkAccesses: [],
 });
 
-const EditVpnSitePage: FC = () => {
+type Props = {
+  onSuccess: () => void;
+  onCancel: () => void;
+};
+
+const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [selectedSite, setSelectedSite] = useState<VpnSite>(getDefaultVpnSite());
-  const history = useHistory();
 
   useEffect(() => {
     const fetchData = async () => {
-      const sites = await getVpnSites();
+      const callbacks = callbackUtils.getCallbacks;
+      const sites = await callbacks.getVpnSites();
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
       setVpnSites(clientVpnSites);
     };
@@ -35,23 +39,25 @@ const EditVpnSitePage: FC = () => {
   const handleSubmit = async (site: VpnSite) => {
     // eslint-disable-next-line no-console
     console.log('submit clicked', site);
-    await editVpnSite(site);
-    history.push('/');
+    const callbacks = callbackUtils.getCallbacks;
+    await callbacks.editVpnSite(site);
+    onSuccess();
   };
 
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    history.push('/');
+    onCancel();
   };
 
   const handleDelete = () => {
     // eslint-disable-next-line no-console
     console.log('delete clicked', selectedSite);
-    const output = deleteVpnSite(unwrap(selectedSite.siteId));
+    const callbacks = callbackUtils.getCallbacks;
+    const output = callbacks.deleteVpnSite(unwrap(selectedSite.siteId));
     // eslint-disable-next-line no-console
     console.log(output);
-    history.push('/');
+    onSuccess();
   };
 
   const handleSiteChange = (site: VpnSite) => {

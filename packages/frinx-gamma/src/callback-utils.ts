@@ -1,4 +1,4 @@
-import { ValidProviderIdentifiersOutput, VpnServicesOutput, VpnSitesOutput } from './api/unistore/network-types';
+import { ValidProviderIdentifiersOutput, VpnServicesOutput, VpnSitesOutput } from './network-types';
 import { VpnService } from './components/forms/service-types';
 import { VpnSite } from './components/forms/site-types';
 

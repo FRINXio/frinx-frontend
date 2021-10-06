@@ -1,7 +1,8 @@
+// TODO: remove this and find a better way to do types through callbackUtils
 import { Either, fold } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
-import { MaximumRoutes } from '../../components/forms/site-types';
+import { MaximumRoutes } from './components/forms/site-types';
 
 // TODO: should go to config
 const YANG_MODULE = 'gamma-l3vpn-svc';

@@ -1,11 +1,10 @@
-import React, { FC, useEffect, useState } from 'react';
-import { Container, Box, Heading } from '@chakra-ui/react';
-import { useHistory } from 'react-router';
-import VpnSiteForm from '../../forms/vpn-site-form';
-import { createVpnSite, getVpnSites } from '../../../api/unistore/unistore';
-import { generateSiteId } from '../../../api/uniresource/uniresource';
-import { apiVpnSitesToClientVpnSite } from '../../forms/converters';
-import { VpnSite } from '../../forms/site-types';
+import { Box, Container, Heading } from '@chakra-ui/react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import callbackUtils from '../../callback-utils';
+import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
+import { VpnSite } from '../../components/forms/site-types';
+import VpnSiteForm from '../../components/forms/vpn-site-form';
+import { generateSiteId } from '../../helpers/id-helpers';
 
 const defaultVpnSite: VpnSite = {
   customerLocations: [],
@@ -17,13 +16,18 @@ const defaultVpnSite: VpnSite = {
   siteNetworkAccesses: [],
 };
 
-const CreateVpnSitePage: FC = () => {
+type Props = {
+  onSuccess: () => void;
+  onCancel: () => void;
+};
+
+const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
-  const history = useHistory();
 
   useEffect(() => {
     const fetchData = async () => {
-      const sites = await getVpnSites();
+      const callbacks = callbackUtils.getCallbacks;
+      const sites = await callbacks.getVpnSites();
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
       setVpnSites(clientVpnSites);
     };
@@ -39,16 +43,17 @@ const CreateVpnSitePage: FC = () => {
       ...site,
       siteId: generateSiteId(),
     };
-    await createVpnSite(siteWithId);
+    const callbacks = callbackUtils.getCallbacks;
+    await callbacks.createVpnSite(siteWithId);
     // eslint-disable-next-line no-console
     console.log('site created');
-    history.push('/');
+    onSuccess();
   };
 
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    history.push('/');
+    onCancel();
   };
 
   return (

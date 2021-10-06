@@ -1,11 +1,10 @@
-import React, { FC, useEffect, useState } from 'react';
-import { Container, Box, Heading } from '@chakra-ui/react';
-import { useHistory } from 'react-router';
-import VpnServiceForm from '../../forms/vpn-service-form';
-import { DefaultCVlanEnum, VpnService } from '../../forms/service-types';
-import { getVpnServices, editVpnServices } from '../../../api/unistore/unistore';
-import { generateVpnId } from '../../../api/uniresource/uniresource';
-import { apiVpnServiceToClientVpnService } from '../../forms/converters';
+import { Box, Container, Heading } from '@chakra-ui/react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import callbackUtils from '../../callback-utils';
+import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
+import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
+import VpnServiceForm from '../../components/forms/vpn-service-form';
+import { generateVpnId } from '../../helpers/id-helpers';
 
 const defaultVpnService: VpnService = {
   customerName: '',
@@ -17,13 +16,18 @@ const defaultVpnService: VpnService = {
 
 const extranetVpns = ['MGMT', 'SIP889'];
 
-const CreateVpnServicePage: FC = () => {
+type Props = {
+  onSuccess: () => void;
+  onCancel: () => void;
+};
+
+const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
-  const history = useHistory();
 
   useEffect(() => {
     const fetchData = async () => {
-      const services = await getVpnServices();
+      const callbacks = callbackUtils.getCallbacks;
+      const services = await callbacks.getVpnServices();
       const clientVpnServices = apiVpnServiceToClientVpnService(services);
       setVpnServices(clientVpnServices);
     };
@@ -31,21 +35,24 @@ const CreateVpnServicePage: FC = () => {
     fetchData();
   }, []);
 
-  const handleSubmit = async (service: VpnService) => {
+  const handleSubmit = async (data: VpnService) => {
+    const service = {
+      ...data,
+      vpnId: generateVpnId(),
+    };
     // eslint-disable-next-line no-console
     console.log('submit clicked', service);
-    // eslint-disable-next-line no-param-reassign
-    service.vpnId = generateVpnId();
-    const output = editVpnServices(service);
+    const callbacks = callbackUtils.getCallbacks;
+    const output = callbacks.editVpnServices(service);
     // eslint-disable-next-line no-console
     console.log(output);
-    history.push('/');
+    onSuccess();
   };
 
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    history.push('/');
+    onCancel();
   };
 
   return (

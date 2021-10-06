@@ -5,7 +5,7 @@
     "lib": ["es5", "es6", "es7", "ESNext", "dom"],
     "jsx": "react",
     "declaration": true,
-    "outDir": "dist",
+    "outDir": "build",
     "strict": true,
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
@@ -20,6 +20,6 @@
     "isolatedModules": true,
     "noEmit": false
   },
-  "include": ["global.d.ts", "custom.d.ts", "src", "*.ts", "*.js"],
+  "include": ["src", "*.ts", "*.js"],
   "exclude": ["**/node_modules"]
 }

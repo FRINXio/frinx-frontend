@@ -1,19 +1,26 @@
-import React, { FC, useEffect, useState } from 'react';
-import { Container, Flex, Button, Box, Heading, FormControl, FormLabel } from '@chakra-ui/react';
-import { useHistory } from 'react-router';
-import { getVpnSites, editVpnSite, getValidProviderIdentifiers } from '../../../api/unistore/unistore';
-import { apiVpnSitesToClientVpnSite, apiProviderIdentifiersToClientIdentifers } from '../../forms/converters';
-import { VpnSite, SiteNetworkAccess } from '../../forms/site-types';
-import SiteNetworkAccessForm from '../../forms/site-network-access-form';
-import Autocomplete2 from '../../autocomplete-2/autocomplete-2';
-import unwrap from '../../../helpers/unwrap';
+import { Box, Button, Container, Flex, FormControl, FormLabel, Heading } from '@chakra-ui/react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import unwrap from '../../helpers/unwrap';
+import Autocomplete2 from '../../components/autocomplete-2/autocomplete-2';
+import {
+  apiProviderIdentifiersToClientIdentifers,
+  apiVpnSitesToClientVpnSite,
+} from '../../components/forms/converters';
+import SiteNetworkAccessForm from '../../components/forms/site-network-access-form';
+import { SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
+import callbackUtils from '../../callback-utils';
 
 // TODO: to be defined
 const getBandwidths = async () => {
   return [1000, 2000, 5000, 10000];
 };
 
-const EditSiteNetAccessPage: FC = () => {
+type Props = {
+  onSuccess: () => void;
+  onCancel: () => void;
+};
+
+const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const [selectedNetworkAccess, setSelectedNetworkAccess] = useState<SiteNetworkAccess | null>(null);
@@ -21,15 +28,14 @@ const EditSiteNetAccessPage: FC = () => {
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const [bandwiths, setBandwiths] = useState<number[]>([]);
 
-  const history = useHistory();
-
   useEffect(() => {
     const fetchData = async () => {
+      const callbacks = callbackUtils.getCallbacks;
       // TODO: we can fetch all in promise all?
-      const sites = await getVpnSites();
+      const sites = await callbacks.getVpnSites();
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
 
-      const profiles = await getValidProviderIdentifiers();
+      const profiles = await callbacks.getValidProviderIdentifiers();
       const clientProfiles = apiProviderIdentifiersToClientIdentifers(profiles);
 
       const bandwithsResponse = await getBandwidths();
@@ -46,17 +52,18 @@ const EditSiteNetAccessPage: FC = () => {
   const handleSubmit = async (s: VpnSite) => {
     // eslint-disable-next-line no-console
     console.log('submit clicked', s);
+    const callbacks = callbackUtils.getCallbacks;
 
-    await editVpnSite(s);
+    await callbacks.editVpnSite(s);
     // eslint-disable-next-line no-console
     console.log('site saved: network access added to site');
-    history.push('/');
+    onSuccess();
   };
 
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    history.push('/');
+    onCancel();
   };
 
   const handleSiteChange = (siteId?: string | null) => {
@@ -81,11 +88,12 @@ const EditSiteNetAccessPage: FC = () => {
       ...selectedSite,
       siteNetworkAccesses: newNetowrkAccesses,
     };
-    const output = editVpnSite(newSite);
+    const callbacks = callbackUtils.getCallbacks;
+    const output = callbacks.editVpnSite(newSite);
 
     // eslint-disable-next-line no-console
     console.log(output);
-    history.push('/');
+    onSuccess();
   };
 
   const handleSiteNetworkChange = (networkAccessId?: string | null) => {

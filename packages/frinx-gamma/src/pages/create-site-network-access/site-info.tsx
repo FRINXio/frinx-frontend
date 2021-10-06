@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Box, Text } from '@chakra-ui/react';
-import { VpnSite } from '../../forms/site-types';
+import { VpnSite } from '../../components/forms/site-types';
 
 type Props = {
   site: VpnSite;

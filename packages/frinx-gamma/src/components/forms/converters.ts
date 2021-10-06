@@ -23,7 +23,7 @@ import {
   CreateVpnServiceInput,
   CreateVpnSiteInput,
   CreateNetworkAccessInput,
-} from '../../api/unistore/network-types';
+} from '../../network-types';
 import unwrap from '../../helpers/unwrap';
 
 export function apiVpnServiceToClientVpnService(apiVpnService: VpnServicesOutput): VpnService[] {
