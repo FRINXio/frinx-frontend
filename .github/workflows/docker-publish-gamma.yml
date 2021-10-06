@@ -5,7 +5,7 @@ on:
   push:
     # Publish `main` as Docker `latest` image.
     branches:
-      - main
+      - gamma-project
 
     # Publish `v1.2.3` tags as releases.
     tags:
@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+        run: docker build . --file gamma.Dockerfile --tag $IMAGE_NAME
 
       - name: Log into docker hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
