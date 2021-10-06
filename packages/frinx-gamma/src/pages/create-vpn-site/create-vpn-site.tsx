@@ -17,6 +17,7 @@ const defaultVpnSite: VpnSite = {
   siteServiceQosProfile: '',
   enableBgpPicFastReroute: false,
   siteNetworkAccesses: [],
+  maximumRoutes: 1000,
 };
 
 type Props = {
@@ -63,6 +64,8 @@ const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
     console.log('cancel clicked');
     onCancel();
   };
+
+  console.log('create vpn site');
 
   return (
     <Container>

@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { AddIcon, CloseIcon } from '@chakra-ui/icons';
 import { uniqBy } from 'lodash';
-import { VpnServiceTopology, DefaultCVlanEnum, VpnService, MaximumRoutes } from './service-types';
+import { VpnServiceTopology, DefaultCVlanEnum, VpnService } from './service-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 
 type Props = {
@@ -33,7 +33,6 @@ const getDefaultVpnService = (): VpnService => ({
   customerName: '',
   defaultCVlan: DefaultCVlanEnum.L3VPN,
   vpnServiceTopology: 'any-to-any',
-  maximumRoutes: 1000,
   extranetVpns: [],
 });
 
@@ -170,28 +169,6 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
               </option>
             );
           })}
-        </Select>
-      </FormControl>
-      <FormControl id="maxiumRoutes" my={6}>
-        <FormLabel>Maximum Routes</FormLabel>
-        <Select
-          variant="filled"
-          name="maximumRoutes"
-          value={serviceState.maximumRoutes}
-          onChange={(event) => {
-            event.persist();
-            const eventValue = event.target.value as unknown as MaximumRoutes;
-            setServiceState({
-              ...serviceState,
-              maximumRoutes: eventValue,
-            });
-          }}
-        >
-          <option value="1000">1000</option>
-          <option value="2000">2000</option>
-          <option value="5000">5000</option>
-          <option value="10000">10000</option>
-          <option value="1000000">1000000</option>
         </Select>
       </FormControl>
 

@@ -13,7 +13,7 @@ import {
   TagCloseButton,
 } from '@chakra-ui/react';
 import { v4 as uuid4 } from 'uuid';
-import { CustomerLocation, SiteDevice, SiteManagementType, VpnSite } from './site-types';
+import { CustomerLocation, SiteDevice, SiteManagementType, VpnSite, MaximumRoutes } from './site-types';
 import CustomerLocationForm from './customer-location-form';
 import SiteDeviceForm from './site-device-form';
 import Autocomplete from '../autocomplete/autocomplete';
@@ -206,6 +206,29 @@ const VpnSiteForm: FC<Props> = ({ mode, site, sites, qosProfiles, onSubmit, onCa
             </Box>
           )}
         </Box>
+      </FormControl>
+
+      <FormControl id="maxiumRoutes" my={6}>
+        <FormLabel>Maximum Routes</FormLabel>
+        <Select
+          variant="filled"
+          name="maximumRoutes"
+          value={siteState.maximumRoutes}
+          onChange={(event) => {
+            event.persist();
+            const eventValue = event.target.value as unknown as MaximumRoutes;
+            setSiteState({
+              ...siteState,
+              maximumRoutes: eventValue,
+            });
+          }}
+        >
+          <option value="1000">1000</option>
+          <option value="2000">2000</option>
+          <option value="5000">5000</option>
+          <option value="10000">10000</option>
+          <option value="1000000">1000000</option>
+        </Select>
       </FormControl>
 
       <FormControl id="site-management-type" my={6}>

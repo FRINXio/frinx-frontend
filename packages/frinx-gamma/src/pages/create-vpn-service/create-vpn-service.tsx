@@ -10,7 +10,6 @@ const defaultVpnService: VpnService = {
   customerName: '',
   defaultCVlan: DefaultCVlanEnum.L3VPN,
   vpnServiceTopology: 'any-to-any',
-  maximumRoutes: 1000,
   extranetVpns: [],
 };
 
@@ -54,6 +53,8 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     console.log('cancel clicked');
     onCancel();
   };
+
+  console.log('create vpn service');
 
   return (
     <Container>
