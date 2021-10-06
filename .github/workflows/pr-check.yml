@@ -21,6 +21,8 @@ jobs:
         run: yarn run formatter:check
       - name: Check for dependencies version in monorepo
         run: yarn run dedubcheck
+      - name: Build gamma project (temp)
+        run: yarn run build:gamma
       - name: Run eslint check in Dashboard
         run: yarn run lint:dashboard
       - name: Run eslint check in Workflow Builder
