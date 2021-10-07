@@ -1,6 +1,7 @@
 export type ProviderIdentifiers = {
   bfdIdentifiers: string[];
   qosIdentifiers: string[];
+  bgpIdentifiers: string[];
 };
 export type CountryCode = 'UK' | 'Ireland';
 export type CustomerLocation = {

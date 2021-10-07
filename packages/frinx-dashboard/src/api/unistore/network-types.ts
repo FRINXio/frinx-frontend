@@ -420,15 +420,26 @@ export type CreateVpnSiteInput = {
 
 const ValidProviderIdentifiersOutputValidator = t.type({
   'valid-provider-identifiers': t.type({
-    'qos-profile-identifier': t.array(
-      t.type({
-        id: t.string,
-      }),
+    'qos-profile-identifier': optional(
+      t.array(
+        t.type({
+          id: t.string,
+        }),
+      ),
     ),
-    'bfd-profile-identifier': t.array(
-      t.type({
-        id: t.string,
-      }),
+    'bfd-profile-identifier': optional(
+      t.array(
+        t.type({
+          id: t.string,
+        }),
+      ),
+    ),
+    'bgp-profile-identifier': optional(
+      t.array(
+        t.type({
+          id: t.string,
+        }),
+      ),
     ),
   }),
 });
@@ -464,6 +475,7 @@ export type VpnService = {
 export type ProviderIdentifiers = {
   bfdIdentifiers: string[];
   qosIdentifiers: string[];
+  bgpIdentifiers: string[];
 };
 export type CountryCode = 'UK' | 'Ireland';
 export type CustomerLocation = {

@@ -125,9 +125,13 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
 export function apiProviderIdentifiersToClientIdentifers(
   identifiers: ValidProviderIdentifiersOutput,
 ): ProviderIdentifiers {
+  const bfdIdentifiers = identifiers['valid-provider-identifiers']['bfd-profile-identifier'];
+  const qosIdentifiers = identifiers['valid-provider-identifiers']['qos-profile-identifier'];
+  const bgpIdentifiers = identifiers['valid-provider-identifiers']['bgp-profile-identifier'];
   return {
-    bfdIdentifiers: identifiers['valid-provider-identifiers']['bfd-profile-identifier'].map((i) => i.id),
-    qosIdentifiers: identifiers['valid-provider-identifiers']['qos-profile-identifier'].map((i) => i.id),
+    bfdIdentifiers: bfdIdentifiers ? bfdIdentifiers.map((i) => i.id) : [],
+    qosIdentifiers: qosIdentifiers ? qosIdentifiers.map((i) => i.id) : [],
+    bgpIdentifiers: bgpIdentifiers ? bgpIdentifiers.map((i) => i.id) : [],
   };
 }
 

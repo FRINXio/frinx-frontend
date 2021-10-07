@@ -8,6 +8,7 @@ import {
   SiteNetworkAccess,
   SiteNetworkAccessType,
   RequestedCVlan,
+  BgpRoutingType,
 } from './site-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 import unwrap from '../../helpers/unwrap';
@@ -19,6 +20,7 @@ type Props = {
   selectedNetworkAccess: SiteNetworkAccess | null;
   qosProfiles: string[];
   bfdProfiles: string[];
+  bgpProfiles: string[];
   bandwidths: number[];
   onSubmit: (s: VpnSite) => void;
   onCancel: () => void;
@@ -41,6 +43,7 @@ const SiteNetAccessForm: FC<Props> = ({
   site,
   selectedNetworkAccess,
   qosProfiles,
+  bgpProfiles,
   bandwidths,
   onSubmit,
   onCancel,
@@ -99,6 +102,28 @@ const SiteNetAccessForm: FC<Props> = ({
     }
   };
 
+  const handleBgpProfileChange = (item?: Item | null) => {
+    if (networkAccessState) {
+      const bgp: BgpRoutingType = networkAccessState.routingProtocols[0].bgp
+        ? { ...networkAccessState.routingProtocols[0].bgp, bgpProfile: unwrap(item).value }
+        : {
+            addressFamily: 'ipv4',
+            autonomousSystem: 0,
+            bgpProfile: unwrap(item).value,
+          };
+
+      setNetworkAccessState({
+        ...networkAccessState,
+        routingProtocols: [
+          {
+            ...networkAccessState.routingProtocols[0],
+            bgp,
+          },
+        ],
+      });
+    }
+  };
+
   if (!networkAccessState) {
     return null;
   }
@@ -123,6 +148,14 @@ const SiteNetAccessForm: FC<Props> = ({
 
   const bgpProfile = networkAccessState.routingProtocols[0].bgp;
   // const staticProfile = networkAccessState.routingProtocols[0].static;
+  const bgpProfileItems = bgpProfiles.map((p) => {
+    return {
+      label: p,
+      value: p,
+    };
+  });
+
+  const [selectedBgpProfileItem] = bgpProfileItems.filter((i) => i.value === bgpProfile?.bgpProfile);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -301,11 +334,11 @@ const SiteNetAccessForm: FC<Props> = ({
         </Select>
       </FormControl>
 
-      <FormControl id="bgp-profile-autonomous-system" my={6}>
-        <FormLabel>Bgp Profile - Autonomous System</FormLabel>
+      <FormControl id="bgp-autonomous-system" my={6}>
+        <FormLabel>Bgp Autonomous System</FormLabel>
         <Input
           variant="filled"
-          name="bgpProfile"
+          name="bgp-autonomous-system"
           value={bgpProfile ? bgpProfile.autonomousSystem : 0}
           onChange={(event) => {
             const bgp = networkAccessState.routingProtocols[0].bgp
@@ -328,6 +361,15 @@ const SiteNetAccessForm: FC<Props> = ({
               ],
             });
           }}
+        />
+      </FormControl>
+
+      <FormControl id="bgp-profile" my={6}>
+        <FormLabel>Bgp Profile</FormLabel>
+        <Autocomplete2
+          items={bgpProfileItems}
+          selectedItem={selectedBgpProfileItem}
+          onChange={handleBgpProfileChange}
         />
       </FormControl>
 
