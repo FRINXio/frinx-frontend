@@ -1,14 +1,4 @@
-import {
-  Box,
-  Button,
-  Container,
-  Flex,
-  Heading,
-  Progress,
-  useDisclosure,
-  useForceUpdate,
-  useToast,
-} from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, Progress, useDisclosure, useToast } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
@@ -109,9 +99,6 @@ type Props = {
 };
 
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick, onEditButtonClick }) => {
-  // when selecting device react's lifecycle is not reacting to that update
-  const rerenderComponentOnDeviceSelect = useForceUpdate();
-
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const toast = useToast();
   const deleteModalDisclosure = useDisclosure();
@@ -238,8 +225,10 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
 
   const handleDeviceSelection = (deviceId: string, checked: boolean) => {
     if (checked) {
-      setSelectedDevices(selectedDevices.add(deviceId));
-      rerenderComponentOnDeviceSelect();
+      setSelectedDevices(() => {
+        const newSelectedDevices = new Set(selectedDevices.add(deviceId));
+        return newSelectedDevices;
+      });
     } else {
       setSelectedDevices((prev) => {
         const newSelectedDevices = new Set(prev);
