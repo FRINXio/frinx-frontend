@@ -64,14 +64,16 @@ export type CreateVpnServiceInput = {
 };
 
 const SiteDevicesValidator = t.type({
-  device: t.array(
-    t.type({
-      'device-id': t.string,
-      management: t.type({
-        address: t.string,
+  device: optional(
+    t.array(
+      t.type({
+        'device-id': t.string,
+        management: t.type({
+          address: t.string,
+        }),
+        location: t.string,
       }),
-      location: t.string,
-    }),
+    ),
   ),
 });
 
@@ -100,15 +102,17 @@ const ManagementValidator = t.type({
 });
 
 const LocationsValidator = t.type({
-  location: t.array(
-    t.type({
-      'location-id': t.string,
-      'postal-code': t.string,
-      state: t.string,
-      address: t.string,
-      city: t.string,
-      'country-code': t.string, // should be Ireland/UK
-    }),
+  location: optional(
+    t.array(
+      t.type({
+        'location-id': t.string,
+        'postal-code': optional(t.string),
+        state: optional(t.string),
+        address: optional(t.string),
+        city: optional(t.string),
+        'country-code': optional(t.string), // should be Ireland/UK
+      }),
+    ),
   ),
 });
 
