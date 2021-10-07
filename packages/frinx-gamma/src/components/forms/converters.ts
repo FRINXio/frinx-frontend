@@ -148,25 +148,29 @@ export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[
     const siteVpnFlavor: unknown = site['site-vpn-flavor'].split(':')[1];
     return {
       siteId: site['site-id'],
-      siteDevices: site.devices.device.map((device) => {
-        return {
-          deviceId: device['device-id'],
-          locationId: device.location,
-          managementIP: device.management.address,
-        };
-      }),
-      customerLocations: site.locations.location.map((l) => {
-        const countryCode: CountryCode =
-          l['country-code'] === 'UK' || l['country-code'] === 'Ireland' ? l['country-code'] : 'UK';
-        return {
-          locationId: l['location-id'],
-          street: l.address,
-          city: l.city,
-          postalCode: l['postal-code'],
-          countryCode,
-          state: l.state,
-        };
-      }),
+      siteDevices: site.devices.device
+        ? site.devices.device.map((device) => {
+            return {
+              deviceId: device['device-id'],
+              locationId: device.location,
+              managementIP: device.management.address,
+            };
+          })
+        : [],
+      customerLocations: site.locations.location
+        ? site.locations.location.map((l) => {
+            const countryCode: CountryCode =
+              l['country-code'] === 'UK' || l['country-code'] === 'Ireland' ? l['country-code'] : 'UK';
+            return {
+              locationId: l['location-id'],
+              street: l.address || '',
+              city: l.city || '',
+              postalCode: l['postal-code'] || '',
+              countryCode: countryCode || 'UK',
+              state: l.state || '',
+            };
+          })
+        : [],
       siteManagementType: managementType as SiteManagementType,
       siteVpnFlavor: siteVpnFlavor as SiteVpnFlavor,
       siteServiceQosProfile: '',
