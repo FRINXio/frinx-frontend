@@ -1,7 +1,6 @@
 import { EditIcon, SettingsIcon } from '@chakra-ui/icons';
 import {
   Badge,
-  Center,
   Checkbox,
   HStack,
   Icon,
@@ -24,7 +23,8 @@ import InstallButton from './install-button';
 
 type Props = {
   devices: DevicesQuery['devices']['edges'];
-  selectedDevices: string[];
+  selectedDevices: Set<string>;
+  areSelectedAll: boolean;
   installLoadingMap: Record<string, boolean>;
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
@@ -32,6 +32,7 @@ type Props = {
   onDeleteBtnClick: (deviceId: string) => void;
   onEditDeviceButtonClick: (deviceId: string) => void;
   onDeviceSelection: (deviceId: string, checked: boolean) => void;
+  onSelectAll: (checked: boolean) => void;
 };
 
 const DeviceTable: VoidFunctionComponent<Props> = ({
@@ -44,12 +45,16 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   onEditDeviceButtonClick,
   installLoadingMap,
   onDeviceSelection,
+  areSelectedAll,
+  onSelectAll,
 }) => {
   return (
     <Table background="white" size="lg">
       <Thead>
         <Tr>
-          <Th>Selected</Th>
+          <Th>
+            <Checkbox isChecked={areSelectedAll} onChange={(e) => onSelectAll(e.target.checked)} mr={2} />
+          </Th>
           <Th>Name</Th>
           <Th>Created</Th>
           <Th>Zone</Th>
@@ -67,12 +72,10 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           return (
             <Tr key={device.id}>
               <Td>
-                <Center>
-                  <Checkbox
-                    isChecked={selectedDevices.includes(device.id)}
-                    onChange={(e) => onDeviceSelection(device.id, e.target.checked)}
-                  />
-                </Center>
+                <Checkbox
+                  isChecked={selectedDevices.has(device.id)}
+                  onChange={(e) => onDeviceSelection(device.id, e.target.checked)}
+                />
               </Td>
               <Td>
                 <Text as="span" fontWeight={600}>
