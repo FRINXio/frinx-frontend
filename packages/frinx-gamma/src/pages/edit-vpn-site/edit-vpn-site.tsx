@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex, Heading } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, FormControl, FormLabel, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import unwrap from '../../helpers/unwrap';
 import {
@@ -8,17 +8,7 @@ import {
 import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
 import callbackUtils from '../../callback-utils';
-
-const getDefaultVpnSite = (): VpnSite => ({
-  customerLocations: [],
-  siteDevices: [],
-  siteManagementType: 'provider-managed',
-  siteVpnFlavor: 'site-vpn-flavor-single',
-  siteServiceQosProfile: '',
-  enableBgpPicFastReroute: false,
-  siteNetworkAccesses: [],
-  maximumRoutes: 1000,
-});
+import Autocomplete2, { Item } from '../../components/autocomplete-2/autocomplete-2';
 
 type Props = {
   onSuccess: () => void;
@@ -27,7 +17,7 @@ type Props = {
 
 const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
-  const [selectedSite, setSelectedSite] = useState<VpnSite>(getDefaultVpnSite());
+  const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
 
   useEffect(() => {
@@ -60,6 +50,9 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
   };
 
   const handleDelete = () => {
+    if (!selectedSite) {
+      return;
+    }
     // eslint-disable-next-line no-console
     console.log('delete clicked', selectedSite);
     const callbacks = callbackUtils.getCallbacks;
@@ -75,6 +68,26 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
     setSelectedSite(site);
   };
 
+  const handleSiteItemChange = (item?: Item | null) => {
+    if (!vpnSites) {
+      return;
+    }
+    const [newSite] = vpnSites.filter((s) => s.siteId === item?.value);
+    setSelectedSite(newSite);
+  };
+
+  // TODO: add some loading state
+  if (!vpnSites) {
+    return null;
+  }
+
+  const siteItems = vpnSites.map((s) => ({
+    value: unwrap(s.siteId),
+    label: unwrap(s.siteId),
+  }));
+
+  const [selectedSiteItem] = siteItems.filter((item) => item.value === selectedSite?.siteId);
+
   return (
     <Container>
       <Box padding={6} margin={6} background="white">
@@ -84,7 +97,11 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
             Delete
           </Button>
         </Flex>
-        {vpnSites && (
+        <FormControl id="siteId" my={6}>
+          <FormLabel>Site ID</FormLabel>
+          <Autocomplete2 items={siteItems} selectedItem={selectedSiteItem} onChange={handleSiteItemChange} />
+        </FormControl>
+        {vpnSites && selectedSite && (
           <VpnSiteForm
             mode="edit"
             sites={vpnSites}
