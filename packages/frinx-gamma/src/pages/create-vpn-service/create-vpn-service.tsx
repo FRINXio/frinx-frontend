@@ -54,8 +54,6 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     onCancel();
   };
 
-  console.log('create vpn service');
-
   return (
     <Container>
       <Box padding={6} margin={6} background="white">
