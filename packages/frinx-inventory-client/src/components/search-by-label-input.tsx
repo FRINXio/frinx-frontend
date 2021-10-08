@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Input } from '@chakra-ui/react';
 import { CUIAutoComplete, Item } from 'chakra-ui-autocomplete';
 import React, { FC } from 'react';
 import { LabelsQuery } from '../__generated__/graphql';
@@ -30,15 +30,13 @@ const SearchByLabelInput: FC<Props> = ({
 
   return (
     // autocomplete lib has some weird styling at the bottom
-    <Box position="relative" paddingBottom={selectedLabelList.length ? 0 : '28px'}>
+    <Box position="relative">
       <CUIAutoComplete
         label={labelText}
         labelStyleProps={{
           marginBottom: 0,
         }}
-        inputStyleProps={{
-          variant: 'filled',
-        }}
+        renderCustomInput={(inputProps) => <Input {...inputProps} variant="outline" backgroundColor="white" />}
         placeholder="Start typing..."
         onCreateItem={onLabelCreate}
         items={labelList}

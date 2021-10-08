@@ -1,6 +1,7 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Flex, Icon, IconButton, Menu, MenuButton, MenuItem, MenuList, Spacer } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { VoidFunctionComponent } from 'react';
+import { DeleteIcon, SettingsIcon } from '@chakra-ui/icons';
 import SearchByLabelInput from '../../components/search-by-label-input';
 import { LabelsQuery } from '../../__generated__/graphql';
 
@@ -13,14 +14,37 @@ type Props = {
 };
 const DeviceFilter: VoidFunctionComponent<Props> = ({ labels, selectedLabels, onSelectionChange }) => {
   return (
-    <Box width={80}>
-      <SearchByLabelInput
-        items={labels}
-        selectedLabels={selectedLabels}
-        onSelectionChange={onSelectionChange}
-        isCreationDisabled
-        labelText="Filter by labels"
-      />
+    <Box>
+      <Flex>
+        <SearchByLabelInput
+          items={labels}
+          selectedLabels={selectedLabels}
+          onSelectionChange={onSelectionChange}
+          isCreationDisabled
+          labelText="Filter by labels"
+        />
+        <Spacer />
+        <Box>
+          <Menu isLazy>
+            <MenuButton as={IconButton} icon={<Icon size={12} as={SettingsIcon} />} backgroundColor="white" />
+            <MenuList>
+              <MenuItem>
+                <Box as="span" fontSize="sm" paddingRight={3} flexShrink={0}>
+                  <Box
+                    as={DeleteIcon}
+                    size="1em"
+                    icon="file-plus"
+                    flexShrink={0}
+                    lineHeight={4}
+                    verticalAlign="middle"
+                  />
+                </Box>
+                Delete selected workflows
+              </MenuItem>
+            </MenuList>
+          </Menu>
+        </Box>
+      </Flex>
     </Box>
   );
 };

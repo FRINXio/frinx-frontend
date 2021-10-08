@@ -285,7 +285,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
             </Box>
           )}
 
-          <Box background="white" paddingX={4} paddingTop={4} paddingBottom={0} marginBottom={4}>
+          <Box>
             <DeviceFilter
               labels={labels}
               selectedLabels={selectedLabels}
