@@ -275,7 +275,7 @@ const VpnSitesOutputValidator = t.type({
         'site-id': t.string,
         devices: SiteDevicesValidator,
         'site-network-accesses': optional(SiteNetworkAccessValidator),
-        // 'maximum-routes': MaximumRoutesValidator,
+        'maximum-routes': MaximumRoutesValidator,
         'site-vpn-flavor': SiteVpnFlavorValidator,
         'traffic-protection': t.type({
           enabled: t.boolean,
@@ -381,12 +381,12 @@ export type CreateVpnSiteInput = {
         }[];
       };
       'site-network-accesses'?: CreateNetworkAccessInput;
-      // 'maximum-routes': {
-      //   'address-family': {
-      //     af: 'ipv4';
-      //     'maximum-routes': number;
-      //   }[];
-      // };
+      'maximum-routes': {
+        'address-family': {
+          af: 'ipv4';
+          'maximum-routes': number;
+        }[];
+      };
       'site-vpn-flavor': string;
       'traffic-protection': {
         enabled: boolean;
