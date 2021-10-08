@@ -11,8 +11,14 @@ type Props = {
   isCreationDisabled?: boolean;
   onSelectionChange: (labels?: Item[]) => void;
   onLabelCreate?: (label: Item) => void;
+  handleOnDeleteClick: () => void;
 };
-const DeviceFilter: VoidFunctionComponent<Props> = ({ labels, selectedLabels, onSelectionChange }) => {
+const DeviceFilter: VoidFunctionComponent<Props> = ({
+  labels,
+  selectedLabels,
+  onSelectionChange,
+  handleOnDeleteClick,
+}) => {
   return (
     <Box>
       <Flex>
@@ -28,7 +34,7 @@ const DeviceFilter: VoidFunctionComponent<Props> = ({ labels, selectedLabels, on
           <Menu isLazy>
             <MenuButton as={IconButton} icon={<Icon size={12} as={SettingsIcon} />} backgroundColor="white" />
             <MenuList>
-              <MenuItem>
+              <MenuItem onClick={handleOnDeleteClick}>
                 <Box as="span" fontSize="sm" paddingRight={3} flexShrink={0}>
                   <Box
                     as={DeleteIcon}

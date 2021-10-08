@@ -250,6 +250,24 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     }
   };
 
+  const handleOnDeleteClick = (deviceId: string | null, deleteSelected = false) => {
+    if (deleteSelected) {
+      Promise.all(
+        [...selectedDevices].map((id) => {
+          return deleteDevice({
+            deviceId: id,
+          });
+        }),
+      ).then(() => deleteModalDisclosure.onClose());
+    } else {
+      deleteDevice({
+        deviceId: unwrap(deviceId),
+      }).then(() => {
+        deleteModalDisclosure.onClose();
+      });
+    }
+  };
+
   const labels = labelsData?.labels?.edges ?? [];
   const areSelectedAll = deviceData?.devices.edges.length === selectedDevices.size;
 
@@ -259,11 +277,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
         isOpen={deleteModalDisclosure.isOpen}
         onClose={deleteModalDisclosure.onClose}
         onConfirmBtnClick={() => {
-          deleteDevice({
-            deviceId: unwrap(deviceIdToDelete),
-          }).then(() => {
-            deleteModalDisclosure.onClose();
-          });
+          handleOnDeleteClick(deviceIdToDelete);
         }}
         title="Delete device"
       >
@@ -290,6 +304,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
               labels={labels}
               selectedLabels={selectedLabels}
               onSelectionChange={handleOnSelectionChange}
+              handleOnDeleteClick={() => handleOnDeleteClick(null, true)}
               isCreationDisabled
             />
           </Box>
