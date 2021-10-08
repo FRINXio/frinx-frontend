@@ -162,31 +162,37 @@ const RoutingProtocolsValidator = t.type({
   'routing-protocol': t.array(
     t.type({
       type: t.string,
-      vrrp: t.type({
-        'address-family': t.array(t.string),
-      }),
-      static: t.type({
-        'cascaded-lan-prefixes': t.type({
-          'ipv4-lan-prefixes': t.array(
-            t.type({
-              lan: t.string,
-              'next-hop': t.string,
-              'lan-tag': t.string,
-            }),
-          ),
+      vrrp: optional(
+        t.type({
+          'address-family': t.array(t.string),
         }),
-      }),
-      bgp: t.type({
-        'bgp-profiles': t.type({
-          'bgp-profile': t.array(
-            t.type({
-              profile: t.string,
-            }),
-          ),
+      ),
+      static: optional(
+        t.type({
+          'cascaded-lan-prefixes': t.type({
+            'ipv4-lan-prefixes': t.array(
+              t.type({
+                lan: t.string,
+                'next-hop': t.string,
+                'lan-tag': t.string,
+              }),
+            ),
+          }),
         }),
-        'autonomous-system': t.number,
-        'address-family': t.array(t.string),
-      }),
+      ),
+      bgp: optional(
+        t.type({
+          'bgp-profiles': t.type({
+            'bgp-profile': t.array(
+              t.type({
+                profile: t.string,
+              }),
+            ),
+          }),
+          'autonomous-system': t.number,
+          'address-family': t.array(t.string),
+        }),
+      ),
     }),
   ),
 });
