@@ -40,7 +40,6 @@ export function apiVpnServiceToClientVpnService(apiVpnService: VpnServicesOutput
       customerName: vpn['customer-name'],
       vpnServiceTopology: vpn['vpn-service-topology'] as VpnServiceTopology,
       defaultCVlan: vpn['default-c-vlan'] as unknown as DefaultCVlanEnum,
-      maximumRoutes: 1000,
       extranetVpns,
     };
   });
@@ -176,6 +175,7 @@ export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[
       siteServiceQosProfile: '',
       enableBgpPicFastReroute: site['traffic-protection'].enabled,
       siteNetworkAccesses: apiSiteNetworkAccessToClientSiteNetworkAccess(site['site-network-accesses']),
+      maximumRoutes: site['maximum-routes']['address-family'][0]['maximum-routes'] as MaximumRoutes,
     };
   });
 }
@@ -308,14 +308,14 @@ export function clientVpnSiteToApiVpnSite(vpnSite: VpnSite): CreateVpnSiteInput 
         // 'site-network-accesses': {
         //   'site-network-access': [],
         // },
-        // 'maximum-routes': {
-        //   'address-family': [
-        //     {
-        //       af: 'ipv4',
-        //       'maximum-routes': 1000,
-        //     },
-        //   ],
-        // },
+        'maximum-routes': {
+          'address-family': [
+            {
+              af: 'ipv4',
+              'maximum-routes': vpnSite.maximumRoutes,
+            },
+          ],
+        },
         'site-vpn-flavor': vpnSite.siteVpnFlavor,
         'traffic-protection': { enabled: vpnSite.enableBgpPicFastReroute },
         management: { type: vpnSite.siteManagementType },

@@ -17,6 +17,7 @@ const defaultVpnSite: VpnSite = {
   siteServiceQosProfile: '',
   enableBgpPicFastReroute: false,
   siteNetworkAccesses: [],
+  maximumRoutes: 1000,
 };
 
 type Props = {

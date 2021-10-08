@@ -162,31 +162,37 @@ const RoutingProtocolsValidator = t.type({
   'routing-protocol': t.array(
     t.type({
       type: t.string,
-      vrrp: t.type({
-        'address-family': t.array(t.string),
-      }),
-      static: t.type({
-        'cascaded-lan-prefixes': t.type({
-          'ipv4-lan-prefixes': t.array(
-            t.type({
-              lan: t.string,
-              'next-hop': t.string,
-              'lan-tag': t.string,
-            }),
-          ),
+      vrrp: optional(
+        t.type({
+          'address-family': t.array(t.string),
         }),
-      }),
-      bgp: t.type({
-        'bgp-profiles': t.type({
-          'bgp-profile': t.array(
-            t.type({
-              profile: t.string,
-            }),
-          ),
+      ),
+      static: optional(
+        t.type({
+          'cascaded-lan-prefixes': t.type({
+            'ipv4-lan-prefixes': t.array(
+              t.type({
+                lan: t.string,
+                'next-hop': t.string,
+                'lan-tag': t.string,
+              }),
+            ),
+          }),
         }),
-        'autonomous-system': t.number,
-        'address-family': t.array(t.string),
-      }),
+      ),
+      bgp: optional(
+        t.type({
+          'bgp-profiles': t.type({
+            'bgp-profile': t.array(
+              t.type({
+                profile: t.string,
+              }),
+            ),
+          }),
+          'autonomous-system': t.number,
+          'address-family': t.array(t.string),
+        }),
+      ),
     }),
   ),
 });
@@ -266,7 +272,7 @@ const VpnSitesOutputValidator = t.type({
         'site-id': t.string,
         devices: SiteDevicesValidator,
         'site-network-accesses': optional(SiteNetworkAccessValidator),
-        // 'maximum-routes': MaximumRoutesValidator,
+        'maximum-routes': MaximumRoutesValidator,
         'site-vpn-flavor': SiteVpnFlavorValidator,
         'traffic-protection': t.type({
           enabled: t.boolean,
@@ -372,12 +378,12 @@ export type CreateVpnSiteInput = {
         }[];
       };
       'site-network-accesses'?: CreateNetworkAccessInput;
-      // 'maximum-routes': {
-      //   'address-family': {
-      //     af: 'ipv4';
-      //     'maximum-routes': number;
-      //   }[];
-      // };
+      'maximum-routes': {
+        'address-family': {
+          af: 'ipv4';
+          'maximum-routes': number;
+        }[];
+      };
       'site-vpn-flavor': string;
       'traffic-protection': {
         enabled: boolean;
@@ -472,7 +478,6 @@ export type VpnService = {
   customerName: string;
   vpnServiceTopology: VpnServiceTopology;
   defaultCVlan: DefaultCVlanEnum;
-  maximumRoutes: MaximumRoutes;
   extranetVpns: string[];
 };
 
@@ -575,4 +580,5 @@ export type VpnSite = {
   siteServiceQosProfile: string;
   enableBgpPicFastReroute: boolean;
   siteNetworkAccesses: SiteNetworkAccess[];
+  maximumRoutes: MaximumRoutes;
 };

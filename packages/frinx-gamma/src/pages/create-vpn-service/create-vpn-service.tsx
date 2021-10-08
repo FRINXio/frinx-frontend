@@ -10,7 +10,6 @@ const defaultVpnService: VpnService = {
   customerName: '',
   defaultCVlan: DefaultCVlanEnum.L3VPN,
   vpnServiceTopology: 'any-to-any',
-  maximumRoutes: 1000,
   extranetVpns: [],
 };
 

@@ -100,4 +100,5 @@ export type VpnSite = {
   siteServiceQosProfile: string;
   enableBgpPicFastReroute: boolean;
   siteNetworkAccesses: SiteNetworkAccess[];
+  maximumRoutes: MaximumRoutes;
 };
