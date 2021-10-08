@@ -225,8 +225,8 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
 
   const handleDeviceSelection = (deviceId: string, checked: boolean) => {
     if (checked) {
-      setSelectedDevices(() => {
-        const newSelectedDevices = new Set(selectedDevices.add(deviceId));
+      setSelectedDevices((prev) => {
+        const newSelectedDevices = new Set(prev.add(deviceId));
         return newSelectedDevices;
       });
     } else {
@@ -246,11 +246,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
         setSelectedDevices(new Set(devicesId));
       }
     } else {
-      setSelectedDevices((prev) => {
-        const emptySelectedDevices = new Set(prev);
-        emptySelectedDevices.clear();
-        return emptySelectedDevices;
-      });
+      setSelectedDevices(new Set());
     }
   };
 
