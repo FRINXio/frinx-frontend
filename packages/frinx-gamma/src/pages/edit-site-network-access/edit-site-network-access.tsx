@@ -26,6 +26,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
   const [selectedNetworkAccess, setSelectedNetworkAccess] = useState<SiteNetworkAccess | null>(null);
   const [bfdProfiles, setBfdProfiles] = useState<string[]>([]);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
+  const [bgpProfiles, setBgpProfiles] = useState<string[]>([]);
   const [bandwiths, setBandwiths] = useState<number[]>([]);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
       setVpnSites(clientVpnSites);
       setBfdProfiles(clientProfiles.bfdIdentifiers);
       setQosProfiles(clientProfiles.qosIdentifiers);
+      setBgpProfiles(clientProfiles.bgpIdentifiers);
       setBandwiths(bandwithsResponse);
     };
 
@@ -161,6 +163,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
                   mode="add"
                   qosProfiles={qosProfiles}
                   bfdProfiles={bfdProfiles}
+                  bgpProfiles={bgpProfiles}
                   bandwidths={bandwiths}
                   sites={vpnSites}
                   site={selectedSite}
