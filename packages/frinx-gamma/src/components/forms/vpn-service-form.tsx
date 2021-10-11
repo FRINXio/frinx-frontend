@@ -36,9 +36,20 @@ const getDefaultVpnService = (): VpnService => ({
   extranetVpns: [],
 });
 
+const getCustomerItems = (services: VpnService[]): Item[] => {
+  return uniqBy(
+    services.map((s) => ({
+      value: s.customerName,
+      label: s.customerName,
+    })),
+    'value',
+  );
+};
+
 const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSubmit, onCancel, onServiceChange }) => {
   const [serviceState, setServiceState] = useState(service);
   const [extranetVpnSelect, setExtranetVpnSelect] = useState<string | null>(null);
+  const [customerItems, setCustomerItems] = useState<Item[]>(getCustomerItems(services));
 
   useEffect(() => {
     setServiceState({
@@ -94,17 +105,17 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
     setServiceState(getDefaultVpnService());
   };
 
+  const handleCreateItem = (item: Item) => {
+    setCustomerItems([...customerItems, item]);
+    setServiceState({
+      ...serviceState,
+      customerName: item.value,
+    });
+  };
+
   const filteredExtranetVpns = extranetVpns.filter((ev) => {
     return !serviceState.extranetVpns.includes(ev);
   });
-
-  const customerItems = uniqBy(
-    services.map((s) => ({
-      value: s.customerName,
-      label: s.customerName,
-    })),
-    'value',
-  );
 
   const [selectedCustomerItem] = customerItems.filter((ci) => ci.value === serviceState.customerName);
 
@@ -114,7 +125,12 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
         <FormLabel>Customer Name</FormLabel>
         <Flex>
           <Box flex="1">
-            <Autocomplete2 items={customerItems} selectedItem={selectedCustomerItem} onChange={handleCustomerChange} />
+            <Autocomplete2
+              items={customerItems}
+              selectedItem={selectedCustomerItem}
+              onChange={handleCustomerChange}
+              onCreateItem={handleCreateItem}
+            />
           </Box>
           <Box marginLeft={4} alignSelf="center">
             <IconButton

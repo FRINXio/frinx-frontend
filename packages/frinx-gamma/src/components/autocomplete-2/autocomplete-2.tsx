@@ -1,7 +1,7 @@
 import { Icon, IconButton, Input, InputGroup, InputProps, InputRightElement } from '@chakra-ui/react';
 import { useCombobox, UseComboboxStateChange } from 'downshift';
 import FeatherIcon from 'feather-icons-react';
-import React, { useState, VoidFunctionComponent } from 'react';
+import React, { useState, useEffect, VoidFunctionComponent } from 'react';
 import AutocompleteMenu from './autocomplete-menu';
 
 export type Item = {
@@ -13,6 +13,7 @@ type Props = {
   onChange: (item?: Item | null) => void;
   inputVariant?: InputProps['variant'];
   selectedItem: Item | null | undefined;
+  onCreateItem?: (item: Item) => void;
 };
 
 // we wanna remove 'id' and 'name' from props returned from `useCombobox`
@@ -22,20 +23,22 @@ function getStrippedInputProps(inputProps: InputProps): Omit<InputProps, 'id' | 
   return rest;
 }
 
-const Autocomplete2: VoidFunctionComponent<Props> = ({ items, onChange, inputVariant, selectedItem }) => {
+const Autocomplete2: VoidFunctionComponent<Props> = ({ items, onCreateItem, onChange, inputVariant, selectedItem }) => {
+  const [isCreating, setIsCreating] = useState(false);
   const [inputItems, setInputItems] = useState(items);
+
+  const onInputValueChange = ({ inputValue }: UseComboboxStateChange<Item>) => {
+    const filteredItems = items.filter((item) => item.value.toLowerCase().includes((inputValue || '').toLowerCase()));
+
+    if (isCreating && filteredItems.length > 0) {
+      setIsCreating(false);
+    }
+
+    setInputItems(filteredItems);
+  };
 
   const onSelectedItemChange = (changes: UseComboboxStateChange<Item>) => {
     onChange(changes.selectedItem);
-  };
-
-  const onInputValueChange = ({ inputValue }: UseComboboxStateChange<Item>) => {
-    setInputItems(() => {
-      if (inputValue) {
-        return items.filter((item) => item.value.toLowerCase().includes(inputValue.toLowerCase()));
-      }
-      return items;
-    });
   };
 
   const {
@@ -46,13 +49,37 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({ items, onChange, inputVar
     getComboboxProps,
     highlightedIndex,
     getItemProps,
+    setHighlightedIndex,
+    inputValue,
   } = useCombobox({
     items: inputItems,
     onSelectedItemChange,
     selectedItem: selectedItem ?? null,
     onInputValueChange,
     itemToString: (item) => (item ? item.value : ''),
+    onStateChange: (changes) => {
+      if (changes.selectedItem?.value === inputValue && !items.includes(changes.selectedItem)) {
+        if (onCreateItem) {
+          onCreateItem({
+            ...changes.selectedItem,
+            label: changes.selectedItem.value,
+          });
+        }
+        setInputItems(inputItems);
+        setIsCreating(false);
+      }
+    },
   });
+
+  useEffect(() => {
+    if (inputItems.length === 0) {
+      setIsCreating(true);
+      if (onCreateItem) {
+        setInputItems([{ label: `Create ${inputValue}`, value: inputValue }]);
+        setHighlightedIndex(0);
+      }
+    }
+  }, [inputItems, setIsCreating, setHighlightedIndex, inputValue, onCreateItem]);
 
   return (
     <>

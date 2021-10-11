@@ -12,7 +12,7 @@ const GammaApp: VoidFunctionComponent = () => {
   const history = useHistory();
 
   useEffect(() => {
-    import('@frinx/gamma/build').then((gammaImport) => {
+    import('@frinx/gamma').then((gammaImport) => {
       const {
         Main,
         CreateVpnService,
