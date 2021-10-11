@@ -299,7 +299,7 @@ export type CreateRoutingProtocolsInput = {
       vrrp: {
         'address-family': ['ipv4'];
       };
-      static: {
+      static?: {
         'cascaded-lan-prefixes': {
           'ipv4-lan-prefixes': {
             lan: string;
@@ -308,7 +308,7 @@ export type CreateRoutingProtocolsInput = {
           }[];
         };
       };
-      bgp: {
+      bgp?: {
         'bgp-profiles': {
           'bgp-profile': [
             {
@@ -539,8 +539,8 @@ export type BgpRoutingType = {
 export type RoutingProtocols = {
   type: RoutingProtocolType;
   vrrp: VrrpRoutingType;
-  static: StaticRoutingType[];
-  bgp: BgpRoutingType;
+  static?: StaticRoutingType[];
+  bgp?: BgpRoutingType;
 };
 
 export type Bearer = {

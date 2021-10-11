@@ -3,6 +3,7 @@ import {
   AccessPriority,
   CountryCode,
   CreateNetworkAccessInput,
+  CreateRoutingProtocolsInput,
   CreateVpnServiceInput,
   CreateVpnSiteInput,
   DefaultCVlanEnum,
@@ -67,21 +68,28 @@ export function clientVpnServiceToApiVpnService(clientVpnService: VpnService): C
 }
 
 export function apiRoutingProtocolToClientRoutingProtocol(routingProtocol: RoutingProtocolsOutput): RoutingProtocols {
+  const routingProtocolType = routingProtocol['routing-protocol'][0].type.split(':').pop();
+  const staticProtocol = routingProtocol['routing-protocol'][0].static;
+  const bgpProtocol = routingProtocol['routing-protocol'][0].bgp;
   return {
-    type: routingProtocol['routing-protocol'][0].type as RoutingProtocolType,
+    type: routingProtocolType as RoutingProtocolType,
     vrrp: 'ipv4',
-    static: routingProtocol['routing-protocol'][0].static['cascaded-lan-prefixes']['ipv4-lan-prefixes'].map((p) => {
-      return {
-        lan: p.lan,
-        lanTag: p['lan-tag'] as LanTag,
-        nextHop: p['next-hop'],
-      };
-    }),
-    bgp: {
-      addressFamily: 'ipv4',
-      autonomousSystem: routingProtocol['routing-protocol'][0].bgp['autonomous-system'],
-      bgpProfile: routingProtocol['routing-protocol'][0].bgp['bgp-profiles']['bgp-profile'][0].profile,
-    },
+    static: staticProtocol
+      ? staticProtocol['cascaded-lan-prefixes']['ipv4-lan-prefixes'].map((p) => {
+          return {
+            lan: p.lan,
+            lanTag: p['lan-tag'] as LanTag,
+            nextHop: p['next-hop'],
+          };
+        })
+      : undefined,
+    bgp: bgpProtocol
+      ? {
+          addressFamily: 'ipv4',
+          autonomousSystem: bgpProtocol['autonomous-system'],
+          bgpProfile: bgpProtocol['bgp-profiles']['bgp-profile'][0].profile,
+        }
+      : undefined,
   };
 }
 
@@ -173,6 +181,55 @@ export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[
   });
 }
 
+function clientRoutingProtocolsToApiRoutingProtocols(
+  routingProtocols: RoutingProtocols[],
+): CreateRoutingProtocolsInput {
+  const output: CreateRoutingProtocolsInput = {
+    'routing-protocol': [
+      {
+        type: routingProtocols[0].type,
+        vrrp: {
+          'address-family': [routingProtocols[0].vrrp],
+        },
+      },
+    ],
+  };
+  const bgpProfile = routingProtocols[0].bgp
+    ? {
+        'bgp-profiles': {
+          'bgp-profile': [{ profile: routingProtocols[0].bgp.bgpProfile || '' }] as [{ profile: string }],
+        },
+        'address-family': ['ipv4'] as ['ipv4'],
+        'autonomous-system': routingProtocols[0].bgp.autonomousSystem,
+      }
+    : undefined;
+
+  const staticProfile = routingProtocols[0].static
+    ? {
+        'cascaded-lan-prefixes': {
+          'ipv4-lan-prefixes': routingProtocols[0].static.map((s) => {
+            return {
+              lan: s.lan,
+              'lan-tag': s.lanTag,
+              'next-hop': s.nextHop,
+            };
+          }),
+        },
+      }
+    : undefined;
+
+  return {
+    ...output,
+    'routing-protocol': [
+      {
+        ...output['routing-protocol'][0],
+        bgp: bgpProfile,
+        static: staticProfile,
+      },
+    ],
+  };
+}
+
 function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAccess[]): CreateNetworkAccessInput {
   return {
     'site-network-access': networkAccesses.map((access) => {
@@ -214,32 +271,7 @@ function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAcces
             },
           },
         },
-        'routing-protocols': {
-          'routing-protocol': [
-            {
-              type: access.routingProtocols[0].type,
-              bgp: {
-                'bgp-profiles': { 'bgp-profile': [{ profile: access.routingProtocols[0].bgp.bgpProfile || '' }] },
-                'address-family': ['ipv4'],
-                'autonomous-system': access.routingProtocols[0].bgp.autonomousSystem,
-              },
-              static: {
-                'cascaded-lan-prefixes': {
-                  'ipv4-lan-prefixes': access.routingProtocols[0].static.map((s) => {
-                    return {
-                      lan: s.lan,
-                      'lan-tag': s.lanTag,
-                      'next-hop': s.nextHop,
-                    };
-                  }),
-                },
-              },
-              vrrp: {
-                'address-family': [access.routingProtocols[0].vrrp],
-              },
-            },
-          ],
-        },
+        'routing-protocols': clientRoutingProtocolsToApiRoutingProtocols(access.routingProtocols),
       };
     }),
   };
