@@ -68,10 +68,11 @@ export function clientVpnServiceToApiVpnService(clientVpnService: VpnService): C
 }
 
 export function apiRoutingProtocolToClientRoutingProtocol(routingProtocol: RoutingProtocolsOutput): RoutingProtocols {
+  const routingProtocolType = routingProtocol['routing-protocol'][0].type.split(':').pop();
   const staticProtocol = routingProtocol['routing-protocol'][0].static;
   const bgpProtocol = routingProtocol['routing-protocol'][0].bgp;
   return {
-    type: routingProtocol['routing-protocol'][0].type as RoutingProtocolType,
+    type: routingProtocolType as RoutingProtocolType,
     vrrp: 'ipv4',
     static: staticProtocol
       ? staticProtocol['cascaded-lan-prefixes']['ipv4-lan-prefixes'].map((p) => {
