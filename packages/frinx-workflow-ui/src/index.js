@@ -4,7 +4,7 @@ import ServiceUIApp from './ServiceUiApp';
 import WorkflowListHeader from './pages/workflow-list/workflow-list-header';
 import WorkflowDefinitions from './pages/workflow-list/WorkflowDefs/workflow-definitions';
 import ReduxProvider from './ReduxProvider';
-import { getUniflowApiProvider } from './UniflowApiProvider';
+import { getUniflowApiProvider } from './uniflow-api-provider';
 import WorkflowExec from './pages/workflow-list/workflow-execution/workflow-exec';
 import Scheduling from './pages/workflow-list/scheduling/scheduling';
 import EventListeners from './pages/workflow-list/EventListeners/event-listeners';

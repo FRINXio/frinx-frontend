@@ -18,7 +18,7 @@ import Scheduling from './pages/workflow-list/scheduling/scheduling';
 import EventListeners from './pages/workflow-list/EventListeners/event-listeners';
 import TaskList from './pages/workflow-list/Tasks/task-list';
 import PollData from './pages/workflow-list/PollData/poll-data';
-import { getUniflowApiProvider } from './UniflowApiProvider';
+import { getUniflowApiProvider } from './uniflow-api-provider';
 
 const rootReducer = combineReducers({
   bulkReducer,

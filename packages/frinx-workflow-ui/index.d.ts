@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { UniflowApiCallbacks } from './src/UniflowApiProvider';
+import { UniflowApiCallbacks } from './src/uniflow-api-provider';
 
 declare module '@frinx/workflow-ui' {
   export const ReduxProvider: FC;
