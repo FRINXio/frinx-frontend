@@ -155,7 +155,7 @@ const VpnPoliciesValidator = t.type({
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ServiceValidator = t.type({
+const SiteServiceValidator = t.type({
   qos: t.type({
     'qos-profile': t.type({
       'qos-profile': t.array(
@@ -166,6 +166,12 @@ const ServiceValidator = t.type({
     }),
   }),
 });
+
+export type SiteServiceOutput = t.TypeOf<typeof SiteServiceValidator>;
+
+export function decodeSiteServiceOutput(value: unknown): SiteServiceOutput {
+  return extractResult(SiteServiceValidator.decode(value));
+}
 
 const RoutingProtocolsValidator = t.type({
   'routing-protocol': t.array(
@@ -289,7 +295,7 @@ const VpnSitesOutputValidator = t.type({
         management: ManagementValidator,
         locations: LocationsValidator,
         // 'vpn-policies': VpnPoliciesValidator,
-        // service: ServiceValidator,
+        service: optional(SiteServiceValidator),
       }),
     ),
   }),
@@ -373,6 +379,18 @@ export type CreateNetworkAccessInput = {
   }[];
 };
 
+export type ApiQosProfileInput = {
+  qos: {
+    'qos-profile': {
+      'qos-profile': [
+        {
+          profile: string;
+        },
+      ];
+    };
+  };
+};
+
 export type CreateVpnSiteInput = {
   site: [
     {
@@ -410,6 +428,7 @@ export type CreateVpnSiteInput = {
           'country-code': string;
         }[];
       };
+      service?: ApiQosProfileInput;
       // 'vpn-policies': {
       //   'vpn-policy': {
       //     'vpn-policy-id': string;

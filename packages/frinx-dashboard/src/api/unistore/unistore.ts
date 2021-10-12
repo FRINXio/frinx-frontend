@@ -248,7 +248,7 @@ export async function editVpnSite(vpnSite: VpnSite): Promise<void> {
 }
 
 export async function deleteVpnSite(vpnSiteId: string): Promise<void> {
-  await sendDeleteRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${vpnSiteId}}`);
+  await sendDeleteRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${vpnSiteId}`);
 }
 
 export async function getValidProviderIdentifiers(): Promise<ValidProviderIdentifiersOutput> {
