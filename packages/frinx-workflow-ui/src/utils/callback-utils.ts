@@ -1,10 +1,10 @@
-import { Workflow } from '../types/types';
+import { ScheduledWorkflow, Workflow } from '../types/types';
 import { EventListener, Queue, TaskDefinition, WorkflowPayload } from '../types/uniflow-types';
 
 export type Callbacks = {
   getWorkflows: () => Promise<Workflow[]>;
-  getWorkflow: (name: string, version: string) => Promise<Workflow>;
-  getSchedule: (name: string, version: string) => Promise<unknown>;
+  getWorkflow: (name: string, version: number) => Promise<Workflow>;
+  getSchedule: (name: string, version: number) => Promise<ScheduledWorkflow>;
   getTaskDefinitions: () => Promise<TaskDefinition[]>;
   getTaskDefinition: (name: string) => Promise<TaskDefinition>;
   registerEventListener: (eventListener: EventListener) => Promise<EventListener>;
@@ -12,7 +12,7 @@ export type Callbacks = {
   getEventListeners: () => Promise<EventListener[]>;
   deleteEventListener: (name: string) => Promise<EventListener>;
   getQueues: () => Promise<Queue>;
-  deleteWorkflow: (name: string, version: string) => Promise<Workflow>;
+  deleteWorkflow: (name: string, version: number) => Promise<Workflow>;
   deleteTaskDefinition: (name: string) => Promise<TaskDefinition>;
   registerTaskDefinition: (taskDefinition: TaskDefinition) => Promise<TaskDefinition>;
   getWorkflowExecutions: (query?: string, start?: number, size?: string) => Promise<unknown>;
@@ -25,15 +25,15 @@ export type Callbacks = {
   retryWorkflows: (workflowIds: string[]) => Promise<string[]>;
   restartWorkflows: (workflowIds: string[]) => Promise<string[]>;
   deleteWorkflowInstance: (workflowId: string) => Promise<string>;
-  getSchedules: () => Promise<unknown>;
-  deleteSchedule: (name: string, version: string) => Promise<unknown>;
-  registerSchedule: (name: string, version: number) => Promise<unknown>;
+  getSchedules: () => Promise<ScheduledWorkflow[]>;
+  deleteSchedule: (name: string, version: number) => Promise<unknown>;
+  registerSchedule: (name: string, version: number, schedule: ScheduledWorkflow) => Promise<ScheduledWorkflow>;
 };
 
 class CallbackUtils {
   private getWorkflows: (() => Promise<Workflow[]>) | null = null;
-  private getWorkflow: ((name: string, version: string) => Promise<Workflow>) | null = null;
-  private getSchedule: ((name: string, version: string) => Promise<unknown>) | null = null;
+  private getWorkflow: ((name: string, version: number) => Promise<Workflow>) | null = null;
+  private getSchedule: ((name: string, version: number) => Promise<ScheduledWorkflow>) | null = null;
   private getTaskDefinitions: (() => Promise<TaskDefinition[]>) | null = null;
   private getTaskDefinition: ((name: string) => Promise<TaskDefinition>) | null = null;
   private registerEventListener: ((eventListener: EventListener) => Promise<EventListener>) | null = null;
@@ -41,7 +41,7 @@ class CallbackUtils {
   private getEventListeners: (() => Promise<EventListener[]>) | null = null;
   private deleteEventListener: ((name: string) => Promise<EventListener>) | null = null;
   private getQueues: (() => Promise<Queue>) | null = null;
-  private deleteWorkflow: ((name: string, version: string) => Promise<Workflow>) | null = null;
+  private deleteWorkflow: ((name: string, version: number) => Promise<Workflow>) | null = null;
   private deleteTaskDefinition: ((name: string) => Promise<TaskDefinition>) | null = null;
   private registerTaskDefinition: ((taskDefinition: TaskDefinition) => Promise<TaskDefinition>) | null = null;
   private getWorkflowExecutions: ((query?: string, start?: number, size?: string) => Promise<unknown>) | null = null;
@@ -56,9 +56,11 @@ class CallbackUtils {
   private retryWorkflows: ((workflowIds: string[]) => Promise<string[]>) | null = null;
   private restartWorkflows: ((workflowIds: string[]) => Promise<string[]>) | null = null;
   private deleteWorkflowInstance: ((workflowId: string) => Promise<string>) | null = null;
-  private getSchedules: (() => Promise<unknown>) | null = null;
-  private deleteSchedule: ((name: string, version: string) => Promise<unknown>) | null = null;
-  private registerSchedule: ((name: string, version: number) => Promise<unknown>) | null = null;
+  private getSchedules: (() => Promise<ScheduledWorkflow[]>) | null = null;
+  private deleteSchedule: ((name: string, version: number) => Promise<unknown>) | null = null;
+  private registerSchedule:
+    | ((name: string, version: number, schedule: ScheduledWorkflow) => Promise<ScheduledWorkflow>)
+    | null = null;
 
   setCallbacks(callbacks: Callbacks) {
     if (this.getWorkflows == null) {
