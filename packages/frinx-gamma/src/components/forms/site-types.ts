@@ -97,7 +97,7 @@ export type VpnSite = {
   siteDevices: SiteDevice[];
   siteManagementType: SiteManagementType;
   siteVpnFlavor: SiteVpnFlavor;
-  siteServiceQosProfile: string;
+  siteServiceQosProfile: string | null;
   enableBgpPicFastReroute: boolean;
   siteNetworkAccesses: SiteNetworkAccess[];
   maximumRoutes: MaximumRoutes;

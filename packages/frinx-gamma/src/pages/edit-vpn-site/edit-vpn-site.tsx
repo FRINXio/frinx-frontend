@@ -1,6 +1,6 @@
-import { Box, Button, Container, Flex, FormControl, FormLabel, Heading } from '@chakra-ui/react';
+import { Box, Container, Flex, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import unwrap from '../../helpers/unwrap';
+import { useParams } from 'react-router';
 import {
   apiVpnSitesToClientVpnSite,
   apiProviderIdentifiersToClientIdentifers,
@@ -8,17 +8,22 @@ import {
 import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
 import callbackUtils from '../../callback-utils';
-import Autocomplete2, { Item } from '../../components/autocomplete-2/autocomplete-2';
+import unwrap from '../../helpers/unwrap';
 
 type Props = {
   onSuccess: () => void;
   onCancel: () => void;
 };
 
+function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
+  const [vpnService] = sites.filter((s) => unwrap(s.siteId) === siteId);
+  return vpnService;
+}
+
 const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
-  const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
+  const { siteId } = useParams<{ siteId: string }>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,58 +54,19 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
     onCancel();
   };
 
-  const handleDelete = () => {
-    if (!selectedSite) {
-      return;
-    }
-    // eslint-disable-next-line no-console
-    console.log('delete clicked', selectedSite);
-    const callbacks = callbackUtils.getCallbacks;
-    const output = callbacks.deleteVpnSite(unwrap(selectedSite.siteId));
-    // eslint-disable-next-line no-console
-    console.log(output);
-    onSuccess();
-  };
-
-  const handleSiteChange = (site: VpnSite) => {
-    // eslint-disable-next-line no-console
-    console.log('site change', site);
-    setSelectedSite(site);
-  };
-
-  const handleSiteItemChange = (item?: Item | null) => {
-    if (!vpnSites) {
-      return;
-    }
-    const [newSite] = vpnSites.filter((s) => s.siteId === item?.value);
-    setSelectedSite(newSite);
-  };
-
   // TODO: add some loading state
   if (!vpnSites) {
     return null;
   }
 
-  const siteItems = vpnSites.map((s) => ({
-    value: unwrap(s.siteId),
-    label: unwrap(s.siteId),
-  }));
-
-  const [selectedSiteItem] = siteItems.filter((item) => item.value === selectedSite?.siteId);
+  const selectedSite = getSelectedSite(vpnSites, siteId);
 
   return (
     <Container>
       <Box padding={6} margin={6} background="white">
         <Flex justifyContent="space-between" alignItems="center">
           <Heading size="md">Edit VPN Site</Heading>
-          <Button onClick={handleDelete} colorScheme="red" isDisabled={!selectedSite}>
-            Delete
-          </Button>
         </Flex>
-        <FormControl id="siteId" my={6}>
-          <FormLabel>Site ID</FormLabel>
-          <Autocomplete2 items={siteItems} selectedItem={selectedSiteItem} onChange={handleSiteItemChange} />
-        </FormControl>
         {vpnSites && selectedSite && (
           <VpnSiteForm
             mode="edit"
@@ -109,7 +75,6 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
             qosProfiles={qosProfiles}
             onSubmit={handleSubmit}
             onCancel={handleCancel}
-            onSiteChange={handleSiteChange}
           />
         )}
       </Box>

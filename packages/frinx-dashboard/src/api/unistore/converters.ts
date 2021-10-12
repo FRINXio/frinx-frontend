@@ -1,6 +1,7 @@
 import unwrap from '../../helpers/unwrap';
 import {
   AccessPriority,
+  ApiQosProfileInput,
   CountryCode,
   CreateNetworkAccessInput,
   CreateRoutingProtocolsInput,
@@ -18,6 +19,7 @@ import {
   SiteNetworkAccess,
   SiteNetworkAccessOutput,
   SiteNetworkAccessType,
+  SiteServiceOutput,
   SiteVpnFlavor,
   ValidProviderIdentifiersOutput,
   VpnService,
@@ -143,10 +145,18 @@ export function apiProviderIdentifiersToClientIdentifers(
   };
 }
 
+function apiSiteServiceToClientSiteService(siteService?: SiteServiceOutput): string | null {
+  if (!siteService) {
+    return null;
+  }
+  return siteService.qos['qos-profile']['qos-profile'][0].profile;
+}
+
 export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[] {
   return apiVpnSite.sites.site.map((site) => {
     const managementType: unknown = site.management.type.split(':')[1];
     const siteVpnFlavor: unknown = site['site-vpn-flavor'].split(':')[1];
+    const siteServiceQosProfile = apiSiteServiceToClientSiteService(site.service || undefined);
     return {
       siteId: site['site-id'],
       siteDevices: site.devices.device
@@ -174,7 +184,7 @@ export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[
         : [],
       siteManagementType: managementType as SiteManagementType,
       siteVpnFlavor: siteVpnFlavor as SiteVpnFlavor,
-      siteServiceQosProfile: '',
+      siteServiceQosProfile,
       enableBgpPicFastReroute: site['traffic-protection'].enabled,
       siteNetworkAccesses: apiSiteNetworkAccessToClientSiteNetworkAccess(site['site-network-accesses']),
       maximumRoutes: site['maximum-routes']['address-family'][0]['maximum-routes'] as MaximumRoutes,
@@ -278,6 +288,20 @@ function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAcces
   };
 }
 
+function clientQosProfileToApiQosProfile(siteQosProfile: string | null): ApiQosProfileInput | undefined {
+  if (!siteQosProfile) {
+    return undefined;
+  }
+
+  return {
+    qos: {
+      'qos-profile': {
+        'qos-profile': [{ profile: siteQosProfile }],
+      },
+    },
+  };
+}
+
 export function clientVpnSiteToApiVpnSite(vpnSite: VpnSite): CreateVpnSiteInput {
   const apiDevices = vpnSite.siteDevices.map((device) => {
     return {
@@ -322,6 +346,7 @@ export function clientVpnSiteToApiVpnSite(vpnSite: VpnSite): CreateVpnSiteInput 
         'traffic-protection': { enabled: vpnSite.enableBgpPicFastReroute },
         management: { type: vpnSite.siteManagementType },
         locations: { location: apiLocations },
+        service: clientQosProfileToApiQosProfile(vpnSite.siteServiceQosProfile),
         // 'vpn-policies': {
         //   'vpn-policy': [],
         // },

@@ -21,6 +21,7 @@ const GammaApp: VoidFunctionComponent = () => {
         EditVpnSite,
         CreateSiteNetAccess,
         ServiceList,
+        SiteList,
         EditSiteNetAccess,
         getUnistoreApiProvider,
       } = gammaImport;
@@ -34,6 +35,7 @@ const GammaApp: VoidFunctionComponent = () => {
         CreateSiteNetAccess,
         EditSiteNetAccess,
         ServiceList,
+        SiteList,
         UnistoreApiProvider: getUnistoreApiProvider(callbacks),
       });
     });
@@ -49,9 +51,8 @@ const GammaApp: VoidFunctionComponent = () => {
     EditVpnService,
     CreateVpnSite,
     EditVpnSite,
-    CreateSiteNetAccess,
-    EditSiteNetAccess,
     ServiceList,
+    SiteList,
     UnistoreApiProvider,
   } = components;
 
@@ -63,11 +64,8 @@ const GammaApp: VoidFunctionComponent = () => {
             onServicesSiteLinkClick={() => {
               history.push('/gamma/services');
             }}
-            onCreateVpnSiteLinkClick={() => {
-              history.push('/gamma/add-vpn-site');
-            }}
-            onEditVpnSiteLinkClick={() => {
-              history.push('/gamma/edit-vpn-site');
+            onSitesSiteLinkClick={() => {
+              history.push('/gamma/sites');
             }}
           />
         </Route>
@@ -101,27 +99,37 @@ const GammaApp: VoidFunctionComponent = () => {
             }}
           />
         </Route>
-        <Route path="/gamma/add-vpn-site" exact>
+        <Route path="/gamma/sites" exact>
+          <SiteList
+            onCreateVpnSiteClick={() => {
+              history.push('/gamma/sites/add');
+            }}
+            onEditVpnSiteClick={(siteId: string) => {
+              history.push(`/gamma/sites/edit/${siteId}`);
+            }}
+          />
+        </Route>
+        <Route path="/gamma/sites/add" exact>
           <CreateVpnSite
             onSuccess={() => {
-              history.push('/gamma');
+              history.push('/gamma/sites');
             }}
             onCancel={() => {
-              history.push('/gamma');
+              history.push('/gamma/sites');
             }}
           />
         </Route>
-        <Route path="/gamma/edit-vpn-site" exact>
+        <Route path="/gamma/sites/edit/:siteId" exact>
           <EditVpnSite
             onSuccess={() => {
-              history.push('/gamma');
+              history.push('/gamma/sites');
             }}
             onCancel={() => {
-              history.push('/gamma');
+              history.push('/gamma/sites');
             }}
           />
         </Route>
-        <Route path="/gamma/add-site-network-access" exact>
+        {/* <Route path="/gamma/add-site-network-access" exact>
           <CreateSiteNetAccess
             onSuccess={() => {
               history.push('/gamma');
@@ -140,7 +148,7 @@ const GammaApp: VoidFunctionComponent = () => {
               history.push('/gamma');
             }}
           />
-        </Route>
+        </Route> */}
       </Switch>
     </UnistoreApiProvider>
   );
