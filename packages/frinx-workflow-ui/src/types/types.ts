@@ -363,3 +363,20 @@ export enum SerializerEnum {
   LongSerializer = 'org.apache.kafka.common.serialization.LongSerializer',
   StringSerializer = 'org.apache.kafka.common.serialization.StringSerializer',
 }
+
+export type StatusType = 'COMPLETED' | 'RUNNING' | 'FAILED';
+
+export type ScheduledWorkflow = {
+  correlationId: string;
+  cronString: string;
+  lastUpdate: string;
+  name: string;
+  taskToDomain: {
+    [key: string]: string;
+  };
+  workflowName: string;
+  workflowVersion: number;
+  workflowContext: string;
+  enabled: boolean;
+  status: StatusType;
+};
