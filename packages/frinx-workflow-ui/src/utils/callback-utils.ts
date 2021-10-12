@@ -1,188 +1,169 @@
+import { Workflow } from '../types/types';
+import { EventListener, Queue, TaskDefinition, WorkflowPayload } from '../types/uniflow-types';
+
+export type Callbacks = {
+  getWorkflows: () => Promise<Workflow[]>;
+  getWorkflow: (name: string, version: string) => Promise<Workflow>;
+  getSchedule: (name: string, version: string) => Promise<unknown>;
+  getTaskDefinitions: () => Promise<TaskDefinition[]>;
+  getTaskDefinition: (name: string) => Promise<TaskDefinition>;
+  registerEventListener: (eventListener: EventListener) => Promise<EventListener>;
+  putWorkflow: (workflows: Workflow[]) => Promise<Workflow[]>;
+  getEventListeners: () => Promise<EventListener[]>;
+  deleteEventListener: (name: string) => Promise<EventListener>;
+  getQueues: () => Promise<Queue>;
+  deleteWorkflow: (name: string, version: string) => Promise<Workflow>;
+  deleteTaskDefinition: (name: string) => Promise<TaskDefinition>;
+  registerTaskDefinition: (taskDefinition: TaskDefinition) => Promise<TaskDefinition>;
+  getWorkflowExecutions: (query?: string, start?: number, size?: string) => Promise<unknown>;
+  getWorkflowInstanceDetail: (workflowId: number) => Promise<unknown>;
+  executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>;
+  getWorkflowExecutionsHierarchical: (query?: string, start?: number, size?: string) => Promise<unknown>;
+  terminateWorkflows: (workflowIds: string[]) => Promise<string[]>;
+  pauseWorkflows: (workflowIds: string[]) => Promise<string[]>;
+  resumeWorkflows: (workflowIds: string[]) => Promise<string[]>;
+  retryWorkflows: (workflowIds: string[]) => Promise<string[]>;
+  restartWorkflows: (workflowIds: string[]) => Promise<string[]>;
+  deleteWorkflowInstance: (workflowId: string) => Promise<string>;
+  getSchedules: () => Promise<unknown>;
+  deleteSchedule: (name: string, version: string) => Promise<unknown>;
+  registerSchedule: (name: string, version: number) => Promise<unknown>;
+};
+
 class CallbackUtils {
-  constructor() {
-    this.getWorkflows = null;
-    this.getTaskDefinitions = null;
-    this.registerEventListener = null;
-    this.putWorkflow = null;
-    this.getEventListeners = null;
-    this.deleteEventListener = null;
-    this.getQueues = null;
-    this.deleteWorkflow = null;
-    this.deleteTaskDefinition = null;
-    this.registerTaskDefinition = null;
-    this.getTaskDefinition = null;
-    this.getWorkflowExecutions = null;
-    this.getWorkflowInstanceDetail = null;
-    this.executeWorkflow = null;
-    this.getWorkflowExecutionsHierarchical = null;
-    this.terminateWorkflows = null;
-    this.pauseWorkflows = null;
-    this.resumeWorkflows = null;
-    this.retryWorkflows = null;
-    this.restartWorkflows = null;
-    this.deleteWorkflowInstance = null;
-    this.getSchedules = null;
-    this.deleteSchedule = null;
-    this.getSchedule = null;
-    this.registerSchedule = null;
-  }
+  private getWorkflows: (() => Promise<Workflow[]>) | null = null;
+  private getWorkflow: ((name: string, version: string) => Promise<Workflow>) | null = null;
+  private getSchedule: ((name: string, version: string) => Promise<unknown>) | null = null;
+  private getTaskDefinitions: (() => Promise<TaskDefinition[]>) | null = null;
+  private getTaskDefinition: ((name: string) => Promise<TaskDefinition>) | null = null;
+  private registerEventListener: ((eventListener: EventListener) => Promise<EventListener>) | null = null;
+  private putWorkflow: ((workflows: Workflow[]) => Promise<Workflow[]>) | null = null;
+  private getEventListeners: (() => Promise<EventListener[]>) | null = null;
+  private deleteEventListener: ((name: string) => Promise<EventListener>) | null = null;
+  private getQueues: (() => Promise<Queue>) | null = null;
+  private deleteWorkflow: ((name: string, version: string) => Promise<Workflow>) | null = null;
+  private deleteTaskDefinition: ((name: string) => Promise<TaskDefinition>) | null = null;
+  private registerTaskDefinition: ((taskDefinition: TaskDefinition) => Promise<TaskDefinition>) | null = null;
+  private getWorkflowExecutions: ((query?: string, start?: number, size?: string) => Promise<unknown>) | null = null;
+  private getWorkflowInstanceDetail: ((workflowId: number) => Promise<unknown>) | null = null;
+  private executeWorkflow: ((workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>) | null = null;
+  private getWorkflowExecutionsHierarchical:
+    | ((query?: string, start?: number, size?: string) => Promise<unknown>)
+    | null = null;
+  private terminateWorkflows: ((workflowIds: string[]) => Promise<string[]>) | null = null;
+  private pauseWorkflows: ((workflowIds: string[]) => Promise<string[]>) | null = null;
+  private resumeWorkflows: ((workflowIds: string[]) => Promise<string[]>) | null = null;
+  private retryWorkflows: ((workflowIds: string[]) => Promise<string[]>) | null = null;
+  private restartWorkflows: ((workflowIds: string[]) => Promise<string[]>) | null = null;
+  private deleteWorkflowInstance: ((workflowId: string) => Promise<string>) | null = null;
+  private getSchedules: (() => Promise<unknown>) | null = null;
+  private deleteSchedule: ((name: string, version: string) => Promise<unknown>) | null = null;
+  private registerSchedule: ((name: string, version: number) => Promise<unknown>) | null = null;
 
-  setCallbacks(callbacks) {
-    if (this.getWorkflows != null) {
-      return;
+  setCallbacks(callbacks: Callbacks) {
+    if (this.getWorkflows == null) {
+      this.getWorkflows = callbacks.getWorkflows;
     }
 
-    this.getWorkflows = callbacks.getWorkflows;
-
-    if (this.getTaskDefinitions != null) {
-      return;
+    if (this.getTaskDefinitions == null) {
+      this.getTaskDefinitions = callbacks.getTaskDefinitions;
     }
 
-    this.getTaskDefinitions = callbacks.getTaskDefinitions;
-
-    if (this.getWorkflow != null) {
-      return;
+    if (this.getWorkflow == null) {
+      this.getWorkflow = callbacks.getWorkflow;
     }
 
-    this.getWorkflow = callbacks.getWorkflow;
-
-    if (this.registerEventListener != null) {
-      return;
+    if (this.registerEventListener == null) {
+      this.registerEventListener = callbacks.registerEventListener;
     }
 
-    this.registerEventListener = callbacks.registerEventListener;
-
-    if (this.putWorkflow != null) {
-      return;
+    if (this.putWorkflow == null) {
+      this.putWorkflow = callbacks.putWorkflow;
     }
 
-    this.putWorkflow = callbacks.putWorkflow;
-
-    if (this.getEventListeners != null) {
-      return;
+    if (this.getEventListeners == null) {
+      this.getEventListeners = callbacks.getEventListeners;
     }
 
-    this.getEventListeners = callbacks.getEventListeners;
-
-    if (this.deleteEventListener != null) {
-      return;
+    if (this.deleteEventListener == null) {
+      this.deleteEventListener = callbacks.deleteEventListener;
     }
 
-    this.deleteEventListener = callbacks.deleteEventListener;
-
-    if (this.getQueues != null) {
-      return;
+    if (this.getQueues == null) {
+      this.getQueues = callbacks.getQueues;
     }
 
-    this.getQueues = callbacks.getQueues;
-
-    if (this.deleteWorkflow != null) {
-      return;
+    if (this.deleteWorkflow == null) {
+      this.deleteWorkflow = callbacks.deleteWorkflow;
     }
 
-    this.deleteWorkflow = callbacks.deleteWorkflow;
-
-    if (this.deleteTaskDefinition != null) {
-      return;
+    if (this.deleteTaskDefinition == null) {
+      this.deleteTaskDefinition = callbacks.deleteTaskDefinition;
     }
 
-    this.deleteTaskDefinition = callbacks.deleteTaskDefinition;
-
-    if (this.registerTaskDefinition != null) {
-      return;
+    if (this.registerTaskDefinition == null) {
+      this.registerTaskDefinition = callbacks.registerTaskDefinition;
     }
 
-    this.registerTaskDefinition = callbacks.registerTaskDefinition;
-
-    if (this.getTaskDefinition != null) {
-      return;
+    if (this.getTaskDefinition == null) {
+      this.getTaskDefinition = callbacks.getTaskDefinition;
     }
 
-    this.getTaskDefinition = callbacks.getTaskDefinition;
-
-    if (this.getWorkflowExecutions != null) {
-      return;
+    if (this.getWorkflowExecutions == null) {
+      this.getWorkflowExecutions = callbacks.getWorkflowExecutions;
     }
 
-    this.getWorkflowExecutions = callbacks.getWorkflowExecutions;
-
-    if (this.getWorkflowInstanceDetail != null) {
-      return;
+    if (this.getWorkflowInstanceDetail == null) {
+      this.getWorkflowInstanceDetail = callbacks.getWorkflowInstanceDetail;
     }
 
-    this.getWorkflowInstanceDetail = callbacks.getWorkflowInstanceDetail;
-
-    if (this.executeWorkflow != null) {
-      return;
+    if (this.executeWorkflow == null) {
+      this.executeWorkflow = callbacks.executeWorkflow;
     }
 
-    this.executeWorkflow = callbacks.executeWorkflow;
-
-    if (this.getWorkflowExecutionsHierarchical != null) {
-      return;
+    if (this.getWorkflowExecutionsHierarchical == null) {
+      this.getWorkflowExecutionsHierarchical = callbacks.getWorkflowExecutionsHierarchical;
     }
 
-    this.getWorkflowExecutionsHierarchical = callbacks.getWorkflowExecutionsHierarchical;
-
-    if (this.terminateWorkflows != null) {
-      return;
+    if (this.terminateWorkflows == null) {
+      this.terminateWorkflows = callbacks.terminateWorkflows;
     }
 
-    this.terminateWorkflows = callbacks.terminateWorkflows;
-
-    if (this.pauseWorkflows != null) {
-      return;
+    if (this.pauseWorkflows == null) {
+      this.pauseWorkflows = callbacks.pauseWorkflows;
     }
 
-    this.pauseWorkflows = callbacks.pauseWorkflows;
-
-    if (this.resumeWorkflows != null) {
-      return;
+    if (this.resumeWorkflows == null) {
+      this.resumeWorkflows = callbacks.resumeWorkflows;
     }
 
-    this.resumeWorkflows = callbacks.resumeWorkflows;
-
-    if (this.retryWorkflows != null) {
-      return;
+    if (this.retryWorkflows == null) {
+      this.retryWorkflows = callbacks.retryWorkflows;
     }
 
-    this.retryWorkflows = callbacks.retryWorkflows;
-
-    if (this.restartWorkflows != null) {
-      return;
+    if (this.restartWorkflows == null) {
+      this.restartWorkflows = callbacks.restartWorkflows;
     }
 
-    this.restartWorkflows = callbacks.restartWorkflows;
-
-    if (this.deleteWorkflowInstance != null) {
-      return;
+    if (this.deleteWorkflowInstance == null) {
+      this.deleteWorkflowInstance = callbacks.deleteWorkflowInstance;
     }
 
-    this.deleteWorkflowInstance = callbacks.deleteWorkflowInstance;
-
-    if (this.getSchedules != null) {
-      return;
+    if (this.getSchedules == null) {
+      this.getSchedules = callbacks.getSchedules;
     }
 
-    this.getSchedules = callbacks.getSchedules;
-
-    if (this.deleteSchedule != null) {
-      return;
+    if (this.deleteSchedule == null) {
+      this.deleteSchedule = callbacks.deleteSchedule;
     }
 
-    this.deleteSchedule = callbacks.deleteSchedule;
-
-    if (this.getSchedule != null) {
-      return;
+    if (this.getSchedule == null) {
+      this.getSchedule = callbacks.getSchedule;
     }
 
-    this.getSchedule = callbacks.getSchedule;
-
-    if (this.registerSchedule != null) {
-      return;
+    if (this.registerSchedule == null) {
+      this.registerSchedule = callbacks.registerSchedule;
     }
-
-    this.registerSchedule = callbacks.registerSchedule;
   }
 
   getWorkflowsCallback() {
