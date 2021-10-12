@@ -23,14 +23,17 @@ import FeatherIcon from 'feather-icons-react';
 import PageContainer from '../../../common/PageContainer';
 import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
-import callbackUtils from '../../../utils/callbackUtils';
+import callbackUtils from '../../../utils/callback-utils';
 import SchedulingModal from './scheduling-modal/scheduling-modal';
+import { ScheduledWorkflow, StatusType } from '../../../types/types';
 
 function Scheduling() {
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
-  const [selectedWorkflow, setSelectedWorkflow] = useState();
+  const [selectedWorkflow, setSelectedWorkflow] = useState<ScheduledWorkflow>();
   const [isSchedulingModalOpen, setIsSchedulingModalOpen] = useState(false);
   const toast = useToast();
+
+  console.log(selectedWorkflow);
 
   function getData() {
     const getSchedules = callbackUtils.getSchedulesCallback();
@@ -39,7 +42,7 @@ function Scheduling() {
       .then((schedules) => {
         setItemList(sortBy(schedules, ['name']));
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         toast({
           title: err?.message,
           status: 'error',
@@ -53,7 +56,7 @@ function Scheduling() {
     getData();
   }, []);
 
-  function onEdit(workflow) {
+  function onEdit(workflow: ScheduledWorkflow) {
     setSelectedWorkflow(workflow);
     setIsSchedulingModalOpen(true);
   }
@@ -63,17 +66,17 @@ function Scheduling() {
     setIsSchedulingModalOpen(false);
   }
 
-  function onScheduleEnable(scheduledWf) {
+  function onScheduleEnable(scheduledWf: ScheduledWorkflow) {
     const newScheduledWf = {
       ...scheduledWf,
       enabled: !scheduledWf.enabled,
     };
     const registerSchedule = callbackUtils.registerScheduleCallback();
 
-    registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, newScheduledWf)
+    registerSchedule(scheduledWf?.workflowName ?? '', scheduledWf?.workflowVersion ?? 0, newScheduledWf)
       .then((res) => {
         toast({
-          title: res?.message,
+          title: res.name,
           status: 'success',
           duration: 9000,
           isClosable: true,
@@ -90,9 +93,9 @@ function Scheduling() {
       });
   }
 
-  const handleDeleteBtnClick = (workflow) => {
+  const handleDeleteBtnClick = (workflow: ScheduledWorkflow) => {
     const deleteSchedule = callbackUtils.deleteScheduleCallback();
-    deleteSchedule(workflow.workflowName, workflow.workflowVersion)
+    deleteSchedule(workflow?.workflowName ?? '', workflow?.workflowVersion ?? 0)
       .then(() => {
         toast({
           title: 'Deleted successfuly',
@@ -112,7 +115,7 @@ function Scheduling() {
       });
   };
 
-  function getStatusTagColor(status) {
+  function getStatusTagColor(status: StatusType) {
     switch (status) {
       case 'COMPLETED':
         return 'green';
@@ -125,14 +128,15 @@ function Scheduling() {
     }
   }
 
+  if (selectedWorkflow == null) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <PageContainer>
       {isSchedulingModalOpen && (
         <SchedulingModal
           scheduledWorkflow={selectedWorkflow}
-          name={selectedWorkflow.name}
-          workflowName={selectedWorkflow.workflowName}
-          workflowVersion={selectedWorkflow.workflowVersion}
           isOpen={isSchedulingModalOpen}
           onClose={onSchedulingModalClose}
         />
@@ -148,7 +152,7 @@ function Scheduling() {
           </Tr>
         </Thead>
         <Tbody>
-          {pageItems.map((item) => (
+          {pageItems.map((item: ScheduledWorkflow) => (
             <Tr key={item.name} role="group">
               <Td>
                 <FormControl display="flex" alignItems="center">
@@ -161,7 +165,7 @@ function Scheduling() {
                 </Heading>
               </Td>
               <Td>
-                <Tag colorScheme={getStatusTagColor(item.status)}>{item.status || '-'}</Tag>
+                <Tag colorScheme={getStatusTagColor(item.status) ?? ''}>{item.status || '-'}</Tag>
               </Td>
               <Td>
                 <Code>{item.cronString}</Code>
