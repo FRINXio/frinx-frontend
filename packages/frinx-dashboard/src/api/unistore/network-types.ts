@@ -77,6 +77,12 @@ const SiteDevicesValidator = t.type({
   ),
 });
 
+export type SiteDevicesOutput = t.TypeOf<typeof SiteDevicesValidator>;
+
+export function decodeSiteDevicesOutput(value: unknown): SiteDevicesOutput {
+  return extractResult(SiteDevicesValidator.decode(value));
+}
+
 const MaximumRoutesValidator = t.type({
   'address-family': t.array(
     t.type({
@@ -270,7 +276,7 @@ const VpnSitesOutputValidator = t.type({
     site: t.array(
       t.type({
         'site-id': t.string,
-        devices: SiteDevicesValidator,
+        devices: optional(SiteDevicesValidator),
         'site-network-accesses': optional(SiteNetworkAccessValidator),
         'maximum-routes': MaximumRoutesValidator,
         'site-vpn-flavor': SiteVpnFlavorValidator,

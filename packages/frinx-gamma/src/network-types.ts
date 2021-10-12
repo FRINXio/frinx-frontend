@@ -80,6 +80,12 @@ const SiteDevicesValidator = t.type({
   ),
 });
 
+export type SiteDevicesOutput = t.TypeOf<typeof SiteDevicesValidator>;
+
+export function decodeSiteDevicesOutput(value: unknown): SiteDevicesOutput {
+  return extractResult(SiteDevicesValidator.decode(value));
+}
+
 const MaximumRoutesValidator = t.type({
   'address-family': t.array(
     t.type({
