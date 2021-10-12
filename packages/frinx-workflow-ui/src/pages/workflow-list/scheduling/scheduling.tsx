@@ -24,7 +24,7 @@ import PageContainer from '../../../common/PageContainer';
 import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
 import callbackUtils from '../../../utils/callbackUtils';
-import SchedulingModal from './SchedulingModal/SchedulingModal';
+import SchedulingModal from './scheduling-modal/scheduling-modal';
 
 function Scheduling() {
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);

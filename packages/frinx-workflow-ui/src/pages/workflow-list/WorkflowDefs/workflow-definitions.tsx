@@ -36,7 +36,7 @@ import DiagramModal from './DiagramModal/DiagramModal';
 import InputModal from './InputModal/input-modal';
 import PageContainer from '../../../common/PageContainer';
 import PaginationPages from '../../../common/Pagination';
-import SchedulingModal from '../Scheduling/SchedulingModal/SchedulingModal';
+import SchedulingModal from '../scheduling/scheduling-modal/scheduling-modal';
 import WfLabels from '../../../common/wf-labels';
 import WorkflowListViewModal from './WorkflowListViewModal/WorkflowListViewModal';
 import callbackUtils from '../../../utils/callbackUtils';
