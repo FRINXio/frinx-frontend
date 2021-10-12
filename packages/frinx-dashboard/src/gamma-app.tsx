@@ -20,6 +20,7 @@ const GammaApp: VoidFunctionComponent = () => {
         CreateVpnSite,
         EditVpnSite,
         CreateSiteNetAccess,
+        ServiceList,
         EditSiteNetAccess,
         getUnistoreApiProvider,
       } = gammaImport;
@@ -32,6 +33,7 @@ const GammaApp: VoidFunctionComponent = () => {
         EditVpnSite,
         CreateSiteNetAccess,
         EditSiteNetAccess,
+        ServiceList,
         UnistoreApiProvider: getUnistoreApiProvider(callbacks),
       });
     });
@@ -49,6 +51,7 @@ const GammaApp: VoidFunctionComponent = () => {
     EditVpnSite,
     CreateSiteNetAccess,
     EditSiteNetAccess,
+    ServiceList,
     UnistoreApiProvider,
   } = components;
 
@@ -57,11 +60,8 @@ const GammaApp: VoidFunctionComponent = () => {
       <Switch>
         <Route path="/gamma/" exact>
           <Main
-            onCreateVpnServiceLinkClick={() => {
-              history.push('/gamma/add-vpn-service');
-            }}
-            onEditVpnServiceLinkClick={() => {
-              history.push('/gamma/edit-vpn-service');
+            onServicesSiteLinkClick={() => {
+              history.push('/gamma/services');
             }}
             onCreateVpnSiteLinkClick={() => {
               history.push('/gamma/add-vpn-site');
@@ -71,23 +71,33 @@ const GammaApp: VoidFunctionComponent = () => {
             }}
           />
         </Route>
-        <Route path="/gamma/add-vpn-service" exact>
-          <CreateVpnService
-            onSuccess={() => {
-              history.push('/gamma');
+        <Route path="/gamma/services" exact>
+          <ServiceList
+            onCreateVpnServiceClick={() => {
+              history.push('/gamma/services/add');
             }}
-            onCancel={() => {
-              history.push('/gamma');
+            onEditVpnServiceClick={(serviceId: string) => {
+              history.push(`/gamma/services/edit/${serviceId}`);
             }}
           />
         </Route>
-        <Route path="/gamma/edit-vpn-service" exact>
-          <EditVpnService
+        <Route path="/gamma/services/add" exact>
+          <CreateVpnService
             onSuccess={() => {
-              history.push('/gamma');
+              history.push('/gamma/services');
             }}
             onCancel={() => {
-              history.push('/gamma');
+              history.push('/gamma/services');
+            }}
+          />
+        </Route>
+        <Route path="/gamma/services/edit/:serviceId" exact>
+          <EditVpnService
+            onSuccess={() => {
+              history.push('/gamma/services');
+            }}
+            onCancel={() => {
+              history.push('/gamma/services');
             }}
           />
         </Route>

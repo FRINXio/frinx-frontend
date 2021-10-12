@@ -34,11 +34,12 @@ export function apiVpnServiceToClientVpnService(apiVpnService: VpnServicesOutput
           return ex['vpn-id'];
         })
       : [];
+    const vpnServiceTopology = unwrap(vpn['vpn-service-topology'].split(':').pop());
 
     return {
       vpnId: vpn['vpn-id'],
       customerName: vpn['customer-name'],
-      vpnServiceTopology: vpn['vpn-service-topology'] as VpnServiceTopology,
+      vpnServiceTopology: vpnServiceTopology as VpnServiceTopology,
       defaultCVlan: DefaultCVlanEnum.L3VPN,
       extranetVpns,
     };
@@ -49,13 +50,13 @@ export function clientVpnServiceToApiVpnService(clientVpnService: VpnService): C
   const extranetVpns = clientVpnService.extranetVpns.map((vpn) => {
     return {
       'vpn-id': vpn,
-      'local-sites-role': '',
+      // 'local-sites-role': '',
     };
   });
   return {
     'vpn-service': [
       {
-        'vpn-id': '',
+        'vpn-id': unwrap(clientVpnService.vpnId),
         'customer-name': clientVpnService.customerName,
         'extranet-vpns': {
           'extranet-vpn': extranetVpns,

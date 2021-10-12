@@ -2,28 +2,21 @@ import { Box, Link } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 
 type Props = {
-  onCreateVpnServiceLinkClick: () => void;
-  onEditVpnServiceLinkClick: () => void;
+  onServicesSiteLinkClick: () => void;
   onCreateVpnSiteLinkClick: () => void;
   onEditVpnSiteLinkClick: () => void;
 };
 
 const Main: VoidFunctionComponent<Props> = ({
-  onCreateVpnServiceLinkClick,
+  onServicesSiteLinkClick,
   onCreateVpnSiteLinkClick,
-  onEditVpnServiceLinkClick,
   onEditVpnSiteLinkClick,
 }) => {
   return (
     <Box padding={6} margin={6} background="white">
       <Box>
-        <Link onClick={onCreateVpnServiceLinkClick} to="/add-vpn-service">
-          Create VPN Service
-        </Link>
-      </Box>
-      <Box>
-        <Link onClick={onEditVpnServiceLinkClick} to="/edit-vpn-service">
-          Edit VPN Service
+        <Link onClick={onServicesSiteLinkClick} to="/services">
+          Services
         </Link>
       </Box>
       <Box>

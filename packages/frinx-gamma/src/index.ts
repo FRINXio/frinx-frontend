@@ -4,5 +4,6 @@ export { default as EditVpnService } from './pages/edit-vpn-service/edit-vpn-ser
 export { default as CreateVpnSite } from './pages/create-vpn-site/create-vpn-site';
 export { default as EditVpnSite } from './pages/edit-vpn-site/edit-vpn-site';
 export { default as CreateSiteNetAccess } from './pages/create-site-network-access/create-site-network-access';
+export { default as ServiceList } from './pages/service-list/service-list';
 export { default as EditSiteNetAccess } from './pages/edit-site-network-access/edit-site-network-access';
 export { getUnistoreApiProvider } from './unistore-api-provider';
