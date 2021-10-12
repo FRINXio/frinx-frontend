@@ -1,7 +1,6 @@
 import { Heading, Flex, keyframes, Icon, Box } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { FC, useState, useEffect, useRef } from 'react';
-// import Icon from '../svg-icons/icon';
 
 const DEFAULT_TIMEOUT_DISMISS = 3000; // defatul timeout in which notification will automatically dismiss (ms)\
 
