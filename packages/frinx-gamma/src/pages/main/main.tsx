@@ -4,16 +4,9 @@ import React, { VoidFunctionComponent } from 'react';
 type Props = {
   onServicesSiteLinkClick: () => void;
   onSitesSiteLinkClick: () => void;
-  // onCreateVpnSiteLinkClick: () => void;
-  // onEditVpnSiteLinkClick: () => void;
 };
 
-const Main: VoidFunctionComponent<Props> = ({
-  onServicesSiteLinkClick,
-  onSitesSiteLinkClick,
-  // onCreateVpnSiteLinkClick,
-  // onEditVpnSiteLinkClick,
-}) => {
+const Main: VoidFunctionComponent<Props> = ({ onServicesSiteLinkClick, onSitesSiteLinkClick }) => {
   return (
     <Box padding={6} margin={6} background="white">
       <Box>
@@ -26,16 +19,6 @@ const Main: VoidFunctionComponent<Props> = ({
           Sites
         </Link>
       </Box>
-      {/* <Box>
-        <Link onClick={onCreateVpnSiteLinkClick} to="/add-vpn-site">
-          Create VPN Site
-        </Link>
-      </Box>
-      <Box>
-        <Link onClick={onEditVpnSiteLinkClick} to="/edit-vpn-site">
-          Edit VPN Site
-        </Link>
-      </Box> */}
       {/* <Box>
         <Link to="/add-site-network-access">Create Site Net Access</Link>
       </Box>
