@@ -3,15 +3,10 @@ import React, { VoidFunctionComponent } from 'react';
 
 type Props = {
   onServicesSiteLinkClick: () => void;
-  onCreateVpnSiteLinkClick: () => void;
-  onEditVpnSiteLinkClick: () => void;
+  onSitesSiteLinkClick: () => void;
 };
 
-const Main: VoidFunctionComponent<Props> = ({
-  onServicesSiteLinkClick,
-  onCreateVpnSiteLinkClick,
-  onEditVpnSiteLinkClick,
-}) => {
+const Main: VoidFunctionComponent<Props> = ({ onServicesSiteLinkClick, onSitesSiteLinkClick }) => {
   return (
     <Box padding={6} margin={6} background="white">
       <Box>
@@ -20,13 +15,8 @@ const Main: VoidFunctionComponent<Props> = ({
         </Link>
       </Box>
       <Box>
-        <Link onClick={onCreateVpnSiteLinkClick} to="/add-vpn-site">
-          Create VPN Site
-        </Link>
-      </Box>
-      <Box>
-        <Link onClick={onEditVpnSiteLinkClick} to="/edit-vpn-site">
-          Edit VPN Site
+        <Link onClick={onSitesSiteLinkClick} to="/sites">
+          Sites
         </Link>
       </Box>
       {/* <Box>

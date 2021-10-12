@@ -227,7 +227,7 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
         <FormLabel>Site Service QOS Profile</FormLabel>
         <Autocomplete
           items={qosProfiles}
-          selectedItem={siteState.siteServiceQosProfile}
+          selectedItem={siteState.siteServiceQosProfile || ''}
           onChange={handleProfileNameChange}
         />
       </FormControl>

@@ -21,7 +21,6 @@ function getSelectedService(services: VpnService[], serviceId: string): VpnServi
 
 const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
-  // const [selectedService, setSelectedService] = useState<VpnService | null>(null);
   const { serviceId } = useParams<{ serviceId: string }>();
 
   useEffect(() => {
@@ -30,7 +29,6 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
       const services = await callbacks.getVpnServices();
       const clientVpnServices = apiVpnServiceToClientVpnService(services);
       setVpnServices(clientVpnServices);
-      // setSelectedService(getSelectedService(clientVpnServices, serviceId));
     };
 
     fetchData();
