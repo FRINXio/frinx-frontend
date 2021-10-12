@@ -32,7 +32,7 @@ const VpnServicesOutputValidator = t.type({
             t.array(
               t.type({
                 'vpn-id': t.string,
-                'local-sites-role': t.string,
+                'local-sites-role': optional(t.string),
               }),
             ),
           ),
@@ -57,7 +57,7 @@ export type CreateVpnServiceInput = {
       'extranet-vpns': {
         'extranet-vpn': {
           'vpn-id': string;
-          'local-sites-role': string;
+          'local-sites-role'?: string;
         }[];
       };
       'vpn-service-topology': string;

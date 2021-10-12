@@ -26,15 +26,7 @@ type Props = {
   extranetVpns: string[];
   onSubmit: (s: VpnService) => void;
   onCancel: () => void;
-  onServiceChange?: (s: VpnService) => void;
 };
-
-const getDefaultVpnService = (): VpnService => ({
-  customerName: '',
-  defaultCVlan: DefaultCVlanEnum.L3VPN,
-  vpnServiceTopology: 'any-to-any',
-  extranetVpns: [],
-});
 
 const getCustomerItems = (services: VpnService[]): Item[] => {
   return uniqBy(
@@ -46,7 +38,7 @@ const getCustomerItems = (services: VpnService[]): Item[] => {
   );
 };
 
-const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSubmit, onCancel, onServiceChange }) => {
+const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSubmit, onCancel }) => {
   const [serviceState, setServiceState] = useState(service);
   const [extranetVpnSelect, setExtranetVpnSelect] = useState<string | null>(null);
   const [customerItems, setCustomerItems] = useState<Item[]>(getCustomerItems(services));
@@ -76,9 +68,6 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
             },
           ];
     setServiceState(newService);
-    if (onServiceChange) {
-      onServiceChange(newService);
-    }
   };
 
   const handleExtranetVpnAdd = () => {
@@ -102,7 +91,10 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
   };
 
   const handleDeselectCustomerName = () => {
-    setServiceState(getDefaultVpnService());
+    setServiceState({
+      ...serviceState,
+      customerName: '',
+    });
   };
 
   const handleCreateItem = (item: Item) => {
