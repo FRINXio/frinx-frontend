@@ -1,6 +1,6 @@
 import { Box, Button, Container, Flex, Heading, Progress, useDisclosure, useToast } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
-import React, { useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { FC, useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal';
 import Pagination from '../../components/pagination';
@@ -12,6 +12,7 @@ import {
   DeleteDeviceMutationVariables,
   DevicesQuery,
   DevicesQueryVariables,
+  Exact,
   FilterLabelsQuery,
   InstallDeviceMutation,
   InstallDeviceMutationVariables,
@@ -98,10 +99,43 @@ type Props = {
   onEditButtonClick: (deviceId: string) => void;
 };
 
+type DeleteModalProps = {
+  selectedDevices: Set<string>;
+  deleteDevice: (
+    variables?: Exact<{
+      deviceId: string;
+    }>,
+  ) => void;
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+const DeleteSelectedDevicesModal: FC<DeleteModalProps> = ({ selectedDevices, deleteDevice, isOpen, onClose }) => {
+  return (
+    <ConfirmDeleteModal
+      isOpen={isOpen}
+      onClose={onClose}
+      onConfirmBtnClick={() => {
+        Promise.all(
+          [...selectedDevices].map((id) => {
+            return deleteDevice({
+              deviceId: id,
+            });
+          }),
+        ).then(() => onClose());
+      }}
+      title="Delete selected devices"
+    >
+      Are you sure? You can&apos;t undo this action afterwards.
+    </ConfirmDeleteModal>
+  );
+};
+
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick, onEditButtonClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const toast = useToast();
   const deleteModalDisclosure = useDisclosure();
+  const deleteSelectedDevicesModal = useDisclosure();
   const [deviceIdToDelete, setDeviceIdToDelete] = useState<string | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [installLoadingMap, setInstallLoadingMap] = useState<Record<string, boolean>>({});
@@ -250,34 +284,26 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     }
   };
 
-  const handleOnDeleteClick = (deviceId: string | null, deleteSelected = false) => {
-    if (deleteSelected) {
-      Promise.all(
-        [...selectedDevices].map((id) => {
-          return deleteDevice({
-            deviceId: id,
-          });
-        }),
-      ).then(() => deleteModalDisclosure.onClose());
-    } else {
-      deleteDevice({
-        deviceId: unwrap(deviceId),
-      }).then(() => {
-        deleteModalDisclosure.onClose();
-      });
-    }
-  };
-
   const labels = labelsData?.labels?.edges ?? [];
   const areSelectedAll = deviceData?.devices.edges.length === selectedDevices.size;
 
   return (
     <>
+      <DeleteSelectedDevicesModal
+        selectedDevices={selectedDevices}
+        deleteDevice={deleteDevice}
+        isOpen={deleteSelectedDevicesModal.isOpen}
+        onClose={deleteSelectedDevicesModal.onClose}
+      />
       <ConfirmDeleteModal
         isOpen={deleteModalDisclosure.isOpen}
         onClose={deleteModalDisclosure.onClose}
         onConfirmBtnClick={() => {
-          handleOnDeleteClick(deviceIdToDelete);
+          deleteDevice({
+            deviceId: unwrap(deviceIdToDelete),
+          }).then(() => {
+            deleteModalDisclosure.onClose();
+          });
         }}
         title="Delete device"
       >
@@ -304,7 +330,11 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
               labels={labels}
               selectedLabels={selectedLabels}
               onSelectionChange={handleOnSelectionChange}
-              handleOnDeleteClick={() => handleOnDeleteClick(null, true)}
+              handleOnDeleteClick={() => {
+                if (selectedDevices != null && selectedDevices.size) {
+                  deleteSelectedDevicesModal.onOpen();
+                }
+              }}
               isCreationDisabled
             />
           </Box>
