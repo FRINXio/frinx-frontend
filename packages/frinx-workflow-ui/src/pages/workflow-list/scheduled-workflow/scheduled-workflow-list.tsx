@@ -25,7 +25,7 @@ import PageContainer from '../../../common/PageContainer';
 import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
 import callbackUtils from '../../../utils/callback-utils';
-import SchedulingModal from './scheduling-modal/scheduling-modal';
+import SchedulingModal from './scheduled-workflow-modal/scheduled-workflow-modal';
 import { ScheduledWorkflow, StatusType } from '../../../types/types';
 
 function ScheduledWorkflowList() {
