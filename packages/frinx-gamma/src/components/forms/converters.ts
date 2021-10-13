@@ -155,7 +155,7 @@ function apiSiteDevicesToClientSiteDevices(apiSiteDevices?: SiteDevicesOutput): 
     return {
       deviceId: device['device-id'],
       locationId: device.location,
-      managementIP: device.management.address,
+      managementIP: device.management ? device.management.address : '',
     };
   });
 }

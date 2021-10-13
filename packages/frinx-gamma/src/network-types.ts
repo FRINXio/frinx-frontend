@@ -71,9 +71,11 @@ const SiteDevicesValidator = t.type({
     t.array(
       t.type({
         'device-id': t.string,
-        management: t.type({
-          address: t.string,
-        }),
+        management: optional(
+          t.type({
+            address: t.string,
+          }),
+        ),
         location: t.string,
       }),
     ),
@@ -285,7 +287,7 @@ const VpnSitesOutputValidator = t.type({
     site: t.array(
       t.type({
         'site-id': t.string,
-        devices: SiteDevicesValidator,
+        devices: optional(SiteDevicesValidator),
         'site-network-accesses': optional(SiteNetworkAccessValidator),
         'maximum-routes': MaximumRoutesValidator,
         'site-vpn-flavor': SiteVpnFlavorValidator,

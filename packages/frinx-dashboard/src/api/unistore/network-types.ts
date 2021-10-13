@@ -68,9 +68,11 @@ const SiteDevicesValidator = t.type({
     t.array(
       t.type({
         'device-id': t.string,
-        management: t.type({
-          address: t.string,
-        }),
+        management: optional(
+          t.type({
+            address: t.string,
+          }),
+        ),
         location: t.string,
       }),
     ),
