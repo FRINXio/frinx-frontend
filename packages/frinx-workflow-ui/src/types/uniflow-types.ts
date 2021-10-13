@@ -76,7 +76,7 @@ export type InputParameters =
   | DynamicForkInputParams;
 
 export type WorkflowPayload = {
-  input: unknown;
+  input: { [key: string]: string };
   name: string;
   version: number;
 };

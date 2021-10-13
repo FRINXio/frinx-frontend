@@ -1,6 +1,6 @@
 import { round } from 'lodash/math';
 import { fetchNewData, fetchParentWorkflows } from './searchExecs';
-import callbackUtils from '../../utils/callbackUtils';
+import callbackUtils from '../../utils/callback-utils';
 
 export const IS_FLAT = 'IS_FLAT';
 export const REQUEST_BULK_OPERATION = 'REQUEST_BULK_OPERATION';

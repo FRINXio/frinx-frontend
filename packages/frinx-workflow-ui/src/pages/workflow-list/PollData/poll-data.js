@@ -2,7 +2,7 @@
 import PageContainer from '../../../common/PageContainer';
 import PaginationPages from '../../../common/Pagination';
 import React, { useEffect, useState } from 'react';
-import callbackUtils from '../../../utils/callbackUtils';
+import callbackUtils from '../../../utils/callback-utils';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Icon, Input, InputGroup, InputLeftElement, Table, Tbody, Td, Tfoot, Th, Thead, Tr } from '@chakra-ui/react';

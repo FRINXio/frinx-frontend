@@ -36,14 +36,15 @@ import DiagramModal from './DiagramModal/DiagramModal';
 import InputModal from './InputModal/input-modal';
 import PageContainer from '../../../common/PageContainer';
 import PaginationPages from '../../../common/Pagination';
-import SchedulingModal from '../scheduling/scheduling-modal/scheduling-modal';
+import SchedulingModal from '../scheduled-workflow/scheduling-modal/scheduling-modal';
 import WfLabels from '../../../common/wf-labels';
 import WorkflowListViewModal from './WorkflowListViewModal/WorkflowListViewModal';
-import callbackUtils from '../../../utils/callbackUtils';
+import callbackUtils from '../../../utils/callback-utils';
 import { jsonParse } from '../../../common/utils';
 import { usePagination } from '../../../common/PaginationHook';
 import WorkflowActions from './workflow-actions';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
+import { ExtendedTask, ScheduledWorkflow, Task, Workflow } from '../../../types/types';
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr = dataset.map(({ description }) => {
@@ -75,13 +76,6 @@ const Labels = (props: { wf: Workflow; labels: string[]; onClick: (label: string
       />
     );
   });
-};
-
-type Workflow = {
-  name: string;
-  version: number;
-  description: string;
-  hasSchedule: boolean;
 };
 type Props = {
   onDefinitionClick: (name: string, version: string) => void;
@@ -138,7 +132,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const getData = () => {
     const getWorkflows = callbackUtils.getWorkflowsCallback();
 
-    getWorkflows().then((workflows: Workflow[]) => {
+    getWorkflows().then((workflows) => {
       if (workflows) {
         const dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
         setData(dataset);
@@ -191,7 +185,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const deleteWorkflow = (workflow: Workflow | null) => {
     const deleteWorkflow = callbackUtils.deleteWorkflowCallback();
 
-    deleteWorkflow(workflow?.name, workflow?.version).then(() => {
+    deleteWorkflow(workflow?.name ?? '', workflow?.version ?? 0).then(() => {
       getData();
       setConfirmDeleteModal(false);
     });
@@ -278,13 +272,30 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     ) : null;
   };
 
+  const makeEmptyScheduledWorkflow = (): ScheduledWorkflow => {
+    return {
+      correlationId: '',
+      cronString: '',
+      enabled: false,
+      lastUpdate: '',
+      name: '',
+      status: 'RUNNING',
+      taskToDomain: {},
+      workflowContext: '',
+      workflowName: '',
+      workflowVersion: 0,
+    };
+  };
+
   const renderSchedulingModal = () => {
     return (
       schedulingModal && (
         <SchedulingModal
-          name={getActiveWfScheduleName()}
-          workflowName={activeWf?.name}
-          workflowVersion={activeWf?.version}
+          scheduledWorkflow={{
+            ...makeEmptyScheduledWorkflow(),
+            workflowName: activeWf?.name ?? '',
+            workflowVersion: activeWf?.version ?? 0,
+          }}
           onClose={onSchedulingModalClose}
           isOpen={schedulingModal}
         />
