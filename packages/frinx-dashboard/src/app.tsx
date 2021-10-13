@@ -26,7 +26,7 @@ const AppWithAuth: FC<{
       <MsalProvider instance={publicClientAppRef.current}>
         <BrowserRouter basename={getURLBaseName()}>
           <Header isAuthEnabled enabledServices={enabledServices} />
-          <Box paddingTop={10}>
+          <Box paddingTop={10} overflow="hidden">
             <Switch>
               <Route path="/" exact>
                 <Dashboard enabledServices={enabledServices} />
@@ -66,7 +66,7 @@ const App: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
     <ChakraProvider theme={theme}>
       <BrowserRouter basename={getURLBaseName()}>
         <Header isAuthEnabled={false} enabledServices={enabledServices} />
-        <Box paddingTop={10}>
+        <Box paddingTop={10} overflow="hidden">
           <Switch>
             <Route path="/" exact>
               <Dashboard enabledServices={enabledServices} />
