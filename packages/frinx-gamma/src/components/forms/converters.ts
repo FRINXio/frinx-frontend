@@ -1,6 +1,7 @@
 import { VpnService, DefaultCVlanEnum, VpnServiceTopology } from './service-types';
 import {
   CountryCode,
+  SiteDevice,
   SiteManagementType,
   SiteVpnFlavor,
   VpnSite,
@@ -18,6 +19,7 @@ import {
   ApiQosProfileInput,
   VpnServicesOutput,
   VpnSitesOutput,
+  SiteDevicesOutput,
   SiteNetworkAccessOutput,
   ValidProviderIdentifiersOutput,
   RoutingProtocolsOutput,
@@ -144,6 +146,20 @@ export function apiProviderIdentifiersToClientIdentifers(
   };
 }
 
+function apiSiteDevicesToClientSiteDevices(apiSiteDevices?: SiteDevicesOutput): SiteDevice[] {
+  if (!apiSiteDevices || !apiSiteDevices.device) {
+    return [];
+  }
+
+  return apiSiteDevices.device.map((device) => {
+    return {
+      deviceId: device['device-id'],
+      locationId: device.location,
+      managementIP: device.management ? device.management.address : '',
+    };
+  });
+}
+
 function apiSiteServiceToClientSiteService(siteService?: SiteServiceOutput): string | null {
   if (!siteService) {
     return null;
@@ -155,18 +171,11 @@ export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[
   return apiVpnSite.sites.site.map((site) => {
     const managementType: unknown = site.management.type.split(':')[1];
     const siteVpnFlavor: unknown = site['site-vpn-flavor'].split(':')[1];
+    const siteDevices = apiSiteDevicesToClientSiteDevices(site.devices || undefined);
     const siteServiceQosProfile = apiSiteServiceToClientSiteService(site.service || undefined);
     return {
       siteId: site['site-id'],
-      siteDevices: site.devices.device
-        ? site.devices.device.map((device) => {
-            return {
-              deviceId: device['device-id'],
-              locationId: device.location,
-              managementIP: device.management.address,
-            };
-          })
-        : [],
+      siteDevices,
       customerLocations: site.locations.location
         ? site.locations.location.map((l) => {
             const countryCode: CountryCode =
