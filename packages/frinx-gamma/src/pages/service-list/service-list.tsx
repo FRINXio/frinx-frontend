@@ -50,7 +50,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
       </ConfirmDeleteModal>
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
-          <Heading as="h2" size="xl">
+          <Heading as="h2" size="lg">
             Services
           </Heading>
           <Button colorScheme="blue" onClick={onCreateVpnServiceClick}>
