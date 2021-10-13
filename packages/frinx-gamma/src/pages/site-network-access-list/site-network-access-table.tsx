@@ -1,47 +1,49 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Icon, IconButton, HStack, Table, Thead, Tbody, Tr, Th, Td, Text } from '@chakra-ui/react';
-import { EditIcon, ViewIcon } from '@chakra-ui/icons';
+import { EditIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import { VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
 
 type Props = {
-  sites: VpnSite[];
-  onEditSiteButtonClick: (siteId: string) => void;
-  onDetailSiteButtonClick: (siteId: string) => void;
-  onDeleteSiteButtonClick: (siteId: string) => void;
+  site: VpnSite;
+  onEditSiteNetworkAccessButtonClick: (siteId: string, accessId: string) => void;
+  onDeleteSiteNetworkAccessButtonClick: (siteId: string) => void;
 };
 
 const SiteTable: VoidFunctionComponent<Props> = ({
-  sites,
-  onEditSiteButtonClick,
-  onDetailSiteButtonClick,
-  onDeleteSiteButtonClick,
+  site,
+  onEditSiteNetworkAccessButtonClick,
+  onDeleteSiteNetworkAccessButtonClick,
 }) => {
   return (
     <Table background="white" size="lg">
       <Thead>
         <Tr>
           <Th>Id</Th>
-          <Th>Management Type</Th>
+          <Th>Access Type</Th>
+          <Th>Access Priority</Th>
           <Th>Maximum Routes</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
       <Tbody>
-        {sites.map((site) => {
+        {site.siteNetworkAccesses.map((access) => {
           return (
-            <Tr key={site.siteId}>
+            <Tr key={access.siteNetworkAccessId}>
               <Td>
                 <Text as="span" fontWeight={600}>
-                  {site.siteId}
+                  {access.siteNetworkAccessId}
                 </Text>
               </Td>
               <Td>
-                <Text as="span">{site.siteManagementType}</Text>
+                <Text as="span">{access.siteNetworkAccessType}</Text>
               </Td>
               <Td>
-                <Text as="span">{site.maximumRoutes}</Text>
+                <Text as="span">{access.accessPriority}</Text>
+              </Td>
+              <Td>
+                <Text as="span">{access.maximumRoutes}</Text>
               </Td>
               <Td>
                 <HStack>
@@ -50,14 +52,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                     size="sm"
                     variant="unstyled"
                     icon={<Icon size={12} as={EditIcon} />}
-                    onClick={() => onEditSiteButtonClick(unwrap(site.siteId))}
-                  />
-                  <IconButton
-                    aria-label="detail"
-                    size="sm"
-                    variant="unstyled"
-                    icon={<Icon size={12} as={ViewIcon} />}
-                    onClick={() => onDetailSiteButtonClick(unwrap(site.siteId))}
+                    onClick={() => onEditSiteNetworkAccessButtonClick(unwrap(site.siteId), access.siteNetworkAccessId)}
                   />
                   <IconButton
                     aria-label="Delete site"
@@ -65,7 +60,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                     colorScheme="red"
                     icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
                     onClick={() => {
-                      onDeleteSiteButtonClick(unwrap(site.siteId));
+                      onDeleteSiteNetworkAccessButtonClick(unwrap(site.siteId));
                     }}
                   />
                 </HStack>
