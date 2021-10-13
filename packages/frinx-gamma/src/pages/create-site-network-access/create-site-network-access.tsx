@@ -1,7 +1,7 @@
-import { Box, Container, FormControl, FormLabel, Heading } from '@chakra-ui/react';
+import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import { useParams } from 'react-router';
 import unwrap from '../../helpers/unwrap';
-import Autocomplete2, { Item } from '../../components/autocomplete-2/autocomplete-2';
 import {
   apiProviderIdentifiersToClientIdentifers,
   apiVpnSitesToClientVpnSite,
@@ -58,9 +58,14 @@ const getBandwidths = async () => {
 };
 
 type Props = {
-  onSuccess: () => void;
-  onCancel: () => void;
+  onSuccess: (siteId: string) => void;
+  onCancel: (siteId: string) => void;
 };
+
+function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
+  const [vpnService] = sites.filter((s) => unwrap(s.siteId) === siteId);
+  return vpnService;
+}
 
 const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
@@ -69,6 +74,7 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const [bgpProfiles, setBgpProfiles] = useState<string[]>([]);
   const [bandwiths, setBandwiths] = useState<number[]>([]);
+  const { siteId } = useParams<{ siteId: string }>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,10 +93,11 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
       setQosProfiles(clientProfiles.qosIdentifiers);
       setBgpProfiles(clientProfiles.bgpIdentifiers);
       setBandwiths(bandwithsResponse);
+      setSelectedSite(getSelectedSite(clientVpnSites, siteId));
     };
 
     fetchData();
-  }, []);
+  }, [siteId]);
 
   const handleSubmit = async (s: VpnSite) => {
     // eslint-disable-next-line no-console
@@ -100,30 +107,14 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     await callbacks.editVpnSite(s);
     // eslint-disable-next-line no-console
     console.log('site saved: network access added to site');
-    onSuccess();
+    onSuccess(unwrap(s.siteId));
   };
 
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    onCancel();
+    onCancel(unwrap(selectedSite?.siteId));
   };
-
-  const handleSiteItemChange = (item?: Item | null) => {
-    // eslint-disable-next-line no-console
-    console.log('site changed');
-    const site = vpnSites?.filter((s) => s.siteId === item?.value).pop();
-    setSelectedSite(site || null);
-  };
-
-  const vpnItems = vpnSites
-    ? vpnSites.map((s) => ({
-        value: unwrap(s.siteId),
-        label: unwrap(s.siteId),
-      }))
-    : [];
-
-  const [selectedVpnItem] = vpnItems.filter((item) => item.value === selectedSite?.siteId);
 
   return (
     <Container>
@@ -131,10 +122,6 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
         <Heading size="md">Create Site Network Access</Heading>
         {vpnSites && (
           <>
-            <FormControl id="selected-site" my={6}>
-              <FormLabel>Select site:</FormLabel>
-              <Autocomplete2 items={vpnItems} selectedItem={selectedVpnItem} onChange={handleSiteItemChange} />
-            </FormControl>
             {selectedSite && (
               <>
                 {/* <SiteInfo site={selectedSite} /> */}

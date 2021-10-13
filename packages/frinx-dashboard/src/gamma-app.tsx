@@ -22,6 +22,7 @@ const GammaApp: VoidFunctionComponent = () => {
         CreateSiteNetAccess,
         ServiceList,
         SiteList,
+        SiteNetworkAccessList,
         EditSiteNetAccess,
         getUnistoreApiProvider,
       } = gammaImport;
@@ -36,6 +37,7 @@ const GammaApp: VoidFunctionComponent = () => {
         EditSiteNetAccess,
         ServiceList,
         SiteList,
+        SiteNetworkAccessList,
         UnistoreApiProvider: getUnistoreApiProvider(callbacks),
       });
     });
@@ -47,12 +49,15 @@ const GammaApp: VoidFunctionComponent = () => {
 
   const {
     Main,
+    CreateSiteNetAccess,
     CreateVpnService,
-    EditVpnService,
     CreateVpnSite,
+    EditSiteNetAccess,
+    EditVpnService,
     EditVpnSite,
     ServiceList,
     SiteList,
+    SiteNetworkAccessList,
     UnistoreApiProvider,
   } = components;
 
@@ -107,6 +112,9 @@ const GammaApp: VoidFunctionComponent = () => {
             onEditVpnSiteClick={(siteId: string) => {
               history.push(`/gamma/sites/edit/${siteId}`);
             }}
+            onDetailVpnSiteClick={(siteId: string) => {
+              history.push(`/gamma/sites/detail/${siteId}`);
+            }}
           />
         </Route>
         <Route path="/gamma/sites/add" exact>
@@ -129,26 +137,39 @@ const GammaApp: VoidFunctionComponent = () => {
             }}
           />
         </Route>
-        {/* <Route path="/gamma/add-site-network-access" exact>
-          <CreateSiteNetAccess
-            onSuccess={() => {
-              history.push('/gamma');
+        <Route path="/gamma/sites/detail/:siteId" exact>
+          <SiteNetworkAccessList
+            onCreateSiteNetworkAccessClick={(siteId: string) => {
+              history.push(`/gamma/sites/detail/${siteId}/add-access`);
             }}
-            onCancel={() => {
-              history.push('/gamma');
+            onEditSiteNetworkAccessClick={(siteId: string, accessId: string) => {
+              history.push(`/gamma/sites/detail/${siteId}/edit-access/${accessId}`);
+            }}
+            onSiteListClick={() => {
+              history.push(`/gamma/sites`);
             }}
           />
         </Route>
-        <Route path="/gamma/edit-site-network-access" exact>
-          <EditSiteNetAccess
-            onSuccess={() => {
-              history.push('/gamma');
+        <Route path="/gamma/sites/detail/:siteId/add-access" exact>
+          <CreateSiteNetAccess
+            onSuccess={(siteId: string) => {
+              history.push(`/gamma/sites/detail/${siteId}`);
             }}
-            onCancel={() => {
-              history.push('/gamma');
+            onCancel={(siteId: string) => {
+              history.push(`/gamma/sites/detail/${siteId}`);
             }}
           />
-        </Route> */}
+        </Route>
+        <Route path="/gamma/sites/detail/:siteId/edit-access/:accessId" exact>
+          <EditSiteNetAccess
+            onSuccess={(siteId: string) => {
+              history.push(`/gamma/sites/detail/${siteId}`);
+            }}
+            onCancel={(siteId: string) => {
+              history.push(`/gamma/sites/detail/${siteId}`);
+            }}
+          />
+        </Route>
       </Switch>
     </UnistoreApiProvider>
   );

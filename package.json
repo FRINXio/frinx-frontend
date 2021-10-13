@@ -14,11 +14,14 @@
     "lint:dashboard": "cd packages/frinx-dashboard && yarn run lint",
     "lint:workflow-builder": "cd packages/frinx-workflow-builder && yarn run lint",
     "lint:inventory": "cd packages/frinx-inventory-client && yarn run lint",
+    "lint:gamma": "cd packages/frinx-gamma && yarn run lint",
     "type-check:workflow-builder": "cd packages/frinx-workflow-builder && yarn run type-check",
     "type-check:inventory": "cd packages/frinx-inventory-client && yarn run type-check",
+    "type-check:gamma": "cd packages/frinx-gamma && yarn run type-check",
+    "type-check:dashboard": "cd packages/frinx-dashboard && yarn run type-check",
     "build:gamma": "cd packages/frinx-gamma && yarn run build",
-    "lint": "yarn run lint:dashboard && yarn run lint:workflow-builder && yarn run lint:inventory",
-    "type-check": "yarn run type-check:workflow-builder && yarn run type-check:inventory"
+    "lint": "yarn run lint:dashboard && yarn run lint:workflow-builder && yarn run lint:inventory && yarn run lint:gamma",
+    "type-check": "yarn run type-check:workflow-builder && yarn run type-check:inventory && yarn run type-check:gamma"
   },
   "devDependencies": {
     "dedubcheck": "^0.0.6",

@@ -10,9 +10,14 @@ import unwrap from '../../helpers/unwrap';
 type Props = {
   onCreateVpnSiteClick: () => void;
   onEditVpnSiteClick: (siteId: string) => void;
+  onDetailVpnSiteClick: (siteId: string) => void;
 };
 
-const SiteListPage: VoidFunctionComponent<Props> = ({ onCreateVpnSiteClick, onEditVpnSiteClick }) => {
+const SiteListPage: VoidFunctionComponent<Props> = ({
+  onCreateVpnSiteClick,
+  onEditVpnSiteClick,
+  onDetailVpnSiteClick,
+}) => {
   const [sites, setSites] = useState<VpnSite[] | null>(null);
   const [siteIdToDelete, setSiteIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
@@ -50,7 +55,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({ onCreateVpnSiteClick, onEd
       </ConfirmDeleteModal>
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
-          <Heading as="h2" size="xl">
+          <Heading as="h2" size="lg">
             Sites
           </Heading>
           <Button colorScheme="blue" onClick={onCreateVpnSiteClick}>
@@ -61,6 +66,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({ onCreateVpnSiteClick, onEd
           {sites ? (
             <SiteTable
               onEditSiteButtonClick={onEditVpnSiteClick}
+              onDetailSiteButtonClick={onDetailVpnSiteClick}
               onDeleteSiteButtonClick={handleDeleteButtonClick}
               sites={sites}
             />

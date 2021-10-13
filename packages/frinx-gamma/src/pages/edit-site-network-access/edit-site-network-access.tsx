@@ -1,7 +1,7 @@
-import { Box, Button, Container, Flex, FormControl, FormLabel, Heading } from '@chakra-ui/react';
+import { Box, Container, Flex, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import { useParams } from 'react-router';
 import unwrap from '../../helpers/unwrap';
-import Autocomplete2, { Item } from '../../components/autocomplete-2/autocomplete-2';
 import {
   apiProviderIdentifiersToClientIdentifers,
   apiVpnSitesToClientVpnSite,
@@ -16,18 +16,28 @@ const getBandwidths = async () => {
 };
 
 type Props = {
-  onSuccess: () => void;
-  onCancel: () => void;
+  onSuccess: (siteId: string) => void;
+  onCancel: (siteId: string) => void;
 };
+
+function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
+  const [vpnService] = sites.filter((s) => unwrap(s.siteId) === siteId);
+  return vpnService;
+}
+
+function getSelectedAccess(site: VpnSite, accessId: string): SiteNetworkAccess {
+  const [siteNetworkAccess] = site.siteNetworkAccesses.filter((a) => unwrap(a.siteNetworkAccessId) === accessId);
+  return siteNetworkAccess;
+}
 
 const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
-  const [selectedNetworkAccess, setSelectedNetworkAccess] = useState<SiteNetworkAccess | null>(null);
   const [bfdProfiles, setBfdProfiles] = useState<string[]>([]);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const [bgpProfiles, setBgpProfiles] = useState<string[]>([]);
   const [bandwiths, setBandwiths] = useState<number[]>([]);
+  const { siteId, accessId } = useParams<{ siteId: string; accessId: string }>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,10 +56,11 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
       setQosProfiles(clientProfiles.qosIdentifiers);
       setBgpProfiles(clientProfiles.bgpIdentifiers);
       setBandwiths(bandwithsResponse);
+      setSelectedSite(getSelectedSite(clientVpnSites, siteId));
     };
 
     fetchData();
-  }, []);
+  }, [siteId]);
 
   const handleSubmit = async (s: VpnSite) => {
     // eslint-disable-next-line no-console
@@ -59,104 +70,29 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
     await callbacks.editVpnSite(s);
     // eslint-disable-next-line no-console
     console.log('site saved: network access added to site');
-    onSuccess();
+    onSuccess(unwrap(s.siteId));
   };
 
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    onCancel();
+    onCancel(unwrap(selectedSite?.siteId));
   };
 
-  const handleSiteItemChange = (item?: Item | null) => {
-    // eslint-disable-next-line no-console
-    console.log('site changed');
-    const site = vpnSites?.filter((s) => s.siteId === item?.value).pop();
-    setSelectedSite(site || null);
-    setSelectedNetworkAccess(null);
-  };
+  if (!selectedSite) {
+    return null;
+  }
 
-  const handleDelete = () => {
-    // eslint-disable-next-line no-console
-    console.log('delete clicked', selectedSite, selectedNetworkAccess);
-    if (!selectedSite || !selectedNetworkAccess) {
-      return;
-    }
-    const newNetowrkAccesses = selectedSite.siteNetworkAccesses.filter((access) => {
-      return access.siteNetworkAccessId !== selectedNetworkAccess.siteNetworkAccessId;
-    });
-
-    const newSite = {
-      ...selectedSite,
-      siteNetworkAccesses: newNetowrkAccesses,
-    };
-    const callbacks = callbackUtils.getCallbacks;
-    const output = callbacks.editVpnSite(newSite);
-
-    // eslint-disable-next-line no-console
-    console.log(output);
-    onSuccess();
-  };
-
-  const handleSiteNetworkItemChange = (item?: Item | null) => {
-    // eslint-disable-next-line no-console
-    console.log('site network change');
-    if (!selectedSite) {
-      return;
-    }
-    const networkAccess = selectedSite.siteNetworkAccesses
-      .filter((access) => access.siteNetworkAccessId === item?.value)
-      .pop();
-    setSelectedNetworkAccess(networkAccess || null);
-  };
-
-  const siteItems = vpnSites
-    ? vpnSites.map((s) => ({
-        value: unwrap(s.siteId),
-        label: unwrap(s.siteId),
-      }))
-    : [];
-  const [selectedSiteItem] = siteItems.filter((item) => item.value === selectedSite?.siteId);
-
-  const networkAccessItems = selectedSite
-    ? selectedSite.siteNetworkAccesses.map((access) => ({
-        value: access.siteNetworkAccessId,
-        label: access.siteNetworkAccessId,
-      }))
-    : [];
-  const [selectedNetworkAccessItem] = networkAccessItems.filter(
-    (item) => item.value === selectedNetworkAccess?.siteNetworkAccessId,
-  );
+  const selectedNetworkAccess = getSelectedAccess(selectedSite, accessId);
 
   return (
     <Container>
       <Box padding={6} margin={6} background="white">
         <Flex justifyContent="space-between" alignItems="center">
           <Heading size="md">Edit Site Network Access</Heading>
-          <Button
-            onClick={handleDelete}
-            colorScheme="red"
-            isDisabled={selectedNetworkAccess?.siteNetworkAccessId == null}
-          >
-            Delete
-          </Button>
         </Flex>
         {vpnSites && (
           <>
-            <FormControl id="selected-site" my={6}>
-              <FormLabel>Select site:</FormLabel>
-              <Autocomplete2 items={siteItems} selectedItem={selectedSiteItem} onChange={handleSiteItemChange} />
-            </FormControl>
-            {selectedSite && (
-              <FormControl id="select-network-access" my={6}>
-                <FormLabel>Select Network Access:</FormLabel>
-                <Autocomplete2
-                  items={networkAccessItems}
-                  selectedItem={selectedNetworkAccessItem}
-                  onChange={handleSiteNetworkItemChange}
-                />
-              </FormControl>
-            )}
             {selectedSite && selectedNetworkAccess && (
               <>
                 <SiteNetworkAccessForm
