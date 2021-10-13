@@ -376,7 +376,9 @@ export type ScheduledWorkflow = {
   };
   workflowName: string;
   workflowVersion: number;
-  workflowContext: string;
+  workflowContext: {
+    [key: string]: any;
+  };
   enabled: boolean;
   status: StatusType;
 };

@@ -27,7 +27,7 @@ export type Callbacks = {
   deleteWorkflowInstance: (workflowId: string) => Promise<string>;
   getSchedules: () => Promise<ScheduledWorkflow[]>;
   deleteSchedule: (name: string, version: number) => Promise<unknown>;
-  registerSchedule: (name: string, version: number, schedule: ScheduledWorkflow) => Promise<ScheduledWorkflow>;
+  registerSchedule: (name: string, version: number, schedule: ScheduledWorkflow) => Promise<{ message: string }>;
 };
 
 class CallbackUtils {
@@ -59,7 +59,7 @@ class CallbackUtils {
   private getSchedules: (() => Promise<ScheduledWorkflow[]>) | null = null;
   private deleteSchedule: ((name: string, version: number) => Promise<unknown>) | null = null;
   private registerSchedule:
-    | ((name: string, version: number, schedule: ScheduledWorkflow) => Promise<ScheduledWorkflow>)
+    | ((name: string, version: number, schedule: ScheduledWorkflow) => Promise<{ message: string }>)
     | null = null;
 
   setCallbacks(callbacks: Callbacks) {
