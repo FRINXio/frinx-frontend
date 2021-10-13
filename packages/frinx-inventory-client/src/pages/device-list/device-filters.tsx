@@ -45,7 +45,7 @@ const DeviceFilter: VoidFunctionComponent<Props> = ({
                     verticalAlign="middle"
                   />
                 </Box>
-                Delete selected workflows
+                Delete selected devices
               </MenuItem>
             </MenuList>
           </Menu>
