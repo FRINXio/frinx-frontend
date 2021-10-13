@@ -37,7 +37,7 @@ const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose }) => {
   useEffect(() => {
     const getSchedule = callbackUtils.getScheduleCallback();
 
-    getSchedule(scheduledWf.name, scheduledWf.workflowVersion)
+    getSchedule(scheduledWf?.workflowName ?? '', scheduledWf?.workflowVersion ?? 0)
       .then((schedule) => {
         setFound(true);
         setScheduledWf(schedule);
@@ -62,10 +62,10 @@ const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose }) => {
 
     const registerSchedule = callbackUtils.registerScheduleCallback();
 
-    registerSchedule(scheduledWf.name, scheduledWf.workflowVersion, {
+    registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, {
       ...scheduledWf,
-      workflowContext: JSON.stringify(scheduledWf?.workflowContext),
-      name: `${name}:${scheduledWf.workflowVersion.toString()}`,
+      workflowContext: JSON.stringify(scheduledWf.workflowContext),
+      name: `${scheduledWf.workflowName}:${scheduledWf.workflowVersion.toString()}`,
     })
       .then(() => {
         onClose();
@@ -92,7 +92,7 @@ const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose }) => {
   };
 
   const getCrontabGuruUrl = () => {
-    const cronString = scheduledWf?.cronString || DEFAULT_CRON_STRING;
+    const cronString = scheduledWf.cronString || DEFAULT_CRON_STRING;
     const url = 'https://crontab.guru/#' + cronString.replace(/\s/g, '_');
     return (
       <Link href={url} color="brand.500">
@@ -138,7 +138,8 @@ const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose }) => {
               mode="json"
               onChange={setWorkflowContext}
               value={JSON.stringify(scheduledWf?.workflowContext, null, 2)}
-              height="200px"
+              height="400px"
+              width="100%"
             />
           </FormControl>
         </ModalBody>
