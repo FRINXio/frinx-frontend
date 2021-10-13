@@ -17,6 +17,7 @@ import {
   Tag,
   Code,
   useToast,
+  useDisclosure,
 } from '@chakra-ui/react';
 import sortBy from 'lodash/sortBy';
 import FeatherIcon from 'feather-icons-react';
@@ -27,13 +28,11 @@ import callbackUtils from '../../../utils/callback-utils';
 import SchedulingModal from './scheduling-modal/scheduling-modal';
 import { ScheduledWorkflow, StatusType } from '../../../types/types';
 
-function Scheduling() {
+function ScheduledWorkflowList() {
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ScheduledWorkflow>();
-  const [isSchedulingModalOpen, setIsSchedulingModalOpen] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
-
-  console.log(selectedWorkflow);
 
   function getData() {
     const getSchedules = callbackUtils.getSchedulesCallback();
@@ -57,13 +56,9 @@ function Scheduling() {
   }, []);
 
   function onEdit(workflow: ScheduledWorkflow) {
+    console.log(workflow);
     setSelectedWorkflow(workflow);
-    setIsSchedulingModalOpen(true);
-  }
-
-  function onSchedulingModalClose() {
-    getData();
-    setIsSchedulingModalOpen(false);
+    onOpen();
   }
 
   function onScheduleEnable(scheduledWf: ScheduledWorkflow) {
@@ -73,7 +68,7 @@ function Scheduling() {
     };
     const registerSchedule = callbackUtils.registerScheduleCallback();
 
-    registerSchedule(scheduledWf?.workflowName ?? '', scheduledWf?.workflowVersion ?? 0, newScheduledWf)
+    registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, newScheduledWf)
       .then((res) => {
         toast({
           title: res.name,
@@ -95,7 +90,7 @@ function Scheduling() {
 
   const handleDeleteBtnClick = (workflow: ScheduledWorkflow) => {
     const deleteSchedule = callbackUtils.deleteScheduleCallback();
-    deleteSchedule(workflow?.workflowName ?? '', workflow?.workflowVersion ?? 0)
+    deleteSchedule(workflow.workflowName, workflow.workflowVersion)
       .then(() => {
         toast({
           title: 'Deleted successfuly',
@@ -128,18 +123,14 @@ function Scheduling() {
     }
   }
 
-  if (selectedWorkflow == null) {
+  if (!pageItems.length) {
     return <p>Loading...</p>;
   }
 
   return (
     <PageContainer>
-      {isSchedulingModalOpen && (
-        <SchedulingModal
-          scheduledWorkflow={selectedWorkflow}
-          isOpen={isSchedulingModalOpen}
-          onClose={onSchedulingModalClose}
-        />
+      {isOpen && selectedWorkflow != null && (
+        <SchedulingModal scheduledWorkflow={selectedWorkflow} isOpen={isOpen} onClose={onClose} />
       )}
       <Table background="white">
         <Thead>
@@ -222,4 +213,4 @@ function Scheduling() {
   );
 }
 
-export default Scheduling;
+export default ScheduledWorkflowList;
