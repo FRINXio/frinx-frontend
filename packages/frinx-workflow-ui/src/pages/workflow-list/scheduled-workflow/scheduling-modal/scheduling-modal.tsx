@@ -16,7 +16,6 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import callbackUtils from '../../../../utils/callback-utils';
 import Editor from 'react-ace';
 import { ScheduledWorkflow } from '../../../../types/types';
 
@@ -26,54 +25,21 @@ type Props = {
   scheduledWorkflow: ScheduledWorkflow;
   isOpen: boolean;
   onClose: () => void;
+  onSubmit: (workflow: ScheduledWorkflow) => void;
 };
 
-const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose }) => {
+const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose, onSubmit }) => {
   const [scheduledWf, setScheduledWf] = useState<ScheduledWorkflow>(scheduledWorkflow);
-  const [status, setStatus] = useState<string | null>();
-  const [found, setFound] = useState(false);
-  const [error, setError] = useState<string>();
 
-  useEffect(() => {
-    const getSchedule = callbackUtils.getScheduleCallback();
-
-    getSchedule(scheduledWf?.workflowName ?? '', scheduledWf?.workflowVersion ?? 0)
-      .then((schedule) => {
-        setFound(true);
-        setScheduledWf(schedule);
-      })
-      .catch(() => {
-        setFound(false);
-        setScheduledWf((prev) => {
-          return {
-            ...prev,
-            name: scheduledWf.name,
-            workflowName: scheduledWf.workflowName,
-            workflowVersion: scheduledWf.workflowVersion,
-            enabled: false,
-            cronString: DEFAULT_CRON_STRING,
-          };
-        });
-      });
-  }, []);
-
-  const onRegisterSchedule = () => {
-    setStatus('Submitting');
-
-    const registerSchedule = callbackUtils.registerScheduleCallback();
-
-    registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, {
+  const handleSubmit = () => {
+    const newWorkflow = {
       ...scheduledWf,
-      workflowContext: JSON.stringify(scheduledWf.workflowContext),
+      workflowContext: scheduledWf.workflowContext,
       name: `${scheduledWf.workflowName}:${scheduledWf.workflowVersion.toString()}`,
-    })
-      .then(() => {
-        onClose();
-      })
-      .catch((err: Error) => {
-        setStatus(null);
-        setError(err.message);
-      });
+    };
+
+    onSubmit(newWorkflow);
+    onClose();
   };
 
   const setWorkflowContext = (workflowContext: string) => {
@@ -145,9 +111,8 @@ const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose }) => {
         </ModalBody>
         <ModalFooter>
           <HStack spacing={2}>
-            <pre>{error}</pre>
-            <Button colorScheme="blue" onClick={onRegisterSchedule} isDisabled={status != null}>
-              {found ? 'Update' : 'Create'}
+            <Button colorScheme="blue" onClick={handleSubmit}>
+              Update
             </Button>
             <Button onClick={onClose}>Close</Button>
           </HStack>

@@ -56,33 +56,28 @@ function ScheduledWorkflowList() {
   }, []);
 
   function onEdit(workflow: ScheduledWorkflow) {
-    console.log(workflow);
     setSelectedWorkflow(workflow);
     onOpen();
   }
 
-  function onScheduleEnable(scheduledWf: ScheduledWorkflow) {
-    const newScheduledWf = {
-      ...scheduledWf,
-      enabled: !scheduledWf.enabled,
-    };
+  function handleWorkflowUpdate(scheduledWf: ScheduledWorkflow) {
     const registerSchedule = callbackUtils.registerScheduleCallback();
 
-    registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, newScheduledWf)
+    registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, scheduledWf)
       .then((res) => {
         toast({
-          title: res.name,
+          title: res.message,
           status: 'success',
-          duration: 9000,
+          duration: 2000,
           isClosable: true,
         });
         getData();
       })
       .catch((err) => {
         toast({
-          title: err?.message,
+          title: err.message,
           status: 'error',
-          duration: 9000,
+          duration: 2000,
           isClosable: true,
         });
       });
@@ -130,7 +125,12 @@ function ScheduledWorkflowList() {
   return (
     <PageContainer>
       {isOpen && selectedWorkflow != null && (
-        <SchedulingModal scheduledWorkflow={selectedWorkflow} isOpen={isOpen} onClose={onClose} />
+        <SchedulingModal
+          scheduledWorkflow={selectedWorkflow}
+          isOpen={isOpen}
+          onClose={onClose}
+          onSubmit={handleWorkflowUpdate}
+        />
       )}
       <Table background="white">
         <Thead>
@@ -147,7 +147,17 @@ function ScheduledWorkflowList() {
             <Tr key={item.name} role="group">
               <Td>
                 <FormControl display="flex" alignItems="center">
-                  <Switch isChecked={!!item.enabled} onChange={() => onScheduleEnable(item)} />
+                  <Switch
+                    isChecked={item.enabled}
+                    onChange={() => {
+                      const editedWorkflow = {
+                        ...item,
+                        enabled: !item.enabled,
+                      };
+
+                      handleWorkflowUpdate(editedWorkflow);
+                    }}
+                  />
                 </FormControl>
               </Td>
               <Td>
