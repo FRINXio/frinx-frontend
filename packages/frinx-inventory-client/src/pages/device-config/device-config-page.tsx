@@ -1,29 +1,43 @@
-import { Container, Progress, useToast, useDisclosure, Box } from '@chakra-ui/react';
+import { Box, Container, Flex, Heading, Progress, useDisclosure } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
-import { useQuery, gql, useMutation } from 'urql';
-import DeviceConfigEditors from './device-config-editors';
-import DeviceConfigActions from './device-config-actions';
-import CreateSnapshotModal from './create-snapshot-modal';
+import { gql, useMutation, useQuery } from 'urql';
+import useNotifications from '../../hooks/use-notifications';
 import {
-  CommitDataStoreConfigMutation,
-  CommitDataStoreConfigMutationVariables,
-  QueryDataStoreQuery,
-  QueryDataStoreQueryVariables,
-  UpdateDataStoreMutation,
-  UpdateDataStoreMutationVariables,
-  ResetConfigMutation,
-  ResetConfigMutationVariables,
   AddSnapshotMutation,
   AddSnapshotMutationVariables,
   ApplySnapshotMutation,
   ApplySnapshotMutationVariables,
+  CommitDataStoreConfigMutation,
+  CommitDataStoreConfigMutationVariables,
+  DataStoreQuery,
+  DataStoreQueryVariables,
+  DeviceNameQuery,
+  DeviceNameQueryVariables,
+  ResetConfigMutation,
+  ResetConfigMutationVariables,
   SyncFromNetworkMutation,
   SyncFromNetworkMutationVariables,
+  UpdateDataStoreMutation,
+  UpdateDataStoreMutationVariables,
 } from '../../__generated__/graphql';
+import CreateSnapshotModal from './create-snapshot-modal';
+import DeviceConfigActions from './device-config-actions';
+import DeviceConfigEditors from './device-config-editors';
 import DiffOutputModal from './diff-output-modal';
 
+const DEVICE_NAME_QUERY = gql`
+  query deviceName($deviceId: ID!) {
+    node(id: $deviceId) {
+      ... on Device {
+        id
+        name
+      }
+    }
+  }
+`;
+
 const DATA_STORE_QUERY = gql`
-  query queryDataStore($deviceId: String!) {
+  query dataStore($deviceId: String!) {
     dataStore(deviceId: $deviceId) {
       config
       operational
@@ -99,7 +113,14 @@ type Props = {
 };
 
 const DeviceConfig: FC<Props> = ({ deviceId }) => {
-  const [{ data, fetching, error }, reexecuteQuery] = useQuery<QueryDataStoreQuery, QueryDataStoreQueryVariables>({
+  const [{ data: deviceData, fetching: isFetchingDevice, error: deviceError }] = useQuery<
+    DeviceNameQuery,
+    DeviceNameQueryVariables
+  >({
+    query: DEVICE_NAME_QUERY,
+    variables: { deviceId },
+  });
+  const [{ data, fetching, error }, reexecuteQuery] = useQuery<DataStoreQuery, DataStoreQueryVariables>({
     query: DATA_STORE_QUERY,
     variables: { deviceId },
   });
@@ -127,7 +148,8 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
   >(SYNC_FROM_NETWORK_MUTATION);
 
   const [config, setConfig] = useState<string>();
-  const toast = useToast();
+  // const toast = useToast();
+  const { addToastNotification } = useNotifications();
   const { isOpen: isSnapshotModalOpen, onClose: onSnapshotModalClose, onOpen: onSnapshotModalOpen } = useDisclosure();
   const { isOpen: isDiffModalOpen, onClose: onDiffModalClose, onOpen: onDiffModalOpen } = useDisclosure();
 
@@ -144,101 +166,135 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     });
 
     if (responseError != null) {
-      toast({
-        title: 'Failed to update config data store',
-        isClosable: true,
-        duration: 2000,
-        status: 'error',
+      addToastNotification({
+        type: 'error',
+        title: 'Error',
+        content: 'Failed to update config data store',
       });
     }
 
     if (responseData != null) {
       reexecuteQuery({ requestPolicy: 'network-only' });
 
-      toast({
-        title: 'Successfully updated config data store',
-        isClosable: true,
-        duration: 2000,
-        status: 'success',
+      addToastNotification({
+        type: 'success',
+        title: 'Success',
+        content: 'Successfully updated config data store',
       });
     }
   };
 
   const handleOnCommitConfig = async (isDryRun?: boolean) => {
-    const { data: responseData } = await commitConfig({ input: { deviceId, shouldDryRun: isDryRun } });
+    const { data: responseData, error: responseError } = await commitConfig({
+      input: { deviceId, shouldDryRun: isDryRun },
+    });
 
-    if (responseData?.commitConfig.isOk) {
-      toast({
-        duration: 2000,
-        isClosable: true,
-        status: 'success',
-        title: 'Successfully commited to network',
+    if (responseError != null) {
+      addToastNotification({
+        type: 'error',
+        title: 'Error',
+        content: isDryRun ? 'Dry run failed' : 'Failed to commit to network',
       });
-    } else {
-      toast({
-        duration: 2000,
-        isClosable: true,
-        status: 'error',
-        title: 'Failed to commit to network',
+    }
+
+    if (responseData != null) {
+      reexecuteQuery({ requestPolicy: 'network-only' });
+
+      addToastNotification({
+        type: 'success',
+        title: 'Success',
+        content: isDryRun ? 'Dry run successfull' : 'Successfully commited to network',
       });
     }
   };
 
   const handleOnResetConfig = async () => {
-    const { data: responseData } = await resetConfig({ deviceId });
-    if (responseData != null) {
-      toast({
-        duration: 2000,
-        isClosable: true,
-        status: 'success',
-        title: 'Successfully replaced config with operational',
-      });
+    const { data: responseData, error: responseError } = await resetConfig({ deviceId });
 
+    if (responseError != null) {
+      addToastNotification({
+        type: 'error',
+        title: 'Error',
+        content: 'Failed to replace config with operational',
+      });
+    }
+
+    if (responseData != null) {
       reexecuteQuery({ requestPolicy: 'network-only' });
-    } else {
-      toast({
-        duration: 2000,
-        isClosable: true,
-        status: 'error',
-        title: 'Failed to replaced config with operational',
+
+      addToastNotification({
+        type: 'success',
+        title: 'Success',
+        content: 'Successfully replaced config with operational',
       });
     }
   };
 
   const handleOnAddSnapshot = async (name: string) => {
-    const { error: responseError } = await addSnapshot({ input: { name, deviceId } });
-    const hasError = responseError != null;
+    const { data: responseData, error: responseError } = await addSnapshot({ input: { name, deviceId } });
 
-    toast({
-      duration: 2000,
-      isClosable: true,
-      status: hasError ? 'error' : 'success',
-      title: hasError ? 'Failed to create snapshot' : 'Successfully created snapshot',
-    });
+    if (responseError != null) {
+      addToastNotification({
+        type: 'error',
+        title: 'Error',
+        content: 'Failed to create snapshot',
+      });
+    }
+
+    if (responseData != null) {
+      reexecuteQuery({ requestPolicy: 'network-only' });
+
+      addToastNotification({
+        type: 'success',
+        title: 'Success',
+        content: 'Successfully created snapshot',
+      });
+    }
   };
 
   const handleOnApplySnapshot = async (name: string) => {
-    const { error: responseError } = await applySnapshot({ input: { name, deviceId } });
-    const hasError = responseError != null;
+    const { data: responseData, error: responseError } = await applySnapshot({ input: { name, deviceId } });
     reexecuteQuery({ requestPolicy: 'network-only' });
-    toast({
-      duration: 2000,
-      isClosable: true,
-      status: hasError ? 'error' : 'success',
-      title: hasError ? 'Failed to apply snapshot' : 'Successfully applied snapshot',
-    });
+
+    if (responseError != null) {
+      addToastNotification({
+        type: 'error',
+        title: 'Error',
+        content: 'Failed to apply snapshot',
+      });
+    }
+
+    if (responseData != null) {
+      reexecuteQuery({ requestPolicy: 'network-only' });
+
+      addToastNotification({
+        type: 'success',
+        title: 'Success',
+        content: 'Successfully applied snapshot',
+      });
+    }
   };
 
   const handleSyncBtnClick = async () => {
-    const { error: responseError } = await syncFromNetwork({ deviceId });
-    const hasError = responseError != null;
+    const { data: responseData, error: responseError } = await syncFromNetwork({ deviceId });
 
-    toast({
-      duration: 2000,
-      isClosable: true,
-      status: hasError ? 'error' : 'success',
-      title: hasError ? 'Failed to sync from network' : 'Successfully synced from network',
-    });
+    if (responseError != null) {
+      addToastNotification({
+        type: 'error',
+        title: 'Error',
+        content: 'Failed to sync from network',
+      });
+    }
+
+    if (responseData != null) {
+      reexecuteQuery({ requestPolicy: 'network-only' });
+
+      addToastNotification({
+        type: 'success',
+        title: 'Success',
+        content: 'Successfully synced from network',
+      });
+    }
   };
 
   const isInitialLoading = fetching && data == null;
@@ -246,6 +302,20 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
   if (isInitialLoading) {
     return <Progress size="xs" isIndeterminate mt={-10} />;
   }
+
+  if (isFetchingDevice) {
+    return <Progress size="xs" isIndeterminate mt={-10} />;
+  }
+
+  if (deviceData == null || deviceError) {
+    return null;
+  }
+
+  if (deviceData.node?.__typename !== 'Device') {
+    return null;
+  }
+
+  const { name } = deviceData.node;
 
   if (error != null) {
     return <div>{error.message}</div>;
@@ -263,6 +333,11 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
       />
       {isDiffModalOpen && <DiffOutputModal onClose={onDiffModalClose} deviceId={deviceId} />}
       <Container maxWidth={1280}>
+        <Flex justify="space-between" align="center" marginBottom={6}>
+          <Heading as="h2" size="3xl">
+            {name}
+          </Heading>
+        </Flex>
         <DeviceConfigActions
           onCreateSnapshotBtnClick={onSnapshotModalOpen}
           snapshots={snapshots}
@@ -293,6 +368,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
             isResetLoading={isResetLoading}
             isUpdateStoreLoading={isUpdateStoreLoading}
             isSyncLoading={isSyncLoading}
+            isRefreshLoading={fetching && data != null}
           />
         </Box>
       </Container>
