@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex, Heading, HStack, Progress, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, Progress, Spacer, useDisclosure } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FC, useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
@@ -277,7 +277,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   const handleSelectionOfAllDevices = (checked: boolean) => {
     if (checked) {
       if (deviceData != null) {
-        const devicesId = deviceData.devices.edges.filter(({ node }) => node.isInstalled).map(({ node }) => node.id);
+        const devicesId = deviceData.devices.edges.filter(({ node }) => !node.isInstalled).map(({ node }) => node.id);
         setSelectedDevices(new Set(devicesId));
       }
     } else {
@@ -320,21 +320,24 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
           )}
 
           <Box>
-            <DeviceFilter
-              labels={labels}
-              selectedLabels={selectedLabels}
-              onSelectionChange={handleOnSelectionChange}
-              isCreationDisabled
-            />
-            <HStack mb={4}>
+            <Flex>
+              <DeviceFilter
+                labels={labels}
+                selectedLabels={selectedLabels}
+                onSelectionChange={handleOnSelectionChange}
+                isCreationDisabled
+              />
+              <Spacer />
               <Button
                 isDisabled={selectedDevices.size === 0}
-                colorScheme="red"
                 onClick={deleteSelectedDevicesModal.onOpen}
+                variant="outline"
+                colorScheme="red"
+                size="sm"
               >
                 Delete selected
               </Button>
-            </HStack>
+            </Flex>
           </Box>
           <DeviceTable
             devices={deviceData?.devices.edges ?? []}
