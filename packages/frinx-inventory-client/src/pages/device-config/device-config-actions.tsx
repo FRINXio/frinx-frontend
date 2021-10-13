@@ -80,7 +80,11 @@ const DeviceConfigActions: VoidFunctionComponent<Props> = ({
       </ButtonGroup>
       <ButtonGroup isAttached marginLeft="auto">
         <Button onClick={onCalculateDiffBtnClick}>Calculate diff</Button>
-        <Button onClick={onDryRunBtnClick} leftIcon={<Icon size={20} as={FeatherIcon} icon="play" />}>
+        <Button
+          onClick={onDryRunBtnClick}
+          leftIcon={<Icon size={20} as={FeatherIcon} icon="play" />}
+          isLoading={isCommitLoading}
+        >
           Dry run
         </Button>
         <Button
