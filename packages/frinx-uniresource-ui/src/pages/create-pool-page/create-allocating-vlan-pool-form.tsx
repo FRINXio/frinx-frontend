@@ -15,10 +15,13 @@ import { useFormik } from 'formik';
 import { omitBy } from 'lodash';
 import React, { FC, useCallback, useState, useEffect } from 'react';
 import * as yup from 'yup';
+import SearchByTagInput from '../../components/search-by-tag-input';
+import { useTagsInput } from '../../hooks/use-tags-input';
 import PoolPropertiesForm from './pool-properties-form';
 
 type FormValues = {
   poolName: string;
+  tags: string[];
   poolDealocationSafetyPeriod: number;
   allocationStrategyId: string;
   resourceTypeId: string;
@@ -29,6 +32,7 @@ type FormValues = {
 
 const INITIAL_VALUES: FormValues = {
   poolName: '',
+  tags: [],
   poolDealocationSafetyPeriod: 120,
   allocationStrategyId: '',
   resourceTypeId: '',
@@ -39,6 +43,7 @@ const INITIAL_VALUES: FormValues = {
 const getPoolSchema = (isNested: boolean) => {
   const poolSchema = yup.object({
     poolName: yup.string().required('Please enter name of pool'),
+    tags: yup.array(),
     poolDealocationSafetyPeriod: yup
       .number()
       .min(0, 'Please enter positive number')
@@ -84,6 +89,7 @@ const CreateAllocatingVlanPoolForm: FC<Props> = ({
   allocationStrategyId,
   possibleParentPools,
 }) => {
+  const { selectedTags, handleOnSelectionChange, handleTagCreation } = useTagsInput();
   const [isNested, setIsNested] = useState(false);
   const [poolSchema, setPoolSchema] = useState(getPoolSchema(isNested));
 
@@ -96,6 +102,7 @@ const CreateAllocatingVlanPoolForm: FC<Props> = ({
           ...data,
           resourceTypeId,
           allocationStrategyId,
+          tags: selectedTags.map((tag) => tag.label),
         },
         isNested,
       );
@@ -160,6 +167,13 @@ const CreateAllocatingVlanPoolForm: FC<Props> = ({
         <FormLabel>Name</FormLabel>
         <Input type="text" onChange={handleChange} name="poolName" placeholder="Enter name" value={values.poolName} />
         <FormErrorMessage>{errors.poolName}</FormErrorMessage>
+      </FormControl>
+      <FormControl marginY={5}>
+        <SearchByTagInput
+          onSelectionChange={handleOnSelectionChange}
+          selectedTags={selectedTags}
+          onTagCreate={handleTagCreation}
+        />
       </FormControl>
       <FormControl
         id="poolDealocationSafetyPeriod"
