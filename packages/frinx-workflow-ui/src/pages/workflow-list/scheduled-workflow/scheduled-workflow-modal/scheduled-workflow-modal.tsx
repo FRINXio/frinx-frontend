@@ -22,23 +22,17 @@ import { ScheduledWorkflow } from '../../../../types/types';
 const DEFAULT_CRON_STRING = '* * * * *';
 
 type Props = {
-  scheduledWorkflow: ScheduledWorkflow;
+  scheduledWorkflow: Partial<ScheduledWorkflow>;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (workflow: ScheduledWorkflow) => void;
+  onSubmit: (workflow: Partial<ScheduledWorkflow>) => void;
 };
 
 const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose, onSubmit }) => {
-  const [scheduledWf, setScheduledWf] = useState<ScheduledWorkflow>(scheduledWorkflow);
+  const [scheduledWf, setScheduledWf] = useState<Partial<ScheduledWorkflow>>(scheduledWorkflow);
 
   const handleSubmit = () => {
-    const newWorkflow = {
-      ...scheduledWf,
-      workflowContext: scheduledWf.workflowContext,
-      name: `${scheduledWf.workflowName}:${scheduledWf.workflowVersion.toString()}`,
-    };
-
-    onSubmit(newWorkflow);
+    onSubmit(scheduledWf);
     onClose();
   };
 

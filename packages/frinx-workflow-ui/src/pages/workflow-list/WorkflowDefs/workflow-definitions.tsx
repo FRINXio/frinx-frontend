@@ -44,6 +44,7 @@ import { usePagination } from '../../../common/PaginationHook';
 import WorkflowActions from './workflow-actions';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import { ScheduledWorkflow, Workflow } from '../../../types/types';
+import useNotifications from '../../../hooks/use-notifications';
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr = dataset.map(({ description }) => {
@@ -77,15 +78,13 @@ const Labels = (props: { wf: Workflow; labels: string[]; onClick: (label: string
   });
 };
 
-const makeEmptyScheduledWorkflow = (): ScheduledWorkflow => {
+const DEFAULT_CRON_STRING = '* * * * *';
+
+const makeEmptyScheduledWorkflow = () => {
   return {
-    correlationId: '',
-    cronString: '',
+    cronString: DEFAULT_CRON_STRING,
     enabled: false,
-    lastUpdate: '',
     name: '',
-    status: 'RUNNING',
-    taskToDomain: {},
     workflowContext: {},
     workflowName: '',
     workflowVersion: 0,
@@ -111,6 +110,8 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const [workflowListViewModal, setWorkflowListViewModal] = useState(false);
   const [allLabels, setAllLabels] = useState([]);
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
+
+  const { addToastNotification } = useNotifications();
 
   useEffect(() => {
     getData();
@@ -154,6 +155,29 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
       }
     });
   };
+
+  function handleWorkflowSchedule(scheduledWf: Partial<ScheduledWorkflow>) {
+    const registerSchedule = callbackUtils.registerScheduleCallback();
+
+    if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
+      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, scheduledWf)
+        .then(() => {
+          addToastNotification({
+            type: 'success',
+            title: 'Success',
+            content: 'Successfully scheduled',
+          });
+          getData();
+        })
+        .catch(() => {
+          addToastNotification({
+            type: 'error',
+            title: 'Error',
+            content: 'Failed to schedule workflow',
+          });
+        });
+    }
+  }
 
   const updateFavourite = (workflow: Workflow) => {
     let wfDescription = jsonParse(workflow.description);
@@ -199,7 +223,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const deleteWorkflow = (workflow: Workflow) => {
     const deleteWorkflow = callbackUtils.deleteWorkflowCallback();
 
-    deleteWorkflow(workflow.name, workflow.version).then(() => {
+    deleteWorkflow(workflow.name, workflow.version.toString()).then(() => {
       getData();
       setConfirmDeleteModal(false);
     });
@@ -245,13 +269,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     setActiveWf(workflow);
   };
 
-  const getActiveWfScheduleName = () => {
-    if (activeWf != null && activeWf.name != null) {
-      return activeWf.name;
-    }
-    return null;
-  };
-
   const getDependencies = (workflow: Workflow) => {
     const usedInWfs = data.filter((wf) => {
       const wfJSON = JSON.stringify(wf, null, 2);
@@ -294,12 +311,12 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
           scheduledWorkflow={{
             ...makeEmptyScheduledWorkflow(),
             workflowName: activeWf.name,
-            workflowVersion: activeWf.version,
+            workflowVersion: activeWf.version.toString(),
             name: `${activeWf.name}:${activeWf.version}`,
           }}
           onClose={onSchedulingModalClose}
           isOpen={schedulingModal}
-          onSubmit={(item) => console.log(item)}
+          onSubmit={handleWorkflowSchedule}
         />
       )
     );

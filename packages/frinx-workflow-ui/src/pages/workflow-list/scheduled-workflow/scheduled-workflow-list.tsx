@@ -27,12 +27,13 @@ import { usePagination } from '../../../common/PaginationHook';
 import callbackUtils from '../../../utils/callback-utils';
 import SchedulingModal from './scheduled-workflow-modal/scheduled-workflow-modal';
 import { ScheduledWorkflow, StatusType } from '../../../types/types';
+import useNotifications from '../../../hooks/use-notifications';
 
 function ScheduledWorkflowList() {
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ScheduledWorkflow>();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();
+  const { addToastNotification } = useNotifications();
 
   function getData() {
     const getSchedules = callbackUtils.getSchedulesCallback();
@@ -42,11 +43,10 @@ function ScheduledWorkflowList() {
         setItemList(sortBy(schedules, ['name']));
       })
       .catch((err: Error) => {
-        toast({
-          title: err?.message,
-          status: 'error',
-          duration: 9000,
-          isClosable: true,
+        addToastNotification({
+          content: err.message,
+          type: 'error',
+          title: 'Error',
         });
       });
   }
@@ -60,25 +60,23 @@ function ScheduledWorkflowList() {
     onOpen();
   }
 
-  function handleWorkflowUpdate(scheduledWf: ScheduledWorkflow) {
+  function handleWorkflowUpdate(scheduledWf: Partial<ScheduledWorkflow>) {
     const registerSchedule = callbackUtils.registerScheduleCallback();
 
-    registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, scheduledWf)
+    registerSchedule(scheduledWf.workflowName!, scheduledWf.workflowVersion!, scheduledWf)
       .then((res) => {
-        toast({
-          title: res.message,
-          status: 'success',
-          duration: 2000,
-          isClosable: true,
+        addToastNotification({
+          content: res.message,
+          type: 'success',
+          title: 'Success',
         });
         getData();
       })
       .catch((err) => {
-        toast({
-          title: err.message,
-          status: 'error',
-          duration: 2000,
-          isClosable: true,
+        addToastNotification({
+          title: 'Failed to schedule workflow',
+          type: 'error',
+          content: err.message,
         });
       });
   }
@@ -87,20 +85,18 @@ function ScheduledWorkflowList() {
     const deleteSchedule = callbackUtils.deleteScheduleCallback();
     deleteSchedule(workflow.workflowName, workflow.workflowVersion)
       .then(() => {
-        toast({
-          title: 'Deleted successfuly',
-          status: 'success',
-          duration: 9000,
-          isClosable: true,
+        addToastNotification({
+          content: 'Deleted successfuly',
+          title: 'Success',
+          type: 'success',
         });
         getData();
       })
       .catch((err) => {
-        toast({
-          title: err?.message,
-          status: 'error',
-          duration: 9000,
-          isClosable: true,
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: err?.message,
         });
       });
   };

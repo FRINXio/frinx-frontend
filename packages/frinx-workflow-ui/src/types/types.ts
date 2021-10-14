@@ -375,7 +375,7 @@ export type ScheduledWorkflow = {
     [key: string]: string;
   };
   workflowName: string;
-  workflowVersion: number;
+  workflowVersion: string;
   workflowContext: {
     [key: string]: any;
   };
