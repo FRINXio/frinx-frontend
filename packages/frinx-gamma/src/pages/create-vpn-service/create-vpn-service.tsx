@@ -8,7 +8,7 @@ import { generateVpnId } from '../../helpers/id-helpers';
 
 const defaultVpnService: VpnService = {
   customerName: '',
-  defaultCVlan: DefaultCVlanEnum.L3VPN,
+  defaultCVlan: DefaultCVlanEnum['Main Corporate VPN'],
   vpnServiceTopology: 'any-to-any',
   extranetVpns: [],
 };

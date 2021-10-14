@@ -20,33 +20,11 @@ export async function getVpnServices(): Promise<VpnServicesOutput> {
   return data;
 }
 
-export async function editVpnServices(body: VpnService): Promise<unknown> {
-  const extranetVpns =
-    body.extranetVpns.length > 0
-      ? {
-          'extranet-vpn': body.extranetVpns.map((vpn) => {
-            return {
-              'vpn-id': vpn,
-              'local-sites-role': 'spoke-role',
-            };
-          }),
-        }
-      : {};
-
-  const jsonBody = {
-    'vpn-service': [
-      {
-        'vpn-id': body.vpnId,
-        'customer-name': body.customerName,
-        'vpn-service-topology': body.vpnServiceTopology,
-        'default-c-vlan': body.defaultCVlan,
-        'extranet-vpns': extranetVpns,
-      },
-    ],
-  };
+export async function editVpnServices(vpnService: VpnService): Promise<unknown> {
+  const body = clientVpnServiceToApiVpnService(vpnService);
   const json = await sendPutRequest(
-    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${body.vpnId}`,
-    jsonBody,
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${vpnService.vpnId}`,
+    body,
   );
   return json;
 }

@@ -31,6 +31,24 @@ import {
   VpnSitesOutput,
 } from './network-types';
 
+function apiDefaultCVlanToClientDefaultCVlan(defaultCVlan: number): Pick<VpnService, 'defaultCVlan' | 'customCVlan'> {
+  const value = defaultCVlan.toString();
+  switch (value) {
+    case DefaultCVlanEnum['Dedicated SIP VPN']:
+    case DefaultCVlanEnum['Guest Wifi VPN']:
+    case DefaultCVlanEnum['Main Corporate VPN']:
+      return {
+        defaultCVlan: value,
+      };
+    default: {
+      return {
+        defaultCVlan: DefaultCVlanEnum['Custom C-VLAN'],
+        customCVlan: defaultCVlan,
+      };
+    }
+  }
+}
+
 export function apiVpnServiceToClientVpnService(apiVpnService: VpnServicesOutput): VpnService[] {
   return apiVpnService['vpn-services']['vpn-service'].map((vpn) => {
     const extranetVpns = vpn['extranet-vpns']['extranet-vpn']
@@ -39,15 +57,23 @@ export function apiVpnServiceToClientVpnService(apiVpnService: VpnServicesOutput
         })
       : [];
     const vpnServiceTopology = unwrap(vpn['vpn-service-topology'].split(':').pop());
+    const defaultCVlan = apiDefaultCVlanToClientDefaultCVlan(vpn['default-c-vlan']);
 
     return {
       vpnId: vpn['vpn-id'],
       customerName: vpn['customer-name'],
       vpnServiceTopology: vpnServiceTopology as VpnServiceTopology,
-      defaultCVlan: DefaultCVlanEnum.L3VPN,
       extranetVpns,
+      ...defaultCVlan,
     };
   });
+}
+
+function clientDefaultCVlanToApiDefaultCVlan(cVlanType: DefaultCVlanEnum, customValue?: number): string {
+  if (cVlanType === DefaultCVlanEnum['Custom C-VLAN']) {
+    return customValue?.toString() || '';
+  }
+  return cVlanType;
 }
 
 export function clientVpnServiceToApiVpnService(clientVpnService: VpnService): CreateVpnServiceInput {
@@ -57,6 +83,7 @@ export function clientVpnServiceToApiVpnService(clientVpnService: VpnService): C
       // 'local-sites-role': '',
     };
   });
+  const defaultCVlan = clientDefaultCVlanToApiDefaultCVlan(clientVpnService.defaultCVlan, clientVpnService.customCVlan);
   return {
     'vpn-service': [
       {
@@ -66,7 +93,7 @@ export function clientVpnServiceToApiVpnService(clientVpnService: VpnService): C
           'extranet-vpn': extranetVpns,
         },
         'vpn-service-topology': clientVpnService.vpnServiceTopology,
-        'default-c-vlan': clientVpnService.defaultCVlan,
+        'default-c-vlan': defaultCVlan,
       },
     ],
   };
