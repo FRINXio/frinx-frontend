@@ -159,7 +159,8 @@ const SiteNetAccessForm: FC<Props> = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl id="service-network-access-type" my={6}>
+      {/* INFO: field is hidden by request from gamma */}
+      {/* <FormControl id="service-network-access-type" my={6}>
         <FormLabel>Service Network Access Type</FormLabel>
         <Select
           variant="filled"
@@ -177,7 +178,7 @@ const SiteNetAccessForm: FC<Props> = ({
           <option value="point-to-point">point-to-point</option>
           <option value="multipoint">multipoint</option>
         </Select>
-      </FormControl>
+      </FormControl> */}
 
       {siteState.siteManagementType === 'customer-managed' ? (
         <FormControl id="location-id" my={6}>
