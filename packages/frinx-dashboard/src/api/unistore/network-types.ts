@@ -36,6 +36,7 @@ const VpnServicesOutputValidator = t.type({
           ),
         }),
         'vpn-service-topology': t.string,
+        'default-c-vlan': t.number,
       }),
     ),
   }),
@@ -491,10 +492,11 @@ export type VpnServiceTopology = 'any-to-any' | 'hub-spoke' | 'hub-spoke-disjoin
 
 // eslint-disable-next-line no-shadow
 export enum DefaultCVlanEnum {
-  L3VPN = '400',
-  SIP = '50',
-  LocalInternet = '300',
-  AldiWifi = '1000',
+  'Main Corporate VPN' = '400',
+  'Guest Wifi VPN' = '1000',
+  'Dedicated SIP VPN' = '50',
+  'Custom C-VLAN' = 'custom',
+  // LocalInternet = '300',
 }
 
 export type AddressFamily = 'ipv4' | 'ipv6';
@@ -505,6 +507,7 @@ export type VpnService = {
   customerName: string;
   vpnServiceTopology: VpnServiceTopology;
   defaultCVlan: DefaultCVlanEnum;
+  customCVlan?: number;
   extranetVpns: string[];
 };
 
