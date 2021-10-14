@@ -237,6 +237,7 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
         <Select
           variant="filled"
           name="enable-bgp-pic-fast-reroute"
+          disabled // requested by gamma
           value={siteState.enableBgpPicFastReroute ? '1' : '0'}
           onChange={(event) => {
             setSiteState({
