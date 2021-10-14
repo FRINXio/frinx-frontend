@@ -39,6 +39,8 @@ export const CustomToastProvider: FC = ({ children }) => {
     );
   };
 
+  console.log({ toasts, visibleToasts });
+
   return (
     <NotificationContext.Provider value={{ addToastNotification }}>
       {toasts.map((t, index) => (

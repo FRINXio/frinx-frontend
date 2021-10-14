@@ -1,12 +1,12 @@
-import { Box, Button, Container, Flex, Heading, Progress, useDisclosure, useToast } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, Progress, useDisclosure } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal';
 import Pagination from '../../components/pagination';
 import unwrap from '../../helpers/unwrap';
+import useNotifications from '../../hooks/use-notifications';
 import { usePagination } from '../../hooks/use-pagination';
-import useResponseToasts from '../../hooks/user-response-toasts';
 import {
   DeleteDeviceMutation,
   DeleteDeviceMutationVariables,
@@ -100,8 +100,8 @@ type Props = {
 
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick, onEditButtonClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
-  const toast = useToast();
   const deleteModalDisclosure = useDisclosure();
+  const { addToastNotification } = useNotifications();
   const [deviceIdToDelete, setDeviceIdToDelete] = useState<string | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [installLoadingMap, setInstallLoadingMap] = useState<Record<string, boolean>>({});
@@ -113,43 +113,11 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     context,
   });
   const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY });
-  const [{ data: installDeviceData, error: installDeviceError }, installDevice] = useMutation<
-    InstallDeviceMutation,
-    InstallDeviceMutationVariables
-  >(INSTALL_DEVICE_MUTATION);
-  const [{ data: uninstallDeviceData, error: uninstallDeviceError }, uninstallDevice] = useMutation<
-    UninstallDeviceMutation,
-    UninstallDeviceMutationVariables
-  >(UNINSTALL_DEVICE_MUTATION);
-  const [{ data: deleteDeviceData, error: deleteDeviceError }, deleteDevice] = useMutation<
-    DeleteDeviceMutation,
-    DeleteDeviceMutationVariables
-  >(DELETE_DEVICE_MUTATION);
-  const isInstallSuccesfull = installDeviceData != null;
-  const isInstallFailed = installDeviceError != null;
-  const isUninstallSuccesfull = uninstallDeviceData != null;
-  const isUninstallFailed = uninstallDeviceError != null;
-  const isDeleteSuccessful = deleteDeviceData != null;
-  const isDeleteFailed = deleteDeviceError != null;
-
-  useResponseToasts({
-    isSuccess: isInstallSuccesfull,
-    isFailure: isInstallFailed,
-    successMessage: 'Device succesfully installed',
-    failureMessage: 'Device could not be installed',
-  });
-  useResponseToasts({
-    isSuccess: isUninstallSuccesfull,
-    isFailure: isUninstallFailed,
-    successMessage: 'Device succesfully uninstalled',
-    failureMessage: 'Device could not be uninstalled',
-  });
-  useResponseToasts({
-    isSuccess: isDeleteSuccessful,
-    isFailure: isDeleteFailed,
-    successMessage: 'Device succesfully deleted',
-    failureMessage: 'Device could not be deleted',
-  });
+  const [, installDevice] = useMutation<InstallDeviceMutation, InstallDeviceMutationVariables>(INSTALL_DEVICE_MUTATION);
+  const [, uninstallDevice] = useMutation<UninstallDeviceMutation, UninstallDeviceMutationVariables>(
+    UNINSTALL_DEVICE_MUTATION,
+  );
+  const [, deleteDevice] = useMutation<DeleteDeviceMutation, DeleteDeviceMutationVariables>(DELETE_DEVICE_MUTATION);
 
   if ((isFetchingDevices && deviceData == null) || isFetchingLabels) {
     return (
@@ -174,7 +142,21 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     });
     installDevice({
       id: deviceId,
-    }).then(() => {
+    }).then((res) => {
+      if (res.data?.installDevice.device.isInstalled) {
+        addToastNotification({
+          type: 'success',
+          title: 'Success',
+          content: 'Device installed successfuly',
+        });
+      }
+      if (res.error) {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: 'Installation failed',
+        });
+      }
       setInstallLoadingMap((m) => {
         return {
           ...m,
@@ -194,13 +176,21 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     uninstallDevice({
       id: deviceId,
     })
-      .then(() => {
-        toast({
-          position: 'top-right',
-          variant: 'subtle',
-          status: 'success',
-          title: 'Device succesfully uninstalled',
-        });
+      .then((res) => {
+        if (res.data?.uninstallDevice.device.isInstalled === false) {
+          addToastNotification({
+            type: 'success',
+            title: 'Success',
+            content: 'Device uninstalled successfuly',
+          });
+        }
+        if (res.error) {
+          addToastNotification({
+            type: 'error',
+            title: 'Error',
+            content: 'Uninstallation failed',
+          });
+        }
       })
       .finally(() => {
         setInstallLoadingMap((m) => {
@@ -261,7 +251,21 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
         onConfirmBtnClick={() => {
           deleteDevice({
             deviceId: unwrap(deviceIdToDelete),
-          }).then(() => {
+          }).then((res) => {
+            if (res.data?.deleteDevice) {
+              addToastNotification({
+                type: 'success',
+                title: 'Success',
+                content: 'Device was deleted successfuly',
+              });
+            }
+            if (res.error) {
+              addToastNotification({
+                type: 'error',
+                title: 'Error',
+                content: 'Failed to delete device',
+              });
+            }
             deleteModalDisclosure.onClose();
           });
         }}
