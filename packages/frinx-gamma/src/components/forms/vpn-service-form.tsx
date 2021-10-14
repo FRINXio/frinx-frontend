@@ -11,6 +11,7 @@ import {
   FormLabel,
   Select,
   IconButton,
+  Input,
   TagLabel,
   TagCloseButton,
 } from '@chakra-ui/react';
@@ -180,6 +181,26 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
         </Select>
       </FormControl>
 
+      {serviceState.defaultCVlan === 'custom' && (
+        <FormControl id="custom-c-vlan" my={6}>
+          <FormLabel>Custom C-VLAN</FormLabel>
+          <Input
+            variant="filled"
+            name="custom-c-vlan"
+            value={serviceState.customCVlan || ''}
+            onChange={(event) => {
+              const value = Number(event.target.value);
+              if (Number.isNaN(value)) {
+                return;
+              }
+              setServiceState({
+                ...serviceState,
+                customCVlan: value,
+              });
+            }}
+          />
+        </FormControl>
+      )}
       <FormControl id="extranet-vpns" my={6}>
         <FormLabel>Extranet VPNs</FormLabel>
         <Flex
