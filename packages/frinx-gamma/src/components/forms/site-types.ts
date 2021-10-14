@@ -89,6 +89,7 @@ export type SiteNetworkAccess = {
   deviceReference: string | null;
   bearer: Bearer;
   service: Service;
+  vpnAttachment: string | null;
 };
 
 export type VpnSite = {

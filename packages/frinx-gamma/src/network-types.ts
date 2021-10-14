@@ -244,7 +244,7 @@ const SiteNetworkAccessValidator = t.type({
       'maximum-routes': MaximumRoutesValidator,
       'location-reference': optional(t.string),
       'device-reference': optional(t.string),
-      // 'vpn-attachment': VpnValidator,
+      'vpn-attachment': optional(VpnValidator),
       availability: t.type({
         'access-priority': t.number,
       }),
