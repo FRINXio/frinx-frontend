@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex, Heading, Progress, Spacer, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, HStack, Progress, Spacer, useDisclosure } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FC, useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
@@ -149,38 +149,6 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     return <div>{error.toString()}</div>;
   }
 
-  const handleInstallButtonClick = (deviceId: string) => {
-    setInstallLoadingMap((m) => {
-      return {
-        ...m,
-        [deviceId]: true,
-      };
-    });
-    installDevice({
-      id: deviceId,
-    })
-      .then(() => {
-        addToastNotification({
-          type: 'success',
-          title: 'Success',
-          content: 'Successfully installed device',
-        });
-        setInstallLoadingMap((m) => {
-          return {
-            ...m,
-            [deviceId]: false,
-          };
-        });
-      })
-      .catch(() => {
-        addToastNotification({
-          type: 'error',
-          title: 'Error',
-          content: 'Failed to update config data store',
-        });
-      });
-  };
-
   const handleUninstallButtonClick = (deviceId: string) => {
     setInstallLoadingMap((m) => {
       return {
@@ -237,6 +205,48 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
           content: 'Failed to delete',
         });
       });
+  };
+
+  const installDevices = (devicesId: string[]) => {
+    Promise.all(
+      devicesId.map((deviceId) => {
+        setInstallLoadingMap((m) => {
+          return {
+            ...m,
+            [deviceId]: true,
+          };
+        });
+        return installDevice({
+          id: deviceId,
+        });
+      }),
+    )
+      .then(() => {
+        addToastNotification({
+          type: 'success',
+          title: 'Success',
+          content: 'Successfully installed device',
+        });
+        [...selectedDevices].forEach((deviceId) => {
+          setInstallLoadingMap((m) => {
+            return {
+              ...m,
+              [deviceId]: false,
+            };
+          });
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: 'Failed to update config data store',
+        });
+      });
+  };
+
+  const handleInstallSelectedDevices = () => {
+    installDevices([...selectedDevices]);
   };
 
   const handleDeviceDelete = () => {
@@ -328,15 +338,26 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
                 isCreationDisabled
               />
               <Spacer />
-              <Button
-                isDisabled={selectedDevices.size === 0}
-                onClick={deleteSelectedDevicesModal.onOpen}
-                variant="outline"
-                colorScheme="red"
-                size="sm"
-              >
-                Delete selected
-              </Button>
+              <HStack>
+                <Button
+                  isDisabled={selectedDevices.size === 0}
+                  onClick={handleInstallSelectedDevices}
+                  variant="outline"
+                  colorScheme="blue"
+                  size="sm"
+                >
+                  Install selected
+                </Button>
+                <Button
+                  isDisabled={selectedDevices.size === 0}
+                  onClick={deleteSelectedDevicesModal.onOpen}
+                  variant="outline"
+                  colorScheme="red"
+                  size="sm"
+                >
+                  Delete selected
+                </Button>
+              </HStack>
             </Flex>
           </Box>
           <DeviceTable
@@ -344,7 +365,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
             areSelectedAll={areSelectedAll}
             onSelectAll={handleSelectionOfAllDevices}
             selectedDevices={selectedDevices}
-            onInstallButtonClick={handleInstallButtonClick}
+            onInstallButtonClick={(deviceId) => installDevices([deviceId])}
             onUninstallButtonClick={handleUninstallButtonClick}
             onSettingsButtonClick={onSettingsButtonClick}
             onDeleteBtnClick={handleDeleteBtnClick}
