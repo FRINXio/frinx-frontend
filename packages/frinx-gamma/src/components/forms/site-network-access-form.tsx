@@ -6,7 +6,6 @@ import {
   RoutingProtocolType,
   VpnSite,
   SiteNetworkAccess,
-  SiteNetworkAccessType,
   RequestedCVlan,
   BgpRoutingType,
 } from './site-types';
@@ -58,16 +57,6 @@ const SiteNetAccessForm: FC<Props> = ({
       ...site,
     });
   }, [site]);
-
-  useEffect(() => {
-    if (selectedNetworkAccess) {
-      setNetworkAccessState({
-        ...selectedNetworkAccess,
-      });
-    } else {
-      setNetworkAccessState(null);
-    }
-  }, [selectedNetworkAccess]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -183,7 +172,9 @@ const SiteNetAccessForm: FC<Props> = ({
           onChange={handleVpnAttachmentChange}
         />
       </FormControl>
-      <FormControl id="service-network-access-type" my={6}>
+
+      {/* INFO: field is hidden by request from gamma */}
+      {/* <FormControl id="service-network-access-type" my={6}>
         <FormLabel>Service Network Access Type</FormLabel>
         <Select
           variant="filled"
@@ -201,7 +192,8 @@ const SiteNetAccessForm: FC<Props> = ({
           <option value="point-to-point">point-to-point</option>
           <option value="multipoint">multipoint</option>
         </Select>
-      </FormControl>
+        </FormControl>
+      */}
 
       {siteState.siteManagementType === 'customer-managed' ? (
         <FormControl id="location-id" my={6}>
