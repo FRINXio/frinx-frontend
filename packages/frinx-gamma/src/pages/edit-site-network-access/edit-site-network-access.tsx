@@ -4,11 +4,13 @@ import { useParams } from 'react-router';
 import unwrap from '../../helpers/unwrap';
 import {
   apiProviderIdentifiersToClientIdentifers,
+  apiVpnServiceToClientVpnService,
   apiVpnSitesToClientVpnSite,
 } from '../../components/forms/converters';
 import SiteNetworkAccessForm from '../../components/forms/site-network-access-form';
 import { SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
 import callbackUtils from '../../callback-utils';
+import { VpnService } from '../../components/forms/service-types';
 
 // TODO: to be defined
 const getBandwidths = async () => {
@@ -36,6 +38,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
   const [bfdProfiles, setBfdProfiles] = useState<string[]>([]);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const [bgpProfiles, setBgpProfiles] = useState<string[]>([]);
+  const [vpnServices, setVpnServices] = useState<VpnService[]>([]);
   const [bandwiths, setBandwiths] = useState<number[]>([]);
   const { siteId, accessId } = useParams<{ siteId: string; accessId: string }>();
 
@@ -51,12 +54,16 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
 
       const bandwithsResponse = await getBandwidths();
 
+      const services = await callbacks.getVpnServices();
+      const clientVpnServices = apiVpnServiceToClientVpnService(services);
+
       setVpnSites(clientVpnSites);
       setBfdProfiles(clientProfiles.bfdIdentifiers);
       setQosProfiles(clientProfiles.qosIdentifiers);
       setBgpProfiles(clientProfiles.bgpIdentifiers);
       setBandwiths(bandwithsResponse);
       setSelectedSite(getSelectedSite(clientVpnSites, siteId));
+      setVpnServices(clientVpnServices);
     };
 
     fetchData();
@@ -100,6 +107,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
                   qosProfiles={qosProfiles}
                   bfdProfiles={bfdProfiles}
                   bgpProfiles={bgpProfiles}
+                  vpnIds={vpnServices.map((s) => unwrap(s.vpnId))}
                   bandwidths={bandwiths}
                   sites={vpnSites}
                   site={selectedSite}

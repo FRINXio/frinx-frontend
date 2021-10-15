@@ -5,11 +5,13 @@ import unwrap from '../../helpers/unwrap';
 import {
   apiProviderIdentifiersToClientIdentifers,
   apiVpnSitesToClientVpnSite,
+  apiVpnServiceToClientVpnService,
 } from '../../components/forms/converters';
 import SiteNetworkAccessForm from '../../components/forms/site-network-access-form';
 import { AccessPriority, RequestedCVlan, SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
 import { generateNetworkAccessId } from '../../helpers/id-helpers';
 import callbackUtils from '../../callback-utils';
+import { VpnService } from '../../components/forms/service-types';
 
 const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
   siteNetworkAccessId: generateNetworkAccessId(),
@@ -50,6 +52,7 @@ const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
     svcOutputBandwidth: 1000,
     qosProfiles: [''],
   },
+  vpnAttachment: null,
 });
 
 // TODO: to be defined
@@ -73,6 +76,7 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
   const [bfdProfiles, setBfdProfiles] = useState<string[]>([]);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const [bgpProfiles, setBgpProfiles] = useState<string[]>([]);
+  const [vpnServices, setVpnServices] = useState<VpnService[]>([]);
   const [bandwiths, setBandwiths] = useState<number[]>([]);
   const { siteId } = useParams<{ siteId: string }>();
 
@@ -88,7 +92,11 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
 
       const bandwithsResponse = await getBandwidths();
 
+      const services = await callbacks.getVpnServices();
+      const clientVpnServices = apiVpnServiceToClientVpnService(services);
+
       setVpnSites(clientVpnSites);
+      setVpnServices(clientVpnServices);
       setBfdProfiles(clientProfiles.bfdIdentifiers);
       setQosProfiles(clientProfiles.qosIdentifiers);
       setBgpProfiles(clientProfiles.bgpIdentifiers);
@@ -130,6 +138,7 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
                   qosProfiles={qosProfiles}
                   bfdProfiles={bfdProfiles}
                   bgpProfiles={bgpProfiles}
+                  vpnIds={vpnServices?.map((s) => unwrap(s.vpnId))}
                   bandwidths={bandwiths}
                   sites={vpnSites}
                   site={selectedSite}

@@ -127,7 +127,7 @@ const LocationsValidator = t.type({
 
 const VpnValidator = t.type({
   'vpn-id': t.string,
-  'site-role': t.string,
+  'site-role': optional(t.string),
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -242,7 +242,7 @@ const SiteNetworkAccessValidator = t.type({
       'maximum-routes': MaximumRoutesValidator,
       'location-reference': optional(t.string),
       'device-reference': optional(t.string),
-      // 'vpn-attachment': VpnValidator,
+      'vpn-attachment': optional(VpnValidator),
       availability: t.type({
         'access-priority': t.number,
       }),
@@ -338,6 +338,11 @@ export type CreateRoutingProtocolsInput = {
   ];
 };
 
+export type CreateVpnAttachment = {
+  'vpn-id': string;
+  'site-role'?: string;
+};
+
 export type CreateNetworkAccessInput = {
   'site-network-access': {
     'site-network-access-id': string;
@@ -375,6 +380,9 @@ export type CreateNetworkAccessInput = {
           ];
         };
       };
+    };
+    'vpn-attachment'?: {
+      'vpn-id': string;
     };
   }[];
 };
@@ -599,6 +607,7 @@ export type SiteNetworkAccess = {
   deviceReference: string | null;
   bearer: Bearer;
   service: Service;
+  vpnAttachment: string | null;
 };
 
 export type VpnSite = {
