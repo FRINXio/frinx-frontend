@@ -5,6 +5,7 @@ import {
   CountryCode,
   CreateNetworkAccessInput,
   CreateRoutingProtocolsInput,
+  CreateVpnAttachment,
   CreateVpnServiceInput,
   CreateVpnSiteInput,
   DefaultCVlanEnum,
@@ -135,6 +136,7 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
   return networkAccess['site-network-access'].map((access) => {
     const apiQosProfiles = access.service.qos['qos-profile']['qos-profile'];
     const [clientQosProfile] = apiQosProfiles.length ? apiQosProfiles.map((p) => p.profile) : [''];
+    const vpnAttachment = access['vpn-attachment'] ? access['vpn-attachment']['vpn-id'] : null;
     return {
       siteNetworkAccessId: access['site-network-access-id'],
       siteNetworkAccessType: access['site-network-access-type'] as SiteNetworkAccessType,
@@ -157,6 +159,7 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
         svcInputBandwidth: access.service['svc-input-bandwidth'],
         svcOutputBandwidth: access.service['svc-output-bandwidth'],
       },
+      vpnAttachment,
     };
   });
 }
@@ -277,6 +280,12 @@ function clientRoutingProtocolsToApiRoutingProtocols(
   };
 }
 
+function clientVpnAttachmentToApiVpnAttachment(vpnAttachment: string): CreateVpnAttachment {
+  return {
+    'vpn-id': vpnAttachment,
+  };
+}
+
 function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAccess[]): CreateNetworkAccessInput {
   return {
     'site-network-access': networkAccesses.map((access) => {
@@ -319,6 +328,9 @@ function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAcces
           },
         },
         'routing-protocols': clientRoutingProtocolsToApiRoutingProtocols(access.routingProtocols),
+        'vpn-attachment': access.vpnAttachment
+          ? clientVpnAttachmentToApiVpnAttachment(access.vpnAttachment)
+          : undefined,
       };
     }),
   };

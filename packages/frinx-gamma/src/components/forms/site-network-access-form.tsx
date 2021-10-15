@@ -21,6 +21,7 @@ type Props = {
   qosProfiles: string[];
   bfdProfiles: string[];
   bgpProfiles: string[];
+  vpnIds: string[];
   bandwidths: number[];
   onSubmit: (s: VpnSite) => void;
   onCancel: () => void;
@@ -44,6 +45,7 @@ const SiteNetAccessForm: FC<Props> = ({
   selectedNetworkAccess,
   qosProfiles,
   bgpProfiles,
+  vpnIds,
   bandwidths,
   onSubmit,
   onCancel,
@@ -124,6 +126,16 @@ const SiteNetAccessForm: FC<Props> = ({
     }
   };
 
+  const handleVpnAttachmentChange = (item?: Item | null) => {
+    if (!networkAccessState) {
+      return;
+    }
+    setNetworkAccessState({
+      ...networkAccessState,
+      vpnAttachment: item ? item.value : null,
+    });
+  };
+
   if (!networkAccessState) {
     return null;
   }
@@ -154,11 +166,23 @@ const SiteNetAccessForm: FC<Props> = ({
       value: p,
     };
   });
-
   const [selectedBgpProfileItem] = bgpProfileItems.filter((i) => i.value === bgpProfile?.bgpProfile);
+
+  const vpnServicesItems = vpnIds.map((id) => {
+    return { value: id, label: id };
+  });
+  const [selectedVpnServiceItem] = vpnServicesItems.filter((item) => item.value === networkAccessState.vpnAttachment);
 
   return (
     <form onSubmit={handleSubmit}>
+      <FormControl id="vpn-attachment" my={6}>
+        <FormLabel>Vpn Attachment</FormLabel>
+        <Autocomplete2
+          items={vpnServicesItems}
+          selectedItem={selectedVpnServiceItem}
+          onChange={handleVpnAttachmentChange}
+        />
+      </FormControl>
       <FormControl id="service-network-access-type" my={6}>
         <FormLabel>Service Network Access Type</FormLabel>
         <Select
