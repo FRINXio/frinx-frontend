@@ -177,7 +177,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
       reexecuteQuery({ requestPolicy: 'network-only' });
 
       addToastNotification({
-        type: 'info',
+        type: 'success',
         title: 'Success',
         content: 'Successfully updated config data store',
       });
