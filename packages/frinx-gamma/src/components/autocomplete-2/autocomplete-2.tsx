@@ -72,6 +72,10 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({ items, onCreateItem, onCh
   });
 
   useEffect(() => {
+    setInputItems(items);
+  }, [items]);
+
+  useEffect(() => {
     if (inputItems.length === 0) {
       setIsCreating(true);
       if (onCreateItem) {

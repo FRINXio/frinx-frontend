@@ -58,16 +58,6 @@ const SiteNetAccessForm: FC<Props> = ({
     });
   }, [site]);
 
-  useEffect(() => {
-    if (selectedNetworkAccess) {
-      setNetworkAccessState({
-        ...selectedNetworkAccess,
-      });
-    } else {
-      setNetworkAccessState(null);
-    }
-  }, [selectedNetworkAccess]);
-
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
