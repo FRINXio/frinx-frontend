@@ -13,7 +13,7 @@ import buildReducer from './store/reducers/builder';
 import bulkReducer from './store/reducers/bulk';
 import searchReducer from './store/reducers/searchExecs';
 import WorkflowDefinitions from './pages/workflow-list/WorkflowDefs/workflow-definitions';
-import WorkflowExec from './pages/workflow-list/executed-workflow-list/workflow-exec';
+import WorkflowExec from './pages/workflow-list/executed-workflow-list/executed-workflow-list';
 import ScheduledWorkflowList from './pages/workflow-list/scheduled-workflow/scheduled-workflow-list';
 import EventListeners from './pages/workflow-list/EventListeners/event-listeners';
 import TaskList from './pages/workflow-list/Tasks/task-list';
