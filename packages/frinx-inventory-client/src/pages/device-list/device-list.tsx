@@ -105,6 +105,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   const [deviceIdToDelete, setDeviceIdToDelete] = useState<string | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [installLoadingMap, setInstallLoadingMap] = useState<Record<string, boolean>>({});
+  const [selectedDevices, setSelectedDevices] = useState<Set<string>>(new Set());
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
   const [{ data: deviceData, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
@@ -222,7 +223,35 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     }
   };
 
+  const handleDeviceSelection = (deviceId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedDevices((prev) => {
+        const newSelectedDevices = new Set(prev.add(deviceId));
+        return newSelectedDevices;
+      });
+    } else {
+      setSelectedDevices((prev) => {
+        const newSelectedDevices = new Set(prev);
+        newSelectedDevices.delete(deviceId);
+
+        return newSelectedDevices;
+      });
+    }
+  };
+
+  const handleSelectionOfAllDevices = (checked: boolean) => {
+    if (checked) {
+      if (deviceData != null) {
+        const devicesId = deviceData.devices.edges.map(({ node }) => node.id);
+        setSelectedDevices(new Set(devicesId));
+      }
+    } else {
+      setSelectedDevices(new Set());
+    }
+  };
+
   const labels = labelsData?.labels?.edges ?? [];
+  const areSelectedAll = deviceData?.devices.edges.length === selectedDevices.size;
 
   return (
     <>
@@ -256,7 +285,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
             </Box>
           )}
 
-          <Box>
+          <Box background="white" paddingX={4} paddingTop={4} paddingBottom={0} marginBottom={4}>
             <DeviceFilter
               labels={labels}
               selectedLabels={selectedLabels}
@@ -266,12 +295,16 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
           </Box>
           <DeviceTable
             devices={deviceData?.devices.edges ?? []}
+            areSelectedAll={areSelectedAll}
+            onSelectAll={handleSelectionOfAllDevices}
+            selectedDevices={selectedDevices}
             onInstallButtonClick={handleInstallButtonClick}
             onUninstallButtonClick={handleUninstallButtonClick}
             onSettingsButtonClick={onSettingsButtonClick}
             onDeleteBtnClick={handleDeleteBtnClick}
             onEditDeviceButtonClick={onEditButtonClick}
             installLoadingMap={installLoadingMap}
+            onDeviceSelection={handleDeviceSelection}
           />
 
           {deviceData && (

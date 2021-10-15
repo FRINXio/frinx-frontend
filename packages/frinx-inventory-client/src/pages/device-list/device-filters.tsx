@@ -13,16 +13,14 @@ type Props = {
 };
 const DeviceFilter: VoidFunctionComponent<Props> = ({ labels, selectedLabels, onSelectionChange }) => {
   return (
-    <Box background="white" paddingX={4} paddingTop={4} paddingBottom={0} marginBottom={4}>
-      <Box width={80}>
-        <SearchByLabelInput
-          items={labels}
-          selectedLabels={selectedLabels}
-          onSelectionChange={onSelectionChange}
-          isCreationDisabled
-          labelText="Filter by labels"
-        />
-      </Box>
+    <Box width={80}>
+      <SearchByLabelInput
+        items={labels}
+        selectedLabels={selectedLabels}
+        onSelectionChange={onSelectionChange}
+        isCreationDisabled
+        labelText="Filter by labels"
+      />
     </Box>
   );
 };

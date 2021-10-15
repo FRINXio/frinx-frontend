@@ -21,10 +21,11 @@ import {
   Divider,
   Button,
 } from '@chakra-ui/react';
-import type { Task } from './flowtypes';
+import type { Task } from '../types/task';
 import { jsonParse } from './utils';
 import { CopyIcon } from '@chakra-ui/icons';
 import unescapeJs from 'unescape-js';
+import useResponseToasts from '../hooks/use-response-toasts';
 
 type Props = {
   task: Task;
@@ -40,6 +41,15 @@ function renderTaskDescription(task: Task) {
 }
 
 const TaskModal = ({ task, show, handle }: Props) => {
+  const [isCopiedSuccessfully, setIsCopiedSuccessfully] = useState(false);
+  const [isCoppiedFailed, setIsCoppiedFailed] = useState(false);
+  useResponseToasts({
+    isSuccess: isCopiedSuccessfully,
+    isFailure: isCoppiedFailed,
+    successMessage: 'Copied to clipboard',
+    failureMessage: 'Copying to clipboard was not successfull',
+  });
+
   const [isEscaped, setIsEscaped] = useState(true);
   const { inputData, outputData, logs } = task;
 
@@ -62,6 +72,13 @@ const TaskModal = ({ task, show, handle }: Props) => {
           .replace(/\\f/g, '\\f')
       : unescapeJs(jsonString);
   }
+
+  const copyToClipBoard = (textToCopy: any) => {
+    navigator.clipboard
+      .writeText(JSON.stringify(textToCopy))
+      .then(() => setIsCopiedSuccessfully(true))
+      .catch(() => setIsCoppiedFailed(true));
+  };
 
   return (
     <Modal size="5xl" isOpen={show} onClose={handle}>
@@ -109,7 +126,7 @@ const TaskModal = ({ task, show, handle }: Props) => {
                       icon={<CopyIcon />}
                       size="sm"
                       className="clp"
-                      data-clipboard-target="#t_input"
+                      onClick={() => copyToClipBoard(inputData)}
                     />
                     <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
                       {isEscaped ? 'Unescape' : 'Escape'}
@@ -134,7 +151,7 @@ const TaskModal = ({ task, show, handle }: Props) => {
                       icon={<CopyIcon />}
                       size="sm"
                       className="clp"
-                      data-clipboard-target="#t_output"
+                      onClick={() => copyToClipBoard(outputData)}
                     />
                     <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
                       {isEscaped ? 'Unescape' : 'Escape'}
@@ -161,7 +178,7 @@ const TaskModal = ({ task, show, handle }: Props) => {
                       icon={<CopyIcon />}
                       size="sm"
                       className="clp"
-                      data-clipboard-target="#t_json"
+                      onClick={() => copyToClipBoard(task)}
                     />
                     <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
                       {isEscaped ? 'Unescape' : 'Escape'}
@@ -188,7 +205,7 @@ const TaskModal = ({ task, show, handle }: Props) => {
                       icon={<CopyIcon />}
                       size="sm"
                       className="clp"
-                      data-clipboard-target="#t_logs"
+                      onClick={() => copyToClipBoard(logs)}
                     />
                     <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
                       {isEscaped ? 'Unescape' : 'Escape'}

@@ -30,6 +30,7 @@ type Props = {
   isUpdateStoreLoading: boolean;
   isResetLoading: boolean;
   isSyncLoading: boolean;
+  isRefreshLoading: boolean;
 };
 
 const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
@@ -43,6 +44,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
   isResetLoading,
   isUpdateStoreLoading,
   isSyncLoading,
+  isRefreshLoading,
 }) => {
   return (
     <Box>
@@ -63,7 +65,11 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
               >
                 Save
               </Button>
-              <Button leftIcon={<Icon size={20} as={FeatherIcon} icon="refresh-cw" />} onClick={onRefreshBtnClick}>
+              <Button
+                leftIcon={<Icon size={20} as={FeatherIcon} icon="refresh-cw" />}
+                onClick={onRefreshBtnClick}
+                isLoading={isRefreshLoading}
+              >
                 Refresh
               </Button>
               <Menu>

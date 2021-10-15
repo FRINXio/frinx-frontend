@@ -656,12 +656,25 @@ export type BlueprintsQuery = (
   ) }
 );
 
-export type QueryDataStoreQueryVariables = Exact<{
+export type DeviceNameQueryVariables = Exact<{
+  deviceId: Scalars['ID'];
+}>;
+
+
+export type DeviceNameQuery = (
+  { __typename?: 'Query' }
+  & { node: Maybe<{ __typename?: 'Blueprint' } | { __typename?: 'Country' } | (
+    { __typename?: 'Device' }
+    & Pick<Device, 'id' | 'name'>
+  ) | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Zone' }> }
+);
+
+export type DataStoreQueryVariables = Exact<{
   deviceId: Scalars['String'];
 }>;
 
 
-export type QueryDataStoreQuery = (
+export type DataStoreQuery = (
   { __typename?: 'Query' }
   & { dataStore: Maybe<(
     { __typename?: 'DataStore' }
