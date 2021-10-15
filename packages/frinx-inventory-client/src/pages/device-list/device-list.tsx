@@ -185,34 +185,53 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   };
 
   const deleteDevices = (devicesId: string[]) => {
-    return Promise.all(
+    return Promise.allSettled(
       [...devicesId].map((deviceId: string) => {
         return deleteDevice({
           deviceId,
         }).then((res) => {
           if (res.data?.deleteDevice) {
-            addToastNotification({
-              type: 'success',
-              title: 'Success',
-              content: 'Device was deleted successfuly',
-            });
+            return res.data.deleteDevice.device?.id;
           }
           if (res.error) {
-            addToastNotification({
-              type: 'error',
-              title: 'Error',
-              content: 'Failed to delete device',
-            });
+            throw new Error(res.error?.message);
           }
+
+          return null;
         });
       }),
-    ).then(() => {
-      deleteModalDisclosure.onClose();
-    });
+    )
+      .then((res) => {
+        if (res.every((item) => item.status === 'fulfilled')) {
+          return addToastNotification({
+            type: 'success',
+            title: 'Success',
+            content: res.length > 1 ? 'Devices were deleted successfully' : 'Device was deleted successfully',
+          });
+        }
+
+        if (res.every((item) => item.status === 'rejected')) {
+          return addToastNotification({
+            type: 'error',
+            title: 'Error',
+            content: res.length > 1 ? 'Failed to delete devices' : 'Failed to delete device',
+          });
+        }
+
+        return addToastNotification({
+          type: 'warning',
+          title: 'Warning',
+          content: 'Not all selected devices were deleted',
+        });
+      })
+      .finally(() => {
+        setSelectedDevices(new Set());
+        deleteModalDisclosure.onClose();
+      });
   };
 
   const installDevices = (devicesId: string[]) => {
-    Promise.all(
+    Promise.allSettled(
       devicesId.map((deviceId) => {
         setInstallLoadingMap((m) => {
           return {
@@ -222,30 +241,51 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
         });
         return installDevice({
           id: deviceId,
-        }).then((res) => {
-          if (res.data?.installDevice.device.isInstalled) {
-            addToastNotification({
-              type: 'success',
-              title: 'Success',
-              content: 'Device installed successfuly',
+        })
+          .then((res) => {
+            if (res.data?.installDevice.device.isInstalled) {
+              return res.data.installDevice.device.isInstalled;
+            }
+            if (res.error) {
+              throw new Error(res.error.message);
+            }
+
+            return null;
+          })
+          .finally(() => {
+            setInstallLoadingMap((m) => {
+              return {
+                ...m,
+                [deviceId]: false,
+              };
             });
-          }
-          if (res.error) {
-            addToastNotification({
-              type: 'error',
-              title: 'Error',
-              content: 'Installation failed',
-            });
-          }
-          setInstallLoadingMap((m) => {
-            return {
-              ...m,
-              [deviceId]: false,
-            };
           });
-        });
       }),
-    );
+    )
+      .then((res) => {
+        if (res.every((item) => item.status === 'fulfilled')) {
+          return addToastNotification({
+            type: 'success',
+            title: 'Success',
+            content: res.length > 1 ? 'Devices were installed successfuly' : 'Device was installed successfully',
+          });
+        }
+
+        if (res.every((item) => item.status === 'rejected')) {
+          return addToastNotification({
+            type: 'error',
+            title: 'Error',
+            content: res.length > 1 ? 'Failed to install devices' : 'Failed to install device',
+          });
+        }
+
+        return addToastNotification({
+          type: 'warning',
+          title: 'Warning',
+          content: 'Not all selected devices were installed successfully',
+        });
+      })
+      .finally(() => setSelectedDevices(new Set()));
   };
 
   const handleInstallSelectedDevices = () => {
