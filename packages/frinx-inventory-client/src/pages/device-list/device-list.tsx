@@ -158,19 +158,21 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     uninstallDevice({
       id: deviceId,
     })
-      .then(() => {
-        addToastNotification({
-          type: 'success',
-          title: 'Success',
-          content: 'Device succesfully uninstalled',
-        });
-      })
-      .catch(() => {
-        addToastNotification({
-          type: 'error',
-          title: 'Error',
-          content: 'Failed to uninstall device',
-        });
+      .then((res) => {
+        if (res.data?.uninstallDevice.device.isInstalled === false) {
+          addToastNotification({
+            type: 'success',
+            title: 'Success',
+            content: 'Device uninstalled successfuly',
+          });
+        }
+        if (res.error) {
+          addToastNotification({
+            type: 'error',
+            title: 'Error',
+            content: 'Uninstallation failed',
+          });
+        }
       })
       .finally(() => {
         setInstallLoadingMap((m) => {
@@ -187,23 +189,26 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
       [...devicesId].map((deviceId: string) => {
         return deleteDevice({
           deviceId,
+        }).then((res) => {
+          if (res.data?.deleteDevice) {
+            addToastNotification({
+              type: 'success',
+              title: 'Success',
+              content: 'Device was deleted successfuly',
+            });
+          }
+          if (res.error) {
+            addToastNotification({
+              type: 'error',
+              title: 'Error',
+              content: 'Failed to delete device',
+            });
+          }
         });
       }),
-    )
-      .then(() => {
-        addToastNotification({
-          type: 'success',
-          title: 'Success',
-          content: 'Successfully deleted',
-        });
-      })
-      .catch(() => {
-        addToastNotification({
-          type: 'error',
-          title: 'Error',
-          content: 'Failed to delete',
-        });
-      });
+    ).then(() => {
+      deleteModalDisclosure.onClose();
+    });
   };
 
   const installDevices = (devicesId: string[]) => {
@@ -217,16 +222,21 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
         });
         return installDevice({
           id: deviceId,
-        });
-      }),
-    )
-      .then(() => {
-        addToastNotification({
-          type: 'success',
-          title: 'Success',
-          content: 'Successfully installed device',
-        });
-        [...selectedDevices].forEach((deviceId) => {
+        }).then((res) => {
+          if (res.data?.installDevice.device.isInstalled) {
+            addToastNotification({
+              type: 'success',
+              title: 'Success',
+              content: 'Device installed successfuly',
+            });
+          }
+          if (res.error) {
+            addToastNotification({
+              type: 'error',
+              title: 'Error',
+              content: 'Installation failed',
+            });
+          }
           setInstallLoadingMap((m) => {
             return {
               ...m,
@@ -234,14 +244,8 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
             };
           });
         });
-      })
-      .catch(() => {
-        addToastNotification({
-          type: 'error',
-          title: 'Error',
-          content: 'Failed to update config data store',
-        });
-      });
+      }),
+    );
   };
 
   const handleInstallSelectedDevices = () => {
