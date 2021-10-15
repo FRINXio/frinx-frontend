@@ -19,7 +19,7 @@ import React, { useEffect, useState } from 'react';
 import WfAutoComplete from '../../../common/wf-autocomplete';
 import WfLabels from '../../../common/wf-labels';
 import _ from 'lodash';
-import callbackUtils from '../../../utils/callbackUtils';
+import callbackUtils from '../../../utils/callback-utils';
 import {
   Box,
   Button,
