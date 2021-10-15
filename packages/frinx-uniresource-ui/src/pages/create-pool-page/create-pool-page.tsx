@@ -106,6 +106,7 @@ type FormValues = {
   name: string;
   description: string;
   resourceTypeId: string;
+  tags: string[];
   poolType: PoolType;
 } & (
   | {
@@ -144,6 +145,7 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
               description: values.description,
               resourceTypeId: values.resourceTypeId,
               poolValues: values.poolValues,
+              tags: values.tags,
             },
           },
           { additionalTypenames: ['ResourcePool'] },
@@ -159,6 +161,7 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
               description: values.description,
               resourceTypeId: values.resourceTypeId,
               allocationStrategyId: values.allocationStrategyId,
+              tags: values.tags,
             },
           },
           { additionalTypenames: ['ResourcePool'] },
@@ -173,6 +176,7 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
               description: values.description,
               resourceTypeId: values.resourceTypeId,
               poolValues: values.poolValues,
+              tags: values.tags,
             },
           },
           { additionalTypenames: ['ResourcePool'] },
@@ -192,6 +196,7 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
             poolDealocationSafetyPeriod: values.dealocationSafetyPeriod,
             resourceTypeId: values.resourceTypeId,
             poolValues: values.poolValues,
+            tags: values.tags,
           },
         },
         { additionalTypenames: ['ResourcePool'] },
@@ -208,6 +213,7 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
             allocationStrategyId: values.allocationStrategyId,
             poolProperties: values.poolProperties,
             poolPropertyTypes: values.poolPropertyTypes,
+            tags: values.tags,
           },
         },
         { additionalTypenames: ['ResourcePool'] },
@@ -221,6 +227,7 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
             description: values.description,
             resourceTypeId: values.resourceTypeId,
             poolValues: values.poolValues,
+            tags: values.tags,
           },
         },
         { additionalTypenames: ['ResourcePool'] },

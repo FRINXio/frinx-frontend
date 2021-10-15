@@ -13,6 +13,7 @@ import NewWorkflowModal from './components/new-workflow-modal/new-workflow-modal
 import RightDrawer from './components/right-drawer';
 import TaskForm from './components/task-form/task-form';
 import WorkflowDefinitionModal from './components/workflow-definition-modal/workflow-definition-modal';
+import WorkflowEditorModal from './components/workflow-editor-modal/workflow-editor-modal';
 import WorkflowForm from './components/workflow-form/workflow-form';
 import { createDiagramController } from './helpers/diagram.helpers';
 import { CustomNodeType, ExtendedTask, NodeData, TaskDefinition, Workflow } from './helpers/types';
@@ -63,6 +64,7 @@ const App: FC<Props> = ({
 }) => {
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
+  const workflowEditorDisclosure = useDisclosure();
   const [isEditing, setIsEditing] = useState(false);
   const [isInputModalShown, setIsInputModalShown] = useState(false);
   const [workflowTasks, setWorkflowTasks] = useState(workflow.tasks);
@@ -148,6 +150,7 @@ const App: FC<Props> = ({
                 <ActionsMenu
                   onShowDefinitionBtnClick={workflowDefinitionDisclosure.onOpen}
                   onNewWorkflowBtnClick={workflowModalDisclosure.onOpen}
+                  onWorkflowEditorBtnClick={workflowEditorDisclosure.onOpen}
                   onEditWorkflowBtnClick={() => {
                     setIsEditing(true);
                   }}
@@ -268,6 +271,14 @@ const App: FC<Props> = ({
           shouldCloseAfterSubmit={false}
           isOpen={isInputModalShown}
           onSuccessClick={onExecuteSuccessClick}
+        />
+      )}
+      {workflowEditorDisclosure.isOpen && (
+        <WorkflowEditorModal
+          workflow={workflow}
+          isOpen={workflowEditorDisclosure.isOpen}
+          onSave={onWorkflowChange}
+          onClose={workflowEditorDisclosure.onClose}
         />
       )}
     </>
