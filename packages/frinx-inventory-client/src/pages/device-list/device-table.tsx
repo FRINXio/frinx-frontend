@@ -73,6 +73,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
             <Tr key={device.id}>
               <Td>
                 <Checkbox
+                  isDisabled={device.isInstalled}
                   isChecked={selectedDevices.has(device.id)}
                   onChange={(e) => onDeviceSelection(device.id, e.target.checked)}
                 />

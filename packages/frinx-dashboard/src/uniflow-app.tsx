@@ -81,7 +81,7 @@ const UniflowApp: FC = () => {
           WorkflowListHeader,
           WorkflowDefinitions,
           WorkflowExec,
-          Scheduling,
+          ScheduledWorkflowList,
           EventListeners,
           TaskList,
           PollData,
@@ -95,7 +95,7 @@ const UniflowApp: FC = () => {
           WorkflowListHeader,
           WorkflowDefinitions,
           WorkflowExec,
-          Scheduling,
+          ScheduledWorkflowList,
           EventListeners,
           TaskList,
           PollData,
@@ -117,7 +117,7 @@ const UniflowApp: FC = () => {
     WorkflowListHeader,
     WorkflowDefinitions,
     WorkflowExec,
-    Scheduling,
+    ScheduledWorkflowList,
     EventListeners,
     TaskList,
     PollData,
@@ -200,7 +200,7 @@ const UniflowApp: FC = () => {
               }}
             />
             <Route exact path="/uniflow/scheduled">
-              <Scheduling />
+              <ScheduledWorkflowList />
             </Route>
             <Route exact path="/uniflow/event-listeners">
               <EventListeners />

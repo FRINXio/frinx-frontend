@@ -1,7 +1,7 @@
 // @flow
 import PageContainer from '../../common/PageContainer';
 import React, { useRef } from 'react';
-import callbackUtils from '../../utils/callbackUtils';
+import callbackUtils from '../../utils/callback-utils';
 import {
   Box,
   Button,

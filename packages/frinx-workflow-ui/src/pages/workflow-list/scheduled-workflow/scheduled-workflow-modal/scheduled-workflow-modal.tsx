@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   Button,
   Checkbox,
@@ -16,68 +16,43 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import callbackUtils from '../../../../utils/callbackUtils';
-import Editor from '../../../../common/editor';
+import Editor from 'react-ace';
+import { ScheduledWorkflow } from '../../../../types/types';
 
 const DEFAULT_CRON_STRING = '* * * * *';
 
-const SchedulingModal = ({ name, workflowName, workflowVersion, isOpen, onClose }) => {
-  const [scheduledWf, setScheduledWf] = useState();
-  const [status, setStatus] = useState();
-  const [found, setFound] = useState();
-  const [error, setError] = useState();
+type Props = {
+  scheduledWorkflow: Partial<ScheduledWorkflow>;
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (workflow: Partial<ScheduledWorkflow>) => void;
+};
 
-  useEffect(() => {
-    const getSchedule = callbackUtils.getScheduleCallback();
+const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose, onSubmit }) => {
+  const [scheduledWf, setScheduledWf] = useState<Partial<ScheduledWorkflow>>(scheduledWorkflow);
 
-    getSchedule(name, workflowVersion)
-      .then((schedule) => {
-        setFound(true);
-        setScheduledWf(schedule);
-      })
-      .catch(() => {
-        setFound(false);
-        setScheduledWf({
-          name,
-          workflowName,
-          // workflowVersion must be string
-          workflowVersion: workflowVersion.toString(),
-          enabled: false,
-          cronString: DEFAULT_CRON_STRING,
-        });
-      });
-  }, []);
-
-  const onRegisterSchedule = () => {
-    setStatus('Submitting');
-
-    const registerSchedule = callbackUtils.registerScheduleCallback();
-
-    registerSchedule(name, workflowVersion, {
-      ...scheduledWf,
-      name: `${name}:${workflowVersion}`,
-    })
-      .then(() => {
-        onClose();
-      })
-      .catch((err) => {
-        setStatus(null);
-        setError(err);
-      });
+  const handleSubmit = () => {
+    onSubmit(scheduledWf);
+    onClose();
   };
 
-  const setWorkflowContext = (workflowContext) => {
+  const setWorkflowContext = (workflowContext: string) => {
     try {
+      const ctx = JSON.parse(workflowContext);
       const myScheduleWf = {
         ...scheduledWf,
-        workflowContext: JSON.parse(workflowContext),
+        workflowContext: ctx,
       };
       setScheduledWf(myScheduleWf);
-    } catch (e) {}
+    } catch (e) {
+      if (e instanceof Error) {
+        console.error(e.message);
+      }
+    }
   };
 
   const getCrontabGuruUrl = () => {
-    const cronString = scheduledWf?.cronString || DEFAULT_CRON_STRING;
+    const cronString = scheduledWf.cronString || DEFAULT_CRON_STRING;
     const url = 'https://crontab.guru/#' + cronString.replace(/\s/g, '_');
     return (
       <Link href={url} color="brand.500">
@@ -120,17 +95,18 @@ const SchedulingModal = ({ name, workflowName, workflowVersion, isOpen, onClose 
             <FormLabel>Workflow Context</FormLabel>
             <Editor
               name="schedule_editor"
-              onChange={(data) => setWorkflowContext(data)}
+              mode="json"
+              onChange={setWorkflowContext}
               value={JSON.stringify(scheduledWf?.workflowContext, null, 2)}
-              height="200px"
+              height="400px"
+              width="100%"
             />
           </FormControl>
         </ModalBody>
         <ModalFooter>
           <HStack spacing={2}>
-            <pre>{error?.message}</pre>
-            <Button colorScheme="blue" onClick={onRegisterSchedule} isDisabled={status != null}>
-              {found ? 'Update' : 'Create'}
+            <Button colorScheme="blue" onClick={handleSubmit}>
+              Update
             </Button>
             <Button onClick={onClose}>Close</Button>
           </HStack>
