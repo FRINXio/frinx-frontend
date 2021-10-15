@@ -339,7 +339,8 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   };
 
   const labels = labelsData?.labels?.edges ?? [];
-  const areSelectedAll = deviceData?.devices.edges.length === selectedDevices.size;
+  const areSelectedAll =
+    deviceData?.devices.edges.filter(({ node }) => !node.isInstalled).length === selectedDevices.size;
 
   return (
     <>
