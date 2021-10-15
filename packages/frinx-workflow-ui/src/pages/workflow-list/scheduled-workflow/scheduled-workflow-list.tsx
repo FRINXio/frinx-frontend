@@ -17,20 +17,23 @@ import {
   Tag,
   Code,
   useToast,
+  useDisclosure,
 } from '@chakra-ui/react';
 import sortBy from 'lodash/sortBy';
 import FeatherIcon from 'feather-icons-react';
 import PageContainer from '../../../common/PageContainer';
 import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
-import callbackUtils from '../../../utils/callbackUtils';
-import SchedulingModal from './SchedulingModal/SchedulingModal';
+import callbackUtils from '../../../utils/callback-utils';
+import SchedulingModal from './scheduled-workflow-modal/scheduled-workflow-modal';
+import { ScheduledWorkflow, StatusType } from '../../../types/types';
+import useNotifications from '../../../hooks/use-notifications';
 
-function Scheduling() {
+function ScheduledWorkflowList() {
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
-  const [selectedWorkflow, setSelectedWorkflow] = useState();
-  const [isSchedulingModalOpen, setIsSchedulingModalOpen] = useState(false);
-  const toast = useToast();
+  const [selectedWorkflow, setSelectedWorkflow] = useState<ScheduledWorkflow>();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { addToastNotification } = useNotifications();
 
   function getData() {
     const getSchedules = callbackUtils.getSchedulesCallback();
@@ -39,12 +42,11 @@ function Scheduling() {
       .then((schedules) => {
         setItemList(sortBy(schedules, ['name']));
       })
-      .catch((err) => {
-        toast({
-          title: err?.message,
-          status: 'error',
-          duration: 9000,
-          isClosable: true,
+      .catch((err: Error) => {
+        addToastNotification({
+          content: err.message,
+          type: 'error',
+          title: 'Error',
         });
       });
   }
@@ -53,66 +55,53 @@ function Scheduling() {
     getData();
   }, []);
 
-  function onEdit(workflow) {
+  function onEdit(workflow: ScheduledWorkflow) {
     setSelectedWorkflow(workflow);
-    setIsSchedulingModalOpen(true);
+    onOpen();
   }
 
-  function onSchedulingModalClose() {
-    getData();
-    setIsSchedulingModalOpen(false);
-  }
-
-  function onScheduleEnable(scheduledWf) {
-    const newScheduledWf = {
-      ...scheduledWf,
-      enabled: !scheduledWf.enabled,
-    };
+  function handleWorkflowUpdate(scheduledWf: Partial<ScheduledWorkflow>) {
     const registerSchedule = callbackUtils.registerScheduleCallback();
 
-    registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, newScheduledWf)
+    registerSchedule(scheduledWf.workflowName!, scheduledWf.workflowVersion!, scheduledWf)
       .then((res) => {
-        toast({
-          title: res?.message,
-          status: 'success',
-          duration: 9000,
-          isClosable: true,
+        addToastNotification({
+          content: res.message,
+          type: 'success',
+          title: 'Success',
         });
         getData();
       })
       .catch((err) => {
-        toast({
-          title: err?.message,
-          status: 'error',
-          duration: 9000,
-          isClosable: true,
+        addToastNotification({
+          title: 'Failed to schedule workflow',
+          type: 'error',
+          content: err.message,
         });
       });
   }
 
-  const handleDeleteBtnClick = (workflow) => {
+  const handleDeleteBtnClick = (workflow: ScheduledWorkflow) => {
     const deleteSchedule = callbackUtils.deleteScheduleCallback();
     deleteSchedule(workflow.workflowName, workflow.workflowVersion)
       .then(() => {
-        toast({
-          title: 'Deleted successfuly',
-          status: 'success',
-          duration: 9000,
-          isClosable: true,
+        addToastNotification({
+          content: 'Deleted successfuly',
+          title: 'Success',
+          type: 'success',
         });
         getData();
       })
       .catch((err) => {
-        toast({
-          title: err?.message,
-          status: 'error',
-          duration: 9000,
-          isClosable: true,
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: err?.message,
         });
       });
   };
 
-  function getStatusTagColor(status) {
+  function getStatusTagColor(status: StatusType) {
     switch (status) {
       case 'COMPLETED':
         return 'green';
@@ -125,16 +114,18 @@ function Scheduling() {
     }
   }
 
+  if (!pageItems.length) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <PageContainer>
-      {isSchedulingModalOpen && (
+      {isOpen && selectedWorkflow != null && (
         <SchedulingModal
           scheduledWorkflow={selectedWorkflow}
-          name={selectedWorkflow.name}
-          workflowName={selectedWorkflow.workflowName}
-          workflowVersion={selectedWorkflow.workflowVersion}
-          isOpen={isSchedulingModalOpen}
-          onClose={onSchedulingModalClose}
+          isOpen={isOpen}
+          onClose={onClose}
+          onSubmit={handleWorkflowUpdate}
         />
       )}
       <Table background="white">
@@ -148,11 +139,21 @@ function Scheduling() {
           </Tr>
         </Thead>
         <Tbody>
-          {pageItems.map((item) => (
+          {pageItems.map((item: ScheduledWorkflow) => (
             <Tr key={item.name} role="group">
               <Td>
                 <FormControl display="flex" alignItems="center">
-                  <Switch isChecked={!!item.enabled} onChange={() => onScheduleEnable(item)} />
+                  <Switch
+                    isChecked={item.enabled}
+                    onChange={() => {
+                      const editedWorkflow = {
+                        ...item,
+                        enabled: !item.enabled,
+                      };
+
+                      handleWorkflowUpdate(editedWorkflow);
+                    }}
+                  />
                 </FormControl>
               </Td>
               <Td>
@@ -161,7 +162,7 @@ function Scheduling() {
                 </Heading>
               </Td>
               <Td>
-                <Tag colorScheme={getStatusTagColor(item.status)}>{item.status || '-'}</Tag>
+                <Tag colorScheme={getStatusTagColor(item.status) ?? ''}>{item.status || '-'}</Tag>
               </Td>
               <Td>
                 <Code>{item.cronString}</Code>
@@ -218,4 +219,4 @@ function Scheduling() {
   );
 }
 
-export default Scheduling;
+export default ScheduledWorkflowList;

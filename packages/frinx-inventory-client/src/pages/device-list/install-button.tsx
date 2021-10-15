@@ -44,7 +44,7 @@ const InstallButton: VoidFunctionComponent<Props> = ({ isInstalled, isLoading, o
     type: 'button',
     borderRadius: 50,
     height: 8,
-    width: 24,
+    width: 32,
     backgroundColor: isInstalled ? 'green.500' : 'blue.400',
     color: 'whiteAlpha.900',
     pointerEvents: isLoading ? 'none' : 'all',
@@ -70,14 +70,14 @@ const InstallButton: VoidFunctionComponent<Props> = ({ isInstalled, isLoading, o
         {isHovered ? (
           <>
             <ButtonIcon icon="arrow-down" color="yellow.500" isLoading={isLoading} />
-            <Text size="sm" fontWeight={600} as="span">
+            <Text size="sm" fontWeight={600} as="span" marginLeft={4}>
               Uninstall
             </Text>
           </>
         ) : (
           <>
             <ButtonIcon icon="check" color="green.500" isLoading={isLoading} />
-            <Text size="sm" fontWeight={600} as="span">
+            <Text size="sm" fontWeight={600} as="span" marginLeft={4}>
               Installed
             </Text>
           </>
