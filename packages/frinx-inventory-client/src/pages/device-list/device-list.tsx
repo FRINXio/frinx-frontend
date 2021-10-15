@@ -1,12 +1,12 @@
-import { Box, Button, Container, Flex, Heading, Progress, useDisclosure, useToast } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, Progress, Spacer, useDisclosure } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
-import React, { useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { FC, useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal';
 import Pagination from '../../components/pagination';
 import unwrap from '../../helpers/unwrap';
+import useNotifications from '../../hooks/use-notifications';
 import { usePagination } from '../../hooks/use-pagination';
-import useResponseToasts from '../../hooks/user-response-toasts';
 import {
   DeleteDeviceMutation,
   DeleteDeviceMutationVariables,
@@ -98,10 +98,25 @@ type Props = {
   onEditButtonClick: (deviceId: string) => void;
 };
 
+type DeleteModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: () => void;
+};
+
+const DeleteSelectedDevicesModal: FC<DeleteModalProps> = ({ onSubmit, isOpen, onClose }) => {
+  return (
+    <ConfirmDeleteModal isOpen={isOpen} onClose={onClose} onConfirmBtnClick={onSubmit} title="Delete selected devices">
+      Are you sure? You can&apos;t undo this action afterwards.
+    </ConfirmDeleteModal>
+  );
+};
+
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick, onEditButtonClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
-  const toast = useToast();
   const deleteModalDisclosure = useDisclosure();
+  const { addToastNotification } = useNotifications();
+  const deleteSelectedDevicesModal = useDisclosure();
   const [deviceIdToDelete, setDeviceIdToDelete] = useState<string | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [installLoadingMap, setInstallLoadingMap] = useState<Record<string, boolean>>({});
@@ -113,43 +128,11 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     context,
   });
   const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY });
-  const [{ data: installDeviceData, error: installDeviceError }, installDevice] = useMutation<
-    InstallDeviceMutation,
-    InstallDeviceMutationVariables
-  >(INSTALL_DEVICE_MUTATION);
-  const [{ data: uninstallDeviceData, error: uninstallDeviceError }, uninstallDevice] = useMutation<
-    UninstallDeviceMutation,
-    UninstallDeviceMutationVariables
-  >(UNINSTALL_DEVICE_MUTATION);
-  const [{ data: deleteDeviceData, error: deleteDeviceError }, deleteDevice] = useMutation<
-    DeleteDeviceMutation,
-    DeleteDeviceMutationVariables
-  >(DELETE_DEVICE_MUTATION);
-  const isInstallSuccesfull = installDeviceData != null;
-  const isInstallFailed = installDeviceError != null;
-  const isUninstallSuccesfull = uninstallDeviceData != null;
-  const isUninstallFailed = uninstallDeviceError != null;
-  const isDeleteSuccessful = deleteDeviceData != null;
-  const isDeleteFailed = deleteDeviceError != null;
-
-  useResponseToasts({
-    isSuccess: isInstallSuccesfull,
-    isFailure: isInstallFailed,
-    successMessage: 'Device succesfully installed',
-    failureMessage: 'Device could not be installed',
-  });
-  useResponseToasts({
-    isSuccess: isUninstallSuccesfull,
-    isFailure: isUninstallFailed,
-    successMessage: 'Device succesfully uninstalled',
-    failureMessage: 'Device could not be uninstalled',
-  });
-  useResponseToasts({
-    isSuccess: isDeleteSuccessful,
-    isFailure: isDeleteFailed,
-    successMessage: 'Device succesfully deleted',
-    failureMessage: 'Device could not be deleted',
-  });
+  const [, installDevice] = useMutation<InstallDeviceMutation, InstallDeviceMutationVariables>(INSTALL_DEVICE_MUTATION);
+  const [, uninstallDevice] = useMutation<UninstallDeviceMutation, UninstallDeviceMutationVariables>(
+    UNINSTALL_DEVICE_MUTATION,
+  );
+  const [, deleteDevice] = useMutation<DeleteDeviceMutation, DeleteDeviceMutationVariables>(DELETE_DEVICE_MUTATION);
 
   if ((isFetchingDevices && deviceData == null) || isFetchingLabels) {
     return (
@@ -174,14 +157,27 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     });
     installDevice({
       id: deviceId,
-    }).then(() => {
-      setInstallLoadingMap((m) => {
-        return {
-          ...m,
-          [deviceId]: false,
-        };
+    })
+      .then(() => {
+        addToastNotification({
+          type: 'success',
+          title: 'Success',
+          content: 'Successfully installed device',
+        });
+        setInstallLoadingMap((m) => {
+          return {
+            ...m,
+            [deviceId]: false,
+          };
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: 'Failed to update config data store',
+        });
       });
-    });
   };
 
   const handleUninstallButtonClick = (deviceId: string) => {
@@ -195,11 +191,17 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
       id: deviceId,
     })
       .then(() => {
-        toast({
-          position: 'top-right',
-          variant: 'subtle',
-          status: 'success',
-          title: 'Device succesfully uninstalled',
+        addToastNotification({
+          type: 'success',
+          title: 'Success',
+          content: 'Device succesfully uninstalled',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: 'Failed to uninstall device',
         });
       })
       .finally(() => {
@@ -210,6 +212,38 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
           };
         });
       });
+  };
+
+  const deleteDevices = (devicesId: string[]) => {
+    return Promise.all(
+      [...devicesId].map((deviceId: string) => {
+        return deleteDevice({
+          deviceId,
+        });
+      }),
+    )
+      .then(() => {
+        addToastNotification({
+          type: 'success',
+          title: 'Success',
+          content: 'Successfully deleted',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: 'Failed to delete',
+        });
+      });
+  };
+
+  const handleDeviceDelete = () => {
+    deleteDevices([unwrap(deviceIdToDelete)]).finally(() => deleteModalDisclosure.onClose());
+  };
+
+  const handleSelectedDeviceDelete = () => {
+    deleteDevices([...selectedDevices]).finally(() => deleteSelectedDevicesModal.onClose());
   };
 
   const handleDeleteBtnClick = (deviceId: string) => {
@@ -242,7 +276,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   const handleSelectionOfAllDevices = (checked: boolean) => {
     if (checked) {
       if (deviceData != null) {
-        const devicesId = deviceData.devices.edges.map(({ node }) => node.id);
+        const devicesId = deviceData.devices.edges.filter(({ node }) => !node.isInstalled).map(({ node }) => node.id);
         setSelectedDevices(new Set(devicesId));
       }
     } else {
@@ -255,16 +289,15 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
 
   return (
     <>
+      <DeleteSelectedDevicesModal
+        onSubmit={handleSelectedDeviceDelete}
+        isOpen={deleteSelectedDevicesModal.isOpen}
+        onClose={deleteSelectedDevicesModal.onClose}
+      />
       <ConfirmDeleteModal
         isOpen={deleteModalDisclosure.isOpen}
         onClose={deleteModalDisclosure.onClose}
-        onConfirmBtnClick={() => {
-          deleteDevice({
-            deviceId: unwrap(deviceIdToDelete),
-          }).then(() => {
-            deleteModalDisclosure.onClose();
-          });
-        }}
+        onConfirmBtnClick={handleDeviceDelete}
         title="Delete device"
       >
         Are you sure? You can&apos;t undo this action afterwards.
@@ -285,13 +318,25 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
             </Box>
           )}
 
-          <Box background="white" paddingX={4} paddingTop={4} paddingBottom={0} marginBottom={4}>
-            <DeviceFilter
-              labels={labels}
-              selectedLabels={selectedLabels}
-              onSelectionChange={handleOnSelectionChange}
-              isCreationDisabled
-            />
+          <Box>
+            <Flex>
+              <DeviceFilter
+                labels={labels}
+                selectedLabels={selectedLabels}
+                onSelectionChange={handleOnSelectionChange}
+                isCreationDisabled
+              />
+              <Spacer />
+              <Button
+                isDisabled={selectedDevices.size === 0}
+                onClick={deleteSelectedDevicesModal.onOpen}
+                variant="outline"
+                colorScheme="red"
+                size="sm"
+              >
+                Delete selected
+              </Button>
+            </Flex>
           </Box>
           <DeviceTable
             devices={deviceData?.devices.edges ?? []}

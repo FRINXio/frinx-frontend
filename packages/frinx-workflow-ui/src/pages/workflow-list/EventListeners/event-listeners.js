@@ -26,7 +26,7 @@ import {
 } from '@chakra-ui/react';
 import PageContainer from '../../../common/PageContainer';
 import PaginationPages from '../../../common/Pagination';
-import callbackUtils from '../../../utils/callbackUtils';
+import callbackUtils from '../../../utils/callback-utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { usePagination } from '../../../common/PaginationHook';
