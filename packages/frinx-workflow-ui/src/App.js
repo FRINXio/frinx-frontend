@@ -14,11 +14,11 @@ import bulkReducer from './store/reducers/bulk';
 import searchReducer from './store/reducers/searchExecs';
 import WorkflowDefinitions from './pages/workflow-list/WorkflowDefs/workflow-definitions';
 import WorkflowExec from './pages/workflow-list/workflow-execution/workflow-exec';
-import Scheduling from './pages/workflow-list/Scheduling/Scheduling';
+import ScheduledWorkflowList from './pages/workflow-list/scheduled-workflow/scheduled-workflow-list';
 import EventListeners from './pages/workflow-list/EventListeners/event-listeners';
 import TaskList from './pages/workflow-list/Tasks/task-list';
 import PollData from './pages/workflow-list/PollData/poll-data';
-import { getUniflowApiProvider } from './UniflowApiProvider';
+import { getUniflowApiProvider } from './uniflow-api-provider';
 
 const rootReducer = combineReducers({
   bulkReducer,
@@ -54,7 +54,7 @@ function App() {
               render={(props) => <WorkflowExec query={props.match.params.wfid} />}
             />
             <Route exact path={path + '/scheduled'}>
-              <Scheduling />
+              <ScheduledWorkflowList />
             </Route>
             <Route exact path={path + '/eventlisteners'}>
               <EventListeners />

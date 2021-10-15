@@ -1,4 +1,3 @@
-// @flow
 import React, { useEffect, useState } from 'react';
 import {
   Button,
@@ -36,14 +35,16 @@ import DiagramModal from './DiagramModal/DiagramModal';
 import InputModal from './InputModal/input-modal';
 import PageContainer from '../../../common/PageContainer';
 import PaginationPages from '../../../common/Pagination';
-import SchedulingModal from '../Scheduling/SchedulingModal/SchedulingModal';
+import ScheduledWorkflowModal from '../scheduled-workflow/scheduled-workflow-modal/scheduled-workflow-modal';
 import WfLabels from '../../../common/wf-labels';
 import WorkflowListViewModal from './WorkflowListViewModal/WorkflowListViewModal';
-import callbackUtils from '../../../utils/callbackUtils';
+import callbackUtils from '../../../utils/callback-utils';
 import { jsonParse } from '../../../common/utils';
 import { usePagination } from '../../../common/PaginationHook';
 import WorkflowActions from './workflow-actions';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
+import { ScheduledWorkflow, Workflow } from '../../../types/types';
+import useNotifications from '../../../hooks/use-notifications';
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr = dataset.map(({ description }) => {
@@ -77,12 +78,19 @@ const Labels = (props: { wf: Workflow; labels: string[]; onClick: (label: string
   });
 };
 
-type Workflow = {
-  name: string;
-  version: number;
-  description: string;
-  hasSchedule: boolean;
+const DEFAULT_CRON_STRING = '* * * * *';
+
+const makeEmptyScheduledWorkflow = () => {
+  return {
+    cronString: DEFAULT_CRON_STRING,
+    enabled: false,
+    name: '',
+    workflowContext: {},
+    workflowName: '',
+    workflowVersion: 0,
+  };
 };
+
 type Props = {
   onDefinitionClick: (name: string, version: string) => void;
   onWorkflowIdClick: (wfId: string) => void;
@@ -92,7 +100,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const [keywords, setKeywords] = useState('');
   const [labels, setLabels] = useState<string[]>([]);
   const [data, setData] = useState<Workflow[]>([]);
-  const [activeWf, setActiveWf] = useState<Workflow | null>(null);
+  const [activeWf, setActiveWf] = useState<Workflow>();
   const [defModal, setDefModal] = useState(false);
   const [diagramModal, setDiagramModal] = useState(false);
   const [inputModal, setInputModal] = useState(false);
@@ -103,6 +111,8 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const [allLabels, setAllLabels] = useState([]);
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
 
+  const { addToastNotification } = useNotifications();
+
   useEffect(() => {
     getData();
   }, []);
@@ -112,7 +122,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
       !keywords && labels.length === 0
         ? data
         : data.filter((e) => {
-            const searchedKeys = ['name'];
             const queryWords = keywords.toUpperCase();
             const wfName = e.name.toUpperCase();
             const labelsArr = jsonParse(e.description)?.labels;
@@ -138,14 +147,37 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const getData = () => {
     const getWorkflows = callbackUtils.getWorkflowsCallback();
 
-    getWorkflows().then((workflows: Workflow[]) => {
-      if (workflows) {
+    getWorkflows().then((workflows) => {
+      if (workflows != null) {
         const dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
         setData(dataset);
         setAllLabels(getLabels(dataset));
       }
     });
   };
+
+  function handleWorkflowSchedule(scheduledWf: Partial<ScheduledWorkflow>) {
+    const registerSchedule = callbackUtils.registerScheduleCallback();
+
+    if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
+      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, scheduledWf)
+        .then(() => {
+          addToastNotification({
+            type: 'success',
+            title: 'Success',
+            content: 'Successfully scheduled',
+          });
+          getData();
+        })
+        .catch(() => {
+          addToastNotification({
+            type: 'error',
+            title: 'Error',
+            content: 'Failed to schedule workflow',
+          });
+        });
+    }
+  }
 
   const updateFavourite = (workflow: Workflow) => {
     let wfDescription = jsonParse(workflow.description);
@@ -188,10 +220,10 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     });
   };
 
-  const deleteWorkflow = (workflow: Workflow | null) => {
+  const deleteWorkflow = (workflow: Workflow) => {
     const deleteWorkflow = callbackUtils.deleteWorkflowCallback();
 
-    deleteWorkflow(workflow?.name, workflow?.version).then(() => {
+    deleteWorkflow(workflow.name, workflow.version.toString()).then(() => {
       getData();
       setConfirmDeleteModal(false);
     });
@@ -237,13 +269,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     setActiveWf(workflow);
   };
 
-  const getActiveWfScheduleName = () => {
-    if (activeWf != null && activeWf.name != null) {
-      return activeWf.name;
-    }
-    return null;
-  };
-
   const getDependencies = (workflow: Workflow) => {
     const usedInWfs = data.filter((wf) => {
       const wfJSON = JSON.stringify(wf, null, 2);
@@ -280,13 +305,18 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
 
   const renderSchedulingModal = () => {
     return (
+      activeWf != null &&
       schedulingModal && (
-        <SchedulingModal
-          name={getActiveWfScheduleName()}
-          workflowName={activeWf?.name}
-          workflowVersion={activeWf?.version}
+        <ScheduledWorkflowModal
+          scheduledWorkflow={{
+            ...makeEmptyScheduledWorkflow(),
+            workflowName: activeWf.name,
+            workflowVersion: activeWf.version.toString(),
+            name: `${activeWf.name}:${activeWf.version}`,
+          }}
           onClose={onSchedulingModalClose}
           isOpen={schedulingModal}
+          onSubmit={handleWorkflowSchedule}
         />
       )
     );
@@ -317,7 +347,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
             </p>
           </ModalBody>
           <ModalFooter>
-            <Button marginRight={4} colorScheme="red" onClick={() => deleteWorkflow(activeWf)}>
+            <Button marginRight={4} colorScheme="red" onClick={() => deleteWorkflow(activeWf!)}>
               <Icon as={FontAwesomeIcon} icon={faTrash} />
               &nbsp;&nbsp;Delete
             </Button>

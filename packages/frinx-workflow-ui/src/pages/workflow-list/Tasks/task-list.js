@@ -4,7 +4,7 @@ import PageContainer from '../../../common/PageContainer';
 import PaginationPages from '../../../common/Pagination';
 import React, { useEffect, useState } from 'react';
 import TaskModal from './TaskModal';
-import callbackUtils from '../../../utils/callbackUtils';
+import callbackUtils from '../../../utils/callback-utils';
 import {
   Button,
   Flex,
