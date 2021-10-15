@@ -115,6 +115,7 @@ const DeleteSelectedDevicesModal: FC<DeleteModalProps> = ({ onSubmit, isOpen, on
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick, onEditButtonClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const deleteModalDisclosure = useDisclosure();
+  const { addToastNotification } = useNotifications();
   const deleteSelectedDevicesModal = useDisclosure();
   const [deviceIdToDelete, setDeviceIdToDelete] = useState<string | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
@@ -132,8 +133,6 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     UNINSTALL_DEVICE_MUTATION,
   );
   const [, deleteDevice] = useMutation<DeleteDeviceMutation, DeleteDeviceMutationVariables>(DELETE_DEVICE_MUTATION);
-
-  const { addToastNotification } = useNotifications();
 
   if ((isFetchingDevices && deviceData == null) || isFetchingLabels) {
     return (
