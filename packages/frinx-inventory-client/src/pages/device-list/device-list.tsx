@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex, Heading, Progress, Spacer, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, HStack, Progress, Spacer, useDisclosure } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FC, useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
@@ -148,38 +148,6 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     return <div>{error.toString()}</div>;
   }
 
-  const handleInstallButtonClick = (deviceId: string) => {
-    setInstallLoadingMap((m) => {
-      return {
-        ...m,
-        [deviceId]: true,
-      };
-    });
-    installDevice({
-      id: deviceId,
-    })
-      .then(() => {
-        addToastNotification({
-          type: 'success',
-          title: 'Success',
-          content: 'Successfully installed device',
-        });
-        setInstallLoadingMap((m) => {
-          return {
-            ...m,
-            [deviceId]: false,
-          };
-        });
-      })
-      .catch(() => {
-        addToastNotification({
-          type: 'error',
-          title: 'Error',
-          content: 'Failed to update config data store',
-        });
-      });
-  };
-
   const handleUninstallButtonClick = (deviceId: string) => {
     setInstallLoadingMap((m) => {
       return {
@@ -190,19 +158,21 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     uninstallDevice({
       id: deviceId,
     })
-      .then(() => {
-        addToastNotification({
-          type: 'success',
-          title: 'Success',
-          content: 'Device succesfully uninstalled',
-        });
-      })
-      .catch(() => {
-        addToastNotification({
-          type: 'error',
-          title: 'Error',
-          content: 'Failed to uninstall device',
-        });
+      .then((res) => {
+        if (res.data?.uninstallDevice.device.isInstalled === false) {
+          addToastNotification({
+            type: 'success',
+            title: 'Success',
+            content: 'Device uninstalled successfuly',
+          });
+        }
+        if (res.error) {
+          addToastNotification({
+            type: 'error',
+            title: 'Error',
+            content: 'Uninstallation failed',
+          });
+        }
       })
       .finally(() => {
         setInstallLoadingMap((m) => {
@@ -215,27 +185,111 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   };
 
   const deleteDevices = (devicesId: string[]) => {
-    return Promise.all(
+    return Promise.allSettled(
       [...devicesId].map((deviceId: string) => {
         return deleteDevice({
           deviceId,
+        }).then((res) => {
+          if (res.data?.deleteDevice) {
+            return res.data.deleteDevice.device?.id;
+          }
+          if (res.error) {
+            throw new Error(res.error?.message);
+          }
+
+          return null;
         });
       }),
     )
-      .then(() => {
-        addToastNotification({
-          type: 'success',
-          title: 'Success',
-          content: 'Successfully deleted',
+      .then((res) => {
+        if (res.every((item) => item.status === 'fulfilled')) {
+          return addToastNotification({
+            type: 'success',
+            title: 'Success',
+            content: res.length > 1 ? 'Devices were deleted successfully' : 'Device was deleted successfully',
+          });
+        }
+
+        if (res.every((item) => item.status === 'rejected')) {
+          return addToastNotification({
+            type: 'error',
+            title: 'Error',
+            content: res.length > 1 ? 'Failed to delete devices' : 'Failed to delete device',
+          });
+        }
+
+        return addToastNotification({
+          type: 'warning',
+          title: 'Warning',
+          content: 'Not all selected devices were deleted',
         });
       })
-      .catch(() => {
-        addToastNotification({
-          type: 'error',
-          title: 'Error',
-          content: 'Failed to delete',
-        });
+      .finally(() => {
+        setSelectedDevices(new Set());
+        deleteModalDisclosure.onClose();
       });
+  };
+
+  const installDevices = (devicesId: string[]) => {
+    Promise.allSettled(
+      devicesId.map((deviceId) => {
+        setInstallLoadingMap((m) => {
+          return {
+            ...m,
+            [deviceId]: true,
+          };
+        });
+        return installDevice({
+          id: deviceId,
+        })
+          .then((res) => {
+            if (res.data?.installDevice.device.isInstalled) {
+              return res.data.installDevice.device.isInstalled;
+            }
+            if (res.error) {
+              throw new Error(res.error.message);
+            }
+
+            return null;
+          })
+          .finally(() => {
+            setInstallLoadingMap((m) => {
+              return {
+                ...m,
+                [deviceId]: false,
+              };
+            });
+          });
+      }),
+    )
+      .then((res) => {
+        if (res.every((item) => item.status === 'fulfilled')) {
+          return addToastNotification({
+            type: 'success',
+            title: 'Success',
+            content: res.length > 1 ? 'Devices were installed successfuly' : 'Device was installed successfully',
+          });
+        }
+
+        if (res.every((item) => item.status === 'rejected')) {
+          return addToastNotification({
+            type: 'error',
+            title: 'Error',
+            content: res.length > 1 ? 'Failed to install devices' : 'Failed to install device',
+          });
+        }
+
+        return addToastNotification({
+          type: 'warning',
+          title: 'Warning',
+          content: 'Not all selected devices were installed successfully',
+        });
+      })
+      .finally(() => setSelectedDevices(new Set()));
+  };
+
+  const handleInstallSelectedDevices = () => {
+    installDevices([...selectedDevices]);
   };
 
   const handleDeviceDelete = () => {
@@ -285,7 +339,8 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   };
 
   const labels = labelsData?.labels?.edges ?? [];
-  const areSelectedAll = deviceData?.devices.edges.length === selectedDevices.size;
+  const areSelectedAll =
+    deviceData?.devices.edges.filter(({ node }) => !node.isInstalled).length === selectedDevices.size;
 
   return (
     <>
@@ -327,15 +382,26 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
                 isCreationDisabled
               />
               <Spacer />
-              <Button
-                isDisabled={selectedDevices.size === 0}
-                onClick={deleteSelectedDevicesModal.onOpen}
-                variant="outline"
-                colorScheme="red"
-                size="sm"
-              >
-                Delete selected
-              </Button>
+              <HStack>
+                <Button
+                  isDisabled={selectedDevices.size === 0}
+                  onClick={handleInstallSelectedDevices}
+                  variant="outline"
+                  colorScheme="blue"
+                  size="sm"
+                >
+                  Install selected
+                </Button>
+                <Button
+                  isDisabled={selectedDevices.size === 0}
+                  onClick={deleteSelectedDevicesModal.onOpen}
+                  variant="outline"
+                  colorScheme="red"
+                  size="sm"
+                >
+                  Delete selected
+                </Button>
+              </HStack>
             </Flex>
           </Box>
           <DeviceTable
@@ -343,7 +409,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
             areSelectedAll={areSelectedAll}
             onSelectAll={handleSelectionOfAllDevices}
             selectedDevices={selectedDevices}
-            onInstallButtonClick={handleInstallButtonClick}
+            onInstallButtonClick={(deviceId) => installDevices([deviceId])}
             onUninstallButtonClick={handleUninstallButtonClick}
             onSettingsButtonClick={onSettingsButtonClick}
             onDeleteBtnClick={handleDeleteBtnClick}
