@@ -34,13 +34,11 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     fetchData();
   }, []);
 
-  const handleSubmit = (service: VpnService) => {
+  const handleSubmit = async (service: VpnService) => {
     // eslint-disable-next-line no-console
     console.log('submit clicked', service);
     const callbacks = callbackUtils.getCallbacks;
-    const output = callbacks.editVpnServices(service);
-    // eslint-disable-next-line no-console
-    console.log(output);
+    await callbacks.editVpnServices(service);
     onSuccess();
   };
 

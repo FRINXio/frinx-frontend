@@ -39,7 +39,7 @@ const getCustomerItems = (services: VpnService[]): Item[] => {
   );
 };
 
-const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSubmit, onCancel }) => {
+const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, onCancel }) => {
   const [serviceState, setServiceState] = useState(service);
   const [extranetVpnSelect, setExtranetVpnSelect] = useState<string | null>(null);
   const [customerItems, setCustomerItems] = useState<Item[]>(getCustomerItems(services));
@@ -59,15 +59,10 @@ const VpnServiceForm: FC<Props> = ({ mode, extranetVpns, service, services, onSu
     if (!customerName) {
       return;
     }
-    const [newService] =
-      mode === 'edit'
-        ? services.filter((s) => s.customerName === customerName.value)
-        : [
-            {
-              ...serviceState,
-              customerName: customerName.value,
-            },
-          ];
+    const newService = {
+      ...serviceState,
+      customerName: customerName.value,
+    };
     setServiceState(newService);
   };
 

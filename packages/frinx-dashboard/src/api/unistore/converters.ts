@@ -4,6 +4,7 @@ import {
   ApiQosProfileInput,
   CountryCode,
   CreateNetworkAccessInput,
+  CreateRoutingProtocolItem,
   CreateRoutingProtocolsInput,
   CreateVpnAttachment,
   CreateVpnServiceInput,
@@ -13,8 +14,8 @@ import {
   MaximumRoutes,
   ProviderIdentifiers,
   RequestedCVlan,
-  RoutingProtocols,
-  RoutingProtocolsOutput,
+  RoutingProtocol,
+  RoutingProtocolItemOutput,
   RoutingProtocolType,
   SiteDevice,
   SiteDevicesOutput,
@@ -100,13 +101,12 @@ export function clientVpnServiceToApiVpnService(clientVpnService: VpnService): C
   };
 }
 
-export function apiRoutingProtocolToClientRoutingProtocol(routingProtocol: RoutingProtocolsOutput): RoutingProtocols {
-  const routingProtocolType = routingProtocol['routing-protocol'][0].type.split(':').pop();
-  const staticProtocol = routingProtocol['routing-protocol'][0].static;
-  const bgpProtocol = routingProtocol['routing-protocol'][0].bgp;
+export function apiRoutingProtocolToClientRoutingProtocol(routingProtocol: RoutingProtocolItemOutput): RoutingProtocol {
+  const routingProtocolType = routingProtocol.type.split(':').pop();
+  const staticProtocol = routingProtocol.static;
+  const bgpProtocol = routingProtocol.bgp;
   return {
     type: routingProtocolType as RoutingProtocolType,
-    vrrp: 'ipv4',
     static: staticProtocol
       ? staticProtocol['cascaded-lan-prefixes']['ipv4-lan-prefixes'].map((p) => {
           return {
@@ -137,6 +137,9 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
     const apiQosProfiles = access.service.qos['qos-profile']['qos-profile'];
     const [clientQosProfile] = apiQosProfiles.length ? apiQosProfiles.map((p) => p.profile) : [''];
     const vpnAttachment = access['vpn-attachment'] ? access['vpn-attachment']['vpn-id'] : null;
+    const routingProtocols = access['routing-protocols']['routing-protocol'].map((p) => {
+      return apiRoutingProtocolToClientRoutingProtocol(p);
+    });
     return {
       siteNetworkAccessId: access['site-network-access-id'],
       siteNetworkAccessType: access['site-network-access-type'] as SiteNetworkAccessType,
@@ -144,7 +147,7 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
       maximumRoutes: access['maximum-routes']['address-family'][0]['maximum-routes'] as MaximumRoutes,
       locationReference: access['location-reference'] || null,
       deviceReference: access['device-reference'] || null,
-      routingProtocols: [apiRoutingProtocolToClientRoutingProtocol(access['routing-protocols'])],
+      routingProtocols,
       bearer: {
         alwaysOn: access.bearer['always-on'],
         bearerReference: access.bearer['bearer-reference'],
@@ -231,33 +234,47 @@ export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[
   });
 }
 
-function clientRoutingProtocolsToApiRoutingProtocols(
-  routingProtocols: RoutingProtocols[],
-): CreateRoutingProtocolsInput {
-  const output: CreateRoutingProtocolsInput = {
-    'routing-protocol': [
-      {
-        type: routingProtocols[0].type,
-        vrrp: {
-          'address-family': [routingProtocols[0].vrrp],
-        },
-      },
-    ],
-  };
-  const bgpProfile = routingProtocols[0].bgp
-    ? {
+function isValidProtocolPredicate(routingProtocol: RoutingProtocol): boolean {
+  if (routingProtocol.type === 'static') {
+    if (!routingProtocol.static) {
+      return false;
+    }
+    return !routingProtocol.static[0].lan && !routingProtocol.static[0].nextHop;
+  }
+
+  if (routingProtocol.type === 'bgp') {
+    if (!routingProtocol.bgp) {
+      return false;
+    }
+    return !routingProtocol.bgp.bgpProfile || !routingProtocol.bgp.autonomousSystem;
+  }
+
+  return false;
+}
+
+function filterValidRoutingProtocols(routingProtocols: RoutingProtocol[]): RoutingProtocol[] {
+  return routingProtocols.filter(isValidProtocolPredicate);
+}
+
+function clientRoutingProtocolsToApiRoutingProtocols(routingProtocols: RoutingProtocol[]): CreateRoutingProtocolsInput {
+  const validProtocols = filterValidRoutingProtocols(routingProtocols);
+  const protocols = validProtocols.map((p) => {
+    const protocol: CreateRoutingProtocolItem = {
+      type: p.type,
+    };
+    if (p.bgp) {
+      protocol.bgp = {
         'bgp-profiles': {
-          'bgp-profile': [{ profile: routingProtocols[0].bgp.bgpProfile || '' }] as [{ profile: string }],
+          'bgp-profile': [{ profile: p.bgp.bgpProfile || '' }] as [{ profile: string }],
         },
         'address-family': ['ipv4'] as ['ipv4'],
-        'autonomous-system': routingProtocols[0].bgp.autonomousSystem,
-      }
-    : undefined;
-
-  const staticProfile = routingProtocols[0].static
-    ? {
+        'autonomous-system': p.bgp.autonomousSystem,
+      };
+    }
+    if (p.static) {
+      protocol.static = {
         'cascaded-lan-prefixes': {
-          'ipv4-lan-prefixes': routingProtocols[0].static.map((s) => {
+          'ipv4-lan-prefixes': p.static.map((s) => {
             return {
               lan: s.lan,
               'lan-tag': s.lanTag,
@@ -265,18 +282,13 @@ function clientRoutingProtocolsToApiRoutingProtocols(
             };
           }),
         },
-      }
-    : undefined;
+      };
+    }
+    return protocol;
+  });
 
   return {
-    ...output,
-    'routing-protocol': [
-      {
-        ...output['routing-protocol'][0],
-        bgp: bgpProfile,
-        static: staticProfile,
-      },
-    ],
+    'routing-protocol': protocols,
   };
 }
 

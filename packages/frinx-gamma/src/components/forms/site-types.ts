@@ -43,22 +43,22 @@ export enum RequestedCVlan {
 
 export type MaximumRoutes = 1000 | 2000 | 5000 | 10000;
 
-export type RoutingProtocolType = 'vrrp' | 'bgp' | 'static';
+export type RoutingProtocolType = 'bgp' | 'static';
 export type VrrpRoutingType = 'ipv4';
 export type LanTag = 'lan' | 'lan-tag' | 'next-hop';
 export type StaticRoutingType = {
   lan: string;
   nextHop: string;
-  lanTag: LanTag;
+  lanTag?: LanTag;
 };
 export type BgpRoutingType = {
   addressFamily: 'ipv4';
   autonomousSystem: number;
   bgpProfile: string | null;
 };
-export type RoutingProtocols = {
+export type RoutingProtocol = {
   type: RoutingProtocolType;
-  vrrp: VrrpRoutingType;
+  vrrp?: VrrpRoutingType;
   static?: StaticRoutingType[];
   bgp?: BgpRoutingType;
 };
@@ -84,7 +84,7 @@ export type SiteNetworkAccess = {
   siteNetworkAccessType: SiteNetworkAccessType;
   accessPriority: AccessPriority;
   maximumRoutes: MaximumRoutes;
-  routingProtocols: [RoutingProtocols];
+  routingProtocols: RoutingProtocol[];
   locationReference: string | null;
   deviceReference: string | null;
   bearer: Bearer;
