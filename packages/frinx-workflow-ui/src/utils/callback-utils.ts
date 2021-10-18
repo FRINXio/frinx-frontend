@@ -16,7 +16,7 @@ export type Callbacks = {
   deleteTaskDefinition: (name: string) => Promise<TaskDefinition>;
   registerTaskDefinition: (taskDefinition: TaskDefinition) => Promise<TaskDefinition>;
   getWorkflowExecutions: (query?: string, start?: number, size?: string) => Promise<unknown>;
-  getWorkflowInstanceDetail: (workflowId: number) => Promise<unknown>;
+  getWorkflowInstanceDetail: (workflowId: string) => Promise<unknown>;
   executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>;
   getWorkflowExecutionsHierarchical: (query?: string, start?: number, size?: string) => Promise<unknown>;
   terminateWorkflows: (workflowIds: string[]) => Promise<string[]>;
@@ -49,7 +49,7 @@ class CallbackUtils {
   private deleteTaskDefinition: ((name: string) => Promise<TaskDefinition>) | null = null;
   private registerTaskDefinition: ((taskDefinition: TaskDefinition) => Promise<TaskDefinition>) | null = null;
   private getWorkflowExecutions: ((query?: string, start?: number, size?: string) => Promise<unknown>) | null = null;
-  private getWorkflowInstanceDetail: ((workflowId: number) => Promise<unknown>) | null = null;
+  private getWorkflowInstanceDetail: ((workflowId: string) => Promise<unknown>) | null = null;
   private executeWorkflow: ((workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>) | null = null;
   private getWorkflowExecutionsHierarchical:
     | ((query?: string, start?: number, size?: string) => Promise<unknown>)
