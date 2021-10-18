@@ -125,28 +125,6 @@ const SiteNetAccessForm: FC<Props> = ({
     }
   };
 
-  // const handleBgpProfileChange = (item?: Item | null) => {
-  //   if (networkAccessState) {
-  //     const bgp: BgpRoutingType = networkAccessState.routingProtocols[0].bgp
-  //       ? { ...networkAccessState.routingProtocols[0].bgp, bgpProfile: unwrap(item).value }
-  //       : {
-  //           addressFamily: 'ipv4',
-  //           autonomousSystem: 0,
-  //           bgpProfile: unwrap(item).value,
-  //         };
-
-  //     setNetworkAccessState({
-  //       ...networkAccessState,
-  //       routingProtocols: [
-  //         {
-  //           ...networkAccessState.routingProtocols[0],
-  //           bgp,
-  //         },
-  //       ],
-  //     });
-  //   }
-  // };
-
   const handleVpnAttachmentChange = (item?: Item | null) => {
     if (!networkAccessState) {
       return;

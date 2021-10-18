@@ -82,6 +82,30 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
         />
       </FormControl>
 
+      <FormControl id="static-routing-next-hop" my={6}>
+        <FormLabel>Static Routing Next Hop</FormLabel>
+        <Input
+          variant="filled"
+          name="static-routing-next-hop"
+          value={staticProtocol ? unwrap(staticProtocol.static)[0].nextHop : ''}
+          onChange={(event) => {
+            const { value } = event.target;
+            const [oldStaticRoutingProtocol] = unwrap(staticProtocol.static);
+            const newStaticProtocol: RoutingProtocol = {
+              type: 'static',
+              static: [
+                {
+                  ...oldStaticRoutingProtocol,
+                  nextHop: value,
+                },
+              ],
+            };
+            const newProtocols = [bgpProtocol, newStaticProtocol];
+            onRoutingProtocolsChange(newProtocols);
+          }}
+        />
+      </FormControl>
+
       <FormControl id="bgp-autonomous-system" my={6}>
         <FormLabel>Bgp Autonomous System</FormLabel>
         <Input
