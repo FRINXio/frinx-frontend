@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Flex, Spacer } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { VoidFunctionComponent } from 'react';
 import SearchByLabelInput from '../../components/search-by-label-input';
@@ -13,8 +13,8 @@ type Props = {
 };
 const DeviceFilter: VoidFunctionComponent<Props> = ({ labels, selectedLabels, onSelectionChange }) => {
   return (
-    <Box background="white" paddingX={4} paddingTop={4} paddingBottom={0} marginBottom={4}>
-      <Box width={80}>
+    <Box>
+      <Flex>
         <SearchByLabelInput
           items={labels}
           selectedLabels={selectedLabels}
@@ -22,7 +22,8 @@ const DeviceFilter: VoidFunctionComponent<Props> = ({ labels, selectedLabels, on
           isCreationDisabled
           labelText="Filter by labels"
         />
-      </Box>
+        <Spacer />
+      </Flex>
     </Box>
   );
 };

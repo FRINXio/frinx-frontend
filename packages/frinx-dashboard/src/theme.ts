@@ -8,6 +8,7 @@ const theme = extendTheme({
           '-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji',
         color: 'gray.800',
         background: 'gray.100',
+        overflowX: 'hidden',
       },
       '.chakra-link.active': {
         borderColor: 'white',

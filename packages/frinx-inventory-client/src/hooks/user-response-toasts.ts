@@ -1,5 +1,5 @@
-import { useToast } from '@chakra-ui/react';
 import { useEffect } from 'react';
+import useNotifications from './use-notifications';
 
 type UseResponseToastsProps = {
   isSuccess: boolean;
@@ -14,23 +14,22 @@ export default function useResponseToasts({
   successMessage,
   failureMessage,
 }: UseResponseToastsProps): void {
-  const toast = useToast();
+  const { addToastNotification } = useNotifications();
+
   useEffect(() => {
     if (isSuccess) {
-      toast({
-        position: 'top-right',
-        variant: 'subtle',
-        status: 'success',
-        title: successMessage,
+      addToastNotification({
+        type: 'success',
+        title: 'Success',
+        content: successMessage,
       });
     }
     if (isFailure) {
-      toast({
-        position: 'top-right',
-        variant: 'subtle',
-        status: 'error',
-        title: failureMessage,
+      addToastNotification({
+        type: 'error',
+        title: 'Error',
+        content: failureMessage,
       });
     }
-  }, [isSuccess, isFailure, successMessage, failureMessage, toast]);
+  }, [isSuccess, isFailure, successMessage, failureMessage, addToastNotification]);
 }

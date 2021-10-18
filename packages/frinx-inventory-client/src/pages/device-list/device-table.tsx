@@ -1,5 +1,19 @@
 import { EditIcon, SettingsIcon } from '@chakra-ui/icons';
-import { Badge, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
+import {
+  Badge,
+  Checkbox,
+  HStack,
+  Icon,
+  IconButton,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tooltip,
+  Tr,
+} from '@chakra-ui/react';
 import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
@@ -9,27 +23,38 @@ import InstallButton from './install-button';
 
 type Props = {
   devices: DevicesQuery['devices']['edges'];
+  selectedDevices: Set<string>;
+  areSelectedAll: boolean;
   installLoadingMap: Record<string, boolean>;
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
   onSettingsButtonClick: (deviceId: string) => void;
   onDeleteBtnClick: (deviceId: string) => void;
   onEditDeviceButtonClick: (deviceId: string) => void;
+  onDeviceSelection: (deviceId: string, checked: boolean) => void;
+  onSelectAll: (checked: boolean) => void;
 };
 
 const DeviceTable: VoidFunctionComponent<Props> = ({
   devices,
+  selectedDevices,
   onInstallButtonClick,
   onUninstallButtonClick,
   onSettingsButtonClick,
   onDeleteBtnClick,
   onEditDeviceButtonClick,
   installLoadingMap,
+  onDeviceSelection,
+  areSelectedAll,
+  onSelectAll,
 }) => {
   return (
     <Table background="white" size="lg">
       <Thead>
         <Tr>
+          <Th>
+            <Checkbox isChecked={areSelectedAll} onChange={(e) => onSelectAll(e.target.checked)} mr={2} />
+          </Th>
           <Th>Name</Th>
           <Th>Created</Th>
           <Th>Zone</Th>
@@ -46,6 +71,13 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
 
           return (
             <Tr key={device.id}>
+              <Td>
+                <Checkbox
+                  isDisabled={device.isInstalled}
+                  isChecked={selectedDevices.has(device.id)}
+                  onChange={(e) => onDeviceSelection(device.id, e.target.checked)}
+                />
+              </Td>
               <Td>
                 <Text as="span" fontWeight={600}>
                   {device.name}

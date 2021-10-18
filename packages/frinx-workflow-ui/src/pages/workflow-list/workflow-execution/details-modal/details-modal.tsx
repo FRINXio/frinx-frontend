@@ -2,7 +2,7 @@ import './DetailsModal.css';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import TaskModal from '../../../../common/task-modal';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
-import callbackUtils from '../../../../utils/callbackUtils';
+import callbackUtils from '../../../../utils/callback-utils';
 import moment from 'moment';
 import isEmpty from 'lodash/isEmpty';
 import unescapeJs from 'unescape-js';
@@ -38,6 +38,7 @@ import { CopyIcon } from '@chakra-ui/icons';
 import TaskTable from './task-table';
 import useResponseToasts from '../../../../hooks/use-response-toasts';
 import { Task } from '../../../../types/task';
+import { WorkflowPayload } from '../../../../types/uniflow-types';
 
 type Props = {
   wfId: string;
@@ -64,11 +65,7 @@ type WfDetails = {
     output: string;
   } | null;
   wfId: string;
-  input: {
-    input: {
-      [key: string]: string;
-    };
-  } | null;
+  input: WorkflowPayload;
   activeTab: number;
   status: 'Execute' | 'OK' | 'Executing...';
   timeouts: number[];
@@ -90,7 +87,11 @@ const INITIAL_STATE: WfDetails = {
   },
   result: null,
   wfId: '',
-  input: null,
+  input: {
+    input: {},
+    name: '',
+    version: 0,
+  },
   activeTab: 1,
   status: 'Execute',
   timeouts: [],
@@ -126,7 +127,6 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
 
   const getData = () => {
     const getWorkflowInstanceDetail = callbackUtils.getWorkflowInstanceDetailCallback();
-
     getWorkflowInstanceDetail(wfId).then((res: any) => {
       const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
       const def = JSON.stringify(res);
@@ -146,12 +146,11 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
           meta: res.meta,
           result: res.result,
           subworkflows: res.subworkflows,
-          input:
-            {
-              name: res.meta.name,
-              version: res.meta.version,
-              input: res.result.input,
-            } || {},
+          input: {
+            name: res.meta.name,
+            version: res.meta.version,
+            input: res.result.input,
+          },
           wfId: res.result.workflowId,
           parentWfId: res.result.parentWorkflowId || '',
           inputsArray: inputsArray,
@@ -212,7 +211,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
 
     const executeWorkflow = callbackUtils.executeWorkflowCallback();
 
-    executeWorkflow(details.input).then((res: { text: string }) => {
+    executeWorkflow(details.input).then((res) => {
       const setStatus = window.setTimeout(() => {
         setDetails((prev) => {
           return {
@@ -227,7 +226,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
         return {
           ...prev,
           status: 'OK',
-          wfIdRerun: res.text,
+          wfIdRerun: res.name,
           timeouts: [...prev.timeouts, setStatus],
         };
       });

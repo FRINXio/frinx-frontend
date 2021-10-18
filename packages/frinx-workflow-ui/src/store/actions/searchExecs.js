@@ -1,5 +1,5 @@
 import { sortBy } from 'lodash';
-import callbackUtils from '../../utils/callbackUtils';
+import callbackUtils from '../../utils/callback-utils';
 
 export const RECEIVE_NEW_DATA = 'RECEIVE_NEW_DATA';
 export const HIERARCHY_NEW_DATA = 'HIERARCHY_NEW_DATA';

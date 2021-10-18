@@ -1,7 +1,7 @@
 // @flow
 import Dropdown from 'react-dropdown';
 import React, { useEffect, useState } from 'react';
-import callbackUtils from '../../../../utils/callbackUtils';
+import callbackUtils from '../../../../utils/callback-utils';
 import {
   Box,
   Button,
