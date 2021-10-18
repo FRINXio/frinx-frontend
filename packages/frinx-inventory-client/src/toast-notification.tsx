@@ -69,6 +69,7 @@ const ToastNotification: FC<Props> = ({
   title,
   children,
   index,
+  onAnimationEnd,
 }) => {
   const [isRendered, setRendered] = useState(isVisible);
   const timeoutID = useRef<NodeJS.Timeout | null>(null);
@@ -89,7 +90,7 @@ const ToastNotification: FC<Props> = ({
     };
   }, [isVisible, onClose, timeout]);
 
-  const onAnimationEnd = () => {
+  const handleAnimationEnd = () => {
     if (!isVisible) {
       setRendered(false);
       onAnimationEnd();
@@ -100,7 +101,7 @@ const ToastNotification: FC<Props> = ({
     <Flex
       alignItems="center"
       animation={`${isVisible ? slideIn : slideOut} 0.4s ease-out`}
-      onAnimationEnd={onAnimationEnd}
+      onAnimationEnd={handleAnimationEnd}
       background={getToastBackground(type)}
       color="whiteAlpha.900"
       borderRadius="md"
