@@ -149,7 +149,7 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
       routingProtocols,
       bearer: {
         alwaysOn: access.bearer['always-on'],
-        bearerReference: access.bearer['bearer-reference'],
+        bearerReference: access.bearer['bearer-reference'] || '',
         requestedCLan: String(access.bearer['requested-c-vlan']) as RequestedCVlan,
         requestedType: {
           requestedType: access.bearer['requested-type']['requested-type'],
