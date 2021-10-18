@@ -255,7 +255,7 @@ const SiteNetworkAccessValidator = t.type({
       }),
       bearer: t.type({
         'always-on': t.boolean,
-        'bearer-reference': t.string,
+        'bearer-reference': optional(t.string),
         'requested-c-vlan': t.number,
         'requested-type': t.type({
           'requested-type': t.string,
@@ -360,7 +360,7 @@ export type CreateNetworkAccessInput = {
     'device-reference'?: string;
     bearer: {
       'always-on': boolean;
-      'bearer-reference': string;
+      'bearer-reference'?: string;
       'requested-c-vlan': number;
       'requested-type': {
         'requested-type': string;

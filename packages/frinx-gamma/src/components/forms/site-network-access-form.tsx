@@ -1,5 +1,5 @@
 import React, { FC, FormEvent, useEffect, useState } from 'react';
-import { Divider, Button, Select, Stack, FormControl, FormLabel } from '@chakra-ui/react';
+import { Divider, Button, Input, Select, Stack, FormControl, FormLabel } from '@chakra-ui/react';
 import {
   AccessPriority,
   MaximumRoutes,
@@ -182,6 +182,24 @@ const SiteNetAccessForm: FC<Props> = ({
           items={vpnServicesItems}
           selectedItem={selectedVpnServiceItem}
           onChange={handleVpnAttachmentChange}
+        />
+      </FormControl>
+
+      <FormControl id="bearer-reference" my={6}>
+        <FormLabel>Bearer Reference</FormLabel>
+        <Input
+          variant="filled"
+          name="bearer-reference"
+          value={networkAccessState.bearer.bearerReference}
+          onChange={(event) => {
+            setNetworkAccessState({
+              ...networkAccessState,
+              bearer: {
+                ...networkAccessState.bearer,
+                bearerReference: event.target.value,
+              },
+            });
+          }}
         />
       </FormControl>
 
