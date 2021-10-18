@@ -238,14 +238,14 @@ function isValidProtocolPredicate(routingProtocol: RoutingProtocol): boolean {
     if (!routingProtocol.static) {
       return false;
     }
-    return !routingProtocol.static[0].lan || !routingProtocol.static[0].nextHop ? false : true;
+    return !(!routingProtocol.static[0].lan || !routingProtocol.static[0].nextHop);
   }
 
   if (routingProtocol.type === 'bgp') {
     if (!routingProtocol.bgp) {
       return false;
     }
-    return !routingProtocol.bgp.bgpProfile || !routingProtocol.bgp.autonomousSystem ? false : true;
+    return !(!routingProtocol.bgp.bgpProfile || !routingProtocol.bgp.autonomousSystem);
   }
 
   return false;
