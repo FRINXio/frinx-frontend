@@ -1,15 +1,15 @@
 import React, { FC, FormEvent, useEffect, useState } from 'react';
-import { Input, Divider, Button, Select, Stack, FormControl, FormLabel } from '@chakra-ui/react';
+import { Divider, Button, Select, Stack, FormControl, FormLabel } from '@chakra-ui/react';
 import {
   AccessPriority,
   MaximumRoutes,
-  RoutingProtocolType,
+  RoutingProtocol,
   VpnSite,
   SiteNetworkAccess,
   RequestedCVlan,
-  BgpRoutingType,
 } from './site-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
+import RoutingProtocolForm from './routing-protocol-form';
 import unwrap from '../../helpers/unwrap';
 
 type Props = {
@@ -26,6 +26,29 @@ type Props = {
   onCancel: () => void;
   onNetworkAccessChange?: (s: SiteNetworkAccess) => void;
 };
+
+function getDefaultStaticRoutingProtocol(): RoutingProtocol {
+  return {
+    type: 'static',
+    static: [
+      {
+        lan: '',
+        nextHop: '',
+      },
+    ],
+  };
+}
+
+function getDefaultBgpRoutingProtocol(): RoutingProtocol {
+  return {
+    type: 'bgp',
+    bgp: {
+      addressFamily: 'ipv4',
+      autonomousSystem: 0,
+      bgpProfile: null,
+    },
+  };
+}
 
 function getEditedNetworkAccesses(
   networkAccesses: SiteNetworkAccess[],
@@ -93,27 +116,36 @@ const SiteNetAccessForm: FC<Props> = ({
     }
   };
 
-  const handleBgpProfileChange = (item?: Item | null) => {
+  const handleRoutingProtocolsChange = (routingProtocols: RoutingProtocol[]) => {
     if (networkAccessState) {
-      const bgp: BgpRoutingType = networkAccessState.routingProtocols[0].bgp
-        ? { ...networkAccessState.routingProtocols[0].bgp, bgpProfile: unwrap(item).value }
-        : {
-            addressFamily: 'ipv4',
-            autonomousSystem: 0,
-            bgpProfile: unwrap(item).value,
-          };
-
       setNetworkAccessState({
         ...networkAccessState,
-        routingProtocols: [
-          {
-            ...networkAccessState.routingProtocols[0],
-            bgp,
-          },
-        ],
+        routingProtocols,
       });
     }
   };
+
+  // const handleBgpProfileChange = (item?: Item | null) => {
+  //   if (networkAccessState) {
+  //     const bgp: BgpRoutingType = networkAccessState.routingProtocols[0].bgp
+  //       ? { ...networkAccessState.routingProtocols[0].bgp, bgpProfile: unwrap(item).value }
+  //       : {
+  //           addressFamily: 'ipv4',
+  //           autonomousSystem: 0,
+  //           bgpProfile: unwrap(item).value,
+  //         };
+
+  //     setNetworkAccessState({
+  //       ...networkAccessState,
+  //       routingProtocols: [
+  //         {
+  //           ...networkAccessState.routingProtocols[0],
+  //           bgp,
+  //         },
+  //       ],
+  //     });
+  //   }
+  // };
 
   const handleVpnAttachmentChange = (item?: Item | null) => {
     if (!networkAccessState) {
@@ -147,20 +179,22 @@ const SiteNetAccessForm: FC<Props> = ({
   });
   const [selectedDevice] = deviceItems.filter((item) => item.value === networkAccessState.deviceReference);
 
-  const bgpProfile = networkAccessState.routingProtocols[0].bgp;
-  // const staticProfile = networkAccessState.routingProtocols[0].static;
+  const vpnServicesItems = vpnIds.map((id) => {
+    return { value: id, label: id };
+  });
+  const [selectedVpnServiceItem] = vpnServicesItems.filter((item) => item.value === networkAccessState.vpnAttachment);
+  const staticRoutingProtocol =
+    networkAccessState.routingProtocols.filter((p) => p.type === 'static').pop() || getDefaultStaticRoutingProtocol();
+  const bgpRoutingProtocol =
+    networkAccessState.routingProtocols.filter((p) => p.type === 'bgp').pop() || getDefaultBgpRoutingProtocol();
+
   const bgpProfileItems = bgpProfiles.map((p) => {
     return {
       label: p,
       value: p,
     };
   });
-  const [selectedBgpProfileItem] = bgpProfileItems.filter((i) => i.value === bgpProfile?.bgpProfile);
-
-  const vpnServicesItems = vpnIds.map((id) => {
-    return { value: id, label: id };
-  });
-  const [selectedVpnServiceItem] = vpnServicesItems.filter((item) => item.value === networkAccessState.vpnAttachment);
+  const [selectedBgpProfileItem] = bgpProfileItems.filter((i) => i.value === bgpRoutingProtocol.bgp?.bgpProfile);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -327,85 +361,13 @@ const SiteNetAccessForm: FC<Props> = ({
         </Select>
       </FormControl>
 
-      <FormControl id="routing-protocol-type" my={6}>
-        <FormLabel>Routing Protocol Type</FormLabel>{' '}
-        <Select
-          variant="filled"
-          name="routing-protocol-type"
-          value={networkAccessState.routingProtocols[0].type}
-          onChange={(event) => {
-            // eslint-disable-next-line no-console
-            console.log(event.target.value);
-            setNetworkAccessState({
-              ...networkAccessState,
-              routingProtocols: [
-                { ...networkAccessState.routingProtocols[0], type: event.target.value as RoutingProtocolType },
-              ],
-            });
-          }}
-        >
-          <option value="static">static</option>
-          <option value="vrrp">vrrp</option>
-          <option value="bgp">bgp</option>
-        </Select>
-      </FormControl>
-
-      <FormControl id="bgp-autonomous-system" my={6}>
-        <FormLabel>Bgp Autonomous System</FormLabel>
-        <Input
-          variant="filled"
-          name="bgp-autonomous-system"
-          value={bgpProfile ? bgpProfile.autonomousSystem : 0}
-          onChange={(event) => {
-            const bgp = networkAccessState.routingProtocols[0].bgp
-              ? {
-                  ...networkAccessState.routingProtocols[0].bgp,
-                  autonomousSystem: Number(event.target.value),
-                }
-              : {
-                  addressFamily: 'ipv4' as const,
-                  autonomousSystem: Number(event.target.value),
-                  bgpProfile: null,
-                };
-            setNetworkAccessState({
-              ...networkAccessState,
-              routingProtocols: [
-                {
-                  ...networkAccessState.routingProtocols[0],
-                  bgp,
-                },
-              ],
-            });
-          }}
-        />
-      </FormControl>
-
-      <FormControl id="bgp-profile" my={6}>
-        <FormLabel>Bgp Profile</FormLabel>
-        <Autocomplete2
-          items={bgpProfileItems}
-          selectedItem={selectedBgpProfileItem}
-          onChange={handleBgpProfileChange}
-        />
-      </FormControl>
-
-      <FormControl id="routing-protocol-vrrp" my={6}>
-        <FormLabel>Vrrp</FormLabel>
-        <Select
-          variant="filled"
-          name="routing-protocol-vrrp"
-          value={networkAccessState.routingProtocols[0].vrrp}
-          onChange={(event) => {
-            // eslint-disable-next-line no-console
-            setNetworkAccessState({
-              ...networkAccessState,
-              routingProtocols: [{ ...networkAccessState.routingProtocols[0], vrrp: event.target.value as 'ipv4' }],
-            });
-          }}
-        >
-          <option value="vrrp">ipv4</option>
-        </Select>
-      </FormControl>
+      <RoutingProtocolForm
+        bgpProfileItems={bgpProfileItems}
+        selectedBgpProfileItem={selectedBgpProfileItem}
+        bgpProtocol={bgpRoutingProtocol}
+        staticProtocol={staticRoutingProtocol}
+        onRoutingProtocolsChange={handleRoutingProtocolsChange}
+      />
 
       <FormControl id="access-priority" my={6}>
         <FormLabel>Access Priority</FormLabel>

@@ -173,43 +173,48 @@ export function decodeSiteServiceOutput(value: unknown): SiteServiceOutput {
   return extractResult(SiteServiceValidator.decode(value));
 }
 
-const RoutingProtocolsValidator = t.type({
-  'routing-protocol': t.array(
+const RoutingProtocolItemValidator = t.type({
+  type: t.string,
+  vrrp: optional(
     t.type({
-      type: t.string,
-      vrrp: optional(
-        t.type({
-          'address-family': t.array(t.string),
-        }),
-      ),
-      static: optional(
-        t.type({
-          'cascaded-lan-prefixes': t.type({
-            'ipv4-lan-prefixes': t.array(
-              t.type({
-                lan: t.string,
-                'next-hop': t.string,
-                'lan-tag': t.string,
-              }),
-            ),
-          }),
-        }),
-      ),
-      bgp: optional(
-        t.type({
-          'bgp-profiles': t.type({
-            'bgp-profile': t.array(
-              t.type({
-                profile: t.string,
-              }),
-            ),
-          }),
-          'autonomous-system': t.number,
-          'address-family': t.array(t.string),
-        }),
-      ),
+      'address-family': t.array(t.string),
     }),
   ),
+  static: optional(
+    t.type({
+      'cascaded-lan-prefixes': t.type({
+        'ipv4-lan-prefixes': t.array(
+          t.type({
+            lan: t.string,
+            'next-hop': t.string,
+            'lan-tag': optional(t.string),
+          }),
+        ),
+      }),
+    }),
+  ),
+  bgp: optional(
+    t.type({
+      'bgp-profiles': t.type({
+        'bgp-profile': t.array(
+          t.type({
+            profile: t.string,
+          }),
+        ),
+      }),
+      'autonomous-system': t.number,
+      'address-family': t.array(t.string),
+    }),
+  ),
+});
+
+export type RoutingProtocolItemOutput = t.TypeOf<typeof RoutingProtocolItemValidator>;
+export function decodeRoutingProtocolItemOutput(value: unknown): RoutingProtocolItemOutput {
+  return extractResult(RoutingProtocolItemValidator.decode(value));
+}
+
+const RoutingProtocolsValidator = t.type({
+  'routing-protocol': t.array(RoutingProtocolItemValidator),
 });
 
 export type RoutingProtocolsOutput = t.TypeOf<typeof RoutingProtocolsValidator>;
@@ -307,35 +312,32 @@ export function decodeVpnSitesOutput(value: unknown): VpnSitesOutput {
   return extractResult(VpnSitesOutputValidator.decode(value));
 }
 
+export type CreateRoutingProtocolItem = {
+  type: 'bgp' | 'vrrp' | 'static';
+  static?: {
+    'cascaded-lan-prefixes': {
+      'ipv4-lan-prefixes': {
+        lan: string;
+        'next-hop': string;
+        'lan-tag'?: string;
+      }[];
+    };
+  };
+  bgp?: {
+    'bgp-profiles': {
+      'bgp-profile': [
+        {
+          profile: string;
+        },
+      ];
+    };
+    'autonomous-system': number;
+    'address-family': ['ipv4'];
+  };
+};
+
 export type CreateRoutingProtocolsInput = {
-  'routing-protocol': [
-    {
-      type: 'bgp' | 'vrrp' | 'static';
-      vrrp: {
-        'address-family': ['ipv4'];
-      };
-      static?: {
-        'cascaded-lan-prefixes': {
-          'ipv4-lan-prefixes': {
-            lan: string;
-            'next-hop': string;
-            'lan-tag': string;
-          }[];
-        };
-      };
-      bgp?: {
-        'bgp-profiles': {
-          'bgp-profile': [
-            {
-              profile: string;
-            },
-          ];
-        };
-        'autonomous-system': number;
-        'address-family': ['ipv4'];
-      };
-    },
-  ];
+  'routing-protocol': CreateRoutingProtocolItem[];
 };
 
 export type CreateVpnAttachment = {
@@ -561,22 +563,22 @@ export enum RequestedCVlan {
   'Local Internet Breakout' = '200',
   DMZ = '300',
 }
-export type RoutingProtocolType = 'vrrp' | 'bgp' | 'static';
+export type RoutingProtocolType = 'bgp' | 'static';
 export type VrrpRoutingType = 'ipv4';
 export type LanTag = 'lan' | 'lan-tag' | 'next-hop';
 export type StaticRoutingType = {
   lan: string;
   nextHop: string;
-  lanTag: LanTag;
+  lanTag?: LanTag;
 };
 export type BgpRoutingType = {
   addressFamily: 'ipv4';
   autonomousSystem: number;
   bgpProfile: string | null;
 };
-export type RoutingProtocols = {
+export type RoutingProtocol = {
   type: RoutingProtocolType;
-  vrrp: VrrpRoutingType;
+  vrrp?: VrrpRoutingType;
   static?: StaticRoutingType[];
   bgp?: BgpRoutingType;
 };
@@ -602,7 +604,7 @@ export type SiteNetworkAccess = {
   siteNetworkAccessType: SiteNetworkAccessType;
   accessPriority: AccessPriority;
   maximumRoutes: MaximumRoutes;
-  routingProtocols: [RoutingProtocols];
+  routingProtocols: RoutingProtocol[];
   locationReference: string | null;
   deviceReference: string | null;
   bearer: Bearer;
