@@ -225,27 +225,42 @@ export function decodeRoutingProtocolsOutput(value: unknown): RoutingProtocolsOu
   return extractResult(RoutingProtocolsValidator.decode(value));
 }
 
+const IPConnectionValidator = t.type({
+  oam: t.type({
+    bfd: optional(
+      t.type({
+        enabled: optional(t.boolean),
+        'profile-name': optional(t.string),
+      }),
+    ),
+  }),
+  ipv4: optional(
+    t.type({
+      'address-allocation-type': optional(t.string),
+      addresses: optional(
+        t.type({
+          'customer-address': optional(t.string),
+          'prefix-length': optional(t.number),
+          'provider-address': optional(t.string),
+        }),
+      ),
+    }),
+  ),
+});
+
+export type IPConnectionOutput = t.TypeOf<typeof IPConnectionValidator>;
+export function decodeIPConnectionOutput(value: unknown): IPConnectionOutput {
+  return extractResult(IPConnectionValidator.decode(value));
+}
+
 const SiteNetworkAccessValidator = t.type({
   'site-network-access': t.array(
     t.type({
       'site-network-access-id': t.string,
       'site-network-access-type': t.string,
-      // 'ip-connection': t.type({
-      //   oam: t.type({
-      //     bfd: t.type({
-      //       enabled: t.boolean,
-      //       'profile-name': t.string,
-      //     }),
-      //   }),
-      //   ipv4: t.type({
-      //     'address-allocation-type': t.string,
-      //     addresses: t.type({
-      //       'customer-address': t.string,
-      //       'prefix-length': t.number,
-      //       'provider-address': t.string,
-      //     }),
-      //   }),
-      // }),
+      // this property is part of the form inputs, but it was reported,
+      // that they dont want to lose it when we edit form
+      'ip-connection': optional(IPConnectionValidator),
       'maximum-routes': MaximumRoutesValidator,
       'location-reference': optional(t.string),
       'device-reference': optional(t.string),
@@ -342,10 +357,30 @@ export type CreateRoutingProtocolsInput = {
   'routing-protocol': CreateRoutingProtocolItem[];
 };
 
+export type CreateIPConnectionInput = {
+  oam?: {
+    bfd?: {
+      enabled?: boolean;
+      'profile-name'?: string;
+    };
+  };
+  ipv4?: {
+    'address-allocation-type'?: string;
+    addresses?: {
+      'customer-address'?: string;
+      'prefix-length'?: number;
+      'provider-address'?: string;
+    };
+  };
+};
+
 export type CreateNetworkAccessInput = {
   'site-network-access': {
     'site-network-access-id': string;
     'site-network-access-type': string;
+    // it is part of create/edit input even we dont use this value in the form,
+    // but we need to preserve it in the structure
+    'ip-connection'?: CreateIPConnectionInput;
     availability: {
       'access-priority': number;
     };
