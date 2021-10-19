@@ -129,6 +129,9 @@ const GammaApp: VoidFunctionComponent = () => {
             onDetailVpnSiteClick={(siteId: string) => {
               history.push(`/gamma/sites/detail/${siteId}`);
             }}
+            onDevicesVpnSiteClick={(siteId: string) => {
+              history.push(`/gamma/sites/devices/${siteId}`);
+            }}
           />
         </Route>
         <Route path="/gamma/sites/add" exact>
