@@ -14,7 +14,7 @@ import {
   RoutingProtocolType,
   LanTag,
   RequestedCVlan,
-  // StaticRoutingProtocol,
+  IPConnection,
 } from './site-types';
 import {
   ApiQosProfileInput,
@@ -30,6 +30,8 @@ import {
   CreateRoutingProtocolItem,
   CreateRoutingProtocolsInput,
   SiteServiceOutput,
+  IPConnectionOutput,
+  CreateIPConnectionInput,
 } from '../../network-types';
 import unwrap from '../../helpers/unwrap';
 
@@ -125,6 +127,34 @@ export function apiRoutingProtocolToClientRoutingProtocol(routingProtocol: Routi
   };
 }
 
+export function apiIPConnectionToClientIPConnection(ipConnection: IPConnectionOutput): IPConnection {
+  const output: IPConnection = {};
+  if (ipConnection.oam) {
+    output.oam = {};
+    if (ipConnection.oam.bfd) {
+      output.oam.bfd = {
+        enabled: ipConnection.oam.bfd.enabled || undefined,
+        profileName: ipConnection.oam.bfd['profile-name'] || undefined,
+      };
+    }
+  }
+  if (ipConnection.ipv4) {
+    output.ipv4 = {
+      addressAllocationType: ipConnection.ipv4['address-allocation-type'] || undefined,
+    };
+    if (ipConnection.ipv4.addresses) {
+      const { addresses } = ipConnection.ipv4;
+      output.ipv4.addresses = {
+        customerAddress: addresses['customer-address'] || undefined,
+        prefixLength: addresses['prefix-length'] || undefined,
+        providerAddress: addresses['provider-address'] || undefined,
+      };
+    }
+  }
+
+  return output;
+}
+
 export function apiSiteNetworkAccessToClientSiteNetworkAccess(
   networkAccess: SiteNetworkAccessOutput | void,
 ): SiteNetworkAccess[] {
@@ -142,6 +172,7 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
     return {
       siteNetworkAccessId: access['site-network-access-id'],
       siteNetworkAccessType: access['site-network-access-type'] as SiteNetworkAccessType,
+      ipConnection: access['ip-connection'] ? apiIPConnectionToClientIPConnection(access['ip-connection']) : undefined,
       accessPriority: String(access.availability['access-priority']) as AccessPriority,
       maximumRoutes: access['maximum-routes']['address-family'][0]['maximum-routes'] as MaximumRoutes,
       locationReference: access['location-reference'] || null,
@@ -291,12 +322,45 @@ function clientRoutingProtocolsToApiRoutingProtocols(routingProtocols: RoutingPr
   };
 }
 
+function clientIPConnectionToApiIPConnection(ipConnection: IPConnection): CreateIPConnectionInput {
+  const output: CreateIPConnectionInput = {};
+
+  if (ipConnection.oam) {
+    output.oam = {};
+
+    if (ipConnection.oam.bfd) {
+      const { bfd } = ipConnection.oam;
+      output.oam.bfd = {
+        enabled: bfd?.enabled,
+        'profile-name': bfd?.profileName,
+      };
+    }
+  }
+  if (ipConnection.ipv4) {
+    output.ipv4 = {
+      'address-allocation-type': ipConnection.ipv4?.addressAllocationType,
+    };
+
+    if (ipConnection.ipv4.addresses) {
+      const { addresses } = ipConnection.ipv4;
+      output.ipv4.addresses = {
+        'customer-address': addresses.customerAddress,
+        'prefix-length': addresses.prefixLength,
+        'provider-address': addresses.providerAddress,
+      };
+    }
+  }
+
+  return output;
+}
+
 function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAccess[]): CreateNetworkAccessInput {
   return {
     'site-network-access': networkAccesses.map((access) => {
       return {
         'site-network-access-id': access.siteNetworkAccessId,
         'site-network-access-type': access.siteNetworkAccessType,
+        'ip-connection': access.ipConnection ? clientIPConnectionToApiIPConnection(access.ipConnection) : undefined,
         availability: {
           'access-priority': Number(access.accessPriority),
         },

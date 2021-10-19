@@ -79,9 +79,27 @@ export type Service = {
   qosProfiles: [string];
 };
 
+export type IPConnection = {
+  oam?: {
+    bfd?: {
+      enabled?: boolean;
+      profileName?: string;
+    };
+  };
+  ipv4?: {
+    addressAllocationType?: string;
+    addresses?: {
+      customerAddress?: string;
+      prefixLength?: number;
+      providerAddress?: string;
+    };
+  };
+};
+
 export type SiteNetworkAccess = {
   siteNetworkAccessId: string;
   siteNetworkAccessType: SiteNetworkAccessType;
+  ipConnection?: IPConnection;
   accessPriority: AccessPriority;
   maximumRoutes: MaximumRoutes;
   routingProtocols: RoutingProtocol[];

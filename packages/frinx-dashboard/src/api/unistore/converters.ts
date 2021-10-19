@@ -3,6 +3,7 @@ import {
   AccessPriority,
   ApiQosProfileInput,
   CountryCode,
+  CreateIPConnectionInput,
   CreateNetworkAccessInput,
   CreateRoutingProtocolItem,
   CreateRoutingProtocolsInput,
@@ -10,6 +11,7 @@ import {
   CreateVpnServiceInput,
   CreateVpnSiteInput,
   DefaultCVlanEnum,
+  IPConnection,
   LanTag,
   MaximumRoutes,
   ProviderIdentifiers,
@@ -298,12 +300,45 @@ function clientVpnAttachmentToApiVpnAttachment(vpnAttachment: string): CreateVpn
   };
 }
 
+function clientIPConnectionToApiIPConnection(ipConnection: IPConnection): CreateIPConnectionInput {
+  const output: CreateIPConnectionInput = {};
+
+  if (ipConnection.oam) {
+    output.oam = {};
+
+    if (ipConnection.oam.bfd) {
+      const { bfd } = ipConnection.oam;
+      output.oam.bfd = {
+        enabled: bfd?.enabled,
+        'profile-name': bfd?.profileName,
+      };
+    }
+  }
+  if (ipConnection.ipv4) {
+    output.ipv4 = {
+      'address-allocation-type': ipConnection.ipv4?.addressAllocationType,
+    };
+
+    if (ipConnection.ipv4.addresses) {
+      const { addresses } = ipConnection.ipv4;
+      output.ipv4.addresses = {
+        'customer-address': addresses.customerAddress,
+        'prefix-length': addresses.prefixLength,
+        'provider-address': addresses.providerAddress,
+      };
+    }
+  }
+
+  return output;
+}
+
 function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAccess[]): CreateNetworkAccessInput {
   return {
     'site-network-access': networkAccesses.map((access) => {
       return {
         'site-network-access-id': access.siteNetworkAccessId,
         'site-network-access-type': access.siteNetworkAccessType,
+        'ip-connection': access.ipConnection ? clientIPConnectionToApiIPConnection(access.ipConnection) : undefined,
         availability: {
           'access-priority': Number(access.accessPriority),
         },
