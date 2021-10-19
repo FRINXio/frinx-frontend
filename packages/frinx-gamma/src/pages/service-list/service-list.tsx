@@ -33,6 +33,23 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
     deleteModalDisclosure.onOpen();
   }
 
+  function handleCommitBtnClick() {
+    const callbacks = callbackUtils.getCallbacks;
+    callbacks
+      .executeWorkflow({
+        name: 'Render_service',
+        version: 2,
+        input: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          unistore_node_name: 'service_scale',
+          action: 'commit',
+        },
+      })
+      .then(() => {
+        console.log('success');
+      });
+  }
+
   return (
     <>
       <ConfirmDeleteModal
@@ -62,6 +79,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
             <ServiceTable
               onEditServiceButtonClick={onEditVpnServiceClick}
               onDeleteServiceButtonClick={handleDeleteButtonClick}
+              onCommitBtnClick={handleCommitBtnClick}
               services={vpnServices}
             />
           ) : null}

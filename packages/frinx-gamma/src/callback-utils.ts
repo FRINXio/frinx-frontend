@@ -2,6 +2,12 @@ import { ValidProviderIdentifiersOutput, VpnServicesOutput, VpnSitesOutput } fro
 import { VpnService } from './components/forms/service-types';
 import { VpnSite } from './components/forms/site-types';
 
+export type WorkflowPayload = {
+  input: unknown;
+  name: string;
+  version: number;
+};
+
 export type Callbacks = {
   getVpnServices: () => Promise<VpnServicesOutput>;
   editVpnServices: (body: VpnService) => Promise<unknown>;
@@ -12,6 +18,7 @@ export type Callbacks = {
   editVpnSite: (body: VpnSite) => Promise<void>;
   deleteVpnSite: (id: string) => Promise<void>;
   getValidProviderIdentifiers: () => Promise<ValidProviderIdentifiersOutput>;
+  executeWorkflow: (payload: WorkflowPayload) => Promise<WorkflowPayload>;
 };
 
 class CallbackUtils {
