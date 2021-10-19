@@ -18,12 +18,17 @@ const DeviceTable: VoidFunctionComponent<Props> = ({ site, onEditDeviceButtonCli
         <Tr>
           <Th>Id</Th>
           <Th>Location ID</Th>
+          <Th>Street</Th>
+          <Th>State</Th>
           <Th>Management IP</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
       <Tbody>
         {site.siteDevices.map((device) => {
+          const [deviceLocation] = site.customerLocations.filter(
+            (location) => location.locationId === device.locationId,
+          );
           return (
             <Tr key={device.deviceId}>
               <Td>
@@ -35,7 +40,10 @@ const DeviceTable: VoidFunctionComponent<Props> = ({ site, onEditDeviceButtonCli
                 <Text as="span">{device.locationId}</Text>
               </Td>
               <Td>
-                <Text as="span">{device.managementIP}</Text>
+                <Text as="span">{deviceLocation?.street || ''}</Text>
+              </Td>
+              <Td>
+                <Text as="span">{deviceLocation?.state || ''}</Text>
               </Td>
               <Td>
                 <HStack>
