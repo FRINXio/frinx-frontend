@@ -1,6 +1,6 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Icon, IconButton, HStack, Table, Thead, Tbody, Tr, Th, Td, Text } from '@chakra-ui/react';
-import { EditIcon, ViewIcon } from '@chakra-ui/icons';
+import { EditIcon, ViewIcon, PhoneIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import { VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
@@ -9,6 +9,7 @@ type Props = {
   sites: VpnSite[];
   onEditSiteButtonClick: (siteId: string) => void;
   onDetailSiteButtonClick: (siteId: string) => void;
+  onDevicesSiteButtonClick: (siteId: string) => void;
   onDeleteSiteButtonClick: (siteId: string) => void;
 };
 
@@ -16,6 +17,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
   sites,
   onEditSiteButtonClick,
   onDetailSiteButtonClick,
+  onDevicesSiteButtonClick,
   onDeleteSiteButtonClick,
 }) => {
   return (
@@ -58,6 +60,13 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                     variant="unstyled"
                     icon={<Icon size={12} as={ViewIcon} />}
                     onClick={() => onDetailSiteButtonClick(unwrap(site.siteId))}
+                  />
+                  <IconButton
+                    aria-label="devices"
+                    size="sm"
+                    variant="unstyled"
+                    icon={<Icon size={12} as={PhoneIcon} />}
+                    onClick={() => onDevicesSiteButtonClick(unwrap(site.siteId))}
                   />
                   <IconButton
                     aria-label="Delete site"

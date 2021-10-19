@@ -20,3 +20,7 @@ export function generateSiteId(): string {
 export function generateNetworkAccessId(): string {
   return `NETWORK_ACCESS_${getRandomString(8)}`;
 }
+
+export function generateDeviceId(): string {
+  return `NETWORK_ACCESS_${getRandomString(8)}`;
+}
