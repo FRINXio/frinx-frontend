@@ -1,4 +1,4 @@
-import { EditIcon, PlusSquareIcon } from '@chakra-ui/icons';
+import { EditIcon } from '@chakra-ui/icons';
 import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
@@ -9,14 +9,12 @@ type Props = {
   services: VpnService[];
   onEditServiceButtonClick: (serviceId: string) => void;
   onDeleteServiceButtonClick: (serviceId: string) => void;
-  onCommitBtnClick: () => void;
 };
 
 const ServiceTable: VoidFunctionComponent<Props> = ({
   services,
   onEditServiceButtonClick,
   onDeleteServiceButtonClick,
-  onCommitBtnClick,
 }) => {
   return (
     <Table background="white" size="lg">
@@ -41,13 +39,6 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
               </Td>
               <Td>
                 <HStack>
-                  <IconButton
-                    aria-label="commit"
-                    size="sm"
-                    colorScheme="blue"
-                    icon={<Icon size={12} as={PlusSquareIcon} />}
-                    onClick={onCommitBtnClick}
-                  />
                   <IconButton
                     aria-label="edit"
                     size="sm"

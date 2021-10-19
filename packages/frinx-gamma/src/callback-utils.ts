@@ -7,6 +7,10 @@ export type WorkflowPayload = {
   name: string;
   version: number;
 };
+export type WorkflowExecPayload = {
+  statusCode: number;
+  text: string;
+};
 
 export type Callbacks = {
   getVpnServices: () => Promise<VpnServicesOutput>;
@@ -18,7 +22,8 @@ export type Callbacks = {
   editVpnSite: (body: VpnSite) => Promise<void>;
   deleteVpnSite: (id: string) => Promise<void>;
   getValidProviderIdentifiers: () => Promise<ValidProviderIdentifiersOutput>;
-  executeWorkflow: (payload: WorkflowPayload) => Promise<WorkflowPayload>;
+  executeWorkflow: (payload: WorkflowPayload) => Promise<WorkflowExecPayload>;
+  getWorkflowInstanceDetail: (workflowId: string) => Promise<unknown>;
 };
 
 class CallbackUtils {

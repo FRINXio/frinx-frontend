@@ -2,11 +2,12 @@ import { FC } from 'beautiful-react-diagrams/node_modules/@types/react';
 import React, { VoidFunctionComponent, useState, useEffect } from 'react';
 import { useHistory, Switch, Route } from 'react-router-dom';
 import * as unistoreCallbacks from './api/unistore/unistore';
-import { executeWorkflow } from './api/uniflow/uniflow-api';
+import { executeWorkflow, getWorkflowInstanceDetail } from './api/uniflow/uniflow-api';
 
 const callbacks = {
   ...unistoreCallbacks,
   executeWorkflow,
+  getWorkflowInstanceDetail,
 };
 
 type GammaComponents = Omit<typeof import('@frinx/gamma/build'), 'getUnistoreApiProvider'> & {

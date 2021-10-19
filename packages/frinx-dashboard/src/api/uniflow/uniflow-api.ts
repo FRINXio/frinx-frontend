@@ -1,4 +1,11 @@
-import { Workflow, TaskDefinition, Queue, WorkflowPayload, EventListener } from '../../helpers/types/uniflow-types';
+import {
+  Workflow,
+  TaskDefinition,
+  Queue,
+  WorkflowPayload,
+  EventListener,
+  WorkflowExecPayload,
+} from '../../helpers/types/uniflow-types';
 import { sendGetRequest, sendPostRequest, sendPutRequest, sendDeleteRequest } from './api-helpers';
 import {
   isArrayTypeOf,
@@ -185,10 +192,10 @@ export async function getWorkflowInstanceDetail(workflowId: string): Promise<unk
 }
 
 // Execute workflow based on payload
-export async function executeWorkflow(workflowPayload: WorkflowPayload): Promise<WorkflowPayload> {
+export async function executeWorkflow(workflowPayload: WorkflowPayload): Promise<WorkflowExecPayload> {
   const payload = await sendPostRequest('/workflow', workflowPayload);
 
-  return payload as WorkflowPayload;
+  return payload as WorkflowExecPayload;
 }
 
 // Returns workflowIds of deleted workflow
