@@ -7,43 +7,35 @@ import unwrap from '../../helpers/unwrap';
 
 type Props = {
   site: VpnSite;
-  onEditSiteNetworkAccessButtonClick: (siteId: string, accessId: string) => void;
-  onDeleteSiteNetworkAccessButtonClick: (siteId: string) => void;
+  onEditDeviceButtonClick: (siteId: string, deviceId: string) => void;
+  onDeleteDeviceButtonClick: (siteId: string) => void;
 };
 
-const SiteTable: VoidFunctionComponent<Props> = ({
-  site,
-  onEditSiteNetworkAccessButtonClick,
-  onDeleteSiteNetworkAccessButtonClick,
-}) => {
+const DeviceTable: VoidFunctionComponent<Props> = ({ site, onEditDeviceButtonClick, onDeleteDeviceButtonClick }) => {
   return (
     <Table background="white" size="lg">
       <Thead>
         <Tr>
           <Th>Id</Th>
-          <Th>Access Type</Th>
-          <Th>Access Priority</Th>
-          <Th>Maximum Routes</Th>
+          <Th>Location ID</Th>
+          <Th>Management IP</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
       <Tbody>
-        {site.siteNetworkAccesses.map((access) => {
+        {site.siteDevices.map((device) => {
           return (
-            <Tr key={access.siteNetworkAccessId}>
+            <Tr key={device.deviceId}>
               <Td>
                 <Text as="span" fontWeight={600}>
-                  {access.siteNetworkAccessId}
+                  {device.deviceId}
                 </Text>
               </Td>
               <Td>
-                <Text as="span">{access.siteNetworkAccessType}</Text>
+                <Text as="span">{device.locationId}</Text>
               </Td>
               <Td>
-                <Text as="span">{access.accessPriority}</Text>
-              </Td>
-              <Td>
-                <Text as="span">{access.maximumRoutes}</Text>
+                <Text as="span">{device.managementIP}</Text>
               </Td>
               <Td>
                 <HStack>
@@ -52,15 +44,15 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                     size="sm"
                     variant="unstyled"
                     icon={<Icon size={12} as={EditIcon} />}
-                    onClick={() => onEditSiteNetworkAccessButtonClick(unwrap(site.siteId), access.siteNetworkAccessId)}
+                    onClick={() => onEditDeviceButtonClick(unwrap(site.siteId), unwrap(device.deviceId))}
                   />
                   <IconButton
-                    aria-label="Delete network access"
+                    aria-label="Delete device"
                     size="sm"
                     colorScheme="red"
                     icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
                     onClick={() => {
-                      onDeleteSiteNetworkAccessButtonClick(unwrap(site.siteId));
+                      onDeleteDeviceButtonClick(unwrap(device.deviceId));
                     }}
                   />
                 </HStack>
@@ -73,4 +65,4 @@ const SiteTable: VoidFunctionComponent<Props> = ({
   );
 };
 
-export default SiteTable;
+export default DeviceTable;

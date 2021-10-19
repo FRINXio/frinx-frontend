@@ -24,6 +24,9 @@ const GammaApp: VoidFunctionComponent = () => {
         SiteList,
         SiteNetworkAccessList,
         EditSiteNetAccess,
+        DeviceList,
+        CreateDevice,
+        EditDevice,
         getUnistoreApiProvider,
       } = gammaImport;
 
@@ -38,6 +41,9 @@ const GammaApp: VoidFunctionComponent = () => {
         ServiceList,
         SiteList,
         SiteNetworkAccessList,
+        DeviceList,
+        CreateDevice,
+        EditDevice,
         UnistoreApiProvider: getUnistoreApiProvider(callbacks),
       });
     });
@@ -49,9 +55,12 @@ const GammaApp: VoidFunctionComponent = () => {
 
   const {
     Main,
+    CreateDevice,
     CreateSiteNetAccess,
     CreateVpnService,
     CreateVpnSite,
+    DeviceList,
+    EditDevice,
     EditSiteNetAccess,
     EditVpnService,
     EditVpnSite,
@@ -64,6 +73,7 @@ const GammaApp: VoidFunctionComponent = () => {
   return (
     <UnistoreApiProvider>
       <Switch>
+        {/* main */}
         <Route path="/gamma/" exact>
           <Main
             onServicesSiteLinkClick={() => {
@@ -74,6 +84,8 @@ const GammaApp: VoidFunctionComponent = () => {
             }}
           />
         </Route>
+
+        {/* services */}
         <Route path="/gamma/services" exact>
           <ServiceList
             onCreateVpnServiceClick={() => {
@@ -104,6 +116,8 @@ const GammaApp: VoidFunctionComponent = () => {
             }}
           />
         </Route>
+
+        {/* sites */}
         <Route path="/gamma/sites" exact>
           <SiteList
             onCreateVpnSiteClick={() => {
@@ -137,6 +151,8 @@ const GammaApp: VoidFunctionComponent = () => {
             }}
           />
         </Route>
+
+        {/* network accesses */}
         <Route path="/gamma/sites/detail/:siteId" exact>
           <SiteNetworkAccessList
             onCreateSiteNetworkAccessClick={(siteId: string) => {
@@ -167,6 +183,41 @@ const GammaApp: VoidFunctionComponent = () => {
             }}
             onCancel={(siteId: string) => {
               history.push(`/gamma/sites/detail/${siteId}`);
+            }}
+          />
+        </Route>
+
+        {/* devices */}
+        <Route path="/gamma/sites/devices/:siteId" exact>
+          <DeviceList
+            onCreateDeviceClick={(siteId: string) => {
+              history.push(`/gamma/sites/devices/${siteId}/add-device`);
+            }}
+            onEditDeviceClick={(siteId: string, deviceId: string) => {
+              history.push(`/gamma/sites/devices/${siteId}/edit-device/${deviceId}`);
+            }}
+            onSiteListClick={() => {
+              history.push(`/gamma/sites`);
+            }}
+          />
+        </Route>
+        <Route path="/gamma/sites/devices/:siteId/add-device" exact>
+          <CreateDevice
+            onSuccess={(siteId: string) => {
+              history.push(`/gamma/sites/devices/${siteId}`);
+            }}
+            onCancel={(siteId: string) => {
+              history.push(`/gamma/sites/devices/${siteId}`);
+            }}
+          />
+        </Route>
+        <Route path="/gamma/sites/devices/:siteId/edit-device/:deviceId" exact>
+          <EditDevice
+            onSuccess={(siteId: string) => {
+              history.push(`/gamma/sites/devices/${siteId}`);
+            }}
+            onCancel={(siteId: string) => {
+              history.push(`/gamma/sites/devices/${siteId}`);
             }}
           />
         </Route>

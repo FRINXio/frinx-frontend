@@ -8,4 +8,7 @@ export { default as ServiceList } from './pages/service-list/service-list';
 export { default as SiteList } from './pages/site-list/site-list';
 export { default as SiteNetworkAccessList } from './pages/site-network-access-list/site-network-access-list';
 export { default as EditSiteNetAccess } from './pages/edit-site-network-access/edit-site-network-access';
+export { default as DeviceList } from './pages/device-list/device-list';
+export { default as CreateDevice } from './pages/create-device/create-device';
+export { default as EditDevice } from './pages/edit-device/edit-device';
 export { getUnistoreApiProvider } from './unistore-api-provider';
