@@ -10,12 +10,14 @@ import unwrap from '../../helpers/unwrap';
 type Props = {
   onCreateVpnSiteClick: () => void;
   onEditVpnSiteClick: (siteId: string) => void;
+  onDevicesVpnSiteClick: (siteId: string) => void;
   onDetailVpnSiteClick: (siteId: string) => void;
 };
 
 const SiteListPage: VoidFunctionComponent<Props> = ({
   onCreateVpnSiteClick,
   onEditVpnSiteClick,
+  onDevicesVpnSiteClick,
   onDetailVpnSiteClick,
 }) => {
   const [sites, setSites] = useState<VpnSite[] | null>(null);
@@ -67,6 +69,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
             <SiteTable
               onEditSiteButtonClick={onEditVpnSiteClick}
               onDetailSiteButtonClick={onDetailVpnSiteClick}
+              onDevicesSiteButtonClick={onDevicesVpnSiteClick}
               onDeleteSiteButtonClick={handleDeleteButtonClick}
               sites={sites}
             />
