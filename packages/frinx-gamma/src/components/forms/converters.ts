@@ -639,7 +639,5 @@ export function clientBearerToApiBearer(bearer: VpnBearer): VpnBearerInput {
       },
     ],
   };
-  return {
-    'vpn-bearer': [],
-  };
+  return output;
 }
