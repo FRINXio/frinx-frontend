@@ -382,3 +382,43 @@ export type ScheduledWorkflow = {
   enabled: boolean;
   status: StatusType;
 };
+
+export type ExecutedWorkflow = {
+  correlationId: string;
+  endTime: string;
+  executionTime: number;
+  failedReferenceTaskNames: string;
+  input: string;
+  inputSize: number;
+  output: string;
+  outputSize: number;
+  priority: number;
+  reasonForIncompletion: string;
+  startTime: string;
+  status: string;
+  updateTime: string;
+  version: number;
+  workflowId: string;
+  workflowType: string;
+};
+
+export type NestedExecutedWorkflow = {
+  correlationId: string;
+  endTime: string;
+  executionTime: number;
+  failedReferenceTaskNames: string;
+  index: number;
+  input: string;
+  inputSize: number;
+  output: string;
+  outputSize: number;
+  parentWorkflowId: string;
+  priority: number;
+  reasonForIncompletion: string;
+  startTime: string;
+  status: string;
+  updateTime: string;
+  version: number;
+  workflowId: string;
+  workflowType: string;
+};
