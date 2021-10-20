@@ -618,7 +618,11 @@ const VpnBearerOutputValidator = t.type({
           carrier: optional(CarrierOutputValidator),
           connection: optional(ConnectionOutputValidator),
           'default-upstream-bearer': optional(t.string),
-          'evc-attachments': t.array(EvcAttachmentOutputValidator),
+          'evc-attachments': optional(
+            t.type({
+              'evc-attachment': t.array(EvcAttachmentOutputValidator),
+            }),
+          ),
         }),
       ),
     }),

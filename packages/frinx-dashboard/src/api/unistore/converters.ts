@@ -525,6 +525,10 @@ export function apiBearerToClientBearer(apiBearer: VpnBearerOutput): VpnBearer[]
   }
 
   return apiBearer['vpn-bearers']['vpn-bearer'].map((b) => {
+    const evcAttachments =
+      b['evc-attachments'] && b['evc-attachments']['evc-attachment']
+        ? b['evc-attachments']['evc-attachment'].map(apiEvcAttachmentToClientEvcAttachment)
+        : [];
     return {
       spBearerReference: b['sp-bearer-reference'],
       description: b.description || null,
@@ -534,7 +538,7 @@ export function apiBearerToClientBearer(apiBearer: VpnBearerOutput): VpnBearer[]
       carrier: b.carrier ? apiCarrierToClientCarrier(b.carrier) : null,
       connection: b.connection ? apiConnectionToClientConnnection(b.connection) : null,
       defaultUpstreamBearer: b['default-upstream-bearer'] || null,
-      evcAttachments: b['evc-attachments'] ? b['evc-attachments'].map(apiEvcAttachmentToClientEvcAttachment) : [],
+      evcAttachments,
     };
   });
 }
