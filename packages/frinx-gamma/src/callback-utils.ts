@@ -23,7 +23,7 @@ export type Callbacks = {
   deleteVpnSite: (id: string) => Promise<void>;
   getValidProviderIdentifiers: () => Promise<ValidProviderIdentifiersOutput>;
   executeWorkflow: (payload: WorkflowPayload) => Promise<WorkflowExecPayload>;
-  getWorkflowInstanceDetail: (workflowId: string) => Promise<unknown>;
+  getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<unknown>;
 };
 
 class CallbackUtils {

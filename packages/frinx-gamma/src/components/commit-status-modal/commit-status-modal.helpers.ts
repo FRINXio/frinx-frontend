@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import callbackUtils from '../../callback-utils';
 
 export type TaskStatus = 'COMPLETED' | 'FAILED' | 'SCHEDULED' | 'IN_PROGRESS';
@@ -42,24 +43,49 @@ export type ExecutedWorkflowResponse = {
   result: ExecutedWorkflowPayload;
 };
 
-async function getWorkflowExecOutput(workflowId: string) {
+async function getWorkflowExecOutput(workflowId: string, abortController: AbortController) {
   const callbacks = callbackUtils.getCallbacks;
-  const response = await callbacks.getWorkflowInstanceDetail(workflowId);
+  const response = await callbacks.getWorkflowInstanceDetail(workflowId, { signal: abortController.signal });
   const data = response as ExecutedWorkflowResponse;
   return data;
 }
 
-export async function* asyncGenerator(workflowId: string): AsyncGenerator<ExecutedWorkflowResponse, void, unknown> {
-  let data = await getWorkflowExecOutput(workflowId);
-  while (data.result.status !== 'FAILED' && data.result.status !== 'COMPLETED') {
+export async function* asyncGenerator(
+  workflowId: string,
+  abortController: AbortController,
+): AsyncGenerator<ExecutedWorkflowResponse, void, unknown> {
+  let data = await getWorkflowExecOutput(workflowId, abortController);
+  while (data.result.status === 'RUNNING') {
     yield data;
     // eslint-disable-next-line no-await-in-loop
-    data = await getWorkflowExecOutput(workflowId);
+    data = await getWorkflowExecOutput(workflowId, abortController);
   }
   // we need to do an additional yield for the last task status change
   if (data.result.status === 'FAILED' || data.result.status === 'COMPLETED') {
     yield data;
   }
+}
+
+export function useAsyncGenerator(workflowId: string): ExecutedWorkflowPayload | null {
+  const { current: controller } = useRef(new AbortController());
+  const [execPayload, setExecPayload] = useState<ExecutedWorkflowPayload | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      // we have to use async iterator here, so we turn off this rule
+      // eslint-disable-next-line no-restricted-syntax
+      for await (const data of asyncGenerator(workflowId, controller)) {
+        setExecPayload(data.result);
+      }
+    })();
+
+    // we need to abort all fetch requests on unmount, otherwise we will get an error
+    return () => {
+      controller.abort();
+    };
+  }, [workflowId, controller]);
+
+  return execPayload;
 }
 
 export function getStatusBadgeColor(status: WorkflowStatus | TaskStatus): string {

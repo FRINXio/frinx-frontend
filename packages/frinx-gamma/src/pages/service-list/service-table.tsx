@@ -1,4 +1,3 @@
-import { EditIcon } from '@chakra-ui/icons';
 import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
@@ -42,8 +41,7 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
                   <IconButton
                     aria-label="edit"
                     size="sm"
-                    variant="unstyled"
-                    icon={<Icon size={12} as={EditIcon} />}
+                    icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                     onClick={() => onEditServiceButtonClick(unwrap(service.vpnId))}
                   />
                   <IconButton
