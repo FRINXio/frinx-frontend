@@ -1,4 +1,10 @@
-import { ScheduledWorkflow, Workflow } from '../types/types';
+import {
+  ExecutedWorkflow,
+  ExecutedWorkflowsFlat,
+  ExecutedWorkflowsHierarchical,
+  ScheduledWorkflow,
+  Workflow,
+} from '../types/types';
 import { EventListener, Queue, TaskDefinition, WorkflowPayload } from '../types/uniflow-types';
 
 export type Callbacks = {
@@ -15,10 +21,14 @@ export type Callbacks = {
   deleteWorkflow: (name: string, version: string) => Promise<Workflow>;
   deleteTaskDefinition: (name: string) => Promise<TaskDefinition>;
   registerTaskDefinition: (taskDefinition: TaskDefinition) => Promise<TaskDefinition>;
-  getWorkflowExecutions: (query?: string, start?: number, size?: string) => Promise<unknown>;
+  getWorkflowExecutions: (query?: string, start?: number, size?: number) => Promise<ExecutedWorkflowsFlat>;
   getWorkflowInstanceDetail: (workflowId: string) => Promise<unknown>;
   executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>;
-  getWorkflowExecutionsHierarchical: (query?: string, start?: number, size?: string) => Promise<unknown>;
+  getWorkflowExecutionsHierarchical: (
+    query?: string,
+    start?: number,
+    size?: number,
+  ) => Promise<ExecutedWorkflowsHierarchical>;
   terminateWorkflows: (workflowIds: string[]) => Promise<string[]>;
   pauseWorkflows: (workflowIds: string[]) => Promise<string[]>;
   resumeWorkflows: (workflowIds: string[]) => Promise<string[]>;
@@ -48,11 +58,13 @@ class CallbackUtils {
   private deleteWorkflow: ((name: string, version: string) => Promise<Workflow>) | null = null;
   private deleteTaskDefinition: ((name: string) => Promise<TaskDefinition>) | null = null;
   private registerTaskDefinition: ((taskDefinition: TaskDefinition) => Promise<TaskDefinition>) | null = null;
-  private getWorkflowExecutions: ((query?: string, start?: number, size?: string) => Promise<unknown>) | null = null;
+  private getWorkflowExecutions:
+    | ((query?: string, start?: number, size?: number) => Promise<ExecutedWorkflowsFlat>)
+    | null = null;
   private getWorkflowInstanceDetail: ((workflowId: string) => Promise<unknown>) | null = null;
   private executeWorkflow: ((workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>) | null = null;
   private getWorkflowExecutionsHierarchical:
-    | ((query?: string, start?: number, size?: string) => Promise<unknown>)
+    | ((query?: string, start?: number, size?: number) => Promise<ExecutedWorkflowsHierarchical>)
     | null = null;
   private terminateWorkflows: ((workflowIds: string[]) => Promise<string[]>) | null = null;
   private pauseWorkflows: ((workflowIds: string[]) => Promise<string[]>) | null = null;

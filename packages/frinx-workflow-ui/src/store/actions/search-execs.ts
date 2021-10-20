@@ -1,7 +1,7 @@
 import { sortBy } from 'lodash';
 import { RootStateOrAny } from 'react-redux';
 import { Dispatch, Store } from 'redux';
-import { ExecutedWorkflow, NestedExecutedWorkflow, ScheduledWorkflow, Workflow } from '../../types/types';
+import { ExecutedWorkflow, ExecutedWorkflowsFlat, NestedExecutedWorkflow } from '../../types/types';
 import callbackUtils from '../../utils/callback-utils';
 
 export const RECEIVE_NEW_DATA = 'RECEIVE_NEW_DATA';
@@ -41,11 +41,11 @@ const createQuery = ({ query, label }: { query: string; label: string }): string
 
 export const fetchNewData = (viewedPage: number, defaultPages: number) => {
   return (dispatch: Dispatch, getState: ReturnType<RootStateOrAny>) => {
-    let q = createQuery(getState().searchReducer);
-    let page = (viewedPage - 1) * defaultPages;
+    const q = createQuery(getState().searchReducer);
+    const page = (viewedPage - 1) * defaultPages;
     const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback();
 
-    getWorkflowExecutions(q, page, defaultPages.toString()).then((res: any) => {
+    getWorkflowExecutions(q, page, defaultPages).then((res: ExecutedWorkflowsFlat) => {
       if (res.result) {
         const data = res.result ? (res.result.hits ? res.result.hits : []) : [];
         dispatch(updateSize(res.result.totalHits));
@@ -55,31 +55,33 @@ export const fetchNewData = (viewedPage: number, defaultPages: number) => {
   };
 };
 
-export const receiveNewData = (data: unknown) => {
+export const receiveNewData = (data: ExecutedWorkflow[]) => {
   return { type: RECEIVE_NEW_DATA, data };
 };
 
 export const fetchParentWorkflows = (viewedPage: number, defaultPages: number) => {
   return (dispatch: Dispatch, getState: ReturnType<RootStateOrAny>) => {
-    let page = viewedPage - 1;
+    const page = viewedPage - 1;
 
     const { checkedWfs, size } = getState().searchReducer;
-    let q = createQuery(getState().searchReducer);
-    let getWorkflowExecutionsHierarchical = callbackUtils.getWorkflowExecutionsHierarchicalCallback();
+    const q = createQuery(getState().searchReducer);
+    const getWorkflowExecutionsHierarchical = callbackUtils.getWorkflowExecutionsHierarchicalCallback();
 
-    getWorkflowExecutionsHierarchical(q, checkedWfs[page], defaultPages.toString()).then((res: any) => {
-      if (res) {
-        let parents = res.parents ? res.parents : [];
-        let children = res.children ? res.children : [];
-        if (res.count < res.hits && (typeof checkedWfs[viewedPage] === 'undefined' || checkedWfs.length === 1)) {
-          checkedWfs.push(res.count);
-          dispatch(updateSize(size + parents.length));
+    getWorkflowExecutionsHierarchical(q, checkedWfs[page], defaultPages)
+      .then((res) => {
+        if (res) {
+          const parents = res.parents ? res.parents : [];
+          const children = res.children ? res.children : [];
+          if (res.count < res.hits && (typeof checkedWfs[viewedPage] === 'undefined' || checkedWfs.length === 1)) {
+            checkedWfs.push(res.count);
+            dispatch(updateSize(size + parents.length));
+          }
+          dispatch(checkedWorkflows(checkedWfs));
+          const sortedParents = sortBy(parents, (wf) => new Date(wf.startTime)).reverse();
+          dispatch(receiveHierarchicalData(sortedParents, children));
         }
-        dispatch(checkedWorkflows(checkedWfs));
-        parents = sortBy(parents, (wf) => new Date(wf.startTime)).reverse();
-        dispatch(receiveHierarchicalData(parents, children));
-      }
-    });
+      })
+      .catch((err) => console.log(err.message));
   };
 };
 

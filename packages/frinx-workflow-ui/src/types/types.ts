@@ -393,7 +393,7 @@ export type ExecutedWorkflow = {
   output: string;
   outputSize: number;
   priority: number;
-  reasonForIncompletion: string;
+  reasonForIncompletion?: string;
   startTime: string;
   status: string;
   updateTime: string;
@@ -421,4 +421,18 @@ export type NestedExecutedWorkflow = {
   version: number;
   workflowId: string;
   workflowType: string;
+};
+
+export type ExecutedWorkflowsFlat = {
+  result: {
+    hits: ExecutedWorkflow[];
+    totalHits: number;
+  };
+};
+
+export type ExecutedWorkflowsHierarchical = {
+  parents: ExecutedWorkflow[];
+  children: NestedExecutedWorkflow[];
+  count: number;
+  hits: number;
 };
