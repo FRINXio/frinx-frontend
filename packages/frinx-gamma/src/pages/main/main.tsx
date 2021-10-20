@@ -1,30 +1,34 @@
-import { Box, Link } from '@chakra-ui/react';
+import { Box, Link, Button } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 
 type Props = {
   onServicesSiteLinkClick: () => void;
   onSitesSiteLinkClick: () => void;
+  onVpnBearerLinkClick: () => void;
 };
 
-const Main: VoidFunctionComponent<Props> = ({ onServicesSiteLinkClick, onSitesSiteLinkClick }) => {
+const Main: VoidFunctionComponent<Props> = ({
+  onServicesSiteLinkClick,
+  onSitesSiteLinkClick,
+  onVpnBearerLinkClick,
+}) => {
   return (
     <Box padding={6} margin={6} background="white">
       <Box>
-        <Link onClick={onServicesSiteLinkClick} to="/services">
+        <Button onClick={onServicesSiteLinkClick} as={Link}>
           Services
-        </Link>
+        </Button>
       </Box>
       <Box>
-        <Link onClick={onSitesSiteLinkClick} to="/sites">
+        <Button onClick={onSitesSiteLinkClick} as={Link}>
           Sites
-        </Link>
-      </Box>
-      {/* <Box>
-        <Link to="/add-site-network-access">Create Site Net Access</Link>
+        </Button>
       </Box>
       <Box>
-        <Link to="/edit-site-network-access">Edit Site Net Access</Link>
-      </Box> */}
+        <Button onClick={onVpnBearerLinkClick} as={Link}>
+          VPN Bearers
+        </Button>
+      </Box>
     </Box>
   );
 };

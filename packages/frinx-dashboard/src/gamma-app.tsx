@@ -1,7 +1,14 @@
 import { FC } from 'beautiful-react-diagrams/node_modules/@types/react';
 import React, { VoidFunctionComponent, useState, useEffect } from 'react';
 import { useHistory, Switch, Route } from 'react-router-dom';
-import * as callbacks from './api/unistore/unistore';
+import * as unistoreCallbacks from './api/unistore/unistore';
+import { executeWorkflow, getWorkflowInstanceDetail } from './api/uniflow/uniflow-api';
+
+const callbacks = {
+  ...unistoreCallbacks,
+  executeWorkflow,
+  getWorkflowInstanceDetail,
+};
 
 type GammaComponents = Omit<typeof import('@frinx/gamma/build'), 'getUnistoreApiProvider'> & {
   UnistoreApiProvider: FC;
@@ -27,6 +34,7 @@ const GammaApp: VoidFunctionComponent = () => {
         DeviceList,
         CreateDevice,
         EditDevice,
+        VpnBearerList,
         getUnistoreApiProvider,
       } = gammaImport;
 
@@ -44,6 +52,7 @@ const GammaApp: VoidFunctionComponent = () => {
         DeviceList,
         CreateDevice,
         EditDevice,
+        VpnBearerList,
         UnistoreApiProvider: getUnistoreApiProvider(callbacks),
       });
     });
@@ -67,6 +76,7 @@ const GammaApp: VoidFunctionComponent = () => {
     ServiceList,
     SiteList,
     SiteNetworkAccessList,
+    VpnBearerList,
     UnistoreApiProvider,
   } = components;
 
@@ -81,6 +91,9 @@ const GammaApp: VoidFunctionComponent = () => {
             }}
             onSitesSiteLinkClick={() => {
               history.push('/gamma/sites');
+            }}
+            onVpnBearerLinkClick={() => {
+              history.push('/gamma/vpn-bearers');
             }}
           />
         </Route>
@@ -223,6 +236,9 @@ const GammaApp: VoidFunctionComponent = () => {
               history.push(`/gamma/sites/devices/${siteId}`);
             }}
           />
+        </Route>
+        <Route path="/gamma/vpn-bearers">
+          <VpnBearerList />
         </Route>
       </Switch>
     </UnistoreApiProvider>

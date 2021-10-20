@@ -81,6 +81,11 @@ export type WorkflowPayload = {
   version: number;
 };
 
+export type WorkflowExecPayload = {
+  statusCode: number;
+  text: string;
+};
+
 export type TaskType =
   | 'DECISION'
   | 'EVENT'

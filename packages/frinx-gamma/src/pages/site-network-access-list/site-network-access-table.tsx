@@ -1,7 +1,6 @@
-import React, { VoidFunctionComponent } from 'react';
-import { Icon, IconButton, HStack, Table, Thead, Tbody, Tr, Th, Td, Text } from '@chakra-ui/react';
-import { EditIcon } from '@chakra-ui/icons';
+import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
+import React, { VoidFunctionComponent } from 'react';
 import { VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
 
@@ -50,8 +49,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                   <IconButton
                     aria-label="edit"
                     size="sm"
-                    variant="unstyled"
-                    icon={<Icon size={12} as={EditIcon} />}
+                    icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                     onClick={() => onEditSiteNetworkAccessButtonClick(unwrap(site.siteId), access.siteNetworkAccessId)}
                   />
                   <IconButton
