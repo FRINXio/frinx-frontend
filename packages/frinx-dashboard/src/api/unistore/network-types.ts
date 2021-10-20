@@ -533,6 +533,121 @@ export function decodeValidProviderIdentifiersOutput(value: unknown): ValidProvi
   return extractResult(ValidProviderIdentifiersOutputValidator.decode(value));
 }
 
+const VpnCarriersValidator = t.type({
+  carrier: t.array(
+    t.type({
+      'carrier-name': t.string,
+      description: optional(t.string),
+    }),
+  ),
+});
+
+const VpnNodesValidator = t.type({
+  'vpn-node': t.array(
+    t.type({
+      'ne-id': t.string,
+      'router-id': t.string,
+      role: optional(t.string),
+    }),
+  ),
+});
+
+const BearerStatusValidator = t.type({
+  'admin-status': optional(
+    t.type({
+      status: optional(t.string),
+      'last-updated': optional(t.string),
+    }),
+  ),
+  'oper-status': optional(
+    t.type({
+      status: optional(t.string),
+      'last-updated': optional(t.string),
+    }),
+  ),
+});
+export type BearerStatusOutput = t.TypeOf<typeof BearerStatusValidator>;
+export function decodeBearerStatusOutput(value: unknown): BearerStatusOutput {
+  return extractResult(BearerStatusValidator.decode(value));
+}
+
+const EvcAttachmentOutputValidator = t.type({
+  'evc-type': t.string,
+  'customer-name': optional(t.string),
+  'circuit-reference': t.string,
+  'carrier-reference': optional(t.string),
+  'svlan-id': optional(t.number),
+  status: optional(BearerStatusValidator),
+  'input-bandwidth': t.number,
+  'qos-input-profile': optional(t.string),
+  'upstream-bearer': optional(t.string),
+});
+export type EvcAttachmentOutput = t.TypeOf<typeof EvcAttachmentOutputValidator>;
+export function decodeEvcAttachmentOutput(value: unknown): EvcAttachmentOutput {
+  return extractResult(EvcAttachmentOutputValidator.decode(value));
+}
+
+const CarrierOutputValidator = t.type({
+  'carrier-name': optional(t.string),
+  'carrier-reference': optional(t.string),
+  'service-type': optional(t.string),
+  'service-status': optional(t.string),
+});
+export type CarrierOutput = t.TypeOf<typeof CarrierOutputValidator>;
+export function decodeCarrierOutput(value: unknown): CarrierOutput {
+  return extractResult(CarrierOutputValidator.decode(value));
+}
+
+const ConnectionOutputValidator = t.type({
+  'encapsulation-type': optional(t.string),
+  'svlan-assignment-type': optional(t.string),
+  tpid: optional(t.string),
+  mtu: t.number,
+  'remote-ne-id': optional(t.string),
+  'remote-port-id': optional(t.string),
+});
+export type ConnectionOutput = t.TypeOf<typeof ConnectionOutputValidator>;
+export function decodeConnectionOutput(value: unknown): ConnectionOutput {
+  return extractResult(ConnectionOutputValidator.decode(value));
+}
+
+const VpnBearerOutputValidator = t.type({
+  'vpn-bearers': optional(
+    t.type({
+      'vpn-bearer': t.array(
+        t.type({
+          'sp-bearer-reference': t.string,
+          description: optional(t.string),
+          'ne-id': t.string,
+          'port-id': t.string,
+          status: optional(BearerStatusValidator),
+          carrier: optional(CarrierOutputValidator),
+          connection: optional(ConnectionOutputValidator),
+          'default-upstream-bearer': optional(t.string),
+          'evc-attachments': t.array(EvcAttachmentOutputValidator),
+        }),
+      ),
+    }),
+  ),
+});
+
+export type VpnBearerOutput = t.TypeOf<typeof VpnBearerOutputValidator>;
+
+export function decodeVpnBearerOutput(value: unknown): VpnBearerOutput {
+  return extractResult(VpnBearerOutputValidator.decode(value));
+}
+
+const SvcBearerOutputValidator = t.type({
+  carriers: optional(VpnCarriersValidator),
+  'vpn-nodes': optional(VpnNodesValidator),
+  'vpn-bearers': optional(VpnBearerOutputValidator),
+});
+
+export type SvcBearerOutput = t.TypeOf<typeof SvcBearerOutputValidator>;
+export function decodeSvcBearerOutput(value: unknown): SvcBearerOutput {
+  return extractResult(SvcBearerOutputValidator.decode(value));
+}
+
 export type VpnServiceTopology = 'any-to-any' | 'hub-spoke' | 'hub-spoke-disjointed' | 'custom';
 
 // eslint-disable-next-line no-shadow
@@ -675,4 +790,54 @@ export type VpnSite = {
   enableBgpPicFastReroute: boolean;
   siteNetworkAccesses: SiteNetworkAccess[];
   maximumRoutes: MaximumRoutes;
+};
+
+export type Status = {
+  status: string | null;
+  lastUpdated: string | null;
+};
+
+export type BearerStatus = {
+  adminStatus: Status | null;
+  operStatus: Status | null;
+};
+
+export type Carrier = {
+  carrierName: string | null;
+  carrierReference: string | null;
+  serviceType: string | null;
+  serviceStatus: string | null;
+};
+
+export type Connection = {
+  encapsulationType: string | null;
+  svlanAssignmentType: string | null;
+  tpId: string | null;
+  mtu: number;
+  remoteNeId: string | null;
+  remotePortId: string | null;
+};
+
+export type EvcAttachment = {
+  evcType: string;
+  customerName: string | null;
+  circuitReference: string;
+  carrierReference: string | null;
+  svlanId: number | null;
+  status: BearerStatus | null;
+  inputBandwidth: number;
+  qosInputProfile: string | null;
+  upstreamBearer: string | null;
+};
+
+export type VpnBearer = {
+  spBearerReference: string;
+  description: string | null;
+  neId: string;
+  portId: string;
+  status: BearerStatus | null;
+  carrier: Carrier | null;
+  connection: Connection | null;
+  defaultUpstreamBearer: string | null;
+  evcAttachments: EvcAttachment[];
 };
