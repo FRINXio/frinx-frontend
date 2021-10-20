@@ -34,6 +34,7 @@ const GammaApp: VoidFunctionComponent = () => {
         DeviceList,
         CreateDevice,
         EditDevice,
+        VpnBearerList,
         getUnistoreApiProvider,
       } = gammaImport;
 
@@ -51,6 +52,7 @@ const GammaApp: VoidFunctionComponent = () => {
         DeviceList,
         CreateDevice,
         EditDevice,
+        VpnBearerList,
         UnistoreApiProvider: getUnistoreApiProvider(callbacks),
       });
     });
@@ -74,6 +76,7 @@ const GammaApp: VoidFunctionComponent = () => {
     ServiceList,
     SiteList,
     SiteNetworkAccessList,
+    VpnBearerList,
     UnistoreApiProvider,
   } = components;
 
@@ -88,6 +91,9 @@ const GammaApp: VoidFunctionComponent = () => {
             }}
             onSitesSiteLinkClick={() => {
               history.push('/gamma/sites');
+            }}
+            onVpnBearerLinkClick={() => {
+              history.push('/gamma/vpn-bearers');
             }}
           />
         </Route>
@@ -230,6 +236,9 @@ const GammaApp: VoidFunctionComponent = () => {
               history.push(`/gamma/sites/devices/${siteId}`);
             }}
           />
+        </Route>
+        <Route path="/gamma/vpn-bearers">
+          <VpnBearerList />
         </Route>
       </Switch>
     </UnistoreApiProvider>

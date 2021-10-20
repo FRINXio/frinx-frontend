@@ -8,9 +8,12 @@ import {
   ValidProviderIdentifiersOutput,
   VpnService,
   VpnSite,
+  decodeVpnBearerOutput,
+  VpnBearerOutput,
 } from './network-types';
 import { clientVpnServiceToApiVpnService, clientVpnSiteToApiVpnSite } from './converters';
 
+// data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers
 const UNICONFIG_SERVICE_URL =
   '/data/network-topology:network-topology/topology=uniconfig/node=service_scale/frinx-uniconfig-topology:configuration';
 
@@ -66,5 +69,14 @@ export async function getValidProviderIdentifiers(): Promise<ValidProviderIdenti
     `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-profiles/valid-provider-identifiers`,
   );
   const data = decodeValidProviderIdentifiersOutput(json);
+  return data;
+}
+
+export async function getVpnBearers(): Promise<VpnBearerOutput> {
+  const json = await sendGetRequest(
+    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers',
+  );
+  const data = decodeVpnBearerOutput(json);
+
   return data;
 }
