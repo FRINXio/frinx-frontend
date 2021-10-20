@@ -5,14 +5,13 @@ import DetailsModal from './details-modal/details-modal';
 import PageContainer from '../../../common/PageContainer';
 import PageCount from '../../../common/PageCount';
 import PageSelect from '../../../common/PageSelect';
-import React, { ChangeEvent, Component, FC, useEffect, useRef, useState } from 'react';
-import WfAutoComplete from '../../../common/wf-autocomplete';
+import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import WorkflowBulk from './WorkflowBulk/workflow-bulk';
-import { Box, Button, ButtonGroup, Flex, FormControl, Grid, Input, Text } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import { connect, RootStateOrAny } from 'react-redux';
 import { ExecutedWorkflow, NestedExecutedWorkflow } from '../../../types/types';
 import ExecutedWorkflowTable from './executed-workflow-table/executed-workflow-table';
-import { Previous } from 'chakra-paginator';
+import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
 
 type Props = {
   query: string;
@@ -70,7 +69,6 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
   updateSize,
 }) => {
   const [state, setState] = useState<StateProps>(initialState);
-
   useEffect(() => {
     if (query) {
       updateByQuery(query);
@@ -79,25 +77,24 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
 
     fetchFn(state.viewedPage, state.defaultPages);
 
-    return () => clearView();
+    return () => {
+      clearView();
+      clearTimeout(state.timeout);
+    };
   }, []);
 
-  const prevQueryRef = useRef('');
   useEffect(() => {
-    if (query && query !== prevQueryRef.current) {
-      setState((prev) => {
-        return {
-          ...prev,
-          showFlat: true,
-          wfId: query,
-          detailsModal: false,
-          closeDetails: true,
-          viewedPage: 1,
-        };
-      });
-      if (query) {
-        updateByQuery(query);
-      }
+    setState((prev) => {
+      return {
+        ...prev,
+        wfId: query,
+        detailsModal: false,
+        closeDetails: true,
+      };
+    });
+
+    if (query) {
+      updateByQuery(query);
     }
 
     const { data, query: searchQuery, parents, size } = searchReducer;
@@ -107,11 +104,11 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
     }
 
     if (size !== state.datasetLength) {
-      let pagesCount = ~~(size / state.defaultPages);
+      const pagesCount = size / state.defaultPages;
       setState((prev) => {
         return {
           ...prev,
-          pagesCount: size % state.defaultPages ? ++pagesCount : pagesCount,
+          pagesCount: size % state.defaultPages ? pagesCount + 1 : pagesCount,
           datasetLength: size,
         };
       });
@@ -123,8 +120,6 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
       fetchParentWorkflows(state.viewedPage, state.defaultPages);
       update([], []);
     }
-
-    prevQueryRef.current = searchQuery;
   }, [query, state.showFlat]);
 
   const clearView = () => {
@@ -388,10 +383,8 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
     <DetailsModal
       wfId={state.wfId}
       modalHandler={showDetailsModal}
-      refreshTable={
-        state.showFlat
-          ? fetchNewData.bind(this, 1, state.defaultPages)
-          : fetchParentWorkflows.bind(this, 1, state.defaultPages)
+      refreshTable={() =>
+        state.showFlat ? fetchNewData(1, state.defaultPages) : fetchParentWorkflows(1, state.defaultPages)
       }
       onWorkflowIdClick={onWorkflowIdClick}
     />
@@ -406,86 +399,41 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
         wfsCount={wfsCount.length}
         selectedWfs={state.selectedWfs}
         pageCount={state.defaultPages}
-        selectAllWfs={selectAllWfs.bind(this)}
-        bulkOperation={clearView.bind(this)}
+        selectAllWfs={selectAllWfs}
+        bulkOperation={clearView}
       />
 
-      <Flex alignItems="center" marginBottom={4}>
-        <Text marginRight={4}>Workflow view</Text>
-
-        <ButtonGroup size="sm" isAttached colorScheme="blue" onChange={changeView.bind(this)}>
-          <Button variant={state.showFlat ? 'outline' : 'solid'} onClick={() => (state.showFlat ? changeView() : null)}>
-            Hierarchy
-          </Button>
-          <Button variant={state.showFlat ? 'solid' : 'outline'} onClick={() => (state.showFlat ? null : changeView())}>
-            Flat
-          </Button>
-        </ButtonGroup>
-      </Flex>
-
-      <Grid templateColumns="1fr 1fr 40px" gap={4} marginBottom={8}>
-        <Box flexGrow={1}>
-          <WfAutoComplete
-            options={['RUNNING', 'COMPLETED', 'FAILED', 'TIMED_OUT', 'TERMINATED', 'PAUSED']}
-            onChange={(e) => changeLabels(e)}
-            selected={searchReducer.label}
-            placeholder="Search by status."
-          />
-        </Box>
-        <Box flexGrow={1}>
-          <FormControl>
-            <Input
-              value={searchReducer.query}
-              onChange={(e) => changeQuery(e.target.value)}
-              placeholder="Search by keyword."
-              background="white"
-            />
-          </FormControl>
-        </Box>
-        <Button
-          className="primary"
-          colorScheme="blue"
-          onClick={() => {
-            changeLabels([]);
-            changeQuery('');
-          }}
-        >
-          <i className="fas fa-times" />
-        </Button>
-      </Grid>
+      <ExecutedWorkflowSearchBox
+        changeLabels={changeLabels}
+        showFlat={state.showFlat}
+        changeQuery={changeQuery}
+        changeView={changeView}
+        searchReducer={searchReducer}
+      />
 
       <ExecutedWorkflowTable
         sort={state.sort}
         isLoading={true}
         showFlat={state.showFlat}
-        dynamicSort={dynamicSort.bind(this)}
-        indent={indent.bind(this)}
-        showChildrenWorkflows={showChildrenWorkflows.bind(this)}
-        showDetailsModal={showDetailsModal.bind(this)}
+        dynamicSort={dynamicSort}
+        indent={indent}
+        showChildrenWorkflows={showChildrenWorkflows}
+        showDetailsModal={showDetailsModal}
         openParentWfs={state.openParentWfs}
         searchReducer={searchReducer}
-        selectWf={selectWf.bind(this)}
+        selectWf={selectWf}
         selectedWfs={state.selectedWfs}
         showChildren={state.showChildren}
-        sortWf={sortWf.bind(this)}
+        sortWf={sortWf}
       />
 
       <Box marginTop={5}>
         <Flex justifyContent="space-between">
           <Box>
-            <PageCount
-              dataSize={searchReducer.size}
-              defaultPages={state.defaultPages}
-              handler={setCountPages.bind(this)}
-            />
+            <PageCount dataSize={searchReducer.size} defaultPages={state.defaultPages} handler={setCountPages} />
           </Box>
           <Box>
-            <PageSelect
-              viewedPage={state.viewedPage}
-              count={state.pagesCount}
-              indent={1}
-              handler={setViewPage.bind(this)}
-            />
+            <PageSelect viewedPage={state.viewedPage} count={state.pagesCount} indent={1} handler={setViewPage} />
           </Box>
         </Flex>
       </Box>
