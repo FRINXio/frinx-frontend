@@ -146,8 +146,6 @@ class WorkflowExec extends Component<ComponentProps, StateProps> {
       openParentWfs: openParents,
       showChildren: showChildren,
     });
-
-    console.log(this.state);
   }
 
   showChildrenWorkflows(
@@ -177,8 +175,6 @@ class WorkflowExec extends Component<ComponentProps, StateProps> {
       this.props.updateParents(showChildren.filter((wf) => wf.parentWorkflowId === workflow.workflowId));
       this.update(openParents, showChildren);
     }
-
-    console.log(this.state);
   }
 
   indent(wf: NestedExecutedWorkflow[], i: number, size?: number) {
@@ -196,7 +192,6 @@ class WorkflowExec extends Component<ComponentProps, StateProps> {
       }
       return indentSize + 'px';
     }
-    console.log(this.state);
     return '0px';
   }
 
@@ -215,8 +210,6 @@ class WorkflowExec extends Component<ComponentProps, StateProps> {
       pagesCount: pagesCount,
       viewedPage: 1,
     });
-
-    console.log(this.state);
   }
 
   setViewPage(page: number) {
@@ -231,8 +224,6 @@ class WorkflowExec extends Component<ComponentProps, StateProps> {
       viewedPage: page,
       sort: [2, 2, 2],
     });
-
-    console.log(this.state);
   }
 
   dynamicSort(property: string) {
@@ -241,7 +232,6 @@ class WorkflowExec extends Component<ComponentProps, StateProps> {
       sortOrder = false;
       property = property.slice(1);
     }
-    console.log(this.state);
     return (a: { [key: string]: any }, b: { [key: string]: any }) => {
       if (!a['parentWorkflowId'] && !b['parentWorkflowId']) {
         return !sortOrder ? b[property].localeCompare(a[property]) : a[property].localeCompare(b[property]);
@@ -327,8 +317,6 @@ class WorkflowExec extends Component<ComponentProps, StateProps> {
       viewedPage: 1,
       sort: [2, 2, 2],
     });
-
-    console.log(this.state);
   }
 
   selectWf(e: ChangeEvent<HTMLInputElement>) {
@@ -353,8 +341,6 @@ class WorkflowExec extends Component<ComponentProps, StateProps> {
     this.setState({
       selectedWfs: wfIds,
     });
-
-    console.log(this.state);
   }
 
   selectChildrenWf(parentId: string, wfIds: string[]) {
@@ -363,7 +349,6 @@ class WorkflowExec extends Component<ComponentProps, StateProps> {
       .filter((wf: NestedExecutedWorkflow) => wf.parentWorkflowId === parentId)
       .map((wf: NestedExecutedWorkflow) => wf.workflowId);
     for (let i = 0; i < newWfIds.length; i++) wfIds = wfIds.concat(this.selectChildrenWf(newWfIds[i], newWfIds));
-    console.log(this.state);
     return [...new Set(wfIds)];
   }
 
@@ -386,8 +371,6 @@ class WorkflowExec extends Component<ComponentProps, StateProps> {
       });
       this.setState({ selectedWfs: wfIds });
     }
-
-    console.log(this.state);
   }
 
   showDetailsModal(workflowId?: string) {
@@ -398,7 +381,6 @@ class WorkflowExec extends Component<ComponentProps, StateProps> {
         wfId: workflowId,
       },
       () => {
-        console.log('pici', this.state.wfId);
         this.setState({
           detailsModal: !this.state.detailsModal,
           closeDetails: !this.state.detailsModal,
@@ -425,17 +407,13 @@ class WorkflowExec extends Component<ComponentProps, StateProps> {
       viewedPage: 1,
       sort: [2, 2, 2],
     });
-
-    console.log(this.state);
   }
 
   changeLabels(e: string[]) {
     this.props.updateByLabel(e);
     if (this.state.allData) {
-      console.log('all', this.state);
       this.props.fetchNewData(1, this.state.defaultPages);
     } else {
-      console.log('not all', this.state);
       this.state.openParentWfs.forEach((parent) => this.showChildrenWorkflows(parent, null, null));
       this.update([], []);
       this.props.updateSize(1);
@@ -446,8 +424,6 @@ class WorkflowExec extends Component<ComponentProps, StateProps> {
       viewedPage: 1,
       sort: [2, 2, 2],
     });
-
-    console.log(this.state);
   }
 
   sortWf(number: number) {
@@ -462,8 +438,6 @@ class WorkflowExec extends Component<ComponentProps, StateProps> {
     this.setState({
       sort: sort,
     });
-
-    console.log(this.state);
   }
 
   changeView() {
