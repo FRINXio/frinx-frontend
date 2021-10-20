@@ -6,7 +6,7 @@ import {
   UPDATE_LABEL,
   DATA_SIZE,
   CHECKED_WORKFLOWS,
-} from '../actions/searchExecs';
+} from '../actions/search-execs';
 
 const initialState = {
   isFetching: false,

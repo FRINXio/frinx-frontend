@@ -5,11 +5,9 @@ import { Next, PageGroup, Paginator, Previous } from 'chakra-paginator';
 
 type Props = {
   viewedPage: number,
-  defaultPages: number,
   count: number,
   indent: number,
   handler: (defaultPageCount: number, pageCount?: number) => void,
-  dataSize: number,
 };
 
 type StateType = {};

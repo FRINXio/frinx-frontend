@@ -1,12 +1,11 @@
-// @flow
 import './WorkflowExec.css';
 import * as bulkActions from '../../../store/actions/bulk';
-import * as searchActions from '../../../store/actions/searchExecs';
+import * as searchActions from '../../../store/actions/search-execs';
 import DetailsModal from './details-modal/details-modal';
 import PageContainer from '../../../common/PageContainer';
 import PageCount from '../../../common/PageCount';
 import PageSelect from '../../../common/PageSelect';
-import React, { Component } from 'react';
+import React, { ChangeEvent, Component } from 'react';
 import WfAutoComplete from '../../../common/wf-autocomplete';
 import WorkflowBulk from './WorkflowBulk/workflow-bulk';
 import moment from 'moment';
@@ -27,26 +26,54 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { connect } from 'react-redux';
+import { connect, RootStateOrAny } from 'react-redux';
+import { ExecutedWorkflow, NestedExecutedWorkflow } from '../../../types/types';
 
-class WorkflowExec extends Component {
-  constructor(props) {
+type Props = {
+  query: string;
+  onWorkflowIdClick: (wfId: string) => void;
+};
+
+type StateProps = {
+  selectedWfs: string[];
+  detailsModal: boolean;
+  wfId: string;
+  openParentWfs: NestedExecutedWorkflow[];
+  closeDetails: boolean;
+  allData: boolean;
+  showChildren: NestedExecutedWorkflow[];
+  defaultPages: number;
+  pagesCount: number;
+  viewedPage: number;
+  datasetLength: number;
+  timeout: NodeJS.Timeout;
+  sort: number[];
+};
+type DispatchProps = ReturnType<typeof mapDispatchToProps>;
+type ReduxStateProps = ReturnType<typeof mapStateToProps>;
+type ComponentProps = Props & DispatchProps & ReduxStateProps & StateProps;
+
+const initialState = {
+  query: '',
+  selectedWfs: [],
+  detailsModal: false,
+  wfId: '',
+  openParentWfs: [],
+  closeDetails: true,
+  allData: false,
+  showChildren: [],
+  defaultPages: 20,
+  pagesCount: 1,
+  viewedPage: 1,
+  datasetLength: 0,
+  timeout: setTimeout(() => {}, 0),
+  sort: [2, 2, 2],
+};
+
+class WorkflowExec extends Component<ComponentProps, StateProps> {
+  constructor(props: ComponentProps) {
     super(props);
-    this.state = {
-      selectedWfs: [],
-      detailsModal: false,
-      wfId: {},
-      openParentWfs: [],
-      closeDetails: true,
-      allData: false,
-      showChildren: [],
-      defaultPages: 20,
-      pagesCount: 1,
-      viewedPage: 1,
-      datasetLength: 0,
-      timeout: 0,
-      sort: [2, 2, 2],
-    };
+    this.state = initialState;
   }
 
   componentDidMount() {
@@ -58,7 +85,7 @@ class WorkflowExec extends Component {
     fetchFn(this.state.viewedPage, this.state.defaultPages);
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps: Props, prevState: StateProps) {
     if (this.props.query !== prevProps.query) {
       this.setState({
         allData: true,
@@ -110,22 +137,27 @@ class WorkflowExec extends Component {
   clearView() {
     this.state.openParentWfs.forEach((parent) => this.showChildrenWorkflows(parent, null, null));
     this.props.updateByQuery('');
-    this.props.updateByLabel('');
-    this._typeahead.clear();
+    this.props.updateByLabel([]);
     this.update([], []);
   }
 
-  update(openParents, showChildren) {
+  update(openParents: NestedExecutedWorkflow[], showChildren: NestedExecutedWorkflow[]) {
     this.setState({
       openParentWfs: openParents,
       showChildren: showChildren,
     });
+
+    console.log(this.state);
   }
 
-  showChildrenWorkflows(workflow, closeParentWfs, closeChildWfs) {
-    const childrenDataset = this.props.searchReducer.children;
+  showChildrenWorkflows(
+    workflow: NestedExecutedWorkflow,
+    closeParentWfs: NestedExecutedWorkflow[] | null,
+    closeChildWfs: NestedExecutedWorkflow[] | null,
+  ) {
+    const childrenDataset: NestedExecutedWorkflow[] = this.props.searchReducer.children;
     if (childrenDataset.length) {
-      childrenDataset.forEach((wf, index) => (wf.index = index));
+      childrenDataset.forEach((wf: any, index: number) => (wf.index = index));
     }
 
     let showChildren = closeChildWfs ? closeChildWfs : this.state.showChildren;
@@ -145,9 +177,11 @@ class WorkflowExec extends Component {
       this.props.updateParents(showChildren.filter((wf) => wf.parentWorkflowId === workflow.workflowId));
       this.update(openParents, showChildren);
     }
+
+    console.log(this.state);
   }
 
-  indent(wf, i, size) {
+  indent(wf: NestedExecutedWorkflow[], i: number, size?: number) {
     const indentSize = size ? size : 6;
     if (wf[i].parentWorkflowId) {
       let layers = 0;
@@ -162,10 +196,11 @@ class WorkflowExec extends Component {
       }
       return indentSize + 'px';
     }
+    console.log(this.state);
     return '0px';
   }
 
-  setCountPages(defaultPages, pagesCount) {
+  setCountPages(defaultPages: number, pagesCount: number) {
     if (this.state.allData) {
       this.props.fetchNewData(1, defaultPages);
     } else {
@@ -180,9 +215,11 @@ class WorkflowExec extends Component {
       pagesCount: pagesCount,
       viewedPage: 1,
     });
+
+    console.log(this.state);
   }
 
-  setViewPage(page) {
+  setViewPage(page: number) {
     if (this.state.allData) {
       this.props.fetchNewData(page, this.state.defaultPages);
     } else {
@@ -194,15 +231,18 @@ class WorkflowExec extends Component {
       viewedPage: page,
       sort: [2, 2, 2],
     });
+
+    console.log(this.state);
   }
 
-  dynamicSort(property) {
+  dynamicSort(property: string) {
     let sortOrder = true;
     if (property[0] === '-') {
       sortOrder = false;
-      property = property.substr(1);
+      property = property.slice(1);
     }
-    return (a, b) => {
+    console.log(this.state);
+    return (a: { [key: string]: any }, b: { [key: string]: any }) => {
       if (!a['parentWorkflowId'] && !b['parentWorkflowId']) {
         return !sortOrder ? b[property].localeCompare(a[property]) : a[property].localeCompare(b[property]);
       }
@@ -211,7 +251,7 @@ class WorkflowExec extends Component {
 
   repeat() {
     const { data, parents, children } = this.props.searchReducer;
-    const childSet = children;
+    const childSet: NestedExecutedWorkflow[] = children;
     const parentsId = childSet ? childSet.map((wf) => wf.parentWorkflowId) : [];
     const output = [];
     let dataset = this.state.allData ? data : parents;
@@ -230,7 +270,7 @@ class WorkflowExec extends Component {
           className={
             this.state.showChildren.some((wf) => wf.workflowId === dataset[i]['workflowId']) && !this.state.allData
               ? 'childWf'
-              : null
+              : undefined
           }
         >
           <Td>
@@ -244,7 +284,7 @@ class WorkflowExec extends Component {
           {this.state.allData ? null : (
             <Td
               className="clickable"
-              onClick={this.showChildrenWorkflows.bind(this, dataset[i], null, null)}
+              onClick={() => this.showChildrenWorkflows.bind(this)(dataset[i], null, null)}
               style={{ textIndent: this.indent(dataset, i) }}
             >
               {parentsId.includes(dataset[i]['workflowId']) ? (
@@ -257,7 +297,7 @@ class WorkflowExec extends Component {
             </Td>
           )}
           <Td
-            onClick={this.showDetailsModal.bind(this, dataset[i]['workflowId'])}
+            onClick={() => this.showDetailsModal.bind(this)(dataset[i]['workflowId'])}
             className="clickable"
             style={{
               textIndent: this.indent(dataset, i, 20),
@@ -275,6 +315,7 @@ class WorkflowExec extends Component {
         </Tr>,
       );
     }
+
     return output;
   }
 
@@ -286,66 +327,87 @@ class WorkflowExec extends Component {
       viewedPage: 1,
       sort: [2, 2, 2],
     });
+
+    console.log(this.state);
   }
 
-  selectWf(e) {
+  selectWf(e: ChangeEvent<HTMLInputElement>) {
     const { data, parents } = this.props.searchReducer;
     const dataset = this.state.allData ? data : parents;
     const rowNum = e.target.id.split('-')[1];
 
     let wfIds = this.state.selectedWfs;
-    const wfId = dataset[rowNum]['workflowId'];
+    const wfId: string = dataset[rowNum]['workflowId'];
 
     if (wfIds.includes(wfId)) {
       const idx = wfIds.indexOf(wfId);
-      if (idx !== -1) wfIds.splice(idx, 1);
+      if (idx !== -1) {
+        wfIds.splice(idx, 1);
+      }
     } else {
       wfIds.push(wfId);
-      if (!this.state.allData) wfIds = this.selectChildrenWf(wfId, wfIds);
+      if (!this.state.allData) {
+        wfIds = this.selectChildrenWf(wfId, wfIds);
+      }
     }
     this.setState({
       selectedWfs: wfIds,
     });
+
+    console.log(this.state);
   }
 
-  selectChildrenWf(parentId, wfIds) {
+  selectChildrenWf(parentId: string, wfIds: string[]) {
     const { children } = this.props.searchReducer;
-    const newWfIds = children.filter((wf) => wf.parentWorkflowId === parentId).map((wf) => wf.workflowId);
+    const newWfIds = children
+      .filter((wf: NestedExecutedWorkflow) => wf.parentWorkflowId === parentId)
+      .map((wf: NestedExecutedWorkflow) => wf.workflowId);
     for (let i = 0; i < newWfIds.length; i++) wfIds = wfIds.concat(this.selectChildrenWf(newWfIds[i], newWfIds));
+    console.log(this.state);
     return [...new Set(wfIds)];
   }
 
   selectAllWfs() {
     const { data, parents, children } = this.props.searchReducer;
-    const hiddenChildren = children.filter(
-      (obj) => !this.state.showChildren.some((obj2) => obj.startTime === obj2.startTime),
+    const hiddenChildren: NestedExecutedWorkflow[] = children.filter(
+      (obj: NestedExecutedWorkflow) => !this.state.showChildren.some((obj2) => obj.startTime === obj2.startTime),
     );
     const dataset = this.state.allData ? data : parents.concat(hiddenChildren);
-    const wfIds = [];
+    const wfIds: string[] = [];
 
     if (this.state.selectedWfs.length > 0) {
       this.setState({ selectedWfs: [] });
     } else {
-      dataset.map((entry) => {
-        if (!this.state.selectedWfs.includes(entry['workflowId'])) {
-          wfIds.push(entry['workflowId']);
+      dataset.map((entry: ExecutedWorkflow) => {
+        if (!this.state.selectedWfs.includes(entry.workflowId)) {
+          wfIds.push(entry.workflowId);
         }
         return null;
       });
       this.setState({ selectedWfs: wfIds });
     }
+
+    console.log(this.state);
   }
 
-  showDetailsModal(workflowId) {
-    const wfId = workflowId !== undefined ? workflowId : null;
-    this.setState({
-      detailsModal: !this.state.detailsModal,
-      wfId: wfId,
-      closeDetails: !this.state.detailsModal,
-    });
+  showDetailsModal(workflowId?: string) {
+    if (workflowId == null || workflowId.trim() === '') return;
+
+    this.setState(
+      {
+        wfId: workflowId,
+      },
+      () => {
+        console.log('pici', this.state.wfId);
+        this.setState({
+          detailsModal: !this.state.detailsModal,
+          closeDetails: !this.state.detailsModal,
+        });
+      },
+    );
   }
 
-  changeQuery(e) {
+  changeQuery(e: string) {
     this.props.updateByQuery(e);
     if (!this.state.allData) {
       this.state.openParentWfs.forEach((parent) => this.showChildrenWorkflows(parent, null, null));
@@ -353,20 +415,21 @@ class WorkflowExec extends Component {
       this.props.updateSize(1);
       this.props.checkedWorkflows([0]);
     }
-    if (this.timeout) clearTimeout(this.timeout);
-    this.timeout = setTimeout(() => {
-      this.state.allData
-        ? this.props.fetchNewData(1, this.state.defaultPages)
-        : this.props.fetchParentWorkflows(1, this.state.defaultPages);
-    }, 300);
-
+    if (this.state.timeout) clearTimeout(this.state.timeout);
     this.setState({
+      timeout: setTimeout(() => {
+        this.state.allData
+          ? this.props.fetchNewData(1, this.state.defaultPages)
+          : this.props.fetchParentWorkflows(1, this.state.defaultPages);
+      }, 300),
       viewedPage: 1,
       sort: [2, 2, 2],
     });
+
+    console.log(this.state);
   }
 
-  changeLabels(e) {
+  changeLabels(e: string[]) {
     this.props.updateByLabel(e);
     if (this.state.allData) {
       console.log('all', this.state);
@@ -383,9 +446,11 @@ class WorkflowExec extends Component {
       viewedPage: 1,
       sort: [2, 2, 2],
     });
+
+    console.log(this.state);
   }
 
-  sortWf(number) {
+  sortWf(number: number) {
     const sort = this.state.sort;
     for (let i = 0; i < sort.length; i++) {
       i === number ? (sort[i] = sort[i] === 2 ? 0 : sort[i] === 0 ? 1 : 0) : (sort[i] = 2);
@@ -397,6 +462,8 @@ class WorkflowExec extends Component {
     this.setState({
       sort: sort,
     });
+
+    console.log(this.state);
   }
 
   changeView() {
@@ -408,13 +475,12 @@ class WorkflowExec extends Component {
     const detailsModal = this.state.detailsModal ? (
       <DetailsModal
         wfId={this.state.wfId}
-        modalHandler={this.showDetailsModal.bind(this)}
+        modalHandler={this.showDetailsModal}
         refreshTable={
           this.state.allData
             ? this.props.fetchNewData.bind(this, 1, this.state.defaultPages)
             : this.props.fetchParentWorkflows.bind(this, 1, this.state.defaultPages)
         }
-        show={this.state.detailsModal}
         onWorkflowIdClick={this.props.onWorkflowIdClick}
       />
     ) : null;
@@ -436,13 +502,13 @@ class WorkflowExec extends Component {
           <ButtonGroup size="sm" isAttached colorScheme="blue" onChange={this.changeView.bind(this)}>
             <Button
               variant={this.state.allData ? 'outline' : 'solid'}
-              onClick={this.state.allData ? this.changeView.bind(this) : null}
+              onClick={() => (this.state.allData ? this.changeView() : null)}
             >
               Hierarchy
             </Button>
             <Button
               variant={this.state.allData ? 'solid' : 'outline'}
-              onClick={this.state.allData ? null : this.changeView.bind(this)}
+              onClick={() => (this.state.allData ? null : this.changeView())}
             >
               Flat
             </Button>
@@ -456,7 +522,6 @@ class WorkflowExec extends Component {
               onChange={(e) => this.changeLabels(e)}
               selected={this.props.searchReducer.label}
               placeholder="Search by status."
-              ref={(ref) => (this._typeahead = ref)}
             />
           </Box>
           <Box flexGrow={1}>
@@ -474,7 +539,6 @@ class WorkflowExec extends Component {
             colorScheme="blue"
             onClick={() => {
               this.changeLabels([]);
-              this._typeahead.clear();
               this.changeQuery('');
             }}
           >
@@ -535,24 +599,25 @@ class WorkflowExec extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: ReturnType<RootStateOrAny>) => {
   return {
     searchReducer: state.searchReducer,
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch: Function) => {
   return {
-    updateByQuery: (query) => dispatch(searchActions.updateQuery(query)),
-    updateByLabel: (label) => dispatch(searchActions.updateLabel(label)),
-    fetchNewData: (viewedPage, defaultPages) => dispatch(searchActions.fetchNewData(viewedPage, defaultPages)),
-    fetchParentWorkflows: (viewedPage, defaultPages) =>
+    updateByQuery: (query: string) => dispatch(searchActions.updateQuery(query)),
+    updateByLabel: (label: string[]) => dispatch(searchActions.updateLabel(label)),
+    fetchNewData: (viewedPage: number, defaultPages: number) =>
+      dispatch(searchActions.fetchNewData(viewedPage, defaultPages)),
+    fetchParentWorkflows: (viewedPage: number, defaultPages: number) =>
       dispatch(searchActions.fetchParentWorkflows(viewedPage, defaultPages)),
-    updateParents: (children) => dispatch(searchActions.updateParents(children)),
-    deleteParents: (children) => dispatch(searchActions.deleteParents(children)),
-    updateSize: (size) => dispatch(searchActions.updateSize(size)),
-    checkedWorkflows: (checkedWfs) => dispatch(searchActions.checkedWorkflows(checkedWfs)),
-    setView: (value) => dispatch(bulkActions.setView(value)),
+    updateParents: (children: NestedExecutedWorkflow[]) => dispatch(searchActions.updateParents(children)),
+    deleteParents: (children: NestedExecutedWorkflow[]) => dispatch(searchActions.deleteParents(children)),
+    updateSize: (size: number) => dispatch(searchActions.updateSize(size)),
+    checkedWorkflows: (checkedWfs: number[]) => dispatch(searchActions.checkedWorkflows(checkedWfs)),
+    setView: (value: unknown) => dispatch(bulkActions.setView(value)),
   };
 };
 
