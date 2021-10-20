@@ -1,7 +1,6 @@
-import React, { VoidFunctionComponent } from 'react';
-import { Icon, IconButton, HStack, Table, Thead, Tbody, Tr, Th, Td, Text } from '@chakra-ui/react';
-import { EditIcon, ViewIcon, PhoneIcon } from '@chakra-ui/icons';
+import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
+import React, { VoidFunctionComponent } from 'react';
 import { VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
 
@@ -50,22 +49,19 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                   <IconButton
                     aria-label="edit"
                     size="sm"
-                    variant="unstyled"
-                    icon={<Icon size={12} as={EditIcon} />}
+                    icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                     onClick={() => onEditSiteButtonClick(unwrap(site.siteId))}
                   />
                   <IconButton
                     aria-label="detail"
                     size="sm"
-                    variant="unstyled"
-                    icon={<Icon size={12} as={ViewIcon} />}
+                    icon={<Icon size={12} as={FeatherIcon} icon="eye" />}
                     onClick={() => onDetailSiteButtonClick(unwrap(site.siteId))}
                   />
                   <IconButton
                     aria-label="devices"
                     size="sm"
-                    variant="unstyled"
-                    icon={<Icon size={12} as={PhoneIcon} />}
+                    icon={<Icon size={12} as={FeatherIcon} icon="cpu" />}
                     onClick={() => onDevicesSiteButtonClick(unwrap(site.siteId))}
                   />
                   <IconButton
