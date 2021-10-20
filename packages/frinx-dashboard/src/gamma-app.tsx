@@ -238,7 +238,16 @@ const GammaApp: VoidFunctionComponent = () => {
           />
         </Route>
         <Route path="/gamma/vpn-bearers">
-          <VpnBearerList />
+          <VpnBearerList
+            onEditVpnBearerClick={() => {
+              // eslint-disable-next-line no-console
+              console.log('edit click');
+            }}
+            onCreateVpnBearerClick={() => {
+              // eslint-disable-next-line no-console
+              console.log('create click');
+            }}
+          />
         </Route>
       </Switch>
     </UnistoreApiProvider>
