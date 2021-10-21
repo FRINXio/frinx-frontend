@@ -7,7 +7,6 @@ import {
   VpnSite,
   SiteNetworkAccess,
   RequestedCVlan,
-  IPConnection,
 } from './site-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 import RoutingProtocolForm from './routing-protocol-form';
@@ -176,7 +175,6 @@ const SiteNetAccessForm: FC<Props> = ({
   const [selectedBgpProfileItem] = bgpProfileItems.filter((i) => i.value === bgpRoutingProtocol.bgp?.bgpProfile);
 
   const ipv4Connection = unwrap(unwrap(networkAccessState.ipConnection).ipv4);
-  console.log(ipv4Connection.addresses?.prefixLength);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -473,11 +471,9 @@ const SiteNetAccessForm: FC<Props> = ({
           name="prefix-length"
           value={ipv4Connection.addresses?.prefixLength || ''}
           onChange={(event) => {
-            console.log(event.target.value);
             if (Number.isNaN(event.target.value)) {
               return;
             }
-            console.log('is number: ', Number(event.target.value));
             setNetworkAccessState({
               ...networkAccessState,
               ipConnection: {
