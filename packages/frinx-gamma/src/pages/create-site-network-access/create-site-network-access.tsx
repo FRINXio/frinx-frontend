@@ -43,7 +43,7 @@ const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
     bearerReference: '',
     requestedCLan: RequestedCVlan.l3vpn,
     requestedType: {
-      requestedType: 'dotlat',
+      requestedType: 'dot1ad',
       strict: false,
     },
   },
