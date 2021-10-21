@@ -146,7 +146,6 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
   if (!networkAccess) {
     return [];
   }
-  console.log(networkAccess);
 
   return networkAccess['site-network-access'].map((access) => {
     const apiQosProfiles = access.service.qos['qos-profile']['qos-profile'];
