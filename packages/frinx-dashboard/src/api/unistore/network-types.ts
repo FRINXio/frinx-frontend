@@ -611,28 +611,37 @@ export function decodeConnectionOutput(value: unknown): ConnectionOutput {
   return extractResult(ConnectionOutputValidator.decode(value));
 }
 
-const VpnBearerOutputValidator = t.type({
-  'vpn-bearers': optional(
+const VpnBearerItemsOutputValidator = t.type({
+  'vpn-bearer': t.array(
     t.type({
-      'vpn-bearer': t.array(
+      'sp-bearer-reference': t.string,
+      description: optional(t.string),
+      'ne-id': t.string,
+      'port-id': t.string,
+      status: optional(BearerStatusValidator),
+      carrier: optional(CarrierOutputValidator),
+      connection: optional(ConnectionOutputValidator),
+      'default-upstream-bearer': optional(t.string),
+      'evc-attachments': optional(
         t.type({
-          'sp-bearer-reference': t.string,
-          description: optional(t.string),
-          'ne-id': t.string,
-          'port-id': t.string,
-          status: optional(BearerStatusValidator),
-          carrier: optional(CarrierOutputValidator),
-          connection: optional(ConnectionOutputValidator),
-          'default-upstream-bearer': optional(t.string),
-          'evc-attachments': optional(
-            t.type({
-              'evc-attachment': t.array(EvcAttachmentOutputValidator),
-            }),
-          ),
+          'evc-attachment': t.array(EvcAttachmentOutputValidator),
         }),
       ),
     }),
   ),
+});
+export type VpnBearerItemsOutput = t.TypeOf<typeof VpnBearerItemsOutputValidator>;
+export type VpnBearerInput = VpnBearerItemsOutput;
+export function decodeVpnBearerItemsOutput(value: unknown): VpnBearerItemsOutput {
+  return extractResult(VpnBearerItemsOutputValidator.decode(value));
+}
+
+export type EvcAttachmentInput = {
+  'evc-attachment': EvcAttachmentOutput[];
+};
+
+const VpnBearerOutputValidator = t.type({
+  'vpn-bearers': optional(VpnBearerItemsOutputValidator),
 });
 
 export type VpnBearerOutput = t.TypeOf<typeof VpnBearerOutputValidator>;

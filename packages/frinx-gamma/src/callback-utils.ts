@@ -1,6 +1,7 @@
 import { ValidProviderIdentifiersOutput, VpnBearerOutput, VpnServicesOutput, VpnSitesOutput } from './network-types';
 import { VpnService } from './components/forms/service-types';
 import { VpnSite } from './components/forms/site-types';
+import { VpnBearer } from './components/forms/bearer-types';
 
 export type WorkflowPayload = {
   input: unknown;
@@ -25,6 +26,9 @@ export type Callbacks = {
   executeWorkflow: (payload: WorkflowPayload) => Promise<WorkflowExecPayload>;
   getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<unknown>;
   getVpnBearers: () => Promise<VpnBearerOutput>;
+  createVpnBearer: (bearer: VpnBearer) => Promise<void>;
+  editVpnBearer: (bearer: VpnBearer) => Promise<void>;
+  deleteVpnBearer: (id: string) => Promise<void>;
 };
 class CallbackUtils {
   private callbacks: Callbacks | null = null;

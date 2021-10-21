@@ -37,6 +37,8 @@ import {
   ConnectionOutput,
   EvcAttachmentOutput,
   VpnBearerOutput,
+  VpnBearerInput,
+  EvcAttachmentInput,
 } from '../../network-types';
 import unwrap from '../../helpers/unwrap';
 import { VpnBearer, BearerStatus, Carrier, Connection, EvcAttachment } from './bearer-types';
@@ -556,4 +558,86 @@ export function apiBearerToClientBearer(apiBearer: VpnBearerOutput): VpnBearer[]
       evcAttachments,
     };
   });
+}
+
+function clientBearerStatusToApiBearerStatus(status: BearerStatus): BearerStatusOutput {
+  const adminStatus = status.adminStatus
+    ? {
+        status: status.adminStatus.status || undefined,
+        'last-updated': status.adminStatus.lastUpdated || undefined,
+      }
+    : undefined;
+  const operStatus = status.operStatus
+    ? {
+        status: status.operStatus.status || undefined,
+        'last-updated': status.operStatus.lastUpdated || undefined,
+      }
+    : undefined;
+  return {
+    'admin-status': adminStatus,
+    'oper-status': operStatus,
+  };
+}
+
+function clientCarrierToApiCarrier(carrier: Carrier): CarrierOutput {
+  return {
+    'carrier-name': carrier.carrierName || undefined,
+    'carrier-reference': carrier.carrierReference || undefined,
+    'service-status': carrier.serviceStatus || undefined,
+    'service-type': carrier.serviceType || undefined,
+  };
+}
+
+function clientConnectionToApiConnection(connection: Connection): ConnectionOutput {
+  return {
+    'encapsulation-type': connection.encapsulationType || undefined,
+    'remote-ne-id': connection.remoteNeId || undefined,
+    'remote-port-id': connection.remotePortId || undefined,
+    'svlan-assignment-type': connection.svlanAssignmentType || undefined,
+    mtu: connection.mtu,
+    tpid: connection.tpId || undefined,
+  };
+}
+
+function clientEvcAttachmentsToApiEvcAttachments(attachments: EvcAttachment[]): EvcAttachmentInput | undefined {
+  if (!attachments.length) {
+    return undefined;
+  }
+
+  const result = attachments.map((a: EvcAttachment): EvcAttachmentOutput => {
+    return {
+      'evc-type': a.evcType,
+      'customer-name': a.customerName || undefined,
+      'circuit-reference': a.circuitReference,
+      'carrier-reference': a.carrierReference || undefined,
+      'svlan-id': a.svlanId || undefined,
+      status: a.status ? clientBearerStatusToApiBearerStatus(a.status) : undefined,
+      'input-bandwidth': a.inputBandwidth,
+      'qos-input-profile': a.qosInputProfile || undefined,
+      'upstream-bearer': a.upstreamBearer || undefined,
+    };
+  });
+
+  return {
+    'evc-attachment': result,
+  };
+}
+
+export function clientBearerToApiBearer(bearer: VpnBearer): VpnBearerInput {
+  const output: VpnBearerInput = {
+    'vpn-bearer': [
+      {
+        'sp-bearer-reference': bearer.spBearerReference,
+        description: bearer.description || undefined,
+        'ne-id': bearer.neId,
+        'port-id': bearer.portId,
+        status: bearer.status ? clientBearerStatusToApiBearerStatus(bearer.status) : undefined,
+        carrier: bearer.carrier ? clientCarrierToApiCarrier(bearer.carrier) : undefined,
+        connection: bearer.connection ? clientConnectionToApiConnection(bearer.connection) : undefined,
+        'default-upstream-bearer': bearer.defaultUpstreamBearer || undefined,
+        'evc-attachments': clientEvcAttachmentsToApiEvcAttachments(bearer.evcAttachments),
+      },
+    ],
+  };
+  return output;
 }

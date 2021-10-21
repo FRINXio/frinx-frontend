@@ -10,8 +10,9 @@ import {
   VpnSite,
   decodeVpnBearerOutput,
   VpnBearerOutput,
+  VpnBearer,
 } from './network-types';
-import { clientVpnServiceToApiVpnService, clientVpnSiteToApiVpnSite } from './converters';
+import { clientBearerToApiBearer, clientVpnServiceToApiVpnService, clientVpnSiteToApiVpnSite } from './converters';
 
 // data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers
 const UNICONFIG_SERVICE_URL =
@@ -79,4 +80,27 @@ export async function getVpnBearers(): Promise<VpnBearerOutput> {
   const data = decodeVpnBearerOutput(json);
 
   return data;
+}
+
+export async function createVpnBearer(bearer: VpnBearer): Promise<void> {
+  const body = clientBearerToApiBearer(bearer);
+  await sendPostRequest(
+    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers',
+    body,
+  );
+}
+
+export async function editVpnBearer(vpnBearer: VpnBearer): Promise<unknown> {
+  const body = clientBearerToApiBearer(vpnBearer);
+  const json = await sendPutRequest(
+    `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${vpnBearer.spBearerReference}`,
+    body,
+  );
+  return json;
+}
+
+export async function deleteVpnBearer(id: string): Promise<void> {
+  await sendDeleteRequest(
+    `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${id}`,
+  );
 }

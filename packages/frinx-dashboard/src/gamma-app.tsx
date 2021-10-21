@@ -35,6 +35,8 @@ const GammaApp: VoidFunctionComponent = () => {
         CreateDevice,
         EditDevice,
         VpnBearerList,
+        CreateBearer,
+        EditBearer,
         getUnistoreApiProvider,
       } = gammaImport;
 
@@ -53,6 +55,8 @@ const GammaApp: VoidFunctionComponent = () => {
         CreateDevice,
         EditDevice,
         VpnBearerList,
+        CreateBearer,
+        EditBearer,
         UnistoreApiProvider: getUnistoreApiProvider(callbacks),
       });
     });
@@ -77,6 +81,8 @@ const GammaApp: VoidFunctionComponent = () => {
     SiteList,
     SiteNetworkAccessList,
     VpnBearerList,
+    CreateBearer,
+    EditBearer,
     UnistoreApiProvider,
   } = components;
 
@@ -237,15 +243,35 @@ const GammaApp: VoidFunctionComponent = () => {
             }}
           />
         </Route>
-        <Route path="/gamma/vpn-bearers">
+
+        {/* bearers */}
+        <Route path="/gamma/vpn-bearers" exact>
           <VpnBearerList
-            onEditVpnBearerClick={() => {
-              // eslint-disable-next-line no-console
-              console.log('edit click');
+            onEditVpnBearerClick={(bearerId: string) => {
+              history.push(`/gamma/vpn-bearers/edit/${bearerId}`);
             }}
             onCreateVpnBearerClick={() => {
-              // eslint-disable-next-line no-console
-              console.log('create click');
+              history.push(`/gamma/vpn-bearers/add`);
+            }}
+          />
+        </Route>
+        <Route path="/gamma/vpn-bearers/add" exact>
+          <CreateBearer
+            onSuccess={() => {
+              history.push(`/gamma/vpn-bearers`);
+            }}
+            onCancel={() => {
+              history.push(`/gamma/vpn-bearers`);
+            }}
+          />
+        </Route>
+        <Route path="/gamma/vpn-bearers/edit/:bearerId" exact>
+          <EditBearer
+            onSuccess={() => {
+              history.push('/gamma/vpn-bearers');
+            }}
+            onCancel={() => {
+              history.push('/gamma/vpn-bearers');
             }}
           />
         </Route>
