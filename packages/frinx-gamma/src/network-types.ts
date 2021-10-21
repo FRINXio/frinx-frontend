@@ -226,14 +226,16 @@ export function decodeRoutingProtocolsOutput(value: unknown): RoutingProtocolsOu
 }
 
 const IPConnectionValidator = t.type({
-  oam: t.type({
-    bfd: optional(
-      t.type({
-        enabled: optional(t.boolean),
-        'profile-name': optional(t.string),
-      }),
-    ),
-  }),
+  oam: optional(
+    t.type({
+      bfd: optional(
+        t.type({
+          enabled: optional(t.boolean),
+          'profile-name': optional(t.string),
+        }),
+      ),
+    }),
+  ),
   ipv4: optional(
     t.type({
       'address-allocation-type': optional(t.string),
