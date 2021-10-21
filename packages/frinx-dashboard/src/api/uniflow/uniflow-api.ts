@@ -24,7 +24,7 @@ export async function getWorkflows(): Promise<Workflow[]> {
 // TODO: types, guards
 // Get schedules of workflows
 export async function getSchedules(): Promise<unknown> {
-  const scheduled = await sendGetRequest('/schedule/');
+  const scheduled = await sendGetRequest('/schedule');
 
   return scheduled;
 }
@@ -86,14 +86,14 @@ export async function getTaskDefinition(name: string): Promise<TaskDefinition> {
 // Delete a task definition
 export async function deleteTaskDefinition(name: string): Promise<TaskDefinition> {
   const query = '?archiveWorfklow=false';
-  const definition = await sendDeleteRequest(`/metadata/taskdef/${name}${query}`);
+  const definition = await sendDeleteRequest(`/metadata/taskdefs/${name}${query}`);
 
   return definition as TaskDefinition;
 }
 
 // Returns single workflow based on name and version
 export async function getWorkflow(name: string, version: string): Promise<Workflow> {
-  const response = await sendGetRequest(`/metadata/workflow/${name}/${version}`);
+  const response = await sendGetRequest(`/metadata/workflow/${name}?version=${version}`);
   // TODO: backend should return just 'Workflow' not '{result: Workflow}`
   const workflow = (response as { result: unknown }).result;
 
@@ -113,7 +113,7 @@ export async function deleteWorkflow(name: string, version: string): Promise<Wor
 
 // Register/Update new workflows
 export async function putWorkflow(workflows: Workflow[]): Promise<Workflow[]> {
-  const workflow = await sendPutRequest('/metadata/', workflows);
+  const workflow = await sendPutRequest('/metadata/workflow', workflows);
 
   return workflow as Workflow[];
 }
@@ -158,8 +158,15 @@ export async function getQueues(): Promise<Queue[]> {
 
 // TODO: Just copy-pasted for now, needs rework in uniflow-api
 // Returns list of running workflows
-export async function getWorkflowExecutions(query = 'status:"RUNNING"', start = 0, size = ''): Promise<unknown> {
-  const executions = sendGetRequest(`/executions/?q=&h=&freeText=${query}&start=${start}&size=${size}`);
+export async function getWorkflowExecutions(
+  workflowId = '*',
+  label = 'status:"RUNNING"',
+  start = 0,
+  size = '',
+): Promise<unknown> {
+  const executions = sendGetRequest(
+    `/executions/?workflowId=${workflowId}&status=${label}&start=${start}&size=${size}`,
+  );
 
   return executions;
 }
@@ -168,10 +175,11 @@ export async function getWorkflowExecutions(query = 'status:"RUNNING"', start = 
 // Returns list of running workflows in hierarchical strucutre
 export async function getWorkflowExecutionsHierarchical(
   query: string,
+  label: string,
   start?: number,
   size?: string,
 ): Promise<unknown> {
-  const executions = sendGetRequest(`/hierarchical/?freeText=${query}&start=${start}&size=${size}`);
+  const executions = sendGetRequest(`/hierarchical/?workflowId=${query}&status=${label}&start=${start}&size=${size}`);
 
   return executions;
 }
@@ -193,31 +201,31 @@ export async function executeWorkflow(workflowPayload: WorkflowPayload): Promise
 
 // Returns workflowIds of deleted workflow
 export async function terminateWorkflows(workflowIds: string[]): Promise<string[]> {
-  const workflowIdsRes = await sendDeleteRequest('/bulk/terminate', workflowIds);
+  const workflowIdsRes = await sendDeleteRequest('/workflow/bulk/terminate', workflowIds);
 
   return workflowIdsRes as string[];
 }
 
 export async function pauseWorkflows(workflowIds: string[]): Promise<string[]> {
-  const workflowIdsRes = await sendPutRequest('/bulk/pause', workflowIds);
+  const workflowIdsRes = await sendPutRequest('/workflow/bulk/pause', workflowIds);
 
   return workflowIdsRes as string[];
 }
 
 export async function resumeWorkflows(workflowIds: string[]): Promise<string[]> {
-  const workflowIdsRes = await sendPutRequest('/bulk/resume', workflowIds);
+  const workflowIdsRes = await sendPutRequest('/workflow/bulk/resume', workflowIds);
 
   return workflowIdsRes as string[];
 }
 
 export async function retryWorkflows(workflowIds: string[]): Promise<string[]> {
-  const workflowIdsRes = await sendPostRequest('/bulk/retry', workflowIds);
+  const workflowIdsRes = await sendPostRequest('/workflow/bulk/retry', workflowIds);
 
   return workflowIdsRes as string[];
 }
 
 export async function restartWorkflows(workflowIds: string[]): Promise<string[]> {
-  const workflowIdsRes = await sendPostRequest('/bulk/restart', workflowIds);
+  const workflowIdsRes = await sendPostRequest('/workflow/bulk/restart', workflowIds);
 
   return workflowIdsRes as string[];
 }

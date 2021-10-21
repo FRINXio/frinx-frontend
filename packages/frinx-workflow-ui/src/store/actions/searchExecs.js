@@ -21,28 +21,21 @@ export const updateQuery = (query) => {
 };
 
 const createQuery = ({ query, label }) => {
-  let q = '',
-    search = '';
-  if (query) {
-    for (let i = 0; i < query.length; i++) {
-      search += '[' + query[i].toUpperCase() + query[i].toLowerCase() + ']';
-    }
-    q += '(workflowId:' + query + '+workflowType:/.*' + search + '.*/)';
-  }
-  if (label.length) {
-    if (query) q += 'AND';
-    q += '(status:' + label + ')';
-  }
-  return q;
+  return { workflowId: query, label: label };
 };
 
 export const fetchNewData = (viewedPage, defaultPages) => {
   return (dispatch, getState) => {
     let q = createQuery(getState().searchReducer);
     let page = (viewedPage - 1) * defaultPages;
-    const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback(q, page, defaultPages);
+    const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback(
+      q.workflowId,
+      q.label,
+      page,
+      defaultPages,
+    );
 
-    getWorkflowExecutions(q, page, defaultPages).then((res) => {
+    getWorkflowExecutions(q.workflowId, q.label, page, defaultPages).then((res) => {
       if (res.result) {
         const data = res.result ? (res.result.hits ? res.result.hits : []) : [];
         dispatch(updateSize(res.result.totalHits));
@@ -64,7 +57,7 @@ export const fetchParentWorkflows = (viewedPage, defaultPages) => {
     let q = createQuery(getState().searchReducer);
     let getWorkflowExecutionsHierarchical = callbackUtils.getWorkflowExecutionsHierarchicalCallback();
 
-    getWorkflowExecutionsHierarchical(q, checkedWfs[page], defaultPages).then((res) => {
+    getWorkflowExecutionsHierarchical(q.workflowId, q.label, checkedWfs[page], defaultPages).then((res) => {
       if (res) {
         let parents = res.parents ? res.parents : [];
         let children = res.children ? res.children : [];
