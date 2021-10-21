@@ -12,4 +12,6 @@ export { default as DeviceList } from './pages/device-list/device-list';
 export { default as CreateDevice } from './pages/create-device/create-device';
 export { default as EditDevice } from './pages/edit-device/edit-device';
 export { default as VpnBearerList } from './pages/vpn-bearer-list/vpn-bearer-list';
+export { default as CreateBearer } from './pages/create-bearer/create-bearer';
+export { default as EditBearer } from './pages/edit-bearer/edit-bearer';
 export { getUnistoreApiProvider } from './unistore-api-provider';

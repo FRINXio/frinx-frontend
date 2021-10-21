@@ -24,3 +24,7 @@ export function generateNetworkAccessId(): string {
 export function generateDeviceId(): string {
   return `NETWORK_ACCESS_${getRandomString(8)}`;
 }
+
+export function generateBearerId(): string {
+  return `BEARER_${getRandomString(8)}`;
+}
