@@ -214,7 +214,7 @@ export function decodeRoutingProtocolItemOutput(value: unknown): RoutingProtocol
 }
 
 const RoutingProtocolsValidator = t.type({
-  'routing-protocol': t.array(RoutingProtocolItemValidator),
+  'routing-protocol': optional(t.array(RoutingProtocolItemValidator)),
 });
 
 export type RoutingProtocolsOutput = t.TypeOf<typeof RoutingProtocolsValidator>;
@@ -291,7 +291,7 @@ const SiteNetworkAccessValidator = t.type({
           }),
         }),
       }),
-      'routing-protocols': RoutingProtocolsValidator,
+      'routing-protocols': optional(RoutingProtocolsValidator),
     }),
   ),
 });
@@ -738,7 +738,7 @@ export type StaticRoutingType = {
 };
 export type BgpRoutingType = {
   addressFamily: 'ipv4';
-  autonomousSystem: number;
+  autonomousSystem: string;
   bgpProfile: string | null;
 };
 export type RoutingProtocol = {

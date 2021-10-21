@@ -111,11 +111,10 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
         <Input
           variant="filled"
           name="bgp-autonomous-system"
-          value={bgpProtocol ? unwrap(bgpProtocol.bgp).autonomousSystem : ''}
+          value={bgpProtocol.bgp ? bgpProtocol.bgp.autonomousSystem : ''}
           onChange={(event) => {
-            const value = Number(event.target.value);
-
-            if (Number.isNaN(value)) {
+            const { value } = event.target;
+            if (Number.isNaN(Number(value))) {
               return;
             }
 
@@ -124,7 +123,7 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
               type: 'bgp',
               bgp: {
                 ...oldBgpRoutingProtocol,
-                autonomousSystem: Number(value),
+                autonomousSystem: value,
               },
             };
             const newProtocols = [newBgpRoutingProtocol, staticProtocol];

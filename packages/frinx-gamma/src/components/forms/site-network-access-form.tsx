@@ -44,7 +44,7 @@ function getDefaultBgpRoutingProtocol(): RoutingProtocol {
     type: 'bgp',
     bgp: {
       addressFamily: 'ipv4',
-      autonomousSystem: 0,
+      autonomousSystem: '',
       bgpProfile: null,
     },
   };

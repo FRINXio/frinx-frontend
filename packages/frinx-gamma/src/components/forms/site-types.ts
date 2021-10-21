@@ -53,7 +53,7 @@ export type StaticRoutingType = {
 };
 export type BgpRoutingType = {
   addressFamily: 'ipv4';
-  autonomousSystem: number;
+  autonomousSystem: string;
   bgpProfile: string | null;
 };
 export type RoutingProtocol = {
