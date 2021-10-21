@@ -1,4 +1,4 @@
-import { Icon, IconButton, HStack, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
+import { Icon, IconButton, Table, Tbody, Td, Th, Thead, Tr, HStack } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { VpnBearer } from '../../components/forms/bearer-types';
