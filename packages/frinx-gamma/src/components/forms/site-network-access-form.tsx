@@ -1,5 +1,5 @@
 import React, { FC, FormEvent, useEffect, useState } from 'react';
-import { Divider, Button, Input, Select, Stack, FormControl, FormLabel } from '@chakra-ui/react';
+import { Divider, Button, Heading, Input, Select, Stack, FormControl, FormLabel } from '@chakra-ui/react';
 import {
   AccessPriority,
   MaximumRoutes,
@@ -7,6 +7,7 @@ import {
   VpnSite,
   SiteNetworkAccess,
   RequestedCVlan,
+  IPConnection,
 } from './site-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 import RoutingProtocolForm from './routing-protocol-form';
@@ -173,6 +174,9 @@ const SiteNetAccessForm: FC<Props> = ({
     };
   });
   const [selectedBgpProfileItem] = bgpProfileItems.filter((i) => i.value === bgpRoutingProtocol.bgp?.bgpProfile);
+
+  const ipv4Connection = unwrap(unwrap(networkAccessState.ipConnection).ipv4);
+  console.log(ipv4Connection.addresses?.prefixLength);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -389,6 +393,102 @@ const SiteNetAccessForm: FC<Props> = ({
             );
           })}
         </Select>
+      </FormControl>
+
+      <Heading size="sm">IP Connection</Heading>
+      <FormControl id="ip-address-allocation-type" my={6}>
+        <FormLabel>Address Allocation Type</FormLabel>
+        <Input
+          variant="filled"
+          name="ip-address-allocation-type"
+          value={ipv4Connection.addressAllocationType?.split(':').pop()}
+          onChange={(event) => {
+            setNetworkAccessState({
+              ...networkAccessState,
+              ipConnection: {
+                ...networkAccessState.ipConnection,
+                ipv4: {
+                  ...networkAccessState.ipConnection?.ipv4,
+                  addressAllocationType: event.target.value || undefined,
+                },
+              },
+            });
+          }}
+        />
+      </FormControl>
+      <FormControl id="ip-provider-address" my={6}>
+        <FormLabel>Provider Address</FormLabel>
+        <Input
+          variant="filled"
+          name="provider-address"
+          value={ipv4Connection.addresses?.providerAddress}
+          onChange={(event) => {
+            setNetworkAccessState({
+              ...networkAccessState,
+              ipConnection: {
+                ...networkAccessState.ipConnection,
+                ipv4: {
+                  ...networkAccessState.ipConnection?.ipv4,
+                  addresses: {
+                    ...networkAccessState.ipConnection?.ipv4?.addresses,
+                    providerAddress: event.target.value || undefined,
+                  },
+                },
+              },
+            });
+          }}
+        />
+      </FormControl>
+      <FormControl id="ip-customer-address" my={6}>
+        <FormLabel>Customer Address</FormLabel>
+        <Input
+          variant="filled"
+          name="customer-address"
+          value={ipv4Connection.addresses?.customerAddress}
+          onChange={(event) => {
+            setNetworkAccessState({
+              ...networkAccessState,
+              ipConnection: {
+                ...networkAccessState.ipConnection,
+                ipv4: {
+                  ...networkAccessState.ipConnection?.ipv4,
+                  addresses: {
+                    ...networkAccessState.ipConnection?.ipv4?.addresses,
+                    customerAddress: event.target.value || undefined,
+                  },
+                },
+              },
+            });
+          }}
+        />
+      </FormControl>
+      <FormControl id="ip-prefix-length" my={6}>
+        <FormLabel>Prefix Length</FormLabel>
+        <Input
+          variant="filled"
+          name="prefix-length"
+          value={ipv4Connection.addresses?.prefixLength || ''}
+          onChange={(event) => {
+            console.log(event.target.value);
+            if (Number.isNaN(event.target.value)) {
+              return;
+            }
+            console.log('is number: ', Number(event.target.value));
+            setNetworkAccessState({
+              ...networkAccessState,
+              ipConnection: {
+                ...networkAccessState.ipConnection,
+                ipv4: {
+                  ...networkAccessState.ipConnection?.ipv4,
+                  addresses: {
+                    ...networkAccessState.ipConnection?.ipv4?.addresses,
+                    prefixLength: Number(event.target.value) || undefined,
+                  },
+                },
+              },
+            });
+          }}
+        />
       </FormControl>
 
       <Divider my={4} />
