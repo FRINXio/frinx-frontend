@@ -46,7 +46,7 @@ export async function createVpnService(vpnService: VpnService): Promise<void> {
 }
 
 export async function getVpnSites(): Promise<VpnSitesOutput> {
-  const json = await sendGetRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites`);
+  const json = await sendGetRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites?content=config`);
   const data = decodeVpnSitesOutput(json);
   return data;
 }
