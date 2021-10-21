@@ -368,7 +368,7 @@ function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAcces
           'always-on': access.bearer.alwaysOn,
           'bearer-reference': access.bearer.bearerReference,
           'requested-type': {
-            'requested-type': access.bearer.requestedType.requestedType,
+            'requested-type': 'dot1ad',
             strict: access.bearer.requestedType.strict,
           },
           'requested-c-vlan': Number(access.bearer.requestedCLan),
