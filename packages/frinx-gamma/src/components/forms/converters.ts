@@ -128,7 +128,7 @@ export function apiRoutingProtocolToClientRoutingProtocol(routingProtocol: Routi
     bgp: bgpProtocol
       ? {
           addressFamily: 'ipv4',
-          autonomousSystem: bgpProtocol['autonomous-system'],
+          autonomousSystem: String(bgpProtocol['autonomous-system']),
           bgpProfile: bgpProtocol['bgp-profiles']['bgp-profile'][0].profile,
         }
       : undefined,
@@ -174,9 +174,12 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
     const apiQosProfiles = access.service.qos['qos-profile']['qos-profile'];
     const [clientQosProfile] = apiQosProfiles.length ? apiQosProfiles.map((p) => p.profile) : [''];
     const vpnAttachment = access['vpn-attachment'] ? access['vpn-attachment']['vpn-id'] : null;
-    const routingProtocols = access['routing-protocols']['routing-protocol'].map((p) => {
-      return apiRoutingProtocolToClientRoutingProtocol(p);
-    });
+    const routingProtocols =
+      access['routing-protocols'] && access['routing-protocols']['routing-protocol']
+        ? access['routing-protocols']['routing-protocol'].map((p) => {
+            return apiRoutingProtocolToClientRoutingProtocol(p);
+          })
+        : [];
     return {
       siteNetworkAccessId: access['site-network-access-id'],
       siteNetworkAccessType: access['site-network-access-type'] as SiteNetworkAccessType,
@@ -306,7 +309,7 @@ function clientRoutingProtocolsToApiRoutingProtocols(routingProtocols: RoutingPr
           'bgp-profile': [{ profile: p.bgp.bgpProfile || '' }] as [{ profile: string }],
         },
         'address-family': ['ipv4'] as ['ipv4'],
-        'autonomous-system': p.bgp.autonomousSystem,
+        'autonomous-system': Number(p.bgp.autonomousSystem),
       };
     }
     if (p.static) {

@@ -103,7 +103,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
             {selectedSite && selectedNetworkAccess && (
               <>
                 <SiteNetworkAccessForm
-                  mode="add"
+                  mode="edit"
                   qosProfiles={qosProfiles}
                   bfdProfiles={bfdProfiles}
                   bgpProfiles={bgpProfiles}

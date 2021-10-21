@@ -26,7 +26,7 @@ const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
       vrrp: 'ipv4',
       bgp: {
         addressFamily: 'ipv4',
-        autonomousSystem: 0,
+        autonomousSystem: '',
         bgpProfile: null,
       },
       static: [
