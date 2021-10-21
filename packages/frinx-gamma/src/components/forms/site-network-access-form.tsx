@@ -322,6 +322,9 @@ const SiteNetAccessForm: FC<Props> = ({
           name="qos-profile"
           value={networkAccessState.service.qosProfiles[0]}
           onChange={(event) => {
+            if (!event.target.value) {
+              return;
+            }
             setNetworkAccessState({
               ...networkAccessState,
               service: {
@@ -331,6 +334,7 @@ const SiteNetAccessForm: FC<Props> = ({
             });
           }}
         >
+          <option value="0">--- choose profile</option>
           {qosProfiles.map((p) => (
             <option key={`qos-profile-${p}`} value={p}>
               {p}
