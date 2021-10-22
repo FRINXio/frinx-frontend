@@ -359,6 +359,11 @@ export type CreateRoutingProtocolsInput = {
   'routing-protocol': CreateRoutingProtocolItem[];
 };
 
+export type CreateVpnAttachment = {
+  'vpn-id': string;
+  'site-role'?: string;
+};
+
 export type CreateIPConnectionInput = {
   oam?: {
     bfd?: {

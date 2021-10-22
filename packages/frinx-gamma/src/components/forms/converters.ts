@@ -29,6 +29,7 @@ import {
   CreateNetworkAccessInput,
   CreateRoutingProtocolItem,
   CreateRoutingProtocolsInput,
+  CreateVpnAttachment,
   SiteServiceOutput,
   IPConnectionOutput,
   CreateIPConnectionInput,
@@ -336,6 +337,12 @@ function clientRoutingProtocolsToApiRoutingProtocols(routingProtocols: RoutingPr
   };
 }
 
+function clientVpnAttachmentToApiVpnAttachment(vpnAttachment: string): CreateVpnAttachment {
+  return {
+    'vpn-id': vpnAttachment,
+  };
+}
+
 function clientIPConnectionToApiIPConnection(ipConnection: IPConnection): CreateIPConnectionInput {
   const output: CreateIPConnectionInput = {};
 
@@ -411,6 +418,9 @@ function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAcces
           },
         },
         'routing-protocols': clientRoutingProtocolsToApiRoutingProtocols(access.routingProtocols),
+        'vpn-attachment': access.vpnAttachment
+          ? clientVpnAttachmentToApiVpnAttachment(access.vpnAttachment)
+          : undefined,
       };
     }),
   };
