@@ -1,18 +1,16 @@
 import { Button, Divider, FormControl, FormLabel, Input, Stack } from '@chakra-ui/react';
 import React, { FormEvent, useState, VoidFunctionComponent } from 'react';
-import unwrap from '../../helpers/unwrap';
-import { SiteDevice, CustomerLocation } from './site-types';
-import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
+import { SiteDevice } from './site-types';
 
 type Props = {
   siteId: string;
   device: SiteDevice;
-  locations: CustomerLocation[];
+  locationId: string;
   onSubmit: (device: SiteDevice) => void;
   onCancel: () => void;
 };
 
-const CreateDeviceForm: VoidFunctionComponent<Props> = ({ device, locations, onSubmit, onCancel }) => {
+const CreateDeviceForm: VoidFunctionComponent<Props> = ({ device, locationId, onSubmit, onCancel }) => {
   const [vpnDevice, setVpnDevice] = useState<SiteDevice>(device);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -20,12 +18,6 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ device, locations, onS
     onSubmit(vpnDevice);
   };
 
-  const locationItems = locations.map((l) => ({
-    label: `${l.street}, ${l.city}, (${l.locationId})`,
-    value: unwrap(l.locationId),
-  }));
-
-  const [selectedLocationItem] = locationItems.filter((l) => l.value === vpnDevice.locationId);
   return (
     <form onSubmit={handleSubmit}>
       <FormControl id="site-device-id" my={6}>
@@ -45,16 +37,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ device, locations, onS
 
       <FormControl id="device-locations" my={6}>
         <FormLabel>Location ID</FormLabel>
-        <Autocomplete2
-          items={locationItems}
-          selectedItem={selectedLocationItem}
-          onChange={(item?: Item | null) => {
-            setVpnDevice({
-              ...vpnDevice,
-              locationId: item ? item.value : null,
-            });
-          }}
-        />
+        <Input type="text" variant="filled" value={locationId} isReadOnly />
       </FormControl>
       <FormControl my={6}>
         <FormLabel>Management IP</FormLabel>

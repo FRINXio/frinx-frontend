@@ -5,18 +5,20 @@ import { CountryCode, CustomerLocation } from './site-types';
 type Props = {
   location: CustomerLocation;
   buttonText: string;
-  onChange: (location: CustomerLocation) => void;
+  onSubmit: (location: CustomerLocation) => void;
+  onCancel: () => void;
 };
 
-const CustomerLocationForm: FC<Props> = ({ location, buttonText, onChange }) => {
+const CustomerLocationForm: FC<Props> = ({ location, buttonText, onSubmit, onCancel }) => {
   const [formState, setFormState] = useState(location);
 
-  const handleChange = () => {
-    onChange(formState);
-  };
-
   return (
-    <>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit(formState);
+      }}
+    >
       <FormControl id="customer-locations-street" my={6}>
         <FormLabel>Street</FormLabel>
         <Input
@@ -91,11 +93,12 @@ const CustomerLocationForm: FC<Props> = ({ location, buttonText, onChange }) => 
         </Select>
       </FormControl>
       <Box my={6}>
-        <Button type="button" colorScheme="blue" onClick={handleChange}>
+        <Button type="submit" colorScheme="blue">
           {buttonText}
         </Button>
+        <Button onClick={onCancel}>Cancel</Button>
       </Box>
-    </>
+    </form>
   );
 };
 

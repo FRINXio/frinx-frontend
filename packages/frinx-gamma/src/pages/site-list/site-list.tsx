@@ -11,14 +11,14 @@ import CommitStatusModal from '../../components/commit-status-modal/commit-statu
 type Props = {
   onCreateVpnSiteClick: () => void;
   onEditVpnSiteClick: (siteId: string) => void;
-  onDevicesVpnSiteClick: (siteId: string) => void;
+  onLocationsVpnSiteClick: (siteId: string) => void;
   onDetailVpnSiteClick: (siteId: string) => void;
 };
 
 const SiteListPage: VoidFunctionComponent<Props> = ({
   onCreateVpnSiteClick,
   onEditVpnSiteClick,
-  onDevicesVpnSiteClick,
+  onLocationsVpnSiteClick,
   onDetailVpnSiteClick,
 }) => {
   const [sites, setSites] = useState<VpnSite[] | null>(null);
@@ -102,7 +102,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
             <SiteTable
               onEditSiteButtonClick={onEditVpnSiteClick}
               onDetailSiteButtonClick={onDetailVpnSiteClick}
-              onDevicesSiteButtonClick={onDevicesVpnSiteClick}
+              onLocationsSiteButtonClick={onLocationsVpnSiteClick}
               onDeleteSiteButtonClick={handleDeleteButtonClick}
               sites={sites}
             />

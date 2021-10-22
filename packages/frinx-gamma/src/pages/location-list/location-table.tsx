@@ -5,44 +5,46 @@ import { VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
 
 type Props = {
-  sites: VpnSite[];
-  onEditSiteButtonClick: (siteId: string) => void;
-  onDetailSiteButtonClick: (siteId: string) => void;
-  onLocationsSiteButtonClick: (siteId: string) => void;
-  onDeleteSiteButtonClick: (siteId: string) => void;
+  site: VpnSite;
+  onEditLocationButtonClick: (siteId: string, locationId: string) => void;
+  onDeleteLocationButtonClick: (siteId: string) => void;
+  onDevicesSiteButtonClick: (siteId: string, locationId: string) => void;
 };
 
-const SiteTable: VoidFunctionComponent<Props> = ({
-  sites,
-  onEditSiteButtonClick,
-  onDetailSiteButtonClick,
-  onLocationsSiteButtonClick,
-  onDeleteSiteButtonClick,
+const LocationTable: VoidFunctionComponent<Props> = ({
+  site,
+  onDeleteLocationButtonClick,
+  onEditLocationButtonClick,
+  onDevicesSiteButtonClick,
 }) => {
   return (
     <Table background="white" size="lg">
       <Thead>
         <Tr>
           <Th>Id</Th>
-          <Th>Management Type</Th>
-          <Th>Maximum Routes</Th>
+          <Th>City</Th>
+          <Th>Postal code</Th>
+          <Th>Street</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
       <Tbody>
-        {sites.map((site) => {
+        {site.customerLocations.map((location) => {
           return (
-            <Tr key={site.siteId}>
+            <Tr key={location.locationId}>
               <Td>
                 <Text as="span" fontWeight={600}>
-                  {site.siteId}
+                  {location.locationId}
                 </Text>
               </Td>
               <Td>
-                <Text as="span">{site.siteManagementType}</Text>
+                <Text as="span">{location.city}</Text>
               </Td>
               <Td>
-                <Text as="span">{site.maximumRoutes}</Text>
+                <Text as="span">{location.postalCode}</Text>
+              </Td>
+              <Td>
+                <Text as="span">{location.street}</Text>
               </Td>
               <Td>
                 <HStack>
@@ -50,27 +52,25 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                     aria-label="edit"
                     size="sm"
                     icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                    onClick={() => onEditSiteButtonClick(unwrap(site.siteId))}
-                  />
-                  <IconButton
-                    aria-label="detail"
-                    size="sm"
-                    icon={<Icon size={12} as={FeatherIcon} icon="eye" />}
-                    onClick={() => onDetailSiteButtonClick(unwrap(site.siteId))}
+                    onClick={() => {
+                      onEditLocationButtonClick(unwrap(site.siteId), unwrap(location.locationId));
+                    }}
                   />
                   <IconButton
                     aria-label="devices"
                     size="sm"
-                    icon={<Icon size={12} as={FeatherIcon} icon="crosshair" />}
-                    onClick={() => onLocationsSiteButtonClick(unwrap(site.siteId))}
+                    icon={<Icon size={12} as={FeatherIcon} icon="cpu" />}
+                    onClick={() => {
+                      onDevicesSiteButtonClick(unwrap(site.siteId), unwrap(location.locationId));
+                    }}
                   />
                   <IconButton
-                    aria-label="Delete site"
+                    aria-label="Delete device"
                     size="sm"
                     colorScheme="red"
                     icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
                     onClick={() => {
-                      onDeleteSiteButtonClick(unwrap(site.siteId));
+                      onDeleteLocationButtonClick(unwrap(location.locationId));
                     }}
                   />
                 </HStack>
@@ -83,4 +83,4 @@ const SiteTable: VoidFunctionComponent<Props> = ({
   );
 };
 
-export default SiteTable;
+export default LocationTable;

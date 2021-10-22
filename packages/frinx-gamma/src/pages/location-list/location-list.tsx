@@ -6,23 +6,25 @@ import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-de
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
-import DeviceTable from './device-table';
+import LocationTable from './location-table';
 
 type Props = {
-  onCreateDeviceClick: (siteId: string, locationId: string) => void;
-  onEditDeviceClick: (siteId: string, locationId: string, deviceId: string) => void;
-  onLocationListClick: (siteId: string) => void;
+  onCreateLocationClick: (siteId: string) => void;
+  onEditLocationClick: (siteId: string, locationId: string) => void;
+  onDevicesVpnSiteClick: (siteId: string, locationId: string) => void;
+  onSiteListClick: () => void;
 };
 
-const DeviceListPage: VoidFunctionComponent<Props> = ({
-  onCreateDeviceClick,
-  onEditDeviceClick,
-  onLocationListClick,
+const LocationListPage: VoidFunctionComponent<Props> = ({
+  onCreateLocationClick,
+  onEditLocationClick,
+  onDevicesVpnSiteClick,
+  onSiteListClick,
 }) => {
   const [site, setSite] = useState<VpnSite | null>(null);
-  const [deviceIdToDelete, setDeviceIdToDelete] = useState<string | null>(null);
+  const [locationIdToDelete, setLocationIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
-  const { siteId, locationId } = useParams<{ siteId: string; locationId: string }>();
+  const { siteId } = useParams<{ siteId: string }>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,7 +39,7 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
   }, [siteId]);
 
   function handleDeleteButtonClick(deviceId: string) {
-    setDeviceIdToDelete(deviceId);
+    setLocationIdToDelete(deviceId);
     deleteModalDisclosure.onOpen();
   }
 
@@ -53,43 +55,43 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
         onConfirmBtnClick={() => {
           const editedVpnSite: VpnSite = {
             ...site,
-            siteDevices: site.siteDevices.filter((s) => s.deviceId !== deviceIdToDelete),
+            customerLocations: site.customerLocations.filter((s) => s.locationId !== locationIdToDelete),
           };
           callbackUtils.getCallbacks.editVpnSite(editedVpnSite).then(() => {
             setSite(editedVpnSite);
             deleteModalDisclosure.onClose();
           });
         }}
-        title="Delete device"
+        title="Delete location"
       >
         Are you sure? You can&apos;t undo this action afterwards.
       </ConfirmDeleteModal>
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h2" size="lg">
-            Devices (Site: {site.siteId} | Location: {locationId})
+            Locations (Site: {site.siteId})
           </Heading>
           <Button
             colorScheme="blue"
             onClick={() => {
-              onCreateDeviceClick(siteId, locationId);
+              onCreateLocationClick(siteId);
             }}
           >
-            Add device
+            Add location
           </Button>
         </Flex>
         <Box>
-          <DeviceTable
-            locationId={locationId}
-            onEditDeviceButtonClick={onEditDeviceClick}
-            onDeleteDeviceButtonClick={handleDeleteButtonClick}
+          <LocationTable
+            onDeleteLocationButtonClick={handleDeleteButtonClick}
+            onEditLocationButtonClick={onEditLocationClick}
+            onDevicesSiteButtonClick={onDevicesVpnSiteClick}
             site={site}
           />
         </Box>
         <Box py={6}>
           <Button
             onClick={() => {
-              onLocationListClick(siteId);
+              onSiteListClick();
             }}
             colorScheme="blue"
           >
@@ -101,4 +103,4 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
   );
 };
 
-export default DeviceListPage;
+export default LocationListPage;

@@ -7,15 +7,15 @@ import DeviceForm from '../../components/forms/device-form';
 import { SiteDevice, VpnSite } from '../../components/forms/site-types';
 import callbackUtils from '../../callback-utils';
 
-const getDefaultDevice = (): SiteDevice => ({
+const getDefaultDevice = (locationId: string): SiteDevice => ({
   deviceId: '',
-  locationId: '',
   managementIP: '',
+  locationId,
 });
 
 type Props = {
-  onSuccess: (siteId: string) => void;
-  onCancel: (siteId: string) => void;
+  onSuccess: (siteId: string, locationId: string) => void;
+  onCancel: (siteId: string, locationId: string) => void;
 };
 
 function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
@@ -25,7 +25,7 @@ function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
 
 const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
-  const { siteId } = useParams<{ siteId: string }>();
+  const { siteId, locationId } = useParams<{ siteId: string; locationId: string }>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,24 +56,29 @@ const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
     await callbacks.editVpnSite(editedSite);
     // eslint-disable-next-line no-console
     console.log('site saved: network access added to site');
-    onSuccess(unwrap(siteId));
+    onSuccess(unwrap(siteId), locationId);
   };
 
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    onCancel(unwrap(selectedSite?.siteId));
+    onCancel(unwrap(selectedSite?.siteId), locationId);
   };
 
   return (
     selectedSite && (
       <Container>
         <Box padding={6} margin={6} background="white">
-          <Heading size="md">Add Device To Site: {siteId} </Heading>
+          <Box>
+            <Heading size="md" marginBottom={2}>
+              Add Device
+            </Heading>
+            <Heading size="sm">To Site: {siteId}</Heading>
+          </Box>
           <DeviceForm
             siteId={unwrap(selectedSite.siteId)}
-            device={getDefaultDevice()}
-            locations={selectedSite.customerLocations}
+            device={getDefaultDevice(locationId)}
+            locationId={locationId}
             onSubmit={handleSubmit}
             onCancel={handleCancel}
           />
