@@ -12,9 +12,9 @@ import {
   TagLabel,
   TagCloseButton,
 } from '@chakra-ui/react';
-import { v4 as uuid4 } from 'uuid';
+// import { v4 as uuid4 } from 'uuid';
 import { CustomerLocation, SiteDevice, SiteManagementType, VpnSite, MaximumRoutes } from './site-types';
-import CustomerLocationForm from './customer-location-form';
+// import CustomerLocationForm from './customer-location-form';
 import SiteDeviceForm from './site-device-form';
 import Autocomplete from '../autocomplete/autocomplete';
 import unwrap from '../../helpers/unwrap';
@@ -29,13 +29,13 @@ type Props = {
   onSiteChange?: (s: VpnSite) => void;
 };
 
-const getDefaultCustomerLocation = (): CustomerLocation => ({
-  city: '',
-  street: '',
-  postalCode: '',
-  state: '',
-  countryCode: 'UK',
-});
+// const getDefaultCustomerLocation = (): CustomerLocation => ({
+//   city: '',
+//   street: '',
+//   postalCode: '',
+//   state: '',
+//   countryCode: 'UK',
+// });
 
 const getDefaultSiteDevice = (): SiteDevice => ({
   deviceId: '',
@@ -58,26 +58,26 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
     onSubmit(siteState);
   };
 
-  const handleCustomerLocationAdd = (location: CustomerLocation) => {
-    const locationWithRandomId = {
-      ...location,
-      locationId: uuid4(),
-    };
-    const newCustomerLocations = [...siteState.customerLocations, locationWithRandomId];
-    setSiteState({
-      ...siteState,
-      customerLocations: newCustomerLocations,
-    });
-    setCustomerLocationsForm(null);
-  };
+  // const handleCustomerLocationAdd = (location: CustomerLocation) => {
+  //   const locationWithRandomId = {
+  //     ...location,
+  //     locationId: uuid4(),
+  //   };
+  //   const newCustomerLocations = [...siteState.customerLocations, locationWithRandomId];
+  //   setSiteState({
+  //     ...siteState,
+  //     customerLocations: newCustomerLocations,
+  //   });
+  //   setCustomerLocationsForm(null);
+  // };
 
-  const handleCustomerLocationRemove = (locationId: string) => {
-    const newCustomerLocations = siteState.customerLocations.filter((cl) => cl.locationId !== locationId);
-    setSiteState({
-      ...siteState,
-      customerLocations: newCustomerLocations,
-    });
-  };
+  // const handleCustomerLocationRemove = (locationId: string) => {
+  //   const newCustomerLocations = siteState.customerLocations.filter((cl) => cl.locationId !== locationId);
+  //   setSiteState({
+  //     ...siteState,
+  //     customerLocations: newCustomerLocations,
+  //   });
+  // };
 
   const handleSiteDeviceAdd = (device: SiteDevice) => {
     if (!device.deviceId) {
