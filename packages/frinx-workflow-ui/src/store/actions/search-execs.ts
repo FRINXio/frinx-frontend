@@ -1,4 +1,4 @@
-import { sortBy } from 'lodash';
+import { isEmpty, sortBy } from 'lodash';
 import { RootStateOrAny } from 'react-redux';
 import { Dispatch, Store } from 'redux';
 import { ExecutedWorkflow, ExecutedWorkflowsFlat, NestedExecutedWorkflow } from '../../types/types';
@@ -23,29 +23,16 @@ export const updateQuery = (query: string) => {
   return { type: UPDATE_QUERY, query };
 };
 
-const createQuery = ({ query, label }: { query: string; label: string }): string => {
-  let q = '',
-    search = '';
-  if (query) {
-    for (let i = 0; i < query.length; i++) {
-      search += '[' + query[i].toUpperCase() + query[i].toLowerCase() + ']';
-    }
-    q += '(workflowId:' + query + '+workflowType:/.*' + search + '.*/)';
-  }
-  if (label.length) {
-    if (query) q += 'AND';
-    q += '(status:' + label + ')';
-  }
-  return q;
-};
-
-export const fetchNewData = (viewedPage: number, defaultPages: number) => {
+export const fetchNewData = (workflowName: string, viewedPage: number, defaultPages: number) => {
   return (dispatch: Dispatch, getState: ReturnType<RootStateOrAny>) => {
-    const q = createQuery(getState().searchReducer);
+    const { label } = getState().searchReducer;
     const page = (viewedPage - 1) * defaultPages;
     const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback();
 
-    getWorkflowExecutions(q, page, defaultPages).then((res: ExecutedWorkflowsFlat) => {
+    const wfLabel = !isEmpty(label) ? label : '';
+    const wfName = !isEmpty(workflowName) ? workflowName : '';
+
+    getWorkflowExecutions(wfName, wfLabel, page, defaultPages.toString()).then((res: ExecutedWorkflowsFlat) => {
       if (res.result) {
         const data = res.result ? (res.result.hits ? res.result.hits : []) : [];
         dispatch(updateSize(res.result.totalHits));
@@ -59,15 +46,17 @@ export const receiveNewData = (data: ExecutedWorkflow[]) => {
   return { type: RECEIVE_NEW_DATA, data };
 };
 
-export const fetchParentWorkflows = (viewedPage: number, defaultPages: number) => {
+export const fetchParentWorkflows = (workflowName: string, viewedPage: number, defaultPages: number) => {
   return (dispatch: Dispatch, getState: ReturnType<RootStateOrAny>) => {
     const page = viewedPage - 1;
 
-    const { checkedWfs, size } = getState().searchReducer;
-    const q = createQuery(getState().searchReducer);
+    const { checkedWfs, size, label } = getState().searchReducer;
     const getWorkflowExecutionsHierarchical = callbackUtils.getWorkflowExecutionsHierarchicalCallback();
 
-    getWorkflowExecutionsHierarchical(q, checkedWfs[page], defaultPages)
+    const wfLabel = !isEmpty(label) ? label : '';
+    const wfName = !isEmpty(workflowName) ? workflowName : '';
+
+    getWorkflowExecutionsHierarchical(wfName, wfLabel, checkedWfs[page], defaultPages.toString())
       .then((res) => {
         if (res) {
           const parents = res.parents ? res.parents : [];

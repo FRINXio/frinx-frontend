@@ -101,10 +101,10 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
       });
     }
     if (state.showFlat) {
-      fetchNewData(state.viewedPage, state.defaultPages);
+      fetchNewData(state.wfId, state.viewedPage, state.defaultPages);
     } else {
       checkedWorkflows([0]);
-      fetchParentWorkflows(state.viewedPage, state.defaultPages);
+      fetchParentWorkflows(state.wfId, state.viewedPage, state.defaultPages);
       update([], []);
     }
   }, [query, state.showFlat]);
@@ -175,11 +175,11 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
 
   const setCountPages = (defaultPages: number, pagesCount: number) => {
     if (state.showFlat) {
-      fetchNewData(1, defaultPages);
+      fetchNewData(state.wfId, 1, defaultPages);
     } else {
       updateSize(1);
       checkedWorkflows([0]);
-      fetchParentWorkflows(1, defaultPages);
+      fetchParentWorkflows(state.wfId, 1, defaultPages);
       state.openParentWfs.forEach((parent) => showChildrenWorkflows(parent, null, null));
       update([], []);
     }
@@ -196,9 +196,9 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
 
   const setViewPage = (page: number) => {
     if (state.showFlat) {
-      fetchNewData(page, state.defaultPages);
+      fetchNewData(state.wfId, page, state.defaultPages);
     } else {
-      fetchParentWorkflows(page, state.defaultPages);
+      fetchParentWorkflows(state.wfId, page, state.defaultPages);
       state.openParentWfs.forEach((parent) => showChildrenWorkflows(parent, null, null));
       update([], []);
     }
@@ -320,7 +320,9 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
       return {
         ...prev,
         timeout: setTimeout(() => {
-          state.showFlat ? fetchNewData(1, state.defaultPages) : fetchParentWorkflows(1, state.defaultPages);
+          state.showFlat
+            ? fetchNewData(state.wfId, 1, state.defaultPages)
+            : fetchParentWorkflows(state.wfId, 1, state.defaultPages);
         }, 300),
         viewedPage: 1,
         sort: [2, 2, 2],
@@ -331,13 +333,13 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
   const changeLabels = (e: string[]) => {
     updateByLabel(e);
     if (state.showFlat) {
-      fetchNewData(1, state.defaultPages);
+      fetchNewData(state.wfId, 1, state.defaultPages);
     } else {
       state.openParentWfs.forEach((parent) => showChildrenWorkflows(parent, null, null));
       update([], []);
       updateSize(1);
       checkedWorkflows([0]);
-      fetchParentWorkflows(1, state.defaultPages);
+      fetchParentWorkflows(state.wfId, 1, state.defaultPages);
     }
     setState((prev) => ({
       ...prev,
@@ -371,7 +373,9 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
       wfId={state.wfId}
       modalHandler={showDetailsModal}
       refreshTable={() =>
-        state.showFlat ? fetchNewData(1, state.defaultPages) : fetchParentWorkflows(1, state.defaultPages)
+        state.showFlat
+          ? fetchNewData(state.wfId, 1, state.defaultPages)
+          : fetchParentWorkflows(state.wfId, 1, state.defaultPages)
       }
       onWorkflowIdClick={onWorkflowIdClick}
     />
@@ -438,10 +442,10 @@ const mapDispatchToProps = (dispatch: Function) => {
   return {
     updateByQuery: (query: string) => dispatch(searchActions.updateQuery(query)),
     updateByLabel: (label: string[]) => dispatch(searchActions.updateLabel(label)),
-    fetchNewData: (viewedPage: number, defaultPages: number) =>
-      dispatch(searchActions.fetchNewData(viewedPage, defaultPages)),
-    fetchParentWorkflows: (viewedPage: number, defaultPages: number) =>
-      dispatch(searchActions.fetchParentWorkflows(viewedPage, defaultPages)),
+    fetchNewData: (wfName: string, viewedPage: number, defaultPages: number) =>
+      dispatch(searchActions.fetchNewData(wfName, viewedPage, defaultPages)),
+    fetchParentWorkflows: (wfName: string, viewedPage: number, defaultPages: number) =>
+      dispatch(searchActions.fetchParentWorkflows(wfName, viewedPage, defaultPages)),
     updateParents: (children: NestedExecutedWorkflow[]) => dispatch(searchActions.updateParents(children)),
     deleteParents: (children: NestedExecutedWorkflow[]) => dispatch(searchActions.deleteParents(children)),
     updateSize: (size: number) => dispatch(searchActions.updateSize(size)),
