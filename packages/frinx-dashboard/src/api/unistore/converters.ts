@@ -316,19 +316,27 @@ function clientVpnAttachmentToApiVpnAttachment(vpnAttachment: string): CreateVpn
 }
 
 function clientIPConnectionToApiIPConnection(ipConnection: IPConnection): CreateIPConnectionInput {
-  const output: CreateIPConnectionInput = {};
+  // TODO: fix this hardcoded oam
+  const output: CreateIPConnectionInput = {
+    oam: {
+      bfd: {
+        enabled: false,
+        'profile-name': '500ms',
+      },
+    },
+  };
 
-  if (ipConnection.oam) {
-    output.oam = {};
+  // if (ipConnection.oam) {
+  //   output.oam = {};
 
-    if (ipConnection.oam.bfd) {
-      const { bfd } = ipConnection.oam;
-      output.oam.bfd = {
-        enabled: bfd?.enabled,
-        'profile-name': bfd?.profileName,
-      };
-    }
-  }
+  //   if (ipConnection.oam.bfd) {
+  //     const { bfd } = ipConnection.oam;
+  //     output.oam.bfd = {
+  //       enabled: bfd?.enabled,
+  //       'profile-name': bfd?.profileName,
+  //     };
+  //   }
+  // }
   if (ipConnection.ipv4) {
     output.ipv4 = {
       'address-allocation-type': ipConnection.ipv4?.addressAllocationType,
