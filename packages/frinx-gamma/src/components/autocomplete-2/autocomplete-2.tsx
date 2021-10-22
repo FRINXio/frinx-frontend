@@ -14,6 +14,7 @@ type Props = {
   inputVariant?: InputProps['variant'];
   selectedItem: Item | null | undefined;
   onCreateItem?: (item: Item) => void;
+  isDisabled?: boolean;
 };
 
 // we wanna remove 'id' and 'name' from props returned from `useCombobox`
@@ -23,7 +24,14 @@ function getStrippedInputProps(inputProps: InputProps): Omit<InputProps, 'id' | 
   return rest;
 }
 
-const Autocomplete2: VoidFunctionComponent<Props> = ({ items, onCreateItem, onChange, inputVariant, selectedItem }) => {
+const Autocomplete2: VoidFunctionComponent<Props> = ({
+  items,
+  onCreateItem,
+  onChange,
+  inputVariant,
+  selectedItem,
+  isDisabled,
+}) => {
   const [isCreating, setIsCreating] = useState(false);
   const [inputItems, setInputItems] = useState(items);
 
@@ -88,9 +96,10 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({ items, onCreateItem, onCh
   return (
     <>
       <InputGroup {...getComboboxProps()} position="relative">
-        <Input variant={inputVariant} {...getStrippedInputProps(getInputProps())} />
+        <Input isDisabled={isDisabled} variant={inputVariant} {...getStrippedInputProps(getInputProps())} />
         <InputRightElement>
           <IconButton
+            isDisabled={isDisabled}
             variant="ghost"
             size="sm"
             type="button"

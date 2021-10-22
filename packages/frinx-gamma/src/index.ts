@@ -14,4 +14,7 @@ export { default as EditDevice } from './pages/edit-device/edit-device';
 export { default as VpnBearerList } from './pages/vpn-bearer-list/vpn-bearer-list';
 export { default as CreateBearer } from './pages/create-bearer/create-bearer';
 export { default as EditBearer } from './pages/edit-bearer/edit-bearer';
+export { default as LocationList } from './pages/location-list/location-list';
+export { default as CreateLocation } from './pages/create-location/create-location';
+export { default as EditLocation } from './pages/edit-location/edit-location';
 export { getUnistoreApiProvider } from './unistore-api-provider';
