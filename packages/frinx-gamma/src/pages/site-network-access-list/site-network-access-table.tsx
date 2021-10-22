@@ -58,7 +58,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                     colorScheme="red"
                     icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
                     onClick={() => {
-                      onDeleteSiteNetworkAccessButtonClick(unwrap(site.siteId));
+                      onDeleteSiteNetworkAccessButtonClick(unwrap(access.siteNetworkAccessId));
                     }}
                   />
                 </HStack>
