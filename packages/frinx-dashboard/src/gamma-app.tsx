@@ -1,9 +1,8 @@
 import { FC } from 'beautiful-react-diagrams/node_modules/@types/react';
-import React, { VoidFunctionComponent, useState, useEffect } from 'react';
-import { useHistory, Switch, Route } from 'react-router-dom';
-import * as unistoreCallbacks from './api/unistore/unistore';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import { executeWorkflow, getWorkflowInstanceDetail } from './api/uniflow/uniflow-api';
-import { string } from 'fp-ts';
+import * as unistoreCallbacks from './api/unistore/unistore';
 
 const callbacks = {
   ...unistoreCallbacks,
