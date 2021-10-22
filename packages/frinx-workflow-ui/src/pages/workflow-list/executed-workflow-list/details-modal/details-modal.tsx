@@ -39,6 +39,7 @@ import TaskTable from './task-table';
 import useResponseToasts from '../../../../hooks/use-response-toasts';
 import { Task } from '../../../../types/task';
 import { WorkflowPayload } from '../../../../types/uniflow-types';
+import { Workflow } from '../../../../types/types';
 
 type Props = {
   wfId: string;
@@ -47,28 +48,24 @@ type Props = {
   onWorkflowIdClick: (wfId: string) => void;
 };
 
-type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED';
+export type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED';
 
 type WfDetails = {
   shouldShow: boolean;
-  meta: {
-    name: string;
-    version: string;
-    inputParameters: string[];
-  };
+  meta: Partial<Workflow>;
   result: {
     status: Status;
     tasks: Task[];
     startTime: Date | number | string;
     endTime: Date | number | string;
-    input: string;
-    output: string;
+    input: { [key: string]: string };
+    output: { [key: string]: string };
   } | null;
   wfId: string;
   input: WorkflowPayload;
   activeTab: number;
   status: 'Execute' | 'OK' | 'Executing...';
-  timeouts: number[];
+  timeouts: any[];
   parentWfId: string;
   inputsArray: string[];
   taskDetail: Task | null;
@@ -82,7 +79,7 @@ const INITIAL_STATE: WfDetails = {
   shouldShow: true,
   meta: {
     name: '',
-    version: '',
+    version: 0,
     inputParameters: [],
   },
   result: null,
@@ -120,7 +117,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
 
     return () => {
       details.timeouts.forEach((timeout) => {
-        clearTimeout(timeout);
+        clearInterval(timeout);
       });
     };
   }, []);
@@ -128,7 +125,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
   const getData = () => {
     const getWorkflowInstanceDetail = callbackUtils.getWorkflowInstanceDetailCallback();
 
-    getWorkflowInstanceDetail(wfId).then((res: any) => {
+    getWorkflowInstanceDetail(wfId).then((res) => {
       const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
       const def = JSON.stringify(res);
       let match = inputCaptureRegex.exec(def);
@@ -137,6 +134,12 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
       while (match != null) {
         inputsArray.push(match[1]);
         match = inputCaptureRegex.exec(def);
+      }
+
+      if (res != null && res.result.status !== 'RUNNING') {
+        details.timeouts.forEach((timeout) => {
+          clearInterval(timeout);
+        });
       }
 
       inputsArray = [...new Set(inputsArray)];
@@ -157,17 +160,6 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
           inputsArray: inputsArray,
         };
       });
-
-      if (details.result && details.result.status === 'RUNNING') {
-        setDetails((prev) => {
-          return {
-            ...prev,
-            // used window.setTimeout because if we use only setTimeout
-            // then there is clash between types we can send to clearTimeout
-            timeouts: [...prev.timeouts, window.setTimeout(() => getData(), 2000)],
-          };
-        });
-      }
     });
   };
 
@@ -337,6 +329,12 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
 
     restartWorkflows([details.wfId]).then(() => {
       getData();
+      setDetails((prev) => {
+        return {
+          ...prev,
+          timeouts: [setInterval(() => getData(), 2000)],
+        };
+      });
     });
   };
 

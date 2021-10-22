@@ -4,7 +4,7 @@ import * as searchActions from '../../../store/actions/search-execs';
 import DetailsModal from './details-modal/details-modal';
 import PageContainer from '../../../common/PageContainer';
 import PageCount from '../../../common/PageCount';
-import PageSelect from '../../../common/PageSelect';
+import PageSelect from '../../../common/page-select';
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import WorkflowBulk from './WorkflowBulk/workflow-bulk';
 import { Box, Flex } from '@chakra-ui/react';
@@ -69,19 +69,6 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
   updateSize,
 }) => {
   const [state, setState] = useState<StateProps>(initialState);
-  useEffect(() => {
-    if (query) {
-      updateByQuery(query);
-    }
-    const fetchFn = state.showFlat ? fetchNewData : fetchParentWorkflows;
-
-    fetchFn(state.viewedPage, state.defaultPages);
-
-    return () => {
-      clearView();
-      clearTimeout(state.timeout);
-    };
-  }, []);
 
   useEffect(() => {
     setState((prev) => {

@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Node } from 'beautiful-react-diagrams/@types/DiagramSchema';
+import { Status } from '../pages/workflow-list/executed-workflow-list/details-modal/details-modal';
+import { Task as WorkflowTask } from '../types/task';
 
 type AnyJson = JsonArray | JsonMap;
 type JsonMap = {
@@ -435,4 +437,33 @@ export type ExecutedWorkflowsHierarchical = {
   children: NestedExecutedWorkflow[];
   count: number;
   hits: number;
+};
+
+export type WorkflowInstanceDetail = {
+  ownerApp: string;
+  createTime: number;
+  updateTime: number;
+  status: Status;
+  endTime: number;
+  workflowId: string;
+  tasks: WorkflowTask[];
+  input: {
+    [key: string]: string;
+  };
+  output: {
+    [key: string]: string;
+  };
+  correlationId: string;
+  taskToDomain: {
+    '*': string;
+  };
+  failedReferenceTaskNames: string[];
+  workflowDefinition: {};
+  priority: number;
+  variables: {};
+  lastRetriedTime: number;
+  startTime: number;
+  workflowName: string;
+  workflowVersion: number;
+  parentWorkflowId: string;
 };
