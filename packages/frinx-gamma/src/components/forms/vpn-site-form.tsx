@@ -113,7 +113,7 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl id="customer-locations" my={6}>
+      {/* <FormControl id="customer-locations" my={6}>
         <FormLabel>Cutomer Locations</FormLabel>
         <Box
           alignItems="stretch"
@@ -147,7 +147,7 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
             </Box>
           )}
         </Box>
-      </FormControl>
+      </FormControl> */}
 
       <FormControl id="site-devices" my={6}>
         <FormLabel>Site Devices</FormLabel>

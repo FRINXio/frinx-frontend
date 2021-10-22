@@ -3,6 +3,7 @@ import React, { VoidFunctionComponent, useState, useEffect } from 'react';
 import { useHistory, Switch, Route } from 'react-router-dom';
 import * as unistoreCallbacks from './api/unistore/unistore';
 import { executeWorkflow, getWorkflowInstanceDetail } from './api/uniflow/uniflow-api';
+import { string } from 'fp-ts';
 
 const callbacks = {
   ...unistoreCallbacks,
@@ -37,6 +38,9 @@ const GammaApp: VoidFunctionComponent = () => {
         VpnBearerList,
         CreateBearer,
         EditBearer,
+        LocationList,
+        CreateLocation,
+        EditLocation,
         getUnistoreApiProvider,
       } = gammaImport;
 
@@ -57,6 +61,9 @@ const GammaApp: VoidFunctionComponent = () => {
         VpnBearerList,
         CreateBearer,
         EditBearer,
+        LocationList,
+        CreateLocation,
+        EditLocation,
         UnistoreApiProvider: getUnistoreApiProvider(callbacks),
       });
     });
@@ -83,6 +90,9 @@ const GammaApp: VoidFunctionComponent = () => {
     VpnBearerList,
     CreateBearer,
     EditBearer,
+    LocationList,
+    CreateLocation,
+    EditLocation,
     UnistoreApiProvider,
   } = components;
 
@@ -148,8 +158,8 @@ const GammaApp: VoidFunctionComponent = () => {
             onDetailVpnSiteClick={(siteId: string) => {
               history.push(`/gamma/sites/detail/${siteId}`);
             }}
-            onDevicesVpnSiteClick={(siteId: string) => {
-              history.push(`/gamma/sites/devices/${siteId}`);
+            onLocationsVpnSiteClick={(siteId: string) => {
+              history.push(`/gamma/sites/${siteId}/locations`);
             }}
           />
         </Route>
@@ -210,36 +220,74 @@ const GammaApp: VoidFunctionComponent = () => {
         </Route>
 
         {/* devices */}
-        <Route path="/gamma/sites/devices/:siteId" exact>
+        <Route path="/gamma/sites/:siteId/:locationId/devices" exact>
           <DeviceList
-            onCreateDeviceClick={(siteId: string) => {
-              history.push(`/gamma/sites/devices/${siteId}/add-device`);
+            onCreateDeviceClick={(siteId: string, locationId: string) => {
+              history.push(`/gamma/sites/${siteId}/${locationId}/devices/add`);
             }}
-            onEditDeviceClick={(siteId: string, deviceId: string) => {
-              history.push(`/gamma/sites/devices/${siteId}/edit-device/${deviceId}`);
+            onEditDeviceClick={(siteId: string, locationId: string, deviceId: string) => {
+              history.push(`/gamma/sites/${siteId}/${locationId}/devices/edit/${deviceId}`);
+            }}
+            onLocationListClick={(siteId: string) => {
+              history.push(`/gamma/sites/${siteId}/locations`);
+            }}
+          />
+        </Route>
+        <Route path="/gamma/sites/:siteId/:locationId/devices/add" exact>
+          <CreateDevice
+            onSuccess={(siteId: string, locationId: string) => {
+              history.push(`/gamma/sites/${siteId}/${locationId}/devices`);
+            }}
+            onCancel={(siteId: string, locationId: string) => {
+              history.push(`/gamma/sites/${siteId}/${locationId}/devices`);
+            }}
+          />
+        </Route>
+        <Route path="/gamma/sites/:siteId/:locationId/devices/edit/:deviceId" exact>
+          <EditDevice
+            onSuccess={(siteId: string, locationId: string) => {
+              history.push(`/gamma/sites/${siteId}/${locationId}/devices`);
+            }}
+            onCancel={(siteId: string, locationId: string) => {
+              history.push(`/gamma/sites/${siteId}/${locationId}/devices`);
+            }}
+          />
+        </Route>
+
+        {/* locations */}
+        <Route path="/gamma/sites/:siteId/locations" exact>
+          <LocationList
+            onEditLocationClick={(siteId: string, locationId: string) => {
+              history.push(`/gamma/sites/${siteId}/locations/edit/${locationId}`);
+            }}
+            onCreateLocationClick={(siteId: string) => {
+              history.push(`/gamma/sites/${siteId}/locations/add`);
             }}
             onSiteListClick={() => {
               history.push(`/gamma/sites`);
             }}
-          />
-        </Route>
-        <Route path="/gamma/sites/devices/:siteId/add-device" exact>
-          <CreateDevice
-            onSuccess={(siteId: string) => {
-              history.push(`/gamma/sites/devices/${siteId}`);
-            }}
-            onCancel={(siteId: string) => {
-              history.push(`/gamma/sites/devices/${siteId}`);
+            onDevicesVpnSiteClick={(siteId: string, locationId: string) => {
+              history.push(`/gamma/sites/${siteId}/${locationId}/devices`);
             }}
           />
         </Route>
-        <Route path="/gamma/sites/devices/:siteId/edit-device/:deviceId" exact>
-          <EditDevice
+        <Route path="/gamma/sites/:siteId/locations/add" exact>
+          <CreateLocation
             onSuccess={(siteId: string) => {
-              history.push(`/gamma/sites/devices/${siteId}`);
+              history.push(`/gamma/sites/${siteId}/locations`);
             }}
             onCancel={(siteId: string) => {
-              history.push(`/gamma/sites/devices/${siteId}`);
+              history.push(`/gamma/sites/${siteId}/locations`);
+            }}
+          />
+        </Route>
+        <Route path="/gamma/sites/:siteId/locations/edit/:locationId">
+          <EditLocation
+            onSuccess={(siteId: string) => {
+              history.push(`/gamma/sites/${siteId}/locations`);
+            }}
+            onCancel={(siteId: string) => {
+              history.push(`/gamma/sites/${siteId}/locations`);
             }}
           />
         </Route>

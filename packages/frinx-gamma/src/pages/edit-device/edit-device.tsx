@@ -1,15 +1,15 @@
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Box, Container, Heading } from '@chakra-ui/react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router';
-import unwrap from '../../helpers/unwrap';
+import callbackUtils from '../../callback-utils';
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import DeviceForm from '../../components/forms/device-form';
 import { SiteDevice, VpnSite } from '../../components/forms/site-types';
-import callbackUtils from '../../callback-utils';
+import unwrap from '../../helpers/unwrap';
 
 type Props = {
-  onSuccess: (siteId: string) => void;
-  onCancel: (siteId: string) => void;
+  onSuccess: (siteId: string, locationId: string) => void;
+  onCancel: (siteId: string, locationId: string) => void;
 };
 
 function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
@@ -24,7 +24,7 @@ function getSelectedDevice(site: VpnSite, deviceId: string): SiteDevice {
 
 const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
-  const { siteId, deviceId } = useParams<{ siteId: string; deviceId: string }>();
+  const { siteId, locationId, deviceId } = useParams<{ siteId: string; locationId: string; deviceId: string }>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,20 +51,16 @@ const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
       ...selectedSite,
       siteDevices: newDevices,
     };
-    // eslint-disable-next-line no-console
-    console.log('submit clicked', editedSite);
     const callbacks = callbackUtils.getCallbacks;
 
     await callbacks.editVpnSite(editedSite);
-    // eslint-disable-next-line no-console
-    console.log('site saved: network access added to site');
-    onSuccess(unwrap(siteId));
+    onSuccess(unwrap(siteId), locationId);
   };
 
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    onCancel(unwrap(selectedSite?.siteId));
+    onCancel(unwrap(selectedSite?.siteId), locationId);
   };
 
   if (!selectedSite) {
@@ -81,7 +77,7 @@ const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
           <DeviceForm
             siteId={unwrap(selectedSite.siteId)}
             device={selectedDevice}
-            locations={selectedSite.customerLocations}
+            locationId={locationId}
             onSubmit={handleSubmit}
             onCancel={handleCancel}
           />

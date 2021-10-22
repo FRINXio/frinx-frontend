@@ -6,11 +6,18 @@ import unwrap from '../../helpers/unwrap';
 
 type Props = {
   site: VpnSite;
-  onEditDeviceButtonClick: (siteId: string, deviceId: string) => void;
+  locationId: string;
+  onEditDeviceButtonClick: (siteId: string, locationId: string, deviceId: string) => void;
   onDeleteDeviceButtonClick: (siteId: string) => void;
 };
 
-const DeviceTable: VoidFunctionComponent<Props> = ({ site, onEditDeviceButtonClick, onDeleteDeviceButtonClick }) => {
+const DeviceTable: VoidFunctionComponent<Props> = ({
+  locationId,
+  site,
+  onEditDeviceButtonClick,
+  onDeleteDeviceButtonClick,
+}) => {
+  const devices = site.siteDevices.filter((d) => d.locationId === locationId);
   return (
     <Table background="white" size="lg">
       <Thead>
@@ -24,7 +31,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({ site, onEditDeviceButtonCli
         </Tr>
       </Thead>
       <Tbody>
-        {site.siteDevices.map((device) => {
+        {devices.map((device) => {
           const [deviceLocation] = site.customerLocations.filter(
             (location) => location.locationId === device.locationId,
           );
@@ -51,7 +58,9 @@ const DeviceTable: VoidFunctionComponent<Props> = ({ site, onEditDeviceButtonCli
                     aria-label="edit"
                     size="sm"
                     icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                    onClick={() => onEditDeviceButtonClick(unwrap(site.siteId), unwrap(device.deviceId))}
+                    onClick={() =>
+                      onEditDeviceButtonClick(unwrap(site.siteId), unwrap(device.locationId), unwrap(device.deviceId))
+                    }
                   />
                   <IconButton
                     aria-label="Delete device"
