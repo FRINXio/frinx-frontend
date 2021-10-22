@@ -252,6 +252,9 @@ export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[
 }
 
 function isValidProtocolPredicate(routingProtocol: RoutingProtocol): boolean {
+  if (routingProtocol.type !== 'bgp' && routingProtocol.type !== 'static') {
+    return false;
+  }
   if (routingProtocol.type === 'static') {
     if (!routingProtocol.static) {
       return false;
