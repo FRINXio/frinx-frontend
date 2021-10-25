@@ -523,7 +523,7 @@ function apiConnectionToClientConnnection(apiConnection: ConnectionOutput): Conn
 
 function apiEvcAttachmentToClientEvcAttachment(apiEvc: EvcAttachmentOutput): EvcAttachment {
   return {
-    evcType: apiEvc['evc-type'],
+    evcType: apiEvc['evc-type'].split(':').pop() as string,
     customerName: apiEvc['customer-name'] || null,
     circuitReference: apiEvc['circuit-reference'],
     carrierReference: apiEvc['carrier-reference'] || null,

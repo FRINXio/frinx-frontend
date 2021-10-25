@@ -7,9 +7,15 @@ type Props = {
   bearers: VpnBearer[];
   onDeleteVpnBearerClick: (id: string) => void;
   onEditVpnBearerClick: (id: string) => void;
+  onEvcAttachmentSiteClick: (bearerId: string) => void;
 };
 
-const VpnBearerTable: VoidFunctionComponent<Props> = ({ bearers, onEditVpnBearerClick, onDeleteVpnBearerClick }) => {
+const VpnBearerTable: VoidFunctionComponent<Props> = ({
+  bearers,
+  onEditVpnBearerClick,
+  onDeleteVpnBearerClick,
+  onEvcAttachmentSiteClick,
+}) => {
   return (
     <Table background="white" size="lg">
       <Thead>
@@ -29,12 +35,21 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({ bearers, onEditVpnBearer
                 <IconButton
                   aria-label="edit"
                   size="sm"
+                  title="Edit"
                   icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                   onClick={() => onEditVpnBearerClick(b.spBearerReference)}
                 />
                 <IconButton
+                  aria-label="edit"
+                  size="sm"
+                  title="Evc Attachments"
+                  icon={<Icon size={12} as={FeatherIcon} icon="anchor" />}
+                  onClick={() => onEvcAttachmentSiteClick(b.spBearerReference)}
+                />
+                <IconButton
                   aria-label="Delete site"
                   size="sm"
+                  title="Delete"
                   colorScheme="red"
                   icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
                   onClick={() => {

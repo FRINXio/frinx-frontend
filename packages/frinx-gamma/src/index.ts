@@ -17,4 +17,7 @@ export { default as EditBearer } from './pages/edit-bearer/edit-bearer';
 export { default as LocationList } from './pages/location-list/location-list';
 export { default as CreateLocation } from './pages/create-location/create-location';
 export { default as EditLocation } from './pages/edit-location/edit-location';
+export { default as EvcAttachmentList } from './pages/evc-list/evc-list';
+export { default as CreateEvcAttachment } from './pages/create-evc-attachment/create-evc-attachment';
+export { default as EditEvcAttachment } from './pages/edit-evc-attachment/edit-evc-attachment';
 export { getUnistoreApiProvider } from './unistore-api-provider';
