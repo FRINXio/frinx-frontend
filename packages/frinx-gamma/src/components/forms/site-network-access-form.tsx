@@ -187,6 +187,28 @@ const SiteNetAccessForm: FC<Props> = ({
         />
       </FormControl>
 
+      <FormControl id="site-role" my={6}>
+        <FormLabel>Site role</FormLabel>
+        <Select
+          variant="filled"
+          name="site-role"
+          value={networkAccessState.siteRole || ''}
+          onChange={(event) => {
+            // eslint-disable-next-line no-console
+            console.log(event.target.value);
+            setNetworkAccessState({
+              ...networkAccessState,
+              siteRole: event.target.value || null,
+            });
+          }}
+        >
+          <option value="">-- choose site role</option>
+          <option value="any-to-any-role">any-any</option>
+          <option value="hub-role">hub</option>
+          <option value="spoke-role">spoke</option>
+        </Select>
+      </FormControl>
+
       <FormControl id="bearer-reference" my={6}>
         <FormLabel>Bearer Reference</FormLabel>
         <Input

@@ -164,6 +164,14 @@ export function apiIPConnectionToClientIPConnection(ipConnection: IPConnectionOu
   return output;
 }
 
+function getClientSiteRole(role: string | void): string | null {
+  if (!role) {
+    return null;
+  }
+
+  return role.split(':').pop() as string;
+}
+
 export function apiSiteNetworkAccessToClientSiteNetworkAccess(
   networkAccess: SiteNetworkAccessOutput | void,
 ): SiteNetworkAccess[] {
@@ -175,6 +183,7 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
     const apiQosProfiles = access.service.qos['qos-profile']['qos-profile'];
     const [clientQosProfile] = apiQosProfiles.length ? apiQosProfiles.map((p) => p.profile) : [''];
     const vpnAttachment = access['vpn-attachment'] ? access['vpn-attachment']['vpn-id'] : null;
+    const siteRole = access['vpn-attachment'] ? getClientSiteRole(access['vpn-attachment']['site-role']) || null : null;
     const routingProtocols =
       access['routing-protocols'] && access['routing-protocols']['routing-protocol']
         ? access['routing-protocols']['routing-protocol'].map((p) => {
@@ -205,6 +214,7 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
         svcOutputBandwidth: access.service['svc-output-bandwidth'],
       },
       vpnAttachment,
+      siteRole,
     };
   });
 }
@@ -337,9 +347,10 @@ function clientRoutingProtocolsToApiRoutingProtocols(routingProtocols: RoutingPr
   };
 }
 
-function clientVpnAttachmentToApiVpnAttachment(vpnAttachment: string): CreateVpnAttachment {
+function clientVpnAttachmentToApiVpnAttachment(vpnAttachment: string, siteRole: string | null): CreateVpnAttachment {
   return {
     'vpn-id': vpnAttachment,
+    'site-role': siteRole || undefined,
   };
 }
 
@@ -419,7 +430,7 @@ function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAcces
         },
         'routing-protocols': clientRoutingProtocolsToApiRoutingProtocols(access.routingProtocols),
         'vpn-attachment': access.vpnAttachment
-          ? clientVpnAttachmentToApiVpnAttachment(access.vpnAttachment)
+          ? clientVpnAttachmentToApiVpnAttachment(access.vpnAttachment, access.siteRole)
           : undefined,
       };
     }),

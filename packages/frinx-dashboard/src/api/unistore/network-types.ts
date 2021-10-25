@@ -422,6 +422,7 @@ export type CreateNetworkAccessInput = {
     };
     'vpn-attachment'?: {
       'vpn-id': string;
+      'site-role'?: string;
     };
   }[];
 };
@@ -793,6 +794,7 @@ export type SiteNetworkAccess = {
   bearer: Bearer;
   service: Service;
   vpnAttachment: string | null;
+  siteRole: string | null;
 };
 
 export type VpnSite = {
