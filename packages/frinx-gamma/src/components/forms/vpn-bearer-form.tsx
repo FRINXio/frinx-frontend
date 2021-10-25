@@ -2,6 +2,8 @@ import React, { FC, FormEvent, useEffect, useState } from 'react';
 import { Divider, Button, Input, Stack, FormControl, FormLabel } from '@chakra-ui/react';
 import { VpnSite } from './site-types';
 import { VpnBearer } from './bearer-types';
+import CarrierForm from './carrier-form';
+import ConnectionForm from './connection-form';
 
 type Props = {
   mode: 'add' | 'edit';
@@ -83,6 +85,36 @@ const VpnBearerForm: FC<Props> = ({ bearer, onSubmit, onCancel }) => {
           }}
         />
       </FormControl>
+
+      <CarrierForm
+        carrier={
+          bearerState.carrier || { carrierName: null, carrierReference: null, serviceType: null, serviceStatus: null }
+        }
+        onChange={(carrier) => {
+          setBearerState({
+            ...bearerState,
+            carrier,
+          });
+        }}
+      />
+      <ConnectionForm
+        connection={
+          bearerState.connection || {
+            tpId: null,
+            svlanAssignmentType: null,
+            encapsulationType: null,
+            mtu: 0,
+            remoteNeId: null,
+            remotePortId: null,
+          }
+        }
+        onChange={(connection) => {
+          setBearerState({
+            ...bearerState,
+            connection,
+          });
+        }}
+      />
 
       <Divider my={4} />
       <Stack direction="row" spacing={2} align="center">
