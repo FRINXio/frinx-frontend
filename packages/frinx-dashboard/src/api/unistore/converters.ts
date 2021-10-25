@@ -49,6 +49,7 @@ import {
   VpnNodesOutput,
   VpnCarrier,
   VpnCarriersOutput,
+  VpnCarrierInput,
 } from './network-types';
 
 function apiDefaultCVlanToClientDefaultCVlan(defaultCVlan: number): Pick<VpnService, 'defaultCVlan' | 'customCVlan'> {
@@ -689,4 +690,15 @@ export function clientBearerToApiBearer(bearer: VpnBearer): VpnBearerInput {
     ],
   };
   return output;
+}
+
+export function clientVpnCarrierToApiVpnCarrier(carrier: VpnCarrier): VpnCarrierInput {
+  return {
+    carrier: [
+      {
+        'carrier-name': carrier.name,
+        description: carrier.description || undefined,
+      },
+    ],
+  };
 }

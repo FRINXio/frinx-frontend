@@ -15,8 +15,14 @@ import {
   decodeVpnNodesOutput,
   VpnCarriersOutput,
   decodeVpnCarriersOutput,
+  VpnCarrier,
 } from './network-types';
-import { clientBearerToApiBearer, clientVpnServiceToApiVpnService, clientVpnSiteToApiVpnSite } from './converters';
+import {
+  clientBearerToApiBearer,
+  clientVpnCarrierToApiVpnCarrier,
+  clientVpnServiceToApiVpnService,
+  clientVpnSiteToApiVpnSite,
+} from './converters';
 
 // data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers
 const UNICONFIG_SERVICE_URL =
@@ -125,4 +131,12 @@ export async function getVpnCarriers(): Promise<VpnCarriersOutput> {
   const data = decodeVpnCarriersOutput(json);
 
   return data;
+}
+
+export async function createVpnCarrier(carrier: VpnCarrier): Promise<void> {
+  const body = clientVpnCarrierToApiVpnCarrier(carrier);
+  await sendPostRequest(
+    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers',
+    body,
+  );
 }

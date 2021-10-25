@@ -1,5 +1,3 @@
-import { string } from 'fp-ts';
-
 export type Status = {
   status: string | null;
   lastUpdated: string | null;

@@ -8,7 +8,7 @@ import {
 } from './network-types';
 import { VpnService } from './components/forms/service-types';
 import { VpnSite } from './components/forms/site-types';
-import { VpnBearer } from './components/forms/bearer-types';
+import { VpnBearer, VpnCarrier } from './components/forms/bearer-types';
 
 export type WorkflowPayload = {
   input: unknown;
@@ -38,6 +38,7 @@ export type Callbacks = {
   deleteVpnBearer: (id: string) => Promise<void>;
   getVpnNodes: () => Promise<VpnNodesOutput>;
   getVpnCarriers: () => Promise<VpnCarriersOutput>;
+  createVpnCarrier: (carrier: VpnCarrier) => Promise<void>;
 };
 class CallbackUtils {
   private callbacks: Callbacks | null = null;

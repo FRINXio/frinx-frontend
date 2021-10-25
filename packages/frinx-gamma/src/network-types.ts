@@ -534,17 +534,22 @@ export function decodeValidProviderIdentifiersOutput(value: unknown): ValidProvi
   return extractResult(ValidProviderIdentifiersOutputValidator.decode(value));
 }
 
-const VpnCarriersValidator = t.type({
-  carriers: optional(
+const VpnCarrierItemsValidator = t.type({
+  carrier: t.array(
     t.type({
-      carrier: t.array(
-        t.type({
-          'carrier-name': t.string,
-          description: optional(t.string),
-        }),
-      ),
+      'carrier-name': t.string,
+      description: optional(t.string),
     }),
   ),
+});
+export type VpnCarrierItemsOutput = t.TypeOf<typeof VpnCarrierItemsValidator>;
+export type VpnCarrierInput = VpnCarrierItemsOutput;
+export function decodeVpnCarrierItemsOutput(value: unknown): VpnCarrierItemsOutput {
+  return extractResult(VpnCarrierItemsValidator.decode(value));
+}
+
+const VpnCarriersValidator = t.type({
+  carriers: optional(VpnCarrierItemsValidator),
 });
 export type VpnCarriersOutput = t.TypeOf<typeof VpnCarriersValidator>;
 export function decodeVpnCarriersOutput(value: unknown): VpnCarriersOutput {
