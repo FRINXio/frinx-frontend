@@ -5,7 +5,6 @@ import callbackUtils from '../../callback-utils';
 import { VpnBearer } from '../../components/forms/bearer-types';
 import { apiBearerToClientBearer } from '../../components/forms/converters';
 import VpnBearerForm from '../../components/forms/vpn-bearer-form';
-import { generateBearerId } from '../../helpers/id-helpers';
 
 type Props = {
   onSuccess: () => void;
@@ -31,13 +30,8 @@ const EditBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
   const handleSubmit = async (vpnBearer: VpnBearer) => {
     // eslint-disable-next-line no-console
     console.log('submit clicked', vpnBearer);
-    // eslint-disable-next-line no-param-reassign
-    const newBearer: VpnBearer = {
-      ...vpnBearer,
-      spBearerReference: generateBearerId(),
-    };
     const callbacks = callbackUtils.getCallbacks;
-    await callbacks.editVpnBearer(newBearer);
+    await callbacks.editVpnBearer(vpnBearer);
     // eslint-disable-next-line no-console
     console.log('bearer created');
     onSuccess();
