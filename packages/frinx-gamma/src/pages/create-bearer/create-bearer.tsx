@@ -1,8 +1,8 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import callbackUtils from '../../callback-utils';
-import { VpnBearer, VpnNode } from '../../components/forms/bearer-types';
-import { apiVpnNodesToClientVpnNodes } from '../../components/forms/converters';
+import { VpnBearer, VpnCarrier, VpnNode } from '../../components/forms/bearer-types';
+import { apiVpnCarriersToClientCarriers, apiVpnNodesToClientVpnNodes } from '../../components/forms/converters';
 import VpnBearerForm from '../../components/forms/vpn-bearer-form';
 import { generateBearerId } from '../../helpers/id-helpers';
 
@@ -31,13 +31,17 @@ type Props = {
 
 const CreateBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [nodes, setNodes] = useState<VpnNode[] | null>(null);
+  const [carriers, setCarriers] = useState<VpnCarrier[] | null>(null);
   useEffect(() => {
     const fetchData = async () => {
       // TODO; possible fetches goes here
       const callbacks = callbackUtils.getCallbacks;
-      const response = await callbacks.getVpnNodes();
-      const clientNodes = apiVpnNodesToClientVpnNodes(response);
+      const apiNodes = await callbacks.getVpnNodes();
+      const clientNodes = apiVpnNodesToClientVpnNodes(apiNodes);
+      const apiCarriers = await callbacks.getVpnCarriers();
+      const clientCarriers = apiVpnCarriersToClientCarriers(apiCarriers);
       setNodes(clientNodes);
+      setCarriers(clientCarriers);
     };
 
     fetchData();
@@ -64,7 +68,7 @@ const CreateBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
     onCancel();
   };
 
-  if (!nodes) {
+  if (!nodes || !carriers) {
     return null;
   }
 
@@ -76,6 +80,7 @@ const CreateBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
           mode="add"
           bearer={defaultVpnBearer}
           nodes={nodes}
+          carriers={carriers}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
         />

@@ -1,3 +1,5 @@
+import { string } from 'fp-ts';
+
 export type Status = {
   status: string | null;
   lastUpdated: string | null;
@@ -52,4 +54,9 @@ export type VpnNode = {
   neId: string;
   routerId: string;
   role: string | null;
+};
+
+export type VpnCarrier = {
+  name: string;
+  description: string | null;
 };

@@ -13,6 +13,8 @@ import {
   VpnBearer,
   VpnNodesOutput,
   decodeVpnNodesOutput,
+  VpnCarriersOutput,
+  decodeVpnCarriersOutput,
 } from './network-types';
 import { clientBearerToApiBearer, clientVpnServiceToApiVpnService, clientVpnSiteToApiVpnSite } from './converters';
 
@@ -112,6 +114,15 @@ export async function getVpnNodes(): Promise<VpnNodesOutput> {
     '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes',
   );
   const data = decodeVpnNodesOutput(json);
+
+  return data;
+}
+
+export async function getVpnCarriers(): Promise<VpnCarriersOutput> {
+  const json = await sendGetRequest(
+    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers',
+  );
+  const data = decodeVpnCarriersOutput(json);
 
   return data;
 }

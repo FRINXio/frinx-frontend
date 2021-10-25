@@ -535,13 +535,21 @@ export function decodeValidProviderIdentifiersOutput(value: unknown): ValidProvi
 }
 
 const VpnCarriersValidator = t.type({
-  carrier: t.array(
+  carriers: optional(
     t.type({
-      'carrier-name': t.string,
-      description: optional(t.string),
+      carrier: t.array(
+        t.type({
+          'carrier-name': t.string,
+          description: optional(t.string),
+        }),
+      ),
     }),
   ),
 });
+export type VpnCarriersOutput = t.TypeOf<typeof VpnCarriersValidator>;
+export function decodeVpnCarriersOutput(value: unknown): VpnCarriersOutput {
+  return extractResult(VpnCarriersValidator.decode(value));
+}
 
 const VpnNodesValidator = t.type({
   'vpn-nodes': optional(

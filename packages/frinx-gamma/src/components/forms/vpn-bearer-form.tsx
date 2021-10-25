@@ -1,7 +1,7 @@
 import React, { FC, FormEvent, useEffect, useState } from 'react';
 import { Divider, Button, Input, Stack, FormControl, FormLabel } from '@chakra-ui/react';
 import { VpnSite } from './site-types';
-import { VpnBearer, VpnNode } from './bearer-types';
+import { VpnBearer, VpnCarrier, VpnNode } from './bearer-types';
 import CarrierForm from './carrier-form';
 import ConnectionForm from './connection-form';
 import Autocomplete2 from '../autocomplete-2/autocomplete-2';
@@ -9,13 +9,14 @@ import Autocomplete2 from '../autocomplete-2/autocomplete-2';
 type Props = {
   mode: 'add' | 'edit';
   nodes: VpnNode[];
+  carriers: VpnCarrier[];
   bearer: VpnBearer;
   onSubmit: (s: VpnBearer) => void;
   onCancel: () => void;
   onSiteChange?: (s: VpnSite) => void;
 };
 
-const VpnBearerForm: FC<Props> = ({ nodes, bearer, onSubmit, onCancel }) => {
+const VpnBearerForm: FC<Props> = ({ nodes, carriers, bearer, onSubmit, onCancel }) => {
   const [bearerState, setBearerState] = useState(bearer);
 
   useEffect(() => {
@@ -96,6 +97,7 @@ const VpnBearerForm: FC<Props> = ({ nodes, bearer, onSubmit, onCancel }) => {
       </FormControl>
 
       <CarrierForm
+        carriers={carriers}
         carrier={
           bearerState.carrier || { carrierName: null, carrierReference: null, serviceType: null, serviceStatus: null }
         }

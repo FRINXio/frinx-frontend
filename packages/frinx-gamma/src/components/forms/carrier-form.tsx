@@ -1,25 +1,34 @@
 import React, { FC } from 'react';
 import { Input, Select, FormControl, FormLabel } from '@chakra-ui/react';
-import { Carrier } from './bearer-types';
+import Autocomplete2 from '../autocomplete-2/autocomplete-2';
+import { Carrier, VpnCarrier } from './bearer-types';
 
 type Props = {
   carrier: Carrier;
+  carriers: VpnCarrier[];
   onChange: (c: Carrier) => void;
 };
 
-const CarrierForm: FC<Props> = ({ carrier, onChange }) => {
+const CarrierForm: FC<Props> = ({ carrier, carriers, onChange }) => {
+  const carrierItems = carriers.map((c) => ({
+    value: c.name,
+    label: c.name,
+  }));
+  const [selectedCarrier] = carrierItems.filter((n) => {
+    return n.value === carrier.carrierName;
+  });
+
   return (
     <>
       <FormControl id="carrier-name" my={6}>
         <FormLabel>Carrier Name</FormLabel>
-        <Input
-          variant="filled"
-          name="carrier-name"
-          value={carrier.carrierName || ''}
-          onChange={(event) => {
+        <Autocomplete2
+          items={carrierItems}
+          selectedItem={selectedCarrier}
+          onChange={(item) => {
             onChange({
               ...carrier,
-              carrierName: event.target.value || null,
+              carrierName: item ? item.value : '',
             });
           }}
         />

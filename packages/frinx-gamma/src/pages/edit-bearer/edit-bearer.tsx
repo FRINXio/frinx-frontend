@@ -2,8 +2,12 @@ import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router';
 import callbackUtils from '../../callback-utils';
-import { VpnBearer, VpnNode } from '../../components/forms/bearer-types';
-import { apiVpnNodesToClientVpnNodes, apiBearerToClientBearer } from '../../components/forms/converters';
+import { VpnBearer, VpnCarrier, VpnNode } from '../../components/forms/bearer-types';
+import {
+  apiVpnNodesToClientVpnNodes,
+  apiBearerToClientBearer,
+  apiVpnCarriersToClientCarriers,
+} from '../../components/forms/converters';
 import VpnBearerForm from '../../components/forms/vpn-bearer-form';
 
 type Props = {
@@ -14,6 +18,7 @@ type Props = {
 const EditBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [bearer, setBearer] = useState<VpnBearer | null>(null);
   const [nodes, setNodes] = useState<VpnNode[] | null>(null);
+  const [carriers, setCarriers] = useState<VpnCarrier[] | null>(null);
   const { bearerId } = useParams<{ bearerId: string }>();
   useEffect(() => {
     const fetchData = async () => {
@@ -24,7 +29,10 @@ const EditBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
       const [selectedBearer] = clientVpnBearers.filter((b) => b.spBearerReference === bearerId);
       const apiNodes = await callbacks.getVpnNodes();
       const clientNodes = apiVpnNodesToClientVpnNodes(apiNodes);
+      const apiCarriers = await callbacks.getVpnCarriers();
+      const clientCarriers = apiVpnCarriersToClientCarriers(apiCarriers);
       setNodes(clientNodes);
+      setCarriers(clientCarriers);
       setBearer(selectedBearer);
     };
 
@@ -47,7 +55,7 @@ const EditBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
     onCancel();
   };
 
-  if (!bearer || !nodes) {
+  if (!bearer || !nodes || !carriers) {
     return null;
   }
 
@@ -55,7 +63,14 @@ const EditBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
     <Container>
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Edit VPN Bearer</Heading>
-        <VpnBearerForm mode="add" nodes={nodes} bearer={bearer} onSubmit={handleSubmit} onCancel={handleCancel} />
+        <VpnBearerForm
+          mode="add"
+          nodes={nodes}
+          carriers={carriers}
+          bearer={bearer}
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+        />
       </Box>
     </Container>
   );

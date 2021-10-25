@@ -41,9 +41,10 @@ import {
   VpnBearerInput,
   EvcAttachmentInput,
   VpnNodesOutput,
+  VpnCarriersOutput,
 } from '../../network-types';
 import unwrap from '../../helpers/unwrap';
-import { VpnBearer, BearerStatus, Carrier, Connection, EvcAttachment, VpnNode } from './bearer-types';
+import { VpnBearer, BearerStatus, Carrier, Connection, EvcAttachment, VpnNode, VpnCarrier } from './bearer-types';
 
 function apiDefaultCVlanToClientDefaultCVlan(defaultCVlan: number): Pick<VpnService, 'defaultCVlan' | 'customCVlan'> {
   const value = defaultCVlan.toString();
@@ -521,6 +522,19 @@ export function apiVpnNodesToClientVpnNodes(apiNodes: VpnNodesOutput): VpnNode[]
       neId: node['ne-id'],
       routerId: node['router-id'],
       role: node.role || null,
+    };
+  });
+}
+
+export function apiVpnCarriersToClientCarriers(apiCarriers: VpnCarriersOutput): VpnCarrier[] {
+  if (!apiCarriers.carriers) {
+    return [];
+  }
+
+  return apiCarriers.carriers.carrier.map((carrier) => {
+    return {
+      name: carrier['carrier-name'],
+      description: carrier.description || null,
     };
   });
 }

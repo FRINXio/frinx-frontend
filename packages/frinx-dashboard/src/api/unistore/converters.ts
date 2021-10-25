@@ -47,6 +47,8 @@ import {
   VpnSitesOutput,
   VpnNode,
   VpnNodesOutput,
+  VpnCarrier,
+  VpnCarriersOutput,
 } from './network-types';
 
 function apiDefaultCVlanToClientDefaultCVlan(defaultCVlan: number): Pick<VpnService, 'defaultCVlan' | 'customCVlan'> {
@@ -505,6 +507,19 @@ export function apiVpnNodesToClientVpnNodes(apiNodes: VpnNodesOutput): VpnNode[]
       neId: node['ne-id'],
       routerId: node['router-id'],
       role: node.role || null,
+    };
+  });
+}
+
+export function apiVpnCarriersToClientCarriers(apiCarriers: VpnCarriersOutput): VpnCarrier[] {
+  if (!apiCarriers.carriers) {
+    return [];
+  }
+
+  return apiCarriers.carriers.carrier.map((carrier) => {
+    return {
+      name: carrier['carrier-name'],
+      description: carrier.description || null,
     };
   });
 }
