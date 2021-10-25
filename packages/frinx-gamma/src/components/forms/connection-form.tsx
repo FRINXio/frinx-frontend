@@ -43,7 +43,7 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
         >
           <option value="">-- choose svlan-assignment-type</option>
           <option value="auto">auto</option>
-          <option value="3rd-party">3rd-party</option>
+          <option value="third-party">third-party</option>
         </Select>
       </FormControl>
       <FormControl my={6}>
@@ -60,8 +60,8 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
           }}
         >
           <option value="">-- choose tpId</option>
-          <option value="802.1ad">802.1ad</option>
-          <option value="802.1q">802.1q</option>
+          <option value="dot1ad">dot1ad</option>
+          <option value="qinq">qinq</option>
         </Select>
       </FormControl>
       <FormControl id="connection-mtu" my={6}>

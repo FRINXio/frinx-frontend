@@ -530,19 +530,28 @@ function apiBearerStatusToClientBearerStatus(apiBearerStatus: BearerStatusOutput
 }
 
 function apiCarrierToClientCarrier(apiCarrier: CarrierOutput): Carrier {
+  const serviceType = apiCarrier['service-type'] ? (apiCarrier['service-type'].split(':').pop() as string) : null;
+  const serviceStatus = apiCarrier['service-status'] ? (apiCarrier['service-status'].split(':').pop() as string) : null;
   return {
     carrierName: apiCarrier['carrier-name'] || null,
     carrierReference: apiCarrier['carrier-reference'] || null,
-    serviceStatus: apiCarrier['service-status'] || null,
-    serviceType: apiCarrier['service-type'] || null,
+    serviceStatus,
+    serviceType,
   };
 }
 
 function apiConnectionToClientConnnection(apiConnection: ConnectionOutput): Connection {
+  const encapsulationType = apiConnection['encapsulation-type']
+    ? (apiConnection['encapsulation-type'].split(':').pop() as string)
+    : null;
+  const svlanAssignmentType = apiConnection['svlan-assignment-type']
+    ? (apiConnection['svlan-assignment-type'].split(':').pop() as string)
+    : null;
+  const tpId = apiConnection.tpid ? (apiConnection.tpid.split(':').pop() as string) : null;
   return {
-    encapsulationType: apiConnection['encapsulation-type'] || null,
-    svlanAssignmentType: apiConnection['svlan-assignment-type'] || null,
-    tpId: apiConnection.tpid || null,
+    encapsulationType,
+    svlanAssignmentType,
+    tpId,
     mtu: apiConnection.mtu,
     remoteNeId: apiConnection['remote-ne-id'] || null,
     remotePortId: apiConnection['remote-port-id'] || null,
