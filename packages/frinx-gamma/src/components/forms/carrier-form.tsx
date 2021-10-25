@@ -52,11 +52,8 @@ const CarrierForm: FC<Props> = ({ carrier, onChange }) => {
           }}
         >
           <option value="">-- choose service type</option>
-          <option value="national-l2">evc</option>
+          <option value="evc">evc</option>
           <option value="shared-fw">shared-fw</option>
-          <option value="nni">nni</option>
-          <option value="colo">colo</option>
-          <option value="direct">direct</option>
         </Select>
       </FormControl>
       <FormControl my={6}>
@@ -75,8 +72,8 @@ const CarrierForm: FC<Props> = ({ carrier, onChange }) => {
           <option value="">-- choose service status</option>
           <option value="active">active</option>
           <option value="ordered">ordered</option>
-          <option value="reservered">reserverd</option>
-          <option value="no-capacity`">no-capacity</option>
+          <option value="reserved">reserved</option>
+          <option value="no-more-capacity">no-more-capacity</option>
           <option value="disabled">disabled</option>
         </Select>
       </FormControl>
