@@ -1,4 +1,10 @@
-import { ValidProviderIdentifiersOutput, VpnBearerOutput, VpnServicesOutput, VpnSitesOutput } from './network-types';
+import {
+  ValidProviderIdentifiersOutput,
+  VpnBearerOutput,
+  VpnNodesOutput,
+  VpnServicesOutput,
+  VpnSitesOutput,
+} from './network-types';
 import { VpnService } from './components/forms/service-types';
 import { VpnSite } from './components/forms/site-types';
 import { VpnBearer } from './components/forms/bearer-types';
@@ -29,6 +35,7 @@ export type Callbacks = {
   createVpnBearer: (bearer: VpnBearer) => Promise<void>;
   editVpnBearer: (bearer: VpnBearer) => Promise<void>;
   deleteVpnBearer: (id: string) => Promise<void>;
+  getVpnNodes: () => Promise<VpnNodesOutput>;
 };
 class CallbackUtils {
   private callbacks: Callbacks | null = null;

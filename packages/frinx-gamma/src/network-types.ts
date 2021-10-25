@@ -544,14 +544,22 @@ const VpnCarriersValidator = t.type({
 });
 
 const VpnNodesValidator = t.type({
-  'vpn-node': t.array(
+  'vpn-nodes': optional(
     t.type({
-      'ne-id': t.string,
-      'router-id': t.string,
-      role: optional(t.string),
+      'vpn-node': t.array(
+        t.type({
+          'ne-id': t.string,
+          'router-id': t.string,
+          role: optional(t.string),
+        }),
+      ),
     }),
   ),
 });
+export type VpnNodesOutput = t.TypeOf<typeof VpnNodesValidator>;
+export function decodeVpnNodesOutput(value: unknown): VpnNodesOutput {
+  return extractResult(VpnNodesValidator.decode(value));
+}
 
 const BearerStatusValidator = t.type({
   'admin-status': optional(

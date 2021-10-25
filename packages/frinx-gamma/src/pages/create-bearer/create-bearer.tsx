@@ -1,9 +1,16 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
-import React, { useEffect, VoidFunctionComponent } from 'react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import callbackUtils from '../../callback-utils';
-import { VpnBearer } from '../../components/forms/bearer-types';
+import { VpnBearer, VpnNode } from '../../components/forms/bearer-types';
+import { apiVpnNodesToClientVpnNodes } from '../../components/forms/converters';
 import VpnBearerForm from '../../components/forms/vpn-bearer-form';
 import { generateBearerId } from '../../helpers/id-helpers';
+
+// const defaultVpnNode: VpnNode = {
+//   neId: '',
+//   routerId: '',
+//   role: null,
+// };
 
 const defaultVpnBearer: VpnBearer = {
   neId: '',
@@ -23,9 +30,14 @@ type Props = {
 };
 
 const CreateBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+  const [nodes, setNodes] = useState<VpnNode[] | null>(null);
   useEffect(() => {
     const fetchData = async () => {
       // TODO; possible fetches goes here
+      const callbacks = callbackUtils.getCallbacks;
+      const response = await callbacks.getVpnNodes();
+      const clientNodes = apiVpnNodesToClientVpnNodes(response);
+      setNodes(clientNodes);
     };
 
     fetchData();
@@ -52,11 +64,21 @@ const CreateBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
     onCancel();
   };
 
+  if (!nodes) {
+    return null;
+  }
+
   return (
     <Container>
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Create VPN Bearer</Heading>
-        <VpnBearerForm mode="add" bearer={defaultVpnBearer} onSubmit={handleSubmit} onCancel={handleCancel} />
+        <VpnBearerForm
+          mode="add"
+          bearer={defaultVpnBearer}
+          nodes={nodes}
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+        />
       </Box>
     </Container>
   );

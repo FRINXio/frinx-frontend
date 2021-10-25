@@ -11,6 +11,8 @@ import {
   decodeVpnBearerOutput,
   VpnBearerOutput,
   VpnBearer,
+  VpnNodesOutput,
+  decodeVpnNodesOutput,
 } from './network-types';
 import { clientBearerToApiBearer, clientVpnServiceToApiVpnService, clientVpnSiteToApiVpnSite } from './converters';
 
@@ -103,4 +105,13 @@ export async function deleteVpnBearer(id: string): Promise<void> {
   await sendDeleteRequest(
     `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${id}`,
   );
+}
+
+export async function getVpnNodes(): Promise<VpnNodesOutput> {
+  const json = await sendGetRequest(
+    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes',
+  );
+  const data = decodeVpnNodesOutput(json);
+
+  return data;
 }
