@@ -12,9 +12,14 @@ import unwrap from '../../helpers/unwrap';
 type Props = {
   onCreateVpnBearerClick: () => void;
   onEditVpnBearerClick: (bearerId: string) => void;
+  onEvcAttachmentSiteClick: (bearerId: string) => void;
 };
 
-const VpnBearerList: VoidFunctionComponent<Props> = ({ onCreateVpnBearerClick, onEditVpnBearerClick }) => {
+const VpnBearerList: VoidFunctionComponent<Props> = ({
+  onCreateVpnBearerClick,
+  onEditVpnBearerClick,
+  onEvcAttachmentSiteClick,
+}) => {
   const [vpnBearers, setVpnBearers] = useState<VpnBearer[] | null>(null);
   const [workflowId, setWorkflowId] = useState<string | null>(null);
   const [bearerIdToDelete, setBearerIdToDelete] = useState<string | null>(null);
@@ -101,6 +106,7 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({ onCreateVpnBearerClick, o
               bearers={vpnBearers}
               onEditVpnBearerClick={onEditVpnBearerClick}
               onDeleteVpnBearerClick={handleDeleteButtonClick}
+              onEvcAttachmentSiteClick={onEvcAttachmentSiteClick}
             />
           )}
         </Box>

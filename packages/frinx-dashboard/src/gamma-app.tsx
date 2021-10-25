@@ -40,6 +40,9 @@ const GammaApp: VoidFunctionComponent = () => {
         LocationList,
         CreateLocation,
         EditLocation,
+        EvcAttachmentList,
+        CreateEvcAttachment,
+        EditEvcAttachment,
         getUnistoreApiProvider,
       } = gammaImport;
 
@@ -63,6 +66,9 @@ const GammaApp: VoidFunctionComponent = () => {
         LocationList,
         CreateLocation,
         EditLocation,
+        EvcAttachmentList,
+        CreateEvcAttachment,
+        EditEvcAttachment,
         UnistoreApiProvider: getUnistoreApiProvider(callbacks),
       });
     });
@@ -92,6 +98,9 @@ const GammaApp: VoidFunctionComponent = () => {
     LocationList,
     CreateLocation,
     EditLocation,
+    EvcAttachmentList,
+    CreateEvcAttachment,
+    EditEvcAttachment,
     UnistoreApiProvider,
   } = components;
 
@@ -300,6 +309,9 @@ const GammaApp: VoidFunctionComponent = () => {
             onCreateVpnBearerClick={() => {
               history.push(`/gamma/vpn-bearers/add`);
             }}
+            onEvcAttachmentSiteClick={(bearerId: string) => {
+              history.push(`/gamma/vpn-bearers/${bearerId}/evc-attachments`);
+            }}
           />
         </Route>
         <Route path="/gamma/vpn-bearers/add" exact>
@@ -319,6 +331,41 @@ const GammaApp: VoidFunctionComponent = () => {
             }}
             onCancel={() => {
               history.push('/gamma/vpn-bearers');
+            }}
+          />
+        </Route>
+
+        {/* evc attachments */}
+        <Route path="/gamma/vpn-bearers/:bearerId/evc-attachments" exact>
+          <EvcAttachmentList
+            onCreateEvcClick={(bearerId: string) => {
+              history.push(`/gamma/vpn-bearers/${bearerId}/evc-attachments/add`);
+            }}
+            onEditEvcClick={(bearerId: string, evcType: string, circuitReference: string) => {
+              history.push(`/gamma/vpn-bearers/${bearerId}/evc-attachments/edit/${evcType}/${circuitReference}`);
+            }}
+            onBearerListClick={() => {
+              history.push(`/gamma/vpn-bearers`);
+            }}
+          />
+        </Route>
+        <Route path="/gamma/vpn-bearers/:bearerId/evc-attachments/add" exact>
+          <CreateEvcAttachment
+            onSuccess={(bearerId: string) => {
+              history.push(`/gamma/vpn-bearers/${bearerId}/evc-attachments`);
+            }}
+            onCancel={(bearerId: string) => {
+              history.push(`/gamma/vpn-bearers/${bearerId}/evc-attachments`);
+            }}
+          />
+        </Route>
+        <Route path="/gamma/vpn-bearers/:bearerId/evc-attachments/edit/:evcType/:circuitReference" exact>
+          <EditEvcAttachment
+            onSuccess={(bearerId: string) => {
+              history.push(`/gamma/vpn-bearers/${bearerId}/evc-attachments`);
+            }}
+            onCancel={(bearerId: string) => {
+              history.push(`/gamma/vpn-bearers/${bearerId}/evc-attachments`);
             }}
           />
         </Route>
