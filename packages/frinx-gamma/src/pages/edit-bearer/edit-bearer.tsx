@@ -56,7 +56,7 @@ const EditBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
   return (
     <Container>
       <Box padding={6} margin={6} background="white">
-        <Heading size="md">kEdit VPN Bearer</Heading>
+        <Heading size="md">Edit VPN Bearer</Heading>
         <VpnBearerForm mode="add" bearer={bearer} onSubmit={handleSubmit} onCancel={handleCancel} />
       </Box>
     </Container>
