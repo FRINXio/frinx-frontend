@@ -108,6 +108,7 @@ export type SiteNetworkAccess = {
   bearer: Bearer;
   service: Service;
   vpnAttachment: string | null;
+  siteRole: string | null;
 };
 
 export type VpnSite = {

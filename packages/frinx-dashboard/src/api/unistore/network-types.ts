@@ -1,3 +1,4 @@
+import { string } from 'fp-ts';
 import { Either, fold } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
@@ -422,6 +423,7 @@ export type CreateNetworkAccessInput = {
     };
     'vpn-attachment'?: {
       'vpn-id': string;
+      'site-role'?: string;
     };
   }[];
 };
@@ -793,6 +795,7 @@ export type SiteNetworkAccess = {
   bearer: Bearer;
   service: Service;
   vpnAttachment: string | null;
+  siteRole: string | null;
 };
 
 export type VpnSite = {
