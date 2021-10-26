@@ -4,7 +4,6 @@ import callbackUtils from '../../callback-utils';
 import { VpnBearer, VpnCarrier, VpnNode } from '../../components/forms/bearer-types';
 import { apiVpnCarriersToClientCarriers, apiVpnNodesToClientVpnNodes } from '../../components/forms/converters';
 import VpnBearerForm from '../../components/forms/vpn-bearer-form';
-import { generateBearerId } from '../../helpers/id-helpers';
 
 // const defaultVpnNode: VpnNode = {
 //   neId: '',
@@ -51,12 +50,8 @@ const CreateBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
     // eslint-disable-next-line no-console
     console.log('submit clicked', bearer);
     // eslint-disable-next-line no-param-reassign
-    const newBearer: VpnBearer = {
-      ...bearer,
-      spBearerReference: generateBearerId(),
-    };
     const callbacks = callbackUtils.getCallbacks;
-    await callbacks.createVpnBearer(newBearer);
+    await callbacks.createVpnBearer(bearer);
     // eslint-disable-next-line no-console
     console.log('bearer created');
     onSuccess();
