@@ -40,9 +40,12 @@ import {
   VpnBearerOutput,
   VpnBearerInput,
   EvcAttachmentInput,
+  VpnNodesOutput,
+  VpnCarriersOutput,
+  VpnCarrierInput,
 } from '../../network-types';
 import unwrap from '../../helpers/unwrap';
-import { VpnBearer, BearerStatus, Carrier, Connection, EvcAttachment } from './bearer-types';
+import { VpnBearer, BearerStatus, Carrier, Connection, EvcAttachment, VpnNode, VpnCarrier } from './bearer-types';
 
 function apiDefaultCVlanToClientDefaultCVlan(defaultCVlan: number): Pick<VpnService, 'defaultCVlan' | 'customCVlan'> {
   const value = defaultCVlan.toString();
@@ -510,6 +513,33 @@ export function clientVpnSiteToApiVpnSite(vpnSite: VpnSite): CreateVpnSiteInput 
   return output;
 }
 
+export function apiVpnNodesToClientVpnNodes(apiNodes: VpnNodesOutput): VpnNode[] {
+  if (!apiNodes['vpn-nodes']) {
+    return [];
+  }
+
+  return apiNodes['vpn-nodes']['vpn-node'].map((node) => {
+    return {
+      neId: node['ne-id'],
+      routerId: node['router-id'],
+      role: node.role || null,
+    };
+  });
+}
+
+export function apiVpnCarriersToClientCarriers(apiCarriers: VpnCarriersOutput): VpnCarrier[] {
+  if (!apiCarriers.carriers) {
+    return [];
+  }
+
+  return apiCarriers.carriers.carrier.map((carrier) => {
+    return {
+      name: carrier['carrier-name'],
+      description: carrier.description || null,
+    };
+  });
+}
+
 function apiBearerStatusToClientBearerStatus(apiBearerStatus: BearerStatusOutput): BearerStatus {
   const adminStatus = apiBearerStatus['admin-status']
     ? {
@@ -676,4 +706,15 @@ export function clientBearerToApiBearer(bearer: VpnBearer): VpnBearerInput {
     ],
   };
   return output;
+}
+
+export function clientVpnCarrierToApiVpnCarrier(carrier: VpnCarrier): VpnCarrierInput {
+  return {
+    carrier: [
+      {
+        'carrier-name': carrier.name,
+        description: carrier.description || undefined,
+      },
+    ],
+  };
 }

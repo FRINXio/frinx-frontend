@@ -47,3 +47,14 @@ export type VpnBearer = {
   defaultUpstreamBearer: string | null;
   evcAttachments: EvcAttachment[];
 };
+
+export type VpnNode = {
+  neId: string;
+  routerId: string;
+  role: string | null;
+};
+
+export type VpnCarrier = {
+  name: string;
+  description: string | null;
+};

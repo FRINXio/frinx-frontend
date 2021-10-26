@@ -1,19 +1,22 @@
 import React, { FC, FormEvent, useEffect, useState } from 'react';
 import { Divider, Button, Input, Stack, FormControl, FormLabel } from '@chakra-ui/react';
 import { VpnSite } from './site-types';
-import { VpnBearer } from './bearer-types';
+import { VpnBearer, VpnCarrier, VpnNode } from './bearer-types';
 import CarrierForm from './carrier-form';
 import ConnectionForm from './connection-form';
+import Autocomplete2 from '../autocomplete-2/autocomplete-2';
 
 type Props = {
   mode: 'add' | 'edit';
+  nodes: VpnNode[];
+  carriers: VpnCarrier[];
   bearer: VpnBearer;
   onSubmit: (s: VpnBearer) => void;
   onCancel: () => void;
   onSiteChange?: (s: VpnSite) => void;
 };
 
-const VpnBearerForm: FC<Props> = ({ bearer, onSubmit, onCancel }) => {
+const VpnBearerForm: FC<Props> = ({ nodes, carriers, bearer, onSubmit, onCancel }) => {
   const [bearerState, setBearerState] = useState(bearer);
 
   useEffect(() => {
@@ -27,18 +30,25 @@ const VpnBearerForm: FC<Props> = ({ bearer, onSubmit, onCancel }) => {
     onSubmit(bearerState);
   };
 
+  const nodeItems = nodes.map((n) => ({
+    value: n.neId,
+    label: `${n.neId} (${n.routerId})`,
+  }));
+  const [selectedNode] = nodeItems.filter((n) => {
+    return n.value === bearerState.neId;
+  });
+
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl id="neId" my={6}>
-        <FormLabel>Ne ID</FormLabel>
-        <Input
-          variant="filled"
-          name="ne-id"
-          value={bearerState.neId}
-          onChange={(event) => {
+      <FormControl id="ne-id" my={6}>
+        <FormLabel>Ne Id</FormLabel>
+        <Autocomplete2
+          items={nodeItems}
+          selectedItem={selectedNode}
+          onChange={(item) => {
             setBearerState({
               ...bearerState,
-              neId: event.target.value,
+              neId: item ? item.value : '',
             });
           }}
         />
@@ -87,6 +97,7 @@ const VpnBearerForm: FC<Props> = ({ bearer, onSubmit, onCancel }) => {
       </FormControl>
 
       <CarrierForm
+        carriers={carriers}
         carrier={
           bearerState.carrier || { carrierName: null, carrierReference: null, serviceType: null, serviceStatus: null }
         }

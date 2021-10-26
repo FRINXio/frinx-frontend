@@ -11,8 +11,18 @@ import {
   decodeVpnBearerOutput,
   VpnBearerOutput,
   VpnBearer,
+  VpnNodesOutput,
+  decodeVpnNodesOutput,
+  VpnCarriersOutput,
+  decodeVpnCarriersOutput,
+  VpnCarrier,
 } from './network-types';
-import { clientBearerToApiBearer, clientVpnServiceToApiVpnService, clientVpnSiteToApiVpnSite } from './converters';
+import {
+  clientBearerToApiBearer,
+  clientVpnCarrierToApiVpnCarrier,
+  clientVpnServiceToApiVpnService,
+  clientVpnSiteToApiVpnSite,
+} from './converters';
 
 // data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers
 const UNICONFIG_SERVICE_URL =
@@ -102,5 +112,31 @@ export async function editVpnBearer(vpnBearer: VpnBearer): Promise<unknown> {
 export async function deleteVpnBearer(id: string): Promise<void> {
   await sendDeleteRequest(
     `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${id}`,
+  );
+}
+
+export async function getVpnNodes(): Promise<VpnNodesOutput> {
+  const json = await sendGetRequest(
+    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes',
+  );
+  const data = decodeVpnNodesOutput(json);
+
+  return data;
+}
+
+export async function getVpnCarriers(): Promise<VpnCarriersOutput> {
+  const json = await sendGetRequest(
+    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers',
+  );
+  const data = decodeVpnCarriersOutput(json);
+
+  return data;
+}
+
+export async function createVpnCarrier(carrier: VpnCarrier): Promise<void> {
+  const body = clientVpnCarrierToApiVpnCarrier(carrier);
+  await sendPostRequest(
+    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers',
+    body,
   );
 }
