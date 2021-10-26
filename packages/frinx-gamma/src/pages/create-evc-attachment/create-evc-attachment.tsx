@@ -6,6 +6,7 @@ import { apiBearerToClientBearer } from '../../components/forms/converters';
 import callbackUtils from '../../callback-utils';
 import { EvcAttachment, VpnBearer } from '../../components/forms/bearer-types';
 import EvcAttachmentForm from '../../components/forms/evc-attachment-form';
+import { getRandomInt } from '../../helpers/id-helpers';
 
 const getDefaultEvcAttachment = (): EvcAttachment => ({
   carrierReference: null,
@@ -15,7 +16,7 @@ const getDefaultEvcAttachment = (): EvcAttachment => ({
   inputBandwidth: 1000,
   qosInputProfile: null,
   status: null,
-  svlanId: null,
+  svlanId: getRandomInt(1000), // https://frinxhelpdesk.atlassian.net/browse/GAM-80
   upstreamBearer: null,
 });
 

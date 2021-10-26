@@ -81,6 +81,26 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ evcAttachment, onSubm
         />
       </FormControl>
 
+      <FormControl id="svlan-id" my={6}>
+        <FormLabel>Svlan Id</FormLabel>
+        <Input
+          variant="filled"
+          name="svlan-id"
+          value={evc.svlanId || ''}
+          disabled
+          onChange={(event) => {
+            const svlanId = Number(event.target.value);
+            if (Number.isNaN(svlanId)) {
+              return;
+            }
+            setEvc({
+              ...evc,
+              svlanId: svlanId || null,
+            });
+          }}
+        />
+      </FormControl>
+
       <FormControl id="input-bandwidth" my={6}>
         <FormLabel>Input Bandwidth</FormLabel>
         <Input
