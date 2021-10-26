@@ -140,3 +140,17 @@ export async function createVpnCarrier(carrier: VpnCarrier): Promise<void> {
     body,
   );
 }
+
+export async function editVpnCarrier(carrier: VpnCarrier): Promise<void> {
+  const body = clientVpnCarrierToApiVpnCarrier(carrier);
+  await sendPutRequest(
+    `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers/carrier=${carrier.name}`,
+    body,
+  );
+}
+
+export async function deleteVpnCarrier(carrierId: string): Promise<void> {
+  await sendDeleteRequest(
+    `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers/carrier=${carrierId}`,
+  );
+}

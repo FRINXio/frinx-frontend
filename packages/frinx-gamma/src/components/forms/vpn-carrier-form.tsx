@@ -1,34 +1,77 @@
 import React, { FC, FormEvent, useState } from 'react';
-import { Button, Divider, Input, FormControl, FormLabel, Stack } from '@chakra-ui/react';
+import { Button, Divider, Flex, Heading, Input, FormControl, FormLabel, Stack } from '@chakra-ui/react';
+import { uniqBy } from 'lodash';
 import { VpnCarrier } from './bearer-types';
+import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 
 type Props = {
   carrier: VpnCarrier;
+  carriers: VpnCarrier[];
+  onDelete: (carrierName: string) => void;
   onSubmit: (c: VpnCarrier) => void;
   onCancel: () => void;
 };
 
-const CarrierForm: FC<Props> = ({ carrier, onSubmit, onCancel }) => {
+const getCarrierItems = (carriers: VpnCarrier[]): Item[] => {
+  return uniqBy(
+    carriers.map((c) => ({
+      value: c.name,
+      label: c.name,
+    })),
+    'value',
+  );
+};
+
+const CarrierForm: FC<Props> = ({ carrier, carriers, onDelete, onSubmit, onCancel }) => {
   const [vpnCarrier, setVpnCarrier] = useState(carrier);
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const [vpnCarrierItems, setVpnCarrierItems] = useState(getCarrierItems(carriers));
+  const handleEdit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(vpnCarrier);
   };
 
+  const handleCarrierChange = (item?: Item | null) => {
+    if (!item) {
+      return;
+    }
+
+    const [filteredCarrier] = carriers.filter((c) => c.name === item.value);
+    setVpnCarrier(filteredCarrier);
+  };
+
+  const handleCreateItem = (item: Item) => {
+    setVpnCarrierItems([...vpnCarrierItems, item]);
+    setVpnCarrier({
+      name: item.value,
+      description: '',
+    });
+  };
+
+  const handleDelete = () => {
+    onDelete(vpnCarrier.name);
+  };
+
+  const [selectedCarrier] = vpnCarrierItems.filter((n) => {
+    return n.value === vpnCarrier.name;
+  });
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleEdit}>
+      <Flex justifyContent="space-between" alignItems="center">
+        <Heading size="md" marginBottom={2}>
+          Save Carrier
+        </Heading>
+        <Button onClick={handleDelete} colorScheme="red">
+          Delete
+        </Button>
+      </Flex>
       <FormControl id="vpn-carrier-name" my={6}>
         <FormLabel>Carrier Name</FormLabel>
-        <Input
-          variant="filled"
-          name="vpn-carrier-name"
-          value={vpnCarrier.name}
-          onChange={(event) => {
-            setVpnCarrier({
-              ...vpnCarrier,
-              name: event.target.value,
-            });
-          }}
+        <Autocomplete2
+          items={vpnCarrierItems}
+          selectedItem={selectedCarrier}
+          onChange={handleCarrierChange}
+          onCreateItem={handleCreateItem}
         />
       </FormControl>
       <FormControl my={6}>

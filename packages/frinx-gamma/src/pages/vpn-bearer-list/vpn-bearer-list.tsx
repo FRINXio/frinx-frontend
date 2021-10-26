@@ -98,7 +98,7 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
               onClick={onCreateVpnCarrierClick}
               leftIcon={<Icon as={FeatherIcon} icon="plus" />}
             >
-              Add carrier
+              Edit carriers
             </Button>
             <Button
               colorScheme="blue"
