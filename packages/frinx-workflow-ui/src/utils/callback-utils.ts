@@ -31,7 +31,11 @@ export type Callbacks = {
   ) => Promise<ExecutedWorkflowsFlat>;
   getWorkflowInstanceDetail: (
     workflowId: string,
-  ) => Promise<{ result: WorkflowInstanceDetail; meta: Workflow<ExtendedTask>; subworkflows: Workflow[] }>;
+  ) => Promise<{
+    result: WorkflowInstanceDetail;
+    meta: Workflow<ExtendedTask>;
+    subworkflows: WorkflowInstanceDetail[];
+  }>;
   executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>;
   getWorkflowExecutionsHierarchical: (
     query: string,
@@ -72,7 +76,9 @@ class CallbackUtils {
     | ((workflowId: string, label: string, start: number, size: string) => Promise<ExecutedWorkflowsFlat>)
     | null = null;
   private getWorkflowInstanceDetail:
-    | ((workflowId: string) => Promise<{ result: WorkflowInstanceDetail; meta: Workflow; subworkflows: Workflow[] }>)
+    | ((
+        workflowId: string,
+      ) => Promise<{ result: WorkflowInstanceDetail; meta: Workflow; subworkflows: WorkflowInstanceDetail[] }>)
     | null = null;
   private executeWorkflow: ((workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>) | null = null;
   private getWorkflowExecutionsHierarchical:

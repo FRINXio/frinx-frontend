@@ -447,12 +447,8 @@ export type WorkflowInstanceDetail = {
   endTime: number;
   workflowId: string;
   tasks: WorkflowTask[];
-  input: {
-    [key: string]: string;
-  };
-  output: {
-    [key: string]: string;
-  };
+  input: Record<string, string>;
+  output: Record<string, string>;
   correlationId: string;
   taskToDomain: {
     '*': string;
