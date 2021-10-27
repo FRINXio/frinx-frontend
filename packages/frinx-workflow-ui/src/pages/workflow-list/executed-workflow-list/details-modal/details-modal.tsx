@@ -9,13 +9,8 @@ import unescapeJs from 'unescape-js';
 import {
   Box,
   Button,
-  ButtonGroup,
   Flex,
-  FormControl,
-  FormHelperText,
-  FormLabel,
   Grid,
-  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -23,23 +18,22 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  SimpleGrid,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  IconButton,
-  Stack,
   Text,
-  Textarea,
 } from '@chakra-ui/react';
-import { CopyIcon } from '@chakra-ui/icons';
 import TaskTable from './task-table';
 import useResponseToasts from '../../../../hooks/use-response-toasts';
 import { Task } from '../../../../types/task';
 import { WorkflowPayload } from '../../../../types/uniflow-types';
 import { Workflow } from '../../../../types/types';
+import InputOutputTab from './details-modal-tabs/input-output-tab';
+import WorkflowJsonTab from './details-modal-tabs/workflow-json-tab';
+import EditRerunTab from './details-modal-tabs/edit-rerun-tab';
+import DetailsModalHeader from './details-modal-header';
 
 type Props = {
   wfId: string;
@@ -50,17 +44,19 @@ type Props = {
 
 export type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED';
 
+export type ExecutedWorkflowDetailResult = {
+  status: Status;
+  tasks: Task[];
+  startTime: Date | number | string;
+  endTime: Date | number | string;
+  input: Record<string, string>;
+  output: Record<string, string>;
+};
+
 type WfDetails = {
   shouldShow: boolean;
   meta: Partial<Workflow>;
-  result: {
-    status: Status;
-    tasks: Task[];
-    startTime: Date | number | string;
-    endTime: Date | number | string;
-    input: { [key: string]: string };
-    output: { [key: string]: string };
-  } | null;
+  result: ExecutedWorkflowDetailResult | null;
   wfId: string;
   input: WorkflowPayload;
   activeTab: number;
@@ -253,24 +249,6 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
     }
   };
 
-  const execTime = (end: Date | number | string | undefined, start: Date | number | string | undefined) => {
-    if (end == null || end === 0 || isEmpty(end)) {
-      return '';
-    }
-
-    const endTime = new Date(end).getTime();
-
-    if (start == null || start === 0 || isEmpty(start)) {
-      return endTime / 1000;
-    }
-
-    const startTime = new Date(start).getTime();
-
-    const total = endTime - startTime;
-
-    return total / 1000;
-  };
-
   const handleTaskDetail = (row: Task | null = null) => {
     if (isEmpty(row)) {
       setDetails((prev) => {
@@ -292,38 +270,6 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
     });
   };
 
-  const terminateWfs = () => {
-    const terminateWorkflows = callbackUtils.terminateWorkflowsCallback();
-
-    terminateWorkflows([details.wfId]).then(() => {
-      getData();
-    });
-  };
-
-  const pauseWfs = () => {
-    const pauseWorkflows = callbackUtils.pauseWorkflowsCallback();
-
-    pauseWorkflows([details.wfId]).then(() => {
-      getData();
-    });
-  };
-
-  const resumeWfs = () => {
-    const resumeWorkflows = callbackUtils.resumeWorkflowsCallback();
-
-    resumeWorkflows([details.wfId]).then(() => {
-      getData();
-    });
-  };
-
-  const retryWfs = () => {
-    const retryWorkflows = callbackUtils.retryWorkflowsCallback();
-
-    retryWorkflows([details.wfId]).then(() => {
-      getData();
-    });
-  };
-
   const restartWfs = () => {
     const restartWorkflows = callbackUtils.restartWorkflowsCallback();
 
@@ -338,218 +284,6 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
     });
   };
 
-  const actionButtons = (status: Status | undefined) => {
-    switch (status) {
-      case 'FAILED':
-      case 'TERMINATED':
-        return (
-          <ButtonGroup float="right">
-            <Button onClick={restartWfs} colorScheme="whiteAlpha">
-              <i className="fas fa-redo" />
-              &nbsp;&nbsp;Restart
-            </Button>
-            <Button onClick={retryWfs} colorScheme="whiteAlpha">
-              <i className="fas fa-history" />
-              &nbsp;&nbsp;Retry
-            </Button>
-          </ButtonGroup>
-        );
-      case 'RUNNING':
-        return (
-          <ButtonGroup float="right">
-            <Button onClick={terminateWfs} colorScheme="whiteAlpha">
-              <i className="fas fa-times" />
-              &nbsp;&nbsp;Terminate
-            </Button>
-            <Button onClick={pauseWfs} colorScheme="whiteAlpha">
-              <i className="fas fa-pause" />
-              &nbsp;&nbsp;Pause
-            </Button>
-          </ButtonGroup>
-        );
-      case 'PAUSED':
-        return (
-          <ButtonGroup float="right">
-            <Button onClick={resumeWfs} colorScheme="whiteAlpha">
-              <i className="fas fa-play" />
-              &nbsp;&nbsp;Resume
-            </Button>
-          </ButtonGroup>
-        );
-      default:
-        break;
-    }
-  };
-
-  const headerInfo = () => (
-    <div className="headerInfo">
-      <Grid gridTemplateColumns="1fr 1fr 1fr 1fr 1fr">
-        <Box md="auto">
-          <div>
-            <b>Total Time (sec)</b>
-            <br />
-            {execTime(details.result?.endTime, details.result?.startTime)}
-          </div>
-        </Box>
-        <Box md="auto">
-          <div>
-            <b>Start Time</b>
-            <br />
-            {formatDate(details.result?.startTime)}
-          </div>
-        </Box>
-        <Box md="auto">
-          <div>
-            <b>End Time</b>
-            <br />
-            {formatDate(details.result?.endTime)}
-          </div>
-        </Box>
-        <Box md="auto">
-          <div>
-            <b>Status</b>
-            <br />
-            {details.result?.status}
-          </div>
-        </Box>
-        <Box>{actionButtons(details.result?.status)}</Box>
-      </Grid>
-    </div>
-  );
-
-  const inputOutput = () => {
-    const { isEscaped, result } = details;
-    const input = result?.input ?? '';
-    const output = result?.output ?? '';
-
-    return (
-      <SimpleGrid columns={2} spacing={4}>
-        <Box>
-          <Stack direction="row" spacing={2} align="center" mb={2}>
-            <Text as="b" fontSize="sm">
-              Workflow Input
-            </Text>
-            <IconButton
-              aria-label="copy"
-              icon={<CopyIcon />}
-              size="sm"
-              className="clp"
-              onClick={() => copyToClipBoard(input)}
-            />
-            <Button
-              size="sm"
-              onClick={() =>
-                setDetails((prevState) => {
-                  return { ...prevState, isEscaped: !prevState.isEscaped };
-                })
-              }
-            >
-              {isEscaped ? 'Unescape' : 'Escape'}
-            </Button>
-          </Stack>
-          <Textarea value={getUnescapedJSON(input)} isReadOnly={true} id="wfinput" variant="filled" minH={200} />
-        </Box>
-        <Box>
-          <Stack direction="row" spacing={2} align="center" mb={2}>
-            <Text as="b" fontSize="sm">
-              Workflow Output
-            </Text>
-            <IconButton
-              aria-label="copy"
-              icon={<CopyIcon />}
-              size="sm"
-              className="clp"
-              onClick={() => copyToClipBoard(output)}
-            />
-            <Button
-              size="sm"
-              onClick={() =>
-                setDetails((prevState) => {
-                  return { ...prevState, isEscaped: !prevState.isEscaped };
-                })
-              }
-            >
-              {isEscaped ? 'Unescape' : 'Escape'}
-            </Button>
-          </Stack>
-          <Textarea value={getUnescapedJSON(output)} isReadOnly={true} id="wfoutput" variant="filled" minH={200} />
-        </Box>
-      </SimpleGrid>
-    );
-  };
-
-  const wfJson = () => {
-    const { isEscaped, result } = details;
-
-    return (
-      <Box>
-        <Stack direction="row" spacing={2} align="center" mb={2}>
-          <Text as="b" fontSize="sm">
-            Workflow JSON
-          </Text>
-          <IconButton
-            aria-label="copy"
-            icon={<CopyIcon />}
-            size="sm"
-            className="clp"
-            onClick={() => copyToClipBoard(result)}
-          />
-          <Button
-            size="sm"
-            onClick={() =>
-              setDetails((prev) => {
-                return { ...prev, isEscaped: !prev.isEscaped };
-              })
-            }
-          >
-            {isEscaped ? 'Unescape' : 'Escape'}
-          </Button>
-        </Stack>
-        <Textarea value={getUnescapedJSON(result)} isReadOnly={true} id="json" variant="filled" minH={200} />
-      </Box>
-    );
-  };
-
-  const editRerun = () => {
-    const input = details.input?.input ?? {};
-    const iPam = details.meta.inputParameters || [];
-    const labels = details.inputsArray;
-    const values: string[] = [];
-
-    labels.forEach((label: string) => {
-      const key = Object.keys(input).findIndex((key) => key === label);
-      key > -1 ? values.push(Object.values(input)[key]) : values.push('');
-    });
-
-    const matchParam = (param: string) => {
-      return param.match(/\[(.*?)]/);
-    };
-
-    const descriptions = iPam.map((param: string) => {
-      if (matchParam(param) && matchParam(param)?.length) {
-        return matchParam(param)![1];
-      }
-
-      return '';
-    });
-
-    return labels.map((label: string, i) => {
-      return (
-        <Box key={`col1-${i}`}>
-          <FormControl>
-            <FormLabel>{label}</FormLabel>
-            <Input
-              onChange={(e) => handleInput(e, labels[i])}
-              placeholder="Enter the input"
-              value={values[i] ? (typeof values[i] === 'object' ? JSON.stringify(values[i]) : values[i]) : ''}
-            />
-            <FormHelperText className="text-muted">{descriptions[i]}</FormHelperText>
-          </FormControl>
-        </Box>
-      );
-    });
-  };
-
   const parentWorkflowButton = () => {
     if (details.parentWfId) {
       return (
@@ -559,6 +293,9 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
       );
     }
   };
+
+  const isResultInputOutputLoaded =
+    details.result != null && details.result.input != null && details.result.output != null;
 
   return (
     <>
@@ -575,7 +312,14 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {headerInfo()}
+            <DetailsModalHeader
+              wfId={details.wfId}
+              onWorkflowActionExecution={getData}
+              endTime={formatDate(details.result?.endTime)}
+              startTime={formatDate(details.result?.startTime)}
+              restartWfs={restartWfs}
+              status={details.result?.status}
+            />
             <Tabs
               value={details.activeTab}
               onChange={(index) => {
@@ -603,8 +347,29 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
                     formatDate={formatDate}
                   />
                 </TabPanel>
-                <TabPanel>{inputOutput()}</TabPanel>
-                <TabPanel>{wfJson()}</TabPanel>
+                <TabPanel>
+                  {isResultInputOutputLoaded && (
+                    <InputOutputTab
+                      copyToClipBoard={copyToClipBoard}
+                      isEscaped={details.isEscaped}
+                      input={details.result?.input ?? {}}
+                      output={details.result?.output ?? {}}
+                      onEscapeChange={(isEscaped) => setDetails((prev) => ({ ...prev, isEscaped }))}
+                      getUnescapedJSON={getUnescapedJSON}
+                    />
+                  )}
+                </TabPanel>
+                <TabPanel>
+                  {details.result != null && (
+                    <WorkflowJsonTab
+                      copyToClipBoard={copyToClipBoard}
+                      isEscaped={details.isEscaped}
+                      result={details.result}
+                      onEscapeChange={(isEscaped) => setDetails((prev) => ({ ...prev, isEscaped }))}
+                      getUnescapedJSON={getUnescapedJSON}
+                    />
+                  )}
+                </TabPanel>
                 <TabPanel>
                   <Text as="b" fontSize="sm">
                     Edit & Rerun Workflow
@@ -612,7 +377,12 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
                   <Box>
                     <form>
                       <Grid gridTemplateColumns="1fr 1fr" gap={4}>
-                        {editRerun()}
+                        <EditRerunTab
+                          handleInput={handleInput}
+                          inputParameters={details.meta.inputParameters}
+                          inputsArray={details.inputsArray}
+                          workflowPayload={details.input}
+                        />
                       </Grid>
                     </form>
                   </Box>
