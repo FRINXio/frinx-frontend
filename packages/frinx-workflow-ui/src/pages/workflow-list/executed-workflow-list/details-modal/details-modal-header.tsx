@@ -30,31 +30,35 @@ const execTime = (end: Date | number | string | undefined, start: Date | number 
 };
 
 const DetailsModalHeader: FC<Props> = ({ startTime, status, endTime, onWorkflowActionExecution, wfId, restartWfs }) => (
-  <div className="headerInfo">
+  <Box
+    background={{ linearGradient: '-120deg, rgb(0, 147, 255) 0%, rgb(0, 118, 203) 100%' }}
+    padding="15px"
+    marginBottom="10px"
+  >
     <Grid gridTemplateColumns="1fr 1fr 1fr 1fr 1fr">
       <Box md="auto">
-        <div>
+        <div color="white">
           <b>Total Time (sec)</b>
           <br />
           {execTime(endTime, startTime)}
         </div>
       </Box>
       <Box md="auto">
-        <div>
+        <div color="white">
           <b>Start Time</b>
           <br />
           {startTime}
         </div>
       </Box>
       <Box md="auto">
-        <div>
+        <div color="white">
           <b>End Time</b>
           <br />
           {endTime}
         </div>
       </Box>
       <Box md="auto">
-        <div>
+        <div color="white">
           <b>Status</b>
           <br />
           {status ?? '-'}
@@ -69,7 +73,7 @@ const DetailsModalHeader: FC<Props> = ({ startTime, status, endTime, onWorkflowA
         />
       </Box>
     </Grid>
-  </div>
+  </Box>
 );
 
 export default DetailsModalHeader;
