@@ -154,3 +154,11 @@ export async function deleteVpnCarrier(carrierId: string): Promise<void> {
     `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers/carrier=${carrierId}`,
   );
 }
+
+export async function getBearerValidProviderIdentifiers(): Promise<ValidProviderIdentifiersOutput> {
+  const json = await sendGetRequest(
+    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/valid-provider-identifiers',
+  );
+  const data = decodeValidProviderIdentifiersOutput(json);
+  return data;
+}

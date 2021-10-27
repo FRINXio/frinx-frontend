@@ -2,7 +2,7 @@ import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Box, Container, Heading } from '@chakra-ui/react';
 import { useParams } from 'react-router';
 import unwrap from '../../helpers/unwrap';
-import { apiBearerToClientBearer } from '../../components/forms/converters';
+import { apiBearerToClientBearer, apiProviderIdentifiersToClientIdentifers } from '../../components/forms/converters';
 import callbackUtils from '../../callback-utils';
 import { EvcAttachment, VpnBearer } from '../../components/forms/bearer-types';
 import EvcAttachmentForm from '../../components/forms/evc-attachment-form';
@@ -26,6 +26,7 @@ function getSelectedEvcAttachment(bearer: VpnBearer, evcType: string, circuitRef
 
 const EditEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [selectedBearer, setSelectedBearer] = useState<VpnBearer | null>(null);
+  const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const { bearerId, evcType, circuitReference } =
     useParams<{ bearerId: string; evcType: string; circuitReference: string }>();
 
@@ -36,6 +37,10 @@ const EditEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
       const bearers = await callbacks.getVpnBearers();
       const clientVpnBearers = apiBearerToClientBearer(bearers);
       setSelectedBearer(getSelectedBearer(clientVpnBearers, bearerId));
+
+      const profiles = await callbacks.getBearerValidProviderIdentifiers();
+      const clientProfiles = apiProviderIdentifiersToClientIdentifers(profiles);
+      setQosProfiles(clientProfiles.qosIdentifiers);
     };
 
     fetchData();
@@ -85,7 +90,12 @@ const EditEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
       <Container>
         <Box padding={6} margin={6} background="white">
           <Heading size="md">Add Evc Attachment To Bearer: {bearerId} </Heading>
-          <EvcAttachmentForm evcAttachment={selectedEvcAttachment} onSubmit={handleSubmit} onCancel={handleCancel} />
+          <EvcAttachmentForm
+            qosProfiles={qosProfiles}
+            evcAttachment={selectedEvcAttachment}
+            onSubmit={handleSubmit}
+            onCancel={handleCancel}
+          />
         </Box>
       </Container>
     )
