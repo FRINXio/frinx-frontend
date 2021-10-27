@@ -21,4 +21,5 @@ export { default as EvcAttachmentList } from './pages/evc-list/evc-list';
 export { default as CreateEvcAttachment } from './pages/create-evc-attachment/create-evc-attachment';
 export { default as EditEvcAttachment } from './pages/edit-evc-attachment/edit-evc-attachment';
 export { default as CreateVpnCarrier } from './pages/save-carrier/save-carrier';
+export { default as CreateVpnNode } from './pages/save-node/save-node';
 export { getUnistoreApiProvider } from './unistore-api-provider';

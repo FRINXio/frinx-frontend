@@ -44,6 +44,7 @@ const GammaApp: VoidFunctionComponent = () => {
         CreateEvcAttachment,
         EditEvcAttachment,
         CreateVpnCarrier,
+        CreateVpnNode,
         getUnistoreApiProvider,
       } = gammaImport;
 
@@ -71,6 +72,7 @@ const GammaApp: VoidFunctionComponent = () => {
         CreateEvcAttachment,
         EditEvcAttachment,
         CreateVpnCarrier,
+        CreateVpnNode,
         UnistoreApiProvider: getUnistoreApiProvider(callbacks),
       });
     });
@@ -105,6 +107,7 @@ const GammaApp: VoidFunctionComponent = () => {
     EditEvcAttachment,
     UnistoreApiProvider,
     CreateVpnCarrier,
+    CreateVpnNode,
   } = components;
 
   return (
@@ -315,6 +318,9 @@ const GammaApp: VoidFunctionComponent = () => {
             onCreateVpnCarrierClick={() => {
               history.push(`/gamma/vpn-bearers/add-carrier`);
             }}
+            onCreateVpnNodeClick={() => {
+              history.push(`/gamma/vpn-bearers/add-node`);
+            }}
             onEvcAttachmentSiteClick={(bearerId: string) => {
               history.push(`/gamma/vpn-bearers/${bearerId}/evc-attachments`);
             }}
@@ -332,6 +338,16 @@ const GammaApp: VoidFunctionComponent = () => {
         </Route>
         <Route path="/gamma/vpn-bearers/add-carrier" exact>
           <CreateVpnCarrier
+            onSuccess={() => {
+              history.push(`/gamma/vpn-bearers`);
+            }}
+            onCancel={() => {
+              history.push(`/gamma/vpn-bearers`);
+            }}
+          />
+        </Route>
+        <Route path="/gamma/vpn-bearers/add-node" exact>
+          <CreateVpnNode
             onSuccess={() => {
               history.push(`/gamma/vpn-bearers`);
             }}

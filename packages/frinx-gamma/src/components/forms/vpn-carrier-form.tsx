@@ -24,7 +24,7 @@ const getCarrierItems = (carriers: VpnCarrier[]): Item[] => {
 
 const CarrierForm: FC<Props> = ({ carrier, carriers, onDelete, onSubmit, onCancel }) => {
   const [vpnCarrier, setVpnCarrier] = useState(carrier);
-  const [vpnCarrierItems, setVpnCarrierItems] = useState(getCarrierItems(carriers));
+  const [vpnCarriers, setVpnCarriers] = useState(carriers);
   const handleEdit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(vpnCarrier);
@@ -35,12 +35,18 @@ const CarrierForm: FC<Props> = ({ carrier, carriers, onDelete, onSubmit, onCance
       return;
     }
 
-    const [filteredCarrier] = carriers.filter((c) => c.name === item.value);
+    const [filteredCarrier] = vpnCarriers.filter((c) => c.name === item.value);
     setVpnCarrier(filteredCarrier);
   };
 
   const handleCreateItem = (item: Item) => {
-    setVpnCarrierItems([...vpnCarrierItems, item]);
+    setVpnCarriers([
+      ...vpnCarriers,
+      {
+        name: item.value,
+        description: null,
+      },
+    ]);
     setVpnCarrier({
       name: item.value,
       description: '',
@@ -51,6 +57,7 @@ const CarrierForm: FC<Props> = ({ carrier, carriers, onDelete, onSubmit, onCance
     onDelete(vpnCarrier.name);
   };
 
+  const vpnCarrierItems = getCarrierItems(vpnCarriers);
   const [selectedCarrier] = vpnCarrierItems.filter((n) => {
     return n.value === vpnCarrier.name;
   });

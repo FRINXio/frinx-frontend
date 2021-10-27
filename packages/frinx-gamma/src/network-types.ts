@@ -556,18 +556,23 @@ export function decodeVpnCarriersOutput(value: unknown): VpnCarriersOutput {
   return extractResult(VpnCarriersValidator.decode(value));
 }
 
-const VpnNodesValidator = t.type({
-  'vpn-nodes': optional(
+const VpnNodeItemsValidator = t.type({
+  'vpn-node': t.array(
     t.type({
-      'vpn-node': t.array(
-        t.type({
-          'ne-id': t.string,
-          'router-id': t.string,
-          role: optional(t.string),
-        }),
-      ),
+      'ne-id': t.string,
+      'router-id': t.string,
+      role: optional(t.string),
     }),
   ),
+});
+export type VpnNodeItemsOutput = t.TypeOf<typeof VpnNodeItemsValidator>;
+export type VpnNodeInput = VpnNodeItemsOutput;
+export function decodeVpnNodeItemsOutput(value: unknown): VpnNodeItemsOutput {
+  return extractResult(VpnNodeItemsValidator.decode(value));
+}
+
+const VpnNodesValidator = t.type({
+  'vpn-nodes': optional(VpnNodeItemsValidator),
 });
 export type VpnNodesOutput = t.TypeOf<typeof VpnNodesValidator>;
 export function decodeVpnNodesOutput(value: unknown): VpnNodesOutput {
