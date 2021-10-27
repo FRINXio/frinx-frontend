@@ -43,6 +43,7 @@ import {
   VpnNodesOutput,
   VpnCarriersOutput,
   VpnCarrierInput,
+  VpnNodeInput,
 } from '../../network-types';
 import unwrap from '../../helpers/unwrap';
 import { VpnBearer, BearerStatus, Carrier, Connection, EvcAttachment, VpnNode, VpnCarrier } from './bearer-types';
@@ -714,6 +715,18 @@ export function clientVpnCarrierToApiVpnCarrier(carrier: VpnCarrier): VpnCarrier
       {
         'carrier-name': carrier.name,
         description: carrier.description || undefined,
+      },
+    ],
+  };
+}
+
+export function clientVpnNodeToApiVpnNode(node: VpnNode): VpnNodeInput {
+  return {
+    'vpn-node': [
+      {
+        'ne-id': node.neId,
+        'router-id': node.routerId,
+        role: node.role || undefined,
       },
     ],
   };

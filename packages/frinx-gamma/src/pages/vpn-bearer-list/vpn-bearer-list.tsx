@@ -10,6 +10,7 @@ import VpnBearerTable from './vpn-bearer-table';
 import unwrap from '../../helpers/unwrap';
 
 type Props = {
+  onCreateVpnNodeClick: () => void;
   onCreateVpnCarrierClick: () => void;
   onCreateVpnBearerClick: () => void;
   onEditVpnBearerClick: (bearerId: string) => void;
@@ -17,6 +18,7 @@ type Props = {
 };
 
 const VpnBearerList: VoidFunctionComponent<Props> = ({
+  onCreateVpnNodeClick,
   onCreateVpnCarrierClick,
   onCreateVpnBearerClick,
   onEditVpnBearerClick,
@@ -93,12 +95,11 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
             <Button variant="outline" colorScheme="blue" onClick={handleCommitBtnClick}>
               Commit changes
             </Button>
-            <Button
-              colorScheme="blue"
-              onClick={onCreateVpnCarrierClick}
-              leftIcon={<Icon as={FeatherIcon} icon="plus" />}
-            >
-              Edit carriers
+            <Button colorScheme="blue" onClick={onCreateVpnNodeClick}>
+              Nodes
+            </Button>
+            <Button colorScheme="blue" onClick={onCreateVpnCarrierClick}>
+              Carriers
             </Button>
             <Button
               colorScheme="blue"
