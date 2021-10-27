@@ -30,6 +30,7 @@ export type Callbacks = {
   editVpnSite: (body: VpnSite) => Promise<void>;
   deleteVpnSite: (id: string) => Promise<void>;
   getValidProviderIdentifiers: () => Promise<ValidProviderIdentifiersOutput>;
+  getBearerValidProviderIdentifiers: () => Promise<ValidProviderIdentifiersOutput>;
   executeWorkflow: (payload: WorkflowPayload) => Promise<WorkflowExecPayload>;
   getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<unknown>;
   getVpnBearers: () => Promise<VpnBearerOutput>;

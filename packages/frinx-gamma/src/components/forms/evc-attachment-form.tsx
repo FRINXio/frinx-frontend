@@ -1,20 +1,34 @@
 import { Button, Divider, FormControl, FormLabel, Input, Select, Stack } from '@chakra-ui/react';
 import React, { FormEvent, useState, VoidFunctionComponent } from 'react';
 import { EvcAttachment } from './bearer-types';
+import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 
 type Props = {
+  qosProfiles: string[];
   evcAttachment: EvcAttachment;
   onSubmit: (attachment: EvcAttachment) => void;
   onCancel: () => void;
 };
 
-const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ evcAttachment, onSubmit, onCancel }) => {
+function getQosProfilesItems(profiles: string[]): Item[] {
+  return profiles.map((p) => ({
+    value: p,
+    label: p,
+  }));
+}
+
+const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttachment, onSubmit, onCancel }) => {
   const [evc, setEvc] = useState<EvcAttachment>(evcAttachment);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(evc);
   };
+
+  const profileItems = getQosProfilesItems(qosProfiles);
+  const [selectedProfile] = profileItems.filter((p) => {
+    return p.value === evc.qosInputProfile;
+  });
 
   return (
     <form onSubmit={handleSubmit}>
@@ -120,16 +134,15 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ evcAttachment, onSubm
         />
       </FormControl>
 
-      <FormControl id="qos-input-profile" my={6}>
-        <FormLabel>Qos Input Profile</FormLabel>
-        <Input
-          variant="filled"
-          name="customer-name"
-          value={evc.qosInputProfile || ''}
-          onChange={(event) => {
+      <FormControl id="qos-profile" my={6}>
+        <FormLabel>QOS Profile</FormLabel>
+        <Autocomplete2
+          items={profileItems}
+          selectedItem={selectedProfile}
+          onChange={(item) => {
             setEvc({
               ...evc,
-              qosInputProfile: event.target.value || null,
+              qosInputProfile: item ? item.value : null,
             });
           }}
         />
