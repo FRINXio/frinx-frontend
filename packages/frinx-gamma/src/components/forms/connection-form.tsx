@@ -60,8 +60,8 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
           }}
         >
           <option value="">-- choose tpId</option>
-          <option value="dot1ad">dot1ad</option>
-          <option value="qinq">qinq</option>
+          <option value="dot1ad">802.1ad (0x88a8)</option>
+          <option value="qinq">802.1QinQ (0x9100)</option>
         </Select>
       </FormControl>
       <FormControl id="connection-mtu" my={6}>
