@@ -85,7 +85,7 @@ export async function getValidProviderIdentifiers(): Promise<ValidProviderIdenti
 
 export async function getVpnBearers(): Promise<VpnBearerOutput> {
   const json = await sendGetRequest(
-    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers',
+    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers?content=config',
   );
   const data = decodeVpnBearerOutput(json);
 
