@@ -31,7 +31,8 @@ const execTime = (end: Date | number | string | undefined, start: Date | number 
 
 const DetailsModalHeader: FC<Props> = ({ startTime, status, endTime, onWorkflowActionExecution, wfId, restartWfs }) => (
   <Box
-    background={{ linearGradient: '-120deg, rgb(0, 147, 255) 0%, rgb(0, 118, 203) 100%' }}
+    bgGradient="linear(to-r, rgb(0, 147, 255), rgb(0, 118, 203))"
+    borderRadius={4}
     padding="15px"
     marginBottom="10px"
   >
