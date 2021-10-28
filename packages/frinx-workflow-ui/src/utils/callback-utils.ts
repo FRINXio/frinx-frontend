@@ -1,5 +1,4 @@
 import {
-  ExecutedWorkflow,
   ExecutedWorkflowsFlat,
   ExecutedWorkflowsHierarchical,
   ExtendedTask,
@@ -29,9 +28,7 @@ export type Callbacks = {
     start: number,
     size: string,
   ) => Promise<ExecutedWorkflowsFlat>;
-  getWorkflowInstanceDetail: (
-    workflowId: string,
-  ) => Promise<{
+  getWorkflowInstanceDetail: (workflowId: string) => Promise<{
     result: WorkflowInstanceDetail;
     meta: Workflow<ExtendedTask>;
     subworkflows: WorkflowInstanceDetail[];
