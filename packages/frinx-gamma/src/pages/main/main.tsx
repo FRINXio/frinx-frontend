@@ -16,7 +16,7 @@ const Main: VoidFunctionComponent<Props> = ({
     <Box padding={6} margin={6} background="white">
       <Box>
         <Button onClick={onServicesSiteLinkClick} as={Link}>
-          Services
+          VPN Services
         </Button>
       </Box>
       <Box>

@@ -11,7 +11,7 @@ import { VpnSite } from './components/forms/site-types';
 import { VpnBearer, VpnCarrier, VpnNode } from './components/forms/bearer-types';
 
 export type WorkflowPayload = {
-  input: unknown;
+  input?: unknown;
   name: string;
   version: number;
 };
