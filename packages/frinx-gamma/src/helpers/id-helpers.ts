@@ -14,7 +14,9 @@ export function getRandomString(length: number): string {
 }
 
 export function generateVpnId(): string {
-  return `VPN_${getRandomString(8)}`;
+  const randomNumber = getRandomInt(99999999);
+  // padding is probably not needed, because of math random distribution (i never get value with less than 8 decimals)
+  return `GNS${String(randomNumber).padStart(8, '0')}`;
 }
 
 export function generateSiteId(): string {
