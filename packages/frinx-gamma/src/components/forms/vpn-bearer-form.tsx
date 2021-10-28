@@ -16,7 +16,7 @@ type Props = {
   onSiteChange?: (s: VpnSite) => void;
 };
 
-const VpnBearerForm: FC<Props> = ({ nodes, carriers, bearer, onSubmit, onCancel }) => {
+const VpnBearerForm: FC<Props> = ({ mode, nodes, carriers, bearer, onSubmit, onCancel }) => {
   const [bearerState, setBearerState] = useState(bearer);
 
   useEffect(() => {
@@ -73,6 +73,7 @@ const VpnBearerForm: FC<Props> = ({ nodes, carriers, bearer, onSubmit, onCancel 
           variant="filled"
           name="sp-bearer-reference"
           value={bearerState.spBearerReference}
+          disabled={mode === 'edit'}
           onChange={(event) => {
             setBearerState({
               ...bearerState,
