@@ -51,7 +51,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
       </FormControl>
 
       <FormControl id="circuit-reference" my={6}>
-        <FormLabel>Circuit Reference</FormLabel>
+        <FormLabel>BMT Circuit Reference</FormLabel>
         <Input
           variant="filled"
           name="circuit-reference"
@@ -66,7 +66,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
       </FormControl>
 
       <FormControl id="carrier-reference" my={6}>
-        <FormLabel>Carrier Reference</FormLabel>
+        <FormLabel>Carrier Circuit Reference</FormLabel>
         <Input
           variant="filled"
           name="carrier-reference"
