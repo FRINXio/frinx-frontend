@@ -1,7 +1,7 @@
 // @flow
-import Grapher from '../../../../../common/Grapher';
+import Grapher from '../../../common/Grapher';
 import React, { Component } from 'react';
-import Workflow2Graph from '../../../../../common/wfegraph';
+import Workflow2Graph from '../../../common/wfegraph';
 import defaultTo from 'lodash/fp/defaultTo';
 import { Box, Flex } from '@chakra-ui/react';
 

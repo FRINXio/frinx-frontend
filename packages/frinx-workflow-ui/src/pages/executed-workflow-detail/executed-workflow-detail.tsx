@@ -1,7 +1,7 @@
 import React, { ChangeEvent, FC, useEffect, useState } from 'react';
-import TaskModal from '../../../../common/task-modal';
+import TaskModal from '../../common/task-modal';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
-import callbackUtils from '../../../../utils/callback-utils';
+import callbackUtils from '../../utils/callback-utils';
 import moment from 'moment';
 import unescapeJs from 'unescape-js';
 import {
@@ -24,10 +24,10 @@ import {
   Text,
 } from '@chakra-ui/react';
 import TaskTable from './task-table';
-import useResponseToasts from '../../../../hooks/use-response-toasts';
-import { Task } from '../../../../types/task';
-import { WorkflowPayload } from '../../../../types/uniflow-types';
-import { Workflow, WorkflowInstanceDetail } from '../../../../types/types';
+import useResponseToasts from '../../hooks/use-response-toasts';
+import { Task } from '../../types/task';
+import { WorkflowPayload } from '../../types/uniflow-types';
+import { Workflow, WorkflowInstanceDetail } from '../../types/types';
 import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
 import WorkflowJsonTab from './executed-workflow-detail-tabs/workflow-json-tab';
 import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';

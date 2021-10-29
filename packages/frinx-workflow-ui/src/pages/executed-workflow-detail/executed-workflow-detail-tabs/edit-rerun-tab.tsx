@@ -1,6 +1,6 @@
 import React, { ChangeEvent, FC } from 'react';
 import { Box, FormControl, FormHelperText, FormLabel, Input } from '@chakra-ui/react';
-import { WorkflowPayload } from '../../../../../types/uniflow-types';
+import { WorkflowPayload } from '../../../types/uniflow-types';
 
 type Props = {
   workflowPayload: WorkflowPayload | null;

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Status } from './executed-workflow-detail';
 import { Button, ButtonGroup } from '@chakra-ui/react';
-import callbackUtils from '../../../../utils/callback-utils';
+import callbackUtils from '../../utils/callback-utils';
 
 type Props = {
   status: Status | undefined;

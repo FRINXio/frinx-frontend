@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import WorkflowDia from '../../executed-workflow-list/executed-workflow-detail/WorkflowDia/WorkflowDia';
+import WorkflowDia from '../../../executed-workflow-detail/WorkflowDia/WorkflowDia';
 import {
   Button,
   Modal,
