@@ -37,17 +37,6 @@ class WorkflowDia extends Component {
 
     return (
       <Box overflow="scroll">
-        {!this.props.def ? (
-          <div>
-            <Flex textAlign="center">
-              <Box>
-                <h2>Execution Flow</h2>
-              </Box>
-            </Flex>
-            <hr />
-          </div>
-        ) : null}
-
         <Grapher def={this.props.def} edges={edges} vertices={vertices} layout="TD-auto" innerGraph={subworkflows} />
       </Box>
     );

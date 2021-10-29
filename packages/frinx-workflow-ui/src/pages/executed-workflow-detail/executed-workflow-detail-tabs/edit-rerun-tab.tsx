@@ -1,28 +1,37 @@
 import React, { ChangeEvent, FC } from 'react';
-import { Box, Button, FormControl, FormHelperText, FormLabel, Input, Text } from '@chakra-ui/react';
+import { Box, Button, FormControl, FormHelperText, FormLabel, Input } from '@chakra-ui/react';
 import { WorkflowPayload } from '../../../types/uniflow-types';
 
 type Props = {
   workflowPayload: WorkflowPayload | null;
   inputParameters: string[] | undefined;
-  inputLabels: string[];
   onInputChange: (e: ChangeEvent<HTMLInputElement>, key: string) => void;
   onRerunClick: () => void;
-  status: 'Execute' | 'OK' | 'Executing...';
+  isExecuting: boolean;
+  workflowDetails: string;
 };
 
 const EditRerunTab: FC<Props> = ({
   workflowPayload,
   inputParameters,
-  inputLabels,
   onInputChange,
   onRerunClick,
-  status,
+  isExecuting,
+  workflowDetails,
 }) => {
   const input = workflowPayload?.input ?? {};
   const inputParams = inputParameters || [];
 
-  const inputValues = inputLabels.map((label: string) => {
+  const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
+  let match = inputCaptureRegex.exec(workflowDetails);
+  const inputLabels = new Set<string>([]);
+
+  while (match != null) {
+    inputLabels.add(match[1]);
+    match = inputCaptureRegex.exec(workflowDetails);
+  }
+
+  const inputValues = [...inputLabels].map((label: string) => {
     return input[label] != null ? input[label] : '';
   });
 
@@ -40,10 +49,7 @@ const EditRerunTab: FC<Props> = ({
 
   return (
     <>
-      <Text as="b" fontSize="sm">
-        Edit & Rerun Workflow
-      </Text>
-      {inputLabels.map((label: string, i) => {
+      {[...inputLabels].map((label: string, i) => {
         return (
           <Box key={`col1-${i}`}>
             <FormControl>
@@ -64,7 +70,7 @@ const EditRerunTab: FC<Props> = ({
           </Box>
         );
       })}
-      <Button marginRight={4} marginTop={10} colorScheme="blue" isDisabled={status != 'Execute'} onClick={onRerunClick}>
+      <Button marginRight={4} marginTop={10} colorScheme="blue" isDisabled={isExecuting} onClick={onRerunClick}>
         Execute
       </Button>
     </>

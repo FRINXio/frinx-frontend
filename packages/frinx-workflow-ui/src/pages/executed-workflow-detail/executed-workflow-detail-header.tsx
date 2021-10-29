@@ -37,7 +37,7 @@ const DetailsModalHeader: FC<Props> = ({
   workflowId,
   restartWorkflows,
 }) => (
-  <Box bgColor="brand.600" borderRadius={4} padding={15} marginBottom={10}>
+  <Box background="brand.600" borderRadius={4} padding={15} marginBottom={10}>
     <Grid gridTemplateColumns="1fr 1fr 1fr 1fr 1fr">
       <Box md="auto">
         <Box color="white">

@@ -41,21 +41,20 @@ export type ExecutedWorkflowDetailResult = {
   output: Record<string, string>;
 };
 
-type workflowDetails = {
+type WorkflowDetails = {
   meta: Partial<Workflow>;
   result: ExecutedWorkflowDetailResult | null;
   workflowId: string;
   input: WorkflowPayload;
-  status: 'Execute' | 'OK' | 'Executing...';
+  isExecuting: boolean;
   timeouts: any[];
   parentWorkflowId: string;
-  editAndRerunInputLabels: string[];
   workflowIdRerun: string;
   isEscaped: boolean;
   subworkflows: WorkflowInstanceDetail[];
 };
 
-const INITIAL_STATE: workflowDetails = {
+const INITIAL_STATE: WorkflowDetails = {
   meta: {
     name: '',
     version: 0,
@@ -68,17 +67,16 @@ const INITIAL_STATE: workflowDetails = {
     name: '',
     version: 0,
   },
-  status: 'Execute',
+  isExecuting: false,
   timeouts: [],
   parentWorkflowId: '',
-  editAndRerunInputLabels: [],
   workflowIdRerun: '',
   isEscaped: true,
   subworkflows: [],
 };
 
 const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
-  const [details, setDetails] = useState<workflowDetails>(INITIAL_STATE);
+  const [details, setDetails] = useState<WorkflowDetails>(INITIAL_STATE);
   const [openedTask, setOpenedTask] = useState<Task | null>(null);
   const taskModalDisclosure = useDisclosure();
 
@@ -96,23 +94,11 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
     const getWorkflowInstanceDetail = callbackUtils.getWorkflowInstanceDetailCallback();
 
     getWorkflowInstanceDetail(workflowId).then((res) => {
-      const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
-      const def = JSON.stringify(res);
-      let match = inputCaptureRegex.exec(def);
-      let editAndRerunInputLabels: string[] = [];
-
-      while (match != null) {
-        editAndRerunInputLabels.push(match[1]);
-        match = inputCaptureRegex.exec(def);
-      }
-
       if (res != null && res.result.status !== 'RUNNING') {
         details.timeouts.forEach((timeout) => {
           clearInterval(timeout);
         });
       }
-
-      editAndRerunInputLabels = [...new Set(editAndRerunInputLabels)];
 
       setDetails((prev) => {
         return {
@@ -127,7 +113,6 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
           },
           workflowId: res.result.workflowId,
           parentWorkflowId: res.result.parentWorkflowId || '',
-          editAndRerunInputLabels,
         };
       });
     });
@@ -155,28 +140,17 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
     setDetails((prev) => {
       return {
         ...prev,
-        status: 'Executing...',
+        isExecuting: true,
       };
     });
 
     const executeWorkflow = callbackUtils.executeWorkflowCallback();
 
-    executeWorkflow(details.input).then((res) => {
-      const setStatus = window.setTimeout(() => {
-        setDetails((prev) => {
-          return {
-            ...prev,
-            status: 'Execute',
-          };
-        });
-      }, 1000);
-
+    executeWorkflow(details.input).then(() => {
       setDetails((prev) => {
         return {
           ...prev,
-          status: 'OK',
-          workflowIdRerun: res.name,
-          timeouts: [...prev.timeouts, setStatus],
+          isExecuting: false,
         };
       });
     });
@@ -258,61 +232,63 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
         restartWorkflows={restartWorkflows}
         status={details.result?.status}
       />
-      <Tabs>
-        <TabList>
-          <Tab>Task Details</Tab>
-          <Tab>Input/Output</Tab>
-          <Tab>JSON</Tab>
-          <Tab value="editRerun">Edit & Rerun</Tab>
-          <Tab>Execution Flow</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>
-            <TaskTable
-              tasks={details.result?.tasks ?? []}
-              onTaskClick={handleOnOpenTaskModal}
-              onWorkflowClick={onWorkflowIdClick}
-              formatDate={formatDate}
-            />
-          </TabPanel>
-          <TabPanel>
-            {isResultInputOutputLoaded && (
-              <InputOutputTab
-                copyToClipBoard={copyToClipBoard}
-                isEscaped={details.isEscaped}
-                input={details.result?.input ?? {}}
-                output={details.result?.output ?? {}}
-                onEscapeChange={(isEscaped) => setDetails((prev) => ({ ...prev, isEscaped }))}
-                getUnescapedJSON={getUnescapedJSON}
+      <Box background="white" borderRadius={4}>
+        <Tabs>
+          <TabList>
+            <Tab>Task Details</Tab>
+            <Tab>Input/Output</Tab>
+            <Tab>JSON</Tab>
+            <Tab value="editRerun">Edit & Rerun</Tab>
+            <Tab>Execution Flow</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <TaskTable
+                tasks={details.result?.tasks ?? []}
+                onTaskClick={handleOnOpenTaskModal}
+                onWorkflowClick={onWorkflowIdClick}
+                formatDate={formatDate}
               />
-            )}
-          </TabPanel>
-          <TabPanel>
-            {details.result != null && (
-              <WorkflowJsonTab
-                copyToClipBoard={copyToClipBoard}
-                isEscaped={details.isEscaped}
-                result={details.result}
-                onEscapeChange={(isEscaped) => setDetails((prev) => ({ ...prev, isEscaped }))}
-                getUnescapedJSON={getUnescapedJSON}
+            </TabPanel>
+            <TabPanel>
+              {isResultInputOutputLoaded && (
+                <InputOutputTab
+                  copyToClipBoard={copyToClipBoard}
+                  isEscaped={details.isEscaped}
+                  input={details.result?.input ?? {}}
+                  output={details.result?.output ?? {}}
+                  onEscapeChange={(isEscaped) => setDetails((prev) => ({ ...prev, isEscaped }))}
+                  getUnescapedJSON={getUnescapedJSON}
+                />
+              )}
+            </TabPanel>
+            <TabPanel>
+              {details.result != null && (
+                <WorkflowJsonTab
+                  copyToClipBoard={copyToClipBoard}
+                  isEscaped={details.isEscaped}
+                  result={details.result}
+                  onEscapeChange={(isEscaped) => setDetails((prev) => ({ ...prev, isEscaped }))}
+                  getUnescapedJSON={getUnescapedJSON}
+                />
+              )}
+            </TabPanel>
+            <TabPanel>
+              <EditRerunTab
+                onInputChange={handleInputChange}
+                inputParameters={details.meta.inputParameters}
+                workflowDetails={JSON.stringify(details)}
+                workflowPayload={details.input}
+                isExecuting={details.isExecuting}
+                onRerunClick={executeWorkflow}
               />
-            )}
-          </TabPanel>
-          <TabPanel>
-            <EditRerunTab
-              onInputChange={handleInputChange}
-              inputParameters={details.meta.inputParameters}
-              inputLabels={details.editAndRerunInputLabels}
-              workflowPayload={details.input}
-              status={details.status}
-              onRerunClick={executeWorkflow}
-            />
-          </TabPanel>
-          <TabPanel>
-            <WorkflowDia meta={details.meta} workflowe={details.result} subworkflows={details.subworkflows} />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+            </TabPanel>
+            <TabPanel>
+              <WorkflowDia meta={details.meta} workflowe={details.result} subworkflows={details.subworkflows} />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Box>
       <Button
         variant="link"
         colorScheme="blue"
