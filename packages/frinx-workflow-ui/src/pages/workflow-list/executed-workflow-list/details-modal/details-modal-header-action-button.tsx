@@ -50,11 +50,11 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
   if (status === 'FAILED' || status === 'TERMINATED') {
     return (
       <ButtonGroup float="right">
-        <Button onClick={restartWorkflows} colorScheme="whiteAlpha">
+        <Button onClick={restartWorkflows} colorScheme="blue">
           <i className="fas fa-redo" />
           &nbsp;&nbsp;Restart
         </Button>
-        <Button onClick={retryWorkflows} colorScheme="whiteAlpha">
+        <Button onClick={retryWorkflows} colorScheme="blue">
           <i className="fas fa-history" />
           &nbsp;&nbsp;Retry
         </Button>
@@ -65,11 +65,11 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
   if (status === 'RUNNING') {
     return (
       <ButtonGroup float="right">
-        <Button onClick={terminateWorkflows} colorScheme="whiteAlpha">
+        <Button onClick={terminateWorkflows} colorScheme="blue">
           <i className="fas fa-times" />
           &nbsp;&nbsp;Terminate
         </Button>
-        <Button onClick={pauseWorkflows} colorScheme="whiteAlpha">
+        <Button onClick={pauseWorkflows} colorScheme="blue">
           <i className="fas fa-pause" />
           &nbsp;&nbsp;Pause
         </Button>
@@ -79,7 +79,7 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
 
   return (
     <ButtonGroup float="right">
-      <Button onClick={resumeWorkflows} colorScheme="whiteAlpha">
+      <Button onClick={resumeWorkflows} colorScheme="blue">
         <i className="fas fa-play" />
         &nbsp;&nbsp;Resume
       </Button>

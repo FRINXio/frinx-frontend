@@ -13,14 +13,14 @@ type Props = {
   workflowId: string;
 };
 
-const execTime = (end: Date | number | string | undefined, start: Date | number | string | undefined) => {
-  if (end == null || end === 0 || isEmpty(end)) {
+const getExecutionTime = (end: string, start: string) => {
+  if (end == null || isEmpty(end)) {
     return '';
   }
 
   const endTime = new Date(end).getTime();
 
-  if (start == null || start === 0 || isEmpty(start)) {
+  if (start == null || isEmpty(start)) {
     return endTime / 1000;
   }
 
@@ -37,40 +37,35 @@ const DetailsModalHeader: FC<Props> = ({
   workflowId,
   restartWorkflows,
 }) => (
-  <Box
-    bgGradient="linear(to-r, rgb(0, 147, 255), rgb(0, 118, 203))"
-    borderRadius={4}
-    padding="15px"
-    marginBottom="10px"
-  >
+  <Box bgColor="brand.600" borderRadius={4} padding={15} marginBottom={10}>
     <Grid gridTemplateColumns="1fr 1fr 1fr 1fr 1fr">
       <Box md="auto">
-        <div color="white">
+        <Box color="white">
           <b>Total Time (sec)</b>
           <br />
-          {execTime(endTime, startTime)}
-        </div>
+          {getExecutionTime(endTime, startTime)}
+        </Box>
       </Box>
       <Box md="auto">
-        <div color="white">
+        <Box color="white">
           <b>Start Time</b>
           <br />
           {startTime}
-        </div>
+        </Box>
       </Box>
       <Box md="auto">
-        <div color="white">
+        <Box color="white">
           <b>End Time</b>
           <br />
           {endTime}
-        </div>
+        </Box>
       </Box>
       <Box md="auto">
-        <div color="white">
+        <Box color="white">
           <b>Status</b>
           <br />
           {status ?? '-'}
-        </div>
+        </Box>
       </Box>
       <Box>
         <DetailsModalHeaderActionButtons

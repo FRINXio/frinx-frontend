@@ -3,7 +3,6 @@ import TaskModal from '../../../../common/task-modal';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../../../utils/callback-utils';
 import moment from 'moment';
-import isEmpty from 'lodash/isEmpty';
 import unescapeJs from 'unescape-js';
 import {
   Box,
@@ -62,7 +61,7 @@ type workflowDetails = {
   status: 'Execute' | 'OK' | 'Executing...';
   timeouts: any[];
   parentWorkflowId: string;
-  inputsArray: string[];
+  editAndRerunInputLabels: string[];
   taskDetail: Task | null;
   shouldShowTaskModal: boolean;
   workflowIdRerun: string;
@@ -88,7 +87,7 @@ const INITIAL_STATE: workflowDetails = {
   status: 'Execute',
   timeouts: [],
   parentWorkflowId: '',
-  inputsArray: [],
+  editAndRerunInputLabels: [],
   taskDetail: null,
   shouldShowTaskModal: false,
   workflowIdRerun: '',
@@ -108,7 +107,7 @@ const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, 
   const [details, setDetails] = useState<workflowDetails>(INITIAL_STATE);
 
   useEffect(() => {
-    getData();
+    fetchWorkflowData();
 
     return () => {
       details.timeouts.forEach((timeout) => {
@@ -117,17 +116,17 @@ const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, 
     };
   }, []);
 
-  const getData = () => {
+  const fetchWorkflowData = () => {
     const getWorkflowInstanceDetail = callbackUtils.getWorkflowInstanceDetailCallback();
 
     getWorkflowInstanceDetail(workflowId).then((res) => {
       const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
       const def = JSON.stringify(res);
       let match = inputCaptureRegex.exec(def);
-      let inputsArray: string[] = [];
+      let editAndRerunInputLabels: string[] = [];
 
       while (match != null) {
-        inputsArray.push(match[1]);
+        editAndRerunInputLabels.push(match[1]);
         match = inputCaptureRegex.exec(def);
       }
 
@@ -137,7 +136,7 @@ const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, 
         });
       }
 
-      inputsArray = [...new Set(inputsArray)];
+      editAndRerunInputLabels = [...new Set(editAndRerunInputLabels)];
 
       setDetails((prev) => {
         return {
@@ -152,7 +151,7 @@ const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, 
           },
           workflowId: res.result.workflowId,
           parentWorkflowId: res.result.parentWorkflowId || '',
-          inputsArray: inputsArray,
+          editAndRerunInputLabels,
         };
       });
     });
@@ -235,35 +234,23 @@ const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, 
     });
   };
 
-  const formatDate = (dt: Date | number | undefined | null | string) => {
+  const formatDate = (date: Date | number | undefined | null | string) => {
     try {
-      if (isEmpty(dt)) {
+      if (date == null) {
         throw new Error();
       }
 
-      const resultTime = moment(dt).format('MM/DD/YYYY, HH:mm:ss:SSS');
-      return resultTime;
+      return moment(date).format('MM/DD/YYYY, HH:mm:ss');
     } catch (error) {
       return '-';
     }
   };
 
-  const handleTaskDetail = (row: Task | null = null) => {
-    if (isEmpty(row)) {
-      setDetails((prev) => {
-        return {
-          ...prev,
-          taskDetail: details.taskDetail,
-          shouldShowTaskModal: !details.shouldShowTaskModal,
-        };
-      });
-      return;
-    }
-
+  const handleTaskClick = (row: Task | null = null) => {
     setDetails((prev) => {
       return {
         ...prev,
-        taskDetail: row,
+        taskDetail: row == null ? details.taskDetail : row,
         shouldShowTaskModal: !details.shouldShowTaskModal,
       };
     });
@@ -273,27 +260,14 @@ const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, 
     const restartWorkflows = callbackUtils.restartWorkflowsCallback();
 
     restartWorkflows([details.workflowId]).then(() => {
-      getData();
+      fetchWorkflowData();
       setDetails((prev) => {
         return {
           ...prev,
-          timeouts: [setInterval(() => getData(), 2000)],
+          timeouts: [...prev.timeouts, setInterval(() => fetchWorkflowData(), 2000)],
         };
       });
     });
-  };
-
-  const parentWorkflowButton = () => {
-    if (details.parentWorkflowId) {
-      return (
-        <Button
-          style={{ margin: '2px', display: 'inline' }}
-          onClick={() => onWorkflowIdClick(details.parentWorkflowId)}
-        >
-          Parent
-        </Button>
-      );
-    }
   };
 
   const isResultInputOutputLoaded =
@@ -302,7 +276,7 @@ const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, 
   return (
     <>
       {details.taskDetail != null && (
-        <TaskModal task={details.taskDetail} show={details.shouldShowTaskModal} handle={handleTaskDetail} />
+        <TaskModal task={details.taskDetail} isOpen={details.shouldShowTaskModal} onClose={handleTaskClick} />
       )}
       <Modal size="5xl" isOpen={details.shouldShow && !details.shouldShowTaskModal} onClose={handleClose}>
         <ModalOverlay />
@@ -310,13 +284,19 @@ const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, 
         <ModalContent>
           <ModalHeader>
             Details of {details.meta.name ? details.meta.name : null} / {details.meta.version}
-            <div>{parentWorkflowButton()}</div>
+            <Box>
+              {details.parentWorkflowId && (
+                <Button display="inline" margin={2} onClick={() => onWorkflowIdClick(details.parentWorkflowId)}>
+                  Parent
+                </Button>
+              )}
+            </Box>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <DetailsModalHeader
               workflowId={details.workflowId}
-              onWorkflowActionExecution={getData}
+              onWorkflowActionExecution={fetchWorkflowData}
               endTime={formatDate(details.result?.endTime)}
               startTime={formatDate(details.result?.startTime)}
               restartWorkflows={restartWorkflows}
@@ -344,7 +324,7 @@ const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, 
                 <TabPanel>
                   <TaskTable
                     tasks={details.result?.tasks ?? []}
-                    onTaskClick={handleTaskDetail}
+                    onTaskClick={handleTaskClick}
                     onWorkflowClick={onWorkflowIdClick}
                     formatDate={formatDate}
                   />
@@ -380,9 +360,9 @@ const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, 
                     <form>
                       <Grid gridTemplateColumns="1fr 1fr" gap={4}>
                         <EditRerunTab
-                          handleInput={handleInput}
+                          onInputChange={handleInput}
                           inputParameters={details.meta.inputParameters}
-                          inputsArray={details.inputsArray}
+                          inputLabels={details.editAndRerunInputLabels}
                           workflowPayload={details.input}
                         />
                       </Grid>

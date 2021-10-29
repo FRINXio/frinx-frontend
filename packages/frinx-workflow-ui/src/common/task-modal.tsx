@@ -29,8 +29,8 @@ import useResponseToasts from '../hooks/use-response-toasts';
 
 type Props = {
   task: Task;
-  show: boolean;
-  handle: () => void;
+  isOpen: boolean;
+  onClose: () => void;
 };
 
 function renderTaskDescription(task: Task) {
@@ -40,7 +40,7 @@ function renderTaskDescription(task: Task) {
   );
 }
 
-const TaskModal = ({ task, show, handle }: Props) => {
+const TaskModal = ({ task, isOpen, onClose }: Props) => {
   const [isCopiedSuccessfully, setIsCopiedSuccessfully] = useState(false);
   const [isCoppiedFailed, setIsCoppiedFailed] = useState(false);
   useResponseToasts({
@@ -81,7 +81,7 @@ const TaskModal = ({ task, show, handle }: Props) => {
   };
 
   return (
-    <Modal size="5xl" isOpen={show} onClose={handle}>
+    <Modal size="5xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
