@@ -8,25 +8,15 @@ import {
   Box,
   Button,
   Container,
-  Flex,
-  Grid,
   Heading,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
+  useDisclosure,
 } from '@chakra-ui/react';
 import TaskTable from './task-table';
-import useResponseToasts from '../../hooks/use-response-toasts';
 import { Task } from '../../types/task';
 import { WorkflowPayload } from '../../types/uniflow-types';
 import { Workflow, WorkflowInstanceDetail } from '../../types/types';
@@ -52,25 +42,20 @@ export type ExecutedWorkflowDetailResult = {
 };
 
 type workflowDetails = {
-  shouldShow: boolean;
   meta: Partial<Workflow>;
   result: ExecutedWorkflowDetailResult | null;
   workflowId: string;
   input: WorkflowPayload;
-  activeTab: number;
   status: 'Execute' | 'OK' | 'Executing...';
   timeouts: any[];
   parentWorkflowId: string;
   editAndRerunInputLabels: string[];
-  taskDetail: Task | null;
-  shouldShowTaskModal: boolean;
   workflowIdRerun: string;
   isEscaped: boolean;
   subworkflows: WorkflowInstanceDetail[];
 };
 
 const INITIAL_STATE: workflowDetails = {
-  shouldShow: true,
   meta: {
     name: '',
     version: 0,
@@ -83,28 +68,19 @@ const INITIAL_STATE: workflowDetails = {
     name: '',
     version: 0,
   },
-  activeTab: 1,
   status: 'Execute',
   timeouts: [],
   parentWorkflowId: '',
   editAndRerunInputLabels: [],
-  taskDetail: null,
-  shouldShowTaskModal: false,
   workflowIdRerun: '',
   isEscaped: true,
   subworkflows: [],
 };
 
 const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
-  const [isCopiedSuccessfully, setIsCopiedSuccessfully] = useState(false);
-  useResponseToasts({
-    isSuccess: isCopiedSuccessfully,
-    isFailure: !isCopiedSuccessfully,
-    successMessage: 'Copied to clipboard',
-    failureMessage: 'Copying to clipboard was not successfull',
-  });
-
   const [details, setDetails] = useState<workflowDetails>(INITIAL_STATE);
+  const [openedTask, setOpenedTask] = useState<Task | null>(null);
+  const taskModalDisclosure = useDisclosure();
 
   useEffect(() => {
     fetchWorkflowData();
@@ -158,10 +134,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
   };
 
   const copyToClipBoard = (textToCopy: any) => {
-    navigator.clipboard
-      .writeText(JSON.stringify(textToCopy))
-      .then(() => setIsCopiedSuccessfully(true))
-      .catch(() => setIsCopiedSuccessfully(false));
+    navigator.clipboard.writeText(JSON.stringify(textToCopy));
   };
 
   const getUnescapedJSON = (data: any) => {
@@ -176,15 +149,6 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
           .replace(/\\b/g, '\\b')
           .replace(/\\f/g, '\\f')
       : unescapeJs(JSON.stringify(data, null, 2));
-  };
-
-  const handleClose = () => {
-    setDetails((prev) => {
-      return {
-        ...prev,
-        shouldShow: false,
-      };
-    });
   };
 
   const executeWorkflow = () => {
@@ -218,7 +182,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
     });
   };
 
-  const handleInput = (e: ChangeEvent<HTMLInputElement>, key: string) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>, key: string) => {
     let workflowForm = details.input?.input ?? ({} as any);
     workflowForm[key] = e.target.value;
     setDetails((prev) => {
@@ -244,16 +208,6 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
     }
   };
 
-  const handleTaskClick = (row: Task | null = null) => {
-    setDetails((prev) => {
-      return {
-        ...prev,
-        taskDetail: row == null ? details.taskDetail : row,
-        shouldShowTaskModal: !details.shouldShowTaskModal,
-      };
-    });
-  };
-
   const restartWorkflows = () => {
     const restartWorkflows = callbackUtils.restartWorkflowsCallback();
 
@@ -268,13 +222,23 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
     });
   };
 
+  const handleOnOpenTaskModal = (task: Task) => {
+    setOpenedTask(task);
+    taskModalDisclosure.onOpen();
+  };
+
+  const handleOnCloseTaskModal = () => {
+    setOpenedTask(null);
+    taskModalDisclosure.onClose();
+  };
+
   const isResultInputOutputLoaded =
     details.result != null && details.result.input != null && details.result.output != null;
 
   return (
     <Container maxWidth={1280}>
-      {details.taskDetail != null && (
-        <TaskModal task={details.taskDetail} isOpen={details.shouldShowTaskModal} onClose={handleTaskClick} />
+      {openedTask != null && (
+        <TaskModal task={openedTask} isOpen={taskModalDisclosure.isOpen} onClose={handleOnCloseTaskModal} />
       )}
       <Heading size="xl" marginBottom={10}>
         Details of {details.meta.name ? details.meta.name : null} / {details.meta.version}
@@ -294,17 +258,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
         restartWorkflows={restartWorkflows}
         status={details.result?.status}
       />
-      <Tabs
-        value={details.activeTab}
-        onChange={(index) => {
-          setDetails((prev) => {
-            return {
-              ...prev,
-              activeTab: index,
-            };
-          });
-        }}
-      >
+      <Tabs>
         <TabList>
           <Tab>Task Details</Tab>
           <Tab>Input/Output</Tab>
@@ -316,7 +270,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
           <TabPanel>
             <TaskTable
               tasks={details.result?.tasks ?? []}
-              onTaskClick={handleTaskClick}
+              onTaskClick={handleOnOpenTaskModal}
               onWorkflowClick={onWorkflowIdClick}
               formatDate={formatDate}
             />
@@ -345,21 +299,14 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
             )}
           </TabPanel>
           <TabPanel>
-            <Text as="b" fontSize="sm">
-              Edit & Rerun Workflow
-            </Text>
-            <Box>
-              <form>
-                <Grid gridTemplateColumns="1fr 1fr" gap={4}>
-                  <EditRerunTab
-                    onInputChange={handleInput}
-                    inputParameters={details.meta.inputParameters}
-                    inputLabels={details.editAndRerunInputLabels}
-                    workflowPayload={details.input}
-                  />
-                </Grid>
-              </form>
-            </Box>
+            <EditRerunTab
+              onInputChange={handleInputChange}
+              inputParameters={details.meta.inputParameters}
+              inputLabels={details.editAndRerunInputLabels}
+              workflowPayload={details.input}
+              status={details.status}
+              onRerunClick={executeWorkflow}
+            />
           </TabPanel>
           <TabPanel>
             <WorkflowDia meta={details.meta} workflowe={details.result} subworkflows={details.subworkflows} />
@@ -374,25 +321,6 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
       >
         {details.workflowIdRerun}
       </Button>
-      <Flex>
-        {details.activeTab === 3 ? (
-          <Button
-            marginRight={4}
-            colorScheme={
-              details.status === 'OK'
-                ? 'green'
-                : details.status === 'Executing...'
-                ? 'teal'
-                : details.status === 'Execute'
-                ? 'blue'
-                : 'red'
-            }
-            onClick={executeWorkflow}
-          >
-            {details.status}
-          </Button>
-        ) : null}
-      </Flex>
     </Container>
   );
 };
