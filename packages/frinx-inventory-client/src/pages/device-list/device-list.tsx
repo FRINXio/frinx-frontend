@@ -20,6 +20,7 @@ import {
 } from '../../__generated__/graphql';
 import DeviceFilter from './device-filters';
 import DeviceTable from './device-table';
+import DeviceSearch from './device-search';
 
 const DEVICES_QUERY = gql`
   query Devices($labelIds: [String!], $first: Int, $after: String, $last: Int, $before: String) {
@@ -98,6 +99,13 @@ type Props = {
   onEditButtonClick: (deviceId: string) => void;
 };
 
+type SortedBy = 'name' | 'created' | null;
+type Direction = 'ASC' | 'DESC';
+type Sorting = {
+  sortedBy: SortedBy;
+  direction: Direction;
+};
+
 type DeleteModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -112,6 +120,26 @@ const DeleteSelectedDevicesModal: FC<DeleteModalProps> = ({ onSubmit, isOpen, on
   );
 };
 
+function getSorting(sorting: Sorting, sortedBy: SortedBy): Sorting {
+  if (sortedBy === sorting.sortedBy) {
+    if (sorting.direction === 'DESC') {
+      return {
+        sortedBy: null,
+        direction: 'ASC',
+      };
+    }
+    return {
+      ...sorting,
+      direction: 'DESC',
+    };
+  }
+
+  return {
+    sortedBy,
+    direction: 'ASC',
+  };
+}
+
 const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick, onEditButtonClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const deleteModalDisclosure = useDisclosure();
@@ -121,6 +149,11 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [installLoadingMap, setInstallLoadingMap] = useState<Record<string, boolean>>({});
   const [selectedDevices, setSelectedDevices] = useState<Set<string>>(new Set());
+  const [sorting, setSorting] = useState<Sorting>({
+    sortedBy: null,
+    direction: 'ASC',
+  });
+  const [searchText, setSearchText] = useState<string | null>(null);
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
   const [{ data: deviceData, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
@@ -338,6 +371,18 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     }
   };
 
+  const handleSortingChange = (sortedBy: SortedBy) => {
+    const newSorting = getSorting(sorting, sortedBy);
+    setSorting(newSorting);
+    // eslint-disable-next-line no-console
+    console.log('submit sorting', sorting);
+  };
+
+  const handleSearchSubmit = (text: string | null) => {
+    // eslint-disable-next-line no-console
+    console.log('submit search text', text);
+  };
+
   const labels = labelsData?.labels?.edges ?? [];
   const areSelectedAll =
     deviceData?.devices.edges.filter(({ node }) => !node.isInstalled).length === selectedDevices.size;
@@ -375,12 +420,15 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
 
           <Box>
             <Flex>
-              <DeviceFilter
-                labels={labels}
-                selectedLabels={selectedLabels}
-                onSelectionChange={handleOnSelectionChange}
-                isCreationDisabled
-              />
+              <Flex gridGap="4">
+                <DeviceFilter
+                  labels={labels}
+                  selectedLabels={selectedLabels}
+                  onSelectionChange={handleOnSelectionChange}
+                  isCreationDisabled
+                />
+                <DeviceSearch text={searchText || ''} onChange={setSearchText} onSubmit={handleSearchSubmit} />
+              </Flex>
               <Spacer />
               <HStack>
                 <Button
@@ -405,10 +453,12 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
             </Flex>
           </Box>
           <DeviceTable
+            sorting={sorting}
             devices={deviceData?.devices.edges ?? []}
             areSelectedAll={areSelectedAll}
             onSelectAll={handleSelectionOfAllDevices}
             selectedDevices={selectedDevices}
+            onSortingClick={handleSortingChange}
             onInstallButtonClick={(deviceId) => installDevices([deviceId])}
             onUninstallButtonClick={handleUninstallButtonClick}
             onSettingsButtonClick={onSettingsButtonClick}
