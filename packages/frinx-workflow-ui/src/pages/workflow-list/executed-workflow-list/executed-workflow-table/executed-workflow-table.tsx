@@ -27,14 +27,14 @@ type Props = {
       [key: string]: any;
     },
   ) => any;
-  showDetailsModal(workflowId?: string | undefined): void;
+  onExecutedWorkflowClick(workflowId: string): void;
 };
 
 const ExecutedWorkflowTable: FC<Props> = ({
   showFlat,
   sort,
   sortWf,
-  showDetailsModal,
+  onExecutedWorkflowClick,
   showChildrenWorkflows,
   selectedWfs,
   indent,
@@ -73,7 +73,7 @@ const ExecutedWorkflowTable: FC<Props> = ({
             dynamicSort={dynamicSort}
             indent={indent}
             showChildrenWorkflows={showChildrenWorkflows}
-            showDetailsModal={showDetailsModal}
+            onExecutedWorkflowClick={onExecutedWorkflowClick}
             openParentWfs={openParentWfs}
             searchReducer={searchReducer}
             selectWf={selectWf}

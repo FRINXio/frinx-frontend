@@ -25,7 +25,7 @@ type Props = {
       [key: string]: any;
     },
   ) => any;
-  showDetailsModal(workflowId?: string | undefined): void;
+  onExecutedWorkflowClick(workflowId: string): void;
 };
 
 const ExecutedWorkflowTableItem: FC<Props> = ({
@@ -39,7 +39,7 @@ const ExecutedWorkflowTableItem: FC<Props> = ({
   indent,
   selectedWfs,
   showChildrenWorkflows,
-  showDetailsModal,
+  onExecutedWorkflowClick,
 }) => {
   const { data, parents, children } = searchReducer;
   const childSet: NestedExecutedWorkflow[] = children;
@@ -82,7 +82,7 @@ const ExecutedWorkflowTableItem: FC<Props> = ({
             </Td>
           )}
           <Td
-            onClick={() => showDetailsModal(item.workflowId)}
+            onClick={() => onExecutedWorkflowClick(item.workflowId)}
             className="clickable"
             style={{
               textIndent: indent(dataset, i, 20),

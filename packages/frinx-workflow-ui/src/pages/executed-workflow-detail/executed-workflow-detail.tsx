@@ -7,8 +7,10 @@ import unescapeJs from 'unescape-js';
 import {
   Box,
   Button,
+  Container,
   Flex,
   Grid,
+  Heading,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -35,8 +37,6 @@ import DetailsModalHeader from './executed-workflow-detail-header';
 
 type Props = {
   workflowId: string;
-  modalHandler: () => void;
-  refreshTable: () => void;
   onWorkflowIdClick: (workflowId: string) => void;
 };
 
@@ -95,7 +95,7 @@ const INITIAL_STATE: workflowDetails = {
   subworkflows: [],
 };
 
-const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, refreshTable }) => {
+const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
   const [isCopiedSuccessfully, setIsCopiedSuccessfully] = useState(false);
   useResponseToasts({
     isSuccess: isCopiedSuccessfully,
@@ -185,7 +185,6 @@ const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, 
         shouldShow: false,
       };
     });
-    modalHandler();
   };
 
   const executeWorkflow = () => {
@@ -206,7 +205,6 @@ const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, 
             status: 'Execute',
           };
         });
-        refreshTable();
       }, 1000);
 
       setDetails((prev) => {
@@ -274,139 +272,128 @@ const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, 
     details.result != null && details.result.input != null && details.result.output != null;
 
   return (
-    <>
+    <Container maxWidth={1280}>
       {details.taskDetail != null && (
         <TaskModal task={details.taskDetail} isOpen={details.shouldShowTaskModal} onClose={handleTaskClick} />
       )}
-      <Modal size="5xl" isOpen={details.shouldShow && !details.shouldShowTaskModal} onClose={handleClose}>
-        <ModalOverlay />
-
-        <ModalContent>
-          <ModalHeader>
-            Details of {details.meta.name ? details.meta.name : null} / {details.meta.version}
-            <Box>
-              {details.parentWorkflowId && (
-                <Button display="inline" margin={2} onClick={() => onWorkflowIdClick(details.parentWorkflowId)}>
-                  Parent
-                </Button>
-              )}
-            </Box>
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <DetailsModalHeader
-              workflowId={details.workflowId}
-              onWorkflowActionExecution={fetchWorkflowData}
-              endTime={formatDate(details.result?.endTime)}
-              startTime={formatDate(details.result?.startTime)}
-              restartWorkflows={restartWorkflows}
-              status={details.result?.status}
+      <Heading size="xl" marginBottom={10}>
+        Details of {details.meta.name ? details.meta.name : null} / {details.meta.version}
+      </Heading>
+      <Box>
+        {details.parentWorkflowId && (
+          <Button display="inline" margin={2} onClick={() => onWorkflowIdClick(details.parentWorkflowId)}>
+            Parent
+          </Button>
+        )}
+      </Box>
+      <DetailsModalHeader
+        workflowId={details.workflowId}
+        onWorkflowActionExecution={fetchWorkflowData}
+        endTime={formatDate(details.result?.endTime)}
+        startTime={formatDate(details.result?.startTime)}
+        restartWorkflows={restartWorkflows}
+        status={details.result?.status}
+      />
+      <Tabs
+        value={details.activeTab}
+        onChange={(index) => {
+          setDetails((prev) => {
+            return {
+              ...prev,
+              activeTab: index,
+            };
+          });
+        }}
+      >
+        <TabList>
+          <Tab>Task Details</Tab>
+          <Tab>Input/Output</Tab>
+          <Tab>JSON</Tab>
+          <Tab value="editRerun">Edit & Rerun</Tab>
+          <Tab>Execution Flow</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <TaskTable
+              tasks={details.result?.tasks ?? []}
+              onTaskClick={handleTaskClick}
+              onWorkflowClick={onWorkflowIdClick}
+              formatDate={formatDate}
             />
-            <Tabs
-              value={details.activeTab}
-              onChange={(index) => {
-                setDetails((prev) => {
-                  return {
-                    ...prev,
-                    activeTab: index,
-                  };
-                });
-              }}
-            >
-              <TabList>
-                <Tab>Task Details</Tab>
-                <Tab>Input/Output</Tab>
-                <Tab>JSON</Tab>
-                <Tab value="editRerun">Edit & Rerun</Tab>
-                <Tab>Execution Flow</Tab>
-              </TabList>
-              <TabPanels>
-                <TabPanel>
-                  <TaskTable
-                    tasks={details.result?.tasks ?? []}
-                    onTaskClick={handleTaskClick}
-                    onWorkflowClick={onWorkflowIdClick}
-                    formatDate={formatDate}
+          </TabPanel>
+          <TabPanel>
+            {isResultInputOutputLoaded && (
+              <InputOutputTab
+                copyToClipBoard={copyToClipBoard}
+                isEscaped={details.isEscaped}
+                input={details.result?.input ?? {}}
+                output={details.result?.output ?? {}}
+                onEscapeChange={(isEscaped) => setDetails((prev) => ({ ...prev, isEscaped }))}
+                getUnescapedJSON={getUnescapedJSON}
+              />
+            )}
+          </TabPanel>
+          <TabPanel>
+            {details.result != null && (
+              <WorkflowJsonTab
+                copyToClipBoard={copyToClipBoard}
+                isEscaped={details.isEscaped}
+                result={details.result}
+                onEscapeChange={(isEscaped) => setDetails((prev) => ({ ...prev, isEscaped }))}
+                getUnescapedJSON={getUnescapedJSON}
+              />
+            )}
+          </TabPanel>
+          <TabPanel>
+            <Text as="b" fontSize="sm">
+              Edit & Rerun Workflow
+            </Text>
+            <Box>
+              <form>
+                <Grid gridTemplateColumns="1fr 1fr" gap={4}>
+                  <EditRerunTab
+                    onInputChange={handleInput}
+                    inputParameters={details.meta.inputParameters}
+                    inputLabels={details.editAndRerunInputLabels}
+                    workflowPayload={details.input}
                   />
-                </TabPanel>
-                <TabPanel>
-                  {isResultInputOutputLoaded && (
-                    <InputOutputTab
-                      copyToClipBoard={copyToClipBoard}
-                      isEscaped={details.isEscaped}
-                      input={details.result?.input ?? {}}
-                      output={details.result?.output ?? {}}
-                      onEscapeChange={(isEscaped) => setDetails((prev) => ({ ...prev, isEscaped }))}
-                      getUnescapedJSON={getUnescapedJSON}
-                    />
-                  )}
-                </TabPanel>
-                <TabPanel>
-                  {details.result != null && (
-                    <WorkflowJsonTab
-                      copyToClipBoard={copyToClipBoard}
-                      isEscaped={details.isEscaped}
-                      result={details.result}
-                      onEscapeChange={(isEscaped) => setDetails((prev) => ({ ...prev, isEscaped }))}
-                      getUnescapedJSON={getUnescapedJSON}
-                    />
-                  )}
-                </TabPanel>
-                <TabPanel>
-                  <Text as="b" fontSize="sm">
-                    Edit & Rerun Workflow
-                  </Text>
-                  <Box>
-                    <form>
-                      <Grid gridTemplateColumns="1fr 1fr" gap={4}>
-                        <EditRerunTab
-                          onInputChange={handleInput}
-                          inputParameters={details.meta.inputParameters}
-                          inputLabels={details.editAndRerunInputLabels}
-                          workflowPayload={details.input}
-                        />
-                      </Grid>
-                    </form>
-                  </Box>
-                </TabPanel>
-                <TabPanel>
-                  <WorkflowDia meta={details.meta} workflowe={details.result} subworkflows={details.subworkflows} />
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          </ModalBody>
-          <ModalFooter justifyContent="space-between">
-            <Button
-              variant="link"
-              colorScheme="blue"
-              justifySelf="start"
-              onClick={() => onWorkflowIdClick(details.workflowIdRerun)}
-            >
-              {details.workflowIdRerun}
-            </Button>
-            <Flex>
-              {details.activeTab === 3 ? (
-                <Button
-                  marginRight={4}
-                  colorScheme={
-                    details.status === 'OK'
-                      ? 'green'
-                      : details.status === 'Executing...'
-                      ? 'teal'
-                      : details.status === 'Execute'
-                      ? 'blue'
-                      : 'red'
-                  }
-                  onClick={executeWorkflow}
-                >
-                  {details.status}
-                </Button>
-              ) : null}
-            </Flex>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+                </Grid>
+              </form>
+            </Box>
+          </TabPanel>
+          <TabPanel>
+            <WorkflowDia meta={details.meta} workflowe={details.result} subworkflows={details.subworkflows} />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+      <Button
+        variant="link"
+        colorScheme="blue"
+        justifySelf="start"
+        onClick={() => onWorkflowIdClick(details.workflowIdRerun)}
+      >
+        {details.workflowIdRerun}
+      </Button>
+      <Flex>
+        {details.activeTab === 3 ? (
+          <Button
+            marginRight={4}
+            colorScheme={
+              details.status === 'OK'
+                ? 'green'
+                : details.status === 'Executing...'
+                ? 'teal'
+                : details.status === 'Execute'
+                ? 'blue'
+                : 'red'
+            }
+            onClick={executeWorkflow}
+          >
+            {details.status}
+          </Button>
+        ) : null}
+      </Flex>
+    </Container>
   );
 };
 

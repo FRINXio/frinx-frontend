@@ -1,7 +1,6 @@
 import './WorkflowExec.css';
 import * as bulkActions from '../../../store/actions/bulk';
 import * as searchActions from '../../../store/actions/search-execs';
-import DetailsModal from '../../executed-workflow-detail/executed-workflow-detail';
 import PageContainer from '../../../common/PageContainer';
 import PageCount from '../../../common/PageCount';
 import PageSelect from '../../../common/page-select';
@@ -14,8 +13,7 @@ import ExecutedWorkflowTable from './executed-workflow-table/executed-workflow-t
 import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
 
 type Props = {
-  query: string;
-  onWorkflowIdClick: (wfId: string) => void;
+  onWorkflowIdClick: (workflowId: string) => void;
 };
 
 type StateProps = {
@@ -38,7 +36,6 @@ type ReduxStateProps = ReturnType<typeof mapStateToProps>;
 type ComponentProps = Props & DispatchProps & ReduxStateProps;
 
 const initialState = {
-  query: '',
   selectedWfs: [],
   detailsModal: false,
   wfId: '',
@@ -60,13 +57,12 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
   checkedWorkflows,
   updateByQuery,
   updateByLabel,
-  query,
-  onWorkflowIdClick,
   fetchParentWorkflows,
   searchReducer,
   setView,
   updateParents,
   updateSize,
+  onWorkflowIdClick,
 }) => {
   const [state, setState] = useState<StateProps>(initialState);
 
@@ -74,15 +70,10 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
     setState((prev) => {
       return {
         ...prev,
-        wfId: query,
         detailsModal: false,
         closeDetails: true,
       };
     });
-
-    if (query) {
-      updateByQuery(query);
-    }
 
     const { data, query: searchQuery, parents, size } = searchReducer;
     const dataset = state.showFlat ? data : parents;
@@ -107,7 +98,7 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
       fetchParentWorkflows(state.wfId, state.viewedPage, state.defaultPages);
       update([], []);
     }
-  }, [query, state.showFlat]);
+  }, [state.showFlat]);
 
   const clearView = () => {
     state.openParentWfs.forEach((parent) => showChildrenWorkflows(parent, null, null));
@@ -368,24 +359,10 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
     selectWfView();
   };
 
-  const detailsModal = state.detailsModal ? (
-    <DetailsModal
-      workflowId={state.wfId}
-      modalHandler={showDetailsModal}
-      refreshTable={() =>
-        state.showFlat
-          ? fetchNewData(state.wfId, 1, state.defaultPages)
-          : fetchParentWorkflows(state.wfId, 1, state.defaultPages)
-      }
-      onWorkflowIdClick={onWorkflowIdClick}
-    />
-  ) : null;
-
   const wfsCount = state.showFlat ? searchReducer.data : searchReducer.parents;
 
   return (
     <PageContainer>
-      {detailsModal}
       <WorkflowBulk
         wfsCount={wfsCount.length}
         selectedWfs={state.selectedWfs}
@@ -409,7 +386,7 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
         dynamicSort={dynamicSort}
         indent={indent}
         showChildrenWorkflows={showChildrenWorkflows}
-        showDetailsModal={showDetailsModal}
+        onExecutedWorkflowClick={onWorkflowIdClick}
         openParentWfs={state.openParentWfs}
         searchReducer={searchReducer}
         selectWf={selectWf}
