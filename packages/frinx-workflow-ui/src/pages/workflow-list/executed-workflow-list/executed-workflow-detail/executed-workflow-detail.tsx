@@ -28,10 +28,10 @@ import useResponseToasts from '../../../../hooks/use-response-toasts';
 import { Task } from '../../../../types/task';
 import { WorkflowPayload } from '../../../../types/uniflow-types';
 import { Workflow, WorkflowInstanceDetail } from '../../../../types/types';
-import InputOutputTab from './details-modal-tabs/input-output-tab';
-import WorkflowJsonTab from './details-modal-tabs/workflow-json-tab';
-import EditRerunTab from './details-modal-tabs/edit-rerun-tab';
-import DetailsModalHeader from './details-modal-header';
+import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
+import WorkflowJsonTab from './executed-workflow-detail-tabs/workflow-json-tab';
+import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
+import DetailsModalHeader from './executed-workflow-detail-header';
 
 type Props = {
   workflowId: string;

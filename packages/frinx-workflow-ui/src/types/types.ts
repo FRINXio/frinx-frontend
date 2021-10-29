@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Node } from 'beautiful-react-diagrams/@types/DiagramSchema';
-import { Status } from '../pages/workflow-list/executed-workflow-list/details-modal/details-modal';
+import { Status } from '../pages/workflow-list/executed-workflow-list/executed-workflow-detail/executed-workflow-detail';
 import { Task as WorkflowTask } from '../types/task';
 
 type AnyJson = JsonArray | JsonMap;

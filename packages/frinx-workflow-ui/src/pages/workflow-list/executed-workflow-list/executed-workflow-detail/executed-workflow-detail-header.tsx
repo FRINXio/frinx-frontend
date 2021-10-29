@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { Box, Grid } from '@chakra-ui/react';
-import { Status } from './details-modal';
+import { Status } from './executed-workflow-detail';
 import { isEmpty } from 'lodash';
-import DetailsModalHeaderActionButtons from './details-modal-header-action-button';
+import DetailsModalHeaderActionButtons from './executed-workflow-detail-header-action-button';
 
 type Props = {
   startTime: string;

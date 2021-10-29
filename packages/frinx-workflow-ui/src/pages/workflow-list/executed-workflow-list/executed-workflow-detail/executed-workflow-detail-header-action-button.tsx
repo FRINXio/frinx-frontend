@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Status } from './details-modal';
+import { Status } from './executed-workflow-detail';
 import { Button, ButtonGroup } from '@chakra-ui/react';
 import callbackUtils from '../../../../utils/callback-utils';
 
