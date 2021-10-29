@@ -210,6 +210,7 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
           variant="filled"
           name="site-management-type"
           value={siteState.siteManagementType}
+          disabled
           onChange={(event) => {
             setSiteState({
               ...siteState,
