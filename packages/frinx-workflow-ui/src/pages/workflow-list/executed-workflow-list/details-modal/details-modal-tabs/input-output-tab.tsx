@@ -30,7 +30,7 @@ const InputOutputTab: FC<Props> = ({ isEscaped, input, output, getUnescapedJSON,
             {isEscaped ? 'Unescape' : 'Escape'}
           </Button>
         </Stack>
-        <Textarea value={getUnescapedJSON(input)} isReadOnly={true} id="wfinput" variant="filled" minH={200} />
+        <Textarea value={getUnescapedJSON(input)} isReadOnly={true} id="workflowInput" variant="filled" minH={200} />
       </Box>
       <Box>
         <Stack direction="row" spacing={2} align="center" mb={2}>
@@ -48,7 +48,7 @@ const InputOutputTab: FC<Props> = ({ isEscaped, input, output, getUnescapedJSON,
             {isEscaped ? 'Unescape' : 'Escape'}
           </Button>
         </Stack>
-        <Textarea value={getUnescapedJSON(output)} isReadOnly={true} id="wfoutput" variant="filled" minH={200} />
+        <Textarea value={getUnescapedJSON(output)} isReadOnly={true} id="workflowOutput" variant="filled" minH={200} />
       </Box>
     </SimpleGrid>
   );

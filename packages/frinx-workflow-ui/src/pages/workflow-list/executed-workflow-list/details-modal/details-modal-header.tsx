@@ -8,9 +8,9 @@ type Props = {
   startTime: string;
   endTime: string;
   status: Status | undefined;
-  restartWfs: () => void;
+  restartWorkflows: () => void;
   onWorkflowActionExecution: () => void;
-  wfId: string;
+  workflowId: string;
 };
 
 const execTime = (end: Date | number | string | undefined, start: Date | number | string | undefined) => {
@@ -29,7 +29,14 @@ const execTime = (end: Date | number | string | undefined, start: Date | number 
   return total / 1000;
 };
 
-const DetailsModalHeader: FC<Props> = ({ startTime, status, endTime, onWorkflowActionExecution, wfId, restartWfs }) => (
+const DetailsModalHeader: FC<Props> = ({
+  startTime,
+  status,
+  endTime,
+  onWorkflowActionExecution,
+  workflowId,
+  restartWorkflows,
+}) => (
   <Box
     bgGradient="linear(to-r, rgb(0, 147, 255), rgb(0, 118, 203))"
     borderRadius={4}
@@ -67,8 +74,8 @@ const DetailsModalHeader: FC<Props> = ({ startTime, status, endTime, onWorkflowA
       </Box>
       <Box>
         <DetailsModalHeaderActionButtons
-          restartWfs={restartWfs}
-          wfId={wfId}
+          restartWorkflows={restartWorkflows}
+          workflowId={workflowId}
           status={status ?? 'RUNNING'}
           onWorkflowActionExecution={onWorkflowActionExecution}
         />

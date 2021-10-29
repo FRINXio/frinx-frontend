@@ -35,10 +35,10 @@ import EditRerunTab from './details-modal-tabs/edit-rerun-tab';
 import DetailsModalHeader from './details-modal-header';
 
 type Props = {
-  wfId: string;
+  workflowId: string;
   modalHandler: () => void;
   refreshTable: () => void;
-  onWorkflowIdClick: (wfId: string) => void;
+  onWorkflowIdClick: (workflowId: string) => void;
 };
 
 export type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED';
@@ -52,25 +52,25 @@ export type ExecutedWorkflowDetailResult = {
   output: Record<string, string>;
 };
 
-type WfDetails = {
+type workflowDetails = {
   shouldShow: boolean;
   meta: Partial<Workflow>;
   result: ExecutedWorkflowDetailResult | null;
-  wfId: string;
+  workflowId: string;
   input: WorkflowPayload;
   activeTab: number;
   status: 'Execute' | 'OK' | 'Executing...';
   timeouts: any[];
-  parentWfId: string;
+  parentWorkflowId: string;
   inputsArray: string[];
   taskDetail: Task | null;
   shouldShowTaskModal: boolean;
-  wfIdRerun: string;
+  workflowIdRerun: string;
   isEscaped: boolean;
   subworkflows: WorkflowInstanceDetail[];
 };
 
-const INITIAL_STATE: WfDetails = {
+const INITIAL_STATE: workflowDetails = {
   shouldShow: true,
   meta: {
     name: '',
@@ -78,7 +78,7 @@ const INITIAL_STATE: WfDetails = {
     inputParameters: [],
   },
   result: null,
-  wfId: '',
+  workflowId: '',
   input: {
     input: {},
     name: '',
@@ -87,16 +87,16 @@ const INITIAL_STATE: WfDetails = {
   activeTab: 1,
   status: 'Execute',
   timeouts: [],
-  parentWfId: '',
+  parentWorkflowId: '',
   inputsArray: [],
   taskDetail: null,
   shouldShowTaskModal: false,
-  wfIdRerun: '',
+  workflowIdRerun: '',
   isEscaped: true,
   subworkflows: [],
 };
 
-const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refreshTable }) => {
+const DetailsModal: FC<Props> = ({ workflowId, modalHandler, onWorkflowIdClick, refreshTable }) => {
   const [isCopiedSuccessfully, setIsCopiedSuccessfully] = useState(false);
   useResponseToasts({
     isSuccess: isCopiedSuccessfully,
@@ -105,7 +105,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
     failureMessage: 'Copying to clipboard was not successfull',
   });
 
-  const [details, setDetails] = useState<WfDetails>(INITIAL_STATE);
+  const [details, setDetails] = useState<workflowDetails>(INITIAL_STATE);
 
   useEffect(() => {
     getData();
@@ -120,7 +120,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
   const getData = () => {
     const getWorkflowInstanceDetail = callbackUtils.getWorkflowInstanceDetailCallback();
 
-    getWorkflowInstanceDetail(wfId).then((res) => {
+    getWorkflowInstanceDetail(workflowId).then((res) => {
       const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
       const def = JSON.stringify(res);
       let match = inputCaptureRegex.exec(def);
@@ -150,8 +150,8 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
             version: res.meta.version,
             input: res.result.input,
           },
-          wfId: res.result.workflowId,
-          parentWfId: res.result.parentWorkflowId || '',
+          workflowId: res.result.workflowId,
+          parentWorkflowId: res.result.parentWorkflowId || '',
           inputsArray: inputsArray,
         };
       });
@@ -214,7 +214,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
         return {
           ...prev,
           status: 'OK',
-          wfIdRerun: res.name,
+          workflowIdRerun: res.name,
           timeouts: [...prev.timeouts, setStatus],
         };
       });
@@ -222,14 +222,14 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
   };
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>, key: string) => {
-    let wfForm = details.input?.input ?? ({} as any);
-    wfForm[key] = e.target.value;
+    let workflowForm = details.input?.input ?? ({} as any);
+    workflowForm[key] = e.target.value;
     setDetails((prev) => {
       return {
         ...prev,
         input: {
           ...details.input,
-          input: wfForm,
+          input: workflowForm,
         },
       };
     });
@@ -269,10 +269,10 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
     });
   };
 
-  const restartWfs = () => {
+  const restartWorkflows = () => {
     const restartWorkflows = callbackUtils.restartWorkflowsCallback();
 
-    restartWorkflows([details.wfId]).then(() => {
+    restartWorkflows([details.workflowId]).then(() => {
       getData();
       setDetails((prev) => {
         return {
@@ -284,9 +284,12 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
   };
 
   const parentWorkflowButton = () => {
-    if (details.parentWfId) {
+    if (details.parentWorkflowId) {
       return (
-        <Button style={{ margin: '2px', display: 'inline' }} onClick={() => onWorkflowIdClick(details.parentWfId)}>
+        <Button
+          style={{ margin: '2px', display: 'inline' }}
+          onClick={() => onWorkflowIdClick(details.parentWorkflowId)}
+        >
           Parent
         </Button>
       );
@@ -312,11 +315,11 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
           <ModalCloseButton />
           <ModalBody>
             <DetailsModalHeader
-              wfId={details.wfId}
+              workflowId={details.workflowId}
               onWorkflowActionExecution={getData}
               endTime={formatDate(details.result?.endTime)}
               startTime={formatDate(details.result?.startTime)}
-              restartWfs={restartWfs}
+              restartWorkflows={restartWorkflows}
               status={details.result?.status}
             />
             <Tabs
@@ -387,7 +390,7 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
                   </Box>
                 </TabPanel>
                 <TabPanel>
-                  <WorkflowDia meta={details.meta} wfe={details.result} subworkflows={details.subworkflows} />
+                  <WorkflowDia meta={details.meta} workflowe={details.result} subworkflows={details.subworkflows} />
                 </TabPanel>
               </TabPanels>
             </Tabs>
@@ -397,9 +400,9 @@ const DetailsModal: FC<Props> = ({ wfId, modalHandler, onWorkflowIdClick, refres
               variant="link"
               colorScheme="blue"
               justifySelf="start"
-              onClick={() => onWorkflowIdClick(details.wfIdRerun)}
+              onClick={() => onWorkflowIdClick(details.workflowIdRerun)}
             >
-              {details.wfIdRerun}
+              {details.workflowIdRerun}
             </Button>
             <Flex>
               {details.activeTab === 3 ? (

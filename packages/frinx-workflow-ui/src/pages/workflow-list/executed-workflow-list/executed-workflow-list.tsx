@@ -370,7 +370,7 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
 
   const detailsModal = state.detailsModal ? (
     <DetailsModal
-      wfId={state.wfId}
+      workflowId={state.wfId}
       modalHandler={showDetailsModal}
       refreshTable={() =>
         state.showFlat

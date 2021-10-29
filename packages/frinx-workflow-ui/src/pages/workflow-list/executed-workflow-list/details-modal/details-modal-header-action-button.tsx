@@ -5,51 +5,56 @@ import callbackUtils from '../../../../utils/callback-utils';
 
 type Props = {
   status: Status | undefined;
-  restartWfs: () => void;
+  restartWorkflows: () => void;
   onWorkflowActionExecution: () => void;
-  wfId: string;
+  workflowId: string;
 };
 
-const DetailsModalHeaderActionButtons: FC<Props> = ({ status, onWorkflowActionExecution, restartWfs, wfId }) => {
-  const terminateWfs = () => {
+const DetailsModalHeaderActionButtons: FC<Props> = ({
+  status,
+  onWorkflowActionExecution,
+  restartWorkflows,
+  workflowId,
+}) => {
+  const terminateWorkflows = () => {
     const terminateWorkflows = callbackUtils.terminateWorkflowsCallback();
 
-    terminateWorkflows([wfId]).then(() => {
+    terminateWorkflows([workflowId]).then(() => {
       onWorkflowActionExecution();
     });
   };
 
-  const pauseWfs = () => {
+  const pauseWorkflows = () => {
     const pauseWorkflows = callbackUtils.pauseWorkflowsCallback();
 
-    pauseWorkflows([wfId]).then(() => {
+    pauseWorkflows([workflowId]).then(() => {
       onWorkflowActionExecution();
     });
   };
 
-  const resumeWfs = () => {
+  const resumeWorkflows = () => {
     const resumeWorkflows = callbackUtils.resumeWorkflowsCallback();
 
-    resumeWorkflows([wfId]).then(() => {
+    resumeWorkflows([workflowId]).then(() => {
       onWorkflowActionExecution();
     });
   };
 
-  const retryWfs = () => {
+  const retryWorkflows = () => {
     const retryWorkflows = callbackUtils.retryWorkflowsCallback();
 
-    retryWorkflows([wfId]).then(() => {
+    retryWorkflows([workflowId]).then(() => {
       onWorkflowActionExecution();
     });
   };
   if (status === 'FAILED' || status === 'TERMINATED') {
     return (
       <ButtonGroup float="right">
-        <Button onClick={restartWfs} colorScheme="whiteAlpha">
+        <Button onClick={restartWorkflows} colorScheme="whiteAlpha">
           <i className="fas fa-redo" />
           &nbsp;&nbsp;Restart
         </Button>
-        <Button onClick={retryWfs} colorScheme="whiteAlpha">
+        <Button onClick={retryWorkflows} colorScheme="whiteAlpha">
           <i className="fas fa-history" />
           &nbsp;&nbsp;Retry
         </Button>
@@ -60,11 +65,11 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({ status, onWorkflowActionEx
   if (status === 'RUNNING') {
     return (
       <ButtonGroup float="right">
-        <Button onClick={terminateWfs} colorScheme="whiteAlpha">
+        <Button onClick={terminateWorkflows} colorScheme="whiteAlpha">
           <i className="fas fa-times" />
           &nbsp;&nbsp;Terminate
         </Button>
-        <Button onClick={pauseWfs} colorScheme="whiteAlpha">
+        <Button onClick={pauseWorkflows} colorScheme="whiteAlpha">
           <i className="fas fa-pause" />
           &nbsp;&nbsp;Pause
         </Button>
@@ -74,7 +79,7 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({ status, onWorkflowActionEx
 
   return (
     <ButtonGroup float="right">
-      <Button onClick={resumeWfs} colorScheme="whiteAlpha">
+      <Button onClick={resumeWorkflows} colorScheme="whiteAlpha">
         <i className="fas fa-play" />
         &nbsp;&nbsp;Resume
       </Button>
