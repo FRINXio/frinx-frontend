@@ -410,6 +410,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   const handleSearchSubmit = (text: string | null) => {
     // eslint-disable-next-line no-console
     console.log('submit search text', text);
+    firstPage();
     setDeviceNameFilter(searchText);
   };
 
