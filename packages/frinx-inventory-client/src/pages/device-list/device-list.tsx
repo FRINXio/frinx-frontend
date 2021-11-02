@@ -172,7 +172,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   const [sorting, setSorting] = useState<Sorting | null>(null);
   const [searchText, setSearchText] = useState<string | null>(null);
   const [deviceNameFilter, setDeviceNameFilter] = useState<string | null>(null);
-  const [paginationArgs, { nextPage, previousPage, firstPage }] = usePagination(2);
+  const [paginationArgs, { nextPage, previousPage, firstPage }] = usePagination();
   const [{ data: deviceData, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
     variables: {
