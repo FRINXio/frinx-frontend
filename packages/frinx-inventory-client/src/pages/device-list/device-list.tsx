@@ -23,8 +23,23 @@ import DeviceTable from './device-table';
 import DeviceSearch from './device-search';
 
 const DEVICES_QUERY = gql`
-  query Devices($labelIds: [String!], $first: Int, $after: String, $last: Int, $before: String) {
-    devices(filter: { labelIds: $labelIds }, first: $first, after: $after, last: $last, before: $before) {
+  query Devices(
+    $labelIds: [String!]
+    $deviceName: String
+    $sort: SortingInput
+    $first: Int
+    $after: String
+    $last: Int
+    $before: String
+  ) {
+    devices(
+      filter: { labelIds: $labelIds, deviceName: $deviceName }
+      sort: $sort
+      first: $first
+      after: $after
+      last: $last
+      before: $before
+    ) {
       edges {
         node {
           id
@@ -99,7 +114,7 @@ type Props = {
   onEditButtonClick: (deviceId: string) => void;
 };
 
-type SortedBy = 'name' | 'created' | null;
+type SortedBy = 'name' | 'created';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
   sortedBy: SortedBy;
@@ -120,14 +135,19 @@ const DeleteSelectedDevicesModal: FC<DeleteModalProps> = ({ onSubmit, isOpen, on
   );
 };
 
-function getSorting(sorting: Sorting, sortedBy: SortedBy): Sorting {
+function getSorting(sorting: Sorting | null, sortedBy: SortedBy): Sorting | null {
+  if (!sorting) {
+    return {
+      sortedBy,
+      direction: 'ASC',
+    };
+  }
+
   if (sortedBy === sorting.sortedBy) {
     if (sorting.direction === 'DESC') {
-      return {
-        sortedBy: null,
-        direction: 'ASC',
-      };
+      return null;
     }
+
     return {
       ...sorting,
       direction: 'DESC',
@@ -149,15 +169,23 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [installLoadingMap, setInstallLoadingMap] = useState<Record<string, boolean>>({});
   const [selectedDevices, setSelectedDevices] = useState<Set<string>>(new Set());
-  const [sorting, setSorting] = useState<Sorting>({
-    sortedBy: null,
-    direction: 'ASC',
-  });
+  const [sorting, setSorting] = useState<Sorting | null>(null);
   const [searchText, setSearchText] = useState<string | null>(null);
-  const [paginationArgs, { nextPage, previousPage }] = usePagination();
+  const [deviceNameFilter, setDeviceNameFilter] = useState<string | null>(null);
+  const [paginationArgs, { nextPage, previousPage, firstPage }] = usePagination(2);
   const [{ data: deviceData, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
-    variables: { labelIds: selectedLabels.map((label) => label.value), ...paginationArgs },
+    variables: {
+      labelIds: selectedLabels.map((label) => label.value),
+      deviceName: deviceNameFilter,
+      sort: sorting
+        ? {
+            sortBy: sorting.sortedBy === 'name' ? 'NAME' : 'CREATED_AT',
+            direction: sorting.direction,
+          }
+        : undefined,
+      ...paginationArgs,
+    },
     context,
   });
   const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY });
@@ -373,14 +401,16 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
 
   const handleSortingChange = (sortedBy: SortedBy) => {
     const newSorting = getSorting(sorting, sortedBy);
+    firstPage();
     setSorting(newSorting);
     // eslint-disable-next-line no-console
-    console.log('submit sorting', sorting);
+    console.log('submit sorting', newSorting);
   };
 
   const handleSearchSubmit = (text: string | null) => {
     // eslint-disable-next-line no-console
     console.log('submit search text', text);
+    setDeviceNameFilter(searchText);
   };
 
   const labels = labelsData?.labels?.edges ?? [];

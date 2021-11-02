@@ -212,6 +212,7 @@ export type DeviceSource =
 
 export type FilterDevicesInput = {
   labelIds?: Maybe<Array<Scalars['String']>>;
+  deviceName?: Maybe<Scalars['String']>;
 };
 
 export type InstallDevicePayload = {
@@ -408,6 +409,7 @@ export type QueryDevicesArgs = {
   last?: Maybe<Scalars['Int']>;
   before?: Maybe<Scalars['String']>;
   filter?: Maybe<FilterDevicesInput>;
+  sort?: Maybe<SortingInput>;
 };
 
 
@@ -469,6 +471,19 @@ export type Snapshot = {
   __typename?: 'Snapshot';
   name: Scalars['String'];
   createdAt: Scalars['String'];
+};
+
+export type SortDeviceBy =
+  | 'NAME'
+  | 'CREATED_AT';
+
+export type SortDirection =
+  | 'ASC'
+  | 'DESC';
+
+export type SortingInput = {
+  sortBy: SortDeviceBy;
+  direction: SortDirection;
 };
 
 export type SyncFromNetworkPayload = {
@@ -792,6 +807,8 @@ export type CalculatedDiffQuery = (
 
 export type DevicesQueryVariables = Exact<{
   labelIds?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+  deviceName?: Maybe<Scalars['String']>;
+  sort?: Maybe<SortingInput>;
   first?: Maybe<Scalars['Int']>;
   after?: Maybe<Scalars['String']>;
   last?: Maybe<Scalars['Int']>;

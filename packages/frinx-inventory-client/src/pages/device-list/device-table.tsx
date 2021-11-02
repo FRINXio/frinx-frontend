@@ -22,7 +22,7 @@ import { getLocalDateFromUTC } from '../../helpers/time.helpers';
 import { DevicesQuery } from '../../__generated__/graphql';
 import InstallButton from './install-button';
 
-type SortedBy = 'name' | 'created' | null;
+type SortedBy = 'name' | 'created';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
   sortedBy: SortedBy;
@@ -30,7 +30,7 @@ type Sorting = {
 };
 
 type Props = {
-  sorting: Sorting;
+  sorting: Sorting | null;
   devices: DevicesQuery['devices']['edges'];
   selectedDevices: Set<string>;
   areSelectedAll: boolean;
@@ -82,7 +82,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               onClick={() => onSortingClick('name')}
             >
               <Text>Name</Text>
-              {sorting.sortedBy === 'name' && getSortingIcon(sorting.direction)}
+              {sorting?.sortedBy === 'name' && getSortingIcon(sorting.direction)}
             </Flex>
           </Th>
           <Th>
@@ -93,7 +93,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               onClick={() => onSortingClick('created')}
             >
               <Text>Created</Text>
-              {sorting.sortedBy === 'created' && getSortingIcon(sorting.direction)}
+              {sorting?.sortedBy === 'created' && getSortingIcon(sorting.direction)}
             </Flex>
           </Th>
           <Th>Zone</Th>
