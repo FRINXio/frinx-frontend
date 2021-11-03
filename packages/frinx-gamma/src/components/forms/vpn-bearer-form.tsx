@@ -68,7 +68,7 @@ const VpnBearerForm: FC<Props> = ({ mode, nodes, carriers, bearer, onSubmit, onC
         />
       </FormControl>
       <FormControl id="sp-bearer-reference" my={6}>
-        <FormLabel>SP Bearer Reference</FormLabel>
+        <FormLabel>Gamma hub-link ID</FormLabel>
         <Input
           variant="filled"
           name="sp-bearer-reference"
