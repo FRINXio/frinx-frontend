@@ -53,11 +53,7 @@ const ExecutedWorkflowTableItem: FC<Props> = ({
   return (
     <>
       {dataset.map((item, i) => (
-        <Tr
-          key={`row-${i}`}
-          id={`row-${i}`}
-          className={showChildren.some((wf) => wf.workflowId === item.workflowId) && !showFlat ? 'childWf' : undefined}
-        >
+        <Tr key={`row-${i}`} id={`row-${i}`}>
           <Td>
             <Checkbox
               isChecked={selectedWfs.includes(item.workflowId)}
@@ -68,7 +64,7 @@ const ExecutedWorkflowTableItem: FC<Props> = ({
           </Td>
           {showFlat ? null : (
             <Td
-              className="clickable"
+              cursor="pointer"
               onClick={() => showChildrenWorkflows(item, null, null)}
               style={{ textIndent: indent(dataset, i) }}
             >
@@ -83,7 +79,7 @@ const ExecutedWorkflowTableItem: FC<Props> = ({
           )}
           <Td
             onClick={() => onExecutedWorkflowClick(item.workflowId)}
-            className="clickable"
+            cursor="pointer"
             style={{
               textIndent: indent(dataset, i, 20),
               whiteSpace: 'nowrap',

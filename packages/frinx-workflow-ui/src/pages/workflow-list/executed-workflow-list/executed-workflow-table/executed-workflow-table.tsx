@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FC } from 'react';
-import { Table, Thead, Tr, Th, Tbody } from '@chakra-ui/react';
+import { Table, Thead, Tr, Th, Tbody, Box } from '@chakra-ui/react';
 import ExecutedWorkflowTableItem from './executed-workflow-table-item';
 import { ExecutedWorkflow, NestedExecutedWorkflow } from '../../../../types/types';
 
@@ -45,28 +45,28 @@ const ExecutedWorkflowTable: FC<Props> = ({
   searchReducer,
 }) => {
   return (
-    <div className="execTableWrapper">
+    <Box overflow="auto" maxHeight={550}>
       <Table background="white" variant={showFlat ? 'striped' : 'simple'}>
         <Thead>
           <Tr>
             <Th> </Th>
             {showFlat ? null : <Th>Children</Th>}
-            <Th onClick={() => sortWf(0)} className="clickable">
+            <Th onClick={() => sortWf(0)} cursor="pointer">
               Name &nbsp;
               {sort[0] !== 2 ? <i className={sort[0] ? 'fas fa-sort-up' : 'fas fa-sort-down'} /> : null}
             </Th>
             <Th>Status</Th>
-            <Th onClick={() => sortWf(1)} className="clickable">
+            <Th onClick={() => sortWf(1)} cursor="pointer">
               Start Time &nbsp;
               {sort[1] !== 2 ? <i className={sort[1] ? 'fas fa-sort-down' : 'fas fa-sort-up'} /> : null}
             </Th>
-            <Th onClick={() => sortWf(2)} className="clickable">
+            <Th onClick={() => sortWf(2)} cursor="pointer">
               End Time &nbsp;
               {sort[2] !== 2 ? <i className={sort[2] ? 'fas fa-sort-down' : 'fas fa-sort-up'} /> : null}
             </Th>
           </Tr>
         </Thead>
-        <Tbody className="execTableRows">
+        <Tbody fontSize={13} textAlign="left">
           <ExecutedWorkflowTableItem
             sort={sort}
             showFlat={showFlat}
@@ -82,7 +82,7 @@ const ExecutedWorkflowTable: FC<Props> = ({
           />
         </Tbody>
       </Table>
-    </div>
+    </Box>
   );
 };
 
