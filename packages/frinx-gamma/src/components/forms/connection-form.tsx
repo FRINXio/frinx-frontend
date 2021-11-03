@@ -33,7 +33,7 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
         <Select
           variant="filled"
           name="svlan-assignment-type"
-          value={connection.svlanAssignmentType || ''}
+          value={connection.svlanAssignmentType || 'auto'}
           onChange={(event) => {
             onChange({
               ...connection,
