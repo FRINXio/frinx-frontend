@@ -71,20 +71,6 @@ const VpnBearerForm: FC<Props> = ({ mode, nodes, carriers, bearer, onSubmit, onC
           })}
         </Select>
       </FormControl>
-      <FormControl id="portId" my={6}>
-        <FormLabel>Port ID</FormLabel>
-        <Input
-          variant="filled"
-          name="port-id"
-          value={bearerState.portId}
-          onChange={(event) => {
-            setBearerState({
-              ...bearerState,
-              portId: event.target.value,
-            });
-          }}
-        />
-      </FormControl>
       <FormControl id="sp-bearer-reference" my={6}>
         <FormLabel>Gamma hub-link ID</FormLabel>
         <Input
