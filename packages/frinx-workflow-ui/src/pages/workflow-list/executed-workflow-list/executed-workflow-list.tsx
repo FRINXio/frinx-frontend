@@ -1,16 +1,19 @@
-import './WorkflowExec.css';
-import * as bulkActions from '../../../store/actions/bulk';
-import * as searchActions from '../../../store/actions/search-execs';
 import PageContainer from '../../../common/PageContainer';
-import PageCount from '../../../common/PageCount';
-import PageSelect from '../../../common/page-select';
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
-import WorkflowBulk from './WorkflowBulk/workflow-bulk';
-import { Box, Flex } from '@chakra-ui/react';
-import { connect, RootStateOrAny } from 'react-redux';
-import { ExecutedWorkflow, NestedExecutedWorkflow } from '../../../types/types';
-import ExecutedWorkflowTable from './executed-workflow-table/executed-workflow-table';
+import React, { FC, useEffect, useState } from 'react';
+import { Progress } from '@chakra-ui/react';
+import { ExecutedWorkflowsFlat, ExecutedWorkflowsHierarchical, NestedExecutedWorkflow } from '../../../types/types';
 import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
+import {
+  fetchNewData,
+  fetchParentWorkflows,
+  getOrderValue,
+  getSortValue,
+  getValueOfProperty,
+  isValid,
+} from './search-execs';
+import ExecutedWorkflowHierarchicalTable from './executed-workflow-table/executed-workflow-hierarchical-table/executed-workflow-hierarchical-table';
+import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workflow-flat-table/executed-workflow-flat-table';
+import { orderBy } from 'lodash';
 
 type Props = {
   onWorkflowIdClick: (workflowId: string) => void;
@@ -19,91 +22,53 @@ type Props = {
 type StateProps = {
   selectedWfs: string[];
   detailsModal: boolean;
-  wfId: string;
+  workflowId: string;
   openParentWfs: NestedExecutedWorkflow[];
-  closeDetails: boolean;
-  showFlat: boolean;
+  isFlat: boolean;
   showChildren: NestedExecutedWorkflow[];
   defaultPages: number;
-  pagesCount: number;
   viewedPage: number;
-  datasetLength: number;
-  timeout: NodeJS.Timeout;
   sort: number[];
+  labels: string[];
 };
-type DispatchProps = ReturnType<typeof mapDispatchToProps>;
-type ReduxStateProps = ReturnType<typeof mapStateToProps>;
-type ComponentProps = Props & DispatchProps & ReduxStateProps;
 
 const initialState = {
   selectedWfs: [],
   detailsModal: false,
-  wfId: '',
+  workflowId: '',
   openParentWfs: [],
-  closeDetails: true,
-  showFlat: false,
+  isFlat: false,
   showChildren: [],
   defaultPages: 20,
-  pagesCount: 1,
   viewedPage: 1,
-  datasetLength: 0,
-  timeout: setTimeout(() => {}, 0),
   sort: [2, 2, 2],
+  labels: [],
 };
 
-const ExecutedWorkflowList: FC<ComponentProps> = ({
-  deleteParents,
-  fetchNewData,
-  checkedWorkflows,
-  updateByQuery,
-  updateByLabel,
-  fetchParentWorkflows,
-  searchReducer,
-  setView,
-  updateParents,
-  updateSize,
-  onWorkflowIdClick,
-}) => {
+const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   const [state, setState] = useState<StateProps>(initialState);
+  const [flatWorkflows, setFlatWorkflows] = useState<ExecutedWorkflowsFlat | null>(null);
+  const [hierarchicalWorkflows, setHierarchicalWorkflows] = useState<ExecutedWorkflowsHierarchical | null>(null);
 
   useEffect(() => {
-    setState((prev) => {
-      return {
-        ...prev,
-        detailsModal: false,
-        closeDetails: true,
-      };
+    fetchNewData(state.workflowId, state.viewedPage, state.defaultPages, state.labels).then((response) => {
+      setFlatWorkflows(response);
     });
+    fetchParentWorkflows(state.workflowId, state.viewedPage, state.defaultPages, state.labels).then((response) => {
+      setHierarchicalWorkflows(response);
+    });
+  }, []);
 
-    const { data, query: searchQuery, parents, size } = searchReducer;
-    const dataset = state.showFlat ? data : parents;
-    if (dataset.length === 1 && searchQuery !== '' && !state.detailsModal && state.closeDetails && searchQuery) {
-      showDetailsModal(searchQuery);
-    }
+  useEffect(() => {
+    setState((prev) => ({ ...prev, selectedWfs: [...new Set<string>()] }));
+  }, [state.isFlat]);
 
-    if (size !== state.datasetLength) {
-      const pagesCount = size / state.defaultPages;
-      setState((prev) => {
-        return {
-          ...prev,
-          pagesCount: size % state.defaultPages ? pagesCount + 1 : pagesCount,
-          datasetLength: size,
-        };
-      });
-    }
-    if (state.showFlat) {
-      fetchNewData(state.wfId, state.viewedPage, state.defaultPages);
-    } else {
-      checkedWorkflows([0]);
-      fetchParentWorkflows(state.wfId, state.viewedPage, state.defaultPages);
-      update([], []);
-    }
-  }, [state.showFlat]);
+  if (hierarchicalWorkflows == null || flatWorkflows == null) {
+    return <Progress isIndeterminate size="xs" />;
+  }
 
   const clearView = () => {
-    state.openParentWfs.forEach((parent) => showChildrenWorkflows(parent, null, null));
-    updateByQuery('');
-    updateByLabel([]);
+    state.openParentWfs.forEach((parent) => showChildrenWorkflows(parent, hierarchicalWorkflows.children, null, null));
     update([], []);
   };
 
@@ -119,12 +84,12 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
 
   const showChildrenWorkflows = (
     workflow: NestedExecutedWorkflow,
+    children: NestedExecutedWorkflow[],
     closeParentWfs: NestedExecutedWorkflow[] | null,
     closeChildWfs: NestedExecutedWorkflow[] | null,
   ) => {
-    const childrenDataset: NestedExecutedWorkflow[] = searchReducer.children;
-    if (childrenDataset.length) {
-      childrenDataset.forEach((wf: any, index: number) => (wf.index = index));
+    if (children.length) {
+      children.forEach((wf, index: number) => (wf.index = index));
     }
 
     let showChildren = closeChildWfs ? closeChildWfs : state.showChildren;
@@ -132,18 +97,24 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
 
     if (openParents.filter((wfs) => wfs.startTime === workflow.startTime).length) {
       const closeParents = openParents.filter((wf) => wf.parentWorkflowId === workflow.workflowId);
-      deleteParents(showChildren.filter((wf) => wf.parentWorkflowId === workflow.workflowId));
       openParents = openParents.filter((wfs) => wfs.startTime !== workflow.startTime);
       showChildren = showChildren.filter((wf) => wf.parentWorkflowId !== workflow.workflowId);
       closeParents.length
-        ? closeParents.forEach((open) => showChildrenWorkflows(open, openParents, showChildren))
+        ? closeParents.forEach((open) => showChildrenWorkflows(open, children, openParents, showChildren))
         : update(openParents, showChildren);
     } else {
       openParents.push(workflow);
-      showChildren = showChildren.concat(childrenDataset.filter((wf) => wf.parentWorkflowId === workflow.workflowId));
-      updateParents(showChildren.filter((wf) => wf.parentWorkflowId === workflow.workflowId));
+      showChildren = showChildren.concat(children.filter((wf) => wf.parentWorkflowId === workflow.workflowId));
       update(openParents, showChildren);
     }
+  };
+
+  const changeLabels = (labels: string[]) => {
+    setState((prev) => ({ ...prev, labels }));
+  };
+
+  const changeQuery = (query: string) => {
+    setState((prev) => ({ ...prev, workflowId: query }));
   };
 
   const indent = (wf: NestedExecutedWorkflow[], i: number, size?: number) => {
@@ -164,99 +135,41 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
     return '0px';
   };
 
-  const setCountPages = (defaultPages: number, pagesCount: number) => {
-    if (state.showFlat) {
-      fetchNewData(state.wfId, 1, defaultPages);
-    } else {
-      updateSize(1);
-      checkedWorkflows([0]);
-      fetchParentWorkflows(state.wfId, 1, defaultPages);
-      state.openParentWfs.forEach((parent) => showChildrenWorkflows(parent, null, null));
-      update([], []);
-    }
-    setState((prev) => {
-      return {
-        ...prev,
-
-        defaultPages: defaultPages,
-        pagesCount: pagesCount,
-        viewedPage: 1,
-      };
-    });
-  };
-
-  const setViewPage = (page: number) => {
-    if (state.showFlat) {
-      fetchNewData(state.wfId, page, state.defaultPages);
-    } else {
-      fetchParentWorkflows(state.wfId, page, state.defaultPages);
-      state.openParentWfs.forEach((parent) => showChildrenWorkflows(parent, null, null));
-      update([], []);
-    }
-    setState((prev) => {
-      return {
-        ...prev,
-        viewedPage: page,
-        sort: [2, 2, 2],
-      };
-    });
-  };
-
-  const dynamicSort = (property: string) => {
-    let sortOrder = true;
-    if (property[0] === '-') {
-      sortOrder = false;
-      property = property.slice(1);
-    }
-    return (a: { [key: string]: any }, b: { [key: string]: any }) => {
-      if (!a['parentWorkflowId'] && !b['parentWorkflowId']) {
-        return !sortOrder ? b[property].localeCompare(a[property]) : a[property].localeCompare(b[property]);
-      }
-    };
-  };
-
   const selectWfView = () => {
     clearView();
-    updateSize(1);
     setState((prev) => {
       return {
         ...prev,
-        showFlat: !state.showFlat,
+        isFlat: !state.isFlat,
         viewedPage: 1,
         sort: [2, 2, 2],
       };
     });
   };
 
-  const selectWf = (e: ChangeEvent<HTMLInputElement>) => {
-    const { data, parents } = searchReducer;
-    const dataset = state.showFlat ? data : parents;
-    const rowNum = e.target.id.split('-')[1];
+  const setView = () => {
+    setState((prev) => ({ ...prev, isFlat: !prev.isFlat }));
+  };
 
-    let wfIds = state.selectedWfs;
-    const wfId: string = dataset[rowNum]['workflowId'];
+  const selectWf = (workflowId: string, isChecked: boolean) => {
+    let selectedWorkflows = new Set(state.selectedWfs);
 
-    if (wfIds.includes(wfId)) {
-      const idx = wfIds.indexOf(wfId);
-      if (idx !== -1) {
-        wfIds.splice(idx, 1);
-      }
+    if (isChecked) {
+      selectedWorkflows.add(workflowId);
     } else {
-      wfIds.push(wfId);
-      if (!state.showFlat) {
-        wfIds = selectChildrenWf(wfId, wfIds);
-      }
+      selectedWorkflows.delete(workflowId);
     }
+
     setState((prev) => {
       return {
         ...prev,
-        selectedWfs: wfIds,
+        selectedWfs: [...selectedWorkflows],
       };
     });
   };
 
   const selectChildrenWf = (parentId: string, wfIds: string[]) => {
-    const { children } = searchReducer;
+    const { children } = hierarchicalWorkflows;
     const newWfIds = children
       .filter((wf: NestedExecutedWorkflow) => wf.parentWorkflowId === parentId)
       .map((wf: NestedExecutedWorkflow) => wf.workflowId);
@@ -264,171 +177,96 @@ const ExecutedWorkflowList: FC<ComponentProps> = ({
     return [...new Set(wfIds)];
   };
 
-  const selectAllWfs = () => {
-    const { data, parents, children } = searchReducer;
-    const hiddenChildren: NestedExecutedWorkflow[] = children.filter(
-      (obj: NestedExecutedWorkflow) => !state.showChildren.some((obj2) => obj.startTime === obj2.startTime),
-    );
-    const dataset = state.showFlat ? data : parents.concat(hiddenChildren);
-    const wfIds: string[] = [];
-
-    if (state.selectedWfs.length > 0) {
-      setState((prev) => ({ ...prev, selectedWfs: [] }));
-    } else {
-      dataset.map((entry: ExecutedWorkflow) => {
-        if (!state.selectedWfs.includes(entry.workflowId)) {
-          wfIds.push(entry.workflowId);
-        }
-        return null;
-      });
-      setState((prev) => ({ ...prev, selectedWfs: wfIds }));
-    }
-  };
-
-  const showDetailsModal = (workflowId?: string) => {
-    if (workflowId == null || workflowId.trim() === '') return;
-
-    setState((prev) => {
-      return {
-        ...prev,
-        wfId: workflowId,
-        detailsModal: !state.detailsModal,
-        closeDetails: !state.detailsModal,
-      };
-    });
-  };
-
-  const changeQuery = (e: string) => {
-    updateByQuery(e);
-    if (!state.showFlat) {
-      state.openParentWfs.forEach((parent) => showChildrenWorkflows(parent, null, null));
-      update([], []);
-      updateSize(1);
-      checkedWorkflows([0]);
-    }
-    if (state.timeout) clearTimeout(state.timeout);
-    setState((prev) => {
-      return {
-        ...prev,
-        timeout: setTimeout(() => {
-          state.showFlat
-            ? fetchNewData(state.wfId, 1, state.defaultPages)
-            : fetchParentWorkflows(state.wfId, 1, state.defaultPages);
-        }, 300),
-        viewedPage: 1,
-        sort: [2, 2, 2],
-      };
-    });
-  };
-
-  const changeLabels = (e: string[]) => {
-    updateByLabel(e);
-    if (state.showFlat) {
-      fetchNewData(state.wfId, 1, state.defaultPages);
-    } else {
-      state.openParentWfs.forEach((parent) => showChildrenWorkflows(parent, null, null));
-      update([], []);
-      updateSize(1);
-      checkedWorkflows([0]);
-      fetchParentWorkflows(state.wfId, 1, state.defaultPages);
-    }
-    setState((prev) => ({
-      ...prev,
-      viewedPage: 1,
-      sort: [2, 2, 2],
-    }));
-  };
-
-  const sortWf = (number: number) => {
-    const sort = state.sort;
-    for (let i = 0; i < sort.length; i++) {
-      i === number ? (sort[i] = sort[i] === 2 ? 0 : sort[i] === 0 ? 1 : 0) : (sort[i] = 2);
-    }
-    if (!state.showFlat) {
-      state.openParentWfs.forEach((parent) => showChildrenWorkflows(parent, null, null));
+  const sortWf = (sortId: number) => {
+    const sort = state.sort.map((value, i) => (sortId === i ? getSortValue(value) : 2));
+    if (!state.isFlat) {
+      state.openParentWfs.forEach((parent) =>
+        showChildrenWorkflows(parent, hierarchicalWorkflows.children, null, null),
+      );
       update([], []);
     }
     setState((prev) => ({
       ...prev,
-      sort: sort,
+      sort,
     }));
   };
 
   const changeView = () => {
-    setView(!state.showFlat);
+    setView();
     selectWfView();
   };
 
-  const wfsCount = state.showFlat ? searchReducer.data : searchReducer.parents;
+  const hierarchy: ExecutedWorkflowsHierarchical = {
+    parents: orderBy(
+      hierarchicalWorkflows.parents.filter((parent) => isValid(parent, state.workflowId, state.labels)) ?? [],
+      [getValueOfProperty(state.sort)],
+      [getOrderValue(state.sort)],
+    ),
+    children: orderBy(
+      hierarchicalWorkflows.children.filter((child) => isValid(child, state.workflowId, state.labels)) ?? [],
+      [getValueOfProperty(state.sort)],
+      [getOrderValue(state.sort)],
+    ),
+    count: hierarchicalWorkflows.count ?? 0,
+    hits: hierarchicalWorkflows.hits ?? 0,
+  };
+
+  const flat: ExecutedWorkflowsFlat = {
+    result: {
+      hits: orderBy(
+        flatWorkflows.result.hits.filter((workflow) => isValid(workflow, state.workflowId, state.labels)) ?? [],
+        [getValueOfProperty(state.sort)],
+        [getOrderValue(state.sort)],
+      ),
+      totalHits: flatWorkflows.result.totalHits ?? 0,
+    },
+  };
 
   return (
     <PageContainer>
-      <WorkflowBulk
+      {/* <WorkflowBulk
         wfsCount={wfsCount.length}
         selectedWfs={state.selectedWfs}
         pageCount={state.defaultPages}
         selectAllWfs={selectAllWfs}
         bulkOperation={clearView}
-      />
+      /> */}
 
       <ExecutedWorkflowSearchBox
         changeLabels={changeLabels}
-        showFlat={state.showFlat}
+        showFlat={state.isFlat}
         changeQuery={changeQuery}
         changeView={changeView}
-        searchReducer={searchReducer}
+        labels={state.labels}
+        query={state.workflowId}
       />
 
-      <ExecutedWorkflowTable
-        sort={state.sort}
-        isLoading={true}
-        showFlat={state.showFlat}
-        dynamicSort={dynamicSort}
-        indent={indent}
-        showChildrenWorkflows={showChildrenWorkflows}
-        onExecutedWorkflowClick={onWorkflowIdClick}
-        openParentWfs={state.openParentWfs}
-        searchReducer={searchReducer}
-        selectWf={selectWf}
-        selectedWfs={state.selectedWfs}
-        showChildren={state.showChildren}
-        sortWf={sortWf}
-      />
+      {!state.isFlat && (
+        <ExecutedWorkflowHierarchicalTable
+          sortWf={sortWf}
+          indent={indent}
+          hierarchicalWorkflows={hierarchy}
+          onExecutedWorkflowClick={onWorkflowIdClick}
+          openParentWfs={state.openParentWfs}
+          selectWf={selectWf}
+          selectedWfs={state.selectedWfs}
+          showChildrenWorkflows={showChildrenWorkflows}
+          sort={state.sort}
+        />
+      )}
 
-      <Box marginTop={5}>
-        <Flex justifyContent="space-between">
-          <Box>
-            <PageCount dataSize={searchReducer.size} defaultPages={state.defaultPages} handler={setCountPages} />
-          </Box>
-          <Box>
-            <PageSelect viewedPage={state.viewedPage} count={state.pagesCount} indent={1} handler={setViewPage} />
-          </Box>
-        </Flex>
-      </Box>
+      {state.isFlat && (
+        <ExecutedWorkflowFlatTable
+          sortWf={sortWf}
+          onExecutedWorkflowClick={onWorkflowIdClick}
+          selectWf={selectWf}
+          selectedWfs={state.selectedWfs}
+          sort={state.sort}
+          flatWorkflows={flat}
+        />
+      )}
     </PageContainer>
   );
 };
 
-const mapStateToProps = (state: ReturnType<RootStateOrAny>) => {
-  return {
-    searchReducer: state.searchReducer,
-  };
-};
-
-const mapDispatchToProps = (dispatch: Function) => {
-  return {
-    updateByQuery: (query: string) => dispatch(searchActions.updateQuery(query)),
-    updateByLabel: (label: string[]) => dispatch(searchActions.updateLabel(label)),
-    fetchNewData: (wfName: string, viewedPage: number, defaultPages: number) =>
-      dispatch(searchActions.fetchNewData(wfName, viewedPage, defaultPages)),
-    fetchParentWorkflows: (wfName: string, viewedPage: number, defaultPages: number) =>
-      dispatch(searchActions.fetchParentWorkflows(wfName, viewedPage, defaultPages)),
-    updateParents: (children: NestedExecutedWorkflow[]) => dispatch(searchActions.updateParents(children)),
-    deleteParents: (children: NestedExecutedWorkflow[]) => dispatch(searchActions.deleteParents(children)),
-    updateSize: (size: number) => dispatch(searchActions.updateSize(size)),
-    checkedWorkflows: (checkedWfs: number[]) => dispatch(searchActions.checkedWorkflows(checkedWfs)),
-    setView: (value: unknown) => dispatch(bulkActions.setView(value)),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ExecutedWorkflowList);
+export default ExecutedWorkflowList;

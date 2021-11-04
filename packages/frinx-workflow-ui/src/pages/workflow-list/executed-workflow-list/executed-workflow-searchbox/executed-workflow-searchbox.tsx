@@ -4,13 +4,14 @@ import WfAutoComplete from '../../../../common/wf-autocomplete';
 
 type Props = {
   showFlat: boolean;
-  searchReducer: any;
+  labels: string[];
+  query: string;
   changeLabels: (e: string[]) => void;
   changeView: () => void;
   changeQuery: (e: string) => void;
 };
 
-const ExecutedWorkflowSearchBox: FC<Props> = ({ changeLabels, changeQuery, changeView, showFlat, searchReducer }) => {
+const ExecutedWorkflowSearchBox: FC<Props> = ({ changeLabels, changeQuery, changeView, showFlat, labels, query }) => {
   return (
     <>
       <Flex alignItems="center" marginBottom={4}>
@@ -31,14 +32,14 @@ const ExecutedWorkflowSearchBox: FC<Props> = ({ changeLabels, changeQuery, chang
           <WfAutoComplete
             options={['RUNNING', 'COMPLETED', 'FAILED', 'TIMED_OUT', 'TERMINATED', 'PAUSED']}
             onChange={(e) => changeLabels(e)}
-            selected={searchReducer.label}
+            selected={labels}
             placeholder="Search by status."
           />
         </Box>
         <Box flexGrow={1}>
           <FormControl>
             <Input
-              value={searchReducer.query}
+              value={query}
               onChange={(e) => changeQuery(e.target.value)}
               placeholder="Search by keyword."
               background="white"
