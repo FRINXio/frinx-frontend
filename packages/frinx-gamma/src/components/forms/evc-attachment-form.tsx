@@ -80,21 +80,6 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
         />
       </FormControl>
 
-      <FormControl id="customer-name" my={6}>
-        <FormLabel>Customer Name</FormLabel>
-        <Input
-          variant="filled"
-          name="customer-name"
-          value={evc.customerName || ''}
-          onChange={(event) => {
-            setEvc({
-              ...evc,
-              customerName: event.target.value || null,
-            });
-          }}
-        />
-      </FormControl>
-
       <FormControl id="svlan-id" my={6}>
         <FormLabel>Svlan Id</FormLabel>
         <Input
