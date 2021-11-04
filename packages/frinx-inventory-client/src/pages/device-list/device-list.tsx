@@ -26,7 +26,7 @@ const DEVICES_QUERY = gql`
   query Devices(
     $labelIds: [String!]
     $deviceName: String
-    $sort: SortingInput
+    $orderBy: DeviceOrderByInput
     $first: Int
     $after: String
     $last: Int
@@ -34,7 +34,7 @@ const DEVICES_QUERY = gql`
   ) {
     devices(
       filter: { labelIds: $labelIds, deviceName: $deviceName }
-      sort: $sort
+      orderBy: $orderBy
       first: $first
       after: $after
       last: $last
@@ -178,9 +178,9 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     variables: {
       labelIds: selectedLabels.map((label) => label.value),
       deviceName: deviceNameFilter,
-      sort: sorting
+      orderBy: sorting
         ? {
-            sortBy: sorting.sortedBy === 'name' ? 'NAME' : 'CREATED_AT',
+            sortKey: sorting.sortedBy === 'name' ? 'NAME' : 'CREATED_AT',
             direction: sorting.direction,
           }
         : undefined,

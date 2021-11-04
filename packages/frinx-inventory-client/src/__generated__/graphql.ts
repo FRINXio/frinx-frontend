@@ -200,6 +200,11 @@ export type DeviceEdge = {
   cursor: Scalars['String'];
 };
 
+export type DeviceOrderByInput = {
+  sortKey: SortDeviceBy;
+  direction: SortDirection;
+};
+
 export type DeviceServiceState =
   | 'PLANNING'
   | 'IN_SERVICE'
@@ -409,7 +414,7 @@ export type QueryDevicesArgs = {
   last?: Maybe<Scalars['Int']>;
   before?: Maybe<Scalars['String']>;
   filter?: Maybe<FilterDevicesInput>;
-  sort?: Maybe<SortingInput>;
+  orderBy?: Maybe<DeviceOrderByInput>;
 };
 
 
@@ -480,11 +485,6 @@ export type SortDeviceBy =
 export type SortDirection =
   | 'ASC'
   | 'DESC';
-
-export type SortingInput = {
-  sortBy: SortDeviceBy;
-  direction: SortDirection;
-};
 
 export type SyncFromNetworkPayload = {
   __typename?: 'SyncFromNetworkPayload';
@@ -808,7 +808,7 @@ export type CalculatedDiffQuery = (
 export type DevicesQueryVariables = Exact<{
   labelIds?: Maybe<Array<Scalars['String']> | Scalars['String']>;
   deviceName?: Maybe<Scalars['String']>;
-  sort?: Maybe<SortingInput>;
+  orderBy?: Maybe<DeviceOrderByInput>;
   first?: Maybe<Scalars['Int']>;
   after?: Maybe<Scalars['String']>;
   last?: Maybe<Scalars['Int']>;
