@@ -15,13 +15,14 @@ import ExecutedWorkflowHierarchicalTable from './executed-workflow-table/execute
 import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workflow-flat-table/executed-workflow-flat-table';
 import { orderBy } from 'lodash';
 import { Previous } from 'chakra-paginator';
+import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
 
 type Props = {
   onWorkflowIdClick: (workflowId: string) => void;
 };
 
 type StateProps = {
-  selectedWfs: string[];
+  selectedWorkflows: string[];
   detailsModal: boolean;
   workflowId: string;
   openParentWfs: NestedExecutedWorkflow[];
@@ -34,7 +35,7 @@ type StateProps = {
 };
 
 const initialState = {
-  selectedWfs: [],
+  selectedWorkflows: [],
   detailsModal: false,
   workflowId: '',
   openParentWfs: [],
@@ -61,7 +62,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   }, []);
 
   useEffect(() => {
-    setState((prev) => ({ ...prev, selectedWfs: [...new Set<string>()] }));
+    setState((prev) => ({ ...prev, selectedWorkflows: [...new Set<string>()] }));
   }, [state.isFlat]);
 
   if (hierarchicalWorkflows == null || flatWorkflows == null) {
@@ -136,7 +137,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   };
 
   const selectWf = (workflowId: string, isChecked: boolean) => {
-    let selectedWorkflows = new Set(state.selectedWfs);
+    let selectedWorkflows = new Set(state.selectedWorkflows);
 
     if (isChecked) {
       selectedWorkflows.add(workflowId);
@@ -147,7 +148,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     setState((prev) => {
       return {
         ...prev,
-        selectedWfs: [...selectedWorkflows],
+        selectedWorkflows: [...selectedWorkflows],
       };
     });
   };
@@ -166,10 +167,10 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
           );
         }
 
-        return { ...prev, selectedWfs: [...selectedWorkflows] };
+        return { ...prev, selectedWorkflows: [...selectedWorkflows] };
       });
     } else {
-      setState((prev) => ({ ...prev, selectedWfs: [] }));
+      setState((prev) => ({ ...prev, selectedWorkflows: [] }));
     }
   };
 
@@ -226,15 +227,15 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     },
   };
 
+  const workflowsAmount = hierarchy.count + flat.result.totalHits;
+
   return (
     <PageContainer>
-      {/* <WorkflowBulk
-        wfsCount={wfsCount.length}
-        selectedWfs={state.selectedWfs}
-        pageCount={state.defaultPages}
-        selectAllWfs={selectAllWfs}
-        bulkOperation={clearView}
-      /> */}
+      <ExecutedWorkflowBulkOperationsBlock
+        workflowsAmount={workflowsAmount}
+        selectedWorkflows={state.selectedWorkflows}
+        selectAllWorkflows={selectAllWorkflows}
+      />
 
       <ExecutedWorkflowSearchBox
         changeLabels={changeLabels}
@@ -254,7 +255,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
           onExecutedWorkflowClick={onWorkflowIdClick}
           openParentWfs={state.openParentWfs}
           selectWf={selectWf}
-          selectedWfs={state.selectedWfs}
+          selectedWfs={state.selectedWorkflows}
           showChildrenWorkflows={showChildrenWorkflows}
           sort={state.sort}
         />
@@ -266,7 +267,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
           sortWf={sortWf}
           onExecutedWorkflowClick={onWorkflowIdClick}
           selectWf={selectWf}
-          selectedWfs={state.selectedWfs}
+          selectedWfs={state.selectedWorkflows}
           sort={state.sort}
           flatWorkflows={flat}
         />
