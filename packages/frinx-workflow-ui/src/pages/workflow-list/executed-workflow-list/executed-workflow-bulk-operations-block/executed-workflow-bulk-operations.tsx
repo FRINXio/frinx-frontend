@@ -11,7 +11,6 @@ import {
   Flex,
   Heading,
   Icon,
-  Progress,
   Spinner,
   Stack,
 } from '@chakra-ui/react';
@@ -68,7 +67,7 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({ workflowsAmount, selec
   };
 
   return (
-    <Accordion allowToggle marginBottom={4} backgroundColor="white">
+    <Accordion allowToggle backgroundColor="white" marginBottom={10}>
       <AccordionItem>
         <h2>
           <AccordionButton>
@@ -129,7 +128,6 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({ workflowsAmount, selec
             </Stack>
           </Flex>
         </AccordionPanel>
-        <Progress marginTop={5} max={100} size="xs" />
       </AccordionItem>
     </Accordion>
   );

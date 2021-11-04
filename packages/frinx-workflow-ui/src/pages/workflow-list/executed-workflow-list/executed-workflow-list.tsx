@@ -66,7 +66,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   }, [state.isFlat]);
 
   if (hierarchicalWorkflows == null || flatWorkflows == null) {
-    return <Progress isIndeterminate size="xs" />;
+    return <Progress isIndeterminate size="xs" marginTop={-10} />;
   }
 
   const update = (openParents: NestedExecutedWorkflow[], showChildren: NestedExecutedWorkflow[]) => {

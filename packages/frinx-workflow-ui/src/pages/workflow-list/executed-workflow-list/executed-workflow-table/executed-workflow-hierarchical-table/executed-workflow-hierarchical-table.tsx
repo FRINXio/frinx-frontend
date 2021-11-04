@@ -38,7 +38,7 @@ const ExecutedWorkflowHierarchicalTable: FC<Props> = ({
     hierarchicalWorkflows.children.length + hierarchicalWorkflows.parents.length === selectedWfs.length;
 
   return (
-    <Box overflow="auto" maxHeight={550}>
+    <Box marginBottom={10}>
       <Table background="white" variant="simple">
         <ExecutedWorkflowTableHead
           sort={sort}
