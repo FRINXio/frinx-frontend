@@ -1,5 +1,5 @@
 import React, { FC, FormEvent, useEffect, useState } from 'react';
-import { Divider, Button, Input, Stack, FormControl, FormLabel } from '@chakra-ui/react';
+import { Divider, Button, Input, Select, Stack, FormControl, FormLabel } from '@chakra-ui/react';
 import { VpnSite } from './site-types';
 import { VpnBearer, VpnCarrier, VpnNode } from './bearer-types';
 import CarrierForm from './carrier-form';
@@ -53,9 +53,9 @@ const VpnBearerForm: FC<Props> = ({ mode, nodes, carriers, bearer, onSubmit, onC
           }}
         />
       </FormControl>
-      <FormControl id="portId" my={6}>
+      <FormControl id="port-id" my={6}>
         <FormLabel>Port ID</FormLabel>
-        <Input
+        <Select
           variant="filled"
           name="port-id"
           value={bearerState.portId}
@@ -65,7 +65,11 @@ const VpnBearerForm: FC<Props> = ({ mode, nodes, carriers, bearer, onSubmit, onC
               portId: event.target.value,
             });
           }}
-        />
+        >
+          {[...Array(8).keys()].map((v) => {
+            return <option value={`xe-0/1/${v}`}>{`xe-0/1/${v}`}</option>;
+          })}
+        </Select>
       </FormControl>
       <FormControl id="sp-bearer-reference" my={6}>
         <FormLabel>Gamma hub-link ID</FormLabel>
