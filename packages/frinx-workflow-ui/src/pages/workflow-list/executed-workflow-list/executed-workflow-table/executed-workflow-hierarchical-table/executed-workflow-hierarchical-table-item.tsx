@@ -37,7 +37,6 @@ const ExecutedWorkflowTableHierarchicalItem: FC<Props> = ({
             <Checkbox
               isChecked={selectedWfs.includes(item.workflowId)}
               onChange={(e) => selectWf(item.workflowId, e.target.checked)}
-              marginLeft={20}
             />
           </Td>
           <Td

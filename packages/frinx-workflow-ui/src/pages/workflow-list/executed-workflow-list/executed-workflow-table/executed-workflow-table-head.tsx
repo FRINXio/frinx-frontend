@@ -1,17 +1,27 @@
 import React, { FC } from 'react';
-import { Thead, Tr, Th } from '@chakra-ui/react';
+import { Thead, Tr, Th, Checkbox } from '@chakra-ui/react';
 
 type Props = {
-  sortWf: (sort: number) => void;
   sort: number[];
   isFlatTable?: boolean;
+  areSelectedAll: boolean;
+  sortWf: (sort: number) => void;
+  selectAllWorkflows: (isChecked: boolean) => void;
 };
 
-const ExecutedWorkflowTableHead: FC<Props> = ({ sort, sortWf, isFlatTable = false }) => {
+const ExecutedWorkflowTableHead: FC<Props> = ({
+  sort,
+  sortWf,
+  isFlatTable = false,
+  selectAllWorkflows,
+  areSelectedAll,
+}) => {
   return (
     <Thead>
       <Tr>
-        <Th> </Th>
+        <Th>
+          <Checkbox onChange={(e) => selectAllWorkflows(e.target.checked)} isChecked={areSelectedAll} />
+        </Th>
         {!isFlatTable && <Th>Children</Th>}
         <Th onClick={() => sortWf(0)} cursor="pointer">
           Name &nbsp;

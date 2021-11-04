@@ -14,6 +14,7 @@ import {
 import ExecutedWorkflowHierarchicalTable from './executed-workflow-table/executed-workflow-hierarchical-table/executed-workflow-hierarchical-table';
 import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workflow-flat-table/executed-workflow-flat-table';
 import { orderBy } from 'lodash';
+import { Previous } from 'chakra-paginator';
 
 type Props = {
   onWorkflowIdClick: (workflowId: string) => void;
@@ -66,11 +67,6 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   if (hierarchicalWorkflows == null || flatWorkflows == null) {
     return <Progress isIndeterminate size="xs" />;
   }
-
-  const clearView = () => {
-    state.openParentWfs.forEach((parent) => showChildrenWorkflows(parent, hierarchicalWorkflows.children, null, null));
-    update([], []);
-  };
 
   const update = (openParents: NestedExecutedWorkflow[], showChildren: NestedExecutedWorkflow[]) => {
     setState((prev) => {
@@ -135,18 +131,6 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     return '0px';
   };
 
-  const selectWfView = () => {
-    clearView();
-    setState((prev) => {
-      return {
-        ...prev,
-        isFlat: !state.isFlat,
-        viewedPage: 1,
-        sort: [2, 2, 2],
-      };
-    });
-  };
-
   const setView = () => {
     setState((prev) => ({ ...prev, isFlat: !prev.isFlat }));
   };
@@ -166,6 +150,27 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
         selectedWfs: [...selectedWorkflows],
       };
     });
+  };
+
+  const selectAllWorkflows = (isChecked: boolean) => {
+    if (isChecked) {
+      setState((prev) => {
+        let selectedWorkflows: Set<string>;
+        if (state.isFlat) {
+          selectedWorkflows = new Set(flatWorkflows.result.hits.map((workflow) => workflow.workflowId));
+        } else {
+          selectedWorkflows = new Set(
+            hierarchicalWorkflows.children
+              .map((workflow) => workflow.workflowId)
+              .concat(hierarchicalWorkflows.parents.map((workflow) => workflow.workflowId)),
+          );
+        }
+
+        return { ...prev, selectedWfs: [...selectedWorkflows] };
+      });
+    } else {
+      setState((prev) => ({ ...prev, selectedWfs: [] }));
+    }
   };
 
   const selectChildrenWf = (parentId: string, wfIds: string[]) => {
@@ -193,7 +198,6 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
 
   const changeView = () => {
     setView();
-    selectWfView();
   };
 
   const hierarchy: ExecutedWorkflowsHierarchical = {
@@ -243,6 +247,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
 
       {!state.isFlat && (
         <ExecutedWorkflowHierarchicalTable
+          selectAllWorkflows={selectAllWorkflows}
           sortWf={sortWf}
           indent={indent}
           hierarchicalWorkflows={hierarchy}
@@ -257,6 +262,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
 
       {state.isFlat && (
         <ExecutedWorkflowFlatTable
+          selectAllWorkflows={selectAllWorkflows}
           sortWf={sortWf}
           onExecutedWorkflowClick={onWorkflowIdClick}
           selectWf={selectWf}
