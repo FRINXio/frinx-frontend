@@ -1,5 +1,6 @@
 import { Button, Divider, FormControl, FormLabel, Input, Select, Stack } from '@chakra-ui/react';
 import React, { FormEvent, useState, VoidFunctionComponent } from 'react';
+import { useFormik, Field } from 'formik';
 import { EvcAttachment } from './bearer-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 
@@ -18,33 +19,31 @@ function getQosProfilesItems(profiles: string[]): Item[] {
 }
 
 const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttachment, onSubmit, onCancel }) => {
-  const [evc, setEvc] = useState<EvcAttachment>(evcAttachment);
+  // const [evc, setEvc] = useState<EvcAttachment>(evcAttachment);
+  const formik = useFormik({
+    initialValues: {
+      ...evcAttachment,
+    },
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(evc);
+    // onSubmit(evc);
   };
 
   const profileItems = getQosProfilesItems(qosProfiles);
   const [selectedProfile] = profileItems.filter((p) => {
-    return p.value === evc.qosInputProfile;
+    return p.value === formik.values.qosInputProfile;
   });
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={formik.handleSubmit}>
       <FormControl id="evc-type" my={6}>
         <FormLabel>Evc Type</FormLabel>
-        <Select
-          variant="filled"
-          name="site-device-id"
-          value={evc.evcType}
-          onChange={(event) => {
-            setEvc({
-              ...evc,
-              evcType: event.target.value,
-            });
-          }}
-        >
+        <Select variant="filled" name="evcType" value={formik.values.evcType} onChange={formik.handleChange}>
           <option value="evc-point-to-point">point-to-point</option>
           <option value="evc-multipoint">multipoint</option>
         </Select>
@@ -54,81 +53,64 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
         <FormLabel>BMT Circuit Reference</FormLabel>
         <Input
           variant="filled"
-          name="circuit-reference"
-          value={evc.circuitReference}
-          onChange={(event) => {
-            setEvc({
-              ...evc,
-              circuitReference: event.target.value,
-            });
-          }}
+          name="circuitReference"
+          value={formik.values.circuitReference}
+          onChange={formik.handleChange}
         />
       </FormControl>
 
-      <FormControl id="carrier-reference" my={6}>
+      <FormControl id="carrierReference" my={6}>
         <FormLabel>Carrier Circuit Reference</FormLabel>
         <Input
           variant="filled"
-          name="carrier-reference"
-          value={evc.carrierReference || ''}
-          onChange={(event) => {
-            setEvc({
-              ...evc,
-              carrierReference: event.target.value || null,
-            });
-          }}
+          name="carrierReference"
+          value={formik.values.carrierReference || ''}
+          onChange={formik.handleChange}
         />
       </FormControl>
 
-      <FormControl id="svlan-id" my={6}>
+      <FormControl id="svlanId" my={6}>
         <FormLabel>Svlan Id</FormLabel>
         <Input
           variant="filled"
-          name="svlan-id"
-          value={evc.svlanId || ''}
+          name="svlanId"
+          value={formik.values.svlanId || ''}
           disabled
           onChange={(event) => {
             const svlanId = Number(event.target.value);
             if (Number.isNaN(svlanId)) {
               return;
             }
-            setEvc({
-              ...evc,
-              svlanId: svlanId || null,
-            });
+            formik.handleChange(svlanId || null);
           }}
         />
       </FormControl>
 
-      <FormControl id="input-bandwidth" my={6}>
+      <FormControl id="inputBandwidth" my={6}>
         <FormLabel>Input Bandwidth</FormLabel>
         <Input
           variant="filled"
-          name="input-bandwidth"
-          value={evc.inputBandwidth}
+          name="inputBandwidth"
+          value={formik.values.inputBandwidth}
           onChange={(event) => {
-            const inputBandwidth = Number(event.target.value);
+            console.log(event);
+            console.log(event.currentTarget.value);
+            const inputBandwidth = Number(event.currentTarget.value);
             if (Number.isNaN(inputBandwidth)) {
               return;
             }
-            setEvc({
-              ...evc,
-              inputBandwidth,
-            });
+            formik.handleChange(event);
           }}
         />
       </FormControl>
 
-      <FormControl id="qos-profile" my={6}>
+      <FormControl id="qosProfile" my={6}>
         <FormLabel>QOS Profile</FormLabel>
         <Autocomplete2
           items={profileItems}
           selectedItem={selectedProfile}
           onChange={(item) => {
-            setEvc({
-              ...evc,
-              qosInputProfile: item ? item.value : null,
-            });
+            formik.handleChange(item);
           }}
         />
       </FormControl>
