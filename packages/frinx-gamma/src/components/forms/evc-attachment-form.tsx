@@ -1,8 +1,18 @@
-import { Button, Divider, FormControl, FormLabel, Input, Select, Stack } from '@chakra-ui/react';
-import React, { FormEvent, useState, VoidFunctionComponent } from 'react';
-import { useFormik, Field } from 'formik';
+import { Button, Divider, FormControl, FormErrorMessage, FormLabel, Input, Select, Stack } from '@chakra-ui/react';
+import React, { FormEvent, VoidFunctionComponent } from 'react';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import { EvcAttachment } from './bearer-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
+
+const EvcSchema = yup.object().shape({
+  evcType: yup.string().required('Evc type is required'),
+  circuitReference: yup.string().required('Circuit Reference is required'),
+  svlanId: yup.number().required('Svlan Id is required'),
+  inputBandwidth: yup.number().required('Input Bandwidth is required'),
+  carrierReference: yup.string().nullable(),
+  qosInputProfiles: yup.string().nullable(),
+});
 
 type Props = {
   qosProfiles: string[];
@@ -19,54 +29,40 @@ function getQosProfilesItems(profiles: string[]): Item[] {
 }
 
 const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttachment, onSubmit, onCancel }) => {
-  // const [evc, setEvc] = useState<EvcAttachment>(evcAttachment);
-  const formik = useFormik({
+  const { values, errors, setFieldValue, handleChange, handleSubmit } = useFormik({
     initialValues: {
       ...evcAttachment,
     },
+    validationSchema: EvcSchema,
     onSubmit: (values) => {
-      console.log(values);
+      onSubmit(values);
     },
   });
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    // onSubmit(evc);
-  };
-
   const profileItems = getQosProfilesItems(qosProfiles);
   const [selectedProfile] = profileItems.filter((p) => {
-    return p.value === formik.values.qosInputProfile;
+    return p.value === values.qosInputProfile;
   });
 
   return (
-    <form onSubmit={formik.handleSubmit}>
+    <form onSubmit={handleSubmit}>
       <FormControl id="evc-type" my={6}>
         <FormLabel>Evc Type</FormLabel>
-        <Select variant="filled" name="evcType" value={formik.values.evcType} onChange={formik.handleChange}>
+        <Select variant="filled" name="evcType" value={values.evcType} onChange={handleChange}>
           <option value="evc-point-to-point">point-to-point</option>
           <option value="evc-multipoint">multipoint</option>
         </Select>
       </FormControl>
 
-      <FormControl id="circuit-reference" my={6}>
+      <FormControl id="circuit-reference" isInvalid={errors.circuitReference != null} my={6}>
         <FormLabel>BMT Circuit Reference</FormLabel>
-        <Input
-          variant="filled"
-          name="circuitReference"
-          value={formik.values.circuitReference}
-          onChange={formik.handleChange}
-        />
+        <Input variant="filled" name="circuitReference" value={values.circuitReference} onChange={handleChange} />
+        {errors.circuitReference && <FormErrorMessage>{errors.circuitReference}</FormErrorMessage>}
       </FormControl>
 
       <FormControl id="carrierReference" my={6}>
         <FormLabel>Carrier Circuit Reference</FormLabel>
-        <Input
-          variant="filled"
-          name="carrierReference"
-          value={formik.values.carrierReference || ''}
-          onChange={formik.handleChange}
-        />
+        <Input variant="filled" name="carrierReference" value={values.carrierReference || ''} onChange={handleChange} />
       </FormControl>
 
       <FormControl id="svlanId" my={6}>
@@ -74,24 +70,24 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
         <Input
           variant="filled"
           name="svlanId"
-          value={formik.values.svlanId || ''}
+          value={values.svlanId || ''}
           disabled
           onChange={(event) => {
             const svlanId = Number(event.target.value);
             if (Number.isNaN(svlanId)) {
               return;
             }
-            formik.handleChange(svlanId || null);
+            handleChange(svlanId || null);
           }}
         />
       </FormControl>
 
-      <FormControl id="inputBandwidth" my={6}>
+      <FormControl id="inputBandwidth" isInvalid={errors.inputBandwidth != null} my={6}>
         <FormLabel>Input Bandwidth</FormLabel>
         <Input
           variant="filled"
           name="inputBandwidth"
-          value={formik.values.inputBandwidth}
+          value={values.inputBandwidth}
           onChange={(event) => {
             console.log(event);
             console.log(event.currentTarget.value);
@@ -99,18 +95,19 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
             if (Number.isNaN(inputBandwidth)) {
               return;
             }
-            formik.handleChange(event);
+            handleChange(event);
           }}
         />
+        {errors.inputBandwidth && <FormErrorMessage>{errors.inputBandwidth}</FormErrorMessage>}
       </FormControl>
 
-      <FormControl id="qosProfile" my={6}>
+      <FormControl id="qosInputProfile" my={6}>
         <FormLabel>QOS Profile</FormLabel>
         <Autocomplete2
           items={profileItems}
           selectedItem={selectedProfile}
           onChange={(item) => {
-            formik.handleChange(item);
+            setFieldValue('qosInputProfile', item?.value);
           }}
         />
       </FormControl>
