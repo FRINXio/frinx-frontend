@@ -403,13 +403,9 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     const newSorting = getSorting(sorting, sortedBy);
     firstPage();
     setSorting(newSorting);
-    // eslint-disable-next-line no-console
-    console.log('submit sorting', newSorting);
   };
 
   const handleSearchSubmit = (text: string | null) => {
-    // eslint-disable-next-line no-console
-    console.log('submit search text', text);
     firstPage();
     setDeviceNameFilter(searchText);
   };
