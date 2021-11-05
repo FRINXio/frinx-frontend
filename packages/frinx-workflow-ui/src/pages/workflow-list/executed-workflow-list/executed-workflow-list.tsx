@@ -73,7 +73,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
       return {
         ...prev,
         openParentWorkflows: openParents,
-        showChildren: showChildren,
+        showChildren,
       };
     });
   };
