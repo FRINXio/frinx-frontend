@@ -12,9 +12,8 @@ import {
   isValid,
 } from './search-execs';
 import ExecutedWorkflowHierarchicalTable from './executed-workflow-table/executed-workflow-hierarchical-table/executed-workflow-hierarchical-table';
-import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workflow-flat-table/executed-workflow-flat-table';
+import ExecutedWorkfloworkflowlatTable from './executed-workflow-table/executed-workflow-flat-table/executed-workflow-flat-table';
 import { orderBy } from 'lodash';
-import { Previous } from 'chakra-paginator';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
 
 type Props = {
@@ -25,10 +24,10 @@ type StateProps = {
   selectedWorkflows: string[];
   detailsModal: boolean;
   workflowId: string;
-  openParentWfs: NestedExecutedWorkflow[];
+  openParentWorkflows: NestedExecutedWorkflow[];
   isFlat: boolean;
   showChildren: NestedExecutedWorkflow[];
-  defaultPages: number;
+  workflowsPerPage: number;
   viewedPage: number;
   sort: number[];
   labels: string[];
@@ -38,10 +37,10 @@ const initialState = {
   selectedWorkflows: [],
   detailsModal: false,
   workflowId: '',
-  openParentWfs: [],
+  openParentWorkflows: [],
   isFlat: false,
   showChildren: [],
-  defaultPages: 20,
+  workflowsPerPage: 20,
   viewedPage: 1,
   sort: [2, 2, 2],
   labels: [],
@@ -53,10 +52,10 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   const [hierarchicalWorkflows, setHierarchicalWorkflows] = useState<ExecutedWorkflowsHierarchical | null>(null);
 
   useEffect(() => {
-    fetchNewData(state.workflowId, state.viewedPage, state.defaultPages, state.labels).then((response) => {
+    fetchNewData(state.workflowId, state.viewedPage, state.workflowsPerPage, state.labels).then((response) => {
       setFlatWorkflows(response);
     });
-    fetchParentWorkflows(state.workflowId, state.viewedPage, state.defaultPages, state.labels).then((response) => {
+    fetchParentWorkflows(state.workflowId, state.viewedPage, state.workflowsPerPage, state.labels).then((response) => {
       setHierarchicalWorkflows(response);
     });
   }, []);
@@ -73,7 +72,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     setState((prev) => {
       return {
         ...prev,
-        openParentWfs: openParents,
+        openParentWorkflows: openParents,
         showChildren: showChildren,
       };
     });
@@ -82,22 +81,24 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   const showChildrenWorkflows = (
     workflow: NestedExecutedWorkflow,
     children: NestedExecutedWorkflow[],
-    closeParentWfs: NestedExecutedWorkflow[] | null,
-    closeChildWfs: NestedExecutedWorkflow[] | null,
+    closeParentWorkflows: NestedExecutedWorkflow[] | null,
+    closeChildWorkflows: NestedExecutedWorkflow[] | null,
   ) => {
-    let showChildren = closeChildWfs ? closeChildWfs : state.showChildren;
-    let openParents = closeParentWfs ? closeParentWfs : state.openParentWfs;
+    let showChildren = closeChildWorkflows ? closeChildWorkflows : state.showChildren;
+    let openParents = closeParentWorkflows ? closeParentWorkflows : state.openParentWorkflows;
 
-    if (openParents.filter((wfs) => wfs.startTime === workflow.startTime).length) {
-      const closeParents = openParents.filter((wf) => wf.parentWorkflowId === workflow.workflowId);
-      openParents = openParents.filter((wfs) => wfs.startTime !== workflow.startTime);
-      showChildren = showChildren.filter((wf) => wf.parentWorkflowId !== workflow.workflowId);
+    if (openParents.filter((Workflows) => Workflows.startTime === workflow.startTime).length) {
+      const closeParents = openParents.filter((workflow) => workflow.parentWorkflowId === workflow.workflowId);
+      openParents = openParents.filter((Workflows) => Workflows.startTime !== workflow.startTime);
+      showChildren = showChildren.filter((workflow) => workflow.parentWorkflowId !== workflow.workflowId);
       closeParents.length
         ? closeParents.forEach((open) => showChildrenWorkflows(open, children, openParents, showChildren))
         : update(openParents, showChildren);
     } else {
       openParents.push(workflow);
-      showChildren = showChildren.concat(children.filter((wf) => wf.parentWorkflowId === workflow.workflowId));
+      showChildren = showChildren.concat(
+        children.filter((workflow) => workflow.parentWorkflowId === workflow.workflowId),
+      );
       update(openParents, showChildren);
     }
   };
@@ -110,15 +111,15 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     setState((prev) => ({ ...prev, workflowId: query }));
   };
 
-  const indent = (wf: NestedExecutedWorkflow[], i: number, size?: number) => {
+  const indent = (workflows: NestedExecutedWorkflow[], i: number, size?: number) => {
     const indentSize = size ? size : 6;
-    if (wf[i].parentWorkflowId) {
+    if ('parentWorkflowId' in workflows[i]) {
       let layers = 0;
-      if (state.showChildren.some((child) => child.workflowId === wf[i].parentWorkflowId)) {
-        let parent = wf[i];
+      if (state.showChildren.some((child) => child.workflowId === workflows[i].parentWorkflowId)) {
+        let parent = workflows[i];
         while (parent.parentWorkflowId) {
           layers++;
-          parent = wf[wf.findIndex((id) => id.workflowId === parent.parentWorkflowId)];
+          parent = workflows[workflows.findIndex((id) => id.workflowId === parent.parentWorkflowId)];
           if (layers > 10) break;
         }
         return layers * indentSize + 'px';
@@ -132,7 +133,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     setState((prev) => ({ ...prev, isFlat: !prev.isFlat }));
   };
 
-  const selectWf = (workflowId: string, isChecked: boolean) => {
+  const selectWorkflow = (workflowId: string, isChecked: boolean) => {
     let selectedWorkflows = new Set(state.selectedWorkflows);
 
     if (isChecked) {
@@ -170,19 +171,20 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     }
   };
 
-  const selectChildrenWf = (parentId: string, wfIds: string[]) => {
+  const selectChildrenworkflow = (parentId: string, workflowIds: string[]) => {
     const { children } = hierarchicalWorkflows;
-    const newWfIds = children
-      .filter((wf: NestedExecutedWorkflow) => wf.parentWorkflowId === parentId)
-      .map((wf: NestedExecutedWorkflow) => wf.workflowId);
-    for (let i = 0; i < newWfIds.length; i++) wfIds = wfIds.concat(selectChildrenWf(newWfIds[i], newWfIds));
-    return [...new Set(wfIds)];
+    const newworkflowIds = children
+      .filter((workflow: NestedExecutedWorkflow) => workflow.parentWorkflowId === parentId)
+      .map((workflow: NestedExecutedWorkflow) => workflow.workflowId);
+    for (let i = 0; i < newworkflowIds.length; i++)
+      workflowIds = workflowIds.concat(selectChildrenworkflow(newworkflowIds[i], newworkflowIds));
+    return [...new Set(workflowIds)];
   };
 
-  const sortWf = (sortId: number) => {
+  const sortWorkflow = (sortId: number) => {
     const sort = state.sort.map((value, i) => (sortId === i ? getSortValue(value) : 2));
     if (!state.isFlat) {
-      state.openParentWfs.forEach((parent) =>
+      state.openParentWorkflows.forEach((parent) =>
         showChildrenWorkflows(parent, hierarchicalWorkflows.children, null, null),
       );
       update([], []);
@@ -245,12 +247,12 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
       {!state.isFlat && (
         <ExecutedWorkflowHierarchicalTable
           selectAllWorkflows={selectAllWorkflows}
-          sortWf={sortWf}
+          sortWf={sortWorkflow}
           indent={indent}
           hierarchicalWorkflows={hierarchy}
           onExecutedWorkflowClick={onWorkflowIdClick}
-          openParentWfs={state.openParentWfs}
-          selectWf={selectWf}
+          openParentWfs={state.openParentWorkflows}
+          selectWf={selectWorkflow}
           selectedWfs={state.selectedWorkflows}
           showChildrenWorkflows={showChildrenWorkflows}
           sort={state.sort}
@@ -258,11 +260,11 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
       )}
 
       {state.isFlat && (
-        <ExecutedWorkflowFlatTable
+        <ExecutedWorkfloworkflowlatTable
           selectAllWorkflows={selectAllWorkflows}
-          sortWf={sortWf}
+          sortWf={sortWorkflow}
           onExecutedWorkflowClick={onWorkflowIdClick}
-          selectWf={selectWf}
+          selectWf={selectWorkflow}
           selectedWfs={state.selectedWorkflows}
           sort={state.sort}
           flatWorkflows={flat}
