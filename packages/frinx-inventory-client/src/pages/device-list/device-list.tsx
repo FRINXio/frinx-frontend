@@ -405,7 +405,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
     setSorting(newSorting);
   };
 
-  const handleSearchSubmit = (text: string | null) => {
+  const handleSearchSubmit = () => {
     firstPage();
     setDeviceNameFilter(searchText);
   };
