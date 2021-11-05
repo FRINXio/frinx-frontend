@@ -46,7 +46,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl id="evc-type" my={6}>
+      <FormControl id="evc-type" isRequired my={6}>
         <FormLabel>Evc Type</FormLabel>
         <Select variant="filled" name="evcType" value={values.evcType} onChange={handleChange}>
           <option value="evc-point-to-point">point-to-point</option>
@@ -54,7 +54,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
         </Select>
       </FormControl>
 
-      <FormControl id="circuit-reference" isInvalid={errors.circuitReference != null} my={6}>
+      <FormControl id="circuit-reference" isRequired isInvalid={errors.circuitReference != null} my={6}>
         <FormLabel>BMT Circuit Reference</FormLabel>
         <Input variant="filled" name="circuitReference" value={values.circuitReference} onChange={handleChange} />
         {errors.circuitReference && <FormErrorMessage>{errors.circuitReference}</FormErrorMessage>}
@@ -65,7 +65,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
         <Input variant="filled" name="carrierReference" value={values.carrierReference || ''} onChange={handleChange} />
       </FormControl>
 
-      <FormControl id="svlanId" my={6}>
+      <FormControl id="svlanId" my={6} isRequired>
         <FormLabel>Svlan Id</FormLabel>
         <Input
           variant="filled"
@@ -82,7 +82,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
         />
       </FormControl>
 
-      <FormControl id="inputBandwidth" isInvalid={errors.inputBandwidth != null} my={6}>
+      <FormControl id="inputBandwidth" isRequired isInvalid={errors.inputBandwidth != null} my={6}>
         <FormLabel>Input Bandwidth</FormLabel>
         <Input
           variant="filled"
