@@ -85,10 +85,6 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     closeParentWfs: NestedExecutedWorkflow[] | null,
     closeChildWfs: NestedExecutedWorkflow[] | null,
   ) => {
-    if (children.length) {
-      children.forEach((wf, index: number) => (wf.index = index));
-    }
-
     let showChildren = closeChildWfs ? closeChildWfs : state.showChildren;
     let openParents = closeParentWfs ? closeParentWfs : state.openParentWfs;
 
