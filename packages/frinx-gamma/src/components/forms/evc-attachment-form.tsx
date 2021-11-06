@@ -1,7 +1,18 @@
-import { Button, Divider, FormControl, FormLabel, Input, Select, Stack } from '@chakra-ui/react';
-import React, { FormEvent, useState, VoidFunctionComponent } from 'react';
+import { Button, Divider, FormControl, FormErrorMessage, FormLabel, Input, Select, Stack } from '@chakra-ui/react';
+import React, { FormEvent, VoidFunctionComponent } from 'react';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import { EvcAttachment } from './bearer-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
+
+const EvcSchema = yup.object().shape({
+  evcType: yup.string().required('Evc type is required'),
+  circuitReference: yup.string().required('Circuit Reference is required'),
+  svlanId: yup.number().required('Svlan Id is required'),
+  inputBandwidth: yup.number().required('Input Bandwidth is required'),
+  carrierReference: yup.string().nullable(),
+  qosInputProfiles: yup.string().nullable(),
+});
 
 type Props = {
   qosProfiles: string[];
@@ -18,117 +29,85 @@ function getQosProfilesItems(profiles: string[]): Item[] {
 }
 
 const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttachment, onSubmit, onCancel }) => {
-  const [evc, setEvc] = useState<EvcAttachment>(evcAttachment);
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    onSubmit(evc);
-  };
+  const { values, errors, setFieldValue, handleChange, handleSubmit } = useFormik({
+    initialValues: {
+      ...evcAttachment,
+    },
+    validationSchema: EvcSchema,
+    onSubmit: (values) => {
+      onSubmit(values);
+    },
+  });
 
   const profileItems = getQosProfilesItems(qosProfiles);
   const [selectedProfile] = profileItems.filter((p) => {
-    return p.value === evc.qosInputProfile;
+    return p.value === values.qosInputProfile;
   });
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl id="evc-type" my={6}>
+      <FormControl id="evc-type" isRequired my={6}>
         <FormLabel>Evc Type</FormLabel>
-        <Select
-          variant="filled"
-          name="site-device-id"
-          value={evc.evcType}
-          onChange={(event) => {
-            setEvc({
-              ...evc,
-              evcType: event.target.value,
-            });
-          }}
-        >
+        <Select variant="filled" name="evcType" value={values.evcType} onChange={handleChange}>
           <option value="evc-point-to-point">point-to-point</option>
           <option value="evc-multipoint">multipoint</option>
         </Select>
       </FormControl>
 
-      <FormControl id="circuit-reference" my={6}>
+      <FormControl id="circuit-reference" isRequired isInvalid={errors.circuitReference != null} my={6}>
         <FormLabel>BMT Circuit Reference</FormLabel>
-        <Input
-          variant="filled"
-          name="circuit-reference"
-          value={evc.circuitReference}
-          onChange={(event) => {
-            setEvc({
-              ...evc,
-              circuitReference: event.target.value,
-            });
-          }}
-        />
+        <Input variant="filled" name="circuitReference" value={values.circuitReference} onChange={handleChange} />
+        {errors.circuitReference && <FormErrorMessage>{errors.circuitReference}</FormErrorMessage>}
       </FormControl>
 
-      <FormControl id="carrier-reference" my={6}>
+      <FormControl id="carrierReference" my={6}>
         <FormLabel>Carrier Circuit Reference</FormLabel>
-        <Input
-          variant="filled"
-          name="carrier-reference"
-          value={evc.carrierReference || ''}
-          onChange={(event) => {
-            setEvc({
-              ...evc,
-              carrierReference: event.target.value || null,
-            });
-          }}
-        />
+        <Input variant="filled" name="carrierReference" value={values.carrierReference || ''} onChange={handleChange} />
       </FormControl>
 
-      <FormControl id="svlan-id" my={6}>
+      <FormControl id="svlanId" my={6} isRequired>
         <FormLabel>Svlan Id</FormLabel>
         <Input
           variant="filled"
-          name="svlan-id"
-          value={evc.svlanId || ''}
+          name="svlanId"
+          value={values.svlanId || ''}
           disabled
           onChange={(event) => {
             const svlanId = Number(event.target.value);
             if (Number.isNaN(svlanId)) {
               return;
             }
-            setEvc({
-              ...evc,
-              svlanId: svlanId || null,
-            });
+            handleChange(svlanId || null);
           }}
         />
       </FormControl>
 
-      <FormControl id="input-bandwidth" my={6}>
+      <FormControl id="inputBandwidth" isRequired isInvalid={errors.inputBandwidth != null} my={6}>
         <FormLabel>Input Bandwidth</FormLabel>
         <Input
           variant="filled"
-          name="input-bandwidth"
-          value={evc.inputBandwidth}
+          name="inputBandwidth"
+          value={values.inputBandwidth}
           onChange={(event) => {
-            const inputBandwidth = Number(event.target.value);
+            console.log(event);
+            console.log(event.currentTarget.value);
+            const inputBandwidth = Number(event.currentTarget.value);
             if (Number.isNaN(inputBandwidth)) {
               return;
             }
-            setEvc({
-              ...evc,
-              inputBandwidth,
-            });
+            handleChange(event);
           }}
         />
+        {errors.inputBandwidth && <FormErrorMessage>{errors.inputBandwidth}</FormErrorMessage>}
       </FormControl>
 
-      <FormControl id="qos-profile" my={6}>
+      <FormControl id="qosInputProfile" my={6}>
         <FormLabel>QOS Profile</FormLabel>
         <Autocomplete2
           items={profileItems}
           selectedItem={selectedProfile}
           onChange={(item) => {
-            setEvc({
-              ...evc,
-              qosInputProfile: item ? item.value : null,
-            });
+            setFieldValue('qosInputProfile', item?.value);
           }}
         />
       </FormControl>
