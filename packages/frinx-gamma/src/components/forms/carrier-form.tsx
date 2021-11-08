@@ -1,11 +1,13 @@
 import React, { FC } from 'react';
 import { Input, Select, FormControl, FormLabel } from '@chakra-ui/react';
+import { FormikErrors } from 'formik';
 import Autocomplete2 from '../autocomplete-2/autocomplete-2';
-import { Carrier, VpnCarrier } from './bearer-types';
+import { Carrier, VpnBearer, VpnCarrier } from './bearer-types';
 
 type Props = {
   carrier: Carrier;
   carriers: VpnCarrier[];
+  errors: FormikErrors<VpnBearer>;
   onChange: (c: Carrier) => void;
 };
 

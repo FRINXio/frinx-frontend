@@ -1,5 +1,5 @@
 import { Button, Divider, FormControl, FormErrorMessage, FormLabel, Input, Select, Stack } from '@chakra-ui/react';
-import React, { FormEvent, VoidFunctionComponent } from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { EvcAttachment } from './bearer-types';
@@ -34,8 +34,8 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
       ...evcAttachment,
     },
     validationSchema: EvcSchema,
-    onSubmit: (values) => {
-      onSubmit(values);
+    onSubmit: (formValues) => {
+      onSubmit(formValues);
     },
   });
 
@@ -89,8 +89,6 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
           name="inputBandwidth"
           value={values.inputBandwidth}
           onChange={(event) => {
-            console.log(event);
-            console.log(event.currentTarget.value);
             const inputBandwidth = Number(event.currentTarget.value);
             if (Number.isNaN(inputBandwidth)) {
               return;

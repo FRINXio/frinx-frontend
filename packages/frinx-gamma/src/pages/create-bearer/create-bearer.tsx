@@ -1,7 +1,7 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import callbackUtils from '../../callback-utils';
-import { VpnBearer, VpnCarrier, VpnNode } from '../../components/forms/bearer-types';
+import { Carrier, Connection, VpnBearer, VpnCarrier, VpnNode } from '../../components/forms/bearer-types';
 import { apiVpnCarriersToClientCarriers, apiVpnNodesToClientVpnNodes } from '../../components/forms/converters';
 import VpnBearerForm from '../../components/forms/vpn-bearer-form';
 
@@ -11,13 +11,29 @@ import VpnBearerForm from '../../components/forms/vpn-bearer-form';
 //   role: null,
 // };
 
+const defaultConnection: Connection = {
+  encapsulationType: null,
+  mtu: 0,
+  remoteNeId: null,
+  remotePortId: null,
+  svlanAssignmentType: null,
+  tpId: null,
+};
+
+const defaultCarrier: Carrier = {
+  carrierName: null,
+  carrierReference: null,
+  serviceStatus: null,
+  serviceType: null,
+};
+
 const defaultVpnBearer: VpnBearer = {
   neId: '',
   portId: '',
   spBearerReference: '',
-  carrier: null,
+  carrier: defaultCarrier,
   defaultUpstreamBearer: null,
-  connection: null,
+  connection: defaultConnection,
   description: null,
   evcAttachments: [],
   status: null,
