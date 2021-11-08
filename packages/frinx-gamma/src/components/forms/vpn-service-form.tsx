@@ -1,4 +1,4 @@
-import React, { FC, FormEvent, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import {
   Flex,
   HStack,
@@ -8,6 +8,7 @@ import {
   Button,
   Stack,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Select,
   IconButton,
@@ -17,6 +18,8 @@ import {
 } from '@chakra-ui/react';
 import { AddIcon, CloseIcon } from '@chakra-ui/icons';
 import { uniqBy } from 'lodash';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import { VpnServiceTopology, DefaultCVlanEnum, VpnService } from './service-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 
@@ -39,77 +42,77 @@ const getCustomerItems = (services: VpnService[]): Item[] => {
   );
 };
 
+const ServiceSchema = yup.object().shape({
+  vpnId: yup.string().nullable(),
+  customerName: yup.string().required('Customer Name is required'),
+  vpnServiceTopology: yup.mixed().oneOf(['any-to-any', 'hub-spoke', 'hub-spoke-disjointed', 'custom']),
+  defaultCVlan: yup.mixed().oneOf(['400', '1000', '50', 'custom']),
+  customCVlan: yup.number().nullable().when('defaultCVlan', {
+    is: 'custom',
+    then: yup.number().required(),
+    otherwise: yup.number().nullable(),
+  }),
+  extranetVpns: yup.array().of(yup.string()),
+});
+
 const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, onCancel }) => {
-  const [serviceState, setServiceState] = useState(service);
+  const { values, errors, setFieldValue, handleSubmit, setValues } = useFormik({
+    initialValues: {
+      ...service,
+    },
+    validationSchema: ServiceSchema,
+    onSubmit: (formValues) => {
+      onSubmit(formValues);
+    },
+  });
   const [extranetVpnSelect, setExtranetVpnSelect] = useState<string | null>(null);
   const [customerItems, setCustomerItems] = useState<Item[]>(getCustomerItems(services));
 
-  useEffect(() => {
-    setServiceState({
-      ...service,
-    });
-  }, [service]);
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    onSubmit(serviceState);
-  };
+  // useEffect(() => {
+  //   setServiceState({
+  //     ...service,
+  //   });
+  // }, [service]);
 
   const handleCustomerChange = (customerName?: Item | null) => {
     if (!customerName) {
       return;
     }
-    const newService = {
-      ...serviceState,
-      customerName: customerName.value,
-    };
-    setServiceState(newService);
+    setFieldValue('customerName', customerName.value);
   };
 
   const handleExtranetVpnAdd = () => {
     if (!extranetVpnSelect) {
       return;
     }
-    const newExtranetVpns = [...serviceState.extranetVpns, extranetVpnSelect];
-    setServiceState({
-      ...serviceState,
-      extranetVpns: newExtranetVpns,
-    });
+    const newExtranetVpns = [...values.extranetVpns, extranetVpnSelect];
+    setValues({ ...values, extranetVpns: newExtranetVpns });
     setExtranetVpnSelect(null);
   };
 
   const handleExtranetVpnRemove = (vpn: string) => {
-    const newExtranetVpns = [...serviceState.extranetVpns].filter((v) => v !== vpn);
-    setServiceState({
-      ...serviceState,
-      extranetVpns: newExtranetVpns,
-    });
+    const newExtranetVpns = [...values.extranetVpns].filter((v) => v !== vpn);
+    setValues({ ...values, extranetVpns: newExtranetVpns });
   };
 
   const handleDeselectCustomerName = () => {
-    setServiceState({
-      ...serviceState,
-      customerName: '',
-    });
+    setFieldValue('customerName', '');
   };
 
   const handleCreateItem = (item: Item) => {
     setCustomerItems([...customerItems, item]);
-    setServiceState({
-      ...serviceState,
-      customerName: item.value,
-    });
+    setFieldValue('customerName', item.value);
   };
 
   const filteredExtranetVpns = extranetVpns.filter((ev) => {
-    return !serviceState.extranetVpns.includes(ev);
+    return !values.extranetVpns.includes(ev);
   });
 
-  const [selectedCustomerItem] = customerItems.filter((ci) => ci.value === serviceState.customerName);
+  const [selectedCustomerItem] = customerItems.filter((ci) => ci.value === values.customerName);
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl id="customerName" my={6}>
+      <FormControl id="customerName" my={6} isRequired isInvalid={errors.customerName != null}>
         <FormLabel>Customer Name</FormLabel>
         <Flex>
           <Box flex="1">
@@ -129,20 +132,18 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
             />
           </Box>
         </Flex>
+        {errors.customerName && <FormErrorMessage>{errors.customerName}</FormErrorMessage>}
       </FormControl>
       <FormControl id="vpnServiceTopology" my={6}>
         <FormLabel>Vpn Service Topology</FormLabel>
         <Select
           variant="filled"
           name="vpnServiceTopology"
-          value={serviceState.vpnServiceTopology}
+          value={values.vpnServiceTopology}
           onChange={(event) => {
             event.persist();
             const eventValue = event.target.value as VpnServiceTopology;
-            setServiceState({
-              ...serviceState,
-              vpnServiceTopology: eventValue,
-            });
+            setFieldValue('vpnServiceTopology', eventValue);
           }}
         >
           <option value="any-to-any">any-to-any</option>
@@ -155,14 +156,11 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
         <Select
           variant="filled"
           name="defaultCVlan"
-          value={serviceState.defaultCVlan}
+          value={values.defaultCVlan}
           onChange={(event) => {
             event.persist();
             const defaultCVlan = event.target.value as unknown as DefaultCVlanEnum;
-            setServiceState({
-              ...serviceState,
-              defaultCVlan,
-            });
+            setFieldValue('defaultCVlan', defaultCVlan);
           }}
         >
           {[...Object.entries(DefaultCVlanEnum)].map((e) => {
@@ -176,24 +174,22 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
         </Select>
       </FormControl>
 
-      {serviceState.defaultCVlan === 'custom' && (
-        <FormControl id="custom-c-vlan" my={6}>
+      {values.defaultCVlan === 'custom' && (
+        <FormControl id="custom-c-vlan" my={6} isRequired isInvalid={errors.customCVlan != null}>
           <FormLabel>Custom C-VLAN</FormLabel>
           <Input
             variant="filled"
-            name="custom-c-vlan"
-            value={serviceState.customCVlan || ''}
+            name="customCVlan"
+            value={values.customCVlan || ''}
             onChange={(event) => {
               const value = Number(event.target.value);
               if (Number.isNaN(value)) {
                 return;
               }
-              setServiceState({
-                ...serviceState,
-                customCVlan: value,
-              });
+              setFieldValue('customCVlan', value);
             }}
           />
+          {errors.customCVlan && <FormErrorMessage>{errors.customCVlan}</FormErrorMessage>}
         </FormControl>
       )}
       <FormControl id="extranet-vpns" my={6}>
@@ -241,9 +237,9 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
             />
           </Box>
         </Flex>
-        {serviceState.extranetVpns.length > 0 && (
+        {values.extranetVpns.length > 0 && (
           <HStack>
-            {serviceState.extranetVpns.map((vpn) => {
+            {values.extranetVpns.map((vpn) => {
               return (
                 <Tag key={`selected-extranet-vpn-${vpn}`} size="lg">
                   <TagLabel>{vpn}</TagLabel>
