@@ -1,9 +1,11 @@
 import React, { FC } from 'react';
 import { Input, Select, FormControl, FormLabel } from '@chakra-ui/react';
-import { Connection } from './bearer-types';
+import { FormikErrors } from 'formik';
+import { Connection, VpnBearer } from './bearer-types';
 
 type Props = {
   connection: Connection;
+  errors: FormikErrors<VpnBearer>;
   onChange: (c: Connection) => void;
 };
 
