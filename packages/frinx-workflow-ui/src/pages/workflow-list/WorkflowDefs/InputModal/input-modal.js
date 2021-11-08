@@ -25,6 +25,7 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import { jsonParse } from '../../../../common/utils';
+import { storeWorkflowId } from '../../../../store/actions/builder';
 import { useDispatch } from 'react-redux';
 import WfAutoComplete from '../../../../common/wf-autocomplete';
 

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Button, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
-import { Task } from '../../types/task';
+import { Task } from '../../../../types/task';
 
 type Props = {
   tasks: Task[];
