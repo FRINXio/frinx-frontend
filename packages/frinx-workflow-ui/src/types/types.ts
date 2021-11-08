@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Node } from 'beautiful-react-diagrams/@types/DiagramSchema';
-import { Status } from '../pages/executed-workflow-detail/executed-workflow-detail';
-import { Task as WorkflowTask } from '../types/task';
 
 type AnyJson = JsonArray | JsonMap;
 type JsonMap = {
@@ -383,83 +381,4 @@ export type ScheduledWorkflow = {
   };
   enabled: boolean;
   status: StatusType;
-};
-
-export type ExecutedWorkflow = {
-  correlationId: string;
-  endTime: string;
-  executionTime: number;
-  failedReferenceTaskNames: string;
-  input: string;
-  inputSize: number;
-  output: string;
-  outputSize: number;
-  priority: number;
-  reasonForIncompletion?: string;
-  startTime: string;
-  status: string;
-  updateTime: string;
-  version: number;
-  workflowId: string;
-  workflowType: string;
-};
-
-export type NestedExecutedWorkflow = {
-  correlationId: string;
-  endTime: string;
-  executionTime: number;
-  failedReferenceTaskNames: string;
-  index: number;
-  input: string;
-  inputSize: number;
-  output: string;
-  outputSize: number;
-  parentWorkflowId: string;
-  priority: number;
-  reasonForIncompletion: string;
-  startTime: string;
-  status: string;
-  updateTime: string;
-  version: number;
-  workflowId: string;
-  workflowType: string;
-};
-
-export type ExecutedWorkflowsFlat = {
-  result: {
-    hits: ExecutedWorkflow[];
-    totalHits: number;
-  };
-};
-
-export type ExecutedWorkflowsHierarchical = {
-  parents: ExecutedWorkflow[];
-  children: NestedExecutedWorkflow[];
-  count: number;
-  hits: number;
-};
-
-export type WorkflowInstanceDetail = {
-  ownerApp: string;
-  createTime: number;
-  updateTime: number;
-  status: Status;
-  endTime: number;
-  workflowId: string;
-  tasks: WorkflowTask[];
-  input: Record<string, string>;
-  output: Record<string, string>;
-  correlationId: string;
-  taskToDomain: {
-    '*': string;
-  };
-  failedReferenceTaskNames: string[];
-  workflowDefinition: {};
-  priority: number;
-  variables: {};
-  lastRetriedTime: number;
-  startTime: number;
-  workflowName: string;
-  workflowVersion: number;
-  parentWorkflowId: string;
 };

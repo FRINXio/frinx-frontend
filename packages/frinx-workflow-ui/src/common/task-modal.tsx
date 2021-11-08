@@ -25,11 +25,12 @@ import type { Task } from '../types/task';
 import { jsonParse } from './utils';
 import { CopyIcon } from '@chakra-ui/icons';
 import unescapeJs from 'unescape-js';
+import useResponseToasts from '../hooks/use-response-toasts';
 
 type Props = {
   task: Task;
-  isOpen: boolean;
-  onClose: () => void;
+  show: boolean;
+  handle: () => void;
 };
 
 function renderTaskDescription(task: Task) {
@@ -39,7 +40,16 @@ function renderTaskDescription(task: Task) {
   );
 }
 
-const TaskModal = ({ task, isOpen, onClose }: Props) => {
+const TaskModal = ({ task, show, handle }: Props) => {
+  const [isCopiedSuccessfully, setIsCopiedSuccessfully] = useState(false);
+  const [isCoppiedFailed, setIsCoppiedFailed] = useState(false);
+  useResponseToasts({
+    isSuccess: isCopiedSuccessfully,
+    isFailure: isCoppiedFailed,
+    successMessage: 'Copied to clipboard',
+    failureMessage: 'Copying to clipboard was not successfull',
+  });
+
   const [isEscaped, setIsEscaped] = useState(true);
   const { inputData, outputData, logs } = task;
 
@@ -64,11 +74,14 @@ const TaskModal = ({ task, isOpen, onClose }: Props) => {
   }
 
   const copyToClipBoard = (textToCopy: any) => {
-    navigator.clipboard.writeText(JSON.stringify(textToCopy));
+    navigator.clipboard
+      .writeText(JSON.stringify(textToCopy))
+      .then(() => setIsCopiedSuccessfully(true))
+      .catch(() => setIsCoppiedFailed(true));
   };
 
   return (
-    <Modal size="5xl" isOpen={isOpen} onClose={onClose}>
+    <Modal size="5xl" isOpen={show} onClose={handle}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
