@@ -76,6 +76,7 @@ const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
             <Heading size="sm">To Site: {siteId}</Heading>
           </Box>
           <DeviceForm
+            mode="add"
             siteId={unwrap(selectedSite.siteId)}
             device={getDefaultDevice(locationId)}
             locationId={locationId}
