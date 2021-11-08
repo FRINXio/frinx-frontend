@@ -1,4 +1,4 @@
-import React, { FC, FormEvent, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import {
   HStack,
   Tag,
@@ -12,12 +12,29 @@ import {
   TagLabel,
   TagCloseButton,
 } from '@chakra-ui/react';
-// import { v4 as uuid4 } from 'uuid';
-import { CustomerLocation, SiteDevice, SiteManagementType, VpnSite, MaximumRoutes } from './site-types';
-// import CustomerLocationForm from './customer-location-form';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+import { SiteDevice, SiteManagementType, VpnSite, MaximumRoutes } from './site-types';
 import SiteDeviceForm from './site-device-form';
 import Autocomplete from '../autocomplete/autocomplete';
 import unwrap from '../../helpers/unwrap';
+
+const DeviceSchema = yup.object().shape({
+  deviceId: yup.string().required(),
+  managementIP: yup.string().required(),
+  locationId: yup.string().required(),
+});
+
+const SiteSchema = yup.object().shape({
+  // customerLocations: yup.array(),
+  siteDevices: yup.array().of(DeviceSchema),
+  siteManagementType: yup.mixed().oneOf(['point-to-point', 'provider-managed', 'co-managed', 'customer-managed']),
+  // siteVpnFlavor: yup.mixed().oneOf(['site-vpn-flavor-single', 'site-vpn-flavor-sub', 'site-vpn-flavor-nni']),
+  siteServiceQosProfile: yup.string().nullable(),
+  enableBgpPicFastReroute: yup.boolean().required('Enable BgpPicFast Reroute is required'),
+  // siteNetworkAccesses: yup.array(),
+  maximumRoutes: yup.mixed().oneOf(['1000', '2000', '5000', '10000', '1000000']),
+});
 
 type Props = {
   mode: 'add' | 'edit';
@@ -44,19 +61,15 @@ const getDefaultSiteDevice = (): SiteDevice => ({
 });
 
 const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
-  const [siteState, setSiteState] = useState(site);
-  const [customerLocationsForm, setCustomerLocationsForm] = useState<CustomerLocation | null>(null); // eslint-disable-line @typescript-eslint/no-unused-vars
-
-  useEffect(() => {
-    setSiteState({
+  const { values, errors, setFieldValue, handleSubmit } = useFormik({
+    initialValues: {
       ...site,
-    });
-  }, [site]);
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    onSubmit(siteState);
-  };
+    },
+    validationSchema: SiteSchema,
+    onSubmit: (formValues) => {
+      onSubmit(formValues);
+    },
+  });
 
   // const handleCustomerLocationAdd = (location: CustomerLocation) => {
   //   const locationWithRandomId = {
@@ -85,30 +98,21 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
     }
 
     // if device id is already in form do nothing
-    if (siteState.siteDevices.filter((d) => d.deviceId === device.deviceId).length) {
+    if (values.siteDevices.filter((d) => d.deviceId === device.deviceId).length) {
       return;
     }
 
-    const newSiteDevices = [...siteState.siteDevices, device];
-    setSiteState({
-      ...siteState,
-      siteDevices: newSiteDevices,
-    });
+    const newSiteDevices = [...values.siteDevices, device];
+    setFieldValue('siteDevices', newSiteDevices);
   };
 
   const handleSiteDeviceRemove = (deviceId: string) => {
-    const newSiteDevices = siteState.siteDevices.filter((sd) => sd.deviceId !== deviceId);
-    setSiteState({
-      ...siteState,
-      siteDevices: newSiteDevices,
-    });
+    const newSiteDevices = values.siteDevices.filter((sd) => sd.deviceId !== deviceId);
+    setFieldValue('siteDevices', newSiteDevices);
   };
 
   const handleProfileNameChange = (profileName: string) => {
-    setSiteState({
-      ...siteState,
-      siteServiceQosProfile: profileName,
-    });
+    setFieldValue('siteServiceQosProfile', profileName);
   };
 
   return (
@@ -162,10 +166,10 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
           flexDirection="column"
         >
           <SiteDeviceForm device={getDefaultSiteDevice()} buttonText="Add" onChange={handleSiteDeviceAdd} />
-          {siteState.siteDevices.length > 0 && (
+          {values.siteDevices.length > 0 && (
             <Box>
               <HStack>
-                {siteState.siteDevices.map((sd) => {
+                {values.siteDevices.map((sd) => {
                   return (
                     <Box key={`customer-location-${sd.deviceId}`} my={4}>
                       <Tag key={`customer-location-${sd.deviceId}`} size="lg">
@@ -186,36 +190,31 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
         <Select
           variant="filled"
           name="maximumRoutes"
-          value={siteState.maximumRoutes}
+          value={values.maximumRoutes}
           onChange={(event) => {
             event.persist();
             const eventValue = event.target.value as unknown as MaximumRoutes;
-            setSiteState({
-              ...siteState,
-              maximumRoutes: eventValue,
-            });
+            setFieldValue('maximumRoutes', eventValue);
           }}
         >
-          <option value="1000">1000</option>
-          <option value="2000">2000</option>
-          <option value="5000">5000</option>
-          <option value="10000">10000</option>
-          <option value="1000000">1000000</option>
+          <option value={1000}>1000</option>
+          <option value={2000}>2000</option>
+          <option value={5000}>5000</option>
+          <option value={10000}>10000</option>
+          <option value={1000000}>1000000</option>
         </Select>
       </FormControl>
 
-      <FormControl id="site-management-type" my={6}>
+      <FormControl id="site-management-type" my={6} isRequired isInvalid={errors.siteManagementType != null}>
         <FormLabel>Site Management Type</FormLabel>
         <Select
           variant="filled"
           name="site-management-type"
-          value={siteState.siteManagementType}
+          value={values.siteManagementType}
           disabled
           onChange={(event) => {
-            setSiteState({
-              ...siteState,
-              siteManagementType: event.target.value as SiteManagementType,
-            });
+            const value = event.target.value as SiteManagementType;
+            setFieldValue('siteManagementType', value);
           }}
         >
           <option value="provider-managed">provider-managed</option>
@@ -228,23 +227,20 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
         <FormLabel>Site Service QOS Profile</FormLabel>
         <Autocomplete
           items={qosProfiles}
-          selectedItem={siteState.siteServiceQosProfile || ''}
+          selectedItem={values.siteServiceQosProfile || ''}
           onChange={handleProfileNameChange}
         />
       </FormControl>
 
-      <FormControl id="enable-bgp-pic-fast-reroute" my={6}>
+      <FormControl id="enable-bgp-pic-fast-reroute" my={6} isRequired isInvalid={errors.siteServiceQosProfile != null}>
         <FormLabel>Enable BGP PIC Fast Reroute</FormLabel>
         <Select
           variant="filled"
           name="enable-bgp-pic-fast-reroute"
           disabled // requested by gamma
-          value={siteState.enableBgpPicFastReroute ? '1' : '0'}
+          value={values.enableBgpPicFastReroute ? '1' : '0'}
           onChange={(event) => {
-            setSiteState({
-              ...siteState,
-              enableBgpPicFastReroute: event.target.value === '1',
-            });
+            setFieldValue('enableBgpPicFastReroute', event.target.value === '1');
           }}
         >
           <option value="1">yes</option>
