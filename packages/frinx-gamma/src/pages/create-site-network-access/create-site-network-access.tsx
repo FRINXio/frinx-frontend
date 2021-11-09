@@ -57,10 +57,7 @@ const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
   ipConnection: {
     ipv4: {
       addressAllocationType: 'static-address',
-      addresses: {
-        customerAddress: '',
-        providerAddress: '',
-      },
+      addresses: {},
     },
   },
 });
