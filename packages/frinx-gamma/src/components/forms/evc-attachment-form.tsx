@@ -7,7 +7,10 @@ import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 
 const EvcSchema = yup.object().shape({
   evcType: yup.string().required('Evc type is required'),
-  circuitReference: yup.string().required('Circuit Reference is required'),
+  circuitReference: yup
+    .string()
+    .matches(/CPNH2-\d{8}-(0\d{3}|\d{4})/, 'Circuit Reference should have following format: CPNH-00000000-0000')
+    .required('Circuit Reference is required'),
   svlanId: yup.number().required('Svlan Id is required'),
   inputBandwidth: yup.number().required('Input Bandwidth is required'),
   carrierReference: yup.string().nullable(),
@@ -56,7 +59,13 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
 
       <FormControl id="circuit-reference" isRequired isInvalid={errors.circuitReference != null} my={6}>
         <FormLabel>BMT Circuit Reference</FormLabel>
-        <Input variant="filled" name="circuitReference" value={values.circuitReference} onChange={handleChange} />
+        <Input
+          placeholder="CPNH2-00000000-0000"
+          variant="filled"
+          name="circuitReference"
+          value={values.circuitReference}
+          onChange={handleChange}
+        />
         {errors.circuitReference && <FormErrorMessage>{errors.circuitReference}</FormErrorMessage>}
       </FormControl>
 
