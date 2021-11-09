@@ -1,5 +1,17 @@
-import React, { FC, FormEvent, useEffect, useState } from 'react';
-import { Divider, Button, Heading, Input, Select, Stack, FormControl, FormLabel } from '@chakra-ui/react';
+import React, { FC, useEffect, useState } from 'react';
+import {
+  Divider,
+  Button,
+  FormErrorMessage,
+  Heading,
+  Input,
+  Select,
+  Stack,
+  FormControl,
+  FormLabel,
+} from '@chakra-ui/react';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import {
   AccessPriority,
   MaximumRoutes,
@@ -12,11 +24,26 @@ import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 import RoutingProtocolForm from './routing-protocol-form';
 import unwrap from '../../helpers/unwrap';
 
+// const RoutingProtocolSchema = yup.array().of(yup.object({}));
+
+const NetworkAccessSchema = yup.object({
+  siteNetworkAccessId: yup.string(),
+  // siteNetworkAccessType: yup.mixed().oneOf(['point-to-point', 'multipoint']),
+  // ipConnection?: IPConnection;
+  accessPriority: yup.mixed().oneOf(['150', '100', '90', '80', '70', '60']),
+  maximumRoutes: yup.mixed().oneOf([1000, 2000, 5000, 10000]),
+  // routingProtocols: RoutingProtocolSchema,
+  locationReference: yup.string().nullable(),
+  deviceReference: yup.string().nullable(),
+  vpnAttachment: yup.string().required('Vpn Attachment is required field'),
+  siteRole: yup.string().nullable(),
+});
+
 type Props = {
   mode: 'add' | 'edit';
   sites: VpnSite[];
   site: VpnSite;
-  selectedNetworkAccess: SiteNetworkAccess | null;
+  selectedNetworkAccess: SiteNetworkAccess;
   qosProfiles: string[];
   bfdProfiles: string[];
   bgpProfiles: string[];
@@ -73,7 +100,24 @@ const SiteNetAccessForm: FC<Props> = ({
   onCancel,
 }) => {
   const [siteState, setSiteState] = useState(site);
-  const [networkAccessState, setNetworkAccessState] = useState(selectedNetworkAccess);
+  const { values, errors, setFieldValue, handleSubmit } = useFormik({
+    initialValues: {
+      ...selectedNetworkAccess,
+    },
+    validationSchema: NetworkAccessSchema,
+    onSubmit: (formValues) => {
+      if (!formValues) {
+        return;
+      }
+      const oldNetworkAccesses = siteState.siteNetworkAccesses || [];
+      const newNetworkAccesses =
+        mode === 'add' ? [...oldNetworkAccesses, formValues] : getEditedNetworkAccesses(oldNetworkAccesses, formValues);
+      onSubmit({
+        ...siteState,
+        siteNetworkAccesses: newNetworkAccesses,
+      });
+    },
+  });
 
   useEffect(() => {
     setSiteState({
@@ -81,63 +125,21 @@ const SiteNetAccessForm: FC<Props> = ({
     });
   }, [site]);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (!networkAccessState) {
-      return;
-    }
-    const oldNetworkAccesses = siteState.siteNetworkAccesses || [];
-    const newNetworkAccesses =
-      mode === 'add'
-        ? [...oldNetworkAccesses, networkAccessState]
-        : getEditedNetworkAccesses(oldNetworkAccesses, networkAccessState);
-    onSubmit({
-      ...siteState,
-      siteNetworkAccesses: newNetworkAccesses,
-    });
-  };
-
   const handleLocationChange = (item?: Item | null) => {
-    if (networkAccessState) {
-      setNetworkAccessState({
-        ...networkAccessState,
-        locationReference: unwrap(item).value,
-      });
-    }
+    setFieldValue('locationReference', unwrap(item).value);
   };
 
   const handleDeviceChange = (item?: Item | null) => {
-    if (networkAccessState) {
-      setNetworkAccessState({
-        ...networkAccessState,
-        deviceReference: unwrap(item).value,
-      });
-    }
+    setFieldValue('deviceReference', unwrap(item).value);
   };
 
   const handleRoutingProtocolsChange = (routingProtocols: RoutingProtocol[]) => {
-    if (networkAccessState) {
-      setNetworkAccessState({
-        ...networkAccessState,
-        routingProtocols,
-      });
-    }
+    setFieldValue('routingProtocols', routingProtocols);
   };
 
   const handleVpnAttachmentChange = (item?: Item | null) => {
-    if (!networkAccessState) {
-      return;
-    }
-    setNetworkAccessState({
-      ...networkAccessState,
-      vpnAttachment: item ? item.value : null,
-    });
+    setFieldValue('vpnAttachment', item ? item.value : null);
   };
-
-  if (!networkAccessState) {
-    return null;
-  }
 
   const locationItems = siteState.customerLocations.map((l) => {
     const id = unwrap(l.locationId);
@@ -146,7 +148,7 @@ const SiteNetAccessForm: FC<Props> = ({
       label: id,
     };
   });
-  const [selectedLocation] = locationItems.filter((item) => item.value === networkAccessState.locationReference);
+  const [selectedLocation] = locationItems.filter((item) => item.value === values.locationReference);
 
   const deviceItems = siteState.siteDevices.map((d) => {
     const id = unwrap(d.deviceId);
@@ -155,16 +157,16 @@ const SiteNetAccessForm: FC<Props> = ({
       label: id,
     };
   });
-  const [selectedDevice] = deviceItems.filter((item) => item.value === networkAccessState.deviceReference);
+  const [selectedDevice] = deviceItems.filter((item) => item.value === values.deviceReference);
 
   const vpnServicesItems = vpnIds.map((id) => {
     return { value: id, label: id };
   });
-  const [selectedVpnServiceItem] = vpnServicesItems.filter((item) => item.value === networkAccessState.vpnAttachment);
+  const [selectedVpnServiceItem] = vpnServicesItems.filter((item) => item.value === values.vpnAttachment);
   const staticRoutingProtocol =
-    networkAccessState.routingProtocols.filter((p) => p.type === 'static').pop() || getDefaultStaticRoutingProtocol();
+    values.routingProtocols.filter((p) => p.type === 'static').pop() || getDefaultStaticRoutingProtocol();
   const bgpRoutingProtocol =
-    networkAccessState.routingProtocols.filter((p) => p.type === 'bgp').pop() || getDefaultBgpRoutingProtocol();
+    values.routingProtocols.filter((p) => p.type === 'bgp').pop() || getDefaultBgpRoutingProtocol();
 
   const bgpProfileItems = bgpProfiles.map((p) => {
     return {
@@ -174,32 +176,28 @@ const SiteNetAccessForm: FC<Props> = ({
   });
   const [selectedBgpProfileItem] = bgpProfileItems.filter((i) => i.value === bgpRoutingProtocol.bgp?.bgpProfile);
 
-  const ipv4Connection = unwrap(unwrap(networkAccessState.ipConnection).ipv4);
+  const ipv4Connection = unwrap(unwrap(values.ipConnection).ipv4);
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl id="vpn-attachment" my={6}>
+      <FormControl id="vpn-attachment" my={6} isRequired isInvalid={errors.vpnAttachment != null}>
         <FormLabel>Vpn Attachment</FormLabel>
         <Autocomplete2
           items={vpnServicesItems}
           selectedItem={selectedVpnServiceItem}
           onChange={handleVpnAttachmentChange}
         />
+        {errors.vpnAttachment && <FormErrorMessage>{errors.vpnAttachment}</FormErrorMessage>}
       </FormControl>
 
       <FormControl id="site-role" my={6}>
         <FormLabel>Site role</FormLabel>
         <Select
           variant="filled"
-          name="site-role"
-          value={networkAccessState.siteRole || ''}
+          name="siteRole"
+          value={values.siteRole || ''}
           onChange={(event) => {
-            // eslint-disable-next-line no-console
-            console.log(event.target.value);
-            setNetworkAccessState({
-              ...networkAccessState,
-              siteRole: event.target.value || null,
-            });
+            setFieldValue('siteRole', event.target.value || null);
           }}
         >
           <option value="">-- choose site role</option>
@@ -213,15 +211,12 @@ const SiteNetAccessForm: FC<Props> = ({
         <FormLabel>Bearer Reference</FormLabel>
         <Input
           variant="filled"
-          name="bearer-reference"
-          value={networkAccessState.bearer.bearerReference}
+          name="bearerReference"
+          value={values.bearer.bearerReference}
           onChange={(event) => {
-            setNetworkAccessState({
-              ...networkAccessState,
-              bearer: {
-                ...networkAccessState.bearer,
-                bearerReference: event.target.value,
-              },
+            setFieldValue('bearer', {
+              ...values.bearer,
+              bearerReference: event.target.value,
             });
           }}
         />
@@ -266,16 +261,11 @@ const SiteNetAccessForm: FC<Props> = ({
         <Select
           variant="filled"
           name="bearer-c-vlan"
-          value={networkAccessState.bearer.requestedCLan}
+          value={values.bearer.requestedCLan}
           onChange={(event) => {
-            // eslint-disable-next-line no-console
-            console.log(event.target.value);
-            setNetworkAccessState({
-              ...networkAccessState,
-              bearer: {
-                ...networkAccessState.bearer,
-                requestedCLan: event.target.value as unknown as RequestedCVlan,
-              },
+            setFieldValue('bearer', {
+              ...values.bearer,
+              requestedCLan: event.target.value as unknown as RequestedCVlan,
             });
           }}
         >
@@ -294,16 +284,13 @@ const SiteNetAccessForm: FC<Props> = ({
         <FormLabel>SVC Input Bandwidth</FormLabel>
         <Select
           variant="filled"
-          name="svc-input-bandwith"
+          name="svcInputBandwith"
           type="number"
-          value={networkAccessState.service.svcInputBandwidth}
+          value={values.service.svcInputBandwidth}
           onChange={(event) => {
-            setNetworkAccessState({
-              ...networkAccessState,
-              service: {
-                ...networkAccessState.service,
-                svcInputBandwidth: Number(event.target.value),
-              },
+            setFieldValue('service', {
+              ...values.service,
+              svcInputBandwidth: Number(event.target.value),
             });
           }}
         >
@@ -317,15 +304,12 @@ const SiteNetAccessForm: FC<Props> = ({
         <FormLabel>SVC Output Bandwidth</FormLabel>
         <Select
           variant="filled"
-          name="svc-output-bandwith"
-          value={networkAccessState.service.svcOutputBandwidth}
+          name="svcOutputBandwith"
+          value={values.service.svcOutputBandwidth}
           onChange={(event) => {
-            setNetworkAccessState({
-              ...networkAccessState,
-              service: {
-                ...networkAccessState.service,
-                svcOutputBandwidth: Number(event.target.value),
-              },
+            setFieldValue('service', {
+              ...values.service,
+              svcOutputBandwidth: Number(event.target.value),
             });
           }}
         >
@@ -335,22 +319,19 @@ const SiteNetAccessForm: FC<Props> = ({
         </Select>
       </FormControl>
 
-      <FormControl id="qos-profile" my={6}>
+      <FormControl id="qosProfile" my={6}>
         <FormLabel>QOS Profile</FormLabel>
         <Select
           variant="filled"
           name="qos-profile"
-          value={networkAccessState.service.qosProfiles[0]}
+          value={values.service.qosProfiles[0]}
           onChange={(event) => {
             if (!event.target.value) {
               return;
             }
-            setNetworkAccessState({
-              ...networkAccessState,
-              service: {
-                ...networkAccessState.service,
-                qosProfiles: [unwrap(event.target.value)],
-              },
+            setFieldValue('service', {
+              ...values.service,
+              qosProfiles: [unwrap(event.target.value)],
             });
           }}
         >
@@ -367,15 +348,10 @@ const SiteNetAccessForm: FC<Props> = ({
         <FormLabel>Maximum Routes</FormLabel>{' '}
         <Select
           variant="filled"
-          name="maximum-routes"
-          value={networkAccessState.maximumRoutes}
+          name="maximumRoutes"
+          value={values.maximumRoutes}
           onChange={(event) => {
-            // eslint-disable-next-line no-console
-            console.log(event.target.value);
-            setNetworkAccessState({
-              ...networkAccessState,
-              maximumRoutes: Number(event.target.value) as MaximumRoutes,
-            });
+            setFieldValue('maximumRoutes', Number(event.target.value) as MaximumRoutes);
           }}
         >
           <option value="1000">1000</option>
@@ -397,15 +373,10 @@ const SiteNetAccessForm: FC<Props> = ({
         <FormLabel>Access Priority</FormLabel>
         <Select
           variant="filled"
-          name="access-priority"
-          value={networkAccessState.accessPriority}
+          name="accessPriority"
+          value={values.accessPriority}
           onChange={(event) => {
-            // eslint-disable-next-line no-console
-            console.log(event.target.value);
-            setNetworkAccessState({
-              ...networkAccessState,
-              accessPriority: event.target.value as unknown as AccessPriority,
-            });
+            setFieldValue('accessPriority', event.target.value as unknown as AccessPriority);
           }}
         >
           {[...Object.entries(AccessPriority)].map((e) => {
@@ -425,16 +396,13 @@ const SiteNetAccessForm: FC<Props> = ({
         <Input
           variant="filled"
           name="ip-address-allocation-type"
-          value={ipv4Connection.addressAllocationType?.split(':').pop()}
+          value={ipv4Connection.addressAllocationType?.split(':').pop() || ''}
           onChange={(event) => {
-            setNetworkAccessState({
-              ...networkAccessState,
-              ipConnection: {
-                ...networkAccessState.ipConnection,
-                ipv4: {
-                  ...networkAccessState.ipConnection?.ipv4,
-                  addressAllocationType: event.target.value || undefined,
-                },
+            setFieldValue('ipConnection', {
+              ...values.ipConnection,
+              ipv4: {
+                ...values.ipConnection?.ipv4,
+                addressAllocationType: event.target.value || undefined,
               },
             });
           }}
@@ -444,19 +412,16 @@ const SiteNetAccessForm: FC<Props> = ({
         <FormLabel>Provider Address</FormLabel>
         <Input
           variant="filled"
-          name="provider-address"
-          value={ipv4Connection.addresses?.providerAddress}
+          name="providerAddress"
+          value={ipv4Connection.addresses?.providerAddress || ''}
           onChange={(event) => {
-            setNetworkAccessState({
-              ...networkAccessState,
-              ipConnection: {
-                ...networkAccessState.ipConnection,
-                ipv4: {
-                  ...networkAccessState.ipConnection?.ipv4,
-                  addresses: {
-                    ...networkAccessState.ipConnection?.ipv4?.addresses,
-                    providerAddress: event.target.value || undefined,
-                  },
+            setFieldValue('ipConnection', {
+              ...values.ipConnection,
+              ipv4: {
+                ...values.ipConnection?.ipv4,
+                addresses: {
+                  ...values.ipConnection?.ipv4?.addresses,
+                  providerAddress: event.target.value || undefined,
                 },
               },
             });
@@ -468,18 +433,15 @@ const SiteNetAccessForm: FC<Props> = ({
         <Input
           variant="filled"
           name="customer-address"
-          value={ipv4Connection.addresses?.customerAddress}
+          value={ipv4Connection.addresses?.customerAddress || ''}
           onChange={(event) => {
-            setNetworkAccessState({
-              ...networkAccessState,
-              ipConnection: {
-                ...networkAccessState.ipConnection,
-                ipv4: {
-                  ...networkAccessState.ipConnection?.ipv4,
-                  addresses: {
-                    ...networkAccessState.ipConnection?.ipv4?.addresses,
-                    customerAddress: event.target.value || undefined,
-                  },
+            setFieldValue('ipConnection', {
+              ...values.ipConnection,
+              ipv4: {
+                ...values.ipConnection?.ipv4,
+                addresses: {
+                  ...values.ipConnection?.ipv4,
+                  customerAddress: event.target.value || undefined,
                 },
               },
             });
@@ -496,16 +458,13 @@ const SiteNetAccessForm: FC<Props> = ({
             if (Number.isNaN(event.target.value)) {
               return;
             }
-            setNetworkAccessState({
-              ...networkAccessState,
-              ipConnection: {
-                ...networkAccessState.ipConnection,
-                ipv4: {
-                  ...networkAccessState.ipConnection?.ipv4,
-                  addresses: {
-                    ...networkAccessState.ipConnection?.ipv4?.addresses,
-                    prefixLength: Number(event.target.value) || undefined,
-                  },
+            setFieldValue('ipConnection', {
+              ...values.ipConnection,
+              ipv4: {
+                ...values.ipConnection?.ipv4,
+                addresses: {
+                  ...values.ipConnection?.ipv4,
+                  prefixLength: Number(event.target.value) || undefined,
                 },
               },
             });
