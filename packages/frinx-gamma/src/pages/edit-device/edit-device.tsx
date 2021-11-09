@@ -75,6 +75,7 @@ const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
         <Box padding={6} margin={6} background="white">
           <Heading size="md">Edit Device: {deviceId} </Heading>
           <DeviceForm
+            mode="edit"
             siteId={unwrap(selectedSite.siteId)}
             device={selectedDevice}
             locationId={locationId}
