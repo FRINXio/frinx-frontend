@@ -48,7 +48,7 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
         version: 2,
         input: {
           // eslint-disable-next-line @typescript-eslint/naming-convention
-          unistore_node_name: 'bearer',
+          unistore_node_name: 'scale',
           action: 'commit',
         },
       })
