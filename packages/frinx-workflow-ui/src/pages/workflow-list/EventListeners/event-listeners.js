@@ -25,7 +25,7 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import PageContainer from '../../../common/PageContainer';
-import PaginationPages from '../../../common/Pagination';
+import Paginator from '../../../common/pagination';
 import callbackUtils from '../../../utils/callback-utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -191,7 +191,7 @@ const EventListeners = () => {
         <Tfoot>
           <Tr>
             <Th>
-              <PaginationPages totalPages={totalPages} currentPage={currentPage} changePageHandler={setCurrentPage} />
+              <Paginator pagesAmount={totalPages} onPaginationClick={setCurrentPage} />
             </Th>
           </Tr>
         </Tfoot>

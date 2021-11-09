@@ -12,7 +12,7 @@ const mapLabelsForApi = (labels: string[]): string => {
 };
 
 export const fetchNewData = (workflowName: string, viewedPage: number, defaultPages: number, labels: string[]) => {
-  const page = (viewedPage - 1) * defaultPages;
+  const page = viewedPage * defaultPages;
   const mappedLabels = mapLabelsForApi(labels);
 
   const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback();
@@ -25,11 +25,10 @@ export const fetchParentWorkflows = (
   defaultPages: number,
   labels: string[],
 ) => {
-  const page = viewedPage - 1;
   const mappedLabels = mapLabelsForApi(labels);
 
   const getWorkflowExecutionsHierarchical = callbackUtils.getWorkflowExecutionsHierarchicalCallback();
-  return getWorkflowExecutionsHierarchical(workflowName, mappedLabels, page, defaultPages.toString());
+  return getWorkflowExecutionsHierarchical(workflowName, mappedLabels, viewedPage, defaultPages.toString());
 };
 
 export const isValid = (
@@ -56,8 +55,10 @@ export const getValueOfProperty = (sortValues: number[]): string => {
       return 'workflowId';
     case 1:
       return 'startTime';
-    default:
+    case 2:
       return 'endTime';
+    default:
+      return 'startTime';
   }
 };
 
@@ -67,7 +68,9 @@ export const getOrderValue = (sortValues: number[]) => {
       return sortValues[0] ? 'asc' : 'desc';
     case 'startTime':
       return sortValues[1] ? 'asc' : 'desc';
-    default:
+    case 'endTime':
       return sortValues[2] ? 'asc' : 'desc';
+    default:
+      return 'desc';
   }
 };

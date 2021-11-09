@@ -1,34 +1,37 @@
-import React, { VoidFunctionComponent } from 'react';
-import { Box, Button, Text, HStack, StackDivider } from '@chakra-ui/react';
+import React, { FC } from 'react';
+import {
+  Pagination,
+  PaginationContainer,
+  PaginationNext,
+  PaginationPage,
+  PaginationPageGroup,
+  PaginationPrevious,
+  usePagination,
+} from '@ajna/pagination';
 
 type Props = {
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  onPrevious: () => void;
-  onNext: () => void;
+  pagesAmount: number;
+  onPaginationClick: (pageNumber: number) => void;
 };
 
-const Pagination: VoidFunctionComponent<Props> = ({ hasNextPage, hasPreviousPage, onPrevious, onNext }) => {
+const Paginator: FC<Props> = ({ onPaginationClick, pagesAmount }) => {
+  const { pages, pagesCount, currentPage } = usePagination({
+    pagesCount: pagesAmount,
+    initialState: { currentPage: 1 },
+  });
   return (
-    <Box padding={1}>
-      <HStack spacing="2" divider={<StackDivider borderColor="gray" />}>
-        {hasPreviousPage ? (
-          <Button color="blue.600" onClick={onPrevious} variant="link" outline="none">
-            Previous
-          </Button>
-        ) : (
-          <Text>Previous</Text>
-        )}
-        {hasNextPage ? (
-          <Button color="blue.600" onClick={onNext} variant="link">
-            Next
-          </Button>
-        ) : (
-          <Text>Next</Text>
-        )}
-      </HStack>
-    </Box>
+    <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={onPaginationClick}>
+      <PaginationContainer>
+        <PaginationPrevious>Previous</PaginationPrevious>
+        <PaginationPageGroup>
+          {pages.map((page) => (
+            <PaginationPage key={`pagination_page_${page}`} page={page} />
+          ))}
+        </PaginationPageGroup>
+        <PaginationNext>Next</PaginationNext>
+      </PaginationContainer>
+    </Pagination>
   );
 };
 
-export default Pagination;
+export default Paginator;

@@ -34,7 +34,6 @@ import DependencyModal from './DependencyModal/DependencyModal';
 import DiagramModal from './DiagramModal/DiagramModal';
 import InputModal from './InputModal/input-modal';
 import PageContainer from '../../../common/PageContainer';
-import PaginationPages from '../../../common/Pagination';
 import ScheduledWorkflowModal from '../scheduled-workflow/scheduled-workflow-modal/scheduled-workflow-modal';
 import WfLabels from '../../../common/wf-labels';
 import WorkflowListViewModal from './WorkflowListViewModal/WorkflowListViewModal';
@@ -45,6 +44,7 @@ import WorkflowActions from './workflow-actions';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import { ScheduledWorkflow, Workflow } from '../../../types/types';
 import useNotifications from '../../../hooks/use-notifications';
+import Paginator from '../../../common/pagination';
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr = dataset.map(({ description }) => {
@@ -468,7 +468,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
         <Tfoot>
           <Tr>
             <Th>
-              <PaginationPages totalPages={totalPages} currentPage={currentPage} changePageHandler={setCurrentPage} />
+              <Paginator onPaginationClick={setCurrentPage} pagesAmount={totalPages} />
             </Th>
           </Tr>
         </Tfoot>

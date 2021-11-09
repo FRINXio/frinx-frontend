@@ -12,9 +12,10 @@ import {
   isValid,
 } from './search-execs';
 import ExecutedWorkflowHierarchicalTable from './executed-workflow-table/executed-workflow-hierarchical-table/executed-workflow-hierarchical-table';
-import ExecutedWorkfloworkflowlatTable from './executed-workflow-table/executed-workflow-flat-table/executed-workflow-flat-table';
+import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workflow-flat-table/executed-workflow-flat-table';
 import { orderBy } from 'lodash';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
+import Paginator from '../../../common/pagination';
 
 type Props = {
   onWorkflowIdClick: (workflowId: string) => void;
@@ -41,8 +42,8 @@ const initialState = {
   isFlat: false,
   showChildren: [],
   workflowsPerPage: 20,
-  viewedPage: 1,
-  sort: [2, 2, 2],
+  viewedPage: 0,
+  sort: [/*workflowId*/ 2, /*startTime*/ 0, /*endTime*/ 2],
   labels: [],
 };
 
@@ -58,7 +59,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     fetchParentWorkflows(state.workflowId, state.viewedPage, state.workflowsPerPage, state.labels).then((response) => {
       setHierarchicalWorkflows(response);
     });
-  }, []);
+  }, [state.viewedPage]);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, selectedWorkflows: [...new Set<string>()] }));
@@ -173,11 +174,11 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
 
   const selectChildrenworkflow = (parentId: string, workflowIds: string[]) => {
     const { children } = hierarchicalWorkflows;
-    const newworkflowIds = children
+    const newWorkflowIds = children
       .filter((workflow: NestedExecutedWorkflow) => workflow.parentWorkflowId === parentId)
       .map((workflow: NestedExecutedWorkflow) => workflow.workflowId);
-    for (let i = 0; i < newworkflowIds.length; i++)
-      workflowIds = workflowIds.concat(selectChildrenworkflow(newworkflowIds[i], newworkflowIds));
+    for (let i = 0; i < newWorkflowIds.length; i++)
+      workflowIds = workflowIds.concat(selectChildrenworkflow(newWorkflowIds[i], newWorkflowIds));
     return [...new Set(workflowIds)];
   };
 
@@ -197,6 +198,10 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
 
   const changeView = () => {
     setView();
+  };
+
+  const handlePaginationClick = (pageNumberClicked: number) => {
+    setState((prev) => ({ ...prev, viewedPage: pageNumberClicked - 1 }));
   };
 
   const hierarchy: ExecutedWorkflowsHierarchical = {
@@ -225,7 +230,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     },
   };
 
-  const workflowsAmount = hierarchy.count + flat.result.totalHits;
+  const workflowsAmount = hierarchy.hits + flat.result.totalHits;
 
   return (
     <PageContainer>
@@ -245,22 +250,26 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
       />
 
       {!state.isFlat && (
-        <ExecutedWorkflowHierarchicalTable
-          selectAllWorkflows={selectAllWorkflows}
-          sortWf={sortWorkflow}
-          indent={indent}
-          hierarchicalWorkflows={hierarchy}
-          onExecutedWorkflowClick={onWorkflowIdClick}
-          openParentWfs={state.openParentWorkflows}
-          selectWf={selectWorkflow}
-          selectedWfs={state.selectedWorkflows}
-          showChildrenWorkflows={showChildrenWorkflows}
-          sort={state.sort}
-        />
+        <>
+          <ExecutedWorkflowHierarchicalTable
+            selectAllWorkflows={selectAllWorkflows}
+            sortWf={sortWorkflow}
+            indent={indent}
+            hierarchicalWorkflows={hierarchy}
+            onExecutedWorkflowClick={onWorkflowIdClick}
+            openParentWfs={state.openParentWorkflows}
+            selectWf={selectWorkflow}
+            selectedWfs={state.selectedWorkflows}
+            showChildrenWorkflows={showChildrenWorkflows}
+            sort={state.sort}
+          />
+
+          {/* <Paginator pagesAmount={Math.ceil(hierarchy.hits / 20)} onPaginationClick={handlePaginationClick} /> */}
+        </>
       )}
 
       {state.isFlat && (
-        <ExecutedWorkfloworkflowlatTable
+        <ExecutedWorkflowFlatTable
           selectAllWorkflows={selectAllWorkflows}
           sortWf={sortWorkflow}
           onExecutedWorkflowClick={onWorkflowIdClick}
