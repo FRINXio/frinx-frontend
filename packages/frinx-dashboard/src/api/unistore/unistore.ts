@@ -28,7 +28,7 @@ import {
 
 // data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers
 const UNICONFIG_SERVICE_URL =
-  '/data/network-topology:network-topology/topology=uniconfig/node=service_scale/frinx-uniconfig-topology:configuration';
+  '/data/network-topology:network-topology/topology=uniconfig/node=service/frinx-uniconfig-topology:configuration';
 
 export async function getVpnServices(): Promise<VpnServicesOutput> {
   const json = await sendGetRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services`);
