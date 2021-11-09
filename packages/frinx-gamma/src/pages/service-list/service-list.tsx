@@ -42,6 +42,11 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
       .executeWorkflow({
         name: 'Render_all',
         version: 1,
+        input: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          unistore_node_name: 'network',
+          action: 'commit',
+        },
       })
       .then((data) => {
         setWorkflowId(data.text);
