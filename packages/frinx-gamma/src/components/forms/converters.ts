@@ -321,7 +321,7 @@ function clientRoutingProtocolsToApiRoutingProtocols(routingProtocols: RoutingPr
     const protocol: CreateRoutingProtocolItem = {
       type: p.type,
     };
-    if (p.bgp) {
+    if (p.type === 'bgp' && p.bgp) {
       protocol.bgp = {
         'bgp-profiles': {
           'bgp-profile': [{ profile: p.bgp.bgpProfile || '' }] as [{ profile: string }],
@@ -330,7 +330,7 @@ function clientRoutingProtocolsToApiRoutingProtocols(routingProtocols: RoutingPr
         'autonomous-system': Number(p.bgp.autonomousSystem),
       };
     }
-    if (p.static) {
+    if (p.type === 'static' && p.static) {
       protocol.static = {
         'cascaded-lan-prefixes': {
           'ipv4-lan-prefixes': p.static.map((s) => {
