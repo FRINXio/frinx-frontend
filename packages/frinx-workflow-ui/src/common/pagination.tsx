@@ -26,9 +26,9 @@ const Paginator: FC<Props> = ({ onPaginationClick, pagesCount, currentPage, show
       <PaginationContainer>
         <PaginationPrevious>Previous</PaginationPrevious>
         {showPageNumbers ? (
-          <PaginationPageGroup>
+          <PaginationPageGroup marginX={5}>
             {pages.map((page) => (
-              <PaginationPage key={`pagination_page_${page}`} page={page} />
+              <PaginationPage key={`pagination_page_${page}`} page={page} paddingX={5} />
             ))}
           </PaginationPageGroup>
         ) : null}
