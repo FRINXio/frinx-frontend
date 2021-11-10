@@ -20,7 +20,6 @@ const SiteDeviceForm: FC<Props> = ({ device, buttonText, onChange }) => {
       <FormControl id="site-device-id" my={6}>
         <FormLabel>Device ID</FormLabel>
         <Input
-          variant="filled"
           name="site-device-id"
           value={formState.deviceId}
           onChange={(event) => {
@@ -34,7 +33,6 @@ const SiteDeviceForm: FC<Props> = ({ device, buttonText, onChange }) => {
       <FormControl my={6}>
         <FormLabel>Management IP</FormLabel>
         <Input
-          variant="filled"
           name="management-ip"
           value={formState.managementIP}
           onChange={(event) => {

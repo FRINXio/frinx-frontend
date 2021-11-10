@@ -193,7 +193,6 @@ const SiteNetAccessForm: FC<Props> = ({
       <FormControl id="site-role" my={6}>
         <FormLabel>Site role</FormLabel>
         <Select
-          variant="filled"
           name="siteRole"
           value={values.siteRole || ''}
           onChange={(event) => {
@@ -210,7 +209,6 @@ const SiteNetAccessForm: FC<Props> = ({
       <FormControl id="bearer-reference" my={6}>
         <FormLabel>Bearer Reference</FormLabel>
         <Input
-          variant="filled"
           name="bearerReference"
           value={values.bearer.bearerReference}
           onChange={(event) => {
@@ -226,7 +224,6 @@ const SiteNetAccessForm: FC<Props> = ({
       {/* <FormControl id="service-network-access-type" my={6}>
         <FormLabel>Service Network Access Type</FormLabel>
         <Select
-          variant="filled"
           name="service-network-access-type"
           value={networkAccessState.siteNetworkAccessType}
           onChange={(event) => {
@@ -259,7 +256,6 @@ const SiteNetAccessForm: FC<Props> = ({
       <FormControl id="bearer-c-vlan" my={6}>
         <FormLabel>Bearer - Requested C Vlan</FormLabel>
         <Select
-          variant="filled"
           name="bearer-c-vlan"
           value={values.bearer.requestedCLan}
           onChange={(event) => {
@@ -283,7 +279,6 @@ const SiteNetAccessForm: FC<Props> = ({
       <FormControl id="svc-input-bandwidth" my={6}>
         <FormLabel>SVC Input Bandwidth</FormLabel>
         <Select
-          variant="filled"
           name="svcInputBandwith"
           type="number"
           value={values.service.svcInputBandwidth}
@@ -303,7 +298,6 @@ const SiteNetAccessForm: FC<Props> = ({
       <FormControl id="svc-output-bandwidth" my={6}>
         <FormLabel>SVC Output Bandwidth</FormLabel>
         <Select
-          variant="filled"
           name="svcOutputBandwith"
           value={values.service.svcOutputBandwidth}
           onChange={(event) => {
@@ -322,7 +316,6 @@ const SiteNetAccessForm: FC<Props> = ({
       <FormControl id="qosProfile" my={6}>
         <FormLabel>QOS Profile</FormLabel>
         <Select
-          variant="filled"
           name="qos-profile"
           value={values.service.qosProfiles[0]}
           onChange={(event) => {
@@ -347,7 +340,6 @@ const SiteNetAccessForm: FC<Props> = ({
       <FormControl id="maximum-routes" my={6}>
         <FormLabel>Maximum Routes</FormLabel>{' '}
         <Select
-          variant="filled"
           name="maximumRoutes"
           value={values.maximumRoutes}
           onChange={(event) => {
@@ -372,7 +364,6 @@ const SiteNetAccessForm: FC<Props> = ({
       <FormControl id="access-priority" my={6}>
         <FormLabel>Access Priority</FormLabel>
         <Select
-          variant="filled"
           name="accessPriority"
           value={values.accessPriority}
           onChange={(event) => {
@@ -394,7 +385,6 @@ const SiteNetAccessForm: FC<Props> = ({
       <FormControl id="ip-address-allocation-type" my={6}>
         <FormLabel>Address Allocation Type</FormLabel>
         <Input
-          variant="filled"
           name="ip-address-allocation-type"
           value={ipv4Connection.addressAllocationType?.split(':').pop() || ''}
           onChange={(event) => {
@@ -411,7 +401,6 @@ const SiteNetAccessForm: FC<Props> = ({
       <FormControl id="ip-provider-address" my={6}>
         <FormLabel>Provider Address</FormLabel>
         <Input
-          variant="filled"
           name="providerAddress"
           value={ipv4Connection.addresses?.providerAddress || ''}
           onChange={(event) => {
@@ -431,7 +420,6 @@ const SiteNetAccessForm: FC<Props> = ({
       <FormControl id="ip-customer-address" my={6}>
         <FormLabel>Customer Address</FormLabel>
         <Input
-          variant="filled"
           name="customer-address"
           value={ipv4Connection.addresses?.customerAddress || ''}
           onChange={(event) => {
@@ -451,7 +439,6 @@ const SiteNetAccessForm: FC<Props> = ({
       <FormControl id="ip-prefix-length" my={6}>
         <FormLabel>Prefix Length</FormLabel>
         <Input
-          variant="filled"
           name="prefix-length"
           value={ipv4Connection.addresses?.prefixLength || ''}
           onChange={(event) => {

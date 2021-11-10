@@ -15,7 +15,6 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
       <FormControl my={6}>
         <FormLabel>Encapsulation Type</FormLabel>
         <Select
-          variant="filled"
           name="encapsulation-type"
           value={connection.encapsulationType || ''}
           onChange={(event) => {
@@ -33,7 +32,6 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
       <FormControl my={6}>
         <FormLabel>Svlan Assignment Type</FormLabel>
         <Select
-          variant="filled"
           name="svlan-assignment-type"
           value={connection.svlanAssignmentType || 'auto'}
           onChange={(event) => {
@@ -51,7 +49,6 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
       <FormControl my={6}>
         <FormLabel>Tpid</FormLabel>
         <Select
-          variant="filled"
           name="tpid"
           value={connection.tpId || ''}
           onChange={(event) => {
@@ -69,7 +66,6 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
       <FormControl id="connection-mtu" my={6}>
         <FormLabel>Mtu</FormLabel>
         <Input
-          variant="filled"
           name="connection-mtu"
           value={connection.mtu}
           onChange={(event) => {

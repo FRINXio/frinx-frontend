@@ -84,7 +84,6 @@ const CarrierForm: FC<Props> = ({ carrier, carriers, onDelete, onSubmit, onCance
       <FormControl my={6}>
         <FormLabel>Description</FormLabel>
         <Input
-          variant="filled"
           name="service-type"
           value={vpnCarrier.description || ''}
           onChange={(event) => {

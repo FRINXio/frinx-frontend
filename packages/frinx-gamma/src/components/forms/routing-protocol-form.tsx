@@ -40,7 +40,6 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
       {/* <FormControl id="routing-protocol-type" my={6}>
         <FormLabel>Routing Protocol Type</FormLabel>{' '}
         <Select
-          variant="filled"
           name="routing-protocol-type"
           value={networkAccessState.routingProtocols[0].type}
           onChange={(event) => {
@@ -61,7 +60,6 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
       <FormControl id="static-routing-lan" my={6}>
         <FormLabel>Static Routing LAN</FormLabel>
         <Input
-          variant="filled"
           name="static-routing-lan"
           value={staticProtocol ? unwrap(staticProtocol.static)[0].lan : ''}
           onChange={(event) => {
@@ -85,7 +83,6 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
       <FormControl id="static-routing-next-hop" my={6}>
         <FormLabel>Static Routing Next Hop</FormLabel>
         <Input
-          variant="filled"
           name="static-routing-next-hop"
           value={staticProtocol ? unwrap(staticProtocol.static)[0].nextHop : ''}
           onChange={(event) => {
@@ -109,7 +106,6 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
       <FormControl id="bgp-autonomous-system" my={6}>
         <FormLabel>Bgp Autonomous System</FormLabel>
         <Input
-          variant="filled"
           name="bgp-autonomous-system"
           value={bgpProtocol.bgp ? bgpProtocol.bgp.autonomousSystem : ''}
           onChange={(event) => {
@@ -145,7 +141,6 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
       {/* <FormControl id="routing-protocol-vrrp" my={6}>
         <FormLabel>Vrrp</FormLabel>
         <Select
-          variant="filled"
           name="routing-protocol-vrrp"
           value={networkAccessState.routingProtocols[0].vrrp}
           onChange={(event) => {
