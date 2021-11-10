@@ -194,6 +194,7 @@ const SiteNetAccessForm: FC<Props> = ({
         <FormLabel>Site role</FormLabel>
         <Select
           variant="filled"
+          isDisabled
           name="siteRole"
           value={values.siteRole || ''}
           onChange={(event) => {
