@@ -16,18 +16,18 @@ import {
   Tr,
   Tag,
   Code,
-  useToast,
   useDisclosure,
+  Progress,
 } from '@chakra-ui/react';
 import sortBy from 'lodash/sortBy';
 import FeatherIcon from 'feather-icons-react';
 import PageContainer from '../../../common/PageContainer';
-import PaginationPages from '../../../common/Pagination';
 import { usePagination } from '../../../common/PaginationHook';
 import callbackUtils from '../../../utils/callback-utils';
 import SchedulingModal from './scheduled-workflow-modal/scheduled-workflow-modal';
 import { ScheduledWorkflow, StatusType } from '../../../types/types';
 import useNotifications from '../../../hooks/use-notifications';
+import Paginator from '../../../common/pagination';
 
 function ScheduledWorkflowList() {
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
@@ -114,8 +114,18 @@ function ScheduledWorkflowList() {
     }
   }
 
+  if (!pageItems == null) {
+    return <Progress isIndeterminate size="xs" marginTop={-10} />;
+  }
+
   if (!pageItems.length) {
-    return <p>Loading...</p>;
+    return (
+      <PageContainer>
+        <Box textAlign="center" marginY={15}>
+          There are no scheduled workflows yet
+        </Box>
+      </PageContainer>
+    );
   }
 
   return (
@@ -138,82 +148,86 @@ function ScheduledWorkflowList() {
             <Th>Actions</Th>
           </Tr>
         </Thead>
-        <Tbody>
-          {pageItems.map((item: ScheduledWorkflow) => (
-            <Tr key={item.name} role="group">
-              <Td>
-                <FormControl display="flex" alignItems="center">
-                  <Switch
-                    isChecked={item.enabled}
-                    onChange={() => {
-                      const editedWorkflow = {
-                        ...item,
-                        enabled: !item.enabled,
-                      };
+        {!pageItems.length ? null : (
+          <>
+            <Tbody>
+              {pageItems.map((item: ScheduledWorkflow) => (
+                <Tr key={item.name} role="group">
+                  <Td>
+                    <FormControl display="flex" alignItems="center">
+                      <Switch
+                        isChecked={item.enabled}
+                        onChange={() => {
+                          const editedWorkflow = {
+                            ...item,
+                            enabled: !item.enabled,
+                          };
 
-                      handleWorkflowUpdate(editedWorkflow);
-                    }}
-                  />
-                </FormControl>
-              </Td>
-              <Td>
-                <Heading as="h6" size="xs">
-                  {item.name}
-                </Heading>
-              </Td>
-              <Td>
-                <Tag colorScheme={getStatusTagColor(item.status) ?? ''}>{item.status || '-'}</Tag>
-              </Td>
-              <Td>
-                <Code>{item.cronString}</Code>
-              </Td>
-              <Td>
-                <Stack direction="row" spacing={4}>
-                  <ButtonGroup>
-                    <Button
-                      colorScheme="red"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        handleDeleteBtnClick(item);
-                      }}
-                    >
-                      <Box as="span" flexShrink={0} alignSelf="center">
-                        <Box
-                          as={FeatherIcon}
-                          size="1em"
-                          icon="trash-2"
-                          flexShrink={0}
-                          lineHeight={4}
-                          verticalAlign="middle"
-                        />
-                      </Box>
-                    </Button>
-                    <Button colorScheme="black" size="sm" variant="outline" onClick={() => onEdit(item)}>
-                      <Box as="span" flexShrink={0} alignSelf="center">
-                        <Box
-                          as={FeatherIcon}
-                          size="1em"
-                          icon="edit"
-                          flexShrink={0}
-                          lineHeight={4}
-                          verticalAlign="middle"
-                        />
-                      </Box>
-                    </Button>
-                  </ButtonGroup>
-                </Stack>
-              </Td>
-            </Tr>
-          ))}
-        </Tbody>
-        <Tfoot>
-          <Tr>
-            <Th>
-              <PaginationPages totalPages={totalPages} currentPage={currentPage} changePageHandler={setCurrentPage} />
-            </Th>
-          </Tr>
-        </Tfoot>
+                          handleWorkflowUpdate(editedWorkflow);
+                        }}
+                      />
+                    </FormControl>
+                  </Td>
+                  <Td>
+                    <Heading as="h6" size="xs">
+                      {item.name}
+                    </Heading>
+                  </Td>
+                  <Td>
+                    <Tag colorScheme={getStatusTagColor(item.status) ?? ''}>{item.status || '-'}</Tag>
+                  </Td>
+                  <Td>
+                    <Code>{item.cronString}</Code>
+                  </Td>
+                  <Td>
+                    <Stack direction="row" spacing={4}>
+                      <ButtonGroup>
+                        <Button
+                          colorScheme="red"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            handleDeleteBtnClick(item);
+                          }}
+                        >
+                          <Box as="span" flexShrink={0} alignSelf="center">
+                            <Box
+                              as={FeatherIcon}
+                              size="1em"
+                              icon="trash-2"
+                              flexShrink={0}
+                              lineHeight={4}
+                              verticalAlign="middle"
+                            />
+                          </Box>
+                        </Button>
+                        <Button colorScheme="black" size="sm" variant="outline" onClick={() => onEdit(item)}>
+                          <Box as="span" flexShrink={0} alignSelf="center">
+                            <Box
+                              as={FeatherIcon}
+                              size="1em"
+                              icon="edit"
+                              flexShrink={0}
+                              lineHeight={4}
+                              verticalAlign="middle"
+                            />
+                          </Box>
+                        </Button>
+                      </ButtonGroup>
+                    </Stack>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+            <Tfoot>
+              <Tr>
+                <Th>
+                  <Paginator currentPage={currentPage} onPaginationClick={setCurrentPage} pagesCount={totalPages} />
+                </Th>
+              </Tr>
+            </Tfoot>
+          </>
+        )}
       </Table>
     </PageContainer>
   );

@@ -1,5 +1,5 @@
 import { round } from 'lodash/math';
-import { fetchNewData, fetchParentWorkflows } from './searchExecs';
+import { fetchNewData, fetchParentWorkflows } from '../../pages/workflow-list/executed-workflow-list/search-execs';
 import callbackUtils from '../../utils/callback-utils';
 
 export const IS_FLAT = 'IS_FLAT';
@@ -17,7 +17,7 @@ export const receiveBulkOperationResponse = (successfulResults, errorResults, de
   return (dispatch, getState) => {
     dispatch(storeResponse(successfulResults, errorResults));
     const { isFlat } = getState().bulkReducer;
-    isFlat ? dispatch(fetchNewData(1, defaultPages)) : dispatch(fetchParentWorkflows(1, defaultPages));
+    isFlat ? dispatch(fetchNewData('', 1, defaultPages, [])) : dispatch(fetchParentWorkflows('', 1, defaultPages, []));
     setTimeout(() => dispatch(resetBulkOperationResult()), 2000);
   };
 };
