@@ -53,7 +53,7 @@ const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
     qosProfiles: [''],
   },
   vpnAttachment: null,
-  siteRole: null,
+  siteRole: 'any-to-any-role',
   ipConnection: {
     ipv4: {
       addressAllocationType: 'static-address',
