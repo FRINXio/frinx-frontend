@@ -137,7 +137,6 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
       <FormControl id="vpnServiceTopology" my={6}>
         <FormLabel>Vpn Service Topology</FormLabel>
         <Select
-          variant="filled"
           name="vpnServiceTopology"
           value={values.vpnServiceTopology}
           onChange={(event) => {
@@ -154,7 +153,6 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
       <FormControl id="defaultCVlan" my={6}>
         <FormLabel>Default C Vlan</FormLabel>
         <Select
-          variant="filled"
           name="defaultCVlan"
           value={values.defaultCVlan}
           onChange={(event) => {
@@ -178,7 +176,6 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
         <FormControl id="custom-c-vlan" my={6} isRequired isInvalid={errors.customCVlan != null}>
           <FormLabel>Custom C-VLAN</FormLabel>
           <Input
-            variant="filled"
             name="customCVlan"
             value={values.customCVlan || ''}
             onChange={(event) => {
@@ -205,7 +202,6 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
         >
           <Box py={4} flex={1}>
             <Select
-              variant="filled"
               name="extranetVpns"
               value={extranetVpnSelect || ''}
               onChange={(event) => {

@@ -34,23 +34,17 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ mode, device, location
     <form onSubmit={handleSubmit}>
       <FormControl id="site-device-id" my={6} isRequired isInvalid={errors.deviceId != null}>
         <FormLabel>Device ID</FormLabel>
-        <Input
-          variant="filled"
-          name="deviceId"
-          value={values.deviceId}
-          isReadOnly={mode === 'edit'}
-          onChange={handleChange}
-        />
+        <Input name="deviceId" value={values.deviceId} isReadOnly={mode === 'edit'} onChange={handleChange} />
         {errors.deviceId && <FormErrorMessage>{errors.deviceId}</FormErrorMessage>}
       </FormControl>
 
       <FormControl id="device-locations" my={6}>
         <FormLabel>Location ID</FormLabel>
-        <Input type="text" variant="filled" value={locationId} isReadOnly />
+        <Input type="text" value={locationId} isReadOnly />
       </FormControl>
       <FormControl my={6} isRequired isInvalid={errors.managementIP != null}>
         <FormLabel>Management IP</FormLabel>
-        <Input variant="filled" name="managementIP" value={values.managementIP} onChange={handleChange} />
+        <Input name="managementIP" value={values.managementIP} onChange={handleChange} />
         {errors.managementIP && <FormErrorMessage>{errors.managementIP}</FormErrorMessage>}
       </FormControl>
       <Divider my={4} />

@@ -75,7 +75,7 @@ const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, be
       </FormControl>
       <FormControl id="port-id" my={6} isRequired isInvalid={errors.portId != null}>
         <FormLabel>Port ID</FormLabel>
-        <Select variant="filled" name="portId" value={values.portId} onChange={handleChange}>
+        <Select name="portId" value={values.portId} onChange={handleChange}>
           <option value="">-- choose port id</option>
           {[...Array(8).keys()].map((v) => {
             return <option key={`port-id-xe-${v}`} value={`xe-0/1/${v}`}>{`xe-0/1/${v}`}</option>;
@@ -86,7 +86,6 @@ const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, be
       <FormControl id="sp-bearer-reference" my={6} isRequired isInvalid={errors.spBearerReference != null}>
         <FormLabel>Gamma hub-link ID</FormLabel>
         <Input
-          variant="filled"
           name="spBearerReference"
           value={values.spBearerReference}
           disabled={mode === 'edit'}
@@ -97,7 +96,6 @@ const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, be
       <FormControl id="description" my={6}>
         <FormLabel>Description</FormLabel>
         <Input
-          variant="filled"
           name="description"
           value={values.description || ''}
           onChange={(event) => {

@@ -87,7 +87,6 @@ const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
       <FormControl my={6}>
         <FormLabel>Router Id</FormLabel>
         <Input
-          variant="filled"
           name="vpn-node-router-id"
           value={vpnNode.routerId}
           onChange={(event) => {
@@ -101,7 +100,6 @@ const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
       <FormControl my={6}>
         <FormLabel>Role</FormLabel>
         <Input
-          variant="filled"
           name="vpn-node-role"
           value={vpnNode.role || ''}
           onChange={(event) => {
