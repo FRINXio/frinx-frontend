@@ -1,4 +1,3 @@
-// @flow
 import App from './App';
 import WorkflowListHeader from './pages/workflow-list/workflow-list-header';
 import WorkflowDefinitions from './pages/workflow-list/WorkflowDefs/workflow-definitions';
@@ -9,6 +8,7 @@ import ScheduledWorkflowList from './pages/workflow-list/scheduled-workflow/sche
 import EventListeners from './pages/workflow-list/EventListeners/event-listeners';
 import TaskList from './pages/workflow-list/Tasks/task-list';
 import PollData from './pages/workflow-list/PollData/poll-data';
+import ReduxProvider from './ReduxProvider';
 
 export { WorkflowListHeader };
 export { WorkflowDefinitions };
@@ -19,6 +19,7 @@ export { ScheduledWorkflowList };
 export { EventListeners };
 export { TaskList };
 export { PollData };
+export { ReduxProvider };
 
 export const menuLinks = [
   { label: 'Definitions', path: '/defs' },
