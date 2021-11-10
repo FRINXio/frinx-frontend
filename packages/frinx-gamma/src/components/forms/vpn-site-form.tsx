@@ -188,7 +188,6 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
       <FormControl id="maxiumRoutes" my={6}>
         <FormLabel>Maximum Routes</FormLabel>
         <Select
-          variant="filled"
           name="maximumRoutes"
           value={values.maximumRoutes}
           onChange={(event) => {
@@ -208,7 +207,6 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
       <FormControl id="site-management-type" my={6} isRequired isInvalid={errors.siteManagementType != null}>
         <FormLabel>Site Management Type</FormLabel>
         <Select
-          variant="filled"
           name="site-management-type"
           value={values.siteManagementType}
           disabled
@@ -235,7 +233,6 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
       <FormControl id="enable-bgp-pic-fast-reroute" my={6} isRequired isInvalid={errors.siteServiceQosProfile != null}>
         <FormLabel>Enable BGP PIC Fast Reroute</FormLabel>
         <Select
-          variant="filled"
           name="enable-bgp-pic-fast-reroute"
           disabled // requested by gamma
           value={values.enableBgpPicFastReroute ? '1' : '0'}

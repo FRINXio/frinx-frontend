@@ -38,7 +38,6 @@ const CarrierForm: FC<Props> = ({ carrier, carriers, onChange }) => {
       <FormControl id="carrier-reference" my={6}>
         <FormLabel>Carrier Reference</FormLabel>
         <Input
-          variant="filled"
           name="carrier-reference"
           value={carrier.carrierReference || ''}
           onChange={(event) => {
@@ -52,7 +51,6 @@ const CarrierForm: FC<Props> = ({ carrier, carriers, onChange }) => {
       <FormControl my={6}>
         <FormLabel>Service Type</FormLabel>
         <Select
-          variant="filled"
           name="service-type"
           value={carrier.serviceType || ''}
           onChange={(event) => {
@@ -70,7 +68,6 @@ const CarrierForm: FC<Props> = ({ carrier, carriers, onChange }) => {
       <FormControl my={6}>
         <FormLabel>Service Status</FormLabel>
         <Select
-          variant="filled"
           name="service-status"
           value={carrier.serviceStatus || ''}
           onChange={(event) => {

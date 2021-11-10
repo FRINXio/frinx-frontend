@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Box, Button, FormLabel, FormErrorMessage, Input, Select, FormControl } from '@chakra-ui/react';
+import { Button, FormLabel, FormErrorMessage, Input, Select, Stack, FormControl } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { CustomerLocation } from './site-types';
@@ -35,38 +35,38 @@ const CustomerLocationForm: VoidFunctionComponent<Props> = ({ location, buttonTe
     <form onSubmit={handleSubmit}>
       <FormControl id="customer-locations-street" my={6} isRequired isInvalid={errors.street != null}>
         <FormLabel>Street</FormLabel>
-        <Input variant="filled" name="street" value={values.street} onChange={handleChange} />
+        <Input name="street" value={values.street} onChange={handleChange} />
         {errors.street && <FormErrorMessage>{errors.street}</FormErrorMessage>}
       </FormControl>
       <FormControl my={6} isRequired isInvalid={errors.postalCode != null}>
         <FormLabel>Postal Code</FormLabel>
-        <Input variant="filled" name="postalCode" value={values.postalCode} onChange={handleChange} />
+        <Input name="postalCode" value={values.postalCode} onChange={handleChange} />
         {errors.postalCode && <FormErrorMessage>{errors.postalCode}</FormErrorMessage>}
       </FormControl>
       <FormControl my={6} isRequired isInvalid={errors.state != null}>
         <FormLabel>State</FormLabel>
-        <Input variant="filled" name="state" value={values.state} onChange={handleChange} />
+        <Input name="state" value={values.state} onChange={handleChange} />
         {errors.state && <FormErrorMessage>{errors.state}</FormErrorMessage>}
       </FormControl>
       <FormControl my={6} isRequired isInvalid={errors.city != null}>
         <FormLabel>City</FormLabel>
-        <Input variant="filled" name="city" value={values.city} onChange={handleChange} />
+        <Input name="city" value={values.city} onChange={handleChange} />
         {errors.city && <FormErrorMessage>{errors.city}</FormErrorMessage>}
       </FormControl>
       <FormControl my={6} isRequired isInvalid={errors.countryCode != null}>
         <FormLabel>Country Code</FormLabel>
-        <Select variant="filled" name="countryCode" value={values.countryCode} onChange={handleChange}>
+        <Select name="countryCode" value={values.countryCode} onChange={handleChange}>
           <option value="UK">UK</option>
           <option value="Ireland">Ireland</option>
         </Select>
         {errors.countryCode && <FormErrorMessage>{errors.countryCode}</FormErrorMessage>}
       </FormControl>
-      <Box my={6}>
+      <Stack direction="row" spacing={2} align="center">
         <Button type="submit" colorScheme="blue">
           {buttonText}
         </Button>
         <Button onClick={onCancel}>Cancel</Button>
-      </Box>
+      </Stack>
     </form>
   );
 };
