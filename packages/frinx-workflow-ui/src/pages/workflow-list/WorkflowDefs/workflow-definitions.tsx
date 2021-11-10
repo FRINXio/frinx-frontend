@@ -211,7 +211,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     const getWorkflows = callbackUtils.getWorkflowsCallback();
 
     putWorkflow([workflow]).then(() => {
-      getWorkflows().then((workflows: Workflow[]) => {
+      getWorkflows().then((workflows) => {
         const dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
         const allLabels = getLabels(dataset);
         setData(dataset);
@@ -468,7 +468,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
         <Tfoot>
           <Tr>
             <Th>
-              <Paginator onPaginationClick={setCurrentPage} pagesAmount={totalPages} />
+              <Paginator pagesCount={totalPages} onPaginationClick={setCurrentPage} currentPage={currentPage} />
             </Th>
           </Tr>
         </Tfoot>

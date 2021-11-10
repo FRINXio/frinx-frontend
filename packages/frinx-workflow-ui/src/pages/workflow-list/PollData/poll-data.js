@@ -94,7 +94,7 @@ const PollData = () => {
         <Tfoot>
           <Tr>
             <Th>
-              <Paginator pagesAmount={totalPages} onPaginationClick={setCurrentPage} />
+              <Paginator currentPage={currentPage} onPaginationClick={setCurrentPage} pagesCount={totalPages} />
             </Th>
           </Tr>
         </Tfoot>

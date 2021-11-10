@@ -6,28 +6,32 @@ import {
   PaginationPage,
   PaginationPageGroup,
   PaginationPrevious,
-  usePagination,
 } from '@ajna/pagination';
 
 type Props = {
-  pagesAmount: number;
+  currentPage: number;
+  pagesCount: number;
+  showPageNumbers?: boolean;
   onPaginationClick: (pageNumber: number) => void;
 };
 
-const Paginator: FC<Props> = ({ onPaginationClick, pagesAmount }) => {
-  const { pages, pagesCount, currentPage } = usePagination({
-    pagesCount: pagesAmount,
-    initialState: { currentPage: 1 },
-  });
+const Paginator: FC<Props> = ({ onPaginationClick, pagesCount, currentPage, showPageNumbers = true }) => {
+  let pages: number[] = [];
+
+  for (let i = 0; i < pagesCount; i++) {
+    pages.push(i + 1);
+  }
   return (
     <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={onPaginationClick}>
       <PaginationContainer>
         <PaginationPrevious>Previous</PaginationPrevious>
-        <PaginationPageGroup>
-          {pages.map((page) => (
-            <PaginationPage key={`pagination_page_${page}`} page={page} />
-          ))}
-        </PaginationPageGroup>
+        {showPageNumbers ? (
+          <PaginationPageGroup>
+            {pages.map((page) => (
+              <PaginationPage key={`pagination_page_${page}`} page={page} />
+            ))}
+          </PaginationPageGroup>
+        ) : null}
         <PaginationNext>Next</PaginationNext>
       </PaginationContainer>
     </Pagination>

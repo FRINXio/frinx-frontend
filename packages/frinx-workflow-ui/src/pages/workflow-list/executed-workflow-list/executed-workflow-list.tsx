@@ -16,6 +16,7 @@ import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workfl
 import { orderBy } from 'lodash';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
 import Paginator from '../../../common/pagination';
+import { usePagination } from '../../../common/PaginationHook';
 
 type Props = {
   onWorkflowIdClick: (workflowId: string) => void;
@@ -51,6 +52,8 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   const [state, setState] = useState<StateProps>(initialState);
   const [flatWorkflows, setFlatWorkflows] = useState<ExecutedWorkflowsFlat | null>(null);
   const [hierarchicalWorkflows, setHierarchicalWorkflows] = useState<ExecutedWorkflowsHierarchical | null>(null);
+  const hierarchicalPagination = usePagination([], 20);
+  const flatViewPagination = usePagination([], 20);
 
   useEffect(() => {
     fetchNewData(state.workflowId, state.viewedPage, state.workflowsPerPage, state.labels).then((response) => {
@@ -200,8 +203,14 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     setView();
   };
 
-  const handlePaginationClick = (pageNumberClicked: number) => {
-    setState((prev) => ({ ...prev, viewedPage: pageNumberClicked - 1 }));
+  const handlePaginationClick = (pageNumber: number) => {
+    setState((prev) => ({ ...prev, viewedPage: pageNumber - 1 }));
+
+    if (state.isFlat) {
+      flatViewPagination.setCurrentPage(pageNumber);
+    } else {
+      hierarchicalPagination.setCurrentPage(pageNumber);
+    }
   };
 
   const hierarchy: ExecutedWorkflowsHierarchical = {
@@ -264,20 +273,32 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
             sort={state.sort}
           />
 
-          {/* <Paginator pagesAmount={Math.ceil(hierarchy.hits / 20)} onPaginationClick={handlePaginationClick} /> */}
+          <Paginator
+            currentPage={hierarchicalPagination.currentPage}
+            onPaginationClick={handlePaginationClick}
+            pagesCount={hierarchicalPagination.totalPages}
+            showPageNumbers={false}
+          />
         </>
       )}
 
       {state.isFlat && (
-        <ExecutedWorkflowFlatTable
-          selectAllWorkflows={selectAllWorkflows}
-          sortWf={sortWorkflow}
-          onExecutedWorkflowClick={onWorkflowIdClick}
-          selectWf={selectWorkflow}
-          selectedWfs={state.selectedWorkflows}
-          sort={state.sort}
-          flatWorkflows={flat}
-        />
+        <>
+          <ExecutedWorkflowFlatTable
+            selectAllWorkflows={selectAllWorkflows}
+            sortWf={sortWorkflow}
+            onExecutedWorkflowClick={onWorkflowIdClick}
+            selectWf={selectWorkflow}
+            selectedWfs={state.selectedWorkflows}
+            sort={state.sort}
+            flatWorkflows={flat}
+          />
+          <Paginator
+            currentPage={flatViewPagination.currentPage}
+            onPaginationClick={handlePaginationClick}
+            pagesCount={flatViewPagination.totalPages}
+          />
+        </>
       )}
     </PageContainer>
   );
