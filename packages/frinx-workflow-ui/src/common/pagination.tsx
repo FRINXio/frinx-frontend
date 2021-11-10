@@ -16,11 +16,8 @@ type Props = {
 };
 
 const Paginator: FC<Props> = ({ onPaginationClick, pagesCount, currentPage, showPageNumbers = true }) => {
-  let pages: number[] = [];
+  const pages = Array.from(new Array(pagesCount)).map((_, i) => i + 1);
 
-  for (let i = 0; i < pagesCount; i++) {
-    pages.push(i + 1);
-  }
   return (
     <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={onPaginationClick}>
       <PaginationContainer>
