@@ -210,6 +210,7 @@ const UniflowApp: FC = () => {
                     key={executedWorkflowId}
                     workflowId={props.match.params.workflowId}
                     onWorkflowIdClick={(workflowId) => {
+                      setExecutedWorkflowId(uuid());
                       history.push(`/uniflow/executed/${workflowId}`);
                     }}
                     onExecutedOperation={() => setExecutedWorkflowId(uuid())}

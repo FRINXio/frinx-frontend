@@ -46,9 +46,6 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
       onWorkflowActionExecution();
     });
   };
-  if (status === 'COMPLETED') {
-    return <Box color="white">Worklow was successfully executed</Box>;
-  }
 
   if (status === 'FAILED' || status === 'TERMINATED') {
     return (

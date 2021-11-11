@@ -38,7 +38,7 @@ const DetailsModalHeader: FC<Props> = ({
   restartWorkflows,
 }) => (
   <Box background="brand.600" borderRadius={4} padding={15} marginBottom={10}>
-    <Grid gridTemplateColumns="1fr 1fr 1fr 1fr 1fr">
+    <Grid templateColumns={status === 'COMPLETED' ? 'repeat(4, 1fr)' : 'repeat(5,1fr)'}>
       <Box md="auto">
         <Box color="white">
           <b>Total Time (sec)</b>
@@ -67,14 +67,16 @@ const DetailsModalHeader: FC<Props> = ({
           {status}
         </Box>
       </Box>
-      <Box>
-        <DetailsModalHeaderActionButtons
-          restartWorkflows={restartWorkflows}
-          workflowId={workflowId}
-          status={status}
-          onWorkflowActionExecution={onWorkflowActionExecution}
-        />
-      </Box>
+      {status !== 'COMPLETED' && (
+        <Box>
+          <DetailsModalHeaderActionButtons
+            restartWorkflows={restartWorkflows}
+            workflowId={workflowId}
+            status={status}
+            onWorkflowActionExecution={onWorkflowActionExecution}
+          />
+        </Box>
+      )}
     </Grid>
   </Box>
 );
