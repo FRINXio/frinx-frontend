@@ -32,7 +32,7 @@ function getQosProfilesItems(profiles: string[]): Item[] {
 }
 
 const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttachment, onSubmit, onCancel }) => {
-  const { values, errors, setFieldValue, handleChange, handleSubmit } = useFormik({
+  const { values, errors, dirty, setFieldValue, handleChange, handleSubmit } = useFormik({
     initialValues: {
       ...evcAttachment,
     },
@@ -118,7 +118,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
 
       <Divider my={4} />
       <Stack direction="row" spacing={2} align="center">
-        <Button type="submit" colorScheme="blue">
+        <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
           Save changes
         </Button>
         <Button onClick={onCancel}>Cancel</Button>

@@ -1,8 +1,26 @@
-import React, { FC, FormEvent, useState } from 'react';
-import { Button, Divider, Flex, Heading, Input, FormControl, FormLabel, Stack } from '@chakra-ui/react';
+import React, { FC, useState } from 'react';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+import {
+  Button,
+  Divider,
+  Flex,
+  FormErrorMessage,
+  Heading,
+  Input,
+  FormControl,
+  FormLabel,
+  Stack,
+} from '@chakra-ui/react';
 import { uniqBy } from 'lodash';
 import { VpnNode } from './bearer-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
+
+const NodeSchema = yup.object().shape({
+  neId: yup.string().required('Ne Id is required'),
+  routerId: yup.string().required('Router Id is required'),
+  role: yup.string().nullable(),
+});
 
 type Props = {
   node: VpnNode;
@@ -23,12 +41,21 @@ const getNodeItems = (carriers: VpnNode[]): Item[] => {
 };
 
 const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
-  const [vpnNode, setVpnNode] = useState(node);
+  const { values, errors, dirty, setFieldValue, setValues, handleSubmit } = useFormik({
+    initialValues: {
+      ...node,
+    },
+    validationSchema: NodeSchema,
+    onSubmit: (formValues) => {
+      onSubmit(formValues);
+    },
+  });
+  // const [vpnNode, setVpnNode] = useState(node);
   const [vpnNodes, setVpnNodes] = useState(nodes);
-  const handleEdit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    onSubmit(vpnNode);
-  };
+  // const handleEdit = (event: FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+  //   onSubmit(vpnNode);
+  // };
 
   const handleNodeChange = (item?: Item | null) => {
     if (!item) {
@@ -36,7 +63,7 @@ const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
     }
 
     const [filteredNode] = vpnNodes.filter((n) => n.neId === item.value);
-    setVpnNode(filteredNode);
+    setValues(filteredNode);
   };
 
   const handleCreateItem = (item: Item) => {
@@ -49,7 +76,7 @@ const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
         role: null,
       },
     ]);
-    setVpnNode({
+    setValues({
       neId: item.value,
       routerId: '',
       role: null,
@@ -57,16 +84,16 @@ const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
   };
 
   const handleDelete = () => {
-    onDelete(vpnNode.neId);
+    onDelete(values.neId);
   };
 
   const vpnNodeItems = getNodeItems(vpnNodes);
   const [selectedNode] = vpnNodeItems.filter((n) => {
-    return n.value === vpnNode.neId;
+    return n.value === values.neId;
   });
 
   return (
-    <form onSubmit={handleEdit}>
+    <form onSubmit={handleSubmit}>
       <Flex justifyContent="space-between" alignItems="center">
         <Heading size="md" marginBottom={2}>
           Save Node
@@ -75,7 +102,7 @@ const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
           Delete
         </Button>
       </Flex>
-      <FormControl id="vpn-node-id" my={6}>
+      <FormControl id="vpn-node-id" my={6} isRequired isInvalid={errors.neId != null}>
         <FormLabel>Ne Id</FormLabel>
         <Autocomplete2
           items={vpnNodeItems}
@@ -83,36 +110,32 @@ const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
           onChange={handleNodeChange}
           onCreateItem={handleCreateItem}
         />
+        {errors.neId && <FormErrorMessage>{errors.neId}</FormErrorMessage>}
       </FormControl>
-      <FormControl my={6}>
+      <FormControl my={6} isRequired isInvalid={errors.routerId != null}>
         <FormLabel>Router Id</FormLabel>
         <Input
           name="vpn-node-router-id"
-          value={vpnNode.routerId}
+          value={values.routerId}
           onChange={(event) => {
-            setVpnNode({
-              ...vpnNode,
-              routerId: event.target.value,
-            });
+            setFieldValue('routerId', event.target.value);
           }}
         />
+        {errors.routerId && <FormErrorMessage>{errors.routerId}</FormErrorMessage>}
       </FormControl>
       <FormControl my={6}>
         <FormLabel>Role</FormLabel>
         <Input
           name="vpn-node-role"
-          value={vpnNode.role || ''}
+          value={values.role || ''}
           onChange={(event) => {
-            setVpnNode({
-              ...vpnNode,
-              role: event.target.value || null,
-            });
+            setFieldValue('role', event.target.value || null);
           }}
         />
       </FormControl>
       <Divider my={4} />
       <Stack direction="row" spacing={2} align="center">
-        <Button type="submit" colorScheme="blue">
+        <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
           Save changes
         </Button>
         <Button onClick={onCancel}>Cancel</Button>

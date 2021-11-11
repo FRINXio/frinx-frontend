@@ -20,7 +20,7 @@ type Props = {
 };
 
 const CreateDeviceForm: VoidFunctionComponent<Props> = ({ mode, device, locationId, onSubmit, onCancel }) => {
-  const { values, errors, handleChange, handleSubmit } = useFormik({
+  const { values, errors, dirty, handleChange, handleSubmit } = useFormik({
     initialValues: {
       ...device,
     },
@@ -49,7 +49,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ mode, device, location
       </FormControl>
       <Divider my={4} />
       <Stack direction="row" spacing={2} align="center">
-        <Button type="submit" colorScheme="blue">
+        <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
           Save changes
         </Button>
         <Button onClick={onCancel}>Cancel</Button>
