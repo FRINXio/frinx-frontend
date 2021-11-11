@@ -1,8 +1,25 @@
-import React, { FC, FormEvent, useState } from 'react';
-import { Button, Divider, Flex, Heading, Input, FormControl, FormLabel, Stack } from '@chakra-ui/react';
+import React, { FC, useState } from 'react';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+import {
+  Button,
+  Divider,
+  Flex,
+  Heading,
+  Input,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Stack,
+} from '@chakra-ui/react';
 import { uniqBy } from 'lodash';
 import { VpnCarrier } from './bearer-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
+
+const CarrierSchema = yup.object().shape({
+  name: yup.string().required('Carrier name is required'),
+  description: yup.string().nullable(),
+});
 
 type Props = {
   carrier: VpnCarrier;
@@ -23,12 +40,16 @@ const getCarrierItems = (carriers: VpnCarrier[]): Item[] => {
 };
 
 const CarrierForm: FC<Props> = ({ carrier, carriers, onDelete, onSubmit, onCancel }) => {
-  const [vpnCarrier, setVpnCarrier] = useState(carrier);
+  const { values, errors, dirty, setFieldValue, setValues, handleSubmit } = useFormik({
+    initialValues: {
+      ...carrier,
+    },
+    validationSchema: CarrierSchema,
+    onSubmit: (formValues) => {
+      onSubmit(formValues);
+    },
+  });
   const [vpnCarriers, setVpnCarriers] = useState(carriers);
-  const handleEdit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    onSubmit(vpnCarrier);
-  };
 
   const handleCarrierChange = (item?: Item | null) => {
     if (!item) {
@@ -36,7 +57,7 @@ const CarrierForm: FC<Props> = ({ carrier, carriers, onDelete, onSubmit, onCance
     }
 
     const [filteredCarrier] = vpnCarriers.filter((c) => c.name === item.value);
-    setVpnCarrier(filteredCarrier);
+    setValues(filteredCarrier);
   };
 
   const handleCreateItem = (item: Item) => {
@@ -47,23 +68,23 @@ const CarrierForm: FC<Props> = ({ carrier, carriers, onDelete, onSubmit, onCance
         description: null,
       },
     ]);
-    setVpnCarrier({
+    setValues({
       name: item.value,
       description: '',
     });
   };
 
   const handleDelete = () => {
-    onDelete(vpnCarrier.name);
+    onDelete(values.name);
   };
 
   const vpnCarrierItems = getCarrierItems(vpnCarriers);
   const [selectedCarrier] = vpnCarrierItems.filter((n) => {
-    return n.value === vpnCarrier.name;
+    return n.value === values.name;
   });
 
   return (
-    <form onSubmit={handleEdit}>
+    <form onSubmit={handleSubmit}>
       <Flex justifyContent="space-between" alignItems="center">
         <Heading size="md" marginBottom={2}>
           Save Carrier
@@ -72,7 +93,7 @@ const CarrierForm: FC<Props> = ({ carrier, carriers, onDelete, onSubmit, onCance
           Delete
         </Button>
       </Flex>
-      <FormControl id="vpn-carrier-name" my={6}>
+      <FormControl id="vpn-carrier-name" my={6} isRequired isInvalid={errors.name != null}>
         <FormLabel>Carrier Name</FormLabel>
         <Autocomplete2
           items={vpnCarrierItems}
@@ -80,23 +101,21 @@ const CarrierForm: FC<Props> = ({ carrier, carriers, onDelete, onSubmit, onCance
           onChange={handleCarrierChange}
           onCreateItem={handleCreateItem}
         />
+        {errors.name && <FormErrorMessage>{errors.name}</FormErrorMessage>}
       </FormControl>
       <FormControl my={6}>
         <FormLabel>Description</FormLabel>
         <Input
-          name="service-type"
-          value={vpnCarrier.description || ''}
+          name="description"
+          value={values.description || ''}
           onChange={(event) => {
-            setVpnCarrier({
-              ...vpnCarrier,
-              description: event.target.value || null,
-            });
+            setFieldValue('description', event.target.value || null);
           }}
         />
       </FormControl>
       <Divider my={4} />
       <Stack direction="row" spacing={2} align="center">
-        <Button type="submit" colorScheme="blue">
+        <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
           Save changes
         </Button>
         <Button onClick={onCancel}>Cancel</Button>

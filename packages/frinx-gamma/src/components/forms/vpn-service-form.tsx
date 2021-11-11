@@ -56,7 +56,7 @@ const ServiceSchema = yup.object().shape({
 });
 
 const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, onCancel }) => {
-  const { values, errors, setFieldValue, handleSubmit, setValues } = useFormik({
+  const { values, errors, dirty, setFieldValue, handleSubmit, setValues } = useFormik({
     initialValues: {
       ...service,
     },
@@ -249,7 +249,7 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
 
       <Divider my={4} />
       <Stack direction="row" spacing={2} align="center">
-        <Button type="submit" colorScheme="blue">
+        <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
           Save changes
         </Button>
         <Button onClick={onCancel}>Cancel</Button>
