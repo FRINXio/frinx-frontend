@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TaskModal from '../../common/task-modal';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../utils/callback-utils';
@@ -67,6 +67,7 @@ const convertWorkflowVariablesToFormFormat = (
 
 type Props = {
   workflowId: string;
+  onExecutedOperation: () => void;
   onWorkflowIdClick: (workflowId: string) => void;
 };
 
@@ -81,11 +82,11 @@ export type ExecutedWorkflowDetailResult = {
   output: Record<string, string>;
 };
 
-const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
-  const [openedTask, setOpenedTask] = useState<Task | null>(null);
-  const [isEscaped, setIsEscaped] = useState(false);
+const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOperation }) => {
   const taskModalDisclosure = useDisclosure();
   const execPayload = useAsyncGenerator(workflowId);
+  const [openedTask, setOpenedTask] = useState<Task | null>(null);
+  const [isEscaped, setIsEscaped] = useState(false);
   const [workflowVariables, setWorkflowVariables] = useState<Record<string, string> | null>(null);
 
   if (execPayload == null) {
@@ -123,6 +124,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
       },
     };
     executeWorkflow(workflowPayload);
+    onExecutedOperation();
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>, key: string) => {
@@ -133,7 +135,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
 
   const formatDate = (date: Date | number | undefined | null | string) => {
     try {
-      if (date == null) {
+      if (date == null || date === 0) {
         throw new Error();
       }
 
@@ -146,6 +148,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
   const restartWorkflows = () => {
     const restartWorkflows = callbackUtils.restartWorkflowsCallback();
     restartWorkflows([workflowId]);
+    onExecutedOperation();
   };
 
   const handleOnOpenTaskModal = (task: Task) => {
@@ -177,7 +180,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
       </Box>
       <DetailsModalHeader
         workflowId={workflowId}
-        onWorkflowActionExecution={executeWorkflow}
+        onWorkflowActionExecution={onExecutedOperation}
         endTime={formatDate(result.endTime)}
         startTime={formatDate(result.startTime)}
         restartWorkflows={restartWorkflows}
@@ -227,18 +230,17 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
               )}
             </TabPanel>
             <TabPanel>
-              {workflowVariables != null && (
-                <EditRerunTab
-                  onInputChange={handleInputChange}
-                  inputs={convertWorkflowVariablesToFormFormat(
-                    JSON.stringify(execPayload),
-                    workflowVariables,
-                    meta.inputParameters,
-                  )}
-                  isExecuting={execPayload.result.status === 'RUNNING'}
-                  onRerunClick={executeWorkflow}
-                />
-              )}
+              <EditRerunTab
+                onInputChange={handleInputChange}
+                inputs={convertWorkflowVariablesToFormFormat(
+                  JSON.stringify(execPayload),
+                  result.input,
+                  meta.inputParameters,
+                )}
+                isExecuting={result.status === 'RUNNING'}
+                isSuccessfullyExecuted={result.status === 'COMPLETED'}
+                onRerunClick={executeWorkflow}
+              />
             </TabPanel>
             <TabPanel>
               <WorkflowDia meta={meta} wfe={result} subworkflows={subworkflows} />

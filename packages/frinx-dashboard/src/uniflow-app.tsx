@@ -71,6 +71,7 @@ const UniflowApp: FC = () => {
   const [components, setComponents] = useState<(UniflowComponents & BuilderComponents) | null>(null);
   const history = useHistory();
   const [key, setKey] = useState(uuid());
+  const [executedWorkflowId, setExecutedWorkflowId] = useState(uuid());
 
   useEffect(() => {
     Promise.all([import('@frinx/workflow-ui'), import('@frinx/workflow-builder/src')]).then(
@@ -206,10 +207,12 @@ const UniflowApp: FC = () => {
               render={(props: RouteComponentProps<{ workflowId: string }>) => {
                 return (
                   <ExecutedWorkflowDetail
+                    key={executedWorkflowId}
                     workflowId={props.match.params.workflowId}
                     onWorkflowIdClick={(workflowId) => {
                       history.push(`/uniflow/executed/${workflowId}`);
                     }}
+                    onExecutedOperation={() => setExecutedWorkflowId(uuid())}
                   />
                 );
               }}

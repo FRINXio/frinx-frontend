@@ -3,6 +3,7 @@ import { Box, Button, FormControl, FormHelperText, FormLabel, Input } from '@cha
 
 type Props = {
   isExecuting: boolean;
+  isSuccessfullyExecuted: boolean;
   inputs: {
     descriptions: string[];
     values: string[];
@@ -12,7 +13,7 @@ type Props = {
   onRerunClick: () => void;
 };
 
-const EditRerunTab: FC<Props> = ({ onInputChange, onRerunClick, isExecuting, inputs }) => {
+const EditRerunTab: FC<Props> = ({ onInputChange, onRerunClick, isExecuting, inputs, isSuccessfullyExecuted }) => {
   const { descriptions, labels, values } = inputs;
 
   return (
@@ -32,7 +33,15 @@ const EditRerunTab: FC<Props> = ({ onInputChange, onRerunClick, isExecuting, inp
           </Box>
         );
       })}
-      <Button marginRight={4} marginTop={10} colorScheme="blue" isDisabled={isExecuting} onClick={onRerunClick}>
+      <Button
+        float="right"
+        marginRight={4}
+        marginY={10}
+        colorScheme="blue"
+        isDisabled={isExecuting || isSuccessfullyExecuted}
+        isLoading={isExecuting}
+        onClick={onRerunClick}
+      >
         Execute
       </Button>
     </>

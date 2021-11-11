@@ -7,7 +7,7 @@ import DetailsModalHeaderActionButtons from './executed-workflow-detail-header-a
 type Props = {
   startTime: string;
   endTime: string;
-  status: Status | undefined;
+  status: Status;
   restartWorkflows: () => void;
   onWorkflowActionExecution: () => void;
   workflowId: string;
@@ -64,14 +64,14 @@ const DetailsModalHeader: FC<Props> = ({
         <Box color="white">
           <b>Status</b>
           <br />
-          {status ?? '-'}
+          {status}
         </Box>
       </Box>
       <Box>
         <DetailsModalHeaderActionButtons
           restartWorkflows={restartWorkflows}
           workflowId={workflowId}
-          status={status ?? 'RUNNING'}
+          status={status}
           onWorkflowActionExecution={onWorkflowActionExecution}
         />
       </Box>

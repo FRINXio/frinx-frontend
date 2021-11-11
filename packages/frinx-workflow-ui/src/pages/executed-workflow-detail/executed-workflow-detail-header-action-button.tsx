@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
 import { Status } from './executed-workflow-detail';
-import { Button, ButtonGroup } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup } from '@chakra-ui/react';
 import callbackUtils from '../../utils/callback-utils';
 
 type Props = {
+  workflowId: string;
   status: Status | undefined;
   restartWorkflows: () => void;
   onWorkflowActionExecution: () => void;
-  workflowId: string;
 };
 
 const DetailsModalHeaderActionButtons: FC<Props> = ({
@@ -35,9 +35,8 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
   const resumeWorkflows = () => {
     const resumeWorkflows = callbackUtils.resumeWorkflowsCallback();
 
-    resumeWorkflows([workflowId]).then(() => {
-      onWorkflowActionExecution();
-    });
+    resumeWorkflows([workflowId]);
+    onWorkflowActionExecution();
   };
 
   const retryWorkflows = () => {
@@ -47,6 +46,10 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
       onWorkflowActionExecution();
     });
   };
+  if (status === 'COMPLETED') {
+    return <Box color="white">Worklow was successfully executed</Box>;
+  }
+
   if (status === 'FAILED' || status === 'TERMINATED') {
     return (
       <ButtonGroup float="right">
