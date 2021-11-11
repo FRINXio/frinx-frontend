@@ -1,7 +1,7 @@
 import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
-import { VpnService } from '../../components/forms/service-types';
+import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
 import unwrap from '../../helpers/unwrap';
 
 type Props = {
@@ -15,6 +15,10 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
   onEditServiceButtonClick,
   onDeleteServiceButtonClick,
 }) => {
+  // CvlanEnum map with swapped keys and values
+  const swappedDefaultCVlanEnumMap = new Map([
+    ...Object.entries(DefaultCVlanEnum).map<[DefaultCVlanEnum, string]>(([key, value]) => [value, key]),
+  ]);
   return (
     <Table background="white" size="lg" marginBottom="12">
       <Thead>
@@ -37,7 +41,9 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
               <Td>
                 <Text as="span">{service.customerName}</Text>
               </Td>
-              <Td>{service.defaultCVlan === 'custom' ? service.customCVlan : service.defaultCVlan}</Td>
+              <Td>{`${swappedDefaultCVlanEnumMap.get(service.defaultCVlan)} (${
+                service.defaultCVlan === 'custom' ? service.customCVlan : service.defaultCVlan
+              })`}</Td>
               <Td>
                 <HStack>
                   <Tooltip label="Edit Service">
