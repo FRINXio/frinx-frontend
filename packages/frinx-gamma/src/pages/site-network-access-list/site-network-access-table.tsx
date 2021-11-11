@@ -1,4 +1,4 @@
-import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { VpnSite } from '../../components/forms/site-types';
@@ -16,7 +16,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
   onDeleteSiteNetworkAccessButtonClick,
 }) => {
   return (
-    <Table background="white" size="lg">
+    <Table background="white" size="lg" marginBottom="12">
       <Thead>
         <Tr>
           <Th>Id</Th>
@@ -46,21 +46,27 @@ const SiteTable: VoidFunctionComponent<Props> = ({
               </Td>
               <Td>
                 <HStack>
-                  <IconButton
-                    aria-label="edit"
-                    size="sm"
-                    icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                    onClick={() => onEditSiteNetworkAccessButtonClick(unwrap(site.siteId), access.siteNetworkAccessId)}
-                  />
-                  <IconButton
-                    aria-label="Delete network access"
-                    size="sm"
-                    colorScheme="red"
-                    icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
-                    onClick={() => {
-                      onDeleteSiteNetworkAccessButtonClick(unwrap(access.siteNetworkAccessId));
-                    }}
-                  />
+                  <Tooltip label="Edit site network access">
+                    <IconButton
+                      aria-label="edit"
+                      size="sm"
+                      icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
+                      onClick={() =>
+                        onEditSiteNetworkAccessButtonClick(unwrap(site.siteId), access.siteNetworkAccessId)
+                      }
+                    />
+                  </Tooltip>
+                  <Tooltip label="Delete site network access">
+                    <IconButton
+                      aria-label="Delete network access"
+                      size="sm"
+                      colorScheme="red"
+                      icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
+                      onClick={() => {
+                        onDeleteSiteNetworkAccessButtonClick(unwrap(access.siteNetworkAccessId));
+                      }}
+                    />
+                  </Tooltip>
                 </HStack>
               </Td>
             </Tr>

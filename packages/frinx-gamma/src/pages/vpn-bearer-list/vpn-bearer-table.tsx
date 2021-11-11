@@ -1,4 +1,4 @@
-import { Icon, IconButton, Table, Tbody, Td, Th, Thead, Tr, HStack } from '@chakra-ui/react';
+import { Icon, IconButton, Table, Tbody, Td, Th, Thead, Tr, HStack, Tooltip } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { VpnBearer } from '../../components/forms/bearer-types';
@@ -17,7 +17,7 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
   onEvcAttachmentSiteClick,
 }) => {
   return (
-    <Table background="white" size="lg">
+    <Table background="white" size="lg" marginBottom="12">
       <Thead>
         <Tr>
           <Th>Id</Th>
@@ -32,30 +32,33 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
             <Td>{b.status?.adminStatus?.status}</Td>
             <Td>
               <HStack>
-                <IconButton
-                  aria-label="edit"
-                  size="sm"
-                  title="Edit"
-                  icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                  onClick={() => onEditVpnBearerClick(b.spBearerReference)}
-                />
-                <IconButton
-                  aria-label="edit"
-                  size="sm"
-                  title="Evc Attachments"
-                  icon={<Icon size={12} as={FeatherIcon} icon="anchor" />}
-                  onClick={() => onEvcAttachmentSiteClick(b.spBearerReference)}
-                />
-                <IconButton
-                  aria-label="Delete site"
-                  size="sm"
-                  title="Delete"
-                  colorScheme="red"
-                  icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
-                  onClick={() => {
-                    onDeleteVpnBearerClick(b.spBearerReference);
-                  }}
-                />
+                <Tooltip label="Edit bearer">
+                  <IconButton
+                    aria-label="edit"
+                    size="sm"
+                    icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
+                    onClick={() => onEditVpnBearerClick(b.spBearerReference)}
+                  />
+                </Tooltip>
+                <Tooltip label="Evc Attachments">
+                  <IconButton
+                    aria-label="evc-attachments"
+                    size="sm"
+                    icon={<Icon size={12} as={FeatherIcon} icon="anchor" />}
+                    onClick={() => onEvcAttachmentSiteClick(b.spBearerReference)}
+                  />
+                </Tooltip>
+                <Tooltip label="Delete Bearer">
+                  <IconButton
+                    aria-label="Delete site"
+                    size="sm"
+                    colorScheme="red"
+                    icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
+                    onClick={() => {
+                      onDeleteVpnBearerClick(b.spBearerReference);
+                    }}
+                  />
+                </Tooltip>
               </HStack>
             </Td>
           </Tr>
