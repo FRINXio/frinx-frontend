@@ -1,55 +1,23 @@
 import React, { ChangeEvent, FC } from 'react';
 import { Box, Button, FormControl, FormHelperText, FormLabel, Input } from '@chakra-ui/react';
-import { WorkflowPayload } from '../../../types/uniflow-types';
 
 type Props = {
-  workflowPayload: WorkflowPayload | null;
-  inputParameters: string[] | undefined;
+  isExecuting: boolean;
+  inputs: {
+    descriptions: string[];
+    values: string[];
+    labels: string[];
+  };
   onInputChange: (e: ChangeEvent<HTMLInputElement>, key: string) => void;
   onRerunClick: () => void;
-  isExecuting: boolean;
-  workflowDetails: string;
 };
 
-const EditRerunTab: FC<Props> = ({
-  workflowPayload,
-  inputParameters,
-  onInputChange,
-  onRerunClick,
-  isExecuting,
-  workflowDetails,
-}) => {
-  const input = workflowPayload?.input ?? {};
-  const inputParams = inputParameters || [];
-
-  const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
-  let match = inputCaptureRegex.exec(workflowDetails);
-  const inputLabels = new Set<string>([]);
-
-  while (match != null) {
-    inputLabels.add(match[1]);
-    match = inputCaptureRegex.exec(workflowDetails);
-  }
-
-  const inputValues = [...inputLabels].map((label: string) => {
-    return input[label] != null ? input[label] : '';
-  });
-
-  const matchParam = (param: string) => {
-    return param.match(/\[(.*?)]/);
-  };
-
-  const descriptions = inputParams.map((param: string) => {
-    if (matchParam(param) && matchParam(param)?.length) {
-      return matchParam(param)![1];
-    }
-
-    return '';
-  });
+const EditRerunTab: FC<Props> = ({ onInputChange, onRerunClick, isExecuting, inputs }) => {
+  const { descriptions, labels, values } = inputs;
 
   return (
     <>
-      {[...inputLabels].map((label: string, i) => {
+      {labels.map((label: string, i) => {
         return (
           <Box key={`col1-${i}`}>
             <FormControl>
@@ -57,13 +25,7 @@ const EditRerunTab: FC<Props> = ({
               <Input
                 onChange={(e) => onInputChange(e, label)}
                 placeholder="Enter the input"
-                value={
-                  inputValues[i]
-                    ? typeof inputValues[i] === 'object'
-                      ? JSON.stringify(inputValues[i])
-                      : inputValues[i]
-                    : ''
-                }
+                value={values[i] ? (typeof values[i] === 'object' ? JSON.stringify(values[i]) : values[i]) : ''}
               />
               <FormHelperText className="text-muted">{descriptions[i]}</FormHelperText>
             </FormControl>

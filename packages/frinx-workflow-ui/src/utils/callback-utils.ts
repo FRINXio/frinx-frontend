@@ -1,3 +1,4 @@
+import { ExecutedWorkflowResponse } from '../pages/executed-workflow-detail/executed-workflow-detail-status.helpers';
 import {
   ExecutedWorkflowsFlat,
   ExecutedWorkflowsHierarchical,
@@ -28,11 +29,7 @@ export type Callbacks = {
     start: number,
     size: string,
   ) => Promise<ExecutedWorkflowsFlat>;
-  getWorkflowInstanceDetail: (workflowId: string) => Promise<{
-    result: WorkflowInstanceDetail;
-    meta: Workflow<ExtendedTask>;
-    subworkflows: WorkflowInstanceDetail[];
-  }>;
+  getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<ExecutedWorkflowResponse>;
   executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>;
   getWorkflowExecutionsHierarchical: (
     query: string,
@@ -73,9 +70,7 @@ class CallbackUtils {
     | ((workflowId: string, label: string, start: number, size: string) => Promise<ExecutedWorkflowsFlat>)
     | null = null;
   private getWorkflowInstanceDetail:
-    | ((
-        workflowId: string,
-      ) => Promise<{ result: WorkflowInstanceDetail; meta: Workflow; subworkflows: WorkflowInstanceDetail[] }>)
+    | ((workflowId: string, options?: RequestInit) => Promise<ExecutedWorkflowResponse>)
     | null = null;
   private executeWorkflow: ((workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>) | null = null;
   private getWorkflowExecutionsHierarchical:
