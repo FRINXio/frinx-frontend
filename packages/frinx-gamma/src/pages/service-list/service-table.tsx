@@ -21,6 +21,7 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
         <Tr>
           <Th>Id</Th>
           <Th>Customer Name</Th>
+          <Th>Default CVlan</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
@@ -36,6 +37,7 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
               <Td>
                 <Text as="span">{service.customerName}</Text>
               </Td>
+              <Td>{service.defaultCVlan === 'custom' ? service.customCVlan : service.defaultCVlan}</Td>
               <Td>
                 <HStack>
                   <Tooltip label="Edit Service">
