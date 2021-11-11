@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Status } from './executed-workflow-detail';
-import { Box, Button, ButtonGroup } from '@chakra-ui/react';
+import { Button, ButtonGroup } from '@chakra-ui/react';
 import callbackUtils from '../../utils/callback-utils';
 
 type Props = {
@@ -19,17 +19,15 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
   const terminateWorkflows = () => {
     const terminateWorkflows = callbackUtils.terminateWorkflowsCallback();
 
-    terminateWorkflows([workflowId]).then(() => {
-      onWorkflowActionExecution();
-    });
+    terminateWorkflows([workflowId]);
+    onWorkflowActionExecution();
   };
 
   const pauseWorkflows = () => {
     const pauseWorkflows = callbackUtils.pauseWorkflowsCallback();
 
-    pauseWorkflows([workflowId]).then(() => {
-      onWorkflowActionExecution();
-    });
+    pauseWorkflows([workflowId]);
+    onWorkflowActionExecution();
   };
 
   const resumeWorkflows = () => {
@@ -42,9 +40,8 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
   const retryWorkflows = () => {
     const retryWorkflows = callbackUtils.retryWorkflowsCallback();
 
-    retryWorkflows([workflowId]).then(() => {
-      onWorkflowActionExecution();
-    });
+    retryWorkflows([workflowId]);
+    onWorkflowActionExecution();
   };
 
   if (status === 'FAILED' || status === 'TERMINATED') {
