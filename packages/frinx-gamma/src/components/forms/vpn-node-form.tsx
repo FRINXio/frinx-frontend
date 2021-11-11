@@ -50,12 +50,7 @@ const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
       onSubmit(formValues);
     },
   });
-  // const [vpnNode, setVpnNode] = useState(node);
   const [vpnNodes, setVpnNodes] = useState(nodes);
-  // const handleEdit = (event: FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   onSubmit(vpnNode);
-  // };
 
   const handleNodeChange = (item?: Item | null) => {
     if (!item) {
@@ -67,7 +62,6 @@ const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
   };
 
   const handleCreateItem = (item: Item) => {
-    // setVpnNodeItems([...vpnNodeItems, item]);
     setVpnNodes([
       ...vpnNodes,
       {

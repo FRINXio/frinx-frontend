@@ -1,4 +1,4 @@
-import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { VpnBearer } from '../../components/forms/bearer-types';
@@ -11,7 +11,7 @@ type Props = {
 
 const EvcTable: VoidFunctionComponent<Props> = ({ bearer, onEditEvcButtonClick, onDeleteEvcButtonClick }) => {
   return (
-    <Table background="white" size="lg">
+    <Table background="white" size="lg" marginBottom="12">
       <Thead>
         <Tr>
           <Th>Evc Type</Th>
@@ -33,21 +33,25 @@ const EvcTable: VoidFunctionComponent<Props> = ({ bearer, onEditEvcButtonClick, 
               </Td>
               <Td>
                 <HStack>
-                  <IconButton
-                    aria-label="edit"
-                    size="sm"
-                    icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                    onClick={() => onEditEvcButtonClick(bearer.spBearerReference, evc.evcType, evc.circuitReference)}
-                  />
-                  <IconButton
-                    aria-label="Delete evc"
-                    size="sm"
-                    colorScheme="red"
-                    icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
-                    onClick={() => {
-                      onDeleteEvcButtonClick(evc.evcType, evc.circuitReference);
-                    }}
-                  />
+                  <Tooltip label="Edit Evc Attachment">
+                    <IconButton
+                      aria-label="edit"
+                      size="sm"
+                      icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
+                      onClick={() => onEditEvcButtonClick(bearer.spBearerReference, evc.evcType, evc.circuitReference)}
+                    />
+                  </Tooltip>
+                  <Tooltip label="Delete Evc Attachment">
+                    <IconButton
+                      aria-label="Delete evc"
+                      size="sm"
+                      colorScheme="red"
+                      icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
+                      onClick={() => {
+                        onDeleteEvcButtonClick(evc.evcType, evc.circuitReference);
+                      }}
+                    />
+                  </Tooltip>
                 </HStack>
               </Td>
             </Tr>

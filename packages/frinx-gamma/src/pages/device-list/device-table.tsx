@@ -1,4 +1,4 @@
-import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { VpnSite } from '../../components/forms/site-types';
@@ -19,7 +19,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
 }) => {
   const devices = site.siteDevices.filter((d) => d.locationId === locationId);
   return (
-    <Table background="white" size="lg">
+    <Table background="white" size="lg" marginBottom="12">
       <Thead>
         <Tr>
           <Th>Id</Th>
@@ -54,23 +54,27 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               <Td>{device.managementIP || '-'}</Td>
               <Td>
                 <HStack>
-                  <IconButton
-                    aria-label="edit"
-                    size="sm"
-                    icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                    onClick={() =>
-                      onEditDeviceButtonClick(unwrap(site.siteId), unwrap(device.locationId), unwrap(device.deviceId))
-                    }
-                  />
-                  <IconButton
-                    aria-label="Delete device"
-                    size="sm"
-                    colorScheme="red"
-                    icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
-                    onClick={() => {
-                      onDeleteDeviceButtonClick(unwrap(device.deviceId));
-                    }}
-                  />
+                  <Tooltip label="Edit device">
+                    <IconButton
+                      aria-label="edit"
+                      size="sm"
+                      icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
+                      onClick={() =>
+                        onEditDeviceButtonClick(unwrap(site.siteId), unwrap(device.locationId), unwrap(device.deviceId))
+                      }
+                    />
+                  </Tooltip>
+                  <Tooltip label="Delete device">
+                    <IconButton
+                      aria-label="Delete device"
+                      size="sm"
+                      colorScheme="red"
+                      icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
+                      onClick={() => {
+                        onDeleteDeviceButtonClick(unwrap(device.deviceId));
+                      }}
+                    />
+                  </Tooltip>
                 </HStack>
               </Td>
             </Tr>

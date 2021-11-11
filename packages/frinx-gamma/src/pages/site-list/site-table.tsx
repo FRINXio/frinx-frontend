@@ -1,4 +1,4 @@
-import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { VpnSite } from '../../components/forms/site-types';
@@ -20,7 +20,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
   onDeleteSiteButtonClick,
 }) => {
   return (
-    <Table background="white" size="lg">
+    <Table background="white" size="lg" marginBottom="12">
       <Thead>
         <Tr>
           <Th>Id</Th>
@@ -46,33 +46,41 @@ const SiteTable: VoidFunctionComponent<Props> = ({
               </Td>
               <Td>
                 <HStack>
-                  <IconButton
-                    aria-label="edit"
-                    size="sm"
-                    icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                    onClick={() => onEditSiteButtonClick(unwrap(site.siteId))}
-                  />
-                  <IconButton
-                    aria-label="detail"
-                    size="sm"
-                    icon={<Icon size={12} as={FeatherIcon} icon="eye" />}
-                    onClick={() => onDetailSiteButtonClick(unwrap(site.siteId))}
-                  />
-                  <IconButton
-                    aria-label="devices"
-                    size="sm"
-                    icon={<Icon size={12} as={FeatherIcon} icon="crosshair" />}
-                    onClick={() => onLocationsSiteButtonClick(unwrap(site.siteId))}
-                  />
-                  <IconButton
-                    aria-label="Delete site"
-                    size="sm"
-                    colorScheme="red"
-                    icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
-                    onClick={() => {
-                      onDeleteSiteButtonClick(unwrap(site.siteId));
-                    }}
-                  />
+                  <Tooltip label="Edit Site">
+                    <IconButton
+                      aria-label="edit"
+                      size="sm"
+                      icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
+                      onClick={() => onEditSiteButtonClick(unwrap(site.siteId))}
+                    />
+                  </Tooltip>
+                  <Tooltip label="Site Detail">
+                    <IconButton
+                      aria-label="detail"
+                      size="sm"
+                      icon={<Icon size={12} as={FeatherIcon} icon="eye" />}
+                      onClick={() => onDetailSiteButtonClick(unwrap(site.siteId))}
+                    />
+                  </Tooltip>
+                  <Tooltip label="Site Locations">
+                    <IconButton
+                      aria-label="devices"
+                      size="sm"
+                      icon={<Icon size={12} as={FeatherIcon} icon="crosshair" />}
+                      onClick={() => onLocationsSiteButtonClick(unwrap(site.siteId))}
+                    />
+                  </Tooltip>
+                  <Tooltip label="Delete Site">
+                    <IconButton
+                      aria-label="Delete site"
+                      size="sm"
+                      colorScheme="red"
+                      icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
+                      onClick={() => {
+                        onDeleteSiteButtonClick(unwrap(site.siteId));
+                      }}
+                    />
+                  </Tooltip>
                 </HStack>
               </Td>
             </Tr>
