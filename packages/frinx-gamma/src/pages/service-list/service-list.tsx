@@ -8,6 +8,8 @@ import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-de
 import callbackUtils from '../../callback-utils';
 import unwrap from '../../helpers/unwrap';
 import CommitStatusModal from '../../components/commit-status-modal/commit-status-modal';
+import { foldM } from 'fp-ts/lib/Foldable';
+import { setTransactionId } from '../../helpers/transaction-id';
 
 type Props = {
   onCreateVpnServiceClick: () => void;
@@ -50,7 +52,8 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
       })
       .then((data) => {
         setWorkflowId(data.text);
-      });
+      })
+      .finally(() => setTransactionId());
   }
 
   return (

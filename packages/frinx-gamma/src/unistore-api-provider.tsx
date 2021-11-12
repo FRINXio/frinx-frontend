@@ -1,5 +1,10 @@
 import React, { createContext, FC } from 'react';
 import callbackUtils, { Callbacks } from './callback-utils';
+import { getTransactionId, setTransactionId } from './helpers/transaction-id';
+
+if (!getTransactionId()) {
+  setTransactionId();
+}
 
 export const UnistoreApiContext = createContext(false);
 
