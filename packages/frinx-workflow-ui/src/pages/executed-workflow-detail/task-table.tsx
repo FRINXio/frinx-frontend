@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import { Button, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
-import { Task } from '../../types/task';
+import { ExecutedWorkflowTask } from '../../types/types';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 
 type Props = {
-  tasks: Task[];
-  onTaskClick: (task: Task) => void;
+  tasks: ExecutedWorkflowTask[];
+  onTaskClick: (task: ExecutedWorkflowTask) => void;
   onWorkflowClick: (wfId: string) => void;
   formatDate: (date: number | string) => string;
 };
