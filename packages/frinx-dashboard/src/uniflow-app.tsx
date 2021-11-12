@@ -29,6 +29,7 @@ import {
   deleteSchedule,
   getSchedule,
   registerSchedule,
+  getExternalStorage,
 } from './api/uniflow/uniflow-api';
 
 const callbacks = {
@@ -58,6 +59,7 @@ const callbacks = {
   deleteSchedule,
   getSchedule,
   registerSchedule,
+  getExternalStorage,
 };
 
 type UniflowComponents = Omit<typeof import('@frinx/workflow-ui'), 'getUniflowApiProvider'> & {

@@ -39,6 +39,8 @@ export type ExecutedWorkflowDetailResult = {
   endTime: Date | number | string;
   input: Record<string, string>;
   output: Record<string, string>;
+  externalInputPayloadStoragePath?: string;
+  externalOutputPayloadStoragePath?: string;
 };
 
 type WorkflowDetails = {
@@ -259,6 +261,8 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
                   output={details.result?.output ?? {}}
                   onEscapeChange={(isEscaped) => setDetails((prev) => ({ ...prev, isEscaped }))}
                   getUnescapedJSON={getUnescapedJSON}
+                  externalInputPayloadStoragePath={details.result?.externalInputPayloadStoragePath}
+                  externalOutputPayloadStoragePath={details.result?.externalOutputPayloadStoragePath}
                 />
               )}
             </TabPanel>

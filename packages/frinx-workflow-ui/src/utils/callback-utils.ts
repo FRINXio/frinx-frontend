@@ -53,6 +53,7 @@ export type Callbacks = {
     version: string,
     schedule: Partial<ScheduledWorkflow>,
   ) => Promise<{ message: string }>;
+  getExternalStorage: (path: string) => Promise<Record<string, string>>;
 };
 
 class CallbackUtils {
@@ -92,6 +93,7 @@ class CallbackUtils {
   private registerSchedule:
     | ((name: string, version: string, schedule: Partial<ScheduledWorkflow>) => Promise<{ message: string }>)
     | null = null;
+  private getExternalStorage: (path: string) => Promise<Record<string, string>>;
 
   setCallbacks(callbacks: Callbacks) {
     if (this.getWorkflows == null) {
@@ -196,6 +198,9 @@ class CallbackUtils {
 
     if (this.registerSchedule == null) {
       this.registerSchedule = callbacks.registerSchedule;
+    }
+    if (this.getExternalStorage == null) {
+      this.getExternalStorage = callbacks.getExternalStorage;
     }
   }
 
@@ -379,6 +384,13 @@ class CallbackUtils {
       throw new Error('registerScheduleCallback is missing');
     }
     return this.registerSchedule;
+  }
+
+  getExternalStorageCallback() {
+    if (this.getExternalStorage == null) {
+      throw new Error('getExternalStorage is missing');
+    }
+    return this.getExternalStorage;
   }
 }
 
