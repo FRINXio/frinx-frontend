@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
-import { Button, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
+import { Button, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
 import { Task } from '../../types/task';
+import { ArrowForwardIcon } from '@chakra-ui/icons';
 
 type Props = {
   tasks: Task[];
@@ -40,14 +41,13 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick, onWorkflowClick, formatDate 
             </Td>
             <Td textAlign="center">
               {task.taskType === 'SUB_WORKFLOW' ? (
-                <Button
+                <IconButton
                   colorScheme="blue"
-                  onClick={() => {
-                    onWorkflowClick(task.subWorkflowId);
-                  }}
-                >
-                  <i className="fas fa-arrow-circle-right" />
-                </Button>
+                  size="sm"
+                  aria-label="show-subworkflow"
+                  onClick={() => onWorkflowClick(task.subWorkflowId)}
+                  icon={<Icon size={12} as={ArrowForwardIcon} />}
+                />
               ) : null}
             </Td>
             <Td
