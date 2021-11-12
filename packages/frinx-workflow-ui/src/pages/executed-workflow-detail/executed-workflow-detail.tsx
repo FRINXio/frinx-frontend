@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TaskModal from '../../common/task-modal';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../utils/callback-utils';
@@ -18,19 +18,60 @@ import {
 } from '@chakra-ui/react';
 import TaskTable from './task-table';
 import { Task } from '../../types/task';
-import { WorkflowPayload } from '../../types/uniflow-types';
-import { Workflow, WorkflowInstanceDetail } from '../../types/types';
 import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
 import WorkflowJsonTab from './executed-workflow-detail-tabs/workflow-json-tab';
 import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
 import DetailsModalHeader from './executed-workflow-detail-header';
+import { useAsyncGenerator } from './executed-workflow-detail-status.helpers';
+
+const convertWorkflowVariablesToFormFormat = (
+  workflowDetails: string,
+  workflowInput: Record<string, string>,
+  inputParameters: string[] = [],
+) => {
+  /* 
+    search through whole executed workflow and is searching for all worklow.input
+    variables in this object and returns array of found variables
+  */
+  const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
+  let match = inputCaptureRegex.exec(workflowDetails);
+  const labels = new Set<string>([]);
+
+  while (match != null) {
+    labels.add(match[1]);
+    match = inputCaptureRegex.exec(workflowDetails);
+  }
+
+  const values = [...labels].map((label: string) => {
+    return workflowInput[label] != null ? workflowInput[label] : '';
+  });
+
+  const matchParam = (param: string) => {
+    return param.match(/\[(.*?)]/);
+  };
+
+  const descriptions = inputParameters.map((param: string) => {
+    if (matchParam(param) && matchParam(param)?.length) {
+      return matchParam(param)![1];
+    }
+
+    return '';
+  });
+
+  return {
+    descriptions,
+    values,
+    labels: [...labels],
+  };
+};
 
 type Props = {
   workflowId: string;
+  onExecutedOperation: () => void;
   onWorkflowIdClick: (workflowId: string) => void;
 };
 
-export type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED';
+export type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED' | 'COMPLETED';
 
 export type ExecutedWorkflowDetailResult = {
   status: Status;
@@ -41,89 +82,25 @@ export type ExecutedWorkflowDetailResult = {
   output: Record<string, string>;
 };
 
-type WorkflowDetails = {
-  meta: Partial<Workflow>;
-  result: ExecutedWorkflowDetailResult | null;
-  workflowId: string;
-  input: WorkflowPayload;
-  isExecuting: boolean;
-  timeouts: any[];
-  parentWorkflowId: string;
-  workflowIdRerun: string;
-  isEscaped: boolean;
-  subworkflows: WorkflowInstanceDetail[];
-};
-
-const INITIAL_STATE: WorkflowDetails = {
-  meta: {
-    name: '',
-    version: 0,
-    inputParameters: [],
-  },
-  result: null,
-  workflowId: '',
-  input: {
-    input: {},
-    name: '',
-    version: 0,
-  },
-  isExecuting: false,
-  timeouts: [],
-  parentWorkflowId: '',
-  workflowIdRerun: '',
-  isEscaped: true,
-  subworkflows: [],
-};
-
-const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
-  const [details, setDetails] = useState<WorkflowDetails>(INITIAL_STATE);
-  const [openedTask, setOpenedTask] = useState<Task | null>(null);
+const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOperation }) => {
   const taskModalDisclosure = useDisclosure();
+  const execPayload = useAsyncGenerator(workflowId);
+  const [openedTask, setOpenedTask] = useState<Task | null>(null);
+  const [isEscaped, setIsEscaped] = useState(false);
+  const [workflowVariables, setWorkflowVariables] = useState<Record<string, string> | null>(null);
 
-  useEffect(() => {
-    fetchWorkflowData();
+  if (execPayload == null) {
+    return null;
+  }
 
-    return () => {
-      details.timeouts.forEach((timeout) => {
-        clearInterval(timeout);
-      });
-    };
-  }, []);
-
-  const fetchWorkflowData = () => {
-    const getWorkflowInstanceDetail = callbackUtils.getWorkflowInstanceDetailCallback();
-
-    getWorkflowInstanceDetail(workflowId).then((res) => {
-      if (res != null && res.result.status !== 'RUNNING') {
-        details.timeouts.forEach((timeout) => {
-          clearInterval(timeout);
-        });
-      }
-
-      setDetails((prev) => {
-        return {
-          ...prev,
-          meta: res.meta,
-          result: res.result,
-          subworkflows: res.subworkflows,
-          input: {
-            name: res.meta.name,
-            version: res.meta.version,
-            input: res.result.input,
-          },
-          workflowId: res.result.workflowId,
-          parentWorkflowId: res.result.parentWorkflowId || '',
-        };
-      });
-    });
-  };
+  const { result, meta, subworkflows } = execPayload;
 
   const copyToClipBoard = (textToCopy: any) => {
     navigator.clipboard.writeText(JSON.stringify(textToCopy));
   };
 
   const getUnescapedJSON = (data: any) => {
-    return details.isEscaped
+    return isEscaped
       ? JSON.stringify(data, null, 2)
           .replace(/\\n/g, '\\n')
           .replace(/\\'/g, "\\'")
@@ -137,42 +114,28 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
   };
 
   const executeWorkflow = () => {
-    setDetails((prev) => {
-      return {
-        ...prev,
-        isExecuting: true,
-      };
-    });
-
     const executeWorkflow = callbackUtils.executeWorkflowCallback();
-
-    executeWorkflow(details.input).then(() => {
-      setDetails((prev) => {
-        return {
-          ...prev,
-          isExecuting: false,
-        };
-      });
-    });
+    const workflowPayload = {
+      name: meta.name,
+      version: meta.version,
+      input: {
+        ...result.input,
+        ...workflowVariables,
+      },
+    };
+    executeWorkflow(workflowPayload);
+    onExecutedOperation();
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>, key: string) => {
-    let workflowForm = details.input?.input ?? ({} as any);
+    let workflowForm = result.input;
     workflowForm[key] = e.target.value;
-    setDetails((prev) => {
-      return {
-        ...prev,
-        input: {
-          ...details.input,
-          input: workflowForm,
-        },
-      };
-    });
+    setWorkflowVariables((prev) => ({ ...prev, ...workflowForm }));
   };
 
   const formatDate = (date: Date | number | undefined | null | string) => {
     try {
-      if (date == null) {
+      if (date == null || date === 0) {
         throw new Error();
       }
 
@@ -184,16 +147,8 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
 
   const restartWorkflows = () => {
     const restartWorkflows = callbackUtils.restartWorkflowsCallback();
-
-    restartWorkflows([details.workflowId]).then(() => {
-      fetchWorkflowData();
-      setDetails((prev) => {
-        return {
-          ...prev,
-          timeouts: [...prev.timeouts, setInterval(() => fetchWorkflowData(), 2000)],
-        };
-      });
-    });
+    restartWorkflows([workflowId]);
+    onExecutedOperation();
   };
 
   const handleOnOpenTaskModal = (task: Task) => {
@@ -206,8 +161,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
     taskModalDisclosure.onClose();
   };
 
-  const isResultInputOutputLoaded =
-    details.result != null && details.result.input != null && details.result.output != null;
+  const isResultInputOutputLoaded = result != null && result.input != null && result.output != null;
 
   return (
     <Container maxWidth={1280}>
@@ -215,22 +169,22 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
         <TaskModal task={openedTask} isOpen={taskModalDisclosure.isOpen} onClose={handleOnCloseTaskModal} />
       )}
       <Heading size="xl" marginBottom={10}>
-        Details of {details.meta.name ? details.meta.name : null} / {details.meta.version}
+        Details of {meta.name ? meta.name : null} / {meta.version}
       </Heading>
       <Box>
-        {details.parentWorkflowId && (
-          <Button display="inline" margin={2} onClick={() => onWorkflowIdClick(details.parentWorkflowId)}>
+        {result.parentWorkflowId && (
+          <Button display="inline" margin={2} onClick={() => onWorkflowIdClick(result.parentWorkflowId)}>
             Parent
           </Button>
         )}
       </Box>
       <DetailsModalHeader
-        workflowId={details.workflowId}
-        onWorkflowActionExecution={fetchWorkflowData}
-        endTime={formatDate(details.result?.endTime)}
-        startTime={formatDate(details.result?.startTime)}
+        workflowId={workflowId}
+        onWorkflowActionExecution={onExecutedOperation}
+        endTime={formatDate(result.endTime)}
+        startTime={formatDate(result.startTime)}
         restartWorkflows={restartWorkflows}
-        status={details.result?.status}
+        status={result.status}
       />
       <Box background="white" borderRadius={4}>
         <Tabs>
@@ -238,13 +192,15 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
             <Tab>Task Details</Tab>
             <Tab>Input/Output</Tab>
             <Tab>JSON</Tab>
-            <Tab value="editRerun">Edit & Rerun</Tab>
+            <Tab value="editRerun" onClick={() => setWorkflowVariables(result.input)}>
+              Edit & Rerun
+            </Tab>
             <Tab>Execution Flow</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
               <TaskTable
-                tasks={details.result?.tasks ?? []}
+                tasks={result.tasks}
                 onTaskClick={handleOnOpenTaskModal}
                 onWorkflowClick={onWorkflowIdClick}
                 formatDate={formatDate}
@@ -254,21 +210,21 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
               {isResultInputOutputLoaded && (
                 <InputOutputTab
                   copyToClipBoard={copyToClipBoard}
-                  isEscaped={details.isEscaped}
-                  input={details.result?.input ?? {}}
-                  output={details.result?.output ?? {}}
-                  onEscapeChange={(isEscaped) => setDetails((prev) => ({ ...prev, isEscaped }))}
+                  isEscaped={isEscaped}
+                  input={result.input}
+                  output={result.output}
+                  onEscapeChange={() => setIsEscaped(!isEscaped)}
                   getUnescapedJSON={getUnescapedJSON}
                 />
               )}
             </TabPanel>
             <TabPanel>
-              {details.result != null && (
+              {result != null && (
                 <WorkflowJsonTab
                   copyToClipBoard={copyToClipBoard}
-                  isEscaped={details.isEscaped}
-                  result={details.result}
-                  onEscapeChange={(isEscaped) => setDetails((prev) => ({ ...prev, isEscaped }))}
+                  isEscaped={isEscaped}
+                  result={result}
+                  onEscapeChange={() => setIsEscaped(!isEscaped)}
                   getUnescapedJSON={getUnescapedJSON}
                 />
               )}
@@ -276,27 +232,22 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick }) => {
             <TabPanel>
               <EditRerunTab
                 onInputChange={handleInputChange}
-                inputParameters={details.meta.inputParameters}
-                workflowDetails={JSON.stringify(details)}
-                workflowPayload={details.input}
-                isExecuting={details.isExecuting}
+                inputs={convertWorkflowVariablesToFormFormat(
+                  JSON.stringify(execPayload),
+                  result.input,
+                  meta.inputParameters,
+                )}
+                isExecuting={result.status === 'RUNNING'}
+                isSuccessfullyExecuted={result.status === 'COMPLETED'}
                 onRerunClick={executeWorkflow}
               />
             </TabPanel>
             <TabPanel>
-              <WorkflowDia meta={details.meta} workflowe={details.result} subworkflows={details.subworkflows} />
+              <WorkflowDia meta={meta} wfe={result} subworkflows={subworkflows} />
             </TabPanel>
           </TabPanels>
         </Tabs>
       </Box>
-      <Button
-        variant="link"
-        colorScheme="blue"
-        justifySelf="start"
-        onClick={() => onWorkflowIdClick(details.workflowIdRerun)}
-      >
-        {details.workflowIdRerun}
-      </Button>
     </Container>
   );
 };

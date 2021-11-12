@@ -4,10 +4,10 @@ import { Button, ButtonGroup } from '@chakra-ui/react';
 import callbackUtils from '../../utils/callback-utils';
 
 type Props = {
+  workflowId: string;
   status: Status | undefined;
   restartWorkflows: () => void;
   onWorkflowActionExecution: () => void;
-  workflowId: string;
 };
 
 const DetailsModalHeaderActionButtons: FC<Props> = ({
@@ -19,34 +19,31 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
   const terminateWorkflows = () => {
     const terminateWorkflows = callbackUtils.terminateWorkflowsCallback();
 
-    terminateWorkflows([workflowId]).then(() => {
-      onWorkflowActionExecution();
-    });
+    terminateWorkflows([workflowId]);
+    onWorkflowActionExecution();
   };
 
   const pauseWorkflows = () => {
     const pauseWorkflows = callbackUtils.pauseWorkflowsCallback();
 
-    pauseWorkflows([workflowId]).then(() => {
-      onWorkflowActionExecution();
-    });
+    pauseWorkflows([workflowId]);
+    onWorkflowActionExecution();
   };
 
   const resumeWorkflows = () => {
     const resumeWorkflows = callbackUtils.resumeWorkflowsCallback();
 
-    resumeWorkflows([workflowId]).then(() => {
-      onWorkflowActionExecution();
-    });
+    resumeWorkflows([workflowId]);
+    onWorkflowActionExecution();
   };
 
   const retryWorkflows = () => {
     const retryWorkflows = callbackUtils.retryWorkflowsCallback();
 
-    retryWorkflows([workflowId]).then(() => {
-      onWorkflowActionExecution();
-    });
+    retryWorkflows([workflowId]);
+    onWorkflowActionExecution();
   };
+
   if (status === 'FAILED' || status === 'TERMINATED') {
     return (
       <ButtonGroup float="right">

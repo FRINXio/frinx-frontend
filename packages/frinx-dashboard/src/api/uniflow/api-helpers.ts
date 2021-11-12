@@ -15,9 +15,10 @@ export async function apiFetch(path: string, options: RequestInit): Promise<unkn
   return response.json();
 }
 
-export async function sendGetRequest(path: string): Promise<unknown> {
+export async function sendGetRequest(path: string, fetchOptions?: RequestInit): Promise<unknown> {
   const options = {
     method: 'GET',
+    ...fetchOptions,
   };
   return apiFetch(path, options);
 }
