@@ -186,8 +186,8 @@ export async function getWorkflowExecutionsHierarchical(
 
 // TODO: needs rework in uniflow-api
 // Get detail of existing instance of workflow
-export async function getWorkflowInstanceDetail(workflowId: string): Promise<unknown> {
-  const workflowDetails = sendGetRequest(`/id/${workflowId}`);
+export async function getWorkflowInstanceDetail(workflowId: string, options?: RequestInit): Promise<unknown> {
+  const workflowDetails = sendGetRequest(`/id/${workflowId}`, options);
 
   return workflowDetails;
 }
