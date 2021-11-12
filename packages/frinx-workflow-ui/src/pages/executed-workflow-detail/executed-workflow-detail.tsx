@@ -17,12 +17,12 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import TaskTable from './task-table';
-import { Task } from '../../types/task';
 import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
 import WorkflowJsonTab from './executed-workflow-detail-tabs/workflow-json-tab';
 import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
 import DetailsModalHeader from './executed-workflow-detail-header';
 import { useAsyncGenerator } from './executed-workflow-detail-status.helpers';
+import { ExecutedWorkflowTask } from '../../types/types';
 
 const convertWorkflowVariablesToFormFormat = (
   workflowDetails: string,
@@ -71,23 +71,10 @@ type Props = {
   onWorkflowIdClick: (workflowId: string) => void;
 };
 
-export type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED' | 'COMPLETED';
-
-export type ExecutedWorkflowDetailResult = {
-  status: Status;
-  tasks: Task[];
-  startTime: Date | number | string;
-  endTime: Date | number | string;
-  input: Record<string, string>;
-  output: Record<string, string>;
-  externalInputPayloadStoragePath?: string;
-  externalOutputPayloadStoragePath?: string;
-};
-
 const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOperation }) => {
   const taskModalDisclosure = useDisclosure();
   const execPayload = useAsyncGenerator(workflowId);
-  const [openedTask, setOpenedTask] = useState<Task | null>(null);
+  const [openedTask, setOpenedTask] = useState<ExecutedWorkflowTask | null>(null);
   const [isEscaped, setIsEscaped] = useState(false);
   const [workflowVariables, setWorkflowVariables] = useState<Record<string, string> | null>(null);
 
@@ -153,7 +140,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOper
     onExecutedOperation();
   };
 
-  const handleOnOpenTaskModal = (task: Task) => {
+  const handleOnOpenTaskModal = (task: ExecutedWorkflowTask) => {
     setOpenedTask(task);
     taskModalDisclosure.onOpen();
   };
@@ -217,8 +204,8 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOper
                   output={result.output}
                   onEscapeChange={() => setIsEscaped(!isEscaped)}
                   getUnescapedJSON={getUnescapedJSON}
-                  externalInputPayloadStoragePath={details.result?.externalInputPayloadStoragePath}
-                  externalOutputPayloadStoragePath={details.result?.externalOutputPayloadStoragePath}
+                  externalInputPayloadStoragePath={result.externalInputPayloadStoragePath}
+                  externalOutputPayloadStoragePath={result.externalOutputPayloadStoragePath}
                 />
               )}
             </TabPanel>

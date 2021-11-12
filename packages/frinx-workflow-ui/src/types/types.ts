@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Node } from 'beautiful-react-diagrams/@types/DiagramSchema';
-import { Status } from '../pages/executed-workflow-detail/executed-workflow-detail';
-import { Task as WorkflowTask } from '../types/task';
 
 type AnyJson = JsonArray | JsonMap;
 type JsonMap = {
@@ -359,6 +357,30 @@ export type TaskDefinition = {
   ownerEmail: string;
 };
 
+export type ExecutedWorkflowTask = {
+  taskType: string;
+  status: string;
+  reasonForIncompletion: string;
+  referenceTaskName: string;
+  callbackAfterSeconds: number;
+  pollCount: number;
+  logs: {};
+  inputData: {};
+  outputData: {};
+  workflowTask: {
+    description: string;
+    taskDefinition: {
+      description: string;
+    };
+  };
+  seq: number;
+  subWorkflowId: string;
+  startTime: number;
+  endTime: number;
+  externalOutputPayloadStoragePath?: string;
+  externalInputPayloadStoragePath?: string;
+};
+
 // eslint-disable-next-line no-shadow
 export enum SerializerEnum {
   IntegerSerializer = 'org.apache.kafka.common.serialization.IntegerSerializer',
@@ -439,6 +461,17 @@ export type ExecutedWorkflowsHierarchical = {
   hits: number;
 };
 
+export type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED' | 'COMPLETED';
+
+export type ExecutedWorkflowDetailResult = {
+  status: Status;
+  tasks: ExecutedWorkflowTask[];
+  startTime: Date | number | string;
+  endTime: Date | number | string;
+  input: Record<string, string>;
+  output: Record<string, string>;
+};
+
 export type WorkflowInstanceDetail = {
   ownerApp: string;
   createTime: number;
@@ -446,7 +479,7 @@ export type WorkflowInstanceDetail = {
   status: Status;
   endTime: number;
   workflowId: string;
-  tasks: WorkflowTask[];
+  tasks: ExecutedWorkflowTask[];
   input: Record<string, string>;
   output: Record<string, string>;
   correlationId: string;
@@ -462,4 +495,6 @@ export type WorkflowInstanceDetail = {
   workflowName: string;
   workflowVersion: number;
   parentWorkflowId: string;
+  externalInputPayloadStoragePath?: string;
+  externalOutputPayloadStoragePath?: string;
 };
