@@ -18,4 +18,6 @@ export type Task = {
   subWorkflowId: string;
   startTime: number;
   endTime: number;
+  externalOutputPayloadStoragePath?: string;
+  externalInputPayloadStoragePath?: string;
 };

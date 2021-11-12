@@ -80,6 +80,8 @@ export type ExecutedWorkflowDetailResult = {
   endTime: Date | number | string;
   input: Record<string, string>;
   output: Record<string, string>;
+  externalInputPayloadStoragePath?: string;
+  externalOutputPayloadStoragePath?: string;
 };
 
 const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOperation }) => {
@@ -215,6 +217,8 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOper
                   output={result.output}
                   onEscapeChange={() => setIsEscaped(!isEscaped)}
                   getUnescapedJSON={getUnescapedJSON}
+                  externalInputPayloadStoragePath={details.result?.externalInputPayloadStoragePath}
+                  externalOutputPayloadStoragePath={details.result?.externalOutputPayloadStoragePath}
                 />
               )}
             </TabPanel>

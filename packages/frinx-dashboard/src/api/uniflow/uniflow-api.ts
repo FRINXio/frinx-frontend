@@ -235,3 +235,8 @@ export async function deleteWorkflowInstance(workflowId: string): Promise<string
 
   return workflowIdRes as string;
 }
+
+export async function getExternalStorage(path: string): Promise<Record<string, string>> {
+  const data = await sendGetRequest(`/external/postgres/${path}`);
+  return data as Record<string, string>;
+}
