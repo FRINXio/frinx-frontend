@@ -23,7 +23,7 @@ export async function apiFetch(path: string, options: RequestInit): Promise<unkn
       ...getRequestHeaders(),
     },
   };
-  const response = await fetch(url, options);
+  const response = await fetch(url, optionsWithHeaders);
 
   if (!response.ok) {
     throw new Error(`apiFetch failed with http-code ${response.status}`);

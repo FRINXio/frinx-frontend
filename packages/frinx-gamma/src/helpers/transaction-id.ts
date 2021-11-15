@@ -1,7 +1,7 @@
 import { v4 as uuid4 } from 'uuid';
 import unwrap from './unwrap';
 
-function setCookie(name: string, val: string) {
+function setCookie(name: string, val: string): void {
   const date = new Date();
   const value = val;
 
@@ -11,20 +11,21 @@ function setCookie(name: string, val: string) {
   document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
 }
 
-function getCookie(name: string) {
+function getCookie(name: string): string | undefined {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
 
   if (parts.length === 2) {
     return unwrap(parts.pop()).split(';').shift();
   }
+  return undefined;
 }
 
-export function setTransactionId() {
+export function setTransactionId(): void {
   const transactionId = uuid4();
   setCookie('transactionId', transactionId);
 }
 
-export function getTransactionId() {
+export function getTransactionId(): string | undefined {
   return getCookie('transactionId');
 }

@@ -1,4 +1,3 @@
-import { v4 as uuid4 } from 'uuid';
 import unwrap from './unwrap';
 
 function getCookie(name: string) {
@@ -8,8 +7,9 @@ function getCookie(name: string) {
   if (parts.length === 2) {
     return unwrap(parts.pop()).split(';').shift();
   }
+  return undefined;
 }
 
-export function getTransactionId() {
+export function getTransactionId(): string | undefined {
   return getCookie('transactionId');
 }
