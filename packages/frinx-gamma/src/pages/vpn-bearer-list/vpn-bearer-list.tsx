@@ -8,6 +8,7 @@ import { VpnBearer } from '../../components/forms/bearer-types';
 import { apiBearerToClientBearer } from '../../components/forms/converters';
 import VpnBearerTable from './vpn-bearer-table';
 import unwrap from '../../helpers/unwrap';
+import { setTransactionId } from '../../helpers/transaction-id';
 
 type Props = {
   onCreateVpnNodeClick: () => void;
@@ -54,6 +55,7 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
       })
       .then((data) => {
         setWorkflowId(data.text);
+        setTransactionId();
       });
   }
 
