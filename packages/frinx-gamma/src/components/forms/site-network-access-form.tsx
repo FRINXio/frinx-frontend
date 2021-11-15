@@ -429,7 +429,7 @@ const SiteNetAccessForm: FC<Props> = ({
               ipv4: {
                 ...values.ipConnection?.ipv4,
                 addresses: {
-                  ...values.ipConnection?.ipv4,
+                  ...values.ipConnection?.ipv4?.addresses,
                   customerAddress: event.target.value || undefined,
                 },
               },
@@ -451,7 +451,7 @@ const SiteNetAccessForm: FC<Props> = ({
               ipv4: {
                 ...values.ipConnection?.ipv4,
                 addresses: {
-                  ...values.ipConnection?.ipv4,
+                  ...values.ipConnection?.ipv4?.addresses,
                   prefixLength: Number(event.target.value) || undefined,
                 },
               },
