@@ -113,7 +113,7 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
   return (
     <form onSubmit={handleSubmit}>
       <FormControl id="customerName" my={6} isRequired isInvalid={errors.customerName != null}>
-        <FormLabel>Customer Name</FormLabel>
+        <FormLabel>VPN Description</FormLabel>
         <Flex>
           <Box flex="1">
             <Autocomplete2
@@ -165,7 +165,7 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
             const [k, v] = e;
             return (
               <option key={k} value={v}>
-                {k}
+                {`${k} (${v})`}
               </option>
             );
           })}
