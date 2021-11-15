@@ -9,7 +9,7 @@ const EvcSchema = yup.object().shape({
   evcType: yup.string().required('Evc type is required'),
   circuitReference: yup
     .string()
-    .matches(/CPNH2-\d{8}-(0\d{3}|\d{4})/, 'Circuit Reference should have following format: CPNH-00000000-0000')
+    .matches(/CPNH2\d{8}-(\d{3,4})/, 'Circuit Reference should have following format: CPNH-00000000-0000')
     .required('Circuit Reference is required'),
   svlanId: yup.number().required('Svlan Id is required'),
   inputBandwidth: yup.number().required('Input Bandwidth is required'),
@@ -60,7 +60,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
       <FormControl id="circuit-reference" isRequired isInvalid={errors.circuitReference != null} my={6}>
         <FormLabel>BMT Circuit Reference</FormLabel>
         <Input
-          placeholder="CPNH2-00000000-0000"
+          placeholder="CPNH200000000-0000"
           name="circuitReference"
           value={values.circuitReference}
           onChange={handleChange}
