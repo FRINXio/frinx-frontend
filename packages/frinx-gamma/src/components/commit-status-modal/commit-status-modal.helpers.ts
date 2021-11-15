@@ -50,10 +50,17 @@ async function getWorkflowExecOutput(workflowId: string, abortController: AbortC
   return data;
 }
 
-export async function* asyncGenerator(
-  workflowId: string,
-  abortController: AbortController,
-): AsyncGenerator<ExecutedWorkflowResponse, void, unknown> {
+export type AsyncGeneratorParams = {
+  workflowId: string;
+  abortController: AbortController;
+  onFinish?: () => void;
+};
+
+export async function* asyncGenerator({
+  workflowId,
+  abortController,
+  onFinish,
+}: AsyncGeneratorParams): AsyncGenerator<ExecutedWorkflowResponse, void, unknown> {
   let data = await getWorkflowExecOutput(workflowId, abortController);
   while (data.result.status === 'RUNNING') {
     yield data;
@@ -63,10 +70,18 @@ export async function* asyncGenerator(
   // we need to do an additional yield for the last task status change
   if (data.result.status === 'FAILED' || data.result.status === 'COMPLETED') {
     yield data;
+    if (onFinish) {
+      onFinish();
+    }
   }
 }
 
-export function useAsyncGenerator(workflowId: string): ExecutedWorkflowPayload | null {
+export type UseAsyncGeneratorParams = {
+  workflowId: string;
+  onFinish?: () => void;
+};
+
+export function useAsyncGenerator({ workflowId, onFinish }: UseAsyncGeneratorParams): ExecutedWorkflowPayload | null {
   const { current: controller } = useRef(new AbortController());
   const [execPayload, setExecPayload] = useState<ExecutedWorkflowPayload | null>(null);
 
@@ -74,7 +89,7 @@ export function useAsyncGenerator(workflowId: string): ExecutedWorkflowPayload |
     (async () => {
       // we have to use async iterator here, so we turn off this rule
       // eslint-disable-next-line no-restricted-syntax
-      for await (const data of asyncGenerator(workflowId, controller)) {
+      for await (const data of asyncGenerator({ workflowId, abortController: controller, onFinish })) {
         setExecPayload(data.result);
       }
     })();
@@ -83,7 +98,7 @@ export function useAsyncGenerator(workflowId: string): ExecutedWorkflowPayload |
     return () => {
       controller.abort();
     };
-  }, [workflowId, controller]);
+  }, [workflowId, controller, onFinish]);
 
   return execPayload;
 }

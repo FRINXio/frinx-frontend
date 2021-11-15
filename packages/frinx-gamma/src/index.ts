@@ -1,4 +1,4 @@
-export { default as Main } from './pages/main/main';
+export { default as ControlPage } from './pages/control-page/control-page';
 export { default as CreateVpnService } from './pages/create-vpn-service/create-vpn-service';
 export { default as EditVpnService } from './pages/edit-vpn-service/edit-vpn-service';
 export { default as CreateVpnSite } from './pages/create-vpn-site/create-vpn-site';

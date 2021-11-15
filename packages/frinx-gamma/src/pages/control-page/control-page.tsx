@@ -1,0 +1,130 @@
+import { Box, Container, Flex, Heading } from '@chakra-ui/react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import callbackUtils from '../../callback-utils';
+import ControlPageTable from './control-page-table';
+
+type Props = {
+  onServicesSiteLinkClick: () => void;
+  onSitesSiteLinkClick: () => void;
+  onVpnBearerLinkClick: () => void;
+};
+
+type CountState = {
+  services: number;
+  sites: number;
+  accesses: number;
+  bearers: number;
+};
+type WorkflowState = { type: 'service' | 'bearer'; id: string };
+const DEFAULT_STATE: CountState = {
+  services: 0,
+  sites: 0,
+  accesses: 0,
+  bearers: 0,
+};
+
+const ControlPage: VoidFunctionComponent<Props> = ({
+  onServicesSiteLinkClick,
+  onSitesSiteLinkClick,
+  onVpnBearerLinkClick,
+}) => {
+  const [countState, setCountState] = useState<CountState>(DEFAULT_STATE);
+  const [workflowState, setWorkflowState] = useState<WorkflowState | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const callbacks = callbackUtils.getCallbacks;
+      const [services, sites, bearers] = await Promise.all([
+        callbacks.getVpnServices(),
+        callbacks.getVpnSites(),
+        callbacks.getVpnBearers(),
+      ]);
+      setCountState({
+        services: services['vpn-services']['vpn-service'].length,
+        sites: sites.sites.site.length,
+        accesses: sites.sites.site.reduce((acc, curr) => {
+          return (
+            acc + (curr['site-network-accesses'] ? curr['site-network-accesses']['site-network-access'].length : 0)
+          );
+        }, 0),
+        bearers: bearers['vpn-bearers'] ? bearers['vpn-bearers']['vpn-bearer'].length : 0,
+      });
+    })();
+  }, []);
+
+  function handleServiceCommitBtnClick() {
+    const callbacks = callbackUtils.getCallbacks;
+    callbacks
+      .executeWorkflow({
+        name: 'Render_all',
+        version: 1,
+        input: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          unistore_node_name: 'network',
+          action: 'commit',
+        },
+      })
+      .then((data) => {
+        setWorkflowState({
+          type: 'service',
+          id: data.text,
+        });
+      });
+  }
+
+  function handleBearerCommitBtnClick() {
+    const callbacks = callbackUtils.getCallbacks;
+    callbacks
+      .executeWorkflow({
+        name: 'Render_bearer',
+        version: 2,
+        input: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          unistore_node_name: 'bearer',
+          action: 'commit',
+        },
+      })
+      .then((data) => {
+        setWorkflowState({
+          type: 'bearer',
+          id: data.text,
+        });
+      });
+  }
+
+  const handleWorkflowFinish = () => {
+    setWorkflowState(null);
+  };
+
+  return (
+    <Container maxWidth={1280} minHeight="60vh">
+      <Flex justify="space-between" align="center" marginBottom={6}>
+        <Heading as="h2" size="lg">
+          Control page
+        </Heading>
+      </Flex>
+      <Box>
+        <ControlPageTable
+          onServicesSiteLinkClick={onServicesSiteLinkClick}
+          onSitesSiteLinkClick={onSitesSiteLinkClick}
+          onVpnBearerLinkClick={onVpnBearerLinkClick}
+          countState={countState}
+          workflowState={workflowState}
+          onServiceCommitBtnClick={handleServiceCommitBtnClick}
+          onBearerCommitBtnClick={handleBearerCommitBtnClick}
+          onBearerDiscardBtnClick={() => {
+            // eslint-disable-next-line no-console
+            console.log('Discard changes');
+          }}
+          onServiceDiscardBtnClick={() => {
+            // eslint-disable-next-line no-console
+            console.log('Discard changes');
+          }}
+          onWorkflowFinish={handleWorkflowFinish}
+        />
+      </Box>
+    </Container>
+  );
+};
+
+export default ControlPage;
