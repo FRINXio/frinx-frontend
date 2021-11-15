@@ -51,8 +51,8 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
       })
       .then((data) => {
         setWorkflowId(data.text);
-      })
-      .finally(() => setTransactionId());
+        setTransactionId();
+      });
   }
 
   return (

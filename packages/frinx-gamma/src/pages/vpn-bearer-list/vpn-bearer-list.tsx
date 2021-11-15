@@ -55,8 +55,8 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
       })
       .then((data) => {
         setWorkflowId(data.text);
-      })
-      .finally(() => setTransactionId());
+        setTransactionId();
+      });
   }
 
   function handleDeleteButtonClick(bearerId: string) {

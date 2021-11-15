@@ -8,7 +8,7 @@ function getRequestHeaders(): Record<string, string> {
   };
   const transactionId = getTransactionId();
   if (transactionId) {
-    headers.transaction_id = transactionId;
+    headers['x-transaction_id'] = transactionId;
   }
 
   return headers;
