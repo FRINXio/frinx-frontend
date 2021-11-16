@@ -16,12 +16,14 @@ import {
   CreateVpnAttachment,
   CreateVpnServiceInput,
   CreateVpnSiteInput,
+  CustomerLocation,
   DefaultCVlanEnum,
   EvcAttachment,
   EvcAttachmentOutput,
   EvcAttachmentInput,
   IPConnection,
   LanTag,
+  LocationsOutput,
   MaximumRoutes,
   ProviderIdentifiers,
   RequestedCVlan,
@@ -234,8 +236,27 @@ function apiSiteServiceToClientSiteService(siteService?: SiteServiceOutput): str
   return siteService.qos['qos-profile']['qos-profile'][0].profile;
 }
 
+export function apiLocationsToClientLocations(apiLocation: LocationsOutput): CustomerLocation[] {
+  if (!apiLocation.location) {
+    return [];
+  }
+
+  return apiLocation.location.map((l) => {
+    const countryCode: CountryCode =
+      l['country-code'] === 'UK' || l['country-code'] === 'Ireland' ? l['country-code'] : 'UK';
+    return {
+      locationId: l['location-id'],
+      street: l.address || '',
+      city: l.city || '',
+      postalCode: l['postal-code'] || '',
+      countryCode: countryCode || 'UK',
+      state: l.state || '',
+    };
+  });
+}
+
 export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[] {
-  return apiVpnSite.sites.site.map((site) => {
+  return apiVpnSite.site.map((site) => {
     const managementType: unknown = site.management.type.split(':')[1];
     const siteVpnFlavor: unknown = site['site-vpn-flavor'].split(':')[1];
     const siteDevices = apiSiteDevicesToClientSiteDevices(site.devices || undefined);
@@ -243,20 +264,7 @@ export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[
     return {
       siteId: site['site-id'],
       siteDevices,
-      customerLocations: site.locations.location
-        ? site.locations.location.map((l) => {
-            const countryCode: CountryCode =
-              l['country-code'] === 'UK' || l['country-code'] === 'Ireland' ? l['country-code'] : 'UK';
-            return {
-              locationId: l['location-id'],
-              street: l.address || '',
-              city: l.city || '',
-              postalCode: l['postal-code'] || '',
-              countryCode: countryCode || 'UK',
-              state: l.state || '',
-            };
-          })
-        : [],
+      customerLocations: site.locations.location ? apiLocationsToClientLocations(site.locations) : [],
       siteManagementType: managementType as SiteManagementType,
       siteVpnFlavor: siteVpnFlavor as SiteVpnFlavor,
       siteServiceQosProfile,
@@ -589,11 +597,11 @@ function apiEvcAttachmentToClientEvcAttachment(apiEvc: EvcAttachmentOutput): Evc
 }
 
 export function apiBearerToClientBearer(apiBearer: VpnBearerOutput): VpnBearer[] {
-  if (!apiBearer['vpn-bearers']) {
+  if (!apiBearer['vpn-bearer']) {
     return [];
   }
 
-  return apiBearer['vpn-bearers']['vpn-bearer'].map((b) => {
+  return apiBearer['vpn-bearer'].map((b) => {
     const evcAttachments =
       b['evc-attachments'] && b['evc-attachments']['evc-attachment']
         ? b['evc-attachments']['evc-attachment'].map(apiEvcAttachmentToClientEvcAttachment)

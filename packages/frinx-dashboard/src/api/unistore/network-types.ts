@@ -123,6 +123,12 @@ const LocationsValidator = t.type({
   ),
 });
 
+export type LocationsOutput = t.TypeOf<typeof LocationsValidator>;
+
+export function decodeLocationsOutput(value: unknown): LocationsOutput {
+  return extractResult(LocationsValidator.decode(value));
+}
+
 const VpnValidator = t.type({
   'vpn-id': t.string,
   'site-role': optional(t.string),
@@ -654,7 +660,7 @@ const VpnBearerItemsOutputValidator = t.array(
   }),
 );
 export type VpnBearerItemsOutput = t.TypeOf<typeof VpnBearerItemsOutputValidator>;
-export type VpnBearerInput = { 'vpn-bearers': VpnBearerItemsOutput };
+export type VpnBearerInput = { 'vpn-bearer': VpnBearerItemsOutput };
 export function decodeVpnBearerItemsOutput(value: unknown): VpnBearerItemsOutput {
   return extractResult(VpnBearerItemsOutputValidator.decode(value));
 }
