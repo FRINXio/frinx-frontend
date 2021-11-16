@@ -20,7 +20,7 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
     ...Object.entries(DefaultCVlanEnum).map<[DefaultCVlanEnum, string]>(([key, value]) => [value, key]),
   ]);
   return (
-    <Table background="white" size="lg" marginBottom="12">
+    <Table background="white" size="lg">
       <Thead>
         <Tr>
           <Th>Id</Th>

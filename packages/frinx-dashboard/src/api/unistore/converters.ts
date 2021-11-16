@@ -72,7 +72,7 @@ function apiDefaultCVlanToClientDefaultCVlan(defaultCVlan: number): Pick<VpnServ
 }
 
 export function apiVpnServiceToClientVpnService(apiVpnService: VpnServicesOutput): VpnService[] {
-  return apiVpnService['vpn-services']['vpn-service'].map((vpn) => {
+  return apiVpnService['vpn-service'].map((vpn) => {
     const extranetVpns = vpn['extranet-vpns']['extranet-vpn']
       ? vpn['extranet-vpns']['extranet-vpn'].map((ex) => {
           return ex['vpn-id'];

@@ -20,7 +20,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
   onDeleteSiteButtonClick,
 }) => {
   return (
-    <Table background="white" size="lg" marginBottom="12">
+    <Table background="white" size="lg">
       <Thead>
         <Tr>
           <Th>Id</Th>

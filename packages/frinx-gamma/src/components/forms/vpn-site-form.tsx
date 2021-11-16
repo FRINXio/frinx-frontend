@@ -33,7 +33,7 @@ const SiteSchema = yup.object().shape({
   siteServiceQosProfile: yup.string().nullable(),
   enableBgpPicFastReroute: yup.boolean().required('Enable BgpPicFast Reroute is required'),
   // siteNetworkAccesses: yup.array(),
-  maximumRoutes: yup.mixed().oneOf(['1000', '2000', '5000', '10000', '1000000']),
+  maximumRoutes: yup.mixed().oneOf([1000, 2000, 5000, 10000, 1000000]),
 });
 
 type Props = {
@@ -193,14 +193,14 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
           onChange={(event) => {
             event.persist();
             const eventValue = event.target.value as unknown as MaximumRoutes;
-            setFieldValue('maximumRoutes', eventValue);
+            setFieldValue('maximumRoutes', Number(eventValue));
           }}
         >
-          <option value={1000}>1000</option>
-          <option value={2000}>2000</option>
-          <option value={5000}>5000</option>
-          <option value={10000}>10000</option>
-          <option value={1000000}>1000000</option>
+          <option value="1000">1000</option>
+          <option value="2000">2000</option>
+          <option value="5000">5000</option>
+          <option value="10000">10000</option>
+          <option value="1000000">1000000</option>
         </Select>
       </FormControl>
 

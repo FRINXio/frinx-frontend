@@ -7,6 +7,8 @@ import { apiVpnServiceToClientVpnService } from '../../components/forms/converte
 import { VpnService } from '../../components/forms/service-types';
 import unwrap from '../../helpers/unwrap';
 import ServiceTable from './service-table';
+import usePagination from '../../hooks/use-pagination';
+import Pagination from '../../components/pagination/pagination';
 
 type Props = {
   onCreateVpnServiceClick: () => void;
@@ -17,21 +19,38 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const [serviceIdToDelete, setServiceIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [pagination, setPagination] = usePagination();
 
   useEffect(() => {
     const fetchData = async () => {
+      const paginationParams = {
+        offset: (pagination.page - 1) * pagination.pageSize,
+        limit: pagination.pageSize,
+      };
       const callbacks = callbackUtils.getCallbacks;
-      const services = await callbacks.getVpnServices();
+      const services = await callbacks.getVpnServices(paginationParams);
       const clientVpnServices = apiVpnServiceToClientVpnService(services);
       setVpnServices(clientVpnServices);
+      const servicesCount = await callbacks.getVpnServiceCount();
+      setPagination({
+        ...pagination,
+        pageCount: Math.ceil(servicesCount / pagination.pageSize),
+      });
     };
 
     fetchData();
-  }, []);
+  }, [pagination.page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleDeleteButtonClick(serviceId: string) {
     setServiceIdToDelete(serviceId);
     deleteModalDisclosure.onOpen();
+  }
+
+  function handlePageChange(page: number) {
+    setPagination({
+      ...pagination,
+      page,
+    });
   }
 
   return (
@@ -66,11 +85,16 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
         </Flex>
         <Box>
           {vpnServices ? (
-            <ServiceTable
-              onEditServiceButtonClick={onEditVpnServiceClick}
-              onDeleteServiceButtonClick={handleDeleteButtonClick}
-              services={vpnServices}
-            />
+            <>
+              <ServiceTable
+                onEditServiceButtonClick={onEditVpnServiceClick}
+                onDeleteServiceButtonClick={handleDeleteButtonClick}
+                services={vpnServices}
+              />
+              <Box m="4">
+                <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />
+              </Box>
+            </>
           ) : null}
         </Box>
       </Container>
