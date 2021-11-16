@@ -7,6 +7,8 @@ import { VpnBearer } from '../../components/forms/bearer-types';
 import { apiBearerToClientBearer } from '../../components/forms/converters';
 import unwrap from '../../helpers/unwrap';
 import VpnBearerTable from './vpn-bearer-table';
+import usePagination from '../../hooks/use-pagination';
+import Pagination from '../../components/pagination/pagination';
 
 type Props = {
   onCreateVpnNodeClick: () => void;
@@ -26,21 +28,38 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
   const [vpnBearers, setVpnBearers] = useState<VpnBearer[] | null>(null);
   const [bearerIdToDelete, setBearerIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [pagination, setPagination] = usePagination();
 
   useEffect(() => {
     const fetchData = async () => {
       const callbacks = callbackUtils.getCallbacks;
-      const response = await callbacks.getVpnBearers();
+      const paginationParams = {
+        offset: (pagination.page - 1) * pagination.pageSize,
+        limit: pagination.pageSize,
+      };
+      const response = await callbacks.getVpnBearers(paginationParams);
       const clientVpnBearers = apiBearerToClientBearer(response);
       setVpnBearers(clientVpnBearers);
+      const bearersCount = await callbacks.getVpnBearerCount();
+      setPagination({
+        ...pagination,
+        pageCount: Math.ceil(bearersCount / pagination.pageSize),
+      });
     };
 
     fetchData();
-  }, []);
+  }, [pagination.page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleDeleteButtonClick(bearerId: string) {
     setBearerIdToDelete(bearerId);
     deleteModalDisclosure.onOpen();
+  }
+
+  function handlePageChange(page: number) {
+    setPagination({
+      ...pagination,
+      page,
+    });
   }
 
   return (
@@ -81,12 +100,17 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
         </Flex>
         <Box>
           {vpnBearers && (
-            <VpnBearerTable
-              bearers={vpnBearers}
-              onEditVpnBearerClick={onEditVpnBearerClick}
-              onDeleteVpnBearerClick={handleDeleteButtonClick}
-              onEvcAttachmentSiteClick={onEvcAttachmentSiteClick}
-            />
+            <>
+              <VpnBearerTable
+                bearers={vpnBearers}
+                onEditVpnBearerClick={onEditVpnBearerClick}
+                onDeleteVpnBearerClick={handleDeleteButtonClick}
+                onEvcAttachmentSiteClick={onEvcAttachmentSiteClick}
+              />
+              <Box m="4">
+                <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />
+              </Box>
+            </>
           )}
         </Box>
       </Container>

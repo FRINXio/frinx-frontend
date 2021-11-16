@@ -19,13 +19,17 @@ export type WorkflowExecPayload = {
   statusCode: number;
   text: string;
 };
+type Pagination = {
+  offset: number;
+  limit: number;
+};
 
 export type Callbacks = {
-  getVpnServices: () => Promise<VpnServicesOutput>;
+  getVpnServices: (pagination?: Pagination) => Promise<VpnServicesOutput>;
   editVpnServices: (body: VpnService) => Promise<unknown>;
   deleteVpnService: (id: string) => Promise<unknown>;
   createVpnService: (body: VpnService) => Promise<void>;
-  getVpnSites: () => Promise<VpnSitesOutput>;
+  getVpnSites: (pagination?: Pagination) => Promise<VpnSitesOutput>;
   createVpnSite: (body: VpnSite) => Promise<void>;
   editVpnSite: (body: VpnSite) => Promise<void>;
   deleteVpnSite: (id: string) => Promise<void>;
@@ -33,7 +37,7 @@ export type Callbacks = {
   getBearerValidProviderIdentifiers: () => Promise<ValidProviderIdentifiersOutput>;
   executeWorkflow: (payload: WorkflowPayload) => Promise<WorkflowExecPayload>;
   getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<unknown>;
-  getVpnBearers: () => Promise<VpnBearerOutput>;
+  getVpnBearers: (pagination?: Pagination) => Promise<VpnBearerOutput>;
   createVpnBearer: (bearer: VpnBearer) => Promise<void>;
   editVpnBearer: (bearer: VpnBearer) => Promise<void>;
   deleteVpnBearer: (id: string) => Promise<void>;

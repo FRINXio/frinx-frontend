@@ -31,9 +31,15 @@ import {
 const UNICONFIG_SERVICE_URL =
   '/data/network-topology:network-topology/topology=uniconfig/node=service/frinx-uniconfig-topology:configuration';
 
-export async function getVpnServices(): Promise<VpnServicesOutput> {
+type Pagination = {
+  offset: number;
+  limit: number;
+};
+
+export async function getVpnServices(pagination?: Pagination): Promise<VpnServicesOutput> {
+  const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
   const json = await sendGetRequest(
-    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?content=config`,
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?content=config${paginationParams}`,
   );
   const data = decodeVpnServicesOutput(json);
   return data;
@@ -60,8 +66,11 @@ export async function createVpnService(vpnService: VpnService): Promise<void> {
   await sendPostRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services`, body);
 }
 
-export async function getVpnSites(): Promise<VpnSitesOutput> {
-  const json = await sendGetRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config`);
+export async function getVpnSites(pagination?: Pagination): Promise<VpnSitesOutput> {
+  const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
+  const json = await sendGetRequest(
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config${paginationParams}`,
+  );
   const data = decodeVpnSitesOutput(json);
   return data;
 }
@@ -88,9 +97,10 @@ export async function getValidProviderIdentifiers(): Promise<ValidProviderIdenti
   return data;
 }
 
-export async function getVpnBearers(): Promise<VpnBearerOutput> {
+export async function getVpnBearers(pagination?: Pagination): Promise<VpnBearerOutput> {
+  const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
   const json = await sendGetRequest(
-    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?content=config',
+    `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?content=config${paginationParams}`,
   );
   const data = decodeVpnBearerOutput(json);
 

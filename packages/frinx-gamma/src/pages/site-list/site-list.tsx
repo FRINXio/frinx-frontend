@@ -6,6 +6,8 @@ import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
 import SiteTable from './site-table';
+import usePagination from '../../hooks/use-pagination';
+import Pagination from '../../components/pagination/pagination';
 
 type Props = {
   onCreateVpnSiteClick: () => void;
@@ -23,21 +25,38 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   const [sites, setSites] = useState<VpnSite[] | null>(null);
   const [siteIdToDelete, setSiteIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [pagination, setPagination] = usePagination();
 
   useEffect(() => {
     const fetchData = async () => {
       const callbacks = callbackUtils.getCallbacks;
-      const apiSites = await callbacks.getVpnSites();
+      const paginationParams = {
+        offset: (pagination.page - 1) * pagination.pageSize,
+        limit: pagination.pageSize,
+      };
+      const apiSites = await callbacks.getVpnSites(paginationParams);
       const clientVpnSites = apiVpnSitesToClientVpnSite(apiSites);
       setSites(clientVpnSites);
+      const sitesCount = await callbacks.getVpnSiteCount();
+      setPagination({
+        ...pagination,
+        pageCount: Math.ceil(sitesCount / pagination.pageSize),
+      });
     };
 
     fetchData();
-  }, []);
+  }, [pagination.page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleDeleteButtonClick(siteId: string) {
     setSiteIdToDelete(siteId);
     deleteModalDisclosure.onOpen();
+  }
+
+  function handlePageChange(page: number) {
+    setPagination({
+      ...pagination,
+      page,
+    });
   }
 
   return (
@@ -68,13 +87,18 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
         </Flex>
         <Box>
           {sites ? (
-            <SiteTable
-              onEditSiteButtonClick={onEditVpnSiteClick}
-              onDetailSiteButtonClick={onDetailVpnSiteClick}
-              onLocationsSiteButtonClick={onLocationsVpnSiteClick}
-              onDeleteSiteButtonClick={handleDeleteButtonClick}
-              sites={sites}
-            />
+            <>
+              <SiteTable
+                onEditSiteButtonClick={onEditVpnSiteClick}
+                onDetailSiteButtonClick={onDetailVpnSiteClick}
+                onLocationsSiteButtonClick={onLocationsVpnSiteClick}
+                onDeleteSiteButtonClick={handleDeleteButtonClick}
+                sites={sites}
+              />
+              <Box m="4">
+                <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />
+              </Box>
+            </>
           ) : null}
         </Box>
       </Container>
