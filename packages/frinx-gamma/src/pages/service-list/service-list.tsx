@@ -1,14 +1,12 @@
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import { useDisclosure, HStack, Heading, Box, Container, Flex, Button, Icon } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, HStack, Icon, useDisclosure } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
-import ServiceTable from './service-table';
-import { VpnService } from '../../components/forms/service-types';
-import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import callbackUtils from '../../callback-utils';
+import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
+import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
+import { VpnService } from '../../components/forms/service-types';
 import unwrap from '../../helpers/unwrap';
-import CommitStatusModal from '../../components/commit-status-modal/commit-status-modal';
-import { setTransactionId } from '../../helpers/transaction-id';
+import ServiceTable from './service-table';
 
 type Props = {
   onCreateVpnServiceClick: () => void;
@@ -18,7 +16,6 @@ type Props = {
 const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnServiceClick, onEditVpnServiceClick }) => {
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const [serviceIdToDelete, setServiceIdToDelete] = useState<string | null>(null);
-  const [workflowId, setWorkflowId] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
 
   useEffect(() => {
@@ -37,24 +34,6 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
     deleteModalDisclosure.onOpen();
   }
 
-  function handleCommitBtnClick() {
-    const callbacks = callbackUtils.getCallbacks;
-    callbacks
-      .executeWorkflow({
-        name: 'Render_all',
-        version: 1,
-        input: {
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          unistore_node_name: 'network',
-          action: 'commit',
-        },
-      })
-      .then((data) => {
-        setWorkflowId(data.text);
-        setTransactionId();
-      });
-  }
-
   return (
     <>
       <ConfirmDeleteModal
@@ -70,24 +49,12 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
       >
         Are you sure? You can&apos;t undo this action afterwards.
       </ConfirmDeleteModal>
-      {workflowId != null && (
-        <CommitStatusModal
-          workflowId={workflowId}
-          isOpen
-          onClose={() => {
-            setWorkflowId(null);
-          }}
-        />
-      )}
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h2" size="lg">
             VPN Services
           </Heading>
           <HStack>
-            <Button variant="outline" colorScheme="blue" onClick={handleCommitBtnClick}>
-              Commit changes
-            </Button>
             <Button
               colorScheme="blue"
               onClick={onCreateVpnServiceClick}

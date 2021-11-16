@@ -44,6 +44,9 @@ export type Callbacks = {
   createVpnCarrier: (carrier: VpnCarrier) => Promise<void>;
   editVpnCarrier: (carrier: VpnCarrier) => Promise<void>;
   deleteVpnCarrier: (carrierName: string) => Promise<void>;
+  getVpnServiceCount: () => Promise<number>;
+  getVpnSiteCount: () => Promise<number>;
+  getVpnBearerCount: () => Promise<number>;
 };
 class CallbackUtils {
   private callbacks: Callbacks | null = null;

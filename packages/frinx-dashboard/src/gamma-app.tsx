@@ -21,7 +21,7 @@ const GammaApp: VoidFunctionComponent = () => {
   useEffect(() => {
     import('@frinx/gamma').then((gammaImport) => {
       const {
-        Main,
+        ControlPage,
         CreateVpnService,
         EditVpnService,
         CreateVpnSite,
@@ -49,7 +49,7 @@ const GammaApp: VoidFunctionComponent = () => {
       } = gammaImport;
 
       setComponents({
-        Main,
+        ControlPage,
         CreateVpnService,
         EditVpnService,
         CreateVpnSite,
@@ -83,7 +83,7 @@ const GammaApp: VoidFunctionComponent = () => {
   }
 
   const {
-    Main,
+    ControlPage,
     CreateDevice,
     CreateSiteNetAccess,
     CreateVpnService,
@@ -113,9 +113,9 @@ const GammaApp: VoidFunctionComponent = () => {
   return (
     <UnistoreApiProvider>
       <Switch>
-        {/* main */}
+        {/* ControlPage */}
         <Route path="/gamma/" exact>
-          <Main
+          <ControlPage
             onServicesSiteLinkClick={() => {
               history.push('/gamma/services');
             }}

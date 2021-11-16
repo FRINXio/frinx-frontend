@@ -20,26 +20,24 @@ export function extractResult<A>(result: Either<t.Errors, A>): A {
 }
 
 const VpnServicesOutputValidator = t.type({
-  'vpn-services': t.type({
-    'vpn-service': t.array(
-      t.type({
-        'vpn-id': t.string,
-        'customer-name': t.string,
-        'extranet-vpns': t.type({
-          'extranet-vpn': optional(
-            t.array(
-              t.type({
-                'vpn-id': t.string,
-                'local-sites-role': optional(t.string),
-              }),
-            ),
+  'vpn-service': t.array(
+    t.type({
+      'vpn-id': t.string,
+      'customer-name': t.string,
+      'extranet-vpns': t.type({
+        'extranet-vpn': optional(
+          t.array(
+            t.type({
+              'vpn-id': t.string,
+              'local-sites-role': optional(t.string),
+            }),
           ),
-        }),
-        'vpn-service-topology': t.string,
-        'default-c-vlan': t.number,
+        ),
       }),
-    ),
-  }),
+      'vpn-service-topology': t.string,
+      'default-c-vlan': t.number,
+    }),
+  ),
 });
 export type VpnServicesOutput = t.TypeOf<typeof VpnServicesOutputValidator>;
 
@@ -303,24 +301,22 @@ export function decodeSiteNetworkAccessOutput(value: unknown): SiteNetworkAccess
 }
 
 const VpnSitesOutputValidator = t.type({
-  sites: t.type({
-    site: t.array(
-      t.type({
-        'site-id': t.string,
-        devices: optional(SiteDevicesValidator),
-        'site-network-accesses': optional(SiteNetworkAccessValidator),
-        'maximum-routes': MaximumRoutesValidator,
-        'site-vpn-flavor': SiteVpnFlavorValidator,
-        'traffic-protection': t.type({
-          enabled: t.boolean,
-        }),
-        management: ManagementValidator,
-        locations: LocationsValidator,
-        // 'vpn-policies': VpnPoliciesValidator,
-        service: optional(SiteServiceValidator),
+  site: t.array(
+    t.type({
+      'site-id': t.string,
+      devices: optional(SiteDevicesValidator),
+      'site-network-accesses': optional(SiteNetworkAccessValidator),
+      'maximum-routes': MaximumRoutesValidator,
+      'site-vpn-flavor': SiteVpnFlavorValidator,
+      'traffic-protection': t.type({
+        enabled: t.boolean,
       }),
-    ),
-  }),
+      management: ManagementValidator,
+      locations: LocationsValidator,
+      // 'vpn-policies': VpnPoliciesValidator,
+      service: optional(SiteServiceValidator),
+    }),
+  ),
 });
 
 export type VpnSitesOutput = t.TypeOf<typeof VpnSitesOutputValidator>;
@@ -640,27 +636,25 @@ export function decodeConnectionOutput(value: unknown): ConnectionOutput {
   return extractResult(ConnectionOutputValidator.decode(value));
 }
 
-const VpnBearerItemsOutputValidator = t.type({
-  'vpn-bearer': t.array(
-    t.type({
-      'sp-bearer-reference': t.string,
-      description: optional(t.string),
-      'ne-id': t.string,
-      'port-id': t.string,
-      status: optional(BearerStatusValidator),
-      carrier: optional(CarrierOutputValidator),
-      connection: optional(ConnectionOutputValidator),
-      'default-upstream-bearer': optional(t.string),
-      'evc-attachments': optional(
-        t.type({
-          'evc-attachment': t.array(EvcAttachmentOutputValidator),
-        }),
-      ),
-    }),
-  ),
-});
+const VpnBearerItemsOutputValidator = t.array(
+  t.type({
+    'sp-bearer-reference': t.string,
+    description: optional(t.string),
+    'ne-id': t.string,
+    'port-id': t.string,
+    status: optional(BearerStatusValidator),
+    carrier: optional(CarrierOutputValidator),
+    connection: optional(ConnectionOutputValidator),
+    'default-upstream-bearer': optional(t.string),
+    'evc-attachments': optional(
+      t.type({
+        'evc-attachment': t.array(EvcAttachmentOutputValidator),
+      }),
+    ),
+  }),
+);
 export type VpnBearerItemsOutput = t.TypeOf<typeof VpnBearerItemsOutputValidator>;
-export type VpnBearerInput = VpnBearerItemsOutput;
+export type VpnBearerInput = { 'vpn-bearers': VpnBearerItemsOutput };
 export function decodeVpnBearerItemsOutput(value: unknown): VpnBearerItemsOutput {
   return extractResult(VpnBearerItemsOutputValidator.decode(value));
 }
@@ -670,7 +664,7 @@ export type EvcAttachmentInput = {
 };
 
 const VpnBearerOutputValidator = t.type({
-  'vpn-bearers': optional(VpnBearerItemsOutputValidator),
+  'vpn-bearer': optional(VpnBearerItemsOutputValidator),
 });
 
 export type VpnBearerOutput = t.TypeOf<typeof VpnBearerOutputValidator>;
