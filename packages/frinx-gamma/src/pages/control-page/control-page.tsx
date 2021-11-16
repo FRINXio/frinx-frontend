@@ -12,14 +12,12 @@ type Props = {
 type CountState = {
   services: number;
   sites: number;
-  accesses: number;
   bearers: number;
 };
 type WorkflowState = { type: 'service' | 'bearer'; id: string };
 const DEFAULT_STATE: CountState = {
   services: 0,
   sites: 0,
-  accesses: 0,
   bearers: 0,
 };
 
@@ -34,20 +32,15 @@ const ControlPage: VoidFunctionComponent<Props> = ({
   useEffect(() => {
     (async () => {
       const callbacks = callbackUtils.getCallbacks;
-      const [services, sites, bearers] = await Promise.all([
-        callbacks.getVpnServices(),
-        callbacks.getVpnSites(),
-        callbacks.getVpnBearers(),
+      const [serviceCount, siteCount, bearerCount] = await Promise.all([
+        callbacks.getVpnServiceCount(),
+        callbacks.getVpnSiteCount(),
+        callbacks.getVpnBearerCount(),
       ]);
       setCountState({
-        services: services['vpn-services']['vpn-service'].length,
-        sites: sites.sites.site.length,
-        accesses: sites.sites.site.reduce((acc, curr) => {
-          return (
-            acc + (curr['site-network-accesses'] ? curr['site-network-accesses']['site-network-access'].length : 0)
-          );
-        }, 0),
-        bearers: bearers['vpn-bearers'] ? bearers['vpn-bearers']['vpn-bearer'].length : 0,
+        services: serviceCount,
+        sites: siteCount,
+        bearers: bearerCount,
       });
     })();
   }, []);

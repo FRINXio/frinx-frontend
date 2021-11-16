@@ -67,7 +67,7 @@ function apiDefaultCVlanToClientDefaultCVlan(defaultCVlan: number): Pick<VpnServ
 }
 
 export function apiVpnServiceToClientVpnService(apiVpnService: VpnServicesOutput): VpnService[] {
-  return apiVpnService['vpn-services']['vpn-service'].map((vpn) => {
+  return apiVpnService['vpn-service'].map((vpn) => {
     const extranetVpns = vpn['extranet-vpns']['extranet-vpn']
       ? vpn['extranet-vpns']['extranet-vpn'].map((ex) => {
           return ex['vpn-id'];
@@ -258,7 +258,7 @@ function apiSiteServiceToClientSiteService(siteService?: SiteServiceOutput): str
 }
 
 export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[] {
-  return apiVpnSite.sites.site.map((site) => {
+  return apiVpnSite.site.map((site) => {
     const managementType: unknown = site.management.type.split(':')[1];
     const siteVpnFlavor: unknown = site['site-vpn-flavor'].split(':')[1];
     const siteDevices = apiSiteDevicesToClientSiteDevices(site.devices || undefined);
@@ -604,11 +604,11 @@ function apiEvcAttachmentToClientEvcAttachment(apiEvc: EvcAttachmentOutput): Evc
 }
 
 export function apiBearerToClientBearer(apiBearer: VpnBearerOutput): VpnBearer[] {
-  if (!apiBearer['vpn-bearers']) {
+  if (!apiBearer['vpn-bearer']) {
     return [];
   }
 
-  return apiBearer['vpn-bearers']['vpn-bearer'].map((b) => {
+  return apiBearer['vpn-bearer'].map((b) => {
     const evcAttachments =
       b['evc-attachments'] && b['evc-attachments']['evc-attachment']
         ? b['evc-attachments']['evc-attachment'].map(apiEvcAttachmentToClientEvcAttachment)

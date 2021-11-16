@@ -7,7 +7,6 @@ type WorkflowState = { type: 'service' | 'bearer'; id: string };
 type CountState = {
   services: number;
   sites: number;
-  accesses: number;
   bearers: number;
 };
 type Props = {

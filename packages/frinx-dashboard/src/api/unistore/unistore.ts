@@ -1,37 +1,40 @@
-import { sendDeleteRequest, sendPostRequest, sendGetRequest, sendPutRequest } from './api-helpers';
-import {
-  decodeVpnServicesOutput,
-  decodeVpnSitesOutput,
-  decodeValidProviderIdentifiersOutput,
-  VpnServicesOutput,
-  VpnSitesOutput,
-  ValidProviderIdentifiersOutput,
-  VpnService,
-  VpnSite,
-  decodeVpnBearerOutput,
-  VpnBearerOutput,
-  VpnBearer,
-  VpnNodesOutput,
-  decodeVpnNodesOutput,
-  VpnCarriersOutput,
-  decodeVpnCarriersOutput,
-  VpnCarrier,
-  VpnNode,
-} from './network-types';
+import { isNumber } from 'fp-ts/lib/number';
+import { sendDeleteRequest, sendGetRequest, sendPostRequest, sendPutRequest } from './api-helpers';
 import {
   clientBearerToApiBearer,
   clientVpnCarrierToApiVpnCarrier,
+  clientVpnNodeToApiVpnNode,
   clientVpnServiceToApiVpnService,
   clientVpnSiteToApiVpnSite,
-  clientVpnNodeToApiVpnNode,
 } from './converters';
+import {
+  decodeValidProviderIdentifiersOutput,
+  decodeVpnBearerOutput,
+  decodeVpnCarriersOutput,
+  decodeVpnNodesOutput,
+  decodeVpnServicesOutput,
+  decodeVpnSitesOutput,
+  ValidProviderIdentifiersOutput,
+  VpnBearer,
+  VpnBearerOutput,
+  VpnCarrier,
+  VpnCarriersOutput,
+  VpnNode,
+  VpnNodesOutput,
+  VpnService,
+  VpnServicesOutput,
+  VpnSite,
+  VpnSitesOutput,
+} from './network-types';
 
 // data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers
 const UNICONFIG_SERVICE_URL =
   '/data/network-topology:network-topology/topology=uniconfig/node=service/frinx-uniconfig-topology:configuration';
 
 export async function getVpnServices(): Promise<VpnServicesOutput> {
-  const json = await sendGetRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services`);
+  const json = await sendGetRequest(
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?content=config`,
+  );
   const data = decodeVpnServicesOutput(json);
   return data;
 }
@@ -58,7 +61,7 @@ export async function createVpnService(vpnService: VpnService): Promise<void> {
 }
 
 export async function getVpnSites(): Promise<VpnSitesOutput> {
-  const json = await sendGetRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites?content=config`);
+  const json = await sendGetRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config`);
   const data = decodeVpnSitesOutput(json);
   return data;
 }
@@ -87,7 +90,7 @@ export async function getValidProviderIdentifiers(): Promise<ValidProviderIdenti
 
 export async function getVpnBearers(): Promise<VpnBearerOutput> {
   const json = await sendGetRequest(
-    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers?content=config',
+    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?content=config',
   );
   const data = decodeVpnBearerOutput(json);
 
@@ -176,5 +179,35 @@ export async function getBearerValidProviderIdentifiers(): Promise<ValidProvider
     '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/valid-provider-identifiers',
   );
   const data = decodeValidProviderIdentifiersOutput(json);
+  return data;
+}
+
+export async function getVpnServiceCount(): Promise<number> {
+  const data = await sendGetRequest(
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?content=config&fetch=count`,
+  );
+  if (!isNumber(data)) {
+    throw new Error('not a number');
+  }
+  return data;
+}
+
+export async function getVpnSiteCount(): Promise<number> {
+  const data = await sendGetRequest(
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config&fetch=count`,
+  );
+  if (!isNumber(data)) {
+    throw new Error('not a number');
+  }
+  return data;
+}
+
+export async function getVpnBearerCount(): Promise<number> {
+  const data = await sendGetRequest(
+    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?content=config&fetch=count',
+  );
+  if (!isNumber(data)) {
+    throw new Error('not a number');
+  }
   return data;
 }
