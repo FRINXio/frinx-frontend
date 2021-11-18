@@ -125,6 +125,12 @@ const LocationsValidator = t.type({
   ),
 });
 
+export type LocationsOutput = t.TypeOf<typeof LocationsValidator>;
+
+export function decodeLocationsOutput(value: unknown): LocationsOutput {
+  return extractResult(LocationsValidator.decode(value));
+}
+
 const VpnValidator = t.type({
   'vpn-id': t.string,
   'site-role': t.string,

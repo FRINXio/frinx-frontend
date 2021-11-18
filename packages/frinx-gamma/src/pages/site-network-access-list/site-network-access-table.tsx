@@ -1,17 +1,18 @@
 import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
-import { VpnSite } from '../../components/forms/site-types';
-import unwrap from '../../helpers/unwrap';
+import { SiteNetworkAccess } from '../../components/forms/site-types';
 
 type Props = {
-  site: VpnSite;
+  siteId: string;
+  networkAccesses: SiteNetworkAccess[];
   onEditSiteNetworkAccessButtonClick: (siteId: string, accessId: string) => void;
   onDeleteSiteNetworkAccessButtonClick: (siteId: string) => void;
 };
 
 const SiteTable: VoidFunctionComponent<Props> = ({
-  site,
+  siteId,
+  networkAccesses,
   onEditSiteNetworkAccessButtonClick,
   onDeleteSiteNetworkAccessButtonClick,
 }) => {
@@ -27,7 +28,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
         </Tr>
       </Thead>
       <Tbody>
-        {site.siteNetworkAccesses.map((access) => {
+        {networkAccesses.map((access) => {
           return (
             <Tr key={access.siteNetworkAccessId}>
               <Td>
@@ -51,9 +52,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                       aria-label="edit"
                       size="sm"
                       icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                      onClick={() =>
-                        onEditSiteNetworkAccessButtonClick(unwrap(site.siteId), access.siteNetworkAccessId)
-                      }
+                      onClick={() => onEditSiteNetworkAccessButtonClick(siteId, access.siteNetworkAccessId)}
                     />
                   </Tooltip>
                   <Tooltip label="Delete site network access">
@@ -63,7 +62,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                       colorScheme="red"
                       icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
                       onClick={() => {
-                        onDeleteSiteNetworkAccessButtonClick(unwrap(access.siteNetworkAccessId));
+                        onDeleteSiteNetworkAccessButtonClick(access.siteNetworkAccessId);
                       }}
                     />
                   </Tooltip>

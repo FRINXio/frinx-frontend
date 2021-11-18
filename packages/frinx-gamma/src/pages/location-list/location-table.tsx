@@ -1,18 +1,20 @@
 import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
-import { VpnSite } from '../../components/forms/site-types';
+import { CustomerLocation } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
 
 type Props = {
-  site: VpnSite;
+  siteId: string;
+  locations: CustomerLocation[];
   onEditLocationButtonClick: (siteId: string, locationId: string) => void;
   onDeleteLocationButtonClick: (siteId: string) => void;
   onDevicesSiteButtonClick: (siteId: string, locationId: string) => void;
 };
 
 const LocationTable: VoidFunctionComponent<Props> = ({
-  site,
+  siteId,
+  locations,
   onDeleteLocationButtonClick,
   onEditLocationButtonClick,
   onDevicesSiteButtonClick,
@@ -29,7 +31,7 @@ const LocationTable: VoidFunctionComponent<Props> = ({
         </Tr>
       </Thead>
       <Tbody>
-        {site.customerLocations.map((location) => {
+        {locations.map((location) => {
           return (
             <Tr key={location.locationId}>
               <Td>
@@ -54,7 +56,7 @@ const LocationTable: VoidFunctionComponent<Props> = ({
                       size="sm"
                       icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                       onClick={() => {
-                        onEditLocationButtonClick(unwrap(site.siteId), unwrap(location.locationId));
+                        onEditLocationButtonClick(unwrap(siteId), unwrap(location.locationId));
                       }}
                     />
                   </Tooltip>
@@ -64,7 +66,7 @@ const LocationTable: VoidFunctionComponent<Props> = ({
                       size="sm"
                       icon={<Icon size={12} as={FeatherIcon} icon="cpu" />}
                       onClick={() => {
-                        onDevicesSiteButtonClick(unwrap(site.siteId), unwrap(location.locationId));
+                        onDevicesSiteButtonClick(unwrap(siteId), unwrap(location.locationId));
                       }}
                     />
                   </Tooltip>

@@ -5,6 +5,8 @@ import {
   VpnServicesOutput,
   VpnSitesOutput,
   VpnCarriersOutput,
+  LocationsOutput,
+  SiteNetworkAccessOutput,
 } from './network-types';
 import { VpnService } from './components/forms/service-types';
 import { VpnSite } from './components/forms/site-types';
@@ -51,6 +53,10 @@ export type Callbacks = {
   getVpnServiceCount: () => Promise<number>;
   getVpnSiteCount: () => Promise<number>;
   getVpnBearerCount: () => Promise<number>;
+  getLocations: (siteId: string, pagiantion?: Pagination) => Promise<LocationsOutput>;
+  getLocationsCount: (siteId: string) => Promise<number>;
+  getSiteNetworkAccesses: (siteId: string, pagiantion?: Pagination) => Promise<SiteNetworkAccessOutput>;
+  getSiteNetworkAccessesCount: (siteId: string) => Promise<number>;
 };
 class CallbackUtils {
   private callbacks: Callbacks | null = null;

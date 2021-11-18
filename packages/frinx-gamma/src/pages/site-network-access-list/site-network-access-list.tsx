@@ -1,12 +1,16 @@
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useDisclosure, Heading, Box, Container, Flex, Button } from '@chakra-ui/react';
 import { useParams } from 'react-router';
-import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
+import {
+  apiSiteNetworkAccessToClientSiteNetworkAccess,
+  apiVpnSitesToClientVpnSite,
+} from '../../components/forms/converters';
 import SiteNetworkAccessTable from './site-network-access-table';
-import { VpnSite } from '../../components/forms/site-types';
+import { SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import callbackUtils from '../../callback-utils';
-// import unwrap from '../../helpers/unwrap';
+import usePagination from '../../hooks/use-pagination';
+import Pagination from '../../components/pagination/pagination';
 
 type Props = {
   onCreateSiteNetworkAccessClick: (siteId: string) => void;
@@ -20,9 +24,11 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   onSiteListClick,
 }) => {
   const [site, setSite] = useState<VpnSite | null>(null);
+  const [networkAccesses, setNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
   const [siteAccessIdToDelete, setSiteAccessIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
   const { siteId } = useParams<{ siteId: string }>();
+  const [pagination, setPagination] = usePagination();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,12 +43,38 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
     fetchData();
   }, [siteId]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const paginationParams = {
+        offset: (pagination.page - 1) * pagination.pageSize,
+        limit: pagination.pageSize,
+      };
+      const callbacks = callbackUtils.getCallbacks;
+      const apiNetworkAccesses = await callbacks.getSiteNetworkAccesses(siteId, paginationParams);
+      const clientNetworkAccesses = apiSiteNetworkAccessToClientSiteNetworkAccess(apiNetworkAccesses);
+      setNetworkAccesses(clientNetworkAccesses);
+      const networkAccessesCount = await callbacks.getSiteNetworkAccessesCount(siteId);
+      setPagination({
+        ...pagination,
+        pageCount: Math.ceil(networkAccessesCount / pagination.pageSize),
+      });
+    };
+    fetchData();
+  }, [pagination.page]); // eslint-disable-line react-hooks/exhaustive-deps
+
   function handleDeleteButtonClick(siteAccessId: string) {
     setSiteAccessIdToDelete(siteAccessId);
     deleteModalDisclosure.onOpen();
   }
 
-  if (!site) {
+  function handlePageChange(page: number) {
+    setPagination({
+      ...pagination,
+      page,
+    });
+  }
+
+  if (!site || !networkAccesses) {
     return null;
   }
 
@@ -75,11 +107,17 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
           </Button>
         </Flex>
         <Box>
-          <SiteNetworkAccessTable
-            onEditSiteNetworkAccessButtonClick={onEditSiteNetworkAccessClick}
-            onDeleteSiteNetworkAccessButtonClick={handleDeleteButtonClick}
-            site={site}
-          />
+          <>
+            <SiteNetworkAccessTable
+              siteId={siteId}
+              networkAccesses={networkAccesses}
+              onEditSiteNetworkAccessButtonClick={onEditSiteNetworkAccessClick}
+              onDeleteSiteNetworkAccessButtonClick={handleDeleteButtonClick}
+            />
+            <Box m="4">
+              <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />
+            </Box>
+          </>
         </Box>
         <Box py={6}>
           <Button onClick={() => onSiteListClick()} colorScheme="blue">

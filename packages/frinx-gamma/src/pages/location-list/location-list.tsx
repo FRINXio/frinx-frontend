@@ -3,10 +3,12 @@ import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router';
 import callbackUtils from '../../callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
-import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
-import { VpnSite } from '../../components/forms/site-types';
+import { apiLocationsToClientLocations, apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
+import { VpnSite, CustomerLocation } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
 import LocationTable from './location-table';
+import usePagination from '../../hooks/use-pagination';
+import Pagination from '../../components/pagination/pagination';
 
 type Props = {
   onCreateLocationClick: (siteId: string) => void;
@@ -22,9 +24,11 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
   onSiteListClick,
 }) => {
   const [site, setSite] = useState<VpnSite | null>(null);
+  const [locations, setLocations] = useState<CustomerLocation[] | null>(null);
   const [locationIdToDelete, setLocationIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
   const { siteId } = useParams<{ siteId: string }>();
+  const [pagination, setPagination] = usePagination();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,12 +42,38 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
     fetchData();
   }, [siteId]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const paginationParams = {
+        offset: (pagination.page - 1) * pagination.pageSize,
+        limit: pagination.pageSize,
+      };
+      const callbacks = callbackUtils.getCallbacks;
+      const apiLocations = await callbacks.getLocations(siteId, paginationParams);
+      const clientLocations = apiLocationsToClientLocations(apiLocations);
+      setLocations(clientLocations);
+      const locationsCount = await callbacks.getLocationsCount(siteId);
+      setPagination({
+        ...pagination,
+        pageCount: Math.ceil(locationsCount / pagination.pageSize),
+      });
+    };
+    fetchData();
+  }, [pagination.page]); // eslint-disable-line react-hooks/exhaustive-deps
+
   function handleDeleteButtonClick(deviceId: string) {
     setLocationIdToDelete(deviceId);
     deleteModalDisclosure.onOpen();
   }
 
-  if (!site) {
+  function handlePageChange(page: number) {
+    setPagination({
+      ...pagination,
+      page,
+    });
+  }
+
+  if (!site || !locations) {
     return null;
   }
 
@@ -81,12 +111,18 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
           </Button>
         </Flex>
         <Box>
-          <LocationTable
-            onDeleteLocationButtonClick={handleDeleteButtonClick}
-            onEditLocationButtonClick={onEditLocationClick}
-            onDevicesSiteButtonClick={onDevicesVpnSiteClick}
-            site={site}
-          />
+          <>
+            <LocationTable
+              siteId={siteId}
+              locations={locations}
+              onDeleteLocationButtonClick={handleDeleteButtonClick}
+              onEditLocationButtonClick={onEditLocationClick}
+              onDevicesSiteButtonClick={onDevicesVpnSiteClick}
+            />
+            <Box m="4">
+              <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />
+            </Box>
+          </>
         </Box>
         <Box py={6}>
           <Button

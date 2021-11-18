@@ -14,6 +14,8 @@ import {
   decodeVpnNodesOutput,
   decodeVpnServicesOutput,
   decodeVpnSitesOutput,
+  decodeLocationsOutput,
+  decodeSiteNetworkAccessOutput,
   ValidProviderIdentifiersOutput,
   VpnBearer,
   VpnBearerOutput,
@@ -25,6 +27,8 @@ import {
   VpnServicesOutput,
   VpnSite,
   VpnSitesOutput,
+  LocationsOutput,
+  SiteNetworkAccessOutput,
 } from './network-types';
 
 // data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers
@@ -215,6 +219,57 @@ export async function getVpnSiteCount(): Promise<number> {
 export async function getVpnBearerCount(): Promise<number> {
   const data = await sendGetRequest(
     '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?content=config&fetch=count',
+  );
+  if (!isNumber(data)) {
+    throw new Error('not a number');
+  }
+  return data;
+}
+
+export async function getLocations(siteId: string, pagination?: Pagination): Promise<LocationsOutput> {
+  try {
+    const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
+    const json = await sendGetRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?content=config${paginationParams}`,
+    );
+    const data = decodeLocationsOutput(json);
+    return data;
+  } catch {
+    // if site does not have locations it the response is 404
+    return { location: [] };
+  }
+}
+
+export async function getLocationsCount(siteId: string): Promise<number> {
+  const data = await sendGetRequest(
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?content=config&fetch=count`,
+  );
+  if (!isNumber(data)) {
+    throw new Error('not a number');
+  }
+  return data;
+}
+
+export async function getSiteNetworkAccesses(
+  siteId: string,
+  pagination?: Pagination,
+): Promise<SiteNetworkAccessOutput> {
+  try {
+    const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
+    const json = await sendGetRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access?content=config${paginationParams}`,
+    );
+    const data = decodeSiteNetworkAccessOutput(json);
+    return data;
+  } catch {
+    // if site does not have locations it the response is 404
+    return { 'site-network-access': [] };
+  }
+}
+
+export async function getSiteNetworkAccessesCount(siteId: string): Promise<number> {
+  const data = await sendGetRequest(
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access?content=config&fetch=count`,
   );
   if (!isNumber(data)) {
     throw new Error('not a number');
