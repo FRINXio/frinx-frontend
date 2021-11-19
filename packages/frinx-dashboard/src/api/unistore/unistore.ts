@@ -53,7 +53,7 @@ function joinNonNullFilters(filters: (string | null)[]): string {
 
 function getServiceFilterParams(serviceFilter: ServiceFilter): string {
   const filters = [];
-  filters.push(serviceFilter.id ? `@."vpn-id"like_regex"${serviceFilter.id}/i"` : null);
+  filters.push(serviceFilter.id ? `@."vpn-id"like_regex"${serviceFilter.id}"` : null);
   filters.push(serviceFilter.customerName ? `@."customer-name"like_regex"${serviceFilter.customerName}"` : null);
   const joinedFilters = joinNonNullFilters(filters);
   return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
@@ -219,9 +219,10 @@ export async function getBearerValidProviderIdentifiers(): Promise<ValidProvider
   return data;
 }
 
-export async function getVpnServiceCount(): Promise<number> {
+export async function getVpnServiceCount(serviceFilter: ServiceFilter | null): Promise<number> {
+  const filterParams = serviceFilter ? getServiceFilterParams(serviceFilter) : '';
   const data = await sendGetRequest(
-    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?content=config&fetch=count`,
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?content=config&fetch=count${filterParams}`,
   );
   if (!isNumber(data)) {
     throw new Error('not a number');

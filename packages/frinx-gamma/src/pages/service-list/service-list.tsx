@@ -42,7 +42,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
       const services = await callbacks.getVpnServices(paginationParams, submittedFilters);
       const clientVpnServices = apiVpnServiceToClientVpnService(services);
       setVpnServices(clientVpnServices);
-      const servicesCount = await callbacks.getVpnServiceCount();
+      const servicesCount = await callbacks.getVpnServiceCount(submittedFilters);
       setPagination({
         ...pagination,
         pageCount: Math.ceil(servicesCount / pagination.pageSize),

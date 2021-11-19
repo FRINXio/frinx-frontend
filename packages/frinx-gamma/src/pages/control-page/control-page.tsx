@@ -33,7 +33,7 @@ const ControlPage: VoidFunctionComponent<Props> = ({
     (async () => {
       const callbacks = callbackUtils.getCallbacks;
       const [serviceCount, siteCount, bearerCount] = await Promise.all([
-        callbacks.getVpnServiceCount(),
+        callbacks.getVpnServiceCount(null),
         callbacks.getVpnSiteCount(),
         callbacks.getVpnBearerCount(),
       ]);
