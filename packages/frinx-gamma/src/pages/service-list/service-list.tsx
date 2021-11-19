@@ -6,6 +6,7 @@ import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-de
 import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
 import { VpnService } from '../../components/forms/service-types';
 import unwrap from '../../helpers/unwrap';
+import ServiceFilter, { ServiceFilters } from './service-filter';
 import ServiceTable from './service-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
@@ -20,6 +21,16 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
   const [serviceIdToDelete, setServiceIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
   const [pagination, setPagination] = usePagination();
+  const [filters, setFilters] = useState<ServiceFilters>({
+    id: null,
+    customerName: null,
+    // defaultCVlan: null,
+  });
+  const [submittedFilters, setSubmittedFilters] = useState<ServiceFilters>({
+    id: null,
+    customerName: null,
+    // defaultCVlan: null,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,10 +39,10 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
         limit: pagination.pageSize,
       };
       const callbacks = callbackUtils.getCallbacks;
-      const services = await callbacks.getVpnServices(paginationParams);
+      const services = await callbacks.getVpnServices(paginationParams, submittedFilters);
       const clientVpnServices = apiVpnServiceToClientVpnService(services);
       setVpnServices(clientVpnServices);
-      const servicesCount = await callbacks.getVpnServiceCount();
+      const servicesCount = await callbacks.getVpnServiceCount(submittedFilters);
       setPagination({
         ...pagination,
         pageCount: Math.ceil(servicesCount / pagination.pageSize),
@@ -39,7 +50,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
     };
 
     fetchData();
-  }, [pagination.page]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleDeleteButtonClick(serviceId: string) {
     setServiceIdToDelete(serviceId);
@@ -51,6 +62,20 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
       ...pagination,
       page,
     });
+  }
+
+  function handleFilterChange(newFilters: ServiceFilters) {
+    setFilters({
+      ...newFilters,
+    });
+  }
+
+  function handleFilterSubmit() {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setSubmittedFilters(filters);
   }
 
   return (
@@ -86,6 +111,11 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
         <Box>
           {vpnServices ? (
             <>
+              <ServiceFilter
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                onFilterSubmit={handleFilterSubmit}
+              />
               <ServiceTable
                 onEditServiceButtonClick={onEditVpnServiceClick}
                 onDeleteServiceButtonClick={handleDeleteButtonClick}

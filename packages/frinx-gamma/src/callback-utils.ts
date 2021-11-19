@@ -11,6 +11,7 @@ import {
 import { VpnService } from './components/forms/service-types';
 import { VpnSite } from './components/forms/site-types';
 import { VpnBearer, VpnCarrier, VpnNode } from './components/forms/bearer-types';
+import { ServiceFilters } from './pages/service-list/service-filter';
 
 export type WorkflowPayload = {
   input?: unknown;
@@ -27,7 +28,7 @@ type Pagination = {
 };
 
 export type Callbacks = {
-  getVpnServices: (pagination?: Pagination) => Promise<VpnServicesOutput>;
+  getVpnServices: (pagination: Pagination | null, filters: ServiceFilters | null) => Promise<VpnServicesOutput>;
   editVpnServices: (body: VpnService) => Promise<unknown>;
   deleteVpnService: (id: string) => Promise<unknown>;
   createVpnService: (body: VpnService) => Promise<void>;
@@ -50,7 +51,7 @@ export type Callbacks = {
   createVpnCarrier: (carrier: VpnCarrier) => Promise<void>;
   editVpnCarrier: (carrier: VpnCarrier) => Promise<void>;
   deleteVpnCarrier: (carrierName: string) => Promise<void>;
-  getVpnServiceCount: () => Promise<number>;
+  getVpnServiceCount: (filters: ServiceFilters | null) => Promise<number>;
   getVpnSiteCount: () => Promise<number>;
   getVpnBearerCount: () => Promise<number>;
   getLocations: (siteId: string, pagiantion?: Pagination) => Promise<LocationsOutput>;

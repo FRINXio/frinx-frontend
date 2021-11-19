@@ -54,7 +54,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
 
       const bandwithsResponse = await getBandwidths();
 
-      const services = await callbacks.getVpnServices();
+      const services = await callbacks.getVpnServices(null, null);
       const clientVpnServices = apiVpnServiceToClientVpnService(services);
 
       setVpnSites(clientVpnSites);
