@@ -48,7 +48,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
       const apiSites = await callbacks.getVpnSites(paginationParams, submittedFilters);
       const clientVpnSites = apiVpnSitesToClientVpnSite(apiSites);
       setSites(clientVpnSites);
-      const sitesCount = await callbacks.getVpnSiteCount();
+      const sitesCount = await callbacks.getVpnSiteCount(submittedFilters);
       setPagination({
         ...pagination,
         pageCount: Math.ceil(sitesCount / pagination.pageSize),

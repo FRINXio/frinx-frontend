@@ -77,7 +77,6 @@ function getSiteFilterParams(siteFilter: SiteFilter): string {
     siteFilter.deviceId ? `exists({@/devices/device}[*]  ? (@."device-id"like_regex"${siteFilter.deviceId}"))` : null,
   );
   const joinedFilters = joinNonNullFilters(filters);
-  console.log('joinedFilters', joinedFilters);
   return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
 }
 
@@ -119,15 +118,19 @@ export async function getVpnSites(
   pagination: Pagination | null,
   siteFilter: SiteFilter | null,
 ): Promise<VpnSitesOutput> {
-  console.log('getVPnSites', siteFilter);
-  const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
-  const filterParams = siteFilter ? getSiteFilterParams(siteFilter) : '';
-  console.log(filterParams);
-  const json = await sendGetRequest(
-    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config${paginationParams}${filterParams}`,
-  );
-  const data = decodeVpnSitesOutput(json);
-  return data;
+  try {
+    const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
+    const filterParams = siteFilter ? getSiteFilterParams(siteFilter) : '';
+    const json = await sendGetRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config${paginationParams}${filterParams}`,
+    );
+    const data = decodeVpnSitesOutput(json);
+    return data;
+  } catch {
+    return {
+      site: [],
+    };
+  }
 }
 
 export async function createVpnSite(vpnSite: VpnSite): Promise<void> {
@@ -258,9 +261,10 @@ export async function getVpnServiceCount(serviceFilter: ServiceFilter | null): P
   return data;
 }
 
-export async function getVpnSiteCount(): Promise<number> {
+export async function getVpnSiteCount(siteFilter: SiteFilter): Promise<number> {
+  const filterParams = siteFilter ? getSiteFilterParams(siteFilter) : '';
   const data = await sendGetRequest(
-    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config&fetch=count`,
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config&fetch=count${filterParams}`,
   );
   if (!isNumber(data)) {
     throw new Error('not a number');
