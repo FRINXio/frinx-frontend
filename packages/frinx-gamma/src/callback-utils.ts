@@ -11,6 +11,7 @@ import {
 import { VpnService } from './components/forms/service-types';
 import { VpnSite } from './components/forms/site-types';
 import { VpnBearer, VpnCarrier, VpnNode } from './components/forms/bearer-types';
+import { ServiceFilters } from './pages/service-list/service-filter';
 
 export type WorkflowPayload = {
   input?: unknown;
@@ -27,7 +28,7 @@ type Pagination = {
 };
 
 export type Callbacks = {
-  getVpnServices: (pagination?: Pagination) => Promise<VpnServicesOutput>;
+  getVpnServices: (pagination: Pagination | null, filters: ServiceFilters | null) => Promise<VpnServicesOutput>;
   editVpnServices: (body: VpnService) => Promise<unknown>;
   deleteVpnService: (id: string) => Promise<unknown>;
   createVpnService: (body: VpnService) => Promise<void>;
