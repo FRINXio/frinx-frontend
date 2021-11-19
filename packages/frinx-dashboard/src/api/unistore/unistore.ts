@@ -45,6 +45,12 @@ type ServiceFilter = {
   customerName: string | null;
 };
 
+type SiteFilter = {
+  id: string | null;
+  locationId: string | null;
+  deviceId: string | null;
+};
+
 // we filter non null filters and joined them with && operator
 function joinNonNullFilters(filters: (string | null)[]): string {
   const separator = encodeURIComponent('&&'); // AND operator must be url encoded
@@ -56,6 +62,22 @@ function getServiceFilterParams(serviceFilter: ServiceFilter): string {
   filters.push(serviceFilter.id ? `@."vpn-id"like_regex"${serviceFilter.id}"` : null);
   filters.push(serviceFilter.customerName ? `@."customer-name"like_regex"${serviceFilter.customerName}"` : null);
   const joinedFilters = joinNonNullFilters(filters);
+  return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
+}
+
+function getSiteFilterParams(siteFilter: SiteFilter): string {
+  const filters = [];
+  filters.push(siteFilter.id ? `@."site-id"like_regex"${siteFilter.id}"` : null);
+  filters.push(
+    siteFilter.locationId
+      ? `exists({@/locations/location}[*]  ? (@."location-id"like_regex"${siteFilter.locationId}"))`
+      : null,
+  );
+  filters.push(
+    siteFilter.deviceId ? `exists({@/devices/device}[*]  ? (@."device-id"like_regex"${siteFilter.deviceId}"))` : null,
+  );
+  const joinedFilters = joinNonNullFilters(filters);
+  console.log('joinedFilters', joinedFilters);
   return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
 }
 
@@ -93,10 +115,16 @@ export async function createVpnService(vpnService: VpnService): Promise<void> {
   await sendPostRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services`, body);
 }
 
-export async function getVpnSites(pagination?: Pagination): Promise<VpnSitesOutput> {
+export async function getVpnSites(
+  pagination: Pagination | null,
+  siteFilter: SiteFilter | null,
+): Promise<VpnSitesOutput> {
+  console.log('getVPnSites', siteFilter);
   const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
+  const filterParams = siteFilter ? getSiteFilterParams(siteFilter) : '';
+  console.log(filterParams);
   const json = await sendGetRequest(
-    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config${paginationParams}`,
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config${paginationParams}${filterParams}`,
   );
   const data = decodeVpnSitesOutput(json);
   return data;

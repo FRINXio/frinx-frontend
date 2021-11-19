@@ -33,7 +33,7 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
   useEffect(() => {
     const fetchData = async () => {
       const callbacks = callbackUtils.getCallbacks;
-      const apiSites = await callbacks.getVpnSites();
+      const apiSites = await callbacks.getVpnSites(null, null);
       const clientVpnSites = apiVpnSitesToClientVpnSite(apiSites);
       const selectedVpnSite = clientVpnSites.find((s) => s.siteId === siteId);
       setSite(unwrap(selectedVpnSite));

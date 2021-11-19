@@ -12,6 +12,7 @@ import { VpnService } from './components/forms/service-types';
 import { VpnSite } from './components/forms/site-types';
 import { VpnBearer, VpnCarrier, VpnNode } from './components/forms/bearer-types';
 import { ServiceFilters } from './pages/service-list/service-filter';
+import { SiteFilters } from './pages/site-list/site-filter';
 
 export type WorkflowPayload = {
   input?: unknown;
@@ -32,7 +33,7 @@ export type Callbacks = {
   editVpnServices: (body: VpnService) => Promise<unknown>;
   deleteVpnService: (id: string) => Promise<unknown>;
   createVpnService: (body: VpnService) => Promise<void>;
-  getVpnSites: (pagination?: Pagination) => Promise<VpnSitesOutput>;
+  getVpnSites: (pagination: Pagination | null, filters: SiteFilters | null) => Promise<VpnSitesOutput>;
   createVpnSite: (body: VpnSite) => Promise<void>;
   editVpnSite: (body: VpnSite) => Promise<void>;
   deleteVpnSite: (id: string) => Promise<void>;

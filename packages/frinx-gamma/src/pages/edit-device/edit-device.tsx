@@ -30,7 +30,7 @@ const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
     const fetchData = async () => {
       const callbacks = callbackUtils.getCallbacks;
       // TODO: we can fetch all in promise all?
-      const sites = await callbacks.getVpnSites();
+      const sites = await callbacks.getVpnSites(null, null);
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
       setSelectedSite(getSelectedSite(clientVpnSites, siteId));
     };

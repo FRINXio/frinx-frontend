@@ -32,7 +32,7 @@ const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
   useEffect(() => {
     const fetchData = async () => {
       const callbacks = callbackUtils.getCallbacks;
-      const sites = await callbacks.getVpnSites();
+      const sites = await callbacks.getVpnSites(null, null);
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
       setVpnSites(clientVpnSites);
 
