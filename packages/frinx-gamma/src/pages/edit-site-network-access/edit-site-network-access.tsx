@@ -46,7 +46,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
     const fetchData = async () => {
       const callbacks = callbackUtils.getCallbacks;
       // TODO: we can fetch all in promise all?
-      const sites = await callbacks.getVpnSites();
+      const sites = await callbacks.getVpnSites(null, null);
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
 
       const profiles = await callbacks.getValidProviderIdentifiers();

@@ -5,6 +5,7 @@ import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-de
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
+import SiteFilter, { SiteFilters } from './site-filter';
 import SiteTable from './site-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
@@ -26,6 +27,16 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   const [siteIdToDelete, setSiteIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
   const [pagination, setPagination] = usePagination();
+  const [filters, setFilters] = useState<SiteFilters>({
+    id: null,
+    locationId: null,
+    deviceId: null,
+  });
+  const [submittedFilters, setSubmittedFilters] = useState<SiteFilters>({
+    id: null,
+    locationId: null,
+    deviceId: null,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,10 +45,10 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
         offset: (pagination.page - 1) * pagination.pageSize,
         limit: pagination.pageSize,
       };
-      const apiSites = await callbacks.getVpnSites(paginationParams);
+      const apiSites = await callbacks.getVpnSites(paginationParams, submittedFilters);
       const clientVpnSites = apiVpnSitesToClientVpnSite(apiSites);
       setSites(clientVpnSites);
-      const sitesCount = await callbacks.getVpnSiteCount();
+      const sitesCount = await callbacks.getVpnSiteCount(submittedFilters);
       setPagination({
         ...pagination,
         pageCount: Math.ceil(sitesCount / pagination.pageSize),
@@ -45,7 +56,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
     };
 
     fetchData();
-  }, [pagination.page]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleDeleteButtonClick(siteId: string) {
     setSiteIdToDelete(siteId);
@@ -57,6 +68,20 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
       ...pagination,
       page,
     });
+  }
+
+  function handleFilterChange(newFilters: SiteFilters) {
+    setFilters({
+      ...newFilters,
+    });
+  }
+
+  function handleFilterSubmit() {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setSubmittedFilters(filters);
   }
 
   return (
@@ -88,6 +113,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
         <Box>
           {sites ? (
             <>
+              <SiteFilter filters={filters} onFilterChange={handleFilterChange} onFilterSubmit={handleFilterSubmit} />
               <SiteTable
                 onEditSiteButtonClick={onEditVpnSiteClick}
                 onDetailSiteButtonClick={onDetailVpnSiteClick}
