@@ -1,5 +1,4 @@
 import { isNumber } from 'fp-ts/lib/number';
-import { mixed } from 'io-ts';
 import { sendDeleteRequest, sendGetRequest, sendPostRequest, sendPutRequest } from './api-helpers';
 import {
   clientBearerToApiBearer,
