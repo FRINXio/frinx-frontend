@@ -14,6 +14,7 @@ import { VpnBearer, VpnCarrier, VpnNode } from './components/forms/bearer-types'
 import { ServiceFilters } from './pages/service-list/service-filter';
 import { SiteFilters } from './pages/site-list/site-filter';
 import { VpnBearerFilters } from './pages/vpn-bearer-list/vpn-bearer-filter';
+import { SiteNetworkAccessFilters } from './pages/site-network-access-list/site-network-access-filter';
 
 export type WorkflowPayload = {
   input?: unknown;
@@ -58,8 +59,15 @@ export type Callbacks = {
   getVpnBearerCount: (filters: VpnBearerFilters | null) => Promise<number>;
   getLocations: (siteId: string, pagiantion?: Pagination) => Promise<LocationsOutput>;
   getLocationsCount: (siteId: string) => Promise<number>;
-  getSiteNetworkAccesses: (siteId: string, pagiantion?: Pagination) => Promise<SiteNetworkAccessOutput>;
-  getSiteNetworkAccessesCount: (siteId: string) => Promise<number>;
+  getSiteNetworkAccesses: (
+    siteId: string,
+    pagination: Pagination | null,
+    siteNetworkAccessFilter: SiteNetworkAccessFilters | null,
+  ) => Promise<SiteNetworkAccessOutput>;
+  getSiteNetworkAccessesCount: (
+    siteId: string,
+    siteNetworkAccessFilter: SiteNetworkAccessFilters | null,
+  ) => Promise<number>;
 };
 class CallbackUtils {
   private callbacks: Callbacks | null = null;

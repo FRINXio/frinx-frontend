@@ -30,6 +30,16 @@ import {
   LocationsOutput,
   SiteNetworkAccessOutput,
 } from './network-types';
+import {
+  ServiceFilter,
+  SiteFilter,
+  SiteNetworkAccessFilter,
+  VpnBearerFilter,
+  getServiceFilterParams,
+  getSiteFilterParams,
+  getSiteNetworkAccessFilterParams,
+  getVpnBearerFilterParams,
+} from './filter-helpers';
 
 // data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers
 const UNICONFIG_SERVICE_URL =
@@ -39,59 +49,6 @@ type Pagination = {
   offset: number;
   limit: number;
 };
-
-type ServiceFilter = {
-  id: string | null;
-  customerName: string | null;
-};
-
-type SiteFilter = {
-  id: string | null;
-  locationId: string | null;
-  deviceId: string | null;
-};
-
-type VpnBearerFilter = {
-  id: string | null;
-  description: string | null;
-};
-
-// we filter non null filters and joined them with && operator
-function joinNonNullFilters(filters: (string | null)[]): string {
-  const separator = encodeURIComponent('&&'); // AND operator must be url encoded
-  return filters.filter((f) => f !== null).join(separator);
-}
-
-function getServiceFilterParams(serviceFilter: ServiceFilter): string {
-  const filters = [];
-  filters.push(serviceFilter.id ? `@."vpn-id"like_regex"${serviceFilter.id}"` : null);
-  filters.push(serviceFilter.customerName ? `@."customer-name"like_regex"${serviceFilter.customerName}"` : null);
-  const joinedFilters = joinNonNullFilters(filters);
-  return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
-}
-
-function getSiteFilterParams(siteFilter: SiteFilter): string {
-  const filters = [];
-  filters.push(siteFilter.id ? `@."site-id"like_regex"${siteFilter.id}"` : null);
-  filters.push(
-    siteFilter.locationId
-      ? `exists({@/locations/location}[*]  ? (@."location-id"like_regex"${siteFilter.locationId}"))`
-      : null,
-  );
-  filters.push(
-    siteFilter.deviceId ? `exists({@/devices/device}[*]  ? (@."device-id"like_regex"${siteFilter.deviceId}"))` : null,
-  );
-  const joinedFilters = joinNonNullFilters(filters);
-  return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
-}
-
-function getVpnBearerFilterParams(vpnBearerFilter: VpnBearerFilter): string {
-  const filters = [];
-  filters.push(vpnBearerFilter.id ? `@."sp-bearer-reference"like_regex"${vpnBearerFilter.id}"` : null);
-  filters.push(vpnBearerFilter.description ? `@."description"like_regex"${vpnBearerFilter.description}"` : null);
-  const joinedFilters = joinNonNullFilters(filters);
-  return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
-}
 
 export async function getVpnServices(
   pagination?: Pagination,
@@ -290,7 +247,7 @@ export async function getVpnServiceCount(serviceFilter: ServiceFilter | null): P
   return data;
 }
 
-export async function getVpnSiteCount(siteFilter: SiteFilter): Promise<number> {
+export async function getVpnSiteCount(siteFilter: SiteFilter | null): Promise<number> {
   const filterParams = siteFilter ? getSiteFilterParams(siteFilter) : '';
   const data = await sendGetRequest(
     `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config&fetch=count${filterParams}`,
@@ -301,7 +258,7 @@ export async function getVpnSiteCount(siteFilter: SiteFilter): Promise<number> {
   return data;
 }
 
-export async function getVpnBearerCount(vpnBearerFilter: VpnBearerFilter): Promise<number> {
+export async function getVpnBearerCount(vpnBearerFilter: VpnBearerFilter | null): Promise<number> {
   const filterParams = vpnBearerFilter ? getVpnBearerFilterParams(vpnBearerFilter) : '';
   const data = await sendGetRequest(
     `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?content=config&fetch=count${filterParams}`,
@@ -338,12 +295,14 @@ export async function getLocationsCount(siteId: string): Promise<number> {
 
 export async function getSiteNetworkAccesses(
   siteId: string,
-  pagination?: Pagination,
+  pagination: Pagination | null,
+  siteNetworkAccessFilter: SiteNetworkAccessFilter | null,
 ): Promise<SiteNetworkAccessOutput> {
   try {
     const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
+    const filterParams = siteNetworkAccessFilter ? getSiteNetworkAccessFilterParams(siteNetworkAccessFilter) : '';
     const json = await sendGetRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access?content=config${paginationParams}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access?content=config${paginationParams}${filterParams}`,
     );
     const data = decodeSiteNetworkAccessOutput(json);
     return data;
@@ -353,9 +312,13 @@ export async function getSiteNetworkAccesses(
   }
 }
 
-export async function getSiteNetworkAccessesCount(siteId: string): Promise<number> {
+export async function getSiteNetworkAccessesCount(
+  siteId: string,
+  siteNetworkAccessFilter: SiteNetworkAccessFilter | null,
+): Promise<number> {
+  const filterParams = siteNetworkAccessFilter ? getSiteNetworkAccessFilterParams(siteNetworkAccessFilter) : '';
   const data = await sendGetRequest(
-    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access?content=config&fetch=count`,
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access?content=config&fetch=count${filterParams}`,
   );
   if (!isNumber(data)) {
     throw new Error('not a number');
