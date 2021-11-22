@@ -1,23 +1,9 @@
 import React, { FC } from 'react';
-import {
-  HStack,
-  Tag,
-  Box,
-  Divider,
-  Button,
-  Select,
-  Stack,
-  FormControl,
-  FormLabel,
-  TagLabel,
-  TagCloseButton,
-} from '@chakra-ui/react';
+import { Divider, Button, Select, Stack, FormControl, FormLabel } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { SiteDevice, SiteManagementType, VpnSite, MaximumRoutes } from './site-types';
-import SiteDeviceForm from './site-device-form';
+import { SiteManagementType, VpnSite, MaximumRoutes } from './site-types';
 import Autocomplete from '../autocomplete/autocomplete';
-import unwrap from '../../helpers/unwrap';
 
 const DeviceSchema = yup.object().shape({
   deviceId: yup.string().required(),
@@ -46,20 +32,6 @@ type Props = {
   onSiteChange?: (s: VpnSite) => void;
 };
 
-// const getDefaultCustomerLocation = (): CustomerLocation => ({
-//   city: '',
-//   street: '',
-//   postalCode: '',
-//   state: '',
-//   countryCode: 'UK',
-// });
-
-const getDefaultSiteDevice = (): SiteDevice => ({
-  deviceId: '',
-  locationId: '',
-  managementIP: '',
-});
-
 const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
   const { values, errors, dirty, setFieldValue, handleSubmit } = useFormik({
     initialValues: {
@@ -71,120 +43,12 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
     },
   });
 
-  // const handleCustomerLocationAdd = (location: CustomerLocation) => {
-  //   const locationWithRandomId = {
-  //     ...location,
-  //     locationId: uuid4(),
-  //   };
-  //   const newCustomerLocations = [...siteState.customerLocations, locationWithRandomId];
-  //   setSiteState({
-  //     ...siteState,
-  //     customerLocations: newCustomerLocations,
-  //   });
-  //   setCustomerLocationsForm(null);
-  // };
-
-  // const handleCustomerLocationRemove = (locationId: string) => {
-  //   const newCustomerLocations = siteState.customerLocations.filter((cl) => cl.locationId !== locationId);
-  //   setSiteState({
-  //     ...siteState,
-  //     customerLocations: newCustomerLocations,
-  //   });
-  // };
-
-  const handleSiteDeviceAdd = (device: SiteDevice) => {
-    if (!device.deviceId) {
-      return;
-    }
-
-    // if device id is already in form do nothing
-    if (values.siteDevices.filter((d) => d.deviceId === device.deviceId).length) {
-      return;
-    }
-
-    const newSiteDevices = [...values.siteDevices, device];
-    setFieldValue('siteDevices', newSiteDevices);
-  };
-
-  const handleSiteDeviceRemove = (deviceId: string) => {
-    const newSiteDevices = values.siteDevices.filter((sd) => sd.deviceId !== deviceId);
-    setFieldValue('siteDevices', newSiteDevices);
-  };
-
   const handleProfileNameChange = (profileName: string) => {
     setFieldValue('siteServiceQosProfile', profileName);
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* <FormControl id="customer-locations" my={6}>
-        <FormLabel>Cutomer Locations</FormLabel>
-        <Box
-          alignItems="stretch"
-          border="1px"
-          borderColor="gray.200"
-          px={4}
-          my={4}
-          borderRadius="md"
-          userSelect="none"
-          flexDirection="column"
-        >
-          <CustomerLocationForm
-            location={getDefaultCustomerLocation()}
-            buttonText="Add"
-            onChange={handleCustomerLocationAdd}
-          />
-          {siteState.customerLocations.length > 0 && (
-            <Box>
-              <HStack>
-                {siteState.customerLocations.map((cl) => {
-                  return (
-                    <Box key={`customer-location-${cl.locationId}`} my={4}>
-                      <Tag key={`customer-location-${cl.locationId}`} size="lg">
-                        <TagLabel>{`${cl.street},${cl.city}`}</TagLabel>
-                        <TagCloseButton onClick={() => handleCustomerLocationRemove(unwrap(cl.locationId))} />
-                      </Tag>
-                    </Box>
-                  );
-                })}
-              </HStack>
-            </Box>
-          )}
-        </Box>
-      </FormControl> */}
-
-      <FormControl id="site-devices" my={6}>
-        <FormLabel>Site Devices</FormLabel>
-        <Box
-          alignItems="stretch"
-          border="1px"
-          borderColor="gray.200"
-          px={4}
-          my={4}
-          borderRadius="md"
-          userSelect="none"
-          flexDirection="column"
-        >
-          <SiteDeviceForm device={getDefaultSiteDevice()} buttonText="Add" onChange={handleSiteDeviceAdd} />
-          {values.siteDevices.length > 0 && (
-            <Box>
-              <HStack>
-                {values.siteDevices.map((sd) => {
-                  return (
-                    <Box key={`customer-location-${sd.deviceId}`} my={4}>
-                      <Tag key={`customer-location-${sd.deviceId}`} size="lg">
-                        <TagLabel>{sd.deviceId}</TagLabel>
-                        <TagCloseButton onClick={() => handleSiteDeviceRemove(unwrap(sd.deviceId))} />
-                      </Tag>
-                    </Box>
-                  );
-                })}
-              </HStack>
-            </Box>
-          )}
-        </Box>
-      </FormControl>
-
       <FormControl id="maxiumRoutes" my={6}>
         <FormLabel>Maximum Routes</FormLabel>
         <Select
