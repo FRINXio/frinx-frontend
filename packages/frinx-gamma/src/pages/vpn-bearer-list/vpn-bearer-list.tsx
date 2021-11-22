@@ -6,6 +6,7 @@ import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-de
 import { VpnBearer } from '../../components/forms/bearer-types';
 import { apiBearerToClientBearer } from '../../components/forms/converters';
 import unwrap from '../../helpers/unwrap';
+import VpnBearerFilter, { VpnBearerFilters } from './vpn-bearer-filter';
 import VpnBearerTable from './vpn-bearer-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
@@ -29,6 +30,14 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
   const [bearerIdToDelete, setBearerIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
   const [pagination, setPagination] = usePagination();
+  const [filters, setFilters] = useState<VpnBearerFilters>({
+    id: null,
+    description: null,
+  });
+  const [submittedFilters, setSubmittedFilters] = useState<VpnBearerFilters>({
+    id: null,
+    description: null,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,10 +46,10 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
         offset: (pagination.page - 1) * pagination.pageSize,
         limit: pagination.pageSize,
       };
-      const response = await callbacks.getVpnBearers(paginationParams);
+      const response = await callbacks.getVpnBearers(paginationParams, submittedFilters);
       const clientVpnBearers = apiBearerToClientBearer(response);
       setVpnBearers(clientVpnBearers);
-      const bearersCount = await callbacks.getVpnBearerCount();
+      const bearersCount = await callbacks.getVpnBearerCount(submittedFilters);
       setPagination({
         ...pagination,
         pageCount: Math.ceil(bearersCount / pagination.pageSize),
@@ -48,7 +57,7 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
     };
 
     fetchData();
-  }, [pagination.page]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleDeleteButtonClick(bearerId: string) {
     setBearerIdToDelete(bearerId);
@@ -60,6 +69,20 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
       ...pagination,
       page,
     });
+  }
+
+  function handleFilterChange(newFilters: VpnBearerFilters) {
+    setFilters({
+      ...newFilters,
+    });
+  }
+
+  function handleFilterSubmit() {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setSubmittedFilters(filters);
   }
 
   return (
@@ -101,6 +124,11 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
         <Box>
           {vpnBearers && (
             <>
+              <VpnBearerFilter
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                onFilterSubmit={handleFilterSubmit}
+              />
               <VpnBearerTable
                 bearers={vpnBearers}
                 onEditVpnBearerClick={onEditVpnBearerClick}

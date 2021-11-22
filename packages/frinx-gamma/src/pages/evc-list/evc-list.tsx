@@ -22,7 +22,7 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
   useEffect(() => {
     const fetchData = async () => {
       const callbacks = callbackUtils.getCallbacks;
-      const apiBearers = await callbacks.getVpnBearers();
+      const apiBearers = await callbacks.getVpnBearers(null, null);
       const clientVpnBearers = apiBearerToClientBearer(apiBearers);
       const [selectedVpnBearer] = clientVpnBearers.filter((b) => b.spBearerReference === bearerId);
       setBearer(selectedVpnBearer);

@@ -21,6 +21,7 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
       <Thead>
         <Tr>
           <Th>Id</Th>
+          <Th>Description</Th>
           <Th>Status</Th>
           <Th>Actions</Th>
         </Tr>
@@ -29,6 +30,7 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
         {bearers.map((b) => (
           <Tr key={b.spBearerReference}>
             <Td>{b.spBearerReference}</Td>
+            <Td>{b.description}</Td>
             <Td>{b.status?.adminStatus?.status}</Td>
             <Td>
               <HStack>
