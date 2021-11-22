@@ -24,6 +24,8 @@ const SiteTable: VoidFunctionComponent<Props> = ({
           <Th>Access Type</Th>
           <Th>Access Priority</Th>
           <Th>Maximum Routes</Th>
+          <Th>Location Id</Th>
+          <Th>Device Id</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
@@ -44,6 +46,12 @@ const SiteTable: VoidFunctionComponent<Props> = ({
               </Td>
               <Td>
                 <Text as="span">{access.maximumRoutes}</Text>
+              </Td>
+              <Td>
+                <Text as="span">{access.locationReference}</Text>
+              </Td>
+              <Td>
+                <Text as="span">{access.deviceReference}</Text>
               </Td>
               <Td>
                 <HStack>
