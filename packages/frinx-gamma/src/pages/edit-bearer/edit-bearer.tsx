@@ -24,7 +24,7 @@ const EditBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
     const fetchData = async () => {
       // TODO; possible fetches goes here
       const callbacks = callbackUtils.getCallbacks;
-      const response = await callbacks.getVpnBearers();
+      const response = await callbacks.getVpnBearers(null, null);
       const clientVpnBearers = apiBearerToClientBearer(response);
       const [selectedBearer] = clientVpnBearers.filter((b) => b.spBearerReference === bearerId);
       const apiNodes = await callbacks.getVpnNodes();

@@ -39,7 +39,7 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     const fetchData = async () => {
       const callbacks = callbackUtils.getCallbacks;
       // TODO: we can fetch all in promise all?
-      const bearers = await callbacks.getVpnBearers();
+      const bearers = await callbacks.getVpnBearers(null, null);
       const clientVpnBearers = apiBearerToClientBearer(bearers);
       setSelectedBearer(getSelectedBearer(clientVpnBearers, bearerId));
 

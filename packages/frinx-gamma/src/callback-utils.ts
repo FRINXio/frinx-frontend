@@ -13,6 +13,7 @@ import { VpnSite } from './components/forms/site-types';
 import { VpnBearer, VpnCarrier, VpnNode } from './components/forms/bearer-types';
 import { ServiceFilters } from './pages/service-list/service-filter';
 import { SiteFilters } from './pages/site-list/site-filter';
+import { VpnBearerFilters } from './pages/vpn-bearer-list/vpn-bearer-filter';
 
 export type WorkflowPayload = {
   input?: unknown;
@@ -41,7 +42,7 @@ export type Callbacks = {
   getBearerValidProviderIdentifiers: () => Promise<ValidProviderIdentifiersOutput>;
   executeWorkflow: (payload: WorkflowPayload) => Promise<WorkflowExecPayload>;
   getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<unknown>;
-  getVpnBearers: (pagination?: Pagination) => Promise<VpnBearerOutput>;
+  getVpnBearers: (pagination: Pagination | null, filters: VpnBearerFilters | null) => Promise<VpnBearerOutput>;
   createVpnBearer: (bearer: VpnBearer) => Promise<void>;
   editVpnBearer: (bearer: VpnBearer) => Promise<void>;
   deleteVpnBearer: (id: string) => Promise<void>;
@@ -54,7 +55,7 @@ export type Callbacks = {
   deleteVpnCarrier: (carrierName: string) => Promise<void>;
   getVpnServiceCount: (filters: ServiceFilters | null) => Promise<number>;
   getVpnSiteCount: (filters: SiteFilters | null) => Promise<number>;
-  getVpnBearerCount: () => Promise<number>;
+  getVpnBearerCount: (filters: VpnBearerFilters | null) => Promise<number>;
   getLocations: (siteId: string, pagiantion?: Pagination) => Promise<LocationsOutput>;
   getLocationsCount: (siteId: string) => Promise<number>;
   getSiteNetworkAccesses: (siteId: string, pagiantion?: Pagination) => Promise<SiteNetworkAccessOutput>;
