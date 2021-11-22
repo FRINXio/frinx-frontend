@@ -31,6 +31,16 @@ import {
   LocationsOutput,
   SiteNetworkAccessOutput,
 } from './network-types';
+import {
+  ServiceFilter,
+  SiteFilter,
+  SiteNetworkAccessFilter,
+  VpnBearerFilter,
+  getServiceFilterParams,
+  getSiteFilterParams,
+  getSiteNetworkAccessFilterParams,
+  getVpnBearerFilterParams,
+} from './filter-helpers';
 
 // data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers
 const UNICONFIG_SERVICE_URL =
@@ -40,87 +50,6 @@ type Pagination = {
   offset: number;
   limit: number;
 };
-
-type ServiceFilter = {
-  id: string | null;
-  customerName: string | null;
-};
-
-type SiteFilter = {
-  id: string | null;
-  locationId: string | null;
-  deviceId: string | null;
-};
-
-type SiteNetworkAccessFilter = {
-  id: string | null;
-  locationId: string | null;
-  deviceId: string | null;
-};
-
-type VpnBearerFilter = {
-  id: string | null;
-  description: string | null;
-};
-
-// we filter non null filters and joined them with && operator
-function joinNonNullFilters(filters: (string | null)[]): string {
-  const separator = encodeURIComponent('&&'); // AND operator must be url encoded
-  return filters.filter((f) => f !== null).join(separator);
-}
-
-function getServiceFilterParams(serviceFilter: ServiceFilter): string {
-  const filters = [];
-  filters.push(serviceFilter.id ? `@."vpn-id"like_regex"${serviceFilter.id}"` : null);
-  filters.push(serviceFilter.customerName ? `@."customer-name"like_regex"${serviceFilter.customerName}"` : null);
-  const joinedFilters = joinNonNullFilters(filters);
-  return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
-}
-
-function getSiteFilterParams(siteFilter: SiteFilter): string {
-  const filters = [];
-  filters.push(siteFilter.id ? `@."site-id"like_regex"${siteFilter.id}"` : null);
-  filters.push(
-    siteFilter.locationId
-      ? `exists({@/locations/location}[*]  ? (@."location-id"like_regex"${siteFilter.locationId}"))`
-      : null,
-  );
-  filters.push(
-    siteFilter.deviceId ? `exists({@/devices/device}[*]  ? (@."device-id"like_regex"${siteFilter.deviceId}"))` : null,
-  );
-  const joinedFilters = joinNonNullFilters(filters);
-  return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
-}
-
-function getSiteNetworkAccessFilterParams(siteNetworkAccessFilter: SiteNetworkAccessFilter): string {
-  const filters = [];
-  filters.push(
-    siteNetworkAccessFilter.id ? `@."site-network-access-id"like_regex"${siteNetworkAccessFilter.id}"` : null,
-  );
-  filters.push(
-    siteNetworkAccessFilter.locationId
-      ? `@."location-reference"like_regex"${siteNetworkAccessFilter.locationId}"`
-      : null,
-  );
-  filters.push(
-    siteNetworkAccessFilter.deviceId ? `@."device-reference"like_regex"${siteNetworkAccessFilter.deviceId}"` : null,
-  );
-  // filters.push(
-  //   siteFilter.locationId
-  //     ? `exists({@/locations/location}[*]  ? (@."location-id"like_regex"${siteFilter.locationId}"))`
-  //     : null,
-  // );
-  const joinedFilters = joinNonNullFilters(filters);
-  return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
-}
-
-function getVpnBearerFilterParams(vpnBearerFilter: VpnBearerFilter): string {
-  const filters = [];
-  filters.push(vpnBearerFilter.id ? `@."sp-bearer-reference"like_regex"${vpnBearerFilter.id}"` : null);
-  filters.push(vpnBearerFilter.description ? `@."description"like_regex"${vpnBearerFilter.description}"` : null);
-  const joinedFilters = joinNonNullFilters(filters);
-  return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
-}
 
 export async function getVpnServices(
   pagination?: Pagination,
