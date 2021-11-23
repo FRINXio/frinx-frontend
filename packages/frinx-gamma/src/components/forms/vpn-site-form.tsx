@@ -4,6 +4,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { SiteManagementType, VpnSite, MaximumRoutes } from './site-types';
 import Autocomplete from '../autocomplete/autocomplete';
+import { getSelectOptions } from './options.helper';
 
 const DeviceSchema = yup.object().shape({
   deviceId: yup.string().required(),
@@ -60,11 +61,13 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
             setFieldValue('maximumRoutes', Number(eventValue));
           }}
         >
-          <option value="1000">1000</option>
-          <option value="2000">2000</option>
-          <option value="5000">5000</option>
-          <option value="10000">10000</option>
-          <option value="1000000">1000000</option>
+          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site.maximum_routes).map((item) => {
+            return (
+              <option key={`maximum-routes-${item.key}`} value={item.key}>
+                {item.label}
+              </option>
+            );
+          })}
         </Select>
       </FormControl>
 
@@ -79,9 +82,13 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
             setFieldValue('siteManagementType', value);
           }}
         >
-          <option value="provider-managed">provider-managed</option>
-          <option value="co-managed">co-managed</option>
-          <option value="customer-managed">customer-managed</option>
+          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site.site_management).map((item) => {
+            return (
+              <option key={`site-management-${item.key}`} value={item.key}>
+                {item.label}
+              </option>
+            );
+          })}
         </Select>
       </FormControl>
 

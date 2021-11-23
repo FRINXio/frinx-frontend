@@ -6,9 +6,9 @@ import { VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
 import callbackUtils from '../../callback-utils';
 import unwrap from '../../helpers/unwrap';
-import { getServiceExtranetVpnsOptions } from '../../components/forms/options.helper';
+import { getSelectOptions } from '../../components/forms/options.helper';
 
-const extranetVpns = getServiceExtranetVpnsOptions().map((item) => item.value);
+const extranetVpns = getSelectOptions(window.__GAMMA_FORM_OPTIONS__.service.extranet_vpns).map((item) => item.key);
 
 type Props = {
   onSuccess: () => void;

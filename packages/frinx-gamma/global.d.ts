@@ -1,23 +1,31 @@
 declare module 'feather-icons-react';
 
+type Options = Record<string, string>;
+
 declare interface Window {
   __GAMMA_FORM_OPTIONS__: Readonly<{
     service: {
-      vpn_topology: {
-        'any-to-any': 'any-to-any';
-        'hub-spoke': 'hub-spoke';
-        'hub-spoke-disjointed': 'hub-spoke-disjointed';
-      };
-      default_cvlan: {
-        'Main Corporate VPN': 400;
-        'Guest Wifi VPN': 1000;
-        'Dedicated SIP VPN': 50;
-        'Custom C-VLAN': 'custom';
-      };
-      extranet_vpns: {
-        MGMT: 'MGMT';
-        SIP889: 'SIP889';
-      };
+      vpn_topology: Options;
+      default_cvlan: Options;
+      extranet_vpns: Options;
+    };
+    site: {
+      site_management: Options;
+      location: Options;
+      maximum_routes: Options;
+    };
+    site_network_access: {
+      site_role: Options;
+      requested_cvlan: Options;
+      bandwidths: Options;
+    };
+    bearer: {
+      service_type: Options;
+      service_status: Options;
+      encapsulation_type: Options;
+      'svlan-assignment-type': Options;
+      tpid: Options;
+      evc_type: Options;
     };
   }>;
 }

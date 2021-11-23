@@ -14,7 +14,6 @@ import {
   RoutingProtocol,
   RoutingProtocolType,
   LanTag,
-  RequestedCVlan,
   IPConnection,
 } from './site-types';
 import {
@@ -208,7 +207,7 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
       bearer: {
         alwaysOn: access.bearer['always-on'],
         bearerReference: access.bearer['bearer-reference'] || '',
-        requestedCLan: String(access.bearer['requested-c-vlan']) as RequestedCVlan,
+        requestedCLan: String(access.bearer['requested-c-vlan']),
         requestedType: {
           requestedType: access.bearer['requested-type']['requested-type'],
           strict: access.bearer['requested-type'].strict,
