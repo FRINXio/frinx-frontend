@@ -31,7 +31,7 @@
     "build": "COMMIT_HASH=$(git rev-parse HEAD) run-s build:webpack generate:typings",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc --noEmit",
-    "generate:typings": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir build src/index.ts"
+    "generate:typings": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir build global.d.ts src/index.ts"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
