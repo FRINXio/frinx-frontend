@@ -22,6 +22,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { VpnServiceTopology, DefaultCVlanEnum, VpnService } from './service-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
+import { getServiceDefaultCVlanOptions, getServiceVpnTopologyOptions } from './options.helper';
 
 type Props = {
   mode: 'add' | 'edit';
@@ -145,9 +146,13 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
             setFieldValue('vpnServiceTopology', eventValue);
           }}
         >
-          <option value="any-to-any">any-to-any</option>
-          <option value="hub-spoke">hub-spoke</option>
-          <option value="hub-spoke-disjointed">hub-spoke-disjointed</option>
+          {getServiceVpnTopologyOptions().map((item) => {
+            return (
+              <option key={`topology-${item.value}`} value={item.value}>
+                {item.key}
+              </option>
+            );
+          })}
         </Select>
       </FormControl>
       <FormControl id="defaultCVlan" my={6}>
@@ -161,11 +166,10 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
             setFieldValue('defaultCVlan', defaultCVlan);
           }}
         >
-          {[...Object.entries(DefaultCVlanEnum)].map((e) => {
-            const [k, v] = e;
+          {getServiceDefaultCVlanOptions().map((item) => {
             return (
-              <option key={k} value={v}>
-                {`${k} (${v})`}
+              <option key={`default-cvlan-${item.value}`} value={item.value}>
+                {item.key}
               </option>
             );
           })}

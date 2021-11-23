@@ -2,6 +2,7 @@ import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import callbackUtils from '../../callback-utils';
 import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
+import { getServiceExtranetVpnsOptions } from '../../components/forms/options.helper';
 import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
 import { generateVpnId } from '../../helpers/id-helpers';
@@ -13,7 +14,7 @@ const defaultVpnService: VpnService = {
   extranetVpns: [],
 };
 
-const extranetVpns = ['MGMT', 'SIP889'];
+const extranetVpns = getServiceExtranetVpnsOptions().map((item) => item.value);
 
 type Props = {
   onSuccess: () => void;

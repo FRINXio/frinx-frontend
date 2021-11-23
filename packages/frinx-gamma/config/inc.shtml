@@ -1,3 +1,4 @@
 <script type="text/javascript" defer>
   window.__CONFIG__ = <!--# include file="config.json" --> ;
+  console.log('gamma inc');
 </script>

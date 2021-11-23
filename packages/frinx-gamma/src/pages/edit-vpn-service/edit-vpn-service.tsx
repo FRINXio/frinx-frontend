@@ -6,8 +6,9 @@ import { VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
 import callbackUtils from '../../callback-utils';
 import unwrap from '../../helpers/unwrap';
+import { getServiceExtranetVpnsOptions } from '../../components/forms/options.helper';
 
-const extranetVpns = ['MGMT', 'SIP889'];
+const extranetVpns = getServiceExtranetVpnsOptions().map((item) => item.value);
 
 type Props = {
   onSuccess: () => void;

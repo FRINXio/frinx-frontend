@@ -23,6 +23,26 @@
         gamma_enabled: true,
         unistore_api_url: 'http://localhost:4000/api/unistore',
       };
+
+      window.__GAMMA_FORM_OPTIONS__ = {
+        service: {
+          vpn_topology: {
+            'any-to-any': 'any-to-any',
+            'hub-spoke': 'hub-spoke',
+            'hub-spoke-disjointed': 'hub-spoke-disjointed',
+          },
+          default_cvlan: {
+            'Main Corporate VPN': '400',
+            'Guest Wifi VPN': 1000,
+            'Dedicated SIP VPN': 50,
+            'Custom C-VLAN': 'custom',
+          },
+          extranet_vpns: {
+            MGMT: 'MGMT',
+            SIP889: 'SIP889',
+          },
+        },
+      };
     </script>
     <meta charset="utf-8" />
     <link rel="icon" href="/favicon.ico" />
