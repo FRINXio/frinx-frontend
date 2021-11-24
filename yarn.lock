@@ -21,31 +21,24 @@
   resolved "https://registry.yarnpkg.com/@ardatan/fetch-event-source/-/fetch-event-source-2.0.2.tgz#734aa3eaa0da456453d24d8dc7c14d5e366a8d21"
   integrity sha512-mcpz/wJ7s50PJIVz4OQ1Yim3w/AAchtYtIg0QMWiMR2cZZoI9t23hRyqeumtD5EmyJu0fxtjmQ5WY8GI86V4rQ==
 
-"@azure/msal-browser@^2.9.0":
-  version "2.16.1"
-  resolved "https://registry.yarnpkg.com/@azure/msal-browser/-/msal-browser-2.16.1.tgz#4b41afc1654eb27e090892893a2a2600af589af7"
-  integrity sha512-PcYi4seUGdtu30mOIdwk4FvbOdHFQ+fKAptEqV0tcsrvor0Hox/R0Xr0GEiBMfKkJbagLOYX7ORPRCYhZrWeqw==
+"@azure/msal-browser@^2.19.0":
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/@azure/msal-browser/-/msal-browser-2.19.0.tgz#6915d200e0679eb8b26368bf0e0fc02ee4a8617a"
+  integrity sha512-nVMMSbFeocGv3SUYGBD+3pkE/pbAciGhER3KCjsBu6Sy9EDaBCiQ418KZfHBcCcrNQgFxf3nleWdeYoYX7281g==
   dependencies:
-    "@azure/msal-common" "^4.5.1"
+    "@azure/msal-common" "^5.1.0"
 
-"@azure/msal-common@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@azure/msal-common/-/msal-common-2.1.0.tgz#a4bc17e254d6ec524016f13267947dd4ff4a624d"
-  integrity sha512-Y1Id+jG59S3eY2ZQQtUA/lxwbRcgjcWaiib9YX+SwV3zeRauKfEiZT7l3z+lwV+T+Sst20F6l1mJsfQcfE7CEQ==
-  dependencies:
-    debug "^4.1.1"
-
-"@azure/msal-common@^4.5.1":
-  version "4.5.1"
-  resolved "https://registry.yarnpkg.com/@azure/msal-common/-/msal-common-4.5.1.tgz#f35af8b634ae24aebd0906deb237c0db1afa5826"
-  integrity sha512-/i5dXM+QAtO+6atYd5oHGBAx48EGSISkXNXViheliOQe+SIFMDo3gSq3lL54W0suOSAsVPws3XnTaIHlla0PIQ==
+"@azure/msal-common@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@azure/msal-common/-/msal-common-5.1.0.tgz#e3a75a8ba1602da040698046161961d6dc59bbc4"
+  integrity sha512-4zHZ5Ec7jAgTIWZO3ap1ozgIPGAirF1wL8UhsmPF9QDoZz0cMHdaNmtov5i2+6Xq37YMzhN5s50EFHBuXd7sDQ==
   dependencies:
     debug "^4.1.1"
 
-"@azure/msal-react@^1.0.0-alpha.2":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@azure/msal-react/-/msal-react-1.0.1.tgz#69b2d6e2f78d56d64b01d6f2961a50b5961b3cc8"
-  integrity sha512-5e5+DYnu3/a9R/QUrH7rWKmq1UjYY13kSW0TAWZTf+GEUjIcV/+cJtTVg0RNBACIWU8PAVW8Epj3qfgPDfOctg==
+"@azure/msal-react@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@azure/msal-react/-/msal-react-1.1.1.tgz#d7980647f6929fd94ca34fa453cd4e5bf3210bb3"
+  integrity sha512-tsl+5N/YQM55E8D5YaolZyxaf70frj/BS8EjZQvmPcxpuyOtQ+qKcJZNL7FYetk30eba58IRUcKNmaVxOJ30xQ==
 
 "@babel/cli@^7.14.3":
   version "7.14.8"
