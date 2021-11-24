@@ -1,16 +1,23 @@
-import React, { createContext, FC, useEffect } from 'react';
+import React, { createContext, FC, useEffect, useState } from 'react';
 import callbackUtils, { Callbacks } from './callback-utils';
 import { getTransactionId, setTransactionId } from './helpers/transaction-id';
 
 export const UnistoreApiContext = createContext(false);
 
 const UnistoreApiProvider: FC = ({ children }) => {
+  const [isReady, setIsReady] = useState(false);
   useEffect(() => {
     if (!getTransactionId()) {
-      setTransactionId();
+      const callbacks = callbackUtils.getCallbacks;
+      callbacks.getTransactionCookie().then((data) => {
+        setTransactionId(data);
+        setIsReady(true);
+      });
+    } else {
+      setIsReady(true);
     }
   }, []);
-  return <UnistoreApiContext.Provider value>{children}</UnistoreApiContext.Provider>;
+  return isReady ? <UnistoreApiContext.Provider value>{children}</UnistoreApiContext.Provider> : null;
 };
 
 export function getUnistoreApiProvider(callbacks: Callbacks): FC {
