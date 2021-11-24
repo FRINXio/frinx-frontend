@@ -175,12 +175,20 @@ export async function deleteVpnBearer(id: string): Promise<void> {
 }
 
 export async function getVpnNodes(): Promise<VpnNodesOutput> {
-  const json = await sendGetRequest(
-    '/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes',
-  );
-  const data = decodeVpnNodesOutput(json);
+  try {
+    const json = await sendGetRequest(
+      '/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes',
+    );
+    const data = decodeVpnNodesOutput(json);
 
-  return data;
+    return data;
+  } catch {
+    return {
+      'vpn-nodes': {
+        'vpn-node': [],
+      },
+    };
+  }
 }
 
 export async function editVpnNode(node: VpnNode): Promise<void> {
@@ -198,12 +206,20 @@ export async function deleteVpnNode(nodeId: string): Promise<void> {
 }
 
 export async function getVpnCarriers(): Promise<VpnCarriersOutput> {
-  const json = await sendGetRequest(
-    '/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers',
-  );
-  const data = decodeVpnCarriersOutput(json);
+  try {
+    const json = await sendGetRequest(
+      '/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers',
+    );
+    const data = decodeVpnCarriersOutput(json);
 
-  return data;
+    return data;
+  } catch {
+    return {
+      carriers: {
+        carrier: [],
+      },
+    };
+  }
 }
 
 export async function createVpnCarrier(carrier: VpnCarrier): Promise<void> {
@@ -229,44 +245,66 @@ export async function deleteVpnCarrier(carrierId: string): Promise<void> {
 }
 
 export async function getBearerValidProviderIdentifiers(): Promise<ValidProviderIdentifiersOutput> {
-  const json = await sendGetRequest(
-    '/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/valid-provider-identifiers',
-  );
-  const data = decodeValidProviderIdentifiersOutput(json);
-  return data;
+  try {
+    const json = await sendGetRequest(
+      '/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/valid-provider-identifiers',
+    );
+    const data = decodeValidProviderIdentifiersOutput(json);
+    return data;
+  } catch {
+    return {
+      'valid-provider-identifiers': {
+        'bfd-profile-identifier': [],
+        'qos-profile-identifier': [],
+        'bgp-profile-identifier': [],
+      },
+    };
+  }
 }
 
 export async function getVpnServiceCount(serviceFilter: ServiceFilter | null): Promise<number> {
-  const filterParams = serviceFilter ? getServiceFilterParams(serviceFilter) : '';
-  const data = await sendGetRequest(
-    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?content=config&fetch=count${filterParams}`,
-  );
-  if (!isNumber(data)) {
-    throw new Error('not a number');
+  try {
+    const filterParams = serviceFilter ? getServiceFilterParams(serviceFilter) : '';
+    const data = await sendGetRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?content=config&fetch=count${filterParams}`,
+    );
+    if (!isNumber(data)) {
+      throw new Error('not a number');
+    }
+    return data;
+  } catch {
+    return 0;
   }
-  return data;
 }
 
 export async function getVpnSiteCount(siteFilter: SiteFilter | null): Promise<number> {
-  const filterParams = siteFilter ? getSiteFilterParams(siteFilter) : '';
-  const data = await sendGetRequest(
-    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config&fetch=count${filterParams}`,
-  );
-  if (!isNumber(data)) {
-    throw new Error('not a number');
+  try {
+    const filterParams = siteFilter ? getSiteFilterParams(siteFilter) : '';
+    const data = await sendGetRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config&fetch=count${filterParams}`,
+    );
+    if (!isNumber(data)) {
+      throw new Error('not a number');
+    }
+    return data;
+  } catch {
+    return 0;
   }
-  return data;
 }
 
 export async function getVpnBearerCount(vpnBearerFilter: VpnBearerFilter | null): Promise<number> {
-  const filterParams = vpnBearerFilter ? getVpnBearerFilterParams(vpnBearerFilter) : '';
-  const data = await sendGetRequest(
-    `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?content=config&fetch=count${filterParams}`,
-  );
-  if (!isNumber(data)) {
-    throw new Error('not a number');
+  try {
+    const filterParams = vpnBearerFilter ? getVpnBearerFilterParams(vpnBearerFilter) : '';
+    const data = await sendGetRequest(
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?content=config&fetch=count${filterParams}`,
+    );
+    if (!isNumber(data)) {
+      throw new Error('not a number');
+    }
+    return data;
+  } catch {
+    return 0;
   }
-  return data;
 }
 
 export async function getLocations(siteId: string, pagination?: Pagination): Promise<LocationsOutput> {
@@ -284,13 +322,17 @@ export async function getLocations(siteId: string, pagination?: Pagination): Pro
 }
 
 export async function getLocationsCount(siteId: string): Promise<number> {
-  const data = await sendGetRequest(
-    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?content=config&fetch=count`,
-  );
-  if (!isNumber(data)) {
-    throw new Error('not a number');
+  try {
+    const data = await sendGetRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?content=config&fetch=count`,
+    );
+    if (!isNumber(data)) {
+      throw new Error('not a number');
+    }
+    return data;
+  } catch {
+    return 0;
   }
-  return data;
 }
 
 export async function getSiteNetworkAccesses(
@@ -316,12 +358,16 @@ export async function getSiteNetworkAccessesCount(
   siteId: string,
   siteNetworkAccessFilter: SiteNetworkAccessFilter | null,
 ): Promise<number> {
-  const filterParams = siteNetworkAccessFilter ? getSiteNetworkAccessFilterParams(siteNetworkAccessFilter) : '';
-  const data = await sendGetRequest(
-    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access?content=config&fetch=count${filterParams}`,
-  );
-  if (!isNumber(data)) {
-    throw new Error('not a number');
+  try {
+    const filterParams = siteNetworkAccessFilter ? getSiteNetworkAccessFilterParams(siteNetworkAccessFilter) : '';
+    const data = await sendGetRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access?content=config&fetch=count${filterParams}`,
+    );
+    if (!isNumber(data)) {
+      throw new Error('not a number');
+    }
+    return data;
+  } catch {
+    return 0;
   }
-  return data;
 }
