@@ -34,12 +34,12 @@ export enum AccessPriority {
 }
 
 // eslint-disable-next-line no-shadow
-export enum RequestedCVlan {
-  l3vpn = '400',
-  Pseudowire = '100',
-  'Local Internet Breakout' = '200',
-  DMZ = '300',
-}
+// export enum RequestedCVlan {
+//   l3vpn = '400',
+//   Pseudowire = '100',
+//   'Local Internet Breakout' = '200',
+//   DMZ = '300',
+// }
 
 export type MaximumRoutes = 1000 | 2000 | 5000 | 10000;
 
@@ -66,7 +66,7 @@ export type RoutingProtocol = {
 export type Bearer = {
   alwaysOn: boolean;
   bearerReference: string;
-  requestedCLan: RequestedCVlan;
+  requestedCLan: string;
   requestedType: {
     requestedType: string;
     strict: boolean;

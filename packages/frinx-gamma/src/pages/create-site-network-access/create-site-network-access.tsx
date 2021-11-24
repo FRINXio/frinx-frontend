@@ -8,10 +8,11 @@ import {
   apiVpnServiceToClientVpnService,
 } from '../../components/forms/converters';
 import SiteNetworkAccessForm from '../../components/forms/site-network-access-form';
-import { AccessPriority, RequestedCVlan, SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
+import { AccessPriority, SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
 import { generateNetworkAccessId } from '../../helpers/id-helpers';
 import callbackUtils from '../../callback-utils';
 import { VpnService } from '../../components/forms/service-types';
+import { getSelectOptions } from '../../components/forms/options.helper';
 
 const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
   siteNetworkAccessId: generateNetworkAccessId(),
@@ -41,7 +42,7 @@ const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
   bearer: {
     alwaysOn: false,
     bearerReference: '',
-    requestedCLan: RequestedCVlan.l3vpn,
+    requestedCLan: '400', // l3vpn
     requestedType: {
       requestedType: 'dot1ad',
       strict: false,
@@ -63,9 +64,8 @@ const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
 });
 
 // TODO: to be defined
-const getBandwidths = async () => {
-  return [1000, 2000, 5000, 10000];
-};
+const getBandwidths = async () =>
+  getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site_network_access.bandwidths).map((item) => Number(item.key));
 
 type Props = {
   onSuccess: (siteId: string) => void;
