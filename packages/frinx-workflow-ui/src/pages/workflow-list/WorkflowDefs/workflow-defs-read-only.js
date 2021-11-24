@@ -14,7 +14,7 @@ import DependencyModal from './DependencyModal/DependencyModal';
 import DiagramModal from './DiagramModal/DiagramModal';
 import InputModal from './InputModal/input-modal';
 import PageContainer from '../../../common/PageContainer';
-import PaginationPages from '../../../common/Pagination';
+import Paginator from '../../../common/pagination';
 import React, { useEffect, useState } from 'react';
 import WfAutoComplete from '../../../common/wf-autocomplete';
 import WfLabels from '../../../common/wf-labels';
@@ -315,7 +315,7 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
         <Tfoot>
           <Tr>
             <Th>
-              <PaginationPages totalPages={totalPages} currentPage={currentPage} changePageHandler={setCurrentPage} />
+              <Paginator currentPage={currentPage} onPaginationClick={setCurrentPage} pagesCount={totalPages} />
             </Th>
           </Tr>
         </Tfoot>

@@ -1,7 +1,8 @@
-import { EditIcon, SettingsIcon } from '@chakra-ui/icons';
+import { EditIcon, SettingsIcon, TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons';
 import {
   Badge,
   Checkbox,
+  Flex,
   HStack,
   Icon,
   IconButton,
@@ -21,11 +22,20 @@ import { getLocalDateFromUTC } from '../../helpers/time.helpers';
 import { DevicesQuery } from '../../__generated__/graphql';
 import InstallButton from './install-button';
 
+type SortedBy = 'name' | 'created';
+type Direction = 'ASC' | 'DESC';
+type Sorting = {
+  sortedBy: SortedBy;
+  direction: Direction;
+};
+
 type Props = {
+  sorting: Sorting | null;
   devices: DevicesQuery['devices']['edges'];
   selectedDevices: Set<string>;
   areSelectedAll: boolean;
   installLoadingMap: Record<string, boolean>;
+  onSortingClick: (sortedBy: SortedBy) => void;
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
   onSettingsButtonClick: (deviceId: string) => void;
@@ -35,9 +45,18 @@ type Props = {
   onSelectAll: (checked: boolean) => void;
 };
 
+function getSortingIcon(direction: Direction) {
+  if (direction === 'ASC') {
+    return <TriangleUpIcon />;
+  }
+  return <TriangleDownIcon />;
+}
+
 const DeviceTable: VoidFunctionComponent<Props> = ({
+  sorting,
   devices,
   selectedDevices,
+  onSortingClick,
   onInstallButtonClick,
   onUninstallButtonClick,
   onSettingsButtonClick,
@@ -55,8 +74,28 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           <Th>
             <Checkbox isChecked={areSelectedAll} onChange={(e) => onSelectAll(e.target.checked)} mr={2} />
           </Th>
-          <Th>Name</Th>
-          <Th>Created</Th>
+          <Th>
+            <Flex
+              alignItems="center"
+              justifyContent="space-between"
+              cursor="pointer"
+              onClick={() => onSortingClick('name')}
+            >
+              <Text>Name</Text>
+              {sorting?.sortedBy === 'name' && getSortingIcon(sorting.direction)}
+            </Flex>
+          </Th>
+          <Th>
+            <Flex
+              alignItems="center"
+              justifyContent="space-between"
+              cursor="pointer"
+              onClick={() => onSortingClick('created')}
+            >
+              <Text>Created</Text>
+              {sorting?.sortedBy === 'created' && getSortingIcon(sorting.direction)}
+            </Flex>
+          </Th>
           <Th>Zone</Th>
           <Th>Service state</Th>
           <Th>Installation</Th>

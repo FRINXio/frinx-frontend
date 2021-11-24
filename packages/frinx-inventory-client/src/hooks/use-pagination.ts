@@ -10,6 +10,7 @@ type PaginationArgs = {
 type CallbackFunctions = {
   nextPage: (cursor: string | null) => () => void;
   previousPage: (cursor: string | null) => () => void;
+  firstPage: () => void;
 };
 
 export function usePagination(devicesPerPage = 20): [PaginationArgs, CallbackFunctions] {
@@ -19,6 +20,16 @@ export function usePagination(devicesPerPage = 20): [PaginationArgs, CallbackFun
     last: undefined,
     before: undefined,
   });
+  const firstPage = useCallback(
+    () =>
+      setState({
+        first: devicesPerPage,
+        after: undefined,
+        last: undefined,
+        before: undefined,
+      }),
+    [devicesPerPage],
+  );
   const nextPage = useCallback(
     (cursor: string | null) => () =>
       setState({
@@ -39,5 +50,5 @@ export function usePagination(devicesPerPage = 20): [PaginationArgs, CallbackFun
       }),
     [devicesPerPage],
   );
-  return [state, { nextPage, previousPage }];
+  return [state, { nextPage, previousPage, firstPage }];
 }

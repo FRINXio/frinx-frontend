@@ -4,11 +4,9 @@ import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import buildReducer from './store/reducers/builder';
 import bulkReducer from './store/reducers/bulk';
-import searchReducer from './store/reducers/searchExecs';
 
 const rootReducer = combineReducers({
   bulkReducer,
-  searchReducer,
   buildReducer,
 });
 
