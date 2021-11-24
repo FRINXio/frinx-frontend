@@ -1,4 +1,3 @@
-import { v4 as uuid4 } from 'uuid';
 import unwrap from './unwrap';
 
 function setCookie(name: string, val: string): void {
@@ -21,11 +20,10 @@ function getCookie(name: string): string | undefined {
   return undefined;
 }
 
-export function setTransactionId(): void {
-  const transactionId = uuid4();
-  setCookie('transactionId', transactionId);
+export function setTransactionId(transactionId: string): void {
+  setCookie('UNICONFIGTXID', transactionId);
 }
 
 export function getTransactionId(): string | undefined {
-  return getCookie('transactionId');
+  return getCookie('UNICONFIGTXID');
 }

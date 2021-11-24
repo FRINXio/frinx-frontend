@@ -68,6 +68,7 @@ export type Callbacks = {
     siteId: string,
     siteNetworkAccessFilter: SiteNetworkAccessFilters | null,
   ) => Promise<number>;
+  getTransactionCookie: () => Promise<string>;
 };
 class CallbackUtils {
   private callbacks: Callbacks | null = null;
