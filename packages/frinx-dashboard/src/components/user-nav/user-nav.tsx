@@ -1,5 +1,5 @@
-import React, { FC, useEffect } from 'react';
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
+import { ChevronDownIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -13,8 +13,8 @@ import {
   MenuList,
   Text,
 } from '@chakra-ui/react';
-import { ChevronDownIcon } from '@chakra-ui/icons';
-import { setTokenCookie, removeTokenCookie, setAuthToken } from '../../auth-helpers';
+import React, { FC, useEffect } from 'react';
+import { removeTokenCookie, setAuthToken } from '../../auth-helpers';
 
 const UserNav: FC = () => {
   const { instance, accounts, inProgress } = useMsal();
