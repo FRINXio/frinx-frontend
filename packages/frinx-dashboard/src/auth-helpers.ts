@@ -13,7 +13,7 @@ export function removeTokenCookie(): void {
   document.cookie = `BearerToken=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
 }
 
-export function setAuthToken(token: string) {
+export function setAuthToken(token: string): void {
   localStorage.setItem(LS_TOKEN_KEY, token);
 }
 
