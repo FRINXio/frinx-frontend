@@ -335,12 +335,10 @@ export async function getSiteNetworkAccessesCount(
 }
 
 export async function getTransactionCookie(): Promise<string> {
-  console.log('fetching cookies');
   const data = await sendCookiePostRequest('/operations/uniconfig-manager:create-transaction', {
     auth: UNISTORE_AUTH,
     verify: false,
   });
-  console.log(data);
   if (!isString(data)) {
     throw new Error('not a string');
   }
