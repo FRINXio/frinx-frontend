@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
+import { Redirect, Route, RouteComponentProps, Switch, useHistory } from 'react-router-dom';
 
 const UniresourceApp: FC = () => {
   const [components, setComponents] = useState<typeof import('@frinx/uniresource-ui') | null>(null);
@@ -17,6 +17,7 @@ const UniresourceApp: FC = () => {
         CreateStrategyPage,
         CreateAllocatingIpv4PrefixPoolPage,
         CreateAllocatingVlanPoolPage,
+        PoolDetailPage,
       } = mod;
       setComponents({
         PoolsPage,
@@ -28,6 +29,7 @@ const UniresourceApp: FC = () => {
         CreateStrategyPage,
         CreateAllocatingIpv4PrefixPoolPage,
         CreateAllocatingVlanPoolPage,
+        PoolDetailPage,
       });
     });
   }, []);
@@ -45,6 +47,7 @@ const UniresourceApp: FC = () => {
     CreateStrategyPage,
     CreateAllocatingIpv4PrefixPoolPage,
     CreateAllocatingVlanPoolPage,
+    PoolDetailPage,
   } = components;
 
   return (
@@ -71,8 +74,16 @@ const UniresourceApp: FC = () => {
             onNewVlanBtnClick={() => {
               history.push('/uniresource/pools/new/allocating/vlan');
             }}
+            onPoolNameClick={(poolId: string) => history.push(`/uniresource/pools/${poolId}`)}
           />
         </Route>
+        <Route
+          exact
+          path="/uniresource/pools/:poolId"
+          render={(props: RouteComponentProps<{ poolId: string }>) => {
+            return <PoolDetailPage poolId={props.match.params.poolId} />;
+          }}
+        />
         <Route exact path="/uniresource/pools/new/allocating/ipv4-prefix">
           <CreateAllocatingIpv4PrefixPoolPage
             onCreateSuccess={() => {

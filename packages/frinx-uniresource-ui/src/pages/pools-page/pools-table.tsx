@@ -5,8 +5,9 @@ import { PoolCapacityPayload, QueryAllPoolsQuery } from '../../__generated__/gra
 
 type Props = {
   pools: QueryAllPoolsQuery['QueryResourcePools'] | null;
-  onDeleteBtnClick: (id: string) => void;
   isLoading: boolean;
+  onDeleteBtnClick: (id: string) => void;
+  onPoolNameClick: (poolId: string) => void;
 };
 
 function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
@@ -26,7 +27,7 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   return (capacity.utilizedCapacity / totalCapacity) * 100;
 }
 
-const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoading }) => {
+const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoading, onPoolNameClick }) => {
   return (
     <>
       <Table background="white">
@@ -55,7 +56,7 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoadi
               return (
                 <Tr key={pool.id}>
                   <Td>
-                    <Text as="span" fontWeight={600}>
+                    <Text as="span" fontWeight={600} onClick={() => onPoolNameClick(pool.id)} cursor="pointer">
                       {pool.Name}
                     </Text>
                   </Td>
