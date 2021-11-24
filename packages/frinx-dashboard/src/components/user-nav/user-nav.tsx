@@ -14,7 +14,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import { setTokenCookie, removeTokenCookie } from '../../auth-helpers';
+import { setTokenCookie, removeTokenCookie, setAuthToken } from '../../auth-helpers';
 
 const UserNav: FC = () => {
   const { instance, accounts, inProgress } = useMsal();
@@ -29,10 +29,7 @@ const UserNav: FC = () => {
       });
 
       authResultPromise.then((value) => {
-        // Pushing JWT token to cookie (msal stores it in localStorage) in order to pass the token to api-gateway
-        //  api gateway needs to make sure the token is still valid
-        // TODO now the token is in localStorage and also in cookie ... is that OK ?
-        setTokenCookie(value.idToken);
+        setAuthToken(value.idToken);
       });
     }
   }, [inProgress, instance, accounts]);

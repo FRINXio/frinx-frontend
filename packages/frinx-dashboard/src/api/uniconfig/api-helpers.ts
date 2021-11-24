@@ -1,9 +1,22 @@
+import { getAuthToken } from '../../auth-helpers';
+
 const UNICONFIG_API_URL = window.__CONFIG__.uniconfig_api_url;
-const AUTHORIZATION = window.__CONFIG__.uniconfig_auth; // encoded admin/admin credentials (default)
+// const AUTHORIZATION = window.__CONFIG__.uniconfig_auth; // encoded admin/admin credentials (default)
+
+function getHeaders(): Record<string, string> {
+  const authToken = getAuthToken();
+  return {
+    'Content-Type': 'application/json',
+    ...(authToken != null ? { Authorization: `Bearer ${authToken}` } : {}),
+  };
+}
 
 export async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
   const url = `${UNICONFIG_API_URL}${path}`;
-  const response = await fetch(url, options);
+  const response = await fetch(url, {
+    ...options,
+    headers: getHeaders(),
+  });
 
   if (!response.ok) {
     throw new Error(`apiFetch failed with http-code ${response.status}`);
@@ -19,9 +32,6 @@ export async function apiFetch(path: string, options: RequestInit): Promise<unkn
 export async function sendGetRequest(path: string): Promise<unknown> {
   const options = {
     method: 'GET',
-    headers: {
-      Authorization: AUTHORIZATION,
-    },
   };
   return apiFetch(path, options);
 }
@@ -30,10 +40,6 @@ export async function sendPostRequest(path: string, body: unknown): Promise<unkn
   const options = {
     method: 'POST',
     body: JSON.stringify(body),
-    headers: {
-      Authorization: AUTHORIZATION,
-      'Content-Type': 'application/json',
-    },
   };
   return apiFetch(path, options);
 }
@@ -42,10 +48,6 @@ export async function sendPutRequest(path: string, body: unknown): Promise<unkno
   const options = {
     method: 'PUT',
     body: JSON.stringify(body),
-    headers: {
-      Authorization: AUTHORIZATION,
-      'Content-Type': 'application/json',
-    },
   };
   return apiFetch(path, options);
 }
@@ -54,9 +56,6 @@ export async function sendDeleteRequest(path: string, body?: unknown): Promise<u
   const options = {
     method: 'DELETE',
     body: JSON.stringify(body),
-    headers: {
-      Authorization: AUTHORIZATION,
-    },
   };
   return apiFetch(path, options);
 }

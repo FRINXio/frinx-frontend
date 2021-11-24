@@ -4,14 +4,24 @@ import PageContainer from './components/page-container';
 
 type Props = {
   url: string;
+  getAuthToken: () => string | null;
 };
 
-const Root: FC<Props> = ({ children, url }) => {
+const Root: FC<Props> = ({ children, url, getAuthToken }) => {
   const { current: urqlClient } = useRef(
-    createClient({
-      url,
-    }),
+    (() => {
+      const authToken = getAuthToken();
+      return createClient({
+        url,
+        fetchOptions: {
+          headers: {
+            ...(authToken != null ? { authorization: `Bearer ${authToken}` } : {}),
+          },
+        },
+      });
+    })(),
   );
+
   return (
     <Provider value={urqlClient}>
       <PageContainer>{children}</PageContainer>
