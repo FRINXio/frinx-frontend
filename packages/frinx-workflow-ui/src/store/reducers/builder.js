@@ -1,4 +1,3 @@
-// @flow
 import {
   LOCK_WORKFLOW_NAME,
   OPEN_CARD,

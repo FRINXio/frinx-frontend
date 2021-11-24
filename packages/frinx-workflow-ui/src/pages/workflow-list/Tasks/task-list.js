@@ -1,7 +1,7 @@
 // @flow
 import AddTaskModal from './AddTaskModal';
 import PageContainer from '../../../common/PageContainer';
-import PaginationPages from '../../../common/Pagination';
+import Paginator from '../../../common/pagination';
 import React, { useEffect, useState } from 'react';
 import TaskModal from './TaskModal';
 import callbackUtils from '../../../utils/callback-utils';
@@ -153,7 +153,7 @@ const TaskList = () => {
         <Tfoot>
           <Tr>
             <Th>
-              <PaginationPages totalPages={totalPages} currentPage={currentPage} changePageHandler={setCurrentPage} />
+              <Paginator currentPage={currentPage} onPaginationClick={setCurrentPage} pagesCount={totalPages} />
             </Th>
           </Tr>
         </Tfoot>

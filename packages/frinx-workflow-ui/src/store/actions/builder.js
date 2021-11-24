@@ -1,4 +1,3 @@
-// @flow
 import * as _ from 'lodash';
 
 export const STORE_WORKFLOWS = 'STORE_WORKFLOWS';

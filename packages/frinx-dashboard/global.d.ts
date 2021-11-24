@@ -26,6 +26,7 @@ declare interface Window {
     uniresource_api_url: string;
     gamma_enabled: boolean;
     unistore_api_url: string;
+    uniflow_api_docs_url: string;
   }>;
 
   dashboardApp: DashboardApp;

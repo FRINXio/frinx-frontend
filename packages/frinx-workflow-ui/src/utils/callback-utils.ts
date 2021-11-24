@@ -1,4 +1,12 @@
-import { ScheduledWorkflow, Workflow } from '../types/types';
+import { ExecutedWorkflowResponse } from '../pages/executed-workflow-detail/executed-workflow-detail-status.helpers';
+import {
+  ExecutedWorkflowsFlat,
+  ExecutedWorkflowsHierarchical,
+  ExtendedTask,
+  ScheduledWorkflow,
+  Workflow,
+  WorkflowInstanceDetail,
+} from '../types/types';
 import { EventListener, Queue, TaskDefinition, WorkflowPayload } from '../types/uniflow-types';
 
 export type Callbacks = {
@@ -15,15 +23,25 @@ export type Callbacks = {
   deleteWorkflow: (name: string, version: string) => Promise<Workflow>;
   deleteTaskDefinition: (name: string) => Promise<TaskDefinition>;
   registerTaskDefinition: (taskDefinition: TaskDefinition) => Promise<TaskDefinition>;
-  getWorkflowExecutions: (query?: string, start?: number, size?: string) => Promise<unknown>;
-  getWorkflowInstanceDetail: (workflowId: string) => Promise<unknown>;
+  getWorkflowExecutions: (
+    workflowId: string,
+    label: string,
+    start: number,
+    size: string,
+  ) => Promise<ExecutedWorkflowsFlat>;
+  getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<ExecutedWorkflowResponse>;
   executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>;
-  getWorkflowExecutionsHierarchical: (query?: string, start?: number, size?: string) => Promise<unknown>;
+  getWorkflowExecutionsHierarchical: (
+    query: string,
+    label: string,
+    start?: number,
+    size?: string,
+  ) => Promise<ExecutedWorkflowsHierarchical>;
   terminateWorkflows: (workflowIds: string[]) => Promise<string[]>;
   pauseWorkflows: (workflowIds: string[]) => Promise<string[]>;
   resumeWorkflows: (workflowIds: string[]) => Promise<string[]>;
   retryWorkflows: (workflowIds: string[]) => Promise<string[]>;
-  restartWorkflows: (workflowIds: string[]) => Promise<string[]>;
+  restartWorkflows: (workflowIds: string[]) => Promise<{ text: string; statusCode: number }>;
   deleteWorkflowInstance: (workflowId: string) => Promise<string>;
   getSchedules: () => Promise<ScheduledWorkflow[]>;
   deleteSchedule: (name: string, version: string) => Promise<unknown>;
@@ -32,6 +50,7 @@ export type Callbacks = {
     version: string,
     schedule: Partial<ScheduledWorkflow>,
   ) => Promise<{ message: string }>;
+  getExternalStorage: (path: string) => Promise<Record<string, string>>;
 };
 
 class CallbackUtils {
@@ -48,23 +67,28 @@ class CallbackUtils {
   private deleteWorkflow: ((name: string, version: string) => Promise<Workflow>) | null = null;
   private deleteTaskDefinition: ((name: string) => Promise<TaskDefinition>) | null = null;
   private registerTaskDefinition: ((taskDefinition: TaskDefinition) => Promise<TaskDefinition>) | null = null;
-  private getWorkflowExecutions: ((query?: string, start?: number, size?: string) => Promise<unknown>) | null = null;
-  private getWorkflowInstanceDetail: ((workflowId: string) => Promise<unknown>) | null = null;
+  private getWorkflowExecutions:
+    | ((workflowId: string, label: string, start: number, size: string) => Promise<ExecutedWorkflowsFlat>)
+    | null = null;
+  private getWorkflowInstanceDetail:
+    | ((workflowId: string, options?: RequestInit) => Promise<ExecutedWorkflowResponse>)
+    | null = null;
   private executeWorkflow: ((workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>) | null = null;
   private getWorkflowExecutionsHierarchical:
-    | ((query?: string, start?: number, size?: string) => Promise<unknown>)
+    | ((query: string, label: string, start?: number, size?: string) => Promise<ExecutedWorkflowsHierarchical>)
     | null = null;
   private terminateWorkflows: ((workflowIds: string[]) => Promise<string[]>) | null = null;
   private pauseWorkflows: ((workflowIds: string[]) => Promise<string[]>) | null = null;
   private resumeWorkflows: ((workflowIds: string[]) => Promise<string[]>) | null = null;
   private retryWorkflows: ((workflowIds: string[]) => Promise<string[]>) | null = null;
-  private restartWorkflows: ((workflowIds: string[]) => Promise<string[]>) | null = null;
+  private restartWorkflows: ((workflowIds: string[]) => Promise<{ text: string; statusCode: number }>) | null = null;
   private deleteWorkflowInstance: ((workflowId: string) => Promise<string>) | null = null;
   private getSchedules: (() => Promise<ScheduledWorkflow[]>) | null = null;
   private deleteSchedule: ((name: string, version: string) => Promise<unknown>) | null = null;
   private registerSchedule:
     | ((name: string, version: string, schedule: Partial<ScheduledWorkflow>) => Promise<{ message: string }>)
     | null = null;
+  private getExternalStorage: (path: string) => Promise<Record<string, string>>;
 
   setCallbacks(callbacks: Callbacks) {
     if (this.getWorkflows == null) {
@@ -169,6 +193,9 @@ class CallbackUtils {
 
     if (this.registerSchedule == null) {
       this.registerSchedule = callbacks.registerSchedule;
+    }
+    if (this.getExternalStorage == null) {
+      this.getExternalStorage = callbacks.getExternalStorage;
     }
   }
 
@@ -352,6 +379,13 @@ class CallbackUtils {
       throw new Error('registerScheduleCallback is missing');
     }
     return this.registerSchedule;
+  }
+
+  getExternalStorageCallback() {
+    if (this.getExternalStorage == null) {
+      throw new Error('getExternalStorage is missing');
+    }
+    return this.getExternalStorage;
   }
 }
 
