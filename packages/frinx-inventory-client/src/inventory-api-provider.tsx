@@ -6,16 +6,25 @@ export const InventoryAPIContext = createContext(false);
 
 export type Props = {
   url: string;
+  getAuthToken: () => string | null;
 };
 
-export const InventoryAPIProvider: FC<Props> = ({ children, url }) => {
-  const { current: clientRef } = useRef(
-    createClient({
-      url,
-    }),
+export const InventoryAPIProvider: FC<Props> = ({ children, url, getAuthToken }) => {
+  const { current: urqlClient } = useRef(
+    (() => {
+      const authToken = getAuthToken();
+      return createClient({
+        url,
+        fetchOptions: {
+          headers: {
+            ...(authToken != null ? { authorization: `Bearer ${authToken}` } : {}),
+          },
+        },
+      });
+    })(),
   );
   return (
-    <Provider value={clientRef}>
+    <Provider value={urqlClient}>
       <CustomToastProvider>{children}</CustomToastProvider>
     </Provider>
   );
