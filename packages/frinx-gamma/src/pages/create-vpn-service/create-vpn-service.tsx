@@ -1,10 +1,11 @@
-import { Alert, AlertDescription, AlertIcon, Box, Container, Heading } from '@chakra-ui/react';
+import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import callbackUtils from '../../callback-utils';
 import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
 import { getSelectOptions } from '../../components/forms/options.helper';
 import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
+import ErrorMessage from '../../components/error-message/error-message';
 import { generateVpnId } from '../../helpers/id-helpers';
 
 const defaultVpnService: VpnService = {
@@ -65,14 +66,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     <Container>
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Create VPN Service</Heading>
-        {submitError && (
-          <Box py="4">
-            <Alert status="error">
-              <AlertIcon />
-              <AlertDescription>{String(submitError)}</AlertDescription>
-            </Alert>
-          </Box>
-        )}
+        {submitError && <ErrorMessage text={String(submitError)} />}
         {vpnServices && (
           <VpnServiceForm
             mode="add"
