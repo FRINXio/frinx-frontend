@@ -155,8 +155,8 @@ const App: FC<Props> = ({
                     setIsEditing(true);
                   }}
                   onSaveWorkflowBtnClick={() => {
-                    const onWorkflowSave = callbackUtils.saveWorkflowCallback();
-                    onWorkflowSave([workflowCtrlRef.current.convertWorkflow(schema, workflow)]);
+                    const { putWorkflow } = callbackUtils.getCallbacks;
+                    putWorkflow([workflowCtrlRef.current.convertWorkflow(schema, workflow)]);
                   }}
                   onFileImport={onFileImport}
                   onFileExport={() => {
@@ -170,8 +170,8 @@ const App: FC<Props> = ({
               <Button
                 colorScheme="blue"
                 onClick={() => {
-                  const onWorkflowSave = callbackUtils.saveWorkflowCallback();
-                  onWorkflowSave([workflowCtrlRef.current.convertWorkflow(schema, workflow)]).then(() => {
+                  const { putWorkflow } = callbackUtils.getCallbacks;
+                  putWorkflow([workflowCtrlRef.current.convertWorkflow(schema, workflow)]).then(() => {
                     setIsInputModalShown(true);
                   });
                 }}

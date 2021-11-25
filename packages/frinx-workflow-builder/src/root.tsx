@@ -34,8 +34,8 @@ const Root: FC<Props> = ({
 
   useEffect(() => {
     if (name != null && version != null) {
-      const getWorkflow = callbackUtils.getWorkflowCallback();
-      getWorkflow(name, version).then((wf) => {
+      const { getWorkflow } = callbackUtils.getCallbacks;
+      getWorkflow(name, Number(version)).then((wf) => {
         setWorkflow(convertWorkflow(wf));
       });
     } else {
@@ -44,14 +44,14 @@ const Root: FC<Props> = ({
   }, [name, version]);
 
   useEffect(() => {
-    const getWorkflows = callbackUtils.getWorkflowsCallback();
+    const { getWorkflows } = callbackUtils.getCallbacks;
     getWorkflows().then((wfs) => {
       setWorkflows(wfs);
     });
   }, []);
 
   useEffect(() => {
-    const getTaskDefinitions = callbackUtils.getTaskDefinitionsCallback();
+    const { getTaskDefinitions } = callbackUtils.getCallbacks;
     getTaskDefinitions().then((tsks) => {
       setTaskDefinitions(tsks);
     });
@@ -83,14 +83,14 @@ const Root: FC<Props> = ({
 
   const handleWorkflowClone = (wf: Workflow, wfName: string) => {
     const updatedWorkflow: Workflow = { ...wf, name: wfName };
-    const cloneWorkflow = callbackUtils.saveWorkflowCallback();
+    const { putWorkflow } = callbackUtils.getCallbacks;
 
-    cloneWorkflow([updatedWorkflow]);
+    putWorkflow([updatedWorkflow]);
   };
 
   const handleWorkflowDelete = () => {
     if (workflow != null) {
-      const deleteWorkflow = callbackUtils.deleteWorkflowCallback();
+      const { deleteWorkflow } = callbackUtils.getCallbacks;
       deleteWorkflow(workflow.name, workflow.version.toString()).then(() => {
         onClose();
       });
