@@ -26,9 +26,13 @@ jobs:
         run: yarn run lint:dashboard
       - name: Run eslint check in Workflow Builder
         run: yarn run lint:workflow-builder
+      - name: Run eslint check in Frinx api
+        run: yarn run lint:api
       - name: Check types in Workflow Builder
         run: yarn run type-check:workflow-builder
       - name: Run eslint check in Inventory client
         run: yarn run lint:inventory
       - name: Check types in Inventory client
         run: yarn run type-check:inventory
+      - name: Check types in Frinx api
+        run: yarn run type-check:api

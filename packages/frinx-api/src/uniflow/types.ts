@@ -352,9 +352,9 @@ export type ExecutedWorkflowTask = {
   referenceTaskName: string;
   callbackAfterSeconds: number;
   pollCount: number;
-  logs: {};
-  inputData: {};
-  outputData: {};
+  logs: Record<string, string>;
+  inputData: Record<string, string>;
+  outputData: Record<string, string>;
   workflowTask: {
     description: string;
     taskDefinition: {
@@ -389,7 +389,7 @@ export type ScheduledWorkflow = {
   workflowName: string;
   workflowVersion: string;
   workflowContext: {
-    [key: string]: any;
+    [key: string]: unknown;
   };
   enabled: boolean;
   status: StatusType;
@@ -475,9 +475,9 @@ export type WorkflowInstanceDetail = {
     '*': string;
   };
   failedReferenceTaskNames: string[];
-  workflowDefinition: {};
+  workflowDefinition: Record<string, string>;
   priority: number;
-  variables: {};
+  variables: Record<string, string>;
   lastRetriedTime: number;
   startTime: number;
   workflowName: string;
@@ -546,6 +546,7 @@ export type ActionTargetWorkflow = {
 export type Action = {
   action: string;
   expandInLineJson: boolean;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
 } & ({ [key in ActionTypes]: ActionTargetTask } | { start_workflow: ActionTargetWorkflow });
 
 export type EventListener = {

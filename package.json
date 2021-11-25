@@ -14,10 +14,12 @@
     "lint:dashboard": "cd packages/frinx-dashboard && yarn run lint",
     "lint:workflow-builder": "cd packages/frinx-workflow-builder && yarn run lint",
     "lint:inventory": "cd packages/frinx-inventory-client && yarn run lint",
+    "lint:api": "cd packages/frinx-api && yarn run lint",
     "type-check:workflow-builder": "cd packages/frinx-workflow-builder && yarn run type-check",
     "type-check:inventory": "cd packages/frinx-inventory-client && yarn run type-check",
-    "lint": "yarn run lint:dashboard && yarn run lint:workflow-builder && yarn run lint:inventory",
-    "type-check": "yarn run type-check:workflow-builder && yarn run type-check:inventory",
+    "type-check:api": "cd packages/frinx-api && yarn run type-check",
+    "lint": "yarn run lint:dashboard && yarn run lint:workflow-builder && yarn run lint:inventory && yarn run lint:api",
+    "type-check": "yarn run type-check:workflow-builder && yarn run type-check:inventory && yarn run type-check:api",
     "build:api": "cd packages/frinx-api && yarn rollup -c"
   },
   "devDependencies": {
