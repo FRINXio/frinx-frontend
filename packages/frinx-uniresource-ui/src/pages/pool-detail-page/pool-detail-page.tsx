@@ -1,20 +1,4 @@
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Flex,
-  Heading,
-  Progress,
-  Spacer,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import PageContainer from '../../components/page-container';
@@ -26,8 +10,11 @@ import {
   PoolCapacityPayload,
   QueryPoolDetailQuery,
   QueryPoolDetailQueryVariables,
+  ResourceConnection,
 } from '../../__generated__/graphql';
-import ClaimResourceModal from './claim-resource-modal';
+import ClaimResourceAllocIpv4PrefixModal from './claim-resource-modal/claim-resource-allocating-modals/claim-resource-allocating-ipv4_prefix';
+import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
+import PoolDetailTable from './pool-detail-table';
 
 type Props = {
   poolId: string;
@@ -66,9 +53,8 @@ const POOL_DETAIL_QUERY = gql`
 `;
 
 const CLAIM_RESOURCES_MUTATION = gql`
-  mutation ClaimResource($poolId: ID!, $description: String, $input: Map!) {
-    ClaimResource(poolId: $poolId, description: $description, userInput: $input) {
-      Description
+  mutation ClaimResource($poolId: ID!, $description: String!, $userInput: Map!) {
+    ClaimResource(poolId: $poolId, description: $description, userInput: $userInput) {
       id
       Properties
     }
@@ -114,7 +100,7 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
     FREE_RESOURCES_MUTATION,
   );
 
-  const claimPoolResource = (userInput: PoolResource, description?: string) => {
+  const claimPoolResource = (userInput: Record<string, string | number>, description?: string) => {
     claimResource({
       poolId,
       userInput,
@@ -122,7 +108,7 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
     });
   };
 
-  const freePoolResource = (userInput: Map<string, string>) => {
+  const freePoolResource = (userInput: Map<string, string | number>) => {
     freeResource({
       poolId,
       input: userInput,
@@ -148,7 +134,7 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
 
   return (
     <PageContainer>
-      <ClaimResourceModal
+      <ClaimResourceAllocIpv4PrefixModal
         poolName={resourcePool.Name}
         isOpen={claimResourceModal.isOpen}
         onClose={claimResourceModal.onClose}
@@ -181,30 +167,7 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
 
       <Box mt={10}>
         <Heading size="lg">Allocated Resources</Heading>
-        <Table background="white">
-          <Thead>
-            <Tr>
-              <Th>Description</Th>
-              <Th>Address</Th>
-              <Th>Prefix</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {resourcePool.allocatedResources != null && resourcePool.allocatedResources.edges.length > 0 ? (
-              resourcePool.allocatedResources.edges.map((resource) => (
-                <Tr>
-                  <Td>{resource?.node.Description}</Td>
-                  <Td>{resource?.node.Properties.address}</Td>
-                  <Td>{resource?.node.Properties.prefix}</Td>
-                </Tr>
-              ))
-            ) : (
-              <Tr>
-                <Td>There are no allocated resources yet.</Td>
-              </Tr>
-            )}
-          </Tbody>
-        </Table>
+        <PoolDetailTable allocatedResources={resourcePool.allocatedResources as ResourceConnection} />
       </Box>
     </PageContainer>
   );

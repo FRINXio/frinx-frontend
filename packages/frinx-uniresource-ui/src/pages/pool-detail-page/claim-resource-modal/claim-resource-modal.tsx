@@ -9,49 +9,17 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
 } from '@chakra-ui/react';
-import { omitBy } from 'lodash';
-import React, { FC, useCallback, useState } from 'react';
-import PoolPropertiesForm from '../../create-pool-page/pool-properties-form';
-import { PoolResource } from '../pool-detail-page';
+import React, { FC } from 'react';
 
 type Props = {
   poolName: string;
   isOpen: boolean;
   onClose: () => void;
-  onClaim: (payload: PoolResource) => void;
+  onClaim: () => void;
 };
 
-const ClaimResourceModal: FC<Props> = ({ poolName, isOpen, onClose, onClaim }) => {
-  const [poolResource, setPoolResource] = useState<PoolResource>({ poolProperties: {}, poolPropertyTypes: {} });
-  const handleDeleteProperty = useCallback(
-    (key: string) => {
-      setPoolResource((prev) => {
-        return {
-          ...prev,
-          poolProperties: omitBy(poolResource.poolProperties, (_, k) => k === key),
-        };
-      });
-      setPoolResource((prev) => {
-        return {
-          ...prev,
-          poolPropertyTypes: omitBy(poolResource.poolPropertyTypes, (_, k) => k === key),
-        };
-      });
-    },
-    [setPoolResource, poolResource],
-  );
-
-  const handlePoolPropertiesChange = (values: { key: string; type: 'string' | 'int'; value: string }) => {
-    setPoolResource((prev) => {
-      return {
-        poolProperties: { ...prev.poolProperties, [values.key]: values.value },
-        poolPropertyTypes: { ...prev.poolPropertyTypes, [values.key]: values.type },
-      };
-    });
-  };
-
+const ClaimResourceModal: FC<Props> = ({ poolName, isOpen, onClose, onClaim, children }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -60,20 +28,12 @@ const ClaimResourceModal: FC<Props> = ({ poolName, isOpen, onClose, onClaim }) =
         <ModalCloseButton />
         <ModalBody>
           <>
-            <Box>
-              <Text>Set pool properties</Text>
-              <PoolPropertiesForm
-                onChange={handlePoolPropertiesChange}
-                onDeleteBtnClick={handleDeleteProperty}
-                poolProperties={poolResource.poolProperties}
-                poolPropertyTypes={poolResource.poolPropertyTypes}
-              />
-            </Box>
+            <Box>{children}</Box>
             <Divider marginY={5} orientation="horizontal" color="gray.200" />
           </>
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="blue" onClick={() => onClaim(poolResource)}>
+          <Button colorScheme="blue" onClick={onClaim}>
             Claim resource
           </Button>
         </ModalFooter>

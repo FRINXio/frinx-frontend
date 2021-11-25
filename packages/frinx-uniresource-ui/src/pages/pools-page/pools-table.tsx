@@ -88,6 +88,7 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoadi
                       onClick={() => {
                         onDeleteBtnClick(pool.id);
                       }}
+                      isDisabled={Capacity?.freeCapacity !== totalCapacity}
                     />
                   </Td>
                 </Tr>
