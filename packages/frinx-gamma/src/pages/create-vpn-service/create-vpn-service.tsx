@@ -5,6 +5,7 @@ import { apiVpnServiceToClientVpnService } from '../../components/forms/converte
 import { getSelectOptions } from '../../components/forms/options.helper';
 import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
+import ErrorMessage from '../../components/error-message/error-message';
 import { generateVpnId } from '../../helpers/id-helpers';
 
 const defaultVpnService: VpnService = {
@@ -23,6 +24,7 @@ type Props = {
 
 const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,6 +38,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
   }, []);
 
   const handleSubmit = async (data: VpnService) => {
+    setSubmitError(null);
     const service = {
       ...data,
       vpnId: generateVpnId(),
@@ -43,10 +46,14 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     // eslint-disable-next-line no-console
     console.log('submit clicked', service);
     const callbacks = callbackUtils.getCallbacks;
-    const output = await callbacks.createVpnService(service);
-    // eslint-disable-next-line no-console
-    console.log(output);
-    onSuccess();
+    try {
+      const output = await callbacks.createVpnService(service);
+      // eslint-disable-next-line no-console
+      console.log(output);
+      onSuccess();
+    } catch (e) {
+      setSubmitError(e as string);
+    }
   };
 
   const handleCancel = () => {
@@ -59,6 +66,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     <Container>
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Create VPN Service</Heading>
+        {submitError && <ErrorMessage text={String(submitError)} />}
         {vpnServices && (
           <VpnServiceForm
             mode="add"
