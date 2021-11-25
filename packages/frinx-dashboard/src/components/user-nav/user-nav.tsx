@@ -14,7 +14,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import React, { FC, useEffect } from 'react';
-import { removeTokenCookie, setAuthToken } from '../../auth-helpers';
+import { removeTokenCookie, AuthHelper } from '../../auth-helpers';
 
 const UserNav: FC = () => {
   const { instance, accounts, inProgress } = useMsal();
@@ -29,7 +29,7 @@ const UserNav: FC = () => {
       });
 
       authResultPromise.then((value) => {
-        setAuthToken(value.idToken);
+        AuthHelper.setAuthToken(value.idToken);
       });
     }
   }, [inProgress, instance, accounts]);

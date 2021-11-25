@@ -103,7 +103,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOper
   };
 
   const executeWorkflow = () => {
-    const executeWorkflow = callbackUtils.executeWorkflowCallback();
+    const { executeWorkflow } = callbackUtils.getCallbacks;
     const workflowPayload = {
       name: meta.name,
       version: meta.version,
@@ -135,7 +135,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOper
   };
 
   const restartWorkflows = () => {
-    const restartWorkflows = callbackUtils.restartWorkflowsCallback();
+    const { restartWorkflows } = callbackUtils.getCallbacks;
     restartWorkflows([workflowId]);
     onExecutedOperation();
   };

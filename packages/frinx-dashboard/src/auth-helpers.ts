@@ -1,29 +1,38 @@
 /* eslint-disable no-underscore-dangle */
 import { LogLevel } from '@azure/msal-common';
 import { PublicClientApplication, Configuration } from '@azure/msal-browser';
+import EventEmitter from 'eventemitter3';
 
 const LS_TOKEN_KEY = 'id_token';
 
-// Set ID token (JWT) to cookie
-export function setTokenCookie(token: string): void {
-  document.cookie = `BearerToken=${token}; SameSite=None; Secure; path=/`;
+export class AuthContext {
+  public eventEmitter: EventEmitter = new EventEmitter();
+
+  private authToken: string | null = localStorage.getItem(LS_TOKEN_KEY);
+
+  static isAuthEnabled(): boolean {
+    return window.__CONFIG__.auth_enabled;
+  }
+
+  public isAuthorized(): boolean {
+    return AuthContext.isAuthEnabled() && this.getAuthToken() != null;
+  }
+
+  public setAuthToken(authToken: string): void {
+    localStorage.setItem(LS_TOKEN_KEY, authToken);
+    this.authToken = authToken;
+  }
+
+  public getAuthToken(): string | null {
+    return this.authToken;
+  }
+
+  public emitUnauthorized(): void {
+    this.eventEmitter.emit('UNAUTHORIZED');
+  }
 }
 
-export function removeTokenCookie(): void {
-  document.cookie = `BearerToken=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
-}
-
-export function setAuthToken(token: string): void {
-  localStorage.setItem(LS_TOKEN_KEY, token);
-}
-
-export function getAuthToken(): string | null {
-  return localStorage.getItem(LS_TOKEN_KEY);
-}
-
-export function isAuthEnabled(): boolean {
-  return window.__CONFIG__.auth_enabled;
-}
+export const authContext = new AuthContext();
 
 const authConfig: Configuration = {
   auth: {

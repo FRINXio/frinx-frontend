@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './app';
 import unwrap from './helpers/unwrap';
-import { isAuthEnabled } from './auth-helpers';
+import { AuthHelper, isAuthEnabled } from './auth-helpers';
 import { ServiceKey } from './types';
 
 const ALL_SERVICES: ServiceKey[] = [
@@ -45,11 +45,12 @@ class DashboardApp {
   }
 
   render() {
+    console.log(AuthHelper.isAuthorized());
     ReactDOM.render(
       React.createElement(
         React.StrictMode,
         null,
-        React.createElement(App, { isAuthEnabled: isAuthEnabled(), enabledServices: this.enabledServices }),
+        React.createElement(App, { isAuthEnabled: AuthHelper.isAuthEnabled(), enabledServices: this.enabledServices }),
       ),
       document.getElementById('root'),
     );

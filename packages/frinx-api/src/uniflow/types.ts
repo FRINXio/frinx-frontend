@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Node } from 'beautiful-react-diagrams/@types/DiagramSchema';
 
 type AnyJson = JsonArray | JsonMap;
 type JsonMap = {
@@ -327,17 +326,6 @@ export type Workflow<T extends Task = Task> = {
   timeoutSeconds: number;
   variables: Record<string, unknown>;
 };
-export type NodeData =
-  | {
-      task: Exclude<ExtendedTask, ExtendedDecisionTask>;
-    }
-  | {
-      task: ExtendedDecisionTask;
-      decisionCases: Record<string, string>;
-    };
-
-export type CustomNodeType = Node<NodeData>;
-
 export type TaskDefinition = {
   name: string;
   description?: string;
@@ -357,12 +345,6 @@ export type TaskDefinition = {
   ownerEmail: string;
 };
 
-// eslint-disable-next-line no-shadow
-export enum SerializerEnum {
-  IntegerSerializer = 'org.apache.kafka.common.serialization.IntegerSerializer',
-  LongSerializer = 'org.apache.kafka.common.serialization.LongSerializer',
-  StringSerializer = 'org.apache.kafka.common.serialization.StringSerializer',
-}
 export type ExecutedWorkflowTask = {
   taskType: string;
   status: string;
@@ -370,9 +352,9 @@ export type ExecutedWorkflowTask = {
   referenceTaskName: string;
   callbackAfterSeconds: number;
   pollCount: number;
-  logs: Record<string, string>;
-  inputData: Record<string, string>;
-  outputData: Record<string, string>;
+  logs: {};
+  inputData: {};
+  outputData: {};
   workflowTask: {
     description: string;
     taskDefinition: {
@@ -385,6 +367,86 @@ export type ExecutedWorkflowTask = {
   endTime: number;
   externalOutputPayloadStoragePath?: string;
   externalInputPayloadStoragePath?: string;
+};
+
+// eslint-disable-next-line no-shadow
+export enum SerializerEnum {
+  IntegerSerializer = 'org.apache.kafka.common.serialization.IntegerSerializer',
+  LongSerializer = 'org.apache.kafka.common.serialization.LongSerializer',
+  StringSerializer = 'org.apache.kafka.common.serialization.StringSerializer',
+}
+
+export type StatusType = 'COMPLETED' | 'RUNNING' | 'FAILED';
+
+export type ScheduledWorkflow = {
+  correlationId: string;
+  cronString: string;
+  lastUpdate: string;
+  name: string;
+  taskToDomain: {
+    [key: string]: string;
+  };
+  workflowName: string;
+  workflowVersion: string;
+  workflowContext: {
+    [key: string]: any;
+  };
+  enabled: boolean;
+  status: StatusType;
+};
+
+export type ExecutedWorkflow = {
+  correlationId: string;
+  endTime: string;
+  executionTime: number;
+  failedReferenceTaskNames: string;
+  input: string;
+  inputSize: number;
+  output: string;
+  outputSize: number;
+  priority: number;
+  reasonForIncompletion?: string;
+  startTime: string;
+  status: string;
+  updateTime: string;
+  version: number;
+  workflowId: string;
+  workflowType: string;
+};
+
+export type NestedExecutedWorkflow = {
+  correlationId: string;
+  endTime: string;
+  executionTime: number;
+  failedReferenceTaskNames: string;
+  index: number;
+  input: string;
+  inputSize: number;
+  output: string;
+  outputSize: number;
+  parentWorkflowId: string;
+  priority: number;
+  reasonForIncompletion: string;
+  startTime: string;
+  status: string;
+  updateTime: string;
+  version: number;
+  workflowId: string;
+  workflowType: string;
+};
+
+export type ExecutedWorkflowsFlat = {
+  result: {
+    hits: ExecutedWorkflow[];
+    totalHits: number;
+  };
+};
+
+export type ExecutedWorkflowsHierarchical = {
+  parents: ExecutedWorkflow[];
+  children: NestedExecutedWorkflow[];
+  count: number;
+  hits: number;
 };
 
 export type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED' | 'COMPLETED';
@@ -413,9 +475,9 @@ export type WorkflowInstanceDetail = {
     '*': string;
   };
   failedReferenceTaskNames: string[];
-  workflowDefinition: Record<string, string>;
+  workflowDefinition: {};
   priority: number;
-  variables: Record<string, string>;
+  variables: {};
   lastRetriedTime: number;
   startTime: number;
   workflowName: string;
@@ -465,4 +527,43 @@ export type ExecutedWorkflowResponse = {
   result: WorkflowInstanceDetail;
   meta: Workflow;
   subworkflows: WorkflowInstanceDetail[];
+};
+
+export type ActionTypes = 'complete_task' | 'fail_task';
+
+export type ActionTargetTask = {
+  workflowId: string;
+  taskRefName: string;
+  output?: unknown;
+};
+
+export type ActionTargetWorkflow = {
+  workflowId: string;
+  taskRefName: string;
+  output?: unknown;
+};
+
+export type Action = {
+  action: string;
+  expandInLineJson: boolean;
+} & ({ [key in ActionTypes]: ActionTargetTask } | { start_workflow: ActionTargetWorkflow });
+
+export type EventListener = {
+  name: string;
+  event: string;
+  actions: Action[];
+  active?: boolean;
+};
+
+export type Queue = {
+  lastPollTime: number;
+  qsize: number;
+  queueName: string;
+  workerId: string;
+};
+
+export type WorkflowPayload = {
+  input: unknown;
+  name: string;
+  version: number;
 };

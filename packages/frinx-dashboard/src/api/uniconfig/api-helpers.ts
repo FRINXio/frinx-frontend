@@ -1,33 +1,55 @@
-import { getAuthToken } from '../../auth-helpers';
-
-const UNICONFIG_API_URL = window.__CONFIG__.uniconfig_api_url;
-// const AUTHORIZATION = window.__CONFIG__.uniconfig_auth; // encoded admin/admin credentials (default)
-
-function getHeaders(): Record<string, string> {
-  const authToken = getAuthToken();
+function getHeaders(authToken: string | null): Record<string, string> {
   return {
     'Content-Type': 'application/json',
     ...(authToken != null ? { Authorization: `Bearer ${authToken}` } : {}),
   };
 }
 
-export async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
-  const url = `${UNICONFIG_API_URL}${path}`;
-  const response = await fetch(url, {
-    ...options,
-    headers: getHeaders(),
-  });
+export type AuthContext = {
+  getAuthToken: () => string | null;
+  emitUnauthorized: () => void;
+};
 
-  if (!response.ok) {
-    throw new Error(`apiFetch failed with http-code ${response.status}`);
-  }
+export function createAPIFetch(
+  baseURL: string,
+  authContext: AuthContext,
+): (path: string, options: RequestInit) => Promise<unknown> {
+  return async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
+    const url = `${baseURL}${path}`;
+    const response = await fetch(url, {
+      ...options,
+      headers: getHeaders(authContext.getAuthToken()),
+    });
 
-  if (response.status === 201 || response.status === 204) {
-    return response;
-  }
+    if (!response.ok) {
+      throw new Error(`apiFetch failed with http-code ${response.status}`);
+    }
 
-  return response.json();
+    if (response.status === 201 || response.status === 204) {
+      return response;
+    }
+
+    return response.json();
+  };
 }
+
+// export async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
+//   const url = `${UNICONFIG_API_URL}${path}`;
+//   const response = await fetch(url, {
+//     ...options,
+//     headers: getHeaders(),
+//   });
+
+//   if (!response.ok) {
+//     throw new Error(`apiFetch failed with http-code ${response.status}`);
+//   }
+
+//   if (response.status === 201 || response.status === 204) {
+//     return response;
+//   }
+
+//   return response.json();
+// }
 
 export async function sendGetRequest(path: string): Promise<unknown> {
   const options = {

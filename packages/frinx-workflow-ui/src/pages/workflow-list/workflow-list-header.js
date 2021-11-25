@@ -48,7 +48,7 @@ const WorkflowListHeader = ({ onAddButtonClick, onImportSuccess }: Props) => {
   const importFiles = async (e) => {
     const { files } = e.currentTarget;
     const readFiles = await Promise.all(Array.from(files).map((f) => readFile(f)));
-    const putWorkflow = callbackUtils.putWorkflowCallback();
+    const { putWorkflow } = callbackUtils.getCallbacks;
     putWorkflow(readFiles).then(() => {
       onImportSuccess();
     });
@@ -59,7 +59,7 @@ const WorkflowListHeader = ({ onAddButtonClick, onImportSuccess }: Props) => {
   };
 
   const exportFile = () => {
-    const getWorkflows = callbackUtils.getWorkflowsCallback();
+    const { getWorkflows } = callbackUtils.getCallbacks;
 
     getWorkflows().then((workflows) => {
       const zip = new JSZip();
