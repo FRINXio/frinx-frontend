@@ -1,14 +1,14 @@
-import React, { FC, useEffect, useState } from 'react';
 import { Box, ChakraProvider, Container, Heading } from '@chakra-ui/react';
 import { saveAs } from 'file-saver';
-import { ExtendedTask, TaskDefinition, Workflow } from './helpers/types';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import App from './app';
-import theme from './theme';
-import { TaskActionsProvider } from './task-actions-context';
-import { convertWorkflow, createEmptyWorkflow } from './helpers/workflow.helpers';
 import callbackUtils from './callback-utils';
-import unwrap from './helpers/unwrap';
 import WorkflowForm from './components/workflow-form/workflow-form';
+import { ExtendedTask, TaskDefinition, Workflow } from './helpers/types';
+import unwrap from './helpers/unwrap';
+import { convertWorkflow, createEmptyWorkflow } from './helpers/workflow.helpers';
+import { TaskActionsProvider } from './task-actions-context';
+import theme from './theme';
 
 type Props = {
   name?: string;
@@ -19,7 +19,7 @@ type Props = {
   onNewWorkflowClick: () => void;
 };
 
-const Root: FC<Props> = ({
+const Root: VoidFunctionComponent<Props> = ({
   name,
   version,
   onClose,
