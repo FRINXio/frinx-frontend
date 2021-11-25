@@ -1,12 +1,12 @@
 import { FormControl, FormLabel, Input } from '@chakra-ui/react';
 import React, { FC, useRef } from 'react';
-import ClaimResourceModal from '../claim-resource-modal';
+import ClaimResourceLayout from '../claim-resource-layout';
 
 type Props = {
   poolName: string;
   isOpen: boolean;
   onClose: () => void;
-  onClaim: (userInput: Record<string, number | string>, description?: string) => void;
+  onClaim: (description: string, userInput?: Record<string, number | string>) => void;
 };
 
 const ClaimResourceAllocIpv4PrefixModal: FC<Props> = ({ poolName, isOpen, onClose, onClaim }) => {
@@ -14,16 +14,13 @@ const ClaimResourceAllocIpv4PrefixModal: FC<Props> = ({ poolName, isOpen, onClos
   const descriptionRef = useRef<HTMLInputElement | null>(null);
 
   const handleOnClaim = () => {
-    onClaim(
-      {
-        desiredSize: Number(inputRef.current?.value),
-      },
-      descriptionRef.current?.value,
-    );
+    onClaim(descriptionRef.current?.value ?? '', {
+      desiredSize: Number(inputRef.current?.value),
+    });
     onClose();
   };
   return (
-    <ClaimResourceModal {...{ poolName, isOpen, onClose, onClaim: handleOnClaim }}>
+    <ClaimResourceLayout {...{ poolName, isOpen, onClose, onClaim: handleOnClaim }}>
       <>
         <FormControl isRequired>
           <FormLabel>Desired size (number of allocated addresses)</FormLabel>
@@ -34,7 +31,7 @@ const ClaimResourceAllocIpv4PrefixModal: FC<Props> = ({ poolName, isOpen, onClos
           <Input ref={descriptionRef} placeholder="Enter description for allocated resources" />
         </FormControl>
       </>
-    </ClaimResourceModal>
+    </ClaimResourceLayout>
   );
 };
 

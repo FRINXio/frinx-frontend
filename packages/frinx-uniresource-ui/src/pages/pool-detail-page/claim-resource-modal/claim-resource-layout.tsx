@@ -19,7 +19,7 @@ type Props = {
   onClaim: () => void;
 };
 
-const ClaimResourceModal: FC<Props> = ({ poolName, isOpen, onClose, onClaim, children }) => {
+const ClaimResourceLayout: FC<Props> = ({ poolName, isOpen, onClose, onClaim, children }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -42,4 +42,4 @@ const ClaimResourceModal: FC<Props> = ({ poolName, isOpen, onClose, onClaim, chi
   );
 };
 
-export default ClaimResourceModal;
+export default ClaimResourceLayout;
