@@ -6,6 +6,7 @@ import { apiBearerToClientBearer, apiProviderIdentifiersToClientIdentifers } fro
 import callbackUtils from '../../callback-utils';
 import { EvcAttachment, VpnBearer } from '../../components/forms/bearer-types';
 import EvcAttachmentForm from '../../components/forms/evc-attachment-form';
+import ErrorMessage from '../../components/error-message/error-message';
 
 type Props = {
   onSuccess: (bearerId: string) => void;
@@ -29,6 +30,7 @@ const EditEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const { bearerId, evcType, circuitReference } =
     useParams<{ bearerId: string; evcType: string; circuitReference: string }>();
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,6 +49,7 @@ const EditEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
   }, [bearerId]);
 
   const handleSubmit = async (attachment: EvcAttachment) => {
+    setSubmitError(null);
     if (!selectedBearer) {
       return;
     }
@@ -67,10 +70,14 @@ const EditEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
     console.log('submit clicked', editedBearer);
     const callbacks = callbackUtils.getCallbacks;
 
-    await callbacks.editVpnBearer(editedBearer);
-    // eslint-disable-next-line no-console
-    console.log('bearer saved: evc attachment added to bearer');
-    onSuccess(unwrap(bearerId));
+    try {
+      await callbacks.editVpnBearer(editedBearer);
+      // eslint-disable-next-line no-console
+      console.log('bearer saved: evc attachment added to bearer');
+      onSuccess(unwrap(bearerId));
+    } catch (e) {
+      setSubmitError(String(e));
+    }
   };
 
   const handleCancel = () => {
@@ -90,6 +97,7 @@ const EditEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
       <Container>
         <Box padding={6} margin={6} background="white">
           <Heading size="md">Add Evc Attachment To Bearer: {bearerId} </Heading>
+          {submitError && <ErrorMessage text={String(submitError)} />}
           <EvcAttachmentForm
             qosProfiles={qosProfiles}
             evcAttachment={selectedEvcAttachment}

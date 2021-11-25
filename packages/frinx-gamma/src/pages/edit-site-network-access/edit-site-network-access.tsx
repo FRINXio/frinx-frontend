@@ -8,6 +8,7 @@ import {
   apiVpnSitesToClientVpnSite,
 } from '../../components/forms/converters';
 import SiteNetworkAccessForm from '../../components/forms/site-network-access-form';
+import ErrorMessage from '../../components/error-message/error-message';
 import { SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
 import callbackUtils from '../../callback-utils';
 import { VpnService } from '../../components/forms/service-types';
@@ -40,6 +41,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
   const [bgpProfiles, setBgpProfiles] = useState<string[]>([]);
   const [vpnServices, setVpnServices] = useState<VpnService[]>([]);
   const [bandwiths, setBandwiths] = useState<number[]>([]);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const { siteId, accessId } = useParams<{ siteId: string; accessId: string }>();
 
   useEffect(() => {
@@ -70,14 +72,19 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
   }, [siteId]);
 
   const handleSubmit = async (s: VpnSite) => {
+    setSubmitError(null);
     // eslint-disable-next-line no-console
     console.log('submit clicked', s);
     const callbacks = callbackUtils.getCallbacks;
 
-    await callbacks.editVpnSite(s);
-    // eslint-disable-next-line no-console
-    console.log('site saved: network access added to site');
-    onSuccess(unwrap(s.siteId));
+    try {
+      await callbacks.editVpnSite(s);
+      // eslint-disable-next-line no-console
+      console.log('site saved: network access added to site');
+      onSuccess(unwrap(s.siteId));
+    } catch (e) {
+      setSubmitError(String(e));
+    }
   };
 
   const handleCancel = () => {
@@ -98,6 +105,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
         <Flex justifyContent="space-between" alignItems="center">
           <Heading size="md">Edit Site Network Access</Heading>
         </Flex>
+        {submitError && <ErrorMessage text={String(submitError)} />}
         {vpnSites && (
           <>
             {selectedSite && selectedNetworkAccess && (

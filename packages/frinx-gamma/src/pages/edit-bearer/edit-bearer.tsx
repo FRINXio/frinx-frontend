@@ -9,6 +9,7 @@ import {
   apiVpnCarriersToClientCarriers,
 } from '../../components/forms/converters';
 import VpnBearerForm from '../../components/forms/vpn-bearer-form';
+import ErrorMessage from '../../components/error-message/error-message';
 
 type Props = {
   onSuccess: () => void;
@@ -20,6 +21,7 @@ const EditBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
   const [nodes, setNodes] = useState<VpnNode[] | null>(null);
   const [carriers, setCarriers] = useState<VpnCarrier[] | null>(null);
   const { bearerId } = useParams<{ bearerId: string }>();
+  const [submitError, setSubmitError] = useState<string | null>(null);
   useEffect(() => {
     const fetchData = async () => {
       // TODO; possible fetches goes here
@@ -40,13 +42,18 @@ const EditBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
   }, [bearerId]);
 
   const handleSubmit = async (vpnBearer: VpnBearer) => {
+    setSubmitError(null);
     // eslint-disable-next-line no-console
     console.log('submit clicked', vpnBearer);
     const callbacks = callbackUtils.getCallbacks;
-    await callbacks.editVpnBearer(vpnBearer);
-    // eslint-disable-next-line no-console
-    console.log('bearer created');
-    onSuccess();
+    try {
+      await callbacks.editVpnBearer(vpnBearer);
+      // eslint-disable-next-line no-console
+      console.log('bearer created');
+      onSuccess();
+    } catch (e) {
+      setSubmitError(String(e));
+    }
   };
 
   const handleCancel = () => {
@@ -63,6 +70,7 @@ const EditBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
     <Container>
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Edit VPN Bearer</Heading>
+        {submitError && <ErrorMessage text={String(submitError)} />}
         <VpnBearerForm
           mode="edit"
           nodes={nodes}
