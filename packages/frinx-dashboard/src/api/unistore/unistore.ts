@@ -49,9 +49,9 @@ import {
   VpnSitesOutput,
 } from './network-types';
 
-// data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers
+// data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers
 const UNICONFIG_SERVICE_URL =
-  '/data/network-topology:network-topology/topology=unistore/node=service/frinx-uniconfig-topology:configuration';
+  '/data/network-topology:network-topology/topology=uniconfig/node=service/frinx-uniconfig-topology:configuration';
 
 type Pagination = {
   offset: number;
@@ -147,7 +147,7 @@ export async function getVpnBearers(
     const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
     const filterParams = vpnBearerFilter ? getVpnBearerFilterParams(vpnBearerFilter) : '';
     const json = await sendGetRequest(
-      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?content=config${paginationParams}${filterParams}`,
+      `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?content=config${paginationParams}${filterParams}`,
     );
     const data = decodeVpnBearerOutput(json);
 
@@ -162,7 +162,7 @@ export async function getVpnBearers(
 export async function createVpnBearer(bearer: VpnBearer): Promise<void> {
   const body = clientBearerToApiBearer(bearer);
   await sendPostRequest(
-    '/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers',
+    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers',
     body,
   );
 }
@@ -170,7 +170,7 @@ export async function createVpnBearer(bearer: VpnBearer): Promise<void> {
 export async function editVpnBearer(vpnBearer: VpnBearer): Promise<unknown> {
   const body = clientBearerToApiBearer(vpnBearer);
   const json = await sendPutRequest(
-    `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${vpnBearer.spBearerReference}`,
+    `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${vpnBearer.spBearerReference}`,
     body,
   );
   return json;
@@ -178,14 +178,14 @@ export async function editVpnBearer(vpnBearer: VpnBearer): Promise<unknown> {
 
 export async function deleteVpnBearer(id: string): Promise<void> {
   await sendDeleteRequest(
-    `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${id}`,
+    `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${id}`,
   );
 }
 
 export async function getVpnNodes(): Promise<VpnNodesOutput> {
   try {
     const json = await sendGetRequest(
-      '/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes',
+      '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes',
     );
     const data = decodeVpnNodesOutput(json);
 
@@ -202,21 +202,21 @@ export async function getVpnNodes(): Promise<VpnNodesOutput> {
 export async function editVpnNode(node: VpnNode): Promise<void> {
   const body = clientVpnNodeToApiVpnNode(node);
   await sendPutRequest(
-    `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes/vpn-node=${node.neId}`,
+    `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes/vpn-node=${node.neId}`,
     body,
   );
 }
 
 export async function deleteVpnNode(nodeId: string): Promise<void> {
   await sendDeleteRequest(
-    `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes/vpn-node=${nodeId}`,
+    `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes/vpn-node=${nodeId}`,
   );
 }
 
 export async function getVpnCarriers(): Promise<VpnCarriersOutput> {
   try {
     const json = await sendGetRequest(
-      '/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers',
+      '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers',
     );
     const data = decodeVpnCarriersOutput(json);
 
@@ -233,7 +233,7 @@ export async function getVpnCarriers(): Promise<VpnCarriersOutput> {
 export async function createVpnCarrier(carrier: VpnCarrier): Promise<void> {
   const body = clientVpnCarrierToApiVpnCarrier(carrier);
   await sendPostRequest(
-    '/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers',
+    '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers',
     body,
   );
 }
@@ -241,21 +241,21 @@ export async function createVpnCarrier(carrier: VpnCarrier): Promise<void> {
 export async function editVpnCarrier(carrier: VpnCarrier): Promise<void> {
   const body = clientVpnCarrierToApiVpnCarrier(carrier);
   await sendPutRequest(
-    `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers/carrier=${carrier.name}`,
+    `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers/carrier=${carrier.name}`,
     body,
   );
 }
 
 export async function deleteVpnCarrier(carrierId: string): Promise<void> {
   await sendDeleteRequest(
-    `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers/carrier=${carrierId}`,
+    `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers/carrier=${carrierId}`,
   );
 }
 
 export async function getBearerValidProviderIdentifiers(): Promise<ValidProviderIdentifiersOutput> {
   try {
     const json = await sendGetRequest(
-      '/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/valid-provider-identifiers',
+      '/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/valid-provider-identifiers',
     );
     const data = decodeValidProviderIdentifiersOutput(json);
     return data;
@@ -304,7 +304,7 @@ export async function getVpnBearerCount(vpnBearerFilter: VpnBearerFilter | null)
   try {
     const filterParams = vpnBearerFilter ? getVpnBearerFilterParams(vpnBearerFilter) : '';
     const data = await sendGetRequest(
-      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?content=config&fetch=count${filterParams}`,
+      `/data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?content=config&fetch=count${filterParams}`,
     );
     if (!isNumber(data)) {
       throw new Error('not a number');
