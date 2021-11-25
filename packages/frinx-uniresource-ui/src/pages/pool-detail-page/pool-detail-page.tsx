@@ -12,7 +12,7 @@ import {
   QueryPoolDetailQueryVariables,
   ResourceConnection,
 } from '../../__generated__/graphql';
-import ClaimResourceAllocIpv4PrefixModal from './claim-resource-modal/claim-resource-allocating-modals/claim-resource-allocating-ipv4_prefix';
+import ClaimResourceAllocIpv4PrefixModal from './claim-resource-modal/claim-resource-allocating-modals/claim-resource-allocating-ipv4_prefix-modal';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
 import PoolDetailTable from './pool-detail-table';
 

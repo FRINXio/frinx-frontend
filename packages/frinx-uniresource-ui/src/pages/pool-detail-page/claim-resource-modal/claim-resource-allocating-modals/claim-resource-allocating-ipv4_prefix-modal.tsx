@@ -23,7 +23,7 @@ const ClaimResourceAllocIpv4PrefixModal: FC<Props> = ({ poolName, isOpen, onClos
     onClose();
   };
   return (
-    <ClaimResourceModal isOpen={isOpen} onClose={onClose} poolName={poolName} onClaim={handleOnClaim}>
+    <ClaimResourceModal {...{ poolName, isOpen, onClose, onClaim: handleOnClaim }}>
       <>
         <FormControl isRequired>
           <FormLabel>Desired size (number of allocated addresses)</FormLabel>
