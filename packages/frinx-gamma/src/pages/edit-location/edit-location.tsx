@@ -5,6 +5,7 @@ import callbackUtils from '../../callback-utils';
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import CustomerLocationForm from '../../components/forms/customer-location-form';
 import { CustomerLocation, VpnSite } from '../../components/forms/site-types';
+import ErrorMessage from '../../components/error-message/error-message';
 import unwrap from '../../helpers/unwrap';
 
 type Props = {
@@ -20,6 +21,7 @@ function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
 const EditLocationPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const { siteId, locationId } = useParams<{ siteId: string; locationId: string }>();
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,6 +36,7 @@ const EditLocationPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
   }, [siteId]);
 
   const handleFormSubmit = async (location: CustomerLocation) => {
+    setSubmitError(null);
     if (!selectedSite) {
       return;
     }
@@ -46,8 +49,12 @@ const EditLocationPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
       customerLocations: newLocations,
     };
     const callbacks = callbackUtils.getCallbacks;
-    await callbacks.editVpnSite(editedSite);
-    onSuccess(unwrap(siteId));
+    try {
+      await callbacks.editVpnSite(editedSite);
+      onSuccess(unwrap(siteId));
+    } catch (e) {
+      setSubmitError(String(e));
+    }
   };
 
   const location = selectedSite?.customerLocations.find((l) => l.locationId === locationId);
@@ -60,6 +67,7 @@ const EditLocationPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
     <Container>
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Create customer location</Heading>
+        {submitError && <ErrorMessage text={String(submitError)} />}
         <CustomerLocationForm
           location={location}
           buttonText="Edit location"

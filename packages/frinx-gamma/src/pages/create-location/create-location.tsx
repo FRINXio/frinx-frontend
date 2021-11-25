@@ -6,6 +6,7 @@ import callbackUtils from '../../callback-utils';
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import CustomerLocationForm from '../../components/forms/customer-location-form';
 import { CustomerLocation, VpnSite } from '../../components/forms/site-types';
+import ErrorMessage from '../../components/error-message/error-message';
 import unwrap from '../../helpers/unwrap';
 
 const getDefaultLocation = (): CustomerLocation => {
@@ -32,6 +33,7 @@ function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
 const CreateLocationPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const { siteId } = useParams<{ siteId: string }>();
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,6 +48,7 @@ const CreateLocationPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel 
   }, [siteId]);
 
   const handleFormSubmit = async (location: CustomerLocation) => {
+    setSubmitError(null);
     if (!selectedSite) {
       return;
     }
@@ -59,14 +62,19 @@ const CreateLocationPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel 
       customerLocations: newLocations,
     };
     const callbacks = callbackUtils.getCallbacks;
-    await callbacks.editVpnSite(editedSite);
-    onSuccess(unwrap(siteId));
+    try {
+      await callbacks.editVpnSite(editedSite);
+      onSuccess(unwrap(siteId));
+    } catch (e) {
+      setSubmitError(String(e));
+    }
   };
 
   return (
     <Container>
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Create customer location</Heading>
+        {submitError && <ErrorMessage text={String(submitError)} />}
         <CustomerLocationForm
           location={getDefaultLocation()}
           buttonText="Create location"
