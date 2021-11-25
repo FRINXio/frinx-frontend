@@ -1,5 +1,13 @@
 import { isNumber } from 'fp-ts/lib/number';
-import { sendDeleteRequest, sendGetRequest, sendPostRequest, sendPutRequest } from './api-helpers';
+import { isString } from 'fp-ts/lib/string';
+import {
+  sendCookiePostRequest,
+  sendDeleteRequest,
+  sendGetRequest,
+  sendPostRequest,
+  sendPutRequest,
+  UNISTORE_AUTH,
+} from './api-helpers';
 import {
   clientBearerToApiBearer,
   clientVpnCarrierToApiVpnCarrier,
@@ -8,14 +16,26 @@ import {
   clientVpnSiteToApiVpnSite,
 } from './converters';
 import {
+  getServiceFilterParams,
+  getSiteFilterParams,
+  getSiteNetworkAccessFilterParams,
+  getVpnBearerFilterParams,
+  ServiceFilter,
+  SiteFilter,
+  SiteNetworkAccessFilter,
+  VpnBearerFilter,
+} from './filter-helpers';
+import {
+  decodeLocationsOutput,
+  decodeSiteNetworkAccessOutput,
   decodeValidProviderIdentifiersOutput,
   decodeVpnBearerOutput,
   decodeVpnCarriersOutput,
   decodeVpnNodesOutput,
   decodeVpnServicesOutput,
   decodeVpnSitesOutput,
-  decodeLocationsOutput,
-  decodeSiteNetworkAccessOutput,
+  LocationsOutput,
+  SiteNetworkAccessOutput,
   ValidProviderIdentifiersOutput,
   VpnBearer,
   VpnBearerOutput,
@@ -27,21 +47,9 @@ import {
   VpnServicesOutput,
   VpnSite,
   VpnSitesOutput,
-  LocationsOutput,
-  SiteNetworkAccessOutput,
 } from './network-types';
-import {
-  ServiceFilter,
-  SiteFilter,
-  SiteNetworkAccessFilter,
-  VpnBearerFilter,
-  getServiceFilterParams,
-  getSiteFilterParams,
-  getSiteNetworkAccessFilterParams,
-  getVpnBearerFilterParams,
-} from './filter-helpers';
 
-// data/network-topology:network-topology/topology=uniconfig/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers
+// data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers
 const UNICONFIG_SERVICE_URL =
   '/data/network-topology:network-topology/topology=unistore/node=service/frinx-uniconfig-topology:configuration';
 
@@ -370,4 +378,15 @@ export async function getSiteNetworkAccessesCount(
   } catch {
     return 0;
   }
+}
+
+export async function getTransactionCookie(): Promise<string> {
+  const data = await sendCookiePostRequest('/operations/uniconfig-manager:create-transaction', {
+    auth: UNISTORE_AUTH,
+    verify: false,
+  });
+  if (!isString(data)) {
+    throw new Error('not a string');
+  }
+  return data;
 }

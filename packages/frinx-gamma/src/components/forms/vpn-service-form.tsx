@@ -1,10 +1,5 @@
 import React, { FC, useState } from 'react';
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  CloseButton,
   Flex,
   HStack,
   Tag,
