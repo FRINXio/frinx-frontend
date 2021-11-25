@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './app';
 import { AuthContext } from './auth-helpers';
 import unwrap from './helpers/unwrap';
+import Root from './root';
 import './set-public-path';
 import { ServiceKey } from './types';
 
@@ -10,7 +10,7 @@ const ALL_SERVICES: ServiceKey[] = [
   'uniflow_enabled' as const,
   'inventory_enabled' as const,
   'uniresource_enabled' as const,
-  // 'usermanagement_enabled' as const,
+  'usermanagement_enabled' as const,
 ];
 const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
   ['uniflow_enabled', () => import('@frinx/workflow-ui')],
@@ -49,7 +49,10 @@ class DashboardApp {
       React.createElement(
         React.StrictMode,
         null,
-        React.createElement(App, { isAuthEnabled: AuthContext.isAuthEnabled(), enabledServices: this.enabledServices }),
+        React.createElement(Root, {
+          isAuthEnabled: AuthContext.isAuthEnabled(),
+          enabledServices: this.enabledServices,
+        }),
       ),
       document.getElementById('root'),
     );

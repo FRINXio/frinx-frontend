@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
+import { GraphQLApi } from '@frinx/api';
 import { authContext } from './auth-helpers';
 
 const UniresourceApp: FC = () => {
@@ -49,7 +50,9 @@ const UniresourceApp: FC = () => {
   } = components;
 
   return (
-    <UniresourceAppProvider url={window.__CONFIG__.uniresource_api_url} getAuthToken={authContext.getAuthToken}>
+    <UniresourceAppProvider
+      client={GraphQLApi.create({ url: window.__CONFIG__.uniresource_api_url, authContext }).client}
+    >
       <Switch>
         <Route exact path="/uniresource">
           <Redirect to="/uniresource/pools" />

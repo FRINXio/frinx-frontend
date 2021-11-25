@@ -1,20 +1,17 @@
-import React, { createContext, FC, useRef } from 'react';
+import { cacheExchange, ClientOptions, createClient, dedupExchange, fetchExchange, Provider } from 'urql';
 import { retryExchange } from '@urql/exchange-retry';
-import { Provider, createClient, ClientOptions, dedupExchange, cacheExchange, fetchExchange } from 'urql';
-import { CustomToastProvider } from './notifications-context';
-
-export const InventoryAPIContext = createContext(false);
+import React, { FC, useRef } from 'react';
+import PageContainer from './components/page-container';
 
 export type InventoryApiClient = {
   clientOptions: ClientOptions;
   onError: () => void;
 };
-
 export type Props = {
   client: InventoryApiClient;
 };
 
-export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
+const UniresourceApiProvider: FC<Props> = ({ children, client }) => {
   const { current: urqlClient } = useRef(
     createClient({
       ...client.clientOptions,
@@ -33,9 +30,12 @@ export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
       ],
     }),
   );
+
   return (
     <Provider value={urqlClient}>
-      <CustomToastProvider>{children}</CustomToastProvider>
+      <PageContainer>{children}</PageContainer>
     </Provider>
   );
 };
+
+export default UniresourceApiProvider;

@@ -1,4 +1,4 @@
-import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
+import { AuthenticatedTemplate, UnauthenticatedTemplate } from '@azure/msal-react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import {
   Box,
@@ -13,39 +13,17 @@ import {
   MenuList,
   Text,
 } from '@chakra-ui/react';
-import React, { FC, useEffect } from 'react';
-import { removeTokenCookie, AuthHelper } from '../../auth-helpers';
+import React, { FC } from 'react';
+import { authContext } from '../../auth-helpers';
+import useAuth from '../../use-auth';
 
 const UserNav: FC = () => {
-  const { instance, accounts, inProgress } = useMsal();
-
-  useEffect(() => {
-    if (inProgress === 'none' && accounts.length > 0) {
-      const authResultPromise = instance.acquireTokenSilent({
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        account: accounts[0],
-        scopes: ['User.Read'],
-      });
-
-      authResultPromise.then((value) => {
-        AuthHelper.setAuthToken(value.idToken);
-      });
-    }
-  }, [inProgress, instance, accounts]);
+  const { inProgress, login, logout } = useAuth();
 
   return (
     <Box marginLeft="auto">
       <UnauthenticatedTemplate>
-        <Button
-          colorScheme="brand"
-          isLoading={inProgress === 'login'}
-          onClick={() => {
-            instance.loginPopup({
-              scopes: ['openid', 'profile', 'User.Read.All'],
-            });
-          }}
-        >
+        <Button colorScheme="brand" isLoading={inProgress === 'login'} onClick={login}>
           Login
         </Button>
       </UnauthenticatedTemplate>
@@ -93,8 +71,8 @@ const UserNav: FC = () => {
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
-                    instance.logout().finally(() => {
-                      removeTokenCookie();
+                    logout().finally(() => {
+                      authContext.deleteAuthToken();
                     });
                   }}
                 >

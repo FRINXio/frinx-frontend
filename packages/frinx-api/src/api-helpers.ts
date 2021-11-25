@@ -27,17 +27,16 @@ export function createApiHelpers(baseURL: string, authContext: AuthContext): Api
       headers: getHeaders(authContext.getAuthToken()),
     });
 
+    if (response.status === 401) {
+      return authContext.emitUnauthorized();
+    }
+
     if (!response.ok) {
       throw new Error(`apiFetch failed with http-code ${response.status}`);
     }
 
     if (response.status === 201 || response.status === 204) {
       return response;
-    }
-
-    if (response.status === 401) {
-      // emit error event
-      authContext.emitUnauthorized();
     }
 
     return response.json();
