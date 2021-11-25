@@ -4,6 +4,7 @@ import { useParams } from 'react-router';
 import callbackUtils from '../../callback-utils';
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import DeviceForm from '../../components/forms/device-form';
+import ErrorMessage from '../../components/error-message/error-message';
 import { SiteDevice, VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
 
@@ -25,6 +26,7 @@ function getSelectedDevice(site: VpnSite, deviceId: string): SiteDevice {
 const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const { siteId, locationId, deviceId } = useParams<{ siteId: string; locationId: string; deviceId: string }>();
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,6 +41,7 @@ const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
   }, [siteId]);
 
   const handleSubmit = async (device: SiteDevice) => {
+    setSubmitError(null);
     if (!selectedSite) {
       return;
     }
@@ -53,8 +56,12 @@ const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
     };
     const callbacks = callbackUtils.getCallbacks;
 
-    await callbacks.editVpnSite(editedSite);
-    onSuccess(unwrap(siteId), locationId);
+    try {
+      await callbacks.editVpnSite(editedSite);
+      onSuccess(unwrap(siteId), locationId);
+    } catch (e) {
+      setSubmitError(String(e));
+    }
   };
 
   const handleCancel = () => {
@@ -74,6 +81,7 @@ const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
       <Container>
         <Box padding={6} margin={6} background="white">
           <Heading size="md">Edit Device: {deviceId} </Heading>
+          {submitError && <ErrorMessage text={String(submitError)} />}
           <DeviceForm
             mode="edit"
             siteId={unwrap(selectedSite.siteId)}

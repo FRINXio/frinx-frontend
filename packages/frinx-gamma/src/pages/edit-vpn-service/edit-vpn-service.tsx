@@ -4,6 +4,7 @@ import { useParams } from 'react-router';
 import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
 import { VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
+import ErrorMessage from '../../components/error-message/error-message';
 import callbackUtils from '../../callback-utils';
 import unwrap from '../../helpers/unwrap';
 import { getSelectOptions } from '../../components/forms/options.helper';
@@ -23,6 +24,7 @@ function getSelectedService(services: VpnService[], serviceId: string): VpnServi
 const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const { serviceId } = useParams<{ serviceId: string }>();
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,11 +38,16 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
   }, []);
 
   const handleSubmit = async (service: VpnService) => {
+    setSubmitError(null);
     // eslint-disable-next-line no-console
     console.log('submit clicked', service);
-    const callbacks = callbackUtils.getCallbacks;
-    await callbacks.editVpnServices(service);
-    onSuccess();
+    try {
+      const callbacks = callbackUtils.getCallbacks;
+      await callbacks.editVpnServices(service);
+      onSuccess();
+    } catch (e) {
+      setSubmitError(String(e));
+    }
   };
 
   const handleCancel = () => {
@@ -62,6 +69,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
         <Flex justifyContent="space-between" alignItems="center">
           <Heading size="md">Edit VPN Service</Heading>
         </Flex>
+        {submitError && <ErrorMessage text={String(submitError)} />}
         {vpnServices && selectedService && (
           <VpnServiceForm
             mode="edit"

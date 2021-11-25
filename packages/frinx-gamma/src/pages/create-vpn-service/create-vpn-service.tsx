@@ -52,7 +52,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
       console.log(output);
       onSuccess();
     } catch (e) {
-      setSubmitError(e as string);
+      setSubmitError(String(e));
     }
   };
 
