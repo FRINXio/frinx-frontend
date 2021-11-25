@@ -1,9 +1,9 @@
-import './set-public-path';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './app';
+import { AuthContext } from './auth-helpers';
 import unwrap from './helpers/unwrap';
-import { AuthHelper, isAuthEnabled } from './auth-helpers';
+import './set-public-path';
 import { ServiceKey } from './types';
 
 const ALL_SERVICES: ServiceKey[] = [
@@ -45,12 +45,11 @@ class DashboardApp {
   }
 
   render() {
-    console.log(AuthHelper.isAuthorized());
     ReactDOM.render(
       React.createElement(
         React.StrictMode,
         null,
-        React.createElement(App, { isAuthEnabled: AuthHelper.isAuthEnabled(), enabledServices: this.enabledServices }),
+        React.createElement(App, { isAuthEnabled: AuthContext.isAuthEnabled(), enabledServices: this.enabledServices }),
       ),
       document.getElementById('root'),
     );
