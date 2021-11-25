@@ -12,7 +12,6 @@ import {
   QueryPoolDetailQueryVariables,
   ResourceConnection,
 } from '../../__generated__/graphql';
-import ClaimResourceAllocIpv4PrefixModal from './claim-resource-modal/claim-resource-allocating-modals/claim-resource-allocating-ipv4_prefix-modal';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
 import PoolDetailTable from './pool-detail-table';
 
@@ -47,6 +46,9 @@ const POOL_DETAIL_QUERY = gql`
       Capacity {
         freeCapacity
         utilizedCapacity
+      }
+      ResourceType {
+        Name
       }
     }
   }
@@ -100,7 +102,7 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
     FREE_RESOURCES_MUTATION,
   );
 
-  const claimPoolResource = (userInput: Record<string, string | number>, description?: string) => {
+  const claimPoolResource = (description: string, userInput: Record<string, string | number> = {}) => {
     claimResource({
       poolId,
       userInput,
@@ -134,11 +136,12 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
 
   return (
     <PageContainer>
-      <ClaimResourceAllocIpv4PrefixModal
-        poolName={resourcePool.Name}
+      <ClaimResourceModal
         isOpen={claimResourceModal.isOpen}
         onClose={claimResourceModal.onClose}
         onClaim={claimPoolResource}
+        poolName={resourcePool.Name}
+        variant={resourcePool.ResourceType.Name}
       />
       <Flex alignItems="center">
         <Heading size="3xl" as="h2" mb={6}>
@@ -165,7 +168,7 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
         </Text>
       </Box>
 
-      <Box mt={10}>
+      <Box my={10}>
         <Heading size="lg">Allocated Resources</Heading>
         <PoolDetailTable allocatedResources={resourcePool.allocatedResources as ResourceConnection} />
       </Box>
