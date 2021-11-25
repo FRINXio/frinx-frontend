@@ -37,6 +37,7 @@ export function createApiHelpers(baseURL: string, authContext: AuthContext): Api
 
     if (response.status === 401) {
       // emit error event
+      authContext.emitUnauthorized();
     }
 
     return response.json();

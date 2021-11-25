@@ -17,7 +17,8 @@
     "type-check:workflow-builder": "cd packages/frinx-workflow-builder && yarn run type-check",
     "type-check:inventory": "cd packages/frinx-inventory-client && yarn run type-check",
     "lint": "yarn run lint:dashboard && yarn run lint:workflow-builder && yarn run lint:inventory",
-    "type-check": "yarn run type-check:workflow-builder && yarn run type-check:inventory"
+    "type-check": "yarn run type-check:workflow-builder && yarn run type-check:inventory",
+    "build:api": "cd packages/frinx-api && yarn rollup -c"
   },
   "devDependencies": {
     "dedubcheck": "^0.0.6",

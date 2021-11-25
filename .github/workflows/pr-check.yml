@@ -20,6 +20,8 @@ jobs:
         run: yarn run formatter:check
       - name: Check for dependencies version in monorepo
         run: yarn run dedubcheck
+      - name: Build dependencies
+        run: yarn run build:api
       - name: Run eslint check in Dashboard
         run: yarn run lint:dashboard
       - name: Run eslint check in Workflow Builder
