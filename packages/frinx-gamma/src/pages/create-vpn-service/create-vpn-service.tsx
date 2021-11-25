@@ -37,6 +37,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
   }, []);
 
   const handleSubmit = async (data: VpnService) => {
+    setSubmitError(null);
     const service = {
       ...data,
       vpnId: generateVpnId(),
