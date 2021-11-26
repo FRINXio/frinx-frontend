@@ -4,6 +4,7 @@ import { useParams } from 'react-router';
 import unwrap from '../../helpers/unwrap';
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import DeviceForm from '../../components/forms/device-form';
+import ErrorMessage from '../../components/error-message/error-message';
 import { SiteDevice, VpnSite } from '../../components/forms/site-types';
 import callbackUtils from '../../callback-utils';
 
@@ -26,6 +27,7 @@ function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
 const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const { siteId, locationId } = useParams<{ siteId: string; locationId: string }>();
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +42,7 @@ const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
   }, [siteId]);
 
   const handleSubmit = async (device: SiteDevice) => {
+    setSubmitError(null);
     if (!selectedSite) {
       return;
     }
@@ -53,10 +56,14 @@ const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
     console.log('submit clicked', editedSite);
     const callbacks = callbackUtils.getCallbacks;
 
-    await callbacks.editVpnSite(editedSite);
-    // eslint-disable-next-line no-console
-    console.log('site saved: network access added to site');
-    onSuccess(unwrap(siteId), locationId);
+    try {
+      await callbacks.editVpnSite(editedSite);
+      // eslint-disable-next-line no-console
+      console.log('site saved: network access added to site');
+      onSuccess(unwrap(siteId), locationId);
+    } catch (e) {
+      setSubmitError(String(e));
+    }
   };
 
   const handleCancel = () => {
@@ -75,6 +82,7 @@ const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
             </Heading>
             <Heading size="sm">To Site: {siteId}</Heading>
           </Box>
+          {submitError && <ErrorMessage text={String(submitError)} />}
           <DeviceForm
             mode="add"
             siteId={unwrap(selectedSite.siteId)}
