@@ -2,6 +2,7 @@ import { Box, Button, ButtonGroup, Flex, Heading, Progress, Spacer, Text, useDis
 import React, { FC } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import PageContainer from '../../components/page-container';
+import useNotifications from '../../hooks/use-notifications';
 import {
   ClaimResourceMutationMutation,
   ClaimResourceMutationMutationVariables,
@@ -88,6 +89,7 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
 
 const PoolDetailPage: FC<Props> = ({ poolId }) => {
   const claimResourceModal = useDisclosure();
+  const { addToastNotification } = useNotifications();
   const [{ data, fetching: isLoadingPool }] = useQuery<QueryPoolDetailQuery, QueryPoolDetailQueryVariables>({
     query: POOL_DETAIL_QUERY,
     variables: {
@@ -107,7 +109,19 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
       poolId,
       userInput,
       ...(description != null && { description }),
-    });
+    })
+      .then(() => {
+        addToastNotification({
+          type: 'success',
+          content: 'Successfully claimed resource from pool',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          type: 'error',
+          content: 'There was a problem with claiming resource from pool',
+        });
+      });
   };
 
   const freePoolResource = (userInput: Map<string, string | number>) => {

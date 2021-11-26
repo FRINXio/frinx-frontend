@@ -1,6 +1,7 @@
 import { createClient, Provider } from 'urql';
 import React, { FC, useRef } from 'react';
 import PageContainer from './components/page-container';
+import { CustomToastProvider } from './notifications-context';
 
 type Props = {
   url: string;
@@ -14,7 +15,9 @@ const Root: FC<Props> = ({ children, url }) => {
   );
   return (
     <Provider value={urqlClient}>
-      <PageContainer>{children}</PageContainer>
+      <CustomToastProvider>
+        <PageContainer>{children}</PageContainer>
+      </CustomToastProvider>
     </Provider>
   );
 };
