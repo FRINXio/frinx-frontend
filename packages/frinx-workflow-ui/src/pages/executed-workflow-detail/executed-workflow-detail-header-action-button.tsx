@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
-import { Status } from './executed-workflow-detail';
+import { WorkflowStatus } from './executed-workflow-detail-status.helpers';
 import { Button, ButtonGroup } from '@chakra-ui/react';
 import callbackUtils from '../../utils/callback-utils';
 
 type Props = {
   workflowId: string;
-  status: Status | undefined;
+  status: WorkflowStatus | undefined;
   restartWorkflows: () => void;
   onWorkflowActionExecution: () => void;
 };
@@ -17,28 +17,28 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
   workflowId,
 }) => {
   const terminateWorkflows = () => {
-    const terminateWorkflows = callbackUtils.terminateWorkflowsCallback();
+    const { terminateWorkflows } = callbackUtils.getCallbacks;
 
     terminateWorkflows([workflowId]);
     onWorkflowActionExecution();
   };
 
   const pauseWorkflows = () => {
-    const pauseWorkflows = callbackUtils.pauseWorkflowsCallback();
+    const { pauseWorkflows } = callbackUtils.getCallbacks;
 
     pauseWorkflows([workflowId]);
     onWorkflowActionExecution();
   };
 
   const resumeWorkflows = () => {
-    const resumeWorkflows = callbackUtils.resumeWorkflowsCallback();
+    const { resumeWorkflows } = callbackUtils.getCallbacks;
 
     resumeWorkflows([workflowId]);
     onWorkflowActionExecution();
   };
 
   const retryWorkflows = () => {
-    const retryWorkflows = callbackUtils.retryWorkflowsCallback();
+    const { retryWorkflows } = callbackUtils.getCallbacks;
 
     retryWorkflows([workflowId]);
     onWorkflowActionExecution();

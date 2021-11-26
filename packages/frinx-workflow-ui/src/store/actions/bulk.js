@@ -60,7 +60,7 @@ export const performBulkOperation = (operation, workflows, defaultPages) => {
     try {
       switch (operation) {
         case 'retry':
-          const retryWorkflows = callbackUtils.retryWorkflowsCallback();
+          const { retryWorkflows } = callbackUtils.getCallbacks;
 
           retryWorkflows(workflows).then((res) => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
@@ -68,7 +68,7 @@ export const performBulkOperation = (operation, workflows, defaultPages) => {
           });
           break;
         case 'restart':
-          const restartWorkflows = callbackUtils.restartWorkflowsCallback();
+          const { restartWorkflows } = callbackUtils.getCallbacks;
 
           restartWorkflows(workflows).then((res) => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
@@ -76,7 +76,7 @@ export const performBulkOperation = (operation, workflows, defaultPages) => {
           });
           break;
         case 'pause':
-          const pauseWorkflows = callbackUtils.pauseWorkflowsCallback();
+          const { pauseWorkflows } = callbackUtils.getCallbacks;
 
           pauseWorkflows(workflows).then((res) => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
@@ -84,7 +84,7 @@ export const performBulkOperation = (operation, workflows, defaultPages) => {
           });
           break;
         case 'resume':
-          const resumeWorkflows = callbackUtils.resumeWorkflowsCallback();
+          const { resumeWorkflows } = callbackUtils.getCallbacks;
 
           resumeWorkflows(workflows).then((res) => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
@@ -92,7 +92,7 @@ export const performBulkOperation = (operation, workflows, defaultPages) => {
           });
           break;
         case 'terminate':
-          const terminateWorkflows = callbackUtils.terminateWorkflowsCallback();
+          const { terminateWorkflows } = callbackUtils.getCallbacks;
 
           terminateWorkflows(workflows).then((res) => {
             const { bulkSuccessfulResults, bulkErrorResults } = res.body.text ? JSON.parse(res.body.text) : [];
@@ -100,7 +100,7 @@ export const performBulkOperation = (operation, workflows, defaultPages) => {
           });
           break;
         case 'delete':
-          const deleteWorkflowInstance = callbackUtils.deleteWorkflowInstanceCallback();
+          const { deleteWorkflowInstance } = callbackUtils.getCallbacks;
 
           workflows.map((wf) => {
             deleteWorkflowInstance(wf).then(() => {

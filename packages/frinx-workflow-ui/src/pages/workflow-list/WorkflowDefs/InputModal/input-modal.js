@@ -76,8 +76,7 @@ function InputModal(props) {
     return new Promise(() => {
       const waitingWfs = [];
 
-      const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback();
-      const getWorkflowInstanceDetail = callbackUtils.getWorkflowInstanceDetailCallback();
+      const { getWorkflowExecutions, getWorkflowInstanceDetail } = callbackUtils.getCallbacks;
 
       getWorkflowExecutions().then((res) => {
         const runningWfs = res.result?.hits || [];
@@ -150,7 +149,7 @@ function InputModal(props) {
       input[label] = typeof value === 'string' && value.startsWith('{') ? JSON.parse(value) : value;
     });
 
-    const executeWorkflow = callbackUtils.executeWorkflowCallback();
+    const { executeWorkflow } = callbackUtils.getCallbacks;
 
     setStatus('Executing...');
     executeWorkflow(payload).then((res) => {

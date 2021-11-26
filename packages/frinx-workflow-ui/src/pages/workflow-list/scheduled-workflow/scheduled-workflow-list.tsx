@@ -36,7 +36,7 @@ function ScheduledWorkflowList() {
   const { addToastNotification } = useNotifications();
 
   function getData() {
-    const getSchedules = callbackUtils.getSchedulesCallback();
+    const { getSchedules } = callbackUtils.getCallbacks;
 
     getSchedules()
       .then((schedules) => {
@@ -61,9 +61,9 @@ function ScheduledWorkflowList() {
   }
 
   function handleWorkflowUpdate(scheduledWf: Partial<ScheduledWorkflow>) {
-    const registerSchedule = callbackUtils.registerScheduleCallback();
+    const { registerSchedule } = callbackUtils.getCallbacks;
 
-    registerSchedule(scheduledWf.workflowName!, scheduledWf.workflowVersion!, scheduledWf)
+    registerSchedule(scheduledWf.workflowName!, Number(scheduledWf.workflowVersion!), scheduledWf)
       .then((res) => {
         addToastNotification({
           content: res.message,
@@ -82,8 +82,8 @@ function ScheduledWorkflowList() {
   }
 
   const handleDeleteBtnClick = (workflow: ScheduledWorkflow) => {
-    const deleteSchedule = callbackUtils.deleteScheduleCallback();
-    deleteSchedule(workflow.workflowName, workflow.workflowVersion)
+    const { deleteSchedule } = callbackUtils.getCallbacks;
+    deleteSchedule(workflow.workflowName, Number(workflow.workflowVersion))
       .then(() => {
         addToastNotification({
           content: 'Deleted successfuly',

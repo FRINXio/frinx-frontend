@@ -1,4 +1,5 @@
 /* eslint-disable */
+// @ts-nocheck
 import { createElement } from 'react';
 import { render } from 'react-dom';
 import { getBuilderApiProvider } from './builder-api-provider';
