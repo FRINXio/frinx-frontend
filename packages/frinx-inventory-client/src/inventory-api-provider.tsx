@@ -1,27 +1,37 @@
 import React, { createContext, FC, useRef } from 'react';
-import { Provider, createClient } from 'urql';
+import { retryExchange } from '@urql/exchange-retry';
+import { Provider, createClient, ClientOptions, dedupExchange, cacheExchange, fetchExchange } from 'urql';
 import { CustomToastProvider } from './notifications-context';
 
 export const InventoryAPIContext = createContext(false);
 
-export type Props = {
-  url: string;
-  getAuthToken: () => string | null;
+export type InventoryApiClient = {
+  clientOptions: ClientOptions;
+  onError: () => void;
 };
 
-export const InventoryAPIProvider: FC<Props> = ({ children, url, getAuthToken }) => {
+export type Props = {
+  client: InventoryApiClient;
+};
+
+export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
   const { current: urqlClient } = useRef(
-    (() => {
-      const authToken = getAuthToken();
-      return createClient({
-        url,
-        fetchOptions: {
-          headers: {
-            ...(authToken != null ? { authorization: `Bearer ${authToken}` } : {}),
+    createClient({
+      ...client.clientOptions,
+      exchanges: [
+        dedupExchange,
+        cacheExchange,
+        retryExchange({
+          retryIf: (err) => {
+            if (err.networkError?.message === 'Unauthorized') {
+              client.onError();
+            }
+            return false;
           },
-        },
-      });
-    })(),
+        }),
+        fetchExchange,
+      ],
+    }),
   );
   return (
     <Provider value={urqlClient}>

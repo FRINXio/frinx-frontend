@@ -18,7 +18,7 @@ const TaskModal = ({ name, modalHandler, show }) => {
   const [response, setResponse] = useState({});
 
   useEffect(() => {
-    const getTaskDefinition = callbackUtils.getTaskDefinitionCallback();
+    const { getTaskDefinition } = callbackUtils.getCallbacks;
 
     getTaskDefinition(name).then((definition) => {
       if (definition) {

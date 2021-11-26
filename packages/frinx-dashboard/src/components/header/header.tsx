@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import {
@@ -28,7 +28,7 @@ type Props = {
   enabledServices: Map<ServiceKey, boolean>;
 };
 
-const Header: FC<Props> = ({ isAuthEnabled, enabledServices }) => {
+const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled, enabledServices }) => {
   return (
     <Flex height={16} alignItems="center" px={4} boxShadow="md" position="relative" background="brand.600">
       <Box marginRight={4}>

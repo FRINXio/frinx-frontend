@@ -2,65 +2,8 @@ import React, { FC, useEffect, useState } from 'react';
 import { Box } from '@chakra-ui/react';
 import { v4 as uuid } from 'uuid';
 import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
-import {
-  getWorkflows,
-  getWorkflow,
-  getTaskDefinitions,
-  getTaskDefinition,
-  registerTaskDefinition,
-  deleteTaskDefinition,
-  registerEventListener,
-  putWorkflow,
-  getEventListeners,
-  deleteEventListener,
-  getQueues,
-  deleteWorkflow,
-  getWorkflowExecutions,
-  getWorkflowInstanceDetail,
-  executeWorkflow,
-  getWorkflowExecutionsHierarchical,
-  terminateWorkflows,
-  pauseWorkflows,
-  resumeWorkflows,
-  retryWorkflows,
-  restartWorkflows,
-  deleteWorkflowInstance,
-  getSchedules,
-  deleteSchedule,
-  getSchedule,
-  registerSchedule,
-  getExternalStorage,
-} from './api/uniflow/uniflow-api';
-
-const callbacks = {
-  getWorkflows,
-  getWorkflow,
-  getTaskDefinitions,
-  getTaskDefinition,
-  registerTaskDefinition,
-  deleteTaskDefinition,
-  registerEventListener,
-  putWorkflow,
-  getEventListeners,
-  deleteEventListener,
-  getQueues,
-  deleteWorkflow,
-  getWorkflowExecutions,
-  getWorkflowInstanceDetail,
-  executeWorkflow,
-  getWorkflowExecutionsHierarchical,
-  terminateWorkflows,
-  pauseWorkflows,
-  resumeWorkflows,
-  retryWorkflows,
-  restartWorkflows,
-  deleteWorkflowInstance,
-  getSchedules,
-  deleteSchedule,
-  getSchedule,
-  registerSchedule,
-  getExternalStorage,
-};
+import { UniflowApi } from '@frinx/api';
+import { authContext } from './auth-helpers';
 
 type UniflowComponents = Omit<typeof import('@frinx/workflow-ui'), 'getUniflowApiProvider'> & {
   UniflowApiProvider: FC;
@@ -104,9 +47,13 @@ const UniflowApp: FC = () => {
           TaskList,
           PollData,
           DiagramBuilder,
-          UniflowApiProvider: getUniflowApiProvider(callbacks),
+          UniflowApiProvider: getUniflowApiProvider(
+            UniflowApi.create({ url: window.__CONFIG__.conductor_api_url, authContext }).client,
+          ),
           WorkflowBuilder,
-          BuilderApiProvider: getBuilderApiProvider(callbacks),
+          BuilderApiProvider: getBuilderApiProvider(
+            UniflowApi.create({ url: window.__CONFIG__.conductor_api_url, authContext }).client,
+          ),
         });
       },
     );

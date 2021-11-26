@@ -15,7 +15,7 @@ export const fetchNewData = (workflowName: string, viewedPage: number, defaultPa
   const page = viewedPage * defaultPages;
   const mappedLabels = mapLabelsForApi(labels);
 
-  const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback();
+  const { getWorkflowExecutions } = callbackUtils.getCallbacks;
   return getWorkflowExecutions(workflowName, mappedLabels, page, defaultPages.toString());
 };
 
@@ -27,7 +27,7 @@ export const fetchParentWorkflows = (
 ) => {
   const mappedLabels = mapLabelsForApi(labels);
 
-  const getWorkflowExecutionsHierarchical = callbackUtils.getWorkflowExecutionsHierarchicalCallback();
+  const { getWorkflowExecutionsHierarchical } = callbackUtils.getCallbacks;
   return getWorkflowExecutionsHierarchical(workflowName, mappedLabels, viewedPage, defaultPages.toString());
 };
 
