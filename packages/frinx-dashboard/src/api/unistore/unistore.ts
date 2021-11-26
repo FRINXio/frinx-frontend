@@ -145,7 +145,7 @@ export async function getValidProviderIdentifiers(): Promise<ValidProviderIdenti
 
 export async function getVpnBearers(
   pagination: Pagination | null,
-  vpnBearerFilter: VpnBearerFilter,
+  vpnBearerFilter: VpnBearerFilter | null,
 ): Promise<VpnBearerOutput> {
   try {
     const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
@@ -173,13 +173,12 @@ export async function createVpnBearer(bearer: VpnBearer): Promise<void> {
   );
 }
 
-export async function editVpnBearer(vpnBearer: VpnBearer): Promise<unknown> {
+export async function editVpnBearer(vpnBearer: VpnBearer): Promise<void> {
   const body = clientBearerToApiBearer(vpnBearer);
-  const json = await sendPutRequest(
+  await sendPutRequest(
     `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${vpnBearer.spBearerReference}`,
     body,
   );
-  return json;
 }
 
 export async function deleteVpnBearer(id: string): Promise<void> {

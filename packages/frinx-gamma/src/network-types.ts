@@ -133,7 +133,7 @@ export function decodeLocationsOutput(value: unknown): LocationsOutput {
 
 const VpnValidator = t.type({
   'vpn-id': t.string,
-  'site-role': t.string,
+  'site-role': optional(t.string),
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

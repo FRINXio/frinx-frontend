@@ -55,7 +55,7 @@ export type UnistoreCallbacks = {
   getVpnServiceCount: (filters: ServiceFilters | null) => Promise<number>;
   getVpnSiteCount: (filters: SiteFilters | null) => Promise<number>;
   getVpnBearerCount: (filters: VpnBearerFilters | null) => Promise<number>;
-  getLocations: (siteId: string, pagiantion?: Pagination) => Promise<LocationsOutput>;
+  getLocations: (siteId: string, pagination: Pagination | null) => Promise<LocationsOutput>;
   getLocationsCount: (siteId: string) => Promise<number>;
   getSiteNetworkAccesses: (
     siteId: string,
