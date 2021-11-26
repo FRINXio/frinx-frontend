@@ -30,7 +30,7 @@ type Pagination = {
   limit: number;
 };
 
-export type Callbacks = {
+export type UnistoreCallbacks = {
   getVpnServices: (pagination: Pagination | null, filters: ServiceFilters | null) => Promise<VpnServicesOutput>;
   editVpnServices: (body: VpnService) => Promise<unknown>;
   deleteVpnService: (id: string) => Promise<unknown>;
@@ -41,8 +41,6 @@ export type Callbacks = {
   deleteVpnSite: (id: string) => Promise<void>;
   getValidProviderIdentifiers: () => Promise<ValidProviderIdentifiersOutput>;
   getBearerValidProviderIdentifiers: () => Promise<ValidProviderIdentifiersOutput>;
-  executeWorkflow: (payload: WorkflowPayload) => Promise<WorkflowExecPayload>;
-  getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<unknown>;
   getVpnBearers: (pagination: Pagination | null, filters: VpnBearerFilters | null) => Promise<VpnBearerOutput>;
   createVpnBearer: (bearer: VpnBearer) => Promise<void>;
   editVpnBearer: (bearer: VpnBearer) => Promise<void>;
@@ -71,9 +69,9 @@ export type Callbacks = {
   getTransactionCookie: () => Promise<string>;
 };
 class CallbackUtils {
-  private callbacks: Callbacks | null = null;
+  private callbacks: UnistoreCallbacks | null = null;
 
-  setCallbacks(callbacks: Callbacks) {
+  setCallbacks(callbacks: UnistoreCallbacks) {
     this.callbacks = callbacks;
   }
 

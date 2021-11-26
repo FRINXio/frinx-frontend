@@ -59,8 +59,8 @@ type Pagination = {
 };
 
 export async function getVpnServices(
-  pagination?: Pagination,
-  serviceFilter?: ServiceFilter,
+  pagination: Pagination | null,
+  serviceFilter: ServiceFilter | null,
 ): Promise<VpnServicesOutput> {
   try {
     const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
@@ -333,7 +333,7 @@ export async function getVpnBearerCount(vpnBearerFilter: VpnBearerFilter | null)
   }
 }
 
-export async function getLocations(siteId: string, pagination?: Pagination): Promise<LocationsOutput> {
+export async function getLocations(siteId: string, pagination: Pagination | null): Promise<LocationsOutput> {
   try {
     const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
     const json = await sendGetRequest(

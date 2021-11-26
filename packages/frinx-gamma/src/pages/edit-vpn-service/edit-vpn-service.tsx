@@ -5,7 +5,7 @@ import { apiVpnServiceToClientVpnService } from '../../components/forms/converte
 import { VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
 import ErrorMessage from '../../components/error-message/error-message';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 import unwrap from '../../helpers/unwrap';
 import { getSelectOptions } from '../../components/forms/options.helper';
 

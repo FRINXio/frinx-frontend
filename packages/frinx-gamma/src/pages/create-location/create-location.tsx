@@ -2,7 +2,7 @@ import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router';
 import { v4 as uuid4 } from 'uuid';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import CustomerLocationForm from '../../components/forms/customer-location-form';
 import { CustomerLocation, VpnSite } from '../../components/forms/site-types';

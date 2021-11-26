@@ -5,7 +5,7 @@ import { apiBearerToClientBearer } from '../../components/forms/converters';
 import EvcTable from './evc-table';
 import { EvcAttachment, VpnBearer } from '../../components/forms/bearer-types';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 
 type Props = {
   onCreateEvcClick: (bearerId: string) => void;

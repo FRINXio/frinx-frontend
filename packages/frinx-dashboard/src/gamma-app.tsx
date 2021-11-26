@@ -1,17 +1,12 @@
+import { UniflowApi } from '@frinx/api';
 import { FC } from 'beautiful-react-diagrams/node_modules/@types/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
-import { executeWorkflow, getWorkflowInstanceDetail } from './api/uniflow/uniflow-api';
 import * as unistoreCallbacks from './api/unistore/unistore';
+import { authContext } from './auth-helpers';
 
-const callbacks = {
-  ...unistoreCallbacks,
-  executeWorkflow,
-  getWorkflowInstanceDetail,
-};
-
-type GammaComponents = Omit<typeof import('@frinx/gamma/build'), 'getUnistoreApiProvider'> & {
-  UnistoreApiProvider: FC;
+type GammaComponents = Omit<typeof import('@frinx/gamma/build'), 'getGammaAppProvider'> & {
+  GammaAppProvider: FC;
 };
 
 const GammaApp: VoidFunctionComponent = () => {
@@ -45,7 +40,7 @@ const GammaApp: VoidFunctionComponent = () => {
         EditEvcAttachment,
         CreateVpnCarrier,
         CreateVpnNode,
-        getUnistoreApiProvider,
+        getGammaAppProvider,
       } = gammaImport;
 
       setComponents({
@@ -73,7 +68,10 @@ const GammaApp: VoidFunctionComponent = () => {
         EditEvcAttachment,
         CreateVpnCarrier,
         CreateVpnNode,
-        UnistoreApiProvider: getUnistoreApiProvider(callbacks),
+        GammaAppProvider: getGammaAppProvider({
+          unistoreCallbacks: { ...unistoreCallbacks },
+          uniflowCallbacks: UniflowApi.create({ url: window.__CONFIG__.conductor_api_url, authContext }).client,
+        }),
       });
     });
   }, []);
@@ -105,13 +103,13 @@ const GammaApp: VoidFunctionComponent = () => {
     EvcAttachmentList,
     CreateEvcAttachment,
     EditEvcAttachment,
-    UnistoreApiProvider,
+    GammaAppProvider,
     CreateVpnCarrier,
     CreateVpnNode,
   } = components;
 
   return (
-    <UnistoreApiProvider>
+    <GammaAppProvider>
       <Switch>
         {/* ControlPage */}
         <Route path="/gamma/" exact>
@@ -402,7 +400,7 @@ const GammaApp: VoidFunctionComponent = () => {
           />
         </Route>
       </Switch>
-    </UnistoreApiProvider>
+    </GammaAppProvider>
   );
 };
 

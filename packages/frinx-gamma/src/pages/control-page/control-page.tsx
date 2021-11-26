@@ -1,6 +1,7 @@
 import { Box, Container, Flex, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import callbackUtils from '../../callback-utils';
+import uniflowCallbackUtils from '../../uniflow-callback-utils';
+import unistoreCallbackUtils from '../../unistore-callback-utils';
 import ControlPageTable from './control-page-table';
 
 type Props = {
@@ -31,7 +32,7 @@ const ControlPage: VoidFunctionComponent<Props> = ({
 
   useEffect(() => {
     (async () => {
-      const callbacks = callbackUtils.getCallbacks;
+      const callbacks = unistoreCallbackUtils.getCallbacks;
       const [serviceCount, siteCount, bearerCount] = await Promise.all([
         callbacks.getVpnServiceCount(null),
         callbacks.getVpnSiteCount(null),
@@ -46,7 +47,7 @@ const ControlPage: VoidFunctionComponent<Props> = ({
   }, []);
 
   function handleServiceCommitBtnClick() {
-    const callbacks = callbackUtils.getCallbacks;
+    const callbacks = uniflowCallbackUtils.getCallbacks;
     callbacks
       .executeWorkflow({
         name: 'Render_all',
@@ -66,7 +67,7 @@ const ControlPage: VoidFunctionComponent<Props> = ({
   }
 
   function handleBearerCommitBtnClick() {
-    const callbacks = callbackUtils.getCallbacks;
+    const callbacks = uniflowCallbackUtils.getCallbacks;
     callbacks
       .executeWorkflow({
         name: 'Render_bearer',
