@@ -37,5 +37,7 @@ jobs:
         run: yarn run lint:inventory
       - name: Check types in Inventory client
         run: yarn run type-check:inventory
+      - name: Check types in Dashboard
+        run: yarn run type-check:dashboard
       - name: Check types in Frinx api
         run: yarn run type-check:api

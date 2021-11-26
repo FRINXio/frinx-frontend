@@ -30,7 +30,7 @@ export type UniflowApiClient = {
   getWorkflowExecutions: (workflowId: string, label: string, start: number, size: string) => Promise<unknown>;
   getWorkflowExecutionsHierarchical: (query: string, label: string, start?: number, size?: string) => Promise<unknown>;
   getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<ExecutedWorkflowResponse>;
-  executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>;
+  executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<{ text: string }>;
   terminateWorkflows: (workflowIds: string[]) => Promise<string[]>;
   pauseWorkflows: (workflowIds: string[]) => Promise<string[]>;
   resumeWorkflows: (workflowIds: string[]) => Promise<string[]>;
@@ -230,10 +230,10 @@ export default function createUniflowApiClient(apiHelpers: ApiHelpers): UniflowA
   }
 
   // Execute workflow based on payload
-  async function executeWorkflow(workflowPayload: WorkflowPayload): Promise<WorkflowPayload> {
+  async function executeWorkflow(workflowPayload: WorkflowPayload): Promise<{ text: string }> {
     const payload = await sendPostRequest('/workflow', workflowPayload);
 
-    return payload as WorkflowPayload;
+    return payload as { text: string };
   }
 
   // Returns workflowIds of deleted workflow

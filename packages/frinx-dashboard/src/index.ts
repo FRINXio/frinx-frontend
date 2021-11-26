@@ -15,7 +15,7 @@ const ALL_SERVICES: ServiceKey[] = [
 const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
   ['uniflow_enabled', () => import('@frinx/workflow-ui')],
   ['inventory_enabled', () => import('@frinx/inventory-client')],
-  ['uniresource_enabled', () => import('@frinx/uniresource-ui')],
+  ['uniresource_enabled', () => import('@frinx/uniresource-ui/src')],
   ['usermanagement_enabled', () => import('@frinx/workflow-ui')],
   ['gamma_enabled', () => import('@frinx/gamma')],
 ]);
