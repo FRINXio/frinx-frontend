@@ -10,10 +10,8 @@ enum ClaimModalVariant {
   VLAN_RANGE = 'vlan_range',
 }
 
-type ModalVariant = 'ipv4_prefix' | 'ipv6_prefix' | 'vlan' | 'vlan_range';
-
 type Props = {
-  variant: ModalVariant;
+  variant: string;
   poolName: string;
   isOpen: boolean;
   onClose: () => void;
