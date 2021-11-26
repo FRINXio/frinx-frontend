@@ -1,9 +1,8 @@
 import { InteractionStatus } from '@azure/msal-browser';
 import { AuthenticationResult } from '@azure/msal-common';
 import { useMsal } from '@azure/msal-react';
-import { Box, Heading, Button, Text } from '@chakra-ui/react';
-import { v4 as uuid } from 'uuid';
-import React, { FC, useEffect, useState, createContext } from 'react';
+import { Box, Button, Heading, Text } from '@chakra-ui/react';
+import React, { createContext, FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
 
 export type ContextType = {
@@ -16,14 +15,11 @@ export const Context = createContext<ContextType | null>(null);
 
 const AuthProvider: FC = ({ children }) => {
   const { instance, accounts, inProgress } = useMsal();
-  const [key, setKey] = useState<string | null>(null);
   const [isAuthError, setIsAuthError] = useState(false);
 
   useEffect(() => {
     if (inProgress === 'none' && accounts.length > 0) {
       const authResultPromise = instance.acquireTokenSilent({
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         account: accounts[0],
         scopes: ['User.Read'],
       });
@@ -46,14 +42,13 @@ const AuthProvider: FC = ({ children }) => {
         scopes: ['openid', 'profile', 'User.Read.All'],
       })
       .then((data) => {
-        setKey(uuid());
+        setIsAuthError(false);
         return data;
       });
   };
 
   return (
     <Context.Provider
-      key={key}
       value={{
         login: handleLogin,
         inProgress,
