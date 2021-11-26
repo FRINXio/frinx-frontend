@@ -70,7 +70,9 @@ export async function getVpnServices(
     );
     const data = decodeVpnServicesOutput(json);
     return data;
-  } catch {
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     return {
       'vpn-service': [],
     };
@@ -110,7 +112,9 @@ export async function getVpnSites(
     );
     const data = decodeVpnSitesOutput(json);
     return data;
-  } catch {
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     return {
       site: [],
     };
@@ -152,7 +156,9 @@ export async function getVpnBearers(
     const data = decodeVpnBearerOutput(json);
 
     return data;
-  } catch {
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     return {
       'vpn-bearer': [],
     };
@@ -190,7 +196,9 @@ export async function getVpnNodes(): Promise<VpnNodesOutput> {
     const data = decodeVpnNodesOutput(json);
 
     return data;
-  } catch {
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     return {
       'vpn-nodes': {
         'vpn-node': [],
@@ -221,7 +229,9 @@ export async function getVpnCarriers(): Promise<VpnCarriersOutput> {
     const data = decodeVpnCarriersOutput(json);
 
     return data;
-  } catch {
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     return {
       carriers: {
         carrier: [],
@@ -259,7 +269,9 @@ export async function getBearerValidProviderIdentifiers(): Promise<ValidProvider
     );
     const data = decodeValidProviderIdentifiersOutput(json);
     return data;
-  } catch {
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     return {
       'valid-provider-identifiers': {
         'bfd-profile-identifier': [],
@@ -280,7 +292,9 @@ export async function getVpnServiceCount(serviceFilter: ServiceFilter | null): P
       throw new Error('not a number');
     }
     return data;
-  } catch {
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     return 0;
   }
 }
@@ -295,7 +309,9 @@ export async function getVpnSiteCount(siteFilter: SiteFilter | null): Promise<nu
       throw new Error('not a number');
     }
     return data;
-  } catch {
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     return 0;
   }
 }
@@ -310,7 +326,9 @@ export async function getVpnBearerCount(vpnBearerFilter: VpnBearerFilter | null)
       throw new Error('not a number');
     }
     return data;
-  } catch {
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     return 0;
   }
 }
@@ -323,7 +341,9 @@ export async function getLocations(siteId: string, pagination?: Pagination): Pro
     );
     const data = decodeLocationsOutput(json);
     return data;
-  } catch {
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     // if site does not have locations it the response is 404
     return { location: [] };
   }
@@ -338,7 +358,9 @@ export async function getLocationsCount(siteId: string): Promise<number> {
       throw new Error('not a number');
     }
     return data;
-  } catch {
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     return 0;
   }
 }
@@ -356,7 +378,9 @@ export async function getSiteNetworkAccesses(
     );
     const data = decodeSiteNetworkAccessOutput(json);
     return data;
-  } catch {
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     // if site does not have locations it the response is 404
     return { 'site-network-access': [] };
   }
@@ -375,7 +399,9 @@ export async function getSiteNetworkAccessesCount(
       throw new Error('not a number');
     }
     return data;
-  } catch {
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     return 0;
   }
 }
