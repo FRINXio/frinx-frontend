@@ -24,7 +24,7 @@ const ClaimResourceAllocIpv4PrefixModal: FC<Props> = ({ poolName, isOpen, onClos
       <>
         <FormControl isRequired>
           <FormLabel>Desired size (number of allocated addresses)</FormLabel>
-          <Input ref={inputRef} defaultValue={24} />
+          <Input ref={inputRef} defaultValue={254} />
         </FormControl>
         <FormControl isRequired>
           <FormLabel>Description</FormLabel>
