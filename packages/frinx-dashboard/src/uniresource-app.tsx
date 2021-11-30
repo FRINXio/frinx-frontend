@@ -4,11 +4,11 @@ import { GraphQLApi } from '@frinx/api';
 import { authContext } from './auth-helpers';
 
 const UniresourceApp: FC = () => {
-  const [components, setComponents] = useState<typeof import('@frinx/uniresource-ui/src') | null>(null);
+  const [components, setComponents] = useState<typeof import('@frinx/uniresource-ui') | null>(null);
   const history = useHistory();
 
   useEffect(() => {
-    import('@frinx/uniresource-ui/src').then((mod) => {
+    import('@frinx/uniresource-ui').then((mod) => {
       const {
         PoolsPage,
         CreatePoolPage,

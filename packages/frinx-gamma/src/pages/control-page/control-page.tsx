@@ -2,7 +2,9 @@ import { Box, Container, Flex, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import unistoreCallbackUtils from '../../unistore-callback-utils';
+import { getTransactionId } from '../../helpers/transaction-id';
 import ControlPageTable from './control-page-table';
+import unwrap from '../../helpers/unwrap';
 
 type Props = {
   onServicesSiteLinkClick: () => void;
@@ -56,6 +58,7 @@ const ControlPage: VoidFunctionComponent<Props> = ({
           // eslint-disable-next-line @typescript-eslint/naming-convention
           unistore_node_name: 'network',
           action: 'commit',
+          US_UI_TX: unwrap(getTransactionId()),
         },
       })
       .then((data) => {
@@ -76,6 +79,7 @@ const ControlPage: VoidFunctionComponent<Props> = ({
           // eslint-disable-next-line @typescript-eslint/naming-convention
           unistore_node_name: 'bearer',
           action: 'commit',
+          US_UI_TX: unwrap(getTransactionId()),
         },
       })
       .then((data) => {
