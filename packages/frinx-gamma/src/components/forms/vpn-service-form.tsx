@@ -113,6 +113,16 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
 
   return (
     <form onSubmit={handleSubmit}>
+      <FormControl id="vpn-id" my={6} isRequired isDisabled>
+        <FormLabel>Vpn Id</FormLabel>
+        <Input
+          name="vpnId"
+          value={values.vpnId || ''}
+          onChange={(event) => {
+            setFieldValue('vpnId', event.target.value);
+          }}
+        />
+      </FormControl>
       <FormControl id="customerName" my={6} isRequired isInvalid={errors.customerName != null}>
         <FormLabel>VPN Description</FormLabel>
         <Flex>
