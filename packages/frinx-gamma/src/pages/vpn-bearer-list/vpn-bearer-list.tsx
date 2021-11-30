@@ -1,7 +1,7 @@
 import { Box, Button, Container, Flex, Heading, HStack, Icon, useDisclosure } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import { VpnBearer } from '../../components/forms/bearer-types';
 import { apiBearerToClientBearer } from '../../components/forms/converters';

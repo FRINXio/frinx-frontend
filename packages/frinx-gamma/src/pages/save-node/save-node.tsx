@@ -3,7 +3,7 @@ import { Box, Container } from '@chakra-ui/react';
 import VpnNodeForm from '../../components/forms/vpn-node-form';
 import { VpnNode } from '../../components/forms/bearer-types';
 import { apiVpnNodesToClientVpnNodes } from '../../components/forms/converters';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 
 const getDefaultNode = (): VpnNode => ({
   neId: '',

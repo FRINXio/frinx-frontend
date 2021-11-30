@@ -66,7 +66,7 @@ const TaskList = () => {
   }, [keywords, data]);
 
   const getData = () => {
-    const getTaskDefinitions = callbackUtils.getTaskDefinitionsCallback();
+    const { getTaskDefinitions } = callbackUtils.getCallbacks;
 
     getTaskDefinitions().then((taskDefinitions) => {
       const data = taskDefinitions.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
@@ -116,7 +116,7 @@ const TaskList = () => {
   };
 
   const deleteTask = (name) => {
-    const deleteTaskDefinition = callbackUtils.deleteTaskDefinitionCallback();
+    const { deleteTaskDefinition } = callbackUtils.getCallbacks;
 
     deleteTaskDefinition(name).then(() => {
       getData();
@@ -182,7 +182,7 @@ const TaskList = () => {
     if (taskBody['name'] !== '') {
       const newTask = { ...taskBody, ownerEmail: 'example@example.com' };
 
-      const registerTaskDefinition = callbackUtils.registerTaskDefinitionCallback();
+      const { registerTaskDefinition } = callbackUtils.getCallbacks;
 
       registerTaskDefinition([newTask]).then(() => {
         window.location.reload();

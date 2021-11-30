@@ -3,7 +3,7 @@ import { Workflow, WorkflowInstanceDetail } from '../../types/types';
 import callbackUtils from '../../utils/callback-utils';
 
 export type TaskStatus = 'COMPLETED' | 'FAILED' | 'SCHEDULED' | 'IN_PROGRESS';
-export type WorkflowStatus = 'COMPLETED' | 'FAILED' | 'RUNNING';
+export type WorkflowStatus = 'COMPLETED' | 'FAILED' | 'RUNNING' | 'TERMINATED';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export type OutputDataPayload<T> =
@@ -50,7 +50,7 @@ async function getWorkflowExecOutput(
   workflowId: string,
   abortController: AbortController,
 ): Promise<ExecutedWorkflowResponse> {
-  const getWorkflowInstanceDetail = callbackUtils.getWorkflowInstanceDetailCallback();
+  const { getWorkflowInstanceDetail } = callbackUtils.getCallbacks;
   const response = await getWorkflowInstanceDetail(workflowId, { signal: abortController.signal });
   return response;
 }

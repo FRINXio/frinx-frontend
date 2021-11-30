@@ -10,7 +10,7 @@ import {
 import SiteNetworkAccessForm from '../../components/forms/site-network-access-form';
 import ErrorMessage from '../../components/error-message/error-message';
 import { SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 import { VpnService } from '../../components/forms/service-types';
 
 // TODO: to be defined

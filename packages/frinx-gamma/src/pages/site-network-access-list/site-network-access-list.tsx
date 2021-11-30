@@ -8,7 +8,7 @@ import {
 import SiteNetworkAccessTable from './site-network-access-table';
 import { SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 import SiteNetworkAccessFilter, { SiteNetworkAccessFilters } from './site-network-access-filter';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';

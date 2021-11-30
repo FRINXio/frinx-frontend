@@ -11,7 +11,7 @@ import SiteNetworkAccessForm from '../../components/forms/site-network-access-fo
 import ErrorMessage from '../../components/error-message/error-message';
 import { AccessPriority, SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
 import { generateNetworkAccessId } from '../../helpers/id-helpers';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 import { VpnService } from '../../components/forms/service-types';
 import { getSelectOptions } from '../../components/forms/options.helper';
 

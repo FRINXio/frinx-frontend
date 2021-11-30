@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Redirect, Route, RouteComponentProps, Switch, useHistory } from 'react-router-dom';
-import { getAuthToken } from './auth-helpers';
+import { GraphQLApi } from '@frinx/api';
+import { authContext } from './auth-helpers';
 
 type InventoryComponents = typeof import('@frinx/inventory-client/src');
 const InventoryApp: FC = () => {
@@ -48,7 +49,7 @@ const InventoryApp: FC = () => {
   } = components;
 
   return (
-    <InventoryAPIProvider url={window.__CONFIG__.inventory_api_url} getAuthToken={getAuthToken}>
+    <InventoryAPIProvider client={GraphQLApi.create({ url: window.__CONFIG__.inventory_api_url, authContext }).client}>
       <Switch>
         <Route exact path="/inventory">
           <Redirect to="/inventory/devices" />

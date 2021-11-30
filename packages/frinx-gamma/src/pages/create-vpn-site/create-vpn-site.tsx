@@ -1,6 +1,6 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 import {
   apiVpnSitesToClientVpnSite,
   apiProviderIdentifiersToClientIdentifers,

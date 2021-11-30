@@ -69,8 +69,7 @@ const getWaitingWorkflows = () => {
   return new Promise(() => {
     const waitingWfs = [];
 
-    const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback();
-    const getWorkflowInstanceDetail = callbackUtils.getWorkflowInstanceDetailCallback();
+    const { getWorkflowExecutions, getWorkflowInstanceDetail } = callbackUtils.getCallbacks;
 
     getWorkflowExecutions().then((res) => {
       const runningWfs = res.result?.hits || [];
@@ -158,7 +157,7 @@ const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, 
       }, {}),
     };
 
-    const executeWorkflow = callbackUtils.executeWorkflowCallback();
+    const { executeWorkflow } = callbackUtils.getCallbacks;
 
     setIsLoading(true);
     executeWorkflow(payload).then((res) => {

@@ -102,8 +102,8 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOper
       : unescapeJs(JSON.stringify(data, null, 2));
   };
 
-  const executeWorkflow = () => {
-    const executeWorkflow = callbackUtils.executeWorkflowCallback();
+  const handleWorkflowExecution = () => {
+    const { executeWorkflow } = callbackUtils.getCallbacks;
     const workflowPayload = {
       name: meta.name,
       version: meta.version,
@@ -135,7 +135,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOper
   };
 
   const restartWorkflows = () => {
-    const restartWorkflows = callbackUtils.restartWorkflowsCallback();
+    const { restartWorkflows } = callbackUtils.getCallbacks;
     restartWorkflows([workflowId]);
     onExecutedOperation();
   };
@@ -230,7 +230,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOper
                 )}
                 isExecuting={result.status === 'RUNNING'}
                 isSuccessfullyExecuted={result.status === 'COMPLETED'}
-                onRerunClick={executeWorkflow}
+                onRerunClick={handleWorkflowExecution}
               />
             </TabPanel>
             <TabPanel>

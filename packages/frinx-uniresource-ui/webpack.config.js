@@ -27,7 +27,7 @@ const plugins = [
 module.exports = {
   entry: path.resolve(__dirname, 'src/index.ts'),
   output: {
-    path: fullPath('build'),
+    path: fullPath('dist'),
     filename: 'index.js',
     publicPath: '/',
     library: 'frinxUniresourceUI',

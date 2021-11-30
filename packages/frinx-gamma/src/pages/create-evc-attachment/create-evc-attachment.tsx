@@ -3,7 +3,7 @@ import { Box, Container, Heading } from '@chakra-ui/react';
 import { useParams } from 'react-router';
 import unwrap from '../../helpers/unwrap';
 import { apiBearerToClientBearer, apiProviderIdentifiersToClientIdentifers } from '../../components/forms/converters';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 import { EvcAttachment, VpnBearer } from '../../components/forms/bearer-types';
 import EvcAttachmentForm from '../../components/forms/evc-attachment-form';
 import ErrorMessage from '../../components/error-message/error-message';

@@ -1,56 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
-import {
-  getCliTopology,
-  getNetconfTopology,
-  getCliConfigurationalState,
-  getNetconfConfigurationalState,
-  getCliOperationalState,
-  getNetconfOperationalState,
-  getCliConfigurationalDataStore,
-  getCliOperationalDataStore,
-  mountCliNode,
-  mountNetconfNode,
-  unmountCliNode,
-  unmountNetconfNode,
-  getCliDeviceTranslations,
-  updateCliConfigurationalDataStore,
-  calculateDiff,
-  commitToNetwork,
-  dryRunCommit,
-  syncFromNetwork,
-  replaceConfigWithOperational,
-  getSnapshots,
-  deleteSnapshot,
-  replaceConfigWithSnapshot,
-  createSnapshot,
-} from './api/uniconfig/uniconfig-api';
-
-const callbacks = {
-  getCliTopology,
-  getNetconfTopology,
-  getCliConfigurationalState,
-  getNetconfConfigurationalState,
-  getCliOperationalState,
-  getNetconfOperationalState,
-  getCliConfigurationalDataStore,
-  getCliOperationalDataStore,
-  mountCliNode,
-  mountNetconfNode,
-  unmountCliNode,
-  unmountNetconfNode,
-  getCliDeviceTranslations,
-  updateCliConfigurationalDataStore,
-  calculateDiff,
-  commitToNetwork,
-  dryRunCommit,
-  syncFromNetwork,
-  replaceConfigWithOperational,
-  getSnapshots,
-  deleteSnapshot,
-  replaceConfigWithSnapshot,
-  createSnapshot,
-};
+import { UniconfigApi } from '@frinx/api';
+import { authContext } from './auth-helpers';
 
 const UniconfigApp: FC = () => {
   const history = useHistory();
@@ -66,7 +17,9 @@ const UniconfigApp: FC = () => {
         DeviceView,
         MountDevice,
         getUniconfigApiProvider,
-        UniconfigApiProvider: getUniconfigApiProvider(callbacks),
+        UniconfigApiProvider: getUniconfigApiProvider(
+          UniconfigApi.create({ url: window.__CONFIG__.uniconfig_api_url, authContext }),
+        ),
       });
     });
   }, []);

@@ -3,7 +3,7 @@ import { Box, Container } from '@chakra-ui/react';
 import VpnCarrierForm from '../../components/forms/vpn-carrier-form';
 import { VpnCarrier } from '../../components/forms/bearer-types';
 import { apiVpnCarriersToClientCarriers } from '../../components/forms/converters';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 
 const getDefaultCarrier = (): VpnCarrier => ({
   name: '',

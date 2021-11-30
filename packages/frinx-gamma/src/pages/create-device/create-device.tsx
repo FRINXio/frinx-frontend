@@ -6,7 +6,7 @@ import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import DeviceForm from '../../components/forms/device-form';
 import ErrorMessage from '../../components/error-message/error-message';
 import { SiteDevice, VpnSite } from '../../components/forms/site-types';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 
 const getDefaultDevice = (locationId: string): SiteDevice => ({
   deviceId: '',

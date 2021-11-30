@@ -18,7 +18,7 @@ function fullPath(...parts) {
 module.exports = {
   entry: fullPath('src', 'index.ts'),
   output: {
-    path: fullPath('build'),
+    path: fullPath('dist'),
     filename: 'index.js',
     publicPath: '/',
     library: 'frinxGamma',
