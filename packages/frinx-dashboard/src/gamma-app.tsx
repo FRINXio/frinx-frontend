@@ -15,6 +15,7 @@ const GammaApp: VoidFunctionComponent = () => {
   useEffect(() => {
     import('@frinx/gamma').then((gammaImport) => {
       const {
+        Breadcrumb,
         ControlPage,
         CreateVpnService,
         EditVpnService,
@@ -43,6 +44,7 @@ const GammaApp: VoidFunctionComponent = () => {
       } = gammaImport;
 
       setComponents({
+        Breadcrumb,
         ControlPage,
         CreateVpnService,
         EditVpnService,
@@ -80,6 +82,7 @@ const GammaApp: VoidFunctionComponent = () => {
   }
 
   const {
+    Breadcrumb,
     ControlPage,
     CreateDevice,
     CreateSiteNetAccess,
@@ -109,6 +112,7 @@ const GammaApp: VoidFunctionComponent = () => {
 
   return (
     <GammaAppProvider>
+      <Breadcrumb />
       <Switch>
         {/* ControlPage */}
         <Route path="/gamma/" exact>
