@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "main": "dist/index.js",
   "module": "src/index.js",
-  "typings": "dist/index.d.ts",
+  "typings": "index.d.ts",
   "files": [
     "dist/*",
     "index.d.ts"

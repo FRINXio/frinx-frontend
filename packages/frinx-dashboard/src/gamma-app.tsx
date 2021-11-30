@@ -1,6 +1,5 @@
 import { UniflowApi } from '@frinx/api';
-import { FC } from 'beautiful-react-diagrams/node_modules/@types/react';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { FC, useEffect, useState, VoidFunctionComponent } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import * as unistoreCallbacks from './api/unistore/unistore';
 import { authContext } from './auth-helpers';

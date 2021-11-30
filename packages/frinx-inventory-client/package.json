@@ -17,7 +17,7 @@
     "type-check": "tsc --noEmit",
     "codegen": "graphql-codegen --config codegen.yml",
     "codegen:clean": "rm -r src/__generated__",
-    "generate:typings": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist global.d.ts src/index.ts"
+    "generate:typings": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist feather-icons-react.d.ts src/index.ts"
   },
   "dependencies": {
     "@types/json-templates": "^3.0.0",

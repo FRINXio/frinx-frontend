@@ -23,8 +23,8 @@ jobs:
         run: yarn run dedubcheck
       - name: Build dependencies
         run: yarn run build:api
-      - name: Build gamma project (temp)
-        run: yarn run build:gamma
+      - name: Generate types
+        run: yarn run typegen
       - name: Run eslint check in Dashboard
         run: yarn run lint:dashboard
       - name: Run eslint check in Workflow Builder
