@@ -29,8 +29,7 @@
     "typegen:gamma": "cd packages/frinx-gamma && yarn run generate:typings",
     "typegen:uniresource-ui": "cd packages/frinx-uniresource-ui && yarn run generate:typings",
     "typegen:workflow-builder": "cd packages/frinx-workflow-builder && yarn run generate:typings",
-    "typegen:workflow-ui": "cd packages/frinx-workflow-ui && yarn run generate:typings",
-    "typegen": "run-s typegen:inventory-client typegen:gamma typegen:uniresource-ui typegen:workflow-builder typegen:workflow-ui"
+    "typegen": "run-s typegen:inventory-client typegen:gamma typegen:uniresource-ui typegen:workflow-builder"
   },
   "devDependencies": {
     "dedubcheck": "^0.0.6",
