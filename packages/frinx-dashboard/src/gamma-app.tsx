@@ -4,7 +4,7 @@ import { Route, Switch, useHistory } from 'react-router-dom';
 import * as unistoreCallbacks from './api/unistore/unistore';
 import { authContext } from './auth-helpers';
 
-type GammaComponents = Omit<typeof import('@frinx/gamma/build'), 'getGammaAppProvider'> & {
+type GammaComponents = Omit<typeof import('@frinx/gamma'), 'getGammaAppProvider'> & {
   GammaAppProvider: FC;
 };
 
