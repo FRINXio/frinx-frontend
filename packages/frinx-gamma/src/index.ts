@@ -1,4 +1,3 @@
-export { default as Breadcrumb } from './components/breadcrumb/breadcrumb';
 export { default as ControlPage } from './pages/control-page/control-page';
 export { default as CreateVpnService } from './pages/create-vpn-service/create-vpn-service';
 export { default as EditVpnService } from './pages/edit-vpn-service/edit-vpn-service';
