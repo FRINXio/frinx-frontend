@@ -1,3 +1,4 @@
+import { Box, Button } from '@chakra-ui/react';
 import { UniflowApi } from '@frinx/api';
 import React, { FC, useEffect, useState, VoidFunctionComponent } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
@@ -109,6 +110,11 @@ const GammaApp: VoidFunctionComponent = () => {
 
   return (
     <GammaAppProvider>
+      <Box m="4">
+        <Button variant="link" fontWeight="normal" onClick={() => history.push('/gamma/')}>
+          Control Page &raquo;
+        </Button>
+      </Box>
       <Switch>
         {/* ControlPage */}
         <Route path="/gamma/" exact>

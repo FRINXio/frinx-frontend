@@ -66,7 +66,7 @@ export async function getVpnServices(
     const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
     const filterParams = serviceFilter ? getServiceFilterParams(serviceFilter) : '';
     const json = await sendGetRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?content=config${paginationParams}${filterParams}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?${paginationParams}${filterParams}`,
     );
     const data = decodeVpnServicesOutput(json);
     return data;
