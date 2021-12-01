@@ -1,6 +1,7 @@
 ﻿import React, { FunctionComponent } from 'react';
-import { IconButton, Progress, Table, Tag, Tbody, Td, Text, Th, Thead, Tr, Icon } from '@chakra-ui/react';
+import { IconButton, Progress, Table, Tag, Tbody, Td, Text, Th, Thead, Tr, Icon, HStack } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
+import { SettingsIcon } from '@chakra-ui/icons';
 import { PoolCapacityPayload, QueryAllPoolsQuery } from '../../__generated__/graphql';
 
 type Props = {
@@ -56,7 +57,7 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoadi
               return (
                 <Tr key={pool.id}>
                   <Td>
-                    <Text as="span" fontWeight={600} onClick={() => onPoolNameClick(pool.id)} cursor="pointer">
+                    <Text as="span" fontWeight={600}>
                       {pool.Name}
                     </Text>
                   </Td>
@@ -80,16 +81,31 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoadi
                     </Text>
                   </Td>
                   <Td>
-                    <IconButton
-                      variant="outline"
-                      colorScheme="red"
-                      aria-label="delete"
-                      icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
-                      onClick={() => {
-                        onDeleteBtnClick(pool.id);
-                      }}
-                      isDisabled={Capacity?.freeCapacity !== totalCapacity}
-                    />
+                    <HStack spacing={2}>
+                      <IconButton
+                        aria-label="config"
+                        size="sm"
+                        variant="unstyled"
+                        icon={<Icon size={12} as={SettingsIcon} />}
+                        onClick={() => onPoolNameClick(pool.id)}
+                      />
+                      {/* <IconButton
+                        aria-label="edit"
+                        size="sm"
+                        variant="unstyled"
+                        icon={<Icon size={12} as={EditIcon} />}
+                      /> */}
+                      <IconButton
+                        variant="outline"
+                        colorScheme="red"
+                        aria-label="delete"
+                        icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
+                        onClick={() => {
+                          onDeleteBtnClick(pool.id);
+                        }}
+                        isDisabled={Capacity?.freeCapacity !== totalCapacity}
+                      />
+                    </HStack>
                   </Td>
                 </Tr>
               );

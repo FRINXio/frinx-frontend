@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import PageContainer from '../../components/page-container';
@@ -124,11 +124,23 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
       });
   };
 
-  const freePoolResource = (userInput: Map<string, string | number>) => {
+  const freePoolResource = (userInput: Record<string, string | number>) => {
     freeResource({
       poolId,
       input: userInput,
-    });
+    })
+      .then(() => {
+        addToastNotification({
+          type: 'success',
+          content: 'Successfully freed resource from pool',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          type: 'error',
+          content: 'There was a problem with freeing resource from pool',
+        });
+      });
   };
 
   if (isLoadingPool) {
@@ -146,7 +158,11 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
     resourcePool.Capacity != null &&
     resourcePool.Capacity.freeCapacity > 0 &&
     resourcePool.Capacity.freeCapacity <= totalCapacity;
-  const canFreeResources = resourcePool.Capacity != null && resourcePool.Capacity.freeCapacity !== totalCapacity;
+  const canFreeResource = resourcePool.Capacity != null && resourcePool.Capacity.freeCapacity !== totalCapacity;
+  const canShowClaimResourceButton =
+    resourcePool.ResourceType.Name === 'ipv4_prefix' ||
+    resourcePool.ResourceType.Name === 'vlan_range' ||
+    resourcePool.ResourceType.Name === 'vlan';
 
   return (
     <PageContainer>
@@ -163,14 +179,16 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
         </Heading>
         <Spacer />
         <Box>
-          <ButtonGroup spacing={6} variant="outline">
-            <Button onClick={claimResourceModal.onOpen} colorScheme="blue" isDisabled={!canClaimResources}>
+          {canShowClaimResourceButton && (
+            <Button
+              onClick={claimResourceModal.onOpen}
+              colorScheme="blue"
+              variant="outline"
+              isDisabled={!canClaimResources}
+            >
               Claim resources
             </Button>
-            <Button onClick={() => console.log('freeol som')} colorScheme="red" isDisabled={!canFreeResources}>
-              Free resources
-            </Button>
-          </ButtonGroup>
+          )}
         </Box>
       </Flex>
 
@@ -184,7 +202,11 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
 
       <Box my={10}>
         <Heading size="lg">Allocated Resources</Heading>
-        <PoolDetailTable allocatedResources={resourcePool.allocatedResources as ResourceConnection} />
+        <PoolDetailTable
+          allocatedResources={resourcePool.allocatedResources as ResourceConnection}
+          onFreeResource={freePoolResource}
+          canFreeResource={canFreeResource}
+        />
       </Box>
     </PageContainer>
   );

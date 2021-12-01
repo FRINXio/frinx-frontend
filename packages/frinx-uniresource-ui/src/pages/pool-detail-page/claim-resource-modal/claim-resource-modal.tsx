@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import ClaimResourceAllocIpv4PrefixModal from './claim-resource-allocating-modals/claim-resource-allocating-ipv4_prefix-modal';
 import ClaimResourceAllocVlanModal from './claim-resource-allocating-modals/claim-resource-allocating-vlan';
+import ClaimResourceAllocatingVlanRangeModal from './claim-resource-allocating-modals/claim-resource-allocationg-vlan_range-modal';
 
 // eslint-disable-next-line no-shadow
 enum ClaimModalVariant {
@@ -23,6 +24,7 @@ const ClaimResourceModal: FC<Props> = ({ variant, ...props }) => {
     <>
       {variant === ClaimModalVariant.IPV4_PREFIX && <ClaimResourceAllocIpv4PrefixModal {...props} />}
       {variant === ClaimModalVariant.VLAN && <ClaimResourceAllocVlanModal {...props} />}
+      {variant === ClaimModalVariant.VLAN_RANGE && <ClaimResourceAllocatingVlanRangeModal {...props} />}
     </>
   );
 };

@@ -1,9 +1,12 @@
-import { Table, Thead, Tr, Th, Tbody, Td } from '@chakra-ui/react';
+import { Table, Thead, Tr, Th, Tbody, Td, Icon, IconButton, ButtonGroup } from '@chakra-ui/react';
 import React, { FC } from 'react';
+import FeatherIcon from 'feather-icons-react';
 import { Maybe, ResourceConnection, ResourceEdge } from '../../__generated__/graphql';
 
 type Props = {
   allocatedResources: Maybe<ResourceConnection>;
+  canFreeResource: boolean;
+  onFreeResource: (userInput: Record<string, string | number>) => void;
 };
 
 const getNamesOfAllocatedResources = (allocatedResources: Maybe<ResourceEdge>[] | undefined) => {
@@ -21,8 +24,9 @@ const getNamesOfAllocatedResources = (allocatedResources: Maybe<ResourceEdge>[] 
   ];
 };
 
-const PoolDetailTable: FC<Props> = ({ allocatedResources }) => {
+const PoolDetailTable: FC<Props> = ({ allocatedResources, onFreeResource, canFreeResource }) => {
   const allocatedResourcesKeys = getNamesOfAllocatedResources(allocatedResources?.edges);
+
   return (
     <Table background="white">
       <Thead>
@@ -31,6 +35,7 @@ const PoolDetailTable: FC<Props> = ({ allocatedResources }) => {
           {allocatedResourcesKeys.map((key) => (
             <Th key={key}>{key}</Th>
           ))}
+          <Th>action</Th>
         </Tr>
       </Thead>
       <Tbody>
@@ -39,8 +44,22 @@ const PoolDetailTable: FC<Props> = ({ allocatedResources }) => {
             <Tr key={resource?.node.id}>
               <Td>{resource?.node.Description}</Td>
               {allocatedResourcesKeys.map((key) => (
-                <Td key={resource?.node.Properties[key]}>{resource?.node.Properties[key]}</Td>
+                <>
+                  <Td key={resource?.node.Properties[key]}>{resource?.node.Properties[key]}</Td>
+                </>
               ))}
+              <Td>
+                <ButtonGroup>
+                  <IconButton
+                    isDisabled={canFreeResource}
+                    variant="outline"
+                    colorScheme="red"
+                    aria-label="delete"
+                    icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
+                    onClick={() => onFreeResource({ ...resource?.node.Properties })}
+                  />
+                </ButtonGroup>
+              </Td>
             </Tr>
           ))
         ) : (
