@@ -8,6 +8,7 @@ import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-typ
 import VpnServiceForm from '../../components/forms/vpn-service-form';
 import ErrorMessage from '../../components/error-message/error-message';
 import { generateVpnId } from '../../helpers/id-helpers';
+import PollWorkflowId from '../../components/poll-workflow-id/poll-worfklow-id';
 
 const defaultVpnService: VpnService = {
   customerName: '',
@@ -24,6 +25,7 @@ type Props = {
 };
 
 const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+  const [workflowId, setWorkflowId] = useState<string | null>(null);
   const [vpnId, setVpnId] = useState<string | null>(null);
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -36,7 +38,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
         version: 1,
         input: {},
       });
-      setVpnId(workflowResult.text);
+      setWorkflowId(workflowResult.text);
       const callbacks = callbackUtils.getCallbacks;
       const services = await callbacks.getVpnServices(null, null);
       const clientVpnServices = apiVpnServiceToClientVpnService(services);
@@ -71,8 +73,12 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     onCancel();
   };
 
-  if (!vpnId) {
+  if (!workflowId) {
     return null;
+  }
+
+  if (!vpnId) {
+    return <PollWorkflowId workflowId={workflowId} onFinish={setVpnId} />;
   }
 
   const vpnService = { ...defaultVpnService, vpnId };
