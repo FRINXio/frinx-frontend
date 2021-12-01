@@ -77,6 +77,13 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
               isLinkExternal
             />
             <Panel
+              label="UniFlow"
+              description="Learn more about UniFlow API using Swagger."
+              icon="book"
+              path={window.__CONFIG__.uniflow_api_docs_url}
+              isLinkExternal
+            />
+            <Panel
               label="Device Inventory"
               description="Execute and inspect queries with GraphQL Playground."
               icon="book"

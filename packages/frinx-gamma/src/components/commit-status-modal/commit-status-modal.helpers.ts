@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import callbackUtils from '../../callback-utils';
+import uniflowCallbackUtils from '../../uniflow-callback-utils';
 
 export type TaskStatus = 'COMPLETED' | 'FAILED' | 'SCHEDULED' | 'IN_PROGRESS';
 export type WorkflowStatus = 'COMPLETED' | 'FAILED' | 'RUNNING';
@@ -61,7 +61,7 @@ export type ExecutedWorkflowResponse<T> = {
 };
 
 async function getWorkflowExecOutput<T>(workflowId: string, abortController: AbortController) {
-  const callbacks = callbackUtils.getCallbacks;
+  const callbacks = uniflowCallbackUtils.getCallbacks;
   const response = await callbacks.getWorkflowInstanceDetail(workflowId, { signal: abortController.signal });
   const data = response as T;
   return data;

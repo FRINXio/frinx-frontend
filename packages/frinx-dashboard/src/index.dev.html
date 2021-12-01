@@ -6,7 +6,7 @@
       window.__CONFIG__ = {
         auth_enabled: true,
         auth_client_id: '366fab79-6c61-4a24-8c2c-b2be2f48fe35',
-        auth_redirect_url: 'http://localhost:3000',
+        auth_redirect_url: 'http://localhost:4000',
         conductor_api_url: 'http://localhost:4000/api/uniflow',
         uniconfig_api_url: 'http://localhost:4000/api/uniconfig',
         uniconfig_auth: 'Basic YWRtaW46YWRtaW4=',
@@ -22,6 +22,93 @@
           'https://editor.swagger.io/?url=https://gist.githubusercontent.com/marosmars/4951c0395837cc04cae374c2a01eb209/raw/fb2e3d579679753b424f86170b54135bec668768/uniconfig_427.yaml',
         gamma_enabled: true,
         unistore_api_url: 'http://localhost:4000/api/unistore',
+        uniflow_api_docs_url: 'http://localhost:4000/api/uniflow/docs',
+      };
+
+      window.__GAMMA_FORM_OPTIONS__ = {
+        service: {
+          vpn_topology: {
+            'any-to-any': 'any-to-any',
+            'hub-spoke': 'hub-spoke',
+            'hub-spoke-disjointed': 'hub-spoke-disjointed',
+          },
+          default_cvlan: {
+            400: 'Main Corporate VPN',
+            1000: 'Guest Wifi VPN',
+            50: 'Dedicated SIP VPN',
+            custom: 'Custom C-VLAN',
+          },
+          extranet_vpns: {
+            MGMT: 'MGMT',
+            SIP889: 'SIP889',
+          },
+        },
+        site: {
+          site_management: {
+            'provider-managed': 'provider-managed',
+            'co-managed': 'co-managed',
+            'customer-managed': 'customer-managed',
+          },
+          location: {
+            UK: 'UK',
+            Ireland: 'Ireland',
+          },
+          maximum_routes: {
+            1000: '1000',
+            2000: '2000',
+            5000: '5000',
+            10000: '10000',
+            1000000: '1000000',
+          },
+        },
+        site_network_access: {
+          site_role: {
+            'any-to-any-role': 'any-any',
+            'hub-role': 'hub',
+            'spoke-role': 'spoke',
+          },
+          requested_cvlan: {
+            400: 'l3vpn',
+            100: 'Pseudowire',
+            200: 'Local Internet Breakout',
+            300: 'DMZ',
+          },
+          bandwidths: {
+            1000: '1000',
+            2000: '2000',
+            5000: '5000',
+            10000: '10000',
+          },
+        },
+        bearer: {
+          service_type: {
+            evc: 'evc',
+            'shared-fw': 'shared-fw',
+          },
+          service_status: {
+            active: 'active',
+            ordered: 'ordered',
+            reserved: 'reserved',
+            'no-more-capacity': 'no-more-capacity',
+            disabled: 'disabled',
+          },
+          encapsulation_type: {
+            'tagged-int': 'tagged-in',
+            'untagged-int': 'untagged-in',
+          },
+          'svlan-assignment-type': {
+            auto: 'auto',
+            'third-party': 'third-party',
+          },
+          tpid: {
+            dot1ad: '802.1ad (0x88a8)',
+            qinq: '802.1QinQ (0x9100)',
+          },
+          evc_type: {
+            'evc-point-to-point': 'point-to-point',
+            'evc-multipoint': 'multipoint',
+          },
+        },
       };
     </script>
     <meta charset="utf-8" />

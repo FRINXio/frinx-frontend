@@ -2,64 +2,8 @@ import React, { FC, useEffect, useState } from 'react';
 import { Box } from '@chakra-ui/react';
 import { v4 as uuid } from 'uuid';
 import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
-// import { WorkflowBuilder } from '@frinx/workflow-builder/src';
-import {
-  getWorkflows,
-  getWorkflow,
-  getTaskDefinitions,
-  getTaskDefinition,
-  registerTaskDefinition,
-  deleteTaskDefinition,
-  registerEventListener,
-  putWorkflow,
-  getEventListeners,
-  deleteEventListener,
-  getQueues,
-  deleteWorkflow,
-  getWorkflowExecutions,
-  getWorkflowInstanceDetail,
-  executeWorkflow,
-  getWorkflowExecutionsHierarchical,
-  terminateWorkflows,
-  pauseWorkflows,
-  resumeWorkflows,
-  retryWorkflows,
-  restartWorkflows,
-  deleteWorkflowInstance,
-  getSchedules,
-  deleteSchedule,
-  getSchedule,
-  registerSchedule,
-} from './api/uniflow/uniflow-api';
-
-const callbacks = {
-  getWorkflows,
-  getWorkflow,
-  getTaskDefinitions,
-  getTaskDefinition,
-  registerTaskDefinition,
-  deleteTaskDefinition,
-  registerEventListener,
-  putWorkflow,
-  getEventListeners,
-  deleteEventListener,
-  getQueues,
-  deleteWorkflow,
-  getWorkflowExecutions,
-  getWorkflowInstanceDetail,
-  executeWorkflow,
-  getWorkflowExecutionsHierarchical,
-  terminateWorkflows,
-  pauseWorkflows,
-  resumeWorkflows,
-  retryWorkflows,
-  restartWorkflows,
-  deleteWorkflowInstance,
-  getSchedules,
-  deleteSchedule,
-  getSchedule,
-  registerSchedule,
-};
+import { UniflowApi } from '@frinx/api';
+import { authContext } from './auth-helpers';
 
 type UniflowComponents = Omit<typeof import('@frinx/workflow-ui'), 'getUniflowApiProvider'> & {
   UniflowApiProvider: FC;
@@ -72,6 +16,7 @@ const UniflowApp: FC = () => {
   const [components, setComponents] = useState<(UniflowComponents & BuilderComponents) | null>(null);
   const history = useHistory();
   const [key, setKey] = useState(uuid());
+  const [executedWorkflowId, setExecutedWorkflowId] = useState(uuid());
 
   useEffect(() => {
     Promise.all([import('@frinx/workflow-ui'), import('@frinx/workflow-builder/src')]).then(
@@ -80,7 +25,8 @@ const UniflowApp: FC = () => {
           ReduxProvider,
           WorkflowListHeader,
           WorkflowDefinitions,
-          WorkflowExec,
+          ExecutedWorkflowList,
+          ExecutedWorkflowDetail,
           ScheduledWorkflowList,
           EventListeners,
           TaskList,
@@ -94,15 +40,20 @@ const UniflowApp: FC = () => {
           ReduxProvider,
           WorkflowListHeader,
           WorkflowDefinitions,
-          WorkflowExec,
+          ExecutedWorkflowList,
+          ExecutedWorkflowDetail,
           ScheduledWorkflowList,
           EventListeners,
           TaskList,
           PollData,
           DiagramBuilder,
-          UniflowApiProvider: getUniflowApiProvider(callbacks),
+          UniflowApiProvider: getUniflowApiProvider(
+            UniflowApi.create({ url: window.__CONFIG__.conductor_api_url, authContext }).client,
+          ),
           WorkflowBuilder,
-          BuilderApiProvider: getBuilderApiProvider(callbacks),
+          BuilderApiProvider: getBuilderApiProvider(
+            UniflowApi.create({ url: window.__CONFIG__.conductor_api_url, authContext }).client,
+          ),
         });
       },
     );
@@ -116,7 +67,8 @@ const UniflowApp: FC = () => {
     ReduxProvider,
     WorkflowListHeader,
     WorkflowDefinitions,
-    WorkflowExec,
+    ExecutedWorkflowList,
+    ExecutedWorkflowDetail,
     ScheduledWorkflowList,
     EventListeners,
     TaskList,
@@ -166,15 +118,15 @@ const UniflowApp: FC = () => {
             }}
           />
           <>
-            <WorkflowListHeader
-              onAddButtonClick={() => {
-                history.push('/uniflow/builder');
-              }}
-              onImportSuccess={() => {
-                setKey(uuid());
-              }}
-            />
             <Route exact path="/uniflow/definitions">
+              <WorkflowListHeader
+                onAddButtonClick={() => {
+                  history.push('/uniflow/builder');
+                }}
+                onImportSuccess={() => {
+                  setKey(uuid());
+                }}
+              />
               <WorkflowDefinitions
                 onDefinitionClick={(name: string, version: string) => {
                   history.push(`/uniflow/builder/${name}/${version}`);
@@ -187,14 +139,30 @@ const UniflowApp: FC = () => {
             </Route>
             <Route
               exact
-              path="/uniflow/executed/:wfId?"
-              render={(props: RouteComponentProps<{ wfId?: string }>) => {
+              path="/uniflow/executed"
+              render={() => {
                 return (
-                  <WorkflowExec
-                    query={props.match.params.wfId}
-                    onWorkflowIdClick={(wfId: string) => {
-                      history.push(`/uniflow/executed/${wfId}`);
+                  <ExecutedWorkflowList
+                    onWorkflowIdClick={(workflowId) => {
+                      history.push(`/uniflow/executed/${workflowId}`);
                     }}
+                  />
+                );
+              }}
+            />
+            <Route
+              exact
+              path="/uniflow/executed/:workflowId"
+              render={(props: RouteComponentProps<{ workflowId: string }>) => {
+                return (
+                  <ExecutedWorkflowDetail
+                    key={executedWorkflowId}
+                    workflowId={props.match.params.workflowId}
+                    onWorkflowIdClick={(workflowId) => {
+                      setExecutedWorkflowId(uuid());
+                      history.push(`/uniflow/executed/${workflowId}`);
+                    }}
+                    onExecutedOperation={() => setExecutedWorkflowId(uuid())}
                   />
                 );
               }}

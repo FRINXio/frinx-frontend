@@ -9,6 +9,7 @@ RUN apk add -U --no-cache nghttp2-dev nodejs npm unzip yarn git
 RUN yarn install --frozen-lockfile && yarn cache clean
 
 RUN cd /frinx-frontend && yarn run build:gamma
+RUN cd /frinx-frontend && yarn run build:api
 # TODO there should be a build for whole repo, not an individual project
 RUN cd  /frinx-frontend/packages/frinx-dashboard && \
         cp .env.example .env && \
@@ -25,7 +26,7 @@ USER root
 
 RUN rm -rf /usr/share/nginx/html/* && \
         rm -rf /etc/nginx/nginx.conf
-        
+
 # TODO we should have static code generated for the whole repo, not an individual project
 COPY --from=build /frinx-frontend/nginx.conf /etc/nginx/nginx.conf
 COPY --from=build /frinx-frontend/packages/frinx-dashboard/build /usr/share/nginx/html
@@ -40,5 +41,5 @@ RUN touch /var/run/nginx.pid && \
         chown -R nginx:nginx /etc/nginx/conf.d && \
         chown -R nginx:nginx /etc/nginx/nginx.conf && \
         chown -R nginx:nginx /usr/share/nginx/html
-             
+
 USER nginx

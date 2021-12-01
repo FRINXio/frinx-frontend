@@ -1,12 +1,13 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 import {
   apiVpnSitesToClientVpnSite,
   apiProviderIdentifiersToClientIdentifers,
 } from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
+import ErrorMessage from '../../components/error-message/error-message';
 import { generateSiteId } from '../../helpers/id-helpers';
 
 const defaultVpnSite: VpnSite = {
@@ -28,6 +29,7 @@ type Props = {
 const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,6 +47,7 @@ const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
   }, []);
 
   const handleSubmit = async (site: VpnSite) => {
+    setSubmitError(null);
     // eslint-disable-next-line no-console
     console.log('submit clicked', site);
     // eslint-disable-next-line no-param-reassign
@@ -53,10 +56,14 @@ const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
       siteId: generateSiteId(),
     };
     const callbacks = callbackUtils.getCallbacks;
-    await callbacks.createVpnSite(siteWithId);
-    // eslint-disable-next-line no-console
-    console.log('site created');
-    onSuccess();
+    try {
+      await callbacks.createVpnSite(siteWithId);
+      // eslint-disable-next-line no-console
+      console.log('site created');
+      onSuccess();
+    } catch (e) {
+      setSubmitError(String(e));
+    }
   };
 
   const handleCancel = () => {
@@ -69,6 +76,7 @@ const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
     <Container>
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Create VPN Site</Heading>
+        {submitError && <ErrorMessage text={String(submitError)} />}
         {vpnSites && (
           <VpnSiteForm
             mode="add"

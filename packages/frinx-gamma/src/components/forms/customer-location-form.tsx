@@ -3,6 +3,7 @@ import { Button, FormLabel, FormErrorMessage, Input, Select, Stack, FormControl 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { CustomerLocation } from './site-types';
+import { getSelectOptions } from './options.helper';
 
 const LocationSchema = yup.object().shape({
   locationId: yup.string(),
@@ -56,8 +57,13 @@ const CustomerLocationForm: VoidFunctionComponent<Props> = ({ location, buttonTe
       <FormControl my={6} isRequired isInvalid={errors.countryCode != null}>
         <FormLabel>Country Code</FormLabel>
         <Select name="countryCode" value={values.countryCode} onChange={handleChange}>
-          <option value="UK">UK</option>
-          <option value="Ireland">Ireland</option>
+          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site.location).map((item) => {
+            return (
+              <option key={`maximum-routes-${item.key}`} value={item.key}>
+                {item.label}
+              </option>
+            );
+          })}
         </Select>
         {errors.countryCode && <FormErrorMessage>{errors.countryCode}</FormErrorMessage>}
       </FormControl>

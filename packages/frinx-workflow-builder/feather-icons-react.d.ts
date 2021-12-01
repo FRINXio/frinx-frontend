@@ -1,7 +1,7 @@
-import { FC } from 'react';
-
 declare module 'feather-icons-react' {
-  const content: FC<{ icon: string; size: string }>;
+  import { VoidFunctionComponent } from 'react';
+
+  const content: VoidFunctionComponent<{ icon: string; size: string | number }>;
 
   export default content;
 }

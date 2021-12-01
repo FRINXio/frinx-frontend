@@ -357,6 +357,30 @@ export type TaskDefinition = {
   ownerEmail: string;
 };
 
+export type ExecutedWorkflowTask = {
+  taskType: string;
+  status: string;
+  reasonForIncompletion: string;
+  referenceTaskName: string;
+  callbackAfterSeconds: number;
+  pollCount: number;
+  logs: {};
+  inputData: {};
+  outputData: {};
+  workflowTask: {
+    description: string;
+    taskDefinition: {
+      description: string;
+    };
+  };
+  seq: number;
+  subWorkflowId: string;
+  startTime: number;
+  endTime: number;
+  externalOutputPayloadStoragePath?: string;
+  externalInputPayloadStoragePath?: string;
+};
+
 // eslint-disable-next-line no-shadow
 export enum SerializerEnum {
   IntegerSerializer = 'org.apache.kafka.common.serialization.IntegerSerializer',
@@ -381,4 +405,96 @@ export type ScheduledWorkflow = {
   };
   enabled: boolean;
   status: StatusType;
+};
+
+export type ExecutedWorkflow = {
+  correlationId: string;
+  endTime: string;
+  executionTime: number;
+  failedReferenceTaskNames: string;
+  input: string;
+  inputSize: number;
+  output: string;
+  outputSize: number;
+  priority: number;
+  reasonForIncompletion?: string;
+  startTime: string;
+  status: string;
+  updateTime: string;
+  version: number;
+  workflowId: string;
+  workflowType: string;
+};
+
+export type NestedExecutedWorkflow = {
+  correlationId: string;
+  endTime: string;
+  executionTime: number;
+  failedReferenceTaskNames: string;
+  index: number;
+  input: string;
+  inputSize: number;
+  output: string;
+  outputSize: number;
+  parentWorkflowId: string;
+  priority: number;
+  reasonForIncompletion: string;
+  startTime: string;
+  status: string;
+  updateTime: string;
+  version: number;
+  workflowId: string;
+  workflowType: string;
+};
+
+export type ExecutedWorkflowsFlat = {
+  result: {
+    hits: ExecutedWorkflow[];
+    totalHits: number;
+  };
+};
+
+export type ExecutedWorkflowsHierarchical = {
+  parents: ExecutedWorkflow[];
+  children: NestedExecutedWorkflow[];
+  count: number;
+  hits: number;
+};
+
+export type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED' | 'COMPLETED';
+
+export type ExecutedWorkflowDetailResult = {
+  status: Status;
+  tasks: ExecutedWorkflowTask[];
+  startTime: Date | number | string;
+  endTime: Date | number | string;
+  input: Record<string, string>;
+  output: Record<string, string>;
+};
+
+export type WorkflowInstanceDetail = {
+  ownerApp: string;
+  createTime: number;
+  updateTime: number;
+  status: Status;
+  endTime: number;
+  workflowId: string;
+  tasks: ExecutedWorkflowTask[];
+  input: Record<string, string>;
+  output: Record<string, string>;
+  correlationId: string;
+  taskToDomain: {
+    '*': string;
+  };
+  failedReferenceTaskNames: string[];
+  workflowDefinition: {};
+  priority: number;
+  variables: {};
+  lastRetriedTime: number;
+  startTime: number;
+  workflowName: string;
+  workflowVersion: number;
+  parentWorkflowId: string;
+  externalInputPayloadStoragePath?: string;
+  externalOutputPayloadStoragePath?: string;
 };

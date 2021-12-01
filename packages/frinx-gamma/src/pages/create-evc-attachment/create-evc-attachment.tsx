@@ -3,9 +3,10 @@ import { Box, Container, Heading } from '@chakra-ui/react';
 import { useParams } from 'react-router';
 import unwrap from '../../helpers/unwrap';
 import { apiBearerToClientBearer, apiProviderIdentifiersToClientIdentifers } from '../../components/forms/converters';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 import { EvcAttachment, VpnBearer } from '../../components/forms/bearer-types';
 import EvcAttachmentForm from '../../components/forms/evc-attachment-form';
+import ErrorMessage from '../../components/error-message/error-message';
 import { getRandomInt } from '../../helpers/id-helpers';
 
 const getDefaultEvcAttachment = (): EvcAttachment => ({
@@ -34,6 +35,7 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
   const [selectedBearer, setSelectedBearer] = useState<VpnBearer | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const { bearerId } = useParams<{ bearerId: string }>();
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,6 +54,7 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
   }, [bearerId]);
 
   const handleSubmit = async (attachment: EvcAttachment) => {
+    setSubmitError(null);
     if (!selectedBearer) {
       return;
     }
@@ -65,10 +68,14 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     console.log('submit clicked', editedBearer);
     const callbacks = callbackUtils.getCallbacks;
 
-    await callbacks.editVpnBearer(editedBearer);
-    // eslint-disable-next-line no-console
-    console.log('bearer saved: evc attachment added to bearer');
-    onSuccess(unwrap(bearerId));
+    try {
+      await callbacks.editVpnBearer(editedBearer);
+      // eslint-disable-next-line no-console
+      console.log('bearer saved: evc attachment added to bearer');
+      onSuccess(unwrap(bearerId));
+    } catch (e) {
+      setSubmitError(String(e));
+    }
   };
 
   const handleCancel = () => {
@@ -82,6 +89,7 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
       <Container>
         <Box padding={6} margin={6} background="white">
           <Heading size="md">Add Evc Attachment To Bearer: {bearerId} </Heading>
+          {submitError && <ErrorMessage text={String(submitError)} />}
           <EvcAttachmentForm
             qosProfiles={qosProfiles}
             evcAttachment={getDefaultEvcAttachment()}

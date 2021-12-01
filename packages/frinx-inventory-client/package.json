@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "main": "dist/index.js",
   "module": "src/index.ts",
-  "typings": "index.d.ts",
+  "typings": "dist/index.d.ts",
   "files": [
     "dist/*"
   ],
@@ -16,12 +16,14 @@
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc --noEmit",
     "codegen": "graphql-codegen --config codegen.yml",
-    "codegen:clean": "rm -r src/__generated__"
+    "codegen:clean": "rm -r src/__generated__",
+    "generate:typings": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist feather-icons-react.d.ts src/index.ts"
   },
   "dependencies": {
     "@types/json-templates": "^3.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@urql/exchange-retry": "^0.3.0",
     "chakra-ui-autocomplete": "^1.4.3",
     "date-fns": "^2.23.0",
     "date-fns-tz": "^1.1.6",

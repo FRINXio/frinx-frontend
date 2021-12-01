@@ -1,9 +1,10 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 import { Carrier, Connection, VpnBearer, VpnCarrier, VpnNode } from '../../components/forms/bearer-types';
 import { apiVpnCarriersToClientCarriers, apiVpnNodesToClientVpnNodes } from '../../components/forms/converters';
 import VpnBearerForm from '../../components/forms/vpn-bearer-form';
+import ErrorMessage from '../../components/error-message/error-message';
 
 // const defaultVpnNode: VpnNode = {
 //   neId: '',
@@ -47,6 +48,7 @@ type Props = {
 const CreateBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [nodes, setNodes] = useState<VpnNode[] | null>(null);
   const [carriers, setCarriers] = useState<VpnCarrier[] | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   useEffect(() => {
     const fetchData = async () => {
       // TODO; possible fetches goes here
@@ -63,14 +65,19 @@ const CreateBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
   }, []);
 
   const handleSubmit = async (bearer: VpnBearer) => {
+    setSubmitError(null);
     // eslint-disable-next-line no-console
     console.log('submit clicked', bearer);
     // eslint-disable-next-line no-param-reassign
     const callbacks = callbackUtils.getCallbacks;
-    await callbacks.createVpnBearer(bearer);
-    // eslint-disable-next-line no-console
-    console.log('bearer created');
-    onSuccess();
+    try {
+      await callbacks.createVpnBearer(bearer);
+      // eslint-disable-next-line no-console
+      console.log('bearer created');
+      onSuccess();
+    } catch (e) {
+      setSubmitError(String(e));
+    }
   };
 
   const handleCancel = () => {
@@ -87,6 +94,7 @@ const CreateBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
     <Container>
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Create VPN Bearer</Heading>
+        {submitError && <ErrorMessage text={String(submitError)} />}
         <VpnBearerForm
           mode="add"
           bearer={defaultVpnBearer}

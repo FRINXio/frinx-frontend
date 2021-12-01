@@ -1,6 +1,6 @@
 // @flow
 import PageContainer from '../../../common/PageContainer';
-import PaginationPages from '../../../common/Pagination';
+import Paginator from '../../../common/pagination';
 import React, { useEffect, useState } from 'react';
 import callbackUtils from '../../../utils/callback-utils';
 import moment from 'moment';
@@ -17,7 +17,7 @@ const PollData = () => {
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
 
   useEffect(() => {
-    const getQueues = callbackUtils.getQueuesCallback();
+    const { getQueues } = callbackUtils.getCallbacks;
 
     getQueues().then((queues) => {
       setData(queues);
@@ -94,7 +94,7 @@ const PollData = () => {
         <Tfoot>
           <Tr>
             <Th>
-              <PaginationPages totalPages={totalPages} currentPage={currentPage} changePageHandler={setCurrentPage} />
+              <Paginator currentPage={currentPage} onPaginationClick={setCurrentPage} pagesCount={totalPages} />
             </Th>
           </Tr>
         </Tfoot>

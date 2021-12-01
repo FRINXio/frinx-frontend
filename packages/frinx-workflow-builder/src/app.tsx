@@ -3,7 +3,7 @@ import Diagram, { Canvas, CanvasControls, useCanvasState, useSchema } from 'beau
 import 'beautiful-react-diagrams/dist/styles.css';
 import produce, { castImmutable } from 'immer';
 import { uniqBy } from 'lodash';
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState, VoidFunctionComponent } from 'react';
 import callbackUtils from './callback-utils';
 import ActionsMenu from './components/actions-menu/actions-menu';
 import ExecutionModal from './components/execution-modal/execution-modal';
@@ -49,7 +49,7 @@ type Props = {
   onWorkflowClone: (workflow: Workflow, name: string) => void;
 };
 
-const App: FC<Props> = ({
+const App: VoidFunctionComponent<Props> = ({
   workflow,
   onWorkflowChange,
   workflows,
@@ -155,8 +155,8 @@ const App: FC<Props> = ({
                     setIsEditing(true);
                   }}
                   onSaveWorkflowBtnClick={() => {
-                    const onWorkflowSave = callbackUtils.saveWorkflowCallback();
-                    onWorkflowSave([workflowCtrlRef.current.convertWorkflow(schema, workflow)]);
+                    const { putWorkflow } = callbackUtils.getCallbacks;
+                    putWorkflow([workflowCtrlRef.current.convertWorkflow(schema, workflow)]);
                   }}
                   onFileImport={onFileImport}
                   onFileExport={() => {
@@ -170,8 +170,8 @@ const App: FC<Props> = ({
               <Button
                 colorScheme="blue"
                 onClick={() => {
-                  const onWorkflowSave = callbackUtils.saveWorkflowCallback();
-                  onWorkflowSave([workflowCtrlRef.current.convertWorkflow(schema, workflow)]).then(() => {
+                  const { putWorkflow } = callbackUtils.getCallbacks;
+                  putWorkflow([workflowCtrlRef.current.convertWorkflow(schema, workflow)]).then(() => {
                     setIsInputModalShown(true);
                   });
                 }}
@@ -193,6 +193,8 @@ const App: FC<Props> = ({
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               onChange={onChange}
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               style={{
                 boxShadow: 'none',
                 border: 'none',

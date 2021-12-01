@@ -8,10 +8,12 @@ import {
   apiVpnServiceToClientVpnService,
 } from '../../components/forms/converters';
 import SiteNetworkAccessForm from '../../components/forms/site-network-access-form';
-import { AccessPriority, RequestedCVlan, SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
+import ErrorMessage from '../../components/error-message/error-message';
+import { AccessPriority, SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
 import { generateNetworkAccessId } from '../../helpers/id-helpers';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 import { VpnService } from '../../components/forms/service-types';
+import { getSelectOptions } from '../../components/forms/options.helper';
 
 const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
   siteNetworkAccessId: generateNetworkAccessId(),
@@ -41,7 +43,7 @@ const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
   bearer: {
     alwaysOn: false,
     bearerReference: '',
-    requestedCLan: RequestedCVlan.l3vpn,
+    requestedCLan: '400', // l3vpn
     requestedType: {
       requestedType: 'dot1ad',
       strict: false,
@@ -63,9 +65,8 @@ const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
 });
 
 // TODO: to be defined
-const getBandwidths = async () => {
-  return [1000, 2000, 5000, 10000];
-};
+const getBandwidths = async () =>
+  getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site_network_access.bandwidths).map((item) => Number(item.key));
 
 type Props = {
   onSuccess: (siteId: string) => void;
@@ -85,6 +86,7 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
   const [bgpProfiles, setBgpProfiles] = useState<string[]>([]);
   const [vpnServices, setVpnServices] = useState<VpnService[]>([]);
   const [bandwiths, setBandwiths] = useState<number[]>([]);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const { siteId } = useParams<{ siteId: string }>();
 
   useEffect(() => {
@@ -115,14 +117,19 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
   }, [siteId]);
 
   const handleSubmit = async (s: VpnSite) => {
+    setSubmitError(null);
     // eslint-disable-next-line no-console
     console.log('submit clicked', s);
     const callbacks = callbackUtils.getCallbacks;
 
-    await callbacks.editVpnSite(s);
-    // eslint-disable-next-line no-console
-    console.log('site saved: network access added to site');
-    onSuccess(unwrap(s.siteId));
+    try {
+      await callbacks.editVpnSite(s);
+      // eslint-disable-next-line no-console
+      console.log('site saved: network access added to site');
+      onSuccess(unwrap(s.siteId));
+    } catch (e) {
+      setSubmitError(String(e));
+    }
   };
 
   const handleCancel = () => {
@@ -140,6 +147,7 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
             {selectedSite && (
               <>
                 {/* <SiteInfo site={selectedSite} /> */}
+                {submitError && <ErrorMessage text={String(submitError)} />}
                 <SiteNetworkAccessForm
                   mode="add"
                   qosProfiles={qosProfiles}

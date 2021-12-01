@@ -1,9 +1,9 @@
-import './set-public-path';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './app';
+import { AuthContext } from './auth-helpers';
 import unwrap from './helpers/unwrap';
-import { isAuthEnabled } from './auth-helpers';
+import Root from './root';
+import './set-public-path';
 import { ServiceKey } from './types';
 
 const ALL_SERVICES: ServiceKey[] = [
@@ -11,12 +11,11 @@ const ALL_SERVICES: ServiceKey[] = [
   'inventory_enabled' as const,
   'uniresource_enabled' as const,
   'gamma_enabled' as const,
-  // 'usermanagement_enabled' as const,
 ];
 const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
   ['uniflow_enabled', () => import('@frinx/workflow-ui')],
   ['inventory_enabled', () => import('@frinx/inventory-client')],
-  ['uniresource_enabled', () => import('@frinx/uniresource-ui')],
+  ['uniresource_enabled', () => import('@frinx/uniresource-ui/src')],
   ['usermanagement_enabled', () => import('@frinx/workflow-ui')],
   ['gamma_enabled', () => import('@frinx/gamma')],
 ]);
@@ -50,7 +49,10 @@ class DashboardApp {
       React.createElement(
         React.StrictMode,
         null,
-        React.createElement(App, { isAuthEnabled: isAuthEnabled(), enabledServices: this.enabledServices }),
+        React.createElement(Root, {
+          isAuthEnabled: AuthContext.isAuthEnabled(),
+          enabledServices: this.enabledServices,
+        }),
       ),
       document.getElementById('root'),
     );

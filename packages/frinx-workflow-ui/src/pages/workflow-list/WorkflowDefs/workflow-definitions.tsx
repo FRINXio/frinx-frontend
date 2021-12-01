@@ -34,7 +34,6 @@ import DependencyModal from './DependencyModal/DependencyModal';
 import DiagramModal from './DiagramModal/DiagramModal';
 import InputModal from './InputModal/input-modal';
 import PageContainer from '../../../common/PageContainer';
-import PaginationPages from '../../../common/Pagination';
 import ScheduledWorkflowModal from '../scheduled-workflow/scheduled-workflow-modal/scheduled-workflow-modal';
 import WfLabels from '../../../common/wf-labels';
 import WorkflowListViewModal from './WorkflowListViewModal/WorkflowListViewModal';
@@ -45,6 +44,7 @@ import WorkflowActions from './workflow-actions';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import { ScheduledWorkflow, Workflow } from '../../../types/types';
 import useNotifications from '../../../hooks/use-notifications';
+import Paginator from '../../../common/pagination';
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr = dataset.map(({ description }) => {
@@ -145,7 +145,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   }, [keywords, labels, data]);
 
   const getData = () => {
-    const getWorkflows = callbackUtils.getWorkflowsCallback();
+    const { getWorkflows } = callbackUtils.getCallbacks;
 
     getWorkflows().then((workflows) => {
       if (workflows != null) {
@@ -157,10 +157,10 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   };
 
   function handleWorkflowSchedule(scheduledWf: Partial<ScheduledWorkflow>) {
-    const registerSchedule = callbackUtils.registerScheduleCallback();
+    const { registerSchedule } = callbackUtils.getCallbacks;
 
     if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
-      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, scheduledWf)
+      registerSchedule(scheduledWf.workflowName, Number(scheduledWf.workflowVersion), scheduledWf)
         .then(() => {
           addToastNotification({
             type: 'success',
@@ -207,11 +207,10 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
 
     workflow.description = JSON.stringify(wfDescription);
 
-    const putWorkflow = callbackUtils.putWorkflowCallback();
-    const getWorkflows = callbackUtils.getWorkflowsCallback();
+    const { putWorkflow, getWorkflows } = callbackUtils.getCallbacks;
 
     putWorkflow([workflow]).then(() => {
-      getWorkflows().then((workflows: Workflow[]) => {
+      getWorkflows().then((workflows) => {
         const dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
         const allLabels = getLabels(dataset);
         setData(dataset);
@@ -221,7 +220,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   };
 
   const deleteWorkflow = (workflow: Workflow) => {
-    const deleteWorkflow = callbackUtils.deleteWorkflowCallback();
+    const { deleteWorkflow } = callbackUtils.getCallbacks;
 
     deleteWorkflow(workflow.name, workflow.version.toString()).then(() => {
       getData();
@@ -468,7 +467,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
         <Tfoot>
           <Tr>
             <Th>
-              <PaginationPages totalPages={totalPages} currentPage={currentPage} changePageHandler={setCurrentPage} />
+              <Paginator pagesCount={totalPages} onPaginationClick={setCurrentPage} currentPage={currentPage} />
             </Th>
           </Tr>
         </Tfoot>

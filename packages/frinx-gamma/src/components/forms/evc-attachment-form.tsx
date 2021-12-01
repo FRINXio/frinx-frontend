@@ -4,6 +4,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { EvcAttachment } from './bearer-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
+import { getSelectOptions } from './options.helper';
 
 const EvcSchema = yup.object().shape({
   evcType: yup.string().required('Evc type is required'),
@@ -52,8 +53,13 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
       <FormControl id="evc-type" isRequired my={6}>
         <FormLabel>Evc Type</FormLabel>
         <Select name="evcType" value={values.evcType} onChange={handleChange}>
-          <option value="evc-point-to-point">point-to-point</option>
-          <option value="evc-multipoint">multipoint</option>
+          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.bearer.evc_type).map((item) => {
+            return (
+              <option key={`evc-type-${item.key}`} value={item.key}>
+                {item.label}
+              </option>
+            );
+          })}
         </Select>
       </FormControl>
 

@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { Input, Select, FormControl, FormLabel } from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
 import { Connection, VpnBearer } from './bearer-types';
+import { getSelectOptions } from './options.helper';
 
 type Props = {
   connection: Connection;
@@ -25,8 +26,13 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
           }}
         >
           <option value="">-- choose encapsulation-type</option>
-          <option value="tagged-int">tagged-in</option>
-          <option value="untagged-int">untagged-in</option>
+          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.bearer.encapsulation_type).map((item) => {
+            return (
+              <option key={`encapsulation-type-${item.key}`} value={item.key}>
+                {item.label}
+              </option>
+            );
+          })}
         </Select>
       </FormControl>
       <FormControl my={6}>
@@ -42,8 +48,13 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
           }}
         >
           <option value="">-- choose svlan-assignment-type</option>
-          <option value="auto">auto</option>
-          <option value="third-party">third-party</option>
+          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.bearer['svlan-assignment-type']).map((item) => {
+            return (
+              <option key={`svlan-assignment-type-${item.key}`} value={item.key}>
+                {item.label}
+              </option>
+            );
+          })}
         </Select>
       </FormControl>
       <FormControl my={6}>
@@ -59,8 +70,13 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
           }}
         >
           <option value="">-- choose tpId</option>
-          <option value="dot1ad">802.1ad (0x88a8)</option>
-          <option value="qinq">802.1QinQ (0x9100)</option>
+          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.bearer.tpid).map((item) => {
+            return (
+              <option key={`tpid-${item.key}`} value={item.key}>
+                {item.label}
+              </option>
+            );
+          })}
         </Select>
       </FormControl>
       <FormControl id="connection-mtu" my={6}>

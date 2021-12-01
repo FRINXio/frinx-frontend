@@ -12,17 +12,11 @@ import {
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import {
-  AccessPriority,
-  MaximumRoutes,
-  RoutingProtocol,
-  VpnSite,
-  SiteNetworkAccess,
-  RequestedCVlan,
-} from './site-types';
+import { AccessPriority, MaximumRoutes, RoutingProtocol, VpnSite, SiteNetworkAccess } from './site-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 import RoutingProtocolForm from './routing-protocol-form';
 import unwrap from '../../helpers/unwrap';
+import { getSelectOptions } from './options.helper';
 
 // const RoutingProtocolSchema = yup.array().of(yup.object({}));
 
@@ -201,9 +195,13 @@ const SiteNetAccessForm: FC<Props> = ({
           }}
         >
           <option value="">-- choose site role</option>
-          <option value="any-to-any-role">any-any</option>
-          <option value="hub-role">hub</option>
-          <option value="spoke-role">spoke</option>
+          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site_network_access.site_role).map((item) => {
+            return (
+              <option key={`evc-type-${item.key}`} value={item.key}>
+                {item.label}
+              </option>
+            );
+          })}
         </Select>
       </FormControl>
 
@@ -262,15 +260,14 @@ const SiteNetAccessForm: FC<Props> = ({
           onChange={(event) => {
             setFieldValue('bearer', {
               ...values.bearer,
-              requestedCLan: event.target.value as unknown as RequestedCVlan,
+              requestedCLan: event.target.value,
             });
           }}
         >
-          {[...Object.entries(RequestedCVlan)].map((e) => {
-            const [k, v] = e;
+          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site_network_access.requested_cvlan).map((item) => {
             return (
-              <option key={k} value={v}>
-                {k}
+              <option key={`requested-cvlan-${item.key}`} value={item.key}>
+                {item.label}
               </option>
             );
           })}
@@ -347,10 +344,13 @@ const SiteNetAccessForm: FC<Props> = ({
             setFieldValue('maximumRoutes', Number(event.target.value) as MaximumRoutes);
           }}
         >
-          <option value="1000">1000</option>
-          <option value="2000">2000</option>
-          <option value="5000">5000</option>
-          <option value="10000">10000</option>
+          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site.maximum_routes).map((item) => {
+            return (
+              <option key={`maximum-routes-${item.key}`} value={item.key}>
+                {item.label}
+              </option>
+            );
+          })}
         </Select>
       </FormControl>
 

@@ -7,7 +7,8 @@ import {
 } from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
-import callbackUtils from '../../callback-utils';
+import ErrorMessage from '../../components/error-message/error-message';
+import callbackUtils from '../../unistore-callback-utils';
 import unwrap from '../../helpers/unwrap';
 
 type Props = {
@@ -24,6 +25,7 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const { siteId } = useParams<{ siteId: string }>();
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,11 +43,16 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
   }, []);
 
   const handleSubmit = async (site: VpnSite) => {
+    setSubmitError(null);
     // eslint-disable-next-line no-console
     console.log('submit clicked', site);
     const callbacks = callbackUtils.getCallbacks;
-    await callbacks.editVpnSite(site);
-    onSuccess();
+    try {
+      await callbacks.editVpnSite(site);
+      onSuccess();
+    } catch (e) {
+      setSubmitError(String(e));
+    }
   };
 
   const handleCancel = () => {
@@ -67,6 +74,7 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
         <Flex justifyContent="space-between" alignItems="center">
           <Heading size="md">Edit VPN Site</Heading>
         </Flex>
+        {submitError && <ErrorMessage text={String(submitError)} />}
         {vpnSites && selectedSite && (
           <VpnSiteForm
             mode="edit"

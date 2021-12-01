@@ -1,9 +1,11 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
 import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
+import { getSelectOptions } from '../../components/forms/options.helper';
 import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
+import ErrorMessage from '../../components/error-message/error-message';
 import { generateVpnId } from '../../helpers/id-helpers';
 
 const defaultVpnService: VpnService = {
@@ -13,7 +15,7 @@ const defaultVpnService: VpnService = {
   extranetVpns: [],
 };
 
-const extranetVpns = ['MGMT', 'SIP889'];
+const extranetVpns = getSelectOptions(window.__GAMMA_FORM_OPTIONS__.service.extranet_vpns).map((item) => item.label);
 
 type Props = {
   onSuccess: () => void;
@@ -22,6 +24,7 @@ type Props = {
 
 const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +38,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
   }, []);
 
   const handleSubmit = async (data: VpnService) => {
+    setSubmitError(null);
     const service = {
       ...data,
       vpnId: generateVpnId(),
@@ -42,10 +46,14 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     // eslint-disable-next-line no-console
     console.log('submit clicked', service);
     const callbacks = callbackUtils.getCallbacks;
-    const output = await callbacks.createVpnService(service);
-    // eslint-disable-next-line no-console
-    console.log(output);
-    onSuccess();
+    try {
+      const output = await callbacks.createVpnService(service);
+      // eslint-disable-next-line no-console
+      console.log(output);
+      onSuccess();
+    } catch (e) {
+      setSubmitError(String(e));
+    }
   };
 
   const handleCancel = () => {
@@ -58,6 +66,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     <Container>
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Create VPN Service</Heading>
+        {submitError && <ErrorMessage text={String(submitError)} />}
         {vpnServices && (
           <VpnServiceForm
             mode="add"

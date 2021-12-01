@@ -8,7 +8,8 @@ import {
 import SiteNetworkAccessTable from './site-network-access-table';
 import { SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
-import callbackUtils from '../../callback-utils';
+import callbackUtils from '../../unistore-callback-utils';
+import SiteNetworkAccessFilter, { SiteNetworkAccessFilters } from './site-network-access-filter';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 
@@ -29,6 +30,16 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   const deleteModalDisclosure = useDisclosure();
   const { siteId } = useParams<{ siteId: string }>();
   const [pagination, setPagination] = usePagination();
+  const [filters, setFilters] = useState<SiteNetworkAccessFilters>({
+    id: null,
+    locationId: null,
+    deviceId: null,
+  });
+  const [submittedFilters, setSubmittedFilters] = useState<SiteNetworkAccessFilters>({
+    id: null,
+    locationId: null,
+    deviceId: null,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,17 +61,17 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
         limit: pagination.pageSize,
       };
       const callbacks = callbackUtils.getCallbacks;
-      const apiNetworkAccesses = await callbacks.getSiteNetworkAccesses(siteId, paginationParams);
+      const apiNetworkAccesses = await callbacks.getSiteNetworkAccesses(siteId, paginationParams, submittedFilters);
       const clientNetworkAccesses = apiSiteNetworkAccessToClientSiteNetworkAccess(apiNetworkAccesses);
       setNetworkAccesses(clientNetworkAccesses);
-      const networkAccessesCount = await callbacks.getSiteNetworkAccessesCount(siteId);
+      const networkAccessesCount = await callbacks.getSiteNetworkAccessesCount(siteId, submittedFilters);
       setPagination({
         ...pagination,
         pageCount: Math.ceil(networkAccessesCount / pagination.pageSize),
       });
     };
     fetchData();
-  }, [pagination.page]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleDeleteButtonClick(siteAccessId: string) {
     setSiteAccessIdToDelete(siteAccessId);
@@ -72,6 +83,20 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
       ...pagination,
       page,
     });
+  }
+
+  function handleFilterChange(newFilters: SiteNetworkAccessFilters) {
+    setFilters({
+      ...newFilters,
+    });
+  }
+
+  function handleFilterSubmit() {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setSubmittedFilters(filters);
   }
 
   if (!site || !networkAccesses) {
@@ -108,6 +133,11 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
         </Flex>
         <Box>
           <>
+            <SiteNetworkAccessFilter
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onFilterSubmit={handleFilterSubmit}
+            />
             <SiteNetworkAccessTable
               siteId={siteId}
               networkAccesses={networkAccesses}

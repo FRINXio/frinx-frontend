@@ -1,4 +1,3 @@
-// @flow
 import Dropdown from 'react-dropdown';
 import React, { useEffect, useState } from 'react';
 import callbackUtils from '../../../../utils/callback-utils';
@@ -25,9 +24,9 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import { jsonParse } from '../../../../common/utils';
-import { storeWorkflowId } from '../../../../store/actions/builder';
 import { useDispatch } from 'react-redux';
 import WfAutoComplete from '../../../../common/wf-autocomplete';
+import { storeWorkflowId } from '../../../../store/actions/builder';
 
 const getInputs = (def) => {
   const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)}/gim;
@@ -58,7 +57,7 @@ function InputModal(props) {
   useEffect(() => {
     const definition = JSON.stringify(props.wf, null, 2);
     const labels = getInputs(definition);
-    const inputParams = jsonParse(props.wf.inputParameters ? props.wf.inputParameters[0] : null);
+    const inputParams = jsonParse(props.wf.inputParameters ? props.wf.inputParameters : null);
 
     const workflowForm = labels.map((label) => ({
       label: label,
@@ -77,8 +76,7 @@ function InputModal(props) {
     return new Promise(() => {
       const waitingWfs = [];
 
-      const getWorkflowExecutions = callbackUtils.getWorkflowExecutionsCallback();
-      const getWorkflowInstanceDetail = callbackUtils.getWorkflowInstanceDetailCallback();
+      const { getWorkflowExecutions, getWorkflowInstanceDetail } = callbackUtils.getCallbacks;
 
       getWorkflowExecutions().then((res) => {
         const runningWfs = res.result?.hits || [];
@@ -151,7 +149,7 @@ function InputModal(props) {
       input[label] = typeof value === 'string' && value.startsWith('{') ? JSON.parse(value) : value;
     });
 
-    const executeWorkflow = callbackUtils.executeWorkflowCallback();
+    const { executeWorkflow } = callbackUtils.getCallbacks;
 
     setStatus('Executing...');
     executeWorkflow(payload).then((res) => {

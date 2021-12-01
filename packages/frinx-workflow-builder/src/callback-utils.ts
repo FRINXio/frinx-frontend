@@ -1,15 +1,14 @@
-import { TaskDefinition, Workflow } from './helpers/types';
-import unwrap from './helpers/unwrap';
+import { ExecutedWorkflowResponse, TaskDefinition, Workflow } from './helpers/types';
 
 export type Callbacks = {
-  putWorkflow: (workflows: Workflow[]) => Promise<unknown>;
-  getWorkflow: (name: string, version: string) => Promise<Workflow>;
   getWorkflows: () => Promise<Workflow[]>;
   getTaskDefinitions: () => Promise<TaskDefinition[]>;
-  getWorkflowExecutions: (query?: string, start?: number, size?: string) => Promise<unknown>;
-  getWorkflowInstanceDetail: (workflowId: number) => Promise<unknown>;
-  executeWorkflow: (payload: WorkflowPayload) => Promise<unknown>;
-  deleteWorkflow: (name: string, version: string) => Promise<unknown>;
+  getWorkflow: (name: string, version: number) => Promise<Workflow>;
+  deleteWorkflow: (name: string, version: string) => Promise<Workflow>;
+  putWorkflow: (workflows: Workflow[]) => Promise<Workflow[]>;
+  getWorkflowExecutions: (workflowId: string, label: string, start: number, size: string) => Promise<unknown>;
+  getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<ExecutedWorkflowResponse>;
+  executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<{ text: string }>;
 };
 
 type WorkflowPayload = {
@@ -19,71 +18,18 @@ type WorkflowPayload = {
 };
 
 class CallbackUtils {
-  private getWorkflow: ((name: string, version: string) => Promise<Workflow>) | null = null;
+  private callbacks: Callbacks | null = null;
 
-  private getWorkflows: (() => Promise<Workflow[]>) | null = null;
+  setCallbacks(callbacks: Callbacks) {
+    this.callbacks = callbacks;
+  }
 
-  private getTaskDefinitions: (() => Promise<TaskDefinition[]>) | null = null;
-
-  private saveWorkflow: ((workflows: Workflow[]) => Promise<unknown>) | null = null;
-
-  private getWorkflowExecutions: ((query?: string, start?: number, size?: string) => Promise<unknown>) | null = null;
-
-  private getWorkflowInstanceDetail: ((workflowId: number) => Promise<unknown>) | null = null;
-
-  private executeWorkflow: ((payload: WorkflowPayload) => Promise<unknown>) | null = null;
-
-  private deleteWorkflow: ((name: string, version: string) => Promise<unknown>) | null = null;
-
-  setCallbacks = (callbacks: Callbacks) => {
-    if (this.getWorkflow == null) {
-      this.getWorkflow = callbacks.getWorkflow;
+  get getCallbacks() {
+    if (this.callbacks == null) {
+      throw new Error('callbacks not set');
     }
-
-    if (this.getWorkflows == null) {
-      this.getWorkflows = callbacks.getWorkflows;
-    }
-
-    if (this.getTaskDefinitions == null) {
-      this.getTaskDefinitions = callbacks.getTaskDefinitions;
-    }
-
-    if (this.saveWorkflow == null) {
-      this.saveWorkflow = callbacks.putWorkflow;
-    }
-
-    if (this.getWorkflowExecutions == null) {
-      this.getWorkflowExecutions = callbacks.getWorkflowExecutions;
-    }
-
-    if (this.getWorkflowInstanceDetail == null) {
-      this.getWorkflowInstanceDetail = callbacks.getWorkflowInstanceDetail;
-    }
-
-    if (this.executeWorkflow == null) {
-      this.executeWorkflow = callbacks.executeWorkflow;
-    }
-
-    if (this.deleteWorkflow == null) {
-      this.deleteWorkflow = callbacks.deleteWorkflow;
-    }
-  };
-
-  getWorkflowCallback = () => unwrap(this.getWorkflow);
-
-  getWorkflowsCallback = () => unwrap(this.getWorkflows);
-
-  getTaskDefinitionsCallback = () => unwrap(this.getTaskDefinitions);
-
-  saveWorkflowCallback = () => unwrap(this.saveWorkflow);
-
-  getWorkflowExecutionsCallback = () => unwrap(this.getWorkflowExecutions);
-
-  getWorkflowInstanceDetailCallback = () => unwrap(this.getWorkflowInstanceDetail);
-
-  executeWorkflowCallback = () => unwrap(this.executeWorkflow);
-
-  deleteWorkflowCallback = () => unwrap(this.deleteWorkflow);
+    return this.callbacks;
+  }
 }
 
 export default new CallbackUtils();
