@@ -4,6 +4,7 @@
   "private": true,
   "module": "src/index.ts",
   "dependencies": {
+    "@urql/exchange-retry": "^0.3.0",
     "ace-builds": "^1.4.12",
     "chakra-ui-autocomplete": "^1.4.3",
     "feather-icons-react": "^0.4.3",

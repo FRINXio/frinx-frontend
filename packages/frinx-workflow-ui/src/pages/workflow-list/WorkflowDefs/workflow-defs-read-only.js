@@ -116,7 +116,7 @@ function WorkflowDefs({ onDefinitionClick, onWorkflowIdClick }: Props) {
   }, [keywords, labels, data, setItemList]);
 
   const getData = () => {
-    const getWorkflows = callbackUtils.getWorkflowsCallback();
+    const { getWorkflows } = callbackUtils.getCallbacks;
 
     getWorkflows().then((workflows) => {
       if (workflows) {

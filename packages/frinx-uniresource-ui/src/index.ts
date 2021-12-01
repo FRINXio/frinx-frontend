@@ -1,4 +1,4 @@
-import Root from './root';
+import UniresourceAppProvider from './uniresource-api-provider';
 import PoolsPage from './pages/pools-page/pools-page';
 import CreatePoolPage from './pages/create-pool-page/create-pool-page';
 
@@ -10,7 +10,7 @@ import CreateAllocatingIpv4PrefixPoolPage from './pages/create-pool-page/create-
 import CreateAllocatingVlanPoolPage from './pages/create-pool-page/create-allocating-vlan-pool-page';
 import PoolDetailPage from './pages/pool-detail-page/pool-detail-page';
 
-export { Root as UniresourceAppProvider };
+export { UniresourceAppProvider };
 export { PoolsPage };
 export { CreatePoolPage };
 export { StrategiesPage };

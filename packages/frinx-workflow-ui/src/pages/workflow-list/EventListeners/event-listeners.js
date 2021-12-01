@@ -58,7 +58,7 @@ const EventListeners = () => {
   }, [searchTerm, eventListeners]);
 
   const getData = () => {
-    const getEventListeners = callbackUtils.getEventListenersCallback();
+    const { getEventListeners } = callbackUtils.getCallbacks;
 
     getEventListeners().then((eventListeners) => {
       if (Array.isArray(eventListeners)) {
@@ -72,7 +72,7 @@ const EventListeners = () => {
       event.active = state;
     }
 
-    const registerEventListener = callbackUtils.registerEventListenerCallback();
+    const { registerEventListener } = callbackUtils.getCallbacks;
 
     registerEventListener(event)
       .then(() => {
@@ -85,7 +85,7 @@ const EventListeners = () => {
   };
 
   const deleteEvent = (name) => {
-    const deleteEventListener = callbackUtils.deleteEventListenerCallback();
+    const { deleteEventListener } = callbackUtils.getCallbacks;
 
     deleteEventListener(name)
       .then(() => {

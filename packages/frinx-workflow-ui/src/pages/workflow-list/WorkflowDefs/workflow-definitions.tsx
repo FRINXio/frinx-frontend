@@ -145,7 +145,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   }, [keywords, labels, data]);
 
   const getData = () => {
-    const getWorkflows = callbackUtils.getWorkflowsCallback();
+    const { getWorkflows } = callbackUtils.getCallbacks;
 
     getWorkflows().then((workflows) => {
       if (workflows != null) {
@@ -157,10 +157,10 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   };
 
   function handleWorkflowSchedule(scheduledWf: Partial<ScheduledWorkflow>) {
-    const registerSchedule = callbackUtils.registerScheduleCallback();
+    const { registerSchedule } = callbackUtils.getCallbacks;
 
     if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
-      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, scheduledWf)
+      registerSchedule(scheduledWf.workflowName, Number(scheduledWf.workflowVersion), scheduledWf)
         .then(() => {
           addToastNotification({
             type: 'success',
@@ -207,8 +207,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
 
     workflow.description = JSON.stringify(wfDescription);
 
-    const putWorkflow = callbackUtils.putWorkflowCallback();
-    const getWorkflows = callbackUtils.getWorkflowsCallback();
+    const { putWorkflow, getWorkflows } = callbackUtils.getCallbacks;
 
     putWorkflow([workflow]).then(() => {
       getWorkflows().then((workflows) => {
@@ -221,7 +220,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   };
 
   const deleteWorkflow = (workflow: Workflow) => {
-    const deleteWorkflow = callbackUtils.deleteWorkflowCallback();
+    const { deleteWorkflow } = callbackUtils.getCallbacks;
 
     deleteWorkflow(workflow.name, workflow.version.toString()).then(() => {
       getData();

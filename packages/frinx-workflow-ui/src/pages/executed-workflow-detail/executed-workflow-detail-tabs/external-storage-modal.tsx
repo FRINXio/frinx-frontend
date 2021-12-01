@@ -22,7 +22,7 @@ const ExternalStorageModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, s
   const [payload, setPayload] = useState<string | null>(null);
 
   useEffect(() => {
-    const getExternalStorage = callbackUtils.getExternalStorageCallback();
+    const { getExternalStorage } = callbackUtils.getCallbacks;
     getExternalStorage(storagePath).then((res) => {
       setPayload(JSON.stringify(res, null, 2));
     });
