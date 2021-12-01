@@ -58,15 +58,23 @@ type Pagination = {
   limit: number;
 };
 
+type ContentType = 'config' | 'nonconfig';
+
+function getContentParameter(contentType?: ContentType): string {
+  return contentType ? `content=${contentType}` : 'content=config';
+}
+
 export async function getVpnServices(
   pagination: Pagination | null,
   serviceFilter: ServiceFilter | null,
+  contentType?: ContentType,
 ): Promise<VpnServicesOutput> {
   try {
     const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
     const filterParams = serviceFilter ? getServiceFilterParams(serviceFilter) : '';
+    const content = getContentParameter(contentType);
     const json = await sendGetRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?${paginationParams}${filterParams}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?${content}${paginationParams}${filterParams}`,
     );
     const data = decodeVpnServicesOutput(json);
     return data;
@@ -103,12 +111,14 @@ export async function createVpnService(vpnService: VpnService): Promise<void> {
 export async function getVpnSites(
   pagination: Pagination | null,
   siteFilter: SiteFilter | null,
+  contentType?: ContentType,
 ): Promise<VpnSitesOutput> {
   try {
     const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
     const filterParams = siteFilter ? getSiteFilterParams(siteFilter) : '';
+    const content = getContentParameter(contentType);
     const json = await sendGetRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config${paginationParams}${filterParams}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?${content}${paginationParams}${filterParams}`,
     );
     const data = decodeVpnSitesOutput(json);
     return data;
@@ -146,12 +156,14 @@ export async function getValidProviderIdentifiers(): Promise<ValidProviderIdenti
 export async function getVpnBearers(
   pagination: Pagination | null,
   vpnBearerFilter: VpnBearerFilter | null,
+  contentType?: ContentType,
 ): Promise<VpnBearerOutput> {
   try {
     const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
     const filterParams = vpnBearerFilter ? getVpnBearerFilterParams(vpnBearerFilter) : '';
+    const content = getContentParameter(contentType);
     const json = await sendGetRequest(
-      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?content=config${paginationParams}${filterParams}`,
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?${content}${paginationParams}${filterParams}`,
     );
     const data = decodeVpnBearerOutput(json);
 
@@ -281,11 +293,15 @@ export async function getBearerValidProviderIdentifiers(): Promise<ValidProvider
   }
 }
 
-export async function getVpnServiceCount(serviceFilter: ServiceFilter | null): Promise<number> {
+export async function getVpnServiceCount(
+  serviceFilter: ServiceFilter | null,
+  contentType?: ContentType,
+): Promise<number> {
   try {
     const filterParams = serviceFilter ? getServiceFilterParams(serviceFilter) : '';
+    const content = getContentParameter(contentType);
     const data = await sendGetRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?content=config&fetch=count${filterParams}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?${content}&fetch=count${filterParams}`,
     );
     if (!isNumber(data)) {
       throw new Error('not a number');
@@ -298,11 +314,12 @@ export async function getVpnServiceCount(serviceFilter: ServiceFilter | null): P
   }
 }
 
-export async function getVpnSiteCount(siteFilter: SiteFilter | null): Promise<number> {
+export async function getVpnSiteCount(siteFilter: SiteFilter | null, contentType?: ContentType): Promise<number> {
   try {
     const filterParams = siteFilter ? getSiteFilterParams(siteFilter) : '';
+    const content = getContentParameter(contentType);
     const data = await sendGetRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?content=config&fetch=count${filterParams}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?${content}&fetch=count${filterParams}`,
     );
     if (!isNumber(data)) {
       throw new Error('not a number');
@@ -315,11 +332,15 @@ export async function getVpnSiteCount(siteFilter: SiteFilter | null): Promise<nu
   }
 }
 
-export async function getVpnBearerCount(vpnBearerFilter: VpnBearerFilter | null): Promise<number> {
+export async function getVpnBearerCount(
+  vpnBearerFilter: VpnBearerFilter | null,
+  contentType?: ContentType,
+): Promise<number> {
   try {
     const filterParams = vpnBearerFilter ? getVpnBearerFilterParams(vpnBearerFilter) : '';
+    const content = getContentParameter(contentType);
     const data = await sendGetRequest(
-      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?content=config&fetch=count${filterParams}`,
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?${content}&fetch=count${filterParams}`,
     );
     if (!isNumber(data)) {
       throw new Error('not a number');
@@ -332,11 +353,16 @@ export async function getVpnBearerCount(vpnBearerFilter: VpnBearerFilter | null)
   }
 }
 
-export async function getLocations(siteId: string, pagination: Pagination | null): Promise<LocationsOutput> {
+export async function getLocations(
+  siteId: string,
+  pagination: Pagination | null,
+  contentType?: ContentType,
+): Promise<LocationsOutput> {
   try {
     const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
+    const content = getContentParameter(contentType);
     const json = await sendGetRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?content=config${paginationParams}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?${content}${paginationParams}`,
     );
     const data = decodeLocationsOutput(json);
     return data;
@@ -348,10 +374,11 @@ export async function getLocations(siteId: string, pagination: Pagination | null
   }
 }
 
-export async function getLocationsCount(siteId: string): Promise<number> {
+export async function getLocationsCount(siteId: string, contentType?: ContentType): Promise<number> {
   try {
+    const content = getContentParameter(contentType);
     const data = await sendGetRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?content=config&fetch=count`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?${content}&fetch=count`,
     );
     if (!isNumber(data)) {
       throw new Error('not a number');
@@ -368,12 +395,14 @@ export async function getSiteNetworkAccesses(
   siteId: string,
   pagination: Pagination | null,
   siteNetworkAccessFilter: SiteNetworkAccessFilter | null,
+  contentType?: ContentType,
 ): Promise<SiteNetworkAccessOutput> {
   try {
     const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
     const filterParams = siteNetworkAccessFilter ? getSiteNetworkAccessFilterParams(siteNetworkAccessFilter) : '';
+    const content = getContentParameter(contentType);
     const json = await sendGetRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access?content=config${paginationParams}${filterParams}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access?${content}${paginationParams}${filterParams}`,
     );
     const data = decodeSiteNetworkAccessOutput(json);
     return data;
@@ -388,11 +417,13 @@ export async function getSiteNetworkAccesses(
 export async function getSiteNetworkAccessesCount(
   siteId: string,
   siteNetworkAccessFilter: SiteNetworkAccessFilter | null,
+  contentType?: ContentType,
 ): Promise<number> {
   try {
     const filterParams = siteNetworkAccessFilter ? getSiteNetworkAccessFilterParams(siteNetworkAccessFilter) : '';
+    const content = getContentParameter(contentType);
     const data = await sendGetRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access?content=config&fetch=count${filterParams}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access?${content}&fetch=count${filterParams}`,
     );
     if (!isNumber(data)) {
       throw new Error('not a number');
