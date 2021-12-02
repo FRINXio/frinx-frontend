@@ -42,7 +42,7 @@ type Props = {
 };
 
 const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, bearer, onSubmit, onCancel }) => {
-  const { values, errors, dirty, setFieldValue, handleChange, handleSubmit } = useFormik({
+  const { values, errors, dirty, resetForm, setFieldValue, handleChange, handleSubmit } = useFormik({
     initialValues: {
       ...bearer,
     },
@@ -136,6 +136,7 @@ const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, be
         <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
           Save changes
         </Button>
+        <Button onClick={() => resetForm()}>Clear</Button>
         <Button onClick={onCancel}>Cancel</Button>
       </Stack>
     </form>
