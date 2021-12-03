@@ -3,7 +3,11 @@ import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
-import { apiLocationsToClientLocations, apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
+import {
+  apiLocationsToClientLocations,
+  apiVpnSitesToClientVpnSite,
+  clientVpnSiteToApiVpnSite,
+} from '../../components/forms/converters';
 import { VpnSite, CustomerLocation } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
 import LocationTable from './location-table';
@@ -87,7 +91,8 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
             ...site,
             customerLocations: site.customerLocations.filter((s) => s.locationId !== locationIdToDelete),
           };
-          callbackUtils.getCallbacks.editVpnSite(editedVpnSite).then(() => {
+          const apiSite = clientVpnSiteToApiVpnSite(editedVpnSite);
+          callbackUtils.getCallbacks.editVpnSite(apiSite).then(() => {
             setSite(editedVpnSite);
             deleteModalDisclosure.onClose();
           });

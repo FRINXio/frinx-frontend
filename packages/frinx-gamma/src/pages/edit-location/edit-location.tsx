@@ -2,7 +2,7 @@ import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router';
 import callbackUtils from '../../unistore-callback-utils';
-import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
+import { apiVpnSitesToClientVpnSite, clientVpnSiteToApiVpnSite } from '../../components/forms/converters';
 import CustomerLocationForm from '../../components/forms/customer-location-form';
 import { CustomerLocation, VpnSite } from '../../components/forms/site-types';
 import ErrorMessage from '../../components/error-message/error-message';
@@ -50,7 +50,8 @@ const EditLocationPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
     };
     const callbacks = callbackUtils.getCallbacks;
     try {
-      await callbacks.editVpnSite(editedSite);
+      const apiSite = clientVpnSiteToApiVpnSite(editedSite);
+      await callbacks.editVpnSite(apiSite);
       onSuccess(unwrap(siteId));
     } catch (e) {
       setSubmitError(String(e));

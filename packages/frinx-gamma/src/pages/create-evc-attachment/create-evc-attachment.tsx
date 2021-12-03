@@ -2,7 +2,11 @@ import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Box, Container, Heading } from '@chakra-ui/react';
 import { useParams } from 'react-router';
 import unwrap from '../../helpers/unwrap';
-import { apiBearerToClientBearer, apiProviderIdentifiersToClientIdentifers } from '../../components/forms/converters';
+import {
+  apiBearerToClientBearer,
+  apiProviderIdentifiersToClientIdentifers,
+  clientBearerToApiBearer,
+} from '../../components/forms/converters';
 import callbackUtils from '../../unistore-callback-utils';
 import { EvcAttachment, VpnBearer } from '../../components/forms/bearer-types';
 import EvcAttachmentForm from '../../components/forms/evc-attachment-form';
@@ -69,7 +73,8 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     const callbacks = callbackUtils.getCallbacks;
 
     try {
-      await callbacks.editVpnBearer(editedBearer);
+      const apiBearer = clientBearerToApiBearer(editedBearer);
+      await callbacks.editVpnBearer(apiBearer);
       // eslint-disable-next-line no-console
       console.log('bearer saved: evc attachment added to bearer');
       onSuccess(unwrap(bearerId));

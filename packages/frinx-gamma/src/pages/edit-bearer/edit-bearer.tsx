@@ -7,6 +7,7 @@ import {
   apiVpnNodesToClientVpnNodes,
   apiBearerToClientBearer,
   apiVpnCarriersToClientCarriers,
+  clientBearerToApiBearer,
 } from '../../components/forms/converters';
 import VpnBearerForm from '../../components/forms/vpn-bearer-form';
 import ErrorMessage from '../../components/error-message/error-message';
@@ -47,7 +48,8 @@ const EditBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
     console.log('submit clicked', vpnBearer);
     const callbacks = callbackUtils.getCallbacks;
     try {
-      await callbacks.editVpnBearer(vpnBearer);
+      const apiBearer = clientBearerToApiBearer(vpnBearer);
+      await callbacks.editVpnBearer(apiBearer);
       // eslint-disable-next-line no-console
       console.log('bearer created');
       onSuccess();

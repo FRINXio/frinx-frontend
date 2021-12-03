@@ -4,6 +4,7 @@ import { useParams } from 'react-router';
 import {
   apiSiteNetworkAccessToClientSiteNetworkAccess,
   apiVpnSitesToClientVpnSite,
+  clientVpnSiteToApiVpnSite,
 } from '../../components/forms/converters';
 import SiteNetworkAccessTable from './site-network-access-table';
 import { SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
@@ -113,7 +114,8 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
             ...site,
             siteNetworkAccesses: site.siteNetworkAccesses.filter((s) => s.siteNetworkAccessId !== siteAccessIdToDelete),
           };
-          callbackUtils.getCallbacks.editVpnSite(editedVpnSite).then(() => {
+          const apiSite = clientVpnSiteToApiVpnSite(editedVpnSite);
+          callbackUtils.getCallbacks.editVpnSite(apiSite).then(() => {
             setSite(editedVpnSite);
             deleteModalDisclosure.onClose();
           });

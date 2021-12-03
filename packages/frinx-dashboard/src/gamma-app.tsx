@@ -1,8 +1,7 @@
 import { Box, Button } from '@chakra-ui/react';
-import { UniflowApi } from '@frinx/api';
+import { UniflowApi, UnistoreApi } from '@frinx/api';
 import React, { FC, useEffect, useState, VoidFunctionComponent } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
-import * as unistoreCallbacks from './api/unistore/unistore';
 import { authContext } from './auth-helpers';
 
 type GammaComponents = Omit<typeof import('@frinx/gamma'), 'getGammaAppProvider'> & {
@@ -69,7 +68,10 @@ const GammaApp: VoidFunctionComponent = () => {
         CreateVpnCarrier,
         CreateVpnNode,
         GammaAppProvider: getGammaAppProvider({
-          unistoreCallbacks: { ...unistoreCallbacks },
+          unistoreCallbacks: UnistoreApi.create(
+            { url: window.__CONFIG__.unistore_api_url, authContext },
+            window.__CONFIG__.uniconfig_auth,
+          ).client,
           uniflowCallbacks: UniflowApi.create({ url: window.__CONFIG__.conductor_api_url, authContext }).client,
         }),
       });

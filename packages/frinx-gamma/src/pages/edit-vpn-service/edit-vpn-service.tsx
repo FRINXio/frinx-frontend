@@ -1,7 +1,7 @@
 import { Box, Container, Flex, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router';
-import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
+import { apiVpnServiceToClientVpnService, clientVpnServiceToApiVpnService } from '../../components/forms/converters';
 import { VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
 import ErrorMessage from '../../components/error-message/error-message';
@@ -43,7 +43,8 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     console.log('submit clicked', service);
     try {
       const callbacks = callbackUtils.getCallbacks;
-      await callbacks.editVpnServices(service);
+      const vpnService = clientVpnServiceToApiVpnService(service);
+      await callbacks.editVpnServices(vpnService);
       onSuccess();
     } catch (e) {
       setSubmitError(String(e));

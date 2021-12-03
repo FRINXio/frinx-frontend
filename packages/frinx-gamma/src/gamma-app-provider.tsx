@@ -11,6 +11,7 @@ const GammaAppProvider: FC = ({ children }) => {
     if (!getTransactionId()) {
       const callbacks = unistoreCallbackUtils.getCallbacks;
       callbacks.getTransactionCookie().then((data) => {
+        console.log(data);
         setTransactionId(data);
         setIsReady(true);
       });
