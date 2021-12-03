@@ -4,20 +4,23 @@ import { gql, useMutation, useQuery } from 'urql';
 import PageContainer from '../../components/page-container';
 import useNotifications from '../../hooks/use-notifications';
 import {
+  AllocatedResourcesQuery,
+  AllocatedResourcesQueryVariables,
   ClaimResourceMutationMutation,
   ClaimResourceMutationMutationVariables,
   FreeResourceMutationMutation,
   FreeResourceMutationMutationVariables,
   PoolCapacityPayload,
-  QueryPoolDetailQuery,
-  QueryPoolDetailQueryVariables,
-  ResourceConnection,
+  PoolDetailQuery,
+  PoolDetailQueryVariables,
 } from '../../__generated__/graphql';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
-import PoolDetailTable from './pool-detail-table';
+import PoolDetailAllocatingTable from './pool-detail-allocating-table';
+import PoolDetailSetSingletonTable from './pool-detail-set_singleton-table';
 
 type Props = {
   poolId: string;
+  reload: () => void;
 };
 
 export type PoolResource = {
@@ -26,19 +29,15 @@ export type PoolResource = {
 };
 
 const POOL_DETAIL_QUERY = gql`
-  query QueryPoolDetail($poolId: ID!) {
+  query PoolDetail($poolId: ID!) {
     QueryResourcePool(poolId: $poolId) {
       id
       Name
       PoolType
-      allocatedResources {
-        edges {
-          node {
-            Description
-            Properties
-          }
-        }
-        totalCount
+      Resources {
+        Description
+        Properties
+        id
       }
       Tags {
         id
@@ -51,6 +50,15 @@ const POOL_DETAIL_QUERY = gql`
       ResourceType {
         Name
       }
+    }
+  }
+`;
+
+const POOL_RESOURCES_QUERY = gql`
+  query AllocatedResources($poolId: ID!) {
+    QueryResources(poolId: $poolId) {
+      id
+      Properties
     }
   }
 `;
@@ -87,14 +95,19 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   return (capacity.utilizedCapacity / totalCapacity) * 100;
 }
 
-const PoolDetailPage: FC<Props> = ({ poolId }) => {
+const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
   const claimResourceModal = useDisclosure();
   const { addToastNotification } = useNotifications();
-  const [{ data, fetching: isLoadingPool }] = useQuery<QueryPoolDetailQuery, QueryPoolDetailQueryVariables>({
+  const [{ data: poolData, fetching: isLoadingPool }] = useQuery<PoolDetailQuery, PoolDetailQueryVariables>({
     query: POOL_DETAIL_QUERY,
-    variables: {
-      poolId,
-    },
+    variables: { poolId },
+  });
+  const [{ data: allocatedResources, fetching: isLoadingResources }] = useQuery<
+    AllocatedResourcesQuery,
+    AllocatedResourcesQueryVariables
+  >({
+    query: POOL_RESOURCES_QUERY,
+    variables: { poolId },
   });
 
   const [, claimResource] = useMutation<ClaimResourceMutationMutation, ClaimResourceMutationMutationVariables>(
@@ -134,6 +147,7 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
           type: 'success',
           content: 'Successfully freed resource from pool',
         });
+        reload();
       })
       .catch(() => {
         addToastNotification({
@@ -143,15 +157,15 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
       });
   };
 
-  if (isLoadingPool) {
+  if (isLoadingPool || isLoadingResources) {
     return <Progress isIndeterminate mt={-10} size="xs" />;
   }
 
-  if (data == null || data.QueryResourcePool == null) {
+  if (poolData == null || poolData.QueryResourcePool == null || allocatedResources == null) {
     return <Box textAlign="center">Resource pool does not exists</Box>;
   }
 
-  const { QueryResourcePool: resourcePool } = data;
+  const { QueryResourcePool: resourcePool } = poolData;
   const capacityValue = getCapacityValue(resourcePool.Capacity);
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
   const canClaimResources =
@@ -160,9 +174,10 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
     resourcePool.Capacity.freeCapacity <= totalCapacity;
   const canFreeResource = resourcePool.Capacity != null && resourcePool.Capacity.freeCapacity !== totalCapacity;
   const canShowClaimResourceButton =
-    resourcePool.ResourceType.Name === 'ipv4_prefix' ||
-    resourcePool.ResourceType.Name === 'vlan_range' ||
-    resourcePool.ResourceType.Name === 'vlan';
+    resourcePool.PoolType === 'allocating' &&
+    (resourcePool.ResourceType.Name === 'ipv4_prefix' ||
+      resourcePool.ResourceType.Name === 'vlan_range' ||
+      resourcePool.ResourceType.Name === 'vlan');
 
   return (
     <PageContainer>
@@ -179,16 +194,16 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
         </Heading>
         <Spacer />
         <Box>
-          {canShowClaimResourceButton && (
-            <Button
-              onClick={claimResourceModal.onOpen}
-              colorScheme="blue"
-              variant="outline"
-              isDisabled={!canClaimResources}
-            >
-              Claim resources
-            </Button>
-          )}
+          <Button
+            onClick={() =>
+              canShowClaimResourceButton ? claimResourceModal.onOpen() : claimPoolResource('claimed', {})
+            }
+            colorScheme="blue"
+            variant="outline"
+            isDisabled={!canClaimResources}
+          >
+            Claim resources
+          </Button>
         </Box>
       </Flex>
 
@@ -202,11 +217,20 @@ const PoolDetailPage: FC<Props> = ({ poolId }) => {
 
       <Box my={10}>
         <Heading size="lg">Allocated Resources</Heading>
-        <PoolDetailTable
-          allocatedResources={resourcePool.allocatedResources as ResourceConnection}
-          onFreeResource={freePoolResource}
-          canFreeResource={canFreeResource}
-        />
+        {resourcePool.PoolType === 'allocating' && (
+          <PoolDetailAllocatingTable
+            allocatedResources={allocatedResources}
+            onFreeResource={freePoolResource}
+            canFreeResource={canFreeResource}
+          />
+        )}
+        {(resourcePool.PoolType === 'set' || resourcePool.PoolType === 'singleton') && (
+          <PoolDetailSetSingletonTable
+            resources={resourcePool.Resources}
+            allocatedResources={allocatedResources}
+            onFreeResource={freePoolResource}
+          />
+        )}
       </Box>
     </PageContainer>
   );
