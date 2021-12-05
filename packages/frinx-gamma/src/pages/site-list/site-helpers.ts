@@ -1,66 +1,66 @@
-import { VpnService } from '../../components/forms/service-types';
+import { VpnSite } from '../../components/forms/site-types';
 
 export type Status = 'CREATED' | 'UPDATED' | 'DELETED' | 'NO_CHANGE';
 
-export type VpnServiceWithStatus = VpnService & { status: Status };
+export type VpnSiteWithStatus = VpnSite & { status: Status };
 
-export function getChangedServicesWithStatus(
-  createdServices: VpnService[] | null,
-  updatedServices: VpnService[] | null,
-  deletedServices: VpnService[] | null,
-): VpnServiceWithStatus[] {
-  const createdServicesWithStatus: VpnServiceWithStatus[] =
-    createdServices?.map((service) => {
+export function getChangedSitesWithStatus(
+  createdSites: VpnSite[] | null,
+  updatedSites: VpnSite[] | null,
+  deletedSites: VpnSite[] | null,
+): VpnSiteWithStatus[] {
+  const createdSitesWithStatus: VpnSiteWithStatus[] =
+    createdSites?.map((Site) => {
       return {
-        ...service,
+        ...Site,
         status: 'CREATED',
       };
     }) || [];
 
-  const updatedServicesWithStatus: VpnServiceWithStatus[] =
-    updatedServices?.map((service) => {
+  const updatedSitesWithStatus: VpnSiteWithStatus[] =
+    updatedSites?.map((Site) => {
       return {
-        ...service,
+        ...Site,
         status: 'UPDATED',
       };
     }) || [];
 
-  const deletedServicesWithStatus: VpnServiceWithStatus[] =
-    deletedServices?.map((service) => {
+  const deletedSitesWithStatus: VpnSiteWithStatus[] =
+    deletedSites?.map((Site) => {
       return {
-        ...service,
+        ...Site,
         status: 'DELETED',
       };
     }) || [];
 
-  return [...createdServicesWithStatus, ...updatedServicesWithStatus, ...deletedServicesWithStatus];
+  return [...createdSitesWithStatus, ...updatedSitesWithStatus, ...deletedSitesWithStatus];
 }
 
-export function getSavedServicesWithStatus(
-  services: VpnService[] | null,
-  updatedServices: VpnService[] | null,
-  deletedServices: VpnService[] | null,
-): VpnServiceWithStatus[] {
+export function getSavedSitesWithStatus(
+  sites: VpnSite[] | null,
+  updatedSites: VpnSite[] | null,
+  deletedSites: VpnSite[] | null,
+): VpnSiteWithStatus[] {
   return (
-    services?.map((service) => {
-      const updatedService = updatedServices?.filter((i) => i.vpnId === service.vpnId) || [];
-      if (updatedService.length) {
+    sites?.map((site) => {
+      const updatedSite = updatedSites?.filter((i) => i.siteId === site.siteId) || [];
+      if (updatedSite.length) {
         return {
-          ...updatedService[0],
+          ...updatedSite[0],
           status: 'UPDATED',
         };
       }
 
-      const deletedService = deletedServices?.filter((i) => i.vpnId === service.vpnId) || [];
-      if (deletedService.length) {
+      const deletedSite = deletedSites?.filter((i) => i.siteId === site.siteId) || [];
+      if (deletedSite.length) {
         return {
-          ...deletedService[0],
+          ...deletedSite[0],
           status: 'DELETED',
         };
       }
 
       return {
-        ...service,
+        ...site,
         status: 'NO_CHANGE',
       };
     }) || []
