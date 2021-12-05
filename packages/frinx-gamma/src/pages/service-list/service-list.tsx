@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex, Heading, HStack, Icon, Text, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, HStack, Icon, useDisclosure } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import diff from 'diff-arrays-of-objects';
@@ -8,7 +8,7 @@ import { apiVpnServiceToClientVpnService } from '../../components/forms/converte
 import { VpnService } from '../../components/forms/service-types';
 import unwrap from '../../helpers/unwrap';
 import ServiceFilter, { ServiceFilters } from './service-filter';
-import ServiceTable, { VpnServiceWithStatus } from './service-table';
+import ServiceTable from './service-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getChangedServicesWithStatus, getSavedServicesWithStatus } from './service-helpers';
@@ -59,7 +59,6 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
       const allUnsavedServices = await callbacks.getVpnServices(null, null);
       const clientAllUnsavedServices = apiVpnServiceToClientVpnService(allUnsavedServices);
       const result = diff(clientAllSavedServices, clientAllUnsavedServices, 'vpnId');
-      console.log(clientAllUnsavedServices, clientAllSavedServices, result);
       setCreatedServices(result.added);
       setUpdatedServices(result.updated);
       setDeletedServices(result.removed);

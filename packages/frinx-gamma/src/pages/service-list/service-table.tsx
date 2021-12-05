@@ -1,25 +1,10 @@
-import {
-  Flex,
-  HStack,
-  Icon,
-  IconButton,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  Tooltip,
-  ThemingProps,
-} from '@chakra-ui/react';
+import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
-import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
-import StatusTag, { Status } from '../../components/status-tag/status-tag';
+import { DefaultCVlanEnum } from '../../components/forms/service-types';
+import StatusTag from '../../components/status-tag/status-tag';
 import unwrap from '../../helpers/unwrap';
-
-export type VpnServiceWithStatus = VpnService & { status: Status };
+import { VpnServiceWithStatus } from './service-helpers';
 
 type Props = {
   size: 'sm' | 'md';
