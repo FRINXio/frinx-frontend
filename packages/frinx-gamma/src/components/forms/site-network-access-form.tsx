@@ -94,7 +94,7 @@ const SiteNetAccessForm: FC<Props> = ({
   onCancel,
 }) => {
   const [siteState, setSiteState] = useState(site);
-  const { values, errors, dirty, setFieldValue, handleSubmit } = useFormik({
+  const { values, errors, dirty, resetForm, setFieldValue, handleSubmit } = useFormik({
     initialValues: {
       ...selectedNetworkAccess,
     },
@@ -465,6 +465,7 @@ const SiteNetAccessForm: FC<Props> = ({
         <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
           Save changes
         </Button>
+        <Button onClick={() => resetForm()}>Clear</Button>
         <Button onClick={onCancel}>Cancel</Button>
       </Stack>
     </form>
