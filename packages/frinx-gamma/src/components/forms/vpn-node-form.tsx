@@ -41,7 +41,7 @@ const getNodeItems = (carriers: VpnNode[]): Item[] => {
 };
 
 const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
-  const { values, errors, dirty, setFieldValue, setValues, handleSubmit } = useFormik({
+  const { values, errors, dirty, resetForm, setFieldValue, setValues, handleSubmit } = useFormik({
     initialValues: {
       ...node,
     },
@@ -132,6 +132,7 @@ const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
         <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
           Save changes
         </Button>
+        <Button onClick={() => resetForm()}>Clear</Button>
         <Button onClick={onCancel}>Cancel</Button>
       </Stack>
     </form>

@@ -34,7 +34,7 @@ type Props = {
 };
 
 const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
-  const { values, errors, dirty, setFieldValue, handleSubmit } = useFormik({
+  const { values, errors, dirty, resetForm, setFieldValue, handleSubmit } = useFormik({
     initialValues: {
       ...site,
     },
@@ -121,6 +121,7 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
         <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
           Save changes
         </Button>
+        <Button onClick={() => resetForm()}>Clear</Button>
         <Button onClick={onCancel}>Cancel</Button>
       </Stack>
     </form>

@@ -40,7 +40,7 @@ const getCarrierItems = (carriers: VpnCarrier[]): Item[] => {
 };
 
 const CarrierForm: FC<Props> = ({ carrier, carriers, onDelete, onSubmit, onCancel }) => {
-  const { values, errors, dirty, setFieldValue, setValues, handleSubmit } = useFormik({
+  const { values, errors, dirty, resetForm, setFieldValue, setValues, handleSubmit } = useFormik({
     initialValues: {
       ...carrier,
     },
@@ -118,6 +118,7 @@ const CarrierForm: FC<Props> = ({ carrier, carriers, onDelete, onSubmit, onCance
         <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
           Save changes
         </Button>
+        <Button onClick={() => resetForm()}>Clear</Button>
         <Button onClick={onCancel}>Cancel</Button>
       </Stack>
     </form>
