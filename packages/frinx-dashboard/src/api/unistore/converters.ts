@@ -536,7 +536,9 @@ export function apiVpnCarriersToClientCarriers(apiCarriers: VpnCarriersOutput): 
 function apiBearerStatusToClientBearerStatus(apiBearerStatus: BearerStatusOutput): BearerStatus {
   const adminStatus = apiBearerStatus['admin-status']
     ? {
-        status: apiBearerStatus['admin-status'].status || null,
+        status: apiBearerStatus['admin-status'].status
+          ? (apiBearerStatus['admin-status'].status.split(':').pop() as string)
+          : null,
         lastUpdated: null,
       }
     : null;
