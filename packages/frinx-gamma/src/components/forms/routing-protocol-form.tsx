@@ -103,6 +103,29 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
         />
       </FormControl>
 
+      <FormControl id="static-routing-lan-tag" my={6}>
+        <FormLabel>Static Routing Lan Tag</FormLabel>
+        <Input
+          name="static-routing-lan-tag"
+          value={staticProtocol.static && staticProtocol.static[0].lanTag ? staticProtocol.static[0].lanTag : ''}
+          onChange={(event) => {
+            const { value } = event.target;
+            const [oldStaticRoutingProtocol] = unwrap(staticProtocol.static);
+            const newStaticProtocol: RoutingProtocol = {
+              type: 'static',
+              static: [
+                {
+                  ...oldStaticRoutingProtocol,
+                  lanTag: value || null,
+                },
+              ],
+            };
+            const newProtocols = [bgpProtocol, newStaticProtocol];
+            onRoutingProtocolsChange(newProtocols);
+          }}
+        />
+      </FormControl>
+
       <FormControl id="bgp-autonomous-system" my={6}>
         <FormLabel>Bgp Autonomous System</FormLabel>
         <Input

@@ -22,7 +22,6 @@ import {
   EvcAttachmentOutput,
   EvcAttachmentInput,
   IPConnection,
-  LanTag,
   LocationsOutput,
   MaximumRoutes,
   ProviderIdentifiers,
@@ -132,7 +131,7 @@ export function apiRoutingProtocolToClientRoutingProtocol(routingProtocol: Routi
       ? staticProtocol['cascaded-lan-prefixes']['ipv4-lan-prefixes'].map((p) => {
           return {
             lan: p.lan,
-            lanTag: p['lan-tag'] as LanTag,
+            lanTag: p['lan-tag'] || null,
             nextHop: p['next-hop'],
           };
         })
@@ -320,7 +319,7 @@ function clientRoutingProtocolsToApiRoutingProtocols(routingProtocols: RoutingPr
           'ipv4-lan-prefixes': p.static.map((s) => {
             return {
               lan: s.lan,
-              'lan-tag': s.lanTag,
+              'lan-tag': s.lanTag || undefined,
               'next-hop': s.nextHop,
             };
           }),
