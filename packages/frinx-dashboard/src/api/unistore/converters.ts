@@ -397,7 +397,7 @@ function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAcces
           'address-family': [
             {
               af: 'ipv4',
-              'maximum-routes': access.maximumRoutes,
+              'maximum-routes': access.maximumRoutes || undefined,
             },
           ],
         },
@@ -482,7 +482,7 @@ export function clientVpnSiteToApiVpnSite(vpnSite: VpnSite): CreateVpnSiteInput 
           'address-family': [
             {
               af: 'ipv4',
-              'maximum-routes': vpnSite.maximumRoutes,
+              'maximum-routes': vpnSite.maximumRoutes || undefined,
             },
           ],
         },

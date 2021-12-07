@@ -100,7 +100,7 @@ export type SiteNetworkAccess = {
   siteNetworkAccessType: SiteNetworkAccessType;
   ipConnection?: IPConnection;
   accessPriority: AccessPriority;
-  maximumRoutes: MaximumRoutes;
+  maximumRoutes: MaximumRoutes | null;
   routingProtocols: RoutingProtocol[];
   locationReference: string | null;
   deviceReference: string | null;
@@ -119,5 +119,5 @@ export type VpnSite = {
   siteServiceQosProfile: string | null;
   enableBgpPicFastReroute: boolean;
   siteNetworkAccesses: SiteNetworkAccess[];
-  maximumRoutes: MaximumRoutes;
+  maximumRoutes: MaximumRoutes | null;
 };
