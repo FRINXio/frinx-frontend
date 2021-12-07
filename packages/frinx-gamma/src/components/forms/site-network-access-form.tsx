@@ -55,6 +55,7 @@ function getDefaultStaticRoutingProtocol(): RoutingProtocol {
       {
         lan: '',
         nextHop: '',
+        lanTag: null,
       },
     ],
   };
