@@ -35,7 +35,7 @@ const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
       },
       static: [
         {
-          lanTag: 'lan',
+          lanTag: '',
           lan: '10.0.0.1/0',
           nextHop: '10.0.0.3',
         },

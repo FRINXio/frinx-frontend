@@ -56,8 +56,8 @@ const ControlPage: VoidFunctionComponent<Props> = ({
         version: 1,
         input: {
           // eslint-disable-next-line @typescript-eslint/naming-convention
-          unistore_node_name: 'network',
-          action: 'commit',
+          unistore_node_name: 'service',
+          action: 'dryrun',
           US_UI_TX: unwrap(getTransactionId()),
         },
       })
