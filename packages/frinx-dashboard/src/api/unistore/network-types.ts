@@ -88,7 +88,7 @@ const MaximumRoutesValidator = t.type({
   'address-family': t.array(
     t.type({
       af: t.literal('ipv4'),
-      'maximum-routes': t.number,
+      'maximum-routes': optional(t.number),
     }),
   ),
 });
@@ -394,7 +394,7 @@ export type CreateNetworkAccessInput = {
     'maximum-routes': {
       'address-family': {
         af: 'ipv4';
-        'maximum-routes': MaximumRoutes;
+        'maximum-routes'?: MaximumRoutes;
       }[];
     };
     'routing-protocols': CreateRoutingProtocolsInput;
@@ -458,7 +458,7 @@ export type CreateVpnSiteInput = {
       'maximum-routes': {
         'address-family': {
           af: 'ipv4';
-          'maximum-routes': number;
+          'maximum-routes'?: number;
         }[];
       };
       'site-vpn-flavor': string;
@@ -812,7 +812,7 @@ export type SiteNetworkAccess = {
   siteNetworkAccessType: SiteNetworkAccessType;
   ipConnection?: IPConnection;
   accessPriority: AccessPriority;
-  maximumRoutes: MaximumRoutes;
+  maximumRoutes: MaximumRoutes | null;
   routingProtocols: RoutingProtocol[];
   locationReference: string | null;
   deviceReference: string | null;
@@ -831,7 +831,7 @@ export type VpnSite = {
   siteServiceQosProfile: string | null;
   enableBgpPicFastReroute: boolean;
   siteNetworkAccesses: SiteNetworkAccess[];
-  maximumRoutes: MaximumRoutes;
+  maximumRoutes: MaximumRoutes | null;
 };
 
 export type Status = {

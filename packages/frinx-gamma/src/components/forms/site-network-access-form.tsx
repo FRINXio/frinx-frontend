@@ -25,7 +25,7 @@ const NetworkAccessSchema = yup.object({
   // siteNetworkAccessType: yup.mixed().oneOf(['point-to-point', 'multipoint']),
   // ipConnection?: IPConnection;
   accessPriority: yup.mixed().oneOf(['150', '100', '90', '80', '70', '60']),
-  maximumRoutes: yup.mixed().oneOf([1000, 2000, 5000, 10000]),
+  maximumRoutes: yup.mixed().oneOf([null, 1000, 2000, 5000, 10000]),
   // routingProtocols: RoutingProtocolSchema,
   locationReference: yup.string().nullable(),
   deviceReference: yup.string().nullable(),
@@ -340,11 +340,12 @@ const SiteNetAccessForm: FC<Props> = ({
         <FormLabel>Maximum Routes</FormLabel>{' '}
         <Select
           name="maximumRoutes"
-          value={values.maximumRoutes}
+          value={values.maximumRoutes || ''}
           onChange={(event) => {
-            setFieldValue('maximumRoutes', Number(event.target.value) as MaximumRoutes);
+            setFieldValue('maximumRoutes', (Number(event.target.value) as MaximumRoutes) || null);
           }}
         >
+          <option value="">-- choose maximum routes</option>
           {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site.maximum_routes).map((item) => {
             return (
               <option key={`maximum-routes-${item.key}`} value={item.key}>
