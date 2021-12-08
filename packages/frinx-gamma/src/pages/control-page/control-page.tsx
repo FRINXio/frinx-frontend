@@ -78,7 +78,7 @@ const ControlPage: VoidFunctionComponent<Props> = ({
         input: {
           // eslint-disable-next-line @typescript-eslint/naming-convention
           unistore_node_name: 'bearer',
-          action: 'commit',
+          action: 'dryrun',
           US_UI_TX: unwrap(getTransactionId()),
         },
       })
