@@ -75,7 +75,13 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+    await uniflowCallbacks.executeWorkflow({
+      name: 'Free_VpnServiceId',
+      version: 1,
+      input: {},
+    });
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
     onCancel();
