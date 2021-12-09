@@ -12,8 +12,10 @@ import ErrorMessage from '../../components/error-message/error-message';
 import { AccessPriority, SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
 import { generateNetworkAccessId } from '../../helpers/id-helpers';
 import callbackUtils from '../../unistore-callback-utils';
+import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import { VpnService } from '../../components/forms/service-types';
 import { getSelectOptions } from '../../components/forms/options.helper';
+import PollWorkflowId from '../../components/poll-workflow-id/poll-worfklow-id';
 
 const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
   siteNetworkAccessId: generateNetworkAccessId(),
@@ -64,6 +66,13 @@ const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
   },
 });
 
+type CustomerAddressWorkflowData = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  response_body: {
+    address: string;
+  };
+};
+
 // TODO: to be defined
 const getBandwidths = async () =>
   getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site_network_access.bandwidths).map((item) => Number(item.key));
@@ -79,6 +88,8 @@ function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
 }
 
 const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+  const [workflowId, setWorkflowId] = useState<string | null>(null);
+  const [customerAddress, setCustomerAddress] = useState<string | null>(null);
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const [bfdProfiles, setBfdProfiles] = useState<string[]>([]);
@@ -91,8 +102,15 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
 
   useEffect(() => {
     const fetchData = async () => {
-      const callbacks = callbackUtils.getCallbacks;
       // TODO: we can fetch all in promise all?
+      const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+      const workflowResult = await uniflowCallbacks.executeWorkflow({
+        name: 'Allocate_CustomerAddress',
+        version: 1,
+        input: {},
+      });
+      setWorkflowId(workflowResult.text);
+      const callbacks = callbackUtils.getCallbacks;
       const sites = await callbacks.getVpnSites(null, null);
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
 
@@ -138,6 +156,36 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     onCancel(unwrap(selectedSite?.siteId));
   };
 
+  const handleWorkflowFinish = (data: string | null) => {
+    if (data === null) {
+      return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { response_body }: CustomerAddressWorkflowData = JSON.parse(data);
+    setCustomerAddress(response_body.address);
+  };
+
+  if (!workflowId) {
+    return null;
+  }
+
+  if (!customerAddress) {
+    return <PollWorkflowId workflowId={workflowId} onFinish={handleWorkflowFinish} />;
+  }
+
+  const networkAccess: SiteNetworkAccess = getDefaultNetworkAccess();
+  networkAccess.ipConnection = {
+    ...networkAccess.ipConnection,
+    ipv4: {
+      ...networkAccess.ipConnection?.ipv4,
+      addresses: {
+        ...networkAccess.ipConnection?.ipv4?.addresses,
+        customerAddress,
+      },
+    },
+  };
+
   return (
     <Container>
       <Box padding={6} margin={6} background="white">
@@ -157,7 +205,7 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
                   bandwidths={bandwiths}
                   sites={vpnSites}
                   site={selectedSite}
-                  selectedNetworkAccess={getDefaultNetworkAccess()}
+                  selectedNetworkAccess={networkAccess}
                   onSubmit={handleSubmit}
                   onCancel={handleCancel}
                 />
