@@ -4,15 +4,7 @@ import { useAsyncGenerator } from '../commit-status-modal/commit-status-modal.he
 
 type Props = {
   workflowId: string;
-  onFinish: (result: string) => void;
-};
-
-type WorkflowResponse = {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  response_body: {
-    counter: number;
-    text: string;
-  };
+  onFinish: (result: string | null) => void;
 };
 
 const WorkflowId: VoidFunctionComponent<Props> = ({ workflowId, onFinish }) => {
@@ -23,11 +15,15 @@ const WorkflowId: VoidFunctionComponent<Props> = ({ workflowId, onFinish }) => {
       return;
     }
 
+    if (execPayload.status === 'FAILED') {
+      onFinish(null);
+      return;
+    }
+
     if (execPayload.status === 'COMPLETED') {
       const { output } = execPayload;
-      const body = output as unknown as WorkflowResponse;
-      const { text } = body.response_body;
-      onFinish(text);
+      const data = output;
+      onFinish(JSON.stringify(data));
     }
   }, [execPayload, onFinish]);
 
