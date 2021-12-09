@@ -102,7 +102,10 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     onCancel(unwrap(selectedBearer?.spBearerReference));
   };
 
-  const handleWorkflowFinish = (data: string) => {
+  const handleWorkflowFinish = (data: string | null) => {
+    if (data === null) {
+      return;
+    }
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { response_body }: SvlanWorkflowData = JSON.parse(data);
     setSvlanId(Number(response_body.vlan));

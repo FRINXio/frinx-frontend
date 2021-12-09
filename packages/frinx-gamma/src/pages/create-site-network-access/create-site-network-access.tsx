@@ -156,7 +156,11 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     onCancel(unwrap(selectedSite?.siteId));
   };
 
-  const handleWorkflowFinish = (data: string) => {
+  const handleWorkflowFinish = (data: string | null) => {
+    if (data === null) {
+      return;
+    }
+
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { response_body }: CustomerAddressWorkflowData = JSON.parse(data);
     setCustomerAddress(response_body.address);

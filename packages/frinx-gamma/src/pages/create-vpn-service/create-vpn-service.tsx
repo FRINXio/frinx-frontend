@@ -81,7 +81,10 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     onCancel();
   };
 
-  const handleWorkflowFinish = (data: string) => {
+  const handleWorkflowFinish = (data: string | null) => {
+    if (data === null) {
+      return;
+    }
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { response_body }: VpnServiceWorkflowData = JSON.parse(data);
     setVpnId(response_body.text);
