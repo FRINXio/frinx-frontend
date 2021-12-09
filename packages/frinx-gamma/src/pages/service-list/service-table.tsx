@@ -1,16 +1,20 @@
-import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
+import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
-import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
+import { DefaultCVlanEnum } from '../../components/forms/service-types';
+import StatusTag from '../../components/status-tag/status-tag';
 import unwrap from '../../helpers/unwrap';
+import { VpnServiceWithStatus } from './service-helpers';
 
 type Props = {
-  services: VpnService[];
-  onEditServiceButtonClick: (serviceId: string) => void;
-  onDeleteServiceButtonClick: (serviceId: string) => void;
+  size: 'sm' | 'md';
+  services: VpnServiceWithStatus[];
+  onEditServiceButtonClick?: (serviceId: string) => void;
+  onDeleteServiceButtonClick?: (serviceId: string) => void;
 };
 
 const ServiceTable: VoidFunctionComponent<Props> = ({
+  size,
   services,
   onEditServiceButtonClick,
   onDeleteServiceButtonClick,
@@ -19,8 +23,9 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
   const swappedDefaultCVlanEnumMap = new Map([
     ...Object.entries(DefaultCVlanEnum).map<[DefaultCVlanEnum, string]>(([key, value]) => [value, key]),
   ]);
+
   return (
-    <Table background="white" size="lg">
+    <Table background="white" size={size}>
       <Thead>
         <Tr>
           <Th>Id</Th>
@@ -34,9 +39,12 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
           return (
             <Tr key={service.vpnId}>
               <Td>
-                <Text as="span" fontWeight={600}>
-                  {service.vpnId}
-                </Text>
+                <Flex alignItems="center">
+                  <Text as="span" fontWeight={600} paddingRight="4">
+                    {service.vpnId}
+                  </Text>
+                  <StatusTag status={service.status} />
+                </Flex>
               </Td>
               <Td>
                 <Text as="span">{service.customerName}</Text>
@@ -45,27 +53,33 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
                 service.defaultCVlan === 'custom' ? service.customCVlan : service.defaultCVlan
               })`}</Td>
               <Td>
-                <HStack>
-                  <Tooltip label="Edit Service">
-                    <IconButton
-                      aria-label="edit"
-                      size="sm"
-                      icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                      onClick={() => onEditServiceButtonClick(unwrap(service.vpnId))}
-                    />
-                  </Tooltip>
-                  <Tooltip label="Delete Service">
-                    <IconButton
-                      aria-label="Delete service"
-                      size="sm"
-                      colorScheme="red"
-                      icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
-                      onClick={() => {
-                        onDeleteServiceButtonClick(unwrap(service.vpnId));
-                      }}
-                    />
-                  </Tooltip>
-                </HStack>
+                {service.status !== 'DELETED' && (
+                  <HStack>
+                    {onEditServiceButtonClick ? (
+                      <Tooltip label="Edit Service">
+                        <IconButton
+                          aria-label="edit"
+                          size="sm"
+                          icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
+                          onClick={() => onEditServiceButtonClick(unwrap(service.vpnId))}
+                        />
+                      </Tooltip>
+                    ) : null}
+                    {onDeleteServiceButtonClick ? (
+                      <Tooltip label="Delete Service">
+                        <IconButton
+                          aria-label="Delete service"
+                          size="sm"
+                          colorScheme="red"
+                          icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
+                          onClick={() => {
+                            onDeleteServiceButtonClick(unwrap(service.vpnId));
+                          }}
+                        />
+                      </Tooltip>
+                    ) : null}
+                  </HStack>
+                )}
               </Td>
             </Tr>
           );

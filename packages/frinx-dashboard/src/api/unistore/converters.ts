@@ -397,7 +397,7 @@ function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAcces
           'address-family': [
             {
               af: 'ipv4',
-              'maximum-routes': access.maximumRoutes,
+              'maximum-routes': access.maximumRoutes || undefined,
             },
           ],
         },
@@ -482,7 +482,7 @@ export function clientVpnSiteToApiVpnSite(vpnSite: VpnSite): CreateVpnSiteInput 
           'address-family': [
             {
               af: 'ipv4',
-              'maximum-routes': vpnSite.maximumRoutes,
+              'maximum-routes': vpnSite.maximumRoutes || undefined,
             },
           ],
         },
@@ -535,7 +535,9 @@ export function apiVpnCarriersToClientCarriers(apiCarriers: VpnCarriersOutput): 
 function apiBearerStatusToClientBearerStatus(apiBearerStatus: BearerStatusOutput): BearerStatus {
   const adminStatus = apiBearerStatus['admin-status']
     ? {
-        status: apiBearerStatus['admin-status'].status || null,
+        status: apiBearerStatus['admin-status'].status
+          ? (apiBearerStatus['admin-status'].status.split(':').pop() as string)
+          : null,
         lastUpdated: null,
       }
     : null;
