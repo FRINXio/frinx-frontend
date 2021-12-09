@@ -30,6 +30,7 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
         <Tr>
           <Th>Id</Th>
           <Th>Customer Name</Th>
+          <Th>Vpn Service Topology</Th>
           <Th>Default CVlan</Th>
           <Th>Actions</Th>
         </Tr>
@@ -49,6 +50,7 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
               <Td>
                 <Text as="span">{service.customerName}</Text>
               </Td>
+              <Td>{service.vpnServiceTopology}</Td>
               <Td>{`${swappedDefaultCVlanEnumMap.get(service.defaultCVlan)} (${
                 service.defaultCVlan === 'custom' ? service.customCVlan : service.defaultCVlan
               })`}</Td>

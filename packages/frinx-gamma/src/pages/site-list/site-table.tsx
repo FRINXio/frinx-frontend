@@ -3,24 +3,29 @@ import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import StatusTag from '../../components/status-tag/status-tag';
 import unwrap from '../../helpers/unwrap';
+import SiteDetail from './site-detail';
 import { VpnSiteWithStatus } from './site-helpers';
 
 type Props = {
   size: 'sm' | 'md';
   sites: VpnSiteWithStatus[];
+  detailId: string | null;
   onEditSiteButtonClick: (siteId: string) => void;
   onDetailSiteButtonClick: (siteId: string) => void;
   onLocationsSiteButtonClick: (siteId: string) => void;
   onDeleteSiteButtonClick: (siteId: string) => void;
+  onRowClick: (rowId: string, isOpen: boolean) => void;
 };
 
 const SiteTable: VoidFunctionComponent<Props> = ({
   size,
   sites,
+  detailId,
   onEditSiteButtonClick,
   onDetailSiteButtonClick,
   onLocationsSiteButtonClick,
   onDeleteSiteButtonClick,
+  onRowClick,
 }) => {
   return (
     <Table background="white" size={size}>
@@ -28,14 +33,18 @@ const SiteTable: VoidFunctionComponent<Props> = ({
         <Tr>
           <Th>Id</Th>
           <Th>Management Type</Th>
+          <Th>Site Vpn Flavour</Th>
           <Th>Maximum Routes</Th>
+          <Th>Enable BGP PIC Reroute</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
-      <Tbody>
-        {sites.map((site) => {
-          return (
-            <Tr key={site.siteId}>
+      {sites.map((site) => {
+        const rowId = unwrap(site.siteId);
+        const isDetailOpen = rowId === detailId;
+        return (
+          <Tbody key={rowId}>
+            <Tr key={site.siteId} onClick={() => onRowClick(rowId, !isDetailOpen)}>
               <Td>
                 <Flex alignItems="center">
                   <Text as="span" fontWeight={600} paddingRight="4">
@@ -48,7 +57,13 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                 <Text as="span">{site.siteManagementType}</Text>
               </Td>
               <Td>
-                <Text as="span">{site.maximumRoutes}</Text>
+                <Text as="span">{site.siteVpnFlavor}</Text>
+              </Td>
+              <Td>
+                <Text as="span">{site.siteServiceQosProfile}</Text>
+              </Td>
+              <Td>
+                <Text as="span">{site.enableBgpPicFastReroute}</Text>
               </Td>
               <Td>
                 {site.status !== 'DELETED' && (
@@ -92,9 +107,16 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                 )}
               </Td>
             </Tr>
-          );
-        })}
-      </Tbody>
+            {isDetailOpen && (
+              <Tr>
+                <Td colSpan={6}>
+                  <SiteDetail site={site} />
+                </Td>
+              </Tr>
+            )}
+          </Tbody>
+        );
+      })}
     </Table>
   );
 };

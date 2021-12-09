@@ -34,6 +34,7 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
   const [vpnBearers, setVpnBearers] = useState<VpnBearer[] | null>(null);
   const [bearerIdToDelete, setBearerIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [pagination, setPagination] = usePagination();
   const [filters, setFilters] = useState<VpnBearerFilters>({
     id: null,
@@ -99,7 +100,10 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
     });
     setSubmittedFilters(filters);
   }
-  // console.log(createdBearers, updatedBearers, deletedBearers);
+
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
+  }
 
   const changedBearersWithStatus = getChangedBearersWithStatus(createdBearers, updatedBearers, deletedBearers);
   const savedBearersWithStatus = getSavedBearersWithStatus(vpnBearers, updatedBearers, deletedBearers);
@@ -153,21 +157,25 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
                   <Heading size="sm">Changes</Heading>
                   <Box my="2">
                     <VpnBearerTable
+                      size="sm"
+                      detailId={null}
                       bearers={changedBearersWithStatus}
                       onEditVpnBearerClick={onEditVpnBearerClick}
                       onDeleteVpnBearerClick={handleDeleteButtonClick}
                       onEvcAttachmentSiteClick={onEvcAttachmentSiteClick}
-                      size="sm"
+                      onRowClick={handleRowClick}
                     />
                   </Box>
                 </>
               ) : null}
               <VpnBearerTable
+                size="md"
+                detailId={detailId}
                 bearers={savedBearersWithStatus}
                 onEditVpnBearerClick={onEditVpnBearerClick}
                 onDeleteVpnBearerClick={handleDeleteButtonClick}
                 onEvcAttachmentSiteClick={onEvcAttachmentSiteClick}
-                size="md"
+                onRowClick={handleRowClick}
               />
               <Box m="4">
                 <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />
