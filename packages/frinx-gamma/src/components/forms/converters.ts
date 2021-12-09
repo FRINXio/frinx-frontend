@@ -199,7 +199,7 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
       siteNetworkAccessType: access['site-network-access-type'] as SiteNetworkAccessType,
       ipConnection: access['ip-connection'] ? apiIPConnectionToClientIPConnection(access['ip-connection']) : undefined,
       accessPriority: String(access.availability['access-priority']) as AccessPriority,
-      maximumRoutes: access['maximum-routes']['address-family'][0]['maximum-routes'] as MaximumRoutes,
+      maximumRoutes: (access['maximum-routes']['address-family'][0]['maximum-routes'] as MaximumRoutes) || undefined,
       locationReference: access['location-reference'] || null,
       deviceReference: access['device-reference'] || null,
       routingProtocols,
@@ -412,7 +412,7 @@ function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAcces
           'address-family': [
             {
               af: 'ipv4',
-              'maximum-routes': access.maximumRoutes,
+              'maximum-routes': access.maximumRoutes || undefined,
             },
           ],
         },
@@ -497,7 +497,7 @@ export function clientVpnSiteToApiVpnSite(vpnSite: VpnSite): CreateVpnSiteInput 
           'address-family': [
             {
               af: 'ipv4',
-              'maximum-routes': vpnSite.maximumRoutes,
+              'maximum-routes': vpnSite.maximumRoutes || undefined,
             },
           ],
         },
