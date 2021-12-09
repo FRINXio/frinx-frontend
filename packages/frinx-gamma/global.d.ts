@@ -1,4 +1,17 @@
 declare module 'feather-icons-react';
+declare module 'diff-arrays-of-objects' {
+  function diff<T>(
+    first: T[],
+    second: T[],
+    idField?: string,
+  ): {
+    same: T[];
+    added: T[];
+    updated: T[];
+    removed: T[];
+  };
+  export default diff;
+}
 
 type Options = Record<string, string>;
 
