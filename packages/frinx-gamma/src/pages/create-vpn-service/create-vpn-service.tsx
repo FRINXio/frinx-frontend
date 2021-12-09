@@ -7,8 +7,8 @@ import { getSelectOptions } from '../../components/forms/options.helper';
 import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
 import ErrorMessage from '../../components/error-message/error-message';
-import { generateVpnId } from '../../helpers/id-helpers';
 import PollWorkflowId from '../../components/poll-workflow-id/poll-worfklow-id';
+import unwrap from '../../helpers/unwrap';
 
 const defaultVpnService: VpnService = {
   customerName: '',
@@ -18,6 +18,14 @@ const defaultVpnService: VpnService = {
 };
 
 const extranetVpns = getSelectOptions(window.__GAMMA_FORM_OPTIONS__.service.extranet_vpns).map((item) => item.label);
+
+type VpnServiceWorkflowData = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  response_body: {
+    text: string;
+    counter: number;
+  };
+};
 
 type Props = {
   onSuccess: () => void;
@@ -52,13 +60,13 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     setSubmitError(null);
     const service = {
       ...data,
-      vpnId: generateVpnId(),
+      vpnId: unwrap(vpnId),
     };
     // eslint-disable-next-line no-console
     console.log('submit clicked', service);
     const callbacks = callbackUtils.getCallbacks;
     try {
-      const output = await callbacks.createVpnService(service);
+      const output = await callbacks.editVpnServices(service);
       // eslint-disable-next-line no-console
       console.log(output);
       onSuccess();
@@ -73,12 +81,18 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     onCancel();
   };
 
+  const handleWorkflowFinish = (data: string) => {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { response_body }: VpnServiceWorkflowData = JSON.parse(data);
+    setVpnId(response_body.text);
+  };
+
   if (!workflowId) {
     return null;
   }
 
   if (!vpnId) {
-    return <PollWorkflowId workflowId={workflowId} onFinish={setVpnId} />;
+    return <PollWorkflowId workflowId={workflowId} onFinish={handleWorkflowFinish} />;
   }
 
   const vpnService = { ...defaultVpnService, vpnId };

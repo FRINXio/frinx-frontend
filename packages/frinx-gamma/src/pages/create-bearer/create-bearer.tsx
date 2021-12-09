@@ -71,7 +71,7 @@ const CreateBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
     // eslint-disable-next-line no-param-reassign
     const callbacks = callbackUtils.getCallbacks;
     try {
-      await callbacks.createVpnBearer(bearer);
+      await callbacks.editVpnBearer(bearer);
       // eslint-disable-next-line no-console
       console.log('bearer created');
       onSuccess();

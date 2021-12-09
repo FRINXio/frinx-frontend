@@ -64,6 +64,11 @@ function getContentParameter(contentType?: ContentType): string {
   return contentType ? `content=${contentType}` : 'content=config';
 }
 
+// used in PUT and POST service parameter
+const SERVICE_SCHEMA_PARAMETER = 'uniconfig-schema-repository=service';
+// used in PUT and POST bearer parameter
+const BEARER_SCHEMA_PARAMETER = 'uniconfig-schema-repository=bearer';
+
 export async function getVpnServices(
   pagination: Pagination | null,
   serviceFilter: ServiceFilter | null,
@@ -90,7 +95,7 @@ export async function getVpnServices(
 export async function editVpnServices(vpnService: VpnService): Promise<unknown> {
   const body = clientVpnServiceToApiVpnService(vpnService);
   const json = await sendPutRequest(
-    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${vpnService.vpnId}`,
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${vpnService.vpnId}?${SERVICE_SCHEMA_PARAMETER}`,
     body,
   );
   return json;
@@ -105,7 +110,10 @@ export async function deleteVpnService(vpnServiceId: string): Promise<unknown> {
 
 export async function createVpnService(vpnService: VpnService): Promise<void> {
   const body = clientVpnServiceToApiVpnService(vpnService);
-  await sendPostRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services`, body);
+  await sendPostRequest(
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services?${SERVICE_SCHEMA_PARAMETER}`,
+    body,
+  );
 }
 
 export async function getVpnSites(
@@ -133,12 +141,15 @@ export async function getVpnSites(
 
 export async function createVpnSite(vpnSite: VpnSite): Promise<void> {
   const body = clientVpnSiteToApiVpnSite(vpnSite);
-  await sendPostRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites`, body);
+  await sendPostRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites?${SERVICE_SCHEMA_PARAMETER}`, body);
 }
 
 export async function editVpnSite(vpnSite: VpnSite): Promise<void> {
   const body = clientVpnSiteToApiVpnSite(vpnSite);
-  await sendPutRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${vpnSite.siteId}`, body);
+  await sendPutRequest(
+    `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${vpnSite.siteId}?${SERVICE_SCHEMA_PARAMETER}`,
+    body,
+  );
 }
 
 export async function deleteVpnSite(vpnSiteId: string): Promise<void> {
@@ -180,7 +191,7 @@ export async function getVpnBearers(
 export async function createVpnBearer(bearer: VpnBearer): Promise<void> {
   const body = clientBearerToApiBearer(bearer);
   await sendPostRequest(
-    '/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers',
+    `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers?${BEARER_SCHEMA_PARAMETER}`,
     body,
   );
 }
@@ -188,7 +199,7 @@ export async function createVpnBearer(bearer: VpnBearer): Promise<void> {
 export async function editVpnBearer(vpnBearer: VpnBearer): Promise<void> {
   const body = clientBearerToApiBearer(vpnBearer);
   await sendPutRequest(
-    `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${vpnBearer.spBearerReference}`,
+    `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${vpnBearer.spBearerReference}?${BEARER_SCHEMA_PARAMETER}`,
     body,
   );
 }
