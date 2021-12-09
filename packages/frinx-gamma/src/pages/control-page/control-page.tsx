@@ -2,7 +2,7 @@ import { Box, Container, Flex, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import unistoreCallbackUtils from '../../unistore-callback-utils';
-import { getTransactionId } from '../../helpers/transaction-id';
+import { getTransactionId, setTransactionId } from '../../helpers/transaction-id';
 import ControlPageTable from './control-page-table';
 import unwrap from '../../helpers/unwrap';
 
@@ -78,7 +78,7 @@ const ControlPage: VoidFunctionComponent<Props> = ({
         input: {
           // eslint-disable-next-line @typescript-eslint/naming-convention
           unistore_node_name: 'bearer',
-          action: 'commit',
+          action: 'dryrun',
           US_UI_TX: unwrap(getTransactionId()),
         },
       })
@@ -90,8 +90,18 @@ const ControlPage: VoidFunctionComponent<Props> = ({
       });
   }
 
-  const handleWorkflowFinish = () => {
+  const handleWorkflowFinish = (isCompleted: boolean) => {
     setWorkflowState(null);
+
+    if (!isCompleted) {
+      return;
+    }
+
+    // set new transaction id after successful commit
+    const unistoreCallbacks = unistoreCallbackUtils.getCallbacks;
+    unistoreCallbacks.getTransactionCookie().then((data) => {
+      setTransactionId(data);
+    });
   };
 
   return (

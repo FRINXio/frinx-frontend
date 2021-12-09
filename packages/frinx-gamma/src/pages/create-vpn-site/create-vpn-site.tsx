@@ -18,7 +18,7 @@ const defaultVpnSite: VpnSite = {
   siteServiceQosProfile: '',
   enableBgpPicFastReroute: false,
   siteNetworkAccesses: [],
-  maximumRoutes: 1000,
+  maximumRoutes: null,
 };
 
 type Props = {
@@ -57,7 +57,7 @@ const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
     };
     const callbacks = callbackUtils.getCallbacks;
     try {
-      await callbacks.createVpnSite(siteWithId);
+      await callbacks.editVpnSite(siteWithId);
       // eslint-disable-next-line no-console
       console.log('site created');
       onSuccess();

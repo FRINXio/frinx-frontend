@@ -7,8 +7,8 @@ import { getSelectOptions } from '../../components/forms/options.helper';
 import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
 import ErrorMessage from '../../components/error-message/error-message';
-import { generateVpnId } from '../../helpers/id-helpers';
 import PollWorkflowId from '../../components/poll-workflow-id/poll-worfklow-id';
+import unwrap from '../../helpers/unwrap';
 
 const defaultVpnService: VpnService = {
   customerName: '',
@@ -60,13 +60,13 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     setSubmitError(null);
     const service = {
       ...data,
-      vpnId: generateVpnId(),
+      vpnId: unwrap(vpnId),
     };
     // eslint-disable-next-line no-console
     console.log('submit clicked', service);
     const callbacks = callbackUtils.getCallbacks;
     try {
-      const output = await callbacks.createVpnService(service);
+      const output = await callbacks.editVpnServices(service);
       // eslint-disable-next-line no-console
       console.log(output);
       onSuccess();
@@ -87,7 +87,10 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     onCancel();
   };
 
-  const handleWorkflowFinish = (data: string) => {
+  const handleWorkflowFinish = (data: string | null) => {
+    if (data === null) {
+      return;
+    }
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { response_body }: VpnServiceWorkflowData = JSON.parse(data);
     setVpnId(response_body.text);

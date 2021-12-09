@@ -20,7 +20,7 @@ const SiteSchema = yup.object().shape({
   siteServiceQosProfile: yup.string().nullable(),
   enableBgpPicFastReroute: yup.boolean().required('Enable BgpPicFast Reroute is required'),
   // siteNetworkAccesses: yup.array(),
-  maximumRoutes: yup.mixed().oneOf([1000, 2000, 5000, 10000, 1000000]),
+  maximumRoutes: yup.mixed().oneOf([null, 1000, 2000, 5000, 10000, 1000000]),
 });
 
 type Props = {
@@ -54,13 +54,14 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
         <FormLabel>Maximum Routes</FormLabel>
         <Select
           name="maximumRoutes"
-          value={values.maximumRoutes}
+          value={values.maximumRoutes || ''}
           onChange={(event) => {
             event.persist();
             const eventValue = event.target.value as unknown as MaximumRoutes;
-            setFieldValue('maximumRoutes', Number(eventValue));
+            setFieldValue('maximumRoutes', Number(eventValue) || null);
           }}
         >
+          <option value="">-- choose maximum routes</option>
           {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site.maximum_routes).map((item) => {
             return (
               <option key={`maximum-routes-${item.key}`} value={item.key}>
