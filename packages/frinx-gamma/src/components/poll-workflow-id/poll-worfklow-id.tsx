@@ -4,7 +4,7 @@ import { useAsyncGenerator } from '../commit-status-modal/commit-status-modal.he
 
 type Props = {
   workflowId: string;
-  onFinish: (result: string) => void;
+  onFinish: (result: string | null) => void;
 };
 
 const WorkflowId: VoidFunctionComponent<Props> = ({ workflowId, onFinish }) => {
@@ -12,6 +12,11 @@ const WorkflowId: VoidFunctionComponent<Props> = ({ workflowId, onFinish }) => {
 
   useEffect(() => {
     if (execPayload == null) {
+      return;
+    }
+
+    if (execPayload.status === 'FAILED') {
+      onFinish(null);
       return;
     }
 
