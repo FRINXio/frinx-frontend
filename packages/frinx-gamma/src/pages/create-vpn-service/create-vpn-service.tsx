@@ -66,7 +66,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     console.log('submit clicked', service);
     const callbacks = callbackUtils.getCallbacks;
     try {
-      const output = await callbacks.createVpnService(service);
+      const output = await callbacks.editVpnServices(service);
       // eslint-disable-next-line no-console
       console.log(output);
       onSuccess();
