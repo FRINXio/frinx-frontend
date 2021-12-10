@@ -4,20 +4,25 @@ import React, { VoidFunctionComponent } from 'react';
 import { DefaultCVlanEnum } from '../../components/forms/service-types';
 import StatusTag from '../../components/status-tag/status-tag';
 import unwrap from '../../helpers/unwrap';
+import ServiceDetail from './service-detail';
 import { VpnServiceWithStatus } from './service-helpers';
 
 type Props = {
   size: 'sm' | 'md';
+  detailId: string | null;
   services: VpnServiceWithStatus[];
   onEditServiceButtonClick?: (serviceId: string) => void;
   onDeleteServiceButtonClick?: (serviceId: string) => void;
+  onRowClick: (rowId: string, isOpen: boolean) => void;
 };
 
 const ServiceTable: VoidFunctionComponent<Props> = ({
+  detailId,
   size,
   services,
   onEditServiceButtonClick,
   onDeleteServiceButtonClick,
+  onRowClick,
 }) => {
   // CvlanEnum map with swapped keys and values
   const swappedDefaultCVlanEnumMap = new Map([
@@ -35,10 +40,12 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
           <Th>Actions</Th>
         </Tr>
       </Thead>
-      <Tbody>
-        {services.map((service) => {
-          return (
-            <Tr key={service.vpnId}>
+      {services.map((service) => {
+        const rowId = unwrap(service.vpnId);
+        const isDetailOpen = rowId === detailId;
+        return (
+          <Tbody key={service.vpnId}>
+            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)}>
               <Td>
                 <Flex alignItems="center">
                   <Text as="span" fontWeight={600} paddingRight="4">
@@ -84,9 +91,16 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
                 )}
               </Td>
             </Tr>
-          );
-        })}
-      </Tbody>
+            {isDetailOpen && (
+              <Tr>
+                <Td colSpan={5}>
+                  <ServiceDetail service={service} />
+                </Td>
+              </Tr>
+            )}
+          </Tbody>
+        );
+      })}
     </Table>
   );
 };
