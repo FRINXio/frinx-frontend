@@ -95,13 +95,16 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   return (capacity.utilizedCapacity / totalCapacity) * 100;
 }
 
-const canShowClaimResourceButton = (resourcePool: PoolDetailQuery['QueryResourcePool']) => {
-  return (
-    resourcePool.PoolType === 'allocating' &&
-    (resourcePool.ResourceType.Name === 'ipv4_prefix' ||
+const canShowClaimResourceModal = (resourcePool: PoolDetailQuery['QueryResourcePool']) => {
+  if (resourcePool.PoolType === 'allocating') {
+    return (
+      resourcePool.ResourceType.Name === 'ipv4_prefix' ||
       resourcePool.ResourceType.Name === 'vlan_range' ||
-      resourcePool.ResourceType.Name === 'vlan')
-  );
+      resourcePool.ResourceType.Name === 'vlan'
+    );
+  }
+
+  return false;
 };
 
 const canClaimResources = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) => {
@@ -206,7 +209,7 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
         <Box>
           <Button
             onClick={() =>
-              canShowClaimResourceButton(resourcePool) ? claimResourceModal.onOpen() : claimPoolResource('claimed', {})
+              canShowClaimResourceModal(resourcePool) ? claimResourceModal.onOpen() : claimPoolResource('', {})
             }
             colorScheme="blue"
             variant="outline"
