@@ -31,6 +31,7 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
   const [locations, setLocations] = useState<CustomerLocation[] | null>(null);
   const [locationIdToDelete, setLocationIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [detailId, setDetailId] = useState<string | null>(null);
   const { siteId } = useParams<{ siteId: string }>();
   const [pagination, setPagination] = usePagination();
 
@@ -77,6 +78,10 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
     });
   }
 
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
+  }
+
   if (!site || !locations) {
     return null;
   }
@@ -119,10 +124,12 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
           <>
             <LocationTable
               siteId={siteId}
+              detailId={detailId}
               locations={locations}
               onDeleteLocationButtonClick={handleDeleteButtonClick}
               onEditLocationButtonClick={onEditLocationClick}
               onDevicesSiteButtonClick={onDevicesVpnSiteClick}
+              onRowClick={handleRowClick}
             />
             <Box m="4">
               <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />

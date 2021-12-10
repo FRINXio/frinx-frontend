@@ -1,5 +1,6 @@
 import { Box, Button, Container, Flex, Heading, HStack, useDisclosure } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
@@ -9,6 +10,7 @@ import SiteFilter, { SiteFilters } from './site-filter';
 import SiteTable from './site-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
+import { getChangedSitesWithStatus, getSavedSitesWithStatus } from './site-helpers';
 
 type Props = {
   onCreateVpnSiteClick: () => void;
@@ -23,9 +25,13 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   onLocationsVpnSiteClick,
   onDetailVpnSiteClick,
 }) => {
+  const [createdSites, setCreatedSites] = useState<VpnSite[] | null>(null);
+  const [updatedSites, setUpdatedSites] = useState<VpnSite[] | null>(null);
+  const [deletedSites, setDeletedSites] = useState<VpnSite[] | null>(null);
   const [sites, setSites] = useState<VpnSite[] | null>(null);
   const [siteIdToDelete, setSiteIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [pagination, setPagination] = usePagination();
   const [filters, setFilters] = useState<SiteFilters>({
     id: null,
@@ -45,14 +51,24 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
         offset: (pagination.page - 1) * pagination.pageSize,
         limit: pagination.pageSize,
       };
-      const apiSites = await callbacks.getVpnSites(paginationParams, submittedFilters);
+      const apiSites = await callbacks.getVpnSites(paginationParams, submittedFilters, 'nonconfig');
       const clientVpnSites = apiVpnSitesToClientVpnSite(apiSites);
       setSites(clientVpnSites);
-      const sitesCount = await callbacks.getVpnSiteCount(submittedFilters);
+      const sitesCount = await callbacks.getVpnSiteCount(submittedFilters, 'nonconfig');
       setPagination({
         ...pagination,
         pageCount: Math.ceil(sitesCount / pagination.pageSize),
       });
+
+      // get data for changes table
+      const allSavedSites = await callbacks.getVpnSites(null, null, 'nonconfig');
+      const clientAllSavedSites = apiVpnSitesToClientVpnSite(allSavedSites);
+      const allUnsavedSites = await callbacks.getVpnSites(null, null);
+      const clientAllUnsavedSites = apiVpnSitesToClientVpnSite(allUnsavedSites);
+      const result = diff(clientAllSavedSites, clientAllUnsavedSites, 'siteId');
+      setCreatedSites(result.added);
+      setUpdatedSites(result.updated);
+      setDeletedSites(result.removed);
     };
 
     fetchData();
@@ -84,6 +100,13 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
     setSubmittedFilters(filters);
   }
 
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
+  }
+
+  const changedSitesWithStatus = getChangedSitesWithStatus(createdSites, updatedSites, deletedSites);
+  const savedSitesWithStatus = getSavedSitesWithStatus(sites, updatedSites, deletedSites);
+
   return (
     <>
       <ConfirmDeleteModal
@@ -114,12 +137,32 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
           {sites ? (
             <>
               <SiteFilter filters={filters} onFilterChange={handleFilterChange} onFilterSubmit={handleFilterSubmit} />
+              {changedSitesWithStatus.length ? (
+                <>
+                  <Heading size="sm">Changes</Heading>
+                  <Box my="2">
+                    <SiteTable
+                      sites={changedSitesWithStatus}
+                      size="sm"
+                      detailId={null}
+                      onEditSiteButtonClick={onEditVpnSiteClick}
+                      onDetailSiteButtonClick={onDetailVpnSiteClick}
+                      onLocationsSiteButtonClick={onLocationsVpnSiteClick}
+                      onDeleteSiteButtonClick={handleDeleteButtonClick}
+                      onRowClick={handleRowClick}
+                    />
+                  </Box>
+                </>
+              ) : null}
               <SiteTable
+                sites={savedSitesWithStatus}
+                size="md"
+                detailId={detailId}
                 onEditSiteButtonClick={onEditVpnSiteClick}
                 onDetailSiteButtonClick={onDetailVpnSiteClick}
                 onLocationsSiteButtonClick={onLocationsVpnSiteClick}
                 onDeleteSiteButtonClick={handleDeleteButtonClick}
-                sites={sites}
+                onRowClick={handleRowClick}
               />
               <Box m="4">
                 <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />

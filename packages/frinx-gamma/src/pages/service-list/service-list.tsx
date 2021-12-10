@@ -1,6 +1,7 @@
 import { Box, Button, Container, Flex, Heading, HStack, Icon, useDisclosure } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
@@ -10,6 +11,7 @@ import ServiceFilter, { ServiceFilters } from './service-filter';
 import ServiceTable from './service-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
+import { getChangedServicesWithStatus, getSavedServicesWithStatus } from './service-helpers';
 
 type Props = {
   onCreateVpnServiceClick: () => void;
@@ -17,9 +19,13 @@ type Props = {
 };
 
 const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnServiceClick, onEditVpnServiceClick }) => {
+  const [createdServices, setCreatedServices] = useState<VpnService[] | null>(null);
+  const [updatedServices, setUpdatedServices] = useState<VpnService[] | null>(null);
+  const [deletedServices, setDeletedServices] = useState<VpnService[] | null>(null);
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const [serviceIdToDelete, setServiceIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [pagination, setPagination] = usePagination();
   const [filters, setFilters] = useState<ServiceFilters>({
     id: null,
@@ -39,14 +45,24 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
         limit: pagination.pageSize,
       };
       const callbacks = callbackUtils.getCallbacks;
-      const services = await callbacks.getVpnServices(paginationParams, submittedFilters);
+      const services = await callbacks.getVpnServices(paginationParams, submittedFilters, 'nonconfig');
       const clientVpnServices = apiVpnServiceToClientVpnService(services);
       setVpnServices(clientVpnServices);
-      const servicesCount = await callbacks.getVpnServiceCount(submittedFilters);
+      const servicesCount = await callbacks.getVpnServiceCount(submittedFilters, 'nonconfig');
       setPagination({
         ...pagination,
         pageCount: Math.ceil(servicesCount / pagination.pageSize),
       });
+
+      // get data for changes table
+      const allSavedServices = await callbacks.getVpnServices(null, null, 'nonconfig');
+      const clientAllSavedServices = apiVpnServiceToClientVpnService(allSavedServices);
+      const allUnsavedServices = await callbacks.getVpnServices(null, null);
+      const clientAllUnsavedServices = apiVpnServiceToClientVpnService(allUnsavedServices);
+      const result = diff(clientAllSavedServices, clientAllUnsavedServices, 'vpnId');
+      setCreatedServices(result.added);
+      setUpdatedServices(result.updated);
+      setDeletedServices(result.removed);
     };
 
     fetchData();
@@ -77,6 +93,13 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
     });
     setSubmittedFilters(filters);
   }
+
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
+  }
+
+  const changedServicesWithStatus = getChangedServicesWithStatus(createdServices, updatedServices, deletedServices);
+  const savedServicesWithStatus = getSavedServicesWithStatus(vpnServices, updatedServices, deletedServices);
 
   return (
     <>
@@ -116,10 +139,28 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
                 onFilterChange={handleFilterChange}
                 onFilterSubmit={handleFilterSubmit}
               />
+              {changedServicesWithStatus.length ? (
+                <>
+                  <Heading size="sm">Changes</Heading>
+                  <Box my="2">
+                    <ServiceTable
+                      size="sm"
+                      detailId={detailId}
+                      services={changedServicesWithStatus}
+                      onEditServiceButtonClick={onEditVpnServiceClick}
+                      onDeleteServiceButtonClick={handleDeleteButtonClick}
+                      onRowClick={handleRowClick}
+                    />
+                  </Box>
+                </>
+              ) : null}
               <ServiceTable
+                size="md"
+                detailId={detailId}
                 onEditServiceButtonClick={onEditVpnServiceClick}
                 onDeleteServiceButtonClick={handleDeleteButtonClick}
-                services={vpnServices}
+                services={savedServicesWithStatus}
+                onRowClick={handleRowClick}
               />
               <Box m="4">
                 <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />

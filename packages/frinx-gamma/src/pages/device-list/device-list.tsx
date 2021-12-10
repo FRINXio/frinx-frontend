@@ -22,6 +22,7 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
   const [site, setSite] = useState<VpnSite | null>(null);
   const [deviceIdToDelete, setDeviceIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [detailId, setDetailId] = useState<string | null>(null);
   const { siteId, locationId } = useParams<{ siteId: string; locationId: string }>();
 
   useEffect(() => {
@@ -39,6 +40,10 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
   function handleDeleteButtonClick(deviceId: string) {
     setDeviceIdToDelete(deviceId);
     deleteModalDisclosure.onOpen();
+  }
+
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
   }
 
   if (!site) {
@@ -81,10 +86,12 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
         </Flex>
         <Box>
           <DeviceTable
+            site={site}
             locationId={locationId}
+            detailId={detailId}
             onEditDeviceButtonClick={onEditDeviceClick}
             onDeleteDeviceButtonClick={handleDeleteButtonClick}
-            site={site}
+            onRowClick={handleRowClick}
           />
         </Box>
         <Box py={6}>

@@ -9,17 +9,23 @@ type CountState = {
   sites: number;
   bearers: number;
 };
+type TotalCountState = {
+  total: CountState | null;
+  added: CountState | null;
+  updated: CountState | null;
+  deleted: CountState | null;
+};
 type Props = {
   onServicesSiteLinkClick: () => void;
   onSitesSiteLinkClick: () => void;
   onVpnBearerLinkClick: () => void;
   workflowState: WorkflowState | null;
-  countState: CountState;
+  countState: TotalCountState;
   onServiceCommitBtnClick: () => void;
   onServiceDiscardBtnClick: () => void;
   onBearerCommitBtnClick: () => void;
   onBearerDiscardBtnClick: () => void;
-  onWorkflowFinish: () => void;
+  onWorkflowFinish: (isCompleted: boolean) => void;
 };
 
 const ControlPageTable: VoidFunctionComponent<Props> = ({
@@ -60,11 +66,17 @@ const ControlPageTable: VoidFunctionComponent<Props> = ({
             </Box>
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.services}
+            {countState.total?.services ?? '-'}
           </Td>
-          <Td />
-          <Td />
-          <Td />
+          <Td fontFamily="monospace" textAlign="right">
+            {countState.added?.services ?? '-'}
+          </Td>
+          <Td fontFamily="monospace" textAlign="right">
+            {countState.updated?.services ?? '-'}
+          </Td>
+          <Td fontFamily="monospace" textAlign="right">
+            {countState.deleted?.services ?? '-'}
+          </Td>
           <Td>
             <ControlPageTableButtons
               onCommitBtnClick={onServiceCommitBtnClick}
@@ -88,11 +100,17 @@ const ControlPageTable: VoidFunctionComponent<Props> = ({
             </Box>
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.sites}
+            {countState.total?.sites ?? '-'}
           </Td>
-          <Td />
-          <Td />
-          <Td />
+          <Td fontFamily="monospace" textAlign="right">
+            {countState.added?.sites ?? '-'}
+          </Td>
+          <Td fontFamily="monospace" textAlign="right">
+            {countState.updated?.sites ?? '-'}
+          </Td>
+          <Td fontFamily="monospace" textAlign="right">
+            {countState.deleted?.sites ?? '-'}
+          </Td>
           <Td>
             <ControlPageTableButtons
               onCommitBtnClick={onServiceCommitBtnClick}
@@ -116,11 +134,17 @@ const ControlPageTable: VoidFunctionComponent<Props> = ({
             </Box>
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.bearers}
+            {countState.total?.bearers ?? '-'}
           </Td>
-          <Td />
-          <Td />
-          <Td />
+          <Td fontFamily="monospace" textAlign="right">
+            {countState.added?.bearers ?? '-'}
+          </Td>
+          <Td fontFamily="monospace" textAlign="right">
+            {countState.updated?.bearers ?? '-'}
+          </Td>
+          <Td fontFamily="monospace" textAlign="right">
+            {countState.deleted?.bearers ?? '-'}
+          </Td>
           <Td>
             <ControlPageTableButtons
               onCommitBtnClick={onBearerCommitBtnClick}
