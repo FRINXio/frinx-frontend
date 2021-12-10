@@ -43,14 +43,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
         const isDetailOpen = rowId === detailId;
         return (
           <Tbody key={device.deviceId}>
-            <Tr
-              onClick={() => onRowClick(rowId, !isDetailOpen)}
-              css={`
-                &:hover {
-                  cursor: pointer;
-                }
-              `}
-            >
+            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
               <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
               <Td>
                 <Text as="span" fontWeight={600}>

@@ -46,15 +46,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
         const isDetailOpen = rowId === detailId;
         return (
           <Tbody key={rowId}>
-            <Tr
-              key={site.siteId}
-              onClick={() => onRowClick(rowId, !isDetailOpen)}
-              css={`
-                &:hover {
-                  cursor: pointer;
-                }
-              `}
-            >
+            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
               <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
               <Td>
                 <Flex alignItems="center">
