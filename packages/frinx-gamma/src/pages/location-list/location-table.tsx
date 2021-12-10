@@ -3,21 +3,26 @@ import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { CustomerLocation } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
+import LocationDetail from './location-detail';
 
 type Props = {
   siteId: string;
+  detailId: string | null;
   locations: CustomerLocation[];
   onEditLocationButtonClick: (siteId: string, locationId: string) => void;
   onDeleteLocationButtonClick: (siteId: string) => void;
   onDevicesSiteButtonClick: (siteId: string, locationId: string) => void;
+  onRowClick: (rowId: string, isOpen: boolean) => void;
 };
 
 const LocationTable: VoidFunctionComponent<Props> = ({
   siteId,
+  detailId,
   locations,
   onDeleteLocationButtonClick,
   onEditLocationButtonClick,
   onDevicesSiteButtonClick,
+  onRowClick,
 }) => {
   return (
     <Table background="white" size="lg" marginBottom="12">
@@ -30,10 +35,12 @@ const LocationTable: VoidFunctionComponent<Props> = ({
           <Th>Actions</Th>
         </Tr>
       </Thead>
-      <Tbody>
-        {locations.map((location) => {
-          return (
-            <Tr key={location.locationId}>
+      {locations.map((location) => {
+        const rowId = unwrap(location.locationId);
+        const isDetailOpen = detailId === location.locationId;
+        return (
+          <Tbody key={location.locationId}>
+            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)}>
               <Td>
                 <Text as="span" fontWeight={600}>
                   {location.locationId}
@@ -84,9 +91,16 @@ const LocationTable: VoidFunctionComponent<Props> = ({
                 </HStack>
               </Td>
             </Tr>
-          );
-        })}
-      </Tbody>
+            {isDetailOpen && (
+              <Tr>
+                <Td colSpan={8}>
+                  <LocationDetail location={location} />
+                </Td>
+              </Tr>
+            )}
+          </Tbody>
+        );
+      })}
     </Table>
   );
 };
