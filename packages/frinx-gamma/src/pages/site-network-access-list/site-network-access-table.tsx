@@ -1,4 +1,5 @@
 import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
+import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { SiteNetworkAccessWithStatus } from './site-network-access-helpers';
@@ -29,6 +30,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
     <Table background="white" size={size} marginBottom="12">
       <Thead>
         <Tr>
+          <Th />
           <Th>Id</Th>
           <Th>Access Type</Th>
           <Th>Access Priority</Th>
@@ -43,7 +45,15 @@ const SiteTable: VoidFunctionComponent<Props> = ({
         const isDetailOpen = rowId === detailId;
         return (
           <Tbody key={access.siteNetworkAccessId}>
-            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)}>
+            <Tr
+              onClick={() => onRowClick(rowId, !isDetailOpen)}
+              css={`
+                &:hover {
+                  cursor: pointer;
+                }
+              `}
+            >
+              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
               <Td>
                 <Flex alignItems="center">
                   <Text as="span" fontWeight={600}>

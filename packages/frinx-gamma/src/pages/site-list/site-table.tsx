@@ -1,4 +1,5 @@
 import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
+import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import StatusTag from '../../components/status-tag/status-tag';
@@ -31,6 +32,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
     <Table background="white" size={size}>
       <Thead>
         <Tr>
+          <Th />
           <Th>Id</Th>
           <Th>Management Type</Th>
           <Th>Site Vpn Flavour</Th>
@@ -44,7 +46,16 @@ const SiteTable: VoidFunctionComponent<Props> = ({
         const isDetailOpen = rowId === detailId;
         return (
           <Tbody key={rowId}>
-            <Tr key={site.siteId} onClick={() => onRowClick(rowId, !isDetailOpen)}>
+            <Tr
+              key={site.siteId}
+              onClick={() => onRowClick(rowId, !isDetailOpen)}
+              css={`
+                &:hover {
+                  cursor: pointer;
+                }
+              `}
+            >
+              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
               <Td>
                 <Flex alignItems="center">
                   <Text as="span" fontWeight={600} paddingRight="4">
@@ -109,7 +120,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
             </Tr>
             {isDetailOpen && (
               <Tr>
-                <Td colSpan={6}>
+                <Td colSpan={7}>
                   <SiteDetail site={site} />
                 </Td>
               </Tr>

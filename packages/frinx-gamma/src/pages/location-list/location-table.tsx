@@ -1,4 +1,5 @@
 import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
+import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { CustomerLocation } from '../../components/forms/site-types';
@@ -28,6 +29,7 @@ const LocationTable: VoidFunctionComponent<Props> = ({
     <Table background="white" size="lg" marginBottom="12">
       <Thead>
         <Tr>
+          <Th />
           <Th>Id</Th>
           <Th>City</Th>
           <Th>Postal code</Th>
@@ -40,7 +42,15 @@ const LocationTable: VoidFunctionComponent<Props> = ({
         const isDetailOpen = detailId === location.locationId;
         return (
           <Tbody key={location.locationId}>
-            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)}>
+            <Tr
+              onClick={() => onRowClick(rowId, !isDetailOpen)}
+              css={`
+                &:hover {
+                  cursor: pointer;
+                }
+              `}
+            >
+              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
               <Td>
                 <Text as="span" fontWeight={600}>
                   {location.locationId}
@@ -93,7 +103,7 @@ const LocationTable: VoidFunctionComponent<Props> = ({
             </Tr>
             {isDetailOpen && (
               <Tr>
-                <Td colSpan={8}>
+                <Td colSpan={6}>
                   <LocationDetail location={location} />
                 </Td>
               </Tr>

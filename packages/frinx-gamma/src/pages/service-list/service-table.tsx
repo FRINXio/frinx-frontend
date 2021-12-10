@@ -1,4 +1,5 @@
 import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
+import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { DefaultCVlanEnum } from '../../components/forms/service-types';
@@ -33,6 +34,7 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
     <Table background="white" size={size}>
       <Thead>
         <Tr>
+          <Th />
           <Th>Id</Th>
           <Th>Customer Name</Th>
           <Th>Vpn Service Topology</Th>
@@ -45,7 +47,15 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
         const isDetailOpen = rowId === detailId;
         return (
           <Tbody key={service.vpnId}>
-            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)}>
+            <Tr
+              onClick={() => onRowClick(rowId, !isDetailOpen)}
+              css={`
+                &:hover {
+                  cursor: pointer;
+                }
+              `}
+            >
+              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
               <Td>
                 <Flex alignItems="center">
                   <Text as="span" fontWeight={600} paddingRight="4">
@@ -93,7 +103,7 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
             </Tr>
             {isDetailOpen && (
               <Tr>
-                <Td colSpan={5}>
+                <Td colSpan={6}>
                   <ServiceDetail service={service} />
                 </Td>
               </Tr>

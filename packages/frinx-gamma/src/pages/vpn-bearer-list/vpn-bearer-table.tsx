@@ -1,4 +1,5 @@
 import { Flex, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, HStack, Tooltip } from '@chakra-ui/react';
+import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import StatusTag from '../../components/status-tag/status-tag';
@@ -29,6 +30,7 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
     <Table background="white" size={size} marginBottom="12">
       <Thead>
         <Tr>
+          <Th />
           <Th>Gamma Hublink Id</Th>
           <Th>Description</Th>
           <Th>Node Id</Th>
@@ -44,7 +46,15 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
         const isDetailOpen = rowId === detailId;
         return (
           <Tbody key={b.spBearerReference}>
-            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)}>
+            <Tr
+              onClick={() => onRowClick(rowId, !isDetailOpen)}
+              css={`
+                &:hover {
+                  cursor: pointer;
+                }
+              `}
+            >
+              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
               <Td>
                 <Flex alignItems="center">
                   <Text as="span" fontWeight={600} paddingRight="4">
@@ -96,7 +106,7 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
 
             {isDetailOpen && (
               <Tr>
-                <Td colSpan={8}>
+                <Td colSpan={9}>
                   <BearerDetail bearer={b} />
                 </Td>
               </Tr>

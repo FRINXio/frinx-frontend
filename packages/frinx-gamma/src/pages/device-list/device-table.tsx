@@ -1,4 +1,5 @@
 import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
+import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { VpnSite } from '../../components/forms/site-types';
@@ -27,6 +28,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
     <Table background="white" size="lg" marginBottom="12">
       <Thead>
         <Tr>
+          <Th />
           <Th>Id</Th>
           <Th>Location ID</Th>
           <Th>Street</Th>
@@ -41,7 +43,15 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
         const isDetailOpen = rowId === detailId;
         return (
           <Tbody key={device.deviceId}>
-            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)}>
+            <Tr
+              onClick={() => onRowClick(rowId, !isDetailOpen)}
+              css={`
+                &:hover {
+                  cursor: pointer;
+                }
+              `}
+            >
+              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
               <Td>
                 <Text as="span" fontWeight={600}>
                   {device.deviceId}
@@ -85,7 +95,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
             </Tr>
             {isDetailOpen && (
               <Tr>
-                <Td colSpan={8}>
+                <Td colSpan={7}>
                   <DeviceDetail device={device} location={deviceLocation} />
                 </Td>
               </Tr>

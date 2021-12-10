@@ -1,4 +1,5 @@
 import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
+import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { VpnBearer } from '../../components/forms/bearer-types';
@@ -24,6 +25,7 @@ const EvcTable: VoidFunctionComponent<Props> = ({
     <Table background="white" size="lg" marginBottom="12">
       <Thead>
         <Tr>
+          <Th />
           <Th>Evc Type</Th>
           <Th>Circuit Reference</Th>
           <Th>Actions</Th>
@@ -34,7 +36,15 @@ const EvcTable: VoidFunctionComponent<Props> = ({
         const isDetailOpen = rowId === detailId;
         return (
           <Tbody key={`${evc.evcType}${evc.circuitReference}`}>
-            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)}>
+            <Tr
+              onClick={() => onRowClick(rowId, !isDetailOpen)}
+              css={`
+                &:hover {
+                  cursor: pointer;
+                }
+              `}
+            >
+              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
               <Td>
                 <Text as="span" fontWeight={600}>
                   {evc.evcType}
@@ -69,7 +79,7 @@ const EvcTable: VoidFunctionComponent<Props> = ({
             </Tr>
             {isDetailOpen && (
               <Tr>
-                <Td colSpan={8}>
+                <Td colSpan={4}>
                   <EvcDetail evc={evc} />
                 </Td>
               </Tr>
