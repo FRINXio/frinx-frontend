@@ -7,7 +7,7 @@ import {
 
 type Props = {
   workflowId: string;
-  onWorkflowFinish?: () => void;
+  onWorkflowFinish?: (isCompleted: boolean) => void;
 };
 
 const WorkflowProgressBar: VoidFunctionComponent<Props> = ({ workflowId, onWorkflowFinish }) => {

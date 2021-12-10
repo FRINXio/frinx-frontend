@@ -25,7 +25,7 @@ type Props = {
   onServiceDiscardBtnClick: () => void;
   onBearerCommitBtnClick: () => void;
   onBearerDiscardBtnClick: () => void;
-  onWorkflowFinish: () => void;
+  onWorkflowFinish: (isCompleted: boolean) => void;
 };
 
 const ControlPageTable: VoidFunctionComponent<Props> = ({

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useDisclosure, Heading, Box, Container, Flex, Button } from '@chakra-ui/react';
 import { useParams } from 'react-router';
+import diff from 'diff-arrays-of-objects';
 import {
   apiSiteNetworkAccessToClientSiteNetworkAccess,
   apiVpnSitesToClientVpnSite,
@@ -12,6 +13,7 @@ import callbackUtils from '../../unistore-callback-utils';
 import SiteNetworkAccessFilter, { SiteNetworkAccessFilters } from './site-network-access-filter';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
+import { getChangedNetworkAccessesWithStatus, getSavedNetworkAccessesWithStatus } from './site-network-access-helpers';
 
 type Props = {
   onCreateSiteNetworkAccessClick: (siteId: string) => void;
@@ -24,6 +26,9 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   onEditSiteNetworkAccessClick,
   onSiteListClick,
 }) => {
+  const [createdNetworkAccesses, setCreatedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
+  const [updatedNetworkAccesses, setUpdatedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
+  const [deletedNetworkAccesses, setDeletedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
   const [site, setSite] = useState<VpnSite | null>(null);
   const [networkAccesses, setNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
   const [siteAccessIdToDelete, setSiteAccessIdToDelete] = useState<string | null>(null);
@@ -61,14 +66,29 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
         limit: pagination.pageSize,
       };
       const callbacks = callbackUtils.getCallbacks;
-      const apiNetworkAccesses = await callbacks.getSiteNetworkAccesses(siteId, paginationParams, submittedFilters);
+      const apiNetworkAccesses = await callbacks.getSiteNetworkAccesses(
+        siteId,
+        paginationParams,
+        submittedFilters,
+        'nonconfig',
+      );
       const clientNetworkAccesses = apiSiteNetworkAccessToClientSiteNetworkAccess(apiNetworkAccesses);
       setNetworkAccesses(clientNetworkAccesses);
-      const networkAccessesCount = await callbacks.getSiteNetworkAccessesCount(siteId, submittedFilters);
+      const networkAccessesCount = await callbacks.getSiteNetworkAccessesCount(siteId, submittedFilters, 'nonconfig');
       setPagination({
         ...pagination,
         pageCount: Math.ceil(networkAccessesCount / pagination.pageSize),
       });
+
+      // get data for changes table
+      const allSavedNetworkAccesses = await callbacks.getSiteNetworkAccesses(siteId, null, null, 'nonconfig');
+      const clientAllSavedNetworkAccesses = apiSiteNetworkAccessToClientSiteNetworkAccess(allSavedNetworkAccesses);
+      const allUnsavedNetworkAccesses = await callbacks.getSiteNetworkAccesses(siteId, null, null);
+      const clientAllUnsavedNetworkAccesses = apiSiteNetworkAccessToClientSiteNetworkAccess(allUnsavedNetworkAccesses);
+      const result = diff(clientAllSavedNetworkAccesses, clientAllUnsavedNetworkAccesses, 'siteNetworkAccessId');
+      setCreatedNetworkAccesses(result.added);
+      setUpdatedNetworkAccesses(result.updated);
+      setDeletedNetworkAccesses(result.removed);
     };
     fetchData();
   }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -102,6 +122,17 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   if (!site || !networkAccesses) {
     return null;
   }
+
+  const changedNetworkAccessesWithStatus = getChangedNetworkAccessesWithStatus(
+    createdNetworkAccesses,
+    updatedNetworkAccesses,
+    deletedNetworkAccesses,
+  );
+  const savedNetworkAccessesWithStatus = getSavedNetworkAccessesWithStatus(
+    networkAccesses,
+    updatedNetworkAccesses,
+    deletedNetworkAccesses,
+  );
 
   return (
     <>
@@ -138,9 +169,24 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
               onFilterChange={handleFilterChange}
               onFilterSubmit={handleFilterSubmit}
             />
+            {changedNetworkAccessesWithStatus.length ? (
+              <>
+                <Heading size="sm">Changes</Heading>
+                <Box my="2">
+                  <SiteNetworkAccessTable
+                    siteId={siteId}
+                    size="sm"
+                    networkAccesses={changedNetworkAccessesWithStatus}
+                    onEditSiteNetworkAccessButtonClick={onEditSiteNetworkAccessClick}
+                    onDeleteSiteNetworkAccessButtonClick={handleDeleteButtonClick}
+                  />
+                </Box>
+              </>
+            ) : null}
             <SiteNetworkAccessTable
               siteId={siteId}
-              networkAccesses={networkAccesses}
+              size="md"
+              networkAccesses={savedNetworkAccessesWithStatus}
               onEditSiteNetworkAccessButtonClick={onEditSiteNetworkAccessClick}
               onDeleteSiteNetworkAccessButtonClick={handleDeleteButtonClick}
             />

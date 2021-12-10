@@ -22,7 +22,7 @@ type Props = {
 };
 
 const CustomerLocationForm: VoidFunctionComponent<Props> = ({ location, buttonText, onSubmit, onCancel }) => {
-  const { values, errors, dirty, handleChange, handleSubmit } = useFormik({
+  const { values, errors, dirty, resetForm, handleChange, handleSubmit } = useFormik({
     initialValues: {
       ...location,
     },
@@ -71,6 +71,7 @@ const CustomerLocationForm: VoidFunctionComponent<Props> = ({ location, buttonTe
         <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
           {buttonText}
         </Button>
+        <Button onClick={() => resetForm()}>Clear</Button>
         <Button onClick={onCancel}>Cancel</Button>
       </Stack>
     </form>

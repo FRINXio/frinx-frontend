@@ -10,7 +10,7 @@ const EvcSchema = yup.object().shape({
   evcType: yup.string().required('Evc type is required'),
   circuitReference: yup
     .string()
-    .matches(/CPNH2\d{8}-(\d{3,4})/, 'Circuit Reference should have following format: CPNH-00000000-0000')
+    .matches(/CPNH2\d{8}-(\d{3,4})/, 'Circuit Reference should have following format: CPNH2-00000000-0000')
     .required('Circuit Reference is required'),
   svlanId: yup.number().required('Svlan Id is required'),
   inputBandwidth: yup.number().required('Input Bandwidth is required'),
@@ -33,7 +33,7 @@ function getQosProfilesItems(profiles: string[]): Item[] {
 }
 
 const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttachment, onSubmit, onCancel }) => {
-  const { values, errors, dirty, setFieldValue, handleChange, handleSubmit } = useFormik({
+  const { values, errors, dirty, resetForm, setFieldValue, handleChange, handleSubmit } = useFormik({
     initialValues: {
       ...evcAttachment,
     },
@@ -127,6 +127,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
         <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
           Save changes
         </Button>
+        <Button onClick={() => resetForm()}>Clear</Button>
         <Button onClick={onCancel}>Cancel</Button>
       </Stack>
     </form>
