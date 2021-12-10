@@ -2,6 +2,7 @@ import { cacheExchange, ClientOptions, createClient, dedupExchange, fetchExchang
 import { retryExchange } from '@urql/exchange-retry';
 import React, { FC, useRef } from 'react';
 import PageContainer from './components/page-container';
+import { CustomToastProvider } from './notifications-context';
 
 export type InventoryApiClient = {
   clientOptions: ClientOptions;
@@ -33,7 +34,9 @@ const UniresourceApiProvider: FC<Props> = ({ children, client }) => {
 
   return (
     <Provider value={urqlClient}>
-      <PageContainer>{children}</PageContainer>
+      <CustomToastProvider>
+        <PageContainer>{children}</PageContainer>
+      </CustomToastProvider>
     </Provider>
   );
 };

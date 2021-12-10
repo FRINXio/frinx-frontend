@@ -15,6 +15,7 @@
     "react-ace": "^9.2.1",
     "react-hook-form": "^7.6.0",
     "urql": "^2.0.4",
+    "uuid": "^8.3.2",
     "yup": "^0.32.9"
   },
   "scripts": {
