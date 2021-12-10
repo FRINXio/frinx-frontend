@@ -95,6 +95,26 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   return (capacity.utilizedCapacity / totalCapacity) * 100;
 }
 
+const canShowClaimResourceButton = (resourcePool: PoolDetailQuery['QueryResourcePool']) => {
+  return (
+    resourcePool.PoolType === 'allocating' &&
+    (resourcePool.ResourceType.Name === 'ipv4_prefix' ||
+      resourcePool.ResourceType.Name === 'vlan_range' ||
+      resourcePool.ResourceType.Name === 'vlan')
+  );
+};
+
+const canClaimResources = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) => {
+  return (
+    resourcePool.Capacity != null &&
+    resourcePool.Capacity.freeCapacity > 0 &&
+    resourcePool.Capacity.freeCapacity <= totalCapacity
+  );
+};
+
+const canFreeResource = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) =>
+  resourcePool.Capacity != null && resourcePool.Capacity.freeCapacity !== totalCapacity;
+
 const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
   const claimResourceModal = useDisclosure();
   const { addToastNotification } = useNotifications();
@@ -168,16 +188,6 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
   const { QueryResourcePool: resourcePool } = poolData;
   const capacityValue = getCapacityValue(resourcePool.Capacity);
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
-  const canClaimResources =
-    resourcePool.Capacity != null &&
-    resourcePool.Capacity.freeCapacity > 0 &&
-    resourcePool.Capacity.freeCapacity <= totalCapacity;
-  const canFreeResource = resourcePool.Capacity != null && resourcePool.Capacity.freeCapacity !== totalCapacity;
-  const canShowClaimResourceButton =
-    resourcePool.PoolType === 'allocating' &&
-    (resourcePool.ResourceType.Name === 'ipv4_prefix' ||
-      resourcePool.ResourceType.Name === 'vlan_range' ||
-      resourcePool.ResourceType.Name === 'vlan');
 
   return (
     <PageContainer>
@@ -196,11 +206,11 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
         <Box>
           <Button
             onClick={() =>
-              canShowClaimResourceButton ? claimResourceModal.onOpen() : claimPoolResource('claimed', {})
+              canShowClaimResourceButton(resourcePool) ? claimResourceModal.onOpen() : claimPoolResource('claimed', {})
             }
             colorScheme="blue"
             variant="outline"
-            isDisabled={!canClaimResources}
+            isDisabled={!canClaimResources(resourcePool, totalCapacity)}
           >
             Claim resources
           </Button>
@@ -221,7 +231,7 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
           <PoolDetailAllocatingTable
             allocatedResources={allocatedResources}
             onFreeResource={freePoolResource}
-            canFreeResource={canFreeResource}
+            canFreeResource={canFreeResource(resourcePool, totalCapacity)}
           />
         )}
         {(resourcePool.PoolType === 'set' || resourcePool.PoolType === 'singleton') && (
