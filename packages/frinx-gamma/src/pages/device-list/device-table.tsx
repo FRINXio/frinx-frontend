@@ -1,27 +1,34 @@
 import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
+import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { VpnSite } from '../../components/forms/site-types';
+import DeviceDetail from './device-detail';
 import unwrap from '../../helpers/unwrap';
 
 type Props = {
   site: VpnSite;
   locationId: string;
+  detailId: string | null;
   onEditDeviceButtonClick: (siteId: string, locationId: string, deviceId: string) => void;
   onDeleteDeviceButtonClick: (siteId: string) => void;
+  onRowClick: (rowId: string, isOpen: boolean) => void;
 };
 
 const DeviceTable: VoidFunctionComponent<Props> = ({
   locationId,
   site,
+  detailId,
   onEditDeviceButtonClick,
   onDeleteDeviceButtonClick,
+  onRowClick,
 }) => {
   const devices = site.siteDevices.filter((d) => d.locationId === locationId);
   return (
     <Table background="white" size="lg" marginBottom="12">
       <Thead>
         <Tr>
+          <Th />
           <Th>Id</Th>
           <Th>Location ID</Th>
           <Th>Street</Th>
@@ -30,13 +37,14 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           <Th>Actions</Th>
         </Tr>
       </Thead>
-      <Tbody>
-        {devices.map((device) => {
-          const [deviceLocation] = site.customerLocations.filter(
-            (location) => location.locationId === device.locationId,
-          );
-          return (
-            <Tr key={device.deviceId}>
+      {devices.map((device) => {
+        const [deviceLocation] = site.customerLocations.filter((location) => location.locationId === device.locationId);
+        const rowId = unwrap(deviceLocation.locationId);
+        const isDetailOpen = rowId === detailId;
+        return (
+          <Tbody key={device.deviceId}>
+            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
+              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
               <Td>
                 <Text as="span" fontWeight={600}>
                   {device.deviceId}
@@ -78,9 +86,16 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 </HStack>
               </Td>
             </Tr>
-          );
-        })}
-      </Tbody>
+            {isDetailOpen && (
+              <Tr>
+                <Td colSpan={7}>
+                  <DeviceDetail device={device} location={deviceLocation} />
+                </Td>
+              </Tr>
+            )}
+          </Tbody>
+        );
+      })}
     </Table>
   );
 };

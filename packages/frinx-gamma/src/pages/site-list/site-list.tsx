@@ -31,6 +31,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   const [sites, setSites] = useState<VpnSite[] | null>(null);
   const [siteIdToDelete, setSiteIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [pagination, setPagination] = usePagination();
   const [filters, setFilters] = useState<SiteFilters>({
     id: null,
@@ -99,6 +100,10 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
     setSubmittedFilters(filters);
   }
 
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
+  }
+
   const changedSitesWithStatus = getChangedSitesWithStatus(createdSites, updatedSites, deletedSites);
   const savedSitesWithStatus = getSavedSitesWithStatus(sites, updatedSites, deletedSites);
 
@@ -138,22 +143,26 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
                   <Box my="2">
                     <SiteTable
                       sites={changedSitesWithStatus}
+                      size="sm"
+                      detailId={null}
                       onEditSiteButtonClick={onEditVpnSiteClick}
                       onDetailSiteButtonClick={onDetailVpnSiteClick}
                       onLocationsSiteButtonClick={onLocationsVpnSiteClick}
                       onDeleteSiteButtonClick={handleDeleteButtonClick}
-                      size="sm"
+                      onRowClick={handleRowClick}
                     />
                   </Box>
                 </>
               ) : null}
               <SiteTable
+                sites={savedSitesWithStatus}
+                size="md"
+                detailId={detailId}
                 onEditSiteButtonClick={onEditVpnSiteClick}
                 onDetailSiteButtonClick={onDetailVpnSiteClick}
                 onLocationsSiteButtonClick={onLocationsVpnSiteClick}
                 onDeleteSiteButtonClick={handleDeleteButtonClick}
-                sites={savedSitesWithStatus}
-                size="md"
+                onRowClick={handleRowClick}
               />
               <Box m="4">
                 <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />

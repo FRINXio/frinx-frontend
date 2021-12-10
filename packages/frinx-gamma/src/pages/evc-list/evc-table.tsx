@@ -1,28 +1,43 @@
 import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
+import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { VpnBearer } from '../../components/forms/bearer-types';
+import EvcDetail from './evc-detail';
+import unwrap from '../../helpers/unwrap';
 
 type Props = {
   bearer: VpnBearer;
+  detailId: string | null;
   onEditEvcButtonClick: (bearerId: string, evcType: string, circuitReference: string) => void;
   onDeleteEvcButtonClick: (evcType: string, circuitReference: string) => void;
+  onRowClick: (rowId: string, isOpen: boolean) => void;
 };
 
-const EvcTable: VoidFunctionComponent<Props> = ({ bearer, onEditEvcButtonClick, onDeleteEvcButtonClick }) => {
+const EvcTable: VoidFunctionComponent<Props> = ({
+  bearer,
+  detailId,
+  onEditEvcButtonClick,
+  onDeleteEvcButtonClick,
+  onRowClick,
+}) => {
   return (
     <Table background="white" size="lg" marginBottom="12">
       <Thead>
         <Tr>
+          <Th />
           <Th>Evc Type</Th>
           <Th>Circuit Reference</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
-      <Tbody>
-        {bearer.evcAttachments.map((evc) => {
-          return (
-            <Tr key={`${evc.evcType}${evc.circuitReference}`}>
+      {bearer.evcAttachments.map((evc) => {
+        const rowId = unwrap(evc.circuitReference);
+        const isDetailOpen = rowId === detailId;
+        return (
+          <Tbody key={`${evc.evcType}${evc.circuitReference}`}>
+            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
+              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
               <Td>
                 <Text as="span" fontWeight={600}>
                   {evc.evcType}
@@ -55,9 +70,16 @@ const EvcTable: VoidFunctionComponent<Props> = ({ bearer, onEditEvcButtonClick, 
                 </HStack>
               </Td>
             </Tr>
-          );
-        })}
-      </Tbody>
+            {isDetailOpen && (
+              <Tr>
+                <Td colSpan={4}>
+                  <EvcDetail evc={evc} />
+                </Td>
+              </Tr>
+            )}
+          </Tbody>
+        );
+      })}
     </Table>
   );
 };
