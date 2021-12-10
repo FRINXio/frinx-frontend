@@ -5,6 +5,11 @@ import unistoreCallbackUtils from '../../unistore-callback-utils';
 import { getTransactionId, setTransactionId } from '../../helpers/transaction-id';
 import ControlPageTable from './control-page-table';
 import unwrap from '../../helpers/unwrap';
+import {
+  CalcDiffPayload,
+  ExecutedWorkflowPayload,
+  useAsyncGenerator,
+} from '../../components/commit-status-modal/commit-status-modal.helpers';
 
 type Props = {
   onServicesSiteLinkClick: () => void;
@@ -18,19 +23,59 @@ type CountState = {
   bearers: number;
 };
 type WorkflowState = { type: 'service' | 'bearer'; id: string };
-const DEFAULT_STATE: CountState = {
-  services: 0,
-  sites: 0,
-  bearers: 0,
+type TotalCountState = {
+  total: CountState | null;
+  added: CountState | null;
+  updated: CountState | null;
+  deleted: CountState | null;
 };
+const DEFAULT_UNCOMMITED_CHANGES: TotalCountState = {
+  total: null,
+  added: null,
+  updated: null,
+  deleted: null,
+};
+
+function makeTotalCountState(
+  countState: TotalCountState,
+  payload: ExecutedWorkflowPayload<CalcDiffPayload> | null,
+): TotalCountState {
+  if (payload?.status === 'COMPLETED') {
+    const { changes } = payload.output;
+    return {
+      total: countState.total,
+      added: {
+        services: Object.keys(changes.creates['vpn-services']).length,
+        bearers: 0,
+        sites: Object.keys(changes.creates.sites).length,
+      },
+      updated: {
+        services: Object.keys(changes.updates['vpn-services']).length,
+        bearers: 0,
+        sites: Object.keys(changes.updates.sites).length,
+      },
+      deleted: {
+        services: changes.deletes.vpn_service.length,
+        bearers: 0,
+        sites: changes.deletes.site.length,
+      },
+    };
+  }
+  return DEFAULT_UNCOMMITED_CHANGES;
+}
 
 const ControlPage: VoidFunctionComponent<Props> = ({
   onServicesSiteLinkClick,
   onSitesSiteLinkClick,
   onVpnBearerLinkClick,
 }) => {
-  const [countState, setCountState] = useState<CountState>(DEFAULT_STATE);
+  const [countState, setCountState] = useState<TotalCountState>(DEFAULT_UNCOMMITED_CHANGES);
   const [workflowState, setWorkflowState] = useState<WorkflowState | null>(null);
+  const [workflowId, setWorkflowId] = useState<string | null>(null);
+  const onFinish = () => {
+    setWorkflowId(null);
+  };
+  const workflowPayload = useAsyncGenerator<CalcDiffPayload>({ workflowId, onFinish });
 
   useEffect(() => {
     (async () => {
@@ -40,12 +85,33 @@ const ControlPage: VoidFunctionComponent<Props> = ({
         callbacks.getVpnSiteCount(null),
         callbacks.getVpnBearerCount(null),
       ]);
-      setCountState({
-        services: serviceCount,
-        sites: siteCount,
-        bearers: bearerCount,
-      });
+      setCountState((prev) => ({
+        ...prev,
+        total: {
+          services: serviceCount,
+          sites: siteCount,
+          bearers: bearerCount,
+        },
+      }));
     })();
+  }, []);
+
+  useEffect(() => {
+    const callbacks = uniflowCallbackUtils.getCallbacks;
+
+    callbacks
+      .executeWorkflow({
+        name: 'Process_calcdiff_ui',
+        version: 2,
+        input: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          unistore_node_name: 'network',
+          US_UI_TX: unwrap(getTransactionId()),
+        },
+      })
+      .then((data) => {
+        setWorkflowId(data.text);
+      });
   }, []);
 
   function handleServiceCommitBtnClick() {
@@ -104,6 +170,8 @@ const ControlPage: VoidFunctionComponent<Props> = ({
     });
   };
 
+  const uncommitedChanges = makeTotalCountState(countState, workflowPayload);
+
   return (
     <Container maxWidth={1280} minHeight="60vh">
       <Flex justify="space-between" align="center" marginBottom={6}>
@@ -116,7 +184,10 @@ const ControlPage: VoidFunctionComponent<Props> = ({
           onServicesSiteLinkClick={onServicesSiteLinkClick}
           onSitesSiteLinkClick={onSitesSiteLinkClick}
           onVpnBearerLinkClick={onVpnBearerLinkClick}
-          countState={countState}
+          countState={{
+            ...uncommitedChanges,
+            total: countState.total,
+          }}
           workflowState={workflowState}
           onServiceCommitBtnClick={handleServiceCommitBtnClick}
           onBearerCommitBtnClick={handleBearerCommitBtnClick}
