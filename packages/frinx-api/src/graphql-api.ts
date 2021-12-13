@@ -1,3 +1,4 @@
+import { ErrorType } from './api-helpers';
 import { ApiConfig, GraphQLApiClient } from './types';
 
 export default class GraphQLApi {
@@ -19,8 +20,8 @@ export default class GraphQLApi {
           };
         },
       },
-      onError: () => {
-        config.authContext.emitUnauthorized();
+      onError: (error: ErrorType) => {
+        config.authContext.emit(error);
       },
     };
   }

@@ -26,9 +26,10 @@ export type ApiHelpers = {
   sendDeleteRequest: (path: string, body?: unknown, options?: RequestInit) => Promise<unknown>;
 };
 
+export type ErrorType = 'UNAUTHORIZED' | 'FORBIDDEN';
 export type AuthContext = {
   getAuthToken: () => string | null;
-  emitUnauthorized: () => void;
+  emit: (errorType: ErrorType) => void;
 };
 
 export function createApiHelpers(baseURL: string, authContext: AuthContext): ApiHelpers {
@@ -44,7 +45,11 @@ export function createApiHelpers(baseURL: string, authContext: AuthContext): Api
     });
 
     if (response.status === 401) {
-      return authContext.emitUnauthorized();
+      return authContext.emit('UNAUTHORIZED');
+    }
+
+    if (response.status === 403) {
+      return authContext.emit('FORBIDDEN');
     }
 
     if (!response.ok) {

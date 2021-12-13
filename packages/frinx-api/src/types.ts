@@ -1,5 +1,5 @@
 import { ClientOptions } from 'urql';
-import { AuthContext } from './api-helpers';
+import { AuthContext, ErrorType } from './api-helpers';
 
 export type ApiConfig = {
   url: string;
@@ -8,5 +8,5 @@ export type ApiConfig = {
 
 export type GraphQLApiClient = {
   clientOptions: ClientOptions;
-  onError: () => void;
+  onError: (error: ErrorType) => void;
 };
