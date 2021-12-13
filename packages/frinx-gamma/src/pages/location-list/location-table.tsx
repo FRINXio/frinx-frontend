@@ -2,12 +2,12 @@ import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Toolti
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
-import { CustomerLocation } from '../../components/forms/site-types';
+import { CustomerLocation, VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
 import LocationDetail from './location-detail';
 
 type Props = {
-  siteId: string;
+  site: VpnSite;
   detailId: string | null;
   locations: CustomerLocation[];
   onEditLocationButtonClick: (siteId: string, locationId: string) => void;
@@ -17,7 +17,7 @@ type Props = {
 };
 
 const LocationTable: VoidFunctionComponent<Props> = ({
-  siteId,
+  site,
   detailId,
   locations,
   onDeleteLocationButtonClick,
@@ -66,7 +66,7 @@ const LocationTable: VoidFunctionComponent<Props> = ({
                       size="sm"
                       icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                       onClick={() => {
-                        onEditLocationButtonClick(unwrap(siteId), unwrap(location.locationId));
+                        onEditLocationButtonClick(unwrap(site.siteId), unwrap(location.locationId));
                       }}
                     />
                   </Tooltip>
@@ -76,7 +76,7 @@ const LocationTable: VoidFunctionComponent<Props> = ({
                       size="sm"
                       icon={<Icon size={12} as={FeatherIcon} icon="cpu" />}
                       onClick={() => {
-                        onDevicesSiteButtonClick(unwrap(siteId), unwrap(location.locationId));
+                        onDevicesSiteButtonClick(unwrap(site.siteId), unwrap(location.locationId));
                       }}
                     />
                   </Tooltip>
@@ -97,7 +97,7 @@ const LocationTable: VoidFunctionComponent<Props> = ({
             {isDetailOpen && (
               <Tr>
                 <Td colSpan={6}>
-                  <LocationDetail location={location} />
+                  <LocationDetail site={site} location={location} />
                 </Td>
               </Tr>
             )}
