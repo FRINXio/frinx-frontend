@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
-import { GraphQLApi } from '@frinx/api';
+import { UniresourceApi } from '@frinx/api';
 import { authContext } from './auth-helpers';
 
 const UniresourceApp: FC = () => {
@@ -9,28 +9,7 @@ const UniresourceApp: FC = () => {
 
   useEffect(() => {
     import('@frinx/uniresource-ui').then((mod) => {
-      const {
-        PoolsPage,
-        CreatePoolPage,
-        StrategiesPage,
-        ResourceTypesList,
-        UniresourceAppProvider,
-        CreateNestedPool,
-        CreateStrategyPage,
-        CreateAllocatingIpv4PrefixPoolPage,
-        CreateAllocatingVlanPoolPage,
-      } = mod;
-      setComponents({
-        PoolsPage,
-        CreatePoolPage,
-        StrategiesPage,
-        ResourceTypesList,
-        UniresourceAppProvider,
-        CreateNestedPool,
-        CreateStrategyPage,
-        CreateAllocatingIpv4PrefixPoolPage,
-        CreateAllocatingVlanPoolPage,
-      });
+      setComponents(mod);
     });
   }, []);
 
@@ -51,7 +30,7 @@ const UniresourceApp: FC = () => {
 
   return (
     <UniresourceAppProvider
-      client={GraphQLApi.create({ url: window.__CONFIG__.uniresource_api_url, authContext }).client}
+      client={UniresourceApi.create({ url: window.__CONFIG__.uniresource_api_url, authContext }).client}
     >
       <Switch>
         <Route exact path="/uniresource">
