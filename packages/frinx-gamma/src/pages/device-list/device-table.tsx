@@ -89,7 +89,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
             {isDetailOpen && (
               <Tr>
                 <Td colSpan={7}>
-                  <DeviceDetail device={device} location={deviceLocation} />
+                  <DeviceDetail site={site} device={device} location={deviceLocation} />
                 </Td>
               </Tr>
             )}

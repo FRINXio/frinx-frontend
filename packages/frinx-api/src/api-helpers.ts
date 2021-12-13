@@ -1,4 +1,6 @@
 import urlJoin from 'url-join';
+import { ApiConfig } from '.';
+import { GraphQLApiClient } from './types';
 
 // directly sent Authorization should be used before we use auth
 function makeHeaders(authToken: string | null, headers?: HeadersInit): Record<string, string> {
@@ -94,6 +96,29 @@ export function createApiHelpers(baseURL: string, authContext: AuthContext): Api
         ...requestOptions,
       };
       return apiFetch(path, options);
+    },
+  };
+}
+
+export function createGraphQLApiClient(config: ApiConfig): GraphQLApiClient {
+  const { url, authContext } = config;
+  return {
+    clientOptions: {
+      url,
+      fetchOptions: () => {
+        const authToken = authContext.getAuthToken();
+        if (authToken != null) {
+          return {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          };
+        }
+        return {};
+      },
+    },
+    onError: () => {
+      config.authContext.emitUnauthorized();
     },
   };
 }
