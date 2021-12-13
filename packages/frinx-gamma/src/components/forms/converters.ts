@@ -13,7 +13,6 @@ import {
   ProviderIdentifiers,
   RoutingProtocol,
   RoutingProtocolType,
-  LanTag,
   IPConnection,
 } from './site-types';
 import {
@@ -126,7 +125,7 @@ export function apiRoutingProtocolToClientRoutingProtocol(routingProtocol: Routi
       ? staticProtocol['cascaded-lan-prefixes']['ipv4-lan-prefixes'].map((p) => {
           return {
             lan: p.lan,
-            lanTag: p['lan-tag'] as LanTag,
+            lanTag: p['lan-tag'] || null,
             nextHop: p['next-hop'],
           };
         })
@@ -200,7 +199,7 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
       siteNetworkAccessType: access['site-network-access-type'] as SiteNetworkAccessType,
       ipConnection: access['ip-connection'] ? apiIPConnectionToClientIPConnection(access['ip-connection']) : undefined,
       accessPriority: String(access.availability['access-priority']) as AccessPriority,
-      maximumRoutes: access['maximum-routes']['address-family'][0]['maximum-routes'] as MaximumRoutes,
+      maximumRoutes: (access['maximum-routes']['address-family'][0]['maximum-routes'] as MaximumRoutes) || undefined,
       locationReference: access['location-reference'] || null,
       deviceReference: access['device-reference'] || null,
       routingProtocols,
@@ -343,7 +342,7 @@ function clientRoutingProtocolsToApiRoutingProtocols(routingProtocols: RoutingPr
           'ipv4-lan-prefixes': p.static.map((s) => {
             return {
               lan: s.lan,
-              'lan-tag': s.lanTag,
+              'lan-tag': s.lanTag || undefined,
               'next-hop': s.nextHop,
             };
           }),
@@ -413,7 +412,7 @@ function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAcces
           'address-family': [
             {
               af: 'ipv4',
-              'maximum-routes': access.maximumRoutes,
+              'maximum-routes': access.maximumRoutes || undefined,
             },
           ],
         },
@@ -498,7 +497,7 @@ export function clientVpnSiteToApiVpnSite(vpnSite: VpnSite): CreateVpnSiteInput 
           'address-family': [
             {
               af: 'ipv4',
-              'maximum-routes': vpnSite.maximumRoutes,
+              'maximum-routes': vpnSite.maximumRoutes || undefined,
             },
           ],
         },
@@ -551,7 +550,9 @@ export function apiVpnCarriersToClientCarriers(apiCarriers: VpnCarriersOutput): 
 function apiBearerStatusToClientBearerStatus(apiBearerStatus: BearerStatusOutput): BearerStatus {
   const adminStatus = apiBearerStatus['admin-status']
     ? {
-        status: apiBearerStatus['admin-status'].status || null,
+        status: apiBearerStatus['admin-status'].status
+          ? (apiBearerStatus['admin-status'].status.split(':').pop() as string)
+          : null,
         lastUpdated: null,
       }
     : null;

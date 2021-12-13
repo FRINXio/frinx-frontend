@@ -17,6 +17,7 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
   const [bearer, setBearer] = useState<VpnBearer | null>(null);
   const [evcToDelete, setEvcToDelete] = useState<Pick<EvcAttachment, 'evcType' | 'circuitReference'> | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [detailId, setDetailId] = useState<string | null>(null);
   const { bearerId } = useParams<{ bearerId: string }>();
 
   useEffect(() => {
@@ -37,6 +38,10 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
       circuitReference,
     });
     deleteModalDisclosure.onOpen();
+  }
+
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
   }
 
   if (!bearer) {
@@ -75,9 +80,11 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
         </Flex>
         <Box>
           <EvcTable
+            bearer={bearer}
+            detailId={detailId}
             onEditEvcButtonClick={onEditEvcClick}
             onDeleteEvcButtonClick={handleDeleteButtonClick}
-            bearer={bearer}
+            onRowClick={handleRowClick}
           />
         </Box>
         <Box py={6}>

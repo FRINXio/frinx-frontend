@@ -4,10 +4,11 @@ import { useParams } from 'react-router';
 import unwrap from '../../helpers/unwrap';
 import { apiBearerToClientBearer, apiProviderIdentifiersToClientIdentifers } from '../../components/forms/converters';
 import callbackUtils from '../../unistore-callback-utils';
+import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import { EvcAttachment, VpnBearer } from '../../components/forms/bearer-types';
 import EvcAttachmentForm from '../../components/forms/evc-attachment-form';
 import ErrorMessage from '../../components/error-message/error-message';
-import { getRandomInt } from '../../helpers/id-helpers';
+import PollWorkflowId from '../../components/poll-workflow-id/poll-worfklow-id';
 
 const getDefaultEvcAttachment = (): EvcAttachment => ({
   carrierReference: null,
@@ -17,9 +18,16 @@ const getDefaultEvcAttachment = (): EvcAttachment => ({
   inputBandwidth: 1000,
   qosInputProfile: null,
   status: null,
-  svlanId: getRandomInt(1000), // https://frinxhelpdesk.atlassian.net/browse/GAM-80
+  svlanId: 0, // https://frinxhelpdesk.atlassian.net/browse/GAM-80
   upstreamBearer: null,
 });
+
+type SvlanWorkflowData = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  response_body: {
+    vlan: number;
+  };
+};
 
 type Props = {
   onSuccess: (siteId: string) => void;
@@ -32,6 +40,8 @@ function getSelectedBearer(bearers: VpnBearer[], bearerId: string): VpnBearer {
 }
 
 const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+  const [workflowId, setWorkflowId] = useState<string | null>(null);
+  const [svlanId, setSvlanId] = useState<number | null>(null);
   const [selectedBearer, setSelectedBearer] = useState<VpnBearer | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const { bearerId } = useParams<{ bearerId: string }>();
@@ -39,8 +49,16 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
 
   useEffect(() => {
     const fetchData = async () => {
-      const callbacks = callbackUtils.getCallbacks;
       // TODO: we can fetch all in promise all?
+      const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+      const workflowResult = await uniflowCallbacks.executeWorkflow({
+        name: 'Allocate_SvlanId',
+        version: 1,
+        input: {},
+      });
+      setWorkflowId(workflowResult.text);
+
+      const callbacks = callbackUtils.getCallbacks;
       const bearers = await callbacks.getVpnBearers(null, null);
       const clientVpnBearers = apiBearerToClientBearer(bearers);
       setSelectedBearer(getSelectedBearer(clientVpnBearers, bearerId));
@@ -84,6 +102,25 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     onCancel(unwrap(selectedBearer?.spBearerReference));
   };
 
+  const handleWorkflowFinish = (data: string | null) => {
+    if (data === null) {
+      return;
+    }
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { response_body }: SvlanWorkflowData = JSON.parse(data);
+    setSvlanId(Number(response_body.vlan));
+  };
+
+  if (!workflowId) {
+    return null;
+  }
+
+  if (!svlanId) {
+    return <PollWorkflowId workflowId={workflowId} onFinish={handleWorkflowFinish} />;
+  }
+
+  const evcAttachment = { ...getDefaultEvcAttachment(), svlanId };
+
   return (
     selectedBearer && (
       <Container>
@@ -92,7 +129,7 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
           {submitError && <ErrorMessage text={String(submitError)} />}
           <EvcAttachmentForm
             qosProfiles={qosProfiles}
-            evcAttachment={getDefaultEvcAttachment()}
+            evcAttachment={evcAttachment}
             onSubmit={handleSubmit}
             onCancel={handleCancel}
           />

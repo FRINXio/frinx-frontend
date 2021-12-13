@@ -1,25 +1,36 @@
-import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
+import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
+import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
-import { SiteNetworkAccess } from '../../components/forms/site-types';
+import { SiteNetworkAccessWithStatus } from './site-network-access-helpers';
+import StatusTag from '../../components/status-tag/status-tag';
+import SiteNetworkAccessDetail from './site-network-access-detail';
+import unwrap from '../../helpers/unwrap';
 
 type Props = {
+  size: 'sm' | 'md';
   siteId: string;
-  networkAccesses: SiteNetworkAccess[];
+  detailId: string | null;
+  networkAccesses: SiteNetworkAccessWithStatus[];
   onEditSiteNetworkAccessButtonClick: (siteId: string, accessId: string) => void;
   onDeleteSiteNetworkAccessButtonClick: (siteId: string) => void;
+  onRowClick: (rowId: string, isOpen: boolean) => void;
 };
 
 const SiteTable: VoidFunctionComponent<Props> = ({
+  size,
   siteId,
+  detailId,
   networkAccesses,
   onEditSiteNetworkAccessButtonClick,
   onDeleteSiteNetworkAccessButtonClick,
+  onRowClick,
 }) => {
   return (
-    <Table background="white" size="lg" marginBottom="12">
+    <Table background="white" size={size} marginBottom="12">
       <Thead>
         <Tr>
+          <Th />
           <Th>Id</Th>
           <Th>Access Type</Th>
           <Th>Access Priority</Th>
@@ -29,14 +40,20 @@ const SiteTable: VoidFunctionComponent<Props> = ({
           <Th>Actions</Th>
         </Tr>
       </Thead>
-      <Tbody>
-        {networkAccesses.map((access) => {
-          return (
-            <Tr key={access.siteNetworkAccessId}>
+      {networkAccesses.map((access) => {
+        const rowId = unwrap(access.siteNetworkAccessId);
+        const isDetailOpen = rowId === detailId;
+        return (
+          <Tbody key={access.siteNetworkAccessId}>
+            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
+              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
               <Td>
-                <Text as="span" fontWeight={600}>
-                  {access.siteNetworkAccessId}
-                </Text>
+                <Flex alignItems="center">
+                  <Text as="span" fontWeight={600}>
+                    {access.siteNetworkAccessId}
+                  </Text>
+                  <StatusTag status={access.status} />
+                </Flex>
               </Td>
               <Td>
                 <Text as="span">{access.siteNetworkAccessType}</Text>
@@ -77,9 +94,16 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                 </HStack>
               </Td>
             </Tr>
-          );
-        })}
-      </Tbody>
+            {isDetailOpen && (
+              <Tr>
+                <Td colSpan={8}>
+                  <SiteNetworkAccessDetail networkAccess={access} />
+                </Td>
+              </Tr>
+            )}
+          </Tbody>
+        );
+      })}
     </Table>
   );
 };

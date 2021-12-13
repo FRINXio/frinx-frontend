@@ -1,6 +1,7 @@
 import { Box, Button, Container, Flex, Heading, HStack, Icon, useDisclosure } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import { VpnBearer } from '../../components/forms/bearer-types';
@@ -10,6 +11,7 @@ import VpnBearerFilter, { VpnBearerFilters } from './vpn-bearer-filter';
 import VpnBearerTable from './vpn-bearer-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
+import { getChangedBearersWithStatus, getSavedBearersWithStatus } from './bearer-helpers';
 
 type Props = {
   onCreateVpnNodeClick: () => void;
@@ -26,9 +28,13 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
   onEditVpnBearerClick,
   onEvcAttachmentSiteClick,
 }) => {
+  const [createdBearers, setCreatedBearers] = useState<VpnBearer[] | null>(null);
+  const [updatedBearers, setUpdatedBearers] = useState<VpnBearer[] | null>(null);
+  const [deletedBearers, setDeletedBearers] = useState<VpnBearer[] | null>(null);
   const [vpnBearers, setVpnBearers] = useState<VpnBearer[] | null>(null);
   const [bearerIdToDelete, setBearerIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [pagination, setPagination] = usePagination();
   const [filters, setFilters] = useState<VpnBearerFilters>({
     id: null,
@@ -46,14 +52,24 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
         offset: (pagination.page - 1) * pagination.pageSize,
         limit: pagination.pageSize,
       };
-      const response = await callbacks.getVpnBearers(paginationParams, submittedFilters);
+      const response = await callbacks.getVpnBearers(paginationParams, submittedFilters, 'nonconfig');
       const clientVpnBearers = apiBearerToClientBearer(response);
       setVpnBearers(clientVpnBearers);
-      const bearersCount = await callbacks.getVpnBearerCount(submittedFilters);
+      const bearersCount = await callbacks.getVpnBearerCount(submittedFilters, 'nonconfig');
       setPagination({
         ...pagination,
         pageCount: Math.ceil(bearersCount / pagination.pageSize),
       });
+
+      // get data for changes table
+      const allSavedBearers = await callbacks.getVpnBearers(null, null, 'nonconfig');
+      const clientAllSavedBearers = apiBearerToClientBearer(allSavedBearers);
+      const allUnsavedBearers = await callbacks.getVpnBearers(null, null);
+      const clientAllUnsavedBearers = apiBearerToClientBearer(allUnsavedBearers);
+      const result = diff(clientAllSavedBearers, clientAllUnsavedBearers, 'spBearerReference');
+      setCreatedBearers(result.added);
+      setUpdatedBearers(result.updated);
+      setDeletedBearers(result.removed);
     };
 
     fetchData();
@@ -84,6 +100,13 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
     });
     setSubmittedFilters(filters);
   }
+
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
+  }
+
+  const changedBearersWithStatus = getChangedBearersWithStatus(createdBearers, updatedBearers, deletedBearers);
+  const savedBearersWithStatus = getSavedBearersWithStatus(vpnBearers, updatedBearers, deletedBearers);
 
   return (
     <>
@@ -129,11 +152,30 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
                 onFilterChange={handleFilterChange}
                 onFilterSubmit={handleFilterSubmit}
               />
+              {changedBearersWithStatus.length ? (
+                <>
+                  <Heading size="sm">Changes</Heading>
+                  <Box my="2">
+                    <VpnBearerTable
+                      size="sm"
+                      detailId={null}
+                      bearers={changedBearersWithStatus}
+                      onEditVpnBearerClick={onEditVpnBearerClick}
+                      onDeleteVpnBearerClick={handleDeleteButtonClick}
+                      onEvcAttachmentSiteClick={onEvcAttachmentSiteClick}
+                      onRowClick={handleRowClick}
+                    />
+                  </Box>
+                </>
+              ) : null}
               <VpnBearerTable
-                bearers={vpnBearers}
+                size="md"
+                detailId={detailId}
+                bearers={savedBearersWithStatus}
                 onEditVpnBearerClick={onEditVpnBearerClick}
                 onDeleteVpnBearerClick={handleDeleteButtonClick}
                 onEvcAttachmentSiteClick={onEvcAttachmentSiteClick}
+                onRowClick={handleRowClick}
               />
               <Box m="4">
                 <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />

@@ -45,11 +45,10 @@ export type MaximumRoutes = 1000 | 2000 | 5000 | 10000;
 
 export type RoutingProtocolType = 'bgp' | 'static';
 export type VrrpRoutingType = 'ipv4';
-export type LanTag = 'lan' | 'lan-tag' | 'next-hop';
 export type StaticRoutingType = {
   lan: string;
   nextHop: string;
-  lanTag?: LanTag;
+  lanTag: string | null;
 };
 export type BgpRoutingType = {
   addressFamily: 'ipv4';
@@ -101,7 +100,7 @@ export type SiteNetworkAccess = {
   siteNetworkAccessType: SiteNetworkAccessType;
   ipConnection?: IPConnection;
   accessPriority: AccessPriority;
-  maximumRoutes: MaximumRoutes;
+  maximumRoutes: MaximumRoutes | null;
   routingProtocols: RoutingProtocol[];
   locationReference: string | null;
   deviceReference: string | null;
@@ -120,5 +119,5 @@ export type VpnSite = {
   siteServiceQosProfile: string | null;
   enableBgpPicFastReroute: boolean;
   siteNetworkAccesses: SiteNetworkAccess[];
-  maximumRoutes: MaximumRoutes;
+  maximumRoutes: MaximumRoutes | null;
 };
