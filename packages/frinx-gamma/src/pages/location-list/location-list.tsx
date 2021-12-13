@@ -118,7 +118,7 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
         <Box>
           <>
             <LocationTable
-              siteId={siteId}
+              site={site}
               detailId={detailId}
               locations={locations}
               onDeleteLocationButtonClick={handleDeleteButtonClick}
