@@ -1,4 +1,6 @@
 import urlJoin from 'url-join';
+import { ApiConfig } from '.';
+import { GraphQLApiClient } from './types';
 
 function getHeaders(authToken: string | null): Record<string, string> {
   return {
@@ -70,6 +72,29 @@ export function createApiHelpers(baseURL: string, authContext: AuthContext): Api
         body: JSON.stringify(body),
       };
       return apiFetch(path, options);
+    },
+  };
+}
+
+export function createGraphQLApiClient(config: ApiConfig): GraphQLApiClient {
+  const { url, authContext } = config;
+  return {
+    clientOptions: {
+      url,
+      fetchOptions: () => {
+        const authToken = authContext.getAuthToken();
+        if (authToken != null) {
+          return {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          };
+        }
+        return {};
+      },
+    },
+    onError: () => {
+      config.authContext.emitUnauthorized();
     },
   };
 }
