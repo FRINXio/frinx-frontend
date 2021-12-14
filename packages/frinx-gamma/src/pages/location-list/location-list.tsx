@@ -13,6 +13,7 @@ import unwrap from '../../helpers/unwrap';
 import LocationTable from './location-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
+import LocationFilter, { getDefaultLocationFilters, LocationFilters } from './location-filter';
 
 type Props = {
   onCreateLocationClick: (siteId: string) => void;
@@ -34,6 +35,8 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
   const [detailId, setDetailId] = useState<string | null>(null);
   const { siteId } = useParams<{ siteId: string }>();
   const [pagination, setPagination] = usePagination();
+  const [filters, setFilters] = useState<LocationFilters>(getDefaultLocationFilters());
+  const [submittedFilters, setSubmittedFilters] = useState<LocationFilters>(getDefaultLocationFilters());
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,17 +57,17 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
         limit: pagination.pageSize,
       };
       const callbacks = callbackUtils.getCallbacks;
-      const apiLocations = await callbacks.getLocations(siteId, paginationParams);
+      const apiLocations = await callbacks.getLocations(siteId, paginationParams, submittedFilters);
       const clientLocations = apiLocationsToClientLocations(apiLocations);
       setLocations(clientLocations);
-      const locationsCount = await callbacks.getLocationsCount(siteId);
+      const locationsCount = await callbacks.getLocationsCount(siteId, submittedFilters);
       setPagination({
         ...pagination,
         pageCount: Math.ceil(locationsCount / pagination.pageSize),
       });
     };
     fetchData();
-  }, [pagination.page]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleDeleteButtonClick(deviceId: string) {
     setLocationIdToDelete(deviceId);
@@ -80,6 +83,20 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
 
   function handleRowClick(rowId: string, isOpen: boolean) {
     setDetailId(isOpen ? rowId : null);
+  }
+
+  function handleFilterChange(newFilters: LocationFilters) {
+    setFilters({
+      ...newFilters,
+    });
+  }
+
+  function handleFilterSubmit() {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setSubmittedFilters(filters);
   }
 
   if (!site || !locations) {
@@ -122,6 +139,7 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
         </Flex>
         <Box>
           <>
+            <LocationFilter filters={filters} onFilterChange={handleFilterChange} onFilterSubmit={handleFilterSubmit} />
             <LocationTable
               site={site}
               detailId={detailId}

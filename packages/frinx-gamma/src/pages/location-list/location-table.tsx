@@ -31,9 +31,11 @@ const LocationTable: VoidFunctionComponent<Props> = ({
         <Tr>
           <Th />
           <Th>Id</Th>
-          <Th>City</Th>
-          <Th>Postal code</Th>
           <Th>Street</Th>
+          <Th>Postal code</Th>
+          <Th>State</Th>
+          <Th>City</Th>
+          <Th>Country Code</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
@@ -50,13 +52,19 @@ const LocationTable: VoidFunctionComponent<Props> = ({
                 </Text>
               </Td>
               <Td>
-                <Text as="span">{location.city}</Text>
+                <Text as="span">{location.street}</Text>
               </Td>
               <Td>
                 <Text as="span">{location.postalCode}</Text>
               </Td>
               <Td>
-                <Text as="span">{location.street}</Text>
+                <Text as="span">{location.state}</Text>
+              </Td>
+              <Td>
+                <Text as="span">{location.city}</Text>
+              </Td>
+              <Td>
+                <Text as="span">{location.countryCode}</Text>
               </Td>
               <Td>
                 <HStack>
@@ -96,7 +104,7 @@ const LocationTable: VoidFunctionComponent<Props> = ({
             </Tr>
             {isDetailOpen && (
               <Tr>
-                <Td colSpan={6}>
+                <Td colSpan={8}>
                   <LocationDetail site={site} location={location} />
                 </Td>
               </Tr>

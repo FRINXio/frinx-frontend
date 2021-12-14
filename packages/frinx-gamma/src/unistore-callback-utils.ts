@@ -1,22 +1,21 @@
 import {
-  CreateVpnServiceInput,
-  CreateVpnSiteInput,
-  LocationsOutput,
-  SiteNetworkAccessOutput,
   ValidProviderIdentifiersOutput,
-  VpnBearerInput,
   VpnBearerOutput,
-  VpnCarrierInput,
-  VpnCarriersOutput,
-  VpnNodeInput,
   VpnNodesOutput,
   VpnServicesOutput,
   VpnSitesOutput,
+  VpnCarriersOutput,
+  LocationsOutput,
+  SiteNetworkAccessOutput,
 } from './network-types';
+import { VpnService } from './components/forms/service-types';
+import { VpnSite } from './components/forms/site-types';
+import { VpnBearer, VpnCarrier, VpnNode } from './components/forms/bearer-types';
 import { ServiceFilters } from './pages/service-list/service-filter';
 import { SiteFilters } from './pages/site-list/site-filter';
-import { SiteNetworkAccessFilters } from './pages/site-network-access-list/site-network-access-filter';
 import { VpnBearerFilters } from './pages/vpn-bearer-list/vpn-bearer-filter';
+import { SiteNetworkAccessFilters } from './pages/site-network-access-list/site-network-access-filter';
+import { LocationFilters } from './pages/location-list/location-filter';
 
 export type WorkflowPayload = {
   input?: unknown;
@@ -37,42 +36,47 @@ type ContentType = 'config' | 'nonconfig';
 export type UnistoreCallbacks = {
   getVpnServices: (
     pagination: Pagination | null,
-    serviceFilter: ServiceFilters | null,
+    filters: ServiceFilters | null,
     contentType?: ContentType,
   ) => Promise<VpnServicesOutput>;
-  editVpnServices: (vpnService: CreateVpnServiceInput) => Promise<unknown>;
-  deleteVpnService: (vpnServiceId: string) => Promise<unknown>;
-  createVpnService: (vpnService: CreateVpnServiceInput) => Promise<void>;
+  editVpnServices: (body: VpnService) => Promise<unknown>;
+  deleteVpnService: (id: string) => Promise<unknown>;
+  createVpnService: (body: VpnService) => Promise<void>;
   getVpnSites: (
     pagination: Pagination | null,
-    siteFilter: SiteFilters | null,
+    filters: SiteFilters | null,
     contentType?: ContentType,
   ) => Promise<VpnSitesOutput>;
-  createVpnSite: (vpnSite: CreateVpnSiteInput) => Promise<void>;
-  editVpnSite: (vpnSite: CreateVpnSiteInput) => Promise<void>;
-  deleteVpnSite: (vpnSiteId: string) => Promise<void>;
+  createVpnSite: (body: VpnSite) => Promise<void>;
+  editVpnSite: (body: VpnSite) => Promise<void>;
+  deleteVpnSite: (id: string) => Promise<void>;
   getValidProviderIdentifiers: () => Promise<ValidProviderIdentifiersOutput>;
+  getBearerValidProviderIdentifiers: () => Promise<ValidProviderIdentifiersOutput>;
   getVpnBearers: (
     pagination: Pagination | null,
-    vpnBearerFilter: VpnBearerFilters | null,
+    filters: VpnBearerFilters | null,
     contentType?: ContentType,
   ) => Promise<VpnBearerOutput>;
-  createVpnBearer: (bearer: VpnBearerInput) => Promise<void>;
-  editVpnBearer: (bearer: VpnBearerInput) => Promise<void>;
+  createVpnBearer: (bearer: VpnBearer) => Promise<void>;
+  editVpnBearer: (bearer: VpnBearer) => Promise<void>;
   deleteVpnBearer: (id: string) => Promise<void>;
   getVpnNodes: () => Promise<VpnNodesOutput>;
-  editVpnNode: (node: VpnNodeInput) => Promise<void>;
+  editVpnNode: (node: VpnNode) => Promise<void>;
   deleteVpnNode: (nodeId: string) => Promise<void>;
   getVpnCarriers: () => Promise<VpnCarriersOutput>;
-  createVpnCarrier: (carrier: VpnCarrierInput) => Promise<void>;
-  editVpnCarrier: (carrier: VpnCarrierInput) => Promise<void>;
-  deleteVpnCarrier: (carrierId: string) => Promise<void>;
-  getBearerValidProviderIdentifiers: () => Promise<ValidProviderIdentifiersOutput>;
-  getVpnServiceCount: (serviceFilter: ServiceFilters | null, contentType?: ContentType) => Promise<number>;
-  getVpnSiteCount: (siteFilter: SiteFilters | null, contentType?: ContentType) => Promise<number>;
-  getVpnBearerCount: (vpnBearerFilter: VpnBearerFilters | null, contentType?: ContentType) => Promise<number>;
-  getLocations: (siteId: string, pagination: Pagination | null, contentType?: ContentType) => Promise<LocationsOutput>;
-  getLocationsCount: (siteId: string, contentType?: ContentType) => Promise<number>;
+  createVpnCarrier: (carrier: VpnCarrier) => Promise<void>;
+  editVpnCarrier: (carrier: VpnCarrier) => Promise<void>;
+  deleteVpnCarrier: (carrierName: string) => Promise<void>;
+  getVpnServiceCount: (filters: ServiceFilters | null, contentType?: ContentType) => Promise<number>;
+  getVpnSiteCount: (filters: SiteFilters | null, contentType?: ContentType) => Promise<number>;
+  getVpnBearerCount: (filters: VpnBearerFilters | null, contentType?: ContentType) => Promise<number>;
+  getLocations: (
+    siteId: string,
+    pagination: Pagination | null,
+    filters: LocationFilters | null,
+    contentType?: ContentType,
+  ) => Promise<LocationsOutput>;
+  getLocationsCount: (siteId: string, filters: LocationFilters, contentType?: ContentType) => Promise<number>;
   getSiteNetworkAccesses: (
     siteId: string,
     pagination: Pagination | null,

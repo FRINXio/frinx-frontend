@@ -20,10 +20,12 @@ import {
   getSiteFilterParams,
   getSiteNetworkAccessFilterParams,
   getVpnBearerFilterParams,
+  getLocationFilterParams,
   ServiceFilter,
   SiteFilter,
   SiteNetworkAccessFilter,
   VpnBearerFilter,
+  LocationFilter,
 } from './filter-helpers';
 import {
   decodeLocationsOutput,
@@ -367,13 +369,15 @@ export async function getVpnBearerCount(
 export async function getLocations(
   siteId: string,
   pagination: Pagination | null,
+  locationFilter: LocationFilter | null,
   contentType?: ContentType,
 ): Promise<LocationsOutput> {
   try {
+    const filterParams = locationFilter ? getLocationFilterParams(locationFilter) : '';
     const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
     const content = getContentParameter(contentType);
     const json = await sendGetRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?${content}${paginationParams}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?${content}${paginationParams}${filterParams}`,
     );
     const data = decodeLocationsOutput(json);
     return data;
@@ -385,11 +389,16 @@ export async function getLocations(
   }
 }
 
-export async function getLocationsCount(siteId: string, contentType?: ContentType): Promise<number> {
+export async function getLocationsCount(
+  siteId: string,
+  locationFilter: LocationFilter | null,
+  contentType?: ContentType,
+): Promise<number> {
   try {
+    const filterParams = locationFilter ? getLocationFilterParams(locationFilter) : '';
     const content = getContentParameter(contentType);
     const data = await sendGetRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?${content}&fetch=count`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?${content}${filterParams}&fetch=count`,
     );
     if (!isNumber(data)) {
       throw new Error('not a number');
