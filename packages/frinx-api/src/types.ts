@@ -1,5 +1,5 @@
 import { ClientOptions } from 'urql';
-import { AuthContext, ErrorType } from './api-helpers';
+import { AuthContext } from './api-helpers';
 
 export type ApiConfig = {
   url: string;
@@ -8,7 +8,7 @@ export type ApiConfig = {
 
 export type GraphQLApiClient = {
   clientOptions: ClientOptions;
-  onError: (error: ErrorType) => void;
+  onError: () => void;
 };
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
