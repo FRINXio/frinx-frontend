@@ -27,9 +27,13 @@ import {
   VpnBearerFilter,
   LocationFilter,
   DeviceFilter,
+  EvcFilter,
   getDeviceFilterParams,
+  getEvcFilterParams,
 } from './filter-helpers';
 import {
+  decodeEvcAttachmentItemsOutput,
+  decodeEvcAttachmentOutput,
   decodeLocationsOutput,
   decodeSiteDevicesOutput,
   decodeSiteNetworkAccessOutput,
@@ -39,6 +43,7 @@ import {
   decodeVpnNodesOutput,
   decodeVpnServicesOutput,
   decodeVpnSitesOutput,
+  EvcAttachmentItemsOutput,
   LocationsOutput,
   SiteDevicesOutput,
   SiteNetworkAccessOutput,
@@ -493,6 +498,51 @@ export async function getSiteNetworkAccessesCount(
     const content = getContentParameter(contentType);
     const data = await sendGetRequest(
       `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access?${content}&fetch=count${filterParams}`,
+    );
+    if (!isNumber(data)) {
+      throw new Error('not a number');
+    }
+    return data;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    return 0;
+  }
+}
+
+export async function getEvcAttachments(
+  bearerId: string,
+  pagination: Pagination | null,
+  evcFilter: EvcFilter | null,
+  contentType?: ContentType,
+): Promise<EvcAttachmentItemsOutput> {
+  try {
+    const filterParams = evcFilter ? getEvcFilterParams(evcFilter) : '';
+    const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
+    const content = getContentParameter(contentType);
+    const json = await sendGetRequest(
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${bearerId}/evc-attachments/evc-attachment?${BEARER_SCHEMA_PARAMETER}&${content}${paginationParams}${filterParams}`,
+    );
+    const data = decodeEvcAttachmentItemsOutput(json);
+    return data;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    // if site does not have locations it the response is 404
+    return { 'evc-attachment': [] };
+  }
+}
+
+export async function getEvcAttachmentsCount(
+  bearerId: string,
+  locationFilter: LocationFilter | null,
+  contentType?: ContentType,
+): Promise<number> {
+  try {
+    const filterParams = locationFilter ? getLocationFilterParams(locationFilter) : '';
+    const content = getContentParameter(contentType);
+    const data = await sendGetRequest(
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${bearerId}/evc-attachments/evc-attachment?${BEARER_SCHEMA_PARAMETER}&fetch=count&${content}${filterParams}`,
     );
     if (!isNumber(data)) {
       throw new Error('not a number');

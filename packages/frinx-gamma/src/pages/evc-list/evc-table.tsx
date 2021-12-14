@@ -2,12 +2,13 @@ import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Toolti
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
-import { VpnBearer } from '../../components/forms/bearer-types';
+import { EvcAttachment, VpnBearer } from '../../components/forms/bearer-types';
 import EvcDetail from './evc-detail';
 import unwrap from '../../helpers/unwrap';
 
 type Props = {
   bearer: VpnBearer;
+  evcAttachments: EvcAttachment[];
   detailId: string | null;
   onEditEvcButtonClick: (bearerId: string, evcType: string, circuitReference: string) => void;
   onDeleteEvcButtonClick: (evcType: string, circuitReference: string) => void;
@@ -16,6 +17,7 @@ type Props = {
 
 const EvcTable: VoidFunctionComponent<Props> = ({
   bearer,
+  evcAttachments,
   detailId,
   onEditEvcButtonClick,
   onDeleteEvcButtonClick,
@@ -31,7 +33,7 @@ const EvcTable: VoidFunctionComponent<Props> = ({
           <Th>Actions</Th>
         </Tr>
       </Thead>
-      {bearer.evcAttachments.map((evc) => {
+      {evcAttachments.map((evc) => {
         const rowId = unwrap(evc.circuitReference);
         const isDetailOpen = rowId === detailId;
         return (

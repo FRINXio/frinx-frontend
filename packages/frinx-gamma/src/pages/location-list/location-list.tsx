@@ -95,7 +95,7 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
     setSubmittedFilters(filters);
   }
 
-  if (!site || !locations) {
+  if (!site) {
     return null;
   }
 
@@ -138,7 +138,7 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
             <LocationTable
               site={site}
               detailId={detailId}
-              locations={locations}
+              locations={locations || []}
               onDeleteLocationButtonClick={handleDeleteButtonClick}
               onEditLocationButtonClick={onEditLocationClick}
               onDevicesSiteButtonClick={onDevicesVpnSiteClick}
