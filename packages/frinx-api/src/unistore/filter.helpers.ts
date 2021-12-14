@@ -20,6 +20,15 @@ export type VpnBearerFilter = {
   description: string | null;
 };
 
+export type LocationFilter = {
+  locationId: string | null;
+  street: string | null;
+  postalCode: string | null;
+  state: string | null;
+  city: string | null;
+  countryCode: string | null;
+};
+
 // we filter non null filters and joined them with && operator
 export function joinNonNullFilters(filters: (string | null)[]): string {
   const separator = encodeURIComponent('&&'); // AND operator must be url encoded
@@ -70,6 +79,18 @@ export function getVpnBearerFilterParams(vpnBearerFilter: VpnBearerFilter): stri
   const filters = [];
   filters.push(vpnBearerFilter.id ? `@."sp-bearer-reference"like_regex"${vpnBearerFilter.id}"` : null);
   filters.push(vpnBearerFilter.description ? `@."description"like_regex"${vpnBearerFilter.description}"` : null);
+  const joinedFilters = joinNonNullFilters(filters);
+  return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
+}
+
+export function getLocationFilterParams(locationFilter: LocationFilter): string {
+  const filters = [];
+  filters.push(locationFilter.locationId ? `@."location-id"like_regex"${locationFilter.locationId}"` : null);
+  filters.push(locationFilter.street ? `@."street"like_regex"${locationFilter.street}"` : null);
+  filters.push(locationFilter.postalCode ? `@."postal-code"like_regex"${locationFilter.postalCode}"` : null);
+  filters.push(locationFilter.state ? `@."state"like_regex"${locationFilter.state}"` : null);
+  filters.push(locationFilter.city ? `@."city"like_regex"${locationFilter.city}"` : null);
+  filters.push(locationFilter.countryCode ? `@."country-code"like_regex"${locationFilter.countryCode}"` : null);
   const joinedFilters = joinNonNullFilters(filters);
   return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
 }

@@ -2,10 +2,12 @@ import { isNumber } from 'fp-ts/lib/number';
 import { isString } from 'fp-ts/lib/string';
 import { ApiHelpers } from '../api-helpers';
 import {
+  getLocationFilterParams,
   getServiceFilterParams,
   getSiteFilterParams,
   getSiteNetworkAccessFilterParams,
   getVpnBearerFilterParams,
+  LocationFilter,
   ServiceFilter,
   SiteFilter,
   SiteNetworkAccessFilter,
@@ -87,8 +89,13 @@ export type UnistoreApiClient = {
   getVpnServiceCount: (serviceFilter: ServiceFilter | null, contentType?: ContentType) => Promise<number>;
   getVpnSiteCount: (siteFilter: SiteFilter | null, contentType?: ContentType) => Promise<number>;
   getVpnBearerCount: (vpnBearerFilter: VpnBearerFilter | null, contentType?: ContentType) => Promise<number>;
-  getLocations: (siteId: string, pagination: Pagination | null, contentType?: ContentType) => Promise<LocationsOutput>;
-  getLocationsCount: (siteId: string, contentType?: ContentType) => Promise<number>;
+  getLocations: (
+    siteId: string,
+    pagination: Pagination | null,
+    filters: LocationFilter | null,
+    contentType?: ContentType,
+  ) => Promise<LocationsOutput>;
+  getLocationsCount: (siteId: string, filters: LocationFilter, contentType?: ContentType) => Promise<number>;
   getSiteNetworkAccesses: (
     siteId: string,
     pagination: Pagination | null,
@@ -391,13 +398,15 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
   async function getLocations(
     siteId: string,
     pagination: Pagination | null,
+    locationFilter: LocationFilter | null,
     contentType?: ContentType,
   ): Promise<LocationsOutput> {
     try {
+      const filterParams = locationFilter ? getLocationFilterParams(locationFilter) : '';
       const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
       const content = getContentParameter(contentType);
       const json = await sendGetRequest(
-        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?${content}${paginationParams}`,
+        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?${content}${paginationParams}${filterParams}`,
       );
       const data = decodeLocationsOutput(json);
       return data;
@@ -409,11 +418,16 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     }
   }
 
-  async function getLocationsCount(siteId: string, contentType?: ContentType): Promise<number> {
+  async function getLocationsCount(
+    siteId: string,
+    locationFilter: LocationFilter | null,
+    contentType?: ContentType,
+  ): Promise<number> {
     try {
+      const filterParams = locationFilter ? getLocationFilterParams(locationFilter) : '';
       const content = getContentParameter(contentType);
       const data = await sendGetRequest(
-        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?${content}&fetch=count`,
+        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?${content}${filterParams}&fetch=count`,
       );
       if (!isNumber(data)) {
         throw new Error('not a number');
