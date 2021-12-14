@@ -20,10 +20,18 @@ function getCookie(name: string): string | undefined {
   return undefined;
 }
 
+function removeCookie(name: string): void {
+  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/`;
+}
+
 export function setTransactionId(transactionId: string): void {
   setCookie('UNICONFIGTXID', transactionId);
 }
 
 export function getTransactionId(): string | undefined {
   return getCookie('UNICONFIGTXID');
+}
+
+export function removeTransactionId(): void {
+  removeCookie('UNICONFIGTXID');
 }

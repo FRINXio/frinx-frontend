@@ -118,7 +118,7 @@ export function createGraphQLApiClient(config: ApiConfig): GraphQLApiClient {
       },
     },
     onError: () => {
-      config.authContext.emitUnauthorized();
+      authContext.emit('UNAUTHORIZED');
     },
   };
 }
