@@ -31,6 +31,7 @@ import {
 } from './filter-helpers';
 import {
   decodeLocationsOutput,
+  decodeSiteDevicesOutput,
   decodeSiteNetworkAccessOutput,
   decodeValidProviderIdentifiersOutput,
   decodeVpnBearerOutput,
@@ -39,6 +40,7 @@ import {
   decodeVpnServicesOutput,
   decodeVpnSitesOutput,
   LocationsOutput,
+  SiteDevicesOutput,
   SiteNetworkAccessOutput,
   ValidProviderIdentifiersOutput,
   VpnBearer,
@@ -418,7 +420,7 @@ export async function getDevices(
   pagination: Pagination | null,
   deviceFilter: DeviceFilter | null,
   contentType?: ContentType,
-): Promise<LocationsOutput> {
+): Promise<SiteDevicesOutput> {
   try {
     const filterParams = deviceFilter ? getDeviceFilterParams(deviceFilter) : '';
     const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
@@ -426,13 +428,13 @@ export async function getDevices(
     const json = await sendGetRequest(
       `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/devices/device?${content}${paginationParams}${filterParams}`,
     );
-    const data = decodeLocationsOutput(json);
+    const data = decodeSiteDevicesOutput(json);
     return data;
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);
     // if site does not have locations it the response is 404
-    return { location: [] };
+    return { device: [] };
   }
 }
 
