@@ -33,7 +33,6 @@ import {
 } from './filter-helpers';
 import {
   decodeEvcAttachmentItemsOutput,
-  decodeEvcAttachmentOutput,
   decodeLocationsOutput,
   decodeSiteDevicesOutput,
   decodeSiteNetworkAccessOutput,
