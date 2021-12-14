@@ -423,7 +423,6 @@ export async function getDevices(
     const filterParams = deviceFilter ? getDeviceFilterParams(deviceFilter) : '';
     const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
     const content = getContentParameter(contentType);
-    console.log(filterParams, paginationParams, content);
     const json = await sendGetRequest(
       `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/devices/device?${content}${paginationParams}${filterParams}`,
     );
