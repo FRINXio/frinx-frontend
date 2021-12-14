@@ -213,7 +213,7 @@ export function apiProviderIdentifiersToClientIdentifers(
   };
 }
 
-function apiSiteDevicesToClientSiteDevices(apiSiteDevices?: SiteDevicesOutput): SiteDevice[] {
+export function apiSiteDevicesToClientSiteDevices(apiSiteDevices?: SiteDevicesOutput): SiteDevice[] {
   if (!apiSiteDevices || !apiSiteDevices.device) {
     return [];
   }

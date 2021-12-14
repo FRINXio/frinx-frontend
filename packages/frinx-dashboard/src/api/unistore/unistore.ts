@@ -26,6 +26,8 @@ import {
   SiteNetworkAccessFilter,
   VpnBearerFilter,
   LocationFilter,
+  DeviceFilter,
+  getDeviceFilterParams,
 } from './filter-helpers';
 import {
   decodeLocationsOutput,
@@ -399,6 +401,52 @@ export async function getLocationsCount(
     const content = getContentParameter(contentType);
     const data = await sendGetRequest(
       `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?${content}${filterParams}&fetch=count`,
+    );
+    if (!isNumber(data)) {
+      throw new Error('not a number');
+    }
+    return data;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    return 0;
+  }
+}
+
+export async function getDevices(
+  siteId: string,
+  pagination: Pagination | null,
+  deviceFilter: DeviceFilter | null,
+  contentType?: ContentType,
+): Promise<LocationsOutput> {
+  try {
+    const filterParams = deviceFilter ? getDeviceFilterParams(deviceFilter) : '';
+    const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
+    const content = getContentParameter(contentType);
+    console.log(filterParams, paginationParams, content);
+    const json = await sendGetRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/devices/device?${content}${paginationParams}${filterParams}`,
+    );
+    const data = decodeLocationsOutput(json);
+    return data;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    // if site does not have locations it the response is 404
+    return { location: [] };
+  }
+}
+
+export async function getDevicesCount(
+  siteId: string,
+  deviceFilter: DeviceFilter | null,
+  contentType?: ContentType,
+): Promise<number> {
+  try {
+    const filterParams = deviceFilter ? getDeviceFilterParams(deviceFilter) : '';
+    const content = getContentParameter(contentType);
+    const data = await sendGetRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/devices/device?${content}${filterParams}&fetch=count`,
     );
     if (!isNumber(data)) {
       throw new Error('not a number');

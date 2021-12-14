@@ -7,6 +7,7 @@ import {
   VpnCarriersOutput,
   LocationsOutput,
   SiteNetworkAccessOutput,
+  SiteDevicesOutput,
 } from './network-types';
 import { VpnService } from './components/forms/service-types';
 import { VpnSite } from './components/forms/site-types';
@@ -16,6 +17,7 @@ import { SiteFilters } from './pages/site-list/site-filter';
 import { VpnBearerFilters } from './pages/vpn-bearer-list/vpn-bearer-filter';
 import { SiteNetworkAccessFilters } from './pages/site-network-access-list/site-network-access-filter';
 import { LocationFilters } from './pages/location-list/location-filter';
+import { DeviceFilters } from './pages/device-list/device-filter';
 
 export type WorkflowPayload = {
   input?: unknown;
@@ -77,6 +79,13 @@ export type UnistoreCallbacks = {
     contentType?: ContentType,
   ) => Promise<LocationsOutput>;
   getLocationsCount: (siteId: string, filters: LocationFilters, contentType?: ContentType) => Promise<number>;
+  getDevices: (
+    siteId: string,
+    pagination: Pagination | null,
+    filters: DeviceFilters | null,
+    contentType?: ContentType,
+  ) => Promise<SiteDevicesOutput>;
+  getDevicesCount: (siteId: string, filters: DeviceFilters, contentType?: ContentType) => Promise<number>;
   getSiteNetworkAccesses: (
     siteId: string,
     pagination: Pagination | null,
