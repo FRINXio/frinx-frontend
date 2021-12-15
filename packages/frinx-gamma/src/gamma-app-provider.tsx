@@ -17,7 +17,6 @@ const GammaAppProvider: FC<GammaAppProviderProps> = ({ children, hasTransactionE
       const callbacks = unistoreCallbackUtils.getCallbacks;
       callbacks.getTransactionCookie().then((data) => {
         setTransactionId(data);
-        onTransactionRefresh();
         setIsReady(true);
       });
     } else {
@@ -30,6 +29,7 @@ const GammaAppProvider: FC<GammaAppProviderProps> = ({ children, hasTransactionE
     removeTransactionId();
     const callbacks = unistoreCallbackUtils.getCallbacks;
     callbacks.getTransactionCookie().then((data) => {
+      onTransactionRefresh();
       setTransactionId(data);
       setIsReady(true);
     });
