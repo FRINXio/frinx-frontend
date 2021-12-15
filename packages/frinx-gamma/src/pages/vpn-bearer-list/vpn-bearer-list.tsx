@@ -7,7 +7,7 @@ import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-de
 import { VpnBearer } from '../../components/forms/bearer-types';
 import { apiBearerToClientBearer } from '../../components/forms/converters';
 import unwrap from '../../helpers/unwrap';
-import VpnBearerFilter, { VpnBearerFilters } from './vpn-bearer-filter';
+import VpnBearerFilter, { getDefaultBearerFilters, VpnBearerFilters } from './vpn-bearer-filter';
 import VpnBearerTable from './vpn-bearer-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
@@ -36,14 +36,8 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
   const deleteModalDisclosure = useDisclosure();
   const [detailId, setDetailId] = useState<string | null>(null);
   const [pagination, setPagination] = usePagination();
-  const [filters, setFilters] = useState<VpnBearerFilters>({
-    id: null,
-    description: null,
-  });
-  const [submittedFilters, setSubmittedFilters] = useState<VpnBearerFilters>({
-    id: null,
-    description: null,
-  });
+  const [filters, setFilters] = useState<VpnBearerFilters>(getDefaultBearerFilters());
+  const [submittedFilters, setSubmittedFilters] = useState<VpnBearerFilters>(getDefaultBearerFilters());
 
   useEffect(() => {
     const fetchData = async () => {
