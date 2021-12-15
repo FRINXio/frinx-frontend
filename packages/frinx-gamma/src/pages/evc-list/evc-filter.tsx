@@ -2,12 +2,9 @@ import React, { VoidFunctionComponent } from 'react';
 import { Box, Button, FormControl, FormLabel, Grid, HStack, Input } from '@chakra-ui/react';
 
 export type EvcFilters = {
-  evcType: string | null;
   circuitReference: string | null;
   carrierReference: string | null;
-  svlanId: string | null;
   inputBandwidth: string | null;
-  qosInputProfile: string | null;
   customerName: string | null;
   adminStatus: string | null;
   operStatus: string | null;
@@ -15,12 +12,9 @@ export type EvcFilters = {
 
 export function getDefaultEvcFilters(): EvcFilters {
   return {
-    evcType: null,
     circuitReference: null,
     carrierReference: null,
-    svlanId: null,
     inputBandwidth: null,
-    qosInputProfile: null,
     customerName: null,
     adminStatus: null,
     operStatus: null,
@@ -37,21 +31,6 @@ const SiteFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onF
   return (
     <HStack marginBottom="4" alignItems="flex-end">
       <Grid templateColumns="repeat(5, 1fr)" gap={4}>
-        <FormControl>
-          <FormLabel>Evc Type:</FormLabel>
-          <Input
-            name="evcType"
-            variant="filled"
-            bgColor="white"
-            value={filters.evcType || ''}
-            onChange={(event) =>
-              onFilterChange({
-                ...filters,
-                evcType: event.target.value,
-              })
-            }
-          />
-        </FormControl>
         <FormControl>
           <FormLabel>Circuit Reference:</FormLabel>
           <Input
@@ -78,36 +57,6 @@ const SiteFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onF
               onFilterChange({
                 ...filters,
                 carrierReference: event.target.value,
-              })
-            }
-          />
-        </FormControl>
-        <FormControl>
-          <FormLabel>Svlan Id:</FormLabel>
-          <Input
-            name="svlanId"
-            variant="filled"
-            bgColor="white"
-            value={filters.svlanId || ''}
-            onChange={(event) =>
-              onFilterChange({
-                ...filters,
-                svlanId: event.target.value,
-              })
-            }
-          />
-        </FormControl>
-        <FormControl>
-          <FormLabel>QOS Input Profile:</FormLabel>
-          <Input
-            name="qosInputProfile"
-            variant="filled"
-            bgColor="white"
-            value={filters.qosInputProfile || ''}
-            onChange={(event) =>
-              onFilterChange({
-                ...filters,
-                qosInputProfile: event.target.value,
               })
             }
           />

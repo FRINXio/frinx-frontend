@@ -2,7 +2,7 @@ import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import callbackUtils from '../../unistore-callback-utils';
 import uniflowCallbackUtils from '../../uniflow-callback-utils';
-import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
+import { apiVpnServiceToClientVpnService, clientVpnServiceToApiVpnService } from '../../components/forms/converters';
 import { getSelectOptions } from '../../components/forms/options.helper';
 import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
@@ -66,7 +66,8 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     console.log('submit clicked', service);
     const callbacks = callbackUtils.getCallbacks;
     try {
-      const output = await callbacks.editVpnServices(service);
+      const vpnService = clientVpnServiceToApiVpnService(service);
+      const output = await callbacks.createVpnService(vpnService);
       // eslint-disable-next-line no-console
       console.log(output);
       onSuccess();

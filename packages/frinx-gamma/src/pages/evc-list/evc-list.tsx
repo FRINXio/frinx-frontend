@@ -1,7 +1,11 @@
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useDisclosure, Heading, Box, Container, Flex, Button } from '@chakra-ui/react';
 import { useParams } from 'react-router';
-import { apiBearerToClientBearer, apiEvcAttachmentsToClientEvcAttachments } from '../../components/forms/converters';
+import {
+  apiBearerToClientBearer,
+  clientBearerToApiBearer,
+  apiEvcAttachmentsToClientEvcAttachments,
+} from '../../components/forms/converters';
 import EvcTable from './evc-table';
 import { EvcAttachment, VpnBearer } from '../../components/forms/bearer-types';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
@@ -107,7 +111,8 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
               (e) => !(e.evcType === evcToDelete?.evcType && e.circuitReference === evcToDelete?.circuitReference),
             ),
           };
-          callbackUtils.getCallbacks.editVpnBearer(editedVpnBearer).then(() => {
+          const apiBearer = clientBearerToApiBearer(editedVpnBearer);
+          callbackUtils.getCallbacks.editVpnBearer(apiBearer).then(() => {
             setBearer(editedVpnBearer);
             deleteModalDisclosure.onClose();
           });

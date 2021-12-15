@@ -16,6 +16,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "fp-ts": "^2.10.5",
+    "io-ts": "^2.2.16",
     "url-join": "^4.0.1"
   },
   "devDependencies": {
