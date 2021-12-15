@@ -2,13 +2,13 @@ import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Toolti
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
-import { VpnSite } from '../../components/forms/site-types';
+import { SiteDevice, VpnSite } from '../../components/forms/site-types';
 import DeviceDetail from './device-detail';
 import unwrap from '../../helpers/unwrap';
 
 type Props = {
   site: VpnSite;
-  locationId: string;
+  devices: SiteDevice[];
   detailId: string | null;
   onEditDeviceButtonClick: (siteId: string, locationId: string, deviceId: string) => void;
   onDeleteDeviceButtonClick: (siteId: string) => void;
@@ -16,14 +16,13 @@ type Props = {
 };
 
 const DeviceTable: VoidFunctionComponent<Props> = ({
-  locationId,
+  devices,
   site,
   detailId,
   onEditDeviceButtonClick,
   onDeleteDeviceButtonClick,
   onRowClick,
 }) => {
-  const devices = site.siteDevices.filter((d) => d.locationId === locationId);
   return (
     <Table background="white" size="lg" marginBottom="12">
       <Thead>

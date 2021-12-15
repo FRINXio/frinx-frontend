@@ -26,9 +26,15 @@ import {
   SiteNetworkAccessFilter,
   VpnBearerFilter,
   LocationFilter,
+  DeviceFilter,
+  EvcFilter,
+  getDeviceFilterParams,
+  getEvcFilterParams,
 } from './filter-helpers';
 import {
+  decodeEvcAttachmentItemsOutput,
   decodeLocationsOutput,
+  decodeSiteDevicesOutput,
   decodeSiteNetworkAccessOutput,
   decodeValidProviderIdentifiersOutput,
   decodeVpnBearerOutput,
@@ -36,7 +42,9 @@ import {
   decodeVpnNodesOutput,
   decodeVpnServicesOutput,
   decodeVpnSitesOutput,
+  EvcAttachmentItemsOutput,
   LocationsOutput,
+  SiteDevicesOutput,
   SiteNetworkAccessOutput,
   ValidProviderIdentifiersOutput,
   VpnBearer,
@@ -411,6 +419,51 @@ export async function getLocationsCount(
   }
 }
 
+export async function getDevices(
+  siteId: string,
+  pagination: Pagination | null,
+  deviceFilter: DeviceFilter | null,
+  contentType?: ContentType,
+): Promise<SiteDevicesOutput> {
+  try {
+    const filterParams = deviceFilter ? getDeviceFilterParams(deviceFilter) : '';
+    const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
+    const content = getContentParameter(contentType);
+    const json = await sendGetRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/devices/device?${content}${paginationParams}${filterParams}`,
+    );
+    const data = decodeSiteDevicesOutput(json);
+    return data;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    // if site does not have locations it the response is 404
+    return { device: [] };
+  }
+}
+
+export async function getDevicesCount(
+  siteId: string,
+  deviceFilter: DeviceFilter | null,
+  contentType?: ContentType,
+): Promise<number> {
+  try {
+    const filterParams = deviceFilter ? getDeviceFilterParams(deviceFilter) : '';
+    const content = getContentParameter(contentType);
+    const data = await sendGetRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/devices/device?${content}${filterParams}&fetch=count`,
+    );
+    if (!isNumber(data)) {
+      throw new Error('not a number');
+    }
+    return data;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    return 0;
+  }
+}
+
 export async function getSiteNetworkAccesses(
   siteId: string,
   pagination: Pagination | null,
@@ -444,6 +497,51 @@ export async function getSiteNetworkAccessesCount(
     const content = getContentParameter(contentType);
     const data = await sendGetRequest(
       `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access?${content}&fetch=count${filterParams}`,
+    );
+    if (!isNumber(data)) {
+      throw new Error('not a number');
+    }
+    return data;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    return 0;
+  }
+}
+
+export async function getEvcAttachments(
+  bearerId: string,
+  pagination: Pagination | null,
+  evcFilter: EvcFilter | null,
+  contentType?: ContentType,
+): Promise<EvcAttachmentItemsOutput> {
+  try {
+    const filterParams = evcFilter ? getEvcFilterParams(evcFilter) : '';
+    const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
+    const content = getContentParameter(contentType);
+    const json = await sendGetRequest(
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${bearerId}/evc-attachments/evc-attachment?${BEARER_SCHEMA_PARAMETER}&${content}${paginationParams}${filterParams}`,
+    );
+    const data = decodeEvcAttachmentItemsOutput(json);
+    return data;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    // if site does not have locations it the response is 404
+    return { 'evc-attachment': [] };
+  }
+}
+
+export async function getEvcAttachmentsCount(
+  bearerId: string,
+  evcFilter: EvcFilter | null,
+  contentType?: ContentType,
+): Promise<number> {
+  try {
+    const filterParams = evcFilter ? getEvcFilterParams(evcFilter) : '';
+    const content = getContentParameter(contentType);
+    const data = await sendGetRequest(
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${bearerId}/evc-attachments/evc-attachment?${BEARER_SCHEMA_PARAMETER}&fetch=count&${content}${filterParams}`,
     );
     if (!isNumber(data)) {
       throw new Error('not a number');

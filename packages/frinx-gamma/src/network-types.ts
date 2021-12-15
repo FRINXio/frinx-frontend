@@ -618,6 +618,15 @@ export function decodeEvcAttachmentOutput(value: unknown): EvcAttachmentOutput {
   return extractResult(EvcAttachmentOutputValidator.decode(value));
 }
 
+const EvcAttachmentItemsOutputValidator = t.type({
+  'evc-attachment': t.array(EvcAttachmentOutputValidator),
+});
+
+export type EvcAttachmentItemsOutput = t.TypeOf<typeof EvcAttachmentItemsOutputValidator>;
+export function decodeEvcAttachmentItemsOutput(value: unknown): EvcAttachmentItemsOutput {
+  return extractResult(EvcAttachmentItemsOutputValidator.decode(value));
+}
+
 const CarrierOutputValidator = t.type({
   'carrier-name': optional(t.string),
   'carrier-reference': optional(t.string),
@@ -652,11 +661,7 @@ const VpnBearerItemsOutputValidator = t.array(
     carrier: optional(CarrierOutputValidator),
     connection: optional(ConnectionOutputValidator),
     'default-upstream-bearer': optional(t.string),
-    'evc-attachments': optional(
-      t.type({
-        'evc-attachment': t.array(EvcAttachmentOutputValidator),
-      }),
-    ),
+    'evc-attachments': optional(EvcAttachmentItemsOutputValidator),
   }),
 );
 export type VpnBearerItemsOutput = t.TypeOf<typeof VpnBearerItemsOutputValidator>;

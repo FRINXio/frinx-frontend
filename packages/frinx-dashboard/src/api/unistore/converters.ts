@@ -20,6 +20,7 @@ import {
   DefaultCVlanEnum,
   EvcAttachment,
   EvcAttachmentOutput,
+  EvcAttachmentItemsOutput,
   EvcAttachmentInput,
   IPConnection,
   LocationsOutput,
@@ -213,7 +214,7 @@ export function apiProviderIdentifiersToClientIdentifers(
   };
 }
 
-function apiSiteDevicesToClientSiteDevices(apiSiteDevices?: SiteDevicesOutput): SiteDevice[] {
+export function apiSiteDevicesToClientSiteDevices(apiSiteDevices?: SiteDevicesOutput): SiteDevice[] {
   if (!apiSiteDevices || !apiSiteDevices.device) {
     return [];
   }
@@ -596,6 +597,10 @@ function apiEvcAttachmentToClientEvcAttachment(apiEvc: EvcAttachmentOutput): Evc
   };
 }
 
+export function apiEvcAttachmentsToClientEvcAttachments(apiEvc: EvcAttachmentItemsOutput): EvcAttachment[] {
+  return apiEvc['evc-attachment'].map(apiEvcAttachmentToClientEvcAttachment);
+}
+
 export function apiBearerToClientBearer(apiBearer: VpnBearerOutput): VpnBearer[] {
   if (!apiBearer['vpn-bearer']) {
     return [];
@@ -604,7 +609,7 @@ export function apiBearerToClientBearer(apiBearer: VpnBearerOutput): VpnBearer[]
   return apiBearer['vpn-bearer'].map((b) => {
     const evcAttachments =
       b['evc-attachments'] && b['evc-attachments']['evc-attachment']
-        ? b['evc-attachments']['evc-attachment'].map(apiEvcAttachmentToClientEvcAttachment)
+        ? apiEvcAttachmentsToClientEvcAttachments(b['evc-attachments'])
         : [];
     return {
       spBearerReference: b['sp-bearer-reference'],
