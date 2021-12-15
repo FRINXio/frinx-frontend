@@ -534,11 +534,11 @@ export async function getEvcAttachments(
 
 export async function getEvcAttachmentsCount(
   bearerId: string,
-  locationFilter: LocationFilter | null,
+  evcFilter: EvcFilter | null,
   contentType?: ContentType,
 ): Promise<number> {
   try {
-    const filterParams = locationFilter ? getLocationFilterParams(locationFilter) : '';
+    const filterParams = evcFilter ? getEvcFilterParams(evcFilter) : '';
     const content = getContentParameter(contentType);
     const data = await sendGetRequest(
       `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${bearerId}/evc-attachments/evc-attachment?${BEARER_SCHEMA_PARAMETER}&fetch=count&${content}${filterParams}`,
