@@ -4,6 +4,7 @@ import { useMsal } from '@azure/msal-react';
 import { Box, Button, Heading, Text } from '@chakra-ui/react';
 import React, { createContext, FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
+import ErrorMessageBox from './components/error-message-box/error-message-box';
 
 export type ContextType = {
   login: () => Promise<AuthenticationResult>;
@@ -69,22 +70,7 @@ const AuthProvider: FC = ({ children }) => {
             zIndex: 20,
           }}
         >
-          <Box
-            position="fixed"
-            top={4}
-            minWidth={96}
-            left="50%"
-            transform="translateX(-50%)"
-            paddingY={4}
-            paddingX={8}
-            borderRadius="md"
-            zIndex="modal"
-            background="white"
-            borderTop={4}
-            borderStyle="solid"
-            borderColor="red"
-            textAlign="center"
-          >
+          <ErrorMessageBox>
             <Heading size="md" marginBottom={2}>
               Unauthorized
             </Heading>
@@ -92,7 +78,7 @@ const AuthProvider: FC = ({ children }) => {
             <Button type="button" colorScheme="blue" onClick={handleLogin}>
               Login
             </Button>
-          </Box>
+          </ErrorMessageBox>
           {children}
         </Box>
       ) : (

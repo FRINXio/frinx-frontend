@@ -3,7 +3,11 @@ import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
-import { apiSiteDevicesToClientSiteDevices, apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
+import {
+  apiSiteDevicesToClientSiteDevices,
+  apiVpnSitesToClientVpnSite,
+  clientVpnSiteToApiVpnSite,
+} from '../../components/forms/converters';
 import { SiteDevice, VpnSite } from '../../components/forms/site-types';
 import DeviceFilter, { DeviceFilters, getDefaultDeviceFilters } from './device-filter';
 import unwrap from '../../helpers/unwrap';
@@ -107,7 +111,8 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
             ...site,
             siteDevices: site.siteDevices.filter((s) => s.deviceId !== deviceIdToDelete),
           };
-          callbackUtils.getCallbacks.editVpnSite(editedVpnSite).then(() => {
+          const apiSite = clientVpnSiteToApiVpnSite(editedVpnSite);
+          callbackUtils.getCallbacks.editVpnSite(apiSite).then(() => {
             setSite(editedVpnSite);
             deleteModalDisclosure.onClose();
           });

@@ -1,78 +1,39 @@
 import { Box, Button } from '@chakra-ui/react';
-import { UniflowApi } from '@frinx/api';
+import { UniflowApi, UnistoreApi } from '@frinx/api';
+import { GammaAppProviderProps } from '@frinx/gamma/dist/gamma-app-provider';
 import React, { FC, useEffect, useState, VoidFunctionComponent } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
-import * as unistoreCallbacks from './api/unistore/unistore';
 import { authContext } from './auth-helpers';
 
 type GammaComponents = Omit<typeof import('@frinx/gamma'), 'getGammaAppProvider'> & {
-  GammaAppProvider: FC;
+  GammaAppProvider: FC<GammaAppProviderProps>;
 };
 
 const GammaApp: VoidFunctionComponent = () => {
   const [components, setComponents] = useState<GammaComponents | null>(null);
+  const [hasTransactionError, setHasTransactionError] = useState(false);
   const history = useHistory();
 
   useEffect(() => {
     import('@frinx/gamma').then((gammaImport) => {
-      const {
-        ControlPage,
-        CreateVpnService,
-        EditVpnService,
-        CreateVpnSite,
-        EditVpnSite,
-        CreateSiteNetAccess,
-        ServiceList,
-        SiteList,
-        SiteNetworkAccessList,
-        EditSiteNetAccess,
-        DeviceList,
-        CreateDevice,
-        EditDevice,
-        VpnBearerList,
-        CreateBearer,
-        EditBearer,
-        LocationList,
-        CreateLocation,
-        EditLocation,
-        EvcAttachmentList,
-        CreateEvcAttachment,
-        EditEvcAttachment,
-        CreateVpnCarrier,
-        CreateVpnNode,
-        getGammaAppProvider,
-      } = gammaImport;
+      const { getGammaAppProvider, ...gammaComponents } = gammaImport;
 
       setComponents({
-        ControlPage,
-        CreateVpnService,
-        EditVpnService,
-        CreateVpnSite,
-        EditVpnSite,
-        CreateSiteNetAccess,
-        EditSiteNetAccess,
-        ServiceList,
-        SiteList,
-        SiteNetworkAccessList,
-        DeviceList,
-        CreateDevice,
-        EditDevice,
-        VpnBearerList,
-        CreateBearer,
-        EditBearer,
-        LocationList,
-        CreateLocation,
-        EditLocation,
-        EvcAttachmentList,
-        CreateEvcAttachment,
-        EditEvcAttachment,
-        CreateVpnCarrier,
-        CreateVpnNode,
         GammaAppProvider: getGammaAppProvider({
-          unistoreCallbacks: { ...unistoreCallbacks },
+          unistoreCallbacks: UnistoreApi.create(
+            { url: window.__CONFIG__.unistore_api_url, authContext },
+            window.__CONFIG__.uniconfig_auth,
+          ).client,
           uniflowCallbacks: UniflowApi.create({ url: window.__CONFIG__.conductor_api_url, authContext }).client,
         }),
+        ...gammaComponents,
       });
+    });
+  }, []);
+
+  useEffect(() => {
+    authContext.eventEmitter.once('FORBIDDEN', () => {
+      setHasTransactionError(true);
     });
   }, []);
 
@@ -109,7 +70,12 @@ const GammaApp: VoidFunctionComponent = () => {
   } = components;
 
   return (
-    <GammaAppProvider>
+    <GammaAppProvider
+      hasTransactionError={hasTransactionError}
+      onTransactionRefresh={() => {
+        setHasTransactionError(false);
+      }}
+    >
       <Box m="4">
         <Button variant="link" fontWeight="normal" onClick={() => history.push('/gamma/')}>
           Control Page &raquo;

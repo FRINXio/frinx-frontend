@@ -1,5 +1,3 @@
-import DeviceFilter from '@frinx/inventory-client/src/pages/device-list/device-filters';
-
 export type ServiceFilter = {
   id: string | null;
   customerName: string | null;
@@ -20,14 +18,6 @@ export type SiteNetworkAccessFilter = {
 export type VpnBearerFilter = {
   id: string | null;
   description: string | null;
-  neId: string | null;
-  portId: string | null;
-  carrierName: string | null;
-  carrierReference: string | null;
-  serviceType: string | null;
-  serviceStatus: string | null;
-  adminStatus: string | null;
-  operStatus: string | null;
 };
 
 export type LocationFilter = {
@@ -94,25 +84,6 @@ export function getVpnBearerFilterParams(vpnBearerFilter: VpnBearerFilter): stri
   const filters = [];
   filters.push(vpnBearerFilter.id ? `@."sp-bearer-reference"like_regex"${vpnBearerFilter.id}"` : null);
   filters.push(vpnBearerFilter.description ? `@."description"like_regex"${vpnBearerFilter.description}"` : null);
-  filters.push(vpnBearerFilter.neId ? `@."ne-id"like_regex"${vpnBearerFilter.neId}"` : null);
-  filters.push(vpnBearerFilter.portId ? `@."port-id"like_regex"${vpnBearerFilter.portId}"` : null);
-  filters.push(vpnBearerFilter.carrierName ? `@."carrier-name"like_regex"${vpnBearerFilter.carrierName}"` : null);
-  filters.push(
-    vpnBearerFilter.carrierReference ? `@."carrier-reference"like_regex"${vpnBearerFilter.carrierReference}"` : null,
-  );
-  filters.push(
-    vpnBearerFilter.serviceType ? `{@/carrier/service-type} like_regex "${vpnBearerFilter.serviceType}"` : null,
-  );
-  filters.push(
-    vpnBearerFilter.serviceStatus ? `{@/carrier/service-status} like_regex "${vpnBearerFilter.serviceStatus}"` : null,
-  );
-  filters.push(
-    vpnBearerFilter.adminStatus ? `{@/status/admin-status/status} like_regex "${vpnBearerFilter.adminStatus}"` : null,
-  );
-  filters.push(
-    vpnBearerFilter.operStatus ? `{@/status/oper-status/status} like_regex "${vpnBearerFilter.operStatus}"` : null,
-  );
-
   const joinedFilters = joinNonNullFilters(filters);
   return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
 }
@@ -126,7 +97,7 @@ export function getLocationFilterParams(locationFilter: LocationFilter): string 
   filters.push(locationFilter.city ? `@."city"like_regex"${locationFilter.city}"` : null);
   filters.push(locationFilter.countryCode ? `@."country-code"like_regex"${locationFilter.countryCode}"` : null);
   const joinedFilters = joinNonNullFilters(filters);
-  return joinedFilters ? encodeURI(`&jsonb-filter=${joinNonNullFilters(filters)}`) : '';
+  return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
 }
 
 export function getDeviceFilterParams(deviceFilter: DeviceFilter): string {

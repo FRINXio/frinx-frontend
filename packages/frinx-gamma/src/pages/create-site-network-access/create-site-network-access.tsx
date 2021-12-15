@@ -6,6 +6,7 @@ import {
   apiProviderIdentifiersToClientIdentifers,
   apiVpnSitesToClientVpnSite,
   apiVpnServiceToClientVpnService,
+  clientVpnSiteToApiVpnSite,
 } from '../../components/forms/converters';
 import SiteNetworkAccessForm from '../../components/forms/site-network-access-form';
 import ErrorMessage from '../../components/error-message/error-message';
@@ -141,7 +142,8 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     const callbacks = callbackUtils.getCallbacks;
 
     try {
-      await callbacks.editVpnSite(s);
+      const apiSite = clientVpnSiteToApiVpnSite(s);
+      await callbacks.editVpnSite(apiSite);
       // eslint-disable-next-line no-console
       console.log('site saved: network access added to site');
       onSuccess(unwrap(s.siteId));
