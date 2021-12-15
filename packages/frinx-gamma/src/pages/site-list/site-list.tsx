@@ -6,7 +6,7 @@ import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-de
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
-import SiteFilter, { SiteFilters } from './site-filter';
+import SiteFilter, { getDefaultSiteFilter, SiteFilters } from './site-filter';
 import SiteTable from './site-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
@@ -33,16 +33,8 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   const deleteModalDisclosure = useDisclosure();
   const [detailId, setDetailId] = useState<string | null>(null);
   const [pagination, setPagination] = usePagination();
-  const [filters, setFilters] = useState<SiteFilters>({
-    id: null,
-    locationId: null,
-    deviceId: null,
-  });
-  const [submittedFilters, setSubmittedFilters] = useState<SiteFilters>({
-    id: null,
-    locationId: null,
-    deviceId: null,
-  });
+  const [filters, setFilters] = useState<SiteFilters>(getDefaultSiteFilter());
+  const [submittedFilters, setSubmittedFilters] = useState<SiteFilters>(getDefaultSiteFilter());
 
   useEffect(() => {
     const fetchData = async () => {
