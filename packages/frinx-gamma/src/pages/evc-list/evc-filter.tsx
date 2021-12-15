@@ -30,7 +30,7 @@ type Props = {
 const SiteFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onFilterSubmit }) => {
   return (
     <HStack marginBottom="4" alignItems="flex-end">
-      <Grid templateColumns="repeat(5, 1fr)" gap={4}>
+      <Grid flex="1" templateColumns="repeat(3, 1fr)" gap={4}>
         <FormControl>
           <FormLabel>Circuit Reference:</FormLabel>
           <Input
