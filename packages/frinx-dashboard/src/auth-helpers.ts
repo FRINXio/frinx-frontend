@@ -45,6 +45,7 @@ export function createPublicClientApp(): PublicClientApplication {
     auth: {
       clientId: window.__CONFIG__.auth_client_id,
       redirectUri: window.__CONFIG__.auth_redirect_url,
+      authority: window.__CONFIG__.msal_authority,
     },
     cache: {
       cacheLocation: 'localStorage',

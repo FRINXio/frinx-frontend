@@ -27,6 +27,7 @@ declare interface Window {
     gamma_enabled: boolean;
     unistore_api_url: string;
     uniflow_api_docs_url: string;
+    msal_authority: string;
   }>;
 
   dashboardApp: DashboardApp;
