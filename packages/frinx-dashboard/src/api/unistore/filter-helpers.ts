@@ -1,3 +1,5 @@
+import DeviceFilter from '@frinx/inventory-client/src/pages/device-list/device-filters';
+
 export type ServiceFilter = {
   id: string | null;
   customerName: string | null;
@@ -35,6 +37,11 @@ export type LocationFilter = {
   state: string | null;
   city: string | null;
   countryCode: string | null;
+};
+
+export type DeviceFilter = {
+  deviceId: string | null;
+  managementIp: string | null;
 };
 
 // we filter non null filters and joined them with && operator
@@ -120,4 +127,12 @@ export function getLocationFilterParams(locationFilter: LocationFilter): string 
   filters.push(locationFilter.countryCode ? `@."country-code"like_regex"${locationFilter.countryCode}"` : null);
   const joinedFilters = joinNonNullFilters(filters);
   return joinedFilters ? encodeURI(`&jsonb-filter=${joinNonNullFilters(filters)}`) : '';
+}
+
+export function getDeviceFilterParams(deviceFilter: DeviceFilter): string {
+  const filters = [];
+  filters.push(deviceFilter.deviceId ? `@."device-id"like_regex"${deviceFilter.deviceId}"` : null);
+  filters.push(deviceFilter.managementIp ? `{@/management/address} like_regex "${deviceFilter.managementIp}"` : null);
+  const joinedFilters = joinNonNullFilters(filters);
+  return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
 }

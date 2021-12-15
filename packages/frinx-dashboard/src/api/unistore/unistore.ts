@@ -26,9 +26,12 @@ import {
   SiteNetworkAccessFilter,
   VpnBearerFilter,
   LocationFilter,
+  DeviceFilter,
+  getDeviceFilterParams,
 } from './filter-helpers';
 import {
   decodeLocationsOutput,
+  decodeSiteDevicesOutput,
   decodeSiteNetworkAccessOutput,
   decodeValidProviderIdentifiersOutput,
   decodeVpnBearerOutput,
@@ -37,6 +40,7 @@ import {
   decodeVpnServicesOutput,
   decodeVpnSitesOutput,
   LocationsOutput,
+  SiteDevicesOutput,
   SiteNetworkAccessOutput,
   ValidProviderIdentifiersOutput,
   VpnBearer,
@@ -399,6 +403,51 @@ export async function getLocationsCount(
     const content = getContentParameter(contentType);
     const data = await sendGetRequest(
       `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/locations/location?${content}${filterParams}&fetch=count`,
+    );
+    if (!isNumber(data)) {
+      throw new Error('not a number');
+    }
+    return data;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    return 0;
+  }
+}
+
+export async function getDevices(
+  siteId: string,
+  pagination: Pagination | null,
+  deviceFilter: DeviceFilter | null,
+  contentType?: ContentType,
+): Promise<SiteDevicesOutput> {
+  try {
+    const filterParams = deviceFilter ? getDeviceFilterParams(deviceFilter) : '';
+    const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
+    const content = getContentParameter(contentType);
+    const json = await sendGetRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/devices/device?${content}${paginationParams}${filterParams}`,
+    );
+    const data = decodeSiteDevicesOutput(json);
+    return data;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    // if site does not have locations it the response is 404
+    return { device: [] };
+  }
+}
+
+export async function getDevicesCount(
+  siteId: string,
+  deviceFilter: DeviceFilter | null,
+  contentType?: ContentType,
+): Promise<number> {
+  try {
+    const filterParams = deviceFilter ? getDeviceFilterParams(deviceFilter) : '';
+    const content = getContentParameter(contentType);
+    const data = await sendGetRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/devices/device?${content}${filterParams}&fetch=count`,
     );
     if (!isNumber(data)) {
       throw new Error('not a number');

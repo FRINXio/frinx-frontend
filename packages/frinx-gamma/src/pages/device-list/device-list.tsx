@@ -3,9 +3,16 @@ import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
-import { apiVpnSitesToClientVpnSite, clientVpnSiteToApiVpnSite } from '../../components/forms/converters';
-import { VpnSite } from '../../components/forms/site-types';
+import {
+  apiSiteDevicesToClientSiteDevices,
+  apiVpnSitesToClientVpnSite,
+  clientVpnSiteToApiVpnSite,
+} from '../../components/forms/converters';
+import { SiteDevice, VpnSite } from '../../components/forms/site-types';
+import DeviceFilter, { DeviceFilters, getDefaultDeviceFilters } from './device-filter';
 import unwrap from '../../helpers/unwrap';
+import usePagination from '../../hooks/use-pagination';
+import Pagination from '../../components/pagination/pagination';
 import DeviceTable from './device-table';
 
 type Props = {
@@ -20,10 +27,14 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
   onLocationListClick,
 }) => {
   const [site, setSite] = useState<VpnSite | null>(null);
+  const [devices, setDevices] = useState<SiteDevice[] | null>(null);
   const [deviceIdToDelete, setDeviceIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
   const [detailId, setDetailId] = useState<string | null>(null);
   const { siteId, locationId } = useParams<{ siteId: string; locationId: string }>();
+  const [pagination, setPagination] = usePagination();
+  const [filters, setFilters] = useState<DeviceFilters>(getDefaultDeviceFilters());
+  const [submittedFilters, setSubmittedFilters] = useState<DeviceFilters>(getDefaultDeviceFilters());
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,16 +48,56 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
     fetchData();
   }, [siteId]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const paginationParams = {
+        offset: (pagination.page - 1) * pagination.pageSize,
+        limit: pagination.pageSize,
+      };
+      const callbacks = callbackUtils.getCallbacks;
+      const apiDevices = await callbacks.getDevices(siteId, paginationParams, submittedFilters);
+      const clientDevices = apiSiteDevicesToClientSiteDevices(apiDevices);
+      setDevices(clientDevices);
+      const locationsCount = await callbacks.getDevicesCount(siteId, submittedFilters);
+      setPagination({
+        ...pagination,
+        pageCount: Math.ceil(locationsCount / pagination.pageSize),
+      });
+    };
+    fetchData();
+  }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
+
   function handleDeleteButtonClick(deviceId: string) {
     setDeviceIdToDelete(deviceId);
     deleteModalDisclosure.onOpen();
+  }
+
+  function handlePageChange(page: number) {
+    setPagination({
+      ...pagination,
+      page,
+    });
   }
 
   function handleRowClick(rowId: string, isOpen: boolean) {
     setDetailId(isOpen ? rowId : null);
   }
 
-  if (!site) {
+  function handleFilterChange(newFilters: DeviceFilters) {
+    setFilters({
+      ...newFilters,
+    });
+  }
+
+  function handleFilterSubmit() {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setSubmittedFilters(filters);
+  }
+
+  if (!site || !devices) {
     return null;
   }
 
@@ -85,14 +136,18 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
           </Button>
         </Flex>
         <Box>
+          <DeviceFilter filters={filters} onFilterChange={handleFilterChange} onFilterSubmit={handleFilterSubmit} />
           <DeviceTable
             site={site}
-            locationId={locationId}
+            devices={devices}
             detailId={detailId}
             onEditDeviceButtonClick={onEditDeviceClick}
             onDeleteDeviceButtonClick={handleDeleteButtonClick}
             onRowClick={handleRowClick}
           />
+          <Box m="4">
+            <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />
+          </Box>
         </Box>
         <Box py={6}>
           <Button
