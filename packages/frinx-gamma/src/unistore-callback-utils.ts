@@ -13,6 +13,7 @@ import {
   VpnServicesOutput,
   VpnSitesOutput,
   SiteDevicesOutput,
+  EvcAttachmentItemsOutput,
 } from './network-types';
 import { ServiceFilters } from './pages/service-list/service-filter';
 import { SiteFilters } from './pages/site-list/site-filter';
@@ -20,6 +21,7 @@ import { VpnBearerFilters } from './pages/vpn-bearer-list/vpn-bearer-filter';
 import { SiteNetworkAccessFilters } from './pages/site-network-access-list/site-network-access-filter';
 import { LocationFilters } from './pages/location-list/location-filter';
 import { DeviceFilters } from './pages/device-list/device-filter';
+import { EvcFilters } from './pages/evc-list/evc-filter';
 
 export type WorkflowPayload = {
   input?: unknown;
@@ -100,6 +102,13 @@ export type UnistoreCallbacks = {
     contentType?: ContentType,
   ) => Promise<number>;
   getTransactionCookie: () => Promise<string>;
+  getEvcAttachments: (
+    bearerId: string,
+    pagination: Pagination | null,
+    filters: EvcFilters | null,
+    contentType?: ContentType,
+  ) => Promise<EvcAttachmentItemsOutput>;
+  getEvcAttachmentsCount: (bearerId: string, filters: EvcFilters, contentType?: ContentType) => Promise<number>;
 };
 class CallbackUtils {
   private callbacks: UnistoreCallbacks | null = null;

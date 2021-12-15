@@ -3,12 +3,14 @@ import { isString } from 'fp-ts/lib/string';
 import { ApiHelpers } from '../api-helpers';
 import {
   getDeviceFilterParams,
+  getEvcFilterParams,
   getLocationFilterParams,
   getServiceFilterParams,
   getSiteFilterParams,
   getSiteNetworkAccessFilterParams,
   getVpnBearerFilterParams,
   DeviceFilter,
+  EvcFilter,
   LocationFilter,
   ServiceFilter,
   SiteFilter,
@@ -18,6 +20,7 @@ import {
 import {
   CreateVpnServiceInput,
   CreateVpnSiteInput,
+  decodeEvcAttachmentItemsOutput,
   decodeLocationsOutput,
   decodeSiteDevicesOutput,
   decodeSiteNetworkAccessOutput,
@@ -27,6 +30,7 @@ import {
   decodeVpnNodesOutput,
   decodeVpnServicesOutput,
   decodeVpnSitesOutput,
+  EvcAttachmentItemsOutput,
   LocationsOutput,
   SiteDevicesOutput,
   SiteNetworkAccessOutput,
@@ -51,6 +55,11 @@ type Pagination = {
 };
 
 type ContentType = 'config' | 'nonconfig';
+
+// used in PUT and POST service parameter
+const SERVICE_SCHEMA_PARAMETER = 'uniconfig-schema-repository=service';
+// used in PUT and POST bearer parameter
+const BEARER_SCHEMA_PARAMETER = 'uniconfig-schema-repository=bearer';
 
 function getContentParameter(contentType?: ContentType): string {
   return contentType ? `content=${contentType}` : 'content=config';
@@ -119,6 +128,13 @@ export type UnistoreApiClient = {
     contentType?: ContentType,
   ) => Promise<number>;
   getTransactionCookie: () => Promise<string>;
+  getEvcAttachments: (
+    bearerId: string,
+    pagination: Pagination | null,
+    filters: EvcFilter | null,
+    contentType?: ContentType,
+  ) => Promise<EvcAttachmentItemsOutput>;
+  getEvcAttachmentsCount: (bearerId: string, filters: EvcFilter, contentType?: ContentType) => Promise<number>;
 };
 
 export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistoreAuthToken: string): UnistoreApiClient {
@@ -149,7 +165,7 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
 
   async function editVpnServices(vpnService: CreateVpnServiceInput): Promise<unknown> {
     const json = await sendPutRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${vpnService['vpn-service'][0]['vpn-id']}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${vpnService['vpn-service'][0]['vpn-id']}?${SERVICE_SCHEMA_PARAMETER}`,
       vpnService,
     );
     return json;
@@ -163,7 +179,10 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
   }
 
   async function createVpnService(vpnService: CreateVpnServiceInput): Promise<void> {
-    await sendPostRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services`, vpnService);
+    await sendPostRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services?${SERVICE_SCHEMA_PARAMETER}`,
+      vpnService,
+    );
   }
 
   async function getVpnSites(
@@ -190,12 +209,15 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
   }
 
   async function createVpnSite(vpnSite: CreateVpnSiteInput): Promise<void> {
-    await sendPostRequest(`${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites`, vpnSite);
+    await sendPostRequest(
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites?${SERVICE_SCHEMA_PARAMETER}`,
+      vpnSite,
+    );
   }
 
   async function editVpnSite(vpnSite: CreateVpnSiteInput): Promise<void> {
     await sendPutRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${vpnSite.site[0]['site-id']}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${vpnSite.site[0]['site-id']}?${SERVICE_SCHEMA_PARAMETER}`,
       vpnSite,
     );
   }
@@ -240,14 +262,14 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
 
   async function createVpnBearer(bearer: VpnBearerInput): Promise<void> {
     await sendPostRequest(
-      '/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers',
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers?${BEARER_SCHEMA_PARAMETER}`,
       bearer,
     );
   }
 
   async function editVpnBearer(bearer: VpnBearerInput): Promise<void> {
     await sendPutRequest(
-      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${bearer['vpn-bearer'][0]['sp-bearer-reference']}`,
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${bearer['vpn-bearer'][0]['sp-bearer-reference']}?${BEARER_SCHEMA_PARAMETER}`,
       bearer,
     );
   }
@@ -541,6 +563,51 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     }
   }
 
+  async function getEvcAttachments(
+    bearerId: string,
+    pagination: Pagination | null,
+    evcFilter: EvcFilter | null,
+    contentType?: ContentType,
+  ): Promise<EvcAttachmentItemsOutput> {
+    try {
+      const filterParams = evcFilter ? getEvcFilterParams(evcFilter) : '';
+      const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
+      const content = getContentParameter(contentType);
+      const json = await sendGetRequest(
+        `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${bearerId}/evc-attachments/evc-attachment?${BEARER_SCHEMA_PARAMETER}&${content}${paginationParams}${filterParams}`,
+      );
+      const data = decodeEvcAttachmentItemsOutput(json);
+      return data;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      // if site does not have locations it the response is 404
+      return { 'evc-attachment': [] };
+    }
+  }
+
+  async function getEvcAttachmentsCount(
+    bearerId: string,
+    evcFilter: EvcFilter | null,
+    contentType?: ContentType,
+  ): Promise<number> {
+    try {
+      const filterParams = evcFilter ? getEvcFilterParams(evcFilter) : '';
+      const content = getContentParameter(contentType);
+      const data = await sendGetRequest(
+        `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${bearerId}/evc-attachments/evc-attachment?${BEARER_SCHEMA_PARAMETER}&fetch=count&${content}${filterParams}`,
+      );
+      if (!isNumber(data)) {
+        throw new Error('not a number');
+      }
+      return data;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return 0;
+    }
+  }
+
   async function getTransactionCookie(): Promise<string> {
     const response = await sendPostRequest(
       '/operations/uniconfig-manager:create-transaction',
@@ -589,5 +656,7 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     getTransactionCookie,
     getDevices,
     getDevicesCount,
+    getEvcAttachments,
+    getEvcAttachmentsCount,
   };
 }

@@ -44,6 +44,7 @@ import {
   VpnCarriersOutput,
   VpnCarrierInput,
   VpnNodeInput,
+  EvcAttachmentItemsOutput,
 } from '../../network-types';
 import unwrap from '../../helpers/unwrap';
 import { VpnBearer, BearerStatus, Carrier, Connection, EvcAttachment, VpnNode, VpnCarrier } from './bearer-types';
@@ -611,6 +612,10 @@ function apiEvcAttachmentToClientEvcAttachment(apiEvc: EvcAttachmentOutput): Evc
   };
 }
 
+export function apiEvcAttachmentsToClientEvcAttachments(apiEvc: EvcAttachmentItemsOutput): EvcAttachment[] {
+  return apiEvc['evc-attachment'].map(apiEvcAttachmentToClientEvcAttachment);
+}
+
 export function apiBearerToClientBearer(apiBearer: VpnBearerOutput): VpnBearer[] {
   if (!apiBearer['vpn-bearer']) {
     return [];
@@ -619,7 +624,7 @@ export function apiBearerToClientBearer(apiBearer: VpnBearerOutput): VpnBearer[]
   return apiBearer['vpn-bearer'].map((b) => {
     const evcAttachments =
       b['evc-attachments'] && b['evc-attachments']['evc-attachment']
-        ? b['evc-attachments']['evc-attachment'].map(apiEvcAttachmentToClientEvcAttachment)
+        ? apiEvcAttachmentsToClientEvcAttachments(b['evc-attachments'])
         : [];
     return {
       spBearerReference: b['sp-bearer-reference'],

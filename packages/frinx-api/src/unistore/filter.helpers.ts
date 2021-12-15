@@ -34,6 +34,15 @@ export type DeviceFilter = {
   managementIp: string | null;
 };
 
+export type EvcFilter = {
+  circuitReference: string | null;
+  carrierReference: string | null;
+  inputBandwidth: string | null;
+  customerName: string | null;
+  adminStatus: string | null;
+  operStatus: string | null;
+};
+
 // we filter non null filters and joined them with && operator
 export function joinNonNullFilters(filters: (string | null)[]): string {
   const separator = encodeURIComponent('&&'); // AND operator must be url encoded
@@ -104,6 +113,25 @@ export function getDeviceFilterParams(deviceFilter: DeviceFilter): string {
   const filters = [];
   filters.push(deviceFilter.deviceId ? `@."device-id"like_regex"${deviceFilter.deviceId}"` : null);
   filters.push(deviceFilter.managementIp ? `{@/management/address} like_regex "${deviceFilter.managementIp}"` : null);
+  const joinedFilters = joinNonNullFilters(filters);
+  return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
+}
+
+export function getEvcFilterParams(evcFilter: EvcFilter): string {
+  const filters = [];
+  filters.push(evcFilter.circuitReference ? `@."circuit-reference"like_regex"${evcFilter.circuitReference}"` : null);
+  filters.push(evcFilter.carrierReference ? `@."carrier-reference"like_regex"${evcFilter.carrierReference}"` : null);
+  filters.push(evcFilter.inputBandwidth ? `@."input-bandwidth"like_regex"${evcFilter.inputBandwidth}"` : null); // TODO: does not work
+  filters.push(
+    evcFilter.adminStatus
+      ? encodeURIComponent(`{@/status/admin-status/status} like_regex "${evcFilter.adminStatus}"`)
+      : null,
+  ); // TODO: does not work
+  filters.push(
+    evcFilter.operStatus
+      ? encodeURIComponent(`{@/status/oper-status/status} like_regex "${evcFilter.operStatus}"`)
+      : null,
+  ); // TODO: does not work
   const joinedFilters = joinNonNullFilters(filters);
   return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
 }
