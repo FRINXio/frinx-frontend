@@ -609,14 +609,10 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
   }
 
   async function getTransactionCookie(): Promise<string> {
-    const response = await sendPostRequest(
-      '/operations/uniconfig-manager:create-transaction',
-      {
-        auth: unistoreAuthToken,
-        verify: false,
-      },
-      { headers: { Authorization: unistoreAuthToken } },
-    );
+    const response = await sendPostRequest('/operations/uniconfig-manager:create-transaction', {
+      auth: unistoreAuthToken,
+      verify: false,
+    });
     const data = await (response as Response).text();
     if (!isString(data)) {
       throw new Error('not a string');

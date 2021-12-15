@@ -9,13 +9,6 @@ function makeHeaders(authToken: string | null, headers?: HeadersInit): Record<st
   }
   // TODO: fix this ugly hack
   const objectHeaders = headers as Record<string, string> | void;
-  if (objectHeaders?.Authorization != null) {
-    const { Authorization, ...rest } = objectHeaders;
-    return {
-      Authorization,
-      ...rest,
-    };
-  }
   return {
     ...(authToken != null ? { Authorization: `Bearer ${authToken}`, ...objectHeaders } : objectHeaders),
   };
