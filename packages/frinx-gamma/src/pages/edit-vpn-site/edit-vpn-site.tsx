@@ -4,6 +4,7 @@ import { useParams } from 'react-router';
 import {
   apiVpnSitesToClientVpnSite,
   apiProviderIdentifiersToClientIdentifers,
+  clientVpnSiteToApiVpnSite,
 } from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
@@ -48,7 +49,8 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
     console.log('submit clicked', site);
     const callbacks = callbackUtils.getCallbacks;
     try {
-      await callbacks.editVpnSite(site);
+      const apiSite = clientVpnSiteToApiVpnSite(site);
+      await callbacks.editVpnSite(apiSite);
       onSuccess();
     } catch (e) {
       setSubmitError(String(e));
