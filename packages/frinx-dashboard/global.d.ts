@@ -25,6 +25,7 @@ declare interface Window {
     inventory_api_url: string;
     uniresource_api_url: string;
     uniflow_api_docs_url: string;
+    msal_authority: string;
   }>;
 
   dashboardApp: DashboardApp;
