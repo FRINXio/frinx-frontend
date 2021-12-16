@@ -1,10 +1,13 @@
 import React, { VoidFunctionComponent } from 'react';
-import { FormControl, FormLabel, Input } from '@chakra-ui/react';
+import { FormControl, FormLabel, FormErrorMessage, Input } from '@chakra-ui/react';
+import { FormikErrors } from 'formik';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 import { RoutingProtocol } from './site-types';
 import unwrap from '../../helpers/unwrap';
+import { SiteNetworkAccess } from '../../network-types';
 
 type Props = {
+  errors: FormikErrors<SiteNetworkAccess>;
   staticProtocol: RoutingProtocol;
   bgpProtocol: RoutingProtocol;
   bgpProfileItems: Item[];
@@ -12,7 +15,24 @@ type Props = {
   onRoutingProtocolsChange: (routingProtcols: RoutingProtocol[]) => void;
 };
 
+// TODO: can we write it more simple???
+function getLanTagErrorMessage(errors: FormikErrors<SiteNetworkAccess>): string | null {
+  if (!errors.routingProtocols || errors.routingProtocols.length === 0) {
+    return null;
+  }
+
+  const routingProtocolsError = errors.routingProtocols as FormikErrors<RoutingProtocol>[];
+  const staticRoutingProtocolsError = routingProtocolsError.filter((e) => e.static).pop();
+  if (staticRoutingProtocolsError) {
+    const staticErrors = staticRoutingProtocolsError.static as unknown as [{ lanTag?: string }];
+    return staticErrors[0].lanTag || null;
+  }
+
+  return null;
+}
+
 const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
+  errors,
   staticProtocol,
   bgpProtocol,
   bgpProfileItems,
@@ -31,6 +51,8 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
     const newProtocols = [newBgpRoutingProtocol, staticProtocol];
     onRoutingProtocolsChange(newProtocols);
   };
+
+  const lanTagErrorMessage = getLanTagErrorMessage(errors);
 
   return (
     <>
@@ -103,7 +125,7 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
         />
       </FormControl>
 
-      <FormControl id="static-routing-lan-tag" my={6}>
+      <FormControl id="static-routing-lan-tag" my={6} isInvalid={lanTagErrorMessage !== null}>
         <FormLabel>Static Routing Lan Tag</FormLabel>
         <Input
           name="static-routing-lan-tag"
@@ -124,6 +146,7 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
             onRoutingProtocolsChange(newProtocols);
           }}
         />
+        {lanTagErrorMessage && <FormErrorMessage>Lan Tag must be value between 0-65535</FormErrorMessage>}
       </FormControl>
 
       <FormControl id="bgp-autonomous-system" my={6}>
