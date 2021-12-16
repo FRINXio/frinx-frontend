@@ -18,6 +18,18 @@ export type SiteNetworkAccessFilter = {
 export type VpnBearerFilter = {
   id: string | null;
   description: string | null;
+  neId: string | null;
+  portId: string | null;
+  carrierName: string | null;
+  carrierReference: string | null;
+  serviceType: string | null;
+  serviceStatus: string | null;
+
+  circuitReference: string | null;
+  carrierEvcReference: string | null;
+  inputBandwidth: string | null;
+  adminStatus: string | null;
+  operStatus: string | null;
 };
 
 export type LocationFilter = {
@@ -91,8 +103,55 @@ export function getSiteNetworkAccessFilterParams(siteNetworkAccessFilter: SiteNe
 
 export function getVpnBearerFilterParams(vpnBearerFilter: VpnBearerFilter): string {
   const filters = [];
+  // bearer filters
   filters.push(vpnBearerFilter.id ? `@."sp-bearer-reference"like_regex"${vpnBearerFilter.id}"` : null);
   filters.push(vpnBearerFilter.description ? `@."description"like_regex"${vpnBearerFilter.description}"` : null);
+  filters.push(vpnBearerFilter.neId ? `{@/ne-id} like_regex "${vpnBearerFilter.neId}"` : null);
+  filters.push(vpnBearerFilter.portId ? `{@/port-id} like_regex "${vpnBearerFilter.portId}"` : null);
+  filters.push(vpnBearerFilter.carrierName ? `@."carrier-name"like_regex"${vpnBearerFilter.carrierName}"` : null);
+  filters.push(
+    vpnBearerFilter.carrierReference ? `@."carrier-reference"like_regex"${vpnBearerFilter.carrierReference}"` : null,
+  );
+  filters.push(
+    vpnBearerFilter.serviceType ? `{@/carrier/service-type} like_regex "${vpnBearerFilter.serviceType}"` : null,
+  );
+  filters.push(
+    vpnBearerFilter.serviceStatus ? `{@/carrier/service-status} like_regex "${vpnBearerFilter.serviceStatus}"` : null,
+  );
+
+  // evc filters
+  filters.push(
+    vpnBearerFilter.circuitReference
+      ? encodeURIComponent(
+          `exists({@/evc-attachments/evc-attachment}[*] ? (@."circuit-reference"like_regex"${vpnBearerFilter.circuitReference}"))`,
+        )
+      : null,
+  );
+  filters.push(
+    vpnBearerFilter.carrierEvcReference
+      ? encodeURIComponent(
+          `exists({@/evc-attachments/evc-attachment}[*] ? (@."carrier-reference"like_regex"${vpnBearerFilter.carrierEvcReference}"))`,
+        )
+      : null,
+  );
+  filters.push(
+    vpnBearerFilter.inputBandwidth
+      ? encodeURIComponent(
+          `exists({@/evc-attachments/evc-attachment}[*] ? (@."input-bandwidth" == ${vpnBearerFilter.inputBandwidth}))`,
+        )
+      : null,
+  );
+  filters.push(
+    vpnBearerFilter.adminStatus
+      ? encodeURIComponent(`{@/status/admin-status/status} like_regex "${vpnBearerFilter.adminStatus}"`)
+      : null,
+  );
+  filters.push(
+    vpnBearerFilter.operStatus
+      ? encodeURIComponent(`{@/status/oper-status/status} like_regex "${vpnBearerFilter.operStatus}"`)
+      : null,
+  );
+
   const joinedFilters = joinNonNullFilters(filters);
   return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
 }
