@@ -7,6 +7,11 @@ export type SiteFilter = {
   id: string | null;
   locationId: string | null;
   deviceId: string | null;
+  street: string | null;
+  postalCode: string | null;
+  state: string | null;
+  city: string | null;
+  countryCode: string | null;
 };
 
 export type SiteNetworkAccessFilter = {
@@ -78,7 +83,36 @@ export function getSiteFilterParams(siteFilter: SiteFilter): string {
       : null,
   );
   filters.push(
-    siteFilter.deviceId ? `exists({@/devices/device}[*]  ? (@."device-id"like_regex"${siteFilter.deviceId}"))` : null,
+    siteFilter.deviceId
+      ? encodeURIComponent(`exists({@/devices/device}[*]  ? (@."device-id"like_regex"${siteFilter.deviceId}"))`)
+      : null,
+  );
+  filters.push(
+    siteFilter.street
+      ? encodeURIComponent(`exists({@/locations/location}[*]  ? (@."address"like_regex"${siteFilter.street}"))`)
+      : null,
+  );
+  filters.push(
+    siteFilter.postalCode
+      ? encodeURIComponent(`exists({@/locations/location}[*]  ? (@."postal-code"like_regex"${siteFilter.postalCode}"))`)
+      : null,
+  );
+  filters.push(
+    siteFilter.state
+      ? encodeURIComponent(`exists({@/locations/location}[*]  ? (@."state"like_regex"${siteFilter.state}"))`)
+      : null,
+  );
+  filters.push(
+    siteFilter.city
+      ? encodeURIComponent(`exists({@/locations/location}[*]  ? (@."city"like_regex"${siteFilter.city}"))`)
+      : null,
+  );
+  filters.push(
+    siteFilter.countryCode
+      ? encodeURIComponent(
+          `exists({@/locations/location}[*]  ? (@."country-code"like_regex"${siteFilter.countryCode}"))`,
+        )
+      : null,
   );
   const joinedFilters = joinNonNullFilters(filters);
   return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
