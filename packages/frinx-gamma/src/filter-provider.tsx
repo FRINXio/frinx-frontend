@@ -15,17 +15,12 @@ export const FilterProvider: FC = ({ children }) => {
   const [siteFilters, setSiteFilters] = useState<SiteFilters>(getDefaultSiteFilter());
   const [bearerFilters, setBearerFilters] = useState<VpnBearerFilters>(getDefaultBearerFilters());
 
-  const handleSiteFilterChange = (filters: SiteFilters) => {
-    console.log('site filters change: ', filters);
-    setSiteFilters(filters);
-  };
-
   return (
     <FilterContext.Provider
       value={{
         site: siteFilters,
         bearer: bearerFilters,
-        onSiteFilterChange: (filters) => handleSiteFilterChange(filters),
+        onSiteFilterChange: setSiteFilters,
         onBearerFilterChange: setBearerFilters,
       }}
     >

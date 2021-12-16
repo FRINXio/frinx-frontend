@@ -1,17 +1,18 @@
 import { Box, Button, Container, Flex, Heading, HStack, Icon, useDisclosure } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import { VpnBearer } from '../../components/forms/bearer-types';
 import { apiBearerToClientBearer } from '../../components/forms/converters';
 import unwrap from '../../helpers/unwrap';
-import VpnBearerFilter, { getDefaultBearerFilters, VpnBearerFilters } from './vpn-bearer-filter';
+import VpnBearerFilter, { VpnBearerFilters } from './vpn-bearer-filter';
 import VpnBearerTable from './vpn-bearer-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getChangedBearersWithStatus, getSavedBearersWithStatus } from './bearer-helpers';
+import FilterContext from '../../filter-provider';
 
 type Props = {
   onCreateVpnNodeClick: () => void;
@@ -28,6 +29,8 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
   onEditVpnBearerClick,
   onEvcAttachmentSiteClick,
 }) => {
+  const filterContext = useContext(FilterContext);
+  const { bearer: bearerFilters, onBearerFilterChange } = unwrap(filterContext);
   const [createdBearers, setCreatedBearers] = useState<VpnBearer[] | null>(null);
   const [updatedBearers, setUpdatedBearers] = useState<VpnBearer[] | null>(null);
   const [deletedBearers, setDeletedBearers] = useState<VpnBearer[] | null>(null);
@@ -36,8 +39,8 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
   const deleteModalDisclosure = useDisclosure();
   const [detailId, setDetailId] = useState<string | null>(null);
   const [pagination, setPagination] = usePagination();
-  const [filters, setFilters] = useState<VpnBearerFilters>(getDefaultBearerFilters());
-  const [submittedFilters, setSubmittedFilters] = useState<VpnBearerFilters>(getDefaultBearerFilters());
+  const [filters, setFilters] = useState<VpnBearerFilters>(bearerFilters);
+  const [submittedFilters, setSubmittedFilters] = useState<VpnBearerFilters>(bearerFilters);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,6 +96,7 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
       page: 1,
     });
     setSubmittedFilters(filters);
+    onBearerFilterChange(filters);
   }
 
   function handleRowClick(rowId: string, isOpen: boolean) {

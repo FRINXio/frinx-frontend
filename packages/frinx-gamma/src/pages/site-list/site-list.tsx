@@ -6,7 +6,7 @@ import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-de
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
-import SiteFilter, { getDefaultSiteFilter, SiteFilters } from './site-filter';
+import SiteFilter, { SiteFilters } from './site-filter';
 import SiteTable from './site-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
