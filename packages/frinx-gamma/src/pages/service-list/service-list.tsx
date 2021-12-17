@@ -25,6 +25,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const [serviceIdToDelete, setServiceIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [pagination, setPagination] = usePagination();
   const [filters, setFilters] = useState<ServiceFilters>({
     id: null,
@@ -93,6 +94,10 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
     setSubmittedFilters(filters);
   }
 
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
+  }
+
   const changedServicesWithStatus = getChangedServicesWithStatus(createdServices, updatedServices, deletedServices);
   const savedServicesWithStatus = getSavedServicesWithStatus(vpnServices, updatedServices, deletedServices);
 
@@ -139,19 +144,23 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
                   <Heading size="sm">Changes</Heading>
                   <Box my="2">
                     <ServiceTable
+                      size="sm"
+                      detailId={detailId}
                       services={changedServicesWithStatus}
                       onEditServiceButtonClick={onEditVpnServiceClick}
                       onDeleteServiceButtonClick={handleDeleteButtonClick}
-                      size="sm"
+                      onRowClick={handleRowClick}
                     />
                   </Box>
                 </>
               ) : null}
               <ServiceTable
+                size="md"
+                detailId={detailId}
                 onEditServiceButtonClick={onEditVpnServiceClick}
                 onDeleteServiceButtonClick={handleDeleteButtonClick}
                 services={savedServicesWithStatus}
-                size="md"
+                onRowClick={handleRowClick}
               />
               <Box m="4">
                 <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />

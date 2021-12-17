@@ -4,6 +4,7 @@ import callbackUtils from '../../unistore-callback-utils';
 import {
   apiVpnSitesToClientVpnSite,
   apiProviderIdentifiersToClientIdentifers,
+  clientVpnSiteToApiVpnSite,
 } from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
@@ -57,7 +58,8 @@ const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
     };
     const callbacks = callbackUtils.getCallbacks;
     try {
-      await callbacks.editVpnSite(siteWithId);
+      const apiSite = clientVpnSiteToApiVpnSite(siteWithId);
+      await callbacks.createVpnSite(apiSite);
       // eslint-disable-next-line no-console
       console.log('site created');
       onSuccess();

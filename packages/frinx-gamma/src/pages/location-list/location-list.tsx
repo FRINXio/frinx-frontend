@@ -3,12 +3,17 @@ import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
-import { apiLocationsToClientLocations, apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
+import {
+  apiLocationsToClientLocations,
+  apiVpnSitesToClientVpnSite,
+  clientVpnSiteToApiVpnSite,
+} from '../../components/forms/converters';
 import { VpnSite, CustomerLocation } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
 import LocationTable from './location-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
+import LocationFilter, { getDefaultLocationFilters, LocationFilters } from './location-filter';
 
 type Props = {
   onCreateLocationClick: (siteId: string) => void;
@@ -27,8 +32,11 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
   const [locations, setLocations] = useState<CustomerLocation[] | null>(null);
   const [locationIdToDelete, setLocationIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [detailId, setDetailId] = useState<string | null>(null);
   const { siteId } = useParams<{ siteId: string }>();
   const [pagination, setPagination] = usePagination();
+  const [filters, setFilters] = useState<LocationFilters>(getDefaultLocationFilters());
+  const [submittedFilters, setSubmittedFilters] = useState<LocationFilters>(getDefaultLocationFilters());
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,17 +57,17 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
         limit: pagination.pageSize,
       };
       const callbacks = callbackUtils.getCallbacks;
-      const apiLocations = await callbacks.getLocations(siteId, paginationParams);
+      const apiLocations = await callbacks.getLocations(siteId, paginationParams, submittedFilters);
       const clientLocations = apiLocationsToClientLocations(apiLocations);
       setLocations(clientLocations);
-      const locationsCount = await callbacks.getLocationsCount(siteId);
+      const locationsCount = await callbacks.getLocationsCount(siteId, submittedFilters);
       setPagination({
         ...pagination,
         pageCount: Math.ceil(locationsCount / pagination.pageSize),
       });
     };
     fetchData();
-  }, [pagination.page]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleDeleteButtonClick(deviceId: string) {
     setLocationIdToDelete(deviceId);
@@ -73,7 +81,25 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
     });
   }
 
-  if (!site || !locations) {
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
+  }
+
+  function handleFilterChange(newFilters: LocationFilters) {
+    setFilters({
+      ...newFilters,
+    });
+  }
+
+  function handleFilterSubmit() {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setSubmittedFilters(filters);
+  }
+
+  if (!site) {
     return null;
   }
 
@@ -87,7 +113,8 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
             ...site,
             customerLocations: site.customerLocations.filter((s) => s.locationId !== locationIdToDelete),
           };
-          callbackUtils.getCallbacks.editVpnSite(editedVpnSite).then(() => {
+          const apiSite = clientVpnSiteToApiVpnSite(editedVpnSite);
+          callbackUtils.getCallbacks.editVpnSite(apiSite).then(() => {
             setSite(editedVpnSite);
             deleteModalDisclosure.onClose();
           });
@@ -112,12 +139,15 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
         </Flex>
         <Box>
           <>
+            <LocationFilter filters={filters} onFilterChange={handleFilterChange} onFilterSubmit={handleFilterSubmit} />
             <LocationTable
-              siteId={siteId}
-              locations={locations}
+              site={site}
+              detailId={detailId}
+              locations={locations || []}
               onDeleteLocationButtonClick={handleDeleteButtonClick}
               onEditLocationButtonClick={onEditLocationClick}
               onDevicesSiteButtonClick={onDevicesVpnSiteClick}
+              onRowClick={handleRowClick}
             />
             <Box m="4">
               <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />

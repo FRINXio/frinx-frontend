@@ -1,8 +1,6 @@
-// TODO: remove this and find a better way to do types through callbackUtils
 import { Either, fold } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
-import { MaximumRoutes } from './components/forms/site-types';
 
 // TODO: should go to config
 const YANG_MODULE = 'gamma-l3vpn-svc';
@@ -276,7 +274,7 @@ const SiteNetworkAccessValidator = t.type({
       }),
       bearer: t.type({
         'always-on': t.boolean,
-        'bearer-reference': optional(t.string),
+        'bearer-reference': t.string,
         'requested-c-vlan': t.number,
         'requested-type': t.type({
           'requested-type': t.string,
@@ -404,7 +402,7 @@ export type CreateNetworkAccessInput = {
     'device-reference'?: string;
     bearer: {
       'always-on': boolean;
-      'bearer-reference'?: string;
+      'bearer-reference': string;
       'requested-c-vlan': number;
       'requested-type': {
         'requested-type': string;
@@ -423,6 +421,10 @@ export type CreateNetworkAccessInput = {
           ];
         };
       };
+    };
+    'vpn-attachment'?: {
+      'vpn-id': string;
+      'site-role'?: string;
     };
   }[];
 };
@@ -616,6 +618,15 @@ export function decodeEvcAttachmentOutput(value: unknown): EvcAttachmentOutput {
   return extractResult(EvcAttachmentOutputValidator.decode(value));
 }
 
+const EvcAttachmentItemsOutputValidator = t.type({
+  'evc-attachment': t.array(EvcAttachmentOutputValidator),
+});
+
+export type EvcAttachmentItemsOutput = t.TypeOf<typeof EvcAttachmentItemsOutputValidator>;
+export function decodeEvcAttachmentItemsOutput(value: unknown): EvcAttachmentItemsOutput {
+  return extractResult(EvcAttachmentItemsOutputValidator.decode(value));
+}
+
 const CarrierOutputValidator = t.type({
   'carrier-name': optional(t.string),
   'carrier-reference': optional(t.string),
@@ -650,11 +661,7 @@ const VpnBearerItemsOutputValidator = t.array(
     carrier: optional(CarrierOutputValidator),
     connection: optional(ConnectionOutputValidator),
     'default-upstream-bearer': optional(t.string),
-    'evc-attachments': optional(
-      t.type({
-        'evc-attachment': t.array(EvcAttachmentOutputValidator),
-      }),
-    ),
+    'evc-attachments': optional(EvcAttachmentItemsOutputValidator),
   }),
 );
 export type VpnBearerItemsOutput = t.TypeOf<typeof VpnBearerItemsOutputValidator>;
@@ -687,3 +694,209 @@ export type SvcBearerOutput = t.TypeOf<typeof SvcBearerOutputValidator>;
 export function decodeSvcBearerOutput(value: unknown): SvcBearerOutput {
   return extractResult(SvcBearerOutputValidator.decode(value));
 }
+
+export type VpnServiceTopology = 'any-to-any' | 'hub-spoke' | 'hub-spoke-disjointed' | 'custom';
+
+// eslint-disable-next-line no-shadow
+export enum DefaultCVlanEnum {
+  'Main Corporate VPN' = '400',
+  'Guest Wifi VPN' = '1000',
+  'Dedicated SIP VPN' = '50',
+  'Custom C-VLAN' = 'custom',
+  // LocalInternet = '300',
+}
+
+export type AddressFamily = 'ipv4' | 'ipv6';
+export type MaximumRoutes = 1000 | 2000 | 5000 | 10000 | 1000000;
+
+export type VpnService = {
+  vpnId?: string;
+  customerName: string;
+  vpnServiceTopology: VpnServiceTopology;
+  defaultCVlan: DefaultCVlanEnum;
+  customCVlan?: number;
+  extranetVpns: string[];
+};
+
+export type ProviderIdentifiers = {
+  bfdIdentifiers: string[];
+  qosIdentifiers: string[];
+  bgpIdentifiers: string[];
+};
+export type CountryCode = 'UK' | 'Ireland';
+export type CustomerLocation = {
+  locationId?: string;
+  street: string;
+  postalCode: string;
+  state: string;
+  city: string;
+  countryCode: CountryCode;
+};
+
+export type SiteDevice = {
+  deviceId?: string;
+  locationId: string | null;
+  managementIP: string;
+};
+
+export type SiteManagementType = 'point-to-point' | 'provider-managed' | 'co-managed' | 'customer-managed';
+export type SiteVpnFlavor = 'site-vpn-flavor-single' | 'site-vpn-flavor-sub' | 'site-vpn-flavor-nni';
+
+export type SiteNetworkAccessType = 'point-to-point' | 'multipoint';
+// eslint-disable-next-line no-shadow
+export enum AccessPriority {
+  'Primary Ethernet' = '150',
+  'Backup Ethernet' = '100',
+  PDSL = '90',
+  'Backup PDSL' = '80',
+  '4G' = '70',
+  'Backup 4G' = '60',
+}
+
+// eslint-disable-next-line no-shadow
+// export enum RequestedCVlan {
+//   l3vpn = '400',
+//   Pseudowire = '100',
+//   'Local Internet Breakout' = '200',
+//   DMZ = '300',
+// }
+export type RoutingProtocolType = 'bgp' | 'static';
+export type VrrpRoutingType = 'ipv4';
+export type LanTag = 'lan' | 'lan-tag' | 'next-hop';
+export type StaticRoutingType = {
+  lan: string;
+  nextHop: string;
+  lanTag?: LanTag;
+};
+export type BgpRoutingType = {
+  addressFamily: 'ipv4';
+  autonomousSystem: string;
+  bgpProfile: string | null;
+};
+export type RoutingProtocol = {
+  type: RoutingProtocolType;
+  vrrp?: VrrpRoutingType;
+  static?: StaticRoutingType[];
+  bgp?: BgpRoutingType;
+};
+
+export type Bearer = {
+  alwaysOn: boolean;
+  bearerReference: string;
+  requestedCLan: string;
+  requestedType: {
+    requestedType: string;
+    strict: boolean;
+  };
+};
+
+export type Service = {
+  svcInputBandwidth: number;
+  svcOutputBandwidth: number;
+  qosProfiles: [string];
+};
+
+export type IPConnection = {
+  oam?: {
+    bfd?: {
+      enabled?: boolean;
+      profileName?: string;
+    };
+  };
+  ipv4?: {
+    addressAllocationType?: string;
+    addresses?: {
+      customerAddress?: string;
+      prefixLength?: number;
+      providerAddress?: string;
+    };
+  };
+};
+
+export type SiteNetworkAccess = {
+  siteNetworkAccessId: string;
+  siteNetworkAccessType: SiteNetworkAccessType;
+  ipConnection?: IPConnection;
+  accessPriority: AccessPriority;
+  maximumRoutes: MaximumRoutes;
+  routingProtocols: RoutingProtocol[];
+  locationReference: string | null;
+  deviceReference: string | null;
+  bearer: Bearer;
+  service: Service;
+  vpnAttachment: string | null;
+  siteRole: string | null;
+};
+
+export type VpnSite = {
+  siteId?: string;
+  customerLocations: CustomerLocation[];
+  siteDevices: SiteDevice[];
+  siteManagementType: SiteManagementType;
+  siteVpnFlavor: SiteVpnFlavor;
+  siteServiceQosProfile: string | null;
+  enableBgpPicFastReroute: boolean;
+  siteNetworkAccesses: SiteNetworkAccess[];
+  maximumRoutes: MaximumRoutes;
+};
+
+export type Status = {
+  status: string | null;
+  lastUpdated: string | null;
+};
+
+export type BearerStatus = {
+  adminStatus: Status | null;
+  operStatus: Status | null;
+};
+
+export type Carrier = {
+  carrierName: string | null;
+  carrierReference: string | null;
+  serviceType: string | null;
+  serviceStatus: string | null;
+};
+
+export type Connection = {
+  encapsulationType: string | null;
+  svlanAssignmentType: string | null;
+  tpId: string | null;
+  mtu: number;
+  remoteNeId: string | null;
+  remotePortId: string | null;
+};
+
+export type EvcAttachment = {
+  evcType: string;
+  customerName: string | null;
+  circuitReference: string;
+  carrierReference: string | null;
+  svlanId: number | null;
+  status: BearerStatus | null;
+  inputBandwidth: number;
+  qosInputProfile: string | null;
+  upstreamBearer: string | null;
+};
+
+export type VpnBearer = {
+  spBearerReference: string;
+  description: string | null;
+  neId: string;
+  portId: string;
+  status: BearerStatus | null;
+  carrier: Carrier | null;
+  connection: Connection | null;
+  defaultUpstreamBearer: string | null;
+  evcAttachments: EvcAttachment[];
+};
+
+export type VpnNode = {
+  neId: string;
+  routerId: string;
+  role: string | null;
+};
+
+export type VpnCarrier = {
+  name: string;
+  description: string | null;
+};

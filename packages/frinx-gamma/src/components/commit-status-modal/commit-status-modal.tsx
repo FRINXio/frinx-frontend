@@ -20,7 +20,7 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { getStatusBadgeColor, useAsyncGenerator } from './commit-status-modal.helpers';
+import { CommitDataPayload, getStatusBadgeColor, useAsyncGenerator } from './commit-status-modal.helpers';
 
 type Props = {
   isOpen: boolean;
@@ -29,7 +29,7 @@ type Props = {
 };
 
 const CommitStatusModal: VoidFunctionComponent<Props> = ({ workflowId, isOpen, onClose }) => {
-  const execPayload = useAsyncGenerator({ workflowId });
+  const execPayload = useAsyncGenerator<CommitDataPayload>({ workflowId });
 
   if (execPayload == null) {
     return null;

@@ -1,6 +1,6 @@
 import { Box, Button, Container, Flex, Heading, HStack, Icon, useDisclosure } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
@@ -12,6 +12,7 @@ import VpnBearerTable from './vpn-bearer-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getChangedBearersWithStatus, getSavedBearersWithStatus } from './bearer-helpers';
+import FilterContext from '../../filter-provider';
 
 type Props = {
   onCreateVpnNodeClick: () => void;
@@ -28,21 +29,18 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
   onEditVpnBearerClick,
   onEvcAttachmentSiteClick,
 }) => {
+  const filterContext = useContext(FilterContext);
+  const { bearer: bearerFilters, onBearerFilterChange } = unwrap(filterContext);
   const [createdBearers, setCreatedBearers] = useState<VpnBearer[] | null>(null);
   const [updatedBearers, setUpdatedBearers] = useState<VpnBearer[] | null>(null);
   const [deletedBearers, setDeletedBearers] = useState<VpnBearer[] | null>(null);
   const [vpnBearers, setVpnBearers] = useState<VpnBearer[] | null>(null);
   const [bearerIdToDelete, setBearerIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [pagination, setPagination] = usePagination();
-  const [filters, setFilters] = useState<VpnBearerFilters>({
-    id: null,
-    description: null,
-  });
-  const [submittedFilters, setSubmittedFilters] = useState<VpnBearerFilters>({
-    id: null,
-    description: null,
-  });
+  const [filters, setFilters] = useState<VpnBearerFilters>(bearerFilters);
+  const [submittedFilters, setSubmittedFilters] = useState<VpnBearerFilters>(bearerFilters);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,8 +96,12 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
       page: 1,
     });
     setSubmittedFilters(filters);
+    onBearerFilterChange(filters);
   }
-  // console.log(createdBearers, updatedBearers, deletedBearers);
+
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
+  }
 
   const changedBearersWithStatus = getChangedBearersWithStatus(createdBearers, updatedBearers, deletedBearers);
   const savedBearersWithStatus = getSavedBearersWithStatus(vpnBearers, updatedBearers, deletedBearers);
@@ -153,21 +155,25 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
                   <Heading size="sm">Changes</Heading>
                   <Box my="2">
                     <VpnBearerTable
+                      size="sm"
+                      detailId={null}
                       bearers={changedBearersWithStatus}
                       onEditVpnBearerClick={onEditVpnBearerClick}
                       onDeleteVpnBearerClick={handleDeleteButtonClick}
                       onEvcAttachmentSiteClick={onEvcAttachmentSiteClick}
-                      size="sm"
+                      onRowClick={handleRowClick}
                     />
                   </Box>
                 </>
               ) : null}
               <VpnBearerTable
+                size="md"
+                detailId={detailId}
                 bearers={savedBearersWithStatus}
                 onEditVpnBearerClick={onEditVpnBearerClick}
                 onDeleteVpnBearerClick={handleDeleteButtonClick}
                 onEvcAttachmentSiteClick={onEvcAttachmentSiteClick}
-                size="md"
+                onRowClick={handleRowClick}
               />
               <Box m="4">
                 <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />

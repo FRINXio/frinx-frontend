@@ -1,5 +1,5 @@
 import { Box, Button, Container, Flex, Heading, HStack, useDisclosure } from '@chakra-ui/react';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
@@ -11,6 +11,7 @@ import SiteTable from './site-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getChangedSitesWithStatus, getSavedSitesWithStatus } from './site-helpers';
+import FilterContext from '../../filter-provider';
 
 type Props = {
   onCreateVpnSiteClick: () => void;
@@ -25,23 +26,18 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   onLocationsVpnSiteClick,
   onDetailVpnSiteClick,
 }) => {
+  const filterContext = useContext(FilterContext);
+  const { site: siteFilters, onSiteFilterChange } = unwrap(filterContext);
   const [createdSites, setCreatedSites] = useState<VpnSite[] | null>(null);
   const [updatedSites, setUpdatedSites] = useState<VpnSite[] | null>(null);
   const [deletedSites, setDeletedSites] = useState<VpnSite[] | null>(null);
   const [sites, setSites] = useState<VpnSite[] | null>(null);
   const [siteIdToDelete, setSiteIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [pagination, setPagination] = usePagination();
-  const [filters, setFilters] = useState<SiteFilters>({
-    id: null,
-    locationId: null,
-    deviceId: null,
-  });
-  const [submittedFilters, setSubmittedFilters] = useState<SiteFilters>({
-    id: null,
-    locationId: null,
-    deviceId: null,
-  });
+  const [filters, setFilters] = useState<SiteFilters>(siteFilters);
+  const [submittedFilters, setSubmittedFilters] = useState<SiteFilters>(siteFilters);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -97,6 +93,11 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
       page: 1,
     });
     setSubmittedFilters(filters);
+    onSiteFilterChange(filters);
+  }
+
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
   }
 
   const changedSitesWithStatus = getChangedSitesWithStatus(createdSites, updatedSites, deletedSites);
@@ -138,22 +139,26 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
                   <Box my="2">
                     <SiteTable
                       sites={changedSitesWithStatus}
+                      size="sm"
+                      detailId={null}
                       onEditSiteButtonClick={onEditVpnSiteClick}
                       onDetailSiteButtonClick={onDetailVpnSiteClick}
                       onLocationsSiteButtonClick={onLocationsVpnSiteClick}
                       onDeleteSiteButtonClick={handleDeleteButtonClick}
-                      size="sm"
+                      onRowClick={handleRowClick}
                     />
                   </Box>
                 </>
               ) : null}
               <SiteTable
+                sites={savedSitesWithStatus}
+                size="md"
+                detailId={detailId}
                 onEditSiteButtonClick={onEditVpnSiteClick}
                 onDetailSiteButtonClick={onDetailVpnSiteClick}
                 onLocationsSiteButtonClick={onLocationsVpnSiteClick}
                 onDeleteSiteButtonClick={handleDeleteButtonClick}
-                sites={savedSitesWithStatus}
-                size="md"
+                onRowClick={handleRowClick}
               />
               <Box m="4">
                 <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />

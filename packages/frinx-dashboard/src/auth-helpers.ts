@@ -4,10 +4,10 @@ import EventEmitter from 'eventemitter3';
 
 const LS_TOKEN_KEY = 'id_token';
 
-export type UnauthorizedEventKey = 'UNAUTHORIZED';
+export type EventKeys = 'UNAUTHORIZED' | 'FORBIDDEN';
 
 export class AuthContext {
-  public eventEmitter: EventEmitter<UnauthorizedEventKey> = new EventEmitter();
+  public eventEmitter: EventEmitter<EventKeys> = new EventEmitter();
 
   private authToken: string | null = localStorage.getItem(LS_TOKEN_KEY);
 
@@ -33,8 +33,8 @@ export class AuthContext {
     return this.authToken;
   }
 
-  public emitUnauthorized(): void {
-    this.eventEmitter.emit('UNAUTHORIZED');
+  public emit(event: EventKeys): void {
+    this.eventEmitter.emit(event);
   }
 }
 
@@ -45,6 +45,7 @@ export function createPublicClientApp(): PublicClientApplication {
     auth: {
       clientId: window.__CONFIG__.auth_client_id,
       redirectUri: window.__CONFIG__.auth_redirect_url,
+      authority: window.__CONFIG__.msal_authority,
     },
     cache: {
       cacheLocation: 'localStorage',

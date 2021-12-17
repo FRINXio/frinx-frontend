@@ -2,7 +2,7 @@ import React, { VoidFunctionComponent, useState, useEffect } from 'react';
 import { Box, Container } from '@chakra-ui/react';
 import VpnCarrierForm from '../../components/forms/vpn-carrier-form';
 import { VpnCarrier } from '../../components/forms/bearer-types';
-import { apiVpnCarriersToClientCarriers } from '../../components/forms/converters';
+import { apiVpnCarriersToClientCarriers, clientVpnCarrierToApiVpnCarrier } from '../../components/forms/converters';
 import callbackUtils from '../../unistore-callback-utils';
 
 const getDefaultCarrier = (): VpnCarrier => ({
@@ -33,8 +33,8 @@ const CreateCarrierPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
     // eslint-disable-next-line no-console
     console.log('submit clicked', carrier);
     const callbacks = callbackUtils.getCallbacks;
-
-    await callbacks.editVpnCarrier(carrier);
+    const apiCarrier = clientVpnCarrierToApiVpnCarrier(carrier);
+    await callbacks.editVpnCarrier(apiCarrier);
     // eslint-disable-next-line no-console
     console.log('site saved: network access added to site');
     onSuccess();

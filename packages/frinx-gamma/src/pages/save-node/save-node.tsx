@@ -2,7 +2,7 @@ import React, { VoidFunctionComponent, useState, useEffect } from 'react';
 import { Box, Container } from '@chakra-ui/react';
 import VpnNodeForm from '../../components/forms/vpn-node-form';
 import { VpnNode } from '../../components/forms/bearer-types';
-import { apiVpnNodesToClientVpnNodes } from '../../components/forms/converters';
+import { apiVpnNodesToClientVpnNodes, clientVpnNodeToApiVpnNode } from '../../components/forms/converters';
 import callbackUtils from '../../unistore-callback-utils';
 
 const getDefaultNode = (): VpnNode => ({
@@ -34,8 +34,8 @@ const SaveNodePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => 
     // eslint-disable-next-line no-console
     console.log('submit clicked', node);
     const callbacks = callbackUtils.getCallbacks;
-
-    await callbacks.editVpnNode(node);
+    const apiNode = clientVpnNodeToApiVpnNode(node);
+    await callbacks.editVpnNode(apiNode);
     // eslint-disable-next-line no-console
     console.log('bearer saved');
     onSuccess();

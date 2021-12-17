@@ -5,7 +5,7 @@ export type TaskStatus = 'COMPLETED' | 'FAILED' | 'SCHEDULED' | 'IN_PROGRESS';
 export type WorkflowStatus = 'COMPLETED' | 'FAILED' | 'RUNNING';
 
 /* eslint-disable @typescript-eslint/naming-convention */
-export type OutputDataPayload<T> =
+export type CommitDataPayload<T = WorkflowStatus> =
   | {
       error_message: {
         response_body: {
@@ -18,6 +18,23 @@ export type OutputDataPayload<T> =
   | {
       response_body: unknown;
     };
+
+export type CalcDiffPayload = {
+  changes: {
+    creates: {
+      sites: Record<string, unknown>;
+      'vpn-services': Record<string, unknown>;
+    };
+    deletes: {
+      site: unknown[];
+      vpn_service: unknown[];
+    };
+    updates: {
+      sites: Record<string, unknown>;
+      'vpn-services': Record<string, unknown>;
+    };
+  };
+};
 /* eslint-enable */
 export type TaskStatusPayload = {
   seq: number;
@@ -28,25 +45,25 @@ export type TaskStatusPayload = {
   updateTime: number;
   endTime: number;
   workflowType: string;
-  outputData: OutputDataPayload<TaskStatus>;
+  outputData: CommitDataPayload<TaskStatus>;
 };
-export type ExecutedWorkflowPayload = {
+export type ExecutedWorkflowPayload<T> = {
   createTime: number;
   updateTime: number;
   endTime: number;
   status: WorkflowStatus;
   workflowId: string;
   tasks: TaskStatusPayload[];
-  output: OutputDataPayload<WorkflowStatus>;
+  output: T;
 };
-export type ExecutedWorkflowResponse = {
-  result: ExecutedWorkflowPayload;
+export type ExecutedWorkflowResponse<T> = {
+  result: ExecutedWorkflowPayload<T>;
 };
 
-async function getWorkflowExecOutput(workflowId: string, abortController: AbortController) {
+async function getWorkflowExecOutput<T>(workflowId: string, abortController: AbortController) {
   const callbacks = uniflowCallbackUtils.getCallbacks;
   const response = await callbacks.getWorkflowInstanceDetail(workflowId, { signal: abortController.signal });
-  const data = response as ExecutedWorkflowResponse;
+  const data = response as T;
   return data;
 }
 
@@ -56,12 +73,12 @@ export type AsyncGeneratorParams = {
   onFinish?: (isCompleted: boolean) => void;
 };
 
-export async function* asyncGenerator({
+export async function* asyncGenerator<T>({
   workflowId,
   abortController,
   onFinish,
-}: AsyncGeneratorParams): AsyncGenerator<ExecutedWorkflowResponse, void, unknown> {
-  let data = await getWorkflowExecOutput(workflowId, abortController);
+}: AsyncGeneratorParams): AsyncGenerator<ExecutedWorkflowResponse<T>, void, unknown> {
+  let data = await getWorkflowExecOutput<ExecutedWorkflowResponse<T>>(workflowId, abortController);
   while (data.result.status === 'RUNNING') {
     yield data;
     // eslint-disable-next-line no-await-in-loop
@@ -77,28 +94,31 @@ export async function* asyncGenerator({
 }
 
 export type UseAsyncGeneratorParams = {
-  workflowId: string;
+  workflowId: string | null;
   onFinish?: (isCompleted: boolean) => void;
 };
 
-export function useAsyncGenerator({ workflowId, onFinish }: UseAsyncGeneratorParams): ExecutedWorkflowPayload | null {
+export function useAsyncGenerator<T>(props: UseAsyncGeneratorParams): ExecutedWorkflowPayload<T> | null {
   const { current: controller } = useRef(new AbortController());
-  const [execPayload, setExecPayload] = useState<ExecutedWorkflowPayload | null>(null);
+  const [execPayload, setExecPayload] = useState<ExecutedWorkflowPayload<T> | null>(null);
 
   useEffect(() => {
     (async () => {
-      // we have to use async iterator here, so we turn off this rule
-      // eslint-disable-next-line no-restricted-syntax
-      for await (const data of asyncGenerator({ workflowId, abortController: controller, onFinish })) {
-        setExecPayload(data.result);
+      const { workflowId, onFinish } = props;
+      if (workflowId != null) {
+        // we have to use async iterator here, so we turn off this rule
+        // eslint-disable-next-line no-restricted-syntax
+        for await (const data of asyncGenerator<T>({ workflowId, abortController: controller, onFinish })) {
+          setExecPayload(data.result);
+        }
       }
     })();
 
     // we need to abort all fetch requests on unmount, otherwise we will get an error
     return () => {
-      controller.abort();
+      // controller.abort();
     };
-  }, [workflowId, controller, onFinish]);
+  }, [props, controller]);
 
   return execPayload;
 }

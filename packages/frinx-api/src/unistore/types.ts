@@ -618,6 +618,15 @@ export function decodeEvcAttachmentOutput(value: unknown): EvcAttachmentOutput {
   return extractResult(EvcAttachmentOutputValidator.decode(value));
 }
 
+const EvcAttachmentItemsOutputValidator = t.type({
+  'evc-attachment': t.array(EvcAttachmentOutputValidator),
+});
+
+export type EvcAttachmentItemsOutput = t.TypeOf<typeof EvcAttachmentItemsOutputValidator>;
+export function decodeEvcAttachmentItemsOutput(value: unknown): EvcAttachmentItemsOutput {
+  return extractResult(EvcAttachmentItemsOutputValidator.decode(value));
+}
+
 const CarrierOutputValidator = t.type({
   'carrier-name': optional(t.string),
   'carrier-reference': optional(t.string),
@@ -757,10 +766,11 @@ export enum AccessPriority {
 // }
 export type RoutingProtocolType = 'bgp' | 'static';
 export type VrrpRoutingType = 'ipv4';
+export type LanTag = 'lan' | 'lan-tag' | 'next-hop';
 export type StaticRoutingType = {
   lan: string;
   nextHop: string;
-  lanTag: string | null;
+  lanTag?: LanTag;
 };
 export type BgpRoutingType = {
   addressFamily: 'ipv4';
@@ -812,7 +822,7 @@ export type SiteNetworkAccess = {
   siteNetworkAccessType: SiteNetworkAccessType;
   ipConnection?: IPConnection;
   accessPriority: AccessPriority;
-  maximumRoutes: MaximumRoutes | null;
+  maximumRoutes: MaximumRoutes;
   routingProtocols: RoutingProtocol[];
   locationReference: string | null;
   deviceReference: string | null;
@@ -831,7 +841,7 @@ export type VpnSite = {
   siteServiceQosProfile: string | null;
   enableBgpPicFastReroute: boolean;
   siteNetworkAccesses: SiteNetworkAccess[];
-  maximumRoutes: MaximumRoutes | null;
+  maximumRoutes: MaximumRoutes;
 };
 
 export type Status = {

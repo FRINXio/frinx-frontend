@@ -5,6 +5,7 @@ import diff from 'diff-arrays-of-objects';
 import {
   apiSiteNetworkAccessToClientSiteNetworkAccess,
   apiVpnSitesToClientVpnSite,
+  clientVpnSiteToApiVpnSite,
 } from '../../components/forms/converters';
 import SiteNetworkAccessTable from './site-network-access-table';
 import { SiteNetworkAccess, VpnSite } from '../../components/forms/site-types';
@@ -33,6 +34,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   const [networkAccesses, setNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
   const [siteAccessIdToDelete, setSiteAccessIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
+  const [detailId, setDetailId] = useState<string | null>(null);
   const { siteId } = useParams<{ siteId: string }>();
   const [pagination, setPagination] = usePagination();
   const [filters, setFilters] = useState<SiteNetworkAccessFilters>({
@@ -119,6 +121,10 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
     setSubmittedFilters(filters);
   }
 
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
+  }
+
   if (!site || !networkAccesses) {
     return null;
   }
@@ -144,7 +150,8 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
             ...site,
             siteNetworkAccesses: site.siteNetworkAccesses.filter((s) => s.siteNetworkAccessId !== siteAccessIdToDelete),
           };
-          callbackUtils.getCallbacks.editVpnSite(editedVpnSite).then(() => {
+          const apiSite = clientVpnSiteToApiVpnSite(editedVpnSite);
+          callbackUtils.getCallbacks.editVpnSite(apiSite).then(() => {
             setSite(editedVpnSite);
             deleteModalDisclosure.onClose();
           });
@@ -176,19 +183,23 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
                   <SiteNetworkAccessTable
                     siteId={siteId}
                     size="sm"
+                    detailId={null}
                     networkAccesses={changedNetworkAccessesWithStatus}
                     onEditSiteNetworkAccessButtonClick={onEditSiteNetworkAccessClick}
                     onDeleteSiteNetworkAccessButtonClick={handleDeleteButtonClick}
+                    onRowClick={handleRowClick}
                   />
                 </Box>
               </>
             ) : null}
             <SiteNetworkAccessTable
               siteId={siteId}
+              detailId={detailId}
               size="md"
               networkAccesses={savedNetworkAccessesWithStatus}
               onEditSiteNetworkAccessButtonClick={onEditSiteNetworkAccessClick}
               onDeleteSiteNetworkAccessButtonClick={handleDeleteButtonClick}
+              onRowClick={handleRowClick}
             />
             <Box m="4">
               <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />

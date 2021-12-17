@@ -2,7 +2,11 @@ import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import callbackUtils from '../../unistore-callback-utils';
 import { Carrier, Connection, VpnBearer, VpnCarrier, VpnNode } from '../../components/forms/bearer-types';
-import { apiVpnCarriersToClientCarriers, apiVpnNodesToClientVpnNodes } from '../../components/forms/converters';
+import {
+  apiVpnCarriersToClientCarriers,
+  apiVpnNodesToClientVpnNodes,
+  clientBearerToApiBearer,
+} from '../../components/forms/converters';
 import VpnBearerForm from '../../components/forms/vpn-bearer-form';
 import ErrorMessage from '../../components/error-message/error-message';
 
@@ -71,7 +75,8 @@ const CreateBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
     // eslint-disable-next-line no-param-reassign
     const callbacks = callbackUtils.getCallbacks;
     try {
-      await callbacks.editVpnBearer(bearer);
+      const apiBearer = clientBearerToApiBearer(bearer);
+      await callbacks.createVpnBearer(apiBearer);
       // eslint-disable-next-line no-console
       console.log('bearer created');
       onSuccess();
