@@ -1,16 +1,17 @@
 import { Box, Button, Container, Flex, Heading, HStack, useDisclosure } from '@chakra-ui/react';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
-import SiteFilter, { getDefaultSiteFilter, SiteFilters } from './site-filter';
+import SiteFilter, { SiteFilters } from './site-filter';
 import SiteTable from './site-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getChangedSitesWithStatus, getSavedSitesWithStatus } from './site-helpers';
+import FilterContext from '../../filter-provider';
 
 type Props = {
   onCreateVpnSiteClick: () => void;
@@ -25,6 +26,8 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   onLocationsVpnSiteClick,
   onDetailVpnSiteClick,
 }) => {
+  const filterContext = useContext(FilterContext);
+  const { site: siteFilters, onSiteFilterChange } = unwrap(filterContext);
   const [createdSites, setCreatedSites] = useState<VpnSite[] | null>(null);
   const [updatedSites, setUpdatedSites] = useState<VpnSite[] | null>(null);
   const [deletedSites, setDeletedSites] = useState<VpnSite[] | null>(null);
@@ -33,8 +36,8 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   const deleteModalDisclosure = useDisclosure();
   const [detailId, setDetailId] = useState<string | null>(null);
   const [pagination, setPagination] = usePagination();
-  const [filters, setFilters] = useState<SiteFilters>(getDefaultSiteFilter());
-  const [submittedFilters, setSubmittedFilters] = useState<SiteFilters>(getDefaultSiteFilter());
+  const [filters, setFilters] = useState<SiteFilters>(siteFilters);
+  const [submittedFilters, setSubmittedFilters] = useState<SiteFilters>(siteFilters);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,6 +93,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
       page: 1,
     });
     setSubmittedFilters(filters);
+    onSiteFilterChange(filters);
   }
 
   function handleRowClick(rowId: string, isOpen: boolean) {

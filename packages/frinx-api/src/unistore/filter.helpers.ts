@@ -79,7 +79,7 @@ export function getSiteFilterParams(siteFilter: SiteFilter): string {
   filters.push(siteFilter.id ? `@."site-id"like_regex"${siteFilter.id}"` : null);
   filters.push(
     siteFilter.locationId
-      ? `exists({@/locations/location}[*]  ? (@."location-id"like_regex"${siteFilter.locationId}"))`
+      ? encodeURIComponent(`exists({@/locations/location}[*] ? (@."location-id"like_regex"${siteFilter.locationId}"))`)
       : null,
   );
   filters.push(
