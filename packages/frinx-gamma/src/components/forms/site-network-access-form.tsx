@@ -18,7 +18,26 @@ import RoutingProtocolForm from './routing-protocol-form';
 import unwrap from '../../helpers/unwrap';
 import { getSelectOptions } from './options.helper';
 
-// const RoutingProtocolSchema = yup.array().of(yup.object({}));
+const StaticProtocolSchema = yup.object({
+  lan: yup.string(),
+  nextHop: yup.string(),
+  lanTag: yup.number().min(0).max(65535).nullable(),
+});
+
+const BgpProtocolSchema = yup.object({
+  addressFamily: yup.mixed().oneOf(['ipv4']),
+  autonomousSystem: yup.string(),
+  bgpProfile: yup.string().nullable(),
+});
+
+const ProtocolSchema = yup.object({
+  type: yup.mixed().oneOf(['static', 'bgp']),
+  vrrp: yup.string().nullable(),
+  bgp: BgpProtocolSchema.nullable(),
+  static: yup.array().of(StaticProtocolSchema).nullable(),
+});
+
+const RoutingProtocolSchema = yup.array().of(ProtocolSchema);
 
 const NetworkAccessSchema = yup.object({
   siteNetworkAccessId: yup.string(),
@@ -26,7 +45,7 @@ const NetworkAccessSchema = yup.object({
   // ipConnection?: IPConnection;
   accessPriority: yup.mixed().oneOf(['150', '100', '90', '80', '70', '60']),
   maximumRoutes: yup.mixed().oneOf([null, 1000, 2000, 5000, 10000]),
-  // routingProtocols: RoutingProtocolSchema,
+  routingProtocols: RoutingProtocolSchema,
   locationReference: yup.string().nullable(),
   deviceReference: yup.string().nullable(),
   vpnAttachment: yup.string().required('Vpn Attachment is required field'),
@@ -357,6 +376,7 @@ const SiteNetAccessForm: FC<Props> = ({
       </FormControl>
 
       <RoutingProtocolForm
+        errors={errors}
         bgpProfileItems={bgpProfileItems}
         selectedBgpProfileItem={selectedBgpProfileItem}
         bgpProtocol={bgpRoutingProtocol}
