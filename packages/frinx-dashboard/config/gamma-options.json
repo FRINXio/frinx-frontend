@@ -66,8 +66,8 @@
       "disabled": "disabled"
     },
     "encapsulation_type": {
-      "tagged-int": "tagged-in",
-      "untagged-int": "untagged-in"
+      "tagged-int": "tagged-int",
+      "untagged-int": "untagged-int"
     },
     "svlan-assignment-type": {
       "auto": "auto",

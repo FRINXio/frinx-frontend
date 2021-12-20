@@ -64,7 +64,7 @@ const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, be
   return (
     <form onSubmit={handleSubmit}>
       <FormControl id="ne-id" my={6} isRequired isInvalid={errors.neId != null}>
-        <FormLabel>Ne Id</FormLabel>
+        <FormLabel>VPN Node</FormLabel>
         <Autocomplete2
           items={nodeItems}
           selectedItem={selectedNode}
@@ -110,7 +110,7 @@ const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, be
         {errors.status && <FormErrorMessage>{errors.status}</FormErrorMessage>}
       </FormControl>
       <FormControl id="sp-bearer-reference" my={6} isRequired isInvalid={errors.spBearerReference != null}>
-        <FormLabel>Gamma hub-link ID</FormLabel>
+        <FormLabel>Gamma Hublink ID</FormLabel>
         <Input
           name="spBearerReference"
           value={values.spBearerReference}

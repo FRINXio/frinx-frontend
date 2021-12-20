@@ -36,10 +36,10 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
         </Select>
       </FormControl>
       <FormControl my={6}>
-        <FormLabel>Svlan Assignment Type</FormLabel>
+        <FormLabel>S-VLAN Assignment Type</FormLabel>
         <Select
           name="svlan-assignment-type"
-          value={connection.svlanAssignmentType || 'auto'}
+          value={connection.svlanAssignmentType || ''}
           onChange={(event) => {
             onChange({
               ...connection,
@@ -58,7 +58,7 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
         </Select>
       </FormControl>
       <FormControl my={6}>
-        <FormLabel>Tpid</FormLabel>
+        <FormLabel>S-VLAN Tag Protocol Identifier</FormLabel>
         <Select
           name="tpid"
           value={connection.tpId || ''}
@@ -69,7 +69,7 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
             });
           }}
         >
-          <option value="">-- choose tpId</option>
+          <option value="">-- choose s-vlan tag protocol identifier</option>
           {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.bearer.tpid).map((item) => {
             return (
               <option key={`tpid-${item.key}`} value={item.key}>
@@ -80,7 +80,7 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
         </Select>
       </FormControl>
       <FormControl id="connection-mtu" my={6}>
-        <FormLabel>Mtu</FormLabel>
+        <FormLabel>MTU</FormLabel>
         <Input
           name="connection-mtu"
           value={connection.mtu}

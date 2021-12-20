@@ -21,15 +21,15 @@ const defaultConnection: Connection = {
   mtu: 0,
   remoteNeId: null,
   remotePortId: null,
-  svlanAssignmentType: null,
-  tpId: null,
+  svlanAssignmentType: 'auto',
+  tpId: 'dot1ad',
 };
 
 const defaultCarrier: Carrier = {
   carrierName: null,
   carrierReference: null,
   serviceStatus: null,
-  serviceType: null,
+  serviceType: 'evc',
 };
 
 const defaultVpnBearer: VpnBearer = {
