@@ -359,6 +359,10 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     ) : null;
   };
 
+  const onLabelsChange = (labels: string[]) => {
+    setLabels([...new Set(labels)]);
+  };
+
   return (
     <PageContainer>
       {renderDefinitionModal()}
@@ -373,7 +377,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
         keywords={[keywords]}
         onKeywordsChange={setKeywords}
         labels={labels}
-        onLabelsChange={setLabels}
+        onLabelsChange={onLabelsChange}
       />
       <Table background="white">
         <Thead>
@@ -403,7 +407,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
                     labels={allLabels}
                     wf={e}
                     onClick={(label: string) => {
-                      setLabels((ls) => [...ls, label]);
+                      setLabels((oldLabels) => [...new Set([...oldLabels, label])]);
                     }}
                   />
                 </Td>
