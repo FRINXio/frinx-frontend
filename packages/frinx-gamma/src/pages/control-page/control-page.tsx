@@ -184,6 +184,7 @@ const ControlPage: VoidFunctionComponent<Props> = ({
     }
 
     // set new transaction id after successful commit
+    removeTransactionId();
     const unistoreCallbacks = unistoreCallbackUtils.getCallbacks;
     unistoreCallbacks.getTransactionCookie().then((data) => {
       setTransactionId(data);
