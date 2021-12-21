@@ -51,6 +51,7 @@ const CarrierForm: FC<Props> = ({ carrier, carriers, onChange }) => {
       <FormControl my={6}>
         <FormLabel>Service Type</FormLabel>
         <Select
+          isDisabled
           name="service-type"
           value={carrier.serviceType || ''}
           onChange={(event) => {

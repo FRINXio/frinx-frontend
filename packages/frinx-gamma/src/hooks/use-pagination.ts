@@ -6,7 +6,7 @@ type PaginationState = {
   page: number;
 };
 
-const PAGE_SIZE = 1;
+const PAGE_SIZE = 20;
 
 const INITIAL_STATE = {
   page: 1,
