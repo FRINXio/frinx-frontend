@@ -102,6 +102,7 @@ export type UnistoreCallbacks = {
     contentType?: ContentType,
   ) => Promise<number>;
   getTransactionCookie: () => Promise<string>;
+  closeTransaction: () => Promise<void>;
   getEvcAttachments: (
     bearerId: string,
     pagination: Pagination | null,
