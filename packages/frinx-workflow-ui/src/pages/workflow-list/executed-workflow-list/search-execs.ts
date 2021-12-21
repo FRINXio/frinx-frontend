@@ -4,9 +4,9 @@ import callbackUtils from '../../../utils/callback-utils';
 const mapLabelsForApi = (labels: string[]): string => {
   return labels.reduce((prev, curr, currId) => {
     if (currId !== labels.length - 1) {
-      return prev.concat(`status:${curr}&`);
+      return prev.concat(`${curr}&`);
     } else {
-      return prev.concat(`status:${curr}`);
+      return prev.concat(`${curr}`);
     }
   }, '');
 };
@@ -36,8 +36,10 @@ export const isValid = (
   searchTerm: string,
   labels: string[],
 ): boolean => {
-  if (searchTerm.trim().length === 0 && labels.length === 0) return true;
-  return item.workflowId === searchTerm || labels.includes(item.status);
+  if (searchTerm.trim().length === 0 && labels.length === 0) {
+    return true;
+  }
+  return item.workflowType.includes(searchTerm) || labels.includes(item.status);
 };
 
 export const getSortValue = (value: number) => {
