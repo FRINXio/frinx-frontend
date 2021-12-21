@@ -1,8 +1,8 @@
-import { Box, Container, Flex, Heading } from '@chakra-ui/react';
+import { Box, Container, Flex, Heading, useDisclosure } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import unistoreCallbackUtils from '../../unistore-callback-utils';
-import { getTransactionId, setTransactionId } from '../../helpers/transaction-id';
+import { getTransactionId, setTransactionId, removeTransactionId } from '../../helpers/transaction-id';
 import ControlPageTable from './control-page-table';
 import unwrap from '../../helpers/unwrap';
 import {
@@ -10,6 +10,7 @@ import {
   ExecutedWorkflowPayload,
   useAsyncGenerator,
 } from '../../components/commit-status-modal/commit-status-modal.helpers';
+import DiscardChangesModal from '../../components/discard-changes-modal/discard-changes';
 
 type Props = {
   onServicesSiteLinkClick: () => void;
@@ -69,6 +70,7 @@ const ControlPage: VoidFunctionComponent<Props> = ({
   onSitesSiteLinkClick,
   onVpnBearerLinkClick,
 }) => {
+  const discardChangesDisclosure = useDisclosure();
   const [countState, setCountState] = useState<TotalCountState>(DEFAULT_UNCOMMITED_CHANGES);
   const [workflowState, setWorkflowState] = useState<WorkflowState | null>(null);
   const [workflowId, setWorkflowId] = useState<string | null>(null);
@@ -156,6 +158,24 @@ const ControlPage: VoidFunctionComponent<Props> = ({
       });
   }
 
+  async function handleDiscardConfirmBtnClick() {
+    const callbacks = unistoreCallbackUtils.getCallbacks;
+    // TODO: close transaction endpoint response is empty 200, so our helper function fails to parse it
+    // we can handle it in our api-helpers.ts or find other solution instead of try/catch
+    try {
+      await callbacks.closeTransaction();
+    } catch (e) {
+      removeTransactionId();
+      const data = await callbacks.getTransactionCookie();
+      setTransactionId(data);
+      discardChangesDisclosure.onClose();
+    }
+  }
+
+  function handleDiscardBtnClick() {
+    discardChangesDisclosure.onOpen();
+  }
+
   const handleWorkflowFinish = (isCompleted: boolean) => {
     setWorkflowState(null);
 
@@ -173,36 +193,40 @@ const ControlPage: VoidFunctionComponent<Props> = ({
   const uncommitedChanges = makeTotalCountState(countState, workflowPayload);
 
   return (
-    <Container maxWidth={1280} minHeight="60vh">
-      <Flex justify="space-between" align="center" marginBottom={6}>
-        <Heading as="h2" size="lg">
-          Control page
-        </Heading>
-      </Flex>
-      <Box>
-        <ControlPageTable
-          onServicesSiteLinkClick={onServicesSiteLinkClick}
-          onSitesSiteLinkClick={onSitesSiteLinkClick}
-          onVpnBearerLinkClick={onVpnBearerLinkClick}
-          countState={{
-            ...uncommitedChanges,
-            total: countState.total,
-          }}
-          workflowState={workflowState}
-          onServiceCommitBtnClick={handleServiceCommitBtnClick}
-          onBearerCommitBtnClick={handleBearerCommitBtnClick}
-          onBearerDiscardBtnClick={() => {
-            // eslint-disable-next-line no-console
-            console.log('Discard changes');
-          }}
-          onServiceDiscardBtnClick={() => {
-            // eslint-disable-next-line no-console
-            console.log('Discard changes');
-          }}
-          onWorkflowFinish={handleWorkflowFinish}
-        />
-      </Box>
-    </Container>
+    <>
+      <DiscardChangesModal
+        isOpen={discardChangesDisclosure.isOpen}
+        onClose={discardChangesDisclosure.onClose}
+        onConfirmBtnClick={handleDiscardConfirmBtnClick}
+        title="Discard changes"
+      >
+        Are you sure you want to discard your changes?
+      </DiscardChangesModal>
+      <Container maxWidth={1280} minHeight="60vh">
+        <Flex justify="space-between" align="center" marginBottom={6}>
+          <Heading as="h2" size="lg">
+            Control page
+          </Heading>
+        </Flex>
+        <Box>
+          <ControlPageTable
+            onServicesSiteLinkClick={onServicesSiteLinkClick}
+            onSitesSiteLinkClick={onSitesSiteLinkClick}
+            onVpnBearerLinkClick={onVpnBearerLinkClick}
+            countState={{
+              ...uncommitedChanges,
+              total: countState.total,
+            }}
+            workflowState={workflowState}
+            onServiceCommitBtnClick={handleServiceCommitBtnClick}
+            onBearerCommitBtnClick={handleBearerCommitBtnClick}
+            onBearerDiscardBtnClick={handleDiscardBtnClick}
+            onServiceDiscardBtnClick={handleDiscardBtnClick}
+            onWorkflowFinish={handleWorkflowFinish}
+          />
+        </Box>
+      </Container>
+    </>
   );
 };
 
