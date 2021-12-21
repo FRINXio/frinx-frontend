@@ -192,12 +192,7 @@ export default function createUniflowApiClient(apiHelpers: ApiHelpers): UniflowA
 
   // TODO: Just copy-pasted for now, needs rework in uniflow-api
   // Returns list of running workflows
-  async function getWorkflowExecutions(
-    workflowId = '*',
-    label = 'status:"RUNNING"',
-    start = 0,
-    size = '',
-  ): Promise<unknown> {
+  async function getWorkflowExecutions(workflowId = '*', label = '"RUNNING"', start = 0, size = ''): Promise<unknown> {
     const executions = sendGetRequest(
       `/executions/?workflowId=${workflowId}&status=${label}&start=${start}&size=${size}`,
     );

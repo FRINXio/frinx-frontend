@@ -62,7 +62,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     fetchParentWorkflows(state.workflowId, state.viewedPage, state.workflowsPerPage, state.labels).then((response) => {
       setHierarchicalWorkflows(response);
     });
-  }, [state.viewedPage]);
+  }, [state]);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, selectedWorkflows: [...new Set<string>()] }));
@@ -239,7 +239,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     },
   };
 
-  const workflowsAmount = hierarchy.hits + flat.result.totalHits;
+  const workflowsAmount = state.isFlat ? flat.result.totalHits : hierarchy.parents.length;
 
   return (
     <PageContainer>
