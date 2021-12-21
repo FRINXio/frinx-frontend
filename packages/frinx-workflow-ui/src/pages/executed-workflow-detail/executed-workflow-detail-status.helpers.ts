@@ -60,7 +60,7 @@ export async function* asyncGenerator(
   abortController: AbortController,
 ): AsyncGenerator<ExecutedWorkflowResponse, void, unknown> {
   let data = await getWorkflowExecOutput(workflowId, abortController);
-  while (data.result.status === 'RUNNING') {
+  while (data.result.status === 'RUNNING' || data.result.status === 'PAUSED') {
     yield data;
     // eslint-disable-next-line no-await-in-loop
     data = await getWorkflowExecOutput(workflowId, abortController);
