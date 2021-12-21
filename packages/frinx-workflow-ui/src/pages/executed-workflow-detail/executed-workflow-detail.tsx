@@ -67,7 +67,7 @@ const convertWorkflowVariablesToFormFormat = (
 
 type Props = {
   workflowId: string;
-  onExecutedOperation: () => void;
+  onExecutedOperation: (workflowId: string) => void;
   onWorkflowIdClick: (workflowId: string) => void;
 };
 
@@ -112,8 +112,9 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOper
         ...workflowVariables,
       },
     };
-    executeWorkflow(workflowPayload);
-    onExecutedOperation();
+    executeWorkflow(workflowPayload).then((res) => {
+      onExecutedOperation(res.text);
+    });
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>, key: string) => {
@@ -136,8 +137,9 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOper
 
   const restartWorkflows = () => {
     const { restartWorkflows } = callbackUtils.getCallbacks;
-    restartWorkflows([workflowId]);
-    onExecutedOperation();
+    restartWorkflows([workflowId]).then(() => {
+      onExecutedOperation(workflowId);
+    });
   };
 
   const handleOnOpenTaskModal = (task: ExecutedWorkflowTask) => {

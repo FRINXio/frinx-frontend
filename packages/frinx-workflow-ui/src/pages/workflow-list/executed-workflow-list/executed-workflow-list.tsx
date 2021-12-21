@@ -277,7 +277,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
           <Paginator
             currentPage={hierarchicalPagination.currentPage}
             onPaginationClick={handlePaginationClick}
-            pagesCount={Math.ceil(workflowsAmount / ITEMS_PER_PAGE)}
+            pagesCount={Math.ceil(hierarchy.hits / ITEMS_PER_PAGE)}
             showPageNumbers={false}
           />
         </>
