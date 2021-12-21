@@ -229,7 +229,6 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOper
                   meta.inputParameters,
                 )}
                 isExecuting={result.status === 'RUNNING'}
-                isSuccessfullyExecuted={result.status === 'COMPLETED'}
                 onRerunClick={executeWorkflow}
               />
             </TabPanel>
