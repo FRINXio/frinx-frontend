@@ -1,6 +1,7 @@
-import React, { FC, useEffect, useState } from 'react';
-import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 import { UniresourceApi } from '@frinx/api';
+import React, { FC, useEffect, useState } from 'react';
+import { Redirect, Route, RouteComponentProps, Switch, useHistory } from 'react-router-dom';
+import { v4 as uuid } from 'uuid';
 import { authContext } from './auth-helpers';
 
 const UniresourceApp: FC = () => {
