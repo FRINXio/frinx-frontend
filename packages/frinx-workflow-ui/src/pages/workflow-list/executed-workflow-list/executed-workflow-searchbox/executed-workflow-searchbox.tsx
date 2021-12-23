@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
-import { ButtonGroup, Button, Box, Flex, FormControl, Grid, Input, Text } from '@chakra-ui/react';
+import { ButtonGroup, Button, Box, Flex, FormControl, Grid, Input, Text, IconButton, Icon } from '@chakra-ui/react';
 import WfAutoComplete from '../../../../common/wf-autocomplete';
+import FeatherIcon from 'feather-icons-react';
 
 type Props = {
   showFlat: boolean;
@@ -46,16 +47,15 @@ const ExecutedWorkflowSearchBox: FC<Props> = ({ changeLabels, changeQuery, chang
             />
           </FormControl>
         </Box>
-        <Button
-          className="primary"
+        <IconButton
+          aria-label="Clear"
           colorScheme="blue"
           onClick={() => {
             changeLabels([]);
             changeQuery('');
           }}
-        >
-          <i className="fas fa-times" />
-        </Button>
+          icon={<Icon size={20} as={FeatherIcon} icon="trash-2" />}
+        />
       </Grid>
     </>
   );

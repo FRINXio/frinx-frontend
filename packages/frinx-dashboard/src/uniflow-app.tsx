@@ -162,7 +162,10 @@ const UniflowApp: FC = () => {
                       setExecutedWorkflowId(uuid());
                       history.push(`/uniflow/executed/${workflowId}`);
                     }}
-                    onExecutedOperation={() => setExecutedWorkflowId(uuid())}
+                    onExecutedOperation={(workflowId) => {
+                      history.push(`/uniflow/executed/${workflowId}`);
+                      setExecutedWorkflowId(uuid());
+                    }}
                   />
                 );
               }}
