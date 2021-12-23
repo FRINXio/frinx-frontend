@@ -1052,6 +1052,71 @@ export type SelectAllocationStrategiesQuery = (
   )> }
 );
 
+export type PoolDetailQueryVariables = Exact<{
+  poolId: Scalars['ID'];
+}>;
+
+
+export type PoolDetailQuery = (
+  { __typename?: 'Query' }
+  & { QueryResourcePool: (
+    { __typename?: 'ResourcePool' }
+    & Pick<ResourcePool, 'id' | 'Name' | 'PoolType'>
+    & { Resources: Array<(
+      { __typename?: 'Resource' }
+      & Pick<Resource, 'Description' | 'Properties' | 'id'>
+    )>, Tags: Array<(
+      { __typename?: 'Tag' }
+      & Pick<Tag, 'id' | 'Tag'>
+    )>, Capacity: Maybe<(
+      { __typename?: 'PoolCapacityPayload' }
+      & Pick<PoolCapacityPayload, 'freeCapacity' | 'utilizedCapacity'>
+    )>, ResourceType: (
+      { __typename?: 'ResourceType' }
+      & Pick<ResourceType, 'Name'>
+    ) }
+  ) }
+);
+
+export type AllocatedResourcesQueryVariables = Exact<{
+  poolId: Scalars['ID'];
+}>;
+
+
+export type AllocatedResourcesQuery = (
+  { __typename?: 'Query' }
+  & { QueryResources: Array<(
+    { __typename?: 'Resource' }
+    & Pick<Resource, 'id' | 'Properties'>
+  )> }
+);
+
+export type ClaimResourceMutationVariables = Exact<{
+  poolId: Scalars['ID'];
+  description: Scalars['String'];
+  userInput: Scalars['Map'];
+}>;
+
+
+export type ClaimResourceMutation = (
+  { __typename?: 'Mutation' }
+  & { ClaimResource: (
+    { __typename?: 'Resource' }
+    & Pick<Resource, 'id' | 'Properties'>
+  ) }
+);
+
+export type FreeResourceMutationVariables = Exact<{
+  poolId: Scalars['ID'];
+  input: Scalars['Map'];
+}>;
+
+
+export type FreeResourceMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'FreeResource'>
+);
+
 export type QueryAllPoolsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
