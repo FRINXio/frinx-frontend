@@ -10,11 +10,8 @@ export type GraphQLApiClient = {
   clientOptions: ClientOptions;
   onError: () => void;
 };
-<<<<<<< HEAD
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export interface GraphQLApi {
   client: GraphQLApiClient;
 }
-=======
->>>>>>> origin/main
