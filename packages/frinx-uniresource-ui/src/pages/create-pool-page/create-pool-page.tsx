@@ -20,6 +20,7 @@ import {
   SelectResourceTypesQuery,
 } from '../../__generated__/graphql';
 import CreatePoolForm from './create-pool-form';
+import useNotifications from '../../hooks/use-notifications';
 
 const CREATE_SET_POOL_MUTATION = gql`
   mutation CreateSetPool($input: CreateSetPoolInput!) {
@@ -239,6 +240,7 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
 
 const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
   const client = useClient();
+  const { addToastNotification } = useNotifications();
   const [{ data: poolsData, fetching: poolsFetching }] = useQuery<SelectPoolsQuery>({ query: SELECT_POOLS_QUERY });
   const [{ data: allocStratData, fetching: allocStratFetching }] = useQuery<SelectAllocationStrategiesQuery>({
     query: SELECT_ALLOCATION_STRATEGIES_QUERY,
@@ -250,6 +252,16 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
       .toPromise()
       .then(() => {
         onCreateSuccess();
+        addToastNotification({
+          type: 'success',
+          content: 'Successfully created resource pool',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          type: 'error',
+          content: 'There was a problem with creating of resource pool',
+        });
       });
   };
 
