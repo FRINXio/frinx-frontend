@@ -71,9 +71,8 @@ const UserNav: FC = () => {
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
-                    logout().finally(() => {
-                      authContext.deleteAuthToken();
-                    });
+                    authContext.deleteAuthToken();
+                    logout();
                   }}
                 >
                   <Flex
