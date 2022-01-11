@@ -54,22 +54,25 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
   useEffect(() => {
     const fetchData = async () => {
       // TODO: we can fetch all in promise all?
-      const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
-      const workflowResult = await uniflowCallbacks.executeWorkflow({
-        name: 'Allocate_SvlanId',
-        version: 1,
-        input: {},
-      });
-      setWorkflowId(workflowResult.text);
-
       const callbacks = callbackUtils.getCallbacks;
       const bearers = await callbacks.getVpnBearers(null, null);
       const clientVpnBearers = apiBearerToClientBearer(bearers);
-      setSelectedBearer(getSelectedBearer(clientVpnBearers, bearerId));
+      const selectedBearer = getSelectedBearer(clientVpnBearers, bearerId);
+      setSelectedBearer(selectedBearer);
 
       const profiles = await callbacks.getBearerValidProviderIdentifiers();
       const clientProfiles = apiProviderIdentifiersToClientIdentifers(profiles);
       setQosProfiles(clientProfiles.qosIdentifiers);
+
+      const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+      const workflowResult = await uniflowCallbacks.executeWorkflow({
+        name: 'Allocate_SvlanId',
+        version: 1,
+        input: {
+          sp_bearer_reference: selectedBearer.spBearerReference,
+        },
+      });
+      setWorkflowId(workflowResult.text);
     };
 
     fetchData();
