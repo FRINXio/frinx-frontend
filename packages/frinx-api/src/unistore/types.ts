@@ -621,7 +621,7 @@ export function decodeEvcAttachmentOutput(value: unknown): EvcAttachmentOutput {
 }
 
 const EvcAttachmentItemsOutputValidator = t.type({
-  'evc-attachment': t.array(EvcAttachmentOutputValidator),
+  'evc-attachment': optional(t.array(EvcAttachmentOutputValidator)),
 });
 
 export type EvcAttachmentItemsOutput = t.TypeOf<typeof EvcAttachmentItemsOutputValidator>;
