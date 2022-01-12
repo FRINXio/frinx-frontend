@@ -665,7 +665,7 @@ const VpnBearerItemsOutputValidator = t.array(
     'default-upstream-bearer': optional(t.string),
     'evc-attachments': optional(
       t.type({
-        'evc-attachment': t.array(EvcAttachmentOutputValidator),
+        'evc-attachment': optional(t.array(EvcAttachmentOutputValidator)),
       }),
     ),
   }),
