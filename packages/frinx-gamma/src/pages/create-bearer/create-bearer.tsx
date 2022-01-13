@@ -18,7 +18,7 @@ import ErrorMessage from '../../components/error-message/error-message';
 
 const defaultConnection: Connection = {
   encapsulationType: null,
-  mtu: 0,
+  mtu: 1500,
   remoteNeId: null,
   remotePortId: null,
   svlanAssignmentType: 'auto',

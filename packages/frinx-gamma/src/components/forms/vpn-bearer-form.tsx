@@ -1,13 +1,13 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Divider, Button, Input, Select, Stack, FormControl, FormErrorMessage, FormLabel } from '@chakra-ui/react';
-import { useFormik } from 'formik';
+import { FormikErrors, useFormik } from 'formik';
 import * as yup from 'yup';
 import { VpnSite } from './site-types';
 import { VpnBearer, VpnCarrier, VpnNode } from './bearer-types';
 import CarrierForm from './carrier-form';
 import ConnectionForm from './connection-form';
 import Autocomplete2 from '../autocomplete-2/autocomplete-2';
-import { BearerStatus } from '../../network-types';
+import { BearerStatus, Connection } from '../../network-types';
 
 const CarrierSchema = yup.object().shape({
   carrierName: yup.string().nullable(),
@@ -19,7 +19,11 @@ const ConnectionSchema = yup.object().shape({
   encapsulationType: yup.string().nullable(),
   svlanAssignmentType: yup.string().nullable(),
   tpId: yup.string().nullable(),
-  mtu: yup.number().required('Mtu is required'),
+  mtu: yup
+    .number()
+    .min(1000, 'mtu must be greater than or equal to 1000')
+    .max(9000, 'mtu must be less than or equal to 9000')
+    .required('Mtu is required'),
   remoteNeId: yup.string().nullable(),
   remotePortId: yup.string().nullable(),
 });
@@ -43,7 +47,7 @@ type Props = {
 };
 
 const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, bearer, onSubmit, onCancel }) => {
-  const { values, errors, dirty, resetForm, setFieldValue, handleChange, handleSubmit } = useFormik({
+  const { values, errors, dirty, isValid, resetForm, setFieldValue, handleChange, handleSubmit } = useFormik({
     initialValues: {
       ...bearer,
     },
@@ -151,7 +155,7 @@ const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, be
             remotePortId: null,
           }
         }
-        errors={errors}
+        errors={errors.connection as FormikErrors<Connection>}
         onChange={(connection) => {
           setFieldValue('connection', connection);
         }}
@@ -159,7 +163,7 @@ const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, be
 
       <Divider my={4} />
       <Stack direction="row" spacing={2} align="center">
-        <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
+        <Button type="submit" colorScheme="blue" isDisabled={!dirty || !isValid}>
           Save changes
         </Button>
         <Button onClick={() => resetForm()}>Clear</Button>
