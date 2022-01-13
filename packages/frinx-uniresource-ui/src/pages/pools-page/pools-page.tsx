@@ -63,9 +63,15 @@ type Props = {
   onNewPoolBtnClick: () => void;
   onNewIpv4PrefixBtnClick: () => void;
   onNewVlanBtnClick: () => void;
+  onPoolNameClick: (poolId: string) => void;
 };
 
-const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onNewIpv4PrefixBtnClick, onNewVlanBtnClick }) => {
+const PoolsPage: FunctionComponent<Props> = ({
+  onNewPoolBtnClick,
+  onNewIpv4PrefixBtnClick,
+  onNewVlanBtnClick,
+  onPoolNameClick,
+}) => {
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [{ data, fetching, error }] = useQuery<QueryAllPoolsQuery>({
     query: POOLS_QUERY,
@@ -130,6 +136,7 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onNewIpv4Prefi
           pools={data?.QueryResourcePools || null}
           isLoading={fetching}
           onDeleteBtnClick={handleDeleteBtnClick}
+          onPoolNameClick={onPoolNameClick}
         />
       </Box>
     </>

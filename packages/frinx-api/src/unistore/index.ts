@@ -128,6 +128,7 @@ export type UnistoreApiClient = {
     contentType?: ContentType,
   ) => Promise<number>;
   getTransactionCookie: () => Promise<string>;
+  closeTransaction: () => Promise<void>;
   getEvcAttachments: (
     bearerId: string,
     pagination: Pagination | null,
@@ -620,6 +621,13 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     return data;
   }
 
+  async function closeTransaction(): Promise<void> {
+    await sendPostRequest('/operations/uniconfig-manager:close-transaction', {
+      auth: unistoreAuthToken,
+      verify: false,
+    });
+  }
+
   return {
     getVpnServices,
     editVpnServices,
@@ -650,6 +658,7 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     getSiteNetworkAccesses,
     getSiteNetworkAccessesCount,
     getTransactionCookie,
+    closeTransaction,
     getDevices,
     getDevicesCount,
     getEvcAttachments,

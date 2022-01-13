@@ -10,7 +10,7 @@ const EvcSchema = yup.object().shape({
   evcType: yup.string().required('Evc type is required'),
   circuitReference: yup
     .string()
-    .matches(/CPNH2\d{8}-(\d{3,4})/, 'Circuit Reference should have following format: CPNH2-00000000-0000')
+    .matches(/CPNH2\d{8}-(\d{3,4})$/, 'Circuit Reference should have following format: CPNH200000000-0000')
     .required('Circuit Reference is required'),
   svlanId: yup.number().required('Svlan Id is required'),
   inputBandwidth: yup.number().required('Input Bandwidth is required'),

@@ -180,7 +180,7 @@ function getClientSiteRole(role: string | void): string | null {
 export function apiSiteNetworkAccessToClientSiteNetworkAccess(
   networkAccess: SiteNetworkAccessOutput | void,
 ): SiteNetworkAccess[] {
-  if (!networkAccess) {
+  if (!networkAccess || !networkAccess['site-network-access']) {
     return [];
   }
 
@@ -551,9 +551,7 @@ export function apiVpnCarriersToClientCarriers(apiCarriers: VpnCarriersOutput): 
 function apiBearerStatusToClientBearerStatus(apiBearerStatus: BearerStatusOutput): BearerStatus {
   const adminStatus = apiBearerStatus['admin-status']
     ? {
-        status: apiBearerStatus['admin-status'].status
-          ? (apiBearerStatus['admin-status'].status.split(':').pop() as string)
-          : null,
+        status: apiBearerStatus['admin-status'].status ? apiBearerStatus['admin-status'].status : null,
         lastUpdated: null,
       }
     : null;
@@ -613,6 +611,9 @@ function apiEvcAttachmentToClientEvcAttachment(apiEvc: EvcAttachmentOutput): Evc
 }
 
 export function apiEvcAttachmentsToClientEvcAttachments(apiEvc: EvcAttachmentItemsOutput): EvcAttachment[] {
+  if (!apiEvc['evc-attachment']) {
+    return [];
+  }
   return apiEvc['evc-attachment'].map(apiEvcAttachmentToClientEvcAttachment);
 }
 

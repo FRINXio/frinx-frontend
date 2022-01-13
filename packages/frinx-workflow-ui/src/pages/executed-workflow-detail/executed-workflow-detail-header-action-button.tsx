@@ -7,7 +7,7 @@ type Props = {
   workflowId: string;
   status: WorkflowStatus | undefined;
   restartWorkflows: () => void;
-  onWorkflowActionExecution: () => void;
+  onWorkflowActionExecution: (workflowId: string) => void;
 };
 
 const DetailsModalHeaderActionButtons: FC<Props> = ({
@@ -20,28 +20,28 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
     const { terminateWorkflows } = callbackUtils.getCallbacks;
 
     terminateWorkflows([workflowId]);
-    onWorkflowActionExecution();
+    onWorkflowActionExecution(workflowId);
   };
 
   const pauseWorkflows = () => {
     const { pauseWorkflows } = callbackUtils.getCallbacks;
 
     pauseWorkflows([workflowId]);
-    onWorkflowActionExecution();
+    onWorkflowActionExecution(workflowId);
   };
 
   const resumeWorkflows = () => {
     const { resumeWorkflows } = callbackUtils.getCallbacks;
 
     resumeWorkflows([workflowId]);
-    onWorkflowActionExecution();
+    onWorkflowActionExecution(workflowId);
   };
 
   const retryWorkflows = () => {
     const { retryWorkflows } = callbackUtils.getCallbacks;
 
     retryWorkflows([workflowId]);
-    onWorkflowActionExecution();
+    onWorkflowActionExecution(workflowId);
   };
 
   if (status === 'FAILED' || status === 'TERMINATED') {

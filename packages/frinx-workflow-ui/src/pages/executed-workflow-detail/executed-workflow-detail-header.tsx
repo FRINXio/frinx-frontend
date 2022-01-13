@@ -9,7 +9,7 @@ type Props = {
   endTime: string;
   status: Status;
   restartWorkflows: () => void;
-  onWorkflowActionExecution: () => void;
+  onWorkflowActionExecution: (workflowId: string) => void;
   workflowId: string;
 };
 

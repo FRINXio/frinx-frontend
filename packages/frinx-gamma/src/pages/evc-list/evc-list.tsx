@@ -1,6 +1,7 @@
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useDisclosure, Heading, Box, Container, Flex, Button } from '@chakra-ui/react';
 import { useParams } from 'react-router';
+import diff from 'diff-arrays-of-objects';
 import {
   apiBearerToClientBearer,
   clientBearerToApiBearer,
@@ -13,6 +14,8 @@ import callbackUtils from '../../unistore-callback-utils';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import EvcFilter, { getDefaultEvcFilters, EvcFilters } from './evc-filter';
+import { getChangedEvcAttachmentsWithStatus, getSavedEvcAttachmentsWithStatus } from './evc-helpers';
+import unwrap from '../../helpers/unwrap';
 
 type Props = {
   onCreateEvcClick: (bearerId: string) => void;
@@ -21,6 +24,9 @@ type Props = {
 };
 
 const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvcClick, onBearerListClick }) => {
+  const [createdEvcAttachments, setCreatedEvcAttachments] = useState<EvcAttachment[] | null>(null);
+  const [updatedEvcAttachments, setUpdatedEvcAttachments] = useState<EvcAttachment[] | null>(null);
+  const [deletedEvcAttachments, setDeletedEvcAttachments] = useState<EvcAttachment[] | null>(null);
   const [bearer, setBearer] = useState<VpnBearer | null>(null);
   const [evcAttachments, setEvcAttachments] = useState<EvcAttachment[] | null>(null);
   const [evcToDelete, setEvcToDelete] = useState<Pick<EvcAttachment, 'evcType' | 'circuitReference'> | null>(null);
@@ -58,6 +64,16 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
         ...pagination,
         pageCount: Math.ceil(evcCount / pagination.pageSize),
       });
+
+      // get data for changes table
+      const allSavedEvcAttachments = await callbacks.getEvcAttachments(bearerId, null, null, 'nonconfig');
+      const clientAllEvcAttachments = apiEvcAttachmentsToClientEvcAttachments(allSavedEvcAttachments);
+      const allUnsavedEvcAttachments = await callbacks.getEvcAttachments(bearerId, null, null);
+      const clientAllUnsavedEvcAttachments = apiEvcAttachmentsToClientEvcAttachments(allUnsavedEvcAttachments);
+      const result = diff(clientAllEvcAttachments, clientAllUnsavedEvcAttachments, 'vpnId');
+      setCreatedEvcAttachments(result.added);
+      setUpdatedEvcAttachments(result.updated);
+      setDeletedEvcAttachments(result.removed);
     };
     fetchData();
   }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -99,6 +115,17 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
     return null;
   }
 
+  const changedEvcAttachmentsWithStatus = getChangedEvcAttachmentsWithStatus(
+    createdEvcAttachments,
+    updatedEvcAttachments,
+    deletedEvcAttachments,
+  );
+  const savedEvcAttachmentsWithStatus = getSavedEvcAttachmentsWithStatus(
+    evcAttachments,
+    updatedEvcAttachments,
+    deletedEvcAttachments,
+  );
+
   return (
     <>
       <ConfirmDeleteModal
@@ -114,6 +141,16 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
           const apiBearer = clientBearerToApiBearer(editedVpnBearer);
           callbackUtils.getCallbacks.editVpnBearer(apiBearer).then(() => {
             setBearer(editedVpnBearer);
+            setCreatedEvcAttachments(
+              unwrap(createdEvcAttachments).filter(
+                (evc) => evc.evcType !== evcToDelete?.evcType && evc.circuitReference !== evcToDelete?.circuitReference,
+              ),
+            );
+            setUpdatedEvcAttachments(
+              unwrap(updatedEvcAttachments).filter(
+                (evc) => evc.evcType !== evcToDelete?.evcType && evc.circuitReference !== evcToDelete?.circuitReference,
+              ),
+            );
             deleteModalDisclosure.onClose();
           });
         }}
@@ -132,9 +169,26 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
         </Flex>
         <Box>
           <EvcFilter filters={filters} onFilterChange={handleFilterChange} onFilterSubmit={handleFilterSubmit} />
+          {changedEvcAttachmentsWithStatus.length ? (
+            <>
+              <Heading size="sm">Changes</Heading>
+              <Box my="2">
+                <EvcTable
+                  size="sm"
+                  bearer={bearer}
+                  evcAttachments={changedEvcAttachmentsWithStatus}
+                  detailId={detailId}
+                  onEditEvcButtonClick={onEditEvcClick}
+                  onDeleteEvcButtonClick={handleDeleteButtonClick}
+                  onRowClick={handleRowClick}
+                />
+              </Box>
+            </>
+          ) : null}
           <EvcTable
+            size="md"
             bearer={bearer}
-            evcAttachments={evcAttachments || []}
+            evcAttachments={savedEvcAttachmentsWithStatus}
             detailId={detailId}
             onEditEvcButtonClick={onEditEvcClick}
             onDeleteEvcButtonClick={handleDeleteButtonClick}

@@ -7,6 +7,7 @@ import { VpnBearer, VpnCarrier, VpnNode } from './bearer-types';
 import CarrierForm from './carrier-form';
 import ConnectionForm from './connection-form';
 import Autocomplete2 from '../autocomplete-2/autocomplete-2';
+import { BearerStatus } from '../../network-types';
 
 const CarrierSchema = yup.object().shape({
   carrierName: yup.string().nullable(),
@@ -63,7 +64,7 @@ const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, be
   return (
     <form onSubmit={handleSubmit}>
       <FormControl id="ne-id" my={6} isRequired isInvalid={errors.neId != null}>
-        <FormLabel>Ne Id</FormLabel>
+        <FormLabel>VPN Node</FormLabel>
         <Autocomplete2
           items={nodeItems}
           selectedItem={selectedNode}
@@ -83,8 +84,33 @@ const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, be
         </Select>
         {errors.portId && <FormErrorMessage>{errors.portId}</FormErrorMessage>}
       </FormControl>
+      <FormControl id="admin-status" my={6}>
+        <FormLabel>Port ID</FormLabel>
+        <Select
+          name="status"
+          value={values.status?.adminStatus?.status || ''}
+          onChange={(event) => {
+            const { value } = event.currentTarget;
+            const newValue: BearerStatus = {
+              operStatus: values.status?.operStatus ? { ...values.status.operStatus } : null,
+              adminStatus: values.status?.adminStatus ? { ...values.status.adminStatus, status: value } : null,
+            };
+
+            setFieldValue('status', newValue);
+          }}
+        >
+          <option value="">-- choose admin state</option>
+          <option value="gamma-vpn-common:administrative-state-testing">administrative-state-testing</option>
+          <option value="gamma-vpn-common:administrative-state-pre-deployment">
+            administrative-state-pre-deployment
+          </option>
+          <option value="gamma-vpn-common:administrative-state-up">administrative-state-up</option>
+          <option value="gamma-vpn-common:administrative-state-down">administrative-state-down</option>
+        </Select>
+        {errors.status && <FormErrorMessage>{errors.status}</FormErrorMessage>}
+      </FormControl>
       <FormControl id="sp-bearer-reference" my={6} isRequired isInvalid={errors.spBearerReference != null}>
-        <FormLabel>Gamma hub-link ID</FormLabel>
+        <FormLabel>Gamma Hublink ID</FormLabel>
         <Input
           name="spBearerReference"
           value={values.spBearerReference}
