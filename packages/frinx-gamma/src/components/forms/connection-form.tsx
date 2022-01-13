@@ -1,16 +1,16 @@
 import React, { FC } from 'react';
-import { Input, Select, FormControl, FormLabel } from '@chakra-ui/react';
-import { FormikErrors } from 'formik';
+import { Input, Select, FormControl, FormErrorMessage, FormLabel } from '@chakra-ui/react';
+import { FormikErrors, FormikValues } from 'formik';
 import { Connection, VpnBearer } from './bearer-types';
 import { getSelectOptions } from './options.helper';
 
 type Props = {
   connection: Connection;
-  errors: FormikErrors<VpnBearer>;
+  errors: FormikErrors<Connection>;
   onChange: (c: Connection) => void;
 };
 
-const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
+const ConnectionForm: FC<Props> = ({ connection, errors, onChange }) => {
   return (
     <>
       <FormControl my={6}>
@@ -79,7 +79,7 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
           })}
         </Select>
       </FormControl>
-      <FormControl id="connection-mtu" my={6}>
+      <FormControl id="connection-mtu" my={6} isInvalid={errors && errors.mtu != undefined}>
         <FormLabel>MTU</FormLabel>
         <Input
           name="connection-mtu"
@@ -95,6 +95,7 @@ const ConnectionForm: FC<Props> = ({ connection, onChange }) => {
             });
           }}
         />
+        {errors && <FormErrorMessage>{errors.mtu}</FormErrorMessage>}
       </FormControl>
     </>
   );
