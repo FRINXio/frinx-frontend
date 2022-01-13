@@ -180,7 +180,7 @@ function getClientSiteRole(role: string | void): string | null {
 export function apiSiteNetworkAccessToClientSiteNetworkAccess(
   networkAccess: SiteNetworkAccessOutput | void,
 ): SiteNetworkAccess[] {
-  if (!networkAccess) {
+  if (!networkAccess || !networkAccess['site-network-access']) {
     return [];
   }
 
@@ -611,6 +611,9 @@ function apiEvcAttachmentToClientEvcAttachment(apiEvc: EvcAttachmentOutput): Evc
 }
 
 export function apiEvcAttachmentsToClientEvcAttachments(apiEvc: EvcAttachmentItemsOutput): EvcAttachment[] {
+  if (!apiEvc['evc-attachment']) {
+    return [];
+  }
   return apiEvc['evc-attachment'].map(apiEvcAttachmentToClientEvcAttachment);
 }
 
