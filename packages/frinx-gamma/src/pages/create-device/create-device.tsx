@@ -2,7 +2,11 @@ import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Box, Container, Heading } from '@chakra-ui/react';
 import { useParams } from 'react-router';
 import unwrap from '../../helpers/unwrap';
-import { apiVpnSitesToClientVpnSite, clientVpnSiteToApiVpnSite } from '../../components/forms/converters';
+import {
+  apiSiteDevicesToClientSiteDevices,
+  apiVpnSitesToClientVpnSite,
+  clientVpnSiteToApiVpnSite,
+} from '../../components/forms/converters';
 import DeviceForm from '../../components/forms/device-form';
 import ErrorMessage from '../../components/error-message/error-message';
 import { SiteDevice, VpnSite } from '../../components/forms/site-types';
@@ -24,7 +28,12 @@ function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
   return vpnService;
 }
 
+function nonEmptyDevices<T>(name: T | undefined): name is T {
+  return name !== undefined;
+}
+
 const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+  const [deviceNames, setDeviceNames] = useState<string[]>([]);
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const { siteId, locationId } = useParams<{ siteId: string; locationId: string }>();
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -36,6 +45,9 @@ const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
       const sites = await callbacks.getVpnSites(null, null);
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
       setSelectedSite(getSelectedSite(clientVpnSites, siteId));
+      const devices = await callbacks.getDevices(siteId, null, null);
+      const clientDevices = apiSiteDevicesToClientSiteDevices(devices);
+      setDeviceNames(clientDevices.map((d) => d.deviceId).filter(nonEmptyDevices));
     };
 
     fetchData();
@@ -73,6 +85,10 @@ const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
     onCancel(unwrap(selectedSite?.siteId), locationId);
   };
 
+  if (!selectedSite) {
+    return null;
+  }
+
   return (
     selectedSite && (
       <Container>
@@ -88,7 +104,8 @@ const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
             mode="add"
             siteId={unwrap(selectedSite.siteId)}
             device={getDefaultDevice(locationId)}
-            locationId={locationId}
+            locations={selectedSite.customerLocations}
+            existingDeviceNames={deviceNames}
             onSubmit={handleSubmit}
             onCancel={handleCancel}
           />

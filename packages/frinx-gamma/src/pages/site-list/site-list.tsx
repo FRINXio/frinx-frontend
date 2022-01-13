@@ -17,6 +17,7 @@ type Props = {
   onCreateVpnSiteClick: () => void;
   onEditVpnSiteClick: (siteId: string) => void;
   onLocationsVpnSiteClick: (siteId: string) => void;
+  onDevicesVpnSiteClick: (siteId: string) => void;
   onDetailVpnSiteClick: (siteId: string) => void;
 };
 
@@ -24,6 +25,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   onCreateVpnSiteClick,
   onEditVpnSiteClick,
   onLocationsVpnSiteClick,
+  onDevicesVpnSiteClick,
   onDetailVpnSiteClick,
 }) => {
   const filterContext = useContext(FilterContext);
@@ -144,6 +146,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
                       onEditSiteButtonClick={onEditVpnSiteClick}
                       onDetailSiteButtonClick={onDetailVpnSiteClick}
                       onLocationsSiteButtonClick={onLocationsVpnSiteClick}
+                      onDevicesSiteButtonClick={onDevicesVpnSiteClick}
                       onDeleteSiteButtonClick={handleDeleteButtonClick}
                       onRowClick={handleRowClick}
                     />
@@ -157,6 +160,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
                 onEditSiteButtonClick={onEditVpnSiteClick}
                 onDetailSiteButtonClick={onDetailVpnSiteClick}
                 onLocationsSiteButtonClick={onLocationsVpnSiteClick}
+                onDevicesSiteButtonClick={onDevicesVpnSiteClick}
                 onDeleteSiteButtonClick={handleDeleteButtonClick}
                 onRowClick={handleRowClick}
               />

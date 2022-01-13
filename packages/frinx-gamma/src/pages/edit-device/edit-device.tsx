@@ -86,8 +86,10 @@ const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
           <DeviceForm
             mode="edit"
             siteId={unwrap(selectedSite.siteId)}
+            locationId={selectedDevice.locationId || undefined}
+            locations={selectedSite.customerLocations}
+            existingDeviceNames={[]}
             device={selectedDevice}
-            locationId={locationId}
             onSubmit={handleSubmit}
             onCancel={handleCancel}
           />
