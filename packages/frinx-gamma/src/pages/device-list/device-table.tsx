@@ -1,21 +1,25 @@
-import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
+import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
-import { SiteDevice, VpnSite } from '../../components/forms/site-types';
+import StatusTag from '../../components/status-tag/status-tag';
+import { VpnSite } from '../../components/forms/site-types';
 import DeviceDetail from './device-detail';
 import unwrap from '../../helpers/unwrap';
+import { SiteDeviceWithStatus } from './device-helpers';
 
 type Props = {
+  size: 'sm' | 'md';
   site: VpnSite;
-  devices: SiteDevice[];
+  devices: SiteDeviceWithStatus[];
   detailId: string | null;
-  onEditDeviceButtonClick: (siteId: string, locationId: string, deviceId: string) => void;
+  onEditDeviceButtonClick: (siteId: string, deviceId: string, locationId?: string) => void;
   onDeleteDeviceButtonClick: (siteId: string) => void;
   onRowClick: (rowId: string, isOpen: boolean) => void;
 };
 
 const DeviceTable: VoidFunctionComponent<Props> = ({
+  size,
   devices,
   site,
   detailId,
@@ -24,7 +28,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   onRowClick,
 }) => {
   return (
-    <Table background="white" size="lg" marginBottom="12">
+    <Table background="white" size={size} marginBottom="12">
       <Thead>
         <Tr>
           <Th />
@@ -38,16 +42,19 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
       </Thead>
       {devices.map((device) => {
         const [deviceLocation] = site.customerLocations.filter((location) => location.locationId === device.locationId);
-        const rowId = unwrap(deviceLocation.locationId);
+        const rowId = unwrap(device.deviceId);
         const isDetailOpen = rowId === detailId;
         return (
           <Tbody key={device.deviceId}>
             <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
               <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
               <Td>
-                <Text as="span" fontWeight={600}>
-                  {device.deviceId}
-                </Text>
+                <Flex alignItems="center">
+                  <Text as="span" fontWeight={600}>
+                    {device.deviceId}
+                  </Text>
+                  <StatusTag status={device.status} />
+                </Flex>
               </Td>
               <Td>
                 <Text as="span">{device.locationId}</Text>
@@ -67,7 +74,11 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                       size="sm"
                       icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                       onClick={() =>
-                        onEditDeviceButtonClick(unwrap(site.siteId), unwrap(device.locationId), unwrap(device.deviceId))
+                        onEditDeviceButtonClick(
+                          unwrap(site.siteId),
+                          unwrap(device.deviceId),
+                          device.locationId || undefined,
+                        )
                       }
                     />
                   </Tooltip>

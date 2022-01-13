@@ -14,6 +14,7 @@ type Props = {
   onEditSiteButtonClick: (siteId: string) => void;
   onDetailSiteButtonClick: (siteId: string) => void;
   onLocationsSiteButtonClick: (siteId: string) => void;
+  onDevicesSiteButtonClick: (siteId: string) => void;
   onDeleteSiteButtonClick: (siteId: string) => void;
   onRowClick: (rowId: string, isOpen: boolean) => void;
 };
@@ -25,6 +26,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
   onEditSiteButtonClick,
   onDetailSiteButtonClick,
   onLocationsSiteButtonClick,
+  onDevicesSiteButtonClick,
   onDeleteSiteButtonClick,
   onRowClick,
 }) => {
@@ -89,10 +91,18 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                     </Tooltip>
                     <Tooltip label="Site Locations">
                       <IconButton
-                        aria-label="devices"
+                        aria-label="locations"
                         size="sm"
                         icon={<Icon size={12} as={FeatherIcon} icon="crosshair" />}
                         onClick={() => onLocationsSiteButtonClick(unwrap(site.siteId))}
+                      />
+                    </Tooltip>
+                    <Tooltip label="Site Devices">
+                      <IconButton
+                        aria-label="devices"
+                        size="sm"
+                        icon={<Icon size={12} as={FeatherIcon} icon="cpu" />}
+                        onClick={() => onDevicesSiteButtonClick(unwrap(site.siteId))}
                       />
                     </Tooltip>
                     <Tooltip label="Delete Site">

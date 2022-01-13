@@ -3,11 +3,13 @@ import { Box, Button, FormControl, FormLabel, HStack, Input } from '@chakra-ui/r
 
 export type DeviceFilters = {
   deviceId: string | null;
+  locationId: string | null;
   managementIp: string | null;
 };
 
-export const getDefaultDeviceFilters = (): DeviceFilters => ({
+export const getDefaultDeviceFilters = (locationId?: string): DeviceFilters => ({
   deviceId: null,
+  locationId: locationId || null,
   managementIp: null,
 });
 
