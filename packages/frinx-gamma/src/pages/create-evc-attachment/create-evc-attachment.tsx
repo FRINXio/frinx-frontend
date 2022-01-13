@@ -57,8 +57,8 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
       const callbacks = callbackUtils.getCallbacks;
       const bearers = await callbacks.getVpnBearers(null, null);
       const clientVpnBearers = apiBearerToClientBearer(bearers);
-      const selectedBearer = getSelectedBearer(clientVpnBearers, bearerId);
-      setSelectedBearer(selectedBearer);
+      const bearer = getSelectedBearer(clientVpnBearers, bearerId);
+      setSelectedBearer(bearer);
 
       const profiles = await callbacks.getBearerValidProviderIdentifiers();
       const clientProfiles = apiProviderIdentifiersToClientIdentifers(profiles);
@@ -69,7 +69,7 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
         name: 'Allocate_SvlanId',
         version: 1,
         input: {
-          sp_bearer_reference: selectedBearer.spBearerReference,
+          sp_bearer_reference: bearer.spBearerReference, // eslint-disable-line @typescript-eslint/naming-convention
         },
       });
       setWorkflowId(workflowResult.text);

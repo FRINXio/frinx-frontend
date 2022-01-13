@@ -258,45 +258,47 @@ export function decodeIPConnectionOutput(value: unknown): IPConnectionOutput {
 }
 
 const SiteNetworkAccessValidator = t.type({
-  'site-network-access': t.array(
-    t.type({
-      'site-network-access-id': t.string,
-      'site-network-access-type': t.string,
-      // this property is part of the form inputs, but it was reported,
-      // that they dont want to lose it when we edit form
-      'ip-connection': optional(IPConnectionValidator),
-      'maximum-routes': MaximumRoutesValidator,
-      'location-reference': optional(t.string),
-      'device-reference': optional(t.string),
-      'vpn-attachment': optional(VpnValidator),
-      availability: t.type({
-        'access-priority': t.number,
-      }),
-      bearer: t.type({
-        'always-on': t.boolean,
-        'bearer-reference': t.string,
-        'requested-c-vlan': t.number,
-        'requested-type': t.type({
-          'requested-type': t.string,
-          strict: t.boolean,
+  'site-network-access': optional(
+    t.array(
+      t.type({
+        'site-network-access-id': t.string,
+        'site-network-access-type': t.string,
+        // this property is part of the form inputs, but it was reported,
+        // that they dont want to lose it when we edit form
+        'ip-connection': optional(IPConnectionValidator),
+        'maximum-routes': MaximumRoutesValidator,
+        'location-reference': optional(t.string),
+        'device-reference': optional(t.string),
+        'vpn-attachment': optional(VpnValidator),
+        availability: t.type({
+          'access-priority': t.number,
         }),
-      }),
-
-      service: t.type({
-        'svc-input-bandwidth': t.number,
-        'svc-output-bandwidth': t.number,
-        qos: t.type({
-          'qos-profile': t.type({
-            'qos-profile': t.array(
-              t.type({
-                profile: t.string,
-              }),
-            ),
+        bearer: t.type({
+          'always-on': t.boolean,
+          'bearer-reference': t.string,
+          'requested-c-vlan': t.number,
+          'requested-type': t.type({
+            'requested-type': t.string,
+            strict: t.boolean,
           }),
         }),
+
+        service: t.type({
+          'svc-input-bandwidth': t.number,
+          'svc-output-bandwidth': t.number,
+          qos: t.type({
+            'qos-profile': t.type({
+              'qos-profile': t.array(
+                t.type({
+                  profile: t.string,
+                }),
+              ),
+            }),
+          }),
+        }),
+        'routing-protocols': optional(RoutingProtocolsValidator),
       }),
-      'routing-protocols': optional(RoutingProtocolsValidator),
-    }),
+    ),
   ),
 });
 
@@ -619,7 +621,7 @@ export function decodeEvcAttachmentOutput(value: unknown): EvcAttachmentOutput {
 }
 
 const EvcAttachmentItemsOutputValidator = t.type({
-  'evc-attachment': t.array(EvcAttachmentOutputValidator),
+  'evc-attachment': optional(t.array(EvcAttachmentOutputValidator)),
 });
 
 export type EvcAttachmentItemsOutput = t.TypeOf<typeof EvcAttachmentItemsOutputValidator>;
@@ -663,7 +665,7 @@ const VpnBearerItemsOutputValidator = t.array(
     'default-upstream-bearer': optional(t.string),
     'evc-attachments': optional(
       t.type({
-        'evc-attachment': t.array(EvcAttachmentOutputValidator),
+        'evc-attachment': optional(t.array(EvcAttachmentOutputValidator)),
       }),
     ),
   }),
