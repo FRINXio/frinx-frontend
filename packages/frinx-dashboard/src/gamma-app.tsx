@@ -144,6 +144,9 @@ const GammaApp: VoidFunctionComponent = () => {
             onLocationsVpnSiteClick={(siteId: string) => {
               history.push(`/gamma/sites/${siteId}/locations`);
             }}
+            onDevicesVpnSiteClick={(siteId: string) => {
+              history.push(`/gamma/sites/${siteId}/devices`);
+            }}
           />
         </Route>
         <Route path="/gamma/sites/add" exact>
@@ -202,13 +205,48 @@ const GammaApp: VoidFunctionComponent = () => {
           />
         </Route>
 
-        {/* devices */}
+        {/* devices via sites */}
+        <Route path="/gamma/sites/:siteId/devices" exact>
+          <DeviceList
+            onCreateDeviceClick={(siteId: string) => {
+              history.push(`/gamma/sites/${siteId}/devices/add`);
+            }}
+            onEditDeviceClick={(siteId: string, deviceId: string) => {
+              history.push(`/gamma/sites/${siteId}/devices/edit/${deviceId}`);
+            }}
+            onLocationListClick={() => {
+              history.push(`/gamma/sites`);
+            }}
+          />
+        </Route>
+        <Route path="/gamma/sites/:siteId/devices/add" exact>
+          <CreateDevice
+            onSuccess={(siteId: string) => {
+              history.push(`/gamma/sites/${siteId}/devices`);
+            }}
+            onCancel={(siteId: string) => {
+              history.push(`/gamma/sites/${siteId}/devices`);
+            }}
+          />
+        </Route>
+        <Route path="/gamma/sites/:siteId/devices/edit/:deviceId" exact>
+          <EditDevice
+            onSuccess={(siteId: string) => {
+              history.push(`/gamma/sites/${siteId}/devices`);
+            }}
+            onCancel={(siteId: string) => {
+              history.push(`/gamma/sites/${siteId}/devices`);
+            }}
+          />
+        </Route>
+
+        {/* devices via locations */}
         <Route path="/gamma/sites/:siteId/:locationId/devices" exact>
           <DeviceList
-            onCreateDeviceClick={(siteId: string, locationId: string) => {
+            onCreateDeviceClick={(siteId: string, locationId?: string) => {
               history.push(`/gamma/sites/${siteId}/${locationId}/devices/add`);
             }}
-            onEditDeviceClick={(siteId: string, locationId: string, deviceId: string) => {
+            onEditDeviceClick={(siteId: string, deviceId: string, locationId?: string) => {
               history.push(`/gamma/sites/${siteId}/${locationId}/devices/edit/${deviceId}`);
             }}
             onLocationListClick={(siteId: string) => {

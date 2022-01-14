@@ -34,12 +34,12 @@ const DeviceDetail: VoidFunctionComponent<Props> = ({ site, device, location }) 
       <DetailItem label="Site Service QOS Profile" value={site.siteServiceQosProfile} />
       <DetailItem label="Enable BGP PIC fast reroute" value={site.enableBgpPicFastReroute ? 'yes' : 'no'} />
 
-      <DetailItem label="Location Id" value={location.locationId} />
-      <DetailItem label="Street" value={location.street} />
-      <DetailItem label="Postal Code" value={location.postalCode} />
-      <DetailItem label="State" value={location.state} />
-      <DetailItem label="City" value={location.city} />
-      <DetailItem label="Country Code" value={location.countryCode} />
+      <DetailItem label="Location Id" value={location?.locationId} />
+      <DetailItem label="Street" value={location?.street} />
+      <DetailItem label="Postal Code" value={location?.postalCode} />
+      <DetailItem label="State" value={location?.state} />
+      <DetailItem label="City" value={location?.city} />
+      <DetailItem label="Country Code" value={location?.countryCode} />
 
       <DetailItem label="Device Id" value={device.deviceId} />
       <DetailItem label="Management" value={device.managementIP} />

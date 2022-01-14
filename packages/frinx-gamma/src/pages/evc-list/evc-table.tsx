@@ -32,8 +32,11 @@ const EvcTable: VoidFunctionComponent<Props> = ({
       <Thead>
         <Tr>
           <Th />
-          <Th>Evc Type</Th>
-          <Th>Circuit Reference</Th>
+          <Th></Th>
+          <Th>BMT Circuit Reference</Th>
+          <Th>Carrier Reference</Th>
+          <Th>Svlan Id</Th>
+          <Th>Input Bandwidth</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
@@ -45,15 +48,19 @@ const EvcTable: VoidFunctionComponent<Props> = ({
             <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
               <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
               <Td>
-                <Flex alignItems="center">
-                  <Text as="span" fontWeight={600}>
-                    {evc.evcType}
-                  </Text>
-                  <StatusTag status={evc.evcStatus} />
-                </Flex>
+                <StatusTag status={evc.evcStatus} />
               </Td>
               <Td>
                 <Text as="span">{evc.circuitReference}</Text>
+              </Td>
+              <Td>
+                <Text as="span">{evc.carrierReference}</Text>
+              </Td>
+              <Td>
+                <Text as="span">{evc.svlanId}</Text>
+              </Td>
+              <Td>
+                <Text as="span">{evc.inputBandwidth}</Text>
               </Td>
               <Td>
                 {evc.evcStatus !== 'DELETED' && (

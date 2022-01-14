@@ -48,6 +48,7 @@ export type LocationFilter = {
 
 export type DeviceFilter = {
   deviceId: string | null;
+  locationId: string | null;
   managementIp: string | null;
 };
 
@@ -205,6 +206,7 @@ export function getLocationFilterParams(locationFilter: LocationFilter): string 
 export function getDeviceFilterParams(deviceFilter: DeviceFilter): string {
   const filters = [];
   filters.push(deviceFilter.deviceId ? `@."device-id"like_regex"${deviceFilter.deviceId}"` : null);
+  filters.push(deviceFilter.locationId ? `@."location"like_regex"${deviceFilter.locationId}"` : null);
   filters.push(deviceFilter.managementIp ? `{@/management/address} like_regex "${deviceFilter.managementIp}"` : null);
   const joinedFilters = joinNonNullFilters(filters);
   return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
