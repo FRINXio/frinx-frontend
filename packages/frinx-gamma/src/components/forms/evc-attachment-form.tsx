@@ -10,7 +10,10 @@ const EvcSchema = yup.object().shape({
   evcType: yup.string().required('Evc type is required'),
   circuitReference: yup
     .string()
-    .matches(/CPNH2\d{8}-(\d{3,4})$/, 'Circuit Reference should have following format: CPNH200000000-0000')
+    .matches(
+      /(^CPNH2\d{8}-(0\d{2}|[1-9]\d{2,3})$)|(^CES\d{8}-\d{2}$)/,
+      'Circuit Reference should have following format: CPNH200000000-0000 or CES00000000-00',
+    )
     .required('Circuit Reference is required'),
   svlanId: yup.number().required('Svlan Id is required'),
   inputBandwidth: yup.number().required('Input Bandwidth is required'),
@@ -50,8 +53,8 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl id="evc-type" isRequired my={6}>
-        <FormLabel>Evc Type</FormLabel>
+      <FormControl id="evc-type" isRequired my={6} isDisabled>
+        <FormLabel>EVC Type</FormLabel>
         <Select name="evcType" value={values.evcType} onChange={handleChange}>
           {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.bearer.evc_type).map((item) => {
             return (
@@ -66,7 +69,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
       <FormControl id="circuit-reference" isRequired isInvalid={errors.circuitReference != null} my={6}>
         <FormLabel>BMT Circuit Reference</FormLabel>
         <Input
-          placeholder="CPNH200000000-0000"
+          placeholder="CPNH200000000-0000 or CES00000000-00"
           name="circuitReference"
           value={values.circuitReference}
           onChange={handleChange}
@@ -80,7 +83,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
       </FormControl>
 
       <FormControl id="svlanId" my={6} isRequired>
-        <FormLabel>Svlan Id</FormLabel>
+        <FormLabel>S-VLAN Identifier</FormLabel>
         <Input
           name="svlanId"
           value={values.svlanId || ''}
@@ -112,7 +115,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
       </FormControl>
 
       <FormControl id="qosInputProfile" my={6}>
-        <FormLabel>QOS Profile</FormLabel>
+        <FormLabel>QoS Profile</FormLabel>
         <Autocomplete2
           items={profileItems}
           selectedItem={selectedProfile}
