@@ -159,28 +159,6 @@ const ControlPage: VoidFunctionComponent<Props> = ({
   }
 
   async function handleDiscardConfirmBtnClick() {
-    const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
-
-    const deallocations = [
-      uniflowCallbacks.executeWorkflow({
-        name: 'Free_VpnServiceId',
-        version: 1,
-        input: {},
-      }),
-      uniflowCallbacks.executeWorkflow({
-        name: 'Free_CustomerAddress',
-        version: 1,
-        input: {},
-      }),
-      uniflowCallbacks.executeWorkflow({
-        name: 'Free_SvlanId',
-        version: 1,
-        input: {},
-      }),
-    ];
-
-    await Promise.all(deallocations);
-
     const callbacks = unistoreCallbackUtils.getCallbacks;
     // TODO: close transaction endpoint response is empty 200, so our helper function fails to parse it
     // we can handle it in our api-helpers.ts or find other solution instead of try/catch
