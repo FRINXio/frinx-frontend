@@ -1,5 +1,5 @@
 export type WorkflowPayload = {
-  input: Record<string, string>;
+  input: Record<string, string | number>;
   name: string;
   version: number;
 };

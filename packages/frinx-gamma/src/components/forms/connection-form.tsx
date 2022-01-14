@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Input, Select, FormControl, FormErrorMessage, FormLabel } from '@chakra-ui/react';
-import { FormikErrors, FormikValues } from 'formik';
-import { Connection, VpnBearer } from './bearer-types';
+import { FormikErrors } from 'formik';
+import { Connection } from './bearer-types';
 import { getSelectOptions } from './options.helper';
 
 type Props = {
@@ -79,7 +79,7 @@ const ConnectionForm: FC<Props> = ({ connection, errors, onChange }) => {
           })}
         </Select>
       </FormControl>
-      <FormControl id="connection-mtu" my={6} isInvalid={errors && errors.mtu != undefined}>
+      <FormControl id="connection-mtu" my={6} isInvalid={errors && errors.mtu !== undefined}>
         <FormLabel>MTU</FormLabel>
         <Input
           name="connection-mtu"

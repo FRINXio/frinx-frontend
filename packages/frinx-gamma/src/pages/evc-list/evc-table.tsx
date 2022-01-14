@@ -1,4 +1,4 @@
-import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
+import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
@@ -32,7 +32,7 @@ const EvcTable: VoidFunctionComponent<Props> = ({
       <Thead>
         <Tr>
           <Th />
-          <Th></Th>
+          <Th />
           <Th>BMT Circuit Reference</Th>
           <Th>Carrier Reference</Th>
           <Th>Svlan Id</Th>

@@ -104,7 +104,16 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+    await uniflowCallbacks.executeWorkflow({
+      name: 'Free_SvlanId',
+      version: 1,
+      input: {
+        sp_bearer_reference: unwrap(selectedBearer?.spBearerReference), // eslint-disable-line @typescript-eslint/naming-convention
+        vlan: unwrap(svlanId),
+      },
+    });
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
     onCancel(unwrap(selectedBearer?.spBearerReference));

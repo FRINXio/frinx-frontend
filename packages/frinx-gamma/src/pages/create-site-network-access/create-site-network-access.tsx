@@ -152,7 +152,16 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+    await uniflowCallbacks.executeWorkflow({
+      name: 'Free_CustomerAddress',
+      version: 1,
+      input: {
+        site: siteId,
+        customer_address: unwrap(customerAddress), // eslint-disable-line @typescript-eslint/naming-convention
+      },
+    });
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
     onCancel(unwrap(selectedSite?.siteId));

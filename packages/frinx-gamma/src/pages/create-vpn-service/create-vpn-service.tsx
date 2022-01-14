@@ -35,6 +35,7 @@ type Props = {
 const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [workflowId, setWorkflowId] = useState<string | null>(null);
   const [vpnId, setVpnId] = useState<string | null>(null);
+  const [counter, setCounter] = useState<number | null>(null);
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -76,7 +77,16 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+    await uniflowCallbacks.executeWorkflow({
+      name: 'Free_VpnServiceId',
+      version: 1,
+      input: {
+        text: unwrap(vpnId),
+        counter: unwrap(counter),
+      },
+    });
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
     onCancel();
@@ -89,6 +99,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { response_body }: VpnServiceWorkflowData = JSON.parse(data);
     setVpnId(response_body.text);
+    setCounter(response_body.counter);
   };
 
   if (!workflowId) {
