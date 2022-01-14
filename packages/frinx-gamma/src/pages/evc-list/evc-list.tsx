@@ -161,7 +161,7 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h2" size="lg">
-            Evc Attachments (Bearer: {bearer.spBearerReference})
+            EVC Attachments (Bearer: {bearer.spBearerReference})
           </Heading>
           <Button colorScheme="blue" onClick={() => onCreateEvcClick(bearer.spBearerReference)}>
             Add Evc Attachment
