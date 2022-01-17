@@ -25,8 +25,8 @@ type Props = {
 const ServiceDetail: VoidFunctionComponent<Props> = ({ service }) => {
   return (
     <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-      <DetailItem label="Vpn Id" value={service.vpnId} />
-      <DetailItem label="Customer Name" value={service.customerName} />
+      <DetailItem label="VPN ID" value={service.vpnId} />
+      <DetailItem label="Customer Name / VPN Description" value={service.customerName} />
       <DetailItem label="Vpn Service Topology" value={service.vpnServiceTopology} />
       <DetailItem label="Default C Vlan" value={service.defaultCVlan} />
     </Grid>
