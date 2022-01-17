@@ -16,7 +16,7 @@ const ServiceFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, 
   return (
     <HStack marginBottom="4" alignItems="flex-end">
       <FormControl>
-        <FormLabel>Id:</FormLabel>
+        <FormLabel>VPN ID:</FormLabel>
         <Input
           name="id"
           variant="filled"
@@ -31,7 +31,7 @@ const ServiceFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, 
         />
       </FormControl>
       <FormControl>
-        <FormLabel>Customer Name:</FormLabel>
+        <FormLabel>Customer Name / VPN Description:</FormLabel>
         <Input
           name="customerName"
           variant="filled"

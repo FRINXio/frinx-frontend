@@ -35,8 +35,8 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
       <Thead>
         <Tr>
           <Th />
-          <Th>Id</Th>
-          <Th>Customer Name</Th>
+          <Th>VPN ID</Th>
+          <Th>Customer Name / VPN Description</Th>
           <Th>Vpn Service Topology</Th>
           <Th>Default CVlan</Th>
           <Th>Actions</Th>
