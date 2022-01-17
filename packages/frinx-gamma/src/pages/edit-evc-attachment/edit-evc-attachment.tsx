@@ -101,7 +101,7 @@ const EditEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
     selectedBearer && (
       <Container>
         <Box padding={6} margin={6} background="white">
-          <Heading size="md">Add Evc Attachment To Bearer: {bearerId} </Heading>
+          <Heading size="md">Edit Evc Attachment: {bearerId} </Heading>
           {submitError && <ErrorMessage text={String(submitError)} />}
           <EvcAttachmentForm
             qosProfiles={qosProfiles}

@@ -29,6 +29,8 @@ const ServiceDetail: VoidFunctionComponent<Props> = ({ service }) => {
       <DetailItem label="Customer Name / VPN Description" value={service.customerName} />
       <DetailItem label="Vpn Service Topology" value={service.vpnServiceTopology} />
       <DetailItem label="Default C Vlan" value={service.defaultCVlan} />
+      {/* we will show only first 5 extranet items, we do not expect more */}
+      <DetailItem label="Extranets" value={service.extranetVpns.slice(0, 5).join(', ')} />
     </Grid>
   );
 };

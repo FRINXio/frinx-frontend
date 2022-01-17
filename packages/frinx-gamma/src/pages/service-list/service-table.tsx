@@ -39,6 +39,7 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
           <Th>Customer Name / VPN Description</Th>
           <Th>Vpn Service Topology</Th>
           <Th>Default CVlan</Th>
+          <Th>Extranets</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
@@ -64,6 +65,8 @@ const ServiceTable: VoidFunctionComponent<Props> = ({
               <Td>{`${swappedDefaultCVlanEnumMap.get(service.defaultCVlan)} (${
                 service.defaultCVlan === 'custom' ? service.customCVlan : service.defaultCVlan
               })`}</Td>
+              {/* we will show only first 5 extranet items, we do not expect more */}
+              <Td>{service.extranetVpns.slice(0, 5).join(', ')}</Td>
               <Td>
                 {service.status !== 'DELETED' && (
                   <HStack>
