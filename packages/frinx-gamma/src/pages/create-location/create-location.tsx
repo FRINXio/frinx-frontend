@@ -1,13 +1,13 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router';
-import { v4 as uuid4 } from 'uuid';
 import callbackUtils from '../../unistore-callback-utils';
 import { apiVpnSitesToClientVpnSite, clientVpnSiteToApiVpnSite } from '../../components/forms/converters';
 import CustomerLocationForm from '../../components/forms/customer-location-form';
 import { CustomerLocation, VpnSite } from '../../components/forms/site-types';
 import ErrorMessage from '../../components/error-message/error-message';
 import unwrap from '../../helpers/unwrap';
+import { generateLocationId } from '../../helpers/id-helpers';
 
 const getDefaultLocation = (): CustomerLocation => {
   return {
@@ -54,7 +54,7 @@ const CreateLocationPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel 
     }
     const newLocation = {
       ...location,
-      locationId: uuid4(),
+      locationId: generateLocationId(),
     };
     const newLocations = [...selectedSite.customerLocations, newLocation];
     const editedSite: VpnSite = {

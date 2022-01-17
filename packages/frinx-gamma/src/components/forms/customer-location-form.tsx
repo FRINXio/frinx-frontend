@@ -39,11 +39,6 @@ const CustomerLocationForm: VoidFunctionComponent<Props> = ({ location, buttonTe
         <Input name="street" value={values.street} onChange={handleChange} />
         {errors.street && <FormErrorMessage>{errors.street}</FormErrorMessage>}
       </FormControl>
-      <FormControl my={6} isRequired isInvalid={errors.postalCode != null}>
-        <FormLabel>Postal Code</FormLabel>
-        <Input name="postalCode" value={values.postalCode} onChange={handleChange} />
-        {errors.postalCode && <FormErrorMessage>{errors.postalCode}</FormErrorMessage>}
-      </FormControl>
       <FormControl my={6} isRequired isInvalid={errors.state != null}>
         <FormLabel>State</FormLabel>
         <Input name="state" value={values.state} onChange={handleChange} />
@@ -66,6 +61,11 @@ const CustomerLocationForm: VoidFunctionComponent<Props> = ({ location, buttonTe
           })}
         </Select>
         {errors.countryCode && <FormErrorMessage>{errors.countryCode}</FormErrorMessage>}
+      </FormControl>
+      <FormControl my={6} isRequired isInvalid={errors.postalCode != null}>
+        <FormLabel>Postal Code</FormLabel>
+        <Input name="postalCode" value={values.postalCode} onChange={handleChange} />
+        {errors.postalCode && <FormErrorMessage>{errors.postalCode}</FormErrorMessage>}
       </FormControl>
       <Stack direction="row" spacing={2} align="center">
         <Button type="submit" colorScheme="blue" isDisabled={!dirty}>

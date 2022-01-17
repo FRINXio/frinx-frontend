@@ -3,7 +3,7 @@ import { Divider, Button, Select, Stack, FormControl, FormLabel } from '@chakra-
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { SiteManagementType, VpnSite, MaximumRoutes } from './site-types';
-import Autocomplete from '../autocomplete/autocomplete';
+import Autocomplete2 from '../autocomplete-2/autocomplete-2';
 import { getSelectOptions } from './options.helper';
 
 const DeviceSchema = yup.object().shape({
@@ -44,9 +44,14 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
     },
   });
 
-  const handleProfileNameChange = (profileName: string) => {
-    setFieldValue('siteServiceQosProfile', profileName);
-  };
+  const qosProfileItems = qosProfiles.map((p) => ({
+    value: p,
+    label: p,
+  }));
+
+  const [selectedProfile] = qosProfileItems.filter((p) => {
+    return p.value === values.siteServiceQosProfile;
+  });
 
   return (
     <form onSubmit={handleSubmit}>
@@ -77,7 +82,6 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
         <Select
           name="site-management-type"
           value={values.siteManagementType}
-          disabled
           onChange={(event) => {
             const value = event.target.value as SiteManagementType;
             setFieldValue('siteManagementType', value);
@@ -95,10 +99,12 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
 
       <FormControl id="site-service-qos-profile" my={6}>
         <FormLabel>Site Service QOS Profile</FormLabel>
-        <Autocomplete
-          items={qosProfiles}
-          selectedItem={values.siteServiceQosProfile || ''}
-          onChange={handleProfileNameChange}
+        <Autocomplete2
+          items={qosProfileItems}
+          selectedItem={selectedProfile}
+          onChange={(item) => {
+            setFieldValue('siteServiceQosProfile', item ? item.value : '');
+          }}
         />
       </FormControl>
 

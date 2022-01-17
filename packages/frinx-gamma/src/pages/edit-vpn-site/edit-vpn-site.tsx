@@ -76,6 +76,9 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
         <Flex justifyContent="space-between" alignItems="center">
           <Heading size="md">Edit VPN Site</Heading>
         </Flex>
+        <Heading size="sm" paddingTop={2}>
+          Site Id: {siteId}
+        </Heading>
         {submitError && <ErrorMessage text={String(submitError)} />}
         {vpnSites && selectedSite && (
           <VpnSiteForm

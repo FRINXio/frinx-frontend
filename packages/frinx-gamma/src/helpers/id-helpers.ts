@@ -34,3 +34,7 @@ export function generateDeviceId(): string {
 export function generateBearerId(): string {
   return `BEARER_${getRandomString(8)}`;
 }
+
+export function generateLocationId(): string {
+  return `LOCATION_${getRandomString(8)}`;
+}
