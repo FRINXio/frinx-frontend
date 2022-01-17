@@ -81,19 +81,19 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                         onClick={() => onEditSiteButtonClick(unwrap(site.siteId))}
                       />
                     </Tooltip>
-                    <Tooltip label="Site Detail">
+                    <Tooltip label="Manage Site Network Accesses">
                       <IconButton
                         aria-label="detail"
                         size="sm"
-                        icon={<Icon size={12} as={FeatherIcon} icon="eye" />}
+                        icon={<Icon size={12} as={FeatherIcon} icon="share-2" />}
                         onClick={() => onDetailSiteButtonClick(unwrap(site.siteId))}
                       />
                     </Tooltip>
-                    <Tooltip label="Site Locations">
+                    <Tooltip label="Manage Site Locations">
                       <IconButton
                         aria-label="locations"
                         size="sm"
-                        icon={<Icon size={12} as={FeatherIcon} icon="crosshair" />}
+                        icon={<Icon size={12} as={FeatherIcon} icon="map-pin" />}
                         onClick={() => onLocationsSiteButtonClick(unwrap(site.siteId))}
                       />
                     </Tooltip>

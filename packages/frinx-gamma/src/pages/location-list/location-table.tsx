@@ -78,11 +78,11 @@ const LocationTable: VoidFunctionComponent<Props> = ({
                       }}
                     />
                   </Tooltip>
-                  <Tooltip label="Location devices">
+                  <Tooltip label="Manage devices">
                     <IconButton
                       aria-label="devices"
                       size="sm"
-                      icon={<Icon size={12} as={FeatherIcon} icon="cpu" />}
+                      icon={<Icon size={12} as={FeatherIcon} icon="hard-drive" />}
                       onClick={() => {
                         onDevicesSiteButtonClick(unwrap(site.siteId), unwrap(location.locationId));
                       }}
