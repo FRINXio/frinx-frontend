@@ -58,7 +58,7 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoadi
                 <Tr key={pool.id}>
                   <Td>
                     <Text as="span" fontWeight={600}>
-                      {pool.Name}
+                      {pool.Name} - {pool.AllocationStrategy?.Name} - {pool.AllocationStrategy?.id}
                     </Text>
                   </Td>
                   <Td>{pool.PoolType}</Td>

@@ -1,6 +1,6 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Client, useClient, useQuery } from 'urql';
-import { Box, Flex, Heading, Spinner } from '@chakra-ui/react';
+import { Box, Flex, Heading, Progress } from '@chakra-ui/react';
 import gql from 'graphql-tag';
 import {
   CreateAllocationPoolMutation,
@@ -266,7 +266,7 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
   };
 
   if (fetching || poolsFetching || allocStratFetching) {
-    return <Spinner size="xl" />;
+    return <Progress isIndeterminate size="xs" mt={-10} />;
   }
 
   if (data == null || poolsData == null || allocStratData == null) {

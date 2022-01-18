@@ -1,5 +1,4 @@
 import React, { useCallback, VoidFunctionComponent, useState, useEffect } from 'react';
-import omitBy from 'lodash/omitBy';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import {
@@ -74,6 +73,51 @@ type Props = {
   allocStrategies: AllocStrategy[];
 };
 
+function getPoolPropertiesSkeleton(
+  resourceTypes: ResourceType[],
+  resourceTypeId: string,
+  values: FormValues['poolProperties'],
+): [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string'>] {
+  const resourceTypeName = resourceTypes.find((type) => type.id === resourceTypeId)?.name;
+  let result: [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string'>] = [{}, {}];
+
+  switch (resourceTypeName) {
+    case 'ipv6_prefix':
+    case 'ipv4_prefix':
+      result = [
+        { prefix: values?.prefix || '', address: values?.address || '' },
+        { prefix: 'int', address: 'string' },
+      ];
+      break;
+    case 'random_signed_int32':
+      result = [{ int: values?.int || '' }, { int: 'int' }];
+      break;
+    case 'route_distinguisher':
+      result = [{ rd: values?.rd || '' }, { rd: 'string' }];
+      break;
+    case 'ipv4':
+    case 'ipv6':
+      result = [{ address: values?.address || '' }, { address: 'string' }];
+      break;
+    case 'vlan':
+      result = [{ vlan: values?.vlan || '' }, { vlan: 'int' }];
+      break;
+    case 'vlan_range':
+      result = [
+        { from: values?.from || '', to: values?.to || '' },
+        { from: 'int', to: 'int' },
+      ];
+      break;
+    case 'unique_id':
+      result = [{ id: values?.id || '' }, { id: 'string' }];
+      break;
+    default:
+      break;
+  }
+
+  return result;
+}
+
 function getSchema(poolType: string, isNested: boolean) {
   switch (poolType) {
     case 'allocating':
@@ -81,17 +125,22 @@ function getSchema(poolType: string, isNested: boolean) {
         name: yup.string().required('Please enter a name'),
         description: yup.string().notRequired(),
         resourceTypeId: yup.string().required('Please enter resource type'),
-        tags: yup.array(),
+        tags: yup.array().notRequired(),
         dealocationSafetyPeriod: yup
           .number()
           .min(0, 'Please enter positive number')
           .required('Please enter a dealocation safety period')
           .typeError('Please enter a number'),
-        allocationStrategyId: yup.string().required('Please enter an allocation strategy'),
-        poolProperties: yup.object({
-          type: yup.string().required('Please enter type of property'),
-          key: yup.string().required('Please enter key of property'),
-          value: yup.string().required('Please enter value of property'),
+        allocationStrategyId: yup.string().notRequired(),
+        poolProperties: yup.lazy((poolProperties) => {
+          return yup.object({
+            ...Object.keys(poolProperties).reduce((acc, key) => {
+              return {
+                ...acc,
+                [key]: yup.string().required('Please enter a value'),
+              };
+            }, {}),
+          });
         }),
         poolPropertyTypes: yup.object().required(),
         ...(isNested && { parentResourceId: yup.string().required('Please enter parent resource type') }),
@@ -128,11 +177,19 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
   const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: poolSchema,
+    validateOnMount: false,
+    validateOnChange: false,
     onSubmit: async (data) => {
+      const resourceTypeName = resourceTypes.find((resourceType) => resourceType.id === data.resourceTypeId)?.name;
+      const allocationStratedyId = allocStrategies.find(
+        (allocationStrategy) => allocationStrategy.name === resourceTypeName,
+      )?.id;
       const updatedData: FormValues = {
         ...data,
         tags: selectedTags.map(({ label }: Item) => label),
+        allocationStrategyId: allocationStratedyId,
       };
+
       onFormSubmit(updatedData);
     },
   });
@@ -150,30 +207,26 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
     (pProperties) => {
       if (values.poolType === 'allocating') {
         setFieldValue('poolProperties', { ...values.poolProperties, [pProperties.key]: pProperties.value });
-        setFieldValue('poolPropertyTypes', { ...values.poolPropertyTypes, [pProperties.key]: pProperties.type });
       }
     },
-    [setFieldValue, values],
-  );
-  const handleDeleteProperty = useCallback(
-    (key: string) => {
-      if (values.poolType === 'allocating') {
-        setFieldValue(
-          'poolProperties',
-          omitBy(values.poolProperties, (_, k) => k === key),
-        );
-        setFieldValue(
-          'poolPropertyTypes',
-          omitBy(values.poolPropertyTypes, (_, k) => k === key),
-        );
-      }
-    },
-    [setFieldValue, values],
+    [setFieldValue, values.poolType, values.poolProperties],
   );
 
   useEffect(() => {
     setPoolSchema(getSchema(values.poolType, isNested));
   }, [isNested, values.poolType]);
+
+  useEffect(() => {
+    const [poolProperties] = getPoolPropertiesSkeleton(resourceTypes, resourceTypeId, values.poolProperties);
+    setFieldValue('poolProperties', { ...poolProperties });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resourceTypes, resourceTypeId, setFieldValue]);
+
+  const [poolProperties, poolPropertyTypes] = getPoolPropertiesSkeleton(
+    resourceTypes,
+    resourceTypeId,
+    values.poolProperties,
+  );
 
   return (
     <form onSubmit={handleSubmit}>
@@ -264,24 +317,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
           <FormErrorMessage>{errors.dealocationSafetyPeriod}</FormErrorMessage>
         </FormControl>
       )}
-      {values.poolType === 'allocating' && (
-        <FormControl id="allocationStrategyId" marginY={5} isInvalid={errors.allocationStrategyId !== undefined}>
-          <FormLabel>Allocation strategy</FormLabel>
-          <Select
-            onChange={handleChange}
-            name="allocationStrategyId"
-            values={values.allocationStrategyId}
-            placeholder="Select allocation strategy"
-          >
-            {allocStrategies.map((as) => (
-              <option key={as.id} value={as.id}>
-                {as.name}
-              </option>
-            ))}
-          </Select>
-          <FormErrorMessage>{errors.allocationStrategyId}</FormErrorMessage>
-        </FormControl>
-      )}
       {values.poolType !== 'allocating' && resourceTypeName != null && (
         <>
           <Divider marginY={5} orientation="horizontal" color="gray.200" />
@@ -306,11 +341,12 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
               Set pool properties
             </Heading>
             <PoolPropertiesForm
-              poolProperties={values.poolProperties as Record<string, string>}
-              poolPropertyTypes={values.poolPropertyTypes as Record<string, 'int' | 'string'>}
+              poolProperties={poolProperties}
+              poolPropertyTypes={poolPropertyTypes}
               onChange={handlePoolPropertiesChange}
-              onDeleteBtnClick={handleDeleteProperty}
+              poolPropertyErrors={errors.poolProperties}
             />
+            {/* <p>{errors.poolProperties[0]}</p> */}
           </Box>
           <Divider marginY={5} orientation="horizontal" color="gray.200" />
         </>
