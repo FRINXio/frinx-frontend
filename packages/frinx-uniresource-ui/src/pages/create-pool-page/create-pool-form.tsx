@@ -60,17 +60,11 @@ type ResourceType = {
 type Pool = {
   id: string;
   name: string;
+  resourceTypeId: string;
 };
 type AllocStrategy = {
   id: string;
   name: string;
-};
-
-type Props = {
-  onFormSubmit: (values: FormValues) => void;
-  resourceTypes: ResourceType[];
-  pools: Pool[];
-  allocStrategies: AllocStrategy[];
 };
 
 function getPoolPropertiesSkeleton(
@@ -171,13 +165,19 @@ function getSchema(poolType: string, isNested: boolean) {
   }
 }
 
+type Props = {
+  onFormSubmit: (values: FormValues) => void;
+  resourceTypes: ResourceType[];
+  pools: Pool[];
+  allocStrategies: AllocStrategy[];
+};
+
 const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTypes, pools, allocStrategies }) => {
   const { selectedTags, handleTagCreation, handleOnSelectionChange } = useTagsInput();
   const [poolSchema, setPoolSchema] = useState(getSchema(INITIAL_VALUES.poolType, INITIAL_VALUES.isNested));
   const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: poolSchema,
-    validateOnMount: false,
     validateOnChange: false,
     onSubmit: async (data) => {
       const resourceTypeName = resourceTypes.find((resourceType) => resourceType.id === data.resourceTypeId)?.name;
@@ -214,13 +214,28 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
 
   useEffect(() => {
     setPoolSchema(getSchema(values.poolType, isNested));
-  }, [isNested, values.poolType]);
+
+    if (!isNested) {
+      setFieldValue('parentResourceId', '');
+    }
+  }, [isNested, values.poolType, setFieldValue]);
 
   useEffect(() => {
     const [poolProperties] = getPoolPropertiesSkeleton(resourceTypes, resourceTypeId, values.poolProperties);
     setFieldValue('poolProperties', { ...poolProperties });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resourceTypes, resourceTypeId, setFieldValue]);
+
+  const availableResourceTypes = parentResourceId
+    ? resourceTypes.filter((rt) => rt.id === pools.find((pool) => pool.id === parentResourceId)?.resourceTypeId)
+    : resourceTypes;
+
+  const derivedFromAvailableResourceTypes = resourceTypes.filter(
+    (rt) =>
+      resourceTypes.length !== availableResourceTypes.length &&
+      ((availableResourceTypes.find((type) => type.name === 'ipv4_prefix') && rt.name === 'ipv4') ||
+        (availableResourceTypes.find((type) => type.name === 'ipv6_prefix') && rt.name === 'ipv6')),
+  );
 
   const [poolProperties, poolPropertyTypes] = getPoolPropertiesSkeleton(
     resourceTypes,
@@ -273,7 +288,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
             onChange={handleChange}
             placeholder="Select resource type"
           >
-            {resourceTypes.map((rt) => (
+            {[...availableResourceTypes, ...derivedFromAvailableResourceTypes].map((rt) => (
               <option value={rt.id} key={rt.id}>
                 {rt.name}
               </option>
@@ -346,7 +361,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
               onChange={handlePoolPropertiesChange}
               poolPropertyErrors={errors.poolProperties}
             />
-            {/* <p>{errors.poolProperties[0]}</p> */}
           </Box>
           <Divider marginY={5} orientation="horizontal" color="gray.200" />
         </>

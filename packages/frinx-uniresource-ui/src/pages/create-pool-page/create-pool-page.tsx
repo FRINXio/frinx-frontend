@@ -90,6 +90,9 @@ const SELECT_POOLS_QUERY = gql`
     QueryResourcePools {
       id
       Name
+      ResourceType {
+        id
+      }
     }
   }
 `;
@@ -274,7 +277,11 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
   }
 
   const resourceTypes = data.QueryResourceTypes.map((rt) => ({ id: rt.id, name: rt.Name }));
-  const pools = poolsData.QueryResourcePools.map((p) => ({ id: p.id, name: p.Name }));
+  const pools = poolsData.QueryResourcePools.map((p) => ({
+    id: p.id,
+    name: p.Name,
+    resourceTypeId: p.ResourceType.id,
+  }));
   const allocStrategies = allocStratData.QueryAllocationStrategies.map((as) => ({ id: as.id, name: as.Name }));
 
   return (
