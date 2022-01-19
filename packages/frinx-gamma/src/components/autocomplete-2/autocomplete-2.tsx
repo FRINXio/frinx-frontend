@@ -51,6 +51,8 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
 
   const {
     isOpen,
+    closeMenu,
+    selectItem,
     getToggleButtonProps,
     getMenuProps,
     getInputProps,
@@ -72,6 +74,7 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
             ...changes.selectedItem,
             label: changes.selectedItem.value,
           });
+          closeMenu();
         }
         setInputItems(inputItems);
         setIsCreating(false);
@@ -84,14 +87,14 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
   }, [items]);
 
   useEffect(() => {
-    if (inputItems.length === 0) {
+    const isInputvalueExisitingItem = items.map((i) => i.value).includes(inputValue);
+    if (!isInputvalueExisitingItem) {
       setIsCreating(true);
       if (onCreateItem) {
-        setInputItems([{ label: `Create ${inputValue}`, value: inputValue }]);
         setHighlightedIndex(0);
       }
     }
-  }, [inputItems, setIsCreating, setHighlightedIndex, inputValue, onCreateItem]);
+  }, [items, inputItems, setIsCreating, setHighlightedIndex, inputValue, onCreateItem]);
 
   return (
     <>
@@ -114,6 +117,9 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
           highlightedIndex={highlightedIndex}
           getItemProps={getItemProps}
           isOpen={isOpen}
+          isCreating={isCreating}
+          inputValue={inputValue}
+          selectItem={selectItem}
         />
       </InputGroup>
     </>
