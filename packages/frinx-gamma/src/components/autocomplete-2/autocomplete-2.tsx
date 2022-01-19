@@ -87,7 +87,7 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
   }, [items]);
 
   useEffect(() => {
-    const isInputvalueExisitingItem = items.map((i) => i.value).includes(inputValue);
+    const isInputvalueExisitingItem = items.map((i) => i.value.toLowerCase()).includes(inputValue);
     if (!isInputvalueExisitingItem) {
       setIsCreating(true);
       if (onCreateItem) {
