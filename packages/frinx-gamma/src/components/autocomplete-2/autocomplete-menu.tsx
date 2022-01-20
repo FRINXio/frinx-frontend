@@ -9,8 +9,11 @@ type Props = {
   items: Item[];
   menuProps: HTMLAttributes<HTMLElement>;
   isOpen: boolean;
+  inputValue: string;
+  isCreating: boolean;
   highlightedIndex: number;
   getItemProps: (options: { item: Item; index: number }) => HTMLAttributes<HTMLElement>;
+  selectItem: (item: Item) => void;
 };
 
 const AutocompleteMenu: VoidFunctionComponent<Props> = ({
@@ -19,6 +22,9 @@ const AutocompleteMenu: VoidFunctionComponent<Props> = ({
   isOpen,
   highlightedIndex,
   getItemProps,
+  isCreating,
+  inputValue,
+  selectItem,
 }) => {
   return (
     <Box {...menuProps} position="absolute" top="100%" right="0" left="0" zIndex="dropdown" transform="translateY(6px)">
@@ -59,6 +65,32 @@ const AutocompleteMenu: VoidFunctionComponent<Props> = ({
               </Flex>
             );
           })}
+          {isCreating && inputValue && (
+            <Flex
+              as="button"
+              type="button"
+              key={inputValue}
+              alignItems="center"
+              paddingY={1.5}
+              paddingX={3}
+              width="100%"
+              minHeight={12}
+              outline="#000 2px"
+              outlineOffset="2px"
+              background="blue.200"
+              _hover={{
+                background: 'blue.100',
+              }}
+              onClick={() =>
+                selectItem({
+                  value: inputValue,
+                  label: inputValue,
+                })
+              }
+            >
+              {`Create "${inputValue}"`}
+            </Flex>
+          )}
         </Box>
       )}
     </Box>
