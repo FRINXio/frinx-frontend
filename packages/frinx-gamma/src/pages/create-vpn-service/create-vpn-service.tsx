@@ -57,6 +57,29 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     fetchData();
   }, []);
 
+  useEffect(() => {
+    // free resource on unmount
+    return () => {
+      const freeResources = async () => {
+        if (!vpnId || !counter) {
+          return;
+        }
+        const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+        await uniflowCallbacks.executeWorkflow({
+          name: 'Free_VpnServiceId',
+          version: 1,
+          input: {
+            text: vpnId,
+            counter,
+          },
+        });
+      };
+      if (vpnId && counter) {
+        freeResources();
+      }
+    };
+  }, [vpnId, counter]);
+
   const handleSubmit = async (data: VpnService) => {
     setSubmitError(null);
     const service = {
@@ -78,17 +101,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
   };
 
   const handleCancel = async () => {
-    const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
-    await uniflowCallbacks.executeWorkflow({
-      name: 'Free_VpnServiceId',
-      version: 1,
-      input: {
-        text: unwrap(vpnId),
-        counter: unwrap(counter),
-      },
-    });
-    // eslint-disable-next-line no-console
-    console.log('cancel clicked');
+    console.log('cancel clicked'); // eslint-disable-line no-console
     onCancel();
   };
 

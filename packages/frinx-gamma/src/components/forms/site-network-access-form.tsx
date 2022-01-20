@@ -2,14 +2,19 @@ import React, { FC, useEffect, useState } from 'react';
 import {
   Divider,
   Button,
+  Flex,
   FormErrorMessage,
   Heading,
+  IconButton,
   Input,
   Select,
+  Spinner,
   Stack,
+  Text,
   FormControl,
   FormLabel,
 } from '@chakra-ui/react';
+import { LinkIcon } from '@chakra-ui/icons';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { AccessPriority, MaximumRoutes, RoutingProtocol, VpnSite, SiteNetworkAccess } from './site-types';
@@ -17,6 +22,17 @@ import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 import RoutingProtocolForm from './routing-protocol-form';
 import unwrap from '../../helpers/unwrap';
 import { getSelectOptions } from './options.helper';
+import uniflowCallbackUtils from '../../uniflow-callback-utils';
+import { useAsyncGenerator } from '../commit-status-modal/commit-status-modal.helpers';
+
+type AddressAssign = {
+  customer_address: string | null; // eslint-disable-line @typescript-eslint/naming-convention
+  provider_address: string | null; // eslint-disable-line @typescript-eslint/naming-convention
+};
+
+type AddressAssignPayload = {
+  response_body: AddressAssign; // eslint-disable-line @typescript-eslint/naming-convention
+};
 
 const StaticProtocolSchema = yup.object({
   lan: yup.string(),
@@ -102,6 +118,11 @@ function getEditedNetworkAccesses(
   });
 }
 
+type AddressAssignState = {
+  customerAddress: string | null;
+  providerAddress: string | null;
+};
+
 const SiteNetAccessForm: FC<Props> = ({
   mode,
   site,
@@ -113,6 +134,12 @@ const SiteNetAccessForm: FC<Props> = ({
   onSubmit,
   onCancel,
 }) => {
+  const [workflowId, setWorkflowId] = useState<string | null>(null);
+  const [addressAssign, setAddressAssign] = useState<AddressAssignState | null>(null);
+  const onFinish = () => {
+    setWorkflowId(null);
+  };
+  const workflowPayload = useAsyncGenerator<AddressAssignPayload>({ workflowId, onFinish });
   const [siteState, setSiteState] = useState(site);
   const { values, errors, dirty, resetForm, setFieldValue, handleSubmit } = useFormik({
     initialValues: {
@@ -139,6 +166,17 @@ const SiteNetAccessForm: FC<Props> = ({
     });
   }, [site]);
 
+  useEffect(() => {
+    if (workflowId && workflowPayload?.status === 'COMPLETED') {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const { provider_address, customer_address } = workflowPayload.output.response_body;
+      setAddressAssign({
+        providerAddress: provider_address,
+        customerAddress: customer_address,
+      });
+    }
+  }, [workflowPayload, workflowId]);
+
   const handleLocationChange = (item?: Item | null) => {
     setFieldValue('locationReference', unwrap(item).value);
   };
@@ -153,6 +191,24 @@ const SiteNetAccessForm: FC<Props> = ({
 
   const handleVpnAttachmentChange = (item?: Item | null) => {
     setFieldValue('vpnAttachment', item ? item.value : null);
+  };
+
+  const handleAddressAssign = async (siteNetworkAccessId: string, prefixLength?: number) => {
+    if (!prefixLength) {
+      return;
+    }
+
+    const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+    const workflowResult = await uniflowCallbacks.executeWorkflow({
+      name: 'Allocate_Addresses',
+      version: 1,
+      input: {
+        site: siteNetworkAccessId, // FIX: backend should rename this property in workflow
+        prefix_length: values.ipConnection?.ipv4?.addresses?.prefixLength || 31, // eslint-disable-line @typescript-eslint/naming-convention
+      },
+    });
+
+    setWorkflowId(workflowResult.text);
   };
 
   const locationItems = siteState.customerLocations.map((l) => {
@@ -191,6 +247,20 @@ const SiteNetAccessForm: FC<Props> = ({
   const [selectedBgpProfileItem] = bgpProfileItems.filter((i) => i.value === bgpRoutingProtocol.bgp?.bgpProfile);
 
   const ipv4Connection = unwrap(unwrap(values.ipConnection).ipv4);
+
+  const newIpv4Connection = {
+    ...ipv4Connection,
+    addresses: {
+      ...unwrap(ipv4Connection.addresses),
+      customerAddress: addressAssign?.customerAddress || '',
+      providerAddress: addressAssign?.providerAddress || '',
+    },
+  };
+
+  values.ipConnection = {
+    ...values.ipConnection,
+    ipv4: newIpv4Connection,
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -421,7 +491,56 @@ const SiteNetAccessForm: FC<Props> = ({
           }}
         />
       </FormControl>
-      <FormControl id="ip-provider-address" my={6}>
+      <FormControl id="ip-prefix-length">
+        <FormLabel>
+          <Flex justifyContent="space-between">
+            <Text>Prefix Length</Text>
+            {workflowId && (
+              <Flex>
+                <Text paddingRight={1} color="blackAlpha.600" fontSize="sm" as="i">
+                  Fetching Addresses
+                </Text>
+                <Spinner size="sm" />
+              </Flex>
+            )}
+          </Flex>
+        </FormLabel>
+        <Flex my={6} alignItems="center">
+          <Select
+            name="prefixLength"
+            value={ipv4Connection.addresses?.prefixLength || ''}
+            onChange={(event) => {
+              if (Number.isNaN(event.target.value)) {
+                return;
+              }
+              setFieldValue('ipConnection', {
+                ...values.ipConnection,
+                ipv4: {
+                  ...values.ipConnection?.ipv4,
+                  addresses: {
+                    ...values.ipConnection?.ipv4?.addresses,
+                    prefixLength: Number(event.target.value) || undefined,
+                  },
+                },
+              });
+            }}
+          >
+            <option value="">-- choose value</option>
+            <option value={30}>30</option>
+            <option value={31}>31</option>
+            );
+          </Select>
+          <IconButton
+            marginLeft="1"
+            size="md"
+            aria-label="Deselect Customer Name"
+            icon={<LinkIcon />}
+            onClick={() => handleAddressAssign(values.siteNetworkAccessId, ipv4Connection.addresses?.prefixLength)}
+            isDisabled={ipv4Connection.addresses?.prefixLength === undefined || workflowId !== null}
+          />
+        </Flex>
+      </FormControl>
+      <FormControl id="ip-provider-address" my={6} isDisabled={workflowId !== null}>
         <FormLabel>Provider Address</FormLabel>
         <Input
           name="providerAddress"
@@ -440,7 +559,7 @@ const SiteNetAccessForm: FC<Props> = ({
           }}
         />
       </FormControl>
-      <FormControl id="ip-customer-address" my={6}>
+      <FormControl id="ip-customer-address" my={6} isDisabled={workflowId !== null}>
         <FormLabel>Customer Address</FormLabel>
         <Input
           name="customer-address"
@@ -459,32 +578,10 @@ const SiteNetAccessForm: FC<Props> = ({
           }}
         />
       </FormControl>
-      <FormControl id="ip-prefix-length" my={6}>
-        <FormLabel>Prefix Length</FormLabel>
-        <Input
-          name="prefix-length"
-          value={ipv4Connection.addresses?.prefixLength || ''}
-          onChange={(event) => {
-            if (Number.isNaN(event.target.value)) {
-              return;
-            }
-            setFieldValue('ipConnection', {
-              ...values.ipConnection,
-              ipv4: {
-                ...values.ipConnection?.ipv4,
-                addresses: {
-                  ...values.ipConnection?.ipv4?.addresses,
-                  prefixLength: Number(event.target.value) || undefined,
-                },
-              },
-            });
-          }}
-        />
-      </FormControl>
 
       <Divider my={4} />
       <Stack direction="row" spacing={2} align="center">
-        <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
+        <Button type="submit" colorScheme="blue" isDisabled={!dirty || workflowId !== null}>
           Save changes
         </Button>
         <Button onClick={() => resetForm()}>Clear</Button>
