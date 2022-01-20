@@ -48,11 +48,14 @@ const ServiceSchema = yup.object().shape({
   customerName: yup.string().required('Customer Name is required'),
   vpnServiceTopology: yup.mixed().oneOf(['any-to-any', 'hub-spoke', 'hub-spoke-disjointed', 'custom']),
   defaultCVlan: yup.mixed().oneOf(['400', '1000', '50', 'custom']),
-  customCVlan: yup.number().nullable().when('defaultCVlan', {
-    is: 'custom',
-    then: yup.number().required(),
-    otherwise: yup.number().nullable(),
-  }),
+  customCVlan: yup
+    .number()
+    .nullable()
+    .when('defaultCVlan', {
+      is: 'custom',
+      then: yup.number().min(1).max(4093).required(),
+      otherwise: yup.number().nullable(),
+    }),
   extranetVpns: yup.array().of(yup.string()),
 });
 
@@ -124,7 +127,7 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
         />
       </FormControl>
       <FormControl id="customerName" my={6} isRequired isInvalid={errors.customerName != null}>
-        <FormLabel>VPN Description</FormLabel>
+        <FormLabel>Customer Name / VPN Description</FormLabel>
         <Flex>
           <Box flex="1">
             <Autocomplete2
@@ -146,7 +149,7 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
         {errors.customerName && <FormErrorMessage>{errors.customerName}</FormErrorMessage>}
       </FormControl>
       <FormControl id="vpnServiceTopology" my={6}>
-        <FormLabel>Vpn Service Topology</FormLabel>
+        <FormLabel>VPN Service Topology</FormLabel>
         <Select
           name="vpnServiceTopology"
           value={values.vpnServiceTopology}
@@ -166,7 +169,7 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
         </Select>
       </FormControl>
       <FormControl id="defaultCVlan" my={6}>
-        <FormLabel>Default C Vlan</FormLabel>
+        <FormLabel>Default C-VLAN</FormLabel>
         <Select
           name="defaultCVlan"
           value={values.defaultCVlan}
@@ -188,7 +191,7 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
 
       {values.defaultCVlan === 'custom' && (
         <FormControl id="custom-c-vlan" my={6} isRequired isInvalid={errors.customCVlan != null}>
-          <FormLabel>Custom C-VLAN</FormLabel>
+          <FormLabel>Custom C-VLAN Identifier</FormLabel>
           <Input
             name="customCVlan"
             value={values.customCVlan || ''}
