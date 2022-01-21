@@ -10,7 +10,7 @@ type PoolResources = Array<
 >;
 
 type Props = {
-  allocatedResources: AllocatedResourcesQuery;
+  allocatedResources: AllocatedResourcesQuery['QueryResources'];
   resources: PoolResources;
   onFreeResource: (userInput: Record<string, string | number>) => void;
 };
@@ -41,7 +41,7 @@ const getNamesOfAllocatedResources = (
 
 const PoolDetailSetSingletonTable: FC<Props> = ({ allocatedResources, onFreeResource, resources }) => {
   const mappedResources = resources.map((resource) => {
-    if (allocatedResources.QueryResources.find((res) => res.id === resource.id)) {
+    if (allocatedResources.find((res) => res.id === resource.id)) {
       return { ...resource, isClaimed: true };
     }
 

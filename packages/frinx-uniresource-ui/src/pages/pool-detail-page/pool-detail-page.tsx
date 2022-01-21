@@ -18,15 +18,33 @@ import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
 import PoolDetailAllocatingTable from './pool-detail-allocating-table';
 import PoolDetailSetSingletonTable from './pool-detail-set_singleton-table';
 
-type Props = {
-  poolId: string;
-  reload: () => void;
-};
-
 export type PoolResource = {
   poolProperties: Record<string, string>;
   poolPropertyTypes: Record<string, 'int' | 'string'>;
 };
+
+const canShowClaimResourceModal = (resourcePool: PoolDetailQuery['QueryResourcePool']) => {
+  if (resourcePool.PoolType === 'allocating') {
+    return (
+      resourcePool.ResourceType.Name === 'ipv4_prefix' ||
+      resourcePool.ResourceType.Name === 'vlan_range' ||
+      resourcePool.ResourceType.Name === 'vlan'
+    );
+  }
+
+  return false;
+};
+
+const canClaimResources = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) => {
+  return (
+    resourcePool.Capacity != null &&
+    resourcePool.Capacity.freeCapacity > 0 &&
+    resourcePool.Capacity.freeCapacity <= totalCapacity
+  );
+};
+
+const canFreeResource = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) =>
+  resourcePool.Capacity != null && resourcePool.Capacity.freeCapacity !== totalCapacity;
 
 const POOL_DETAIL_QUERY = gql`
   query PoolDetail($poolId: ID!) {
@@ -95,30 +113,11 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   return (capacity.utilizedCapacity / totalCapacity) * 100;
 }
 
-const canShowClaimResourceModal = (resourcePool: PoolDetailQuery['QueryResourcePool']) => {
-  if (resourcePool.PoolType === 'allocating') {
-    return (
-      resourcePool.ResourceType.Name === 'ipv4_prefix' ||
-      resourcePool.ResourceType.Name === 'vlan_range' ||
-      resourcePool.ResourceType.Name === 'vlan'
-    );
-  }
-
-  return false;
+type Props = {
+  poolId: string;
 };
 
-const canClaimResources = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) => {
-  return (
-    resourcePool.Capacity != null &&
-    resourcePool.Capacity.freeCapacity > 0 &&
-    resourcePool.Capacity.freeCapacity <= totalCapacity
-  );
-};
-
-const canFreeResource = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) =>
-  resourcePool.Capacity != null && resourcePool.Capacity.freeCapacity !== totalCapacity;
-
-const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
+const PoolDetailPageContainer: FC<Props> = ({ poolId }) => {
   const claimResourceModal = useDisclosure();
   const { addToastNotification } = useNotifications();
   const [{ data: poolData, fetching: isLoadingPool }] = useQuery<PoolDetailQuery, PoolDetailQueryVariables>({
@@ -141,11 +140,14 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
   );
 
   const claimPoolResource = (description: string, userInput: Record<string, string | number> = {}) => {
-    claimResource({
-      poolId,
-      userInput,
-      ...(description != null && { description }),
-    })
+    claimResource(
+      {
+        poolId,
+        userInput,
+        ...(description != null && { description }),
+      },
+      { additionalTypenames: ['Resource'] },
+    )
       .then(() => {
         addToastNotification({
           type: 'success',
@@ -161,16 +163,18 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
   };
 
   const freePoolResource = (userInput: Record<string, string | number>) => {
-    freeResource({
-      poolId,
-      input: userInput,
-    })
+    freeResource(
+      {
+        poolId,
+        input: userInput,
+      },
+      { additionalTypenames: ['Resource'] },
+    )
       .then(() => {
         addToastNotification({
           type: 'success',
           content: 'Successfully freed resource from pool',
         });
-        reload();
       })
       .catch(() => {
         addToastNotification({
@@ -232,7 +236,7 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
         <Heading size="lg">Allocated Resources</Heading>
         {resourcePool.PoolType === 'allocating' && (
           <PoolDetailAllocatingTable
-            allocatedResources={allocatedResources}
+            allocatedResources={allocatedResources.QueryResources}
             onFreeResource={freePoolResource}
             canFreeResource={canFreeResource(resourcePool, totalCapacity)}
           />
@@ -240,7 +244,7 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
         {(resourcePool.PoolType === 'set' || resourcePool.PoolType === 'singleton') && (
           <PoolDetailSetSingletonTable
             resources={resourcePool.Resources}
-            allocatedResources={allocatedResources}
+            allocatedResources={allocatedResources.QueryResources}
             onFreeResource={freePoolResource}
           />
         )}
@@ -249,4 +253,4 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
   );
 };
 
-export default PoolDetailPage;
+export default PoolDetailPageContainer;
