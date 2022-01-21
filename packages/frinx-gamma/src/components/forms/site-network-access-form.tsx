@@ -136,8 +136,9 @@ const SiteNetAccessForm: FC<Props> = ({
 }) => {
   const [workflowId, setWorkflowId] = useState<string | null>(null);
   const [addressAssign, setAddressAssign] = useState<AddressAssignState | null>(null);
+  const [addressAssignError, setAddressAssignError] = useState<string | null>(null);
   const onFinish = () => {
-    setWorkflowId(null);
+    // do nothing
   };
   const workflowPayload = useAsyncGenerator<AddressAssignPayload>({ workflowId, onFinish });
   const [siteState, setSiteState] = useState(site);
@@ -167,9 +168,17 @@ const SiteNetAccessForm: FC<Props> = ({
   }, [site]);
 
   useEffect(() => {
-    if (workflowId && workflowPayload?.status === 'COMPLETED') {
+    if (workflowId === workflowPayload?.workflowId && workflowPayload?.status === 'COMPLETED') {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const { provider_address, customer_address } = workflowPayload.output.response_body;
+      setWorkflowId(null);
+
+      // any of the empty address in result is condidered as error
+      if (!provider_address || !customer_address) {
+        setAddressAssignError('Addresses were already assigned.');
+        return;
+      }
+
       setAddressAssign({
         providerAddress: provider_address,
         customerAddress: customer_address,
@@ -197,6 +206,8 @@ const SiteNetAccessForm: FC<Props> = ({
     if (!prefixLength) {
       return;
     }
+
+    setAddressAssignError(null);
 
     const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
     const workflowResult = await uniflowCallbacks.executeWorkflow({
@@ -497,7 +508,7 @@ const SiteNetAccessForm: FC<Props> = ({
             <Text>Prefix Length</Text>
             {workflowId && (
               <Flex>
-                <Text paddingRight={1} color="blackAlpha.600" fontSize="sm" as="i">
+                <Text py={2} paddingRight={1} color="blackAlpha.600" fontSize="sm" as="i">
                   Fetching Addresses
                 </Text>
                 <Spinner size="sm" />
@@ -505,7 +516,12 @@ const SiteNetAccessForm: FC<Props> = ({
             )}
           </Flex>
         </FormLabel>
-        <Flex my={6} alignItems="center">
+        {addressAssignError !== null && (
+          <Text fontSize="sm" color="red">
+            {addressAssignError}
+          </Text>
+        )}
+        <Flex alignItems="center">
           <Select
             name="prefixLength"
             value={ipv4Connection.addresses?.prefixLength || ''}
