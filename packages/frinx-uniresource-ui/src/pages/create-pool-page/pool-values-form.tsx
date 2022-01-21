@@ -11,14 +11,18 @@ import {
   HStack,
   InputLeftElement,
   Tooltip,
+  FormErrorMessage,
 } from '@chakra-ui/react';
 import { DeleteIcon, CheckIcon } from '@chakra-ui/icons';
+import { FormikErrors } from 'formik';
+import { isObject } from 'lodash';
 
 type PoolValue = Record<string, string>;
 type Props = {
   resourceTypeName: string;
-  onChange: (values: PoolValue[]) => void;
   existingPoolValues: PoolValue[];
+  poolValuesErrors?: string | string[] | FormikErrors<Record<string, string>>[];
+  onChange: (values: PoolValue[]) => void;
 };
 
 function getDefaultValue(name: string): PoolValue {
@@ -44,7 +48,12 @@ function getDefaultValue(name: string): PoolValue {
   }
 }
 
-const PoolValuesForm: VoidFunctionComponent<Props> = ({ onChange, resourceTypeName, existingPoolValues }) => {
+const PoolValuesForm: VoidFunctionComponent<Props> = ({
+  onChange,
+  resourceTypeName,
+  existingPoolValues,
+  poolValuesErrors,
+}) => {
   const [poolValues, setPoolValues] = useState<PoolValue[]>([getDefaultValue(resourceTypeName)]);
   const isButtonDisabled = isEqual(poolValues, existingPoolValues);
 
@@ -53,6 +62,11 @@ const PoolValuesForm: VoidFunctionComponent<Props> = ({ onChange, resourceTypeNa
     onChange([]);
   }, [resourceTypeName, onChange]);
 
+  const errors =
+    Array.isArray(poolValuesErrors) && isObject(poolValuesErrors[0])
+      ? (poolValuesErrors as Array<Record<string, string>>)
+      : undefined;
+
   return (
     <>
       {poolValues.map((pv, index) =>
@@ -60,8 +74,13 @@ const PoolValuesForm: VoidFunctionComponent<Props> = ({ onChange, resourceTypeNa
           const value = pv[key];
           const isPristine = isEqual(existingPoolValues[index], poolValues[index]);
           return (
-            // eslint-disable-next-line react/no-array-index-key
-            <FormControl id={`${key}/${index}`} key={`${key}/${index}`} marginY={5}>
+            <FormControl
+              id={`${key}/${index}`}
+              // eslint-disable-next-line react/no-array-index-key
+              key={`${key}/${index}`}
+              marginY={5}
+              isInvalid={poolValuesErrors != null}
+            >
               <FormLabel>{key}</FormLabel>
               <InputGroup>
                 <InputLeftElement>
@@ -101,6 +120,8 @@ const PoolValuesForm: VoidFunctionComponent<Props> = ({ onChange, resourceTypeNa
                   />
                 </InputRightElement>
               </InputGroup>
+              {errors && <FormErrorMessage>{errors[index][key]}</FormErrorMessage>}
+              {typeof poolValuesErrors === 'string' && <FormErrorMessage>{poolValuesErrors}</FormErrorMessage>}
             </FormControl>
           );
         }),

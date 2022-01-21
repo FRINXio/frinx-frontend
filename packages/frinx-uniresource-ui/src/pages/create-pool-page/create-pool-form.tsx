@@ -151,6 +151,21 @@ function getSchema(poolType: string, isNested: boolean) {
           .min(0, 'Please enter positive number')
           .required('Please enter a dealocation safety period')
           .typeError('Please enter a number'),
+        poolValues: yup.lazy((poolValues: Array<Record<string, string>>) => {
+          return yup
+            .array()
+            .of(
+              yup.object().shape({
+                ...Object.keys(poolValues[0] ?? {}).reduce((acc, key) => {
+                  return {
+                    ...acc,
+                    [key]: yup.string().required('Please enter a value'),
+                  };
+                }, {}),
+              }),
+            )
+            .min(1, 'Please enter at least one value');
+        }),
         ...(isNested && { parentResourceId: yup.string().required('Please enter parent resource type') }),
       });
 
@@ -350,6 +365,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
               onChange={handleFormValuesChange}
               resourceTypeName={resourceTypeName}
               existingPoolValues={values.poolValues}
+              poolValuesErrors={errors.poolValues}
             />
           </Box>
           <Divider marginY={5} orientation="horizontal" color="gray.200" />
