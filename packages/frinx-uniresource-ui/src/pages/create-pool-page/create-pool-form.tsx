@@ -237,6 +237,11 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
         (availableResourceTypes.find((type) => type.name === 'ipv6_prefix') && rt.name === 'ipv6')),
   );
 
+  const canSelectAllocatingType = resourceTypes.some(
+    (rt) =>
+      /^ipv4$|^ipv6$|unique_id|route_distinguisher|vlan|random_signed_int32/.test(rt.name) && rt.id === resourceTypeId,
+  );
+
   const [poolProperties, poolPropertyTypes] = getPoolPropertiesSkeleton(
     resourceTypes,
     resourceTypeId,
@@ -273,11 +278,13 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
         <FormControl id="poolType">
           <FormLabel>Pool type</FormLabel>
           <Select name="poolType" value={poolType} onChange={handleChange}>
-            {['set', 'allocating', 'singleton'].map((o) => (
-              <option value={o} key={o}>
-                {o}
-              </option>
-            ))}
+            {['set', 'allocating', 'singleton']
+              .filter((type) => (canSelectAllocatingType && type !== 'allocating') || !canSelectAllocatingType)
+              .map((o) => (
+                <option value={o} key={o}>
+                  {o}
+                </option>
+              ))}
           </Select>
         </FormControl>
         <FormControl id="resourceTypeId" isInvalid={errors.resourceTypeId !== undefined}>
