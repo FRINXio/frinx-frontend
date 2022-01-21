@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { useMemo, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import PageContainer from '../../components/page-container';
 import useNotifications from '../../hooks/use-notifications';
@@ -117,7 +117,8 @@ type Props = {
   poolId: string;
 };
 
-const PoolDetailPageContainer: FC<Props> = ({ poolId }) => {
+const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId }) => {
+  const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
   const claimResourceModal = useDisclosure();
   const { addToastNotification } = useNotifications();
   const [{ data: poolData, fetching: isLoadingPool }] = useQuery<PoolDetailQuery, PoolDetailQueryVariables>({
@@ -130,6 +131,7 @@ const PoolDetailPageContainer: FC<Props> = ({ poolId }) => {
   >({
     query: POOL_RESOURCES_QUERY,
     variables: { poolId },
+    context,
   });
 
   const [, claimResource] = useMutation<ClaimResourceMutationMutation, ClaimResourceMutationMutationVariables>(
@@ -139,15 +141,12 @@ const PoolDetailPageContainer: FC<Props> = ({ poolId }) => {
     FREE_RESOURCES_MUTATION,
   );
 
-  const claimPoolResource = (description: string, userInput: Record<string, string | number> = {}) => {
-    claimResource(
-      {
-        poolId,
-        userInput,
-        ...(description != null && { description }),
-      },
-      { additionalTypenames: ['Resource'] },
-    )
+  const claimPoolResource = (description = '', userInput: Record<string, string | number> = {}) => {
+    claimResource({
+      poolId,
+      userInput,
+      ...(description != null && { description }),
+    })
       .then(() => {
         addToastNotification({
           type: 'success',
@@ -213,7 +212,7 @@ const PoolDetailPageContainer: FC<Props> = ({ poolId }) => {
         <Box>
           <Button
             onClick={() =>
-              canShowClaimResourceModal(resourcePool) ? claimResourceModal.onOpen() : claimPoolResource('', {})
+              canShowClaimResourceModal(resourcePool) ? claimResourceModal.onOpen() : claimPoolResource()
             }
             colorScheme="blue"
             variant="outline"
@@ -251,6 +250,6 @@ const PoolDetailPageContainer: FC<Props> = ({ poolId }) => {
       </Box>
     </PageContainer>
   );
-};
+});
 
-export default PoolDetailPageContainer;
+export default PoolDetailPage;
