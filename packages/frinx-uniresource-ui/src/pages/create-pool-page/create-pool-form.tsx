@@ -236,8 +236,13 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
   }, [isNested, values.poolType, setFieldValue]);
 
   useEffect(() => {
-    const [poolProperties] = getPoolPropertiesSkeleton(resourceTypes, resourceTypeId, values.poolProperties);
+    const [poolProperties, poolPropertyTypes] = getPoolPropertiesSkeleton(
+      resourceTypes,
+      resourceTypeId,
+      values.poolProperties,
+    );
     setFieldValue('poolProperties', { ...poolProperties });
+    setFieldValue('poolPropertyTypes', { ...poolPropertyTypes });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resourceTypes, resourceTypeId, setFieldValue]);
 
