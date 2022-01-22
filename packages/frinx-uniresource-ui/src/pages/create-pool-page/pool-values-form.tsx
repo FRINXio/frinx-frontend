@@ -63,9 +63,13 @@ const PoolValuesForm: VoidFunctionComponent<Props> = ({
   }, [resourceTypeName, onChange]);
 
   const errors =
-    Array.isArray(poolValuesErrors) && isObject(poolValuesErrors[0])
+    Array.isArray(poolValuesErrors) && poolValuesErrors.some(isObject)
       ? (poolValuesErrors as Array<Record<string, string>>)
       : undefined;
+
+  const isErrorString = typeof poolValuesErrors === 'string';
+  const isPoolValueInvalid = (index: number, key: string) =>
+    isErrorString ? poolValuesErrors != null : errors != null && errors[index] != null && errors[index][key] != null;
 
   return (
     <>
@@ -79,7 +83,7 @@ const PoolValuesForm: VoidFunctionComponent<Props> = ({
               // eslint-disable-next-line react/no-array-index-key
               key={`${key}/${index}`}
               marginY={5}
-              isInvalid={poolValuesErrors != null}
+              isInvalid={isPoolValueInvalid(index, key)}
             >
               <FormLabel>{key}</FormLabel>
               <InputGroup>
@@ -120,7 +124,7 @@ const PoolValuesForm: VoidFunctionComponent<Props> = ({
                   />
                 </InputRightElement>
               </InputGroup>
-              {errors && <FormErrorMessage>{errors[index][key]}</FormErrorMessage>}
+              {errors && errors[index] && <FormErrorMessage>{errors[index][key]}</FormErrorMessage>}
               {typeof poolValuesErrors === 'string' && <FormErrorMessage>{poolValuesErrors}</FormErrorMessage>}
             </FormControl>
           );
