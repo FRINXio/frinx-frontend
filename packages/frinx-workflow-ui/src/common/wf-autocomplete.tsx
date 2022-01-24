@@ -89,7 +89,7 @@ const WfAutoComplete = forwardRef((props: Props, ref) => {
 
   return (
     <Box position="relative">
-      <InputGroup marginBottom={0}>
+      <InputGroup>
         {selected && selected.length > 0 && (
           <InputLeftAddon bg="white">
             {selected.map((item, index) => {

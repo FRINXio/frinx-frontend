@@ -34,6 +34,7 @@ type StateProps = {
   sort: number[];
   labels: string[];
 };
+const ITEMS_PER_PAGE = 20;
 
 const initialState = {
   selectedWorkflows: [],
@@ -42,7 +43,7 @@ const initialState = {
   openParentWorkflows: [],
   isFlat: false,
   showChildren: [],
-  workflowsPerPage: 20,
+  workflowsPerPage: ITEMS_PER_PAGE,
   viewedPage: 0,
   sort: [/*workflowId*/ 2, /*startTime*/ 0, /*endTime*/ 2],
   labels: [],
@@ -52,8 +53,8 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   const [state, setState] = useState<StateProps>(initialState);
   const [flatWorkflows, setFlatWorkflows] = useState<ExecutedWorkflowsFlat | null>(null);
   const [hierarchicalWorkflows, setHierarchicalWorkflows] = useState<ExecutedWorkflowsHierarchical | null>(null);
-  const hierarchicalPagination = usePagination([], 20);
-  const flatViewPagination = usePagination([], 20);
+  const hierarchicalPagination = usePagination([], ITEMS_PER_PAGE);
+  const flatViewPagination = usePagination([], ITEMS_PER_PAGE);
 
   useEffect(() => {
     fetchNewData(state.workflowId, state.viewedPage, state.workflowsPerPage, state.labels).then((response) => {
@@ -62,7 +63,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     fetchParentWorkflows(state.workflowId, state.viewedPage, state.workflowsPerPage, state.labels).then((response) => {
       setHierarchicalWorkflows(response);
     });
-  }, [state.viewedPage]);
+  }, [state]);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, selectedWorkflows: [...new Set<string>()] }));
@@ -239,7 +240,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     },
   };
 
-  const workflowsAmount = hierarchy.hits + flat.result.totalHits;
+  const workflowsAmount = state.isFlat ? flat.result.totalHits : hierarchy.parents.length;
 
   return (
     <PageContainer>
@@ -276,7 +277,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
           <Paginator
             currentPage={hierarchicalPagination.currentPage}
             onPaginationClick={handlePaginationClick}
-            pagesCount={hierarchicalPagination.totalPages}
+            pagesCount={Math.ceil(hierarchy.hits / ITEMS_PER_PAGE)}
             showPageNumbers={false}
           />
         </>
@@ -296,7 +297,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
           <Paginator
             currentPage={flatViewPagination.currentPage}
             onPaginationClick={handlePaginationClick}
-            pagesCount={flatViewPagination.totalPages}
+            pagesCount={Math.ceil(workflowsAmount / ITEMS_PER_PAGE)}
           />
         </>
       )}

@@ -14,12 +14,22 @@ type Props = {
   onLabelsChange: (labels: string[]) => void;
 };
 
+function dropNulls<T>(values: (T | null)[]): T[] {
+  const result: T[] = [];
+  values.forEach((v) => {
+    if (v != null) {
+      result.push(v);
+    }
+  });
+  return result;
+}
+
 const WorkflowDefinitionsHeader: FC<Props> = ({ allLabels, keywords, onKeywordsChange, labels, onLabelsChange }) => {
   const searchFavourites = () => {
-    const newLabels = [...labels];
+    const newLabels: (string | null)[] = [...labels];
     const index = newLabels.findIndex((label) => label === 'FAVOURITE');
-    newLabels.splice(index, 1, index === -1 ? 'FAVOURITE' : '');
-    onLabelsChange(newLabels.filter((l) => l != null));
+    newLabels.splice(index, 1, index === -1 ? 'FAVOURITE' : null);
+    onLabelsChange(dropNulls(newLabels));
   };
 
   return (
