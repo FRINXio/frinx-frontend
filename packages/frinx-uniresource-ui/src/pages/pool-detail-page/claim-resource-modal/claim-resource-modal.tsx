@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import ClaimResourceAllocIpv4PrefixModal from './claim-resource-allocating-modals/claim-resource-allocating-ipv4_prefix-modal';
-import ClaimResourceAllocVlanModal from './claim-resource-allocating-modals/claim-resource-allocating-vlan';
+import ClaimResourceAllocVlanModal from './claim-resource-allocating-modals/claim-resource-allocating-ipv6_prefix';
 import ClaimResourceAllocatingVlanRangeModal from './claim-resource-allocating-modals/claim-resource-allocationg-vlan_range-modal';
 
 // eslint-disable-next-line no-shadow
