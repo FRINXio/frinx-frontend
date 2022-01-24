@@ -1,6 +1,6 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Client, useClient, useQuery } from 'urql';
-import { Box, Flex, Heading, Spinner } from '@chakra-ui/react';
+import { Box, Flex, Heading, Progress } from '@chakra-ui/react';
 import gql from 'graphql-tag';
 import {
   CreateAllocationPoolMutation,
@@ -90,6 +90,9 @@ const SELECT_POOLS_QUERY = gql`
     QueryResourcePools {
       id
       Name
+      ResourceType {
+        id
+      }
     }
   }
 `;
@@ -266,7 +269,7 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
   };
 
   if (fetching || poolsFetching || allocStratFetching) {
-    return <Spinner size="xl" />;
+    return <Progress isIndeterminate size="xs" mt={-10} />;
   }
 
   if (data == null || poolsData == null || allocStratData == null) {
@@ -274,7 +277,11 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
   }
 
   const resourceTypes = data.QueryResourceTypes.map((rt) => ({ id: rt.id, name: rt.Name }));
-  const pools = poolsData.QueryResourcePools.map((p) => ({ id: p.id, name: p.Name }));
+  const pools = poolsData.QueryResourcePools.map((p) => ({
+    id: p.id,
+    name: p.Name,
+    resourceTypeId: p.ResourceType.id,
+  }));
   const allocStrategies = allocStratData.QueryAllocationStrategies.map((as) => ({ id: as.id, name: as.Name }));
 
   return (

@@ -3,17 +3,17 @@ import React, { FC } from 'react';
 import { AllocatedResourcesQuery } from '../../__generated__/graphql';
 
 type Props = {
-  allocatedResources: AllocatedResourcesQuery;
+  allocatedResources: AllocatedResourcesQuery['QueryResources'];
   canFreeResource: boolean;
   onFreeResource: (userInput: Record<string, string | number>) => void;
 };
 
-const getNamesOfAllocatedResources = (allocatedResources: AllocatedResourcesQuery) => {
+const getNamesOfAllocatedResources = (allocatedResources: AllocatedResourcesQuery['QueryResources']) => {
   if (allocatedResources == null) return [];
 
   return [
     ...new Set(
-      allocatedResources.QueryResources.reduce(
+      allocatedResources.reduce(
         (prev, curr) => {
           return prev.concat(Object.keys(curr.Properties));
         },
@@ -37,9 +37,9 @@ const PoolDetailAllocatingTable: FC<Props> = ({ allocatedResources, onFreeResour
         </Tr>
       </Thead>
       <Tbody>
-        {allocatedResources != null && allocatedResources.QueryResources.length > 0 ? (
-          allocatedResources.QueryResources.map((resource) => (
-            <Tr key={resource.id}>
+        {allocatedResources != null && allocatedResources.length > 0 ? (
+          allocatedResources.map((resource) => (
+            <Tr key={resource.id} title={resource.Description ?? ''}>
               {allocatedResourcesKeys.map((key) => (
                 <Td key={`${key}-${resource.id}`}>{resource.Properties[key]}</Td>
               ))}
