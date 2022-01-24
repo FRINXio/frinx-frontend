@@ -28,7 +28,7 @@ const canShowClaimResourceModal = (resourcePool: PoolDetailQuery['QueryResourceP
     return (
       resourcePool.ResourceType.Name === 'ipv4_prefix' ||
       resourcePool.ResourceType.Name === 'vlan_range' ||
-      resourcePool.ResourceType.Name === 'vlan'
+      resourcePool.ResourceType.Name === 'ipv6_prefix'
     );
   }
 
