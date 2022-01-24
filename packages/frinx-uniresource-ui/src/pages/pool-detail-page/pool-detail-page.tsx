@@ -77,6 +77,7 @@ const POOL_RESOURCES_QUERY = gql`
     QueryResources(poolId: $poolId) {
       id
       Properties
+      Description
     }
   }
 `;

@@ -39,7 +39,7 @@ const PoolDetailAllocatingTable: FC<Props> = ({ allocatedResources, onFreeResour
       <Tbody>
         {allocatedResources != null && allocatedResources.length > 0 ? (
           allocatedResources.map((resource) => (
-            <Tr key={resource.id}>
+            <Tr key={resource.id} title={resource.Description ?? ''}>
               {allocatedResourcesKeys.map((key) => (
                 <Td key={`${key}-${resource.id}`}>{resource.Properties[key]}</Td>
               ))}
