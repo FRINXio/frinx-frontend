@@ -1,7 +1,8 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Box, FormControl, FormLabel, IconButton, Icon, Input, Text, Tooltip, Divider } from '@chakra-ui/react';
+import { Box, Button, FormControl, FormLabel, Icon, Input, Text, Tooltip, Divider } from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
 import FeatherIcon from 'feather-icons-react';
+import { uniqueId } from 'lodash';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 import { RoutingProtocol, RoutingProtocolType, StaticRoutingType } from './site-types';
 import unwrap from '../../helpers/unwrap';
@@ -17,12 +18,48 @@ type Props = {
   onRoutingProtocolsChange: (routingProtcols: RoutingProtocol[]) => void;
 };
 
-function getDefaultStaticRouting(): StaticRoutingType {
+type StaticRoutingTypeWithId = StaticRoutingType & { id: string };
+
+function getDefaultStaticRoutingWithId(): StaticRoutingTypeWithId {
   return {
+    id: uniqueId(),
     lanTag: '',
     lan: '10.0.0.1/0',
     nextHop: '10.0.0.3',
   };
+}
+
+function getStaticRoutingErrors(errors: FormikErrors<SiteNetworkAccess>): FormikErrors<StaticRoutingType>[] | null {
+  if (!errors.routingProtocols || errors.routingProtocols.length === 0) {
+    return null;
+  }
+
+  const routingProtocolsError = errors.routingProtocols as FormikErrors<RoutingProtocol>[];
+  if (!routingProtocolsError) {
+    return null;
+  }
+
+  if (!routingProtocolsError || routingProtocolsError.length === 0) {
+    return null;
+  }
+
+  const staticRoutingErrors = routingProtocolsError.filter(
+    (error) => error !== undefined && error.static !== undefined,
+  );
+
+  if (staticRoutingErrors.length === 0) {
+    return null;
+  }
+
+  return (staticRoutingErrors.pop()?.static as unknown as FormikErrors<StaticRoutingType>[]) || null;
+}
+
+function getRowErrors(errors: FormikErrors<StaticRoutingType>[] | null, key: number) {
+  if (!errors) {
+    return {};
+  }
+
+  return errors[key] || {};
 }
 
 const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
@@ -46,20 +83,28 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
     onRoutingProtocolsChange(newProtocols);
   };
 
-  const handleStaticRoutingChange = (staticRouting: StaticRoutingType) => {
+  const handleStaticRoutingChange = (staticRouting: StaticRoutingTypeWithId) => {
     console.log('change static routing: ', staticRouting); // eslint-disable-line no-console
+    const updateIndex = staticProtocol.static?.findIndex((p) => p.id === staticRouting.id);
 
+    if (updateIndex === undefined || updateIndex < 0) {
+      return;
+    }
+
+    const updatedStaticProtocol = staticProtocol.static ? [...staticProtocol.static] : [];
+    updatedStaticProtocol.splice(updateIndex, 1, staticRouting);
     const newStaticProtocol: RoutingProtocol = {
       type: 'static',
-      static: [staticRouting],
+      static: updatedStaticProtocol,
     };
     const newProtocols = [bgpProtocol, newStaticProtocol];
     onRoutingProtocolsChange(newProtocols);
   };
 
-  const handleStaticRoutingCreate = (staticRouting: StaticRoutingType) => {
+  const handleStaticRoutingCreate = () => {
     console.log('create static routing'); // eslint-disable-line no-console
     const oldStatic = staticProtocol.static ? [...staticProtocol.static] : [];
+    const staticRouting = getDefaultStaticRoutingWithId();
     const newStaticProtocol: RoutingProtocol = {
       type: 'static',
       static: [...oldStatic, staticRouting],
@@ -68,11 +113,12 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
     onRoutingProtocolsChange(newProtocols);
   };
 
-  const handleStaticRoutingDelete = (staticRouting: StaticRoutingType) => {
+  const handleStaticRoutingDelete = (routingId: string) => {
     console.log('delete static routing'); // eslint-disable-line no-console
-    const newStaticProtocol = staticProtocol.static?.filter((p) => {
-      return p.lan !== staticRouting.lan && p.nextHop !== staticRouting.nextHop;
-    });
+    const newStaticProtocol =
+      staticProtocol.static?.filter((p) => {
+        return p.id !== routingId;
+      }) || [];
 
     const newProtocols = newStaticProtocol
       ? [
@@ -113,31 +159,32 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
         </Select>
       </FormControl> */}
 
-      <StaticRoutingForm
-        errors={errors}
-        staticRouting={getDefaultStaticRouting()}
-        onStaticRoutingChange={handleStaticRoutingChange}
-        onStaticRoutingCreate={handleStaticRoutingCreate}
-      />
-      {staticProtocol.static?.map((routing) => {
+      <Box py="1" gridColumn="1/5">
+        <Tooltip label="Create Static Routing Protocol">
+          <Button
+            size="sm"
+            aria-label="Create Static Routing Protocol"
+            colorScheme="blue"
+            leftIcon={<Icon as={FeatherIcon} icon="plus" />}
+            onClick={handleStaticRoutingCreate}
+          >
+            <Text paddingTop="1">Create Static Routing</Text>
+          </Button>
+        </Tooltip>
+      </Box>
+
+      {staticProtocol.static?.map((routing, key) => {
+        const staticRoutingErrors = getStaticRoutingErrors(errors);
+        const rowErrors = getRowErrors(staticRoutingErrors, key);
+
         return (
-          // <HStack spacing={4} gridColumn="1/5" key={`${routing.lan}-${routing.nextHop}`}>
-          <React.Fragment key={`${routing.lan}-${routing.nextHop}`}>
-            <Text p={4}>{routing.lan}</Text>
-            <Text p={4}>{routing.nextHop}</Text>
-            <Text p={4}>{routing.lanTag}</Text>
-            <Box py={4}>
-              <Tooltip label="Delete Static Routing Protocol">
-                <IconButton
-                  aria-label="Delete Static Routing Protocol"
-                  colorScheme="red"
-                  icon={<Icon as={FeatherIcon} icon="trash-2" />}
-                  size="md"
-                  onClick={() => handleStaticRoutingDelete(routing)}
-                />
-              </Tooltip>
-            </Box>
-          </React.Fragment>
+          <StaticRoutingForm
+            key={routing.id}
+            errors={rowErrors}
+            staticRouting={routing}
+            onStaticRoutingChange={handleStaticRoutingChange}
+            onStaticRoutingDelete={handleStaticRoutingDelete}
+          />
         );
       })}
 

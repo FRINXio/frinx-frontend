@@ -34,7 +34,13 @@ const getDefaultNetworkAccess = (selectedSite: VpnSite | null): SiteNetworkAcces
         autonomousSystem: '',
         bgpProfile: null,
       },
-      static: [],
+      static: [
+        // {
+        //   lanTag: '',
+        //   lan: '10.0.0.1/0',
+        //   nextHop: '10.0.0.3',
+        // },
+      ],
     },
   ],
   bearer: {

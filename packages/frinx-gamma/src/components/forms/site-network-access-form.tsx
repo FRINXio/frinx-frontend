@@ -19,6 +19,7 @@ import {
 import { LinkIcon } from '@chakra-ui/icons';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { uniqueId } from 'lodash';
 import {
   AccessPriority,
   MaximumRoutes,
@@ -34,6 +35,7 @@ import { getSelectOptions } from './options.helper';
 import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import { useAsyncGenerator } from '../commit-status-modal/commit-status-modal.helpers';
 import { VpnService } from './service-types';
+import { string } from 'io-ts';
 
 type AddressAssign = {
   customer_address: string | null; // eslint-disable-line @typescript-eslint/naming-convention
@@ -60,15 +62,24 @@ const ProtocolSchema = yup.object({
   type: yup.mixed().oneOf(['static', 'bgp']),
   vrrp: yup.string().nullable(),
   bgp: BgpProtocolSchema.nullable(),
-  static: yup.array().min(1).of(StaticProtocolSchema).nullable(),
+  static: yup.array().of(StaticProtocolSchema).nullable(),
 });
 
 const RoutingProtocolSchema = yup.array().of(ProtocolSchema);
 
+const IpConnectionSchema = yup.object({
+  ipv4: yup.object({
+    addresses: yup.object({
+      customerAddress: yup.string().required(),
+      providerAddress: yup.string().required(),
+    }),
+  }),
+});
+
 const NetworkAccessSchema = yup.object({
   siteNetworkAccessId: yup.string(),
   // siteNetworkAccessType: yup.mixed().oneOf(['point-to-point', 'multipoint']),
-  // ipConnection?: IPConnection;
+  // ipConnection: IpConnectionSchema,
   accessPriority: yup.mixed().oneOf(['150', '100', '90', '80', '70', '60']),
   maximumRoutes: yup.mixed().oneOf([null, 1000, 2000, 5000, 10000]),
   routingProtocols: RoutingProtocolSchema,
@@ -108,6 +119,7 @@ function getDefaultStaticRoutingProtocol(): RoutingProtocol {
     type: 'static',
     static: [
       {
+        id: uniqueId(),
         lan: '',
         nextHop: '',
         lanTag: null,
@@ -283,8 +295,8 @@ const SiteNetAccessForm: FC<Props> = ({
     ...ipv4Connection,
     addresses: {
       ...unwrap(ipv4Connection.addresses),
-      customerAddress: addressAssign?.customerAddress || '',
-      providerAddress: addressAssign?.providerAddress || '',
+      customerAddress: addressAssign?.customerAddress || ipv4Connection.addresses?.customerAddress || '',
+      providerAddress: addressAssign?.providerAddress || ipv4Connection.addresses?.providerAddress || '',
     },
   };
 

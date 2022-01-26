@@ -1,3 +1,4 @@
+import { uniqueId } from 'lodash';
 import { VpnService, DefaultCVlanEnum, VpnServiceTopology } from './service-types';
 import {
   CountryCode,
@@ -125,6 +126,7 @@ export function apiRoutingProtocolToClientRoutingProtocol(routingProtocol: Routi
     static: staticProtocol
       ? staticProtocol['cascaded-lan-prefixes']['ipv4-lan-prefixes'].map((p) => {
           return {
+            id: uniqueId(),
             lan: p.lan,
             lanTag: p['lan-tag'] || null,
             nextHop: p['next-hop'],
