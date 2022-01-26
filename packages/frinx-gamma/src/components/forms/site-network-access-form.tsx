@@ -17,7 +17,7 @@ import {
   FormLabel,
 } from '@chakra-ui/react';
 import { LinkIcon } from '@chakra-ui/icons';
-import { useFormik } from 'formik';
+import { FormikErrors, useFormik } from 'formik';
 import * as yup from 'yup';
 import { uniqueId } from 'lodash';
 import {
@@ -35,7 +35,7 @@ import { getSelectOptions } from './options.helper';
 import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import { useAsyncGenerator } from '../commit-status-modal/commit-status-modal.helpers';
 import { VpnService } from './service-types';
-import { string } from 'io-ts';
+import { IPConnection } from '../../network-types';
 
 type AddressAssign = {
   customer_address: string | null; // eslint-disable-line @typescript-eslint/naming-convention
@@ -79,7 +79,7 @@ const IpConnectionSchema = yup.object({
 const NetworkAccessSchema = yup.object({
   siteNetworkAccessId: yup.string(),
   // siteNetworkAccessType: yup.mixed().oneOf(['point-to-point', 'multipoint']),
-  // ipConnection: IpConnectionSchema,
+  ipConnection: IpConnectionSchema,
   accessPriority: yup.mixed().oneOf(['150', '100', '90', '80', '70', '60']),
   maximumRoutes: yup.mixed().oneOf([null, 1000, 2000, 5000, 10000]),
   routingProtocols: RoutingProtocolSchema,
@@ -148,6 +148,14 @@ function getEditedNetworkAccesses(
   return oldNetworkAccesses.map((access) => {
     return access.siteNetworkAccessId === editedNetworkAccess.siteNetworkAccessId ? editedNetworkAccess : access;
   });
+}
+
+function getCustomerAddressError(errors: FormikErrors<SiteNetworkAccess>): string | null {
+  return (errors?.ipConnection as IPConnection)?.ipv4?.addresses?.customerAddress || null;
+}
+
+function getProviderAddressError(errors: FormikErrors<SiteNetworkAccess>): string | null {
+  return (errors?.ipConnection as IPConnection)?.ipv4?.addresses?.providerAddress || null;
 }
 
 type AddressAssignState = {
@@ -304,6 +312,9 @@ const SiteNetAccessForm: FC<Props> = ({
     ...values.ipConnection,
     ipv4: newIpv4Connection,
   };
+
+  const customerAddressError = getCustomerAddressError(errors);
+  const providerAddressError = getProviderAddressError(errors);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -608,7 +619,12 @@ const SiteNetAccessForm: FC<Props> = ({
                 />
               </Flex>
             </FormControl>
-            <FormControl id="ip-provider-address" my={1} isDisabled={workflowId !== null}>
+            <FormControl
+              id="ip-provider-address"
+              my={1}
+              isInvalid={providerAddressError != null}
+              isDisabled={workflowId !== null}
+            >
               <FormLabel>Provider Address</FormLabel>
               <Input
                 name="providerAddress"
@@ -626,8 +642,14 @@ const SiteNetAccessForm: FC<Props> = ({
                   });
                 }}
               />
+              {providerAddressError != null && <FormErrorMessage>{providerAddressError}</FormErrorMessage>}
             </FormControl>
-            <FormControl id="ip-customer-address" my={1} isDisabled={workflowId !== null}>
+            <FormControl
+              id="ip-customer-address"
+              my={1}
+              isInvalid={customerAddressError != null}
+              isDisabled={workflowId !== null}
+            >
               <FormLabel>Customer Address</FormLabel>
               <Input
                 name="customer-address"
@@ -645,6 +667,7 @@ const SiteNetAccessForm: FC<Props> = ({
                   });
                 }}
               />
+              {customerAddressError != null && <FormErrorMessage>{customerAddressError}</FormErrorMessage>}
             </FormControl>
           </Grid>
         </Box>
