@@ -104,6 +104,11 @@ export type CalculatedDiffPayload = {
   output: Maybe<Scalars['String']>;
 };
 
+export type CloseTransactionPayload = {
+  __typename?: 'CloseTransactionPayload';
+  isOk: Scalars['Boolean'];
+};
+
 export type CommitConfigInput = {
   deviceId: Scalars['String'];
   shouldDryRun?: Maybe<Scalars['Boolean']>;
@@ -142,6 +147,11 @@ export type CreateLabelInput = {
 export type CreateLabelPayload = {
   __typename?: 'CreateLabelPayload';
   label: Maybe<Label>;
+};
+
+export type CreateTransactionPayload = {
+  __typename?: 'CreateTransactionPayload';
+  transactionId: Maybe<Scalars['String']>;
 };
 
 export type DataStore = {
@@ -282,6 +292,8 @@ export type Mutation = {
   addSnapshot: Maybe<AddSnapshotPayload>;
   applySnapshot: ApplySnapshotPayload;
   syncFromNetwork: SyncFromNetworkPayload;
+  createTransaction: CreateTransactionPayload;
+  closeTransaction: CloseTransactionPayload;
   createLabel: CreateLabelPayload;
   deleteLabel: DeleteLabelPayload;
   addLocation: AddLocationPayload;
@@ -323,32 +335,49 @@ export type MutationAddZoneArgs = {
 
 export type MutationUpdateDataStoreArgs = {
   deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
   input: UpdateDataStoreInput;
 };
 
 
 export type MutationCommitConfigArgs = {
+  transactionId: Scalars['String'];
   input: CommitConfigInput;
 };
 
 
 export type MutationResetConfigArgs = {
   deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
 };
 
 
 export type MutationAddSnapshotArgs = {
   input: AddSnapshotInput;
+  transactionId: Scalars['String'];
 };
 
 
 export type MutationApplySnapshotArgs = {
   input: ApplySnapshotInput;
+  transactionId: Scalars['String'];
 };
 
 
 export type MutationSyncFromNetworkArgs = {
   deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
+};
+
+
+export type MutationCreateTransactionArgs = {
+  deviceId: Scalars['String'];
+};
+
+
+export type MutationCloseTransactionArgs = {
+  deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
 };
 
 
@@ -428,11 +457,13 @@ export type QueryZonesArgs = {
 
 export type QueryDataStoreArgs = {
   deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
 };
 
 
 export type QueryCalculatedDiffArgs = {
   deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
 };
 
 
@@ -686,6 +717,7 @@ export type DeviceNameQuery = (
 
 export type DataStoreQueryVariables = Exact<{
   deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
 }>;
 
 
@@ -703,6 +735,7 @@ export type DataStoreQuery = (
 
 export type UpdateDataStoreMutationVariables = Exact<{
   deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
   input: UpdateDataStoreInput;
 }>;
 
@@ -719,6 +752,7 @@ export type UpdateDataStoreMutation = (
 );
 
 export type CommitDataStoreConfigMutationVariables = Exact<{
+  transactionId: Scalars['String'];
   input: CommitConfigInput;
 }>;
 
@@ -733,6 +767,7 @@ export type CommitDataStoreConfigMutation = (
 
 export type ResetConfigMutationVariables = Exact<{
   deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
 }>;
 
 
@@ -748,6 +783,7 @@ export type ResetConfigMutation = (
 );
 
 export type AddSnapshotMutationVariables = Exact<{
+  transactionId: Scalars['String'];
   input: AddSnapshotInput;
 }>;
 
@@ -764,6 +800,7 @@ export type AddSnapshotMutation = (
 );
 
 export type ApplySnapshotMutationVariables = Exact<{
+  transactionId: Scalars['String'];
   input: ApplySnapshotInput;
 }>;
 
@@ -778,6 +815,7 @@ export type ApplySnapshotMutation = (
 
 export type SyncFromNetworkMutationVariables = Exact<{
   deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
 }>;
 
 
@@ -792,8 +830,36 @@ export type SyncFromNetworkMutation = (
   ) }
 );
 
+export type CreateTransactionMutationVariables = Exact<{
+  deviceId: Scalars['String'];
+}>;
+
+
+export type CreateTransactionMutation = (
+  { __typename?: 'Mutation' }
+  & { createTransaction: (
+    { __typename?: 'CreateTransactionPayload' }
+    & Pick<CreateTransactionPayload, 'transactionId'>
+  ) }
+);
+
+export type CloseTransactionMutationVariables = Exact<{
+  deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
+}>;
+
+
+export type CloseTransactionMutation = (
+  { __typename?: 'Mutation' }
+  & { closeTransaction: (
+    { __typename?: 'CloseTransactionPayload' }
+    & Pick<CloseTransactionPayload, 'isOk'>
+  ) }
+);
+
 export type CalculatedDiffQueryVariables = Exact<{
   deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
 }>;
 
 

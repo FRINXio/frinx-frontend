@@ -13,8 +13,8 @@ import { gql, useQuery } from 'urql';
 import { CalculatedDiffQuery, CalculatedDiffQueryVariables } from '../../__generated__/graphql';
 
 const CALCULATED_DIFF_QUERY = gql`
-  query calculatedDiff($deviceId: String!) {
-    calculatedDiff(deviceId: $deviceId) {
+  query calculatedDiff($deviceId: String!, $transactionId: String!) {
+    calculatedDiff(deviceId: $deviceId, transactionId: $transactionId) {
       output
     }
   }
