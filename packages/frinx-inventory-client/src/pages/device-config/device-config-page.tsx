@@ -1,14 +1,19 @@
 import { Box, Container, Flex, Heading, Progress, useDisclosure } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
+import unwrap from '../../helpers/unwrap';
 import useNotifications from '../../hooks/use-notifications';
 import {
   AddSnapshotMutation,
   AddSnapshotMutationVariables,
   ApplySnapshotMutation,
   ApplySnapshotMutationVariables,
+  CloseTransactionMutation,
+  CloseTransactionMutationVariables,
   CommitDataStoreConfigMutation,
   CommitDataStoreConfigMutationVariables,
+  CreateTransactionMutation,
+  CreateTransactionMutationVariables,
   DataStoreQuery,
   DataStoreQueryVariables,
   DeviceNameQuery,
@@ -37,8 +42,8 @@ const DEVICE_NAME_QUERY = gql`
 `;
 
 const DATA_STORE_QUERY = gql`
-  query dataStore($deviceId: String!) {
-    dataStore(deviceId: $deviceId) {
+  query dataStore($deviceId: String!, $transactionId: String!) {
+    dataStore(deviceId: $deviceId, transactionId: $transactionId) {
       config
       operational
       snapshots {
@@ -50,8 +55,8 @@ const DATA_STORE_QUERY = gql`
 `;
 
 const UPDATE_DATA_STORE_MUTATION = gql`
-  mutation updateDataStore($deviceId: String!, $input: UpdateDataStoreInput!) {
-    updateDataStore(deviceId: $deviceId, input: $input) {
+  mutation updateDataStore($deviceId: String!, $transactionId: String!, $input: UpdateDataStoreInput!) {
+    updateDataStore(deviceId: $deviceId, transactionId: $transactionId, input: $input) {
       dataStore {
         config
         operational
@@ -61,16 +66,16 @@ const UPDATE_DATA_STORE_MUTATION = gql`
 `;
 
 const COMMIT_DATA_STORE_MUTATION = gql`
-  mutation commitDataStoreConfig($input: CommitConfigInput!) {
-    commitConfig(input: $input) {
+  mutation commitDataStoreConfig($transactionId: String!, $input: CommitConfigInput!) {
+    commitConfig(transactionId: $transactionId, input: $input) {
       isOk
     }
   }
 `;
 
 const RESET_CONFIG_MUTATION = gql`
-  mutation resetConfig($deviceId: String!) {
-    resetConfig(deviceId: $deviceId) {
+  mutation resetConfig($deviceId: String!, $transactionId: String!) {
+    resetConfig(deviceId: $deviceId, transactionId: $transactionId) {
       dataStore {
         config
         operational
@@ -80,8 +85,8 @@ const RESET_CONFIG_MUTATION = gql`
 `;
 
 const ADD_SNAPSHOT_MUTATION = gql`
-  mutation addSnapshot($input: AddSnapshotInput!) {
-    addSnapshot(input: $input) {
+  mutation addSnapshot($transactionId: String!, $input: AddSnapshotInput!) {
+    addSnapshot(transactionId: $transactionId, input: $input) {
       snapshot {
         name
       }
@@ -90,8 +95,8 @@ const ADD_SNAPSHOT_MUTATION = gql`
 `;
 
 const APPLY_SNAPSHOT_MUTATION = gql`
-  mutation applySnapshot($input: ApplySnapshotInput!) {
-    applySnapshot(input: $input) {
+  mutation applySnapshot($transactionId: String!, $input: ApplySnapshotInput!) {
+    applySnapshot(transactionId: $transactionId, input: $input) {
       isOk
       output
     }
@@ -99,14 +104,77 @@ const APPLY_SNAPSHOT_MUTATION = gql`
 `;
 
 const SYNC_FROM_NETWORK_MUTATION = gql`
-  mutation syncFromNetwork($deviceId: String!) {
-    syncFromNetwork(deviceId: $deviceId) {
+  mutation syncFromNetwork($deviceId: String!, $transactionId: String!) {
+    syncFromNetwork(deviceId: $deviceId, transactionId: $transactionId) {
       dataStore {
         operational
       }
     }
   }
 `;
+const CREATE_TRANSACTION_MUTATION = gql`
+  mutation createTransaction($deviceId: String!) {
+    createTransaction(deviceId: $deviceId) {
+      transactionId
+    }
+  }
+`;
+const CLOSE_TRANSACTION_MUTATION = gql`
+  mutation closeTransaction($deviceId: String!, $transactionId: String!) {
+    closeTransaction(deviceId: $deviceId, transactionId: $transactionId) {
+      isOk
+    }
+  }
+`;
+
+const TRANSACTION_ID_KEY = 'TX_ID_INVENTORY';
+
+const useTransactionId = (deviceId: string) => {
+  const [, createTransaction] = useMutation<CreateTransactionMutation, CreateTransactionMutationVariables>(
+    CREATE_TRANSACTION_MUTATION,
+  );
+  const [{ fetching: isClosingTransaction }, closeTransaction] = useMutation<
+    CloseTransactionMutation,
+    CloseTransactionMutationVariables
+  >(CLOSE_TRANSACTION_MUTATION);
+
+  const [transactionId, setTransactionId] = useState(localStorage.getItem(TRANSACTION_ID_KEY));
+
+  useEffect(() => {
+    if (transactionId == null) {
+      createTransaction({ deviceId }).then((res) => {
+        const { data, error } = res;
+
+        if (error != null) {
+          throw new Error(error.toString());
+        }
+
+        if (data?.createTransaction.transactionId != null) {
+          setTransactionId(data.createTransaction.transactionId);
+          localStorage.setItem(TRANSACTION_ID_KEY, data.createTransaction.transactionId);
+        }
+      });
+    }
+
+    return () => {
+      if (transactionId != null) {
+        localStorage.removeItem(TRANSACTION_ID_KEY);
+        closeTransaction({ deviceId, transactionId });
+      }
+    };
+  }, [createTransaction, deviceId, closeTransaction, transactionId]);
+
+  return {
+    transactionId,
+    isClosingTransaction,
+    closeTransaction: async () => {
+      closeTransaction({ deviceId, transactionId: unwrap(transactionId) }).then(() => {
+        localStorage.removeItem(TRANSACTION_ID_KEY);
+        setTransactionId(null);
+      });
+    },
+  };
+};
 
 type Props = {
   deviceId: string;
@@ -120,9 +188,13 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     query: DEVICE_NAME_QUERY,
     variables: { deviceId },
   });
+  const { transactionId, isClosingTransaction, closeTransaction } = useTransactionId(deviceId);
   const [{ data, fetching, error }, reexecuteQuery] = useQuery<DataStoreQuery, DataStoreQueryVariables>({
     query: DATA_STORE_QUERY,
-    variables: { deviceId },
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    variables: { deviceId, transactionId },
+    pause: transactionId == null,
   });
   const [{ fetching: isUpdateStoreLoading }, updateDataStore] = useMutation<
     UpdateDataStoreMutation,
@@ -159,9 +231,14 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     }
   }, [data]);
 
+  if (transactionId == null) {
+    return null;
+  }
+
   const handleOnSaveConfig = async () => {
     const { data: responseData, error: responseError } = await updateDataStore({
       deviceId,
+      transactionId,
       input: { config: JSON.stringify(JSON.parse(config ?? ''), null, 0) },
     });
 
@@ -186,6 +263,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
 
   const handleOnCommitConfig = async (isDryRun?: boolean) => {
     const { data: responseData, error: responseError } = await commitConfig({
+      transactionId,
       input: { deviceId, shouldDryRun: isDryRun },
     });
 
@@ -209,7 +287,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
   };
 
   const handleOnResetConfig = async () => {
-    const { data: responseData, error: responseError } = await resetConfig({ deviceId });
+    const { data: responseData, error: responseError } = await resetConfig({ deviceId, transactionId });
 
     if (responseError != null) {
       addToastNotification({
@@ -231,7 +309,10 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
   };
 
   const handleOnAddSnapshot = async (name: string) => {
-    const { data: responseData, error: responseError } = await addSnapshot({ input: { name, deviceId } });
+    const { data: responseData, error: responseError } = await addSnapshot({
+      input: { name, deviceId },
+      transactionId,
+    });
 
     if (responseError != null) {
       addToastNotification({
@@ -253,7 +334,10 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
   };
 
   const handleOnApplySnapshot = async (name: string) => {
-    const { data: responseData, error: responseError } = await applySnapshot({ input: { name, deviceId } });
+    const { data: responseData, error: responseError } = await applySnapshot({
+      input: { name, deviceId },
+      transactionId,
+    });
     reexecuteQuery({ requestPolicy: 'network-only' });
 
     if (responseError != null) {
@@ -276,7 +360,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
   };
 
   const handleSyncBtnClick = async () => {
-    const { data: responseData, error: responseError } = await syncFromNetwork({ deviceId });
+    const { data: responseData, error: responseError } = await syncFromNetwork({ deviceId, transactionId });
 
     if (responseError != null) {
       addToastNotification({
@@ -295,6 +379,16 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
         content: 'Successfully synced from network',
       });
     }
+  };
+
+  const handleCloseTransactionBtnClick = async () => {
+    closeTransaction().then(() => {
+      addToastNotification({
+        type: 'success',
+        title: 'Success',
+        content: 'Sucessfully discarded changes',
+      });
+    });
   };
 
   const isInitialLoading = fetching && data == null;
@@ -331,7 +425,9 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
         onFormSubmit={handleOnAddSnapshot}
         isLoading={isAddLoading}
       />
-      {isDiffModalOpen && <DiffOutputModal onClose={onDiffModalClose} deviceId={deviceId} />}
+      {isDiffModalOpen && (
+        <DiffOutputModal onClose={onDiffModalClose} deviceId={deviceId} transactionId={transactionId} />
+      )}
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h2" size="3xl">
@@ -349,8 +445,10 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
             handleOnCommitConfig(true);
           }}
           onCalculateDiffBtnClick={onDiffModalOpen}
+          onTransactionCloseBtnClick={handleCloseTransactionBtnClick}
           isApplySnapshotLoading={isApplySnapshotLoading}
           isCommitLoading={isCommitLoading}
+          isCloseTransactionLoading={isClosingTransaction}
         />
         <Box background="white" padding={4}>
           <DeviceConfigEditors

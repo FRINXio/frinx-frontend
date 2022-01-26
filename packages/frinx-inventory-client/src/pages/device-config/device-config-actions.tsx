@@ -25,8 +25,10 @@ type Props = {
   onCommitBtnClick: () => void;
   onDryRunBtnClick: () => void;
   onCalculateDiffBtnClick: () => void;
+  onTransactionCloseBtnClick: () => void;
   isCommitLoading: boolean;
   isApplySnapshotLoading: boolean;
+  isCloseTransactionLoading: boolean;
 };
 
 const DeviceConfigActions: VoidFunctionComponent<Props> = ({
@@ -36,8 +38,10 @@ const DeviceConfigActions: VoidFunctionComponent<Props> = ({
   onCommitBtnClick,
   onDryRunBtnClick,
   onCalculateDiffBtnClick,
+  onTransactionCloseBtnClick,
   isApplySnapshotLoading,
   isCommitLoading,
+  isCloseTransactionLoading,
 }) => {
   return (
     <Flex background="gray.300" paddingX={4} paddingY={2}>
@@ -79,6 +83,9 @@ const DeviceConfigActions: VoidFunctionComponent<Props> = ({
         </Menu>
       </ButtonGroup>
       <ButtonGroup isAttached marginLeft="auto">
+        <Button onClick={onTransactionCloseBtnClick} colorScheme="red" isLoading={isCloseTransactionLoading}>
+          Discard changes
+        </Button>
         <Button onClick={onCalculateDiffBtnClick}>Calculate diff</Button>
         <Button
           onClick={onDryRunBtnClick}

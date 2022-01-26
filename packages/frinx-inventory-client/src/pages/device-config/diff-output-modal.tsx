@@ -13,8 +13,8 @@ import { gql, useQuery } from 'urql';
 import { CalculatedDiffQuery, CalculatedDiffQueryVariables } from '../../__generated__/graphql';
 
 const CALCULATED_DIFF_QUERY = gql`
-  query calculatedDiff($deviceId: String!) {
-    calculatedDiff(deviceId: $deviceId) {
+  query calculatedDiff($deviceId: String!, $transactionId: String!) {
+    calculatedDiff(deviceId: $deviceId, transactionId: $transactionId) {
       output
     }
   }
@@ -23,13 +23,15 @@ const CALCULATED_DIFF_QUERY = gql`
 type Props = {
   onClose: () => void;
   deviceId: string;
+  transactionId: string;
 };
 
-const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId }) => {
+const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId, transactionId }) => {
   const [{ data, fetching, error }] = useQuery<CalculatedDiffQuery, CalculatedDiffQueryVariables>({
     query: CALCULATED_DIFF_QUERY,
     variables: {
       deviceId,
+      transactionId,
     },
     requestPolicy: 'network-only',
   });
