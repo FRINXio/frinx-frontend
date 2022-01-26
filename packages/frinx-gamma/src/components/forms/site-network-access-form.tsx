@@ -1,8 +1,10 @@
 import React, { FC, useEffect, useState } from 'react';
 import {
   Divider,
+  Box,
   Button,
   Flex,
+  Grid,
   FormErrorMessage,
   Heading,
   IconButton,
@@ -17,13 +19,21 @@ import {
 import { LinkIcon } from '@chakra-ui/icons';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { AccessPriority, MaximumRoutes, RoutingProtocol, VpnSite, SiteNetworkAccess } from './site-types';
+import {
+  AccessPriority,
+  MaximumRoutes,
+  RoutingProtocol,
+  VpnSite,
+  SiteNetworkAccess,
+  StaticRoutingType,
+} from './site-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 import RoutingProtocolForm from './routing-protocol-form';
 import unwrap from '../../helpers/unwrap';
 import { getSelectOptions } from './options.helper';
 import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import { useAsyncGenerator } from '../commit-status-modal/commit-status-modal.helpers';
+import { VpnService } from './service-types';
 
 type AddressAssign = {
   customer_address: string | null; // eslint-disable-line @typescript-eslint/naming-convention
@@ -50,7 +60,7 @@ const ProtocolSchema = yup.object({
   type: yup.mixed().oneOf(['static', 'bgp']),
   vrrp: yup.string().nullable(),
   bgp: BgpProtocolSchema.nullable(),
-  static: yup.array().of(StaticProtocolSchema).nullable(),
+  static: yup.array().min(1).of(StaticProtocolSchema).nullable(),
 });
 
 const RoutingProtocolSchema = yup.array().of(ProtocolSchema);
@@ -66,6 +76,15 @@ const NetworkAccessSchema = yup.object({
   deviceReference: yup.string().nullable(),
   vpnAttachment: yup.string().required('Vpn Attachment is required field'),
   siteRole: yup.string().nullable(),
+  bearer: yup.object({
+    bearerReference: yup
+      .string()
+      .matches(
+        /(^CPNH2\d{8}-(0\d{2}|[1-9]\d{2,3})$)|(^CES\d{8}-\d{2}$)/,
+        'Circuit Reference should have following format: CPNH200000000-0000 or CES00000000-00',
+      )
+      .required('Circuit Reference is required'),
+  }),
 });
 
 type Props = {
@@ -76,8 +95,9 @@ type Props = {
   qosProfiles: string[];
   bfdProfiles: string[];
   bgpProfiles: string[];
-  vpnIds: string[];
+  vpnServices: VpnService[];
   bandwidths: number[];
+  staticRoutes: StaticRoutingType[];
   onSubmit: (s: VpnSite) => void;
   onCancel: () => void;
   onNetworkAccessChange?: (s: SiteNetworkAccess) => void;
@@ -129,7 +149,7 @@ const SiteNetAccessForm: FC<Props> = ({
   selectedNetworkAccess,
   qosProfiles,
   bgpProfiles,
-  vpnIds,
+  vpnServices,
   bandwidths,
   onSubmit,
   onCancel,
@@ -142,7 +162,7 @@ const SiteNetAccessForm: FC<Props> = ({
   };
   const workflowPayload = useAsyncGenerator<AddressAssignPayload>({ workflowId, onFinish });
   const [siteState, setSiteState] = useState(site);
-  const { values, errors, dirty, resetForm, setFieldValue, handleSubmit } = useFormik({
+  const { values, errors, dirty, isValid, resetForm, setFieldValue, handleSubmit } = useFormik({
     initialValues: {
       ...selectedNetworkAccess,
     },
@@ -240,8 +260,8 @@ const SiteNetAccessForm: FC<Props> = ({
   });
   const [selectedDevice] = deviceItems.filter((item) => item.value === values.deviceReference);
 
-  const vpnServicesItems = vpnIds.map((id) => {
-    return { value: id, label: id };
+  const vpnServicesItems = vpnServices.map((service) => {
+    return { value: unwrap(service.vpnId), label: `${service.vpnId} (${service.customerName})` };
   });
   const [selectedVpnServiceItem] = vpnServicesItems.filter((item) => item.value === values.vpnAttachment);
   const staticRoutingProtocol =
@@ -275,53 +295,58 @@ const SiteNetAccessForm: FC<Props> = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl id="vpn-attachment" my={6} isRequired isInvalid={errors.vpnAttachment != null}>
-        <FormLabel>Vpn Attachment</FormLabel>
-        <Autocomplete2
-          items={vpnServicesItems}
-          selectedItem={selectedVpnServiceItem}
-          onChange={handleVpnAttachmentChange}
-        />
-        {errors.vpnAttachment && <FormErrorMessage>{errors.vpnAttachment}</FormErrorMessage>}
-      </FormControl>
+      <Box paddingTop="6">
+        <Heading size="sm">General</Heading>
+        <Grid templateColumns="repeat(4, 1fr)" gap="1">
+          <FormControl id="vpn-attachment" my={1} isRequired isInvalid={errors.vpnAttachment != null}>
+            <FormLabel>VPN Attachment</FormLabel>
+            <Autocomplete2
+              items={vpnServicesItems}
+              selectedItem={selectedVpnServiceItem}
+              onChange={handleVpnAttachmentChange}
+            />
+            {errors.vpnAttachment && <FormErrorMessage>{errors.vpnAttachment}</FormErrorMessage>}
+          </FormControl>
 
-      <FormControl id="site-role" my={6}>
-        <FormLabel>Site role</FormLabel>
-        <Select
-          isDisabled
-          name="siteRole"
-          value={values.siteRole || ''}
-          onChange={(event) => {
-            setFieldValue('siteRole', event.target.value || null);
-          }}
-        >
-          <option value="">-- choose site role</option>
-          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site_network_access.site_role).map((item) => {
-            return (
-              <option key={`evc-type-${item.key}`} value={item.key}>
-                {item.label}
-              </option>
-            );
-          })}
-        </Select>
-      </FormControl>
+          <FormControl id="site-role" my={1}>
+            <FormLabel>Site role</FormLabel>
+            <Select
+              isDisabled
+              name="siteRole"
+              value={values.siteRole || ''}
+              onChange={(event) => {
+                setFieldValue('siteRole', event.target.value || null);
+              }}
+            >
+              <option value="">-- choose site role</option>
+              {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site_network_access.site_role).map((item) => {
+                return (
+                  <option key={`evc-type-${item.key}`} value={item.key}>
+                    {item.label}
+                  </option>
+                );
+              })}
+            </Select>
+          </FormControl>
 
-      <FormControl id="bearer-reference" my={6}>
-        <FormLabel>Bearer Reference</FormLabel>
-        <Input
-          name="bearerReference"
-          value={values.bearer.bearerReference}
-          onChange={(event) => {
-            setFieldValue('bearer', {
-              ...values.bearer,
-              bearerReference: event.target.value,
-            });
-          }}
-        />
-      </FormControl>
+          <FormControl id="bearer-reference" my={1} isInvalid={errors.bearer?.bearerReference != null}>
+            <FormLabel>BMT Circuit Reference</FormLabel>
+            <Input
+              placeholder="CPNH200000000-0000 or CES00000000-00"
+              name="bearerReference"
+              value={values.bearer.bearerReference}
+              onChange={(event) => {
+                setFieldValue('bearer', {
+                  ...values.bearer,
+                  bearerReference: event.target.value,
+                });
+              }}
+            />
+            {errors.bearer?.bearerReference && <FormErrorMessage>{errors.bearer.bearerReference}</FormErrorMessage>}
+          </FormControl>
 
-      {/* INFO: field is hidden by request from gamma */}
-      {/* <FormControl id="service-network-access-type" my={6}>
+          {/* INFO: field is hidden by request from gamma */}
+          {/* <FormControl id="service-network-access-type" my={6}>
         <FormLabel>Service Network Access Type</FormLabel>
         <Select
           name="service-network-access-type"
@@ -341,263 +366,281 @@ const SiteNetAccessForm: FC<Props> = ({
         </FormControl>
       */}
 
-      {siteState.siteManagementType === 'customer-managed' ? (
-        <FormControl id="location-id" my={6}>
-          <FormLabel>Locations</FormLabel>
-          <Autocomplete2 items={locationItems} selectedItem={selectedLocation} onChange={handleLocationChange} />
-        </FormControl>
-      ) : (
-        <FormControl id="device-id" my={6}>
-          <FormLabel>Devices</FormLabel>
-          <Autocomplete2 items={deviceItems} selectedItem={selectedDevice} onChange={handleDeviceChange} />
-        </FormControl>
-      )}
+          {siteState.siteManagementType === 'customer-managed' ? (
+            <FormControl id="location-id" my={1}>
+              <FormLabel>Locations</FormLabel>
+              <Autocomplete2 items={locationItems} selectedItem={selectedLocation} onChange={handleLocationChange} />
+            </FormControl>
+          ) : (
+            <FormControl id="device-id" my={1}>
+              <FormLabel>Devices</FormLabel>
+              <Autocomplete2 items={deviceItems} selectedItem={selectedDevice} onChange={handleDeviceChange} />
+            </FormControl>
+          )}
 
-      <FormControl id="bearer-c-vlan" my={6}>
-        <FormLabel>Bearer - Requested C Vlan</FormLabel>
-        <Select
-          name="bearer-c-vlan"
-          value={values.bearer.requestedCLan}
-          onChange={(event) => {
-            setFieldValue('bearer', {
-              ...values.bearer,
-              requestedCLan: event.target.value,
-            });
-          }}
-        >
-          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site_network_access.requested_cvlan).map((item) => {
-            return (
-              <option key={`requested-cvlan-${item.key}`} value={item.key}>
-                {item.label}
-              </option>
-            );
-          })}
-        </Select>
-      </FormControl>
+          <FormControl id="bearer-c-vlan" my={1}>
+            <FormLabel>Bearer - Requested C Vlan</FormLabel>
+            <Select
+              name="bearer-c-vlan"
+              value={values.bearer.requestedCLan}
+              onChange={(event) => {
+                setFieldValue('bearer', {
+                  ...values.bearer,
+                  requestedCLan: event.target.value,
+                });
+              }}
+            >
+              {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site_network_access.requested_cvlan).map((item) => {
+                return (
+                  <option key={`requested-cvlan-${item.key}`} value={item.key}>
+                    {item.label}
+                  </option>
+                );
+              })}
+            </Select>
+          </FormControl>
 
-      <FormControl id="svc-input-bandwidth" my={6}>
-        <FormLabel>SVC Input Bandwidth</FormLabel>
-        <Select
-          name="svcInputBandwith"
-          type="number"
-          value={values.service.svcInputBandwidth}
-          onChange={(event) => {
-            setFieldValue('service', {
-              ...values.service,
-              svcInputBandwidth: Number(event.target.value),
-            });
-          }}
-        >
-          {bandwidths.map((b) => (
-            <option key={`input-bandwith-key-${b}`}>{b}</option>
-          ))}
-        </Select>
-      </FormControl>
+          <FormControl id="maximum-routes" my={1}>
+            <FormLabel>Maximum Routes</FormLabel>{' '}
+            <Select
+              name="maximumRoutes"
+              value={values.maximumRoutes || ''}
+              onChange={(event) => {
+                setFieldValue('maximumRoutes', (Number(event.target.value) as MaximumRoutes) || null);
+              }}
+            >
+              <option value="">-- choose maximum routes</option>
+              {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site.maximum_routes).map((item) => {
+                return (
+                  <option key={`maximum-routes-${item.key}`} value={item.key}>
+                    {item.label}
+                  </option>
+                );
+              })}
+            </Select>
+          </FormControl>
 
-      <FormControl id="svc-output-bandwidth" my={6}>
-        <FormLabel>SVC Output Bandwidth</FormLabel>
-        <Select
-          name="svcOutputBandwith"
-          value={values.service.svcOutputBandwidth}
-          onChange={(event) => {
-            setFieldValue('service', {
-              ...values.service,
-              svcOutputBandwidth: Number(event.target.value),
-            });
-          }}
-        >
-          {bandwidths.map((b) => (
-            <option key={`output-bandwith-key-${b}`}>{b}</option>
-          ))}
-        </Select>
-      </FormControl>
+          <FormControl id="access-priority" my={1}>
+            <FormLabel>Access Priority</FormLabel>
+            <Select
+              name="accessPriority"
+              value={values.accessPriority}
+              onChange={(event) => {
+                setFieldValue('accessPriority', event.target.value as unknown as AccessPriority);
+              }}
+            >
+              {[...Object.entries(AccessPriority)].map((e) => {
+                const [k, v] = e;
+                return (
+                  <option key={k} value={v}>
+                    {k}
+                  </option>
+                );
+              })}
+            </Select>
+          </FormControl>
+        </Grid>
 
-      <FormControl id="qosProfile" my={6}>
-        <FormLabel>QOS Profile</FormLabel>
-        <Select
-          name="qos-profile"
-          value={values.service.qosProfiles[0]}
-          onChange={(event) => {
-            if (!event.target.value) {
-              return;
-            }
-            setFieldValue('service', {
-              ...values.service,
-              qosProfiles: [unwrap(event.target.value)],
-            });
-          }}
-        >
-          <option value="0">--- choose profile</option>
-          {qosProfiles.map((p) => (
-            <option key={`qos-profile-${p}`} value={p}>
-              {p}
-            </option>
-          ))}
-        </Select>
-      </FormControl>
+        <Box paddingTop={6}>
+          <Heading size="sm">Service</Heading>
+          <Grid templateColumns="repeat(4, 1fr)" gap="1">
+            <FormControl id="svc-input-bandwidth" my={1}>
+              <FormLabel>SVC Input Bandwidth</FormLabel>
+              <Select
+                name="svcInputBandwith"
+                type="number"
+                value={values.service.svcInputBandwidth}
+                onChange={(event) => {
+                  setFieldValue('service', {
+                    ...values.service,
+                    svcInputBandwidth: Number(event.target.value),
+                  });
+                }}
+              >
+                {bandwidths.map((b) => (
+                  <option key={`input-bandwith-key-${b}`}>{b}</option>
+                ))}
+              </Select>
+            </FormControl>
 
-      <FormControl id="maximum-routes" my={6}>
-        <FormLabel>Maximum Routes</FormLabel>{' '}
-        <Select
-          name="maximumRoutes"
-          value={values.maximumRoutes || ''}
-          onChange={(event) => {
-            setFieldValue('maximumRoutes', (Number(event.target.value) as MaximumRoutes) || null);
-          }}
-        >
-          <option value="">-- choose maximum routes</option>
-          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site.maximum_routes).map((item) => {
-            return (
-              <option key={`maximum-routes-${item.key}`} value={item.key}>
-                {item.label}
-              </option>
-            );
-          })}
-        </Select>
-      </FormControl>
+            <FormControl id="svc-output-bandwidth" my={1}>
+              <FormLabel>SVC Output Bandwidth</FormLabel>
+              <Select
+                name="svcOutputBandwith"
+                value={values.service.svcOutputBandwidth}
+                onChange={(event) => {
+                  setFieldValue('service', {
+                    ...values.service,
+                    svcOutputBandwidth: Number(event.target.value),
+                  });
+                }}
+              >
+                {bandwidths.map((b) => (
+                  <option key={`output-bandwith-key-${b}`}>{b}</option>
+                ))}
+              </Select>
+            </FormControl>
 
-      <RoutingProtocolForm
-        errors={errors}
-        bgpProfileItems={bgpProfileItems}
-        selectedBgpProfileItem={selectedBgpProfileItem}
-        bgpProtocol={bgpRoutingProtocol}
-        staticProtocol={staticRoutingProtocol}
-        onRoutingProtocolsChange={handleRoutingProtocolsChange}
-      />
+            <FormControl id="qosProfile" my={1}>
+              <FormLabel>QOS Profile</FormLabel>
+              <Select
+                name="qos-profile"
+                value={values.service.qosProfiles[0]}
+                onChange={(event) => {
+                  if (!event.target.value) {
+                    return;
+                  }
+                  setFieldValue('service', {
+                    ...values.service,
+                    qosProfiles: [unwrap(event.target.value)],
+                  });
+                }}
+              >
+                <option value="0">--- choose profile</option>
+                {qosProfiles.map((p) => (
+                  <option key={`qos-profile-${p}`} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Box>
 
-      <FormControl id="access-priority" my={6}>
-        <FormLabel>Access Priority</FormLabel>
-        <Select
-          name="accessPriority"
-          value={values.accessPriority}
-          onChange={(event) => {
-            setFieldValue('accessPriority', event.target.value as unknown as AccessPriority);
-          }}
-        >
-          {[...Object.entries(AccessPriority)].map((e) => {
-            const [k, v] = e;
-            return (
-              <option key={k} value={v}>
-                {k}
-              </option>
-            );
-          })}
-        </Select>
-      </FormControl>
+        <Box paddingTop={6}>
+          <Heading size="sm">Routing Protocol</Heading>
+          <Grid templateColumns="repeat(4, 1fr)" gap="1">
+            <RoutingProtocolForm
+              errors={errors}
+              bgpProfileItems={bgpProfileItems}
+              selectedBgpProfileItem={selectedBgpProfileItem}
+              bgpProtocol={bgpRoutingProtocol}
+              staticProtocol={staticRoutingProtocol}
+              onRoutingProtocolsChange={handleRoutingProtocolsChange}
+            />
+          </Grid>
+        </Box>
 
-      <Heading size="sm">IP Connection</Heading>
-      <FormControl id="ip-address-allocation-type" my={6}>
-        <FormLabel>Address Allocation Type</FormLabel>
-        <Input
-          name="ip-address-allocation-type"
-          value={ipv4Connection.addressAllocationType?.split(':').pop() || ''}
-          onChange={(event) => {
-            setFieldValue('ipConnection', {
-              ...values.ipConnection,
-              ipv4: {
-                ...values.ipConnection?.ipv4,
-                addressAllocationType: event.target.value || undefined,
-              },
-            });
-          }}
-        />
-      </FormControl>
-      <FormControl id="ip-prefix-length">
-        <FormLabel>
-          <Flex justifyContent="space-between">
-            <Text>Prefix Length</Text>
-            {workflowId && (
-              <Flex>
-                <Text py={2} paddingRight={1} color="blackAlpha.600" fontSize="sm" as="i">
-                  Fetching Addresses
+        <Box paddingTop={6}>
+          <Heading size="sm">IP Connection</Heading>
+          <Grid templateColumns="repeat(4, 1fr)" gap="1">
+            <FormControl id="ip-address-allocation-type" my={1} isReadOnly>
+              <FormLabel>Address Allocation Type</FormLabel>
+              <Input
+                name="ip-address-allocation-type"
+                value={ipv4Connection.addressAllocationType?.split(':').pop() || ''}
+                onChange={(event) => {
+                  setFieldValue('ipConnection', {
+                    ...values.ipConnection,
+                    ipv4: {
+                      ...values.ipConnection?.ipv4,
+                      addressAllocationType: event.target.value || undefined,
+                    },
+                  });
+                }}
+              />
+            </FormControl>
+            <FormControl id="ip-prefix-length">
+              <FormLabel>
+                <Flex justifyContent="space-between" alignItems="flex-start">
+                  <Text>Prefix Length</Text>
+                  {workflowId && (
+                    <Flex alignItems="center">
+                      <Text paddingRight={1} color="blackAlpha.600" fontSize="sm" as="i">
+                        Fetching Addresses
+                      </Text>
+                      <Spinner size="sm" />
+                    </Flex>
+                  )}
+                </Flex>
+              </FormLabel>
+              {addressAssignError !== null && (
+                <Text fontSize="sm" color="red">
+                  {addressAssignError}
                 </Text>
-                <Spinner size="sm" />
+              )}
+              <Flex alignItems="center">
+                <Select
+                  name="prefixLength"
+                  value={ipv4Connection.addresses?.prefixLength || ''}
+                  onChange={(event) => {
+                    if (Number.isNaN(event.target.value)) {
+                      return;
+                    }
+                    setFieldValue('ipConnection', {
+                      ...values.ipConnection,
+                      ipv4: {
+                        ...values.ipConnection?.ipv4,
+                        addresses: {
+                          ...values.ipConnection?.ipv4?.addresses,
+                          prefixLength: Number(event.target.value) || undefined,
+                        },
+                      },
+                    });
+                  }}
+                >
+                  <option value="">-- choose value</option>
+                  <option value={30}>30</option>
+                  <option value={31}>31</option>
+                  );
+                </Select>
+                <IconButton
+                  marginLeft="1"
+                  size="md"
+                  aria-label="Deselect Customer Name"
+                  icon={<LinkIcon />}
+                  onClick={() =>
+                    handleAddressAssign(values.siteNetworkAccessId, ipv4Connection.addresses?.prefixLength)
+                  }
+                  isDisabled={ipv4Connection.addresses?.prefixLength === undefined || workflowId !== null}
+                />
               </Flex>
-            )}
-          </Flex>
-        </FormLabel>
-        {addressAssignError !== null && (
-          <Text fontSize="sm" color="red">
-            {addressAssignError}
-          </Text>
-        )}
-        <Flex alignItems="center">
-          <Select
-            name="prefixLength"
-            value={ipv4Connection.addresses?.prefixLength || ''}
-            onChange={(event) => {
-              if (Number.isNaN(event.target.value)) {
-                return;
-              }
-              setFieldValue('ipConnection', {
-                ...values.ipConnection,
-                ipv4: {
-                  ...values.ipConnection?.ipv4,
-                  addresses: {
-                    ...values.ipConnection?.ipv4?.addresses,
-                    prefixLength: Number(event.target.value) || undefined,
-                  },
-                },
-              });
-            }}
-          >
-            <option value="">-- choose value</option>
-            <option value={30}>30</option>
-            <option value={31}>31</option>
-            );
-          </Select>
-          <IconButton
-            marginLeft="1"
-            size="md"
-            aria-label="Deselect Customer Name"
-            icon={<LinkIcon />}
-            onClick={() => handleAddressAssign(values.siteNetworkAccessId, ipv4Connection.addresses?.prefixLength)}
-            isDisabled={ipv4Connection.addresses?.prefixLength === undefined || workflowId !== null}
-          />
-        </Flex>
-      </FormControl>
-      <FormControl id="ip-provider-address" my={6} isDisabled={workflowId !== null}>
-        <FormLabel>Provider Address</FormLabel>
-        <Input
-          name="providerAddress"
-          value={ipv4Connection.addresses?.providerAddress || ''}
-          onChange={(event) => {
-            setFieldValue('ipConnection', {
-              ...values.ipConnection,
-              ipv4: {
-                ...values.ipConnection?.ipv4,
-                addresses: {
-                  ...values.ipConnection?.ipv4?.addresses,
-                  providerAddress: event.target.value || undefined,
-                },
-              },
-            });
-          }}
-        />
-      </FormControl>
-      <FormControl id="ip-customer-address" my={6} isDisabled={workflowId !== null}>
-        <FormLabel>Customer Address</FormLabel>
-        <Input
-          name="customer-address"
-          value={ipv4Connection.addresses?.customerAddress || ''}
-          onChange={(event) => {
-            setFieldValue('ipConnection', {
-              ...values.ipConnection,
-              ipv4: {
-                ...values.ipConnection?.ipv4,
-                addresses: {
-                  ...values.ipConnection?.ipv4?.addresses,
-                  customerAddress: event.target.value || undefined,
-                },
-              },
-            });
-          }}
-        />
-      </FormControl>
+            </FormControl>
+            <FormControl id="ip-provider-address" my={1} isDisabled={workflowId !== null}>
+              <FormLabel>Provider Address</FormLabel>
+              <Input
+                name="providerAddress"
+                value={ipv4Connection.addresses?.providerAddress || ''}
+                onChange={(event) => {
+                  setFieldValue('ipConnection', {
+                    ...values.ipConnection,
+                    ipv4: {
+                      ...values.ipConnection?.ipv4,
+                      addresses: {
+                        ...values.ipConnection?.ipv4?.addresses,
+                        providerAddress: event.target.value || undefined,
+                      },
+                    },
+                  });
+                }}
+              />
+            </FormControl>
+            <FormControl id="ip-customer-address" my={1} isDisabled={workflowId !== null}>
+              <FormLabel>Customer Address</FormLabel>
+              <Input
+                name="customer-address"
+                value={ipv4Connection.addresses?.customerAddress || ''}
+                onChange={(event) => {
+                  setFieldValue('ipConnection', {
+                    ...values.ipConnection,
+                    ipv4: {
+                      ...values.ipConnection?.ipv4,
+                      addresses: {
+                        ...values.ipConnection?.ipv4?.addresses,
+                        customerAddress: event.target.value || undefined,
+                      },
+                    },
+                  });
+                }}
+              />
+            </FormControl>
+          </Grid>
+        </Box>
+      </Box>
 
       <Divider my={4} />
       <Stack direction="row" spacing={2} align="center">
-        <Button type="submit" colorScheme="blue" isDisabled={!dirty || workflowId !== null}>
+        <Button type="submit" colorScheme="blue" isDisabled={!dirty || workflowId !== null || !isValid}>
           Save changes
         </Button>
         <Button onClick={() => resetForm()}>Clear</Button>
