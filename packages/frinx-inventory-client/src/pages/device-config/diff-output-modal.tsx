@@ -23,13 +23,15 @@ const CALCULATED_DIFF_QUERY = gql`
 type Props = {
   onClose: () => void;
   deviceId: string;
+  transactionId: string;
 };
 
-const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId }) => {
+const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId, transactionId }) => {
   const [{ data, fetching, error }] = useQuery<CalculatedDiffQuery, CalculatedDiffQueryVariables>({
     query: CALCULATED_DIFF_QUERY,
     variables: {
       deviceId,
+      transactionId,
     },
     requestPolicy: 'network-only',
   });

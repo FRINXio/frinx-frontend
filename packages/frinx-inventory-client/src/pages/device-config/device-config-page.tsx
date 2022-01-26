@@ -386,7 +386,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
       addToastNotification({
         type: 'success',
         title: 'Success',
-        content: 'Sucessfully discared changes',
+        content: 'Sucessfully discarded changes',
       });
     });
   };
@@ -425,7 +425,9 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
         onFormSubmit={handleOnAddSnapshot}
         isLoading={isAddLoading}
       />
-      {isDiffModalOpen && <DiffOutputModal onClose={onDiffModalClose} deviceId={deviceId} />}
+      {isDiffModalOpen && (
+        <DiffOutputModal onClose={onDiffModalClose} deviceId={deviceId} transactionId={transactionId} />
+      )}
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h2" size="3xl">
