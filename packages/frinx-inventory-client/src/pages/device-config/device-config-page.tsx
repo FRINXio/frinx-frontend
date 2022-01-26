@@ -1,14 +1,19 @@
 import { Box, Container, Flex, Heading, Progress, useDisclosure } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
+import unwrap from '../../helpers/unwrap';
 import useNotifications from '../../hooks/use-notifications';
 import {
   AddSnapshotMutation,
   AddSnapshotMutationVariables,
   ApplySnapshotMutation,
   ApplySnapshotMutationVariables,
+  CloseTransactionMutation,
+  CloseTransactionMutationVariables,
   CommitDataStoreConfigMutation,
   CommitDataStoreConfigMutationVariables,
+  CreateTransactionMutation,
+  CreateTransactionMutationVariables,
   DataStoreQuery,
   DataStoreQueryVariables,
   DeviceNameQuery,
@@ -19,10 +24,6 @@ import {
   SyncFromNetworkMutationVariables,
   UpdateDataStoreMutation,
   UpdateDataStoreMutationVariables,
-  CreateTransactionMutation,
-  CreateTransactionMutationVariables,
-  CloseTransactionMutation,
-  CloseTransactionMutationVariables,
 } from '../../__generated__/graphql';
 import CreateSnapshotModal from './create-snapshot-modal';
 import DeviceConfigActions from './device-config-actions';
@@ -126,6 +127,55 @@ const CLOSE_TRANSACTION_MUTATION = gql`
   }
 `;
 
+const TRANSACTION_ID_KEY = 'TX_ID_INVENTORY';
+
+const useTransactionId = (deviceId: string) => {
+  const [, createTransaction] = useMutation<CreateTransactionMutation, CreateTransactionMutationVariables>(
+    CREATE_TRANSACTION_MUTATION,
+  );
+  const [{ fetching: isClosingTransaction }, closeTransaction] = useMutation<
+    CloseTransactionMutation,
+    CloseTransactionMutationVariables
+  >(CLOSE_TRANSACTION_MUTATION);
+
+  const [transactionId, setTransactionId] = useState(localStorage.getItem(TRANSACTION_ID_KEY));
+
+  useEffect(() => {
+    if (transactionId == null) {
+      createTransaction({ deviceId }).then((res) => {
+        const { data, error } = res;
+
+        if (error != null) {
+          throw new Error(error.toString());
+        }
+
+        if (data?.createTransaction.transactionId != null) {
+          setTransactionId(data.createTransaction.transactionId);
+          localStorage.setItem(TRANSACTION_ID_KEY, data.createTransaction.transactionId);
+        }
+      });
+    }
+
+    return () => {
+      if (transactionId != null) {
+        localStorage.removeItem(TRANSACTION_ID_KEY);
+        closeTransaction({ deviceId, transactionId });
+      }
+    };
+  }, [createTransaction, deviceId, closeTransaction, transactionId]);
+
+  return {
+    transactionId,
+    isClosingTransaction,
+    closeTransaction: async () => {
+      closeTransaction({ deviceId, transactionId: unwrap(transactionId) }).then(() => {
+        localStorage.removeItem(TRANSACTION_ID_KEY);
+        setTransactionId(null);
+      });
+    },
+  };
+};
+
 type Props = {
   deviceId: string;
 };
@@ -138,11 +188,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     query: DEVICE_NAME_QUERY,
     variables: { deviceId },
   });
-  const [{ data: transactionData }, createTransaction] = useMutation<
-    CreateTransactionMutation,
-    CreateTransactionMutationVariables
-  >(CREATE_TRANSACTION_MUTATION);
-  const transactionId = transactionData?.createTransaction.transactionId ?? null;
+  const { transactionId, isClosingTransaction, closeTransaction } = useTransactionId(deviceId);
   const [{ data, fetching, error }, reexecuteQuery] = useQuery<DataStoreQuery, DataStoreQueryVariables>({
     query: DATA_STORE_QUERY,
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -172,10 +218,6 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     SyncFromNetworkMutation,
     SyncFromNetworkMutationVariables
   >(SYNC_FROM_NETWORK_MUTATION);
-  const [{ fetching: isClosingTransaction }, closeTransaction] = useMutation<
-    CloseTransactionMutation,
-    CloseTransactionMutationVariables
-  >(CLOSE_TRANSACTION_MUTATION);
 
   const [config, setConfig] = useState<string>();
   // const toast = useToast();
@@ -188,21 +230,6 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
       setConfig(JSON.stringify(JSON.parse(data.dataStore.config ?? ''), null, 2));
     }
   }, [data]);
-
-  useEffect(() => {
-    createTransaction({
-      deviceId,
-    });
-
-    return () => {
-      if (transactionId != null) {
-        closeTransaction({
-          deviceId,
-          transactionId,
-        });
-      }
-    };
-  }, [deviceId, createTransaction, closeTransaction, transactionId]);
 
   if (transactionId == null) {
     return null;
@@ -355,18 +382,13 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
   };
 
   const handleCloseTransactionBtnClick = async () => {
-    const { data: responseData } = await closeTransaction({
-      deviceId,
-      transactionId,
-    });
-
-    if (responseData != null) {
+    closeTransaction().then(() => {
       addToastNotification({
         type: 'success',
         title: 'Success',
         content: 'Sucessfully discared changes',
       });
-    }
+    });
   };
 
   const isInitialLoading = fetching && data == null;
