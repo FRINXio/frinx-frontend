@@ -151,11 +151,11 @@ function getEditedNetworkAccesses(
 }
 
 function getCustomerAddressError(errors: FormikErrors<SiteNetworkAccess>): string | null {
-  return (errors?.ipConnection as IPConnection)?.ipv4?.addresses?.customerAddress || null;
+  return (errors?.ipConnection as unknown as IPConnection)?.ipv4?.addresses?.customerAddress || null;
 }
 
 function getProviderAddressError(errors: FormikErrors<SiteNetworkAccess>): string | null {
-  return (errors?.ipConnection as IPConnection)?.ipv4?.addresses?.providerAddress || null;
+  return (errors?.ipConnection as unknown as IPConnection)?.ipv4?.addresses?.providerAddress || null;
 }
 
 type AddressAssignState = {
