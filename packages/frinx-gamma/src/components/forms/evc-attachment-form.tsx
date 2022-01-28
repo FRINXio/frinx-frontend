@@ -1,10 +1,24 @@
-import { Button, Divider, FormControl, FormErrorMessage, FormLabel, Input, Select, Stack } from '@chakra-ui/react';
+import {
+  Button,
+  Divider,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  IconButton,
+  Input,
+  Select,
+  Spinner,
+  Stack,
+} from '@chakra-ui/react';
+import { LinkIcon } from '@chakra-ui/icons';
 import React, { VoidFunctionComponent } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { EvcAttachment } from './bearer-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 import { getSelectOptions } from './options.helper';
+import useDidMountEffect from '../../hooks/use-did-mount-effect';
 
 const EvcSchema = yup.object().shape({
   evcType: yup.string().required('Evc type is required'),
@@ -24,8 +38,11 @@ const EvcSchema = yup.object().shape({
 type Props = {
   qosProfiles: string[];
   evcAttachment: EvcAttachment;
+  // svlanId: number | null;
+  isLoadingSvlan: boolean;
   onSubmit: (attachment: EvcAttachment) => void;
   onCancel: () => void;
+  onSvlanAssign?: () => Promise<void>;
 };
 
 function getQosProfilesItems(profiles: string[]): Item[] {
@@ -35,8 +52,17 @@ function getQosProfilesItems(profiles: string[]): Item[] {
   }));
 }
 
-const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttachment, onSubmit, onCancel }) => {
-  const { values, errors, dirty, resetForm, setFieldValue, handleChange, handleSubmit } = useFormik({
+const EvcAttachmentForm: VoidFunctionComponent<Props> = ({
+  isLoadingSvlan,
+  qosProfiles,
+  evcAttachment,
+  // svlanId,
+  onSvlanAssign,
+  onSubmit,
+  onCancel,
+}) => {
+  // const [workflowId, setWorkflowId] = useState<string | null>(null);
+  const { values, errors, dirty, isValid, resetForm, setFieldValue, handleChange, handleSubmit } = useFormik({
     initialValues: {
       ...evcAttachment,
     },
@@ -45,6 +71,17 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
       onSubmit(formValues);
     },
   });
+
+  useDidMountEffect(() => {
+    setFieldValue('svlanId', evcAttachment.svlanId);
+  }, [evcAttachment.svlanId]);
+
+  function handleSvlanAssign() {
+    if (!onSvlanAssign) {
+      return;
+    }
+    onSvlanAssign();
+  }
 
   const profileItems = getQosProfilesItems(qosProfiles);
   const [selectedProfile] = profileItems.filter((p) => {
@@ -83,19 +120,34 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
       </FormControl>
 
       <FormControl id="svlanId" my={6} isRequired>
-        <FormLabel>S-VLAN Identifier</FormLabel>
-        <Input
-          name="svlanId"
-          value={values.svlanId || ''}
-          disabled
-          onChange={(event) => {
-            const svlanId = Number(event.target.value);
-            if (Number.isNaN(svlanId)) {
-              return;
-            }
-            handleChange(svlanId || null);
-          }}
-        />
+        <Flex justifyContent="space-between" alignItems="center">
+          <FormLabel>S-VLAN Identifier</FormLabel>
+          {isLoadingSvlan && <Spinner size="sm" />}
+        </Flex>
+        <Flex alignItems="center">
+          <Input
+            name="svlanId"
+            value={values.svlanId || ''}
+            disabled
+            onChange={(event) => {
+              const value = Number(event.target.value);
+              if (Number.isNaN(value)) {
+                return;
+              }
+              handleChange(value || null);
+            }}
+          />
+
+          <IconButton
+            marginLeft="1"
+            size="md"
+            aria-label="Assign Svlan Identifier"
+            title="Assign Svlan Identifier"
+            icon={<LinkIcon />}
+            onClick={handleSvlanAssign}
+            isDisabled={isLoadingSvlan || evcAttachment.svlanId !== null}
+          />
+        </Flex>
       </FormControl>
 
       <FormControl id="inputBandwidth" isRequired isInvalid={errors.inputBandwidth != null} my={6}>
@@ -127,7 +179,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({ qosProfiles, evcAttac
 
       <Divider my={4} />
       <Stack direction="row" spacing={2} align="center">
-        <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
+        <Button type="submit" colorScheme="blue" isDisabled={!dirty || !isValid}>
           Save changes
         </Button>
         <Button onClick={() => resetForm()}>Clear</Button>

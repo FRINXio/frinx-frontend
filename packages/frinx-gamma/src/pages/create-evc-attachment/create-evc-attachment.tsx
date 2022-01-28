@@ -12,7 +12,7 @@ import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import { EvcAttachment, VpnBearer } from '../../components/forms/bearer-types';
 import EvcAttachmentForm from '../../components/forms/evc-attachment-form';
 import ErrorMessage from '../../components/error-message/error-message';
-import PollWorkflowId from '../../components/poll-workflow-id/poll-worfklow-id';
+import { asyncGenerator } from '../../components/commit-status-modal/commit-status-modal.helpers';
 
 const getDefaultEvcAttachment = (): EvcAttachment => ({
   carrierReference: null,
@@ -44,7 +44,8 @@ function getSelectedBearer(bearers: VpnBearer[], bearerId: string): VpnBearer {
 }
 
 const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
-  const [workflowId, setWorkflowId] = useState<string | null>(null);
+  const [isLoadingSvlan, setIsLoadingSvlan] = useState<boolean>(false);
+  // const [workflowId, setWorkflowId] = useState<string | null>(null);
   const [svlanId, setSvlanId] = useState<number | null>(null);
   const [selectedBearer, setSelectedBearer] = useState<VpnBearer | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
@@ -63,16 +64,6 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
       const profiles = await callbacks.getBearerValidProviderIdentifiers();
       const clientProfiles = apiProviderIdentifiersToClientIdentifers(profiles);
       setQosProfiles(clientProfiles.qosIdentifiers);
-
-      const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
-      const workflowResult = await uniflowCallbacks.executeWorkflow({
-        name: 'Allocate_SvlanId',
-        version: 1,
-        input: {
-          sp_bearer_reference: bearer.spBearerReference, // eslint-disable-line @typescript-eslint/naming-convention
-        },
-      });
-      setWorkflowId(workflowResult.text);
     };
 
     fetchData();
@@ -132,40 +123,58 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     onCancel(unwrap(selectedBearer?.spBearerReference));
   };
 
-  const handleWorkflowFinish = (data: string | null) => {
-    if (data === null) {
-      return;
-    }
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const { response_body }: SvlanWorkflowData = JSON.parse(data);
-    setSvlanId(Number(response_body.vlan));
+  const handleWorkflowFinish = () => {
+    setIsLoadingSvlan(false);
   };
 
-  if (!workflowId) {
-    return null;
-  }
+  const handleSvlanAssign = async () => {
+    setIsLoadingSvlan(true);
+    const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+    const workflowResult = await uniflowCallbacks.executeWorkflow({
+      name: 'Allocate_SvlanId',
+      version: 1,
+      input: {
+        sp_bearer_reference: bearerId, // eslint-disable-line @typescript-eslint/naming-convention
+      },
+    });
 
-  if (!svlanId) {
-    return <PollWorkflowId workflowId={workflowId} onFinish={handleWorkflowFinish} />;
-  }
+    const controller = new AbortController();
+
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const data of asyncGenerator<SvlanWorkflowData>({
+      workflowId: workflowResult.text,
+      abortController: controller,
+      onFinish: handleWorkflowFinish,
+    })) {
+      if (data.result.status === 'COMPLETED') {
+        const { vlan } = data.result.output.response_body;
+        setSvlanId(vlan);
+      }
+    }
+  };
 
   const evcAttachment = { ...getDefaultEvcAttachment(), svlanId };
 
   return (
-    selectedBearer && (
-      <Container>
-        <Box padding={6} margin={6} background="white">
-          <Heading size="md">Add Evc Attachment To Bearer: {bearerId} </Heading>
-          {submitError && <ErrorMessage text={String(submitError)} />}
-          <EvcAttachmentForm
-            qosProfiles={qosProfiles}
-            evcAttachment={evcAttachment}
-            onSubmit={handleSubmit}
-            onCancel={handleCancel}
-          />
-        </Box>
-      </Container>
-    )
+    <>
+      {selectedBearer && (
+        <Container>
+          <Box padding={6} margin={6} background="white">
+            <Heading size="md">Add Evc Attachment To Bearer: {bearerId} </Heading>
+            {submitError && <ErrorMessage text={String(submitError)} />}
+            <EvcAttachmentForm
+              qosProfiles={qosProfiles}
+              evcAttachment={evcAttachment}
+              onSvlanAssign={handleSvlanAssign}
+              onSubmit={handleSubmit}
+              onCancel={handleCancel}
+              isLoadingSvlan={isLoadingSvlan}
+            />
+          </Box>
+          {/* {workflowId && <PollWorkflowId workflowId={workflowId} onFinish={handleWorkflowFinish} />} */}
+        </Container>
+      )}
+    </>
   );
 };
 
