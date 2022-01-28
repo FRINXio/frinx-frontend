@@ -131,8 +131,6 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
     deletedEvcAttachments,
   );
 
-  console.log(evcAttachments);
-
   return (
     <>
       <ConfirmDeleteModal
