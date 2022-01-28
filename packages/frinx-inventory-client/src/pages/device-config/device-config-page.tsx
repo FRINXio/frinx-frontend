@@ -164,13 +164,18 @@ const useTransactionId = (deviceId: string) => {
     };
   }, [createTransaction, deviceId, closeTransaction, transactionId]);
 
+  const removeTransaction = () => {
+    localStorage.removeItem(TRANSACTION_ID_KEY);
+    setTransactionId(null);
+  };
+
   return {
     transactionId,
     isClosingTransaction,
+    removeTransaction,
     closeTransaction: async () => {
       closeTransaction({ deviceId, transactionId: unwrap(transactionId) }).then(() => {
-        localStorage.removeItem(TRANSACTION_ID_KEY);
-        setTransactionId(null);
+        removeTransaction();
       });
     },
   };
@@ -188,7 +193,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     query: DEVICE_NAME_QUERY,
     variables: { deviceId },
   });
-  const { transactionId, isClosingTransaction, closeTransaction } = useTransactionId(deviceId);
+  const { transactionId, isClosingTransaction, closeTransaction, removeTransaction } = useTransactionId(deviceId);
   const [{ data, fetching, error }, reexecuteQuery] = useQuery<DataStoreQuery, DataStoreQueryVariables>({
     query: DATA_STORE_QUERY,
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -276,6 +281,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     }
 
     if (responseData != null) {
+      removeTransaction();
       reexecuteQuery({ requestPolicy: 'network-only' });
 
       addToastNotification({
