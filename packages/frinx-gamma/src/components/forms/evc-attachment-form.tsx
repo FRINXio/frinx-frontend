@@ -38,7 +38,6 @@ const EvcSchema = yup.object().shape({
 type Props = {
   qosProfiles: string[];
   evcAttachment: EvcAttachment;
-  // svlanId: number | null;
   isLoadingSvlan: boolean;
   onSubmit: (attachment: EvcAttachment) => void;
   onCancel: () => void;
@@ -56,12 +55,10 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({
   isLoadingSvlan,
   qosProfiles,
   evcAttachment,
-  // svlanId,
   onSvlanAssign,
   onSubmit,
   onCancel,
 }) => {
-  // const [workflowId, setWorkflowId] = useState<string | null>(null);
   const { values, errors, dirty, isValid, resetForm, setFieldValue, handleChange, handleSubmit } = useFormik({
     initialValues: {
       ...evcAttachment,

@@ -45,7 +45,6 @@ function getSelectedBearer(bearers: VpnBearer[], bearerId: string): VpnBearer {
 
 const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [isLoadingSvlan, setIsLoadingSvlan] = useState<boolean>(false);
-  // const [workflowId, setWorkflowId] = useState<string | null>(null);
   const [svlanId, setSvlanId] = useState<number | null>(null);
   const [selectedBearer, setSelectedBearer] = useState<VpnBearer | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
