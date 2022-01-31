@@ -21,14 +21,18 @@ const Editor: FC<IAceEditorProps> = ({ value, onChange, name, readOnly, mode = '
   const handleChange = (val: string) => {
     setState(val);
 
+    if (!onChange) {
+      return;
+    }
+
     if (mode === 'json') {
       try {
         JSON.parse(val);
-        if (onChange) {
-          onChange(val);
-        }
+        onChange(val);
         // eslint-disable-next-line no-empty
       } catch (e) {}
+    } else {
+      onChange(val);
     }
   };
 
