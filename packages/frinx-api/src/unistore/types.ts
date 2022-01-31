@@ -24,16 +24,18 @@ const VpnServicesOutputValidator = t.type({
     t.type({
       'vpn-id': t.string,
       'customer-name': t.string,
-      'extranet-vpns': t.type({
-        'extranet-vpn': optional(
-          t.array(
-            t.type({
-              'vpn-id': t.string,
-              'local-sites-role': optional(t.string),
-            }),
+      'extranet-vpns': optional(
+        t.type({
+          'extranet-vpn': optional(
+            t.array(
+              t.type({
+                'vpn-id': t.string,
+                'local-sites-role': optional(t.string),
+              }),
+            ),
           ),
-        ),
-      }),
+        }),
+      ),
       'vpn-service-topology': t.string,
       'default-c-vlan': t.number,
     }),
