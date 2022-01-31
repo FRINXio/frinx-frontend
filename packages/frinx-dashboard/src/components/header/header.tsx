@@ -61,7 +61,7 @@ const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled, enabledServices }
               {enabledServices.get('gamma_enabled') && (
                 <MenuItem as={Link} to="/gamma">
                   <Icon size={20} as={FeatherIcon} icon="hard-drive" color="brand.700" marginRight={2} />
-                  <Text fontWeight="bold">Gamma</Text>
+                  <Text fontWeight="bold">L3VPN Automation</Text>
                 </MenuItem>
               )}
             </MenuList>
