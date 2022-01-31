@@ -286,7 +286,7 @@ export function apiLocationsToClientLocations(apiLocation: LocationsOutput): Cus
 
 export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[] {
   return apiVpnSite.site.map((site) => {
-    const managementType = site.management?.type.split(':')[1] || '';
+    const managementType = site.management?.type?.split(':')[1] || '';
     const siteVpnFlavor = (site['site-vpn-flavor']?.split(':')[1] as SiteVpnFlavor) || null;
     const siteDevices = apiSiteDevicesToClientSiteDevices(site.devices || undefined);
     const siteServiceQosProfile = apiSiteServiceToClientSiteService(site.service || undefined);
