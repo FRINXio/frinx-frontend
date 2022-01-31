@@ -425,7 +425,7 @@ export type CreateNetworkAccessInput = {
         strict: boolean;
       };
     };
-    service?: {
+    service: {
       'svc-input-bandwidth': number;
       'svc-output-bandwidth': number;
       qos: {
