@@ -1,9 +1,12 @@
 import React, { VoidFunctionComponent } from 'react';
-import { FormControl, FormLabel, FormErrorMessage, Input } from '@chakra-ui/react';
+import { Box, Button, FormControl, FormLabel, Icon, Input, Text, Tooltip, Divider } from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
+import FeatherIcon from 'feather-icons-react';
+import { uniqueId } from 'lodash';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
-import { RoutingProtocol, SiteNetworkAccess } from './site-types';
+import { RoutingProtocol, SiteNetworkAccess, RoutingProtocolType, StaticRoutingType } from './site-types';
 import unwrap from '../../helpers/unwrap';
+import StaticRoutingForm from './static-routes-form';
 
 type Props = {
   errors: FormikErrors<SiteNetworkAccess>;
@@ -14,20 +17,48 @@ type Props = {
   onRoutingProtocolsChange: (routingProtcols: RoutingProtocol[]) => void;
 };
 
-// TODO: can we write it more simple???
-function getLanTagErrorMessage(errors: FormikErrors<SiteNetworkAccess>): string | null {
+type StaticRoutingTypeWithId = StaticRoutingType & { id: string };
+
+function getDefaultStaticRoutingWithId(): StaticRoutingTypeWithId {
+  return {
+    id: uniqueId(),
+    lanTag: '',
+    lan: '10.0.0.1/0',
+    nextHop: '10.0.0.3',
+  };
+}
+
+function getStaticRoutingErrors(errors: FormikErrors<SiteNetworkAccess>): FormikErrors<StaticRoutingType>[] | null {
   if (!errors.routingProtocols || errors.routingProtocols.length === 0) {
     return null;
   }
 
   const routingProtocolsError = errors.routingProtocols as FormikErrors<RoutingProtocol>[];
-  const staticRoutingProtocolsError = routingProtocolsError.filter((e) => e.static).pop();
-  if (staticRoutingProtocolsError) {
-    const staticErrors = staticRoutingProtocolsError.static as unknown as [{ lanTag?: string }];
-    return staticErrors[0].lanTag || null;
+  if (!routingProtocolsError) {
+    return null;
   }
 
-  return null;
+  if (!routingProtocolsError || routingProtocolsError.length === 0) {
+    return null;
+  }
+
+  const staticRoutingErrors = routingProtocolsError.filter(
+    (error) => error !== undefined && error.static !== undefined,
+  );
+
+  if (staticRoutingErrors.length === 0) {
+    return null;
+  }
+
+  return (staticRoutingErrors.pop()?.static as unknown as FormikErrors<StaticRoutingType>[]) || null;
+}
+
+function getRowErrors(errors: FormikErrors<StaticRoutingType>[] | null, key: number) {
+  if (!errors) {
+    return {};
+  }
+
+  return errors[key] || {};
 }
 
 const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
@@ -51,7 +82,55 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
     onRoutingProtocolsChange(newProtocols);
   };
 
-  const lanTagErrorMessage = getLanTagErrorMessage(errors);
+  const handleStaticRoutingChange = (staticRouting: StaticRoutingTypeWithId) => {
+    console.log('change static routing: ', staticRouting); // eslint-disable-line no-console
+    const updateIndex = staticProtocol.static?.findIndex((p) => p.id === staticRouting.id);
+
+    if (updateIndex === undefined || updateIndex < 0) {
+      return;
+    }
+
+    const updatedStaticProtocol = staticProtocol.static ? [...staticProtocol.static] : [];
+    updatedStaticProtocol.splice(updateIndex, 1, staticRouting);
+    const newStaticProtocol: RoutingProtocol = {
+      type: 'static',
+      static: updatedStaticProtocol,
+    };
+    const newProtocols = [bgpProtocol, newStaticProtocol];
+    onRoutingProtocolsChange(newProtocols);
+  };
+
+  const handleStaticRoutingCreate = () => {
+    console.log('create static routing'); // eslint-disable-line no-console
+    const oldStatic = staticProtocol.static ? [...staticProtocol.static] : [];
+    const staticRouting = getDefaultStaticRoutingWithId();
+    const newStaticProtocol: RoutingProtocol = {
+      type: 'static',
+      static: [...oldStatic, staticRouting],
+    };
+    const newProtocols = [bgpProtocol, newStaticProtocol];
+    onRoutingProtocolsChange(newProtocols);
+  };
+
+  const handleStaticRoutingDelete = (routingId: string) => {
+    console.log('delete static routing'); // eslint-disable-line no-console
+    const newStaticProtocol =
+      staticProtocol.static?.filter((p) => {
+        return p.id !== routingId;
+      }) || [];
+
+    const newProtocols = newStaticProtocol
+      ? [
+          bgpProtocol,
+          {
+            type: 'static' as RoutingProtocolType,
+            static: newStaticProtocol,
+          },
+        ]
+      : [bgpProtocol];
+
+    onRoutingProtocolsChange(newProtocols);
+  };
 
   return (
     <>
@@ -78,78 +157,40 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
           <option value="bgp">bgp</option>
         </Select>
       </FormControl> */}
-      <FormControl id="static-routing-lan" my={6}>
-        <FormLabel>Static Routing LAN</FormLabel>
-        <Input
-          name="static-routing-lan"
-          value={staticProtocol ? unwrap(staticProtocol.static)[0].lan : ''}
-          onChange={(event) => {
-            const { value } = event.target;
-            const [oldStaticRoutingProtocol] = unwrap(staticProtocol.static);
-            const newStaticProtocol: RoutingProtocol = {
-              type: 'static',
-              static: [
-                {
-                  ...oldStaticRoutingProtocol,
-                  lan: value,
-                },
-              ],
-            };
-            const newProtocols = [bgpProtocol, newStaticProtocol];
-            onRoutingProtocolsChange(newProtocols);
-          }}
-        />
-      </FormControl>
 
-      <FormControl id="static-routing-next-hop" my={6}>
-        <FormLabel>Static Routing Next Hop</FormLabel>
-        <Input
-          name="static-routing-next-hop"
-          value={staticProtocol ? unwrap(staticProtocol.static)[0].nextHop : ''}
-          onChange={(event) => {
-            const { value } = event.target;
-            const [oldStaticRoutingProtocol] = unwrap(staticProtocol.static);
-            const newStaticProtocol: RoutingProtocol = {
-              type: 'static',
-              static: [
-                {
-                  ...oldStaticRoutingProtocol,
-                  nextHop: value,
-                },
-              ],
-            };
-            const newProtocols = [bgpProtocol, newStaticProtocol];
-            onRoutingProtocolsChange(newProtocols);
-          }}
-        />
-      </FormControl>
+      <Box py="1" gridColumn="1/5">
+        <Tooltip label="Create Static Routing Protocol">
+          <Button
+            size="sm"
+            aria-label="Create Static Routing Protocol"
+            colorScheme="blue"
+            leftIcon={<Icon as={FeatherIcon} icon="plus" />}
+            onClick={handleStaticRoutingCreate}
+          >
+            <Text paddingTop="1">Create Static Routing</Text>
+          </Button>
+        </Tooltip>
+      </Box>
 
-      <FormControl id="static-routing-lan-tag" my={6} isInvalid={lanTagErrorMessage !== null}>
-        <FormLabel>Static Routing Lan Tag</FormLabel>
-        <Input
-          name="static-routing-lan-tag"
-          value={staticProtocol.static && staticProtocol.static[0].lanTag ? staticProtocol.static[0].lanTag : ''}
-          onChange={(event) => {
-            const { value } = event.target;
-            const [oldStaticRoutingProtocol] = unwrap(staticProtocol.static);
-            const newStaticProtocol: RoutingProtocol = {
-              type: 'static',
-              static: [
-                {
-                  ...oldStaticRoutingProtocol,
-                  lanTag: value || null,
-                },
-              ],
-            };
-            const newProtocols = [bgpProtocol, newStaticProtocol];
-            onRoutingProtocolsChange(newProtocols);
-          }}
-        />
-        {lanTagErrorMessage && <FormErrorMessage>Lan Tag must be value between 0-65535</FormErrorMessage>}
-      </FormControl>
+      {staticProtocol.static?.map((routing, key) => {
+        const staticRoutingErrors = getStaticRoutingErrors(errors);
+        const rowErrors = getRowErrors(staticRoutingErrors, key);
 
-      <FormControl id="bgp-autonomous-system" my={6}>
-        <FormLabel>Bgp Autonomous System</FormLabel>
+        return (
+          <StaticRoutingForm
+            key={routing.id}
+            errors={rowErrors}
+            staticRouting={routing}
+            onStaticRoutingChange={handleStaticRoutingChange}
+            onStaticRoutingDelete={handleStaticRoutingDelete}
+          />
+        );
+      })}
+
+      <Divider gridColumn="1/5" my={2} />
+
+      <FormControl id="bgp-autonomous-system" my={1}>
+        <FormLabel>CPE Bgp Autonomous System</FormLabel>
         <Input
           name="bgp-autonomous-system"
           value={bgpProtocol.bgp ? bgpProtocol.bgp.autonomousSystem : ''}
@@ -173,7 +214,7 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
         />
       </FormControl>
 
-      <FormControl id="bgp-profile" my={6}>
+      <FormControl id="bgp-profile" my={1}>
         <FormLabel>Bgp Profile</FormLabel>
         <Autocomplete2
           items={bgpProfileItems}
