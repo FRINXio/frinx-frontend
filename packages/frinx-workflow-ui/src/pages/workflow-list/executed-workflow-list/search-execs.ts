@@ -1,4 +1,4 @@
-import { NestedExecutedWorkflow, ExecutedWorkflow } from '../../../types/types';
+import { NestedExecutedWorkflow, ExecutedWorkflow, ExecutedWorkflowsHierarchical } from '../../../types/types';
 import callbackUtils from '../../../utils/callback-utils';
 
 const mapLabelsForApi = (labels: string[]): string => {
@@ -26,9 +26,10 @@ export const fetchParentWorkflows = (
   labels: string[],
 ) => {
   const mappedLabels = mapLabelsForApi(labels);
+  const page = viewedPage * defaultPages;
 
   const { getWorkflowExecutionsHierarchical } = callbackUtils.getCallbacks;
-  return getWorkflowExecutionsHierarchical(workflowName, mappedLabels, viewedPage, defaultPages.toString());
+  return getWorkflowExecutionsHierarchical(workflowName, mappedLabels, page, defaultPages.toString());
 };
 
 export const isValid = (

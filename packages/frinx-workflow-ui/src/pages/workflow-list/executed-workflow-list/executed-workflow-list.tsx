@@ -294,10 +294,12 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
             sort={state.sort}
             flatWorkflows={flat}
           />
+
           <Paginator
             currentPage={flatViewPagination.currentPage}
             onPaginationClick={handlePaginationClick}
             pagesCount={Math.ceil(workflowsAmount / ITEMS_PER_PAGE)}
+            showPageNumbers={false}
           />
         </>
       )}
