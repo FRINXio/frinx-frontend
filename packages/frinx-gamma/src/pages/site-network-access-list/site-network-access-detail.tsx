@@ -34,8 +34,8 @@ const SiteNetworkAccessDetail: VoidFunctionComponent<Props> = ({ networkAccess }
       <DetailItem label="Customer Address" value={networkAccess.ipConnection?.ipv4?.addresses?.customerAddress} />
       <DetailItem label="Prefix Length" value={networkAccess.ipConnection?.ipv4?.addresses?.prefixLength} />
       <DetailItem label="Bfd Profile" value={networkAccess.ipConnection?.oam?.bfd?.profileName} />
-      <DetailItem label="Svc Input Bandwidth" value={networkAccess.service.svcInputBandwidth} />
-      <DetailItem label="Qos Profile" value={networkAccess.service.qosProfiles[0]} />
+      <DetailItem label="Svc Input Bandwidth" value={networkAccess.service?.svcInputBandwidth} />
+      <DetailItem label="Qos Profile" value={networkAccess.service?.qosProfiles[0]} />
       <DetailItem label="Maximum Routes" value={networkAccess.maximumRoutes} />
       <DetailItem label="Access Priority" value={networkAccess.accessPriority} />
       <DetailItem label="Site Role" value={networkAccess.siteRole} />

@@ -105,7 +105,7 @@ export type SiteNetworkAccess = {
   locationReference: string | null;
   deviceReference: string | null;
   bearer: Bearer;
-  service: Service;
+  service: Service | null;
   vpnAttachment: string | null;
   siteRole: string | null;
 };
@@ -115,7 +115,7 @@ export type VpnSite = {
   customerLocations: CustomerLocation[];
   siteDevices: SiteDevice[];
   siteManagementType: SiteManagementType;
-  siteVpnFlavor: SiteVpnFlavor;
+  siteVpnFlavor: SiteVpnFlavor | null;
   siteServiceQosProfile: string | null;
   enableBgpPicFastReroute: boolean;
   siteNetworkAccesses: SiteNetworkAccess[];

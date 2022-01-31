@@ -9,11 +9,11 @@ import {
   SiteNetworkAccess,
   SiteNetworkAccessType,
   AccessPriority,
-  MaximumRoutes,
   ProviderIdentifiers,
   RoutingProtocol,
   RoutingProtocolType,
   IPConnection,
+  MaximumRoutes,
 } from './site-types';
 import {
   ApiQosProfileInput,
@@ -185,9 +185,10 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
   }
 
   return networkAccess['site-network-access'].map((access) => {
-    const apiQosProfiles = access.service.qos['qos-profile']['qos-profile'];
-    const [clientQosProfile] = apiQosProfiles.length ? apiQosProfiles.map((p) => p.profile) : [''];
-    const vpnAttachment = access['vpn-attachment'] ? access['vpn-attachment']['vpn-id'] : null;
+    const apiQosProfiles = access.service?.qos?.['qos-profile']?.['qos-profile'];
+    const [clientQosProfile] = apiQosProfiles?.length ? apiQosProfiles.map((p) => p.profile) : [''];
+    const vpnAttachment =
+      access['vpn-attachment'] && access['vpn-attachment']['vpn-id'] ? access['vpn-attachment']?.['vpn-id'] : null;
     const siteRole = access['vpn-attachment'] ? getClientSiteRole(access['vpn-attachment']['site-role']) || null : null;
     const routingProtocols =
       access['routing-protocols'] && access['routing-protocols']['routing-protocol']
@@ -199,24 +200,30 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
       siteNetworkAccessId: access['site-network-access-id'],
       siteNetworkAccessType: access['site-network-access-type'] as SiteNetworkAccessType,
       ipConnection: access['ip-connection'] ? apiIPConnectionToClientIPConnection(access['ip-connection']) : undefined,
-      accessPriority: String(access.availability['access-priority']) as AccessPriority,
-      maximumRoutes: (access['maximum-routes']['address-family'][0]['maximum-routes'] as MaximumRoutes) || undefined,
+      accessPriority: String(access.availability?.['access-priority']) as AccessPriority,
+      maximumRoutes:
+        access['maximum-routes'] && access['maximum-routes']['address-family']
+          ? (access['maximum-routes']['address-family'][0]['maximum-routes'] as MaximumRoutes)
+          : null,
       locationReference: access['location-reference'] || null,
       deviceReference: access['device-reference'] || null,
       routingProtocols,
       bearer: {
-        alwaysOn: access.bearer['always-on'],
-        bearerReference: access.bearer['bearer-reference'] || '',
-        requestedCLan: String(access.bearer['requested-c-vlan']),
+        alwaysOn: access?.bearer?.['always-on'] || false,
+        bearerReference: access?.bearer?.['bearer-reference'] || '',
+        requestedCLan: String(access?.bearer?.['requested-c-vlan'] || ''),
         requestedType: {
-          requestedType: access.bearer['requested-type']['requested-type'],
-          strict: access.bearer['requested-type'].strict,
+          requestedType:
+            access.bearer && access.bearer?.['requested-type'] && access.bearer['requested-type']['requested-type']
+              ? access.bearer['requested-type']['requested-type']
+              : '',
+          strict: access.bearer?.['requested-type']?.strict || false,
         },
       },
       service: {
         qosProfiles: [clientQosProfile],
-        svcInputBandwidth: access.service['svc-input-bandwidth'],
-        svcOutputBandwidth: access.service['svc-output-bandwidth'],
+        svcInputBandwidth: access?.service?.['svc-input-bandwidth'] || 0,
+        svcOutputBandwidth: access?.service?.['svc-output-bandwidth'] || 0,
       },
       vpnAttachment,
       siteRole,
@@ -279,20 +286,23 @@ export function apiLocationsToClientLocations(apiLocation: LocationsOutput): Cus
 
 export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[] {
   return apiVpnSite.site.map((site) => {
-    const managementType: unknown = site.management.type.split(':')[1];
-    const siteVpnFlavor: unknown = site['site-vpn-flavor'].split(':')[1];
+    // const managementType: unknown = site.management.type.split(':')[1];
+    const managementType = 'point-to-point';
+    const siteVpnFlavor = (site['site-vpn-flavor']?.split(':')[1] as SiteVpnFlavor) || null;
     const siteDevices = apiSiteDevicesToClientSiteDevices(site.devices || undefined);
     const siteServiceQosProfile = apiSiteServiceToClientSiteService(site.service || undefined);
     return {
       siteId: site['site-id'],
       siteDevices,
-      customerLocations: site.locations.location ? apiLocationsToClientLocations(site.locations) : [],
+      customerLocations:
+        site.locations && unwrap(site.locations).location ? apiLocationsToClientLocations(site.locations) : [],
       siteManagementType: managementType as SiteManagementType,
-      siteVpnFlavor: siteVpnFlavor as SiteVpnFlavor,
+      siteVpnFlavor,
       siteServiceQosProfile,
-      enableBgpPicFastReroute: site['traffic-protection'].enabled,
+      enableBgpPicFastReroute: site['traffic-protection']?.enabled || false,
       siteNetworkAccesses: apiSiteNetworkAccessToClientSiteNetworkAccess(site['site-network-accesses']),
-      maximumRoutes: site['maximum-routes']['address-family'][0]['maximum-routes'] as MaximumRoutes,
+      // maximumRoutes: site['maximum-routes']['address-family'][0]['maximum-routes'] as MaximumRoutes,
+      maximumRoutes: 1000,
     };
   });
 }
@@ -427,13 +437,13 @@ function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAcces
           'requested-c-vlan': Number(access.bearer.requestedCLan),
         },
         service: {
-          'svc-input-bandwidth': access.service.svcInputBandwidth,
-          'svc-output-bandwidth': access.service.svcOutputBandwidth,
+          'svc-input-bandwidth': access.service?.svcInputBandwidth || 1000,
+          'svc-output-bandwidth': access.service?.svcOutputBandwidth || 1000,
           qos: {
             'qos-profile': {
               'qos-profile': [
                 {
-                  profile: access.service.qosProfiles[0],
+                  profile: access.service?.qosProfiles[0] || '',
                 },
               ],
             },
@@ -502,7 +512,7 @@ export function clientVpnSiteToApiVpnSite(vpnSite: VpnSite): CreateVpnSiteInput 
             },
           ],
         },
-        'site-vpn-flavor': vpnSite.siteVpnFlavor,
+        'site-vpn-flavor': vpnSite.siteVpnFlavor || 'site-vpn-flavor-sub',
         'traffic-protection': { enabled: vpnSite.enableBgpPicFastReroute },
         management: { type: vpnSite.siteManagementType },
         locations: { location: apiLocations },

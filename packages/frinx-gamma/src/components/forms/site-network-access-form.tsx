@@ -380,7 +380,7 @@ const SiteNetAccessForm: FC<Props> = ({
         <Select
           name="svcInputBandwith"
           type="number"
-          value={values.service.svcInputBandwidth}
+          value={values.service?.svcInputBandwidth || bandwidths[0]}
           onChange={(event) => {
             setFieldValue('service', {
               ...values.service,
@@ -398,7 +398,7 @@ const SiteNetAccessForm: FC<Props> = ({
         <FormLabel>SVC Output Bandwidth</FormLabel>
         <Select
           name="svcOutputBandwith"
-          value={values.service.svcOutputBandwidth}
+          value={values.service?.svcOutputBandwidth || bandwidths[0]}
           onChange={(event) => {
             setFieldValue('service', {
               ...values.service,
@@ -416,7 +416,7 @@ const SiteNetAccessForm: FC<Props> = ({
         <FormLabel>QOS Profile</FormLabel>
         <Select
           name="qos-profile"
-          value={values.service.qosProfiles[0]}
+          value={values.service?.qosProfiles[0] || ''}
           onChange={(event) => {
             if (!event.target.value) {
               return;
