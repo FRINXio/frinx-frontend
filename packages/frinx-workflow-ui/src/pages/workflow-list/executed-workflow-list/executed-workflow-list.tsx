@@ -29,8 +29,6 @@ type StateProps = {
   openParentWorkflows: NestedExecutedWorkflow[];
   isFlat: boolean;
   showChildren: NestedExecutedWorkflow[];
-  workflowsPerPage: number;
-  viewedPage: number;
   sort: number[];
   labels: string[];
 };
@@ -43,8 +41,6 @@ const initialState = {
   openParentWorkflows: [],
   isFlat: false,
   showChildren: [],
-  workflowsPerPage: ITEMS_PER_PAGE,
-  viewedPage: 0,
   sort: [/*workflowId*/ 2, /*startTime*/ 0, /*endTime*/ 2],
   labels: [],
 };
@@ -57,13 +53,29 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   const flatViewPagination = usePagination([], ITEMS_PER_PAGE);
 
   useEffect(() => {
-    fetchNewData(state.workflowId, state.viewedPage, state.workflowsPerPage, state.labels).then((response) => {
+    fetchNewData(
+      state.workflowId,
+      flatViewPagination.currentPage,
+      flatViewPagination.maxItemsPerPage,
+      state.labels,
+    ).then((response) => {
       setFlatWorkflows(response);
     });
-    fetchParentWorkflows(state.workflowId, state.viewedPage, state.workflowsPerPage, state.labels).then((response) => {
+    fetchParentWorkflows(
+      state.workflowId,
+      hierarchicalPagination.currentPage,
+      hierarchicalPagination.maxItemsPerPage,
+      state.labels,
+    ).then((response) => {
       setHierarchicalWorkflows(response);
     });
-  }, [state]);
+  }, [
+    state,
+    hierarchicalPagination.currentPage,
+    hierarchicalPagination.maxItemsPerPage,
+    flatViewPagination.currentPage,
+    flatViewPagination.maxItemsPerPage,
+  ]);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, selectedWorkflows: [...new Set<string>()] }));
@@ -205,8 +217,6 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   };
 
   const handlePaginationClick = (pageNumber: number) => {
-    setState((prev) => ({ ...prev, viewedPage: pageNumber - 1 }));
-
     if (state.isFlat) {
       flatViewPagination.setCurrentPage(pageNumber);
     } else {

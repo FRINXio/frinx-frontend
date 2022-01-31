@@ -12,7 +12,8 @@ const mapLabelsForApi = (labels: string[]): string => {
 };
 
 export const fetchNewData = (workflowName: string, viewedPage: number, defaultPages: number, labels: string[]) => {
-  const page = viewedPage * defaultPages;
+  const viewedPageStartFromZero = viewedPage - 1;
+  const page = viewedPageStartFromZero * defaultPages;
   const mappedLabels = mapLabelsForApi(labels);
 
   const { getWorkflowExecutions } = callbackUtils.getCallbacks;
@@ -25,8 +26,9 @@ export const fetchParentWorkflows = (
   defaultPages: number,
   labels: string[],
 ) => {
+  const viewedPageStartFromZero = viewedPage - 1;
+  const page = viewedPageStartFromZero * defaultPages;
   const mappedLabels = mapLabelsForApi(labels);
-  const page = viewedPage * defaultPages;
 
   const { getWorkflowExecutionsHierarchical } = callbackUtils.getCallbacks;
   return getWorkflowExecutionsHierarchical(workflowName, mappedLabels, page, defaultPages.toString());

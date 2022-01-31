@@ -44,5 +44,6 @@ export const usePagination = (itemList, maxItemsPerPage) => {
     pageItems,
     totalPages,
     itemCount,
+    maxItemsPerPage,
   };
 };
