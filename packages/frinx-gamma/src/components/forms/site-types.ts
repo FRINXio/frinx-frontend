@@ -50,6 +50,7 @@ export type StaticRoutingType = {
   nextHop: string;
   lanTag: string | null;
 };
+export type StaticRoutingTypeWithId = StaticRoutingType & { id: string };
 export type BgpRoutingType = {
   addressFamily: 'ipv4';
   autonomousSystem: string;
@@ -58,7 +59,7 @@ export type BgpRoutingType = {
 export type RoutingProtocol = {
   type: RoutingProtocolType;
   vrrp?: VrrpRoutingType;
-  static?: StaticRoutingType[];
+  static?: StaticRoutingTypeWithId[];
   bgp?: BgpRoutingType;
 };
 
