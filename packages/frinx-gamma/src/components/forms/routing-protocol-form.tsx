@@ -8,9 +8,14 @@ import { RoutingProtocol, SiteNetworkAccess, RoutingProtocolType, StaticRoutingT
 import unwrap from '../../helpers/unwrap';
 import StaticRoutingForm from './static-routes-form';
 
+type StaticRoutingProtocol = {
+  type: 'static';
+  static: StaticRoutingTypeWithId[];
+};
+
 type Props = {
   errors: FormikErrors<SiteNetworkAccess>;
-  staticProtocol: RoutingProtocol;
+  staticProtocol: StaticRoutingProtocol;
   bgpProtocol: RoutingProtocol;
   bgpProfileItems: Item[];
   selectedBgpProfileItem: Item;

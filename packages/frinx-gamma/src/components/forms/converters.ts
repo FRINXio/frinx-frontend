@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid';
 import { VpnService, DefaultCVlanEnum, VpnServiceTopology } from './service-types';
 import {
   CountryCode,
@@ -126,7 +125,6 @@ export function apiRoutingProtocolToClientRoutingProtocol(routingProtocol: Routi
     static: staticProtocol
       ? staticProtocol['cascaded-lan-prefixes']['ipv4-lan-prefixes'].map((p) => {
           return {
-            id: uuid(),
             lan: p.lan,
             lanTag: p['lan-tag'] || null,
             nextHop: p['next-hop'],
@@ -137,7 +135,7 @@ export function apiRoutingProtocolToClientRoutingProtocol(routingProtocol: Routi
       ? {
           addressFamily: 'ipv4',
           autonomousSystem: String(bgpProtocol['autonomous-system']),
-          bgpProfile: bgpProtocol['bgp-profiles']['bgp-profile'][0].profile,
+          bgpProfile: bgpProtocol['bgp-profiles']?.['bgp-profile'][0].profile || null,
         }
       : undefined,
   };

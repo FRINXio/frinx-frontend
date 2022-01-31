@@ -56,12 +56,31 @@ export type BgpRoutingType = {
   autonomousSystem: string;
   bgpProfile: string | null;
 };
-export type RoutingProtocol = {
+export type BaseRoutingProtocol = {
   type: RoutingProtocolType;
   vrrp?: VrrpRoutingType;
-  static?: StaticRoutingTypeWithId[];
   bgp?: BgpRoutingType;
 };
+export type RoutingProtocol = BaseRoutingProtocol & {
+  static?: StaticRoutingType[];
+};
+export type ClientRoutingProtocol = BaseRoutingProtocol & {
+  static?: StaticRoutingTypeWithId[];
+};
+
+// export type BgpRoutingProtocol = {
+//   type: 'bgp';
+//   bgp: BgpRoutingType;
+// };
+// export type StaticRoutingProtocol = {
+//   type: 'static';
+//   static: StaticRoutingType;
+// };
+// export type ClientStaticRoutingType = {
+//   type: 'static';
+//   static: ClientStaticRoutingType;
+// };
+// export type RoutingProtocol = BgpRoutingProtocol | StaticRoutingProtocol;
 
 export type Bearer = {
   alwaysOn: boolean;
@@ -96,19 +115,26 @@ export type IPConnection = {
   };
 };
 
-export type SiteNetworkAccess = {
+type BaseNetworkAccess = {
   siteNetworkAccessId: string;
   siteNetworkAccessType: SiteNetworkAccessType;
   ipConnection?: IPConnection;
   accessPriority: AccessPriority;
   maximumRoutes: MaximumRoutes | null;
-  routingProtocols: RoutingProtocol[];
   locationReference: string | null;
   deviceReference: string | null;
   bearer: Bearer;
   service: Service | null;
   vpnAttachment: string | null;
   siteRole: string | null;
+};
+
+export type SiteNetworkAccess = BaseNetworkAccess & {
+  routingProtocols: RoutingProtocol[];
+};
+
+export type ClientSiteNetworkAccess = BaseNetworkAccess & {
+  routingProtocols: ClientRoutingProtocol[];
 };
 
 export type VpnSite = {
