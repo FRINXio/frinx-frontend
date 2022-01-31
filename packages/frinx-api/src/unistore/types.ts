@@ -288,26 +288,26 @@ const SiteNetworkAccessValidator = t.type({
             ),
           }),
         ),
-        // service: optional(
-        // t.type({
-        // 'svc-input-bandwidth': t.number,
-        // 'svc-output-bandwidth': t.number,
-        // qos: optional(
-        //   t.type({
-        //     'qos-profile': optional(
-        //       t.type({
-        //         'qos-profile': t.array(
-        //           t.type({
-        //             profile: t.string,
-        //           }),
-        //         ),
-        //       }),
-        //     ),
-        //   }),
-        // ),
-        // }),
-        // ),
-        // 'routing-protocols': optional(RoutingProtocolsValidator),
+        service: optional(
+          t.type({
+            'svc-input-bandwidth': t.number,
+            'svc-output-bandwidth': t.number,
+            qos: optional(
+              t.type({
+                'qos-profile': optional(
+                  t.type({
+                    'qos-profile': t.array(
+                      t.type({
+                        profile: t.string,
+                      }),
+                    ),
+                  }),
+                ),
+              }),
+            ),
+          }),
+        ),
+        'routing-protocols': optional(RoutingProtocolsValidator),
       }),
     ),
   ),
@@ -332,7 +332,7 @@ const VpnSitesOutputValidator = t.type({
           enabled: optional(t.boolean),
         }),
       ),
-      // management: ManagementValidator,
+      management: optional(ManagementValidator),
       locations: optional(LocationsValidator),
       // 'vpn-policies': VpnPoliciesValidator,
       service: optional(SiteServiceValidator),

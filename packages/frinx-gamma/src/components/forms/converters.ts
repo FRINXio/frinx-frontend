@@ -286,8 +286,7 @@ export function apiLocationsToClientLocations(apiLocation: LocationsOutput): Cus
 
 export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[] {
   return apiVpnSite.site.map((site) => {
-    // const managementType: unknown = site.management.type.split(':')[1];
-    const managementType = 'point-to-point';
+    const managementType = site.management?.type.split(':')[1] || '';
     const siteVpnFlavor = (site['site-vpn-flavor']?.split(':')[1] as SiteVpnFlavor) || null;
     const siteDevices = apiSiteDevicesToClientSiteDevices(site.devices || undefined);
     const siteServiceQosProfile = apiSiteServiceToClientSiteService(site.service || undefined);
@@ -301,8 +300,7 @@ export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[
       siteServiceQosProfile,
       enableBgpPicFastReroute: site['traffic-protection']?.enabled || false,
       siteNetworkAccesses: apiSiteNetworkAccessToClientSiteNetworkAccess(site['site-network-accesses']),
-      // maximumRoutes: site['maximum-routes']['address-family'][0]['maximum-routes'] as MaximumRoutes,
-      maximumRoutes: 1000,
+      maximumRoutes: (site['maximum-routes']?.['address-family'][0]['maximum-routes'] as MaximumRoutes) || 1000,
     };
   });
 }

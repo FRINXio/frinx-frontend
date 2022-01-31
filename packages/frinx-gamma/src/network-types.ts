@@ -333,7 +333,7 @@ const VpnSitesOutputValidator = t.type({
           enabled: optional(t.boolean),
         }),
       ),
-      management: ManagementValidator,
+      management: optional(ManagementValidator),
       locations: optional(LocationsValidator),
       // 'vpn-policies': VpnPoliciesValidator,
       service: optional(SiteServiceValidator),

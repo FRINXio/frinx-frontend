@@ -203,7 +203,6 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
-      console.dir(e);
       return {
         site: [],
       };
