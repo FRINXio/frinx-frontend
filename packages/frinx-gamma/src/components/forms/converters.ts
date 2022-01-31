@@ -185,7 +185,10 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
   }
 
   return networkAccess['site-network-access'].map((access) => {
-    const apiQosProfiles = access.service?.qos?.['qos-profile']?.['qos-profile'];
+    const apiQosProfiles =
+      access.service && access.service.qos && access.service.qos['qos-profile']
+        ? access.service.qos['qos-profile']['qos-profile']
+        : [];
     const [clientQosProfile] = apiQosProfiles?.length ? apiQosProfiles.map((p) => p.profile) : [''];
     const vpnAttachment =
       access['vpn-attachment'] && access['vpn-attachment']['vpn-id'] ? access['vpn-attachment']?.['vpn-id'] : null;
@@ -286,8 +289,8 @@ export function apiLocationsToClientLocations(apiLocation: LocationsOutput): Cus
 
 export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[] {
   return apiVpnSite.site.map((site) => {
-    const managementType = site.management?.type?.split(':')[1] || '';
-    const siteVpnFlavor = (site['site-vpn-flavor']?.split(':')[1] as SiteVpnFlavor) || null;
+    const managementType = site.management && site.management.type ? site.management.type.split(':')[1] : '';
+    const siteVpnFlavor = (site['site-vpn-flavor'] && (site['site-vpn-flavor'].split(':')[1] as SiteVpnFlavor)) || null;
     const siteDevices = apiSiteDevicesToClientSiteDevices(site.devices || undefined);
     const siteServiceQosProfile = apiSiteServiceToClientSiteService(site.service || undefined);
     return {
@@ -298,7 +301,7 @@ export function apiVpnSitesToClientVpnSite(apiVpnSite: VpnSitesOutput): VpnSite[
       siteManagementType: managementType as SiteManagementType,
       siteVpnFlavor,
       siteServiceQosProfile,
-      enableBgpPicFastReroute: site['traffic-protection']?.enabled || false,
+      enableBgpPicFastReroute: Boolean(site['traffic-protection'] && site['traffic-protection'].enabled),
       siteNetworkAccesses: apiSiteNetworkAccessToClientSiteNetworkAccess(site['site-network-accesses']),
       maximumRoutes: (site['maximum-routes']?.['address-family'][0]['maximum-routes'] as MaximumRoutes) || 1000,
     };
