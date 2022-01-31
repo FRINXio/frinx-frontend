@@ -108,6 +108,7 @@ const EditEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
             evcAttachment={selectedEvcAttachment}
             onSubmit={handleSubmit}
             onCancel={handleCancel}
+            isLoadingSvlan={false}
           />
         </Box>
       </Container>
