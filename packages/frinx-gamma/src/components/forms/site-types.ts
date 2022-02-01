@@ -68,20 +68,6 @@ export type ClientRoutingProtocol = BaseRoutingProtocol & {
   static?: StaticRoutingTypeWithId[];
 };
 
-// export type BgpRoutingProtocol = {
-//   type: 'bgp';
-//   bgp: BgpRoutingType;
-// };
-// export type StaticRoutingProtocol = {
-//   type: 'static';
-//   static: StaticRoutingType;
-// };
-// export type ClientStaticRoutingType = {
-//   type: 'static';
-//   static: ClientStaticRoutingType;
-// };
-// export type RoutingProtocol = BgpRoutingProtocol | StaticRoutingProtocol;
-
 export type Bearer = {
   alwaysOn: boolean;
   bearerReference: string;
