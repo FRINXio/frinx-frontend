@@ -18,10 +18,10 @@ import { VpnService } from '../../components/forms/service-types';
 import { getSelectOptions } from '../../components/forms/options.helper';
 import PollWorkflowId from '../../components/poll-workflow-id/poll-worfklow-id';
 
-const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
+const getDefaultNetworkAccess = (selectedSite: VpnSite | null): SiteNetworkAccess => ({
   siteNetworkAccessId: generateNetworkAccessId(),
   siteNetworkAccessType: 'point-to-point',
-  maximumRoutes: 1000,
+  maximumRoutes: selectedSite?.maximumRoutes || 1000,
   accessPriority: AccessPriority['Primary Ethernet'],
   locationReference: null,
   deviceReference: null,
@@ -35,11 +35,11 @@ const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
         bgpProfile: null,
       },
       static: [
-        {
-          lanTag: '',
-          lan: '10.0.0.1/0',
-          nextHop: '10.0.0.3',
-        },
+        // {
+        //   lanTag: '',
+        //   lan: '10.0.0.1/0',
+        //   nextHop: '10.0.0.3',
+        // },
       ],
     },
   ],
@@ -55,7 +55,7 @@ const getDefaultNetworkAccess = (): SiteNetworkAccess => ({
   service: {
     svcInputBandwidth: 1000,
     svcOutputBandwidth: 1000,
-    qosProfiles: [''],
+    qosProfiles: [selectedSite?.siteServiceQosProfile || ''],
   },
   vpnAttachment: null,
   siteRole: 'any-to-any-role',
@@ -197,7 +197,7 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     return <PollWorkflowId workflowId={workflowId} onFinish={handleWorkflowFinish} />;
   }
 
-  const networkAccess: SiteNetworkAccess = getDefaultNetworkAccess();
+  const networkAccess: SiteNetworkAccess = getDefaultNetworkAccess(selectedSite);
   networkAccess.ipConnection = {
     ...networkAccess.ipConnection,
     ipv4: {
@@ -210,7 +210,7 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
   };
 
   return (
-    <Container>
+    <Container maxWidth={1280}>
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Create Site Network Access</Heading>
         {vpnSites && (
@@ -224,11 +224,12 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
                   qosProfiles={qosProfiles}
                   bfdProfiles={bfdProfiles}
                   bgpProfiles={bgpProfiles}
-                  vpnIds={vpnServices?.map((s) => unwrap(s.vpnId))}
+                  vpnServices={vpnServices}
                   bandwidths={bandwiths}
                   sites={vpnSites}
                   site={selectedSite}
                   selectedNetworkAccess={networkAccess}
+                  staticRoutes={[]}
                   onSubmit={handleSubmit}
                   onCancel={handleCancel}
                 />

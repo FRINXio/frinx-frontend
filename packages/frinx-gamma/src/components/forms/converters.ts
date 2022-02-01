@@ -135,7 +135,7 @@ export function apiRoutingProtocolToClientRoutingProtocol(routingProtocol: Routi
       ? {
           addressFamily: 'ipv4',
           autonomousSystem: String(bgpProtocol['autonomous-system']),
-          bgpProfile: bgpProtocol['bgp-profiles']['bgp-profile'][0].profile,
+          bgpProfile: bgpProtocol['bgp-profiles']?.['bgp-profile'][0].profile || null,
         }
       : undefined,
   };

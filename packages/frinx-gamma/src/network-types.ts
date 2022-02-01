@@ -201,13 +201,15 @@ const RoutingProtocolItemValidator = t.type({
   ),
   bgp: optional(
     t.type({
-      'bgp-profiles': t.type({
-        'bgp-profile': t.array(
-          t.type({
-            profile: t.string,
-          }),
-        ),
-      }),
+      'bgp-profiles': optional(
+        t.type({
+          'bgp-profile': t.array(
+            t.type({
+              profile: t.string,
+            }),
+          ),
+        }),
+      ),
       'autonomous-system': t.number,
       'address-family': t.array(t.string),
     }),

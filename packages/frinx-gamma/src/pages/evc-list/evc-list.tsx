@@ -56,10 +56,15 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
         limit: pagination.pageSize,
       };
       const callbacks = callbackUtils.getCallbacks;
-      const apiEvcAttachments = await callbacks.getEvcAttachments(bearerId, paginationParams, submittedFilters);
+      const apiEvcAttachments = await callbacks.getEvcAttachments(
+        bearerId,
+        paginationParams,
+        submittedFilters,
+        'nonconfig',
+      );
       const clientEvcAttachments = apiEvcAttachmentsToClientEvcAttachments(apiEvcAttachments);
       setEvcAttachments(clientEvcAttachments);
-      const evcCount = await callbacks.getEvcAttachmentsCount(bearerId, submittedFilters);
+      const evcCount = await callbacks.getEvcAttachmentsCount(bearerId, submittedFilters, 'nonconfig');
       setPagination({
         ...pagination,
         pageCount: Math.ceil(evcCount / pagination.pageSize),
@@ -125,8 +130,6 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
     updatedEvcAttachments,
     deletedEvcAttachments,
   );
-
-  console.log(savedEvcAttachmentsWithStatus.length, changedEvcAttachmentsWithStatus.length);
 
   return (
     <>

@@ -102,7 +102,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
   const selectedNetworkAccess = getSelectedAccess(selectedSite, accessId);
 
   return (
-    <Container>
+    <Container maxWidth={1280}>
       <Box padding={6} margin={6} background="white">
         <Flex justifyContent="space-between" alignItems="center">
           <Heading size="md">Edit Site Network Access</Heading>
@@ -117,11 +117,12 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
                   qosProfiles={qosProfiles}
                   bfdProfiles={bfdProfiles}
                   bgpProfiles={bgpProfiles}
-                  vpnIds={vpnServices.map((s) => unwrap(s.vpnId))}
+                  vpnServices={vpnServices}
                   bandwidths={bandwiths}
                   sites={vpnSites}
                   site={selectedSite}
                   selectedNetworkAccess={selectedNetworkAccess}
+                  staticRoutes={[]}
                   onSubmit={handleSubmit}
                   onCancel={handleCancel}
                 />
