@@ -53,8 +53,11 @@ export type DeviceFilter = {
 };
 
 export type EvcFilter = {
+  evcType: string | null;
   circuitReference: string | null;
   carrierReference: string | null;
+  svlanId: string | null;
+  qosProfile: string | null;
   inputBandwidth: string | null;
   customerName: string | null;
   adminStatus: string | null;
@@ -214,8 +217,11 @@ export function getDeviceFilterParams(deviceFilter: DeviceFilter): string {
 
 export function getEvcFilterParams(evcFilter: EvcFilter): string {
   const filters = [];
+  filters.push(evcFilter.evcType ? `@."evc-type"like_regex"${evcFilter.evcType}"` : null);
   filters.push(evcFilter.circuitReference ? `@."circuit-reference"like_regex"${evcFilter.circuitReference}"` : null);
   filters.push(evcFilter.carrierReference ? `@."carrier-reference"like_regex"${evcFilter.carrierReference}"` : null);
+  filters.push(evcFilter.svlanId ? `@."svlan-id"like_regex"${evcFilter.svlanId}"` : null);
+  filters.push(evcFilter.qosProfile ? `@."qos-input-profile"like_regex"${evcFilter.qosProfile}"` : null);
   filters.push(evcFilter.inputBandwidth ? `@."input-bandwidth"like_regex"${evcFilter.inputBandwidth}"` : null); // TODO: does not work
   filters.push(
     evcFilter.adminStatus
