@@ -24,6 +24,8 @@ import {
   SyncFromNetworkMutationVariables,
   UpdateDataStoreMutation,
   UpdateDataStoreMutationVariables,
+  DeleteSnapshotMutation,
+  DeleteSnapshotMutationVariables,
 } from '../../__generated__/graphql';
 import CreateSnapshotModal from './create-snapshot-modal';
 import DeviceConfigActions from './device-config-actions';
@@ -127,6 +129,16 @@ const CLOSE_TRANSACTION_MUTATION = gql`
   }
 `;
 
+const DELETE_SNAPSHOT_MUTATION = gql`
+  mutation deleteSnapshot($input: DeleteSnapshotInput!) {
+    deleteSnapshot(input: $input) {
+      snapshot {
+        name
+      }
+    }
+  }
+`;
+
 const TRANSACTION_ID_KEY = 'TX_ID_INVENTORY';
 
 const useTransactionId = (deviceId: string) => {
@@ -156,12 +168,12 @@ const useTransactionId = (deviceId: string) => {
       });
     }
 
-    return () => {
-      if (transactionId != null) {
-        localStorage.removeItem(TRANSACTION_ID_KEY);
-        closeTransaction({ deviceId, transactionId });
-      }
-    };
+    // return () => {
+    //   if (transactionId != null) {
+    //     localStorage.removeItem(TRANSACTION_ID_KEY);
+    //     closeTransaction({ deviceId, transactionId });
+    //   }
+    // };
   }, [createTransaction, deviceId, closeTransaction, transactionId]);
 
   const removeTransaction = () => {
@@ -223,6 +235,9 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     SyncFromNetworkMutation,
     SyncFromNetworkMutationVariables
   >(SYNC_FROM_NETWORK_MUTATION);
+  const [, deleteSnapshot] = useMutation<DeleteSnapshotMutation, DeleteSnapshotMutationVariables>(
+    DELETE_SNAPSHOT_MUTATION,
+  );
 
   const [config, setConfig] = useState<string>();
   // const toast = useToast();
@@ -397,6 +412,28 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     });
   };
 
+  const handleDeleteSnapshot = async (snapshotName: string) => {
+    const { data: responseData, error: responseError } = await deleteSnapshot({
+      input: { deviceId, name: snapshotName, transactionId },
+    });
+
+    if (responseError != null) {
+      addToastNotification({
+        type: 'error',
+        title: 'Error',
+        content: 'Failed to delete snapshot',
+      });
+    }
+
+    if (responseData?.deleteSnapshot != null) {
+      addToastNotification({
+        type: 'success',
+        title: 'Success',
+        content: 'Successfully deleted snapshot',
+      });
+    }
+  };
+
   const isInitialLoading = fetching && data == null;
 
   if (isInitialLoading) {
@@ -441,9 +478,6 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
           </Heading>
         </Flex>
         <DeviceConfigActions
-          onCreateSnapshotBtnClick={onSnapshotModalOpen}
-          snapshots={snapshots}
-          onLoadSnapshotClick={handleOnApplySnapshot}
           onCommitBtnClick={() => {
             handleOnCommitConfig();
           }}
@@ -452,7 +486,6 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
           }}
           onCalculateDiffBtnClick={onDiffModalOpen}
           onTransactionCloseBtnClick={handleCloseTransactionBtnClick}
-          isApplySnapshotLoading={isApplySnapshotLoading}
           isCommitLoading={isCommitLoading}
           isCloseTransactionLoading={isClosingTransaction}
         />
@@ -473,6 +506,11 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
             isUpdateStoreLoading={isUpdateStoreLoading}
             isSyncLoading={isSyncLoading}
             isRefreshLoading={fetching && data != null}
+            onCreateSnapshotBtnClick={onSnapshotModalOpen}
+            snapshots={snapshots}
+            onLoadSnapshotClick={handleOnApplySnapshot}
+            isApplySnapshotLoading={isApplySnapshotLoading}
+            onDeleteSnapshotBtnClck={handleDeleteSnapshot}
           />
         </Box>
       </Container>

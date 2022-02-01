@@ -1,91 +1,27 @@
-import React, { VoidFunctionComponent } from 'react';
-import {
-  Icon,
-  Button,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Heading,
-  Text,
-  ButtonGroup,
-  Box,
-} from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
+import { Button, ButtonGroup, Flex, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { format } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
-import { Snapshot } from '../../__generated__/graphql';
+import React, { VoidFunctionComponent } from 'react';
 
 type Props = {
-  onCreateSnapshotBtnClick: () => void;
-  snapshots: Snapshot[];
-  onLoadSnapshotClick: (name: string) => void;
   onCommitBtnClick: () => void;
   onDryRunBtnClick: () => void;
   onCalculateDiffBtnClick: () => void;
   onTransactionCloseBtnClick: () => void;
   isCommitLoading: boolean;
-  isApplySnapshotLoading: boolean;
   isCloseTransactionLoading: boolean;
 };
 
 const DeviceConfigActions: VoidFunctionComponent<Props> = ({
-  onCreateSnapshotBtnClick,
-  snapshots,
-  onLoadSnapshotClick,
   onCommitBtnClick,
   onDryRunBtnClick,
   onCalculateDiffBtnClick,
   onTransactionCloseBtnClick,
-  isApplySnapshotLoading,
   isCommitLoading,
   isCloseTransactionLoading,
 }) => {
   return (
     <Flex background="gray.300" paddingX={4} paddingY={2}>
       <ButtonGroup isAttached>
-        <Button onClick={onCreateSnapshotBtnClick} leftIcon={<AddIcon />}>
-          Create snapshot
-        </Button>
-        <Menu>
-          <MenuButton
-            as={Button}
-            rightIcon={<Icon size={20} as={FeatherIcon} icon="chevron-down" />}
-            isDisabled={snapshots.length === 0}
-          >
-            Load snapshot
-          </MenuButton>
-          <MenuList>
-            {snapshots.map((snapshot) => (
-              <MenuItem
-                key={snapshot.name}
-                isDisabled={isApplySnapshotLoading}
-                onClick={() => {
-                  onLoadSnapshotClick(snapshot.name);
-                }}
-              >
-                <Box>
-                  <Heading as="h5" fontSize="sm" fontWeight={500} display="block">
-                    {snapshot.name}
-                  </Heading>
-                  <Text as="span" fontSize="xs" color="gray.700">
-                    {format(
-                      utcToZonedTime(snapshot.createdAt, Intl.DateTimeFormat().resolvedOptions().timeZone),
-                      'dd/MM/yyyy, k:m',
-                    )}
-                  </Text>
-                </Box>
-              </MenuItem>
-            ))}
-          </MenuList>
-        </Menu>
-      </ButtonGroup>
-      <ButtonGroup isAttached marginLeft="auto">
-        <Button onClick={onTransactionCloseBtnClick} colorScheme="red" isLoading={isCloseTransactionLoading}>
-          Discard changes
-        </Button>
         <Button onClick={onCalculateDiffBtnClick}>Calculate diff</Button>
         <Button
           onClick={onDryRunBtnClick}
@@ -93,6 +29,16 @@ const DeviceConfigActions: VoidFunctionComponent<Props> = ({
           isLoading={isCommitLoading}
         >
           Dry run
+        </Button>
+      </ButtonGroup>
+      <ButtonGroup isAttached marginLeft="auto">
+        <Button
+          onClick={onTransactionCloseBtnClick}
+          colorScheme="red"
+          leftIcon={<Icon size={20} as={FeatherIcon} icon="trash-2" />}
+          isLoading={isCloseTransactionLoading}
+        >
+          Discard changes
         </Button>
         <Button
           onClick={onCommitBtnClick}

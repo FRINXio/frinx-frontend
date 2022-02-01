@@ -101,7 +101,14 @@ export type BlueprintEdge = {
 
 export type CalculatedDiffPayload = {
   __typename?: 'CalculatedDiffPayload';
-  output: Maybe<Scalars['String']>;
+  result: CalculatedDiffResult;
+};
+
+export type CalculatedDiffResult = {
+  __typename?: 'CalculatedDiffResult';
+  createdData: Array<DiffData>;
+  deletedData: Array<DiffData>;
+  updatedData: Array<DiffData>;
 };
 
 export type CloseTransactionPayload = {
@@ -171,6 +178,17 @@ export type DeleteLabelPayload = {
   label: Maybe<Label>;
 };
 
+export type DeleteSnapshotInput = {
+  deviceId: Scalars['String'];
+  name: Scalars['String'];
+  transactionId: Scalars['String'];
+};
+
+export type DeleteSnapshotPayload = {
+  __typename?: 'DeleteSnapshotPayload';
+  snapshot: Maybe<Snapshot>;
+};
+
 export type Device = Node & {
   __typename?: 'Device';
   id: Scalars['ID'];
@@ -224,6 +242,12 @@ export type DeviceSource =
   | 'MANUAL'
   | 'DISCOVERED'
   | 'IMPORTED';
+
+export type DiffData = {
+  __typename?: 'DiffData';
+  path: Scalars['String'];
+  data: Scalars['String'];
+};
 
 export type FilterDevicesInput = {
   labelIds?: Maybe<Array<Scalars['String']>>;
@@ -290,6 +314,7 @@ export type Mutation = {
   commitConfig: CommitConfigPayload;
   resetConfig: ResetConfigPayload;
   addSnapshot: Maybe<AddSnapshotPayload>;
+  deleteSnapshot: Maybe<DeleteSnapshotPayload>;
   applySnapshot: ApplySnapshotPayload;
   syncFromNetwork: SyncFromNetworkPayload;
   createTransaction: CreateTransactionPayload;
@@ -355,6 +380,11 @@ export type MutationResetConfigArgs = {
 export type MutationAddSnapshotArgs = {
   input: AddSnapshotInput;
   transactionId: Scalars['String'];
+};
+
+
+export type MutationDeleteSnapshotArgs = {
+  input: DeleteSnapshotInput;
 };
 
 
@@ -857,6 +887,22 @@ export type CloseTransactionMutation = (
   ) }
 );
 
+export type DeleteSnapshotMutationVariables = Exact<{
+  input: DeleteSnapshotInput;
+}>;
+
+
+export type DeleteSnapshotMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteSnapshot: Maybe<(
+    { __typename?: 'DeleteSnapshotPayload' }
+    & { snapshot: Maybe<(
+      { __typename?: 'Snapshot' }
+      & Pick<Snapshot, 'name'>
+    )> }
+  )> }
+);
+
 export type CalculatedDiffQueryVariables = Exact<{
   deviceId: Scalars['String'];
   transactionId: Scalars['String'];
@@ -867,7 +913,19 @@ export type CalculatedDiffQuery = (
   { __typename?: 'Query' }
   & { calculatedDiff: (
     { __typename?: 'CalculatedDiffPayload' }
-    & Pick<CalculatedDiffPayload, 'output'>
+    & { result: (
+      { __typename?: 'CalculatedDiffResult' }
+      & { createdData: Array<(
+        { __typename?: 'DiffData' }
+        & Pick<DiffData, 'path' | 'data'>
+      )>, deletedData: Array<(
+        { __typename?: 'DiffData' }
+        & Pick<DiffData, 'path' | 'data'>
+      )>, updatedData: Array<(
+        { __typename?: 'DiffData' }
+        & Pick<DiffData, 'path' | 'data'>
+      )> }
+    ) }
   ) }
 );
 
