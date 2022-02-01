@@ -108,9 +108,14 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
         onClose={deleteModalDisclosure.onClose}
         onConfirmBtnClick={() => {
           callbackUtils.getCallbacks.deleteVpnService(unwrap(serviceIdToDelete)).then(() => {
-            setVpnServices(unwrap(vpnServices).filter((service) => service.vpnId !== serviceIdToDelete));
             setCreatedServices(unwrap(createdServices).filter((service) => service.vpnId !== serviceIdToDelete));
             setUpdatedServices(unwrap(updatedServices).filter((service) => service.vpnId !== serviceIdToDelete));
+            const deletedService = unwrap(vpnServices).find((s) => s.vpnId === serviceIdToDelete);
+            if (deletedService) {
+              const newDeletedServices =
+                deletedServices === null ? [deletedService] : [...deletedServices, deletedService];
+              setDeletedServices(newDeletedServices);
+            }
             deleteModalDisclosure.onClose();
           });
         }}

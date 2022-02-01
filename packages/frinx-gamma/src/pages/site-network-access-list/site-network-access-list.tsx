@@ -15,6 +15,7 @@ import SiteNetworkAccessFilter, { SiteNetworkAccessFilters } from './site-networ
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getChangedNetworkAccessesWithStatus, getSavedNetworkAccessesWithStatus } from './site-network-access-helpers';
+import unwrap from '../../helpers/unwrap';
 
 type Props = {
   onCreateSiteNetworkAccessClick: (siteId: string) => void;
@@ -153,6 +154,18 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
           const apiSite = clientVpnSiteToApiVpnSite(editedVpnSite);
           callbackUtils.getCallbacks.editVpnSite(apiSite).then(() => {
             setSite(editedVpnSite);
+            setCreatedNetworkAccesses(
+              unwrap(createdNetworkAccesses).filter((access) => access.siteNetworkAccessId !== siteAccessIdToDelete),
+            );
+            setUpdatedNetworkAccesses(
+              unwrap(updatedNetworkAccesses).filter((access) => access.siteNetworkAccessId !== siteAccessIdToDelete),
+            );
+            const deletedAccess = unwrap(networkAccesses).find((a) => a.siteNetworkAccessId === siteAccessIdToDelete);
+            if (deletedAccess) {
+              const newDeletedAccesses =
+                deletedNetworkAccesses === null ? [deletedAccess] : [...deletedNetworkAccesses, deletedAccess];
+              setDeletedNetworkAccesses(newDeletedAccesses);
+            }
             deleteModalDisclosure.onClose();
           });
         }}

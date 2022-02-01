@@ -113,6 +113,13 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
         onConfirmBtnClick={() => {
           callbackUtils.getCallbacks.deleteVpnSite(unwrap(siteIdToDelete)).then(() => {
             setSites(unwrap(sites).filter((site) => site.siteId !== siteIdToDelete));
+            setCreatedSites(unwrap(createdSites).filter((site) => site.siteId !== siteIdToDelete));
+            setUpdatedSites(unwrap(updatedSites).filter((site) => site.siteId !== siteIdToDelete));
+            const deletedSite = unwrap(sites).find((s) => s.siteId === siteIdToDelete);
+            if (deletedSite) {
+              const newDeletedSites = deletedSites === null ? [deletedSite] : [...deletedSites, deletedSite];
+              setDeletedSites(newDeletedSites);
+            }
             deleteModalDisclosure.onClose();
           });
         }}

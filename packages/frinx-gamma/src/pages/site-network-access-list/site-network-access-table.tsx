@@ -71,27 +71,29 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                 <Text as="span">{access.deviceReference}</Text>
               </Td>
               <Td>
-                <HStack>
-                  <Tooltip label="Edit site network access">
-                    <IconButton
-                      aria-label="edit"
-                      size="sm"
-                      icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                      onClick={() => onEditSiteNetworkAccessButtonClick(siteId, access.siteNetworkAccessId)}
-                    />
-                  </Tooltip>
-                  <Tooltip label="Delete site network access">
-                    <IconButton
-                      aria-label="Delete network access"
-                      size="sm"
-                      colorScheme="red"
-                      icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
-                      onClick={() => {
-                        onDeleteSiteNetworkAccessButtonClick(access.siteNetworkAccessId);
-                      }}
-                    />
-                  </Tooltip>
-                </HStack>
+                {access.status !== 'DELETED' && (
+                  <HStack>
+                    <Tooltip label="Edit site network access">
+                      <IconButton
+                        aria-label="edit"
+                        size="sm"
+                        icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
+                        onClick={() => onEditSiteNetworkAccessButtonClick(siteId, access.siteNetworkAccessId)}
+                      />
+                    </Tooltip>
+                    <Tooltip label="Delete site network access">
+                      <IconButton
+                        aria-label="Delete network access"
+                        size="sm"
+                        colorScheme="red"
+                        icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
+                        onClick={() => {
+                          onDeleteSiteNetworkAccessButtonClick(access.siteNetworkAccessId);
+                        }}
+                      />
+                    </Tooltip>
+                  </HStack>
+                )}
               </Td>
             </Tr>
             {isDetailOpen && (
