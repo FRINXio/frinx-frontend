@@ -19,7 +19,7 @@ import {
 import { LinkIcon } from '@chakra-ui/icons';
 import { FormikErrors, useFormik } from 'formik';
 import * as yup from 'yup';
-import { uniqueId } from 'lodash';
+import { v4 as uuid } from 'uuid';
 import {
   AccessPriority,
   MaximumRoutes,
@@ -27,6 +27,9 @@ import {
   VpnSite,
   SiteNetworkAccess,
   StaticRoutingType,
+  StaticRoutingTypeWithId,
+  ClientSiteNetworkAccess,
+  ClientRoutingProtocol,
 } from './site-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 import RoutingProtocolForm from './routing-protocol-form';
@@ -98,6 +101,11 @@ const NetworkAccessSchema = yup.object({
   }),
 });
 
+type StaticRoutingProtocol = {
+  type: 'static';
+  static: StaticRoutingTypeWithId[];
+};
+
 type Props = {
   mode: 'add' | 'edit';
   sites: VpnSite[];
@@ -114,12 +122,12 @@ type Props = {
   onNetworkAccessChange?: (s: SiteNetworkAccess) => void;
 };
 
-function getDefaultStaticRoutingProtocol(): RoutingProtocol {
+function getDefaultStaticRoutingProtocol(): StaticRoutingProtocol {
   return {
     type: 'static',
     static: [
       {
-        id: uniqueId(),
+        id: uuid(),
         lan: '',
         nextHop: '',
         lanTag: null,
@@ -158,6 +166,20 @@ function getProviderAddressError(errors: FormikErrors<SiteNetworkAccess>): strin
   return (errors?.ipConnection as unknown as IPConnection)?.ipv4?.addresses?.providerAddress || null;
 }
 
+function getClientSelectedNetworkAccess(siteNetworkAccess: SiteNetworkAccess): ClientSiteNetworkAccess {
+  // we need to add ids to static routing protocols to be able to edit them
+  return {
+    ...siteNetworkAccess,
+    routingProtocols: siteNetworkAccess.routingProtocols.map((p) => {
+      const newProtocol: RoutingProtocol = { ...p };
+      if (newProtocol.static) {
+        newProtocol.static = newProtocol.static.map((s) => ({ ...s, id: uuid() }));
+      }
+      return newProtocol as ClientRoutingProtocol;
+    }),
+  };
+}
+
 type AddressAssignState = {
   customerAddress: string | null;
   providerAddress: string | null;
@@ -183,9 +205,7 @@ const SiteNetAccessForm: FC<Props> = ({
   const workflowPayload = useAsyncGenerator<AddressAssignPayload>({ workflowId, onFinish });
   const [siteState, setSiteState] = useState(site);
   const { values, errors, dirty, isValid, resetForm, setFieldValue, handleSubmit } = useFormik({
-    initialValues: {
-      ...selectedNetworkAccess,
-    },
+    initialValues: getClientSelectedNetworkAccess(selectedNetworkAccess),
     validationSchema: NetworkAccessSchema,
     onSubmit: (formValues) => {
       if (!formValues) {
@@ -285,7 +305,8 @@ const SiteNetAccessForm: FC<Props> = ({
   });
   const [selectedVpnServiceItem] = vpnServicesItems.filter((item) => item.value === values.vpnAttachment);
   const staticRoutingProtocol =
-    values.routingProtocols.filter((p) => p.type === 'static').pop() || getDefaultStaticRoutingProtocol();
+    (values.routingProtocols.filter((p) => p.type === 'static').pop() as StaticRoutingProtocol) ||
+    getDefaultStaticRoutingProtocol();
   const bgpRoutingProtocol =
     values.routingProtocols.filter((p) => p.type === 'bgp').pop() || getDefaultBgpRoutingProtocol();
 
@@ -472,7 +493,7 @@ const SiteNetAccessForm: FC<Props> = ({
               <Select
                 name="svcInputBandwith"
                 type="number"
-                value={values.service.svcInputBandwidth}
+                value={values.service?.svcInputBandwidth || bandwidths[0]}
                 onChange={(event) => {
                   setFieldValue('service', {
                     ...values.service,
@@ -490,7 +511,7 @@ const SiteNetAccessForm: FC<Props> = ({
               <FormLabel>SVC Output Bandwidth</FormLabel>
               <Select
                 name="svcOutputBandwith"
-                value={values.service.svcOutputBandwidth}
+                value={values.service?.svcOutputBandwidth || bandwidths[0]}
                 onChange={(event) => {
                   setFieldValue('service', {
                     ...values.service,
@@ -508,7 +529,7 @@ const SiteNetAccessForm: FC<Props> = ({
               <FormLabel>QOS Profile</FormLabel>
               <Select
                 name="qos-profile"
-                value={values.service.qosProfiles[0]}
+                value={values.service?.qosProfiles[0] || ''}
                 onChange={(event) => {
                   if (!event.target.value) {
                     return;

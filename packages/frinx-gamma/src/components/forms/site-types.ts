@@ -56,11 +56,16 @@ export type BgpRoutingType = {
   autonomousSystem: string;
   bgpProfile: string | null;
 };
-export type RoutingProtocol = {
+export type BaseRoutingProtocol = {
   type: RoutingProtocolType;
   vrrp?: VrrpRoutingType;
-  static?: StaticRoutingTypeWithId[];
   bgp?: BgpRoutingType;
+};
+export type RoutingProtocol = BaseRoutingProtocol & {
+  static?: StaticRoutingType[];
+};
+export type ClientRoutingProtocol = BaseRoutingProtocol & {
+  static?: StaticRoutingTypeWithId[];
 };
 
 export type Bearer = {
@@ -96,19 +101,26 @@ export type IPConnection = {
   };
 };
 
-export type SiteNetworkAccess = {
+type BaseNetworkAccess = {
   siteNetworkAccessId: string;
   siteNetworkAccessType: SiteNetworkAccessType;
   ipConnection?: IPConnection;
   accessPriority: AccessPriority;
   maximumRoutes: MaximumRoutes | null;
-  routingProtocols: RoutingProtocol[];
   locationReference: string | null;
   deviceReference: string | null;
   bearer: Bearer;
-  service: Service;
+  service: Service | null;
   vpnAttachment: string | null;
   siteRole: string | null;
+};
+
+export type SiteNetworkAccess = BaseNetworkAccess & {
+  routingProtocols: RoutingProtocol[];
+};
+
+export type ClientSiteNetworkAccess = BaseNetworkAccess & {
+  routingProtocols: ClientRoutingProtocol[];
 };
 
 export type VpnSite = {
@@ -116,7 +128,7 @@ export type VpnSite = {
   customerLocations: CustomerLocation[];
   siteDevices: SiteDevice[];
   siteManagementType: SiteManagementType;
-  siteVpnFlavor: SiteVpnFlavor;
+  siteVpnFlavor: SiteVpnFlavor | null;
   siteServiceQosProfile: string | null;
   enableBgpPicFastReroute: boolean;
   siteNetworkAccesses: SiteNetworkAccess[];

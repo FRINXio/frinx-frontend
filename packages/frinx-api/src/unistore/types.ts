@@ -24,16 +24,18 @@ const VpnServicesOutputValidator = t.type({
     t.type({
       'vpn-id': t.string,
       'customer-name': t.string,
-      'extranet-vpns': t.type({
-        'extranet-vpn': optional(
-          t.array(
-            t.type({
-              'vpn-id': t.string,
-              'local-sites-role': optional(t.string),
-            }),
+      'extranet-vpns': optional(
+        t.type({
+          'extranet-vpn': optional(
+            t.array(
+              t.type({
+                'vpn-id': t.string,
+                'local-sites-role': optional(t.string),
+              }),
+            ),
           ),
-        ),
-      }),
+        }),
+      ),
       'vpn-service-topology': t.string,
       'default-c-vlan': t.number,
     }),
@@ -199,13 +201,15 @@ const RoutingProtocolItemValidator = t.type({
   ),
   bgp: optional(
     t.type({
-      'bgp-profiles': t.type({
-        'bgp-profile': t.array(
-          t.type({
-            profile: t.string,
-          }),
-        ),
-      }),
+      'bgp-profiles': optional(
+        t.type({
+          'bgp-profile': t.array(
+            t.type({
+              profile: t.string,
+            }),
+          ),
+        }),
+      ),
       'autonomous-system': t.number,
       'address-family': t.array(t.string),
     }),
@@ -262,40 +266,51 @@ const SiteNetworkAccessValidator = t.type({
     t.array(
       t.type({
         'site-network-access-id': t.string,
-        'site-network-access-type': t.string,
+        'site-network-access-type': optional(t.string),
         // this property is part of the form inputs, but it was reported,
         // that they dont want to lose it when we edit form
         'ip-connection': optional(IPConnectionValidator),
-        'maximum-routes': MaximumRoutesValidator,
+        'maximum-routes': optional(MaximumRoutesValidator),
         'location-reference': optional(t.string),
         'device-reference': optional(t.string),
         'vpn-attachment': optional(VpnValidator),
-        availability: t.type({
-          'access-priority': t.number,
-        }),
-        bearer: t.type({
-          'always-on': t.boolean,
-          'bearer-reference': t.string,
-          'requested-c-vlan': t.number,
-          'requested-type': t.type({
-            'requested-type': t.string,
-            strict: t.boolean,
+        availability: optional(
+          t.type({
+            'access-priority': optional(t.number),
           }),
-        }),
-
-        service: t.type({
-          'svc-input-bandwidth': t.number,
-          'svc-output-bandwidth': t.number,
-          qos: t.type({
-            'qos-profile': t.type({
-              'qos-profile': t.array(
-                t.type({
-                  profile: t.string,
-                }),
-              ),
-            }),
+        ),
+        bearer: optional(
+          t.type({
+            'always-on': optional(t.boolean),
+            'bearer-reference': optional(t.string),
+            'requested-c-vlan': optional(t.number),
+            'requested-type': optional(
+              t.type({
+                'requested-type': optional(t.string),
+                strict: optional(t.boolean),
+              }),
+            ),
           }),
-        }),
+        ),
+        service: optional(
+          t.type({
+            'svc-input-bandwidth': t.number,
+            'svc-output-bandwidth': t.number,
+            qos: optional(
+              t.type({
+                'qos-profile': optional(
+                  t.type({
+                    'qos-profile': t.array(
+                      t.type({
+                        profile: t.string,
+                      }),
+                    ),
+                  }),
+                ),
+              }),
+            ),
+          }),
+        ),
         'routing-protocols': optional(RoutingProtocolsValidator),
       }),
     ),
@@ -314,13 +329,15 @@ const VpnSitesOutputValidator = t.type({
       'site-id': t.string,
       devices: optional(SiteDevicesValidator),
       'site-network-accesses': optional(SiteNetworkAccessValidator),
-      'maximum-routes': MaximumRoutesValidator,
-      'site-vpn-flavor': SiteVpnFlavorValidator,
-      'traffic-protection': t.type({
-        enabled: t.boolean,
-      }),
-      management: ManagementValidator,
-      locations: LocationsValidator,
+      'maximum-routes': optional(MaximumRoutesValidator), // GAM-161 from gamma point of view this field is mandatory
+      'site-vpn-flavor': optional(SiteVpnFlavorValidator),
+      'traffic-protection': optional(
+        t.type({
+          enabled: optional(t.boolean),
+        }),
+      ),
+      management: optional(ManagementValidator),
+      locations: optional(LocationsValidator),
       // 'vpn-policies': VpnPoliciesValidator,
       service: optional(SiteServiceValidator),
     }),

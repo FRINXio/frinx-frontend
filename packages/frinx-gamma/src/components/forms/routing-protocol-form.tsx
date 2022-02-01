@@ -4,14 +4,18 @@ import { FormikErrors } from 'formik';
 import FeatherIcon from 'feather-icons-react';
 import { uniqueId } from 'lodash';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
-import { RoutingProtocol, RoutingProtocolType, StaticRoutingType } from './site-types';
+import { RoutingProtocol, SiteNetworkAccess, RoutingProtocolType, StaticRoutingType } from './site-types';
 import unwrap from '../../helpers/unwrap';
-import { SiteNetworkAccess } from '../../network-types';
 import StaticRoutingForm from './static-routes-form';
+
+type StaticRoutingProtocol = {
+  type: 'static';
+  static: StaticRoutingTypeWithId[];
+};
 
 type Props = {
   errors: FormikErrors<SiteNetworkAccess>;
-  staticProtocol: RoutingProtocol;
+  staticProtocol: StaticRoutingProtocol;
   bgpProtocol: RoutingProtocol;
   bgpProfileItems: Item[];
   selectedBgpProfileItem: Item;
