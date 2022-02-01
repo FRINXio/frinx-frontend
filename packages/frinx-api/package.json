@@ -16,13 +16,13 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@types/url-join": "^4.0.1",
     "url-join": "^4.0.1"
   },
   "devDependencies": {
     "@frinx/eslint-config-typescript": "^18.2.1-build.2",
     "@typescript-eslint/eslint-plugin": "^4.15.0",
     "@typescript-eslint/parser": "^4.15.0",
-    "@urql/exchange-retry": "^0.3.0",
     "esbuild": "^0.13.15",
     "eslint": "^7.17.0",
     "eslint-config-prettier": "^7.1.0",
@@ -34,7 +34,6 @@
     "rollup": "^2.60.1",
     "rollup-plugin-dts": "^4.0.1",
     "rollup-plugin-esbuild": "^4.7.2",
-    "typescript": "^4.2.3",
-    "urql": "^2.0.4"
+    "typescript": "^4.2.3"
   }
 }

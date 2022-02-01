@@ -1,6 +1,5 @@
-import { ApiConfig } from '.';
 import { createGraphQLApiClient } from './api-helpers';
-import { GraphQLApiClient } from './types';
+import { GraphQLApiClient, ApiConfig } from './types';
 
 export default class InventoryApi {
   client: GraphQLApiClient;
