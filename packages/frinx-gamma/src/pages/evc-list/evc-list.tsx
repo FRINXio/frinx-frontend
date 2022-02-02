@@ -75,7 +75,7 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
       const clientAllEvcAttachments = apiEvcAttachmentsToClientEvcAttachments(allSavedEvcAttachments);
       const allUnsavedEvcAttachments = await callbacks.getEvcAttachments(bearerId, null, null);
       const clientAllUnsavedEvcAttachments = apiEvcAttachmentsToClientEvcAttachments(allUnsavedEvcAttachments);
-      const result = diff(clientAllEvcAttachments, clientAllUnsavedEvcAttachments, 'vpnId');
+      const result = diff(clientAllEvcAttachments, clientAllUnsavedEvcAttachments, 'circuitReference');
       setCreatedEvcAttachments(result.added);
       setUpdatedEvcAttachments(result.updated);
       setDeletedEvcAttachments(result.removed);
