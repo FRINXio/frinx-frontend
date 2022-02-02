@@ -1,21 +1,18 @@
 import { Box, Container, Flex, Heading, Progress, useDisclosure } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
-import unwrap from '../../helpers/unwrap';
 import useNotifications from '../../hooks/use-notifications';
 import {
   AddSnapshotMutation,
   AddSnapshotMutationVariables,
   ApplySnapshotMutation,
   ApplySnapshotMutationVariables,
-  CloseTransactionMutation,
-  CloseTransactionMutationVariables,
   CommitDataStoreConfigMutation,
   CommitDataStoreConfigMutationVariables,
-  CreateTransactionMutation,
-  CreateTransactionMutationVariables,
   DataStoreQuery,
   DataStoreQueryVariables,
+  DeleteSnapshotMutation,
+  DeleteSnapshotMutationVariables,
   DeviceNameQuery,
   DeviceNameQueryVariables,
   ResetConfigMutation,
@@ -24,12 +21,11 @@ import {
   SyncFromNetworkMutationVariables,
   UpdateDataStoreMutation,
   UpdateDataStoreMutationVariables,
-  DeleteSnapshotMutation,
-  DeleteSnapshotMutationVariables,
 } from '../../__generated__/graphql';
 import CreateSnapshotModal from './create-snapshot-modal';
 import DeviceConfigActions from './device-config-actions';
 import DeviceConfigEditors from './device-config-editors';
+import { useTransactionId } from './device-config.helpers';
 import DiffOutputModal from './diff-output-modal';
 
 const DEVICE_NAME_QUERY = gql`
@@ -114,20 +110,6 @@ const SYNC_FROM_NETWORK_MUTATION = gql`
     }
   }
 `;
-const CREATE_TRANSACTION_MUTATION = gql`
-  mutation createTransaction($deviceId: String!) {
-    createTransaction(deviceId: $deviceId) {
-      transactionId
-    }
-  }
-`;
-const CLOSE_TRANSACTION_MUTATION = gql`
-  mutation closeTransaction($deviceId: String!, $transactionId: String!) {
-    closeTransaction(deviceId: $deviceId, transactionId: $transactionId) {
-      isOk
-    }
-  }
-`;
 
 const DELETE_SNAPSHOT_MUTATION = gql`
   mutation deleteSnapshot($input: DeleteSnapshotInput!) {
@@ -138,60 +120,6 @@ const DELETE_SNAPSHOT_MUTATION = gql`
     }
   }
 `;
-
-const TRANSACTION_ID_KEY = 'TX_ID_INVENTORY';
-
-const useTransactionId = (deviceId: string) => {
-  const [, createTransaction] = useMutation<CreateTransactionMutation, CreateTransactionMutationVariables>(
-    CREATE_TRANSACTION_MUTATION,
-  );
-  const [{ fetching: isClosingTransaction }, closeTransaction] = useMutation<
-    CloseTransactionMutation,
-    CloseTransactionMutationVariables
-  >(CLOSE_TRANSACTION_MUTATION);
-
-  const [transactionId, setTransactionId] = useState(localStorage.getItem(TRANSACTION_ID_KEY));
-
-  useEffect(() => {
-    if (transactionId == null) {
-      createTransaction({ deviceId }).then((res) => {
-        const { data, error } = res;
-
-        if (error != null) {
-          throw new Error(error.toString());
-        }
-
-        if (data?.createTransaction.transactionId != null) {
-          setTransactionId(data.createTransaction.transactionId);
-          localStorage.setItem(TRANSACTION_ID_KEY, data.createTransaction.transactionId);
-        }
-      });
-    }
-
-    // return () => {
-    //   if (transactionId != null) {
-    //     localStorage.removeItem(TRANSACTION_ID_KEY);
-    //     closeTransaction({ deviceId, transactionId });
-    //   }
-    // };
-  }, [createTransaction, deviceId, closeTransaction, transactionId]);
-
-  const removeTransaction = () => {
-    localStorage.removeItem(TRANSACTION_ID_KEY);
-    setTransactionId(null);
-  };
-
-  return {
-    transactionId,
-    isClosingTransaction,
-    removeTransaction,
-    closeTransaction: async () => {
-      closeTransaction({ deviceId, transactionId: unwrap(transactionId) }).then(() => {
-        removeTransaction();
-      });
-    },
-  };
-};
 
 type Props = {
   deviceId: string;
@@ -240,7 +168,6 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
   );
 
   const [config, setConfig] = useState<string>();
-  // const toast = useToast();
   const { addToastNotification } = useNotifications();
   const { isOpen: isSnapshotModalOpen, onClose: onSnapshotModalClose, onOpen: onSnapshotModalOpen } = useDisclosure();
   const { isOpen: isDiffModalOpen, onClose: onDiffModalClose, onOpen: onDiffModalOpen } = useDisclosure();
