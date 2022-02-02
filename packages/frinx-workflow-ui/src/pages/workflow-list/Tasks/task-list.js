@@ -1,5 +1,5 @@
 // @flow
-import AddTaskModal from './AddTaskModal';
+import AddTaskModal from './add-task-modal/AddTaskModal';
 import PageContainer from '../../../common/PageContainer';
 import Paginator from '../../../common/pagination';
 import React, { useEffect, useState } from 'react';

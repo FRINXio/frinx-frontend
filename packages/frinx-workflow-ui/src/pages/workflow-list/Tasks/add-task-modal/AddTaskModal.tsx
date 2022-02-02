@@ -20,8 +20,8 @@ import {
   Tooltip,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { taskDefinition } from '../../../constants';
-import { TaskDefinition } from '../../../types/uniflow-types';
+import { taskDefinition } from '../../../../constants';
+import { TaskDefinition } from '../../../../types/uniflow-types';
 
 type AddTaskModalProps = {
   isOpen: boolean;
