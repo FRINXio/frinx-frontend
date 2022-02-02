@@ -121,10 +121,16 @@ export type CommitConfigInput = {
   shouldDryRun?: Maybe<Scalars['Boolean']>;
 };
 
+export type CommitConfigOutput = {
+  __typename?: 'CommitConfigOutput';
+  deviceId: Scalars['String'];
+  message: Maybe<Scalars['String']>;
+  configuration: Maybe<Scalars['String']>;
+};
+
 export type CommitConfigPayload = {
   __typename?: 'CommitConfigPayload';
-  isOk: Scalars['Boolean'];
-  output: Scalars['String'];
+  output: CommitConfigOutput;
 };
 
 export type Country = Node & {
@@ -791,7 +797,10 @@ export type CommitDataStoreConfigMutation = (
   { __typename?: 'Mutation' }
   & { commitConfig: (
     { __typename?: 'CommitConfigPayload' }
-    & Pick<CommitConfigPayload, 'isOk'>
+    & { output: (
+      { __typename?: 'CommitConfigOutput' }
+      & Pick<CommitConfigOutput, 'configuration' | 'message'>
+    ) }
   ) }
 );
 
@@ -860,6 +869,22 @@ export type SyncFromNetworkMutation = (
   ) }
 );
 
+export type DeleteSnapshotMutationVariables = Exact<{
+  input: DeleteSnapshotInput;
+}>;
+
+
+export type DeleteSnapshotMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteSnapshot: Maybe<(
+    { __typename?: 'DeleteSnapshotPayload' }
+    & { snapshot: Maybe<(
+      { __typename?: 'Snapshot' }
+      & Pick<Snapshot, 'name'>
+    )> }
+  )> }
+);
+
 export type CreateTransactionMutationVariables = Exact<{
   deviceId: Scalars['String'];
 }>;
@@ -885,22 +910,6 @@ export type CloseTransactionMutation = (
     { __typename?: 'CloseTransactionPayload' }
     & Pick<CloseTransactionPayload, 'isOk'>
   ) }
-);
-
-export type DeleteSnapshotMutationVariables = Exact<{
-  input: DeleteSnapshotInput;
-}>;
-
-
-export type DeleteSnapshotMutation = (
-  { __typename?: 'Mutation' }
-  & { deleteSnapshot: Maybe<(
-    { __typename?: 'DeleteSnapshotPayload' }
-    & { snapshot: Maybe<(
-      { __typename?: 'Snapshot' }
-      & Pick<Snapshot, 'name'>
-    )> }
-  )> }
 );
 
 export type CalculatedDiffQueryVariables = Exact<{

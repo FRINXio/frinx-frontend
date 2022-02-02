@@ -22,6 +22,7 @@ import {
   UpdateDataStoreMutation,
   UpdateDataStoreMutationVariables,
 } from '../../__generated__/graphql';
+import CommitOutputModal from './commit-output-modal';
 import CreateSnapshotModal from './create-snapshot-modal';
 import DeviceConfigActions from './device-config-actions';
 import DeviceConfigEditors from './device-config-editors';
@@ -66,7 +67,10 @@ const UPDATE_DATA_STORE_MUTATION = gql`
 const COMMIT_DATA_STORE_MUTATION = gql`
   mutation commitDataStoreConfig($transactionId: String!, $input: CommitConfigInput!) {
     commitConfig(transactionId: $transactionId, input: $input) {
-      isOk
+      output {
+        configuration
+        message
+      }
     }
   }
 `;
@@ -145,7 +149,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     UpdateDataStoreMutation,
     UpdateDataStoreMutationVariables
   >(UPDATE_DATA_STORE_MUTATION);
-  const [{ fetching: isCommitLoading }, commitConfig] = useMutation<
+  const [{ fetching: isCommitLoading, data: commitData }, commitConfig] = useMutation<
     CommitDataStoreConfigMutation,
     CommitDataStoreConfigMutationVariables
   >(COMMIT_DATA_STORE_MUTATION);
@@ -168,6 +172,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
   );
 
   const [config, setConfig] = useState<string>();
+  const [commitConfigData, setCommitConfigData] = useState<string | null>(null);
   const { addToastNotification } = useNotifications();
   const { isOpen: isSnapshotModalOpen, onClose: onSnapshotModalClose, onOpen: onSnapshotModalOpen } = useDisclosure();
   const { isOpen: isDiffModalOpen, onClose: onDiffModalClose, onOpen: onDiffModalOpen } = useDisclosure();
@@ -177,6 +182,10 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
       setConfig(JSON.stringify(JSON.parse(data.dataStore.config ?? ''), null, 2));
     }
   }, [data]);
+
+  useEffect(() => {
+    setCommitConfigData(commitData?.commitConfig.output.configuration ?? null);
+  }, [commitData]);
 
   if (transactionId == null) {
     return null;
@@ -397,6 +406,14 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
       />
       {isDiffModalOpen && (
         <DiffOutputModal onClose={onDiffModalClose} deviceId={deviceId} transactionId={transactionId} />
+      )}
+      {commitConfigData != null && (
+        <CommitOutputModal
+          configuration={commitConfigData}
+          onClose={() => {
+            setCommitConfigData(null);
+          }}
+        />
       )}
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
