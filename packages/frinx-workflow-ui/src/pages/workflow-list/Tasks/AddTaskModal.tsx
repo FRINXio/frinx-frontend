@@ -1,11 +1,13 @@
-// @flow
-import React from 'react';
+import { InfoIcon } from '@chakra-ui/icons';
 import {
-  Box,
   Button,
+  ButtonGroup,
+  Flex,
   FormControl,
+  FormHelperText,
   FormLabel,
   Grid,
+  Icon,
   Input,
   Modal,
   ModalBody,
@@ -14,58 +16,68 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Spacer,
   Tooltip,
 } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import { taskDefinition } from '../../../constants';
+import { TaskDefinition } from '../../../types/uniflow-types';
 
-const AddTaskModal = (props) => {
-  const handleClose = () => {
-    props.modalHandler();
+type AddTaskModalProps = {
+  isOpen: boolean;
+  task: TaskDefinition;
+  onClose: () => void;
+  onSubmit: (task: TaskDefinition) => void;
+};
+
+const AddTaskModal = ({ isOpen, onClose, onSubmit, task }: AddTaskModalProps) => {
+  const [newTask, setNewTask] = useState<TaskDefinition>(task);
+  const handleSubmit = () => {
+    onSubmit(newTask);
+    onClose();
   };
 
-  const showInfo = (i) => {
+  const mapTaskPropertyToFormControl = (key: keyof typeof taskDefinition, index: number) => {
     return (
-      <Tooltip placement="auto" label='Please use comma (",") to separate keys'>
-        <i style={{ color: 'rgba(0, 149, 255, 0.91)' }} className="clickable fas fa-info-circle" />
-      </Tooltip>
+      <FormControl key={key}>
+        <FormLabel htmlFor={`task-property-${key}`}>{key}</FormLabel>
+        <Input
+          id={`task-property-${key}`}
+          placeholder={`${key}`}
+          value={newTask[key]}
+          onChange={(e) => {
+            setNewTask({ ...newTask, [key]: e.target.value });
+          }}
+        />
+        {index >= 8 && <FormHelperText>Please use comma (",") to separate keys</FormHelperText>}
+      </FormControl>
     );
   };
 
   return (
-    <Modal size="3xl" dialogClassName="modalWider" isOpen={props.show} onClose={handleClose}>
+    <Modal size="3xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalCloseButton />
       <ModalContent>
+        <ModalCloseButton />
         <ModalHeader>Add new Task</ModalHeader>
         <ModalBody>
-          <form onSubmit={props.addTask.bind(this)}>
+          <form onSubmit={handleSubmit}>
             <Grid gridTemplateColumns="1fr 1fr" columnGap={12} rowGap={2}>
-              {Object.keys(props.taskBody).map((item, i) => {
-                return (
-                  <Box key={`col1-${i}`}>
-                    <FormControl>
-                      <FormLabel>
-                        {item}&nbsp;&nbsp;
-                        {i >= 8 ? showInfo(i - 8) : null}
-                      </FormLabel>
-                      <Input
-                        onChange={(e) => props.handleInput(e)}
-                        placeholder="Enter the input"
-                        value={Object.values(props.taskBody)[i] ? Object.values(props.taskBody)[i] : ''}
-                      />
-                    </FormControl>
-                  </Box>
-                );
+              {Object.keys(task).map((item, i) => {
+                return mapTaskPropertyToFormControl(item as keyof typeof taskDefinition, i);
               })}
             </Grid>
           </form>
         </ModalBody>
         <ModalFooter>
-          <Button marginRight={4} colorScheme="blue" onClick={props.addTask.bind(this)}>
-            Add
-          </Button>
-          <Button colorScheme="gray" onClick={handleClose}>
-            Close
-          </Button>
+          <ButtonGroup>
+            <Button colorScheme="gray" onClick={onClose}>
+              Close
+            </Button>
+            <Button colorScheme="blue" onClick={handleSubmit}>
+              Add
+            </Button>
+          </ButtonGroup>
         </ModalFooter>
       </ModalContent>
     </Modal>
