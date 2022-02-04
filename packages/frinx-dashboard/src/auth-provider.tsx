@@ -17,6 +17,7 @@ export const Context = createContext<ContextType | null>(null);
 const AuthProvider: FC = ({ children }) => {
   const { instance, accounts, inProgress } = useMsal();
   const [isAuthError, setIsAuthError] = useState(false);
+  const [isAccessError, setIsAccessError] = useState(false);
 
   useEffect(() => {
     if (inProgress === 'none' && accounts.length > 0) {
@@ -37,6 +38,12 @@ const AuthProvider: FC = ({ children }) => {
     });
   }, []);
 
+  useEffect(() => {
+    authContext.eventEmitter.once('ACCESS_REJECTED', () => {
+      setIsAccessError(true);
+    });
+  }, []);
+
   const handleLogin = () => {
     return instance
       .loginPopup({
@@ -46,6 +53,10 @@ const AuthProvider: FC = ({ children }) => {
         setIsAuthError(false);
         return data;
       });
+  };
+
+  const handleClose = () => {
+    setIsAccessError(false);
   };
 
   return (
@@ -58,7 +69,7 @@ const AuthProvider: FC = ({ children }) => {
         },
       }}
     >
-      {isAuthError ? (
+      {isAuthError || isAccessError ? (
         <Box
           position="fixed"
           inset={0}
@@ -70,15 +81,27 @@ const AuthProvider: FC = ({ children }) => {
             zIndex: 20,
           }}
         >
-          <ErrorMessageBox>
-            <Heading size="md" marginBottom={2}>
-              Unauthorized
-            </Heading>
-            <Text marginBottom={2}>Please login to continue</Text>
-            <Button type="button" colorScheme="blue" onClick={handleLogin}>
-              Login
-            </Button>
-          </ErrorMessageBox>
+          {isAuthError ? (
+            <ErrorMessageBox>
+              <Heading size="md" marginBottom={2}>
+                Unauthorized
+              </Heading>
+              <Text marginBottom={2}>Please login to continue</Text>
+              <Button type="button" colorScheme="blue" onClick={handleLogin}>
+                Login
+              </Button>
+            </ErrorMessageBox>
+          ) : (
+            <ErrorMessageBox>
+              <Heading size="md" marginBottom={2}>
+                No access
+              </Heading>
+              <Text marginBottom={2}>You have no access to this resource</Text>
+              <Button type="button" colorScheme="blue" onClick={handleClose}>
+                Close
+              </Button>
+            </ErrorMessageBox>
+          )}
           {children}
         </Box>
       ) : (
