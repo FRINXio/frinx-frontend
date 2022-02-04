@@ -1,4 +1,4 @@
-import { Box, Container, Heading } from '@chakra-ui/react';
+import { Box, Container, Flex, Heading, Spinner } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import callbackUtils from '../../unistore-callback-utils';
 import uniflowCallbackUtils from '../../uniflow-callback-utils';
@@ -120,7 +120,14 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
   }
 
   if (!vpnId) {
-    return <PollWorkflowId workflowId={workflowId} onFinish={handleWorkflowFinish} />;
+    return (
+      <>
+        <Flex justifyContent="center">
+          <Spinner />
+        </Flex>
+        <PollWorkflowId workflowId={workflowId} onFinish={handleWorkflowFinish} />;
+      </>
+    );
   }
 
   const vpnService = { ...defaultVpnService, vpnId };

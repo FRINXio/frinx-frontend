@@ -22,4 +22,6 @@ export { default as CreateEvcAttachment } from './pages/create-evc-attachment/cr
 export { default as EditEvcAttachment } from './pages/edit-evc-attachment/edit-evc-attachment';
 export { default as CreateVpnCarrier } from './pages/save-carrier/save-carrier';
 export { default as CreateVpnNode } from './pages/save-node/save-node';
+export { default as SearchList } from './pages/search-list/search-list';
+
 export { getGammaAppProvider } from './gamma-app-provider';

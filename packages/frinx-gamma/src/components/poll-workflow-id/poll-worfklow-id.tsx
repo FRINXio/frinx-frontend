@@ -1,5 +1,4 @@
-import React, { useEffect, VoidFunctionComponent } from 'react';
-import { Flex } from '@chakra-ui/react';
+import { useEffect, VoidFunctionComponent } from 'react';
 import { useAsyncGenerator } from '../commit-status-modal/commit-status-modal.helpers';
 
 type Props = {
@@ -27,7 +26,7 @@ const WorkflowId: VoidFunctionComponent<Props> = ({ workflowId, onFinish }) => {
     }
   }, [execPayload, onFinish]);
 
-  return <Flex justifyContent="center">Loading...</Flex>;
+  return null;
 };
 
 export default WorkflowId;
