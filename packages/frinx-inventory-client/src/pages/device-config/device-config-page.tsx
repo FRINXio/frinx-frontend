@@ -1,21 +1,18 @@
 import { Box, Container, Flex, Heading, Progress, useDisclosure } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
-import unwrap from '../../helpers/unwrap';
 import useNotifications from '../../hooks/use-notifications';
 import {
   AddSnapshotMutation,
   AddSnapshotMutationVariables,
   ApplySnapshotMutation,
   ApplySnapshotMutationVariables,
-  CloseTransactionMutation,
-  CloseTransactionMutationVariables,
   CommitDataStoreConfigMutation,
   CommitDataStoreConfigMutationVariables,
-  CreateTransactionMutation,
-  CreateTransactionMutationVariables,
   DataStoreQuery,
   DataStoreQueryVariables,
+  DeleteSnapshotMutation,
+  DeleteSnapshotMutationVariables,
   DeviceNameQuery,
   DeviceNameQueryVariables,
   ResetConfigMutation,
@@ -25,9 +22,11 @@ import {
   UpdateDataStoreMutation,
   UpdateDataStoreMutationVariables,
 } from '../../__generated__/graphql';
+import CommitOutputModal from './commit-output-modal';
 import CreateSnapshotModal from './create-snapshot-modal';
 import DeviceConfigActions from './device-config-actions';
 import DeviceConfigEditors from './device-config-editors';
+import { useTransactionId } from './device-config.helpers';
 import DiffOutputModal from './diff-output-modal';
 
 const DEVICE_NAME_QUERY = gql`
@@ -68,7 +67,10 @@ const UPDATE_DATA_STORE_MUTATION = gql`
 const COMMIT_DATA_STORE_MUTATION = gql`
   mutation commitDataStoreConfig($transactionId: String!, $input: CommitConfigInput!) {
     commitConfig(transactionId: $transactionId, input: $input) {
-      isOk
+      output {
+        configuration
+        message
+      }
     }
   }
 `;
@@ -112,74 +114,16 @@ const SYNC_FROM_NETWORK_MUTATION = gql`
     }
   }
 `;
-const CREATE_TRANSACTION_MUTATION = gql`
-  mutation createTransaction($deviceId: String!) {
-    createTransaction(deviceId: $deviceId) {
-      transactionId
-    }
-  }
-`;
-const CLOSE_TRANSACTION_MUTATION = gql`
-  mutation closeTransaction($deviceId: String!, $transactionId: String!) {
-    closeTransaction(deviceId: $deviceId, transactionId: $transactionId) {
-      isOk
-    }
-  }
-`;
 
-const TRANSACTION_ID_KEY = 'TX_ID_INVENTORY';
-
-const useTransactionId = (deviceId: string) => {
-  const [, createTransaction] = useMutation<CreateTransactionMutation, CreateTransactionMutationVariables>(
-    CREATE_TRANSACTION_MUTATION,
-  );
-  const [{ fetching: isClosingTransaction }, closeTransaction] = useMutation<
-    CloseTransactionMutation,
-    CloseTransactionMutationVariables
-  >(CLOSE_TRANSACTION_MUTATION);
-
-  const [transactionId, setTransactionId] = useState(localStorage.getItem(TRANSACTION_ID_KEY));
-
-  useEffect(() => {
-    if (transactionId == null) {
-      createTransaction({ deviceId }).then((res) => {
-        const { data, error } = res;
-
-        if (error != null) {
-          throw new Error(error.toString());
-        }
-
-        if (data?.createTransaction.transactionId != null) {
-          setTransactionId(data.createTransaction.transactionId);
-          localStorage.setItem(TRANSACTION_ID_KEY, data.createTransaction.transactionId);
-        }
-      });
-    }
-
-    return () => {
-      if (transactionId != null) {
-        localStorage.removeItem(TRANSACTION_ID_KEY);
-        closeTransaction({ deviceId, transactionId });
+const DELETE_SNAPSHOT_MUTATION = gql`
+  mutation deleteSnapshot($input: DeleteSnapshotInput!) {
+    deleteSnapshot(input: $input) {
+      snapshot {
+        name
       }
-    };
-  }, [createTransaction, deviceId, closeTransaction, transactionId]);
-
-  const removeTransaction = () => {
-    localStorage.removeItem(TRANSACTION_ID_KEY);
-    setTransactionId(null);
-  };
-
-  return {
-    transactionId,
-    isClosingTransaction,
-    removeTransaction,
-    closeTransaction: async () => {
-      closeTransaction({ deviceId, transactionId: unwrap(transactionId) }).then(() => {
-        removeTransaction();
-      });
-    },
-  };
-};
+    }
+  }
+`;
 
 type Props = {
   deviceId: string;
@@ -205,7 +149,7 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     UpdateDataStoreMutation,
     UpdateDataStoreMutationVariables
   >(UPDATE_DATA_STORE_MUTATION);
-  const [{ fetching: isCommitLoading }, commitConfig] = useMutation<
+  const [{ fetching: isCommitLoading, data: commitData }, commitConfig] = useMutation<
     CommitDataStoreConfigMutation,
     CommitDataStoreConfigMutationVariables
   >(COMMIT_DATA_STORE_MUTATION);
@@ -223,9 +167,12 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     SyncFromNetworkMutation,
     SyncFromNetworkMutationVariables
   >(SYNC_FROM_NETWORK_MUTATION);
+  const [, deleteSnapshot] = useMutation<DeleteSnapshotMutation, DeleteSnapshotMutationVariables>(
+    DELETE_SNAPSHOT_MUTATION,
+  );
 
   const [config, setConfig] = useState<string>();
-  // const toast = useToast();
+  const [commitConfigData, setCommitConfigData] = useState<string | null>(null);
   const { addToastNotification } = useNotifications();
   const { isOpen: isSnapshotModalOpen, onClose: onSnapshotModalClose, onOpen: onSnapshotModalOpen } = useDisclosure();
   const { isOpen: isDiffModalOpen, onClose: onDiffModalClose, onOpen: onDiffModalOpen } = useDisclosure();
@@ -235,6 +182,10 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
       setConfig(JSON.stringify(JSON.parse(data.dataStore.config ?? ''), null, 2));
     }
   }, [data]);
+
+  useEffect(() => {
+    setCommitConfigData(commitData?.commitConfig.output.configuration ?? null);
+  }, [commitData]);
 
   if (transactionId == null) {
     return null;
@@ -397,6 +348,28 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     });
   };
 
+  const handleDeleteSnapshot = async (snapshotName: string) => {
+    const { data: responseData, error: responseError } = await deleteSnapshot({
+      input: { deviceId, name: snapshotName, transactionId },
+    });
+
+    if (responseError != null) {
+      addToastNotification({
+        type: 'error',
+        title: 'Error',
+        content: 'Failed to delete snapshot',
+      });
+    }
+
+    if (responseData?.deleteSnapshot != null) {
+      addToastNotification({
+        type: 'success',
+        title: 'Success',
+        content: 'Successfully deleted snapshot',
+      });
+    }
+  };
+
   const isInitialLoading = fetching && data == null;
 
   if (isInitialLoading) {
@@ -434,6 +407,14 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
       {isDiffModalOpen && (
         <DiffOutputModal onClose={onDiffModalClose} deviceId={deviceId} transactionId={transactionId} />
       )}
+      {commitConfigData != null && (
+        <CommitOutputModal
+          configuration={commitConfigData}
+          onClose={() => {
+            setCommitConfigData(null);
+          }}
+        />
+      )}
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h2" size="3xl">
@@ -441,9 +422,6 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
           </Heading>
         </Flex>
         <DeviceConfigActions
-          onCreateSnapshotBtnClick={onSnapshotModalOpen}
-          snapshots={snapshots}
-          onLoadSnapshotClick={handleOnApplySnapshot}
           onCommitBtnClick={() => {
             handleOnCommitConfig();
           }}
@@ -452,7 +430,6 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
           }}
           onCalculateDiffBtnClick={onDiffModalOpen}
           onTransactionCloseBtnClick={handleCloseTransactionBtnClick}
-          isApplySnapshotLoading={isApplySnapshotLoading}
           isCommitLoading={isCommitLoading}
           isCloseTransactionLoading={isClosingTransaction}
         />
@@ -473,6 +450,11 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
             isUpdateStoreLoading={isUpdateStoreLoading}
             isSyncLoading={isSyncLoading}
             isRefreshLoading={fetching && data != null}
+            onCreateSnapshotBtnClick={onSnapshotModalOpen}
+            snapshots={snapshots}
+            onLoadSnapshotClick={handleOnApplySnapshot}
+            isApplySnapshotLoading={isApplySnapshotLoading}
+            onDeleteSnapshotBtnClck={handleDeleteSnapshot}
           />
         </Box>
       </Container>
