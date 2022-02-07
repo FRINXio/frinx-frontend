@@ -1,5 +1,5 @@
 // @flow
-import AddTaskModal from './AddTaskModal';
+import AddTaskModal from './add-task-modal';
 import PageContainer from '../../../common/PageContainer';
 import Paginator from '../../../common/pagination';
 import React, { useEffect, useState } from 'react';
@@ -21,6 +21,7 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileCode, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -34,9 +35,8 @@ const TaskList = () => {
   const [data, setData] = useState([]);
   const [taskModal, setTaskModal] = useState(false);
   const [taskName, setTaskName] = useState(null);
-  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
-  const [taskBody, setTaskBody] = useState(taskDefinition);
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
+  const addTaskModal = useDisclosure();
 
   useEffect(() => {
     getData();
@@ -131,10 +131,6 @@ const TaskList = () => {
     setData(sortedArray);
   };
 
-  const showAddNewTaskModal = () => {
-    setShowAddTaskModal(!showAddTaskModal);
-  };
-
   const taskTable = () => {
     return (
       <Table background="white">
@@ -161,26 +157,20 @@ const TaskList = () => {
     );
   };
 
-  const handleInput = (e) =>
-    setTaskBody({
-      ...taskBody,
-      [e.target.name]: e.target.value,
-    });
-
-  const addTask = () => {
-    Object.keys(taskBody).forEach((key) => {
+  const addTask = (task) => {
+    Object.keys(task).forEach((key) => {
       if (key === 'inputKeys' || key === 'outputKeys') {
-        taskBody[key] = taskBody[key]
+        task[key] = task[key]
           .replace(/ /g, '')
           .split(',')
           .filter((e) => {
             return e !== '';
           });
-        taskBody[key] = [...new Set(taskBody[key])];
+        task[key] = [...new Set(task[key])];
       }
     });
-    if (taskBody['name'] !== '') {
-      const newTask = { ...taskBody, ownerEmail: 'example@example.com' };
+    if (task['name'] !== '') {
+      const newTask = { ...task, ownerEmail: 'example@example.com' };
 
       const { registerTaskDefinition } = callbackUtils.getCallbacks;
 
@@ -194,20 +184,15 @@ const TaskList = () => {
     <TaskModal name={taskName} modalHandler={() => handleTaskModal()} show={taskModal} />
   ) : null;
 
-  const addTaskModal = showAddTaskModal ? (
-    <AddTaskModal
-      modalHandler={showAddNewTaskModal}
-      show={showAddTaskModal}
-      taskBody={taskBody}
-      handleInput={handleInput}
-      addTask={addTask}
-    />
-  ) : null;
-
   return (
     <PageContainer>
+      <AddTaskModal
+        isOpen={addTaskModal.isOpen}
+        onSubmit={addTask}
+        onClose={addTaskModal.onClose}
+        task={taskDefinition}
+      />
       {taskModalComp}
-      {addTaskModal}
       <Flex marginBottom={8}>
         <InputGroup>
           <InputLeftElement>
@@ -220,7 +205,7 @@ const TaskList = () => {
             background="white"
           />
         </InputGroup>
-        <Button marginLeft={4} colorScheme="blue" onClick={() => showAddNewTaskModal()}>
+        <Button marginLeft={4} colorScheme="blue" onClick={addTaskModal.onOpen}>
           New
         </Button>
       </Flex>

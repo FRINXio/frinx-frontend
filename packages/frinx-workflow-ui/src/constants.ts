@@ -1,3 +1,5 @@
+import { TaskDefinition } from './types/uniflow-types';
+
 export const wfLabelsColor = [
   '#7D6608',
   '#43ABC9',
@@ -56,15 +58,16 @@ export const taskDescriptions = {
   startDelay: 'time period before task executes',
 };
 
-export const taskDefinition = {
+export const taskDefinition: TaskDefinition = {
   name: '',
   description: '',
-  retryCount: '0',
+  retryCount: 0,
   retryLogic: 'FIXED',
-  retryDelaySeconds: '0',
+  retryDelaySeconds: 0,
   timeoutPolicy: 'TIME_OUT_WF',
-  timeoutSeconds: '60',
-  responseTimeoutSeconds: '10',
-  inputKeys: '',
-  outputKeys: '',
+  timeoutSeconds: 60,
+  responseTimeoutSeconds: 10,
+  ownerEmail: '',
+  inputKeys: [],
+  outputKeys: [],
 };
