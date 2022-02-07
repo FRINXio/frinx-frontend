@@ -67,6 +67,7 @@ const GammaApp: VoidFunctionComponent = () => {
     GammaAppProvider,
     CreateVpnCarrier,
     CreateVpnNode,
+    SearchList,
   } = components;
 
   return (
@@ -132,6 +133,9 @@ const GammaApp: VoidFunctionComponent = () => {
         {/* sites */}
         <Route path="/gamma/sites" exact>
           <SiteList
+            onAdvancedSearchClick={() => {
+              history.push('/gamma/search');
+            }}
             onCreateVpnSiteClick={() => {
               history.push('/gamma/sites/add');
             }}
@@ -407,6 +411,11 @@ const GammaApp: VoidFunctionComponent = () => {
               history.push(`/gamma/vpn-bearers/${bearerId}/evc-attachments`);
             }}
           />
+        </Route>
+
+        {/* horizontal search */}
+        <Route path="/gamma/search" exact>
+          <SearchList />
         </Route>
       </Switch>
     </GammaAppProvider>

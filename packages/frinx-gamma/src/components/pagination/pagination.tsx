@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Box, Button, HStack, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Text } from '@chakra-ui/react';
 
 type Props = {
   page: number;
@@ -11,12 +11,14 @@ const range = (start: number, end: number, length = end - start + 1) => [...Arra
 
 const Pagination: VoidFunctionComponent<Props> = ({ page, count, onPageChange }) => {
   return (
-    <Box>
-      <HStack>
-        <Text>Pages:</Text>
+    <Flex alignItems="flexStart" flexWrap="wrap">
+      <Text>Pages:</Text>
+      <Box flex="1">
         {range(1, count).map((p) =>
           p === page ? (
-            <Text key={`pagination-${p}`}>{p}</Text>
+            <Text key={`pagination-${p}`} paddingX="1" as="span">
+              {p}
+            </Text>
           ) : (
             <Button
               key={`pagination-${p}`}
@@ -24,13 +26,14 @@ const Pagination: VoidFunctionComponent<Props> = ({ page, count, onPageChange })
               variant="link"
               minWidth="revert"
               color="blue.600"
+              mx="1"
             >
               {p}
             </Button>
           ),
         )}
-      </HStack>
-    </Box>
+      </Box>
+    </Flex>
   );
 };
 

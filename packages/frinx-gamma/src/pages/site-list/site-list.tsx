@@ -1,5 +1,6 @@
 import { Box, Button, Container, Flex, Heading, HStack, useDisclosure } from '@chakra-ui/react';
 import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
+import { SearchIcon } from '@chakra-ui/icons';
 import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
@@ -14,6 +15,7 @@ import { getChangedSitesWithStatus, getSavedSitesWithStatus } from './site-helpe
 import FilterContext from '../../filter-provider';
 
 type Props = {
+  onAdvancedSearchClick: () => void;
   onCreateVpnSiteClick: () => void;
   onEditVpnSiteClick: (siteId: string) => void;
   onLocationsVpnSiteClick: (siteId: string) => void;
@@ -22,6 +24,7 @@ type Props = {
 };
 
 const SiteListPage: VoidFunctionComponent<Props> = ({
+  onAdvancedSearchClick,
   onCreateVpnSiteClick,
   onEditVpnSiteClick,
   onLocationsVpnSiteClick,
@@ -133,6 +136,9 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
             Sites
           </Heading>
           <HStack>
+            <Button leftIcon={<SearchIcon />} colorScheme="blue" onClick={onAdvancedSearchClick}>
+              Advanced Search
+            </Button>
             <Button colorScheme="blue" onClick={onCreateVpnSiteClick}>
               Add site
             </Button>

@@ -1,4 +1,4 @@
-import { Box, Container, Heading } from '@chakra-ui/react';
+import { Box, Container, Flex, Heading, Spinner } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router';
 import unwrap from '../../helpers/unwrap';
@@ -194,7 +194,14 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
   }
 
   if (!customerAddress) {
-    return <PollWorkflowId workflowId={workflowId} onFinish={handleWorkflowFinish} />;
+    return (
+      <>
+        <Flex justifyContent="center">
+          <Spinner />
+        </Flex>
+        <PollWorkflowId workflowId={workflowId} onFinish={handleWorkflowFinish} />
+      </>
+    );
   }
 
   const networkAccess: SiteNetworkAccess = getDefaultNetworkAccess(selectedSite);
