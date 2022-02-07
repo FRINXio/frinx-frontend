@@ -1,9 +1,10 @@
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
-import Diagram, { Canvas, CanvasControls, useCanvasState, useSchema } from 'beautiful-react-diagrams';
+import { useSchema } from 'beautiful-react-diagrams';
+import ReactFlow from 'react-flow-renderer';
 import 'beautiful-react-diagrams/dist/styles.css';
 import produce, { castImmutable } from 'immer';
-import { uniqBy } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState, VoidFunctionComponent } from 'react';
+import { getElements } from './helpers/data.helpers';
 import callbackUtils from './callback-utils';
 import ActionsMenu from './components/actions-menu/actions-menu';
 import ExecutionModal from './components/execution-modal/execution-modal';
@@ -73,7 +74,6 @@ const App: VoidFunctionComponent<Props> = ({
   const [schema, { onChange, addNode }] = useSchema<NodeData>(
     useMemo(() => schemaCtrlRef.current.createSchemaFromWorkflow(), []),
   );
-  const [canvasStates, handlers] = useCanvasState(); // creates canvas state
 
   const handleDeleteButtonClick = useCallback(
     (id: string) => {
@@ -114,12 +114,10 @@ const App: VoidFunctionComponent<Props> = ({
     onWorkflowClone(wf, wfName);
   };
 
-  const usedSchema = useMemo(() => {
+  const usedElements = useMemo(() => {
     const { nodes, links } = schema;
-    return {
-      links,
-      nodes: uniqBy(nodes, (n) => n.id),
-    };
+    const elements = getElements(nodes, links || []);
+    return elements;
   }, [schema]);
 
   return (
@@ -185,22 +183,7 @@ const App: VoidFunctionComponent<Props> = ({
           <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
         </Box>
         <Box minHeight="60vh" maxHeight="100vh" position="relative">
-          <Canvas {...canvasStates} {...handlers}>
-            <Diagram
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              schema={usedSchema}
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              onChange={onChange}
-              style={{
-                boxShadow: 'none',
-                border: 'none',
-                flex: 1,
-              }}
-            />
-            <CanvasControls />
-          </Canvas>
+          <ReactFlow elements={usedElements} />
           {selectedTask?.task && selectedTask?.actionType === 'edit' && (
             <RightDrawer>
               <Box px={6} py={10}>
