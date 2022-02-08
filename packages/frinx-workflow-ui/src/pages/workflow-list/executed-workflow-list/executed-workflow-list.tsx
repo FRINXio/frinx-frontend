@@ -174,11 +174,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
         if (state.isFlat) {
           selectedWorkflows = new Set(flatWorkflows.result.hits.map((workflow) => workflow.workflowId));
         } else {
-          selectedWorkflows = new Set(
-            hierarchicalWorkflows.children
-              .map((workflow) => workflow.workflowId)
-              .concat(hierarchicalWorkflows.parents.map((workflow) => workflow.workflowId)),
-          );
+          selectedWorkflows = new Set(hierarchicalWorkflows.parents.map((workflow) => workflow.workflowId));
         }
 
         return { ...prev, selectedWorkflows: [...selectedWorkflows] };
