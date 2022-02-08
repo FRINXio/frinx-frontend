@@ -20,11 +20,11 @@ import callbackUtils from '../../../../utils/callback-utils';
 import useNotifications from '../../../../hooks/use-notifications';
 
 type CallBackUtilsFunctionNames =
-  | 'restartWorkflowsCallback'
-  | 'resumeWorkflowsCallback'
-  | 'pauseWorkflowsCallback'
-  | 'deleteWorkflowInstanceCallback'
-  | 'terminateWorkflowsCallback';
+  | 'restartWorkflows'
+  | 'resumeWorkflows'
+  | 'pauseWorkflows'
+  | 'deleteWorkflowInstance'
+  | 'terminateWorkflows';
 
 type Props = {
   workflowsAmount: number;
@@ -41,9 +41,9 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({ workflowsAmount, selec
 
     setIsFetching(true);
 
-    if (operationFunctionName === 'deleteWorkflowInstanceCallback') {
-      const operation = callbackUtils[operationFunctionName]();
-      Promise.all(selectedWorkflows.map(async (workflow) => await operation(workflow)))
+    if (operationFunctionName === 'deleteWorkflowInstance') {
+      const operations = callbackUtils.getCallbacks;
+      Promise.all(selectedWorkflows.map(async (workflow) => await operations[operationFunctionName](workflow)))
         .then(() =>
           addToastNotification({ content: 'Successfully executed bulk operation', type: 'success', title: 'Success' }),
         )
@@ -53,8 +53,8 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({ workflowsAmount, selec
           selectAllWorkflows(false);
         });
     } else {
-      const operation = callbackUtils[operationFunctionName]();
-      operation(selectedWorkflows)
+      const operations = callbackUtils.getCallbacks;
+      operations[operationFunctionName](selectedWorkflows)
         .then(() =>
           addToastNotification({ content: 'Successfully executed bulk operation', type: 'success', title: 'Success' }),
         )
@@ -90,38 +90,22 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({ workflowsAmount, selec
               </Heading>
             </Box>
             <Stack spacing={4} direction="row">
-              <Button
-                variant="outline"
-                colorScheme="blue"
-                onClick={() => executeBulkOperation('pauseWorkflowsCallback')}
-              >
+              <Button variant="outline" colorScheme="blue" onClick={() => executeBulkOperation('pauseWorkflows')}>
                 Pause
               </Button>
-              <Button
-                variant="outline"
-                colorScheme="blue"
-                onClick={() => executeBulkOperation('resumeWorkflowsCallback')}
-              >
+              <Button variant="outline" colorScheme="blue" onClick={() => executeBulkOperation('resumeWorkflows')}>
                 Resume
               </Button>
-              <Button
-                variant="outline"
-                colorScheme="blue"
-                onClick={() => executeBulkOperation('restartWorkflowsCallback')}
-              >
+              <Button variant="outline" colorScheme="blue" onClick={() => executeBulkOperation('restartWorkflows')}>
                 Restart
               </Button>
-              <Button
-                variant="outline"
-                colorScheme="red"
-                onClick={() => executeBulkOperation('terminateWorkflowsCallback')}
-              >
+              <Button variant="outline" colorScheme="red" onClick={() => executeBulkOperation('terminateWorkflows')}>
                 Terminate
               </Button>
               <Button
                 variant="outline"
                 colorScheme="gray"
-                onClick={() => executeBulkOperation('deleteWorkflowInstanceCallback')}
+                onClick={() => executeBulkOperation('deleteWorkflowInstance')}
               >
                 Delete
               </Button>
