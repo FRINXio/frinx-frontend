@@ -29,7 +29,7 @@ import Paginator from '../../../common/pagination';
 import callbackUtils from '../../../utils/callback-utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { usePagination } from '../../../common/PaginationHook';
+import { usePagination } from '../../../common/pagination-hook';
 import Editor from '../../../common/editor';
 
 const EventListeners = () => {

@@ -16,7 +16,7 @@ import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workfl
 import { orderBy } from 'lodash';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
 import Paginator from '../../../common/pagination';
-import { usePagination } from '../../../common/PaginationHook';
+import { usePagination } from '../../../common/pagination-hook';
 
 type Props = {
   onWorkflowIdClick: (workflowId: string) => void;
