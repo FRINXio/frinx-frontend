@@ -4,7 +4,7 @@ import ReactFlow from 'react-flow-renderer';
 import 'beautiful-react-diagrams/dist/styles.css';
 import produce, { castImmutable } from 'immer';
 import React, { useCallback, useMemo, useRef, useState, VoidFunctionComponent } from 'react';
-import { getElements } from './helpers/data.helpers';
+import { getElementsFromWorkflow } from './helpers/data.helpers';
 import callbackUtils from './callback-utils';
 import ActionsMenu from './components/actions-menu/actions-menu';
 import ExecutionModal from './components/execution-modal/execution-modal';
@@ -20,6 +20,7 @@ import { createDiagramController } from './helpers/diagram.helpers';
 import { CustomNodeType, ExtendedTask, NodeData, TaskDefinition, Workflow } from './helpers/types';
 import unwrap from './helpers/unwrap';
 import { createWorkflowHelper, deserializeId } from './helpers/workflow.helpers';
+import { getLayoutedElements } from './helpers/layout.helpers';
 import { useTaskActions } from './task-actions-context';
 
 type Props = {
@@ -75,6 +76,10 @@ const App: VoidFunctionComponent<Props> = ({
     useMemo(() => schemaCtrlRef.current.createSchemaFromWorkflow(), []),
   );
 
+  console.log(workflow.tasks); // eslint-disable-line no-console
+  const elements = getElementsFromWorkflow(workflow);
+  const layoutedElements = getLayoutedElements(elements);
+
   const handleDeleteButtonClick = useCallback(
     (id: string) => {
       // TODO: wait for the library update to fix a bug with removing node with links
@@ -113,12 +118,6 @@ const App: VoidFunctionComponent<Props> = ({
     const wf: Workflow = workflowCtrlRef.current.convertWorkflow(schema, workflow);
     onWorkflowClone(wf, wfName);
   };
-
-  const usedElements = useMemo(() => {
-    const { nodes, links } = schema;
-    const elements = getElements(nodes, links || []);
-    return elements;
-  }, [schema]);
 
   return (
     <>
@@ -183,7 +182,7 @@ const App: VoidFunctionComponent<Props> = ({
           <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
         </Box>
         <Box minHeight="60vh" maxHeight="100vh" position="relative">
-          <ReactFlow elements={usedElements} />
+          <ReactFlow elements={layoutedElements} />
           {selectedTask?.task && selectedTask?.actionType === 'edit' && (
             <RightDrawer>
               <Box px={6} py={10}>
