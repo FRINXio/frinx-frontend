@@ -122,10 +122,14 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
 
   const changeLabels = (labels: string[]) => {
     setState((prev) => ({ ...prev, labels }));
+    hierarchicalPagination.setCurrentPage(1);
+    flatViewPagination.setCurrentPage(1);
   };
 
   const changeQuery = (query: string) => {
     setState((prev) => ({ ...prev, workflowId: query }));
+    hierarchicalPagination.setCurrentPage(1);
+    flatViewPagination.setCurrentPage(1);
   };
 
   const indent = (workflows: NestedExecutedWorkflow[], i: number, size?: number) => {
