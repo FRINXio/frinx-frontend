@@ -1,10 +1,12 @@
-import AddTaskModal from './add-task-modal';
-import PageContainer from '../../../common/PageContainer';
-import React, { useEffect, useState } from 'react';
-import callbackUtils from '../../../utils/callback-utils';
+import React, { useEffect, useRef, useState } from 'react';
+import MiniSearch, { SearchResult } from 'minisearch';
+import { throttle } from 'lodash';
 import { Button, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import AddTaskModal from './add-task-modal';
+import PageContainer from '../../../common/PageContainer';
+import callbackUtils from '../../../utils/callback-utils';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
 import { taskDefinition } from '../../../constants';
 import { usePagination } from '../../../common/PaginationHook';
@@ -12,11 +14,17 @@ import TaskTable from './task-table';
 import { TaskDefinition } from '../../../types/uniflow-types';
 import TaskConfigModal from './task-modal';
 
+function getFilteredResults<T extends { name: string }>(searchResult: SearchResult[], defs: T[]): T[] {
+  const resultIds = searchResult.map((r) => r.id);
+  return defs.filter((df) => resultIds.includes(df.name));
+}
+
 const TaskList = () => {
-  const [keywords, setKeywords] = useState('');
+  const { currentPage, setCurrentPage, pageItems: tasks, setItemList, totalPages } = usePagination([], 10);
   const [sorted, setSorted] = useState(false);
   const [task, setTask] = useState<TaskDefinition>();
-  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
+  const [searchTerm, setSearchTerm] = useState('');
+  const { current: minisearch } = useRef(new MiniSearch({ fields: ['name'], idField: 'name' }));
   const addTaskModal = useDisclosure();
   const taskConfigModal = useDisclosure();
 
@@ -29,6 +37,12 @@ const TaskList = () => {
     });
   }, []);
 
+  useEffect(() => {
+    minisearch.addAll(tasks);
+  }, [tasks, minisearch]);
+
+  const searchFn = throttle(() => getFilteredResults(minisearch.search(searchTerm, { prefix: true }), tasks), 60);
+
   const handleTaskModal = (task: TaskDefinition) => {
     setTask(task);
     taskConfigModal.onOpen();
@@ -38,12 +52,12 @@ const TaskList = () => {
     const { deleteTaskDefinition } = callbackUtils.getCallbacks;
 
     deleteTaskDefinition(name).then((deletedTask) => {
-      setItemList(pageItems.filter((task: TaskDefinition) => task.name !== deletedTask.name));
+      setItemList(tasks.filter((task: TaskDefinition) => task.name !== deletedTask.name));
     });
   };
 
   const sortArray = (key: string) => {
-    const sortedArray = pageItems;
+    const sortedArray = tasks;
 
     sortedArray.sort(sorted ? sortDescBy(key) : sortAscBy(key));
     setSorted(!sorted);
@@ -71,6 +85,8 @@ const TaskList = () => {
     }
   };
 
+  const result = searchTerm.length > 2 ? searchFn() : tasks;
+
   return (
     <PageContainer>
       <AddTaskModal
@@ -86,9 +102,9 @@ const TaskList = () => {
             <Icon as={FontAwesomeIcon} icon={faSearch} color="grey" />
           </InputLeftElement>
           <Input
-            value={keywords}
+            value={searchTerm}
             placeholder="Search..."
-            onChange={(e) => setKeywords(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
             background="white"
           />
         </InputGroup>
@@ -98,7 +114,7 @@ const TaskList = () => {
       </Flex>
 
       <TaskTable
-        tasks={pageItems}
+        tasks={result}
         onTaskConfigClick={handleTaskModal}
         onTaskDelete={handleDeleteTask}
         pagination={{ currentPage, setCurrentPage, totalPages }}

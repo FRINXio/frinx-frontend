@@ -26,10 +26,10 @@ export default function TaskConfigModal({ isOpen, task, onClose }: TaskConfigMod
       <ModalOverlay />
       <ModalCloseButton />
       <ModalContent>
-        <ModalHeader>Details of {task?.name}</ModalHeader>
+        <ModalHeader>Details of {task.name}</ModalHeader>
         <ModalBody>
           <Text color="gray.500" mb={4}>
-            {jsonParse(task.description)?.description || task.description}
+            {jsonParse(task.description).description || task.description}
           </Text>
           <Editor
             name="task_details_editor"
