@@ -16,7 +16,7 @@ import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workfl
 import { orderBy } from 'lodash';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
 import Paginator from '../../../common/pagination';
-import { usePagination } from '../../../common/PaginationHook';
+import { usePagination } from '../../../common/pagination-hook';
 
 type Props = {
   onWorkflowIdClick: (workflowId: string) => void;
@@ -122,10 +122,14 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
 
   const changeLabels = (labels: string[]) => {
     setState((prev) => ({ ...prev, labels }));
+    hierarchicalPagination.setCurrentPage(1);
+    flatViewPagination.setCurrentPage(1);
   };
 
   const changeQuery = (query: string) => {
     setState((prev) => ({ ...prev, workflowId: query }));
+    hierarchicalPagination.setCurrentPage(1);
+    flatViewPagination.setCurrentPage(1);
   };
 
   const indent = (workflows: NestedExecutedWorkflow[], i: number, size?: number) => {

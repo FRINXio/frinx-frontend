@@ -22,7 +22,7 @@ import {
 import sortBy from 'lodash/sortBy';
 import FeatherIcon from 'feather-icons-react';
 import PageContainer from '../../../common/PageContainer';
-import { usePagination } from '../../../common/PaginationHook';
+import { usePagination } from '../../../common/pagination-hook';
 import callbackUtils from '../../../utils/callback-utils';
 import SchedulingModal from './scheduled-workflow-modal/scheduled-workflow-modal';
 import { ScheduledWorkflow, StatusType } from '../../../types/types';
@@ -30,7 +30,7 @@ import useNotifications from '../../../hooks/use-notifications';
 import Paginator from '../../../common/pagination';
 
 function ScheduledWorkflowList() {
-  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
+  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<ScheduledWorkflow>([], 10);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ScheduledWorkflow>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { addToastNotification } = useNotifications();
@@ -66,7 +66,7 @@ function ScheduledWorkflowList() {
     registerSchedule(scheduledWf.workflowName!, Number(scheduledWf.workflowVersion!), scheduledWf)
       .then((res) => {
         addToastNotification({
-          content: res.message,
+          content: 'Schedule successfully registered',
           type: 'success',
           title: 'Success',
         });
