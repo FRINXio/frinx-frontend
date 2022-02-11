@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import callbackUtils from '../../../utils/callback-utils';
+import React from 'react';
 import {
   Button,
   Modal,
@@ -13,40 +12,38 @@ import {
 } from '@chakra-ui/react';
 import { jsonParse } from '../../../common/utils';
 import Editor from '../../../common/editor';
+import { TaskDefinition } from '../../../types/uniflow-types';
 
-const TaskModal = ({ name, modalHandler, show }) => {
-  const [response, setResponse] = useState({});
+type TaskConfigModalProps = {
+  isOpen: boolean;
+  task: TaskDefinition;
+  onClose: () => void;
+};
 
-  useEffect(() => {
-    const { getTaskDefinition } = callbackUtils.getCallbacks;
-
-    getTaskDefinition(name).then((definition) => {
-      if (definition) {
-        setResponse(definition);
-      }
-    });
-  }, [name]);
-
+export default function TaskConfigModal({ isOpen, task, onClose }: TaskConfigModalProps) {
   return (
-    <Modal size="3xl" isOpen={show} onClose={modalHandler}>
+    <Modal size="3xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalCloseButton />
       <ModalContent>
-        <ModalHeader>Details of {response?.name}</ModalHeader>
+        <ModalHeader>Details of {task?.name}</ModalHeader>
         <ModalBody>
           <Text color="gray.500" mb={4}>
-            {jsonParse(response.description)?.description || response.description}
+            {jsonParse(task.description)?.description || task.description}
           </Text>
-          <Editor name="task_details_editor" value={JSON.stringify(response, null, 2)} isReadOnly={true} />
+          <Editor
+            name="task_details_editor"
+            value={JSON.stringify(task, null, 2)}
+            isReadOnly={true}
+            onChange={undefined}
+          />
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="gray" onClick={modalHandler}>
+          <Button colorScheme="gray" onClick={onClose}>
             Close
           </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>
   );
-};
-
-export default TaskModal;
+}

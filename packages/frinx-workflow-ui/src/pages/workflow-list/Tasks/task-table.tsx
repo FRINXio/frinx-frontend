@@ -16,7 +16,7 @@ type TaskTableProps = {
   tasks: Array<TaskDefinition>;
   sortArray: (fieldName: string) => void;
   onTaskDelete: (taskName: string) => void;
-  onTaskConfigClick: (taskName: string) => void;
+  onTaskConfigClick: (task: TaskDefinition) => void;
 };
 
 export default function TaskTable({
@@ -69,7 +69,7 @@ export default function TaskTable({
                   variant="outline"
                   title="Definition"
                   icon={<Icon as={FontAwesomeIcon} icon={faFileCode} />}
-                  onClick={() => onTaskConfigClick(task.name)}
+                  onClick={() => onTaskConfigClick(task)}
                 />
                 <IconButton
                   aria-label="Delete task"

@@ -1,7 +1,6 @@
 import AddTaskModal from './add-task-modal';
 import PageContainer from '../../../common/PageContainer';
 import React, { useEffect, useState } from 'react';
-import TaskModal from './TaskModal';
 import callbackUtils from '../../../utils/callback-utils';
 import { Button, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,78 +9,51 @@ import { sortAscBy, sortDescBy } from '../workflowUtils';
 import { taskDefinition } from '../../../constants';
 import { usePagination } from '../../../common/PaginationHook';
 import TaskTable from './task-table';
+import { TaskDefinition } from '../../../types/uniflow-types';
+import TaskConfigModal from './task-modal';
 
 const TaskList = () => {
   const [keywords, setKeywords] = useState('');
   const [sorted, setSorted] = useState(false);
-  const [data, setData] = useState([]);
-  const [taskModal, setTaskModal] = useState(false);
-  const [taskName, setTaskName] = useState(null);
+  const [task, setTask] = useState<TaskDefinition>();
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
   const addTaskModal = useDisclosure();
+  const taskConfigModal = useDisclosure();
 
   useEffect(() => {
-    getData();
-  }, []);
-
-  useEffect(() => {
-    const results = !keywords
-      ? data
-      : data.filter((e) => {
-          const searchedKeys = [
-            'name',
-            'timeoutPolicy',
-            'timeoutSeconds',
-            'responseTimeoutSeconds',
-            'retryCount',
-            'retryLogic',
-          ];
-
-          for (let i = 0; i < searchedKeys.length; i += 1) {
-            if (e[searchedKeys[i]].toString().toLowerCase().includes(keywords.toLocaleLowerCase())) {
-              return true;
-            }
-          }
-          return false;
-        });
-    setItemList(results);
-  }, [keywords, data]);
-
-  const getData = () => {
     const { getTaskDefinitions } = callbackUtils.getCallbacks;
 
     getTaskDefinitions().then((taskDefinitions) => {
       const data = taskDefinitions.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
-      setData(data);
+      setItemList(data);
     });
+  }, []);
+
+  const handleTaskModal = (task: TaskDefinition) => {
+    setTask(task);
+    taskConfigModal.onOpen();
   };
 
-  const handleTaskModal = (name) => {
-    const taskName = name !== undefined ? name : null;
-    setTaskName(taskName);
-    setTaskModal(!taskModal);
-  };
-
-  const deleteTask = (name) => {
+  const handleDeleteTask = (name: string) => {
     const { deleteTaskDefinition } = callbackUtils.getCallbacks;
 
-    deleteTaskDefinition(name).then(() => {
-      getData();
+    deleteTaskDefinition(name).then((deletedTask) => {
+      setItemList(pageItems.filter((task: TaskDefinition) => task.name !== deletedTask.name));
     });
   };
 
-  const sortArray = (key) => {
-    const sortedArray = data;
+  const sortArray = (key: string) => {
+    const sortedArray = pageItems;
 
     sortedArray.sort(sorted ? sortDescBy(key) : sortAscBy(key));
     setSorted(!sorted);
-    setData(sortedArray);
+    setItemList(sortedArray);
   };
 
-  const addTask = (task) => {
+  const addTask = (task: TaskDefinition) => {
     Object.keys(task).forEach((key) => {
       if (key === 'inputKeys' || key === 'outputKeys') {
-        task[key] = task[key].filter((e) => {
+        task[key] = task[key]?.filter((e) => {
           return e !== '';
         });
         task[key] = [...new Set(task[key])];
@@ -99,10 +71,6 @@ const TaskList = () => {
     }
   };
 
-  const taskModalComp = taskModal ? (
-    <TaskModal name={taskName} modalHandler={() => handleTaskModal()} show={taskModal} />
-  ) : null;
-
   return (
     <PageContainer>
       <AddTaskModal
@@ -111,7 +79,7 @@ const TaskList = () => {
         onClose={addTaskModal.onClose}
         task={taskDefinition}
       />
-      {taskModalComp}
+      {task && <TaskConfigModal isOpen={taskConfigModal.isOpen} onClose={taskConfigModal.onClose} task={task} />}
       <Flex marginBottom={8}>
         <InputGroup>
           <InputLeftElement>
@@ -132,7 +100,7 @@ const TaskList = () => {
       <TaskTable
         tasks={pageItems}
         onTaskConfigClick={handleTaskModal}
-        onTaskDelete={deleteTask}
+        onTaskDelete={handleDeleteTask}
         pagination={{ currentPage, setCurrentPage, totalPages }}
         sortArray={sortArray}
       />
