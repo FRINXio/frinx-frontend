@@ -174,6 +174,11 @@ export type DataStore = {
   snapshots: Array<Snapshot>;
 };
 
+export type DeleteBlueprintPayload = {
+  __typename?: 'DeleteBlueprintPayload';
+  blueprint: Maybe<Blueprint>;
+};
+
 export type DeleteDevicePayload = {
   __typename?: 'DeleteDevicePayload';
   device: Maybe<Device>;
@@ -330,6 +335,7 @@ export type Mutation = {
   addLocation: AddLocationPayload;
   addBlueprint: AddBlueprintPayload;
   updateBlueprint: UpdateBlueprintPayload;
+  deleteBlueprint: DeleteBlueprintPayload;
 };
 
 
@@ -440,6 +446,11 @@ export type MutationAddBlueprintArgs = {
 export type MutationUpdateBlueprintArgs = {
   id: Scalars['String'];
   input: UpdateBlueprintInput;
+};
+
+
+export type MutationDeleteBlueprintArgs = {
+  id: Scalars['String'];
 };
 
 export type Node = {
@@ -734,6 +745,22 @@ export type BlueprintsQuery = (
         { __typename?: 'Blueprint' }
         & Pick<Blueprint, 'id' | 'createdAt' | 'name'>
       ) }
+    )> }
+  ) }
+);
+
+export type DeleteBlueprintMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteBlueprintMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteBlueprint: (
+    { __typename?: 'DeleteBlueprintPayload' }
+    & { blueprint: Maybe<(
+      { __typename?: 'Blueprint' }
+      & Pick<Blueprint, 'id'>
     )> }
   ) }
 );
