@@ -1,8 +1,11 @@
 import { Link } from 'beautiful-react-diagrams/@types/DiagramSchema';
-import { Elements, Position as FlowPosition, Node, Edge } from 'react-flow-renderer';
+import { Elements, Position as FlowPosition, Node, Edge, NodeTypesType } from 'react-flow-renderer';
 import { v4 as uuid } from 'uuid';
 import { Task, CustomNodeType, ExtendedTask, Workflow } from './types';
 import { getTaskLabel } from './task.helpers';
+import { TaskType } from './types';
+
+type NodeType = 'decision' | 'fork_join' | 'join' | 'default';
 
 type Position = { x: number; y: number };
 type HandlePosition = {
@@ -111,6 +114,18 @@ function getNodePosition(): Position {
   };
 }
 
+function getNodeType(taskType: TaskType): NodeType {
+  switch (taskType) {
+    case 'DECISION':
+      return 'decision';
+    case 'FORK_JOIN':
+      return 'fork_join';
+    case 'JOIN':
+      return 'join';
+    default:
+      return 'default';
+  }
+}
 function createStartNode(): Node {
   return {
     id: 'start',
@@ -130,11 +145,11 @@ function createEndNode(): Node {
 }
 
 function convertTaskToNode(task: ExtendedTask): Node[] {
-  const { taskReferenceName } = task;
+  const { taskReferenceName, type } = task;
 
   const node = {
     id: taskReferenceName,
-    type: task.type === 'DECISION' ? 'decision' : undefined,
+    type: getNodeType(type as TaskType), // RAW type is node in TaskType???
     position: getNodePosition(),
     data: {
       label: taskReferenceName,
@@ -167,6 +182,21 @@ function convertTaskToNode(task: ExtendedTask): Node[] {
     const defaultExtendedTasks = task.defaultCase.map(convertTaskToExtendedTask);
     const defaultDecisionNodes = createNodes(defaultExtendedTasks); // eslint-disable-line @typescript-eslint/no-use-before-define
     return [decisionNode, ...decisionChildren, ...defaultDecisionNodes];
+  }
+
+  if (task.type === 'FORK_JOIN') {
+    const forkNode = {
+      ...node,
+    };
+
+    const forkNodeChildren = task.forkTasks
+      .map((tasks) => {
+        const forkExtendedTasks = tasks.map(convertTaskToExtendedTask);
+        return createNodes(forkExtendedTasks);
+      })
+      .flat();
+
+    return [forkNode, ...forkNodeChildren];
   }
 
   return [node];
@@ -262,6 +292,45 @@ function createEdges(tasks: Task[]): Edge[] {
         : null;
       const allDefaultCaseEdges = startDefaultCaseEdge ? [...defaultCaseEdges, startDefaultCaseEdge] : defaultCaseEdges;
       return [...prev, newEdge, ...decisionEdges, ...allDefaultCaseEdges];
+    }
+
+    // edges for fork task
+    if (curr.type === 'FORK_JOIN') {
+      const newEdge = {
+        id: `e${previousTask.taskReferenceName}-${curr.taskReferenceName}`,
+        source: previousTask.taskReferenceName,
+        target: curr.taskReferenceName,
+        style: { background: '#fff' },
+      };
+
+      const forkEdges = curr.forkTasks
+        .map((forkTasks) => {
+          // edge connecting fork task with its branches
+          const firstBranchEdge = forkTasks.length
+            ? {
+                id: `e${curr.taskReferenceName}-${forkTasks[0].taskReferenceName}`,
+                source: curr.taskReferenceName,
+                target: forkTasks[0].taskReferenceName,
+              }
+            : null;
+          const forkBranchEdges = createEdges(forkTasks);
+          const allBranchEdges = firstBranchEdge ? [firstBranchEdge, ...forkBranchEdges] : forkBranchEdges;
+          return allBranchEdges;
+        })
+        .flat();
+
+      return [...prev, newEdge, ...forkEdges];
+    }
+
+    // edges for jon task
+    if (curr.type === 'JOIN') {
+      const joinEdges = curr.joinOn.map((forkTaskId) => ({
+        id: `e${forkTaskId}-${curr.taskReferenceName}`,
+        source: forkTaskId,
+        target: curr.taskReferenceName,
+      }));
+      console.log(joinEdges);
+      return [...prev, ...joinEdges];
     }
 
     const newEdge = {
