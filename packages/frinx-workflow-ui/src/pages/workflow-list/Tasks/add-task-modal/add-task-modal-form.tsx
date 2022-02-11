@@ -1,7 +1,8 @@
 import React from 'react';
-import { Box, FormControl, FormLabel, Grid, Input, Select, Tag } from '@chakra-ui/react';
+import { Box, FormControl, FormLabel, Grid, Icon, Input, Select, Tag, Tooltip } from '@chakra-ui/react';
 import { taskDefinition } from '../../../../constants';
 import { TaskDefinition } from '../../../../types/uniflow-types';
+import { InfoIcon } from '@chakra-ui/icons';
 
 type Key = keyof typeof taskDefinition;
 
@@ -80,7 +81,7 @@ export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormP
       e.preventDefault();
 
       const inputKeys = Array.from(task[fieldName] || []);
-      onChange(fieldName, [...inputKeys, ref.current.value.trim()]);
+      onChange(fieldName, [...inputKeys, ref.current.value.trim().replaceAll(' ', '_')]);
       ref.current.value = '';
     }
   };
@@ -131,8 +132,14 @@ export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormP
           value={task.responseTimeoutSeconds}
           type="number"
         />
-        <Box>
-          <FormInput
+        <FormControl>
+          <FormLabel htmlFor="inputKeys">
+            Input Keys
+            <Tooltip label="Hit enter to add input key">
+              <Icon as={InfoIcon} ml={2} />
+            </Tooltip>
+          </FormLabel>
+          <Input
             id="inputKeys"
             label="Input Keys"
             ref={inputKeysRef}
@@ -147,13 +154,19 @@ export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormP
                 </Tag>
               ))}
           </Box>
-        </Box>
-        <Box>
-          <FormInput
+        </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="outputKeys">
+            Output Keys
+            <Tooltip label="Hit enter to add output key">
+              <Icon as={InfoIcon} ml={2} />
+            </Tooltip>
+          </FormLabel>
+          <Input
             id="outputKeys"
-            label="Output Keys"
             ref={outputKeysRef}
             onKeyPress={(e) => handleKeyPress('outputKeys', e, outputKeysRef)}
+            placeholder="Enter output keys"
           />
           <Box mt={1}>
             {task.outputKeys != null &&
@@ -164,7 +177,7 @@ export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormP
                 </Tag>
               ))}
           </Box>
-        </Box>
+        </FormControl>
       </Grid>
     </form>
   );

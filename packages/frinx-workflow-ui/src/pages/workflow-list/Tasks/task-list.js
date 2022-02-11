@@ -160,17 +160,15 @@ const TaskList = () => {
   const addTask = (task) => {
     Object.keys(task).forEach((key) => {
       if (key === 'inputKeys' || key === 'outputKeys') {
-        task[key] = task[key]
-          .replace(/ /g, '')
-          .split(',')
-          .filter((e) => {
-            return e !== '';
-          });
+        task[key] = task[key].filter((e) => {
+          return e !== '';
+        });
         task[key] = [...new Set(task[key])];
       }
     });
     if (task['name'] !== '') {
-      const newTask = { ...task, ownerEmail: 'example@example.com' };
+      const ownerEmail = task.ownerEmail || 'example@example.com';
+      const newTask = { ...task, ownerEmail };
 
       const { registerTaskDefinition } = callbackUtils.getCallbacks;
 
