@@ -1,11 +1,14 @@
 import { Box, Flex } from '@chakra-ui/react';
 import React, { HTMLAttributes, VoidFunctionComponent } from 'react';
 
+type Direction = 'down' | 'up';
+
 type Item = {
   label: string;
   value: string;
 };
 type Props = {
+  direction: Direction;
   items: Item[];
   menuProps: HTMLAttributes<HTMLElement>;
   isOpen: boolean;
@@ -17,6 +20,7 @@ type Props = {
 };
 
 const AutocompleteMenu: VoidFunctionComponent<Props> = ({
+  direction,
   items,
   menuProps,
   isOpen,
@@ -26,8 +30,25 @@ const AutocompleteMenu: VoidFunctionComponent<Props> = ({
   inputValue,
   selectItem,
 }) => {
+  const menuDirection =
+    direction === 'up'
+      ? {
+          bottom: '100%',
+        }
+      : {
+          top: '100%',
+        };
+
   return (
-    <Box {...menuProps} position="absolute" top="100%" right="0" left="0" zIndex="dropdown" transform="translateY(6px)">
+    <Box
+      {...menuProps}
+      {...menuDirection}
+      position="absolute"
+      right="0"
+      left="0"
+      zIndex="dropdown"
+      transform="translateY(6px)"
+    >
       {isOpen && (
         <Box
           paddingY={2}
