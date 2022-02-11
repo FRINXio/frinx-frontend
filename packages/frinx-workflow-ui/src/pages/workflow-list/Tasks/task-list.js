@@ -27,7 +27,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileCode, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
 import { taskDefinition } from '../../../constants';
-import { usePagination } from '../../../common/PaginationHook';
+import { usePagination } from '../../../common/pagination-hook';
 
 const TaskList = () => {
   const [keywords, setKeywords] = useState('');
