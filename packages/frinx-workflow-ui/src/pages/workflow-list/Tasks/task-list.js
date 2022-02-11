@@ -1,33 +1,15 @@
-// @flow
 import AddTaskModal from './add-task-modal';
 import PageContainer from '../../../common/PageContainer';
-import Paginator from '../../../common/pagination';
 import React, { useEffect, useState } from 'react';
 import TaskModal from './TaskModal';
 import callbackUtils from '../../../utils/callback-utils';
-import {
-  Button,
-  Flex,
-  Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Stack,
-  Table,
-  Tbody,
-  Td,
-  Tfoot,
-  Th,
-  Thead,
-  Tr,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Button, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileCode, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
 import { taskDefinition } from '../../../constants';
 import { usePagination } from '../../../common/PaginationHook';
+import TaskTable from './task-table';
 
 const TaskList = () => {
   const [keywords, setKeywords] = useState('');
@@ -80,41 +62,6 @@ const TaskList = () => {
     setTaskModal(!taskModal);
   };
 
-  const filteredRows = () => {
-    return pageItems.map((e) => {
-      return (
-        <Tr key={e.name}>
-          <Td>{e.name}</Td>
-          <Td>{e.timeoutPolicy}</Td>
-          <Td>{e.timeoutSeconds}</Td>
-          <Td>{e.responseTimeoutSeconds}</Td>
-          <Td>{e.retryCount}</Td>
-          <Td>{e.retryLogic}</Td>
-          <Td textAlign="center">
-            <Stack direction="row" spacing={1}>
-              <IconButton
-                colorScheme="gray"
-                isRound
-                variant="outline"
-                title="Definition"
-                icon={<Icon as={FontAwesomeIcon} icon={faFileCode} />}
-                onClick={() => handleTaskModal(e.name)}
-              />
-              <IconButton
-                colorScheme="red"
-                isRound
-                variant="outline"
-                onClick={() => deleteTask(e.name)}
-                title="Delete"
-                icon={<Icon as={FontAwesomeIcon} icon={faTrash} />}
-              />
-            </Stack>
-          </Td>
-        </Tr>
-      );
-    });
-  };
-
   const deleteTask = (name) => {
     const { deleteTaskDefinition } = callbackUtils.getCallbacks;
 
@@ -129,32 +76,6 @@ const TaskList = () => {
     sortedArray.sort(sorted ? sortDescBy(key) : sortAscBy(key));
     setSorted(!sorted);
     setData(sortedArray);
-  };
-
-  const taskTable = () => {
-    return (
-      <Table background="white">
-        <Thead>
-          <Tr>
-            <Th onClick={() => sortArray('name')}>Name/Version</Th>
-            <Th onClick={() => sortArray('timeoutPolicy')}>Timeout Policy</Th>
-            <Th onClick={() => sortArray('timeoutSeconds')}>Timeout Seconds</Th>
-            <Th onClick={() => sortArray('responseTimeoutSeconds')}>Response Timeout</Th>
-            <Th onClick={() => sortArray('retryCount')}>Retry Count</Th>
-            <Th onClick={() => sortArray('retryLogic')}>Retry Logic</Th>
-            <Th textAlign="center">Actions</Th>
-          </Tr>
-        </Thead>
-        <Tbody>{filteredRows()}</Tbody>
-        <Tfoot>
-          <Tr>
-            <Th>
-              <Paginator currentPage={currentPage} onPaginationClick={setCurrentPage} pagesCount={totalPages} />
-            </Th>
-          </Tr>
-        </Tfoot>
-      </Table>
-    );
   };
 
   const addTask = (task) => {
@@ -208,7 +129,13 @@ const TaskList = () => {
         </Button>
       </Flex>
 
-      {taskTable()}
+      <TaskTable
+        tasks={pageItems}
+        onTaskConfigClick={handleTaskModal}
+        onTaskDelete={deleteTask}
+        pagination={{ currentPage, setCurrentPage, totalPages }}
+        sortArray={sortArray}
+      />
     </PageContainer>
   );
 };
