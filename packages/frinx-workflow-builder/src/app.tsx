@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
 import { useSchema } from 'beautiful-react-diagrams';
-import ReactFlow from 'react-flow-renderer';
+import ReactFlow, { Background, BackgroundVariant } from 'react-flow-renderer';
 import 'beautiful-react-diagrams/dist/styles.css';
 import produce, { castImmutable } from 'immer';
 import React, { useCallback, useMemo, useRef, useState, VoidFunctionComponent } from 'react';
@@ -22,6 +22,11 @@ import unwrap from './helpers/unwrap';
 import { createWorkflowHelper, deserializeId } from './helpers/workflow.helpers';
 import { getLayoutedElements } from './helpers/layout.helpers';
 import { useTaskActions } from './task-actions-context';
+import DecisionNode from './components/decision-node/decision-node';
+
+const nodeTypes = {
+  decision: DecisionNode,
+};
 
 type Props = {
   onClose: () => void;
@@ -182,7 +187,9 @@ const App: VoidFunctionComponent<Props> = ({
           <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
         </Box>
         <Box minHeight="60vh" maxHeight="100vh" position="relative">
-          <ReactFlow elements={layoutedElements} />
+          <ReactFlow elements={layoutedElements} nodeTypes={nodeTypes}>
+            <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
+          </ReactFlow>
           {selectedTask?.task && selectedTask?.actionType === 'edit' && (
             <RightDrawer>
               <Box px={6} py={10}>

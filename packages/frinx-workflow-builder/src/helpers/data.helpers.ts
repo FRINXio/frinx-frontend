@@ -13,6 +13,7 @@ type HandlePosition = {
 type NodeStyle = {
   padding: number;
   border: string;
+  background: string;
 };
 
 type NodeLink = {
@@ -62,6 +63,7 @@ function getNodeStyle(): NodeStyle {
   return {
     padding: 15,
     border: '1px solid black',
+    background: '#ddd',
   };
 }
 
@@ -141,10 +143,15 @@ function convertTaskToNode(task: ExtendedTask): Node[] {
   };
 
   if (task.type === 'DECISION') {
-    const handles = Object.keys(task.decisionCases);
+    const decisionHandles = Object.keys(task.decisionCases);
+    const handles = [...decisionHandles, 'default'];
     const decisionNode = {
       ...node,
-      handles,
+      style: getNodeStyle(),
+      data: {
+        ...node.data,
+        handles,
+      },
     };
 
     const decisionChildren = Object.keys(task.decisionCases)
@@ -224,6 +231,7 @@ function createEdges(tasks: Task[]): Edge[] {
         id: `e${previousTask.taskReferenceName}-${curr.taskReferenceName}`,
         source: previousTask.taskReferenceName,
         target: curr.taskReferenceName,
+        style: { background: '#fff' },
       };
       const decisionEdges = Object.keys(curr.decisionCases)
         .map((d) => {
@@ -236,6 +244,7 @@ function createEdges(tasks: Task[]): Edge[] {
                 id: `e${curr.taskReferenceName}-${decisionTasks[0].taskReferenceName}`,
                 source: curr.taskReferenceName,
                 target: decisionTasks[0].taskReferenceName,
+                sourceHandle: `${d}`,
               }
             : null;
           return startDecisionEdge ? [...currentDecisionEdges, startDecisionEdge] : currentDecisionEdges;
@@ -248,6 +257,7 @@ function createEdges(tasks: Task[]): Edge[] {
             id: `e${curr.taskReferenceName}-${curr.defaultCase[0].taskReferenceName}`,
             source: curr.taskReferenceName,
             target: curr.defaultCase[0].taskReferenceName,
+            sourceHandle: 'default',
           }
         : null;
       const allDefaultCaseEdges = startDefaultCaseEdge ? [...defaultCaseEdges, startDefaultCaseEdge] : defaultCaseEdges;
