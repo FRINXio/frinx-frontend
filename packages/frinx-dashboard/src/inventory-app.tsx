@@ -1,6 +1,6 @@
+import { InventoryApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { Redirect, Route, RouteComponentProps, Switch, useHistory } from 'react-router-dom';
-import { InventoryApi } from '@frinx/api';
 import { authContext } from './auth-helpers';
 
 type InventoryComponents = typeof import('@frinx/inventory-client/src');

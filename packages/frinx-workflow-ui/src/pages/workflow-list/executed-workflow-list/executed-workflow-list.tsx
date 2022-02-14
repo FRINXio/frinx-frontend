@@ -16,7 +16,7 @@ import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workfl
 import { orderBy } from 'lodash';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
 import Paginator from '../../../common/pagination';
-import { usePagination } from '../../../common/PaginationHook';
+import { usePagination } from '../../../common/pagination-hook';
 
 type Props = {
   onWorkflowIdClick: (workflowId: string) => void;
@@ -29,8 +29,6 @@ type StateProps = {
   openParentWorkflows: NestedExecutedWorkflow[];
   isFlat: boolean;
   showChildren: NestedExecutedWorkflow[];
-  workflowsPerPage: number;
-  viewedPage: number;
   sort: number[];
   labels: string[];
 };
@@ -43,8 +41,6 @@ const initialState = {
   openParentWorkflows: [],
   isFlat: false,
   showChildren: [],
-  workflowsPerPage: ITEMS_PER_PAGE,
-  viewedPage: 0,
   sort: [/*workflowId*/ 2, /*startTime*/ 0, /*endTime*/ 2],
   labels: [],
 };
@@ -57,13 +53,29 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   const flatViewPagination = usePagination([], ITEMS_PER_PAGE);
 
   useEffect(() => {
-    fetchNewData(state.workflowId, state.viewedPage, state.workflowsPerPage, state.labels).then((response) => {
+    fetchNewData(
+      state.workflowId,
+      flatViewPagination.currentPage,
+      flatViewPagination.maxItemsPerPage,
+      state.labels,
+    ).then((response) => {
       setFlatWorkflows(response);
     });
-    fetchParentWorkflows(state.workflowId, state.viewedPage, state.workflowsPerPage, state.labels).then((response) => {
+    fetchParentWorkflows(
+      state.workflowId,
+      hierarchicalPagination.currentPage,
+      hierarchicalPagination.maxItemsPerPage,
+      state.labels,
+    ).then((response) => {
       setHierarchicalWorkflows(response);
     });
-  }, [state]);
+  }, [
+    state,
+    hierarchicalPagination.currentPage,
+    hierarchicalPagination.maxItemsPerPage,
+    flatViewPagination.currentPage,
+    flatViewPagination.maxItemsPerPage,
+  ]);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, selectedWorkflows: [...new Set<string>()] }));
@@ -110,10 +122,14 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
 
   const changeLabels = (labels: string[]) => {
     setState((prev) => ({ ...prev, labels }));
+    hierarchicalPagination.setCurrentPage(1);
+    flatViewPagination.setCurrentPage(1);
   };
 
   const changeQuery = (query: string) => {
     setState((prev) => ({ ...prev, workflowId: query }));
+    hierarchicalPagination.setCurrentPage(1);
+    flatViewPagination.setCurrentPage(1);
   };
 
   const indent = (workflows: NestedExecutedWorkflow[], i: number, size?: number) => {
@@ -162,11 +178,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
         if (state.isFlat) {
           selectedWorkflows = new Set(flatWorkflows.result.hits.map((workflow) => workflow.workflowId));
         } else {
-          selectedWorkflows = new Set(
-            hierarchicalWorkflows.children
-              .map((workflow) => workflow.workflowId)
-              .concat(hierarchicalWorkflows.parents.map((workflow) => workflow.workflowId)),
-          );
+          selectedWorkflows = new Set(hierarchicalWorkflows.parents.map((workflow) => workflow.workflowId));
         }
 
         return { ...prev, selectedWorkflows: [...selectedWorkflows] };
@@ -205,8 +217,6 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   };
 
   const handlePaginationClick = (pageNumber: number) => {
-    setState((prev) => ({ ...prev, viewedPage: pageNumber - 1 }));
-
     if (state.isFlat) {
       flatViewPagination.setCurrentPage(pageNumber);
     } else {
@@ -294,10 +304,12 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
             sort={state.sort}
             flatWorkflows={flat}
           />
+
           <Paginator
             currentPage={flatViewPagination.currentPage}
             onPaginationClick={handlePaginationClick}
             pagesCount={Math.ceil(workflowsAmount / ITEMS_PER_PAGE)}
+            showPageNumbers={false}
           />
         </>
       )}

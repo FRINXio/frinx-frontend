@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Icon, Input, InputGroup, InputLeftElement, Table, Tbody, Td, Tfoot, Th, Thead, Tr } from '@chakra-ui/react';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
-import { usePagination } from '../../../common/PaginationHook';
+import { usePagination } from '../../../common/pagination-hook';
 
 const PollData = () => {
   const [sorted, setSorted] = useState(false);

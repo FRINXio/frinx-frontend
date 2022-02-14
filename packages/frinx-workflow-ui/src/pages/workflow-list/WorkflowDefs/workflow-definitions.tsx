@@ -39,7 +39,7 @@ import WfLabels from '../../../common/wf-labels';
 import WorkflowListViewModal from './WorkflowListViewModal/WorkflowListViewModal';
 import callbackUtils from '../../../utils/callback-utils';
 import { jsonParse } from '../../../common/utils';
-import { usePagination } from '../../../common/PaginationHook';
+import { usePagination } from '../../../common/pagination-hook';
 import WorkflowActions from './workflow-actions';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import { ScheduledWorkflow, Workflow } from '../../../types/types';

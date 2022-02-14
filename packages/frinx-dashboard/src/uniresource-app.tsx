@@ -1,7 +1,6 @@
 import { UniresourceApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { Redirect, Route, RouteComponentProps, Switch, useHistory } from 'react-router-dom';
-import { v4 as uuid } from 'uuid';
 import { authContext } from './auth-helpers';
 
 const UniresourceApp: FC = () => {
@@ -64,15 +63,7 @@ const UniresourceApp: FC = () => {
           exact
           path="/uniresource/pools/:poolId"
           render={(props: RouteComponentProps<{ poolId: string }>) => {
-            return (
-              <PoolDetailPage
-                poolId={props.match.params.poolId}
-                reload={() => {
-                  setKey(uuid());
-                }}
-                key={key}
-              />
-            );
+            return <PoolDetailPage poolId={props.match.params.poolId} />;
           }}
         />
         <Route exact path="/uniresource/pools/new/allocating/ipv4-prefix">

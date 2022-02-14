@@ -83,13 +83,15 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
               path={window.__CONFIG__.uniflow_api_docs_url}
               isLinkExternal
             />
-            <Panel
-              label="Device Inventory"
-              description="Execute and inspect queries with GraphQL Playground."
-              icon="book"
-              path={window.__CONFIG__.inventory_api_url}
-              isLinkExternal
-            />
+            {window.__CONFIG__.auth_enabled ? null : (
+              <Panel
+                label="Device Inventory"
+                description="Execute and inspect queries with GraphQL Playground."
+                icon="book"
+                path={window.__CONFIG__.inventory_api_url}
+                isLinkExternal
+              />
+            )}
           </HStack>
         </Box>
       </Container>

@@ -34,8 +34,7 @@ const ExecutedWorkflowHierarchicalTable: FC<Props> = ({
   hierarchicalWorkflows,
   selectAllWorkflows,
 }) => {
-  const areSelectedAll =
-    hierarchicalWorkflows.children.length + hierarchicalWorkflows.parents.length === selectedWfs.length;
+  const areSelectedAll = hierarchicalWorkflows.parents.length === selectedWfs.length;
 
   return (
     <Box marginBottom={10}>
