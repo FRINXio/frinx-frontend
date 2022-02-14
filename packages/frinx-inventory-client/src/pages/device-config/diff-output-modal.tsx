@@ -3,6 +3,7 @@ import {
   Button,
   Code,
   Heading,
+  Icon,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -11,6 +12,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { gql, useQuery } from 'urql';
 import { CalculatedDiffQuery, CalculatedDiffQueryVariables, CalculatedDiffResult } from '../../__generated__/graphql';
@@ -29,7 +31,8 @@ const CALCULATED_DIFF_QUERY = gql`
         }
         updatedData {
           path
-          data
+          actualData
+          intendedData
         }
       }
     }
@@ -92,6 +95,7 @@ const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId, tran
   }
 
   const { result } = data.calculatedDiff;
+  const { updatedData, ...rest } = result;
 
   return (
     <Modal isOpen onClose={onClose} size="6xl" scrollBehavior="inside">
@@ -101,7 +105,7 @@ const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId, tran
         <ModalCloseButton />
         <ModalBody overflowX="auto">
           {isResultEmpty(result) && 'No diff'}
-          {Object.entries(result).map(([key, value]) => {
+          {Object.entries(rest).map(([key, value]) => {
             if (Array.isArray(value) && value.length) {
               return (
                 <Box key={key} overflow="hidden">
@@ -133,6 +137,70 @@ const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId, tran
             }
             return null;
           })}
+          {Array.isArray(updatedData) && updatedData.length > 0 && (
+            <Box overflow="hidden">
+              <Heading
+                size="sm"
+                as="h3"
+                paddingY={2}
+                paddingX={4}
+                backgroundColor={getColor('updatedData')}
+                color="blackAlpha.700"
+                borderRadius="md"
+              >
+                {getDiffTypeFromKey('updatedData')}
+              </Heading>
+              {updatedData.map((v) => (
+                <Box key={v.path} paddingY={2} paddingX={4}>
+                  <Heading size="xs" as="h4" fontFamily="monospace">
+                    {v.path}
+                  </Heading>
+                  <Box marginY={2}>
+                    <Heading
+                      size="xs"
+                      as="h5"
+                      backgroundColor="green.300"
+                      borderRadius="md"
+                      color="blackAlpha.700"
+                      paddingY={2}
+                      paddingX={4}
+                      display="flex"
+                      alignItems="center"
+                    >
+                      <Icon as={FeatherIcon} icon="plus-square" size={24} marginRight={2} />
+                      Added
+                    </Heading>
+                    <pre>
+                      <Code width="100%" display="block" backgroundColor="green.50">
+                        {JSON.stringify(JSON.parse(v.actualData), null, 2)}
+                      </Code>
+                    </pre>
+                  </Box>
+                  <Box marginY={2}>
+                    <Heading
+                      size="xs"
+                      as="h5"
+                      backgroundColor="red.300"
+                      borderRadius="md"
+                      color="blackAlpha.700"
+                      paddingY={2}
+                      paddingX={4}
+                      display="flex"
+                      alignItems="center"
+                    >
+                      <Icon as={FeatherIcon} icon="minus-square" size={24} marginRight={2} />
+                      Deleted
+                    </Heading>
+                    <pre>
+                      <Code width="100%" display="block" backgroundColor="red.50">
+                        {JSON.stringify(JSON.parse(v.intendedData), null, 2)}
+                      </Code>
+                    </pre>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+          )}
         </ModalBody>
 
         <ModalFooter>

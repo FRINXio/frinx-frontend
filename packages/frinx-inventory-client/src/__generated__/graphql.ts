@@ -108,7 +108,14 @@ export type CalculatedDiffResult = {
   __typename?: 'CalculatedDiffResult';
   createdData: Array<DiffData>;
   deletedData: Array<DiffData>;
-  updatedData: Array<DiffData>;
+  updatedData: Array<CalculatedUpdateDiffData>;
+};
+
+export type CalculatedUpdateDiffData = {
+  __typename?: 'CalculatedUpdateDiffData';
+  path: Scalars['String'];
+  intendedData: Scalars['String'];
+  actualData: Scalars['String'];
 };
 
 export type CloseTransactionPayload = {
@@ -958,8 +965,8 @@ export type CalculatedDiffQuery = (
         { __typename?: 'DiffData' }
         & Pick<DiffData, 'path' | 'data'>
       )>, updatedData: Array<(
-        { __typename?: 'DiffData' }
-        & Pick<DiffData, 'path' | 'data'>
+        { __typename?: 'CalculatedUpdateDiffData' }
+        & Pick<CalculatedUpdateDiffData, 'path' | 'actualData' | 'intendedData'>
       )> }
     ) }
   ) }
