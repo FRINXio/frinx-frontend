@@ -119,9 +119,7 @@ function getNodeType(taskType: TaskType): NodeType {
     case 'DECISION':
       return 'decision';
     case 'FORK_JOIN':
-      return 'fork_join';
     case 'JOIN':
-      return 'join';
     default:
       return 'default';
   }
