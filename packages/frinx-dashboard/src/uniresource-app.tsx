@@ -6,7 +6,6 @@ import { authContext } from './auth-helpers';
 const UniresourceApp: FC = () => {
   const [components, setComponents] = useState<typeof import('@frinx/uniresource-ui') | null>(null);
   const history = useHistory();
-  const [key, setKey] = useState(uuid());
 
   useEffect(() => {
     import('@frinx/uniresource-ui').then((mod) => {

@@ -21,7 +21,7 @@ import SearchByTagInput from '../../components/search-by-tag-input';
 import { useTagsInput } from '../../hooks/use-tags-input';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
-type FormValues = {
+export type FormValues = {
   name: string;
   description: string;
   resourceTypeId: string;
@@ -386,7 +386,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
               poolProperties={poolProperties}
               poolPropertyTypes={poolPropertyTypes}
               onChange={handlePoolPropertiesChange}
-              poolPropertyErrors={errors.poolProperties}
+              errors={errors}
             />
           </Box>
           <Divider marginY={5} orientation="horizontal" color="gray.200" />
