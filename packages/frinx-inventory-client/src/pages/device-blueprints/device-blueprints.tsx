@@ -21,9 +21,14 @@ import {
 import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { useMemo, VoidFunctionComponent } from 'react';
-import { gql, useQuery } from 'urql';
+import { gql, useQuery, useMutation } from 'urql';
 import { getLocalDateFromUTC } from '../../helpers/time.helpers';
-import { BlueprintsQuery, BlueprintsQueryVariables } from '../../__generated__/graphql';
+import {
+  BlueprintsQuery,
+  BlueprintsQueryVariables,
+  DeleteBlueprintMutation,
+  DeleteBlueprintMutationVariables,
+} from '../../__generated__/graphql';
 
 const BLUEPRINTS_QUERY = gql`
   query Blueprints {
@@ -38,6 +43,15 @@ const BLUEPRINTS_QUERY = gql`
     }
   }
 `;
+const DELETE_BLUEPRINT_MUTATION = gql`
+  mutation deleteBlueprint($id: String!) {
+    deleteBlueprint(id: $id) {
+      blueprint {
+        id
+      }
+    }
+  }
+`;
 
 type Props = {
   onAddButtonClick: () => void;
@@ -46,11 +60,13 @@ type Props = {
 
 const DeviceBlueprints: VoidFunctionComponent<Props> = ({ onAddButtonClick, onEditBlueprintButtonClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['Blueprint'] }), []);
-
   const [{ data, fetching, error }] = useQuery<BlueprintsQuery, BlueprintsQueryVariables>({
     query: BLUEPRINTS_QUERY,
     context,
   });
+  const [, deleteBlueprint] = useMutation<DeleteBlueprintMutation, DeleteBlueprintMutationVariables>(
+    DELETE_BLUEPRINT_MUTATION,
+  );
 
   if (fetching || data == null) {
     return null;
@@ -59,6 +75,12 @@ const DeviceBlueprints: VoidFunctionComponent<Props> = ({ onAddButtonClick, onEd
     return <div>{error.message}</div>;
   }
   const { blueprints } = data;
+
+  const handleDeleteBtnClick = (id: string) => {
+    deleteBlueprint({
+      id,
+    });
+  };
 
   return (
     <Container maxWidth={1280}>
@@ -117,6 +139,9 @@ const DeviceBlueprints: VoidFunctionComponent<Props> = ({ onAddButtonClick, onEd
                       size="sm"
                       aria-label="Delete blueprint"
                       icon={<Icon size={20} as={FeatherIcon} icon="trash-2" />}
+                      onClick={() => {
+                        handleDeleteBtnClick(blueprint.id);
+                      }}
                     />
                   </HStack>
                 </Td>
