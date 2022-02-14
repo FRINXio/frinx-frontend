@@ -7,7 +7,7 @@ import { VpnBearer, VpnCarrier, VpnNode } from './bearer-types';
 import CarrierForm from './carrier-form';
 import ConnectionForm from './connection-form';
 import Autocomplete2 from '../autocomplete-2/autocomplete-2';
-import { BearerStatus, Connection } from '../../network-types';
+import { Connection } from '../../network-types';
 
 const CarrierSchema = yup.object().shape({
   carrierName: yup.string().nullable(),
@@ -89,18 +89,24 @@ const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, be
         {errors.portId && <FormErrorMessage>{errors.portId}</FormErrorMessage>}
       </FormControl>
       <FormControl id="admin-status" my={6}>
-        <FormLabel>Port ID</FormLabel>
+        <FormLabel>Admin Status</FormLabel>
         <Select
           name="status"
           value={values.status?.adminStatus?.status || ''}
           onChange={(event) => {
             const { value } = event.currentTarget;
-            const newValue: BearerStatus = {
-              operStatus: values.status?.operStatus ? { ...values.status.operStatus } : null,
-              adminStatus: values.status?.adminStatus ? { ...values.status.adminStatus, status: value } : null,
+            const oldBearerStatus = values.status || {
+              adminStatus: null,
+              operStatus: null,
+            };
+            const newBearerStatus = {
+              ...oldBearerStatus,
+              adminStatus: {
+                status: value,
+              },
             };
 
-            setFieldValue('status', newValue);
+            setFieldValue('status', newBearerStatus);
           }}
         >
           <option value="">-- choose admin state</option>
