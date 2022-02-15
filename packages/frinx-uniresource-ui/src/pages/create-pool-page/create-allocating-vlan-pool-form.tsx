@@ -12,7 +12,6 @@ import {
   Switch,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
-import { omitBy } from 'lodash';
 import React, { FC, useCallback, useState, useEffect } from 'react';
 import * as yup from 'yup';
 import SearchByTagInput from '../../components/search-by-tag-input';
@@ -121,20 +120,6 @@ const CreateAllocatingVlanPoolForm: FC<Props> = ({
     [setFieldValue, values],
   );
 
-  const handleDeleteProperty = useCallback(
-    (key: string) => {
-      setFieldValue(
-        'poolProperties',
-        omitBy(values.poolProperties, (_, k) => k === key),
-      );
-      setFieldValue(
-        'poolPropertyTypes',
-        omitBy(values.poolPropertyTypes, (_, k) => k === key),
-      );
-    },
-    [setFieldValue, values],
-  );
-
   return (
     <form onSubmit={handleSubmit}>
       {possibleParentPools && (
@@ -201,7 +186,7 @@ const CreateAllocatingVlanPoolForm: FC<Props> = ({
               poolProperties={values.poolProperties as Record<string, string>}
               poolPropertyTypes={values.poolPropertyTypes as Record<string, 'int'>}
               onChange={handlePoolPropertiesChange}
-              onDeleteBtnClick={handleDeleteProperty}
+              errors={errors}
             />
             <FormErrorMessage>{errors.poolProperties}</FormErrorMessage>
           </Box>
