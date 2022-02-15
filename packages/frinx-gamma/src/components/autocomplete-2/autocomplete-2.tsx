@@ -1,13 +1,19 @@
-import { Icon, IconButton, Input, InputGroup, InputProps, InputRightElement } from '@chakra-ui/react';
+import { Box, Icon, IconButton, Input, InputGroup, InputProps, InputRightElement } from '@chakra-ui/react';
 import { useCombobox, UseComboboxStateChange } from 'downshift';
 import FeatherIcon from 'feather-icons-react';
-import React, { useState, useEffect, VoidFunctionComponent } from 'react';
+import React, { useState, useEffect, useRef, VoidFunctionComponent } from 'react';
 import AutocompleteMenu from './autocomplete-menu';
+import unwrap from '../../helpers/unwrap';
+
+const MAX_MENU_HEIGHT = 200;
 
 export type Item = {
   label: string;
   value: string;
 };
+
+type Direction = 'up' | 'down';
+
 type Props = {
   items: Item[];
   onChange: (item?: Item | null) => void;
@@ -32,8 +38,10 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
   selectedItem,
   isDisabled,
 }) => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [inputItems, setInputItems] = useState(items);
+  const [menuDirection, setMenuDirection] = useState<Direction>('down');
 
   const onInputValueChange = ({ inputValue }: UseComboboxStateChange<Item>) => {
     const filteredItems = items.filter((item) => item.value.toLowerCase().includes((inputValue || '').toLowerCase()));
@@ -47,6 +55,14 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
 
   const onSelectedItemChange = (changes: UseComboboxStateChange<Item>) => {
     onChange(changes.selectedItem);
+  };
+
+  const scrollHandler = () => {
+    const { y } = unwrap(inputRef.current).getBoundingClientRect();
+    const { innerHeight: height } = window;
+
+    const newDirection = height - y > MAX_MENU_HEIGHT ? 'down' : 'up';
+    setMenuDirection(newDirection);
   };
 
   const {
@@ -96,8 +112,19 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
     }
   }, [items, inputItems, setIsCreating, setHighlightedIndex, inputValue, onCreateItem]);
 
+  useEffect(() => {
+    if (!inputRef.current) {
+      scrollHandler();
+      window.addEventListener('scroll', scrollHandler, true);
+    }
+
+    return () => {
+      window.removeEventListener('scroll', scrollHandler, true);
+    };
+  }, []);
+
   return (
-    <>
+    <Box ref={inputRef}>
       <InputGroup {...getComboboxProps()} position="relative">
         <Input isDisabled={isDisabled} variant={inputVariant} {...getStrippedInputProps(getInputProps())} />
         <InputRightElement>
@@ -112,6 +139,7 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
           />
         </InputRightElement>
         <AutocompleteMenu
+          direction={menuDirection}
           items={inputItems}
           menuProps={getMenuProps()}
           highlightedIndex={highlightedIndex}
@@ -122,7 +150,7 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
           selectItem={selectItem}
         />
       </InputGroup>
-    </>
+    </Box>
   );
 };
 
