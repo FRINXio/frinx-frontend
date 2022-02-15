@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { useMemo, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import PageContainer from '../../components/page-container';
 import useNotifications from '../../hooks/use-notifications';
@@ -18,15 +18,33 @@ import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
 import PoolDetailAllocatingTable from './pool-detail-allocating-table';
 import PoolDetailSetSingletonTable from './pool-detail-set_singleton-table';
 
-type Props = {
-  poolId: string;
-  reload: () => void;
-};
-
 export type PoolResource = {
   poolProperties: Record<string, string>;
   poolPropertyTypes: Record<string, 'int' | 'string'>;
 };
+
+const canShowClaimResourceModal = (resourcePool: PoolDetailQuery['QueryResourcePool']) => {
+  if (resourcePool.PoolType === 'allocating') {
+    return (
+      resourcePool.ResourceType.Name === 'ipv4_prefix' ||
+      resourcePool.ResourceType.Name === 'vlan_range' ||
+      resourcePool.ResourceType.Name === 'ipv6_prefix'
+    );
+  }
+
+  return false;
+};
+
+const canClaimResources = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) => {
+  return (
+    resourcePool.Capacity != null &&
+    resourcePool.Capacity.freeCapacity > 0 &&
+    resourcePool.Capacity.freeCapacity <= totalCapacity
+  );
+};
+
+const canFreeResource = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) =>
+  resourcePool.Capacity != null && resourcePool.Capacity.freeCapacity !== totalCapacity;
 
 const POOL_DETAIL_QUERY = gql`
   query PoolDetail($poolId: ID!) {
@@ -59,6 +77,7 @@ const POOL_RESOURCES_QUERY = gql`
     QueryResources(poolId: $poolId) {
       id
       Properties
+      Description
     }
   }
 `;
@@ -95,30 +114,12 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   return (capacity.utilizedCapacity / totalCapacity) * 100;
 }
 
-const canShowClaimResourceModal = (resourcePool: PoolDetailQuery['QueryResourcePool']) => {
-  if (resourcePool.PoolType === 'allocating') {
-    return (
-      resourcePool.ResourceType.Name === 'ipv4_prefix' ||
-      resourcePool.ResourceType.Name === 'vlan_range' ||
-      resourcePool.ResourceType.Name === 'vlan'
-    );
-  }
-
-  return false;
+type Props = {
+  poolId: string;
 };
 
-const canClaimResources = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) => {
-  return (
-    resourcePool.Capacity != null &&
-    resourcePool.Capacity.freeCapacity > 0 &&
-    resourcePool.Capacity.freeCapacity <= totalCapacity
-  );
-};
-
-const canFreeResource = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) =>
-  resourcePool.Capacity != null && resourcePool.Capacity.freeCapacity !== totalCapacity;
-
-const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
+const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId }) => {
+  const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
   const claimResourceModal = useDisclosure();
   const { addToastNotification } = useNotifications();
   const [{ data: poolData, fetching: isLoadingPool }] = useQuery<PoolDetailQuery, PoolDetailQueryVariables>({
@@ -131,6 +132,7 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
   >({
     query: POOL_RESOURCES_QUERY,
     variables: { poolId },
+    context,
   });
 
   const [, claimResource] = useMutation<ClaimResourceMutationMutation, ClaimResourceMutationMutationVariables>(
@@ -140,7 +142,7 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
     FREE_RESOURCES_MUTATION,
   );
 
-  const claimPoolResource = (description: string, userInput: Record<string, string | number> = {}) => {
+  const claimPoolResource = (description = '', userInput: Record<string, string | number> = {}) => {
     claimResource({
       poolId,
       userInput,
@@ -161,16 +163,18 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
   };
 
   const freePoolResource = (userInput: Record<string, string | number>) => {
-    freeResource({
-      poolId,
-      input: userInput,
-    })
+    freeResource(
+      {
+        poolId,
+        input: userInput,
+      },
+      { additionalTypenames: ['Resource'] },
+    )
       .then(() => {
         addToastNotification({
           type: 'success',
           content: 'Successfully freed resource from pool',
         });
-        reload();
       })
       .catch(() => {
         addToastNotification({
@@ -209,7 +213,7 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
         <Box>
           <Button
             onClick={() =>
-              canShowClaimResourceModal(resourcePool) ? claimResourceModal.onOpen() : claimPoolResource('', {})
+              canShowClaimResourceModal(resourcePool) ? claimResourceModal.onOpen() : claimPoolResource()
             }
             colorScheme="blue"
             variant="outline"
@@ -232,7 +236,7 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
         <Heading size="lg">Allocated Resources</Heading>
         {resourcePool.PoolType === 'allocating' && (
           <PoolDetailAllocatingTable
-            allocatedResources={allocatedResources}
+            allocatedResources={allocatedResources.QueryResources}
             onFreeResource={freePoolResource}
             canFreeResource={canFreeResource(resourcePool, totalCapacity)}
           />
@@ -240,13 +244,13 @@ const PoolDetailPage: FC<Props> = ({ poolId, reload }) => {
         {(resourcePool.PoolType === 'set' || resourcePool.PoolType === 'singleton') && (
           <PoolDetailSetSingletonTable
             resources={resourcePool.Resources}
-            allocatedResources={allocatedResources}
+            allocatedResources={allocatedResources.QueryResources}
             onFreeResource={freePoolResource}
           />
         )}
       </Box>
     </PageContainer>
   );
-};
+});
 
 export default PoolDetailPage;

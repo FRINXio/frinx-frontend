@@ -1038,6 +1038,10 @@ export type SelectPoolsQuery = (
   & { QueryResourcePools: Array<(
     { __typename?: 'ResourcePool' }
     & Pick<ResourcePool, 'id' | 'Name'>
+    & { ResourceType: (
+      { __typename?: 'ResourceType' }
+      & Pick<ResourceType, 'id'>
+    ) }
   )> }
 );
 
@@ -1087,7 +1091,7 @@ export type AllocatedResourcesQuery = (
   { __typename?: 'Query' }
   & { QueryResources: Array<(
     { __typename?: 'Resource' }
-    & Pick<Resource, 'id' | 'Properties'>
+    & Pick<Resource, 'id' | 'Properties' | 'Description'>
   )> }
 );
 
