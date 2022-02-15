@@ -23,6 +23,7 @@ import { createWorkflowHelper, deserializeId } from './helpers/workflow.helpers'
 import { getLayoutedElements } from './helpers/layout.helpers';
 import { useTaskActions } from './task-actions-context';
 import DecisionNode from './components/decision-node/decision-node';
+import { convertToTasks } from './helpers/api.helpers';
 
 const nodeTypes = {
   decision: DecisionNode,
@@ -157,8 +158,10 @@ const App: VoidFunctionComponent<Props> = ({
                     setIsEditing(true);
                   }}
                   onSaveWorkflowBtnClick={() => {
-                    const { putWorkflow } = callbackUtils.getCallbacks;
-                    putWorkflow([workflowCtrlRef.current.convertWorkflow(schema, workflow)]);
+                    const newTasks = convertToTasks(elements);
+                    console.log('tasks: ', newTasks);
+                    // const { putWorkflow } = callbackUtils.getCallbacks;
+                    // putWorkflow([workflowCtrlRef.current.convertWorkflow(schema, workflow)]);
                   }}
                   onFileImport={onFileImport}
                   onFileExport={() => {
