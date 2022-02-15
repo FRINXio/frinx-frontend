@@ -47,10 +47,13 @@ export function createApiHelpers(baseURL: string, authContext: AuthContext): Api
       return authContext.emit('FORBIDDEN');
     }
 
+<<<<<<< HEAD
     if (response.status === 427) {
       return authContext.emit('ACCESS_REJECTED');
     }
 
+=======
+>>>>>>> origin/main
     if (!response.ok) {
       throw new Error(`apiFetch failed with http-code ${response.status}`);
     }
