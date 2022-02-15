@@ -17,7 +17,6 @@
     "@frinx/gamma": "^0.0.1",
     "@frinx/api": "0.0.1",
     "@frinx/inventory-client": "^0.0.1",
-    "@frinx/uniconfig-ui": "^2.0.0",
     "@frinx/uniresource-ui": "^0.0.1",
     "@frinx/workflow-builder": "^1.0.0",
     "@frinx/workflow-ui": "^2.0.0",
