@@ -1,9 +1,8 @@
 import { Link } from 'beautiful-react-diagrams/@types/DiagramSchema';
-import { Elements, Position as FlowPosition, Node, Edge, NodeTypesType } from 'react-flow-renderer';
+import { Elements, Position as FlowPosition, Node, Edge } from 'react-flow-renderer';
 import { v4 as uuid } from 'uuid';
-import { Task, CustomNodeType, ExtendedTask, Workflow } from './types';
+import { Task, CustomNodeType, ExtendedTask, TaskType, Workflow } from './types';
 import { getTaskLabel } from './task.helpers';
-import { TaskType } from './types';
 
 type NodeType = 'decision' | 'fork_join' | 'join' | 'default';
 
@@ -190,7 +189,7 @@ function convertTaskToNode(task: ExtendedTask): Node[] {
     const forkNodeChildren = task.forkTasks
       .map((tasks) => {
         const forkExtendedTasks = tasks.map(convertTaskToExtendedTask);
-        return createNodes(forkExtendedTasks);
+        return createNodes(forkExtendedTasks); // eslint-disable-line @typescript-eslint/no-use-before-define
       })
       .flat();
 
@@ -327,7 +326,6 @@ function createEdges(tasks: Task[]): Edge[] {
         source: forkTaskId,
         target: curr.taskReferenceName,
       }));
-      console.log(joinEdges);
       return [...prev, ...joinEdges];
     }
 

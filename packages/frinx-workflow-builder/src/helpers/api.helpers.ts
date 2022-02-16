@@ -10,6 +10,7 @@ function convertNodeToTask(node: Node): Task {
 
 function findJoinNode(elements: Elements, forkNode: Node, depth: number): Node {
   const children = getOutgoers(forkNode, elements);
+  // eslint-disable-next-line no-restricted-syntax
   for (const ch of children) {
     if (getIncomers(ch, elements).length > 1) {
       return ch;
@@ -20,25 +21,28 @@ function findJoinNode(elements: Elements, forkNode: Node, depth: number): Node {
   throw Error('no valid join was found');
 }
 
-function findDecisionEndNode(elements: Elements, forkNode: Node, depth: number): Node {
-  const children = getOutgoers(forkNode, elements);
+function isConnectionNode(node: Node, elements: Elements): boolean {
+  return getIncomers(node, elements).length > 1;
+}
+
+function findDecisionEndNode(elements: Elements, node: Node, depth: number): Node {
+  let newDepth = depth;
+  const children = getOutgoers(node, elements);
+  // eslint-disable-next-line no-restricted-syntax
   for (const ch of children) {
-    if (getIncomers(ch, elements).length > 1) {
+    newDepth = isConnectionNode(ch, elements) ? newDepth - 1 : newDepth;
+    newDepth = ch.data.task.type === 'DECISION' ? newDepth + 1 : newDepth;
+
+    if (getIncomers(ch, elements).length > 1 && depth === 0) {
       return ch;
     }
-    return findDecisionEndNode(elements, ch, depth + 1);
+    return findDecisionEndNode(elements, ch, newDepth);
   }
 
   throw Error('no valid decision end was found');
 }
 
-function traverseElements(
-  tasks: Task[],
-  elements: Elements,
-  id: string,
-  endId: string = 'end',
-  depth: number = 0,
-): Task[] {
+function traverseElements(tasks: Task[], elements: Elements, id: string, endId = 'end', depth = 0): Task[] {
   if (id === endId) {
     return tasks;
   }
@@ -51,20 +55,21 @@ function traverseElements(
 
   // DECISION
   if (currentTask.type === 'DECISION') {
-    const decisionEndNode = findDecisionEndNode(elements, currentNode, depth);
+    const decisionEndNode = findDecisionEndNode(elements, currentNode, 0);
 
     const decisionTasks: [string, Task[]][] = children.map((decision) => {
       const connectionEdges = getConnectedEdges([decision], edges);
       const startBranchEdge = unwrap(connectionEdges.find((e) => e.source === currentTask.taskReferenceName));
       const decisionStartNode = unwrap(nodes.find((n) => n.id === startBranchEdge?.target));
-      const decisionTasks = traverseElements([], elements, decisionStartNode.id, decisionEndNode.id);
-      return [unwrap(startBranchEdge.sourceHandle), decisionTasks];
+      const currentDecisionTasks = traverseElements([], elements, decisionStartNode.id, decisionEndNode.id);
+      return [unwrap(startBranchEdge.sourceHandle), currentDecisionTasks];
     });
 
     const [decisionCases, defaultCase] = partition(decisionTasks, (d) => d[0] !== 'default');
 
     currentTask.decisionCases = decisionCases.reduce((acc, cur) => ({ ...acc, [cur[0]]: cur[1] }), {});
-    currentTask.defaultCase = defaultCase[0][1];
+    const defaultCaseTasks = defaultCase[0][1];
+    currentTask.defaultCase = defaultCaseTasks;
 
     const nextTasks: Task[] = traverseElements([], elements, decisionEndNode.id, 'end');
     return [...tasks, currentTask, ...nextTasks];
@@ -73,7 +78,6 @@ function traverseElements(
   // FORK JOIN
   if (currentTask.type === 'FORK_JOIN') {
     const joinNode = findJoinNode(elements, currentNode, depth);
-    console.log('joinNode: ', joinNode);
 
     currentTask.forkTasks = children.map((fork) => {
       return traverseElements([], elements, fork.id, joinNode.id, depth + 1);

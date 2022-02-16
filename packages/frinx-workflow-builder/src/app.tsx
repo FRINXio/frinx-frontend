@@ -159,7 +159,7 @@ const App: VoidFunctionComponent<Props> = ({
                   }}
                   onSaveWorkflowBtnClick={() => {
                     const newTasks = convertToTasks(elements);
-                    console.log('tasks: ', newTasks);
+                    console.log('tasks: ', newTasks); // eslint-disable-line no-console
                     // const { putWorkflow } = callbackUtils.getCallbacks;
                     // putWorkflow([workflowCtrlRef.current.convertWorkflow(schema, workflow)]);
                   }}
