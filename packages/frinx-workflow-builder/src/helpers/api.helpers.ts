@@ -8,24 +8,11 @@ function convertNodeToTask(node: Node): Task {
   return data.task;
 }
 
-function findJoinNode(elements: Elements, forkNode: Node, depth: number): Node {
-  const children = getOutgoers(forkNode, elements);
-  // eslint-disable-next-line no-restricted-syntax
-  for (const ch of children) {
-    if (getIncomers(ch, elements).length > 1) {
-      return ch;
-    }
-    return findJoinNode(elements, ch, depth + 1);
-  }
-
-  throw Error('no valid join was found');
-}
-
 function isConnectionNode(node: Node, elements: Elements): boolean {
   return getIncomers(node, elements).length > 1;
 }
 
-function findDecisionEndNode(elements: Elements, node: Node, depth: number): Node {
+function findForkOrDecisionEndNode(elements: Elements, node: Node, depth: number): Node {
   let newDepth = depth;
   const children = getOutgoers(node, elements);
   // eslint-disable-next-line no-restricted-syntax
@@ -36,7 +23,7 @@ function findDecisionEndNode(elements: Elements, node: Node, depth: number): Nod
     if (getIncomers(ch, elements).length > 1 && depth === 0) {
       return ch;
     }
-    return findDecisionEndNode(elements, ch, newDepth);
+    return findForkOrDecisionEndNode(elements, ch, newDepth);
   }
 
   throw Error('no valid decision end was found');
@@ -46,8 +33,9 @@ function getDecisionTask(tasks: Task[], elements: Elements, currentNode: Node): 
   const [nodes, edges] = partition(elements, isNode);
   const currentTask = convertNodeToTask(currentNode) as DecisionTask;
   const children = getOutgoers(currentNode, elements);
-  const decisionEndNode = findDecisionEndNode(elements, currentNode, 0);
+  const decisionEndNode = findForkOrDecisionEndNode(elements, currentNode, 0);
 
+  // get every decision branch tasks
   const decisionTasks: [string, Task[]][] = children.map((decision) => {
     const connectionEdges = getConnectedEdges([decision], edges);
     const startBranchEdge = unwrap(connectionEdges.find((e) => e.source === currentTask.taskReferenceName));
@@ -56,31 +44,50 @@ function getDecisionTask(tasks: Task[], elements: Elements, currentNode: Node): 
     return [unwrap(startBranchEdge.sourceHandle), currentDecisionTasks];
   });
 
+  // we split tasks for decision cases and for `default` case
   const [decisionCases, defaultCase] = partition(decisionTasks, (d) => d[0] !== 'default');
 
+  // we convert [string, Task[]][] -> Record<string, Task[]>
   currentTask.decisionCases = decisionCases.reduce((acc, cur) => ({ ...acc, [cur[0]]: cur[1] }), {});
   const defaultCaseTasks = defaultCase[0][1];
   currentTask.defaultCase = defaultCaseTasks;
 
-  const nextTasks: Task[] = traverseElements([], elements, decisionEndNode.id, 'end'); // eslint-disable-line @typescript-eslint/no-use-before-define
-  return [...tasks, currentTask, ...nextTasks];
+  // it is possible that current decision task is nested
+  // we need to find all elements after decision end node till the diagram end or when there is another join
+  // to upper nest level
+  try {
+    const nextJoinNode = findForkOrDecisionEndNode(elements, decisionEndNode, 0);
+    const nextTasks: Task[] = traverseElements([], elements, decisionEndNode.id, nextJoinNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
+    return [...tasks, currentTask, ...nextTasks];
+  } catch {
+    const nextTasks: Task[] = traverseElements([], elements, decisionEndNode.id, 'end'); // eslint-disable-line @typescript-eslint/no-use-before-define
+    return [...tasks, currentTask, ...nextTasks];
+  }
 }
 
 function getForkTask(tasks: Task[], elements: Elements, currentNode: Node): Task[] {
   const currentTask = convertNodeToTask(currentNode) as ForkTask;
   const children = getOutgoers(currentNode, elements);
-  const joinNode = findJoinNode(elements, currentNode, 0);
+  const joinNode = findForkOrDecisionEndNode(elements, currentNode, 0);
 
   currentTask.forkTasks = children.map((fork) => {
     return traverseElements([], elements, fork.id, joinNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
   });
 
-  const nextTasks = traverseElements([], elements, joinNode.id, 'end'); // eslint-disable-line @typescript-eslint/no-use-before-define
-
-  return [...tasks, currentTask, ...nextTasks];
+  // it is possible that current fork task is nested
+  // we need to find all elements after fork end node till the diagram end or when there is another join
+  // to upper nest level
+  try {
+    const nextJoinNode = findForkOrDecisionEndNode(elements, joinNode, 0);
+    const nextTasks: Task[] = traverseElements([], elements, joinNode.id, nextJoinNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
+    return [...tasks, currentTask, ...nextTasks];
+  } catch {
+    const nextTasks: Task[] = traverseElements([], elements, joinNode.id, 'end'); // eslint-disable-line @typescript-eslint/no-use-before-define
+    return [...tasks, currentTask, ...nextTasks];
+  }
 }
 
-function traverseElements(tasks: Task[], elements: Elements, id: string, endId = 'end', depth = 0): Task[] {
+function traverseElements(tasks: Task[], elements: Elements, id: string, endId = 'end'): Task[] {
   if (id === endId) {
     return tasks;
   }
@@ -100,7 +107,7 @@ function traverseElements(tasks: Task[], elements: Elements, id: string, endId =
   }
 
   const nextTasks = children.map((n) => {
-    return traverseElements([], elements, n.id, endId, depth);
+    return traverseElements([], elements, n.id, endId);
   });
 
   return [...tasks, currentTask, ...nextTasks[0]];
