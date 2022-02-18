@@ -1,27 +1,11 @@
-import { Link } from 'beautiful-react-diagrams/@types/DiagramSchema';
-import { Elements, Position as FlowPosition, Node, Edge } from 'react-flow-renderer';
+import { Edge, Elements, Node } from 'react-flow-renderer';
 import { v4 as uuid } from 'uuid';
-import { Task, CustomNodeType, ExtendedTask, TaskType, Workflow } from './types';
 import { getTaskLabel } from './task.helpers';
+import { ExtendedTask, Task, TaskType } from './types';
 
 type NodeType = 'decision' | 'fork_join' | 'join' | 'default';
 
 type Position = { x: number; y: number };
-type HandlePosition = {
-  sourcePosition?: FlowPosition;
-  targetPosition?: FlowPosition;
-};
-
-type NodeStyle = {
-  padding: number;
-  border: string;
-  background: string;
-};
-
-type NodeLink = {
-  id: string;
-  type: 'input' | 'output';
-};
 
 function notNullPredicate<T>(value?: T | null): value is T {
   if (value == null) {
@@ -30,76 +14,8 @@ function notNullPredicate<T>(value?: T | null): value is T {
   return true;
 }
 
-function getFlowNodeType(node: CustomNodeType): string | null {
-  if (node.id === 'start') {
-    return 'input';
-  }
-  if (node.id === 'end') {
-    return 'output';
-  }
-  if (node.data?.task.type === 'DECISION') {
-    return 'decision';
-  }
-
-  return null;
-}
-
-function getHandlePosition(node: CustomNodeType): HandlePosition {
-  if (node.id === 'start') {
-    return {
-      sourcePosition: FlowPosition.Right,
-    };
-  }
-  if (node.id === 'end') {
-    return {
-      targetPosition: FlowPosition.Left,
-    };
-  }
-  return {
-    sourcePosition: FlowPosition.Right,
-    targetPosition: FlowPosition.Left,
-  };
-}
-
-function getNodeStyle(): NodeStyle {
-  return {
-    padding: 15,
-    border: '1px solid black',
-    background: '#ddd',
-  };
-}
-
-function convertNodeToFlowNode(node: CustomNodeType): Node {
-  return {
-    id: node.id,
-    position: {
-      x: node.coordinates[0],
-      y: node.coordinates[1],
-    },
-    type: getFlowNodeType(node) || undefined,
-    data: {
-      label: node.data?.task.label || 'default',
-      type: node.data?.task.type || 'SIMPLE',
-    },
-    style: getNodeStyle(),
-    ...getHandlePosition(node),
-  };
-}
-
-function convertLinkToFlowEdge(link: Link): Edge {
-  const input: NodeLink = JSON.parse(link.input);
-  const output: NodeLink = JSON.parse(link.output);
-  return {
-    id: `e${input.id}-${output.id}`,
-    source: input.id,
-    target: output.id,
-  };
-}
-
-export function getElements(nodes: CustomNodeType[], links: Link[]): Elements<{ type: string }> {
-  const flowNodes = nodes.map(convertNodeToFlowNode);
-  const flowEdges = links.map(convertLinkToFlowEdge);
-  return [...flowNodes, ...flowEdges];
+function getNodeStyle() {
+  return {};
 }
 
 function convertTaskToExtendedTask(task: Task): ExtendedTask {
@@ -359,8 +275,7 @@ function createAllEdges(tasks: Task[]): Edge[] {
   return edges;
 }
 
-export function getElementsFromWorkflow(workflow: Workflow<ExtendedTask>): Elements {
-  const { tasks } = workflow;
+export function getElementsFromWorkflow(tasks: ExtendedTask[]): Elements {
   const nodes = createAllNodes(tasks);
   const edges = createAllEdges(tasks);
   console.log('nodes: ', nodes); // eslint-disable-line no-console

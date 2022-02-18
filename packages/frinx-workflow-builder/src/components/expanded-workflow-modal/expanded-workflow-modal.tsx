@@ -1,4 +1,3 @@
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   AlertDialog,
@@ -17,11 +16,9 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import Diagram, { Canvas, CanvasControls, useCanvasState, useSchema } from 'beautiful-react-diagrams';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import callbackUtils from '../../callback-utils';
-import { createDiagramController } from '../../helpers/diagram.helpers';
-import { NodeData, Workflow } from '../../helpers/types';
-import { convertWorkflow } from '../../helpers/workflow.helpers';
+import { Workflow } from '../../helpers/types';
 
 type Props = {
   workflowName: string;
@@ -31,25 +28,7 @@ type Props = {
 };
 
 const ExpandedWorkflowDiagram: FC<{ workflow: Workflow }> = ({ workflow }) => {
-  const schemaCtrlRef = useRef(useMemo(() => createDiagramController(convertWorkflow(workflow), true), [workflow]));
-  const [schema] = useSchema<NodeData>(useMemo(() => schemaCtrlRef.current.createSchemaFromWorkflow(), []));
-  const [canvasStates, handlers] = useCanvasState(); // creates canvas state
-
-  return (
-    <Canvas {...canvasStates} {...handlers}>
-      <Diagram
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        schema={schema}
-        // onChange={noop}
-        style={{
-          boxShadow: 'none',
-          border: 'none',
-        }}
-      />
-      <CanvasControls />
-    </Canvas>
-  );
+  return null;
 };
 
 const ExpandedWorkflowModal: FC<Props> = ({ workflowName, workflowVersion, onClose, onEditBtnClick }) => {
