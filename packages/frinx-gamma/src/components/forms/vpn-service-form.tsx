@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import {
   Flex,
   HStack,
@@ -11,18 +11,30 @@ import {
   FormErrorMessage,
   FormLabel,
   Select,
+  Spinner,
+  Text,
   IconButton,
   Input,
   TagLabel,
   TagCloseButton,
 } from '@chakra-ui/react';
-import { AddIcon, CloseIcon } from '@chakra-ui/icons';
+import { AddIcon, CloseIcon, LinkIcon } from '@chakra-ui/icons';
 import { uniqBy } from 'lodash';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import { VpnServiceTopology, DefaultCVlanEnum, VpnService } from './service-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
 import { getSelectOptions } from './options.helper';
+import { useAsyncGenerator } from '../commit-status-modal/commit-status-modal.helpers';
+
+type VpnServiceWorkflowData = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  response_body: {
+    text: string;
+    counter: number;
+  };
+};
 
 type Props = {
   mode: 'add' | 'edit';
@@ -43,6 +55,21 @@ const getCustomerItems = (services: VpnService[]): Item[] => {
   );
 };
 
+const freeResources = async (vpnId: string, counter: number) => {
+  if (!vpnId || !counter) {
+    return;
+  }
+  const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+  await uniflowCallbacks.executeWorkflow({
+    name: 'Free_VpnServiceId',
+    version: 1,
+    input: {
+      text: vpnId,
+      counter,
+    },
+  });
+};
+
 const ServiceSchema = yup.object().shape({
   vpnId: yup.string().nullable(),
   customerName: yup.string().required('Customer Name is required'),
@@ -60,6 +87,9 @@ const ServiceSchema = yup.object().shape({
 });
 
 const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, onCancel }) => {
+  const [workflowId, setWorkflowId] = useState<string | null>(null);
+  const [vpnId, setVpnId] = useState<string | null>(null);
+  const [counter, setCounter] = useState<number | null>(null);
   const { values, errors, dirty, resetForm, setFieldValue, handleSubmit, setValues } = useFormik({
     initialValues: {
       ...service,
@@ -67,16 +97,40 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
     validationSchema: ServiceSchema,
     onSubmit: (formValues) => {
       onSubmit(formValues);
+      // we dont want to run Free_VpnServiceId on unmount aftert save
+      setVpnId(null);
+      setCounter(null);
     },
   });
   const [extranetVpnSelect, setExtranetVpnSelect] = useState<string | null>(null);
   const [customerItems, setCustomerItems] = useState<Item[]>(getCustomerItems(services));
+  const onFinish = () => {
+    // do nothing
+  };
+  const workflowPayload = useAsyncGenerator<VpnServiceWorkflowData>({ workflowId, onFinish });
 
-  // useEffect(() => {
-  //   setServiceState({
-  //     ...service,
-  //   });
-  // }, [service]);
+  useEffect(() => {
+    if (workflowId === workflowPayload?.workflowId && workflowPayload?.status === 'COMPLETED') {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const { counter: responseCounter, text } = workflowPayload.output.response_body;
+      if (!text || !responseCounter) {
+        return;
+      }
+      setWorkflowId(null);
+      setVpnId(text);
+      setCounter(responseCounter);
+      setFieldValue('vpnId', text);
+    }
+  }, [workflowPayload, workflowId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    // free resource on unmount
+    return () => {
+      if (vpnId && counter) {
+        freeResources(vpnId, counter);
+      }
+    };
+  }, [vpnId, counter]);
 
   const handleCustomerChange = (customerName?: Item | null) => {
     if (!customerName) {
@@ -108,6 +162,25 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
     setFieldValue('customerName', item.value);
   };
 
+  const handleAssignVpnId = async () => {
+    const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+    const workflowResult = await uniflowCallbacks.executeWorkflow({
+      name: 'Allocate_VpnServiceId',
+      version: 1,
+      input: {},
+    });
+    setWorkflowId(workflowResult.text);
+  };
+
+  const handleReset = () => {
+    if (vpnId !== null && counter !== null) {
+      freeResources(vpnId, counter);
+    }
+    setVpnId(null);
+    setCounter(null);
+    resetForm();
+  };
+
   const filteredExtranetVpns = extranetVpns.filter((ev) => {
     return !values.extranetVpns.includes(ev);
   });
@@ -118,13 +191,36 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
     <form onSubmit={handleSubmit}>
       <FormControl id="vpn-id" my={6} isRequired isDisabled>
         <FormLabel>Vpn Id</FormLabel>
-        <Input
-          name="vpnId"
-          value={values.vpnId || ''}
-          onChange={(event) => {
-            setFieldValue('vpnId', event.target.value);
-          }}
-        />
+        <Flex justifyContent="space-between" alignItems="center">
+          {workflowId && (
+            <Flex alignItems="center">
+              <Text paddingRight={1} color="blackAlpha.600" fontSize="sm" as="i">
+                Fetching Vpn Id
+              </Text>
+              <Spinner size="sm" />
+            </Flex>
+          )}
+        </Flex>
+        <Flex>
+          <Box flex="1">
+            <Input
+              name="vpnId"
+              value={values.vpnId || ''}
+              onChange={(event) => {
+                setFieldValue('vpnId', event.target.value);
+              }}
+            />
+          </Box>
+          <Box marginLeft={4} alignSelf="center">
+            <IconButton
+              size="sm"
+              aria-label="Assign Vpn ID"
+              icon={<LinkIcon />}
+              onClick={handleAssignVpnId}
+              isDisabled={workflowId !== null}
+            />
+          </Box>
+        </Flex>
       </FormControl>
       <FormControl id="customerName" my={6} isRequired isInvalid={errors.customerName != null}>
         <FormLabel>Customer Name / VPN Description</FormLabel>
@@ -269,7 +365,7 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
         <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
           Save changes
         </Button>
-        <Button onClick={() => resetForm()}>Clear</Button>
+        <Button onClick={() => handleReset()}>Clear</Button>
         <Button onClick={onCancel}>Cancel</Button>
       </Stack>
     </form>
