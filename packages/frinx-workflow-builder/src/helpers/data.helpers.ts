@@ -363,7 +363,5 @@ export function getElementsFromWorkflow(workflow: Workflow<ExtendedTask>): Eleme
   const { tasks } = workflow;
   const nodes = createAllNodes(tasks);
   const edges = createAllEdges(tasks);
-  console.log('nodes: ', nodes); // eslint-disable-line no-console
-  console.log('edges: ', edges); // eslint-disable-line no-console
   return [...nodes, ...edges];
 }
