@@ -66,7 +66,7 @@ export async function* asyncGenerator(
     data = await getWorkflowExecOutput(workflowId, abortController);
   }
   // we need to do an additional yield for the last task status change
-  if (data.result.status === 'FAILED' || data.result.status === 'COMPLETED' || data.result.status == 'TERMINATED') {
+  if (data.result.status === 'FAILED' || data.result.status === 'COMPLETED' || data.result.status === 'TERMINATED') {
     yield data;
   }
 }

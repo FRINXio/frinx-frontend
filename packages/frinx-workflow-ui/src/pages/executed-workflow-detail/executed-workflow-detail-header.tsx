@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Box, Grid } from '@chakra-ui/react';
-import { Status } from './executed-workflow-detail';
+import { Status } from '../../types/types';
 import { isEmpty } from 'lodash';
 import DetailsModalHeaderActionButtons from './executed-workflow-detail-header-action-button';
 
@@ -9,7 +9,7 @@ type Props = {
   endTime: string;
   status: Status;
   restartWorkflows: () => void;
-  onWorkflowActionExecution: () => void;
+  onWorkflowActionExecution: (workflowId: string) => void;
   workflowId: string;
 };
 
