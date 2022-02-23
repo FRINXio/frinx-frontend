@@ -288,7 +288,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
             currentPage={hierarchicalPagination.currentPage}
             onPaginationClick={handlePaginationClick}
             pagesCount={Math.ceil(hierarchy.hits / ITEMS_PER_PAGE)}
-            showPageNumbers={false}
+            showPageNumbers={true}
           />
         </>
       )}
@@ -309,7 +309,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
             currentPage={flatViewPagination.currentPage}
             onPaginationClick={handlePaginationClick}
             pagesCount={Math.ceil(workflowsAmount / ITEMS_PER_PAGE)}
-            showPageNumbers={false}
+            showPageNumbers={true}
           />
         </>
       )}
