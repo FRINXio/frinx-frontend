@@ -83,12 +83,14 @@ export function useAsyncGenerator(workflowId: string): ExecutedWorkflowResponse 
         setExecPayload(data);
       }
     })();
+  }, [workflowId, controller]);
 
-    // we need to abort all fetch requests on unmount, otherwise we will get an error
+  // we need to abort all fetch requests on unmount, otherwise we will get an error
+  useEffect(() => {
     return () => {
       controller.abort();
     };
-  }, [workflowId, controller]);
+  }, [controller]);
 
   return execPayload;
 }
