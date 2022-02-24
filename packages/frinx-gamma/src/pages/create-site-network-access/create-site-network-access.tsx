@@ -88,6 +88,18 @@ function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
   return vpnService;
 }
 
+function freeResources(customerAddress: string, siteId: string) {
+  const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+  uniflowCallbacks.executeWorkflow({
+    name: 'Free_CustomerAddress',
+    version: 1,
+    input: {
+      site: siteId,
+      customer_address: unwrap(customerAddress), // eslint-disable-line @typescript-eslint/naming-convention
+    },
+  });
+}
+
 const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [workflowId, setWorkflowId] = useState<string | null>(null);
   const [customerAddress, setCustomerAddress] = useState<string | null>(null);
@@ -135,27 +147,6 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     fetchData();
   }, [siteId]);
 
-  useEffect(() => {
-    // free resource on unmount
-    return () => {
-      const freeResources = async () => {
-        if (!customerAddress || !siteId) {
-          return;
-        }
-        const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
-        await uniflowCallbacks.executeWorkflow({
-          name: 'Free_CustomerAddress',
-          version: 1,
-          input: {
-            site: siteId,
-            customer_address: unwrap(customerAddress), // eslint-disable-line @typescript-eslint/naming-convention
-          },
-        });
-      };
-      freeResources();
-    };
-  }, [siteId, customerAddress]);
-
   const handleSubmit = async (s: VpnSite) => {
     setSubmitError(null);
     // eslint-disable-next-line no-console
@@ -173,10 +164,19 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     }
   };
 
-  const handleCancel = async () => {
+  const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
+    if (customerAddress) {
+      freeResources(customerAddress, siteId);
+    }
     onCancel(unwrap(selectedSite?.siteId));
+  };
+
+  const handleReset = () => {
+    if (customerAddress) {
+      freeResources(customerAddress, siteId);
+    }
   };
 
   const handleWorkflowFinish = (data: string | null) => {
@@ -239,6 +239,7 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
                   staticRoutes={[]}
                   onSubmit={handleSubmit}
                   onCancel={handleCancel}
+                  onReset={handleReset}
                 />
               </>
             )}
