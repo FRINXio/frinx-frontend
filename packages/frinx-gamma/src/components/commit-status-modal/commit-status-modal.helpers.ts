@@ -113,12 +113,14 @@ export function useAsyncGenerator<T>(props: UseAsyncGeneratorParams): ExecutedWo
         }
       }
     })();
-
-    // we need to abort all fetch requests on unmount, otherwise we will get an error
-    return () => {
-      // controller.abort();
-    };
   }, [props, controller]);
+
+  // we need to abort all fetch requests on unmount, otherwise we will get an error
+  useEffect(() => {
+    return () => {
+      controller.abort();
+    };
+  }, [controller]);
 
   return execPayload;
 }
