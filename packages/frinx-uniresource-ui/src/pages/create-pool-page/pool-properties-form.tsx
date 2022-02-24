@@ -1,6 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
 import { FormControl, Input, HStack, Box, FormErrorMessage } from '@chakra-ui/react';
-import { FormikErrors } from 'formik';
 
 type FormValues = Partial<Record<string, unknown>>;
 type PoolProperties = Record<string, string>;
@@ -9,11 +8,16 @@ type Props = {
   onChange: (values: { key: string; type: 'int' | 'string'; value: string }) => void;
   poolProperties: PoolProperties;
   poolPropertyTypes: PoolPropertyTypes;
-  errors: FormikErrors<FormValues>;
+  poolPropertyErrors?: string;
 };
 
-const PoolPropertiesForm: VoidFunctionComponent<Props> = ({ onChange, poolProperties, poolPropertyTypes, errors }) => {
-  const formErrors = JSON.parse(JSON.stringify(errors.poolProperties ?? {}));
+const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
+  onChange,
+  poolProperties,
+  poolPropertyTypes,
+  poolPropertyErrors,
+}) => {
+  const errors = JSON.parse(JSON.stringify(poolPropertyErrors) || '{}');
   return (
     <>
       {Object.keys(poolProperties).map((pKey) => {
@@ -28,7 +32,7 @@ const PoolPropertiesForm: VoidFunctionComponent<Props> = ({ onChange, poolProper
               <FormControl id="key">
                 <Input name="key" value={pKey} isReadOnly />
               </FormControl>
-              <FormControl id={pKey} isInvalid={formErrors[pKey] !== undefined}>
+              <FormControl id={pKey} isInvalid={errors[pKey] !== undefined}>
                 <Input
                   name={pKey}
                   onChange={(e) =>
@@ -40,7 +44,7 @@ const PoolPropertiesForm: VoidFunctionComponent<Props> = ({ onChange, poolProper
                   }
                   value={pValue}
                 />
-                {[formErrors[pKey]] && <FormErrorMessage>{formErrors[pKey]}</FormErrorMessage>}
+                {[errors[pKey]] && <FormErrorMessage>{errors[pKey]}</FormErrorMessage>}
               </FormControl>
             </HStack>
           </Box>

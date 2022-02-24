@@ -1,4 +1,4 @@
-import { Box, Container, Flex, Heading, Progress, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, Progress, useDisclosure } from '@chakra-ui/react';
 import React, { FC, useEffect, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import useNotifications from '../../hooks/use-notifications';
@@ -173,9 +173,16 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
 
   const [config, setConfig] = useState<string>();
   const [commitConfigData, setCommitConfigData] = useState<string | null>(null);
+  const [hasTransactionError, setHasTransactionError] = useState(false);
   const { addToastNotification } = useNotifications();
   const { isOpen: isSnapshotModalOpen, onClose: onSnapshotModalClose, onOpen: onSnapshotModalOpen } = useDisclosure();
   const { isOpen: isDiffModalOpen, onClose: onDiffModalClose, onOpen: onDiffModalOpen } = useDisclosure();
+
+  useEffect(() => {
+    if (error?.graphQLErrors.some((e) => e.message === 'TRANSACTION_EXPIRED')) {
+      setHasTransactionError(true);
+    }
+  }, [error]);
 
   useEffect(() => {
     if (data != null && data.dataStore != null) {
@@ -389,6 +396,41 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
   }
 
   const { name } = deviceData.node;
+
+  if (hasTransactionError) {
+    return (
+      <Container maxWidth={1280}>
+        <Flex justify="space-between" align="center" marginBottom={6}>
+          <Heading as="h2" size="3xl">
+            {name}
+          </Heading>
+        </Flex>
+        <Box
+          paddingY={4}
+          paddingX={8}
+          borderRadius="md"
+          background="white"
+          borderTop={4}
+          borderStyle="solid"
+          borderColor="red"
+        >
+          <Heading size="md" marginBottom={2}>
+            Transaction expired
+          </Heading>
+          <Button
+            type="button"
+            colorScheme="blue"
+            onClick={() => {
+              removeTransaction();
+              window.location.reload();
+            }}
+          >
+            Refresh
+          </Button>
+        </Box>
+      </Container>
+    );
+  }
 
   if (error != null) {
     return <div>{error.message}</div>;
