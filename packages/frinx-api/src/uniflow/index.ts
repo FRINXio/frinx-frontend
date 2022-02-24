@@ -30,11 +30,7 @@ export type UniflowApiClient = {
   getWorkflowExecutions: (workflowId: string, label: string, start: number, size: string) => Promise<unknown>;
   getWorkflowExecutionsHierarchical: (query: string, label: string, start?: number, size?: string) => Promise<unknown>;
   getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<ExecutedWorkflowResponse>;
-<<<<<<< HEAD
   executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<{ text: string }>;
-=======
-  executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>;
->>>>>>> origin/main
   terminateWorkflows: (workflowIds: string[]) => Promise<string[]>;
   pauseWorkflows: (workflowIds: string[]) => Promise<string[]>;
   resumeWorkflows: (workflowIds: string[]) => Promise<string[]>;
