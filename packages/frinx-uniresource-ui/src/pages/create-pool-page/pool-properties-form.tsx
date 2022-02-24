@@ -1,7 +1,6 @@
 import React, { VoidFunctionComponent } from 'react';
 import { FormControl, Input, HStack, Box, FormErrorMessage } from '@chakra-ui/react';
 
-type FormValues = Partial<Record<string, unknown>>;
 type PoolProperties = Record<string, string>;
 type PoolPropertyTypes = Record<string, 'int' | 'string'>;
 type Props = {
