@@ -412,6 +412,7 @@ export type Query = {
   QueryResourceTypes: Array<ResourceType>;
   QueryResourcePool: ResourcePool;
   QueryResourcePools: Array<ResourcePool>;
+  QueryRecentlyActiveResourcePools: Array<ResourcePool>;
   QueryResourcePoolHierarchyPath: Array<ResourcePool>;
   QueryRootResourcePools: Array<ResourcePool>;
   QueryLeafResourcePools: Array<ResourcePool>;
@@ -466,6 +467,12 @@ export type QueryQueryResourcePoolArgs = {
 export type QueryQueryResourcePoolsArgs = {
   resourceTypeId?: Maybe<Scalars['ID']>;
   tags?: Maybe<TagOr>;
+};
+
+
+export type QueryQueryRecentlyActiveResourcePoolsArgs = {
+  fromDatetime: Scalars['String'];
+  toDatetime?: Maybe<Scalars['String']>;
 };
 
 
