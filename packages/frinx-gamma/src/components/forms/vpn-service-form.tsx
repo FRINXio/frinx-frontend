@@ -123,15 +123,6 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
     }
   }, [workflowPayload, workflowId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    // free resource on unmount
-    return () => {
-      if (vpnId && counter) {
-        freeResources(vpnId, counter);
-      }
-    };
-  }, [vpnId, counter]);
-
   const handleCustomerChange = (customerName?: Item | null) => {
     if (!customerName) {
       return;
@@ -179,6 +170,13 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
     setVpnId(null);
     setCounter(null);
     resetForm();
+  };
+
+  const handleCancel = () => {
+    if (vpnId !== null && counter !== null) {
+      freeResources(vpnId, counter);
+    }
+    onCancel();
   };
 
   const filteredExtranetVpns = extranetVpns.filter((ev) => {
@@ -366,7 +364,7 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
           Save changes
         </Button>
         <Button onClick={() => handleReset()}>Clear</Button>
-        <Button onClick={onCancel}>Cancel</Button>
+        <Button onClick={handleCancel}>Cancel</Button>
       </Stack>
     </form>
   );

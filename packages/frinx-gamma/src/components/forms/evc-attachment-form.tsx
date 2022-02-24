@@ -40,6 +40,7 @@ type Props = {
   evcAttachment: EvcAttachment;
   isLoadingSvlan: boolean;
   onSubmit: (attachment: EvcAttachment) => void;
+  onReset: () => void;
   onCancel: () => void;
   onSvlanAssign?: () => Promise<void>;
 };
@@ -56,6 +57,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({
   qosProfiles,
   evcAttachment,
   onSvlanAssign,
+  onReset,
   onSubmit,
   onCancel,
 }) => {
@@ -78,6 +80,11 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({
       return;
     }
     onSvlanAssign();
+  }
+
+  function handleReset() {
+    resetForm();
+    onReset();
   }
 
   const profileItems = getQosProfilesItems(qosProfiles);
@@ -142,7 +149,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({
             title="Assign Svlan Identifier"
             icon={<LinkIcon />}
             onClick={handleSvlanAssign}
-            isDisabled={isLoadingSvlan || evcAttachment.svlanId !== null}
+            isDisabled={isLoadingSvlan || values.svlanId !== null}
           />
         </Flex>
       </FormControl>
@@ -179,7 +186,7 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({
         <Button type="submit" colorScheme="blue" isDisabled={!dirty || !isValid}>
           Save changes
         </Button>
-        <Button onClick={() => resetForm()}>Clear</Button>
+        <Button onClick={handleReset}>Clear</Button>
         <Button onClick={onCancel}>Cancel</Button>
       </Stack>
     </form>
