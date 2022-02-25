@@ -108,6 +108,7 @@ const EditEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
             evcAttachment={selectedEvcAttachment}
             onSubmit={handleSubmit}
             onCancel={handleCancel}
+            onReset={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
             isLoadingSvlan={false}
           />
         </Box>

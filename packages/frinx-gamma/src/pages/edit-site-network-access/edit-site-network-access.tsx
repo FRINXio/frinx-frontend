@@ -125,6 +125,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
                   staticRoutes={[]}
                   onSubmit={handleSubmit}
                   onCancel={handleCancel}
+                  onReset={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
                 />
               </>
             )}
