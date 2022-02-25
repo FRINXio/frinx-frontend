@@ -199,7 +199,6 @@ const SiteNetAccessForm: FC<Props> = ({
   onReset,
 }) => {
   const [workflowId, setWorkflowId] = useState<string | null>(null);
-  const [addressAssign, setAddressAssign] = useState<AddressAssignState | null>(null);
   const [addressAssignError, setAddressAssignError] = useState<string | null>(null);
   const onFinish = () => {
     // do nothing
@@ -241,10 +240,6 @@ const SiteNetAccessForm: FC<Props> = ({
         return;
       }
 
-      // setAddressAssign({
-      //   providerAddress: provider_address,
-      //   customerAddress: customer_address,
-      // });
       setFieldValue('ipConnection', {
         ...values.ipConnection,
         ipv4: {

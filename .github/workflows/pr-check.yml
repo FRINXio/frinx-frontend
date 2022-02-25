@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - gamma-project
+      - story-without-fe-server
 
 jobs:
   pr-check:
