@@ -241,9 +241,20 @@ const SiteNetAccessForm: FC<Props> = ({
         return;
       }
 
-      setAddressAssign({
-        providerAddress: provider_address,
-        customerAddress: customer_address,
+      // setAddressAssign({
+      //   providerAddress: provider_address,
+      //   customerAddress: customer_address,
+      // });
+      setFieldValue('ipConnection', {
+        ...values.ipConnection,
+        ipv4: {
+          ...values.ipConnection?.ipv4,
+          addresses: {
+            ...values.ipConnection?.ipv4?.addresses,
+            providerAddress: provider_address || undefined,
+            customerAddress: customer_address || undefined,
+          },
+        },
       });
     }
   }, [workflowPayload, workflowId]);
@@ -331,15 +342,15 @@ const SiteNetAccessForm: FC<Props> = ({
     ...ipv4Connection,
     addresses: {
       ...unwrap(ipv4Connection.addresses),
-      customerAddress: addressAssign?.customerAddress || ipv4Connection.addresses?.customerAddress || '',
-      providerAddress: addressAssign?.providerAddress || ipv4Connection.addresses?.providerAddress || '',
+      customerAddress: ipv4Connection.addresses?.customerAddress || '',
+      providerAddress: ipv4Connection.addresses?.providerAddress || '',
     },
   };
 
-  values.ipConnection = {
-    ...values.ipConnection,
-    ipv4: newIpv4Connection,
-  };
+  // values.ipConnection = {
+  //   ...values.ipConnection,
+  //   ipv4: newIpv4Connection,
+  // };
 
   const customerAddressError = getCustomerAddressError(errors);
   const providerAddressError = getProviderAddressError(errors);
