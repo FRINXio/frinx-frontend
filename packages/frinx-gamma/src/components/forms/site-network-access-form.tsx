@@ -181,11 +181,6 @@ function getClientSelectedNetworkAccess(siteNetworkAccess: SiteNetworkAccess): C
   };
 }
 
-type AddressAssignState = {
-  customerAddress: string | null;
-  providerAddress: string | null;
-};
-
 const SiteNetAccessForm: FC<Props> = ({
   mode,
   site,
@@ -252,7 +247,7 @@ const SiteNetAccessForm: FC<Props> = ({
         },
       });
     }
-  }, [workflowPayload, workflowId]);
+  }, [workflowPayload, workflowId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLocationChange = (item?: Item | null) => {
     setFieldValue('locationReference', unwrap(item).value);
@@ -332,20 +327,6 @@ const SiteNetAccessForm: FC<Props> = ({
   const [selectedBgpProfileItem] = bgpProfileItems.filter((i) => i.value === bgpRoutingProtocol.bgp?.bgpProfile);
 
   const ipv4Connection = unwrap(unwrap(values.ipConnection).ipv4);
-
-  const newIpv4Connection = {
-    ...ipv4Connection,
-    addresses: {
-      ...unwrap(ipv4Connection.addresses),
-      customerAddress: ipv4Connection.addresses?.customerAddress || '',
-      providerAddress: ipv4Connection.addresses?.providerAddress || '',
-    },
-  };
-
-  // values.ipConnection = {
-  //   ...values.ipConnection,
-  //   ipv4: newIpv4Connection,
-  // };
 
   const customerAddressError = getCustomerAddressError(errors);
   const providerAddressError = getProviderAddressError(errors);
