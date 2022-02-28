@@ -13,7 +13,7 @@ process.on('unhandledRejection', (error) => {
 });
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
-const HOST = process.env.IP || '127.0.0.1';
+const HOST = process.env.HOST || '127.0.0.1';
 
 export const log = getLogger('frinx-frontend-server');
 

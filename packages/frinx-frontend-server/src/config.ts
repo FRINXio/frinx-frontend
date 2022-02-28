@@ -8,6 +8,7 @@ function envString(key: string): string {
   return value;
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 const config = {
   auth_enabled: Boolean(envString('AUTH_ENABLED')),
   auth_client_id: envString('AUTH_CLIENT_ID'),
@@ -27,5 +28,6 @@ const config = {
   uniflow_api_docs_url: envString('UNIFLOW_API_DOCS_URL'),
   msal_authority: envString('MSAL_AUTHORITY'),
 };
+/* eslint-enable */
 
 export default config;
