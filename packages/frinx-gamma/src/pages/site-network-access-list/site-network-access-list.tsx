@@ -16,7 +16,6 @@ import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getChangedNetworkAccessesWithStatus, getSavedNetworkAccessesWithStatus } from './site-network-access-helpers';
 import unwrap from '../../helpers/unwrap';
-import { string } from 'fp-ts';
 
 type Props = {
   onCreateSiteNetworkAccessClick: (siteId: string) => void;
