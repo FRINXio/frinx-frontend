@@ -156,7 +156,7 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
                   <Box my="2">
                     <VpnBearerTable
                       size="sm"
-                      detailId={null}
+                      detailId={detailId}
                       bearers={changedBearersWithStatus}
                       onEditVpnBearerClick={onEditVpnBearerClick}
                       onDeleteVpnBearerClick={handleDeleteButtonClick}
