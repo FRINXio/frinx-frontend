@@ -31,7 +31,7 @@ const UniresourceApp: FC = () => {
 
   return (
     <UniresourceAppProvider
-      client={UniresourceApi.create({ url: window.__CONFIG__.uniresource_api_url, authContext }).client}
+      client={UniresourceApi.create({ url: window.__CONFIG__.uniresourceApiURL, authContext }).client}
     >
       <Switch>
         <Route exact path="/uniresource">

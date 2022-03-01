@@ -23,17 +23,17 @@ const App: FC<Props> = ({ enabledServices, basename, isAuthEnabled }) => {
           <Route path="/" exact>
             <Dashboard enabledServices={enabledServices} />
           </Route>
-          {enabledServices.get('uniflow_enabled') && (
+          {enabledServices.get('isUniflowEnabled') && (
             <Route path="/uniflow">
               <UniflowApp />
             </Route>
           )}
-          {enabledServices.get('inventory_enabled') && (
+          {enabledServices.get('isInventoryEnabled') && (
             <Route path="/inventory">
               <InventoryApp />
             </Route>
           )}
-          {enabledServices.get('uniresource_enabled') && (
+          {enabledServices.get('isUniresourceEnabled') && (
             <Route path="/uniresource">
               <UniresourceApp />
             </Route>

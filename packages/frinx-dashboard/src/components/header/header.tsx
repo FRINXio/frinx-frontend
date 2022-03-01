@@ -40,19 +40,19 @@ const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled, enabledServices }
                 <Icon size={20} as={FeatherIcon} icon="grid" color="brand.700" marginRight={2} />
                 <Text fontWeight="bold">Dashboard</Text>
               </MenuItem>
-              {enabledServices.get('uniflow_enabled') && (
+              {enabledServices.get('isUniflowEnabled') && (
                 <MenuItem as={Link} to="/uniflow">
                   <Icon size={20} as={FeatherIcon} icon="layers" color="brand.700" marginRight={2} />
                   <Text fontWeight="bold">UniFlow</Text>
                 </MenuItem>
               )}
-              {enabledServices.get('inventory_enabled') && (
+              {enabledServices.get('isInventoryEnabled') && (
                 <MenuItem as={Link} to="/inventory">
                   <Icon size={20} as={FeatherIcon} icon="server" color="brand.700" marginRight={2} />
                   <Text fontWeight="bold">Device Inventory</Text>
                 </MenuItem>
               )}
-              {enabledServices.get('uniresource_enabled') && (
+              {enabledServices.get('isUniresourceEnabled') && (
                 <MenuItem as={Link} to="/uniresource">
                   <Icon size={20} as={FeatherIcon} icon="hard-drive" color="brand.700" marginRight={2} />
                   <Text fontWeight="bold">UniResource</Text>
