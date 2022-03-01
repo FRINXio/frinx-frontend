@@ -592,11 +592,6 @@ const SiteNetAccessForm: FC<Props> = ({
                   )}
                 </Flex>
               </FormLabel>
-              {addressAssignError !== null && (
-                <Text fontSize="sm" color="red">
-                  {addressAssignError}
-                </Text>
-              )}
               <Flex alignItems="center">
                 <Select
                   name="prefixLength"
@@ -658,6 +653,11 @@ const SiteNetAccessForm: FC<Props> = ({
                 }}
               />
               {providerAddressError != null && <FormErrorMessage>{providerAddressError}</FormErrorMessage>}
+              {addressAssignError !== null && (
+                <Text fontSize="sm" color="red">
+                  {addressAssignError}
+                </Text>
+              )}
             </FormControl>
             <FormControl
               id="ip-customer-address"
