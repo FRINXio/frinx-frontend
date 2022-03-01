@@ -49,9 +49,7 @@ const InventoryApp: FC = () => {
   } = components;
 
   return (
-    <InventoryAPIProvider
-      client={InventoryApi.create({ url: window.__CONFIG__.inventory_api_url, authContext }).client}
-    >
+    <InventoryAPIProvider client={InventoryApi.create({ url: window.__CONFIG__.inventoryApiURL, authContext }).client}>
       <Switch>
         <Route exact path="/inventory">
           <Redirect to="/inventory/devices" />

@@ -8,25 +8,36 @@ function envString(key: string): string {
   return value;
 }
 
+function stringToBoolean(value: string): boolean {
+  switch (value.toLowerCase()) {
+    case 'true':
+    case 'yes':
+    case '1':
+      return true;
+    case 'false':
+    case 'no':
+    case '0':
+    case '':
+    default:
+      return false;
+  }
+}
+
 /* eslint-disable @typescript-eslint/naming-convention */
 const config = {
-  auth_enabled: Boolean(envString('AUTH_ENABLED')),
-  auth_client_id: envString('AUTH_CLIENT_ID'),
-  auth_redirect_url: envString('AUTH_REDIRECT_URL'),
-  conductor_api_url: envString('CONDUCTOR_API_URL'),
-  uniconfig_api_url: envString('UNICONFIG_API_URL'),
-  uniconfig_auth: envString('UNICONFIG_AUTH'),
-  uniresource_enabled: Boolean(envString('UNIRESOURCE_ENABLED')),
-  uniconfig_enabled: Boolean(envString('UNICONFIG_ENABLED')),
-  uniflow_enabled: Boolean(envString('UNIFLOW_ENABLED')),
-  usermanagement_enabled: Boolean(envString('USERMANAGEMENT_ENABLED')),
-  url_basename: envString('URL_BASENAME'),
-  inventory_api_url: envString('INVENTORY_API_URL'),
-  uniresource_api_url: envString('UNIRESOURCE_API_URL'),
-  inventory_enabled: Boolean(envString('INVENTORY_ENABLED')),
-  uniconfig_api_docs_url: envString('UNICONFIG_API_DOCS_URL'),
-  uniflow_api_docs_url: envString('UNIFLOW_API_DOCS_URL'),
-  msal_authority: envString('MSAL_AUTHORITY'),
+  isAuthEnabled: stringToBoolean(envString('AUTH_ENABLED')),
+  authClientId: envString('AUTH_CLIENT_ID'),
+  authRedirectURL: envString('AUTH_REDIRECT_URL'),
+  uniflowApiURL: envString('CONDUCTOR_API_URL'),
+  isUniresourceEnabled: stringToBoolean(envString('UNIRESOURCE_ENABLED')),
+  isUniflowEnabled: stringToBoolean(envString('UNIFLOW_ENABLED')),
+  URLBasename: envString('URL_BASENAME'),
+  inventoryApiURL: envString('INVENTORY_API_URL'),
+  uniresourceApiURL: envString('UNIRESOURCE_API_URL'),
+  isInventoryEnabled: stringToBoolean(envString('INVENTORY_ENABLED')),
+  uniconfigApiDocsURL: envString('UNICONFIG_API_DOCS_URL'),
+  uniflowApiDocsURL: envString('UNIFLOW_API_DOCS_URL'),
+  MSALAuthority: envString('MSAL_AUTHORITY'),
 };
 /* eslint-enable */
 
