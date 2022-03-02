@@ -1,12 +1,10 @@
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
-import { useSchema } from 'beautiful-react-diagrams';
-import ReactFlow, { Background, BackgroundVariant } from 'react-flow-renderer';
-import 'beautiful-react-diagrams/dist/styles.css';
-import produce, { castImmutable } from 'immer';
-import React, { useCallback, useMemo, useRef, useState, VoidFunctionComponent } from 'react';
-import { getElementsFromWorkflow } from './helpers/data.helpers';
-import callbackUtils from './callback-utils';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
+import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap } from 'react-flow-renderer';
 import ActionsMenu from './components/actions-menu/actions-menu';
+import DecisionNode from './components/workflow-nodes/decision-node';
+import StartEndNode from './components/workflow-nodes/start-end-node';
+import BaseNode from './components/workflow-nodes/base-node';
 import ExecutionModal from './components/execution-modal/execution-modal';
 import ExpandedWorkflowModal from './components/expanded-workflow-modal/expanded-workflow-modal';
 import LeftMenu from './components/left-menu/left-menu';
@@ -16,17 +14,17 @@ import TaskForm from './components/task-form/task-form';
 import WorkflowDefinitionModal from './components/workflow-definition-modal/workflow-definition-modal';
 import WorkflowEditorModal from './components/workflow-editor-modal/workflow-editor-modal';
 import WorkflowForm from './components/workflow-form/workflow-form';
-import { createDiagramController } from './helpers/diagram.helpers';
-import { CustomNodeType, ExtendedTask, NodeData, TaskDefinition, Workflow } from './helpers/types';
-import unwrap from './helpers/unwrap';
-import { createWorkflowHelper, deserializeId } from './helpers/workflow.helpers';
-import { getLayoutedElements } from './helpers/layout.helpers';
-import { useTaskActions } from './task-actions-context';
-import DecisionNode from './components/decision-node/decision-node';
 import { convertToTasks } from './helpers/api.helpers';
+import { getElementsFromWorkflow } from './helpers/data.helpers';
+import { getLayoutedElements } from './helpers/layout.helpers';
+import { ExtendedTask, TaskDefinition, Workflow } from './helpers/types';
+import { useTaskActions } from './task-actions-context';
 
 const nodeTypes = {
   decision: DecisionNode,
+  start: StartEndNode,
+  end: StartEndNode,
+  default: BaseNode,
 };
 
 type Props = {
@@ -76,54 +74,30 @@ const App: VoidFunctionComponent<Props> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isInputModalShown, setIsInputModalShown] = useState(false);
   const [workflowTasks, setWorkflowTasks] = useState(workflow.tasks);
-  const workflowCtrlRef = useRef(useMemo(() => createWorkflowHelper(), []));
-  const schemaCtrlRef = useRef(useMemo(() => createDiagramController(workflow), [workflow]));
-  const [schema, { onChange, addNode }] = useSchema<NodeData>(
-    useMemo(() => schemaCtrlRef.current.createSchemaFromWorkflow(), []),
-  );
 
   console.log(workflow.tasks); // eslint-disable-line no-console
-  const elements = getElementsFromWorkflow(workflow);
-  const layoutedElements = getLayoutedElements(elements);
+  const elements = getElementsFromWorkflow(workflowTasks);
+  const layoutedElements = useMemo(() => getLayoutedElements(elements), [elements]);
 
-  const handleDeleteButtonClick = useCallback(
-    (id: string) => {
-      // TODO: wait for the library update to fix a bug with removing node with links
-      // we use simple `onChange` instead of `removeNode` for now
-      onChange({
-        links: schema.links?.filter((l) => deserializeId(l.input).id !== id && deserializeId(l.output).id !== id) ?? [],
-        nodes: schema.nodes.filter((n) => n.id !== id),
-      });
-    },
-    [schema.nodes, onChange, schema.links],
-  );
+  const handleDeleteButtonClick = (id: string) => {
+    setWorkflowTasks((oldTasks) => {
+      const newTasks = [...oldTasks].filter((t) => t.id !== id);
+      return newTasks;
+    });
+  };
   const { selectedTask, selectTask } = useTaskActions(handleDeleteButtonClick);
 
   const { name } = workflow;
 
   const handleAddButtonClick = (t: ExtendedTask) => {
-    addNode(schemaCtrlRef.current.createTaskNode(t));
+    // addNode(schemaCtrlRef.current.createTaskNode(t));
+
     setWorkflowTasks((prevTasks) => [...prevTasks, t]);
   };
 
-  const handleFormSubmit = (t: ExtendedTask) => {
-    const copiedNodes = castImmutable(
-      produce(schema.nodes, (acc) => {
-        const index = acc.findIndex((n) => n.id === t.id);
+  const handleFormSubmit = (t: ExtendedTask) => {};
 
-        unwrap(acc[index].data).task = t;
-
-        return acc;
-      }),
-      // immer.js returns incompatible type, so we have to cast it manually
-    ) as CustomNodeType[];
-    onChange({ nodes: copiedNodes });
-  };
-
-  const handleWorkflowClone = (wfName: string) => {
-    const wf: Workflow = workflowCtrlRef.current.convertWorkflow(schema, workflow);
-    onWorkflowClone(wf, wfName);
-  };
+  const handleWorkflowClone = (wfName: string) => {};
 
   return (
     <>
@@ -165,7 +139,7 @@ const App: VoidFunctionComponent<Props> = ({
                   }}
                   onFileImport={onFileImport}
                   onFileExport={() => {
-                    onFileExport(workflowCtrlRef.current.convertWorkflow(schema, workflow));
+                    // TODO
                   }}
                   onWorkflowDelete={onWorkflowDelete}
                   onWorkflowClone={handleWorkflowClone}
@@ -175,10 +149,8 @@ const App: VoidFunctionComponent<Props> = ({
               <Button
                 colorScheme="blue"
                 onClick={() => {
-                  const { putWorkflow } = callbackUtils.getCallbacks;
-                  putWorkflow([workflowCtrlRef.current.convertWorkflow(schema, workflow)]).then(() => {
-                    setIsInputModalShown(true);
-                  });
+                  // const { putWorkflow } = callbackUtils.getCallbacks;
+                  // TODO
                 }}
               >
                 Save and execute
@@ -190,8 +162,10 @@ const App: VoidFunctionComponent<Props> = ({
           <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
         </Box>
         <Box minHeight="60vh" maxHeight="100vh" position="relative">
-          <ReactFlow elements={layoutedElements} nodeTypes={nodeTypes}>
+          <ReactFlow elements={layoutedElements} nodeTypes={nodeTypes} snapToGrid>
             <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
+            <MiniMap />
+            <Controls />
           </ReactFlow>
           {selectedTask?.task && selectedTask?.actionType === 'edit' && (
             <RightDrawer>
@@ -248,7 +222,8 @@ const App: VoidFunctionComponent<Props> = ({
         <WorkflowDefinitionModal
           isOpen
           onClose={workflowDefinitionDisclosure.onClose}
-          workflow={workflowCtrlRef.current.convertWorkflow(schema, workflow)}
+          // TODO:
+          workflow={workflow}
         />
       )}
       <NewWorkflowModal
@@ -258,7 +233,8 @@ const App: VoidFunctionComponent<Props> = ({
       />
       {isInputModalShown && (
         <ExecutionModal
-          workflow={workflowCtrlRef.current.convertWorkflow(schema, workflow)}
+          // TODO:
+          workflow={workflow}
           onClose={() => setIsInputModalShown(false)}
           shouldCloseAfterSubmit={false}
           isOpen={isInputModalShown}
@@ -267,6 +243,7 @@ const App: VoidFunctionComponent<Props> = ({
       )}
       {workflowEditorDisclosure.isOpen && (
         <WorkflowEditorModal
+          // TODO:
           workflow={workflow}
           isOpen={workflowEditorDisclosure.isOpen}
           onSave={onWorkflowChange}

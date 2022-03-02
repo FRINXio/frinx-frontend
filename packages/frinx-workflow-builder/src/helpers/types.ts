@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Node } from 'beautiful-react-diagrams/@types/DiagramSchema';
 
 type AnyJson = JsonArray | JsonMap;
 type JsonMap = {
@@ -335,8 +334,6 @@ export type NodeData =
       task: ExtendedDecisionTask;
       decisionCases: Record<string, string>;
     };
-
-export type CustomNodeType = Node<NodeData>;
 
 export type TaskDefinition = {
   name: string;

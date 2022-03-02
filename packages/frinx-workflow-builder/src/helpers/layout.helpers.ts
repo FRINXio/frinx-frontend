@@ -8,10 +8,10 @@ dagreGraph.setDefaultEdgeLabel(() => ({}));
 // In a real world app you would use the correct width and height values of
 // const nodes = useStoreState(state => state.nodes) and then node.__rf.width, node.__rf.height
 
-const nodeWidth = 172;
+const nodeWidth = 300;
 const nodeHeight = 36;
 
-export const getLayoutedElements = (elements: Elements, direction = 'TB'): Elements => {
+export const getLayoutedElements = (elements: Elements, direction = 'LR'): Elements => {
   const isHorizontal = direction === 'LR';
   dagreGraph.setGraph({ rankdir: direction });
 

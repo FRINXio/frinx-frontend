@@ -1,7 +1,7 @@
 import { Box, Flex, Heading, Text, Theme, Tooltip, useTheme } from '@chakra-ui/react';
 import React, { memo, VoidFunctionComponent } from 'react';
 import { Position, Handle, NodeProps } from 'react-flow-renderer';
-import { ExtendedDecisionTask } from '../../helpers/types';
+import { ExtendedTask, TaskType } from '../../helpers/types';
 import { useTaskActions } from '../../task-actions-context';
 import NodeButtons from '../nodes/node-buttons';
 
@@ -9,13 +9,29 @@ type Props = NodeProps<{
   type: string;
   label: string;
   handles: string[];
-  task: ExtendedDecisionTask;
+  task: ExtendedTask;
 }>;
 
-const DecisionNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
+function getBorderColor(taskType: TaskType) {
+  switch (taskType) {
+    case 'SIMPLE': {
+      return 'yellow.500';
+    }
+    case 'LAMBDA': {
+      return 'orange.600';
+    }
+    default: {
+      return 'pink.400';
+    }
+  }
+}
+
+const BaseNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
   const theme = useTheme<Theme>();
   const { selectTask, selectedTask, setRemovedTaskId } = useTaskActions();
   const { task } = data;
+
+  const topColor = getBorderColor(task.type as TaskType);
 
   return (
     <Flex
@@ -25,7 +41,7 @@ const DecisionNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
       borderWidth={2}
       borderStyle="solid"
       borderColor={task.id === selectedTask?.task.id ? 'pink.400' : 'gray.200'}
-      borderTopColor="pink.400"
+      borderTopColor={topColor}
       borderTopWidth={6}
       borderTopStyle="solid"
       overflow="hidden"
@@ -73,9 +89,7 @@ const DecisionNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
           />
         </Flex>
         <Flex height={8} alignItems="center" justifyContent="center" isTruncated>
-          <Text size="sm" color="gray.700" fontFamily="monospace">
-            if {task.caseValueParam} ==
-          </Text>
+          <Text size="sm" color="gray.700" fontFamily="monospace" />
         </Flex>
       </Box>
       <Flex
@@ -86,37 +100,32 @@ const DecisionNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
         alignItems="stretch"
         justifyContent="space-between"
       >
-        {data.handles.map((h) => {
-          return (
-            <Handle
-              key={`node-${id}-handle-${h}`}
-              type="source"
-              position={Position.Right}
-              id={`${h}`}
-              style={{
-                position: 'static',
-                top: 0,
-                right: 0,
-                transform: 'none',
-                borderRadius: 0,
-                width: '100%',
-                // display: isVisible ? 'flex' : 'none',
-                display: 'flex',
-                background: theme.colors.gray[200],
-                color: theme.colors.gray[700],
-                fontSize: theme.fontSizes.xs,
-                height: theme.sizes[6],
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              {h}
-            </Handle>
-          );
-        })}
+        <Handle
+          id={`node-${id}-source`}
+          type="source"
+          position={Position.Right}
+          style={{
+            position: 'static',
+            top: 0,
+            right: 0,
+            transform: 'none',
+            borderRadius: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            background: theme.colors.gray[200],
+            color: theme.colors.gray[700],
+            fontSize: theme.fontSizes.xs,
+            alignItems: 'center',
+            justifyContent: 'center',
+            textTransform: 'uppercase',
+          }}
+        >
+          out
+        </Handle>
       </Flex>
     </Flex>
   );
 });
 
-export default DecisionNode;
+export default BaseNode;
