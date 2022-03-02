@@ -41,11 +41,5 @@ jobs:
         run: yarn run type-check:workflow-builder
       - name: Check types in Inventory client
         run: yarn run type-check:inventory
-      - name: Check types in Uniresource
-        run: yarn run type-check:uniresource
-      - name: Check types in Dashboard
-        run: yarn run type-check:dashboard
       - name: Check types in Frinx api
         run: yarn run type-check:api
-      - name: Check types in Gamma
-        run: yarn run type-check:gamma

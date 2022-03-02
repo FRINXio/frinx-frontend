@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const webpack = require('webpack');
-const HtmlWebPackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
 /* eslint-enable */
 
 const ENVIRONMENT = process.env.NODE_ENV || 'development';
@@ -19,18 +19,13 @@ function fullPath(...parts) {
 }
 
 const plugins = [
-  new CopyWebpackPlugin({
-    patterns: [
-      { from: fullPath('static'), to: '.' },
-      { from: fullPath('config'), to: '.' },
-    ],
-  }),
-  new HtmlWebPackPlugin({
-    template: isDev ? fullPath('src', 'index.dev.html') : fullPath('src', 'index.shtml'),
+  new HtmlWebpackPlugin({
+    template: fullPath('../../public', 'index.html'),
     inject: false,
-    filename: isDev ? 'index.html' : 'index.shtml',
-    scriptLoading: 'blocking',
+    alwaysWriteToDisk: true,
+    filename: 'index.html',
   }),
+  new HtmlWebpackHarddiskPlugin(),
   new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   new webpack.DefinePlugin({
     COMMIT_HASH: JSON.stringify(process.env.COMMIT_HASH),
@@ -40,8 +35,8 @@ const plugins = [
 module.exports = {
   entry: [fullPath('src', 'index.ts')],
   output: {
-    path: fullPath('build'),
-    filename: 'static/bundle.js',
+    path: fullPath('../../build-client'),
+    filename: 'bundle.js',
     publicPath: '/',
   },
   devServer: {
@@ -49,8 +44,8 @@ module.exports = {
     inline: true,
     open: false,
     disableHostCheck: true,
-    port: 3000,
-    contentBase: fullPath('static'),
+    port: 2999,
+    contentBase: '../../build-client',
   },
   devtool: isDev ? 'eval-cheap-module-source-map' : false,
   module: {
