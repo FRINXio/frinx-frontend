@@ -239,7 +239,9 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
     }
 
     if (responseData != null) {
-      removeTransaction();
+      if (!isDryRun) {
+        removeTransaction();
+      }
       reexecuteQuery({ requestPolicy: 'network-only' });
 
       addToastNotification({
