@@ -2,7 +2,9 @@ import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap } from 'react-flow-renderer';
 import ActionsMenu from './components/actions-menu/actions-menu';
-import DecisionNode from './components/decision-node/decision-node';
+import DecisionNode from './components/workflow-nodes/decision-node';
+import StartEndNode from './components/workflow-nodes/start-end-node';
+import BaseNode from './components/workflow-nodes/base-node';
 import ExecutionModal from './components/execution-modal/execution-modal';
 import ExpandedWorkflowModal from './components/expanded-workflow-modal/expanded-workflow-modal';
 import LeftMenu from './components/left-menu/left-menu';
@@ -20,6 +22,9 @@ import { useTaskActions } from './task-actions-context';
 
 const nodeTypes = {
   decision: DecisionNode,
+  start: StartEndNode,
+  end: StartEndNode,
+  default: BaseNode,
 };
 
 type Props = {

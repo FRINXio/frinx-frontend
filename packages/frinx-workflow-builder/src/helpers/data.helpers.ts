@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { getTaskLabel } from './task.helpers';
 import { ExtendedTask, Task, TaskType } from './types';
 
-type NodeType = 'decision' | 'fork_join' | 'join' | 'default';
+type NodeType = 'decision' | 'fork_join' | 'join' | 'base';
 
 type Position = { x: number; y: number };
 
@@ -36,13 +36,13 @@ function getNodeType(taskType: TaskType): NodeType {
     case 'FORK_JOIN':
     case 'JOIN':
     default:
-      return 'default';
+      return 'base';
   }
 }
 function createStartNode(): Node {
   return {
     id: 'start',
-    type: 'input',
+    type: 'start',
     position: getNodePosition(),
     data: { label: 'start', type: 'START' },
   };
@@ -51,7 +51,7 @@ function createStartNode(): Node {
 function createEndNode(): Node {
   return {
     id: 'end',
-    type: 'output',
+    type: 'end',
     position: getNodePosition(),
     data: { label: 'end', type: 'END' },
   };
