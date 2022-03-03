@@ -13,7 +13,7 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
   return (
     <>
       <Container maxWidth={1280}>
-        {enabledServices.get('uniflow_enabled') && (
+        {enabledServices.get('isUniflowEnabled') && (
           <Box marginBottom={12}>
             <Heading as="h2" size="md" marginBottom={4}>
               UniFlow
@@ -21,7 +21,7 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
             <UniflowActions />
           </Box>
         )}
-        {enabledServices.get('inventory_enabled') && (
+        {enabledServices.get('isInventoryEnabled') && (
           <Box>
             <Heading as="h2" size="md" marginBottom={4}>
               Device Inventory
@@ -36,7 +36,7 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
             </Heading>
           </Box>
           <HStack spacing={4}>
-            {enabledServices.get('uniflow_enabled') && (
+            {enabledServices.get('isUniflowEnabled') && (
               <Panel
                 label="UniFlow"
                 description="Create, organize and execute workflows."
@@ -44,7 +44,7 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
                 path="/uniflow"
               />
             )}
-            {enabledServices.get('inventory_enabled') && (
+            {enabledServices.get('isInventoryEnabled') && (
               <Panel
                 label="Device Inventory"
                 description="Manage network device configurations."
@@ -52,7 +52,7 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
                 path="/inventory"
               />
             )}
-            {enabledServices.get('uniresource_enabled') && (
+            {enabledServices.get('isUniresourceEnabled') && (
               <Panel
                 label="UniResource"
                 description="Manage logical resources."
@@ -73,22 +73,22 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
               label="UniConfig"
               description="Learn more about UniConfig API using Swagger."
               icon="book"
-              path={window.__CONFIG__.uniconfig_api_docs_url}
+              path={window.__CONFIG__.uniconfigApiDocsURL}
               isLinkExternal
             />
             <Panel
               label="UniFlow"
               description="Learn more about UniFlow API using Swagger."
               icon="book"
-              path={window.__CONFIG__.uniflow_api_docs_url}
+              path={window.__CONFIG__.uniflowApiDocsURL}
               isLinkExternal
             />
-            {window.__CONFIG__.auth_enabled ? null : (
+            {window.__CONFIG__.isAuthEnabled ? null : (
               <Panel
                 label="Device Inventory"
                 description="Execute and inspect queries with GraphQL Playground."
                 icon="book"
-                path={window.__CONFIG__.inventory_api_url}
+                path={window.__CONFIG__.inventoryApiURL}
                 isLinkExternal
               />
             )}

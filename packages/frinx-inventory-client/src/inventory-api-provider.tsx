@@ -5,7 +5,7 @@ import { CustomToastProvider } from './notifications-context';
 
 export const InventoryAPIContext = createContext(false);
 
-type InventoryApiClient = {
+export type InventoryApiClient = {
   clientOptions: ClientOptions;
   onError: () => void;
 };

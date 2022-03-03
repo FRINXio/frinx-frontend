@@ -20,11 +20,8 @@ const GammaApp: VoidFunctionComponent = () => {
 
       setComponents({
         GammaAppProvider: getGammaAppProvider({
-          unistoreCallbacks: UnistoreApi.create(
-            { url: window.__CONFIG__.unistore_api_url, authContext },
-            window.__CONFIG__.uniconfig_auth,
-          ).client,
-          uniflowCallbacks: UniflowApi.create({ url: window.__CONFIG__.conductor_api_url, authContext }).client,
+          unistoreCallbacks: UnistoreApi.create({ url: window.__CONFIG__.unistoreApiURL, authContext }, '').client,
+          uniflowCallbacks: UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext }).client,
         }),
         ...gammaComponents,
       });

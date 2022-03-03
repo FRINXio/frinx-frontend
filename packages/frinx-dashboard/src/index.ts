@@ -7,17 +7,16 @@ import './set-public-path';
 import { ServiceKey } from './types';
 
 const ALL_SERVICES: ServiceKey[] = [
-  'uniflow_enabled' as const,
-  'inventory_enabled' as const,
-  'uniresource_enabled' as const,
-  'gamma_enabled' as const,
+  'isUniflowEnabled' as const,
+  'isInventoryEnabled' as const,
+  'isUniresourceEnabled' as const,
+  'isGammaEnabled' as const,
 ];
 const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
-  ['uniflow_enabled', () => import('@frinx/workflow-ui')],
-  ['inventory_enabled', () => import('@frinx/inventory-client')],
-  ['uniresource_enabled', () => import('@frinx/uniresource-ui/src')],
-  ['usermanagement_enabled', () => import('@frinx/workflow-ui')],
-  ['gamma_enabled', () => import('@frinx/gamma')],
+  ['isUniflowEnabled', () => import('@frinx/workflow-ui')],
+  ['isInventoryEnabled', () => import('@frinx/inventory-client')],
+  ['isUniresourceEnabled', () => import('@frinx/uniresource-ui')],
+  ['isGammaEnabled', () => import('@frinx/gamma')],
 ]);
 
 class DashboardApp {

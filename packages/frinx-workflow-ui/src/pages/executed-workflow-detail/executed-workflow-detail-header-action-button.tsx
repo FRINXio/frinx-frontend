@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { WorkflowStatus } from './executed-workflow-detail-status.helpers';
+import { Status } from '../../types/types';
 import { Button, ButtonGroup } from '@chakra-ui/react';
 import callbackUtils from '../../utils/callback-utils';
 
@@ -16,10 +17,10 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
   restartWorkflows,
   workflowId,
 }) => {
-  const terminateWorkflows = () => {
+  const terminateWorkflows = async () => {
     const { terminateWorkflows } = callbackUtils.getCallbacks;
 
-    terminateWorkflows([workflowId]);
+    const result = await terminateWorkflows([workflowId]);
     onWorkflowActionExecution(workflowId);
   };
 
