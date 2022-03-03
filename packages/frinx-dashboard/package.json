@@ -36,7 +36,8 @@
     "uuid": "^8.3.2"
   },
   "scripts": {
-    "dev": "COMMIT_HASH=$(git rev-parse HEAD) run-s build:api dev:webpack",
+    "copy:gamma": "cp ../../public/gamma-options.js ../../build-client/",
+    "dev": "COMMIT_HASH=$(git rev-parse HEAD) run-s copy:gamma build:api dev:webpack",
     "dev:webpack": "webpack serve --mode development",
     "build:api": "cd ../frinx-api && yarn run build",
     "build:webpack": "NODE_ENV=production webpack --mode production",
