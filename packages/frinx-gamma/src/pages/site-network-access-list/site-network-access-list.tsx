@@ -196,7 +196,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
                   <SiteNetworkAccessTable
                     siteId={siteId}
                     size="sm"
-                    detailId={null}
+                    detailId={detailId}
                     networkAccesses={changedNetworkAccessesWithStatus}
                     onEditSiteNetworkAccessButtonClick={onEditSiteNetworkAccessClick}
                     onDeleteSiteNetworkAccessButtonClick={handleDeleteButtonClick}

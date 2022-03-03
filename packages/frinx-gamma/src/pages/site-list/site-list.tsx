@@ -155,7 +155,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
                     <SiteTable
                       sites={changedSitesWithStatus}
                       size="sm"
-                      detailId={null}
+                      detailId={detailId}
                       onEditSiteButtonClick={onEditVpnSiteClick}
                       onDetailSiteButtonClick={onDetailVpnSiteClick}
                       onLocationsSiteButtonClick={onLocationsVpnSiteClick}
