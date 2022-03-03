@@ -19,9 +19,6 @@ function fullPath(...parts) {
   return path.join(__dirname, ...parts);
 }
 
-// console.log(fullPath('../../public/', 'gamma-options.js'));
-// console.log(fullPath('../../build-client/', 'gamma-options.js'));
-
 const plugins = [
   new HtmlWebpackPlugin({
     template: fullPath('../../public', 'index.html'),
