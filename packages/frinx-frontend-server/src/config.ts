@@ -23,11 +23,15 @@ function stringToBoolean(value: string): boolean {
   }
 }
 
+function buildAuthRedirectURL(scheme: string, url: string ): string {
+  return scheme.replace("://","") + '://' + url
+}
+
 /* eslint-disable @typescript-eslint/naming-convention */
 const config = {
   isAuthEnabled: stringToBoolean(envString('AUTH_ENABLED')),
   authClientId: envString('AUTH_CLIENT_ID'),
-  authRedirectURL: envString('AUTH_REDIRECT_URL'),
+  authRedirectURL: buildAuthRedirectURL(envString('AUTH_REDIRECT_SCHEME'), envString('AUTH_REDIRECT_DOMAIN')),
   uniflowApiURL: envString('CONDUCTOR_API_URL'),
   isUniresourceEnabled: stringToBoolean(envString('UNIRESOURCE_ENABLED')),
   isUniflowEnabled: stringToBoolean(envString('UNIFLOW_ENABLED')),
