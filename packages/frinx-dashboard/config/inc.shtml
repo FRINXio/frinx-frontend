@@ -1,4 +1,0 @@
-<script type="text/javascript" defer>
-  window.__CONFIG__ = <!--# include file="config.json" --> ;
-  window.__GAMMA_FORM_OPTIONS__ = <!--# include file="gamma-options.json" --> ;
-</script>
