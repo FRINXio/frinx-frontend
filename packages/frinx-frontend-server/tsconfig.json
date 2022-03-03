@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["es2019"],
+    "isolatedModules": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "outDir": "../../build-server",
+    "rootDir": "src"
+  },
+  "include": ["src"],
+  "exclude": [".eslintrc.js", "babel.config.js", "babel-register-ts.js"]
+}

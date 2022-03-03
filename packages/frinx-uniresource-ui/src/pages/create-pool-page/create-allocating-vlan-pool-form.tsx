@@ -186,7 +186,6 @@ const CreateAllocatingVlanPoolForm: FC<Props> = ({
               poolProperties={values.poolProperties as Record<string, string>}
               poolPropertyTypes={values.poolPropertyTypes as Record<string, 'int'>}
               onChange={handlePoolPropertiesChange}
-              errors={errors}
             />
             <FormErrorMessage>{errors.poolProperties}</FormErrorMessage>
           </Box>
