@@ -386,7 +386,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({ onFormSubmit, resourceTy
               poolProperties={poolProperties}
               poolPropertyTypes={poolPropertyTypes}
               onChange={handlePoolPropertiesChange}
-              errors={errors}
+              poolPropertyErrors={errors.poolProperties}
             />
           </Box>
           <Divider marginY={5} orientation="horizontal" color="gray.200" />

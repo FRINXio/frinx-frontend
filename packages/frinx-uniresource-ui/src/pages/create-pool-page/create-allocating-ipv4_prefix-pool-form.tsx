@@ -176,7 +176,6 @@ const CreateAllocatingIpv4PrefixPoolForm: FC<Props> = ({
               poolProperties={values.poolProperties as Record<string, string>}
               poolPropertyTypes={values.poolPropertyTypes as Record<string, 'int' | 'string'>}
               onChange={handlePoolPropertiesChange}
-              errors={errors}
             />
             <FormErrorMessage>{errors.poolProperties}</FormErrorMessage>
           </Box>
