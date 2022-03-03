@@ -43,6 +43,18 @@ function getSelectedBearer(bearers: VpnBearer[], bearerId: string): VpnBearer {
   return vpnBearer;
 }
 
+function freeResources(spBearerReference: string, svlanId: number) {
+  const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+  uniflowCallbacks.executeWorkflow({
+    name: 'Free_SvlanId',
+    version: 1,
+    input: {
+      sp_bearer_reference: spBearerReference, // eslint-disable-line @typescript-eslint/naming-convention
+      vlan: svlanId,
+    },
+  });
+}
+
 const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
   const [isLoadingSvlan, setIsLoadingSvlan] = useState<boolean>(false);
   const [svlanId, setSvlanId] = useState<number | null>(null);
@@ -67,28 +79,6 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
 
     fetchData();
   }, [bearerId]);
-
-  useEffect(() => {
-    // free resource on unmount
-    return () => {
-      if (!selectedBearer?.spBearerReference || !svlanId) {
-        return;
-      }
-      const freeResources = async () => {
-        const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
-        await uniflowCallbacks.executeWorkflow({
-          name: 'Free_SvlanId',
-          version: 1,
-          input: {
-            sp_bearer_reference: selectedBearer?.spBearerReference, // eslint-disable-line @typescript-eslint/naming-convention
-            vlan: svlanId,
-          },
-        });
-      };
-
-      freeResources();
-    };
-  }, [selectedBearer, svlanId]);
 
   const handleSubmit = async (attachment: EvcAttachment) => {
     setSubmitError(null);
@@ -116,10 +106,20 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     }
   };
 
-  const handleCancel = async () => {
+  const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
+    if (selectedBearer?.spBearerReference && svlanId) {
+      freeResources(selectedBearer.spBearerReference, svlanId);
+    }
     onCancel(unwrap(selectedBearer?.spBearerReference));
+  };
+
+  const handleReset = () => {
+    if (selectedBearer?.spBearerReference && svlanId) {
+      freeResources(selectedBearer.spBearerReference, svlanId);
+    }
+    setSvlanId(null);
   };
 
   const handleWorkflowFinish = () => {
@@ -166,6 +166,7 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
               evcAttachment={evcAttachment}
               onSvlanAssign={handleSvlanAssign}
               onSubmit={handleSubmit}
+              onReset={handleReset}
               onCancel={handleCancel}
               isLoadingSvlan={isLoadingSvlan}
             />

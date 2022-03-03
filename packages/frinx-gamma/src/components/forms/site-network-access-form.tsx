@@ -119,6 +119,7 @@ type Props = {
   staticRoutes: StaticRoutingType[];
   onSubmit: (s: VpnSite) => void;
   onCancel: () => void;
+  onReset: () => void;
   onNetworkAccessChange?: (s: SiteNetworkAccess) => void;
 };
 
@@ -195,6 +196,7 @@ const SiteNetAccessForm: FC<Props> = ({
   bandwidths,
   onSubmit,
   onCancel,
+  onReset,
 }) => {
   const [workflowId, setWorkflowId] = useState<string | null>(null);
   const [addressAssign, setAddressAssign] = useState<AddressAssignState | null>(null);
@@ -280,6 +282,11 @@ const SiteNetAccessForm: FC<Props> = ({
     });
 
     setWorkflowId(workflowResult.text);
+  };
+
+  const handleReset = () => {
+    resetForm();
+    onReset();
   };
 
   const locationItems = siteState.customerLocations.map((l) => {
@@ -699,7 +706,7 @@ const SiteNetAccessForm: FC<Props> = ({
         <Button type="submit" colorScheme="blue" isDisabled={!dirty || workflowId !== null || !isValid}>
           Save changes
         </Button>
-        <Button onClick={() => resetForm()}>Clear</Button>
+        <Button onClick={handleReset}>Clear</Button>
         <Button onClick={onCancel}>Cancel</Button>
       </Stack>
     </form>
