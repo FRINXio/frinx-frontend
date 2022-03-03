@@ -5,8 +5,6 @@ on:
     branches:
       - main
       - gamma-project
-      - story-without-fe-server
-
 jobs:
   pr-check:
     runs-on: ubuntu-latest
@@ -24,22 +22,14 @@ jobs:
         run: yarn run dedubcheck
       - name: Build dependencies
         run: yarn run build:api
-<<<<<<< HEAD
       - name: Generate types
         run: yarn run typegen
-=======
->>>>>>> origin/main
       - name: Run eslint check in Dashboard
         run: yarn run lint:dashboard
       - name: Run eslint check in Workflow Builder
         run: yarn run lint:workflow-builder
       - name: Run eslint check in Frinx api
         run: yarn run lint:api
-<<<<<<< HEAD
-=======
-      - name: Check types in Workflow Builder
-        run: yarn run type-check:workflow-builder
->>>>>>> origin/main
       - name: Run eslint check in Inventory client
         run: yarn run lint:inventory
       - name: Run eslint check in Uniresource UI
@@ -50,7 +40,6 @@ jobs:
         run: yarn run type-check:workflow-builder
       - name: Check types in Inventory client
         run: yarn run type-check:inventory
-<<<<<<< HEAD
       - name: Check types in Uniresource
         run: yarn run type-check:uniresource
       - name: Check types in Dashboard
@@ -59,7 +48,3 @@ jobs:
         run: yarn run type-check:api
       - name: Check types in Gamma
         run: yarn run type-check:gamma
-=======
-      - name: Check types in Frinx api
-        run: yarn run type-check:api
->>>>>>> origin/main
