@@ -9,7 +9,7 @@ import theme from './theme';
 import { ServiceKey } from './types';
 
 function getURLBaseName(): string {
-  return window.__CONFIG__.url_basename ?? '/';
+  return window.__CONFIG__.URLBasename ?? '/';
 }
 
 const AuthRoot: FC = ({ children }) => {
