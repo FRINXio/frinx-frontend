@@ -20,18 +20,15 @@ type Props = {
 
 const ExecutedWorkflowTableHierarchicalItem: FC<Props> = ({
   hierarchicalWorkflows,
-  openParentWfs,
   selectWf,
-  indent,
   selectedWfs,
-  showChildrenWorkflows,
   onExecutedWorkflowClick,
 }) => {
-  let { parents, children } = hierarchicalWorkflows;
-  const parentsId = children.map((wf) => wf.parentWorkflowId);
+  let { parents } = hierarchicalWorkflows;
+
   return (
     <>
-      {parents.map((item, i) => (
+      {parents.map((item) => (
         <Tr key={item.workflowId}>
           <Td>
             <Checkbox
@@ -40,23 +37,9 @@ const ExecutedWorkflowTableHierarchicalItem: FC<Props> = ({
             />
           </Td>
           <Td
-            cursor="pointer"
-            onClick={() => showChildrenWorkflows(item, children, null, null)}
-            style={{ textIndent: indent(parents, i) }}
-          >
-            {parentsId.includes(item.workflowId) ? (
-              openParentWfs.filter((wf) => wf.startTime === item.startTime).length ? (
-                <i className="fas fa-minus" />
-              ) : (
-                <i className="fas fa-plus" />
-              )
-            ) : null}
-          </Td>
-          <Td
             onClick={() => onExecutedWorkflowClick(item.workflowId)}
             cursor="pointer"
             style={{
-              textIndent: indent(parents, i, 20),
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',

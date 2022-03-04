@@ -7,13 +7,6 @@ type NodeType = 'decision' | 'fork_join' | 'join' | 'base';
 
 type Position = { x: number; y: number };
 
-function notNullPredicate<T>(value?: T | null): value is T {
-  if (value == null) {
-    return false;
-  }
-  return true;
-}
-
 function getNodeStyle() {
   return {};
 }

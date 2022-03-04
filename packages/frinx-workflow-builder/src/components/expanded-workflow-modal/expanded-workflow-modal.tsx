@@ -27,7 +27,7 @@ type Props = {
   onClose: () => void;
 };
 
-const ExpandedWorkflowDiagram: FC<{ workflow: Workflow }> = ({ workflow }) => {
+const ExpandedWorkflowDiagram: FC<{ workflow: Workflow }> = () => {
   return null;
 };
 

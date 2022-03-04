@@ -66,7 +66,7 @@ export async function* asyncGenerator(
     data = await getWorkflowExecOutput(workflowId, abortController);
   }
   // we need to do an additional yield for the last task status change
-  if (data.result.status === 'FAILED' || data.result.status === 'COMPLETED' || data.result.status == 'TERMINATED') {
+  if (data.result.status === 'FAILED' || data.result.status === 'COMPLETED' || data.result.status === 'TERMINATED') {
     yield data;
   }
 }
@@ -83,12 +83,14 @@ export function useAsyncGenerator(workflowId: string): ExecutedWorkflowResponse 
         setExecPayload(data);
       }
     })();
+  }, [workflowId, controller]);
 
+  useEffect(() => {
     // we need to abort all fetch requests on unmount, otherwise we will get an error
     return () => {
       controller.abort();
     };
-  }, [workflowId, controller]);
+  }, [controller]);
 
   return execPayload;
 }

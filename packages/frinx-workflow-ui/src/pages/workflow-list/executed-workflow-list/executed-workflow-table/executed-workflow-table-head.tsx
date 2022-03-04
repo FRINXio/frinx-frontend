@@ -22,7 +22,6 @@ const ExecutedWorkflowTableHead: FC<Props> = ({
         <Th>
           <Checkbox onChange={(e) => selectAllWorkflows(e.target.checked)} isChecked={areSelectedAll} />
         </Th>
-        {!isFlatTable && <Th>Children</Th>}
         <Th onClick={() => sortWf(0)} cursor="pointer">
           Name &nbsp;
           {sort[0] !== 2 ? <i className={sort[0] ? 'fas fa-sort-up' : 'fas fa-sort-down'} /> : null}

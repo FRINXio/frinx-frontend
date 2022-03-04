@@ -48,11 +48,11 @@ const UniflowApp: FC = () => {
           PollData,
           DiagramBuilder,
           UniflowApiProvider: getUniflowApiProvider(
-            UniflowApi.create({ url: window.__CONFIG__.conductor_api_url, authContext }).client,
+            UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext }).client,
           ),
           WorkflowBuilder,
           BuilderApiProvider: getBuilderApiProvider(
-            UniflowApi.create({ url: window.__CONFIG__.conductor_api_url, authContext }).client,
+            UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext }).client,
           ),
         });
       },

@@ -24,9 +24,20 @@ const Paginator: FC<Props> = ({ onPaginationClick, pagesCount, currentPage, show
         <PaginationPrevious>Previous</PaginationPrevious>
         {showPageNumbers ? (
           <PaginationPageGroup marginX={5}>
-            {pages.map((page) => (
-              <PaginationPage key={`pagination_page_${page}`} page={page} paddingX={5} />
-            ))}
+            {pages.map((page) => {
+              if (page === currentPage || (page <= currentPage + 2 && page >= currentPage - 2)) {
+                return (
+                  <PaginationPage
+                    key={`pagination_page_${page}`}
+                    page={page}
+                    paddingX={5}
+                    isActive={page === currentPage}
+                  />
+                );
+              }
+
+              return null;
+            })}
           </PaginationPageGroup>
         ) : null}
         <PaginationNext>Next</PaginationNext>
