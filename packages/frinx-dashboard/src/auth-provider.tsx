@@ -4,6 +4,7 @@ import { useMsal } from '@azure/msal-react';
 import { Box, Button, Heading, Text } from '@chakra-ui/react';
 import React, { createContext, FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
+import ErrorMessageBox from './components/error-message-box/error-message-box';
 
 export type ContextType = {
   login: () => Promise<AuthenticationResult>;
@@ -16,6 +17,7 @@ export const Context = createContext<ContextType | null>(null);
 const AuthProvider: FC = ({ children }) => {
   const { instance, accounts, inProgress } = useMsal();
   const [isAuthError, setIsAuthError] = useState(false);
+  const [isAccessError, setIsAccessError] = useState(false);
 
   useEffect(() => {
     if (inProgress === 'none' && accounts.length > 0) {
@@ -36,6 +38,12 @@ const AuthProvider: FC = ({ children }) => {
     });
   }, []);
 
+  useEffect(() => {
+    authContext.eventEmitter.once('ACCESS_REJECTED', () => {
+      setIsAccessError(true);
+    });
+  }, []);
+
   const handleLogin = () => {
     return instance
       .loginPopup({
@@ -45,6 +53,10 @@ const AuthProvider: FC = ({ children }) => {
         setIsAuthError(false);
         return data;
       });
+  };
+
+  const handleClose = () => {
+    setIsAccessError(false);
   };
 
   return (
@@ -57,7 +69,7 @@ const AuthProvider: FC = ({ children }) => {
         },
       }}
     >
-      {isAuthError ? (
+      {isAuthError || isAccessError ? (
         <Box
           position="fixed"
           inset={0}
@@ -69,30 +81,27 @@ const AuthProvider: FC = ({ children }) => {
             zIndex: 20,
           }}
         >
-          <Box
-            position="fixed"
-            top={4}
-            minWidth={96}
-            left="50%"
-            transform="translateX(-50%)"
-            paddingY={4}
-            paddingX={8}
-            borderRadius="md"
-            zIndex="modal"
-            background="white"
-            borderTop={4}
-            borderStyle="solid"
-            borderColor="red"
-            textAlign="center"
-          >
-            <Heading size="md" marginBottom={2}>
-              Unauthorized
-            </Heading>
-            <Text marginBottom={2}>Please login to continue</Text>
-            <Button type="button" colorScheme="blue" onClick={handleLogin}>
-              Login
-            </Button>
-          </Box>
+          {isAuthError ? (
+            <ErrorMessageBox>
+              <Heading size="md" marginBottom={2}>
+                Unauthorized
+              </Heading>
+              <Text marginBottom={2}>Please login to continue</Text>
+              <Button type="button" colorScheme="blue" onClick={handleLogin}>
+                Login
+              </Button>
+            </ErrorMessageBox>
+          ) : (
+            <ErrorMessageBox>
+              <Heading size="md" marginBottom={2}>
+                No access
+              </Heading>
+              <Text marginBottom={2}>You have no access to this resource</Text>
+              <Button type="button" colorScheme="blue" onClick={handleClose}>
+                Close
+              </Button>
+            </ErrorMessageBox>
+          )}
           {children}
         </Box>
       ) : (

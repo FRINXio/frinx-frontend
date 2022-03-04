@@ -15,8 +15,10 @@ declare interface Window {
     uniflowApiURL: string;
     uniconfigApiDocsURL: string;
     isUniresourceEnabled: boolean;
+    unistoreApiURL: string;
     isUniflowEnabled: boolean;
     isInventoryEnabled: boolean;
+    isGammaEnabled: boolean;
     URLBasename: string;
     inventoryApiURL: string;
     uniresourceApiURL: string;

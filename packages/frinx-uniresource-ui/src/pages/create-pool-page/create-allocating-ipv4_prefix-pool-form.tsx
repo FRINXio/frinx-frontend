@@ -12,7 +12,6 @@ import {
   Switch,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
-import { omitBy } from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import * as yup from 'yup';
 import SearchByTagInput from '../../components/search-by-tag-input';
@@ -110,19 +109,6 @@ const CreateAllocatingIpv4PrefixPoolForm: FC<Props> = ({
     },
     [setFieldValue, values],
   );
-  const handleDeleteProperty = useCallback(
-    (key: string) => {
-      setFieldValue(
-        'poolProperties',
-        omitBy(values.poolProperties, (_, k) => k === key),
-      );
-      setFieldValue(
-        'poolPropertyTypes',
-        omitBy(values.poolPropertyTypes, (_, k) => k === key),
-      );
-    },
-    [setFieldValue, values],
-  );
 
   return (
     <form onSubmit={handleSubmit}>
@@ -190,7 +176,6 @@ const CreateAllocatingIpv4PrefixPoolForm: FC<Props> = ({
               poolProperties={values.poolProperties as Record<string, string>}
               poolPropertyTypes={values.poolPropertyTypes as Record<string, 'int' | 'string'>}
               onChange={handlePoolPropertiesChange}
-              onDeleteBtnClick={handleDeleteProperty}
             />
             <FormErrorMessage>{errors.poolProperties}</FormErrorMessage>
           </Box>

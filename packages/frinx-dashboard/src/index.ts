@@ -10,16 +10,17 @@ const ALL_SERVICES: ServiceKey[] = [
   'isUniflowEnabled' as const,
   'isInventoryEnabled' as const,
   'isUniresourceEnabled' as const,
+  'isGammaEnabled' as const,
 ];
 const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
   ['isUniflowEnabled', () => import('@frinx/workflow-ui')],
   ['isInventoryEnabled', () => import('@frinx/inventory-client')],
   ['isUniresourceEnabled', () => import('@frinx/uniresource-ui')],
+  ['isGammaEnabled', () => import('@frinx/gamma')],
 ]);
 
 class DashboardApp {
   private enabledServices: Map<ServiceKey, boolean> = new Map(
-    // eslint-disable-next-line no-underscore-dangle
     ALL_SERVICES.map((service) => {
       return [service, window.__CONFIG__[service]];
     }),

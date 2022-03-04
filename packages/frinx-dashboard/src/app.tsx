@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Dashboard from './components/dashboard/dashboard';
 import Header from './components/header/header';
+import GammaApp from './gamma-app';
 import InventoryApp from './inventory-app';
 import { ServiceKey } from './types';
 import UniflowApp from './uniflow-app';
@@ -31,6 +32,11 @@ const App: FC<Props> = ({ enabledServices, basename, isAuthEnabled }) => {
           {enabledServices.get('isInventoryEnabled') && (
             <Route path="/inventory">
               <InventoryApp />
+            </Route>
+          )}
+          {enabledServices.get('isGammaEnabled') && (
+            <Route path="/gamma">
+              <GammaApp />
             </Route>
           )}
           {enabledServices.get('isUniresourceEnabled') && (

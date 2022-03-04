@@ -5,7 +5,7 @@ import EventEmitter from 'eventemitter3';
 const LS_TOKEN_KEY = 'id_token';
 
 export type UnauthorizedEventKey = 'UNAUTHORIZED';
-export type EventKeys = 'UNAUTHORIZED' | 'FORBIDDEN';
+export type EventKeys = 'UNAUTHORIZED' | 'FORBIDDEN' | 'ACCESS_REJECTED';
 
 export class AuthContext {
   public eventEmitter: EventEmitter<EventKeys> = new EventEmitter();
