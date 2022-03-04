@@ -42,6 +42,8 @@ const ExpandedWorkflowDiagram: FC<{ workflow: Workflow }> = ({ workflow }) => {
         // @ts-ignore
         schema={schema}
         // onChange={noop}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         style={{
           boxShadow: 'none',
           border: 'none',

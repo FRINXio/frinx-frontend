@@ -10,26 +10,7 @@ const InventoryApp: FC = () => {
 
   useEffect(() => {
     import('@frinx/inventory-client/src').then((mod) => {
-      const {
-        DeviceList,
-        CreateDevicePage,
-        InventoryAPIProvider,
-        DeviceConfigPage,
-        DeviceBlueprints,
-        CreateBlueprintPage,
-        EditDevicePage,
-        EditBlueprintPage,
-      } = mod;
-      setComponents({
-        DeviceList,
-        CreateDevicePage,
-        InventoryAPIProvider,
-        DeviceConfigPage,
-        DeviceBlueprints,
-        CreateBlueprintPage,
-        EditDevicePage,
-        EditBlueprintPage,
-      });
+      setComponents(mod);
     });
   }, []);
 

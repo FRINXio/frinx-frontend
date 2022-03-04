@@ -33,11 +33,13 @@ const config = {
   isUniflowEnabled: stringToBoolean(envString('UNIFLOW_ENABLED')),
   URLBasename: envString('URL_BASENAME'),
   inventoryApiURL: envString('INVENTORY_API_URL'),
+  unistoreApiURL: envString('UNISTORE_API_URL'),
   uniresourceApiURL: envString('UNIRESOURCE_API_URL'),
   isInventoryEnabled: stringToBoolean(envString('INVENTORY_ENABLED')),
   uniconfigApiDocsURL: envString('UNICONFIG_API_DOCS_URL'),
   uniflowApiDocsURL: envString('UNIFLOW_API_DOCS_URL'),
   MSALAuthority: envString('MSAL_AUTHORITY'),
+  isGammaEnabled: envString('GAMMA_ENABLED'),
 };
 /* eslint-enable */
 
