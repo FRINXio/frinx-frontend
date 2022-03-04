@@ -21,7 +21,7 @@ import SearchByTagInput from '../../components/search-by-tag-input';
 import { useTagsInput } from '../../hooks/use-tags-input';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
-type FormValues = {
+export type FormValues = {
   name: string;
   description: string;
   resourceTypeId: string;

@@ -3,6 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 /* eslint-enable */
 
 const ENVIRONMENT = process.env.NODE_ENV || 'development';
@@ -29,6 +30,11 @@ const plugins = [
   new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   new webpack.DefinePlugin({
     COMMIT_HASH: JSON.stringify(process.env.COMMIT_HASH),
+  }),
+  new CopyWebpackPlugin({
+    patterns: [
+      { from: fullPath('../../public/', 'gamma-options.js'), to: fullPath('../../build-client/', 'gamma-options.js') },
+    ],
   }),
 ];
 

@@ -8,7 +8,7 @@ export type Callbacks = {
   putWorkflow: (workflows: Workflow[]) => Promise<Workflow[]>;
   getWorkflowExecutions: (workflowId: string, label: string, start: number, size: string) => Promise<unknown>;
   getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<ExecutedWorkflowResponse>;
-  executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<WorkflowPayload>;
+  executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<{ text: string }>;
 };
 
 type WorkflowPayload = {

@@ -293,6 +293,8 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
       </Flex>
       <Box background="white" paddingY={8} paddingX={4}>
         <CreatePoolForm
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           onFormSubmit={handleFormSubmit}
           resourceTypes={resourceTypes}
           pools={pools}

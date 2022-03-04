@@ -3,7 +3,7 @@
     "target": "esnext",
     "module": "esnext",
     "lib": ["es5", "es6", "es7", "ESNext", "dom"],
-    "jsx": "react-jsx",
+    "jsx": "react",
     "declaration": true,
     "outDir": "dist",
     "strict": true,
@@ -20,6 +20,6 @@
     "isolatedModules": true,
     "noEmit": false
   },
-  "include": ["custom.d.ts", "feather-icons-react.d.ts", "src", "*.ts", "*.js", ".eslintrc.js"],
+  "include": ["feather-icons-react.d.ts", "src", "*.ts", "*.js", ".eslintrc.js"],
   "exclude": ["node_modules"]
 }
