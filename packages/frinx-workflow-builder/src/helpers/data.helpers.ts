@@ -140,18 +140,22 @@ function createEdges(tasks: Task[]): Edge[] {
 
     // edges for task after decision
     if (previousTask.type === 'DECISION') {
-      const decisionCaseEdges = Object.keys(previousTask.decisionCases)
-        .map((d) => {
-          const decisionCaseTasks = [...previousTask.decisionCases[d]];
-          const lastDecisionTask = decisionCaseTasks.pop();
-          return lastDecisionTask;
-        })
-        .filter(notNullPredicate)
-        .map((task) => ({
-          id: `e${task.taskReferenceName}-${curr.taskReferenceName}`,
-          source: task.taskReferenceName,
-          target: curr.taskReferenceName,
-        }));
+      const decisionCaseEdges = Object.keys(previousTask.decisionCases).map((d) => {
+        const decisionCaseTasks = [...previousTask.decisionCases[d]];
+        const lastDecisionTask = decisionCaseTasks.pop();
+        return lastDecisionTask
+          ? {
+              id: `e${lastDecisionTask.taskReferenceName}-${curr.taskReferenceName}`,
+              source: lastDecisionTask.taskReferenceName,
+              target: curr.taskReferenceName,
+            }
+          : {
+              id: `e${previousTask.taskReferenceName}-${curr.taskReferenceName}`,
+              source: previousTask.taskReferenceName,
+              target: curr.taskReferenceName,
+              sourceHandle: d,
+            };
+      });
 
       const defaultCaseTasks = [...previousTask.defaultCase];
       const defaultCaseLastTask = defaultCaseTasks.pop();
@@ -164,7 +168,15 @@ function createEdges(tasks: Task[]): Edge[] {
               target: curr.taskReferenceName,
             },
           ]
-        : decisionCaseEdges;
+        : [
+            ...decisionCaseEdges,
+            {
+              id: `e${previousTask.taskReferenceName}-${curr.taskReferenceName}`,
+              source: previousTask.taskReferenceName,
+              target: curr.taskReferenceName,
+              sourceHandle: `default`,
+            },
+          ];
       return [...prev, ...newEdges];
     }
 
@@ -258,20 +270,22 @@ function createEdges(tasks: Task[]): Edge[] {
 }
 
 function createAllEdges(tasks: Task[]): Edge[] {
-  const edges = createEdges(tasks);
-  if (tasks.length) {
-    const startEdge = {
-      id: `estart-${tasks[0].taskReferenceName}`,
-      source: 'start',
-      target: tasks[0].taskReferenceName,
-    };
-    const endEdge = {
-      id: `e${tasks[0].taskReferenceName}-end`,
-      source: tasks[tasks.length - 1].taskReferenceName,
-      target: 'end',
-    };
-    return [startEdge, ...edges, endEdge];
-  }
+  const startTask: Task = {
+    type: 'START_TASK',
+    name: 'start',
+    taskReferenceName: 'start',
+    optional: false,
+    startDelay: 0,
+  };
+  const endTask: Task = {
+    type: 'END_TASK',
+    name: 'end',
+    taskReferenceName: 'end',
+    optional: false,
+    startDelay: 0,
+  };
+  const tasksWithStartEndNodes = [startTask, ...tasks, endTask];
+  const edges = createEdges(tasksWithStartEndNodes);
   return edges;
 }
 
