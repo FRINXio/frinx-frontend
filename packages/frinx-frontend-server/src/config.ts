@@ -1,3 +1,5 @@
+import { URL } from 'url';
+
 function envString(key: string): string {
   const { env } = process;
   const value = env[key];
@@ -23,15 +25,30 @@ function stringToBoolean(value: string): boolean {
   }
 }
 
-function buildAuthRedirectURL(scheme: string, url: string ): string {
-  return scheme.replace("://","") + '://' + url
+function ensureSchema(schema: string): 'http' | 'https' {
+  if (schema !== 'http' && schema !== 'https') {
+    throw new Error(`Invalid "AUTH_REDIRECT_SCHEME" env value: ${schema}`);
+  }
+  return schema;
+}
+
+function buildAuthRedirectURL(schema: 'http' | 'https', base: string): string {
+  try {
+    const url = new URL(`${schema}://${base}`);
+    return url.href;
+  } catch (e) {
+    throw new Error(`Invalid "AUTH_REDIRECT_DOMAIN" env value: ${base}`);
+  }
 }
 
 /* eslint-disable @typescript-eslint/naming-convention */
 const config = {
   isAuthEnabled: stringToBoolean(envString('AUTH_ENABLED')),
   authClientId: envString('AUTH_CLIENT_ID'),
-  authRedirectURL: buildAuthRedirectURL(envString('AUTH_REDIRECT_SCHEME'), envString('AUTH_REDIRECT_DOMAIN')),
+  authRedirectURL: buildAuthRedirectURL(
+    ensureSchema(envString('AUTH_REDIRECT_SCHEME')),
+    envString('AUTH_REDIRECT_DOMAIN'),
+  ),
   uniflowApiURL: envString('CONDUCTOR_API_URL'),
   isUniresourceEnabled: stringToBoolean(envString('UNIRESOURCE_ENABLED')),
   isUniflowEnabled: stringToBoolean(envString('UNIFLOW_ENABLED')),
