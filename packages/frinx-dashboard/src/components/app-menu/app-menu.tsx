@@ -11,7 +11,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
   return (
     <Flex alignItems="stretch" height="100%">
       <Switch>
-        {enabledServices.get('uniflow_enabled') && (
+        {enabledServices.get('isUniflowEnabled') && (
           <Route path="/uniflow">
             <Link
               to="/uniflow/definitions"
@@ -135,7 +135,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
             </Link>
           </Route>
         )}
-        {enabledServices.get('uniresource_enabled') && (
+        {enabledServices.get('isUniresourceEnabled') && (
           <Route path="/uniresource">
             <Link
               to="/uniresource/pools"
@@ -199,7 +199,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
             </Link>
           </Route>
         )}
-        {enabledServices.get('inventory_enabled') && (
+        {enabledServices.get('isInventoryEnabled') && (
           <Route path="/inventory">
             <Link
               to="/inventory/devices"

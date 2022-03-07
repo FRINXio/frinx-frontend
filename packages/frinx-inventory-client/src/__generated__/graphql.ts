@@ -108,7 +108,14 @@ export type CalculatedDiffResult = {
   __typename?: 'CalculatedDiffResult';
   createdData: Array<DiffData>;
   deletedData: Array<DiffData>;
-  updatedData: Array<DiffData>;
+  updatedData: Array<CalculatedUpdateDiffData>;
+};
+
+export type CalculatedUpdateDiffData = {
+  __typename?: 'CalculatedUpdateDiffData';
+  path: Scalars['String'];
+  intendedData: Scalars['String'];
+  actualData: Scalars['String'];
 };
 
 export type CloseTransactionPayload = {
@@ -172,6 +179,11 @@ export type DataStore = {
   config: Maybe<Scalars['String']>;
   operational: Maybe<Scalars['String']>;
   snapshots: Array<Snapshot>;
+};
+
+export type DeleteBlueprintPayload = {
+  __typename?: 'DeleteBlueprintPayload';
+  blueprint: Maybe<Blueprint>;
 };
 
 export type DeleteDevicePayload = {
@@ -330,6 +342,7 @@ export type Mutation = {
   addLocation: AddLocationPayload;
   addBlueprint: AddBlueprintPayload;
   updateBlueprint: UpdateBlueprintPayload;
+  deleteBlueprint: DeleteBlueprintPayload;
 };
 
 
@@ -440,6 +453,11 @@ export type MutationAddBlueprintArgs = {
 export type MutationUpdateBlueprintArgs = {
   id: Scalars['String'];
   input: UpdateBlueprintInput;
+};
+
+
+export type MutationDeleteBlueprintArgs = {
+  id: Scalars['String'];
 };
 
 export type Node = {
@@ -738,6 +756,22 @@ export type BlueprintsQuery = (
   ) }
 );
 
+export type DeleteBlueprintMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteBlueprintMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteBlueprint: (
+    { __typename?: 'DeleteBlueprintPayload' }
+    & { blueprint: Maybe<(
+      { __typename?: 'Blueprint' }
+      & Pick<Blueprint, 'id'>
+    )> }
+  ) }
+);
+
 export type DeviceNameQueryVariables = Exact<{
   deviceId: Scalars['ID'];
 }>;
@@ -931,8 +965,8 @@ export type CalculatedDiffQuery = (
         { __typename?: 'DiffData' }
         & Pick<DiffData, 'path' | 'data'>
       )>, updatedData: Array<(
-        { __typename?: 'DiffData' }
-        & Pick<DiffData, 'path' | 'data'>
+        { __typename?: 'CalculatedUpdateDiffData' }
+        & Pick<CalculatedUpdateDiffData, 'path' | 'actualData' | 'intendedData'>
       )> }
     ) }
   ) }

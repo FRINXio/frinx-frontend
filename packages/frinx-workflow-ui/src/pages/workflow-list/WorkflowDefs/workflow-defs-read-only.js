@@ -51,7 +51,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCodeBranch, faFileCode, faPlay, faSearch, faStar } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarOutlined } from '@fortawesome/free-regular-svg-icons';
 import { jsonParse } from '../../../common/utils';
-import { usePagination } from '../../../common/PaginationHook';
+import { usePagination } from '../../../common/pagination-hook';
 
 const getLabels = (dataset) => {
   const labelsArr = dataset.map(({ description }) => {

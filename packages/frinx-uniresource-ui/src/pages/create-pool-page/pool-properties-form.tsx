@@ -1,5 +1,6 @@
 import React, { VoidFunctionComponent } from 'react';
 import { FormControl, Input, HStack, Box, FormErrorMessage } from '@chakra-ui/react';
+import { FormikErrors } from 'formik';
 
 type PoolProperties = Record<string, string>;
 type PoolPropertyTypes = Record<string, 'int' | 'string'>;
@@ -7,7 +8,7 @@ type Props = {
   onChange: (values: { key: string; type: 'int' | 'string'; value: string }) => void;
   poolProperties: PoolProperties;
   poolPropertyTypes: PoolPropertyTypes;
-  poolPropertyErrors?: string;
+  poolPropertyErrors?: string | string[] | FormikErrors<Record<string, string>>;
 };
 
 const PoolPropertiesForm: VoidFunctionComponent<Props> = ({

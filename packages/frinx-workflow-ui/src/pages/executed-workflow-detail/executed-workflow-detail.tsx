@@ -102,7 +102,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOper
       : unescapeJs(JSON.stringify(data, null, 2));
   };
 
-  const executeWorkflow = () => {
+  const handleWorkflowExecution = () => {
     const { executeWorkflow } = callbackUtils.getCallbacks;
     const workflowPayload = {
       name: meta.name,
@@ -231,7 +231,7 @@ const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOper
                   meta.inputParameters,
                 )}
                 isExecuting={result.status === 'RUNNING'}
-                onRerunClick={executeWorkflow}
+                onRerunClick={handleWorkflowExecution}
               />
             </TabPanel>
             <TabPanel>

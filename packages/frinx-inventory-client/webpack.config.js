@@ -27,7 +27,7 @@ const plugins = [
 module.exports = {
   entry: isDev ? fullPath('src/index-dev.ts') : fullPath('src', 'index.ts'),
   output: {
-    path: fullPath('build'),
+    path: fullPath('dist'),
     filename: 'index.js',
     publicPath: '/',
     library: 'frinxWorkflowBuilder',
