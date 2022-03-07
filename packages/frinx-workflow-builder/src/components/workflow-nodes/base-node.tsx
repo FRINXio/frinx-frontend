@@ -10,6 +10,7 @@ type Props = NodeProps<{
   label: string;
   handles: string[];
   task: ExtendedTask;
+  isReadOnly: boolean;
 }>;
 
 function getBorderColor(taskType: TaskType) {
@@ -20,6 +21,9 @@ function getBorderColor(taskType: TaskType) {
     case 'LAMBDA': {
       return 'orange.600';
     }
+    case 'SUB_WORKFLOW': {
+      return 'cyan.400';
+    }
     default: {
       return 'pink.400';
     }
@@ -29,7 +33,7 @@ function getBorderColor(taskType: TaskType) {
 const BaseNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
   const theme = useTheme<Theme>();
   const { selectTask, selectedTask, setRemovedTaskId } = useTaskActions();
-  const { task } = data;
+  const { task, isReadOnly } = data;
 
   const topColor = getBorderColor(task.type as TaskType);
 
@@ -79,14 +83,23 @@ const BaseNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
           <Heading as="h6" size="xs" textTransform="uppercase" isTruncated cursor="default">
             <Tooltip label={task.taskReferenceName}>{task.taskReferenceName}</Tooltip>
           </Heading>
-          <NodeButtons
-            onEditButtonClick={() => {
-              selectTask({ actionType: 'edit', task });
-            }}
-            onDeleteButtonClick={() => {
-              setRemovedTaskId(task.id);
-            }}
-          />
+          {!isReadOnly && (
+            <NodeButtons
+              onEditButtonClick={() => {
+                selectTask({ actionType: 'edit', task });
+              }}
+              onDeleteButtonClick={() => {
+                setRemovedTaskId(task.id);
+              }}
+              onExpandButtonClick={
+                task.type === 'SUB_WORKFLOW'
+                  ? () => {
+                      selectTask({ actionType: 'expand', task });
+                    }
+                  : undefined
+              }
+            />
+          )}
         </Flex>
         <Flex height={8} alignItems="center" justifyContent="center" isTruncated>
           <Text size="sm" color="gray.700" fontFamily="monospace" />

@@ -32,25 +32,25 @@ function getNodeType(taskType: TaskType): NodeType {
       return 'base';
   }
 }
-function createStartNode(): Node {
+function createStartNode(isReadOnly: boolean): Node {
   return {
     id: 'start',
     type: 'start',
     position: getNodePosition(),
-    data: { label: 'start', type: 'START' },
+    data: { label: 'start', type: 'START', isReadOnly },
   };
 }
 
-function createEndNode(): Node {
+function createEndNode(isReadOnly: boolean): Node {
   return {
     id: 'end',
     type: 'end',
     position: getNodePosition(),
-    data: { label: 'end', type: 'END' },
+    data: { label: 'end', type: 'END', isReadOnly },
   };
 }
 
-function convertTaskToNode(task: ExtendedTask): Node[] {
+function convertTaskToNode(task: Task, isReadOnly: boolean): Node[] {
   const { taskReferenceName, type } = task;
 
   const node = {
@@ -60,6 +60,7 @@ function convertTaskToNode(task: ExtendedTask): Node[] {
     data: {
       label: taskReferenceName,
       task,
+      isReadOnly,
     },
   };
 
@@ -72,6 +73,7 @@ function convertTaskToNode(task: ExtendedTask): Node[] {
       data: {
         ...node.data,
         handles,
+        isReadOnly,
       },
     };
 
@@ -79,26 +81,27 @@ function convertTaskToNode(task: ExtendedTask): Node[] {
       .map((d) => {
         const tasks = task.decisionCases[d];
         const decisionExtendedTasks = tasks.map(convertTaskToExtendedTask);
-        const decisionNodes = createNodes(decisionExtendedTasks); // eslint-disable-line @typescript-eslint/no-use-before-define
+        const decisionNodes = createNodes(decisionExtendedTasks, isReadOnly); // eslint-disable-line @typescript-eslint/no-use-before-define
 
         return decisionNodes;
       }, [])
       .flat();
 
     const defaultExtendedTasks = task.defaultCase.map(convertTaskToExtendedTask);
-    const defaultDecisionNodes = createNodes(defaultExtendedTasks); // eslint-disable-line @typescript-eslint/no-use-before-define
+    const defaultDecisionNodes = createNodes(defaultExtendedTasks, isReadOnly); // eslint-disable-line @typescript-eslint/no-use-before-define
     return [decisionNode, ...decisionChildren, ...defaultDecisionNodes];
   }
 
   if (task.type === 'FORK_JOIN') {
     const forkNode = {
       ...node,
+      isReadOnly,
     };
 
     const forkNodeChildren = task.forkTasks
       .map((tasks) => {
         const forkExtendedTasks = tasks.map(convertTaskToExtendedTask);
-        return createNodes(forkExtendedTasks); // eslint-disable-line @typescript-eslint/no-use-before-define
+        return createNodes(forkExtendedTasks, isReadOnly); // eslint-disable-line @typescript-eslint/no-use-before-define
       })
       .flat();
 
@@ -108,18 +111,18 @@ function convertTaskToNode(task: ExtendedTask): Node[] {
   return [node];
 }
 
-function createNodes(tasks: ExtendedTask[]): Node[] {
-  const nodes = tasks.reduce((prev: Node[], curr: ExtendedTask) => {
-    const node = convertTaskToNode(curr);
+function createNodes(tasks: Task[], isReadOnly: boolean): Node[] {
+  const nodes = tasks.reduce((prev: Node[], curr: Task) => {
+    const node = convertTaskToNode(curr, isReadOnly);
     return [...prev, ...node];
   }, []);
   return nodes;
 }
 
-function createAllNodes(tasks: ExtendedTask[]): Node[] {
-  const startNode = createStartNode();
-  const nodes = createNodes(tasks);
-  const endNode = createEndNode();
+function createAllNodes(tasks: Task[], isReadOnly: boolean): Node[] {
+  const startNode = createStartNode(isReadOnly);
+  const nodes = createNodes(tasks, isReadOnly);
+  const endNode = createEndNode(isReadOnly);
   return [startNode, ...nodes, endNode];
 }
 
@@ -282,8 +285,8 @@ function createAllEdges(tasks: Task[]): Edge[] {
   return edges;
 }
 
-export function getElementsFromWorkflow(tasks: ExtendedTask[]): Elements {
-  const nodes = createAllNodes(tasks);
+export function getElementsFromWorkflow(tasks: Task[], isReadOnly: boolean): Elements {
+  const nodes = createAllNodes(tasks, isReadOnly);
   const edges = createAllEdges(tasks);
   return [...nodes, ...edges];
 }

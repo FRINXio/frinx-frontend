@@ -16,9 +16,22 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState, useMemo } from 'react';
+import ReactFlow, { Background, BackgroundVariant, Controls, isNode, MiniMap } from 'react-flow-renderer';
 import callbackUtils from '../../callback-utils';
-import { Workflow } from '../../helpers/types';
+import { getElementsFromWorkflow } from '../../helpers/data.helpers';
+import { getLayoutedElements } from '../../helpers/layout.helpers';
+import { Task, Workflow } from '../../helpers/types';
+import DecisionNode from '../workflow-nodes/decision-node';
+import StartEndNode from '../workflow-nodes/start-end-node';
+import BaseNode from '../workflow-nodes/base-node';
+
+const nodeTypes = {
+  decision: DecisionNode,
+  start: StartEndNode,
+  end: StartEndNode,
+  default: BaseNode,
+};
 
 type Props = {
   workflowName: string;
@@ -27,12 +40,21 @@ type Props = {
   onClose: () => void;
 };
 
-const ExpandedWorkflowDiagram: FC<{ workflow: Workflow }> = () => {
-  return null;
+const ExpandedWorkflowDiagram: FC<{ workflow: Workflow<Task> }> = ({ workflow }) => {
+  const elements = getElementsFromWorkflow(workflow.tasks, true);
+  const layoutedElements = useMemo(() => getLayoutedElements(elements), [elements]);
+  console.log('layoutedElements: ', layoutedElements.filter(isNode)); // eslint-disable-line no-console
+  return (
+    <ReactFlow elements={layoutedElements} nodeTypes={nodeTypes} snapToGrid>
+      <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
+      <MiniMap />
+      <Controls />
+    </ReactFlow>
+  );
 };
 
 const ExpandedWorkflowModal: FC<Props> = ({ workflowName, workflowVersion, onClose, onEditBtnClick }) => {
-  const [workflowState, setWorkflowState] = useState<Workflow | null>(null);
+  const [workflowState, setWorkflowState] = useState<Workflow<Task> | null>(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const ref = useRef<HTMLButtonElement | null>(null);
 

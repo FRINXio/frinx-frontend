@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
-import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap } from 'react-flow-renderer';
+import ReactFlow, { Background, BackgroundVariant, Controls, isNode, MiniMap } from 'react-flow-renderer';
 import ActionsMenu from './components/actions-menu/actions-menu';
 import DecisionNode from './components/workflow-nodes/decision-node';
 import StartEndNode from './components/workflow-nodes/start-end-node';
@@ -64,9 +64,9 @@ const App: VoidFunctionComponent<Props> = ({
   onEditWorkflowClick,
   onNewWorkflowClick,
   onFileImport,
-  onFileExport,
+  onFileExport, // eslint-disable-line @typescript-eslint/no-unused-vars
   onWorkflowDelete,
-  onWorkflowClone,
+  onWorkflowClone, // eslint-disable-line @typescript-eslint/no-unused-vars
 }) => {
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
@@ -76,8 +76,9 @@ const App: VoidFunctionComponent<Props> = ({
   const [workflowTasks, setWorkflowTasks] = useState(workflow.tasks);
 
   console.log(workflow.tasks); // eslint-disable-line no-console
-  const elements = getElementsFromWorkflow(workflowTasks);
+  const elements = getElementsFromWorkflow(workflowTasks, false);
   const layoutedElements = useMemo(() => getLayoutedElements(elements), [elements]);
+  console.log('layoutedElements: ', layoutedElements.filter(isNode)); // eslint-disable-line no-console
 
   const handleDeleteButtonClick = (id: string) => {
     setWorkflowTasks((oldTasks) => {
@@ -95,9 +96,9 @@ const App: VoidFunctionComponent<Props> = ({
     setWorkflowTasks((prevTasks) => [...prevTasks, t]);
   };
 
-  const handleFormSubmit = (t: ExtendedTask) => {};
+  const handleFormSubmit = () => {}; // eslint-disable-line @typescript-eslint/no-empty-function
 
-  const handleWorkflowClone = (wfName: string) => {};
+  const handleWorkflowClone = () => {}; // eslint-disable-line @typescript-eslint/no-empty-function
 
   return (
     <>

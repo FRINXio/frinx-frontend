@@ -10,12 +10,13 @@ type Props = NodeProps<{
   label: string;
   handles: string[];
   task: ExtendedDecisionTask;
+  isReadOnly: boolean;
 }>;
 
 const DecisionNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
   const theme = useTheme<Theme>();
   const { selectTask, selectedTask, setRemovedTaskId } = useTaskActions();
-  const { task } = data;
+  const { task, isReadOnly } = data;
 
   return (
     <Flex
@@ -63,14 +64,16 @@ const DecisionNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
           <Heading as="h6" size="xs" textTransform="uppercase" isTruncated cursor="default">
             <Tooltip label={task.taskReferenceName}>{task.taskReferenceName}</Tooltip>
           </Heading>
-          <NodeButtons
-            onEditButtonClick={() => {
-              selectTask({ actionType: 'edit', task });
-            }}
-            onDeleteButtonClick={() => {
-              setRemovedTaskId(task.id);
-            }}
-          />
+          {!isReadOnly && (
+            <NodeButtons
+              onEditButtonClick={() => {
+                selectTask({ actionType: 'edit', task });
+              }}
+              onDeleteButtonClick={() => {
+                setRemovedTaskId(task.id);
+              }}
+            />
+          )}
         </Flex>
         <Flex height={8} alignItems="center" justifyContent="center" isTruncated>
           <Text size="sm" color="gray.700" fontFamily="monospace">
