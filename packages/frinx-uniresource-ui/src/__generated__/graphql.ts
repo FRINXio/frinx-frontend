@@ -412,7 +412,6 @@ export type Query = {
   QueryResourceTypes: Array<ResourceType>;
   QueryResourcePool: ResourcePool;
   QueryResourcePools: Array<ResourcePool>;
-  QueryRecentlyActiveResourcePools: Array<ResourcePool>;
   QueryResourcePoolHierarchyPath: Array<ResourcePool>;
   QueryRootResourcePools: Array<ResourcePool>;
   QueryLeafResourcePools: Array<ResourcePool>;
@@ -467,12 +466,6 @@ export type QueryQueryResourcePoolArgs = {
 export type QueryQueryResourcePoolsArgs = {
   resourceTypeId?: Maybe<Scalars['ID']>;
   tags?: Maybe<TagOr>;
-};
-
-
-export type QueryQueryRecentlyActiveResourcePoolsArgs = {
-  fromDatetime: Scalars['String'];
-  toDatetime?: Maybe<Scalars['String']>;
 };
 
 
@@ -1076,6 +1069,23 @@ export type PoolDetailQuery = (
     & { Resources: Array<(
       { __typename?: 'Resource' }
       & Pick<Resource, 'Description' | 'Properties' | 'id'>
+      & { NestedPool: Maybe<(
+        { __typename?: 'ResourcePool' }
+        & Pick<ResourcePool, 'id' | 'Name' | 'PoolType'>
+        & { Tags: Array<(
+          { __typename?: 'Tag' }
+          & Pick<Tag, 'id' | 'Tag'>
+        )>, AllocationStrategy: Maybe<(
+          { __typename?: 'AllocationStrategy' }
+          & Pick<AllocationStrategy, 'id' | 'Name' | 'Lang'>
+        )>, ResourceType: (
+          { __typename?: 'ResourceType' }
+          & Pick<ResourceType, 'id' | 'Name'>
+        ), Capacity: Maybe<(
+          { __typename?: 'PoolCapacityPayload' }
+          & Pick<PoolCapacityPayload, 'freeCapacity' | 'utilizedCapacity'>
+        )> }
+      )> }
     )>, Tags: Array<(
       { __typename?: 'Tag' }
       & Pick<Tag, 'id' | 'Tag'>

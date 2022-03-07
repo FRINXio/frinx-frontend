@@ -2,18 +2,23 @@ import { Box, Button, Flex, Heading, Progress, Spacer, Text, useDisclosure } fro
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import PageContainer from '../../components/page-container';
+import { omitNullValue } from '../../helpers/omit-null-value';
 import useNotifications from '../../hooks/use-notifications';
 import {
   AllocatedResourcesQuery,
   AllocatedResourcesQueryVariables,
   ClaimResourceMutationMutation,
   ClaimResourceMutationMutationVariables,
+  DeletePoolMutation,
+  DeletePoolMutationMutationVariables,
   FreeResourceMutationMutation,
   FreeResourceMutationMutationVariables,
   PoolCapacityPayload,
   PoolDetailQuery,
   PoolDetailQueryVariables,
+  QueryAllPoolsQuery,
 } from '../../__generated__/graphql';
+import PoolsTable from '../pools-page/pools-table';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
 import PoolDetailAllocatingTable from './pool-detail-allocating-table';
 import PoolDetailSetSingletonTable from './pool-detail-set_singleton-table';
@@ -56,6 +61,28 @@ const POOL_DETAIL_QUERY = gql`
         Description
         Properties
         id
+        NestedPool {
+          id
+          Name
+          PoolType
+          Tags {
+            id
+            Tag
+          }
+          AllocationStrategy {
+            id
+            Name
+            Lang
+          }
+          ResourceType {
+            id
+            Name
+          }
+          Capacity {
+            freeCapacity
+            utilizedCapacity
+          }
+        }
       }
       Tags {
         id
@@ -97,6 +124,14 @@ const FREE_RESOURCES_MUTATION = gql`
   }
 `;
 
+const DELETE_POOL_MUTATION = gql`
+  mutation DeletePool($input: DeleteResourcePoolInput!) {
+    DeleteResourcePool(input: $input) {
+      resourcePoolId
+    }
+  }
+`;
+
 function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
   if (capacity == null) {
     return 0;
@@ -116,9 +151,10 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
 
 type Props = {
   poolId: string;
+  onPoolClick: (poolId: string) => void;
 };
 
-const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId }) => {
+const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoolClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
   const claimResourceModal = useDisclosure();
   const { addToastNotification } = useNotifications();
@@ -141,6 +177,7 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId }) => 
   const [, freeResource] = useMutation<FreeResourceMutationMutation, FreeResourceMutationMutationVariables>(
     FREE_RESOURCES_MUTATION,
   );
+  const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
 
   const claimPoolResource = (description = '', userInput: Record<string, string | number> = {}) => {
     claimResource({
@@ -184,6 +221,10 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId }) => 
       });
   };
 
+  const handleDeleteBtnClick = (id: string) => {
+    deletePool({ input: { resourcePoolId: id } }, context);
+  };
+
   if (isLoadingPool || isLoadingResources) {
     return <Progress isIndeterminate mt={-10} size="xs" />;
   }
@@ -195,6 +236,9 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId }) => 
   const { QueryResourcePool: resourcePool } = poolData;
   const capacityValue = getCapacityValue(resourcePool.Capacity);
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
+  const nestedPools: QueryAllPoolsQuery['QueryResourcePools'] = resourcePool.Resources.map((resource) =>
+    resource.NestedPool !== null ? resource.NestedPool : null,
+  ).filter(omitNullValue);
 
   return (
     <PageContainer>
@@ -230,6 +274,16 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId }) => 
         <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
           {resourcePool.Capacity?.freeCapacity ?? 0} / {totalCapacity}
         </Text>
+      </Box>
+
+      <Box my={10}>
+        <Heading size="lg">Nested Pools</Heading>
+        <PoolsTable
+          pools={nestedPools}
+          isLoading={isLoadingPool}
+          onDeleteBtnClick={handleDeleteBtnClick}
+          onPoolNameClick={onPoolClick}
+        />
       </Box>
 
       <Box my={10}>

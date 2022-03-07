@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import { useMutation, useQuery } from 'urql';
 import gql from 'graphql-tag';
 import {
@@ -73,20 +73,16 @@ const PoolsPage: FunctionComponent<Props> = ({
   onPoolNameClick,
 }) => {
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
+  const { isOpen, onToggle } = useDisclosure();
   const [{ data, fetching, error }] = useQuery<QueryAllPoolsQuery>({
     query: POOLS_QUERY,
     context,
   });
   const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
 
-  const handleDeleteBtnClick = useCallback(
-    (id: string) => {
-      deletePool({ input: { resourcePoolId: id } }, { additionalTypenames: ['ResourcePool'] });
-    },
-    [deletePool],
-  );
-
-  const { isOpen, onToggle } = useDisclosure();
+  const handleDeleteBtnClick = (id: string) => {
+    deletePool({ input: { resourcePoolId: id } }, context);
+  };
 
   if (error != null) {
     return <div>{error.message}</div>;

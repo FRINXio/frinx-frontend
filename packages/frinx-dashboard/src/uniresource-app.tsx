@@ -62,7 +62,12 @@ const UniresourceApp: FC = () => {
           exact
           path="/uniresource/pools/:poolId"
           render={(props: RouteComponentProps<{ poolId: string }>) => {
-            return <PoolDetailPage poolId={props.match.params.poolId} />;
+            return (
+              <PoolDetailPage
+                poolId={props.match.params.poolId}
+                onPoolClick={(poolId: string) => history.push(`/uniresource/pools/${poolId}`)}
+              />
+            );
           }}
         />
         <Route exact path="/uniresource/pools/new/allocating/ipv4-prefix">
