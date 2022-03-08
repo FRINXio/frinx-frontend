@@ -16,15 +16,15 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import React, { FC, useEffect, useRef, useState, useMemo } from 'react';
-import ReactFlow, { Background, BackgroundVariant, Controls, isNode, MiniMap } from 'react-flow-renderer';
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap } from 'react-flow-renderer';
 import callbackUtils from '../../callback-utils';
 import { getElementsFromWorkflow } from '../../helpers/data.helpers';
 import { getLayoutedElements } from '../../helpers/layout.helpers';
 import { Task, Workflow } from '../../helpers/types';
+import BaseNode from '../workflow-nodes/base-node';
 import DecisionNode from '../workflow-nodes/decision-node';
 import StartEndNode from '../workflow-nodes/start-end-node';
-import BaseNode from '../workflow-nodes/base-node';
 
 const nodeTypes = {
   decision: DecisionNode,
@@ -43,7 +43,6 @@ type Props = {
 const ExpandedWorkflowDiagram: FC<{ workflow: Workflow<Task> }> = ({ workflow }) => {
   const elements = getElementsFromWorkflow(workflow.tasks, true);
   const layoutedElements = useMemo(() => getLayoutedElements(elements), [elements]);
-  console.log('layoutedElements: ', layoutedElements.filter(isNode)); // eslint-disable-line no-console
   return (
     <ReactFlow elements={layoutedElements} nodeTypes={nodeTypes} snapToGrid>
       <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
