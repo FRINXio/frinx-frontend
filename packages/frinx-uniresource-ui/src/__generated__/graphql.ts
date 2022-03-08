@@ -1040,7 +1040,7 @@ export type SelectPoolsQuery = (
     & Pick<ResourcePool, 'id' | 'Name'>
     & { ResourceType: (
       { __typename?: 'ResourceType' }
-      & Pick<ResourceType, 'id'>
+      & Pick<ResourceType, 'id' | 'Name'>
     ), Resources: Array<(
       { __typename?: 'Resource' }
       & Pick<Resource, 'Description' | 'Properties' | 'id'>
@@ -1049,7 +1049,7 @@ export type SelectPoolsQuery = (
         & Pick<ResourcePool, 'id' | 'Name'>
       ), NestedPool: Maybe<(
         { __typename?: 'ResourcePool' }
-        & Pick<ResourcePool, 'id'>
+        & Pick<ResourcePool, 'id' | 'PoolProperties'>
       )> }
     )> }
   )> }

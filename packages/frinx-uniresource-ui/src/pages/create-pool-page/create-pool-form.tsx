@@ -11,15 +11,27 @@ import {
   Heading,
   HStack,
   Input,
+  List,
+  ListItem,
   Select,
   Switch,
+  Text,
 } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
 import PoolValuesForm from './pool-values-form';
 import PoolPropertiesForm from './pool-properties-form';
 import SearchByTagInput from '../../components/search-by-tag-input';
 import { useTagsInput } from '../../hooks/use-tags-input';
-import { SelectPoolsQuery } from '../../__generated__/graphql';
+import { SelectPoolsQuery, SelectResourceTypesQuery } from '../../__generated__/graphql';
+import {
+  canSelectAllocatingStrategy,
+  getAvailableAllocatedResources,
+  getAvailablePoolProperties,
+  getAvailableResourceTypes,
+  deriveResourceTypesFromAvailableResourceTypes,
+  formatSuggestedProperties,
+  getPoolPropertiesSkeleton,
+} from '../../helpers/create-pool-form.helpers';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
 export type FormValues = {
@@ -56,59 +68,10 @@ const INITIAL_VALUES: FormValues = {
   tags: [],
 };
 
-type ResourceType = {
-  id: string;
-  name: string;
-};
 type AllocStrategy = {
   id: string;
   name: string;
 };
-
-function getPoolPropertiesSkeleton(
-  resourceTypes: ResourceType[],
-  resourceTypeId: string,
-  values: FormValues['poolProperties'],
-): [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string'>] {
-  const resourceTypeName = resourceTypes.find((type) => type.id === resourceTypeId)?.name;
-  let result: [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string'>] = [{}, {}];
-
-  switch (resourceTypeName) {
-    case 'ipv6_prefix':
-    case 'ipv4_prefix':
-      result = [
-        { prefix: values?.prefix || '', address: values?.address || '' },
-        { prefix: 'int', address: 'string' },
-      ];
-      break;
-    case 'random_signed_int32':
-      result = [{ int: values?.int || '' }, { int: 'int' }];
-      break;
-    case 'route_distinguisher':
-      result = [{ rd: values?.rd || '' }, { rd: 'string' }];
-      break;
-    case 'ipv4':
-    case 'ipv6':
-      result = [{ address: values?.address || '' }, { address: 'string' }];
-      break;
-    case 'vlan':
-      result = [{ vlan: values?.vlan || '' }, { vlan: 'int' }];
-      break;
-    case 'vlan_range':
-      result = [
-        { from: values?.from || '', to: values?.to || '' },
-        { from: 'int', to: 'int' },
-      ];
-      break;
-    case 'unique_id':
-      result = [{ id: values?.id || '' }, { id: 'string' }];
-      break;
-    default:
-      break;
-  }
-
-  return result;
-}
 
 function getSchema(poolType: string, isNested: boolean) {
   switch (poolType) {
@@ -189,7 +152,7 @@ function getSchema(poolType: string, isNested: boolean) {
 
 type Props = {
   onFormSubmit: (values: FormValues) => void;
-  resourceTypes: ResourceType[];
+  resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'];
   resourcePools: SelectPoolsQuery;
   allocStrategies: AllocStrategy[];
 };
@@ -207,7 +170,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     validationSchema: poolSchema,
     validateOnChange: false,
     onSubmit: async (data) => {
-      const resourceTypeName = resourceTypes.find((resourceType) => resourceType.id === data.resourceTypeId)?.name;
+      const resourceTypeName = resourceTypes.find((resourceType) => resourceType.id === data.resourceTypeId)?.Name;
       const allocationStratedyId = allocStrategies.find(
         (allocationStrategy) => allocationStrategy.name === resourceTypeName,
       )?.id;
@@ -222,7 +185,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   });
 
   const { isNested, poolType, resourceTypeId, parentPoolId, parentResourceId } = values;
-  const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.name ?? null;
 
   const handleFormValuesChange = useCallback(
     (pValues) => {
@@ -260,31 +222,17 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   }, [resourceTypes, resourceTypeId, setFieldValue]);
 
   const { QueryResourcePools: pools } = resourcePools;
-  const availableResourceTypes = parentPoolId
-    ? resourceTypes.filter(
-        (resourceType) => resourceType.id === pools.find((pool) => pool.id === parentPoolId)?.ResourceType.id,
-      )
-    : resourceTypes;
-  const availableAllocatedResources = pools.flatMap((resourcePool) =>
-    resourcePool.Resources.map((resource) => ({
-      Name: `${resource.Description}`,
-      id: resource.id,
-      parentId: resource.ParentPool.id,
-      hasNestedPools: resource.NestedPool !== null,
-    })).filter(({ parentId, hasNestedPools }) => parentId === parentPoolId && hasNestedPools === false),
+  const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.Name ?? null;
+  const parentResourceTypeName = pools.find((pool) => pool.id === parentPoolId)?.ResourceType.Name ?? null;
+  const availableResourceTypes = getAvailableResourceTypes(resourceTypes, pools, parentPoolId);
+  const availableAllocatedResources = getAvailableAllocatedResources(pools, parentPoolId);
+  const derivedFromAvailableResourceTypes = deriveResourceTypesFromAvailableResourceTypes(
+    resourceTypes,
+    availableResourceTypes,
   );
-
-  const derivedFromAvailableResourceTypes = resourceTypes.filter(
-    (resourceType) =>
-      resourceTypes.length !== availableResourceTypes.length &&
-      ((availableResourceTypes.find((type) => type.name === 'ipv4_prefix') && resourceType.name === 'ipv4') ||
-        (availableResourceTypes.find((type) => type.name === 'ipv6_prefix') && resourceType.name === 'ipv6')),
-  );
-
-  const canSelectAllocatingType = resourceTypes.some(
-    (resourceType) =>
-      /^ipv4_prefix$|^ipv6_prefix$|^vlan_range$/.test(resourceType.name) && resourceType.id === resourceTypeId,
-  );
+  const canSelectAllocatingType = canSelectAllocatingStrategy(resourceTypes, resourceTypeId);
+  const availablePoolProperties = getAvailablePoolProperties(resourcePools, parentPoolId, parentResourceId);
+  const formattedSuggestedProperties = formatSuggestedProperties(parentResourceTypeName, availablePoolProperties);
 
   const [poolProperties, poolPropertyTypes] = getPoolPropertiesSkeleton(
     resourceTypes,
@@ -358,7 +306,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
           >
             {[...availableResourceTypes, ...derivedFromAvailableResourceTypes].map((rt) => (
               <option value={rt.id} key={rt.id}>
-                {rt.name}
+                {rt.Name}
               </option>
             ))}
           </Select>
@@ -407,6 +355,18 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
             <Heading as="h4" size="md">
               Set pool values
             </Heading>
+            {isNested && (
+              <>
+                <Text color="gray">available resources (allocated in selected parent):</Text>
+                <List>
+                  {formattedSuggestedProperties.map((property) => (
+                    <ListItem ml={2} color="gray" fontSize="sm" key={property}>
+                      {property}
+                    </ListItem>
+                  ))}
+                </List>
+              </>
+            )}
             <PoolValuesForm
               onChange={handleFormValuesChange}
               resourceTypeName={resourceTypeName}
@@ -424,6 +384,18 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
             <Heading as="h4" size="md">
               Set pool properties
             </Heading>
+            {isNested && (
+              <>
+                <Text color="gray">available resources (allocated in selected parent):</Text>
+                <List>
+                  {formattedSuggestedProperties.map((property) => (
+                    <ListItem ml={2} color="gray" fontSize="sm" key={property}>
+                      {property}
+                    </ListItem>
+                  ))}
+                </List>
+              </>
+            )}
             <PoolPropertiesForm
               poolProperties={poolProperties}
               poolPropertyTypes={poolPropertyTypes}
