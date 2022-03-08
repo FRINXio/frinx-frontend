@@ -1,6 +1,6 @@
-import { Box, Flex, Heading, Text, Theme, Tooltip, useTheme } from '@chakra-ui/react';
+import { Box, Flex, Heading, Theme, useTheme } from '@chakra-ui/react';
 import React, { memo, VoidFunctionComponent } from 'react';
-import { Position, Handle, NodeProps } from 'react-flow-renderer';
+import { Handle, NodeProps, Position } from 'react-flow-renderer';
 import { ExtendedTask, TaskType } from '../../helpers/types';
 import { useTaskActions } from '../../task-actions-context';
 import NodeButtons from '../nodes/node-buttons';
@@ -10,6 +10,7 @@ type Props = NodeProps<{
   label: string;
   handles: string[];
   task: ExtendedTask;
+  isReadOnly: boolean;
 }>;
 
 function getBorderColor(taskType: TaskType) {
@@ -20,6 +21,9 @@ function getBorderColor(taskType: TaskType) {
     case 'LAMBDA': {
       return 'orange.600';
     }
+    case 'SUB_WORKFLOW': {
+      return 'cyan.400';
+    }
     default: {
       return 'pink.400';
     }
@@ -29,26 +33,54 @@ function getBorderColor(taskType: TaskType) {
 const BaseNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
   const theme = useTheme<Theme>();
   const { selectTask, selectedTask, setRemovedTaskId } = useTaskActions();
-  const { task } = data;
+  const { task, isReadOnly } = data;
 
-  const topColor = getBorderColor(task.type as TaskType);
+  const topColor = getBorderColor(task.type);
 
   return (
-    <Flex
-      alignItems="stretch"
+    <Box
       background="white"
-      width={64}
+      paddingX={10}
+      // width={64}
       borderWidth={2}
       borderStyle="solid"
-      borderColor={task.id === selectedTask?.task.id ? 'pink.400' : 'gray.200'}
+      borderColor={task.id === selectedTask?.task.id ? topColor : 'gray.200'}
       borderTopColor={topColor}
       borderTopWidth={6}
       borderTopStyle="solid"
-      overflow="hidden"
       boxShadow={task.id === selectedTask?.task.id ? undefined : 'base'}
       borderRadius="md"
+      position="relative"
     >
-      <Flex background="gray.100" alignItems="stretch" width={10}>
+      {!isReadOnly && (
+        <Box
+          position="absolute"
+          left="0"
+          top="-6px"
+          transform="translate(0, -100%)"
+          paddingX={2}
+          paddingY={1}
+          background="white"
+          borderTopRadius="md"
+        >
+          <NodeButtons
+            onEditButtonClick={() => {
+              selectTask({ actionType: 'edit', task });
+            }}
+            onDeleteButtonClick={() => {
+              setRemovedTaskId(task.id);
+            }}
+            onExpandButtonClick={
+              task.type === 'SUB_WORKFLOW'
+                ? () => {
+                    selectTask({ actionType: 'expand', task });
+                  }
+                : undefined
+            }
+          />
+        </Box>
+      )}
+      <Flex background="gray.100" alignItems="stretch" width={10} position="absolute" top={0} bottom={0} left={0}>
         <Handle
           type="target"
           position={Position.Left}
@@ -74,25 +106,16 @@ const BaseNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
         </Handle>
       </Flex>
 
-      <Box width={44}>
-        <Flex alignItems="center" flex={1} paddingX={2} paddingY={1} height={8}>
-          <Heading as="h6" size="xs" textTransform="uppercase" isTruncated cursor="default">
-            <Tooltip label={task.taskReferenceName}>{task.taskReferenceName}</Tooltip>
-          </Heading>
-          <NodeButtons
-            onEditButtonClick={() => {
-              selectTask({ actionType: 'edit', task });
-            }}
-            onDeleteButtonClick={() => {
-              setRemovedTaskId(task.id);
-            }}
-          />
-        </Flex>
-        <Flex height={8} alignItems="center" justifyContent="center" isTruncated>
-          <Text size="sm" color="gray.700" fontFamily="monospace" />
-        </Flex>
+      <Box paddingX={2} paddingTop={4} minHeight={14}>
+        <Heading as="h6" size="xs">
+          {task.taskReferenceName}
+        </Heading>
       </Box>
       <Flex
+        position="absolute"
+        top={0}
+        bottom={0}
+        right={0}
         width={10}
         flexBasis={12}
         marginLeft="auto"
@@ -124,7 +147,7 @@ const BaseNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
           out
         </Handle>
       </Flex>
-    </Flex>
+    </Box>
   );
 });
 

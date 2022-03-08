@@ -1,5 +1,5 @@
-import { Elements, isNode, Position } from 'react-flow-renderer';
 import dagre from 'dagre';
+import { Elements, isNode, Position } from 'react-flow-renderer';
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -9,7 +9,7 @@ dagreGraph.setDefaultEdgeLabel(() => ({}));
 // const nodes = useStoreState(state => state.nodes) and then node.__rf.width, node.__rf.height
 
 const nodeWidth = 300;
-const nodeHeight = 36;
+const nodeHeight = 55;
 
 export const getLayoutedElements = (elements: Elements, direction = 'LR'): Elements => {
   const isHorizontal = direction === 'LR';

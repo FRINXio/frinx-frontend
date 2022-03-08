@@ -1,10 +1,9 @@
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
+import produce from 'immer';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap } from 'react-flow-renderer';
+import callbackUtils from './callback-utils';
 import ActionsMenu from './components/actions-menu/actions-menu';
-import DecisionNode from './components/workflow-nodes/decision-node';
-import StartEndNode from './components/workflow-nodes/start-end-node';
-import BaseNode from './components/workflow-nodes/base-node';
 import ExecutionModal from './components/execution-modal/execution-modal';
 import ExpandedWorkflowModal from './components/expanded-workflow-modal/expanded-workflow-modal';
 import LeftMenu from './components/left-menu/left-menu';
@@ -14,6 +13,9 @@ import TaskForm from './components/task-form/task-form';
 import WorkflowDefinitionModal from './components/workflow-definition-modal/workflow-definition-modal';
 import WorkflowEditorModal from './components/workflow-editor-modal/workflow-editor-modal';
 import WorkflowForm from './components/workflow-form/workflow-form';
+import BaseNode from './components/workflow-nodes/base-node';
+import DecisionNode from './components/workflow-nodes/decision-node';
+import StartEndNode from './components/workflow-nodes/start-end-node';
 import { convertToTasks } from './helpers/api.helpers';
 import { getElementsFromWorkflow } from './helpers/data.helpers';
 import { getLayoutedElements } from './helpers/layout.helpers';
@@ -24,7 +26,7 @@ const nodeTypes = {
   decision: DecisionNode,
   start: StartEndNode,
   end: StartEndNode,
-  default: BaseNode,
+  base: BaseNode,
 };
 
 type Props = {
@@ -74,9 +76,7 @@ const App: VoidFunctionComponent<Props> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isInputModalShown, setIsInputModalShown] = useState(false);
   const [workflowTasks, setWorkflowTasks] = useState(workflow.tasks);
-
-  console.log(workflow.tasks); // eslint-disable-line no-console
-  const elements = getElementsFromWorkflow(workflowTasks);
+  const elements = getElementsFromWorkflow(workflowTasks, false);
   const layoutedElements = useMemo(() => getLayoutedElements(elements), [elements]);
 
   const handleDeleteButtonClick = (id: string) => {
@@ -90,20 +90,35 @@ const App: VoidFunctionComponent<Props> = ({
   const { name } = workflow;
 
   const handleAddButtonClick = (t: ExtendedTask) => {
-    // addNode(schemaCtrlRef.current.createTaskNode(t));
-
     setWorkflowTasks((prevTasks) => [...prevTasks, t]);
   };
 
-  const handleFormSubmit = (t: ExtendedTask) => {};
+  const handleFormSubmit = (t: ExtendedTask) => {
+    setWorkflowTasks((oldTasks) => {
+      return produce(oldTasks, (acc) => {
+        const index = acc.findIndex((n) => n.id === t.id);
+        acc[index] = t;
+        return acc;
+      });
+    });
+  };
 
-  const handleWorkflowClone = (wfName: string) => {};
+  const handleWorkflowClone = (wfName: string) => {
+    const newTasks = convertToTasks(elements);
+    const { tasks, ...rest } = workflow;
+    onWorkflowClone(
+      {
+        ...rest,
+        tasks: newTasks,
+      },
+      wfName,
+    );
+  };
 
   return (
     <>
       <Grid templateColumns="384px 1fr" templateRows="64px 1fr" minHeight="100%" maxHeight="100%">
         <Flex
-          // height={16}
           alignItems="center"
           px={4}
           boxShadow="base"
@@ -133,13 +148,23 @@ const App: VoidFunctionComponent<Props> = ({
                   }}
                   onSaveWorkflowBtnClick={() => {
                     const newTasks = convertToTasks(elements);
-                    console.log('tasks: ', newTasks); // eslint-disable-line no-console
-                    // const { putWorkflow } = callbackUtils.getCallbacks;
-                    // putWorkflow([workflowCtrlRef.current.convertWorkflow(schema, workflow)]);
+                    const { tasks, ...rest } = workflow;
+                    const { putWorkflow } = callbackUtils.getCallbacks;
+                    putWorkflow([
+                      {
+                        ...rest,
+                        tasks: newTasks,
+                      },
+                    ]);
                   }}
                   onFileImport={onFileImport}
                   onFileExport={() => {
-                    // TODO
+                    const newTasks = convertToTasks(elements);
+                    const { tasks, ...rest } = workflow;
+                    onFileExport({
+                      ...rest,
+                      tasks: newTasks,
+                    });
                   }}
                   onWorkflowDelete={onWorkflowDelete}
                   onWorkflowClone={handleWorkflowClone}
@@ -149,8 +174,17 @@ const App: VoidFunctionComponent<Props> = ({
               <Button
                 colorScheme="blue"
                 onClick={() => {
-                  // const { putWorkflow } = callbackUtils.getCallbacks;
-                  // TODO
+                  const newTasks = convertToTasks(elements);
+                  const { tasks, ...rest } = workflow;
+                  const { putWorkflow } = callbackUtils.getCallbacks;
+                  putWorkflow([
+                    {
+                      ...rest,
+                      tasks: newTasks,
+                    },
+                  ]).then(() => {
+                    setIsInputModalShown(true);
+                  });
                 }}
               >
                 Save and execute
@@ -219,12 +253,7 @@ const App: VoidFunctionComponent<Props> = ({
         />
       )}
       {workflowDefinitionDisclosure.isOpen && (
-        <WorkflowDefinitionModal
-          isOpen
-          onClose={workflowDefinitionDisclosure.onClose}
-          // TODO:
-          workflow={workflow}
-        />
+        <WorkflowDefinitionModal isOpen onClose={workflowDefinitionDisclosure.onClose} workflow={workflow} />
       )}
       <NewWorkflowModal
         isOpen={workflowModalDisclosure.isOpen}
@@ -233,7 +262,6 @@ const App: VoidFunctionComponent<Props> = ({
       />
       {isInputModalShown && (
         <ExecutionModal
-          // TODO:
           workflow={workflow}
           onClose={() => setIsInputModalShown(false)}
           shouldCloseAfterSubmit={false}
@@ -243,7 +271,6 @@ const App: VoidFunctionComponent<Props> = ({
       )}
       {workflowEditorDisclosure.isOpen && (
         <WorkflowEditorModal
-          // TODO:
           workflow={workflow}
           isOpen={workflowEditorDisclosure.isOpen}
           onSave={onWorkflowChange}
