@@ -30,7 +30,7 @@ const nodeTypes = {
   decision: DecisionNode,
   start: StartEndNode,
   end: StartEndNode,
-  default: BaseNode,
+  base: BaseNode,
 };
 
 type Props = {

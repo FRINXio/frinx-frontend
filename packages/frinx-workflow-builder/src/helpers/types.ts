@@ -99,25 +99,7 @@ export type InputParameters =
   | RawInputParams
   | DynamicForkInputParams;
 
-export type TaskType =
-  | 'DECISION'
-  | 'EVENT'
-  | 'SIMPLE'
-  | 'FORK_JOIN'
-  | 'JOIN'
-  | 'WAIT'
-  | 'LAMBDA'
-  | 'TERMINATE'
-  | 'DO_WHILE'
-  | 'WHILE_END'
-  | 'SUB_WORKFLOW'
-  | 'CUSTOM'
-  | 'FORK_JOIN_DYNAMIC'
-  | 'EXCLUSIVE_JOIN'
-  | 'HTTP'
-  | 'KAFKA_PUBLISH'
-  | 'JSON_JQ';
-
+export type TaskType = Task['type'];
 type TaskValues = {
   name: string;
   taskReferenceName: string;
