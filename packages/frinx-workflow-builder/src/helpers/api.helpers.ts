@@ -1,5 +1,5 @@
 import { partition } from 'lodash';
-import { Elements, isNode, Node, getConnectedEdges, getOutgoers, getIncomers } from 'react-flow-renderer';
+import { Elements, isNode, Node, getConnectedEdges, getOutgoers, getIncomers, Edge } from 'react-flow-renderer';
 import { DecisionTask, ForkTask, Task } from './types';
 import unwrap from './unwrap';
 
@@ -37,7 +37,7 @@ function getDecisionTask(tasks: Task[], elements: Elements, currentNode: Node): 
 
   // get every decision branch tasks
   const decisionTasks: [string, Task[]][] = children.map((decision) => {
-    const connectionEdges = getConnectedEdges([decision], edges);
+    const connectionEdges = getConnectedEdges([decision], edges as Edge<unknown>[]);
     const startBranchEdge = unwrap(connectionEdges.find((e) => e.source === currentTask.taskReferenceName));
     const decisionStartNode = unwrap(nodes.find((n) => n.id === startBranchEdge?.target));
     const currentDecisionTasks = traverseElements([], elements, decisionStartNode.id, decisionEndNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
