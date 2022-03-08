@@ -93,6 +93,18 @@ const SELECT_POOLS_QUERY = gql`
       ResourceType {
         id
       }
+      Resources {
+        Description
+        Properties
+        id
+        ParentPool {
+          id
+          Name
+        }
+        NestedPool {
+          id
+        }
+      }
     }
   }
 `;
@@ -277,11 +289,6 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
   }
 
   const resourceTypes = data.QueryResourceTypes.map((rt) => ({ id: rt.id, name: rt.Name }));
-  const pools = poolsData.QueryResourcePools.map((p) => ({
-    id: p.id,
-    name: p.Name,
-    resourceTypeId: p.ResourceType.id,
-  }));
   const allocStrategies = allocStratData.QueryAllocationStrategies.map((as) => ({ id: as.id, name: as.Name }));
 
   return (
@@ -297,7 +304,7 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
           // @ts-ignore
           onFormSubmit={handleFormSubmit}
           resourceTypes={resourceTypes}
-          pools={pools}
+          resourcePools={poolsData}
           allocStrategies={allocStrategies}
         />
       </Box>

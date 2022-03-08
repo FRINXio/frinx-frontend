@@ -1041,7 +1041,17 @@ export type SelectPoolsQuery = (
     & { ResourceType: (
       { __typename?: 'ResourceType' }
       & Pick<ResourceType, 'id'>
-    ) }
+    ), Resources: Array<(
+      { __typename?: 'Resource' }
+      & Pick<Resource, 'Description' | 'Properties' | 'id'>
+      & { ParentPool: (
+        { __typename?: 'ResourcePool' }
+        & Pick<ResourcePool, 'id' | 'Name'>
+      ), NestedPool: Maybe<(
+        { __typename?: 'ResourcePool' }
+        & Pick<ResourcePool, 'id'>
+      )> }
+    )> }
   )> }
 );
 
@@ -1138,6 +1148,19 @@ export type FreeResourceMutation = (
   & Pick<Mutation, 'FreeResource'>
 );
 
+export type DeletePoolMutationVariables = Exact<{
+  input: DeleteResourcePoolInput;
+}>;
+
+
+export type DeletePoolMutation = (
+  { __typename?: 'Mutation' }
+  & { DeleteResourcePool: (
+    { __typename?: 'DeleteResourcePoolPayload' }
+    & Pick<DeleteResourcePoolPayload, 'resourcePoolId'>
+  ) }
+);
+
 export type QueryAllPoolsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1160,19 +1183,6 @@ export type QueryAllPoolsQuery = (
       & Pick<PoolCapacityPayload, 'freeCapacity' | 'utilizedCapacity'>
     )> }
   )> }
-);
-
-export type DeletePoolMutationVariables = Exact<{
-  input: DeleteResourcePoolInput;
-}>;
-
-
-export type DeletePoolMutation = (
-  { __typename?: 'Mutation' }
-  & { DeleteResourcePool: (
-    { __typename?: 'DeleteResourcePoolPayload' }
-    & Pick<DeleteResourcePoolPayload, 'resourcePoolId'>
-  ) }
 );
 
 export type DeleteStrategyMutationVariables = Exact<{
