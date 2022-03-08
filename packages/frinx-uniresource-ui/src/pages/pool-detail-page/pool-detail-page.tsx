@@ -28,18 +28,6 @@ export type PoolResource = {
   poolPropertyTypes: Record<string, 'int' | 'string'>;
 };
 
-const canShowClaimResourceModal = (resourcePool: PoolDetailQuery['QueryResourcePool']) => {
-  if (resourcePool.PoolType === 'allocating') {
-    return (
-      resourcePool.ResourceType.Name === 'ipv4_prefix' ||
-      resourcePool.ResourceType.Name === 'vlan_range' ||
-      resourcePool.ResourceType.Name === 'ipv6_prefix'
-    );
-  }
-
-  return false;
-};
-
 const canClaimResources = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) => {
   return (
     resourcePool.Capacity != null &&
@@ -185,16 +173,20 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoo
       userInput,
       ...(description != null && { description }),
     })
-      .then(() => {
+      .then((response) => {
+        if (response.error) {
+          throw new Error(response.error.message);
+        }
+
         addToastNotification({
           type: 'success',
           content: 'Successfully claimed resource from pool',
         });
       })
-      .catch(() => {
+      .catch((error) => {
         addToastNotification({
           type: 'error',
-          content: 'There was a problem with claiming resource from pool',
+          content: error.message || 'There was a problem with claiming resource from pool',
         });
       });
   };
@@ -260,9 +252,7 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoo
         <Spacer />
         <Box>
           <Button
-            onClick={() =>
-              canShowClaimResourceModal(resourcePool) ? claimResourceModal.onOpen() : claimPoolResource()
-            }
+            onClick={() => claimResourceModal.onOpen()}
             colorScheme="blue"
             variant="outline"
             isDisabled={!canClaimResources(resourcePool, totalCapacity)}
