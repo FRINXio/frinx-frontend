@@ -207,16 +207,20 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoo
       },
       { additionalTypenames: ['Resource'] },
     )
-      .then(() => {
+      .then((response) => {
+        if (response.error) {
+          throw new Error(response.error.message);
+        }
+
         addToastNotification({
           type: 'success',
           content: 'Successfully freed resource from pool',
         });
       })
-      .catch(() => {
+      .catch((error) => {
         addToastNotification({
           type: 'error',
-          content: 'There was a problem with freeing resource from pool',
+          content: error.message || 'There was a problem with freeing resource from pool',
         });
       });
   };
