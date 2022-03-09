@@ -181,11 +181,6 @@ function getClientSelectedNetworkAccess(siteNetworkAccess: SiteNetworkAccess): C
   };
 }
 
-type AddressAssignState = {
-  customerAddress: string | null;
-  providerAddress: string | null;
-};
-
 const SiteNetAccessForm: FC<Props> = ({
   mode,
   site,
