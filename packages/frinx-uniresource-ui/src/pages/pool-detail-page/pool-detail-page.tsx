@@ -271,7 +271,9 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoo
       </Box>
 
       <Box my={10}>
-        <Heading size="lg">Nested Pools</Heading>
+        <Heading size="lg" mb={5}>
+          Nested Pools
+        </Heading>
         <PoolsTable
           pools={nestedPools}
           isLoading={isLoadingPool}
@@ -281,7 +283,9 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoo
       </Box>
 
       <Box my={10}>
-        <Heading size="lg">Allocated Resources</Heading>
+        <Heading size="lg" mb={5}>
+          Allocated Resources
+        </Heading>
         {resourcePool.PoolType === 'allocating' && (
           <PoolDetailAllocatingTable
             allocatedResources={allocatedResources.QueryResources}
