@@ -17,7 +17,7 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
-import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap } from 'react-flow-renderer';
+import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';
 import callbackUtils from '../../callback-utils';
 import { getElementsFromWorkflow } from '../../helpers/data.helpers';
 import { getLayoutedElements } from '../../helpers/layout.helpers';
@@ -44,11 +44,13 @@ const ExpandedWorkflowDiagram: FC<{ workflow: Workflow<Task> }> = ({ workflow })
   const elements = getElementsFromWorkflow(workflow.tasks, true);
   const layoutedElements = useMemo(() => getLayoutedElements(elements), [elements]);
   return (
-    <ReactFlow elements={layoutedElements} nodeTypes={nodeTypes} snapToGrid>
-      <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
-      <MiniMap />
-      <Controls />
-    </ReactFlow>
+    <ReactFlowProvider>
+      <ReactFlow elements={layoutedElements} nodeTypes={nodeTypes} snapToGrid onLoad={(instance) => instance.fitView()}>
+        <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
+        <MiniMap />
+        <Controls />
+      </ReactFlow>
+    </ReactFlowProvider>
   );
 };
 

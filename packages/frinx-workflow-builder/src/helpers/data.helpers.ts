@@ -22,7 +22,7 @@ function getNodePosition(): Position {
   };
 }
 
-function getNodeType(taskType: TaskType): NodeType {
+export function getNodeType(taskType: TaskType): NodeType {
   switch (taskType) {
     case 'DECISION':
       return 'decision';
