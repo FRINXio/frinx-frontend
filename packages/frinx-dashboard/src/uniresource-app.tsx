@@ -4,11 +4,11 @@ import { Redirect, Route, RouteComponentProps, Switch, useHistory } from 'react-
 import { authContext } from './auth-helpers';
 
 const UniresourceApp: FC = () => {
-  const [components, setComponents] = useState<typeof import('@frinx/uniresource-ui/') | null>(null);
+  const [components, setComponents] = useState<typeof import('@frinx/uniresource-ui') | null>(null);
   const history = useHistory();
 
   useEffect(() => {
-    import('@frinx/uniresource-ui/').then((mod) => {
+    import('@frinx/uniresource-ui').then((mod) => {
       setComponents(mod);
     });
   }, []);
