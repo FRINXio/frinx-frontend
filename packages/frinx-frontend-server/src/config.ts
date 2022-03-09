@@ -45,10 +45,9 @@ function buildAuthRedirectURL(schema: 'http' | 'https', base: string): string {
 const config = {
   isAuthEnabled: stringToBoolean(envString('AUTH_ENABLED')),
   authClientId: envString('AUTH_CLIENT_ID'),
-  authRedirectURL: buildAuthRedirectURL(
-    ensureSchema(envString('AUTH_REDIRECT_SCHEME')),
-    envString('AUTH_REDIRECT_DOMAIN'),
-  ),
+  authRedirectURL: stringToBoolean(envString('AUTH_ENABLED'))
+    ? buildAuthRedirectURL(ensureSchema(envString('AUTH_REDIRECT_SCHEME')), envString('AUTH_REDIRECT_DOMAIN'))
+    : null,
   uniflowApiURL: envString('CONDUCTOR_API_URL'),
   isUniresourceEnabled: stringToBoolean(envString('UNIRESOURCE_ENABLED')),
   isUniflowEnabled: stringToBoolean(envString('UNIFLOW_ENABLED')),

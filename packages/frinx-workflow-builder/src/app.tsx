@@ -1,11 +1,22 @@
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
-import Diagram, { Canvas, CanvasControls, useCanvasState, useSchema } from 'beautiful-react-diagrams';
-import 'beautiful-react-diagrams/dist/styles.css';
-import produce, { castImmutable } from 'immer';
-import { uniqBy } from 'lodash';
-import React, { useCallback, useMemo, useRef, useState, VoidFunctionComponent } from 'react';
+import produce from 'immer';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
+import ReactFlow, {
+  addEdge,
+  Background,
+  BackgroundVariant,
+  Connection,
+  Controls,
+  Edge,
+  Elements,
+  MiniMap,
+  ReactFlowProvider,
+  removeElements,
+  updateEdge,
+} from 'react-flow-renderer';
 import callbackUtils from './callback-utils';
 import ActionsMenu from './components/actions-menu/actions-menu';
+import ButtonEdge from './components/edges/button-edge';
 import ExecutionModal from './components/execution-modal/execution-modal';
 import ExpandedWorkflowModal from './components/expanded-workflow-modal/expanded-workflow-modal';
 import LeftMenu from './components/left-menu/left-menu';
@@ -15,11 +26,27 @@ import TaskForm from './components/task-form/task-form';
 import WorkflowDefinitionModal from './components/workflow-definition-modal/workflow-definition-modal';
 import WorkflowEditorModal from './components/workflow-editor-modal/workflow-editor-modal';
 import WorkflowForm from './components/workflow-form/workflow-form';
-import { createDiagramController } from './helpers/diagram.helpers';
-import { CustomNodeType, ExtendedTask, NodeData, TaskDefinition, Workflow } from './helpers/types';
+import BaseNode from './components/workflow-nodes/base-node';
+import DecisionNode from './components/workflow-nodes/decision-node';
+import StartEndNode from './components/workflow-nodes/start-end-node';
+import { EdgeRemoveContext } from './edge-remove-context';
+import { convertToTasks } from './helpers/api.helpers';
+import { getElementsFromWorkflow, getNodeType } from './helpers/data.helpers';
+import { getLayoutedElements } from './helpers/layout.helpers';
+import { ExtendedTask, TaskDefinition, Workflow } from './helpers/types';
 import unwrap from './helpers/unwrap';
-import { createWorkflowHelper, deserializeId } from './helpers/workflow.helpers';
 import { useTaskActions } from './task-actions-context';
+
+const nodeTypes = {
+  decision: DecisionNode,
+  start: StartEndNode,
+  end: StartEndNode,
+  base: BaseNode,
+};
+
+const edgeTypes = {
+  buttonedge: ButtonEdge,
+};
 
 type Props = {
   onClose: () => void;
@@ -68,65 +95,78 @@ const App: VoidFunctionComponent<Props> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isInputModalShown, setIsInputModalShown] = useState(false);
   const [workflowTasks, setWorkflowTasks] = useState(workflow.tasks);
-  const workflowCtrlRef = useRef(useMemo(() => createWorkflowHelper(), []));
-  const schemaCtrlRef = useRef(useMemo(() => createDiagramController(workflow), [workflow]));
-  const [schema, { onChange, addNode }] = useSchema<NodeData>(
-    useMemo(() => schemaCtrlRef.current.createSchemaFromWorkflow(), []),
-  );
-  const [canvasStates, handlers] = useCanvasState(); // creates canvas state
+  const [elements, setElements] = useState(getElementsFromWorkflow(workflowTasks, false));
 
-  const handleDeleteButtonClick = useCallback(
-    (id: string) => {
-      // TODO: wait for the library update to fix a bug with removing node with links
-      // we use simple `onChange` instead of `removeNode` for now
-      onChange({
-        links: schema.links?.filter((l) => deserializeId(l.input).id !== id && deserializeId(l.output).id !== id) ?? [],
-        nodes: schema.nodes.filter((n) => n.id !== id),
-      });
-    },
-    [schema.nodes, onChange, schema.links],
-  );
+  const handleConnect = (edge: Edge<unknown> | Connection) => {
+    setElements((els) => addEdge(edge, els));
+  };
+
+  const handleEdgeUpdate = (oldEdge: Edge<unknown>, newConnection: Connection) => {
+    setElements((els) => updateEdge(oldEdge, newConnection, els));
+  };
+
+  const handleElementsRemove = (elementsToRemove: Elements<unknown>) => {
+    setElements((els) => removeElements(elementsToRemove, els));
+  };
+
+  const handleDeleteButtonClick = (id: string) => {
+    setElements((els) => {
+      const elementsToRemove = els.filter((e) => e.data?.task?.id === id);
+      return removeElements(elementsToRemove, els);
+    });
+  };
+
   const { selectedTask, selectTask } = useTaskActions(handleDeleteButtonClick);
 
   const { name } = workflow;
 
   const handleAddButtonClick = (t: ExtendedTask) => {
-    addNode(schemaCtrlRef.current.createTaskNode(t));
+    setElements((els) => {
+      return [
+        ...els,
+        {
+          id: t.taskReferenceName,
+          type: getNodeType(t.type),
+          position: { x: 0, y: 0 },
+          data: {
+            label: t.taskReferenceName,
+            task: t,
+            isReadOnly: false,
+          },
+        },
+      ];
+    });
     setWorkflowTasks((prevTasks) => [...prevTasks, t]);
   };
 
   const handleFormSubmit = (t: ExtendedTask) => {
-    const copiedNodes = castImmutable(
-      produce(schema.nodes, (acc) => {
-        const index = acc.findIndex((n) => n.id === t.id);
-
+    setElements((els) => {
+      return produce(els, (acc) => {
+        const index = acc.findIndex((n) => n.data?.task?.id === t.id);
         unwrap(acc[index].data).task = t;
-
         return acc;
-      }),
-      // immer.js returns incompatible type, so we have to cast it manually
-    ) as CustomNodeType[];
-    onChange({ nodes: copiedNodes });
+      });
+    });
   };
 
   const handleWorkflowClone = (wfName: string) => {
-    const wf: Workflow = workflowCtrlRef.current.convertWorkflow(schema, workflow);
-    onWorkflowClone(wf, wfName);
+    const newTasks = convertToTasks(elements);
+    const { tasks, ...rest } = workflow;
+    onWorkflowClone(
+      {
+        ...rest,
+        tasks: newTasks,
+      },
+      wfName,
+    );
   };
 
-  const usedSchema = useMemo(() => {
-    const { nodes, links } = schema;
-    return {
-      links,
-      nodes: uniqBy(nodes, (n) => n.id),
-    };
-  }, [schema]);
+  const layoutedElements = useMemo(() => getLayoutedElements(elements), [elements]);
 
   return (
     <>
       <Grid templateColumns="384px 1fr" templateRows="64px 1fr" minHeight="100%" maxHeight="100%">
         <Flex
-          // height={16}
           alignItems="center"
           px={4}
           boxShadow="base"
@@ -155,12 +195,24 @@ const App: VoidFunctionComponent<Props> = ({
                     setIsEditing(true);
                   }}
                   onSaveWorkflowBtnClick={() => {
+                    const newTasks = convertToTasks(elements);
+                    const { tasks, ...rest } = workflow;
                     const { putWorkflow } = callbackUtils.getCallbacks;
-                    putWorkflow([workflowCtrlRef.current.convertWorkflow(schema, workflow)]);
+                    putWorkflow([
+                      {
+                        ...rest,
+                        tasks: newTasks,
+                      },
+                    ]);
                   }}
                   onFileImport={onFileImport}
                   onFileExport={() => {
-                    onFileExport(workflowCtrlRef.current.convertWorkflow(schema, workflow));
+                    const newTasks = convertToTasks(elements);
+                    const { tasks, ...rest } = workflow;
+                    onFileExport({
+                      ...rest,
+                      tasks: newTasks,
+                    });
                   }}
                   onWorkflowDelete={onWorkflowDelete}
                   onWorkflowClone={handleWorkflowClone}
@@ -170,8 +222,15 @@ const App: VoidFunctionComponent<Props> = ({
               <Button
                 colorScheme="blue"
                 onClick={() => {
+                  const newTasks = convertToTasks(elements);
+                  const { tasks, ...rest } = workflow;
                   const { putWorkflow } = callbackUtils.getCallbacks;
-                  putWorkflow([workflowCtrlRef.current.convertWorkflow(schema, workflow)]).then(() => {
+                  putWorkflow([
+                    {
+                      ...rest,
+                      tasks: newTasks,
+                    },
+                  ]).then(() => {
                     setIsInputModalShown(true);
                   });
                 }}
@@ -185,24 +244,33 @@ const App: VoidFunctionComponent<Props> = ({
           <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
         </Box>
         <Box minHeight="60vh" maxHeight="100vh" position="relative">
-          <Canvas {...canvasStates} {...handlers}>
-            <Diagram
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              schema={usedSchema}
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              onChange={onChange}
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              style={{
-                boxShadow: 'none',
-                border: 'none',
-                flex: 1,
-              }}
-            />
-            <CanvasControls />
-          </Canvas>
+          <EdgeRemoveContext.Provider
+            value={{
+              removeEdge: (id: string) => {
+                setElements((els) => {
+                  const elementsToRemove = els.filter((e) => e.id === id);
+                  return removeElements(elementsToRemove, els);
+                });
+              },
+            }}
+          >
+            <ReactFlowProvider>
+              <ReactFlow
+                elements={layoutedElements}
+                nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
+                snapToGrid
+                onConnect={handleConnect}
+                onEdgeUpdate={handleEdgeUpdate}
+                onElementsRemove={handleElementsRemove}
+                onLoad={(instance) => instance.fitView()}
+              >
+                <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
+                <MiniMap />
+                <Controls />
+              </ReactFlow>
+            </ReactFlowProvider>
+          </EdgeRemoveContext.Provider>
           {selectedTask?.task && selectedTask?.actionType === 'edit' && (
             <RightDrawer>
               <Box px={6} py={10}>
@@ -255,11 +323,7 @@ const App: VoidFunctionComponent<Props> = ({
         />
       )}
       {workflowDefinitionDisclosure.isOpen && (
-        <WorkflowDefinitionModal
-          isOpen
-          onClose={workflowDefinitionDisclosure.onClose}
-          workflow={workflowCtrlRef.current.convertWorkflow(schema, workflow)}
-        />
+        <WorkflowDefinitionModal isOpen onClose={workflowDefinitionDisclosure.onClose} workflow={workflow} />
       )}
       <NewWorkflowModal
         isOpen={workflowModalDisclosure.isOpen}
@@ -268,7 +332,7 @@ const App: VoidFunctionComponent<Props> = ({
       />
       {isInputModalShown && (
         <ExecutionModal
-          workflow={workflowCtrlRef.current.convertWorkflow(schema, workflow)}
+          workflow={workflow}
           onClose={() => setIsInputModalShown(false)}
           shouldCloseAfterSubmit={false}
           isOpen={isInputModalShown}

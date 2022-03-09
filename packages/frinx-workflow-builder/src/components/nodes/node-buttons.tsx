@@ -1,7 +1,6 @@
-import React, { FC, memo } from 'react';
-import { Box, Divider, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Portal } from '@chakra-ui/react';
-import { EditIcon } from '@chakra-ui/icons';
+import { Box, Divider, HStack, Icon, IconButton, Menu, MenuButton, MenuItem, MenuList, Portal } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
+import React, { FC, memo } from 'react';
 
 type Props = {
   onEditButtonClick: () => void;
@@ -15,13 +14,13 @@ const NodeButtons: FC<Props> = memo(({ onEditButtonClick, onDeleteButtonClick, o
       <IconButton
         onClick={onEditButtonClick}
         aria-label="Edit workflow"
-        icon={<EditIcon />}
+        icon={<Icon as={FeatherIcon} icon="edit" size={12} />}
         size="xs"
         colorScheme="blue"
       />
       <Box>
         <Menu isLazy>
-          <MenuButton size="xs" as={IconButton} icon={<FeatherIcon icon="more-horizontal" size={12} />} />
+          <MenuButton size="xs" as={IconButton} icon={<Icon as={FeatherIcon} icon="more-horizontal" size={12} />} />
           <Portal>
             <MenuList zIndex="dropdown" maxWidth={40}>
               {onExpandButtonClick && (
