@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Node } from 'beautiful-react-diagrams/@types/DiagramSchema';
 
 type AnyJson = JsonArray | JsonMap;
 type JsonMap = {
@@ -100,25 +99,7 @@ export type InputParameters =
   | RawInputParams
   | DynamicForkInputParams;
 
-export type TaskType =
-  | 'DECISION'
-  | 'EVENT'
-  | 'SIMPLE'
-  | 'FORK_JOIN'
-  | 'JOIN'
-  | 'WAIT'
-  | 'LAMBDA'
-  | 'TERMINATE'
-  | 'DO_WHILE'
-  | 'WHILE_END'
-  | 'SUB_WORKFLOW'
-  | 'CUSTOM'
-  | 'FORK_JOIN_DYNAMIC'
-  | 'EXCLUSIVE_JOIN'
-  | 'HTTP'
-  | 'KAFKA_PUBLISH'
-  | 'JSON_JQ';
-
+export type TaskType = Task['type'];
 type TaskValues = {
   name: string;
   taskReferenceName: string;
@@ -335,8 +316,6 @@ export type NodeData =
       task: ExtendedDecisionTask;
       decisionCases: Record<string, string>;
     };
-
-export type CustomNodeType = Node<NodeData>;
 
 export type TaskDefinition = {
   name: string;
