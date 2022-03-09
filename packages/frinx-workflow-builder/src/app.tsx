@@ -16,6 +16,7 @@ import ReactFlow, {
 } from 'react-flow-renderer';
 import callbackUtils from './callback-utils';
 import ActionsMenu from './components/actions-menu/actions-menu';
+import ButtonEdge from './components/edges/button-edge';
 import ExecutionModal from './components/execution-modal/execution-modal';
 import ExpandedWorkflowModal from './components/expanded-workflow-modal/expanded-workflow-modal';
 import LeftMenu from './components/left-menu/left-menu';
@@ -28,6 +29,7 @@ import WorkflowForm from './components/workflow-form/workflow-form';
 import BaseNode from './components/workflow-nodes/base-node';
 import DecisionNode from './components/workflow-nodes/decision-node';
 import StartEndNode from './components/workflow-nodes/start-end-node';
+import { EdgeRemoveContext } from './edge-remove-context';
 import { convertToTasks } from './helpers/api.helpers';
 import { getElementsFromWorkflow, getNodeType } from './helpers/data.helpers';
 import { getLayoutedElements } from './helpers/layout.helpers';
@@ -40,6 +42,10 @@ const nodeTypes = {
   start: StartEndNode,
   end: StartEndNode,
   base: BaseNode,
+};
+
+const edgeTypes = {
+  buttonedge: ButtonEdge,
 };
 
 type Props = {
@@ -238,21 +244,33 @@ const App: VoidFunctionComponent<Props> = ({
           <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
         </Box>
         <Box minHeight="60vh" maxHeight="100vh" position="relative">
-          <ReactFlowProvider>
-            <ReactFlow
-              elements={layoutedElements}
-              nodeTypes={nodeTypes}
-              snapToGrid
-              onConnect={handleConnect}
-              onEdgeUpdate={handleEdgeUpdate}
-              onElementsRemove={handleElementsRemove}
-              onLoad={(instance) => instance.fitView()}
-            >
-              <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
-              <MiniMap />
-              <Controls />
-            </ReactFlow>
-          </ReactFlowProvider>
+          <EdgeRemoveContext.Provider
+            value={{
+              removeEdge: (id: string) => {
+                setElements((els) => {
+                  const elementsToRemove = els.filter((e) => e.id === id);
+                  return removeElements(elementsToRemove, els);
+                });
+              },
+            }}
+          >
+            <ReactFlowProvider>
+              <ReactFlow
+                elements={layoutedElements}
+                nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
+                snapToGrid
+                onConnect={handleConnect}
+                onEdgeUpdate={handleEdgeUpdate}
+                onElementsRemove={handleElementsRemove}
+                onLoad={(instance) => instance.fitView()}
+              >
+                <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
+                <MiniMap />
+                <Controls />
+              </ReactFlow>
+            </ReactFlowProvider>
+          </EdgeRemoveContext.Provider>
           {selectedTask?.task && selectedTask?.actionType === 'edit' && (
             <RightDrawer>
               <Box px={6} py={10}>
