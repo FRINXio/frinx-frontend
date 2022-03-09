@@ -35,7 +35,7 @@ const CreateBlueprintForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => 
       </FormControl>
       <FormControl id="template" my={6} isInvalid={errors.template != null}>
         <FormLabel>Template</FormLabel>
-        <Textarea value={values.template} onChange={handleChange} />
+        <Textarea value={values.template} minHeight="calc(100vh - 550px)" onChange={handleChange} />
         <FormErrorMessage>{errors.template}</FormErrorMessage>
       </FormControl>
       <Divider my={6} />
