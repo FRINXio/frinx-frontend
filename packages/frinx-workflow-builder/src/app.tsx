@@ -98,7 +98,7 @@ const App: VoidFunctionComponent<Props> = ({
   const [elements, setElements] = useState(getElementsFromWorkflow(workflowTasks, false));
 
   const handleConnect = (edge: Edge<unknown> | Connection) => {
-    setElements((els) => addEdge(edge, els));
+    setElements((els) => addEdge({ ...edge, type: 'buttonedge' }, els));
   };
 
   const handleEdgeUpdate = (oldEdge: Edge<unknown>, newConnection: Connection) => {
