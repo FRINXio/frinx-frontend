@@ -267,7 +267,10 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
   const handleFormSubmit = (values: FormValues) => {
     createPool(client.mutation.bind(client), values)
       .toPromise()
-      .then(() => {
+      .then((response) => {
+        if (response.error) {
+          throw response.error;
+        }
         onCreateSuccess();
         addToastNotification({
           type: 'success',
