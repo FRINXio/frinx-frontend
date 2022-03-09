@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
 import produce from 'immer';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
-import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap } from 'react-flow-renderer';
+import ReactFlow, { Background, BackgroundVariant, Controls, Elements, MiniMap } from 'react-flow-renderer';
 import callbackUtils from './callback-utils';
 import ActionsMenu from './components/actions-menu/actions-menu';
 import ExecutionModal from './components/execution-modal/execution-modal';
@@ -20,6 +20,7 @@ import { convertToTasks } from './helpers/api.helpers';
 import { getElementsFromWorkflow } from './helpers/data.helpers';
 import { getLayoutedElements } from './helpers/layout.helpers';
 import { ExtendedTask, TaskDefinition, Workflow } from './helpers/types';
+import ButtonEdge from './components/edges/button-edge';
 import { useTaskActions } from './task-actions-context';
 
 const nodeTypes = {
@@ -27,6 +28,10 @@ const nodeTypes = {
   start: StartEndNode,
   end: StartEndNode,
   base: BaseNode,
+};
+
+const edgeTypes = {
+  buttonedge: ButtonEdge,
 };
 
 type Props = {
@@ -76,8 +81,9 @@ const App: VoidFunctionComponent<Props> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isInputModalShown, setIsInputModalShown] = useState(false);
   const [workflowTasks, setWorkflowTasks] = useState(workflow.tasks);
-  const elements = getElementsFromWorkflow(workflowTasks, false);
-  const layoutedElements = useMemo(() => getLayoutedElements(elements), [elements]);
+  const initialElements = getElementsFromWorkflow(workflowTasks, false);
+  const layoutedElements = useMemo(() => getLayoutedElements(initialElements), [initialElements]);
+  const [elements, setElements] = useState(layoutedElements); // eslint-disable-line @typescript-eslint/no-unused-vars
 
   const handleDeleteButtonClick = (id: string) => {
     setWorkflowTasks((oldTasks) => {
@@ -113,6 +119,10 @@ const App: VoidFunctionComponent<Props> = ({
       },
       wfName,
     );
+  };
+
+  const handleElementsRemove = (elementsToRemove: Elements) => {
+    console.log('=== remove ID', elementsToRemove); // eslint-disable-line no-console
   };
 
   return (
@@ -196,7 +206,13 @@ const App: VoidFunctionComponent<Props> = ({
           <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
         </Box>
         <Box minHeight="60vh" maxHeight="100vh" position="relative">
-          <ReactFlow elements={layoutedElements} nodeTypes={nodeTypes} snapToGrid>
+          <ReactFlow
+            elements={elements}
+            nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
+            snapToGrid
+            onElementsRemove={handleElementsRemove}
+          >
             <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
             <MiniMap />
             <Controls />

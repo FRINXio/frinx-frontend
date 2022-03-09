@@ -144,12 +144,14 @@ function createEdges(tasks: Task[]): Edge[] {
               id: `e${lastDecisionTask.taskReferenceName}-${curr.taskReferenceName}`,
               source: lastDecisionTask.taskReferenceName,
               target: curr.taskReferenceName,
+              type: 'buttonedge',
             }
           : {
               id: `e${previousTask.taskReferenceName}-${curr.taskReferenceName}`,
               source: previousTask.taskReferenceName,
               target: curr.taskReferenceName,
               sourceHandle: d,
+              type: 'buttonedge',
             };
       });
 
@@ -162,6 +164,7 @@ function createEdges(tasks: Task[]): Edge[] {
               id: `e${defaultCaseLastTask.taskReferenceName}-${curr.taskReferenceName}`,
               source: defaultCaseLastTask.taskReferenceName,
               target: curr.taskReferenceName,
+              type: 'buttonedge',
             },
           ]
         : [
@@ -171,6 +174,7 @@ function createEdges(tasks: Task[]): Edge[] {
               source: previousTask.taskReferenceName,
               target: curr.taskReferenceName,
               sourceHandle: `default`,
+              type: 'buttonedge',
             },
           ];
       return [...prev, ...newEdges];
@@ -183,6 +187,7 @@ function createEdges(tasks: Task[]): Edge[] {
         source: previousTask.taskReferenceName,
         target: curr.taskReferenceName,
         style: { background: '#fff' },
+        type: 'buttonedge',
       };
       const decisionEdges = Object.keys(curr.decisionCases)
         .map((d) => {
@@ -196,6 +201,7 @@ function createEdges(tasks: Task[]): Edge[] {
                 source: curr.taskReferenceName,
                 target: decisionTasks[0].taskReferenceName,
                 sourceHandle: `${d}`,
+                type: 'buttonedge',
               }
             : null;
           return startDecisionEdge ? [...currentDecisionEdges, startDecisionEdge] : currentDecisionEdges;
@@ -209,6 +215,7 @@ function createEdges(tasks: Task[]): Edge[] {
             source: curr.taskReferenceName,
             target: curr.defaultCase[0].taskReferenceName,
             sourceHandle: 'default',
+            type: 'buttonedge',
           }
         : null;
       const allDefaultCaseEdges = startDefaultCaseEdge ? [...defaultCaseEdges, startDefaultCaseEdge] : defaultCaseEdges;
@@ -222,6 +229,7 @@ function createEdges(tasks: Task[]): Edge[] {
         source: previousTask.taskReferenceName,
         target: curr.taskReferenceName,
         style: { background: '#fff' },
+        type: 'buttonedge',
       };
 
       const forkEdges = curr.forkTasks
@@ -232,6 +240,7 @@ function createEdges(tasks: Task[]): Edge[] {
                 id: `e${curr.taskReferenceName}-${forkTasks[0].taskReferenceName}`,
                 source: curr.taskReferenceName,
                 target: forkTasks[0].taskReferenceName,
+                type: 'buttonedge',
               }
             : null;
           const forkBranchEdges = createEdges(forkTasks);
@@ -249,6 +258,7 @@ function createEdges(tasks: Task[]): Edge[] {
         id: `e${forkTaskId}-${curr.taskReferenceName}`,
         source: forkTaskId,
         target: curr.taskReferenceName,
+        type: 'buttonedge',
       }));
       return [...prev, ...joinEdges];
     }
@@ -257,6 +267,7 @@ function createEdges(tasks: Task[]): Edge[] {
       id: `e${previousTask.taskReferenceName}-${curr.taskReferenceName}`,
       source: previousTask.taskReferenceName,
       target: curr.taskReferenceName,
+      type: 'buttonedge',
     };
 
     return [...prev, newEdge];
