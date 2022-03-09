@@ -1,14 +1,8 @@
-import React, { VoidFunctionComponent } from 'react';
-import {
-  removeElements,
-  getBezierPath,
-  getEdgeCenter,
-  getMarkerEnd,
-  EdgeProps,
-  useStoreState,
-} from 'react-flow-renderer';
-import { Box, IconButton } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
+import { Box, IconButton } from '@chakra-ui/react';
+import React, { VoidFunctionComponent } from 'react';
+import { EdgeProps, getBezierPath, getEdgeCenter, getMarkerEnd } from 'react-flow-renderer';
+import { useEdgeRemoveContext } from '../../edge-remove-context';
 
 const foreignObjectSize = 40;
 
@@ -24,16 +18,11 @@ const ButtonEdge: VoidFunctionComponent<EdgeProps> = ({
   arrowHeadType,
   markerEndId,
 }) => {
-  const edges = useStoreState((state) => state.edges);
+  const { removeEdge } = useEdgeRemoveContext();
 
   const handleEdgeClick = (evt: React.MouseEvent<HTMLButtonElement>, edgeId: string) => {
     evt.stopPropagation();
-    const edgeToRemove = edges.find((e) => e.id === edgeId);
-
-    if (edgeToRemove) {
-      console.log(edgeToRemove); // eslint-disable-line no-console
-      removeElements([edgeToRemove], edges);
-    }
+    removeEdge(edgeId);
   };
   const edgePath = getBezierPath({
     sourceX,
