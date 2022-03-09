@@ -58,6 +58,12 @@ const UniresourceApp: FC = () => {
               <PoolDetailPage
                 poolId={props.match.params.poolId}
                 onPoolClick={(poolId: string) => history.push(`/uniresource/pools/${poolId}`)}
+                onCreateNestedPoolClick={() => {
+                  history.push({
+                    pathname: '/uniresource/pools/new',
+                    search: `?parentPoolId=${props.match.params.poolId}&isNested=true`,
+                  });
+                }}
               />
             );
           }}

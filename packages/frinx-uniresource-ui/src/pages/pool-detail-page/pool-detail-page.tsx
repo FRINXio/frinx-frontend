@@ -140,9 +140,10 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
 type Props = {
   poolId: string;
   onPoolClick: (poolId: string) => void;
+  onCreateNestedPoolClick: () => void;
 };
 
-const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoolClick }) => {
+const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoolClick, onCreateNestedPoolClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
   const claimResourceModal = useDisclosure();
   const { addToastNotification } = useNotifications();
@@ -235,6 +236,8 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoo
   const nestedPools: QueryAllPoolsQuery['QueryResourcePools'] = resourcePool.Resources.map((resource) =>
     resource.NestedPool !== null ? resource.NestedPool : null,
   ).filter(omitNullValue);
+  const canCreateNestedPool =
+    resourcePool.Resources.length !== resourcePool.Resources.filter((resource) => resource.NestedPool !== null).length;
 
   return (
     <PageContainer>
@@ -271,9 +274,20 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoo
       </Box>
 
       <Box my={10}>
-        <Heading size="lg" mb={5}>
-          Nested Pools
-        </Heading>
+        <Flex>
+          <Heading size="lg" mb={5}>
+            Nested Pools
+          </Heading>
+          <Spacer />
+          <Button
+            onClick={onCreateNestedPoolClick}
+            colorScheme="blue"
+            isDisabled={!canCreateNestedPool}
+            title={canCreateNestedPool ? '' : 'Cannot create nested pool, because there are no free resources'}
+          >
+            Create nested pool
+          </Button>
+        </Flex>
         <PoolsTable
           pools={nestedPools}
           isLoading={isLoadingPool}

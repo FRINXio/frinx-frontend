@@ -45,27 +45,31 @@ export type FormValues = {
   dealocationSafetyPeriod?: number;
   poolType: PoolType;
   poolValues: Record<string, string>[];
-  isNested: false;
-  parentPoolId?: undefined;
-  parentResourceId: undefined;
+  isNested: boolean;
+  parentPoolId?: string;
+  parentResourceId?: string;
 };
 
-const INITIAL_VALUES: FormValues = {
-  name: '',
-  description: '',
-  dealocationSafetyPeriod: 0,
-  resourceTypeId: '',
-  isNested: false,
-  poolType: 'set',
-  poolValues: [],
-  parentPoolId: undefined,
-  parentResourceId: undefined,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  allocationStrategyId: '',
-  poolProperties: {},
-  poolPropertyTypes: {},
-  tags: [],
+const getInitialValues = (url: string): FormValues => {
+  const query = new URLSearchParams(url);
+
+  return {
+    name: '',
+    description: '',
+    dealocationSafetyPeriod: 0,
+    resourceTypeId: '',
+    isNested: !!query.get('isNested') || false,
+    poolType: 'set',
+    poolValues: [],
+    parentPoolId: query.get('parentPoolId') || undefined,
+    parentResourceId: undefined,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    allocationStrategyId: '',
+    poolProperties: {},
+    poolPropertyTypes: {},
+    tags: [],
+  };
 };
 
 type AllocStrategy = {
@@ -164,9 +168,11 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   allocStrategies,
 }) => {
   const { selectedTags, handleTagCreation, handleOnSelectionChange } = useTagsInput();
-  const [poolSchema, setPoolSchema] = useState(getSchema(INITIAL_VALUES.poolType, INITIAL_VALUES.isNested));
+  const [poolSchema, setPoolSchema] = useState(
+    getSchema(getInitialValues(window.location.search).poolType, getInitialValues(window.location.search).isNested),
+  );
   const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik<FormValues>({
-    initialValues: INITIAL_VALUES,
+    initialValues: getInitialValues(window.location.search),
     validationSchema: poolSchema,
     validateOnChange: false,
     onSubmit: async (data) => {
