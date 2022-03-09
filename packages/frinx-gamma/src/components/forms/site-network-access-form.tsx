@@ -199,7 +199,6 @@ const SiteNetAccessForm: FC<Props> = ({
   onReset,
 }) => {
   const [workflowId, setWorkflowId] = useState<string | null>(null);
-  const [addressAssign, setAddressAssign] = useState<AddressAssignState | null>(null);
   const [addressAssignError, setAddressAssignError] = useState<string | null>(null);
   const onFinish = () => {
     // do nothing
@@ -240,13 +239,19 @@ const SiteNetAccessForm: FC<Props> = ({
         setAddressAssignError('Addresses were already assigned.');
         return;
       }
-
-      setAddressAssign({
-        providerAddress: provider_address,
-        customerAddress: customer_address,
+      setFieldValue('ipConnection', {
+        ...values.ipConnection,
+        ipv4: {
+          ...values.ipConnection?.ipv4,
+          addresses: {
+            ...values.ipConnection?.ipv4?.addresses,
+            providerAddress: provider_address || undefined,
+            customerAddress: customer_address || undefined,
+          },
+        },
       });
     }
-  }, [workflowPayload, workflowId]);
+  }, [workflowPayload, workflowId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLocationChange = (item?: Item | null) => {
     setFieldValue('locationReference', unwrap(item).value);
@@ -326,20 +331,6 @@ const SiteNetAccessForm: FC<Props> = ({
   const [selectedBgpProfileItem] = bgpProfileItems.filter((i) => i.value === bgpRoutingProtocol.bgp?.bgpProfile);
 
   const ipv4Connection = unwrap(unwrap(values.ipConnection).ipv4);
-
-  const newIpv4Connection = {
-    ...ipv4Connection,
-    addresses: {
-      ...unwrap(ipv4Connection.addresses),
-      customerAddress: addressAssign?.customerAddress || ipv4Connection.addresses?.customerAddress || '',
-      providerAddress: addressAssign?.providerAddress || ipv4Connection.addresses?.providerAddress || '',
-    },
-  };
-
-  values.ipConnection = {
-    ...values.ipConnection,
-    ipv4: newIpv4Connection,
-  };
 
   const customerAddressError = getCustomerAddressError(errors);
   const providerAddressError = getProviderAddressError(errors);
@@ -605,11 +596,6 @@ const SiteNetAccessForm: FC<Props> = ({
                   )}
                 </Flex>
               </FormLabel>
-              {addressAssignError !== null && (
-                <Text fontSize="sm" color="red">
-                  {addressAssignError}
-                </Text>
-              )}
               <Flex alignItems="center">
                 <Select
                   name="prefixLength"
@@ -671,6 +657,11 @@ const SiteNetAccessForm: FC<Props> = ({
                 }}
               />
               {providerAddressError != null && <FormErrorMessage>{providerAddressError}</FormErrorMessage>}
+              {addressAssignError !== null && (
+                <Text fontSize="sm" color="red">
+                  {addressAssignError}
+                </Text>
+              )}
             </FormControl>
             <FormControl
               id="ip-customer-address"
