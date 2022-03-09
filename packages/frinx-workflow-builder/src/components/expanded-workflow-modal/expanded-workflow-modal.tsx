@@ -1,4 +1,3 @@
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   AlertDialog,
@@ -17,11 +16,22 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import Diagram, { Canvas, CanvasControls, useCanvasState, useSchema } from 'beautiful-react-diagrams';
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';
 import callbackUtils from '../../callback-utils';
-import { createDiagramController } from '../../helpers/diagram.helpers';
-import { NodeData, Workflow } from '../../helpers/types';
-import { convertWorkflow } from '../../helpers/workflow.helpers';
+import { getElementsFromWorkflow } from '../../helpers/data.helpers';
+import { getLayoutedElements } from '../../helpers/layout.helpers';
+import { Task, Workflow } from '../../helpers/types';
+import BaseNode from '../workflow-nodes/base-node';
+import DecisionNode from '../workflow-nodes/decision-node';
+import StartEndNode from '../workflow-nodes/start-end-node';
+
+const nodeTypes = {
+  decision: DecisionNode,
+  start: StartEndNode,
+  end: StartEndNode,
+  base: BaseNode,
+};
 
 type Props = {
   workflowName: string;
@@ -30,32 +40,22 @@ type Props = {
   onClose: () => void;
 };
 
-const ExpandedWorkflowDiagram: FC<{ workflow: Workflow }> = ({ workflow }) => {
-  const schemaCtrlRef = useRef(useMemo(() => createDiagramController(convertWorkflow(workflow), true), [workflow]));
-  const [schema] = useSchema<NodeData>(useMemo(() => schemaCtrlRef.current.createSchemaFromWorkflow(), []));
-  const [canvasStates, handlers] = useCanvasState(); // creates canvas state
-
+const ExpandedWorkflowDiagram: FC<{ workflow: Workflow<Task> }> = ({ workflow }) => {
+  const elements = getElementsFromWorkflow(workflow.tasks, true);
+  const layoutedElements = useMemo(() => getLayoutedElements(elements), [elements]);
   return (
-    <Canvas {...canvasStates} {...handlers}>
-      <Diagram
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        schema={schema}
-        // onChange={noop}
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        style={{
-          boxShadow: 'none',
-          border: 'none',
-        }}
-      />
-      <CanvasControls />
-    </Canvas>
+    <ReactFlowProvider>
+      <ReactFlow elements={layoutedElements} nodeTypes={nodeTypes} snapToGrid onLoad={(instance) => instance.fitView()}>
+        <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
+        <MiniMap />
+        <Controls />
+      </ReactFlow>
+    </ReactFlowProvider>
   );
 };
 
 const ExpandedWorkflowModal: FC<Props> = ({ workflowName, workflowVersion, onClose, onEditBtnClick }) => {
-  const [workflowState, setWorkflowState] = useState<Workflow | null>(null);
+  const [workflowState, setWorkflowState] = useState<Workflow<Task> | null>(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const ref = useRef<HTMLButtonElement | null>(null);
 

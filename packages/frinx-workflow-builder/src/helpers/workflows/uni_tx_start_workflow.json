@@ -1,0 +1,103 @@
+{
+  "updateTime": 1644571137531,
+  "name": "UNI_TX_start",
+  "description": "{\"description\":\"Reuse a running uniconfig TX or start a new one if no uniconfig context is provided\",\"labels\":[\"TX\", \"MULTIZONE\"]}",
+  "version": 1,
+  "inputParameters": [],
+  "outputParameters": {},
+  "schemaVersion": 2,
+  "restartable": false,
+  "workflowStatusListenerEnabled": true,
+  "ownerEmail": "gamma-workers",
+  "timeoutPolicy": "ALERT_ONLY",
+  "timeoutSeconds": 60,
+  "variables": {},
+  "tasks": [
+    {
+      "name": "decide_task",
+      "taskReferenceName": "should_reuse_parent_tx",
+      "inputParameters": {
+        "parent_tx_multizone": "${workflow.input.uniconfig_context.uniconfig_cookies_multizone}"
+      },
+      "type": "DECISION",
+      "caseExpression": "$.parent_tx_multizone ? 'True' : 'False'",
+      "decisionCases": {
+        "False": [
+          {
+            "name": "UNISTORE_tx_create_multizone",
+            "taskReferenceName": "create",
+            "inputParameters": {
+              "devices": "${workflow.input.devices}",
+              "oam_domain": "${workflow.input.oam_domain}"
+            },
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          },
+          {
+            "name": "terminate",
+            "taskReferenceName": "return_new_tx_id",
+            "inputParameters": {
+              "terminationStatus": "COMPLETED",
+              "workflowOutput": {
+                "uniconfig_context": {
+                  "uniconfig_cookies_multizone": "${create.output.uniconfig_cookies_multizone}",
+                  "started_by_wf": "${workflow.parentWorkflowId}"
+                }
+              }
+            },
+            "type": "TERMINATE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          }
+        ],
+        "True": [
+          {
+            "name": "terminate",
+            "taskReferenceName": "return_parent_tx_id",
+            "inputParameters": {
+              "terminationStatus": "COMPLETED",
+              "workflowOutput": {
+                "uniconfig_context": "${workflow.input.uniconfig_context}"
+              }
+            },
+            "type": "TERMINATE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          }
+        ]
+      },
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "id": "7f9f2ea1-7335-4879-8341-4a7278658202",
+      "label": "decision"
+    }
+  ]
+}
