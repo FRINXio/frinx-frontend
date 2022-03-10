@@ -43,9 +43,9 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoadi
           </Tr>
         </Thead>
         <Tbody>
-          {!isLoading && !pools && (
+          {!isLoading && (!pools || pools.length === 0) && (
             <Tr textAlign="center">
-              <Td>There are no data</Td>
+              <Td>There are no resource pools</Td>
             </Tr>
           )}
           {pools &&
