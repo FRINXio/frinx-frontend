@@ -1,23 +1,8 @@
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import { useMutation, useQuery } from 'urql';
 import gql from 'graphql-tag';
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Icon,
-  IconButton,
-  useDisclosure,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Link,
-  Progress,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
@@ -61,17 +46,10 @@ const DELETE_POOL_MUTATION = gql`
 
 type Props = {
   onNewPoolBtnClick: () => void;
-  onNewIpv4PrefixBtnClick: () => void;
-  onNewVlanBtnClick: () => void;
   onPoolNameClick: (poolId: string) => void;
 };
 
-const PoolsPage: FunctionComponent<Props> = ({
-  onNewPoolBtnClick,
-  onNewIpv4PrefixBtnClick,
-  onNewVlanBtnClick,
-  onPoolNameClick,
-}) => {
+const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [{ data, fetching, error }] = useQuery<QueryAllPoolsQuery>({
     query: POOLS_QUERY,
@@ -79,14 +57,9 @@ const PoolsPage: FunctionComponent<Props> = ({
   });
   const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
 
-  const handleDeleteBtnClick = useCallback(
-    (id: string) => {
-      deletePool({ input: { resourcePoolId: id } }, { additionalTypenames: ['ResourcePool'] });
-    },
-    [deletePool],
-  );
-
-  const { isOpen, onToggle } = useDisclosure();
+  const handleDeleteBtnClick = (id: string) => {
+    deletePool({ input: { resourcePoolId: id } }, context);
+  };
 
   if (error != null) {
     return <div>{error.message}</div>;
@@ -107,25 +80,6 @@ const PoolsPage: FunctionComponent<Props> = ({
           >
             Create Pool
           </Button>
-          <Menu colorScheme="blue">
-            <MenuButton
-              rounded="lg"
-              fontSize="small"
-              // textColor="gray"
-              as={IconButton}
-              aria-label="Options"
-              icon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
-              onClick={onToggle}
-            />
-            <MenuList>
-              <MenuItem as={Link} onClick={onNewIpv4PrefixBtnClick}>
-                IPv4 prefix pool
-              </MenuItem>
-              <MenuItem as={Link} onClick={onNewVlanBtnClick}>
-                Vlan pool
-              </MenuItem>
-            </MenuList>
-          </Menu>
         </Box>
       </Flex>
       <Box position="relative">
