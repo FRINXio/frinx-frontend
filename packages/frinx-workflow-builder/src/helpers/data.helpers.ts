@@ -1,7 +1,7 @@
 import { Edge, Elements, Node } from 'react-flow-renderer';
 import { v4 as uuid } from 'uuid';
 import { getTaskLabel } from './task.helpers';
-import { ExtendedTask, Task, TaskType } from './types';
+import { DecisionTask, ExtendedTask, Task, TaskType } from './types';
 
 type NodeType = 'decision' | 'fork_join' | 'join' | 'base';
 
@@ -126,6 +126,71 @@ function createAllNodes(tasks: Task[], isReadOnly: boolean): Node[] {
   return [startNode, ...nodes, endNode];
 }
 
+// cretes edges from decision node to joining node after
+function createAfterDecisionEdges(decisionTask: DecisionTask, currentTask: Task, output: Edge[]): Edge[] {
+  // decision cases edges
+  const decisionCaseEdges = Object.keys(decisionTask.decisionCases)
+    .map((d) => {
+      const decisionCaseTasks = [...decisionTask.decisionCases[d]];
+      const lastDecisionTask = decisionCaseTasks.pop();
+
+      if (!lastDecisionTask) {
+        return {
+          id: `e${decisionTask.taskReferenceName}-${currentTask.taskReferenceName}`,
+          source: decisionTask.taskReferenceName,
+          target: currentTask.taskReferenceName,
+          sourceHandle: d,
+          type: 'buttonedge',
+        };
+      }
+
+      if (lastDecisionTask.type === 'DECISION') {
+        return createAfterDecisionEdges(lastDecisionTask, currentTask, []);
+      }
+
+      return {
+        id: `e${lastDecisionTask.taskReferenceName}-${currentTask.taskReferenceName}`,
+        source: lastDecisionTask.taskReferenceName,
+        target: currentTask.taskReferenceName,
+        type: 'buttonedge',
+      };
+    })
+    .flat();
+
+  // default cases edges
+  const defaultCaseTasks = [...decisionTask.defaultCase];
+  const defaultCaseLastTask = defaultCaseTasks.pop();
+
+  if (!defaultCaseLastTask) {
+    return [
+      ...output,
+      ...decisionCaseEdges,
+      {
+        id: `e${decisionTask.taskReferenceName}-${currentTask.taskReferenceName}`,
+        source: decisionTask.taskReferenceName,
+        target: currentTask.taskReferenceName,
+        sourceHandle: `default`,
+        type: 'buttonedge',
+      },
+    ];
+  }
+
+  if (defaultCaseLastTask.type === 'DECISION') {
+    return createAfterDecisionEdges(defaultCaseLastTask, currentTask, []);
+  }
+
+  return [
+    ...output,
+    ...decisionCaseEdges,
+    {
+      id: `e${defaultCaseLastTask.taskReferenceName}-${currentTask.taskReferenceName}`,
+      source: defaultCaseLastTask.taskReferenceName,
+      target: currentTask.taskReferenceName,
+      type: 'buttonedge',
+    },
+  ];
+}
+
 function createEdges(tasks: Task[]): Edge[] {
   const edges = tasks.reduce((prev: Edge[], curr: Task, index: number, array: Task[]) => {
     if (index === 0) {
@@ -136,48 +201,7 @@ function createEdges(tasks: Task[]): Edge[] {
 
     // edges for task after decision
     if (previousTask.type === 'DECISION') {
-      const decisionCaseEdges = Object.keys(previousTask.decisionCases).map((d) => {
-        const decisionCaseTasks = [...previousTask.decisionCases[d]];
-        const lastDecisionTask = decisionCaseTasks.pop();
-        return lastDecisionTask
-          ? {
-              id: `e${lastDecisionTask.taskReferenceName}-${curr.taskReferenceName}`,
-              source: lastDecisionTask.taskReferenceName,
-              target: curr.taskReferenceName,
-              type: 'buttonedge',
-            }
-          : {
-              id: `e${previousTask.taskReferenceName}-${curr.taskReferenceName}`,
-              source: previousTask.taskReferenceName,
-              target: curr.taskReferenceName,
-              sourceHandle: d,
-              type: 'buttonedge',
-            };
-      });
-
-      const defaultCaseTasks = [...previousTask.defaultCase];
-      const defaultCaseLastTask = defaultCaseTasks.pop();
-      const newEdges = defaultCaseLastTask
-        ? [
-            ...decisionCaseEdges,
-            {
-              id: `e${defaultCaseLastTask.taskReferenceName}-${curr.taskReferenceName}`,
-              source: defaultCaseLastTask.taskReferenceName,
-              target: curr.taskReferenceName,
-              type: 'buttonedge',
-            },
-          ]
-        : [
-            ...decisionCaseEdges,
-            {
-              id: `e${previousTask.taskReferenceName}-${curr.taskReferenceName}`,
-              source: previousTask.taskReferenceName,
-              target: curr.taskReferenceName,
-              sourceHandle: `default`,
-              type: 'buttonedge',
-            },
-          ];
-      return [...prev, ...newEdges];
+      return createAfterDecisionEdges(previousTask, curr, [...prev]);
     }
 
     // edges for decision tasks
@@ -252,7 +276,7 @@ function createEdges(tasks: Task[]): Edge[] {
       return [...prev, newEdge, ...forkEdges];
     }
 
-    // edges for jon task
+    // edges for join task
     if (curr.type === 'JOIN') {
       const joinEdges = curr.joinOn.map((forkTaskId) => ({
         id: `e${forkTaskId}-${curr.taskReferenceName}`,
