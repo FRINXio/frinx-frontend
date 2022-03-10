@@ -50,7 +50,7 @@
     "@chakra-ui/react": "^1.6.7",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
-    "@frinx/eslint-config-typescript": "^18.2.1-build.2",
+    "@frinx/eslint-config-typescript": "file:../../../frinx-javascript/eslint-config-typescript/",
     "@graphql-codegen/cli": "1.21.3",
     "@graphql-codegen/introspection": "1.18.1",
     "@graphql-codegen/typescript": "1.21.1",

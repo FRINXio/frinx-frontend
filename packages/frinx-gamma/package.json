@@ -48,7 +48,7 @@
     "@chakra-ui/react": "^1.6.7",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
-    "@frinx/eslint-config-typescript": "^18.2.1-build.2",
+    "@frinx/eslint-config-typescript": "file:../../../frinx-javascript/eslint-config-typescript/",
     "@types/lodash": "^4.14.172",
     "@types/react-router": "^5.1.17",
     "@typescript-eslint/eslint-plugin": "^4.15.0",
