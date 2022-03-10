@@ -412,7 +412,6 @@ export type Query = {
   QueryResourceTypes: Array<ResourceType>;
   QueryResourcePool: ResourcePool;
   QueryResourcePools: Array<ResourcePool>;
-  QueryRecentlyActiveResourcePools: Array<ResourcePool>;
   QueryResourcePoolHierarchyPath: Array<ResourcePool>;
   QueryRootResourcePools: Array<ResourcePool>;
   QueryLeafResourcePools: Array<ResourcePool>;
@@ -467,12 +466,6 @@ export type QueryQueryResourcePoolArgs = {
 export type QueryQueryResourcePoolsArgs = {
   resourceTypeId?: Maybe<Scalars['ID']>;
   tags?: Maybe<TagOr>;
-};
-
-
-export type QueryQueryRecentlyActiveResourcePoolsArgs = {
-  fromDatetime: Scalars['String'];
-  toDatetime?: Maybe<Scalars['String']>;
 };
 
 
@@ -1047,8 +1040,18 @@ export type SelectPoolsQuery = (
     & Pick<ResourcePool, 'id' | 'Name'>
     & { ResourceType: (
       { __typename?: 'ResourceType' }
-      & Pick<ResourceType, 'id'>
-    ) }
+      & Pick<ResourceType, 'id' | 'Name'>
+    ), Resources: Array<(
+      { __typename?: 'Resource' }
+      & Pick<Resource, 'Description' | 'Properties' | 'id'>
+      & { ParentPool: (
+        { __typename?: 'ResourcePool' }
+        & Pick<ResourcePool, 'id' | 'Name'>
+      ), NestedPool: Maybe<(
+        { __typename?: 'ResourcePool' }
+        & Pick<ResourcePool, 'id' | 'PoolProperties'>
+      )> }
+    )> }
   )> }
 );
 
@@ -1076,6 +1079,23 @@ export type PoolDetailQuery = (
     & { Resources: Array<(
       { __typename?: 'Resource' }
       & Pick<Resource, 'Description' | 'Properties' | 'id'>
+      & { NestedPool: Maybe<(
+        { __typename?: 'ResourcePool' }
+        & Pick<ResourcePool, 'id' | 'Name' | 'PoolType'>
+        & { Tags: Array<(
+          { __typename?: 'Tag' }
+          & Pick<Tag, 'id' | 'Tag'>
+        )>, AllocationStrategy: Maybe<(
+          { __typename?: 'AllocationStrategy' }
+          & Pick<AllocationStrategy, 'id' | 'Name' | 'Lang'>
+        )>, ResourceType: (
+          { __typename?: 'ResourceType' }
+          & Pick<ResourceType, 'id' | 'Name'>
+        ), Capacity: Maybe<(
+          { __typename?: 'PoolCapacityPayload' }
+          & Pick<PoolCapacityPayload, 'freeCapacity' | 'utilizedCapacity'>
+        )> }
+      )> }
     )>, Tags: Array<(
       { __typename?: 'Tag' }
       & Pick<Tag, 'id' | 'Tag'>
@@ -1128,6 +1148,19 @@ export type FreeResourceMutation = (
   & Pick<Mutation, 'FreeResource'>
 );
 
+export type DeletePoolMutationVariables = Exact<{
+  input: DeleteResourcePoolInput;
+}>;
+
+
+export type DeletePoolMutation = (
+  { __typename?: 'Mutation' }
+  & { DeleteResourcePool: (
+    { __typename?: 'DeleteResourcePoolPayload' }
+    & Pick<DeleteResourcePoolPayload, 'resourcePoolId'>
+  ) }
+);
+
 export type QueryAllPoolsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1150,19 +1183,6 @@ export type QueryAllPoolsQuery = (
       & Pick<PoolCapacityPayload, 'freeCapacity' | 'utilizedCapacity'>
     )> }
   )> }
-);
-
-export type DeletePoolMutationVariables = Exact<{
-  input: DeleteResourcePoolInput;
-}>;
-
-
-export type DeletePoolMutation = (
-  { __typename?: 'Mutation' }
-  & { DeleteResourcePool: (
-    { __typename?: 'DeleteResourcePoolPayload' }
-    & Pick<DeleteResourcePoolPayload, 'resourcePoolId'>
-  ) }
 );
 
 export type DeleteStrategyMutationVariables = Exact<{

@@ -2,18 +2,23 @@ import { Box, Button, Flex, Heading, Progress, Spacer, Text, useDisclosure } fro
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import PageContainer from '../../components/page-container';
+import { omitNullValue } from '../../helpers/omit-null-value';
 import useNotifications from '../../hooks/use-notifications';
 import {
   AllocatedResourcesQuery,
   AllocatedResourcesQueryVariables,
   ClaimResourceMutationMutation,
   ClaimResourceMutationMutationVariables,
+  DeletePoolMutation,
+  DeletePoolMutationMutationVariables,
   FreeResourceMutationMutation,
   FreeResourceMutationMutationVariables,
   PoolCapacityPayload,
   PoolDetailQuery,
   PoolDetailQueryVariables,
+  QueryAllPoolsQuery,
 } from '../../__generated__/graphql';
+import PoolsTable from '../pools-page/pools-table';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
 import PoolDetailAllocatingTable from './pool-detail-allocating-table';
 import PoolDetailSetSingletonTable from './pool-detail-set_singleton-table';
@@ -21,18 +26,6 @@ import PoolDetailSetSingletonTable from './pool-detail-set_singleton-table';
 export type PoolResource = {
   poolProperties: Record<string, string>;
   poolPropertyTypes: Record<string, 'int' | 'string'>;
-};
-
-const canShowClaimResourceModal = (resourcePool: PoolDetailQuery['QueryResourcePool']) => {
-  if (resourcePool.PoolType === 'allocating') {
-    return (
-      resourcePool.ResourceType.Name === 'ipv4_prefix' ||
-      resourcePool.ResourceType.Name === 'vlan_range' ||
-      resourcePool.ResourceType.Name === 'ipv6_prefix'
-    );
-  }
-
-  return false;
 };
 
 const canClaimResources = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) => {
@@ -56,6 +49,28 @@ const POOL_DETAIL_QUERY = gql`
         Description
         Properties
         id
+        NestedPool {
+          id
+          Name
+          PoolType
+          Tags {
+            id
+            Tag
+          }
+          AllocationStrategy {
+            id
+            Name
+            Lang
+          }
+          ResourceType {
+            id
+            Name
+          }
+          Capacity {
+            freeCapacity
+            utilizedCapacity
+          }
+        }
       }
       Tags {
         id
@@ -97,6 +112,14 @@ const FREE_RESOURCES_MUTATION = gql`
   }
 `;
 
+const DELETE_POOL_MUTATION = gql`
+  mutation DeletePool($input: DeleteResourcePoolInput!) {
+    DeleteResourcePool(input: $input) {
+      resourcePoolId
+    }
+  }
+`;
+
 function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
   if (capacity == null) {
     return 0;
@@ -116,9 +139,11 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
 
 type Props = {
   poolId: string;
+  onPoolClick: (poolId: string) => void;
+  onCreateNestedPoolClick: () => void;
 };
 
-const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId }) => {
+const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoolClick, onCreateNestedPoolClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
   const claimResourceModal = useDisclosure();
   const { addToastNotification } = useNotifications();
@@ -141,6 +166,7 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId }) => 
   const [, freeResource] = useMutation<FreeResourceMutationMutation, FreeResourceMutationMutationVariables>(
     FREE_RESOURCES_MUTATION,
   );
+  const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
 
   const claimPoolResource = (description = '', userInput: Record<string, string | number> = {}) => {
     claimResource({
@@ -148,16 +174,20 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId }) => 
       userInput,
       ...(description != null && { description }),
     })
-      .then(() => {
+      .then((response) => {
+        if (response.error) {
+          throw new Error(response.error.message);
+        }
+
         addToastNotification({
           type: 'success',
           content: 'Successfully claimed resource from pool',
         });
       })
-      .catch(() => {
+      .catch((error) => {
         addToastNotification({
           type: 'error',
-          content: 'There was a problem with claiming resource from pool',
+          content: error.message || 'There was a problem with claiming resource from pool',
         });
       });
   };
@@ -170,18 +200,26 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId }) => 
       },
       { additionalTypenames: ['Resource'] },
     )
-      .then(() => {
+      .then((response) => {
+        if (response.error) {
+          throw new Error(response.error.message);
+        }
+
         addToastNotification({
           type: 'success',
           content: 'Successfully freed resource from pool',
         });
       })
-      .catch(() => {
+      .catch((error) => {
         addToastNotification({
           type: 'error',
-          content: 'There was a problem with freeing resource from pool',
+          content: error.message || 'There was a problem with freeing resource from pool',
         });
       });
+  };
+
+  const handleDeleteBtnClick = (id: string) => {
+    deletePool({ input: { resourcePoolId: id } }, context);
   };
 
   if (isLoadingPool || isLoadingResources) {
@@ -195,6 +233,11 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId }) => 
   const { QueryResourcePool: resourcePool } = poolData;
   const capacityValue = getCapacityValue(resourcePool.Capacity);
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
+  const nestedPools: QueryAllPoolsQuery['QueryResourcePools'] = resourcePool.Resources.map((resource) =>
+    resource.NestedPool !== null ? resource.NestedPool : null,
+  ).filter(omitNullValue);
+  const canCreateNestedPool =
+    resourcePool.Resources.length !== resourcePool.Resources.filter((resource) => resource.NestedPool !== null).length;
 
   return (
     <PageContainer>
@@ -212,9 +255,7 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId }) => 
         <Spacer />
         <Box>
           <Button
-            onClick={() =>
-              canShowClaimResourceModal(resourcePool) ? claimResourceModal.onOpen() : claimPoolResource()
-            }
+            onClick={() => claimResourceModal.onOpen()}
             colorScheme="blue"
             variant="outline"
             isDisabled={!canClaimResources(resourcePool, totalCapacity)}
@@ -233,7 +274,32 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId }) => 
       </Box>
 
       <Box my={10}>
-        <Heading size="lg">Allocated Resources</Heading>
+        <Flex>
+          <Heading size="lg" mb={5}>
+            Nested Pools
+          </Heading>
+          <Spacer />
+          <Button
+            onClick={onCreateNestedPoolClick}
+            colorScheme="blue"
+            isDisabled={!canCreateNestedPool}
+            title={canCreateNestedPool ? '' : 'Cannot create nested pool, because there are no free resources'}
+          >
+            Create nested pool
+          </Button>
+        </Flex>
+        <PoolsTable
+          pools={nestedPools}
+          isLoading={isLoadingPool}
+          onDeleteBtnClick={handleDeleteBtnClick}
+          onPoolNameClick={onPoolClick}
+        />
+      </Box>
+
+      <Box my={10}>
+        <Heading size="lg" mb={5}>
+          Allocated Resources
+        </Heading>
         {resourcePool.PoolType === 'allocating' && (
           <PoolDetailAllocatingTable
             allocatedResources={allocatedResources.QueryResources}

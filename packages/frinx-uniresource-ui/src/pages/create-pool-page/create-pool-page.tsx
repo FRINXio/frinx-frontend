@@ -92,6 +92,20 @@ const SELECT_POOLS_QUERY = gql`
       Name
       ResourceType {
         id
+        Name
+      }
+      Resources {
+        Description
+        Properties
+        id
+        ParentPool {
+          id
+          Name
+        }
+        NestedPool {
+          id
+          PoolProperties
+        }
       }
     }
   }
@@ -253,7 +267,10 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
   const handleFormSubmit = (values: FormValues) => {
     createPool(client.mutation.bind(client), values)
       .toPromise()
-      .then(() => {
+      .then((response) => {
+        if (response.error) {
+          throw response.error;
+        }
         onCreateSuccess();
         addToastNotification({
           type: 'success',
@@ -276,12 +293,6 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
     return null;
   }
 
-  const resourceTypes = data.QueryResourceTypes.map((rt) => ({ id: rt.id, name: rt.Name }));
-  const pools = poolsData.QueryResourcePools.map((p) => ({
-    id: p.id,
-    name: p.Name,
-    resourceTypeId: p.ResourceType.id,
-  }));
   const allocStrategies = allocStratData.QueryAllocationStrategies.map((as) => ({ id: as.id, name: as.Name }));
 
   return (
@@ -296,8 +307,8 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           onFormSubmit={handleFormSubmit}
-          resourceTypes={resourceTypes}
-          pools={pools}
+          resourceTypes={data.QueryResourceTypes}
+          resourcePools={poolsData}
           allocStrategies={allocStrategies}
         />
       </Box>

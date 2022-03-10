@@ -24,8 +24,6 @@ const UniresourceApp: FC = () => {
     ResourceTypesList,
     UniresourceAppProvider,
     CreateStrategyPage,
-    CreateAllocatingIpv4PrefixPoolPage,
-    CreateAllocatingVlanPoolPage,
     PoolDetailPage,
   } = components;
 
@@ -49,12 +47,6 @@ const UniresourceApp: FC = () => {
             onNewPoolBtnClick={() => {
               history.push('/uniresource/pools/new');
             }}
-            onNewIpv4PrefixBtnClick={() => {
-              history.push('/uniresource/pools/new/allocating/ipv4-prefix');
-            }}
-            onNewVlanBtnClick={() => {
-              history.push('/uniresource/pools/new/allocating/vlan');
-            }}
             onPoolNameClick={(poolId: string) => history.push(`/uniresource/pools/${poolId}`)}
           />
         </Route>
@@ -62,23 +54,20 @@ const UniresourceApp: FC = () => {
           exact
           path="/uniresource/pools/:poolId"
           render={(props: RouteComponentProps<{ poolId: string }>) => {
-            return <PoolDetailPage poolId={props.match.params.poolId} />;
+            return (
+              <PoolDetailPage
+                poolId={props.match.params.poolId}
+                onPoolClick={(poolId: string) => history.push(`/uniresource/pools/${poolId}`)}
+                onCreateNestedPoolClick={() => {
+                  history.push({
+                    pathname: '/uniresource/pools/new',
+                    search: `?parentPoolId=${props.match.params.poolId}&isNested=true`,
+                  });
+                }}
+              />
+            );
           }}
         />
-        <Route exact path="/uniresource/pools/new/allocating/ipv4-prefix">
-          <CreateAllocatingIpv4PrefixPoolPage
-            onCreateSuccess={() => {
-              history.push('/uniresource');
-            }}
-          />
-        </Route>
-        <Route exact path="/uniresource/pools/new/allocating/vlan">
-          <CreateAllocatingVlanPoolPage
-            onCreateSuccess={() => {
-              history.push('/uniresource');
-            }}
-          />
-        </Route>
         <Route exact path="/uniresource/strategies/new">
           <CreateStrategyPage
             onSaveButtonClick={() => {
