@@ -103,12 +103,13 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
   }, [items]);
 
   useEffect(() => {
+    if (!onCreateItem) {
+      return;
+    }
     const isInputvalueExisitingItem = items.map((i) => i.value.toLowerCase()).includes(inputValue);
     if (!isInputvalueExisitingItem) {
       setIsCreating(true);
-      if (onCreateItem) {
-        setHighlightedIndex(0);
-      }
+      setHighlightedIndex(0);
     }
   }, [items, inputItems, setIsCreating, setHighlightedIndex, inputValue, onCreateItem]);
 
