@@ -26,7 +26,8 @@ function findForkOrDecisionEndNode(elements: Elements, node: Node, depth: number
     return findForkOrDecisionEndNode(elements, ch, newDepth);
   }
 
-  throw Error('no valid decision end was found');
+  const endNode = unwrap(elements.filter(isNode).find((n) => n.id === 'end'));
+  return endNode;
 }
 
 function getDecisionTask(tasks: Task[], elements: Elements, currentNode: Node): Task[] {
