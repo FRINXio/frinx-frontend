@@ -9,9 +9,13 @@ type Props = {
   selectedLabels: Item[];
   isCreationDisabled?: boolean;
   onSelectionChange: (labels?: Item[]) => void;
-  onLabelCreate?: (label: Item) => void;
 };
-const DeviceFilter: VoidFunctionComponent<Props> = ({ labels, selectedLabels, onSelectionChange }) => {
+const DeviceFilter: VoidFunctionComponent<Props> = ({
+  labels,
+  selectedLabels,
+  onSelectionChange,
+  isCreationDisabled,
+}) => {
   return (
     <Box>
       <Flex>
@@ -19,7 +23,7 @@ const DeviceFilter: VoidFunctionComponent<Props> = ({ labels, selectedLabels, on
           items={labels}
           selectedLabels={selectedLabels}
           onSelectionChange={onSelectionChange}
-          isCreationDisabled
+          isCreationDisabled={isCreationDisabled || false}
           labelText="Filter by labels"
         />
         <Spacer />
