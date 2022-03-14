@@ -14,24 +14,24 @@ const RawInputForm: FC<Props> = ({ params, onChange }) => {
 
   return (
     <FormControl id="raw" my={6}>
-        <FormLabel>Raw</FormLabel>
-        <Editor
-          name="raw-editor"
-          mode="javascript"
-          value={raw}
-          onChange={(value) => {
-            onChange({
-              ...params,
-              raw: value,
-            });
-          }}
-          enableBasicAutocompletion
-          height="200px"
-          style={{
-            borderRadius: theme.radii.md,
-          }}
-        />
-      </FormControl>
+      <FormLabel>Raw</FormLabel>
+      <Editor
+        name="raw-editor"
+        mode="javascript"
+        value={raw}
+        onChange={(value) => {
+          onChange({
+            ...params,
+            raw: value,
+          });
+        }}
+        enableBasicAutocompletion
+        height="200px"
+        style={{
+          borderRadius: theme.radii.md,
+        }}
+      />
+    </FormControl>
   );
 };
 

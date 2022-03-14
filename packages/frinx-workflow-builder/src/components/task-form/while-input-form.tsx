@@ -12,19 +12,19 @@ const WhileInputForm: FC<Props> = ({ params, onChange }) => {
 
   return (
     <FormControl id="iterations" my={6}>
-        <FormLabel>Iterations</FormLabel>
-        <Input
-          name="iterations"
-          variant="filled"
-          value={iterations}
-          onChange={(event) => {
-            event.persist();
-            onChange({
-              iterations: Number(event.target.value),
-            });
-          }}
-        />
-      </FormControl>
+      <FormLabel>Iterations</FormLabel>
+      <Input
+        name="iterations"
+        variant="filled"
+        value={iterations}
+        onChange={(event) => {
+          event.persist();
+          onChange({
+            iterations: Number(event.target.value),
+          });
+        }}
+      />
+    </FormControl>
   );
 };
 
