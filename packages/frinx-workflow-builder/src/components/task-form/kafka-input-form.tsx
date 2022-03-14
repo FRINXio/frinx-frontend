@@ -5,8 +5,8 @@ import Editor from '../common/editor';
 
 type Props = {
   params: KafkaPublishInputParams;
-  tasks: ExtendedTask[];
-  task: ExtendedTask;
+  tasks: ExtendedTask[]; // eslint-disable-line react/no-unused-prop-types
+  task: ExtendedTask; // eslint-disable-line react/no-unused-prop-types
   onChange: (p: KafkaPublishInputParams) => void;
 };
 

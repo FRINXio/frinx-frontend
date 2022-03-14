@@ -96,35 +96,35 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
     fetchData();
   }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function handleDeleteButtonClick(siteAccessId: string) {
+  const handleDeleteButtonClick = (siteAccessId: string) => {
     setSiteAccessIdToDelete(siteAccessId);
     deleteModalDisclosure.onOpen();
-  }
+  };
 
-  function handlePageChange(page: number) {
+  const handlePageChange = (page: number) => {
     setPagination({
       ...pagination,
       page,
     });
-  }
+  };
 
-  function handleFilterChange(newFilters: SiteNetworkAccessFilters) {
+  const handleFilterChange = (newFilters: SiteNetworkAccessFilters) => {
     setFilters({
       ...newFilters,
     });
-  }
+  };
 
-  function handleFilterSubmit() {
+  const handleFilterSubmit = () => {
     setPagination({
       ...pagination,
       page: 1,
     });
     setSubmittedFilters(filters);
-  }
+  };
 
-  function handleRowClick(rowId: string, isOpen: boolean) {
+  const handleRowClick = (rowId: string, isOpen: boolean) => {
     setDetailId(isOpen ? rowId : null);
-  }
+  };
 
   if (!site || !networkAccesses) {
     return null;

@@ -63,10 +63,10 @@ const BlueprintForm: VoidFunctionComponent<Props> = ({ blueprints, onFormSubmit 
           })}
         </Select>
       </FormControl>
-      <Wrap>
+      <Wrap spacing={4}>
         {Object.keys(formValues).map((key) => {
           return (
-            <WrapItem spacing={4} key={key}>
+            <WrapItem key={key}>
               <FormControl id={key} marginY={3}>
                 <FormLabel>{key}</FormLabel>
                 <Input

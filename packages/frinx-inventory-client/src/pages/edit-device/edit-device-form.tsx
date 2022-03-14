@@ -23,7 +23,7 @@ type Props = {
   labels: LabelsQuery['labels']['edges'];
   initialSelectedLabels: LabelsQuery['labels']['edges'];
   serviceState: DeviceServiceState;
-  zones: ZonesQuery['zones']['edges'];
+  zones: ZonesQuery['zones']['edges']; // eslint-disable-line react/no-unused-prop-types
   onUpdate: (values: FormValues) => void;
   onLabelCreate: (label: string) => Promise<Label | null>;
   onCancel: () => void;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 export type VpnServiceTopology = 'any-to-any' | 'hub-spoke' | 'hub-spoke-disjointed' | 'custom';
 
 // eslint-disable-next-line no-shadow

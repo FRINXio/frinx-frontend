@@ -93,32 +93,32 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
     fetchData();
   }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function handlePageChange(page: number) {
+  const handlePageChange = (page: number) => {
     setPagination({
       ...pagination,
       page,
     });
-  }
+  };
 
-  function handleFilterChange(newFilters: SearchFilters) {
+  const handleFilterChange = (newFilters: SearchFilters) => {
     setFilters({
       ...newFilters,
     });
-  }
+  };
 
-  function handleFilterSubmit() {
+  const handleFilterSubmit = () => {
     setPagination({
       ...pagination,
       page: 1,
     });
     setSubmittedFilters(filters);
-  }
+  };
 
-  function handleRowClick(rowId: string, isOpen: boolean) {
+  const handleRowClick = (rowId: string, isOpen: boolean) => {
     setDetailId(isOpen ? rowId : null);
-  }
+  };
 
-  function handleWorkflowFinish(data: string | null) {
+  const handleWorkflowFinish = (data: string | null) => {
     if (!data) {
       setIsFetchingData(false);
       return;
@@ -135,44 +135,42 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
       pageCount: Math.ceil(row_count / pagination.pageSize),
     });
     setIsFetchingData(false);
-  }
+  };
 
   return (
-    <>
-      <Container maxWidth={1280}>
-        <Flex justify="space-between" align="center" marginBottom={6}>
-          <Heading as="h2" size="lg">
-            Search
-          </Heading>
-        </Flex>
-        <Box>
-          <>
-            <SearchFilter
-              isFetching={isFetchingData}
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              onFilterSubmit={handleFilterSubmit}
-            />
-            {isFetchingData && (
-              <Flex justifyContent="center">
-                <Spinner />
-              </Flex>
-            )}
-            {isFetchingData && workflowId && (
-              <PollWorkflowId workflowId={unwrap(workflowId)} onFinish={handleWorkflowFinish} />
-            )}
-            {searchResult && (
-              <>
-                <SearchTable size="md" detailId={detailId} rows={searchResult} onRowClick={handleRowClick} />
-                <Box m="4">
-                  <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />
-                </Box>
-              </>
-            )}
-          </>
-        </Box>
-      </Container>
-    </>
+    <Container maxWidth={1280}>
+      <Flex justify="space-between" align="center" marginBottom={6}>
+        <Heading as="h2" size="lg">
+          Search
+        </Heading>
+      </Flex>
+      <Box>
+        <>
+          <SearchFilter
+            isFetching={isFetchingData}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onFilterSubmit={handleFilterSubmit}
+          />
+          {isFetchingData && (
+            <Flex justifyContent="center">
+              <Spinner />
+            </Flex>
+          )}
+          {isFetchingData && workflowId && (
+            <PollWorkflowId workflowId={unwrap(workflowId)} onFinish={handleWorkflowFinish} />
+          )}
+          {searchResult && (
+            <>
+              <SearchTable size="md" detailId={detailId} rows={searchResult} onRowClick={handleRowClick} />
+              <Box m="4">
+                <Pagination page={pagination.page} count={pagination.pageCount} onPageChange={handlePageChange} />
+              </Box>
+            </>
+          )}
+        </>
+      </Box>
+    </Container>
   );
 };
 

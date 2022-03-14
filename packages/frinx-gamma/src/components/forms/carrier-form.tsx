@@ -7,7 +7,7 @@ import { Carrier, VpnBearer, VpnCarrier } from './bearer-types';
 type Props = {
   carrier: Carrier;
   carriers: VpnCarrier[];
-  errors: FormikErrors<VpnBearer>;
+  errors: FormikErrors<VpnBearer>; // eslint-disable-line react/no-unused-prop-types
   onChange: (c: Carrier) => void;
 };
 

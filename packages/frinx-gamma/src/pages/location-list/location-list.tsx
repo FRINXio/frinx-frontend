@@ -69,35 +69,35 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
     fetchData();
   }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function handleDeleteButtonClick(deviceId: string) {
+  const handleDeleteButtonClick = (deviceId: string) => {
     setLocationIdToDelete(deviceId);
     deleteModalDisclosure.onOpen();
-  }
+  };
 
-  function handlePageChange(page: number) {
+  const handlePageChange = (page: number) => {
     setPagination({
       ...pagination,
       page,
     });
-  }
+  };
 
-  function handleRowClick(rowId: string, isOpen: boolean) {
+  const handleRowClick = (rowId: string, isOpen: boolean) => {
     setDetailId(isOpen ? rowId : null);
-  }
+  };
 
-  function handleFilterChange(newFilters: LocationFilters) {
+  const handleFilterChange = (newFilters: LocationFilters) => {
     setFilters({
       ...newFilters,
     });
-  }
+  };
 
-  function handleFilterSubmit() {
+  const handleFilterSubmit = () => {
     setPagination({
       ...pagination,
       page: 1,
     });
     setSubmittedFilters(filters);
-  }
+  };
 
   if (!site) {
     return null;

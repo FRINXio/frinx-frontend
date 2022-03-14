@@ -75,17 +75,17 @@ const EvcAttachmentForm: VoidFunctionComponent<Props> = ({
     setFieldValue('svlanId', evcAttachment.svlanId);
   }, [evcAttachment.svlanId]);
 
-  function handleSvlanAssign() {
+  const handleSvlanAssign = () => {
     if (!onSvlanAssign) {
       return;
     }
     onSvlanAssign();
-  }
+  };
 
-  function handleReset() {
+  const handleReset = () => {
     resetForm();
     onReset();
-  }
+  };
 
   const profileItems = getQosProfilesItems(qosProfiles);
   const [selectedProfile] = profileItems.filter((p) => {

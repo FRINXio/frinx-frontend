@@ -85,8 +85,6 @@ const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
           {submitError && <ErrorMessage text={String(submitError)} />}
           <DeviceForm
             mode="edit"
-            siteId={unwrap(selectedSite.siteId)}
-            locationId={selectedDevice.locationId || undefined}
             locations={selectedSite.customerLocations}
             existingDeviceNames={[]}
             device={selectedDevice}

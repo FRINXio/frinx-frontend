@@ -116,7 +116,7 @@ const ControlPage: VoidFunctionComponent<Props> = ({
       });
   }, []);
 
-  function handleServiceCommitBtnClick() {
+  const handleServiceCommitBtnClick = () => {
     const callbacks = uniflowCallbackUtils.getCallbacks;
     callbacks
       .executeWorkflow({
@@ -135,9 +135,9 @@ const ControlPage: VoidFunctionComponent<Props> = ({
           id: data.text,
         });
       });
-  }
+  };
 
-  function handleBearerCommitBtnClick() {
+  const handleBearerCommitBtnClick = () => {
     const callbacks = uniflowCallbackUtils.getCallbacks;
     callbacks
       .executeWorkflow({
@@ -156,9 +156,9 @@ const ControlPage: VoidFunctionComponent<Props> = ({
           id: data.text,
         });
       });
-  }
+  };
 
-  async function handleDiscardConfirmBtnClick() {
+  const handleDiscardConfirmBtnClick = async () => {
     const callbacks = unistoreCallbackUtils.getCallbacks;
     // TODO: close transaction endpoint response is empty 200, so our helper function fails to parse it
     // we can handle it in our api-helpers.ts or find other solution instead of try/catch
@@ -170,11 +170,11 @@ const ControlPage: VoidFunctionComponent<Props> = ({
       setTransactionId(data);
       discardChangesDisclosure.onClose();
     }
-  }
+  };
 
-  function handleDiscardBtnClick() {
+  const handleDiscardBtnClick = () => {
     discardChangesDisclosure.onOpen();
-  }
+  };
 
   const handleWorkflowFinish = (isCompleted: boolean) => {
     setWorkflowState(null);

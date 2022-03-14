@@ -36,13 +36,13 @@ const getToastBackground = (type: NotificationType): string => {
   switch (type) {
     case 'error':
       return 'red.400';
-    case 'info':
-    default:
-      return 'blue.400';
     case 'success':
       return 'green.400';
     case 'warning':
       return 'yellow.400';
+    case 'info':
+    default:
+      return 'blue.400';
   }
 };
 

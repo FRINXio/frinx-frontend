@@ -81,8 +81,6 @@ const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
         {submitError && <ErrorMessage text={String(submitError)} />}
         {vpnSites && (
           <VpnSiteForm
-            mode="add"
-            sites={[]}
             site={defaultVpnSite}
             qosProfiles={qosProfiles}
             onSubmit={handleSubmit}
