@@ -162,6 +162,17 @@ const App: VoidFunctionComponent<Props> = ({
   };
 
   const layoutedElements = useMemo(() => getLayoutedElements(elements), [elements]);
+  const removeEdgeContextValue = useMemo(
+    () => ({
+      removeEdge: (id: string) => {
+        setElements((els) => {
+          const elementsToRemove = els.filter((e) => e.id === id);
+          return removeElements(elementsToRemove, els);
+        });
+      },
+    }),
+    [],
+  );
 
   return (
     <>
@@ -244,17 +255,7 @@ const App: VoidFunctionComponent<Props> = ({
           <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
         </Box>
         <Box minHeight="60vh" maxHeight="100vh" position="relative">
-          <EdgeRemoveContext.Provider
-            // eslint-disable-next-line react/jsx-no-constructed-context-values
-            value={{
-              removeEdge: (id: string) => {
-                setElements((els) => {
-                  const elementsToRemove = els.filter((e) => e.id === id);
-                  return removeElements(elementsToRemove, els);
-                });
-              },
-            }}
-          >
+          <EdgeRemoveContext.Provider value={removeEdgeContextValue}>
             <ReactFlowProvider>
               <ReactFlow
                 elements={layoutedElements}

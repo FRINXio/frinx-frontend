@@ -2,7 +2,7 @@ import { InteractionStatus } from '@azure/msal-browser';
 import { AuthenticationResult } from '@azure/msal-common';
 import { useMsal } from '@azure/msal-react';
 import { Box, Button, Heading, Text } from '@chakra-ui/react';
-import React, { createContext, FC, useEffect, useState } from 'react';
+import React, { createContext, FC, useEffect, useState, useMemo, useCallback } from 'react';
 import { authContext } from './auth-helpers';
 import ErrorMessageBox from './components/error-message-box/error-message-box';
 
@@ -44,7 +44,7 @@ const AuthProvider: FC = ({ children }) => {
     });
   }, []);
 
-  const handleLogin = () => {
+  const handleLogin = useCallback(() => {
     return instance
       .loginPopup({
         scopes: ['openid', 'profile', 'User.Read.All'],
@@ -53,23 +53,25 @@ const AuthProvider: FC = ({ children }) => {
         setIsAuthError(false);
         return data;
       });
-  };
+  }, [instance]);
 
   const handleClose = () => {
     setIsAccessError(false);
   };
 
+  const contextProviderValue = useMemo(
+    () => ({
+      login: handleLogin,
+      inProgress,
+      logout: () => {
+        return instance.logout();
+      },
+    }),
+    [handleLogin, inProgress, instance],
+  );
+
   return (
-    <Context.Provider
-      // eslint-disable-next-line react/jsx-no-constructed-context-values
-      value={{
-        login: handleLogin,
-        inProgress,
-        logout: () => {
-          return instance.logout();
-        },
-      }}
-    >
+    <Context.Provider value={contextProviderValue}>
       {isAuthError || isAccessError ? (
         <Box
           position="fixed"

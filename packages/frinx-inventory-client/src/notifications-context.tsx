@@ -1,4 +1,4 @@
-import React, { createContext, FC, ReactNode, useState } from 'react';
+import React, { createContext, FC, ReactNode, useCallback, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import ToastNotification from './toast-notification';
 
@@ -21,7 +21,7 @@ export const CustomToastProvider: FC = ({ children }) => {
   const [toasts, setToasts] = useState<ToastPropsId[]>([]);
   const [visibleToasts, setVisibleToasts] = useState<Set<string>>(new Set());
 
-  const addToastNotification = (tProps: ToastProps) => {
+  const addToastNotification = useCallback((tProps: ToastProps) => {
     const id = uuid();
     setVisibleToasts((v) => {
       const v2 = new Set(v);
@@ -37,12 +37,12 @@ export const CustomToastProvider: FC = ({ children }) => {
         ...t,
       ].slice(0, MAX_NOTIFICATION_COUNT),
     );
-  };
+  }, []);
+
+  const notificationContextValue = useMemo(() => ({ addToastNotification }), [addToastNotification]);
 
   return (
-    // FIXME: should it be chagned on every render?
-    // eslint-disable-next-line react/jsx-no-constructed-context-values
-    <NotificationContext.Provider value={{ addToastNotification }}>
+    <NotificationContext.Provider value={notificationContextValue}>
       {toasts.map((t, index) => (
         <ToastNotification
           index={index}

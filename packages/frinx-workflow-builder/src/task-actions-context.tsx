@@ -1,4 +1,4 @@
-import React, { createContext, FC, useContext, useEffect, useState } from 'react';
+import React, { createContext, FC, useContext, useEffect, useState, useMemo } from 'react';
 import { ExtendedSubworkflowTask, ExtendedTask } from './helpers/types';
 import unwrap from './helpers/unwrap';
 
@@ -29,19 +29,17 @@ export const TaskActionsProvider: FC = ({ children }) => {
     setRemovedTaskId(id);
   };
 
-  return (
-    <TaskActionsContext.Provider
-      // eslint-disable-next-line react/jsx-no-constructed-context-values
-      value={{
-        selectedTask: task,
-        selectTask: handleTaskSelect,
-        removedTaskId,
-        setRemovedTaskId: handleTaskRemove,
-      }}
-    >
-      {children}
-    </TaskActionsContext.Provider>
+  const taskActionsContextValue = useMemo(
+    () => ({
+      selectedTask: task,
+      selectTask: handleTaskSelect,
+      removedTaskId,
+      setRemovedTaskId: handleTaskRemove,
+    }),
+    [removedTaskId, task],
   );
+
+  return <TaskActionsContext.Provider value={taskActionsContextValue}>{children}</TaskActionsContext.Provider>;
 };
 
 export function useTaskActions(removeNode: ((id: string) => void) | void): TaskActionsContextType {

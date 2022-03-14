@@ -1891,13 +1891,17 @@
   dependencies:
     prop-types "^15.7.2"
 
-"@frinx/eslint-config-typescript-base@file:../frinx-javascript/eslint-config-typescript-base":
-  version "14.2.1-build.4"
+"@frinx/eslint-config-typescript-base@15.0.0-build.1":
+  version "15.0.0-build.1"
+  resolved "https://registry.yarnpkg.com/@frinx/eslint-config-typescript-base/-/eslint-config-typescript-base-15.0.0-build.1.tgz#f78357cbf9281f3d2ea9c8f0ba0bee26482e7f83"
+  integrity sha512-U3a1xvYxxk5CORATx+7J+2kwBefW3tLihBUKikGGXSh89PDjjAiSGrNkLz87/lk1s9Sh69iFaB3ozbIISS7N1A==
   dependencies:
     eslint-config-airbnb-base "^15.0.0"
 
-"@frinx/eslint-config-typescript@file:../frinx-javascript/eslint-config-typescript":
+"@frinx/eslint-config-typescript@19.0.4-build.1":
   version "19.0.4-build.1"
+  resolved "https://registry.yarnpkg.com/@frinx/eslint-config-typescript/-/eslint-config-typescript-19.0.4-build.1.tgz#a20b478ed16576658870eadaec9dc96c2a14ac8b"
+  integrity sha512-oWNyzshHRcw+G987gFHHxAYLBOw+822dmkqcfFgGzNv7bDwTTGBrHvPplJ9pvRCLz3WPuJdgKe0YkRhp3l8PhQ==
   dependencies:
     eslint-config-airbnb "^19.0.4"
 
