@@ -68,35 +68,35 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
     fetchData();
   }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function handleDeleteButtonClick(serviceId: string) {
+  const handleDeleteButtonClick = (serviceId: string) => {
     setServiceIdToDelete(serviceId);
     deleteModalDisclosure.onOpen();
-  }
+  };
 
-  function handlePageChange(page: number) {
+  const handlePageChange = (page: number) => {
     setPagination({
       ...pagination,
       page,
     });
-  }
+  };
 
-  function handleFilterChange(newFilters: ServiceFilters) {
+  const handleFilterChange = (newFilters: ServiceFilters) => {
     setFilters({
       ...newFilters,
     });
-  }
+  };
 
-  function handleFilterSubmit() {
+  const handleFilterSubmit = () => {
     setPagination({
       ...pagination,
       page: 1,
     });
     setSubmittedFilters(filters);
-  }
+  };
 
-  function handleRowClick(rowId: string, isOpen: boolean) {
+  const handleRowClick = (rowId: string, isOpen: boolean) => {
     setDetailId(isOpen ? rowId : null);
-  }
+  };
 
   const changedServicesWithStatus = getChangedServicesWithStatus(createdServices, updatedServices, deletedServices);
   const savedServicesWithStatus = getSavedServicesWithStatus(vpnServices, updatedServices, deletedServices);

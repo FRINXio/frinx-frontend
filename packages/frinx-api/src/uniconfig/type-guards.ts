@@ -11,6 +11,8 @@ import {
 
 export function isCliOperationalState(state: unknown): state is CliOperationalState {
   if (state !== null && typeof state === 'object') {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return 'node-id' in state! && typeof state['node-id'] === 'string';
   }
   return false;
@@ -18,6 +20,8 @@ export function isCliOperationalState(state: unknown): state is CliOperationalSt
 
 export function isNetconfOperationalState(state: unknown): state is NetconfOperationalState {
   if (state !== null && typeof state === 'object') {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return 'node-id' in state! && typeof state['node-id'] === 'string';
   }
   return false;
@@ -25,6 +29,8 @@ export function isNetconfOperationalState(state: unknown): state is NetconfOpera
 
 export function isCliConfigurationalState(state: unknown): state is CliConfigurationalState {
   if (state !== null && typeof state === 'object') {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return 'node-id' in state! && typeof state['node-id'] === 'string';
   }
   return false;
@@ -32,6 +38,8 @@ export function isCliConfigurationalState(state: unknown): state is CliConfigura
 
 export function isNetconfConfigurationalState(state: unknown): state is NetconfConfigurationalState {
   if (state !== null && typeof state === 'object') {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return 'node-id' in state! && typeof state['node-id'] === 'string';
   }
   return false;

@@ -15,7 +15,7 @@ function isConnectionNode(node: Node, elements: Elements): boolean {
 function findForkOrDecisionEndNode(elements: Elements, node: Node, depth: number): Node {
   let newDepth = depth;
   const children = getOutgoers(node, elements);
-  // eslint-disable-next-line no-restricted-syntax
+  // eslint-disable-next-line no-restricted-syntax, no-unreachable-loop
   for (const ch of children) {
     newDepth = isConnectionNode(ch, elements) ? newDepth - 1 : newDepth;
     newDepth = ch.data.task?.type === 'DECISION' || ch.data.task?.type === 'FORK_JOIN' ? newDepth + 1 : newDepth;

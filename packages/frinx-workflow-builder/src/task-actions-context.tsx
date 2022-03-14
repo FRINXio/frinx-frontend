@@ -31,6 +31,7 @@ export const TaskActionsProvider: FC = ({ children }) => {
 
   return (
     <TaskActionsContext.Provider
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         selectedTask: task,
         selectTask: handleTaskSelect,

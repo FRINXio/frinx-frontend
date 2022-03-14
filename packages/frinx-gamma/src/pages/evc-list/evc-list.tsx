@@ -83,38 +83,38 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
     fetchData();
   }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function handleDeleteButtonClick(evcType: string, circuitReference: string) {
+  const handleDeleteButtonClick = (evcType: string, circuitReference: string) => {
     setEvcToDelete({
       evcType,
       circuitReference,
     });
     deleteModalDisclosure.onOpen();
-  }
+  };
 
-  function handlePageChange(page: number) {
+  const handlePageChange = (page: number) => {
     setPagination({
       ...pagination,
       page,
     });
-  }
+  };
 
-  function handleRowClick(rowId: string, isOpen: boolean) {
+  const handleRowClick = (rowId: string, isOpen: boolean) => {
     setDetailId(isOpen ? rowId : null);
-  }
+  };
 
-  function handleFilterChange(newFilters: EvcFilters) {
+  const handleFilterChange = (newFilters: EvcFilters) => {
     setFilters({
       ...newFilters,
     });
-  }
+  };
 
-  function handleFilterSubmit() {
+  const handleFilterSubmit = () => {
     setPagination({
       ...pagination,
       page: 1,
     });
     setSubmittedFilters(filters);
-  }
+  };
 
   if (!bearer) {
     return null;

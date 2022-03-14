@@ -245,6 +245,7 @@ const App: VoidFunctionComponent<Props> = ({
         </Box>
         <Box minHeight="60vh" maxHeight="100vh" position="relative">
           <EdgeRemoveContext.Provider
+            // eslint-disable-next-line react/jsx-no-constructed-context-values
             value={{
               removeEdge: (id: string) => {
                 setElements((els) => {

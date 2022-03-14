@@ -11,8 +11,7 @@ const WhileInputForm: FC<Props> = ({ params, onChange }) => {
   const { iterations } = params;
 
   return (
-    <>
-      <FormControl id="iterations" my={6}>
+    <FormControl id="iterations" my={6}>
         <FormLabel>Iterations</FormLabel>
         <Input
           name="iterations"
@@ -26,7 +25,6 @@ const WhileInputForm: FC<Props> = ({ params, onChange }) => {
           }}
         />
       </FormControl>
-    </>
   );
 };
 

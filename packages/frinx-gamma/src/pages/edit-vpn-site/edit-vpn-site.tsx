@@ -81,14 +81,7 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
         </Heading>
         {submitError && <ErrorMessage text={String(submitError)} />}
         {vpnSites && selectedSite && (
-          <VpnSiteForm
-            mode="edit"
-            sites={vpnSites}
-            site={selectedSite}
-            qosProfiles={qosProfiles}
-            onSubmit={handleSubmit}
-            onCancel={handleCancel}
-          />
+          <VpnSiteForm site={selectedSite} qosProfiles={qosProfiles} onSubmit={handleSubmit} onCancel={handleCancel} />
         )}
       </Box>
     </Container>

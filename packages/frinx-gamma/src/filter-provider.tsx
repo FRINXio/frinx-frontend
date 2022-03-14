@@ -17,6 +17,8 @@ export const FilterProvider: FC = ({ children }) => {
 
   return (
     <FilterContext.Provider
+      // FIXME: should it rererender everytime or should useMemo be used?
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         site: siteFilters,
         bearer: bearerFilters,

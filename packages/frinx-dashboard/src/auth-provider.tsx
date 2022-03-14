@@ -61,6 +61,7 @@ const AuthProvider: FC = ({ children }) => {
 
   return (
     <Context.Provider
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         login: handleLogin,
         inProgress,

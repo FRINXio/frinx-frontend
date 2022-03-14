@@ -220,29 +220,23 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     <Container maxWidth={1280}>
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Create Site Network Access</Heading>
-        {vpnSites && (
+        {vpnSites && selectedSite && (
           <>
-            {selectedSite && (
-              <>
-                {/* <SiteInfo site={selectedSite} /> */}
-                {submitError && <ErrorMessage text={String(submitError)} />}
-                <SiteNetworkAccessForm
-                  mode="add"
-                  qosProfiles={qosProfiles}
-                  bfdProfiles={bfdProfiles}
-                  bgpProfiles={bgpProfiles}
-                  vpnServices={vpnServices}
-                  bandwidths={bandwiths}
-                  sites={vpnSites}
-                  site={selectedSite}
-                  selectedNetworkAccess={networkAccess}
-                  staticRoutes={[]}
-                  onSubmit={handleSubmit}
-                  onCancel={handleCancel}
-                  onReset={handleReset}
-                />
-              </>
-            )}
+            {/* <SiteInfo site={selectedSite} /> */}
+            {submitError && <ErrorMessage text={String(submitError)} />}
+            <SiteNetworkAccessForm
+              mode="add"
+              qosProfiles={qosProfiles}
+              bfdProfiles={bfdProfiles}
+              bgpProfiles={bgpProfiles}
+              vpnServices={vpnServices}
+              bandwidths={bandwiths}
+              site={selectedSite}
+              selectedNetworkAccess={networkAccess}
+              onSubmit={handleSubmit}
+              onCancel={handleCancel}
+              onReset={handleReset}
+            />
           </>
         )}
       </Box>

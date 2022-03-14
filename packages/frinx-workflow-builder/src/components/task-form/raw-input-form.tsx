@@ -13,8 +13,7 @@ const RawInputForm: FC<Props> = ({ params, onChange }) => {
   const { raw } = params;
 
   return (
-    <>
-      <FormControl id="raw" my={6}>
+    <FormControl id="raw" my={6}>
         <FormLabel>Raw</FormLabel>
         <Editor
           name="raw-editor"
@@ -33,7 +32,6 @@ const RawInputForm: FC<Props> = ({ params, onChange }) => {
           }}
         />
       </FormControl>
-    </>
   );
 };
 

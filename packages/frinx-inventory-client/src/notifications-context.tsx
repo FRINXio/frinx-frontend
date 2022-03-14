@@ -40,6 +40,8 @@ export const CustomToastProvider: FC = ({ children }) => {
   };
 
   return (
+    // FIXME: should it be chagned on every render?
+    // eslint-disable-next-line react/jsx-no-constructed-context-values
     <NotificationContext.Provider value={{ addToastNotification }}>
       {toasts.map((t, index) => (
         <ToastNotification

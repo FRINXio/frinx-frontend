@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import urlJoin from 'url-join';
 import { ApiConfig } from '.';
 import { GraphQLApiClient } from './types';

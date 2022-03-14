@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { extendTheme } from '@chakra-ui/react';
 
 const theme = extendTheme({

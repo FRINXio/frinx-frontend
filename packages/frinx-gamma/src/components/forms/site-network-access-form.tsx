@@ -26,7 +26,6 @@ import {
   RoutingProtocol,
   VpnSite,
   SiteNetworkAccess,
-  StaticRoutingType,
   StaticRoutingTypeWithId,
   ClientSiteNetworkAccess,
   ClientRoutingProtocol,
@@ -108,19 +107,16 @@ type StaticRoutingProtocol = {
 
 type Props = {
   mode: 'add' | 'edit';
-  sites: VpnSite[];
   site: VpnSite;
   selectedNetworkAccess: SiteNetworkAccess;
   qosProfiles: string[];
-  bfdProfiles: string[];
+  bfdProfiles: string[]; // eslint-disable-line react/no-unused-prop-types
   bgpProfiles: string[];
   vpnServices: VpnService[];
   bandwidths: number[];
-  staticRoutes: StaticRoutingType[];
   onSubmit: (s: VpnSite) => void;
   onCancel: () => void;
   onReset: () => void;
-  onNetworkAccessChange?: (s: SiteNetworkAccess) => void;
 };
 
 function getDefaultStaticRoutingProtocol(): StaticRoutingProtocol {
@@ -485,7 +481,6 @@ const SiteNetAccessForm: FC<Props> = ({
               <FormLabel>SVC Input Bandwidth</FormLabel>
               <Select
                 name="svcInputBandwith"
-                type="number"
                 value={values.service?.svcInputBandwidth || bandwidths[0]}
                 onChange={(event) => {
                   setFieldValue('service', {
