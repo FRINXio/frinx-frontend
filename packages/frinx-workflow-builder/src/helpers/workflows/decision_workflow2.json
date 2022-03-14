@@ -1,0 +1,102 @@
+{
+  "updateTime": 1646919224371,
+  "name": "decision_test2",
+  "description": "",
+  "version": 1,
+  "tasks": [
+    {
+      "name": "decisionTask",
+      "taskReferenceName": "decision_ntkF",
+      "inputParameters": {
+        "param": "true",
+        "foo": "bar"
+      },
+      "type": "DECISION",
+      "caseValueParam": "param",
+      "decisionCases": {
+        "true": [
+          {
+            "name": "HTTP_task",
+            "taskReferenceName": "http_kr0H",
+            "inputParameters": {
+              "http_request": {
+                "contentType": "application/json",
+                "method": "GET",
+                "headers": {},
+                "timeout": 3600,
+                "uri": "${workflow.input.uri}"
+              }
+            },
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          },
+          {
+            "name": "decisionTask",
+            "taskReferenceName": "decision_Un98",
+            "inputParameters": {
+              "param": "true",
+              "foo": "bar"
+            },
+            "type": "DECISION",
+            "caseValueParam": "param",
+            "decisionCases": {
+              "true": [
+                {
+                  "name": "LAMBDA_TASK",
+                  "taskReferenceName": "lambda_lilr",
+                  "inputParameters": {
+                    "lambdaValue": "${workflow.input.lambdaValue}",
+                    "scriptExpression": "if ($.lambdaValue == 1) { \n  return { testvalue: true } \n} else { \n  return { testvalue: false } \n}"
+                  },
+                  "type": "LAMBDA",
+                  "decisionCases": {},
+                  "defaultCase": [],
+                  "forkTasks": [],
+                  "startDelay": 0,
+                  "joinOn": [],
+                  "optional": false,
+                  "defaultExclusiveJoinTask": [],
+                  "asyncComplete": false,
+                  "loopOver": []
+                }
+              ]
+            },
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          }
+        ]
+      },
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": []
+    }
+  ],
+  "inputParameters": [],
+  "outputParameters": {},
+  "schemaVersion": 2,
+  "restartable": true,
+  "workflowStatusListenerEnabled": false,
+  "ownerEmail": "admin-user",
+  "timeoutPolicy": "ALERT_ONLY",
+  "timeoutSeconds": 0,
+  "variables": {}
+}
