@@ -16,27 +16,27 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "fp-ts": "^2.10.5",
-    "io-ts": "^2.2.16",
-    "url-join": "^4.0.1"
+    "fp-ts": "2.11.1",
+    "io-ts": "2.2.16",
+    "url-join": "4.0.1"
   },
   "devDependencies": {
     "@frinx/eslint-config-typescript": "19.0.4-build.1",
-    "@typescript-eslint/eslint-plugin": "^5.14.0",
-    "@typescript-eslint/parser": "^5.14.0",
-    "@urql/exchange-retry": "^0.3.0",
-    "esbuild": "^0.13.15",
-    "eslint": "^8.6.0",
-    "eslint-config-prettier": "^7.1.0",
-    "eslint-import-resolver-typescript": "^2.3.0",
-    "eslint-plugin-import": "^2.25.3",
-    "eslint-plugin-jsx-a11y": "^6.5.1",
-    "eslint-plugin-react": "^7.29.3",
-    "eslint-plugin-react-hooks": "^4.3.0",
-    "rollup": "^2.60.1",
-    "rollup-plugin-dts": "^4.0.1",
-    "rollup-plugin-esbuild": "^4.7.2",
-    "typescript": "^4.2.3",
-    "urql": "^2.0.4"
+    "@typescript-eslint/eslint-plugin": "5.14.0",
+    "@typescript-eslint/parser": "5.14.0",
+    "@urql/exchange-retry": "0.3.0",
+    "esbuild": "0.13.15",
+    "eslint": "8.11.0",
+    "eslint-config-prettier": "7.2.0",
+    "eslint-import-resolver-typescript": "2.4.0",
+    "eslint-plugin-import": "2.25.4",
+    "eslint-plugin-jsx-a11y": "6.5.1",
+    "eslint-plugin-react": "7.29.3",
+    "eslint-plugin-react-hooks": "4.3.0",
+    "rollup": "2.60.1",
+    "rollup-plugin-dts": "4.0.1",
+    "rollup-plugin-esbuild": "4.7.2",
+    "typescript": "4.3.5",
+    "urql": "2.0.4"
   }
 }
