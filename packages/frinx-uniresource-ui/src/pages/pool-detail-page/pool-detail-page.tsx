@@ -255,9 +255,9 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoo
   const canCreateNestedPool =
     resourcePool.Resources.length !== resourcePool.Resources.filter((resource) => resource.NestedPool !== null).length;
 
-  function handleRowClick(rowId: string, isOpen: boolean) {
+  const handleRowClick = (rowId: string, isOpen: boolean) => {
     setDetailId(isOpen ? rowId : null);
-  }
+  };
 
   return (
     <PageContainer>

@@ -92,9 +92,9 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClic
     }
   };
 
-  function handleRowClick(rowId: string, isOpen: boolean) {
+  const handleRowClick = (rowId: string, isOpen: boolean) => {
     setDetailId(isOpen ? rowId : null);
-  }
+  };
 
   if (error != null && data === null) {
     return <div>{error.message}</div>;
