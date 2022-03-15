@@ -18,7 +18,7 @@
     "downshift": "6.1.7",
     "feather-icons-react": "0.4.3",
     "formik": "2.2.9",
-    "fp-ts": "2.11.1",
+    "fp-ts": "2.11.9",
     "fuse.js": "6.4.6",
     "io-ts": "2.2.16",
     "url-join": "4.0.1",
