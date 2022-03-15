@@ -8,6 +8,17 @@ type ItemProps = {
   value?: string | number | null;
 };
 
+const DetailItem: FC<ItemProps> = ({ label, value, children }) => {
+  return (
+    <Flex>
+      <Text mr={4} fontWeight="bold">
+        {label}:
+      </Text>
+      {children || <Text>{value}</Text>}
+    </Flex>
+  );
+};
+
 const NestedPools: VoidFunctionComponent<{
   items: QueryAllPoolsQuery['QueryResourcePools'][0];
   onNestedPoolClick: (poolId: string) => void;
@@ -21,23 +32,7 @@ const NestedPools: VoidFunctionComponent<{
   ).filter(Boolean);
 
   return (
-    <Flex>
-      <Text mr={4} fontWeight="bold">
-        Nested Pools:
-      </Text>
-      {pools.length ? <List>{pools}</List> : <Text>has no subpools</Text>}
-    </Flex>
-  );
-};
-
-const DetailItem: FC<ItemProps> = ({ label, value, children }) => {
-  return (
-    <Flex>
-      <Text mr={4} fontWeight="bold">
-        {label}:
-      </Text>
-      {children || <Text>{value}</Text>}
-    </Flex>
+    <DetailItem label="Nested pools">{pools.length ? <List>{pools}</List> : <Text>has no subpools</Text>}</DetailItem>
   );
 };
 
