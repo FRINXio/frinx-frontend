@@ -11,7 +11,7 @@ const LocationSchema = yup.object().shape({
   postalCode: yup.string().required('Postal code is required field'),
   state: yup.string().required('State is required field'),
   city: yup.string().required('City is required field'),
-  countryCode: yup.mixed().oneOf(['UK', 'Ireland']).required(),
+  countryCode: yup.mixed().oneOf(['UK', 'IE']).required(),
 });
 
 type Props = {

@@ -276,7 +276,7 @@ export function apiLocationsToClientLocations(apiLocation: LocationsOutput): Cus
 
   return apiLocation.location.map((l) => {
     const countryCode: CountryCode =
-      l['country-code'] === 'UK' || l['country-code'] === 'Ireland' ? l['country-code'] : 'UK';
+      l['country-code'] === 'UK' || l['country-code'] === 'IE' ? l['country-code'] : 'UK';
     return {
       locationId: l['location-id'],
       street: l.address || '',

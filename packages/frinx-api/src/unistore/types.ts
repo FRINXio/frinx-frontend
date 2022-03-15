@@ -120,7 +120,7 @@ const LocationsValidator = t.type({
         state: optional(t.string),
         address: optional(t.string),
         city: optional(t.string),
-        'country-code': optional(t.string), // should be Ireland/UK
+        'country-code': optional(t.string), // should be IE/UK
       }),
     ),
   ),
@@ -747,7 +747,7 @@ export type ProviderIdentifiers = {
   qosIdentifiers: string[];
   bgpIdentifiers: string[];
 };
-export type CountryCode = 'UK' | 'Ireland';
+export type CountryCode = 'UK' | 'IE';
 export type CustomerLocation = {
   locationId?: string;
   street: string;
