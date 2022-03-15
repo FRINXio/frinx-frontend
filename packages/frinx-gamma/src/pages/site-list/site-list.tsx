@@ -74,36 +74,36 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
     fetchData();
   }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function handleDeleteButtonClick(siteId: string) {
+  const handleDeleteButtonClick = (siteId: string) => {
     setSiteIdToDelete(siteId);
     deleteModalDisclosure.onOpen();
-  }
+  };
 
-  function handlePageChange(page: number) {
+  const handlePageChange = (page: number) => {
     setPagination({
       ...pagination,
       page,
     });
-  }
+  };
 
-  function handleFilterChange(newFilters: SiteFilters) {
+  const handleFilterChange = (newFilters: SiteFilters) => {
     setFilters({
       ...newFilters,
     });
-  }
+  };
 
-  function handleFilterSubmit() {
+  const handleFilterSubmit = () => {
     setPagination({
       ...pagination,
       page: 1,
     });
     setSubmittedFilters(filters);
     onSiteFilterChange(filters);
-  }
+  };
 
-  function handleRowClick(rowId: string, isOpen: boolean) {
+  const handleRowClick = (rowId: string, isOpen: boolean) => {
     setDetailId(isOpen ? rowId : null);
-  }
+  };
 
   const changedSitesWithStatus = getChangedSitesWithStatus(createdSites, updatedSites, deletedSites);
   const savedSitesWithStatus = getSavedSitesWithStatus(sites, updatedSites, deletedSites);

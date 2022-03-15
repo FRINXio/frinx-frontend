@@ -37,7 +37,6 @@ type VpnServiceWorkflowData = {
 };
 
 type Props = {
-  mode: 'add' | 'edit';
   services: VpnService[];
   service: VpnService;
   extranetVpns: string[];

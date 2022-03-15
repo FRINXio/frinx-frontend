@@ -33,11 +33,9 @@ function getDeviceSchema(existingDeviceNames: string[]): unknown {
 
 type Props = {
   mode: 'add' | 'edit';
-  siteId: string;
   device: SiteDevice;
   existingDeviceNames: string[];
   locations: CustomerLocation[];
-  locationId?: string;
   onSubmit: (device: SiteDevice) => void;
   onCancel: () => void;
 };

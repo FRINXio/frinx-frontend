@@ -155,26 +155,24 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
   const evcAttachment = { ...getDefaultEvcAttachment(), svlanId };
 
   return (
-    <>
-      {selectedBearer && (
-        <Container>
-          <Box padding={6} margin={6} background="white">
-            <Heading size="md">Add Evc Attachment To Bearer: {bearerId} </Heading>
-            {submitError && <ErrorMessage text={String(submitError)} />}
-            <EvcAttachmentForm
-              qosProfiles={qosProfiles}
-              evcAttachment={evcAttachment}
-              onSvlanAssign={handleSvlanAssign}
-              onSubmit={handleSubmit}
-              onReset={handleReset}
-              onCancel={handleCancel}
-              isLoadingSvlan={isLoadingSvlan}
-            />
-          </Box>
-          {/* {workflowId && <PollWorkflowId workflowId={workflowId} onFinish={handleWorkflowFinish} />} */}
-        </Container>
-      )}
-    </>
+    selectedBearer && (
+      <Container>
+        <Box padding={6} margin={6} background="white">
+          <Heading size="md">Add Evc Attachment To Bearer: {bearerId} </Heading>
+          {submitError && <ErrorMessage text={String(submitError)} />}
+          <EvcAttachmentForm
+            qosProfiles={qosProfiles}
+            evcAttachment={evcAttachment}
+            onSvlanAssign={handleSvlanAssign}
+            onSubmit={handleSubmit}
+            onReset={handleReset}
+            onCancel={handleCancel}
+            isLoadingSvlan={isLoadingSvlan}
+          />
+        </Box>
+        {/* {workflowId && <PollWorkflowId workflowId={workflowId} onFinish={handleWorkflowFinish} />} */}
+      </Container>
+    )
   );
 };
 

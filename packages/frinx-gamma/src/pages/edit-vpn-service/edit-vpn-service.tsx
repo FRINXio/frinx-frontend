@@ -73,7 +73,6 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
         {submitError && <ErrorMessage text={String(submitError)} />}
         {vpnServices && selectedService && (
           <VpnServiceForm
-            mode="edit"
             services={vpnServices}
             service={selectedService}
             onSubmit={handleSubmit}

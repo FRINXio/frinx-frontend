@@ -24,13 +24,10 @@ const SiteSchema = yup.object().shape({
 });
 
 type Props = {
-  mode: 'add' | 'edit';
-  sites: VpnSite[];
   site: VpnSite;
   qosProfiles: string[];
   onSubmit: (s: VpnSite) => void;
   onCancel: () => void;
-  onSiteChange?: (s: VpnSite) => void;
 };
 
 const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {

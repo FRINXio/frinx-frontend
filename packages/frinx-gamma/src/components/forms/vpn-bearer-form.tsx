@@ -2,7 +2,6 @@ import React, { VoidFunctionComponent } from 'react';
 import { Divider, Button, Input, Select, Stack, FormControl, FormErrorMessage, FormLabel } from '@chakra-ui/react';
 import { FormikErrors, useFormik } from 'formik';
 import * as yup from 'yup';
-import { VpnSite } from './site-types';
 import { VpnBearer, VpnCarrier, VpnNode } from './bearer-types';
 import CarrierForm from './carrier-form';
 import ConnectionForm from './connection-form';
@@ -43,7 +42,6 @@ type Props = {
   bearer: VpnBearer;
   onSubmit: (s: VpnBearer) => void;
   onCancel: () => void;
-  onSiteChange?: (s: VpnSite) => void;
 };
 
 const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, bearer, onSubmit, onCancel }) => {

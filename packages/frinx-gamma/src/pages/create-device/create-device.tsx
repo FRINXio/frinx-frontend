@@ -102,7 +102,6 @@ const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
           {submitError && <ErrorMessage text={String(submitError)} />}
           <DeviceForm
             mode="add"
-            siteId={unwrap(selectedSite.siteId)}
             device={getDefaultDevice(locationId)}
             locations={selectedSite.customerLocations}
             existingDeviceNames={deviceNames}

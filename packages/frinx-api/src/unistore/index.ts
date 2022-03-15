@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { isNumber } from 'fp-ts/lib/number';
 import { isString } from 'fp-ts/lib/string';
 import { ApiHelpers } from '../api-helpers';

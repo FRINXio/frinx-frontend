@@ -108,28 +108,20 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
           <Heading size="md">Edit Site Network Access</Heading>
         </Flex>
         {submitError && <ErrorMessage text={String(submitError)} />}
-        {vpnSites && (
-          <>
-            {selectedSite && selectedNetworkAccess && (
-              <>
-                <SiteNetworkAccessForm
-                  mode="edit"
-                  qosProfiles={qosProfiles}
-                  bfdProfiles={bfdProfiles}
-                  bgpProfiles={bgpProfiles}
-                  vpnServices={vpnServices}
-                  bandwidths={bandwiths}
-                  sites={vpnSites}
-                  site={selectedSite}
-                  selectedNetworkAccess={selectedNetworkAccess}
-                  staticRoutes={[]}
-                  onSubmit={handleSubmit}
-                  onCancel={handleCancel}
-                  onReset={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
-                />
-              </>
-            )}
-          </>
+        {vpnSites && selectedSite && selectedNetworkAccess && (
+          <SiteNetworkAccessForm
+            mode="edit"
+            qosProfiles={qosProfiles}
+            bfdProfiles={bfdProfiles}
+            bgpProfiles={bgpProfiles}
+            vpnServices={vpnServices}
+            bandwidths={bandwiths}
+            site={selectedSite}
+            selectedNetworkAccess={selectedNetworkAccess}
+            onSubmit={handleSubmit}
+            onCancel={handleCancel}
+            onReset={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
+          />
         )}
       </Box>
     </Container>

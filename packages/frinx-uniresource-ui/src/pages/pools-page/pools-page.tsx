@@ -9,6 +9,7 @@ import {
   QueryAllPoolsQuery,
 } from '../../__generated__/graphql';
 import PoolsTable from './pools-table';
+import useNotifications from '../../hooks/use-notifications';
 
 const POOLS_QUERY = gql`
   query QueryAllPools {
@@ -71,9 +72,24 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClic
     context,
   });
   const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
+  const { addToastNotification } = useNotifications();
 
-  const handleDeleteBtnClick = (id: string) => {
-    deletePool({ input: { resourcePoolId: id } }, context);
+  const handleDeleteBtnClick = async (id: string) => {
+    try {
+      const result = await deletePool({ input: { resourcePoolId: id } }, context);
+      if (result.error) {
+        throw Error();
+      }
+      addToastNotification({
+        type: 'success',
+        content: 'Successfully deleted resource pool',
+      });
+    } catch {
+      addToastNotification({
+        type: 'error',
+        content: 'There was a problem with deletion of the resource pool',
+      });
+    }
   };
 
   function handleRowClick(rowId: string, isOpen: boolean) {
