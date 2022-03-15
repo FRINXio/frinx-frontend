@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo } from 'react';
+import React, { FunctionComponent, useMemo, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
 import gql from 'graphql-tag';
 import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
@@ -20,6 +20,13 @@ const POOLS_QUERY = gql`
         id
         Tag
       }
+      PoolProperties
+      ParentResource {
+        ParentPool {
+          id
+          Name
+        }
+      }
       AllocationStrategy {
         id
         Name
@@ -28,6 +35,13 @@ const POOLS_QUERY = gql`
       ResourceType {
         id
         Name
+      }
+      Resources {
+        id
+        NestedPool {
+          id
+          Name
+        }
       }
       Capacity {
         freeCapacity
@@ -50,6 +64,7 @@ type Props = {
 };
 
 const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClick }) => {
+  const [detailId, setDetailId] = useState<string | null>(null);
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [{ data, fetching, error }] = useQuery<QueryAllPoolsQuery>({
     query: POOLS_QUERY,
@@ -61,7 +76,11 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClic
     deletePool({ input: { resourcePoolId: id } }, context);
   };
 
-  if (error != null) {
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
+  }
+
+  if (error != null && data === null) {
     return <div>{error.message}</div>;
   }
 
@@ -82,15 +101,17 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClic
           </Button>
         </Box>
       </Flex>
-      <Box position="relative">
+      <Box position="relative" marginBottom={5}>
         <Box position="absolute" top={0} left={0} right={0}>
           {fetching && <Progress isIndeterminate size="xs" />}
         </Box>
         <PoolsTable
-          pools={data?.QueryResourcePools || null}
+          pools={data?.QueryResourcePools}
           isLoading={fetching}
+          detailId={detailId}
           onDeleteBtnClick={handleDeleteBtnClick}
           onPoolNameClick={onPoolNameClick}
+          onRowClick={handleRowClick}
         />
       </Box>
     </>

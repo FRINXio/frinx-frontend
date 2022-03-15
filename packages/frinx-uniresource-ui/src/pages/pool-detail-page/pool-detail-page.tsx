@@ -57,6 +57,13 @@ const POOL_DETAIL_QUERY = gql`
             id
             Tag
           }
+          PoolProperties
+          ParentResource {
+            ParentPool {
+              id
+              Name
+            }
+          }
           AllocationStrategy {
             id
             Name
@@ -65,6 +72,13 @@ const POOL_DETAIL_QUERY = gql`
           ResourceType {
             id
             Name
+          }
+          Resources {
+            id
+            NestedPool {
+              id
+              Name
+            }
           }
           Capacity {
             freeCapacity
@@ -81,6 +95,7 @@ const POOL_DETAIL_QUERY = gql`
         utilizedCapacity
       }
       ResourceType {
+        id
         Name
       }
     }
@@ -144,6 +159,7 @@ type Props = {
 };
 
 const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoolClick, onCreateNestedPoolClick }) => {
+  const [detailId, setDetailId] = React.useState<string | null>(null);
   const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
   const claimResourceModal = useDisclosure();
   const { addToastNotification } = useNotifications();
@@ -239,6 +255,10 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoo
   const canCreateNestedPool =
     resourcePool.Resources.length !== resourcePool.Resources.filter((resource) => resource.NestedPool !== null).length;
 
+  function handleRowClick(rowId: string, isOpen: boolean) {
+    setDetailId(isOpen ? rowId : null);
+  }
+
   return (
     <PageContainer>
       <ClaimResourceModal
@@ -293,6 +313,8 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoo
           isLoading={isLoadingPool}
           onDeleteBtnClick={handleDeleteBtnClick}
           onPoolNameClick={onPoolClick}
+          detailId={detailId}
+          onRowClick={handleRowClick}
         />
       </Box>
 
