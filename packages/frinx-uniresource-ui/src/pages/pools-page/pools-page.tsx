@@ -72,7 +72,7 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClic
     } catch {
       addToastNotification({
         type: 'error',
-        content: 'There was a problem with deleting of resource pool',
+        content: 'There was a problem with deletion of the resource pool',
       });
     }
   };
