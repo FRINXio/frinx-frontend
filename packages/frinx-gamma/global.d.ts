@@ -39,6 +39,7 @@ declare interface Window {
       'svlan-assignment-type': Options;
       tpid: Options;
       evc_type: Options;
+      port_id: Options;
     };
   }>;
 }

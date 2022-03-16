@@ -81,5 +81,15 @@ window.__GAMMA_FORM_OPTIONS__ = {
       'evc-point-to-point': 'point-to-point',
       'evc-multipoint': 'multipoint',
     },
+    port_id: {
+      'xe-0/1/0': 'xe-0/1/0',
+      'xe-0/1/1': 'xe-0/1/1',
+      'xe-0/1/2': 'xe-0/1/2',
+      'xe-0/1/3': 'xe-0/1/3',
+      'xe-0/1/4': 'xe-0/1/4',
+      'xe-0/1/5': 'xe-0/1/5',
+      'xe-0/1/6': 'xe-0/1/6',
+      'xe-0/1/7': 'xe-0/1/7',
+    },
   },
 };
