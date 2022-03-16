@@ -9,9 +9,9 @@
     "dist/*"
   ],
   "dependencies": {
-    "@urql/exchange-retry": "0.3.0",
+    "@urql/exchange-retry": "0.3.2",
     "ace-builds": "1.4.12",
-    "chakra-ui-autocomplete": "1.4.3",
+    "chakra-ui-autocomplete": "1.4.5",
     "feather-icons-react": "0.4.3",
     "formik": "2.2.9",
     "graphql": "15.5.1",

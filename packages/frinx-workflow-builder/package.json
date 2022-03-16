@@ -28,11 +28,11 @@
     "dagre": "0.8.5",
     "feather-icons-react": "0.4.3",
     "file-saver": "2.0.5",
-    "immer": "9.0.6",
+    "immer": "9.0.12",
     "lodash": "4.17.21",
     "minisearch": "3.0.4",
     "react-ace": "9.4.3",
-    "react-flow-renderer": "9.7.3",
+    "react-flow-renderer": "9.7.4",
     "uuid": "8.3.2"
   },
   "devDependencies": {

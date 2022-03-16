@@ -11,9 +11,9 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "1.2.36",
     "@fortawesome/free-solid-svg-icons": "5.15.4",
-    "@fortawesome/react-fontawesome": "0.1.15",
+    "@fortawesome/react-fontawesome": "0.1.17",
     "@types/url-join": "4.0.1",
-    "chakra-ui-autocomplete": "1.4.3",
+    "chakra-ui-autocomplete": "1.4.5",
     "diff-arrays-of-objects": "1.1.9",
     "downshift": "6.1.7",
     "feather-icons-react": "0.4.3",
