@@ -4378,15 +4378,15 @@ chai@^4.3.6:
     pathval "^1.1.1"
     type-detect "^4.0.5"
 
-chakra-ui-autocomplete@1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/chakra-ui-autocomplete/-/chakra-ui-autocomplete-1.4.3.tgz#99bc9e7e19fe61cb92eaec59f843d30ef4fe6f1b"
-  integrity sha512-PrR7GiBvO0rIiOTDmmPWNzd3xaUXcoto4uvYuLa7gLh0OyHXN2x1jsJZASVXwN6CflaFrGyr+oO7RHPaeBSS2Q==
+chakra-ui-autocomplete@1.4.5:
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/chakra-ui-autocomplete/-/chakra-ui-autocomplete-1.4.5.tgz#a5ae4f167c87d733d46ad847dd54f9983e5262e1"
+  integrity sha512-MefrB1lR3VwnrNY2NwNdIuQ1vP8KZ8szURiKebQB/p8PkoerrildMuaRcQBwcx0ZRIGZwZNwENkG1z4RkctPBQ==
   dependencies:
     "@chakra-ui/icons" "^1.0.3"
     downshift "^6.0.6"
     match-sorter "^4.2.1"
-    react-highlight-words "^0.16.0"
+    react-highlight-words "0.17.0"
     react-use "^15.3.4"
 
 chalk@2.4.2, chalk@^2.0.0, chalk@^2.4.1:
@@ -10200,10 +10200,10 @@ react-focus-lock@2.5.0:
     use-callback-ref "^1.2.1"
     use-sidecar "^1.0.1"
 
-react-highlight-words@^0.16.0:
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/react-highlight-words/-/react-highlight-words-0.16.0.tgz#4b4b9824e3d2b98789d3e3b3aedb5e961ae1b7cf"
-  integrity sha512-q34TwCSJOL+5pVDv6LUj3amaoyXdNDwd7zRqVAvceOrO9g1haWLAglK6WkGLMNUa3PFN8EgGedLg/k8Gpndxqg==
+react-highlight-words@0.17.0:
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/react-highlight-words/-/react-highlight-words-0.17.0.tgz#e79a559a2de301548339d7216264d6cd0f1eed6f"
+  integrity sha512-uX1Qh5IGjnLuJT0Zok234QDwRC8h4hcVMnB99Cb7aquB1NlPPDiWKm0XpSZOTdSactvnClCk8LOmVlP+75dgHA==
   dependencies:
     highlight-words-core "^1.2.0"
     memoize-one "^4.0.0"
