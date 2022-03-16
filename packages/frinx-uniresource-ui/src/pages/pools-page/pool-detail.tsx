@@ -1,7 +1,7 @@
 import { Flex, Grid, List, ListItem, Text } from '@chakra-ui/react';
 import React, { FC, VoidFunctionComponent } from 'react';
 import { omitMaybeType } from '../../helpers/omit-null-value';
-import { QueryAllPoolsQuery } from '../../__generated__/graphql';
+import { GetAllPoolsQuery } from '../../__generated__/graphql';
 
 type ItemProps = {
   label: string;
@@ -20,7 +20,7 @@ const DetailItem: FC<ItemProps> = ({ label, value, children }) => {
 };
 
 const NestedPools: VoidFunctionComponent<{
-  items: QueryAllPoolsQuery['QueryResourcePools'][0];
+  items: GetAllPoolsQuery['QueryResourcePools'][0];
   onNestedPoolClick: (poolId: string) => void;
 }> = ({ items, onNestedPoolClick }) => {
   const pools = items.Resources.map(({ NestedPool }) =>
@@ -37,21 +37,21 @@ const NestedPools: VoidFunctionComponent<{
 };
 
 type DetailProps = {
-  resourcePool: QueryAllPoolsQuery['QueryResourcePools'][0];
+  resourcePool: GetAllPoolsQuery['QueryResourcePools'][0];
   onPoolClick: (poolId: string) => void;
 };
 
-type Resources = QueryAllPoolsQuery['QueryResourcePools'][0]['Resources'];
+type Resources = GetAllPoolsQuery['QueryResourcePools'][0]['Resources'];
 
 export const PoolDetail: VoidFunctionComponent<DetailProps> = ({ resourcePool, onPoolClick }) => {
-  const availableNestedPools = (resources: Resources) => {
+  const getAvailableNestedPools = (resources: Resources) => {
     if (resources == null) {
       return 0;
     }
     return resources.filter((resource) => resource.NestedPool === null).length;
   };
 
-  const usedNestedPools = (resources: Resources) => {
+  const getUsedNestedPools = (resources: Resources) => {
     if (resources == null) {
       return 0;
     }
@@ -63,8 +63,8 @@ export const PoolDetail: VoidFunctionComponent<DetailProps> = ({ resourcePool, o
 
   return (
     <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-      <DetailItem label="Used subpools" value={usedNestedPools(resourcePool.Resources)} />
-      <DetailItem label="Available subpools" value={availableNestedPools(resourcePool.Resources)} />
+      <DetailItem label="Used subpools" value={getUsedNestedPools(resourcePool.Resources)} />
+      <DetailItem label="Available subpools" value={getAvailableNestedPools(resourcePool.Resources)} />
       <DetailItem label="Used resources" value={resourcePool.Capacity?.utilizedCapacity} />
       <DetailItem label="Available resources" value={resourcePool.Capacity?.freeCapacity} />
       <DetailItem label="Total resources" value={totalCapacity} />

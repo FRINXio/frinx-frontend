@@ -238,6 +238,7 @@ export type Mutation = {
   CreateResourceType: CreateResourceTypePayload;
   DeleteResourceType: DeleteResourceTypePayload;
   UpdateResourceTypeName: UpdateResourceTypeNamePayload;
+  UpdateResourceAltId: Resource;
 };
 
 
@@ -354,6 +355,13 @@ export type MutationUpdateResourceTypeNameArgs = {
   input: UpdateResourceTypeNameInput;
 };
 
+
+export type MutationUpdateResourceAltIdArgs = {
+  input: Scalars['Map'];
+  poolId: Scalars['ID'];
+  alternativeId: Scalars['Map'];
+};
+
 /** Interface for entities needed by the relay-framework */
 export type Node = {
   /** The ID of the entity */
@@ -406,12 +414,14 @@ export type Query = {
   QueryPoolTypes: Array<PoolType>;
   QueryResource: Resource;
   QueryResources: Array<Resource>;
-  QueryResourceByAltId: Resource;
+  QueryResourcesByAltId: Array<Resource>;
   QueryAllocationStrategy: AllocationStrategy;
   QueryAllocationStrategies: Array<AllocationStrategy>;
   QueryResourceTypes: Array<ResourceType>;
   QueryResourcePool: ResourcePool;
+  QueryEmptyResourcePools: Array<ResourcePool>;
   QueryResourcePools: Array<ResourcePool>;
+  QueryRecentlyActiveResourcePools: Array<ResourcePool>;
   QueryResourcePoolHierarchyPath: Array<ResourcePool>;
   QueryRootResourcePools: Array<ResourcePool>;
   QueryLeafResourcePools: Array<ResourcePool>;
@@ -437,9 +447,9 @@ export type QueryQueryResourcesArgs = {
 };
 
 
-export type QueryQueryResourceByAltIdArgs = {
+export type QueryQueryResourcesByAltIdArgs = {
   input: Scalars['Map'];
-  poolId: Scalars['ID'];
+  poolId?: Maybe<Scalars['ID']>;
 };
 
 
@@ -463,9 +473,20 @@ export type QueryQueryResourcePoolArgs = {
 };
 
 
+export type QueryQueryEmptyResourcePoolsArgs = {
+  resourceTypeId?: Maybe<Scalars['ID']>;
+};
+
+
 export type QueryQueryResourcePoolsArgs = {
   resourceTypeId?: Maybe<Scalars['ID']>;
   tags?: Maybe<TagOr>;
+};
+
+
+export type QueryQueryRecentlyActiveResourcePoolsArgs = {
+  fromDatetime: Scalars['String'];
+  toDatetime?: Maybe<Scalars['String']>;
 };
 
 
@@ -502,6 +523,7 @@ export type Resource = Node & {
   NestedPool: Maybe<ResourcePool>;
   ParentPool: ResourcePool;
   Properties: Scalars['Map'];
+  AlternativeId: Scalars['Map'];
   id: Scalars['ID'];
 };
 
@@ -944,12 +966,12 @@ export type SelectAllocationStrategiesQuery = (
   )> }
 );
 
-export type PoolDetailQueryVariables = Exact<{
+export type GetPoolDetailQueryVariables = Exact<{
   poolId: Scalars['ID'];
 }>;
 
 
-export type PoolDetailQuery = (
+export type GetPoolDetailQuery = (
   { __typename?: 'Query' }
   & { QueryResourcePool: (
     { __typename?: 'ResourcePool' }
@@ -1052,10 +1074,10 @@ export type DeletePoolMutation = (
   ) }
 );
 
-export type QueryAllPoolsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetAllPoolsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type QueryAllPoolsQuery = (
+export type GetAllPoolsQuery = (
   { __typename?: 'Query' }
   & { QueryResourcePools: Array<(
     { __typename?: 'ResourcePool' }

@@ -3,16 +3,12 @@ import { useMutation, useQuery } from 'urql';
 import gql from 'graphql-tag';
 import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import {
-  DeletePoolMutation,
-  DeletePoolMutationMutationVariables,
-  QueryAllPoolsQuery,
-} from '../../__generated__/graphql';
+import { DeletePoolMutation, DeletePoolMutationMutationVariables, GetAllPoolsQuery } from '../../__generated__/graphql';
 import PoolsTable from './pools-table';
 import useNotifications from '../../hooks/use-notifications';
 
 const POOLS_QUERY = gql`
-  query QueryAllPools {
+  query GetAllPools {
     QueryResourcePools {
       id
       Name
@@ -67,7 +63,7 @@ type Props = {
 const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClick }) => {
   const [detailId, setDetailId] = useState<string | null>(null);
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-  const [{ data, fetching, error }] = useQuery<QueryAllPoolsQuery>({
+  const [{ data, fetching, error }] = useQuery<GetAllPoolsQuery>({
     query: POOLS_QUERY,
     context,
   });

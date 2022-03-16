@@ -3,7 +3,7 @@ export function omitNullValue<T>(item: T | null | undefined): item is T {
 }
 
 export function omitMaybeType<T>(item: T | null | undefined): T | null {
-  if (item === null || item === undefined) {
+  if (item == null) {
     return null;
   }
   return item;

@@ -14,9 +14,9 @@ import {
   FreeResourceMutationMutation,
   FreeResourceMutationMutationVariables,
   PoolCapacityPayload,
-  PoolDetailQuery,
-  PoolDetailQueryVariables,
-  QueryAllPoolsQuery,
+  GetPoolDetailQuery,
+  GetPoolDetailQueryVariables,
+  GetAllPoolsQuery,
 } from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
@@ -28,7 +28,7 @@ export type PoolResource = {
   poolPropertyTypes: Record<string, 'int' | 'string'>;
 };
 
-const canClaimResources = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) => {
+const canClaimResources = (resourcePool: GetPoolDetailQuery['QueryResourcePool'], totalCapacity: number) => {
   return (
     resourcePool.Capacity != null &&
     resourcePool.Capacity.freeCapacity > 0 &&
@@ -36,11 +36,11 @@ const canClaimResources = (resourcePool: PoolDetailQuery['QueryResourcePool'], t
   );
 };
 
-const canFreeResource = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) =>
+const canFreeResource = (resourcePool: GetPoolDetailQuery['QueryResourcePool'], totalCapacity: number) =>
   resourcePool.Capacity != null && resourcePool.Capacity.freeCapacity !== totalCapacity;
 
 const POOL_DETAIL_QUERY = gql`
-  query PoolDetail($poolId: ID!) {
+  query GetPoolDetail($poolId: ID!) {
     QueryResourcePool(poolId: $poolId) {
       id
       Name
@@ -163,7 +163,7 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoo
   const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
   const claimResourceModal = useDisclosure();
   const { addToastNotification } = useNotifications();
-  const [{ data: poolData, fetching: isLoadingPool }] = useQuery<PoolDetailQuery, PoolDetailQueryVariables>({
+  const [{ data: poolData, fetching: isLoadingPool }] = useQuery<GetPoolDetailQuery, GetPoolDetailQueryVariables>({
     query: POOL_DETAIL_QUERY,
     variables: { poolId },
   });
@@ -249,7 +249,7 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoo
   const { QueryResourcePool: resourcePool } = poolData;
   const capacityValue = getCapacityValue(resourcePool.Capacity);
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
-  const nestedPools: QueryAllPoolsQuery['QueryResourcePools'] = resourcePool.Resources.map((resource) =>
+  const nestedPools: GetAllPoolsQuery['QueryResourcePools'] = resourcePool.Resources.map((resource) =>
     resource.NestedPool !== null ? resource.NestedPool : null,
   ).filter(omitNullValue);
   const canCreateNestedPool =
