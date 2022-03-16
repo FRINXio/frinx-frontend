@@ -22,7 +22,7 @@
     "@frinx/workflow-ui": "^2.0.0",
     "@types/node": "14.17.10",
     "@types/react": "17.0.19",
-    "@types/react-dom": "17.0.9",
+    "@types/react-dom": "17.0.13",
     "@types/url-join": "4.0.1",
     "eventemitter3": "4.0.7",
     "feather-icons-react": "0.4.3",
