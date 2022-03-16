@@ -1884,7 +1884,14 @@
   dependencies:
     "@fortawesome/fontawesome-common-types" "^0.2.36"
 
-"@fortawesome/react-fontawesome@0.1.15", "@fortawesome/react-fontawesome@^0.1.11":
+"@fortawesome/react-fontawesome@0.1.17":
+  version "0.1.17"
+  resolved "https://registry.yarnpkg.com/@fortawesome/react-fontawesome/-/react-fontawesome-0.1.17.tgz#06fc06cb1a721e38e5b50b4a1cb851e9b9c77d7a"
+  integrity sha512-dX43Z5IvMaW7fwzU8farosYjKNGfRb2HB/DgjVBHeJZ/NSnuuaujPPx0YOdcAq+n3mqn70tyCde2HM1mqbhiuw==
+  dependencies:
+    prop-types "^15.8.1"
+
+"@fortawesome/react-fontawesome@^0.1.11":
   version "0.1.15"
   resolved "https://registry.yarnpkg.com/@fortawesome/react-fontawesome/-/react-fontawesome-0.1.15.tgz#1450b838f905981d721bf07e14e3b52c0e9a91ed"
   integrity sha512-/HFHdcoLESxxMkqZAcZ6RXDJ69pVApwdwRos/B2kiMWxDSAX2dFK8Er2/+rG+RsrzWB/dsAyjefLmemgmfE18g==
@@ -10167,10 +10174,10 @@ react-fast-compare@^2.0.1:
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-2.0.4.tgz#e84b4d455b0fec113e0402c329352715196f81f9"
   integrity sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==
 
-react-flow-renderer@9.7.3:
-  version "9.7.3"
-  resolved "https://registry.yarnpkg.com/react-flow-renderer/-/react-flow-renderer-9.7.3.tgz#56779ef5f4590edfabca380dd90e62bd37375a83"
-  integrity sha512-yMSGdZ2mtpiNsi7fGgkmMC6/q/a2LI+G4Par9zcIBWDVP5ZsujSeBpehXprPEXKtUjZTi3ToNLq0EQ5Z7/EU4Q==
+react-flow-renderer@9.7.4:
+  version "9.7.4"
+  resolved "https://registry.yarnpkg.com/react-flow-renderer/-/react-flow-renderer-9.7.4.tgz#11394c05ca953b650e2017d056c075fd3df9075c"
+  integrity sha512-GxHBXzkn8Y+TEG8pul7h6Fjo4cKrT0kW9UQ34OAGZqAnSBLbBsx9W++TF8GiULBbTn3O8o7HtHxux685Op10mQ==
   dependencies:
     "@babel/runtime" "^7.16.7"
     classcat "^5.0.3"
