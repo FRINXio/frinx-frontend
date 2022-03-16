@@ -24,7 +24,7 @@ window.__GAMMA_FORM_OPTIONS__ = {
     },
     location: {
       UK: 'UK',
-      Ireland: 'Ireland',
+      IE: 'IE',
     },
     maximum_routes: {
       1000: '1000',
