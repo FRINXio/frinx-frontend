@@ -7,6 +7,7 @@ import CarrierForm from './carrier-form';
 import ConnectionForm from './connection-form';
 import Autocomplete2 from '../autocomplete-2/autocomplete-2';
 import { Connection } from '../../network-types';
+import { getSelectOptions } from './options.helper';
 
 const CarrierSchema = yup.object().shape({
   carrierName: yup.string().nullable(),
@@ -80,8 +81,12 @@ const VpnBearerForm: VoidFunctionComponent<Props> = ({ mode, nodes, carriers, be
         <FormLabel>Port ID</FormLabel>
         <Select name="portId" value={values.portId} onChange={handleChange}>
           <option value="">-- choose port id</option>
-          {[...Array(8).keys()].map((v) => {
-            return <option key={`port-id-xe-${v}`} value={`xe-0/1/${v}`}>{`xe-0/1/${v}`}</option>;
+          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.bearer.port_id).map((item) => {
+            return (
+              <option key={`port-id-${item.key}`} value={item.label}>
+                {item.key}
+              </option>
+            );
           })}
         </Select>
         {errors.portId && <FormErrorMessage>{errors.portId}</FormErrorMessage>}

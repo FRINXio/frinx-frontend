@@ -4,7 +4,7 @@ export type ProviderIdentifiers = {
   qosIdentifiers: string[];
   bgpIdentifiers: string[];
 };
-export type CountryCode = 'UK' | 'Ireland';
+export type CountryCode = 'UK' | 'IE';
 export type CustomerLocation = {
   locationId?: string;
   street: string;
