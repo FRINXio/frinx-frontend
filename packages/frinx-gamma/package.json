@@ -23,7 +23,7 @@
     "io-ts": "2.2.16",
     "url-join": "4.0.1",
     "uuid": "8.3.2",
-    "yup": "0.32.9"
+    "yup": "0.32.11"
   },
   "scripts": {
     "dev": "COMMIT_HASH=$(git rev-parse HEAD) run-s dev:webpack",
