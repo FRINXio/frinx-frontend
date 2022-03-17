@@ -93,10 +93,6 @@ const TaskList = () => {
 
   const result = searchTerm.length > 2 ? searchFn() : tasks;
 
-  if (!result || result.length === 0) {
-    return <Progress isIndeterminate mt={-10} size="xs" />;
-  }
-
   return (
     <PageContainer>
       <AddTaskModal
