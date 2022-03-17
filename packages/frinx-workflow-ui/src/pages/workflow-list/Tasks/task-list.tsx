@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import MiniSearch, { SearchResult } from 'minisearch';
 import { throttle } from 'lodash';
-import { Button, Flex, Icon, Input, InputGroup, InputLeftElement, Progress, useDisclosure } from '@chakra-ui/react';
+import { Button, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import AddTaskModal from './add-task-modal';
@@ -120,7 +120,7 @@ const TaskList = () => {
       </Flex>
 
       <TaskTable
-        tasks={result}
+        tasks={result || []}
         onTaskConfigClick={handleTaskModal}
         onTaskDelete={handleDeleteTask}
         pagination={{ currentPage, setCurrentPage, totalPages }}
