@@ -59,7 +59,7 @@ const config = {
   uniconfigApiDocsURL: envString('UNICONFIG_API_DOCS_URL'),
   uniflowApiDocsURL: envString('UNIFLOW_API_DOCS_URL'),
   MSALAuthority: envString('MSAL_AUTHORITY'),
-  isGammaEnabled: envString('GAMMA_ENABLED'),
+  isGammaEnabled: stringToBoolean(envString('GAMMA_ENABLED')),
 };
 /* eslint-enable */
 
