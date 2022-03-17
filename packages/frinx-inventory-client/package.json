@@ -32,7 +32,7 @@
     "graphql": "15.8.0",
     "json-templates": "4.1.0",
     "lodash": "4.17.21",
-    "react-ace": "9.4.3",
+    "react-ace": "9.5.0",
     "urql": "2.0.4",
     "uuid": "8.3.2",
     "yup": "0.32.11"
