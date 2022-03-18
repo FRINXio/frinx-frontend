@@ -2,11 +2,10 @@
 import { IconButton, Progress, Table, Tag, Tbody, Td, Text, Th, Thead, Tr, Icon, HStack } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { ChevronDownIcon, ChevronUpIcon, SettingsIcon } from '@chakra-ui/icons';
-import { PoolCapacityPayload, QueryAllPoolsQuery } from '../../__generated__/graphql';
-import { PoolDetail } from './pool-detail';
+import { PoolCapacityPayload, GetAllPoolsQuery } from '../../__generated__/graphql';
 
 type Props = {
-  pools?: QueryAllPoolsQuery['QueryResourcePools'];
+  pools?: GetAllPoolsQuery['QueryResourcePools'];
   isLoading: boolean;
   detailId: string | null;
   onDeleteBtnClick: (id: string) => void;
@@ -108,13 +107,6 @@ const PoolsTable: FunctionComponent<Props> = ({
                       </HStack>
                     </Td>
                   </Tr>
-                  {isDetailOpen && (
-                    <Tr key={`${pool.id}-detail`}>
-                      <Td colSpan={9}>
-                        <PoolDetail resourcePool={pool} onPoolClick={onPoolNameClick} />
-                      </Td>
-                    </Tr>
-                  )}
                 </React.Fragment>
               );
             })
