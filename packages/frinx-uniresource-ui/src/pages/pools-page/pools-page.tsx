@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, useState } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import { useMutation, useQuery } from 'urql';
 import gql from 'graphql-tag';
 import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
@@ -18,12 +18,6 @@ const POOLS_QUERY = gql`
         Tag
       }
       PoolProperties
-      ParentResource {
-        ParentPool {
-          id
-          Name
-        }
-      }
       AllocationStrategy {
         id
         Name
@@ -58,10 +52,10 @@ const DELETE_POOL_MUTATION = gql`
 type Props = {
   onNewPoolBtnClick: () => void;
   onPoolNameClick: (poolId: string) => void;
+  onRowClick: (poolId: string) => void;
 };
 
-const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClick }) => {
-  const [detailId, setDetailId] = useState<string | null>(null);
+const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClick, onRowClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [{ data, fetching, error }] = useQuery<GetAllPoolsQuery>({
     query: POOLS_QUERY,
@@ -86,10 +80,6 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClic
         content: 'There was a problem with deletion of the resource pool',
       });
     }
-  };
-
-  const handleRowClick = (rowId: string, isOpen: boolean) => {
-    setDetailId(isOpen ? rowId : null);
   };
 
   if (error != null && data === null) {
@@ -120,10 +110,9 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClic
         <PoolsTable
           pools={data?.QueryResourcePools}
           isLoading={fetching}
-          detailId={detailId}
           onDeleteBtnClick={handleDeleteBtnClick}
           onPoolNameClick={onPoolNameClick}
-          onRowClick={handleRowClick}
+          onRowClick={onRowClick}
         />
       </Box>
     </>

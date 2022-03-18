@@ -1,16 +1,15 @@
 ﻿import React, { FunctionComponent } from 'react';
 import { IconButton, Progress, Table, Tag, Tbody, Td, Text, Th, Thead, Tr, Icon, HStack } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { ChevronDownIcon, ChevronUpIcon, SettingsIcon } from '@chakra-ui/icons';
+import { SettingsIcon } from '@chakra-ui/icons';
 import { PoolCapacityPayload, GetAllPoolsQuery } from '../../__generated__/graphql';
 
 type Props = {
   pools?: GetAllPoolsQuery['QueryResourcePools'];
   isLoading: boolean;
-  detailId: string | null;
   onDeleteBtnClick: (id: string) => void;
   onPoolNameClick: (poolId: string) => void;
-  onRowClick: (id: string, isDetailOpen: boolean) => void;
+  onRowClick: (poolId: string) => void;
 };
 
 function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
@@ -30,19 +29,11 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   return (capacity.utilizedCapacity / totalCapacity) * 100;
 }
 
-const PoolsTable: FunctionComponent<Props> = ({
-  pools,
-  onDeleteBtnClick,
-  isLoading,
-  onPoolNameClick,
-  onRowClick,
-  detailId,
-}) => {
+const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoading, onPoolNameClick, onRowClick }) => {
   return (
     <Table background="white">
       <Thead>
         <Tr>
-          <Th />
           <Th>Name</Th>
           <Th>Pool Type</Th>
           <Th>Tags</Th>
@@ -58,12 +49,10 @@ const PoolsTable: FunctionComponent<Props> = ({
               const { Capacity } = pool;
               const capacityValue = getCapacityValue(Capacity);
               const totalCapacity = getTotalCapacity(Capacity);
-              const isDetailOpen = pool.id === detailId;
 
               return (
                 <React.Fragment key={pool.id}>
-                  <Tr key={pool.id} onClick={() => onRowClick(pool.id, !isDetailOpen)} cursor="pointer">
-                    <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
+                  <Tr key={pool.id} onClick={() => onRowClick(pool.id)} cursor="pointer">
                     <Td>
                       <Text as="span" fontWeight={600}>
                         {pool.Name}
