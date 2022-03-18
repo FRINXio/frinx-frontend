@@ -30,7 +30,7 @@
     "file-saver": "2.0.5",
     "immer": "9.0.12",
     "lodash": "4.17.21",
-    "minisearch": "3.0.4",
+    "minisearch": "3.3.0",
     "react-ace": "9.5.0",
     "react-flow-renderer": "9.7.4",
     "uuid": "8.3.2"
