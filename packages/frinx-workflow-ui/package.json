@@ -11,7 +11,7 @@
   "author": "frinx",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "@ajna/pagination": "1.4.13",
+    "@ajna/pagination": "1.4.14",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
     "@fortawesome/free-regular-svg-icons": "^5.15.2",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",

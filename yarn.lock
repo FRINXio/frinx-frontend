@@ -2,11 +2,12 @@
 # yarn lockfile v1
 
 
-"@ajna/pagination@1.4.13":
-  version "1.4.13"
-  resolved "https://registry.yarnpkg.com/@ajna/pagination/-/pagination-1.4.13.tgz#47d99eebd779a4a23aca714a297e3ae3cd6ed484"
-  integrity sha512-sEG1oIT8aYevMc2YJ1grihKb/PHykWAby/oVt1aUZntQwAQishyhdyPOAmRbx58KQS+nkqXRmPLp2CYi0FMJgA==
+"@ajna/pagination@1.4.14":
+  version "1.4.14"
+  resolved "https://registry.yarnpkg.com/@ajna/pagination/-/pagination-1.4.14.tgz#bb9630eb5bd3d514170b1464190c64e385317c87"
+  integrity sha512-LiVmBlNUjJDOzmBrgabgJsRmWEe5ZT4JGw2COhkd0WstwFvRCv/LYGotYeUGRlri5j1aJ66/b72AHIaseuRrmg==
   dependencies:
+    eslint-plugin-import "^2.25.4"
     lodash.union "^4.6.0"
 
 "@ampproject/remapping@^2.1.0":
@@ -6047,7 +6048,7 @@ eslint-plugin-flowtype@5.10.0:
     lodash "^4.17.15"
     string-natural-compare "^3.0.1"
 
-eslint-plugin-import@2.25.4:
+eslint-plugin-import@2.25.4, eslint-plugin-import@^2.25.4:
   version "2.25.4"
   resolved "https://registry.yarnpkg.com/eslint-plugin-import/-/eslint-plugin-import-2.25.4.tgz#322f3f916a4e9e991ac7af32032c25ce313209f1"
   integrity sha512-/KJBASVFxpu0xg1kIBn9AUa8hQVnszpwgE7Ld0lKAlx7Ie87yzEzCgSkekt+le/YVhiaosO4Y14GDAOc41nfxA==
