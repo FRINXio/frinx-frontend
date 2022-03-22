@@ -6,7 +6,7 @@
     "dist/*"
   ],
   "engines": {
-    "node": "^14.18.0"
+    "node": ">=17"
   },
   "author": "Frinx.io",
   "license": "MIT",
