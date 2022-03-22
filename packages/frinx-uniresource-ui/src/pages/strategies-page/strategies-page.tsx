@@ -85,7 +85,7 @@ const StrategiesPage: FC<Props> = ({ onAddButtonClick }) => {
         </Heading>
         <Button
           marginLeft="auto"
-          icon={<Icon size={20} as={FeatherIcon} icon="plus" />}
+          leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
           colorScheme="blue"
           onClick={() => {
             onAddButtonClick();
