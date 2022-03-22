@@ -22,6 +22,7 @@ import JSZip from 'jszip';
 import { faCogs, faFileExport, faFileImport, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { saveAs } from 'file-saver';
 import FeatherIcon from 'feather-icons-react';
+import useNotifications from '../../hooks/use-notifications';
 
 type Props = {
   onAddButtonClick: () => void,
@@ -32,7 +33,12 @@ function readFile(file: File) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.addEventListener('load', (event) => {
-      resolve(JSON.parse(event.target.result));
+      try {
+        const json = JSON.parse(event.target.result);
+        resolve(json);
+      } catch (e) {
+        reject(e);
+      }
     });
 
     reader.addEventListener('error', (err) => {
@@ -44,14 +50,25 @@ function readFile(file: File) {
 
 const WorkflowListHeader = ({ onAddButtonClick, onImportSuccess }: Props) => {
   const inputRef = useRef();
+  const { addToastNotification } = useNotifications();
 
   const importFiles = async (e) => {
     const { files } = e.currentTarget;
-    const readFiles = await Promise.all(Array.from(files).map((f) => readFile(f)));
-    const { putWorkflow } = callbackUtils.getCallbacks;
-    putWorkflow(readFiles).then(() => {
+    try {
+      const readFiles = await Promise.all(Array.from(files).map((f) => readFile(f)));
+      const { putWorkflow } = callbackUtils.getCallbacks;
+      await putWorkflow(readFiles);
       onImportSuccess();
-    });
+      addToastNotification({
+        type: 'success',
+        content: `Workflow successfully imported`,
+      });
+    } catch {
+      addToastNotification({
+        type: 'error',
+        content: `Workflow upload error. Check workflow definition and/or syntax.`,
+      });
+    }
   };
 
   const openFileUpload = () => {
