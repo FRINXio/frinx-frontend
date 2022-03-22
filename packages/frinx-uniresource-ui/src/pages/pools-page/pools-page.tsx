@@ -90,7 +90,7 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClic
         <Box marginLeft="auto">
           <Button
             mr={2}
-            icon={<Icon size={20} as={FeatherIcon} icon="plus" />}
+            leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
             colorScheme="blue"
             onClick={onNewPoolBtnClick}
           >
