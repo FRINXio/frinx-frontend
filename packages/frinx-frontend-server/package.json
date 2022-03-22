@@ -6,7 +6,7 @@
     "dist/*"
   ],
   "engines": {
-    "node": ">=17"
+    "node": ">=16"
   },
   "author": "Frinx.io",
   "license": "MIT",
