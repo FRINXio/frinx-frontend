@@ -1,4 +1,4 @@
-FROM node:14.19.1-alpine as build
+FROM node:17.7.2-alpine as build
 
 RUN mkdir /build
 COPY . /build/
@@ -8,7 +8,7 @@ RUN yarn install --immutable
 ENV NODE_ENV production
 RUN yarn run build
 
-FROM node:14.19.1-alpine
+FROM node:17.7.2-alpine
 
 ENV NODE_ENV production
 
