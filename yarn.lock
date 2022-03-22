@@ -30,14 +30,7 @@
   dependencies:
     "@azure/msal-common" "^6.1.0"
 
-"@azure/msal-common@5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@azure/msal-common/-/msal-common-5.2.0.tgz#49440e04f4d0961fc5a1a1718fbe5e4eae2db5db"
-  integrity sha512-oVc4soy5MEZOp9NvCDqBk57mtiUTJXQQ8Z8S/4UiRQP8RG8snuCFQUs9xxdIfvl2FWIvgiBz+SMByyjTaRX42Q==
-  dependencies:
-    debug "^4.1.1"
-
-"@azure/msal-common@^6.1.0":
+"@azure/msal-common@6.1.0", "@azure/msal-common@^6.1.0":
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/@azure/msal-common/-/msal-common-6.1.0.tgz#00b0c625d10f4c8e48e7b48a353f7d8d20a5ceca"
   integrity sha512-IGjAHttOgKDPQr0Qxx1NjABR635ZNuN7LHjxI0Y7SEA2thcaRGTccy+oaXTFabM/rZLt4F2VrPKUX4BnR9hW9g==
