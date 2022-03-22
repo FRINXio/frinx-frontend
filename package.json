@@ -4,7 +4,7 @@
     "packages/*"
   ],
   "engines": {
-    "node": ">=17"
+    "node": ">=16"
   },
   "resolutions": {
     "csstype": "3.0.10"
