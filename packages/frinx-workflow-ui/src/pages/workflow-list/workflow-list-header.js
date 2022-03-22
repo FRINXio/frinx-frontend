@@ -69,23 +69,6 @@ const WorkflowListHeader = ({ onAddButtonClick, onImportSuccess }: Props) => {
         content: `Workflow upload error. Check workflow definition and/or syntax.`,
       });
     }
-
-    // const { putWorkflow } = callbackUtils.getCallbacks;
-    // putWorkflow(readFiles)
-    //   .then(() => {
-    //     onImportSuccess();
-    //     addToastNotification({
-    //       type: 'success',
-    //       content: `Workflow successfully imported`,
-    //     });
-    //   })
-    //   .catch((e) => {
-    //     console.log('import failed', e);
-    //     addToastNotification({
-    //       type: 'error',
-    //       content: `Workflow import failed: ${e.message}`,
-    //     });
-    //   });
   };
 
   const openFileUpload = () => {
