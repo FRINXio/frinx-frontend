@@ -76,6 +76,7 @@ window.__GAMMA_FORM_OPTIONS__ = {
     tpid: {
       dot1ad: '802.1ad (0x88a8)',
       qinq: '802.1QinQ (0x9100)',
+      dot1q: '802.1q (0x8100)',
     },
     evc_type: {
       'evc-point-to-point': 'point-to-point',
