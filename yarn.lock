@@ -3147,7 +3147,7 @@ __metadata:
     style-loader: 2.0.0
     typescript: 4.6.2
     uuid: 8.3.2
-    vitest: 0.7.8
+    vitest: 0.7.9
     webpack: 5.51.0
     webpack-cli: 4.9.2
   peerDependencies:
@@ -16999,9 +16999,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:0.7.8":
-  version: 0.7.8
-  resolution: "vitest@npm:0.7.8"
+"vitest@npm:0.7.9":
+  version: 0.7.9
+  resolution: "vitest@npm:0.7.9"
   dependencies:
     "@types/chai": ^4.3.0
     "@types/chai-subset": ^1.3.3
@@ -17026,7 +17026,7 @@ __metadata:
       optional: true
   bin:
     vitest: vitest.mjs
-  checksum: c5d59810f147f5c75e9ca37eb7b78f5019d916877e82f0c76be9f8ae7105a44a3f92355e12252962bf264ebb2ccd4a5773116fb219e4da91abe9c54b59dc895d
+  checksum: ec6b61a68a5013e56d14587f13850617cb302ceb495fde2fc213d915ea26230cb7facd87e481bf5962c3cfb149160d3c31ae7fda3d57214f7b893820069e331f
   languageName: node
   linkType: hard
 
