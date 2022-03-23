@@ -49,8 +49,8 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoadi
             pools.map((pool) => {
               const capacityValue = getCapacityValue(pool.Capacity);
               const totalCapacity = getTotalCapacity(pool.Capacity);
-              const hasNestedPools = pool.Resources.filter((resource) => resource.NestedPool != null).length > 0;
               const amountOfNestedPools = pool.Resources.filter((resource) => resource.NestedPool != null).length;
+              const hasNestedPools = amountOfNestedPools > 0;
 
               return (
                 <React.Fragment key={pool.id}>
