@@ -27,7 +27,7 @@
     "file-loader": "^6.2.0",
     "file-saver": "^2.0.5",
     "formik": "^2.2.9",
-    "html-loader": "^1.1.0",
+    "html-loader": "^3.0.0",
     "jszip": "^3.2.2",
     "lodash": "^4.17.20",
     "match-sorter": "^6.3.0",
