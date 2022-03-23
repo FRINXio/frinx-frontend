@@ -3,6 +3,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { Progress } from '@chakra-ui/react';
 import { ExecutedWorkflowsFlat, ExecutedWorkflowsHierarchical, NestedExecutedWorkflow } from '../../../types/types';
 import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
+import { useHistory, useLocation } from 'react-router-dom';
 import {
   fetchNewData,
   fetchParentWorkflows,
@@ -17,6 +18,7 @@ import { orderBy } from 'lodash';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
 import Paginator from '../../../common/pagination';
 import { usePagination } from '../../../common/pagination-hook';
+import useQueryParams from '../../../hooks/use-query-params';
 
 type Props = {
   onWorkflowIdClick: (workflowId: string) => void;
@@ -46,7 +48,17 @@ const initialState = {
 };
 
 const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
-  const [state, setState] = useState<StateProps>(initialState);
+  const location = useLocation();
+  console.log(location);
+  const history = useHistory();
+  const query = useQueryParams();
+  const searchKeyword = query.get('search') || '';
+
+  const [state, setState] = useState<StateProps>({
+    ...initialState,
+    workflowId: searchKeyword,
+  });
+
   const [flatWorkflows, setFlatWorkflows] = useState<ExecutedWorkflowsFlat | null>(null);
   const [hierarchicalWorkflows, setHierarchicalWorkflows] = useState<ExecutedWorkflowsHierarchical | null>(null);
   const hierarchicalPagination = usePagination([], ITEMS_PER_PAGE);
@@ -76,6 +88,10 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     flatViewPagination.currentPage,
     flatViewPagination.maxItemsPerPage,
   ]);
+
+  useEffect(() => {
+    history.replace({ search: state.workflowId ? `search=${state.workflowId}` : '' });
+  }, [state.workflowId]);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, selectedWorkflows: [...new Set<string>()] }));
