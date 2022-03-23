@@ -34,14 +34,13 @@ const StrategiesList: FC<Props> = ({ onAddButtonClick }) => {
       <Flex marginBottom={4} justifyContent="space-between">
         <Heading>Strategies</Heading>
         <Button
-          icon={<Icon size={20} as={FeatherIcon} icon="plus" />}
+          leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
           colorScheme="blue"
           onClick={() => {
             onAddButtonClick();
           }}
         >
-          {' '}
-          Create new Strategy{' '}
+          Create new Strategy
         </Button>
       </Flex>
       <ul>

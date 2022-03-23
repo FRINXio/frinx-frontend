@@ -4,7 +4,10 @@
     "packages/*"
   ],
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
+  },
+  "resolutions": {
+    "csstype": "3.0.10"
   },
   "scripts": {
     "formatter:check": "prettier -l '*.md' 'packages/**/*.js' 'packages/**/*.ts' 'packages/**/*.tsx' 'packages/*/package.json' package.json",
