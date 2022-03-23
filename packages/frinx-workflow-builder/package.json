@@ -32,7 +32,7 @@
     "lodash": "4.17.21",
     "minisearch": "3.3.0",
     "react-ace": "9.5.0",
-    "react-flow-renderer": "9.7.4",
+    "react-flow-renderer": "10.0.4",
     "uuid": "8.3.2"
   },
   "devDependencies": {
