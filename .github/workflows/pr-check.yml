@@ -8,10 +8,10 @@ on:
 jobs:
   pr-check:
     runs-on: ubuntu-latest
-    container: node:14-alpine
+    container: node:16.14.2-alpine
     steps:
       - name: Checkout repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Copy yarn.lock file
         run: cp yarn.lock yarn.lock.orig
       - name: Install dependencies

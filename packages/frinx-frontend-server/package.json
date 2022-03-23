@@ -6,7 +6,7 @@
     "dist/*"
   ],
   "engines": {
-    "node": "^14.18.0"
+    "node": ">=16"
   },
   "author": "Frinx.io",
   "license": "MIT",
@@ -25,19 +25,19 @@
     "express": "4.17.3",
     "helmet": "5.0.2",
     "http-proxy-middleware": "2.0.4",
-    "pino": "7.9.1",
+    "pino": "7.9.2",
     "pino-pretty": "7.5.4"
   },
   "devDependencies": {
     "@frinx/eslint-config-typescript-base": "15.0.0-build.1",
-    "@typescript-eslint/eslint-plugin": "5.14.0",
-    "@typescript-eslint/parser": "5.14.0",
+    "@typescript-eslint/eslint-plugin": "5.16.0",
+    "@typescript-eslint/parser": "5.16.0",
     "dotenv": "16.0.0",
     "eslint": "8.11.0",
     "eslint-config-prettier": "7.2.0",
-    "eslint-import-resolver-typescript": "2.5.0",
+    "eslint-import-resolver-typescript": "2.7.0",
     "eslint-plugin-import": "2.25.4",
     "ts-node-dev": "1.1.8",
-    "typescript": "4.3.5"
+    "typescript": "4.6.2"
   }
 }

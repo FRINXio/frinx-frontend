@@ -22,21 +22,21 @@
   },
   "devDependencies": {
     "@frinx/eslint-config-typescript": "19.0.4-build.1",
-    "@typescript-eslint/eslint-plugin": "5.14.0",
-    "@typescript-eslint/parser": "5.14.0",
+    "@typescript-eslint/eslint-plugin": "5.16.0",
+    "@typescript-eslint/parser": "5.16.0",
     "@urql/exchange-retry": "0.3.2",
     "esbuild": "0.14.27",
     "eslint": "8.11.0",
     "eslint-config-prettier": "7.2.0",
-    "eslint-import-resolver-typescript": "2.5.0",
+    "eslint-import-resolver-typescript": "2.7.0",
     "eslint-plugin-import": "2.25.4",
     "eslint-plugin-jsx-a11y": "6.5.1",
     "eslint-plugin-react": "7.29.4",
     "eslint-plugin-react-hooks": "4.3.0",
     "rollup": "2.70.1",
-    "rollup-plugin-dts": "4.0.1",
+    "rollup-plugin-dts": "4.2.0",
     "rollup-plugin-esbuild": "4.7.2",
-    "typescript": "4.3.5",
+    "typescript": "4.6.2",
     "urql": "2.2.0"
   }
 }
