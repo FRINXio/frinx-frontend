@@ -60,7 +60,7 @@
     "@webpack-cli/serve": "1.6.1",
     "babel-loader": "8.2.4",
     "eslint": "8.11.0",
-    "eslint-config-prettier": "7.2.0",
+    "eslint-config-prettier": "8.5.0",
     "eslint-import-resolver-typescript": "2.5.0",
     "eslint-plugin-import": "2.25.4",
     "eslint-plugin-jsx-a11y": "6.5.1",
