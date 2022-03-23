@@ -1,4 +1,4 @@
-import { Box, Progress } from '@chakra-ui/react';
+import { Box, Heading, Progress } from '@chakra-ui/react';
 import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import PageContainer from '../components/page-container';
@@ -99,7 +99,7 @@ const NestedPoolsDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId
   });
   const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
 
-  // need to set detailId in useeffect because poolId on first load is cached and shows value
+  // need to set detailId in useeffect because poolId on first load is cached and shows
   // from previous page and then it will push you to the same page
   useEffect(() => {
     setDetailId(poolId);
@@ -130,6 +130,9 @@ const NestedPoolsDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId
 
   return (
     <PageContainer>
+      <Heading size="lg" mb={5}>
+        Nested pools
+      </Heading>
       <Box my={10}>
         <PoolsTable
           pools={[resourcePool]}

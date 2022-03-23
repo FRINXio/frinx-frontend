@@ -1,7 +1,7 @@
 ﻿import React, { FunctionComponent } from 'react';
 import { IconButton, Progress, Table, Tag, Tbody, Td, Text, Th, Thead, Tr, Icon, HStack } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { SettingsIcon } from '@chakra-ui/icons';
+import { ChevronDownIcon, SettingsIcon } from '@chakra-ui/icons';
 import { PoolCapacityPayload, GetAllPoolsQuery } from '../../__generated__/graphql';
 
 type Props = {
@@ -34,9 +34,10 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoadi
     <Table background="white">
       <Thead>
         <Tr>
+          <Th>Children</Th>
           <Th>Name</Th>
-          <Th>Pool Type</Th>
           <Th>Tags</Th>
+          <Th>Pool Type</Th>
           <Th>Resource Type</Th>
           <Th>Utilized Capacity</Th>
           <Th>Actions</Th>
@@ -46,19 +47,30 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoadi
         <Tbody>
           {pools !== undefined && pools.length > 0 ? (
             pools.map((pool) => {
-              const { Capacity } = pool;
-              const capacityValue = getCapacityValue(Capacity);
-              const totalCapacity = getTotalCapacity(Capacity);
+              const capacityValue = getCapacityValue(pool.Capacity);
+              const totalCapacity = getTotalCapacity(pool.Capacity);
+              const hasNestedPools = pool.Resources.filter((resource) => resource.NestedPool != null).length > 0;
+              const amountOfNestedPools = pool.Resources.filter((resource) => resource.NestedPool != null).length;
 
               return (
                 <React.Fragment key={pool.id}>
-                  <Tr key={pool.id} onClick={() => onRowClick(pool.id)} cursor="pointer">
+                  <Tr
+                    key={pool.id}
+                    onClick={() => hasNestedPools && onRowClick(pool.id)}
+                    cursor={hasNestedPools ? 'pointer' : 'default'}
+                  >
+                    <Td>
+                      {hasNestedPools ? (
+                        <>
+                          <Icon as={ChevronDownIcon} /> {amountOfNestedPools}
+                        </>
+                      ) : null}
+                    </Td>
                     <Td>
                       <Text as="span" fontWeight={600}>
                         {pool.Name}
                       </Text>
                     </Td>
-                    <Td>{pool.PoolType}</Td>
                     <Td>
                       {pool.Tags?.map((t) => (
                         <Tag key={t.id} marginRight={1}>
@@ -66,6 +78,7 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoadi
                         </Tag>
                       ))}
                     </Td>
+                    <Td>{pool.PoolType}</Td>
                     <Td>
                       <Text as="span" fontFamily="monospace" color="red">
                         {pool.ResourceType?.Name}
@@ -91,7 +104,7 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoadi
                           onClick={() => {
                             onDeleteBtnClick(pool.id);
                           }}
-                          isDisabled={Capacity?.freeCapacity !== totalCapacity}
+                          isDisabled={pool.Capacity?.freeCapacity !== totalCapacity}
                         />
                       </HStack>
                     </Td>
