@@ -1,13 +1,10 @@
 import { Box } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Dashboard from './components/dashboard/dashboard';
 import Header from './components/header/header';
-import GammaApp from './gamma-app';
-import InventoryApp from './inventory-app';
 import { ServiceKey } from './types';
 import UniflowApp from './uniflow-app';
-import UniresourceApp from './uniresource-app';
 
 type Props = {
   enabledServices: Map<ServiceKey, boolean>;
@@ -20,31 +17,10 @@ const App: FC<Props> = ({ enabledServices, basename, isAuthEnabled }) => {
     <BrowserRouter basename={basename}>
       <Header isAuthEnabled={isAuthEnabled} enabledServices={enabledServices} />
       <Box paddingTop={10} overflow="hidden">
-        <Switch>
-          <Route path="/" exact>
-            <Dashboard enabledServices={enabledServices} />
-          </Route>
-          {enabledServices.get('isUniflowEnabled') && (
-            <Route path="/uniflow">
-              <UniflowApp />
-            </Route>
-          )}
-          {enabledServices.get('isInventoryEnabled') && (
-            <Route path="/inventory">
-              <InventoryApp />
-            </Route>
-          )}
-          {enabledServices.get('isGammaEnabled') && (
-            <Route path="/gamma">
-              <GammaApp />
-            </Route>
-          )}
-          {enabledServices.get('isUniresourceEnabled') && (
-            <Route path="/uniresource">
-              <UniresourceApp />
-            </Route>
-          )}
-        </Switch>
+        <Routes>
+          {enabledServices.get('isUniflowEnabled') && <Route path="/uniflow/*" element={<UniflowApp />} />}
+          <Route path="/" element={<Dashboard enabledServices={enabledServices} />} />
+        </Routes>
       </Box>
     </BrowserRouter>
   );

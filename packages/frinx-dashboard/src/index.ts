@@ -8,15 +8,15 @@ import { ServiceKey } from './types';
 
 const ALL_SERVICES: ServiceKey[] = [
   'isUniflowEnabled' as const,
-  'isInventoryEnabled' as const,
-  'isUniresourceEnabled' as const,
-  'isGammaEnabled' as const,
+  // 'isInventoryEnabled' as const,
+  // 'isUniresourceEnabled' as const,
+  // 'isGammaEnabled' as const,
 ];
 const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
   ['isUniflowEnabled', () => import('@frinx/workflow-ui')],
-  ['isInventoryEnabled', () => import('@frinx/inventory-client')],
-  ['isUniresourceEnabled', () => import('@frinx/uniresource-ui')],
-  ['isGammaEnabled', () => import('@frinx/gamma')],
+  // ['isInventoryEnabled', () => import('@frinx/inventory-client')],
+  // ['isUniresourceEnabled', () => import('@frinx/uniresource-ui')],
+  // ['isGammaEnabled', () => import('@frinx/gamma')],
 ]);
 
 class DashboardApp {
