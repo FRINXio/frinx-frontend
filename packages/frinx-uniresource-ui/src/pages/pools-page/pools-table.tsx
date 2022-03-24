@@ -1,14 +1,15 @@
 ﻿import React, { FunctionComponent } from 'react';
 import { IconButton, Progress, Table, Tag, Tbody, Td, Text, Th, Thead, Tr, Icon, HStack } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { SettingsIcon } from '@chakra-ui/icons';
-import { PoolCapacityPayload, QueryAllPoolsQuery } from '../../__generated__/graphql';
+import { ChevronDownIcon, SettingsIcon } from '@chakra-ui/icons';
+import { PoolCapacityPayload, GetAllPoolsQuery } from '../../__generated__/graphql';
 
 type Props = {
-  pools: QueryAllPoolsQuery['QueryResourcePools'] | null;
+  pools?: GetAllPoolsQuery['QueryResourcePools'];
   isLoading: boolean;
   onDeleteBtnClick: (id: string) => void;
   onPoolNameClick: (poolId: string) => void;
+  onRowClick: (poolId: string) => void;
 };
 
 function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
@@ -28,88 +29,98 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   return (capacity.utilizedCapacity / totalCapacity) * 100;
 }
 
-const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoading, onPoolNameClick }) => {
+const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoading, onPoolNameClick, onRowClick }) => {
   return (
     <Table background="white">
       <Thead>
         <Tr>
+          <Th>Children</Th>
           <Th>Name</Th>
-          <Th>Pool Type</Th>
           <Th>Tags</Th>
+          <Th>Pool Type</Th>
           <Th>Resource Type</Th>
           <Th>Utilized Capacity</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
-      <Tbody>
-        {!isLoading && (!pools || pools.length === 0) && (
-          <Tr textAlign="center">
-            <Td>There are no resource pools</Td>
-          </Tr>
-        )}
-        {pools &&
-          pools.map((pool) => {
-            const { Capacity } = pool;
-            const capacityValue = getCapacityValue(Capacity);
-            const totalCapacity = getTotalCapacity(Capacity);
+      {isLoading ? null : (
+        <Tbody>
+          {pools !== undefined && pools.length > 0 ? (
+            pools.map((pool) => {
+              const capacityValue = getCapacityValue(pool.Capacity);
+              const totalCapacity = getTotalCapacity(pool.Capacity);
+              const amountOfNestedPools = pool.Resources.filter((resource) => resource.NestedPool != null).length;
+              const hasNestedPools = amountOfNestedPools > 0;
 
-            return (
-              <Tr key={pool.id}>
-                <Td>
-                  <Text as="span" fontWeight={600}>
-                    {pool.Name}
-                  </Text>
-                </Td>
-                <Td>{pool.PoolType}</Td>
-                <Td>
-                  {pool.Tags?.map((t) => (
-                    <Tag key={t.id} marginRight={1}>
-                      {t.Tag}
-                    </Tag>
-                  ))}
-                </Td>
-                <Td>
-                  <Text as="span" fontFamily="monospace" color="red">
-                    {pool.ResourceType?.Name}
-                  </Text>
-                </Td>
-                <Td isNumeric>
-                  <Progress size="xs" value={capacityValue} />
-                  <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
-                    {Capacity?.freeCapacity ?? 0} / {totalCapacity}
-                  </Text>
-                </Td>
-                <Td>
-                  <HStack spacing={2}>
-                    <IconButton
-                      aria-label="config"
-                      size="sm"
-                      variant="unstyled"
-                      icon={<Icon size={12} as={SettingsIcon} />}
-                      onClick={() => onPoolNameClick(pool.id)}
-                    />
-                    {/* <IconButton
-                        aria-label="edit"
-                        size="sm"
-                        variant="unstyled"
-                        icon={<Icon size={12} as={EditIcon} />}
-                      /> */}
-                    <IconButton
-                      variant="outline"
-                      colorScheme="red"
-                      aria-label="delete"
-                      icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
-                      onClick={() => {
-                        onDeleteBtnClick(pool.id);
-                      }}
-                      isDisabled={Capacity?.freeCapacity !== totalCapacity}
-                    />
-                  </HStack>
-                </Td>
-              </Tr>
-            );
-          })}
-      </Tbody>
+              return (
+                <React.Fragment key={pool.id}>
+                  <Tr
+                    key={pool.id}
+                    onClick={() => hasNestedPools && onRowClick(pool.id)}
+                    cursor={hasNestedPools ? 'pointer' : 'default'}
+                  >
+                    <Td>
+                      {hasNestedPools ? (
+                        <>
+                          {amountOfNestedPools} <Icon as={ChevronDownIcon} />
+                        </>
+                      ) : (
+                        0
+                      )}
+                    </Td>
+                    <Td>
+                      <Text as="span" fontWeight={600}>
+                        {pool.Name}
+                      </Text>
+                    </Td>
+                    <Td>
+                      {pool.Tags?.map((t) => (
+                        <Tag key={t.id} marginRight={1}>
+                          {t.Tag}
+                        </Tag>
+                      ))}
+                    </Td>
+                    <Td>{pool.PoolType}</Td>
+                    <Td>
+                      <Text as="span" fontFamily="monospace" color="red">
+                        {pool.ResourceType?.Name}
+                      </Text>
+                    </Td>
+                    <Td isNumeric>
+                      <Progress size="xs" value={capacityValue} />
+                    </Td>
+                    <Td>
+                      <HStack spacing={2}>
+                        <IconButton
+                          aria-label="config"
+                          size="sm"
+                          variant="unstyled"
+                          icon={<Icon size={12} as={SettingsIcon} />}
+                          onClick={() => onPoolNameClick(pool.id)}
+                        />
+                        <IconButton
+                          variant="outline"
+                          colorScheme="red"
+                          aria-label="delete"
+                          icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
+                          onClick={() => {
+                            onDeleteBtnClick(pool.id);
+                          }}
+                          isDisabled={pool.Capacity?.freeCapacity !== totalCapacity}
+                        />
+                      </HStack>
+                    </Td>
+                  </Tr>
+                </React.Fragment>
+              );
+            })
+          ) : (
+            <Tr textAlign="center">
+              <Td>There are no resource pools</Td>
+            </Tr>
+          )}
+        </Tbody>
+      )}
     </Table>
   );
 };

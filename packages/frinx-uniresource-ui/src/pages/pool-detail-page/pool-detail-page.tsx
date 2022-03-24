@@ -14,9 +14,9 @@ import {
   FreeResourceMutationMutation,
   FreeResourceMutationMutationVariables,
   PoolCapacityPayload,
-  PoolDetailQuery,
-  PoolDetailQueryVariables,
-  QueryAllPoolsQuery,
+  GetPoolDetailQuery,
+  GetPoolDetailQueryVariables,
+  GetAllPoolsQuery,
 } from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
@@ -28,7 +28,7 @@ export type PoolResource = {
   poolPropertyTypes: Record<string, 'int' | 'string'>;
 };
 
-const canClaimResources = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) => {
+const canClaimResources = (resourcePool: GetPoolDetailQuery['QueryResourcePool'], totalCapacity: number) => {
   return (
     resourcePool.Capacity != null &&
     resourcePool.Capacity.freeCapacity > 0 &&
@@ -36,11 +36,11 @@ const canClaimResources = (resourcePool: PoolDetailQuery['QueryResourcePool'], t
   );
 };
 
-const canFreeResource = (resourcePool: PoolDetailQuery['QueryResourcePool'], totalCapacity: number) =>
+const canFreeResource = (resourcePool: GetPoolDetailQuery['QueryResourcePool'], totalCapacity: number) =>
   resourcePool.Capacity != null && resourcePool.Capacity.freeCapacity !== totalCapacity;
 
 const POOL_DETAIL_QUERY = gql`
-  query PoolDetail($poolId: ID!) {
+  query GetPoolDetail($poolId: ID!) {
     QueryResourcePool(poolId: $poolId) {
       id
       Name
@@ -57,6 +57,13 @@ const POOL_DETAIL_QUERY = gql`
             id
             Tag
           }
+          PoolProperties
+          ParentResource {
+            ParentPool {
+              id
+              Name
+            }
+          }
           AllocationStrategy {
             id
             Name
@@ -65,6 +72,13 @@ const POOL_DETAIL_QUERY = gql`
           ResourceType {
             id
             Name
+          }
+          Resources {
+            id
+            NestedPool {
+              id
+              Name
+            }
           }
           Capacity {
             freeCapacity
@@ -81,6 +95,7 @@ const POOL_DETAIL_QUERY = gql`
         utilizedCapacity
       }
       ResourceType {
+        id
         Name
       }
     }
@@ -141,182 +156,187 @@ type Props = {
   poolId: string;
   onPoolClick: (poolId: string) => void;
   onCreateNestedPoolClick: () => void;
+  onRowClick: (poolId: string) => void;
 };
 
-const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoolClick, onCreateNestedPoolClick }) => {
-  const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
-  const claimResourceModal = useDisclosure();
-  const { addToastNotification } = useNotifications();
-  const [{ data: poolData, fetching: isLoadingPool }] = useQuery<PoolDetailQuery, PoolDetailQueryVariables>({
-    query: POOL_DETAIL_QUERY,
-    variables: { poolId },
-  });
-  const [{ data: allocatedResources, fetching: isLoadingResources }] = useQuery<
-    AllocatedResourcesQuery,
-    AllocatedResourcesQueryVariables
-  >({
-    query: POOL_RESOURCES_QUERY,
-    variables: { poolId },
-    context,
-  });
+const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(
+  ({ poolId, onPoolClick, onCreateNestedPoolClick, onRowClick }) => {
+    const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
+    const claimResourceModal = useDisclosure();
+    const { addToastNotification } = useNotifications();
+    const [{ data: poolData, fetching: isLoadingPool }] = useQuery<GetPoolDetailQuery, GetPoolDetailQueryVariables>({
+      query: POOL_DETAIL_QUERY,
+      variables: { poolId },
+    });
+    const [{ data: allocatedResources, fetching: isLoadingResources }] = useQuery<
+      AllocatedResourcesQuery,
+      AllocatedResourcesQueryVariables
+    >({
+      query: POOL_RESOURCES_QUERY,
+      variables: { poolId },
+      context,
+    });
 
-  const [, claimResource] = useMutation<ClaimResourceMutationMutation, ClaimResourceMutationMutationVariables>(
-    CLAIM_RESOURCES_MUTATION,
-  );
-  const [, freeResource] = useMutation<FreeResourceMutationMutation, FreeResourceMutationMutationVariables>(
-    FREE_RESOURCES_MUTATION,
-  );
-  const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
+    const [, claimResource] = useMutation<ClaimResourceMutationMutation, ClaimResourceMutationMutationVariables>(
+      CLAIM_RESOURCES_MUTATION,
+    );
+    const [, freeResource] = useMutation<FreeResourceMutationMutation, FreeResourceMutationMutationVariables>(
+      FREE_RESOURCES_MUTATION,
+    );
+    const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
 
-  const claimPoolResource = (description = '', userInput: Record<string, string | number> = {}) => {
-    claimResource({
-      poolId,
-      userInput,
-      ...(description != null && { description }),
-    })
-      .then((response) => {
-        if (response.error) {
-          throw new Error(response.error.message);
-        }
-
-        addToastNotification({
-          type: 'success',
-          content: 'Successfully claimed resource from pool',
-        });
-      })
-      .catch((error) => {
-        addToastNotification({
-          type: 'error',
-          content: error.message || 'There was a problem with claiming resource from pool',
-        });
-      });
-  };
-
-  const freePoolResource = (userInput: Record<string, string | number>) => {
-    freeResource(
-      {
+    const claimPoolResource = (description = '', userInput: Record<string, string | number> = {}) => {
+      claimResource({
         poolId,
-        input: userInput,
-      },
-      { additionalTypenames: ['Resource'] },
-    )
-      .then((response) => {
-        if (response.error) {
-          throw new Error(response.error.message);
-        }
-
-        addToastNotification({
-          type: 'success',
-          content: 'Successfully freed resource from pool',
-        });
+        userInput,
+        ...(description != null && { description }),
       })
-      .catch((error) => {
-        addToastNotification({
-          type: 'error',
-          content: error.message || 'There was a problem with freeing resource from pool',
+        .then((response) => {
+          if (response.error) {
+            throw new Error(response.error.message);
+          }
+
+          addToastNotification({
+            type: 'success',
+            content: 'Successfully claimed resource from pool',
+          });
+        })
+        .catch((error) => {
+          addToastNotification({
+            type: 'error',
+            content: error.message || 'There was a problem with claiming resource from pool',
+          });
         });
-      });
-  };
+    };
 
-  const handleDeleteBtnClick = (id: string) => {
-    deletePool({ input: { resourcePoolId: id } }, context);
-  };
+    const freePoolResource = (userInput: Record<string, string | number>) => {
+      freeResource(
+        {
+          poolId,
+          input: userInput,
+        },
+        { additionalTypenames: ['Resource'] },
+      )
+        .then((response) => {
+          if (response.error) {
+            throw new Error(response.error.message);
+          }
 
-  if (isLoadingPool || isLoadingResources) {
-    return <Progress isIndeterminate mt={-10} size="xs" />;
-  }
+          addToastNotification({
+            type: 'success',
+            content: 'Successfully freed resource from pool',
+          });
+        })
+        .catch((error) => {
+          addToastNotification({
+            type: 'error',
+            content: error.message || 'There was a problem with freeing resource from pool',
+          });
+        });
+    };
 
-  if (poolData == null || poolData.QueryResourcePool == null || allocatedResources == null) {
-    return <Box textAlign="center">Resource pool does not exists</Box>;
-  }
+    const handleDeleteBtnClick = (id: string) => {
+      deletePool({ input: { resourcePoolId: id } }, context);
+    };
 
-  const { QueryResourcePool: resourcePool } = poolData;
-  const capacityValue = getCapacityValue(resourcePool.Capacity);
-  const totalCapacity = getTotalCapacity(resourcePool.Capacity);
-  const nestedPools: QueryAllPoolsQuery['QueryResourcePools'] = resourcePool.Resources.map((resource) =>
-    resource.NestedPool !== null ? resource.NestedPool : null,
-  ).filter(omitNullValue);
-  const canCreateNestedPool =
-    resourcePool.Resources.length !== resourcePool.Resources.filter((resource) => resource.NestedPool !== null).length;
+    if (isLoadingPool || isLoadingResources) {
+      return <Progress isIndeterminate mt={-10} size="xs" />;
+    }
 
-  return (
-    <PageContainer>
-      <ClaimResourceModal
-        isOpen={claimResourceModal.isOpen}
-        onClose={claimResourceModal.onClose}
-        onClaim={claimPoolResource}
-        poolName={resourcePool.Name}
-        variant={resourcePool.ResourceType.Name}
-      />
-      <Flex alignItems="center">
-        <Heading size="3xl" as="h2" mb={6}>
-          {resourcePool.Name}
-        </Heading>
-        <Spacer />
-        <Box>
-          <Button
-            onClick={() => claimResourceModal.onOpen()}
-            colorScheme="blue"
-            variant="outline"
-            isDisabled={!canClaimResources(resourcePool, totalCapacity)}
-          >
-            Claim resources
-          </Button>
-        </Box>
-      </Flex>
+    if (poolData == null || poolData.QueryResourcePool == null || allocatedResources == null) {
+      return <Box textAlign="center">Resource pool does not exists</Box>;
+    }
 
-      <Box background="white" padding={5}>
-        <Text fontSize="lg">Utilized capacity</Text>
-        <Progress size="xs" value={capacityValue} />
-        <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
-          {resourcePool.Capacity?.freeCapacity ?? 0} / {totalCapacity}
-        </Text>
-      </Box>
+    const { QueryResourcePool: resourcePool } = poolData;
+    const capacityValue = getCapacityValue(resourcePool.Capacity);
+    const totalCapacity = getTotalCapacity(resourcePool.Capacity);
+    const nestedPools: GetAllPoolsQuery['QueryResourcePools'] = resourcePool.Resources.map((resource) =>
+      resource.NestedPool !== null ? resource.NestedPool : null,
+    ).filter(omitNullValue);
+    const canCreateNestedPool =
+      resourcePool.Resources.length !==
+      resourcePool.Resources.filter((resource) => resource.NestedPool !== null).length;
 
-      <Box my={10}>
-        <Flex>
-          <Heading size="lg" mb={5}>
-            Nested Pools
+    return (
+      <PageContainer>
+        <ClaimResourceModal
+          isOpen={claimResourceModal.isOpen}
+          onClose={claimResourceModal.onClose}
+          onClaim={claimPoolResource}
+          poolName={resourcePool.Name}
+          variant={resourcePool.ResourceType.Name}
+        />
+        <Flex alignItems="center">
+          <Heading size="3xl" as="h2" mb={6}>
+            {resourcePool.Name}
           </Heading>
           <Spacer />
-          <Button
-            onClick={onCreateNestedPoolClick}
-            colorScheme="blue"
-            isDisabled={!canCreateNestedPool}
-            title={canCreateNestedPool ? '' : 'Cannot create nested pool, because there are no free resources'}
-          >
-            Create nested pool
-          </Button>
+          <Box>
+            <Button
+              onClick={() => claimResourceModal.onOpen()}
+              colorScheme="blue"
+              variant="outline"
+              isDisabled={!canClaimResources(resourcePool, totalCapacity)}
+            >
+              Claim resources
+            </Button>
+          </Box>
         </Flex>
-        <PoolsTable
-          pools={nestedPools}
-          isLoading={isLoadingPool}
-          onDeleteBtnClick={handleDeleteBtnClick}
-          onPoolNameClick={onPoolClick}
-        />
-      </Box>
 
-      <Box my={10}>
-        <Heading size="lg" mb={5}>
-          Allocated Resources
-        </Heading>
-        {resourcePool.PoolType === 'allocating' && (
-          <PoolDetailAllocatingTable
-            allocatedResources={allocatedResources.QueryResources}
-            onFreeResource={freePoolResource}
-            canFreeResource={canFreeResource(resourcePool, totalCapacity)}
+        <Box background="white" padding={5}>
+          <Text fontSize="lg">Utilized capacity</Text>
+          <Progress size="xs" value={capacityValue} />
+          <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
+            {resourcePool.Capacity?.freeCapacity ?? 0} / {totalCapacity}
+          </Text>
+        </Box>
+
+        <Box my={10}>
+          <Flex>
+            <Heading size="lg" mb={5}>
+              Nested Pools
+            </Heading>
+            <Spacer />
+            <Button
+              onClick={onCreateNestedPoolClick}
+              colorScheme="blue"
+              isDisabled={!canCreateNestedPool}
+              title={canCreateNestedPool ? '' : 'Cannot create nested pool, because there are no free resources'}
+            >
+              Create nested pool
+            </Button>
+          </Flex>
+          <PoolsTable
+            pools={nestedPools}
+            isLoading={isLoadingPool}
+            onDeleteBtnClick={handleDeleteBtnClick}
+            onPoolNameClick={onPoolClick}
+            onRowClick={onRowClick}
           />
-        )}
-        {(resourcePool.PoolType === 'set' || resourcePool.PoolType === 'singleton') && (
-          <PoolDetailSetSingletonTable
-            resources={resourcePool.Resources}
-            allocatedResources={allocatedResources.QueryResources}
-            onFreeResource={freePoolResource}
-          />
-        )}
-      </Box>
-    </PageContainer>
-  );
-});
+        </Box>
+
+        <Box my={10}>
+          <Heading size="lg" mb={5}>
+            Allocated Resources
+          </Heading>
+          {resourcePool.PoolType === 'allocating' && (
+            <PoolDetailAllocatingTable
+              allocatedResources={allocatedResources.QueryResources}
+              onFreeResource={freePoolResource}
+              canFreeResource={canFreeResource(resourcePool, totalCapacity)}
+            />
+          )}
+          {(resourcePool.PoolType === 'set' || resourcePool.PoolType === 'singleton') && (
+            <PoolDetailSetSingletonTable
+              resources={resourcePool.Resources}
+              allocatedResources={allocatedResources.QueryResources}
+              onFreeResource={freePoolResource}
+            />
+          )}
+        </Box>
+      </PageContainer>
+    );
+  },
+);
 
 export default PoolDetailPage;

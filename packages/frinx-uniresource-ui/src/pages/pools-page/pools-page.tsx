@@ -3,16 +3,12 @@ import { useMutation, useQuery } from 'urql';
 import gql from 'graphql-tag';
 import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import {
-  DeletePoolMutation,
-  DeletePoolMutationMutationVariables,
-  QueryAllPoolsQuery,
-} from '../../__generated__/graphql';
+import { DeletePoolMutation, DeletePoolMutationMutationVariables, GetAllPoolsQuery } from '../../__generated__/graphql';
 import PoolsTable from './pools-table';
 import useNotifications from '../../hooks/use-notifications';
 
 const POOLS_QUERY = gql`
-  query QueryAllPools {
+  query GetAllPools {
     QueryResourcePools {
       id
       Name
@@ -21,6 +17,7 @@ const POOLS_QUERY = gql`
         id
         Tag
       }
+      PoolProperties
       AllocationStrategy {
         id
         Name
@@ -29,6 +26,13 @@ const POOLS_QUERY = gql`
       ResourceType {
         id
         Name
+      }
+      Resources {
+        id
+        NestedPool {
+          id
+          Name
+        }
       }
       Capacity {
         freeCapacity
@@ -48,11 +52,12 @@ const DELETE_POOL_MUTATION = gql`
 type Props = {
   onNewPoolBtnClick: () => void;
   onPoolNameClick: (poolId: string) => void;
+  onRowClick: (poolId: string) => void;
 };
 
-const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClick }) => {
+const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClick, onRowClick }) => {
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-  const [{ data, fetching, error }] = useQuery<QueryAllPoolsQuery>({
+  const [{ data, fetching, error }] = useQuery<GetAllPoolsQuery>({
     query: POOLS_QUERY,
     context,
   });
@@ -77,7 +82,7 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClic
     }
   };
 
-  if (error != null) {
+  if (error != null && data === null) {
     return <div>{error.message}</div>;
   }
 
@@ -98,15 +103,16 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClic
           </Button>
         </Box>
       </Flex>
-      <Box position="relative">
+      <Box position="relative" marginBottom={5}>
         <Box position="absolute" top={0} left={0} right={0}>
           {fetching && <Progress isIndeterminate size="xs" />}
         </Box>
         <PoolsTable
-          pools={data?.QueryResourcePools || null}
+          pools={data?.QueryResourcePools}
           isLoading={fetching}
           onDeleteBtnClick={handleDeleteBtnClick}
           onPoolNameClick={onPoolNameClick}
+          onRowClick={onRowClick}
         />
       </Box>
     </>
