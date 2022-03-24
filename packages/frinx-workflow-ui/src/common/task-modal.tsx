@@ -83,20 +83,20 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
       )}
       <Modal size="5xl" isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent css="display: flex; flex-direction: column; height: -webkit-fill-available" my="0.75em">
           <ModalHeader>
             {task.taskType} ({task.status})
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            <Tabs defaultIndex={0}>
+          <ModalBody display="flex">
+            <Tabs defaultIndex={0} css="display: flex; flex-direction: column; flex: 1">
               <TabList>
                 <Tab>Summary</Tab>
                 <Tab>JSON</Tab>
                 <Tab>Logs</Tab>
               </TabList>
-              <TabPanels>
-                <TabPanel>
+              <TabPanels css="display: flex; flex-direction: column; flex: 1">
+                <TabPanel css="display: flex; flex-direction: column; flex: 1">
                   <SimpleGrid columns={2} spacing={4} mb={4}>
                     <Box>
                       <b>Task Ref. Name: </b>
@@ -151,7 +151,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
                       minH={200}
                     />
                   </Box>
-                  <Box>
+                  <Box css="display: flex; flex-direction: column; flex: 1">
                     <Stack direction="row" spacing={2} align="center" mb={2} mt={2}>
                       <Text as="b" fontSize="sm">
                         Output
@@ -184,6 +184,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
                       id="t_output"
                       variant="filled"
                       minH={200}
+                      height="-webkit-fill-available"
                     />
                   </Box>
                 </TabPanel>
