@@ -208,7 +208,7 @@ export default function createUniflowApiClient(apiHelpers: ApiHelpers): UniflowA
     start?: number,
     size?: string,
   ): Promise<unknown> {
-    const executions = sendGetRequest(`/hierarchical/?workflowId=${query}&status=${label}&start=${start}&size=${size}`);
+    const executions = sendGetRequest(`/hierarchical/?q=${query}&status=${label}&start=${start}&size=${size}`);
 
     return executions;
   }

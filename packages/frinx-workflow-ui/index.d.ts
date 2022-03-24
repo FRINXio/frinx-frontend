@@ -10,7 +10,7 @@ declare module '@frinx/workflow-ui' {
     onDefinitionClick: (name: string, version: string) => void;
     onWorkflowIdClick: (wfId: string) => void;
   }>;
-  export const ExecutedWorkflowList: FC<{ onWorkflowIdClick: (workflowId: string) => void }>;
+  export const ExecutedWorkflowList: FC<{ onWorkflowIdClick: (workflowId: string, search: string) => void }>;
   export const ExecutedWorkflowDetail: FC<{
     workflowId: string;
     onWorkflowIdClick: (workflowId: string) => void;
