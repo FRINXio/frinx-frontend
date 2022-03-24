@@ -68,7 +68,7 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
                 <Td>
                   <ButtonGroup>
                     <Button isDisabled={!resource.isClaimed} onClick={() => onFreeResource(resource.Properties)}>
-                      Free
+                      Deallocate
                     </Button>
                   </ButtonGroup>
                 </Td>

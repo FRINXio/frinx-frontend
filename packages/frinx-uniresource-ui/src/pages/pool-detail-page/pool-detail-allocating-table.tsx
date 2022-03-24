@@ -44,7 +44,7 @@ const PoolDetailAllocatingTable: FC<Props> = ({ allocatedResources, onFreeResour
               <Td>
                 <ButtonGroup>
                   <Button isDisabled={!canFreeResource} onClick={() => onFreeResource(resource.Properties)}>
-                    Free
+                    Deallocate
                   </Button>
                 </ButtonGroup>
               </Td>
