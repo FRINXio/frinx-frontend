@@ -7,6 +7,7 @@ import ResourceTypesList from './components/resource-types-list';
 import CreateNestedPool from './components/create-nested-pool';
 import CreateStrategyPage from './pages/create-strategy-page/create-strategy-page';
 import PoolDetailPage from './pages/pool-detail-page/pool-detail-page';
+import NestedPoolsDetailPage from './nested-pools-detail-page/nested-pools-detail-page';
 
 export { UniresourceAppProvider };
 export { PoolsPage };
@@ -16,3 +17,4 @@ export { ResourceTypesList };
 export { CreateNestedPool };
 export { CreateStrategyPage };
 export { PoolDetailPage };
+export { NestedPoolsDetailPage };
