@@ -62,9 +62,11 @@ const PoolsTable: FunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoadi
                     <Td>
                       {hasNestedPools ? (
                         <>
-                          <Icon as={ChevronDownIcon} /> {amountOfNestedPools}
+                          {amountOfNestedPools} <Icon as={ChevronDownIcon} />
                         </>
-                      ) : null}
+                      ) : (
+                        0
+                      )}
                     </Td>
                     <Td>
                       <Text as="span" fontWeight={600}>
