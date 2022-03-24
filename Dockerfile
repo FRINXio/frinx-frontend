@@ -21,7 +21,7 @@ COPY --from=build /build/yarn.lock /build/yarn.lock
 COPY --from=build /build/packages/frinx-frontend-server/package.json /build/package.json
 
 WORKDIR /build
-RUN yarn install --prod --frozen-lockfile
+RUN yarn install --prod --immutable
 
 COPY --from=build /build/build-client /build/build-client
 COPY --from=build /build/build-server /build/build-server
