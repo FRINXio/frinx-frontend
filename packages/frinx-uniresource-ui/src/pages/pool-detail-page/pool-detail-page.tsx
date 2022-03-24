@@ -291,6 +291,27 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(
         </Box>
 
         <Box my={10}>
+          <Heading size="lg" mb={5}>
+            Allocated Resources
+          </Heading>
+          {resourcePool.PoolType === 'allocating' && (
+            <PoolDetailAllocatingTable
+              allocatedResources={allocatedResources.QueryResources}
+              onFreeResource={freePoolResource}
+              canFreeResource={canFreeResource}
+            />
+          )}
+          {(resourcePool.PoolType === 'set' || resourcePool.PoolType === 'singleton') && (
+            <PoolDetailSetSingletonTable
+              resources={resourcePool.Resources}
+              allocatedResources={allocatedResources.QueryResources}
+              onFreeResource={freePoolResource}
+              onClaimResource={claimPoolResource}
+            />
+          )}
+        </Box>
+
+        <Box my={10}>
           <Flex>
             <Heading size="lg" mb={5}>
               Nested Pools
@@ -312,27 +333,6 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(
             onPoolNameClick={onPoolClick}
             onRowClick={onRowClick}
           />
-        </Box>
-
-        <Box my={10}>
-          <Heading size="lg" mb={5}>
-            Allocated Resources
-          </Heading>
-          {resourcePool.PoolType === 'allocating' && (
-            <PoolDetailAllocatingTable
-              allocatedResources={allocatedResources.QueryResources}
-              onFreeResource={freePoolResource}
-              canFreeResource={canFreeResource}
-            />
-          )}
-          {(resourcePool.PoolType === 'set' || resourcePool.PoolType === 'singleton') && (
-            <PoolDetailSetSingletonTable
-              resources={resourcePool.Resources}
-              allocatedResources={allocatedResources.QueryResources}
-              onFreeResource={freePoolResource}
-              onClaimResource={claimPoolResource}
-            />
-          )}
         </Box>
       </PageContainer>
     );
