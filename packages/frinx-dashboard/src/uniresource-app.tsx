@@ -25,6 +25,7 @@ const UniresourceApp: FC = () => {
     UniresourceAppProvider,
     CreateStrategyPage,
     PoolDetailPage,
+    NestedPoolsDetailPage,
   } = components;
 
   return (
@@ -48,6 +49,7 @@ const UniresourceApp: FC = () => {
               history.push('/uniresource/pools/new');
             }}
             onPoolNameClick={(poolId: string) => history.push(`/uniresource/pools/${poolId}`)}
+            onRowClick={(poolId: string) => history.push(`/uniresource/nested/${poolId}`)}
           />
         </Route>
         <Route
@@ -58,6 +60,26 @@ const UniresourceApp: FC = () => {
               <PoolDetailPage
                 poolId={props.match.params.poolId}
                 onPoolClick={(poolId: string) => history.push(`/uniresource/pools/${poolId}`)}
+                onRowClick={(poolId: string) => history.push(`/uniresource/nested/${poolId}`)}
+                onCreateNestedPoolClick={() => {
+                  history.push({
+                    pathname: '/uniresource/pools/new',
+                    search: `?parentPoolId=${props.match.params.poolId}&isNested=true`,
+                  });
+                }}
+              />
+            );
+          }}
+        />
+        <Route
+          exact
+          path="/uniresource/nested/:poolId"
+          render={(props: RouteComponentProps<{ poolId: string }>) => {
+            return (
+              <NestedPoolsDetailPage
+                poolId={props.match.params.poolId}
+                onPoolClick={(poolId: string) => history.push(`/uniresource/pools/${poolId}`)}
+                onRowClick={(poolId: string) => history.push(`/uniresource/nested/${poolId}`)}
                 onCreateNestedPoolClick={() => {
                   history.push({
                     pathname: '/uniresource/pools/new',
