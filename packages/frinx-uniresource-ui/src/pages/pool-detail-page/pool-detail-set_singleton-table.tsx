@@ -1,6 +1,7 @@
 import { Table, Thead, Tr, Th, Tbody, Td, ButtonGroup, Button } from '@chakra-ui/react';
 import { keys } from 'lodash';
 import React, { VoidFunctionComponent } from 'react';
+import useNotifications from '../../hooks/use-notifications';
 import { AllocatedResourcesQuery, Maybe, Resource } from '../../__generated__/graphql';
 
 type PoolResources = Array<
@@ -14,6 +15,7 @@ type Props = {
   allocatedResources: AllocatedResourcesQuery['QueryResources'];
   resources: PoolResources;
   onFreeResource: (userInput: Record<string, string | number>) => void;
+  onClaimResource: (description: string, userInput?: Record<string, string | number>) => void;
 };
 
 const getNamesOfAllocatedResources = (
@@ -33,9 +35,11 @@ const getNamesOfAllocatedResources = (
 
 const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
   onFreeResource,
+  onClaimResource,
   resources,
   allocatedResources,
 }) => {
+  const toast = useNotifications();
   const mappedResources = resources.map((resource) => {
     if (allocatedResources.find((res) => res.id === resource.id)) {
       return { ...resource, isClaimed: true };
@@ -45,6 +49,18 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
   });
   const allocatedResourcesKeys = getNamesOfAllocatedResources(mappedResources);
 
+  const handleOnClaimResource = (description: string | null, userInput?: Record<string, string | number>) => {
+    if (description == null) {
+      toast.addToastNotification({
+        title: 'Cannot claim resource',
+        content: 'Please provide a description for the resource.',
+        type: 'error',
+      });
+    } else {
+      onClaimResource(description, userInput);
+    }
+  };
+
   return (
     <Table background="white">
       <Thead>
@@ -53,6 +69,7 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
             <Th key={key}>{key}</Th>
           ))}
           <Th>state</Th>
+          <Th>description</Th>
           <Th>action</Th>
         </Tr>
       </Thead>
@@ -65,8 +82,15 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
                   return <Td key={`${key}-${resource.id}`}>{resource.Properties[key]}</Td>;
                 })}
                 <Td>{resource.isClaimed ? 'Claimed' : 'Unclaimed'}</Td>
+                <Td>{resource.Description}</Td>
                 <Td>
                   <ButtonGroup>
+                    <Button
+                      isDisabled={resource.isClaimed}
+                      onClick={() => handleOnClaimResource(resource.Description, resource.Properties)}
+                    >
+                      Claim
+                    </Button>
                     <Button isDisabled={!resource.isClaimed} onClick={() => onFreeResource(resource.Properties)}>
                       Deallocate
                     </Button>

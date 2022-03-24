@@ -185,7 +185,7 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(
     );
     const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
 
-    const claimPoolResource = (description = '', userInput: Record<string, string | number> = {}) => {
+    const claimPoolResource = (description: string, userInput: Record<string, string | number> = {}) => {
       claimResource({
         poolId,
         userInput,
@@ -331,6 +331,7 @@ const PoolDetailPage: VoidFunctionComponent<Props> = React.memo(
               resources={resourcePool.Resources}
               allocatedResources={allocatedResources.QueryResources}
               onFreeResource={freePoolResource}
+              onClaimResource={claimPoolResource}
             />
           )}
         </Box>
