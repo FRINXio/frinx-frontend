@@ -2942,7 +2942,7 @@ __metadata:
     framer-motion: ^4.1.3 || ^6.0.0
     react: ^17.0.1
     react-dom: ^17.0.1
-    react-router-dom: 6.2.2
+    react-router-dom: ^6.0.0
   languageName: unknown
   linkType: soft
 
@@ -2998,6 +2998,7 @@ __metadata:
     react-ace: 9.5.0
     react-dom: 17.0.2
     react-hook-form: 7.12.2
+    react-router-dom: 6.2.2
     style-loader: 2.0.0
     typescript: 4.6.2
     urql: 2.2.0
@@ -3014,6 +3015,7 @@ __metadata:
     framer-motion: ^4.1.3 || ^6.0.0
     react: ^17.0.1
     react-dom: ^17.0.1
+    react-router-dom: ^6.0.0
   languageName: unknown
   linkType: soft
 

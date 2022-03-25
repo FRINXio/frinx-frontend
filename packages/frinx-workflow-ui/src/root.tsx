@@ -22,7 +22,7 @@ const Root: VoidFunctionComponent = () => {
 
   return (
     <Routes>
-      <Route index element={<Navigate to="definitions" />} />
+      <Route index element={<Navigate replace to="definitions" />} />
       <Route
         path="definitions"
         element={

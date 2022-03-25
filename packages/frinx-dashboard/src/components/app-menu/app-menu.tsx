@@ -136,7 +136,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
         )}
         {enabledServices.get('isUniresourceEnabled') && (
           <Route
-            path="/uniresource"
+            path="/uniresource/*"
             element={
               <>
                 <Link
