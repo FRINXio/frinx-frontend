@@ -18,7 +18,7 @@
   "dependencies": {
     "fp-ts": "2.11.9",
     "io-ts": "2.2.16",
-    "url-join": "4.0.1"
+    "url-join": "5.0.0"
   },
   "devDependencies": {
     "@frinx/eslint-config-typescript": "19.0.4-build.1",
