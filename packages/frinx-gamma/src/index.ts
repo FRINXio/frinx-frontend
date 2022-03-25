@@ -1,27 +1,2 @@
-export { default as ControlPage } from './pages/control-page/control-page';
-export { default as CreateVpnService } from './pages/create-vpn-service/create-vpn-service';
-export { default as EditVpnService } from './pages/edit-vpn-service/edit-vpn-service';
-export { default as CreateVpnSite } from './pages/create-vpn-site/create-vpn-site';
-export { default as EditVpnSite } from './pages/edit-vpn-site/edit-vpn-site';
-export { default as CreateSiteNetAccess } from './pages/create-site-network-access/create-site-network-access';
-export { default as ServiceList } from './pages/service-list/service-list';
-export { default as SiteList } from './pages/site-list/site-list';
-export { default as SiteNetworkAccessList } from './pages/site-network-access-list/site-network-access-list';
-export { default as EditSiteNetAccess } from './pages/edit-site-network-access/edit-site-network-access';
-export { default as DeviceList } from './pages/device-list/device-list';
-export { default as CreateDevice } from './pages/create-device/create-device';
-export { default as EditDevice } from './pages/edit-device/edit-device';
-export { default as VpnBearerList } from './pages/vpn-bearer-list/vpn-bearer-list';
-export { default as CreateBearer } from './pages/create-bearer/create-bearer';
-export { default as EditBearer } from './pages/edit-bearer/edit-bearer';
-export { default as LocationList } from './pages/location-list/location-list';
-export { default as CreateLocation } from './pages/create-location/create-location';
-export { default as EditLocation } from './pages/edit-location/edit-location';
-export { default as EvcAttachmentList } from './pages/evc-list/evc-list';
-export { default as CreateEvcAttachment } from './pages/create-evc-attachment/create-evc-attachment';
-export { default as EditEvcAttachment } from './pages/edit-evc-attachment/edit-evc-attachment';
-export { default as CreateVpnCarrier } from './pages/save-carrier/save-carrier';
-export { default as CreateVpnNode } from './pages/save-node/save-node';
-export { default as SearchList } from './pages/search-list/search-list';
-
+export { default as GammaApp } from './root';
 export { getGammaAppProvider } from './gamma-app-provider';
