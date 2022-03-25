@@ -31,6 +31,7 @@ const PoolDetailAllocatingTable: FC<Props> = ({ allocatedResources, onFreeResour
       <Thead>
         <Tr>
           {allocatedResourcesKeys.map((key) => (key ? <Th key={key}>{key}</Th> : null))}
+          <Th>description</Th>
           <Th>action</Th>
         </Tr>
       </Thead>
@@ -41,10 +42,11 @@ const PoolDetailAllocatingTable: FC<Props> = ({ allocatedResources, onFreeResour
               {allocatedResourcesKeys.map((key) =>
                 key ? <Td key={`${key}-${resource.id}`}>{resource.Properties[key]}</Td> : null,
               )}
+              <Td>{resource.Description}</Td>
               <Td>
                 <ButtonGroup>
                   <Button isDisabled={!canFreeResource} onClick={() => onFreeResource(resource.Properties)}>
-                    Free
+                    Deallocate
                   </Button>
                 </ButtonGroup>
               </Td>
