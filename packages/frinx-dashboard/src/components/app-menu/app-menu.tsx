@@ -202,7 +202,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
         )}
         {enabledServices.get('isInventoryEnabled') && (
           <Route
-            path="/inventory"
+            path="/inventory/*"
             element={
               <>
                 <Link
