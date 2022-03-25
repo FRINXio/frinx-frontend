@@ -20,7 +20,7 @@ const Root: VoidFunctionComponent = () => {
 
   return (
     <Routes>
-      <Route index element={<Navigate to="devices" />} />
+      <Route index element={<Navigate replace to="devices" />} />
       <Route path="devices" element={<DeviceList />} />
       <Route path="new" element={<CreateDevicePage onAddDeviceSuccess={handleDeviceListRedirect} />} />
       <Route

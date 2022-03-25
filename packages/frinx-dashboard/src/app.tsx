@@ -6,6 +6,7 @@ import Header from './components/header/header';
 import InventoryApp from './inventory-app';
 import { ServiceKey } from './types';
 import UniflowApp from './uniflow-app';
+import UniresourceApp from './uniresource-app';
 
 type Props = {
   enabledServices: Map<ServiceKey, boolean>;
@@ -21,6 +22,7 @@ const App: FC<Props> = ({ enabledServices, basename, isAuthEnabled }) => {
         <Routes>
           {enabledServices.get('isUniflowEnabled') && <Route path="/uniflow/*" element={<UniflowApp />} />}
           {enabledServices.get('isInventoryEnabled') && <Route path="/inventory/*" element={<InventoryApp />} />}
+          {enabledServices.get('isUniresourceEnabled') && <Route path="/uniresource/*" element={<UniresourceApp />} />}
           <Route path="/" element={<Dashboard enabledServices={enabledServices} />} />
         </Routes>
       </Box>
