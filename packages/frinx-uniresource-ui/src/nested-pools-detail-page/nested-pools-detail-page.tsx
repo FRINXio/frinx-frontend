@@ -1,8 +1,10 @@
 import { Box, Heading, Progress } from '@chakra-ui/react';
-import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { useMemo, VoidFunctionComponent } from 'react';
+import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import PageContainer from '../components/page-container';
 import { omitNullValue } from '../helpers/omit-null-value';
+import unwrap from '../helpers/unwrap';
 import PoolsTable from '../pages/pools-page/pools-table';
 import {
   DeletePoolMutation,
@@ -80,39 +82,24 @@ const DELETE_POOL_MUTATION = gql`
   }
 `;
 
-type Props = {
-  poolId: string;
-  onPoolClick: (poolId: string) => void;
-  onCreateNestedPoolClick: () => void;
-  onRowClick: (poolId: string) => void;
-};
-
-const NestedPoolsDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId, onPoolClick, onRowClick }) => {
-  const [detailId, setDetailId] = useState(poolId);
+const NestedPoolsDetailPage: VoidFunctionComponent = () => {
+  const { poolId } = useParams<{ poolId: string }>();
   const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
   const [{ data: poolData, fetching: isLoadingPool }] = useQuery<
     GetNestedPoolsDetailQuery,
     GetNestedPoolsDetailQueryVariables
   >({
     query: POOL_DETAIL_QUERY,
-    variables: { poolId },
+    variables: { poolId: unwrap(poolId) },
   });
   const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
 
-  // need to set detailId in useeffect because poolId on first load is cached and shows
-  // from previous page and then it will push you to the same page
-  useEffect(() => {
-    setDetailId(poolId);
-  }, [poolId]);
+  if (poolId == null) {
+    return null;
+  }
 
   const handleDeleteBtnClick = (id: string) => {
     deletePool({ input: { resourcePoolId: id } }, context);
-  };
-
-  const handleOnRowClick = (id: string) => {
-    if (id !== detailId) {
-      onRowClick(id);
-    }
   };
 
   if (isLoadingPool) {
@@ -138,21 +125,14 @@ const NestedPoolsDetailPage: VoidFunctionComponent<Props> = React.memo(({ poolId
           pools={[resourcePool]}
           isLoading={isLoadingPool}
           onDeleteBtnClick={handleDeleteBtnClick}
-          onPoolNameClick={onPoolClick}
-          onRowClick={handleOnRowClick}
+          isNestedShown={false}
         />
         <Box ml={10}>
-          <PoolsTable
-            pools={nestedPools}
-            isLoading={isLoadingPool}
-            onDeleteBtnClick={handleDeleteBtnClick}
-            onPoolNameClick={onPoolClick}
-            onRowClick={onRowClick}
-          />
+          <PoolsTable pools={nestedPools} isLoading={isLoadingPool} onDeleteBtnClick={handleDeleteBtnClick} />
         </Box>
       </Box>
     </PageContainer>
   );
-});
+};
 
 export default NestedPoolsDetailPage;
