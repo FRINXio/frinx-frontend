@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Dashboard from './components/dashboard/dashboard';
 import Header from './components/header/header';
 import GammaApp from './gamma-app';
+import InventoryApp from './inventory-app';
 import { ServiceKey } from './types';
 import UniflowApp from './uniflow-app';
 
@@ -21,6 +22,7 @@ const App: FC<Props> = ({ enabledServices, basename, isAuthEnabled }) => {
         <Routes>
           {enabledServices.get('isUniflowEnabled') && <Route path="/uniflow/*" element={<UniflowApp />} />}
           {enabledServices.get('isGammaEnabled') && <Route path="/gamma/*" element={<GammaApp />} />}
+          {enabledServices.get('isInventoryEnabled') && <Route path="/inventory/*" element={<InventoryApp />} />}
           <Route path="/" element={<Dashboard enabledServices={enabledServices} />} />
         </Routes>
       </Box>

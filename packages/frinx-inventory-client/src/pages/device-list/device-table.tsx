@@ -18,6 +18,7 @@ import {
 import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 import { getLocalDateFromUTC } from '../../helpers/time.helpers';
 import { DevicesQuery } from '../../__generated__/graphql';
 import InstallButton from './install-button';
@@ -38,9 +39,7 @@ type Props = {
   onSortingClick: (sortedBy: SortedBy) => void;
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
-  onSettingsButtonClick: (deviceId: string) => void;
   onDeleteBtnClick: (deviceId: string) => void;
-  onEditDeviceButtonClick: (deviceId: string) => void;
   onDeviceSelection: (deviceId: string, checked: boolean) => void;
   onSelectAll: (checked: boolean) => void;
 };
@@ -59,9 +58,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   onSortingClick,
   onInstallButtonClick,
   onUninstallButtonClick,
-  onSettingsButtonClick,
   onDeleteBtnClick,
-  onEditDeviceButtonClick,
   installLoadingMap,
   onDeviceSelection,
   areSelectedAll,
@@ -153,7 +150,8 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     variant="unstyled"
                     isDisabled={!isInstalled}
                     icon={<Icon size={12} as={SettingsIcon} />}
-                    onClick={() => onSettingsButtonClick(device.id)}
+                    as={Link}
+                    to={`../config/${device.id}`}
                   />
                   <IconButton
                     aria-label="edit"
@@ -161,7 +159,8 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     variant="unstyled"
                     isDisabled={isInstalled}
                     icon={<Icon size={12} as={EditIcon} />}
-                    onClick={() => onEditDeviceButtonClick(device.id)}
+                    as={Link}
+                    to={`../${device.id}/edit`}
                   />
                   <IconButton
                     aria-label="Delete device"

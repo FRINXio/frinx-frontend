@@ -2927,6 +2927,7 @@ __metadata:
     react: 17.0.2
     react-ace: 9.5.0
     react-dom: 17.0.2
+    react-router-dom: 6.2.2
     typescript: 4.6.2
     urql: 2.2.0
     uuid: 8.3.2
@@ -2941,6 +2942,7 @@ __metadata:
     framer-motion: ^4.1.3 || ^6.0.0
     react: ^17.0.1
     react-dom: ^17.0.1
+    react-router-dom: 6.2.2
   languageName: unknown
   linkType: soft
 
