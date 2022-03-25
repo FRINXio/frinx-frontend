@@ -1,2 +1,2 @@
 export { default as GammaApp } from './root';
-export { getGammaAppProvider } from './gamma-app-provider';
+export { getGammaAppProvider, type GammaAppProviderProps } from './gamma-app-provider';

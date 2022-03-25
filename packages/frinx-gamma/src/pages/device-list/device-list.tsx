@@ -1,6 +1,6 @@
 import { Box, Button, Container, Flex, Heading, useDisclosure } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';

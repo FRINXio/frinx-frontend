@@ -1,6 +1,6 @@
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Box, Container, Heading } from '@chakra-ui/react';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import unwrap from '../../helpers/unwrap';
 import {
   apiSiteDevicesToClientSiteDevices,
