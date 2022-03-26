@@ -1,6 +1,6 @@
 import { Box, Container, Flex, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import unwrap from '../../helpers/unwrap';
 import {
   apiProviderIdentifiersToClientIdentifers,
@@ -19,11 +19,6 @@ const getBandwidths = async () => {
   return [1000, 2000, 5000, 10000];
 };
 
-type Props = {
-  onSuccess: (siteId: string) => void;
-  onCancel: (siteId: string) => void;
-};
-
 function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
   const [vpnService] = sites.filter((s) => unwrap(s.siteId) === siteId);
   return vpnService;
@@ -34,7 +29,7 @@ function getSelectedAccess(site: VpnSite, accessId: string): SiteNetworkAccess {
   return siteNetworkAccess;
 }
 
-const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+const EditSiteNetAccessPage: VoidFunctionComponent = () => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const [bfdProfiles, setBfdProfiles] = useState<string[]>([]);
@@ -44,6 +39,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
   const [bandwiths, setBandwiths] = useState<number[]>([]);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const { siteId, accessId } = useParams<{ siteId: string; accessId: string }>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,7 +61,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
       setQosProfiles(clientProfiles.qosIdentifiers);
       setBgpProfiles(clientProfiles.bgpIdentifiers);
       setBandwiths(bandwithsResponse);
-      setSelectedSite(getSelectedSite(clientVpnSites, siteId));
+      setSelectedSite(getSelectedSite(clientVpnSites, unwrap(siteId)));
       setVpnServices(clientVpnServices);
     };
 
@@ -83,7 +79,7 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
       await callbacks.editVpnSite(apiSite);
       // eslint-disable-next-line no-console
       console.log('site saved: network access added to site');
-      onSuccess(unwrap(s.siteId));
+      navigate(`../sites/detail/${siteId}`);
     } catch (e) {
       setSubmitError(String(e));
     }
@@ -92,14 +88,14 @@ const EditSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    onCancel(unwrap(selectedSite?.siteId));
+    navigate(`../sites/detail/${selectedSite?.siteId}`);
   };
 
   if (!selectedSite) {
     return null;
   }
 
-  const selectedNetworkAccess = getSelectedAccess(selectedSite, accessId);
+  const selectedNetworkAccess = getSelectedAccess(selectedSite, unwrap(accessId));
 
   return (
     <Container maxWidth={1280}>

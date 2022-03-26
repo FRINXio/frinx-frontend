@@ -4,6 +4,7 @@ import VpnNodeForm from '../../components/forms/vpn-node-form';
 import { VpnNode } from '../../components/forms/bearer-types';
 import { apiVpnNodesToClientVpnNodes, clientVpnNodeToApiVpnNode } from '../../components/forms/converters';
 import callbackUtils from '../../unistore-callback-utils';
+import { useNavigate } from 'react-router-dom';
 
 const getDefaultNode = (): VpnNode => ({
   neId: '',
@@ -11,13 +12,9 @@ const getDefaultNode = (): VpnNode => ({
   role: null,
 });
 
-type Props = {
-  onSuccess: () => void;
-  onCancel: () => void;
-};
-
-const SaveNodePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+const SaveNodePage: VoidFunctionComponent = () => {
   const [nodes, setNodes] = useState<VpnNode[] | null>(null);
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchData = async () => {
       // TODO; possible fetches goes here
@@ -38,7 +35,7 @@ const SaveNodePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => 
     await callbacks.editVpnNode(apiNode);
     // eslint-disable-next-line no-console
     console.log('bearer saved');
-    onSuccess();
+    navigate(`../vpn-bearers`);
   };
 
   const handleDelete = async (nodeId: string) => {
@@ -46,13 +43,13 @@ const SaveNodePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => 
     console.log('delete clicked', nodeId);
     const callbacks = callbackUtils.getCallbacks;
     await callbacks.deleteVpnNode(nodeId);
-    onSuccess();
+    navigate(`../vpn-bearers`);
   };
 
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    onCancel();
+    navigate(`../vpn-bearers`);
   };
 
   if (!nodes) {

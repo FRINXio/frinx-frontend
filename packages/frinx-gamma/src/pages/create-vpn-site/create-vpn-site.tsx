@@ -10,6 +10,7 @@ import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
 import ErrorMessage from '../../components/error-message/error-message';
 import { generateSiteId } from '../../helpers/id-helpers';
+import { useNavigate } from 'react-router-dom';
 
 const defaultVpnSite: VpnSite = {
   customerLocations: [],
@@ -22,15 +23,11 @@ const defaultVpnSite: VpnSite = {
   maximumRoutes: null,
 };
 
-type Props = {
-  onSuccess: () => void;
-  onCancel: () => void;
-};
-
-const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+const CreateVpnSitePage: VoidFunctionComponent = () => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,7 +59,7 @@ const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
       await callbacks.createVpnSite(apiSite);
       // eslint-disable-next-line no-console
       console.log('site created');
-      onSuccess();
+      navigate('../sites');
     } catch (e) {
       setSubmitError(String(e));
     }
@@ -71,7 +68,7 @@ const CreateVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    onCancel();
+    navigate('../sites');
   };
 
   return (

@@ -1,5 +1,6 @@
 import { Box, Button, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 import ControlPageTableButtons from './control-page-table-buttons';
 import WorkflowProgressBar from './workflow-progress-bar';
 
@@ -16,9 +17,9 @@ type TotalCountState = {
   deleted: CountState | null;
 };
 type Props = {
-  onServicesSiteLinkClick: () => void;
-  onSitesSiteLinkClick: () => void;
-  onVpnBearerLinkClick: () => void;
+  // onServicesSiteLinkClick: () => void;
+  // onSitesSiteLinkClick: () => void;
+  // onVpnBearerLinkClick: () => void;
   workflowState: WorkflowState | null;
   countState: TotalCountState;
   onServiceCommitBtnClick: () => void;
@@ -29,9 +30,9 @@ type Props = {
 };
 
 const ControlPageTable: VoidFunctionComponent<Props> = ({
-  onServicesSiteLinkClick,
-  onSitesSiteLinkClick,
-  onVpnBearerLinkClick,
+  // onServicesSiteLinkClick,
+  // onSitesSiteLinkClick,
+  // onVpnBearerLinkClick,
   workflowState,
   countState,
   onServiceCommitBtnClick,
@@ -54,7 +55,7 @@ const ControlPageTable: VoidFunctionComponent<Props> = ({
       <Tbody>
         <Tr>
           <Td>
-            <Button onClick={onServicesSiteLinkClick} variant="link">
+            <Button variant="link" as={Link} to="../services">
               Services
             </Button>
           </Td>
@@ -88,7 +89,7 @@ const ControlPageTable: VoidFunctionComponent<Props> = ({
         </Tr>
         <Tr>
           <Td>
-            <Button onClick={onSitesSiteLinkClick} variant="link">
+            <Button variant="link" as={Link} to="../sites">
               Sites
             </Button>
           </Td>
@@ -122,7 +123,7 @@ const ControlPageTable: VoidFunctionComponent<Props> = ({
         </Tr>
         <Tr>
           <Td>
-            <Button onClick={onVpnBearerLinkClick} variant="link">
+            <Button variant="link" as={Link} to="../vpn-bearers">
               VPN Bearers
             </Button>
           </Td>

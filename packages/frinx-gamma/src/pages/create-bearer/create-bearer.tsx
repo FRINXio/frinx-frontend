@@ -9,6 +9,7 @@ import {
 } from '../../components/forms/converters';
 import VpnBearerForm from '../../components/forms/vpn-bearer-form';
 import ErrorMessage from '../../components/error-message/error-message';
+import { useNavigate } from 'react-router-dom';
 
 // const defaultVpnNode: VpnNode = {
 //   neId: '',
@@ -44,15 +45,11 @@ const defaultVpnBearer: VpnBearer = {
   status: null,
 };
 
-type Props = {
-  onSuccess: () => void;
-  onCancel: () => void;
-};
-
-const CreateBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+const CreateBearerPage: VoidFunctionComponent = () => {
   const [nodes, setNodes] = useState<VpnNode[] | null>(null);
   const [carriers, setCarriers] = useState<VpnCarrier[] | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchData = async () => {
       // TODO; possible fetches goes here
@@ -79,7 +76,7 @@ const CreateBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
       await callbacks.createVpnBearer(apiBearer);
       // eslint-disable-next-line no-console
       console.log('bearer created');
-      onSuccess();
+      navigate('../vpn-bearers');
     } catch (e) {
       setSubmitError(String(e));
     }
@@ -88,7 +85,7 @@ const CreateBearerPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    onCancel();
+    navigate('../vpn-bearers');
   };
 
   if (!nodes || !carriers) {

@@ -7,13 +7,14 @@ import { VpnSite } from '../../components/forms/site-types';
 import DeviceDetail from './device-detail';
 import unwrap from '../../helpers/unwrap';
 import { SiteDeviceWithStatus } from './device-helpers';
+import { Link } from 'react-router-dom';
 
 type Props = {
   size: 'sm' | 'md';
   site: VpnSite;
+  locationId: string | null;
   devices: SiteDeviceWithStatus[];
   detailId: string | null;
-  onEditDeviceButtonClick: (siteId: string, deviceId: string, locationId?: string) => void;
   onDeleteDeviceButtonClick: (siteId: string) => void;
   onRowClick: (rowId: string, isOpen: boolean) => void;
 };
@@ -22,8 +23,8 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   size,
   devices,
   site,
+  locationId,
   detailId,
-  onEditDeviceButtonClick,
   onDeleteDeviceButtonClick,
   onRowClick,
 }) => {
@@ -73,12 +74,11 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                       aria-label="edit"
                       size="sm"
                       icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                      onClick={() =>
-                        onEditDeviceButtonClick(
-                          unwrap(site.siteId),
-                          unwrap(device.deviceId),
-                          device.locationId || undefined,
-                        )
+                      as={Link}
+                      to={
+                        locationId
+                          ? `../sites/${site.siteId}/${locationId}/devices/edit/${device.deviceId}`
+                          : `../sites/${site.siteId}/devices/edit/${device.deviceId}`
                       }
                     />
                   </Tooltip>

@@ -1,6 +1,6 @@
 import { Box, Container, Flex, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   apiVpnSitesToClientVpnSite,
   apiProviderIdentifiersToClientIdentifers,
@@ -12,21 +12,17 @@ import ErrorMessage from '../../components/error-message/error-message';
 import callbackUtils from '../../unistore-callback-utils';
 import unwrap from '../../helpers/unwrap';
 
-type Props = {
-  onSuccess: () => void;
-  onCancel: () => void;
-};
-
 function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
   const [vpnService] = sites.filter((s) => unwrap(s.siteId) === siteId);
   return vpnService;
 }
 
-const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+const EditVpnSitePage: VoidFunctionComponent = () => {
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const { siteId } = useParams<{ siteId: string }>();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,7 +47,7 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
     try {
       const apiSite = clientVpnSiteToApiVpnSite(site);
       await callbacks.editVpnSite(apiSite);
-      onSuccess();
+      navigate('../sites');
     } catch (e) {
       setSubmitError(String(e));
     }
@@ -60,7 +56,7 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    onCancel();
+    navigate('../sites');
   };
 
   // TODO: add some loading state
@@ -68,7 +64,7 @@ const EditVpnSitePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) 
     return null;
   }
 
-  const selectedSite = getSelectedSite(vpnSites, siteId);
+  const selectedSite = getSelectedSite(vpnSites, unwrap(siteId));
 
   return (
     <Container>

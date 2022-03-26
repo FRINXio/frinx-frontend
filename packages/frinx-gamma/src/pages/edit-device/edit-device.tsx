@@ -8,11 +8,6 @@ import ErrorMessage from '../../components/error-message/error-message';
 import { SiteDevice, VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
 
-type Props = {
-  onSuccess: (siteId: string, locationId: string) => void;
-  onCancel: (siteId: string, locationId: string) => void;
-};
-
 function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
   const [vpnService] = sites.filter((s) => unwrap(s.siteId) === siteId);
   return vpnService;
@@ -23,7 +18,7 @@ function getSelectedDevice(site: VpnSite, deviceId: string): SiteDevice {
   return device;
 }
 
-const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+const EditDevicePage: VoidFunctionComponent = () => {
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const { siteId, locationId, deviceId } = useParams<{ siteId: string; locationId: string; deviceId: string }>();
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -34,7 +29,7 @@ const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
       // TODO: we can fetch all in promise all?
       const sites = await callbacks.getVpnSites(null, null);
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
-      setSelectedSite(getSelectedSite(clientVpnSites, siteId));
+      setSelectedSite(getSelectedSite(clientVpnSites, unwrap(siteId)));
     };
 
     fetchData();
@@ -59,7 +54,7 @@ const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
     try {
       const apiSite = clientVpnSiteToApiVpnSite(editedSite);
       await callbacks.editVpnSite(apiSite);
-      onSuccess(unwrap(siteId), locationId);
+      locationId ? `sites/${siteId}/${locationId}/devices` : `sites/${siteId}/devices`;
     } catch (e) {
       setSubmitError(String(e));
     }
@@ -68,14 +63,14 @@ const EditDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) =
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    onCancel(unwrap(selectedSite?.siteId), locationId);
+    locationId ? `sites/${siteId}/${locationId}/devices` : `sites/${siteId}/devices`;
   };
 
   if (!selectedSite) {
     return null;
   }
 
-  const selectedDevice = getSelectedDevice(selectedSite, deviceId);
+  const selectedDevice = getSelectedDevice(selectedSite, unwrap(deviceId));
 
   return (
     selectedSite && (

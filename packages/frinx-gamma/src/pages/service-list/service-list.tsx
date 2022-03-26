@@ -12,13 +12,9 @@ import ServiceTable from './service-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getChangedServicesWithStatus, getSavedServicesWithStatus } from './service-helpers';
+import { Link, useNavigate } from 'react-router-dom';
 
-type Props = {
-  onCreateVpnServiceClick: () => void;
-  onEditVpnServiceClick: (serviceId: string) => void;
-};
-
-const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnServiceClick, onEditVpnServiceClick }) => {
+const CreateVpnServicePage: VoidFunctionComponent = () => {
   const [createdServices, setCreatedServices] = useState<VpnService[] | null>(null);
   const [updatedServices, setUpdatedServices] = useState<VpnService[] | null>(null);
   const [deletedServices, setDeletedServices] = useState<VpnService[] | null>(null);
@@ -37,6 +33,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
     customerName: null,
     // defaultCVlan: null,
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,6 +95,10 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
     setDetailId(isOpen ? rowId : null);
   };
 
+  const handleEditRedirect = (serviceId: string) => {
+    navigate(`../edit/${unwrap(serviceId)}`);
+  };
+
   const changedServicesWithStatus = getChangedServicesWithStatus(createdServices, updatedServices, deletedServices);
   const savedServicesWithStatus = getSavedServicesWithStatus(vpnServices, updatedServices, deletedServices);
 
@@ -129,11 +130,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
             VPN Services
           </Heading>
           <HStack>
-            <Button
-              colorScheme="blue"
-              onClick={onCreateVpnServiceClick}
-              leftIcon={<Icon as={FeatherIcon} icon="plus" />}
-            >
+            <Button colorScheme="blue" leftIcon={<Icon as={FeatherIcon} icon="plus" />} as={Link} to="../add">
               Add service
             </Button>
           </HStack>
@@ -154,7 +151,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
                       size="sm"
                       detailId={detailId}
                       services={changedServicesWithStatus}
-                      onEditServiceButtonClick={onEditVpnServiceClick}
+                      onEditServiceButtonClick={handleEditRedirect}
                       onDeleteServiceButtonClick={handleDeleteButtonClick}
                       onRowClick={handleRowClick}
                     />
@@ -164,7 +161,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onCreateVpnService
               <ServiceTable
                 size="md"
                 detailId={detailId}
-                onEditServiceButtonClick={onEditVpnServiceClick}
+                onEditServiceButtonClick={handleEditRedirect}
                 onDeleteServiceButtonClick={handleDeleteButtonClick}
                 services={savedServicesWithStatus}
                 onRowClick={handleRowClick}

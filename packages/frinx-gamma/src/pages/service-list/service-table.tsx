@@ -7,6 +7,7 @@ import StatusTag from '../../components/status-tag/status-tag';
 import unwrap from '../../helpers/unwrap';
 import ServiceDetail from './service-detail';
 import { VpnServiceWithStatus } from './service-helpers';
+import { Link } from 'react-router-dom';
 
 type Props = {
   size: 'sm' | 'md';
