@@ -69,7 +69,8 @@ const CreateDevicePage: VoidFunctionComponent = () => {
       await callbacks.editVpnSite(apiSite);
       // eslint-disable-next-line no-console
       console.log('site saved: network access added to site');
-      locationId ? navigate(`../sites/${siteId}/${locationId}/devices/add`) : navigate(`../sites/${siteId}/devices`);
+      const url = locationId ? `../sites/${siteId}/${locationId}/devices/add` : `../sites/${siteId}/devices`;
+      navigate(url);
     } catch (e) {
       setSubmitError(String(e));
     }
@@ -78,7 +79,8 @@ const CreateDevicePage: VoidFunctionComponent = () => {
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    locationId ? navigate(`../sites/${siteId}/${locationId}/devices/add`) : navigate(`../sites/${siteId}/devices`);
+    const url = locationId ? `../sites/${siteId}/${locationId}/devices/add` : `../sites/${siteId}/devices`;
+    navigate(url);
   };
 
   if (!selectedSite) {

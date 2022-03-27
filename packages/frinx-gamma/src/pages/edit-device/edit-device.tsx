@@ -1,6 +1,6 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import callbackUtils from '../../unistore-callback-utils';
 import { apiVpnSitesToClientVpnSite, clientVpnSiteToApiVpnSite } from '../../components/forms/converters';
 import DeviceForm from '../../components/forms/device-form';
@@ -22,6 +22,7 @@ const EditDevicePage: VoidFunctionComponent = () => {
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const { siteId, locationId, deviceId } = useParams<{ siteId: string; locationId: string; deviceId: string }>();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,7 +55,8 @@ const EditDevicePage: VoidFunctionComponent = () => {
     try {
       const apiSite = clientVpnSiteToApiVpnSite(editedSite);
       await callbacks.editVpnSite(apiSite);
-      locationId ? `sites/${siteId}/${locationId}/devices` : `sites/${siteId}/devices`;
+      const url = locationId ? `sites/${siteId}/${locationId}/devices` : `sites/${siteId}/devices`;
+      navigate(url);
     } catch (e) {
       setSubmitError(String(e));
     }
@@ -63,7 +65,8 @@ const EditDevicePage: VoidFunctionComponent = () => {
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    locationId ? `sites/${siteId}/${locationId}/devices` : `sites/${siteId}/devices`;
+    const url = locationId ? `sites/${siteId}/${locationId}/devices` : `sites/${siteId}/devices`;
+    navigate(url);
   };
 
   if (!selectedSite) {

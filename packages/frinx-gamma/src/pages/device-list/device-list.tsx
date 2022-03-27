@@ -1,6 +1,6 @@
 import { Box, Button, Container, Flex, Heading, useDisclosure } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
@@ -16,7 +16,6 @@ import usePagination from '../../hooks/use-pagination';
 import { getChangedDevicesWithStatus, getSavedDevicesWithStatus } from './device-helpers';
 import Pagination from '../../components/pagination/pagination';
 import DeviceTable from './device-table';
-import { Link } from 'react-router-dom';
 
 const DeviceListPage: VoidFunctionComponent = () => {
   const [site, setSite] = useState<VpnSite | null>(null);

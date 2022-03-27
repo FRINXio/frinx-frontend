@@ -2,10 +2,10 @@ import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Toolti
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 import { CustomerLocation, VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
 import LocationDetail from './location-detail';
-import { Link } from 'react-router-dom';
 
 type Props = {
   site: VpnSite;

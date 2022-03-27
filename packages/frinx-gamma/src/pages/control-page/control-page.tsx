@@ -1,6 +1,5 @@
 import { Box, Container, Flex, Heading, useDisclosure } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import { Link } from 'react-router-dom';
 import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import unistoreCallbackUtils from '../../unistore-callback-utils';
 import { getTransactionId, setTransactionId, removeTransactionId } from '../../helpers/transaction-id';

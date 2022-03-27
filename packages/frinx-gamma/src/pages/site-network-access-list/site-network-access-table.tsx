@@ -2,11 +2,11 @@ import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, 
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 import { SiteNetworkAccessWithStatus } from './site-network-access-helpers';
 import StatusTag from '../../components/status-tag/status-tag';
 import SiteNetworkAccessDetail from './site-network-access-detail';
 import unwrap from '../../helpers/unwrap';
-import { Link } from 'react-router-dom';
 
 type Props = {
   size: 'sm' | 'md';

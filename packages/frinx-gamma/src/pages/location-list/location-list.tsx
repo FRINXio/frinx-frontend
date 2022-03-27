@@ -1,6 +1,6 @@
 import { Box, Button, Container, Flex, Heading, useDisclosure } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import {
@@ -14,7 +14,6 @@ import LocationTable from './location-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import LocationFilter, { getDefaultLocationFilters, LocationFilters } from './location-filter';
-import { Link } from 'react-router-dom';
 
 const LocationListPage: VoidFunctionComponent = () => {
   const [site, setSite] = useState<VpnSite | null>(null);
@@ -137,7 +136,7 @@ const LocationListPage: VoidFunctionComponent = () => {
           </>
         </Box>
         <Box py={6}>
-          <Button colorScheme="blue" as={Link} to={`../sites`}>
+          <Button colorScheme="blue" as={Link} to="../sites">
             Back to list
           </Button>
         </Box>

@@ -2,10 +2,9 @@ import React, { VoidFunctionComponent } from 'react';
 import { Button, FormLabel, FormErrorMessage, Input, Select, Stack, FormControl } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { Link } from 'react-router-dom';
 import { CustomerLocation } from './site-types';
 import { getSelectOptions } from './options.helper';
-import { Link } from 'react-router-dom';
-import { string } from 'fp-ts';
 
 const LocationSchema = yup.object().shape({
   locationId: yup.string(),

@@ -1,6 +1,7 @@
 import { Box, Button, Container, Flex, Heading, HStack, Icon, useDisclosure } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
@@ -12,7 +13,6 @@ import ServiceTable from './service-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getChangedServicesWithStatus, getSavedServicesWithStatus } from './service-helpers';
-import { Link, useNavigate } from 'react-router-dom';
 
 const CreateVpnServicePage: VoidFunctionComponent = () => {
   const [createdServices, setCreatedServices] = useState<VpnService[] | null>(null);

@@ -1,10 +1,10 @@
 import React, { VoidFunctionComponent, useState, useEffect } from 'react';
 import { Box, Container } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import VpnCarrierForm from '../../components/forms/vpn-carrier-form';
 import { VpnCarrier } from '../../components/forms/bearer-types';
 import { apiVpnCarriersToClientCarriers, clientVpnCarrierToApiVpnCarrier } from '../../components/forms/converters';
 import callbackUtils from '../../unistore-callback-utils';
-import { useNavigate } from 'react-router-dom';
 
 const getDefaultCarrier = (): VpnCarrier => ({
   name: '',

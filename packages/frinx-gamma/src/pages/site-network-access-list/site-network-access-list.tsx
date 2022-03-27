@@ -1,8 +1,7 @@
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useDisclosure, Heading, Box, Container, Flex, Button } from '@chakra-ui/react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import diff from 'diff-arrays-of-objects';
-import { Link } from 'react-router-dom';
 import {
   apiSiteNetworkAccessToClientSiteNetworkAccess,
   apiVpnSitesToClientVpnSite,

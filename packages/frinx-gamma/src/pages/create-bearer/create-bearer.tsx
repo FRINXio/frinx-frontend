@@ -1,5 +1,6 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import callbackUtils from '../../unistore-callback-utils';
 import { Carrier, Connection, VpnBearer, VpnCarrier, VpnNode } from '../../components/forms/bearer-types';
 import {
@@ -9,7 +10,6 @@ import {
 } from '../../components/forms/converters';
 import VpnBearerForm from '../../components/forms/vpn-bearer-form';
 import ErrorMessage from '../../components/error-message/error-message';
-import { useNavigate } from 'react-router-dom';
 
 // const defaultVpnNode: VpnNode = {
 //   neId: '',

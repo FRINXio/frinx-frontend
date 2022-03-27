@@ -1,12 +1,12 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import callbackUtils from '../../unistore-callback-utils';
 import { apiVpnServiceToClientVpnService, clientVpnServiceToApiVpnService } from '../../components/forms/converters';
 import { getSelectOptions } from '../../components/forms/options.helper';
 import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
 import ErrorMessage from '../../components/error-message/error-message';
-import { useNavigate } from 'react-router-dom';
 
 const defaultVpnService: VpnService = {
   customerName: '',

@@ -1,6 +1,7 @@
 import { Box, Button, Container, Flex, Heading, HStack, Icon, useDisclosure } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
@@ -13,7 +14,6 @@ import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getChangedBearersWithStatus, getSavedBearersWithStatus } from './bearer-helpers';
 import FilterContext from '../../filter-provider';
-import { Link, useNavigate } from 'react-router-dom';
 
 const VpnBearerList: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);

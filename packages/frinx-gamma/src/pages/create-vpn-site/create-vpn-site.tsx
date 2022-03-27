@@ -1,5 +1,6 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import callbackUtils from '../../unistore-callback-utils';
 import {
   apiVpnSitesToClientVpnSite,
@@ -10,7 +11,6 @@ import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
 import ErrorMessage from '../../components/error-message/error-message';
 import { generateSiteId } from '../../helpers/id-helpers';
-import { useNavigate } from 'react-router-dom';
 
 const defaultVpnSite: VpnSite = {
   customerLocations: [],

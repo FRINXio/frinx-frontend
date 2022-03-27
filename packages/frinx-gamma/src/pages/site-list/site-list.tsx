@@ -2,6 +2,7 @@ import { Box, Button, Container, Flex, Heading, HStack, useDisclosure } from '@c
 import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import { SearchIcon } from '@chakra-ui/icons';
 import diff from 'diff-arrays-of-objects';
+import { Link, useNavigate } from 'react-router-dom';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
@@ -13,7 +14,6 @@ import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getChangedSitesWithStatus, getSavedSitesWithStatus } from './site-helpers';
 import FilterContext from '../../filter-provider';
-import { Link, useNavigate } from 'react-router-dom';
 
 const SiteListPage: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);

@@ -1,10 +1,10 @@
 import React, { VoidFunctionComponent, useState, useEffect } from 'react';
 import { Box, Container } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import VpnNodeForm from '../../components/forms/vpn-node-form';
 import { VpnNode } from '../../components/forms/bearer-types';
 import { apiVpnNodesToClientVpnNodes, clientVpnNodeToApiVpnNode } from '../../components/forms/converters';
 import callbackUtils from '../../unistore-callback-utils';
-import { useNavigate } from 'react-router-dom';
 
 const getDefaultNode = (): VpnNode => ({
   neId: '',

@@ -2,12 +2,12 @@ import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, 
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 import StatusTag from '../../components/status-tag/status-tag';
 import { VpnSite } from '../../components/forms/site-types';
 import DeviceDetail from './device-detail';
 import unwrap from '../../helpers/unwrap';
 import { SiteDeviceWithStatus } from './device-helpers';
-import { Link } from 'react-router-dom';
 
 type Props = {
   size: 'sm' | 'md';

@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import ControlPage from './pages/control-page/control-page';
 import ServiceList from './pages/service-list/service-list';
 import CreateVpnService from './pages/create-vpn-service/create-vpn-service';

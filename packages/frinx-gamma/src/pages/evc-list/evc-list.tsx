@@ -1,6 +1,6 @@
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useDisclosure, Heading, Box, Container, Flex, Button } from '@chakra-ui/react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import diff from 'diff-arrays-of-objects';
 import {
   apiBearerToClientBearer,
@@ -16,7 +16,6 @@ import Pagination from '../../components/pagination/pagination';
 import EvcFilter, { getDefaultEvcFilters, EvcFilters } from './evc-filter';
 import { getChangedEvcAttachmentsWithStatus, getSavedEvcAttachmentsWithStatus } from './evc-helpers';
 import unwrap from '../../helpers/unwrap';
-import { Link } from 'react-router-dom';
 
 const EvcListPage: VoidFunctionComponent = () => {
   const [createdEvcAttachments, setCreatedEvcAttachments] = useState<EvcAttachment[] | null>(null);
@@ -112,8 +111,8 @@ const EvcListPage: VoidFunctionComponent = () => {
     setSubmittedFilters(filters);
   };
 
-  const handleEditEvcRedirect = (bearerId: string, evcType: string, circuitReference: string) => {
-    navigate(`../vpn-bearers/${bearerId}/evc-attachments/edit/${evcType}/${circuitReference}`);
+  const handleEditEvcRedirect = (vpnBearerId: string, evcType: string, circuitReference: string) => {
+    navigate(`../vpn-bearers/${vpnBearerId}/evc-attachments/edit/${evcType}/${circuitReference}`);
   };
 
   if (!bearer) {
