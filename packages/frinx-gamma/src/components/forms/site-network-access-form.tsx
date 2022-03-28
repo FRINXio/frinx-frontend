@@ -115,8 +115,8 @@ type Props = {
   vpnServices: VpnService[];
   bandwidths: number[];
   onSubmit: (s: VpnSite) => void;
-  onCancel: () => void;
-  onReset: () => void;
+  onCancel: (customerAddress: string | null, providerAddress: string | null) => void;
+  onReset: (customerAddress: string | null, providerAddress: string | null) => void;
 };
 
 function getDefaultStaticRoutingProtocol(): StaticRoutingProtocol {
@@ -282,7 +282,15 @@ const SiteNetAccessForm: FC<Props> = ({
 
   const handleReset = () => {
     resetForm();
-    onReset();
+    const customerAddress = values.ipConnection?.ipv4?.addresses?.customerAddress || null;
+    const providerAddress = values.ipConnection?.ipv4?.addresses?.providerAddress || null;
+    onReset(customerAddress, providerAddress);
+  };
+
+  const handleCancel = () => {
+    const customerAddress = values.ipConnection?.ipv4?.addresses?.customerAddress || null;
+    const providerAddress = values.ipConnection?.ipv4?.addresses?.providerAddress || null;
+    onCancel(customerAddress, providerAddress);
   };
 
   const locationItems = siteState.customerLocations.map((l) => {
@@ -688,7 +696,7 @@ const SiteNetAccessForm: FC<Props> = ({
           Save changes
         </Button>
         <Button onClick={handleReset}>Clear</Button>
-        <Button onClick={onCancel}>Cancel</Button>
+        <Button onClick={handleCancel}>Cancel</Button>
       </Stack>
     </form>
   );

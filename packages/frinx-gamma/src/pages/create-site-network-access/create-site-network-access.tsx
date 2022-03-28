@@ -1,4 +1,4 @@
-import { Box, Container, Flex, Heading, Spinner } from '@chakra-ui/react';
+import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router';
 import unwrap from '../../helpers/unwrap';
@@ -16,7 +16,6 @@ import callbackUtils from '../../unistore-callback-utils';
 import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import { VpnService } from '../../components/forms/service-types';
 import { getSelectOptions } from '../../components/forms/options.helper';
-import PollWorkflowId from '../../components/poll-workflow-id/poll-worfklow-id';
 
 const getDefaultNetworkAccess = (selectedSite: VpnSite | null): SiteNetworkAccess => ({
   siteNetworkAccessId: generateNetworkAccessId(),
@@ -67,13 +66,6 @@ const getDefaultNetworkAccess = (selectedSite: VpnSite | null): SiteNetworkAcces
   },
 });
 
-type CustomerAddressWorkflowData = {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  response_body: {
-    address: string;
-  };
-};
-
 // TODO: to be defined
 const getBandwidths = async () =>
   getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site_network_access.bandwidths).map((item) => Number(item.key));
@@ -88,20 +80,19 @@ function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
   return vpnService;
 }
 
-function freeResources(customerAddress: string, siteId: string) {
+function freeResources(address: string, siteId: string) {
   const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
   uniflowCallbacks.executeWorkflow({
-    name: 'Free_CustomerAddress',
+    name: 'Free_Addresses',
     version: 1,
     input: {
       site: siteId,
-      customer_address: unwrap(customerAddress), // eslint-disable-line @typescript-eslint/naming-convention
+      address: unwrap(address), // eslint-disable-line @typescript-eslint/naming-convention
     },
   });
 }
 
 const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
-  const [customerAddress, setCustomerAddress] = useState<string | null>(null);
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const [bfdProfiles, setBfdProfiles] = useState<string[]>([]);
@@ -156,18 +147,24 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = (customerAddress: string | null, providerAddress: string | null) => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
     if (customerAddress) {
       freeResources(customerAddress, siteId);
     }
+    if (providerAddress) {
+      freeResources(providerAddress, siteId);
+    }
     onCancel(unwrap(selectedSite?.siteId));
   };
 
-  const handleReset = () => {
+  const handleReset = (customerAddress: string | null, providerAddress: string | null) => {
     if (customerAddress) {
       freeResources(customerAddress, siteId);
+    }
+    if (providerAddress) {
+      freeResources(providerAddress, siteId);
     }
   };
 
