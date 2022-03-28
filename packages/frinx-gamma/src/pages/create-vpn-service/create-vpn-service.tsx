@@ -1,5 +1,6 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import callbackUtils from '../../unistore-callback-utils';
 import { apiVpnServiceToClientVpnService, clientVpnServiceToApiVpnService } from '../../components/forms/converters';
 import { getSelectOptions } from '../../components/forms/options.helper';
@@ -16,14 +17,10 @@ const defaultVpnService: VpnService = {
 
 const extranetVpns = getSelectOptions(window.__GAMMA_FORM_OPTIONS__.service.extranet_vpns).map((item) => item.label);
 
-type Props = {
-  onSuccess: () => void;
-  onCancel: () => void;
-};
-
-const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+const CreateVpnServicePage: VoidFunctionComponent = () => {
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,7 +46,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
       const output = await callbacks.createVpnService(vpnService);
       // eslint-disable-next-line no-console
       console.log(output);
-      onSuccess();
+      navigate('../services');
     } catch (e) {
       setSubmitError(String(e));
     }
@@ -57,7 +54,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
 
   const handleCancel = async () => {
     console.log('cancel clicked'); // eslint-disable-line no-console
-    onCancel();
+    navigate('../services');
   };
 
   return (

@@ -1,11 +1,12 @@
-import React, { FunctionComponent, useMemo } from 'react';
-import { useMutation, useQuery } from 'urql';
-import gql from 'graphql-tag';
 import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
+import gql from 'graphql-tag';
+import React, { useMemo, VoidFunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
+import { useMutation, useQuery } from 'urql';
+import useNotifications from '../../hooks/use-notifications';
 import { DeletePoolMutation, DeletePoolMutationMutationVariables, GetAllPoolsQuery } from '../../__generated__/graphql';
 import PoolsTable from './pools-table';
-import useNotifications from '../../hooks/use-notifications';
 
 const POOLS_QUERY = gql`
   query GetAllPools {
@@ -49,13 +50,7 @@ const DELETE_POOL_MUTATION = gql`
   }
 `;
 
-type Props = {
-  onNewPoolBtnClick: () => void;
-  onPoolNameClick: (poolId: string) => void;
-  onRowClick: (poolId: string) => void;
-};
-
-const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClick, onRowClick }) => {
+const PoolsPage: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [{ data, fetching, error }] = useQuery<GetAllPoolsQuery>({
     query: POOLS_QUERY,
@@ -97,7 +92,8 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClic
             mr={2}
             leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
             colorScheme="blue"
-            onClick={onNewPoolBtnClick}
+            as={Link}
+            to="new"
           >
             Create Pool
           </Button>
@@ -107,13 +103,7 @@ const PoolsPage: FunctionComponent<Props> = ({ onNewPoolBtnClick, onPoolNameClic
         <Box position="absolute" top={0} left={0} right={0}>
           {fetching && <Progress isIndeterminate size="xs" />}
         </Box>
-        <PoolsTable
-          pools={data?.QueryResourcePools}
-          isLoading={fetching}
-          onDeleteBtnClick={handleDeleteBtnClick}
-          onPoolNameClick={onPoolNameClick}
-          onRowClick={onRowClick}
-        />
+        <PoolsTable pools={data?.QueryResourcePools} isLoading={fetching} onDeleteBtnClick={handleDeleteBtnClick} />
       </Box>
     </>
   );

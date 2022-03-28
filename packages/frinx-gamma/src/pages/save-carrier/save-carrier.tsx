@@ -1,5 +1,6 @@
 import React, { VoidFunctionComponent, useState, useEffect } from 'react';
 import { Box, Container } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import VpnCarrierForm from '../../components/forms/vpn-carrier-form';
 import { VpnCarrier } from '../../components/forms/bearer-types';
 import { apiVpnCarriersToClientCarriers, clientVpnCarrierToApiVpnCarrier } from '../../components/forms/converters';
@@ -10,13 +11,9 @@ const getDefaultCarrier = (): VpnCarrier => ({
   description: null,
 });
 
-type Props = {
-  onSuccess: () => void;
-  onCancel: () => void;
-};
-
-const CreateCarrierPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+const CreateCarrierPage: VoidFunctionComponent = () => {
   const [carriers, setCarriers] = useState<VpnCarrier[] | null>(null);
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchData = async () => {
       // TODO; possible fetches goes here
@@ -37,7 +34,7 @@ const CreateCarrierPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
     await callbacks.editVpnCarrier(apiCarrier);
     // eslint-disable-next-line no-console
     console.log('site saved: network access added to site');
-    onSuccess();
+    navigate(`../vpn-bearers`);
   };
 
   const handleDelete = async (carrierName: string) => {
@@ -45,13 +42,13 @@ const CreateCarrierPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }
     console.log('delete clicked', carrierName);
     const callbacks = callbackUtils.getCallbacks;
     await callbacks.deleteVpnCarrier(carrierName);
-    onSuccess();
+    navigate(`../vpn-bearers`);
   };
 
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    onCancel();
+    navigate(`../vpn-bearers`);
   };
 
   if (!carriers) {

@@ -1,6 +1,8 @@
 import { Box, Button, Container, Flex, Heading, Progress, useDisclosure } from '@chakra-ui/react';
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
+import unwrap from '../../helpers/unwrap';
 import useNotifications from '../../hooks/use-notifications';
 import {
   AddSnapshotMutation,
@@ -125,19 +127,18 @@ const DELETE_SNAPSHOT_MUTATION = gql`
   }
 `;
 
-type Props = {
-  deviceId: string;
-};
-
-const DeviceConfig: FC<Props> = ({ deviceId }) => {
+const DeviceConfig: VoidFunctionComponent = () => {
+  const { deviceId } = useParams<{ deviceId: string }>();
   const [{ data: deviceData, fetching: isFetchingDevice, error: deviceError }] = useQuery<
     DeviceNameQuery,
     DeviceNameQueryVariables
   >({
     query: DEVICE_NAME_QUERY,
-    variables: { deviceId },
+    variables: { deviceId: unwrap(deviceId) },
   });
-  const { transactionId, isClosingTransaction, closeTransaction, removeTransaction } = useTransactionId(deviceId);
+  const { transactionId, isClosingTransaction, closeTransaction, removeTransaction } = useTransactionId(
+    unwrap(deviceId),
+  );
   const [{ data, fetching, error }, reexecuteQuery] = useQuery<DataStoreQuery, DataStoreQueryVariables>({
     query: DATA_STORE_QUERY,
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -195,6 +196,10 @@ const DeviceConfig: FC<Props> = ({ deviceId }) => {
   }, [commitData]);
 
   if (transactionId == null) {
+    return null;
+  }
+
+  if (deviceId == null) {
     return null;
   }
 

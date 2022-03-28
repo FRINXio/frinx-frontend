@@ -1,6 +1,6 @@
 import { Box, Button, Container, Flex, Heading, useDisclosure } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import { useParams } from 'react-router';
+import { useParams, Link } from 'react-router-dom';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import {
@@ -15,19 +15,7 @@ import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import LocationFilter, { getDefaultLocationFilters, LocationFilters } from './location-filter';
 
-type Props = {
-  onCreateLocationClick: (siteId: string) => void;
-  onEditLocationClick: (siteId: string, locationId: string) => void;
-  onDevicesVpnSiteClick: (siteId: string, locationId: string) => void;
-  onSiteListClick: () => void;
-};
-
-const LocationListPage: VoidFunctionComponent<Props> = ({
-  onCreateLocationClick,
-  onEditLocationClick,
-  onDevicesVpnSiteClick,
-  onSiteListClick,
-}) => {
+const LocationListPage: VoidFunctionComponent = () => {
   const [site, setSite] = useState<VpnSite | null>(null);
   const [locations, setLocations] = useState<CustomerLocation[] | null>(null);
   const [locationIdToDelete, setLocationIdToDelete] = useState<string | null>(null);
@@ -57,10 +45,10 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
         limit: pagination.pageSize,
       };
       const callbacks = callbackUtils.getCallbacks;
-      const apiLocations = await callbacks.getLocations(siteId, paginationParams, submittedFilters);
+      const apiLocations = await callbacks.getLocations(unwrap(siteId), paginationParams, submittedFilters);
       const clientLocations = apiLocationsToClientLocations(apiLocations);
       setLocations(clientLocations);
-      const locationsCount = await callbacks.getLocationsCount(siteId, submittedFilters);
+      const locationsCount = await callbacks.getLocationsCount(unwrap(siteId), submittedFilters);
       setPagination({
         ...pagination,
         pageCount: Math.ceil(locationsCount / pagination.pageSize),
@@ -128,12 +116,7 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
           <Heading as="h2" size="lg">
             Locations (Site: {site.siteId})
           </Heading>
-          <Button
-            colorScheme="blue"
-            onClick={() => {
-              onCreateLocationClick(siteId);
-            }}
-          >
+          <Button colorScheme="blue" as={Link} to={`../sites/${siteId}/locations/add`}>
             Add location
           </Button>
         </Flex>
@@ -145,8 +128,6 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
               detailId={detailId}
               locations={locations || []}
               onDeleteLocationButtonClick={handleDeleteButtonClick}
-              onEditLocationButtonClick={onEditLocationClick}
-              onDevicesSiteButtonClick={onDevicesVpnSiteClick}
               onRowClick={handleRowClick}
             />
             <Box m="4">
@@ -155,12 +136,7 @@ const LocationListPage: VoidFunctionComponent<Props> = ({
           </>
         </Box>
         <Box py={6}>
-          <Button
-            onClick={() => {
-              onSiteListClick();
-            }}
-            colorScheme="blue"
-          >
+          <Button colorScheme="blue" as={Link} to="../sites">
             Back to list
           </Button>
         </Box>

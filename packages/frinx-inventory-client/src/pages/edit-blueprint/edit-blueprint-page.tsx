@@ -1,9 +1,10 @@
-import { Container, Heading, Box, Progress } from '@chakra-ui/react';
-import { gql, useMutation, useQuery } from 'urql';
+import { Box, Container, Heading, Progress } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import EditBlueprintForm, { FormValues } from './edit-blueprint-form';
-import { UpdateBlueprintMutation, UpdateBlueprintMutationVariables } from '../../__generated__/graphql';
+import { useParams } from 'react-router-dom';
+import { gql, useMutation, useQuery } from 'urql';
 import useResponseToasts from '../../hooks/user-response-toasts';
+import { UpdateBlueprintMutation, UpdateBlueprintMutationVariables } from '../../__generated__/graphql';
+import EditBlueprintForm, { FormValues } from './edit-blueprint-form';
 
 const BLUEPRINT_QUERY = gql`
   query Blueprint($id: ID!) {
@@ -30,12 +31,12 @@ const UPDATE_BLUEPRINT_MUTATION = gql`
 `;
 
 type Props = {
-  blueprintId: string;
   onSuccess: () => void;
   onCancel: () => void;
 };
 
-const EditBlueprintPage: FC<Props> = ({ blueprintId, onSuccess, onCancel }) => {
+const EditBlueprintPage: FC<Props> = ({ onSuccess, onCancel }) => {
+  const { blueprintId } = useParams<{ blueprintId: string }>();
   const [{ data: updateBlueprintData, error: updateBlueprintError }, updateBlueprint] = useMutation<
     UpdateBlueprintMutation,
     UpdateBlueprintMutationVariables
@@ -54,6 +55,10 @@ const EditBlueprintPage: FC<Props> = ({ blueprintId, onSuccess, onCancel }) => {
     successMessage: 'Blueprint succesfully edited',
     failureMessage: 'Blueprint could not be edited',
   });
+
+  if (blueprintId == null) {
+    return null;
+  }
 
   const handleSubmit = (values: FormValues) => {
     updateBlueprint({
