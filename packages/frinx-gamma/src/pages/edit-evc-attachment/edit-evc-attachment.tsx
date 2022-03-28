@@ -1,6 +1,6 @@
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Box, Container, Heading } from '@chakra-ui/react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import unwrap from '../../helpers/unwrap';
 import {
   apiBearerToClientBearer,
@@ -11,11 +11,6 @@ import callbackUtils from '../../unistore-callback-utils';
 import { EvcAttachment, VpnBearer } from '../../components/forms/bearer-types';
 import EvcAttachmentForm from '../../components/forms/evc-attachment-form';
 import ErrorMessage from '../../components/error-message/error-message';
-
-type Props = {
-  onSuccess: (bearerId: string) => void;
-  onCancel: (bearerId: string) => void;
-};
 
 function getSelectedBearer(bearers: VpnBearer[], bearerId: string): VpnBearer {
   const [vpnBearer] = bearers.filter((b) => b.spBearerReference === bearerId);
@@ -29,12 +24,13 @@ function getSelectedEvcAttachment(bearer: VpnBearer, evcType: string, circuitRef
   return evcAttachment;
 }
 
-const EditEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+const EditEvcAttachmentPage: VoidFunctionComponent = () => {
   const [selectedBearer, setSelectedBearer] = useState<VpnBearer | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const { bearerId, evcType, circuitReference } =
     useParams<{ bearerId: string; evcType: string; circuitReference: string }>();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,7 +38,7 @@ const EditEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
       // TODO: we can fetch all in promise all?
       const bearers = await callbacks.getVpnBearers(null, null);
       const clientVpnBearers = apiBearerToClientBearer(bearers);
-      setSelectedBearer(getSelectedBearer(clientVpnBearers, bearerId));
+      setSelectedBearer(getSelectedBearer(clientVpnBearers, unwrap(bearerId)));
 
       const profiles = await callbacks.getBearerValidProviderIdentifiers();
       const clientProfiles = apiProviderIdentifiersToClientIdentifers(profiles);
@@ -79,7 +75,7 @@ const EditEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
       await callbacks.editVpnBearer(apiBearer);
       // eslint-disable-next-line no-console
       console.log('bearer saved: evc attachment added to bearer');
-      onSuccess(unwrap(bearerId));
+      navigate(`../vpn-bearers/${bearerId}/evc-attachments`);
     } catch (e) {
       setSubmitError(String(e));
     }
@@ -88,14 +84,14 @@ const EditEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCanc
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    onCancel(unwrap(selectedBearer?.spBearerReference));
+    navigate(`../vpn-bearers/${bearerId}/evc-attachments`);
   };
 
   if (!selectedBearer) {
     return null;
   }
 
-  const selectedEvcAttachment = getSelectedEvcAttachment(selectedBearer, evcType, circuitReference);
+  const selectedEvcAttachment = getSelectedEvcAttachment(selectedBearer, unwrap(evcType), unwrap(circuitReference));
 
   return (
     selectedBearer && (

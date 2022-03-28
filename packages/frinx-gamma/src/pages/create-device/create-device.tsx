@@ -1,6 +1,6 @@
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Box, Container, Heading } from '@chakra-ui/react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import unwrap from '../../helpers/unwrap';
 import {
   apiSiteDevicesToClientSiteDevices,
@@ -12,16 +12,11 @@ import ErrorMessage from '../../components/error-message/error-message';
 import { SiteDevice, VpnSite } from '../../components/forms/site-types';
 import callbackUtils from '../../unistore-callback-utils';
 
-const getDefaultDevice = (locationId: string): SiteDevice => ({
+const getDefaultDevice = (locationId: string | null): SiteDevice => ({
   deviceId: '',
   managementIP: '',
   locationId,
 });
-
-type Props = {
-  onSuccess: (siteId: string, locationId: string) => void;
-  onCancel: (siteId: string, locationId: string) => void;
-};
 
 function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
   const [vpnService] = sites.filter((s) => unwrap(s.siteId) === siteId);
@@ -32,11 +27,12 @@ function nonEmptyDevices<T>(name: T | undefined): name is T {
   return name !== undefined;
 }
 
-const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+const CreateDevicePage: VoidFunctionComponent = () => {
   const [deviceNames, setDeviceNames] = useState<string[]>([]);
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const { siteId, locationId } = useParams<{ siteId: string; locationId: string }>();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,8 +40,8 @@ const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
       // TODO: we can fetch all in promise all?
       const sites = await callbacks.getVpnSites(null, null);
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
-      setSelectedSite(getSelectedSite(clientVpnSites, siteId));
-      const devices = await callbacks.getDevices(siteId, null, null);
+      setSelectedSite(getSelectedSite(clientVpnSites, unwrap(siteId)));
+      const devices = await callbacks.getDevices(unwrap(siteId), null, null);
       const clientDevices = apiSiteDevicesToClientSiteDevices(devices);
       setDeviceNames(clientDevices.map((d) => d.deviceId).filter(nonEmptyDevices));
     };
@@ -73,7 +69,8 @@ const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
       await callbacks.editVpnSite(apiSite);
       // eslint-disable-next-line no-console
       console.log('site saved: network access added to site');
-      onSuccess(unwrap(siteId), locationId);
+      const url = locationId ? `../sites/${siteId}/${locationId}/devices/add` : `../sites/${siteId}/devices`;
+      navigate(url);
     } catch (e) {
       setSubmitError(String(e));
     }
@@ -82,7 +79,8 @@ const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    onCancel(unwrap(selectedSite?.siteId), locationId);
+    const url = locationId ? `../sites/${siteId}/${locationId}/devices/add` : `../sites/${siteId}/devices`;
+    navigate(url);
   };
 
   if (!selectedSite) {
@@ -102,7 +100,7 @@ const CreateDevicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel })
           {submitError && <ErrorMessage text={String(submitError)} />}
           <DeviceForm
             mode="add"
-            device={getDefaultDevice(locationId)}
+            device={getDefaultDevice(locationId || null)}
             locations={selectedSite.customerLocations}
             existingDeviceNames={deviceNames}
             onSubmit={handleSubmit}

@@ -23,6 +23,7 @@ import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
 import DetailsModalHeader from './executed-workflow-detail-header';
 import { useAsyncGenerator } from './executed-workflow-detail-status.helpers';
 import { ExecutedWorkflowTask } from '../../types/types';
+import { useParams } from 'react-router-dom';
 
 const convertWorkflowVariablesToFormFormat = (
   workflowDetails: string,
@@ -66,19 +67,23 @@ const convertWorkflowVariablesToFormFormat = (
 };
 
 type Props = {
-  workflowId: string;
   onExecutedOperation: (workflowId: string) => void;
   onWorkflowIdClick: (workflowId: string) => void;
 };
 
-const DetailsModal: FC<Props> = ({ workflowId, onWorkflowIdClick, onExecutedOperation }) => {
+const DetailsModal: FC<Props> = ({ onWorkflowIdClick, onExecutedOperation }) => {
+  const { workflowId } = useParams<{ workflowId: string }>();
   const taskModalDisclosure = useDisclosure();
-  const execPayload = useAsyncGenerator(workflowId);
+  const execPayload = useAsyncGenerator(workflowId ?? '');
   const [openedTask, setOpenedTask] = useState<ExecutedWorkflowTask | null>(null);
   const [isEscaped, setIsEscaped] = useState(false);
   const [workflowVariables, setWorkflowVariables] = useState<Record<string, string> | null>(null);
 
   if (execPayload == null) {
+    return null;
+  }
+
+  if (workflowId == null) {
     return null;
   }
 
