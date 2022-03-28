@@ -1,56 +1,29 @@
-import React, { FC, useEffect, useState } from 'react';
-import { Box } from '@chakra-ui/react';
-import { v4 as uuid } from 'uuid';
-import { Route, Switch, Redirect, useHistory, RouteComponentProps } from 'react-router-dom';
 import { UniflowApi } from '@frinx/api';
+import React, { FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
 
 type UniflowComponents = Omit<typeof import('@frinx/workflow-ui'), 'getUniflowApiProvider'> & {
   UniflowApiProvider: FC;
 };
-type BuilderComponents = Omit<typeof import('@frinx/workflow-builder/src'), 'getBuilderApiProvider'> & {
+type BuilderComponents = {
   BuilderApiProvider: FC;
 };
 
 const UniflowApp: FC = () => {
   const [components, setComponents] = useState<(UniflowComponents & BuilderComponents) | null>(null);
-  const history = useHistory();
-  const [key, setKey] = useState(uuid());
-  const [executedWorkflowId, setExecutedWorkflowId] = useState(uuid());
 
   useEffect(() => {
     Promise.all([import('@frinx/workflow-ui'), import('@frinx/workflow-builder/src')]).then(
       ([uniflowImport, builderImport]) => {
-        const {
-          ReduxProvider,
-          WorkflowListHeader,
-          WorkflowDefinitions,
-          ExecutedWorkflowList,
-          ExecutedWorkflowDetail,
-          ScheduledWorkflowList,
-          EventListeners,
-          TaskList,
-          PollData,
-          DiagramBuilder,
-          getUniflowApiProvider,
-        } = uniflowImport;
-        const { WorkflowBuilder, getBuilderApiProvider } = builderImport;
+        const { UniflowApp: App, getUniflowApiProvider, ReduxProvider } = uniflowImport;
+        const { getBuilderApiProvider } = builderImport;
 
         setComponents({
+          UniflowApp: App,
           ReduxProvider,
-          WorkflowListHeader,
-          WorkflowDefinitions,
-          ExecutedWorkflowList,
-          ExecutedWorkflowDetail,
-          ScheduledWorkflowList,
-          EventListeners,
-          TaskList,
-          PollData,
-          DiagramBuilder,
           UniflowApiProvider: getUniflowApiProvider(
             UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext }).client,
           ),
-          WorkflowBuilder,
           BuilderApiProvider: getBuilderApiProvider(
             UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext }).client,
           ),
@@ -63,128 +36,15 @@ const UniflowApp: FC = () => {
     return null;
   }
 
-  const {
-    ReduxProvider,
-    WorkflowListHeader,
-    WorkflowDefinitions,
-    ExecutedWorkflowList,
-    ExecutedWorkflowDetail,
-    ScheduledWorkflowList,
-    EventListeners,
-    TaskList,
-    PollData,
-    UniflowApiProvider,
-    WorkflowBuilder,
-    BuilderApiProvider,
-  } = components;
+  const { UniflowApiProvider, UniflowApp: App, ReduxProvider, BuilderApiProvider } = components;
 
   return (
     <UniflowApiProvider>
-      <ReduxProvider>
-        <Switch>
-          <Route exact path="/uniflow">
-            <Redirect to="/uniflow/definitions" />
-          </Route>
-          <Route
-            exact
-            path="/uniflow/builder/:name?/:version?"
-            render={(props: RouteComponentProps<{ name?: string; version?: string }>) => {
-              const { match } = props;
-              const { params } = match;
-
-              return (
-                <Box marginTop={-10} height="calc(100vh - 64px)">
-                  <BuilderApiProvider>
-                    <WorkflowBuilder
-                      key={`${params.name}/${params.version}`}
-                      name={params.name}
-                      version={params.version}
-                      onClose={() => {
-                        history.push('/uniflow/definitions');
-                      }}
-                      onExecuteSuccessClick={(workflowId) => {
-                        history.push(`/uniflow/executed/${workflowId}`);
-                      }}
-                      onEditWorkflowClick={(name, version) => {
-                        history.push(`/uniflow/builder/${name}/${version}`);
-                      }}
-                      onNewWorkflowClick={() => {
-                        history.push('/uniflow/builder');
-                      }}
-                    />
-                  </BuilderApiProvider>
-                </Box>
-              );
-            }}
-          />
-          <>
-            <Route exact path="/uniflow/definitions">
-              <WorkflowListHeader
-                onAddButtonClick={() => {
-                  history.push('/uniflow/builder');
-                }}
-                onImportSuccess={() => {
-                  setKey(uuid());
-                }}
-              />
-              <WorkflowDefinitions
-                onDefinitionClick={(name: string, version: string) => {
-                  history.push(`/uniflow/builder/${name}/${version}`);
-                }}
-                onWorkflowIdClick={(wfId: string) => {
-                  history.push(`/uniflow/executed/${wfId}`);
-                }}
-                key={key}
-              />
-            </Route>
-            <Route
-              exact
-              path="/uniflow/executed"
-              render={() => {
-                return (
-                  <ExecutedWorkflowList
-                    onWorkflowIdClick={(workflowId) => {
-                      history.push(`/uniflow/executed/${workflowId}`);
-                    }}
-                  />
-                );
-              }}
-            />
-            <Route
-              exact
-              path="/uniflow/executed/:workflowId"
-              render={(props: RouteComponentProps<{ workflowId: string }>) => {
-                return (
-                  <ExecutedWorkflowDetail
-                    key={executedWorkflowId}
-                    workflowId={props.match.params.workflowId}
-                    onWorkflowIdClick={(workflowId) => {
-                      setExecutedWorkflowId(uuid());
-                      history.push(`/uniflow/executed/${workflowId}`);
-                    }}
-                    onExecutedOperation={(workflowId) => {
-                      history.push(`/uniflow/executed/${workflowId}`);
-                      setExecutedWorkflowId(uuid());
-                    }}
-                  />
-                );
-              }}
-            />
-            <Route exact path="/uniflow/scheduled">
-              <ScheduledWorkflowList />
-            </Route>
-            <Route exact path="/uniflow/event-listeners">
-              <EventListeners />
-            </Route>
-            <Route exact path="/uniflow/tasks">
-              <TaskList />
-            </Route>
-            <Route exact path="/uniflow/poll-data">
-              <PollData />
-            </Route>
-          </>
-        </Switch>
-      </ReduxProvider>
+      <BuilderApiProvider>
+        <ReduxProvider>
+          <App />
+        </ReduxProvider>
+      </BuilderApiProvider>
     </UniflowApiProvider>
   );
 };

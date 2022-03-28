@@ -1,8 +1,9 @@
-import React, { FC } from 'react';
-import { gql, useMutation, useQuery } from 'urql';
-
 import { Box, Container, Heading, Progress } from '@chakra-ui/react';
-import EditDeviceForm from './edit-device-form';
+import React, { FC } from 'react';
+import { useParams } from 'react-router-dom';
+import { gql, useMutation, useQuery } from 'urql';
+import unwrap from '../../helpers/unwrap';
+import useResponseToasts from '../../hooks/user-response-toasts';
 import {
   CreateLabelMutation,
   CreateLabelMutationVariables,
@@ -17,7 +18,7 @@ import {
   ZonesQuery,
   ZonesQueryVariables,
 } from '../../__generated__/graphql';
-import useResponseToasts from '../../hooks/user-response-toasts';
+import EditDeviceForm from './edit-device-form';
 
 const DEVICE_QUERY = gql`
   query Device($id: ID!) {
@@ -100,7 +101,6 @@ const LABELS_QUERY = gql`
 `;
 
 type Props = {
-  deviceId: string;
   onSuccess: () => void;
   onCancelButtonClick: () => void;
 };
@@ -112,14 +112,15 @@ type FormValues = {
   serviceState: DeviceServiceState;
 };
 
-const EditDevicePage: FC<Props> = ({ deviceId, onSuccess, onCancelButtonClick }) => {
+const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
+  const { deviceId } = useParams<{ deviceId: string }>();
   const [{ data: updateDeviceData, error: updateDeviceError }, updateDevice] = useMutation<
     UpdateDeviceMutation,
     UpdateDeviceMutationVariables
   >(UPDATE_DEVICE_MUTATION);
   const [{ data: deviceData, fetching: isLoadingDevice }] = useQuery<DeviceQuery, DeviceQueryVariables>({
     query: DEVICE_QUERY,
-    variables: { id: deviceId },
+    variables: { id: unwrap(deviceId) },
   });
   const [{ data: zones, fetching: isLoadingZones }] = useQuery<ZonesQuery, ZonesQueryVariables>({ query: ZONES_QUERY });
   const [{ data: labels, fetching: isLoadingLabels }] = useQuery<LabelsQuery, LabelsQueryVariables>({
@@ -149,7 +150,7 @@ const EditDevicePage: FC<Props> = ({ deviceId, onSuccess, onCancelButtonClick })
 
   const handleOnUpdateDevice = (values: FormValues) => {
     updateDevice({
-      id: deviceId,
+      id: unwrap(deviceId),
       input: {
         labelIds: values.labels,
         mountParameters: values.mountParameters,

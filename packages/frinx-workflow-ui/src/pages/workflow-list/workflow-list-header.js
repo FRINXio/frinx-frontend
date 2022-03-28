@@ -23,9 +23,9 @@ import { faCogs, faFileExport, faFileImport, faPlus } from '@fortawesome/free-so
 import { saveAs } from 'file-saver';
 import FeatherIcon from 'feather-icons-react';
 import useNotifications from '../../hooks/use-notifications';
+import { Link } from 'react-router-dom';
 
 type Props = {
-  onAddButtonClick: () => void,
   onImportSuccess: () => void,
 };
 
@@ -48,7 +48,7 @@ function readFile(file: File) {
   });
 }
 
-const WorkflowListHeader = ({ onAddButtonClick, onImportSuccess }: Props) => {
+const WorkflowListHeader = ({ onImportSuccess }: Props) => {
   const inputRef = useRef();
   const { addToastNotification } = useNotifications();
 
@@ -99,7 +99,7 @@ const WorkflowListHeader = ({ onAddButtonClick, onImportSuccess }: Props) => {
         </Heading>
         <Box marginLeft="auto">
           <HStack>
-            <Button leftIcon={<SmallAddIcon />} colorScheme="blue" onClick={onAddButtonClick}>
+            <Button as={Link} leftIcon={<SmallAddIcon />} colorScheme="blue" to="builder">
               Create
             </Button>
             <Box>
