@@ -1,6 +1,6 @@
 import { Box, Button, Container, Flex, Heading, useDisclosure } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
@@ -17,17 +17,7 @@ import { getChangedDevicesWithStatus, getSavedDevicesWithStatus } from './device
 import Pagination from '../../components/pagination/pagination';
 import DeviceTable from './device-table';
 
-type Props = {
-  onCreateDeviceClick: (siteId: string, locationId?: string) => void;
-  onEditDeviceClick: (siteId: string, deviceId: string, locationId?: string) => void;
-  onLocationListClick: (siteId: string) => void;
-};
-
-const DeviceListPage: VoidFunctionComponent<Props> = ({
-  onCreateDeviceClick,
-  onEditDeviceClick,
-  onLocationListClick,
-}) => {
+const DeviceListPage: VoidFunctionComponent = () => {
   const [site, setSite] = useState<VpnSite | null>(null);
   const [createdDevices, setCreatedDevices] = useState<SiteDevice[] | null>(null);
   const [updatedDevices, setUpdatedDevices] = useState<SiteDevice[] | null>(null);
@@ -60,19 +50,19 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
         limit: pagination.pageSize,
       };
       const callbacks = callbackUtils.getCallbacks;
-      const apiDevices = await callbacks.getDevices(siteId, paginationParams, submittedFilters, 'nonconfig');
+      const apiDevices = await callbacks.getDevices(unwrap(siteId), paginationParams, submittedFilters, 'nonconfig');
       const clientDevices = apiSiteDevicesToClientSiteDevices(apiDevices);
       setDevices(clientDevices);
-      const locationsCount = await callbacks.getDevicesCount(siteId, submittedFilters);
+      const locationsCount = await callbacks.getDevicesCount(unwrap(siteId), submittedFilters);
       setPagination({
         ...pagination,
         pageCount: Math.ceil(locationsCount / pagination.pageSize),
       });
 
       // get data for changes table
-      const allSavedDevices = await callbacks.getDevices(siteId, null, null, 'nonconfig');
+      const allSavedDevices = await callbacks.getDevices(unwrap(siteId), null, null, 'nonconfig');
       const clientAllSavedDevices = apiSiteDevicesToClientSiteDevices(allSavedDevices);
-      const allUnsavedDevices = await callbacks.getDevices(siteId, null, null);
+      const allUnsavedDevices = await callbacks.getDevices(unwrap(siteId), null, null);
       const clientAllUnsavedDevices = apiSiteDevicesToClientSiteDevices(allUnsavedDevices);
       const result = diff(clientAllSavedDevices, clientAllUnsavedDevices, 'deviceId');
       setCreatedDevices(result.added);
@@ -149,9 +139,8 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
           </Heading>
           <Button
             colorScheme="blue"
-            onClick={() => {
-              onCreateDeviceClick(siteId, locationId);
-            }}
+            as={Link}
+            to={locationId ? `../sites/${siteId}/${locationId}/devices/add` : `../sites/${siteId}/devices/add`}
           >
             Add device
           </Button>
@@ -165,9 +154,9 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
                 <DeviceTable
                   size="sm"
                   site={site}
+                  locationId={locationId || null}
                   devices={changedDevicesWithStatus}
                   detailId={detailId}
-                  onEditDeviceButtonClick={onEditDeviceClick}
                   onDeleteDeviceButtonClick={handleDeleteButtonClick}
                   onRowClick={handleRowClick}
                 />
@@ -177,9 +166,9 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
           <DeviceTable
             size="md"
             site={site}
+            locationId={locationId || null}
             devices={savedDevicesWithStatus}
             detailId={detailId}
-            onEditDeviceButtonClick={onEditDeviceClick}
             onDeleteDeviceButtonClick={handleDeleteButtonClick}
             onRowClick={handleRowClick}
           />
@@ -188,12 +177,7 @@ const DeviceListPage: VoidFunctionComponent<Props> = ({
           </Box>
         </Box>
         <Box py={6}>
-          <Button
-            onClick={() => {
-              onLocationListClick(siteId);
-            }}
-            colorScheme="blue"
-          >
+          <Button colorScheme="blue" as={Link} to={`../sites/${siteId}/locations`}>
             Back to list
           </Button>
         </Box>

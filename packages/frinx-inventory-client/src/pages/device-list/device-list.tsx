@@ -2,6 +2,7 @@ import { Box, Button, Container, Flex, Heading, HStack, Progress, Spacer, useDis
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FC, useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
+import { Link } from 'react-router-dom';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal';
 import Pagination from '../../components/pagination';
 import unwrap from '../../helpers/unwrap';
@@ -21,7 +22,6 @@ import {
 import DeviceFilter from './device-filters';
 import DeviceTable from './device-table';
 import DeviceSearch from './device-search';
-import { Link } from 'react-router-dom';
 
 const DEVICES_QUERY = gql`
   query Devices(

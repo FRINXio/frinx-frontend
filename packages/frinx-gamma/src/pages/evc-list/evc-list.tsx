@@ -1,6 +1,6 @@
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useDisclosure, Heading, Box, Container, Flex, Button } from '@chakra-ui/react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import diff from 'diff-arrays-of-objects';
 import {
   apiBearerToClientBearer,
@@ -17,13 +17,7 @@ import EvcFilter, { getDefaultEvcFilters, EvcFilters } from './evc-filter';
 import { getChangedEvcAttachmentsWithStatus, getSavedEvcAttachmentsWithStatus } from './evc-helpers';
 import unwrap from '../../helpers/unwrap';
 
-type Props = {
-  onCreateEvcClick: (bearerId: string) => void;
-  onEditEvcClick: (bearerId: string, evcType: string, circuitReference: string) => void;
-  onBearerListClick: () => void;
-};
-
-const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvcClick, onBearerListClick }) => {
+const EvcListPage: VoidFunctionComponent = () => {
   const [createdEvcAttachments, setCreatedEvcAttachments] = useState<EvcAttachment[] | null>(null);
   const [updatedEvcAttachments, setUpdatedEvcAttachments] = useState<EvcAttachment[] | null>(null);
   const [deletedEvcAttachments, setDeletedEvcAttachments] = useState<EvcAttachment[] | null>(null);
@@ -36,6 +30,7 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
   const [pagination, setPagination] = usePagination();
   const [filters, setFilters] = useState<EvcFilters>(getDefaultEvcFilters());
   const [submittedFilters, setSubmittedFilters] = useState<EvcFilters>(getDefaultEvcFilters());
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,23 +52,23 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
       };
       const callbacks = callbackUtils.getCallbacks;
       const apiEvcAttachments = await callbacks.getEvcAttachments(
-        bearerId,
+        unwrap(bearerId),
         paginationParams,
         submittedFilters,
         'nonconfig',
       );
       const clientEvcAttachments = apiEvcAttachmentsToClientEvcAttachments(apiEvcAttachments);
       setEvcAttachments(clientEvcAttachments);
-      const evcCount = await callbacks.getEvcAttachmentsCount(bearerId, submittedFilters, 'nonconfig');
+      const evcCount = await callbacks.getEvcAttachmentsCount(unwrap(bearerId), submittedFilters, 'nonconfig');
       setPagination({
         ...pagination,
         pageCount: Math.ceil(evcCount / pagination.pageSize),
       });
 
       // get data for changes table
-      const allSavedEvcAttachments = await callbacks.getEvcAttachments(bearerId, null, null, 'nonconfig');
+      const allSavedEvcAttachments = await callbacks.getEvcAttachments(unwrap(bearerId), null, null, 'nonconfig');
       const clientAllEvcAttachments = apiEvcAttachmentsToClientEvcAttachments(allSavedEvcAttachments);
-      const allUnsavedEvcAttachments = await callbacks.getEvcAttachments(bearerId, null, null);
+      const allUnsavedEvcAttachments = await callbacks.getEvcAttachments(unwrap(bearerId), null, null);
       const clientAllUnsavedEvcAttachments = apiEvcAttachmentsToClientEvcAttachments(allUnsavedEvcAttachments);
       const result = diff(clientAllEvcAttachments, clientAllUnsavedEvcAttachments, 'circuitReference');
       setCreatedEvcAttachments(result.added);
@@ -114,6 +109,10 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
       page: 1,
     });
     setSubmittedFilters(filters);
+  };
+
+  const handleEditEvcRedirect = (vpnBearerId: string, evcType: string, circuitReference: string) => {
+    navigate(`../vpn-bearers/${vpnBearerId}/evc-attachments/edit/${evcType}/${circuitReference}`);
   };
 
   if (!bearer) {
@@ -168,7 +167,7 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
           <Heading as="h2" size="lg">
             EVC Attachments (Bearer: {bearer.spBearerReference})
           </Heading>
-          <Button colorScheme="blue" onClick={() => onCreateEvcClick(bearer.spBearerReference)}>
+          <Button colorScheme="blue" as={Link} to={`../vpn-bearers/${bearerId}/evc-attachments/add`}>
             Add Evc Attachment
           </Button>
         </Flex>
@@ -183,7 +182,7 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
                   bearer={bearer}
                   evcAttachments={changedEvcAttachmentsWithStatus}
                   detailId={detailId}
-                  onEditEvcButtonClick={onEditEvcClick}
+                  onEditEvcButtonClick={handleEditEvcRedirect}
                   onDeleteEvcButtonClick={handleDeleteButtonClick}
                   onRowClick={handleRowClick}
                 />
@@ -195,7 +194,7 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
             bearer={bearer}
             evcAttachments={savedEvcAttachmentsWithStatus}
             detailId={detailId}
-            onEditEvcButtonClick={onEditEvcClick}
+            onEditEvcButtonClick={handleEditEvcRedirect}
             onDeleteEvcButtonClick={handleDeleteButtonClick}
             onRowClick={handleRowClick}
           />
@@ -204,7 +203,7 @@ const EvcListPage: VoidFunctionComponent<Props> = ({ onCreateEvcClick, onEditEvc
           </Box>
         </Box>
         <Box py={6}>
-          <Button onClick={() => onBearerListClick()} colorScheme="blue">
+          <Button as={Link} to="../vpn-bearers" colorScheme="blue">
             Back to list
           </Button>
         </Box>

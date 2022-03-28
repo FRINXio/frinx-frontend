@@ -2,6 +2,7 @@ import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Toolti
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 import { CustomerLocation, VpnSite } from '../../components/forms/site-types';
 import unwrap from '../../helpers/unwrap';
 import LocationDetail from './location-detail';
@@ -10,9 +11,7 @@ type Props = {
   site: VpnSite;
   detailId: string | null;
   locations: CustomerLocation[];
-  onEditLocationButtonClick: (siteId: string, locationId: string) => void;
   onDeleteLocationButtonClick: (siteId: string) => void;
-  onDevicesSiteButtonClick: (siteId: string, locationId: string) => void;
   onRowClick: (rowId: string, isOpen: boolean) => void;
 };
 
@@ -21,8 +20,6 @@ const LocationTable: VoidFunctionComponent<Props> = ({
   detailId,
   locations,
   onDeleteLocationButtonClick,
-  onEditLocationButtonClick,
-  onDevicesSiteButtonClick,
   onRowClick,
 }) => {
   return (
@@ -73,9 +70,8 @@ const LocationTable: VoidFunctionComponent<Props> = ({
                       aria-label="edit"
                       size="sm"
                       icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                      onClick={() => {
-                        onEditLocationButtonClick(unwrap(site.siteId), unwrap(location.locationId));
-                      }}
+                      as={Link}
+                      to={`../sites/${site.siteId}/locations/edit/${location.locationId}`}
                     />
                   </Tooltip>
                   <Tooltip label="Manage devices">
@@ -83,9 +79,8 @@ const LocationTable: VoidFunctionComponent<Props> = ({
                       aria-label="devices"
                       size="sm"
                       icon={<Icon size={12} as={FeatherIcon} icon="hard-drive" />}
-                      onClick={() => {
-                        onDevicesSiteButtonClick(unwrap(site.siteId), unwrap(location.locationId));
-                      }}
+                      as={Link}
+                      to={`../sites/${site.siteId}/${location.locationId}/devices`}
                     />
                   </Tooltip>
                   <Tooltip label="Delete location">

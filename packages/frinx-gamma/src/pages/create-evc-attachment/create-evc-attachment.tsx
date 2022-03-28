@@ -1,6 +1,6 @@
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Box, Container, Heading } from '@chakra-ui/react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import unwrap from '../../helpers/unwrap';
 import {
   apiBearerToClientBearer,
@@ -33,11 +33,6 @@ type SvlanWorkflowData = {
   };
 };
 
-type Props = {
-  onSuccess: (siteId: string) => void;
-  onCancel: (siteId: string) => void;
-};
-
 function getSelectedBearer(bearers: VpnBearer[], bearerId: string): VpnBearer {
   const [vpnBearer] = bearers.filter((b) => b.spBearerReference === bearerId);
   return vpnBearer;
@@ -55,13 +50,14 @@ function freeResources(spBearerReference: string, svlanId: number) {
   });
 }
 
-const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+const CreateEvcAttachmentPage: VoidFunctionComponent = () => {
   const [isLoadingSvlan, setIsLoadingSvlan] = useState<boolean>(false);
   const [svlanId, setSvlanId] = useState<number | null>(null);
   const [selectedBearer, setSelectedBearer] = useState<VpnBearer | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const { bearerId } = useParams<{ bearerId: string }>();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,7 +65,7 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
       const callbacks = callbackUtils.getCallbacks;
       const bearers = await callbacks.getVpnBearers(null, null);
       const clientVpnBearers = apiBearerToClientBearer(bearers);
-      const bearer = getSelectedBearer(clientVpnBearers, bearerId);
+      const bearer = getSelectedBearer(clientVpnBearers, unwrap(bearerId));
       setSelectedBearer(bearer);
 
       const profiles = await callbacks.getBearerValidProviderIdentifiers();
@@ -100,7 +96,7 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
       await callbacks.editVpnBearer(apiBearer);
       // eslint-disable-next-line no-console
       console.log('bearer saved: evc attachment added to bearer');
-      onSuccess(unwrap(bearerId));
+      navigate(`../vpn-bearers/${bearerId}/evc-attachments`);
     } catch (e) {
       setSubmitError(String(e));
     }
@@ -112,7 +108,7 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     if (selectedBearer?.spBearerReference && svlanId) {
       freeResources(selectedBearer.spBearerReference, svlanId);
     }
-    onCancel(unwrap(selectedBearer?.spBearerReference));
+    navigate(`../vpn-bearers/${bearerId}/evc-attachments`);
   };
 
   const handleReset = () => {
@@ -133,7 +129,7 @@ const CreateEvcAttachmentPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
       name: 'Allocate_SvlanId',
       version: 1,
       input: {
-        sp_bearer_reference: bearerId, // eslint-disable-line @typescript-eslint/naming-convention
+        sp_bearer_reference: unwrap(bearerId), // eslint-disable-line @typescript-eslint/naming-convention
       },
     });
 
