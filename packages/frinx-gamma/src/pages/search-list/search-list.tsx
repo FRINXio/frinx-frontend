@@ -60,7 +60,7 @@ function getWorkflowInput(
   };
 }
 
-const CreateVpnServicePage: VoidFunctionComponent = () => {
+const SearchListPage: VoidFunctionComponent = () => {
   const [isFetchingData, setIsFetchingData] = useState(false);
   const [workflowId, setWorkflowId] = useState<string | null>(null);
   const [searchResult, setSearchResult] = useState<TableItem[] | null>(null);
@@ -174,4 +174,4 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
   );
 };
 
-export default CreateVpnServicePage;
+export default SearchListPage;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useDisclosure, Heading, Box, Container, Flex, Button } from '@chakra-ui/react';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router-dom';
 import diff from 'diff-arrays-of-objects';
 import {
   apiSiteNetworkAccessToClientSiteNetworkAccess,
@@ -17,17 +17,7 @@ import Pagination from '../../components/pagination/pagination';
 import { getChangedNetworkAccessesWithStatus, getSavedNetworkAccessesWithStatus } from './site-network-access-helpers';
 import unwrap from '../../helpers/unwrap';
 
-type Props = {
-  onCreateSiteNetworkAccessClick: (siteId: string) => void;
-  onEditSiteNetworkAccessClick: (siteId: string, accessId: string) => void;
-  onSiteListClick: () => void;
-};
-
-const SiteListPage: VoidFunctionComponent<Props> = ({
-  onCreateSiteNetworkAccessClick,
-  onEditSiteNetworkAccessClick,
-  onSiteListClick,
-}) => {
+const SiteListPage: VoidFunctionComponent = () => {
   const [createdNetworkAccesses, setCreatedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
   const [updatedNetworkAccesses, setUpdatedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
   const [deletedNetworkAccesses, setDeletedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
@@ -70,23 +60,27 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
       };
       const callbacks = callbackUtils.getCallbacks;
       const apiNetworkAccesses = await callbacks.getSiteNetworkAccesses(
-        siteId,
+        unwrap(siteId),
         paginationParams,
         submittedFilters,
         'nonconfig',
       );
       const clientNetworkAccesses = apiSiteNetworkAccessToClientSiteNetworkAccess(apiNetworkAccesses);
       setNetworkAccesses(clientNetworkAccesses);
-      const networkAccessesCount = await callbacks.getSiteNetworkAccessesCount(siteId, submittedFilters, 'nonconfig');
+      const networkAccessesCount = await callbacks.getSiteNetworkAccessesCount(
+        unwrap(siteId),
+        submittedFilters,
+        'nonconfig',
+      );
       setPagination({
         ...pagination,
         pageCount: Math.ceil(networkAccessesCount / pagination.pageSize),
       });
 
       // get data for changes table
-      const allSavedNetworkAccesses = await callbacks.getSiteNetworkAccesses(siteId, null, null, 'nonconfig');
+      const allSavedNetworkAccesses = await callbacks.getSiteNetworkAccesses(unwrap(siteId), null, null, 'nonconfig');
       const clientAllSavedNetworkAccesses = apiSiteNetworkAccessToClientSiteNetworkAccess(allSavedNetworkAccesses);
-      const allUnsavedNetworkAccesses = await callbacks.getSiteNetworkAccesses(siteId, null, null);
+      const allUnsavedNetworkAccesses = await callbacks.getSiteNetworkAccesses(unwrap(siteId), null, null);
       const clientAllUnsavedNetworkAccesses = apiSiteNetworkAccessToClientSiteNetworkAccess(allUnsavedNetworkAccesses);
       const result = diff(clientAllSavedNetworkAccesses, clientAllUnsavedNetworkAccesses, 'siteNetworkAccessId');
       setCreatedNetworkAccesses(result.added);
@@ -178,7 +172,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
           <Heading as="h2" size="lg">
             Sites Network Accesses (Site: {site.siteId})
           </Heading>
-          <Button colorScheme="blue" onClick={() => onCreateSiteNetworkAccessClick(siteId)}>
+          <Button colorScheme="blue" as={Link} to={`../sites/detail/${unwrap(siteId)}/add-access`}>
             Add network access
           </Button>
         </Flex>
@@ -194,11 +188,10 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
                 <Heading size="sm">Changes</Heading>
                 <Box my="2">
                   <SiteNetworkAccessTable
-                    siteId={siteId}
+                    siteId={unwrap(siteId)}
                     size="sm"
                     detailId={detailId}
                     networkAccesses={changedNetworkAccessesWithStatus}
-                    onEditSiteNetworkAccessButtonClick={onEditSiteNetworkAccessClick}
                     onDeleteSiteNetworkAccessButtonClick={handleDeleteButtonClick}
                     onRowClick={handleRowClick}
                   />
@@ -206,11 +199,10 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
               </>
             ) : null}
             <SiteNetworkAccessTable
-              siteId={siteId}
+              siteId={unwrap(siteId)}
               detailId={detailId}
               size="md"
               networkAccesses={savedNetworkAccessesWithStatus}
-              onEditSiteNetworkAccessButtonClick={onEditSiteNetworkAccessClick}
               onDeleteSiteNetworkAccessButtonClick={handleDeleteButtonClick}
               onRowClick={handleRowClick}
             />
@@ -220,7 +212,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
           </>
         </Box>
         <Box py={6}>
-          <Button onClick={() => onSiteListClick()} colorScheme="blue">
+          <Button as={Link} to="../sites" colorScheme="blue">
             Back to list
           </Button>
         </Box>

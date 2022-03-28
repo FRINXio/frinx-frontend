@@ -2,6 +2,7 @@ import React, { VoidFunctionComponent } from 'react';
 import { Button, FormLabel, FormErrorMessage, Input, Select, Stack, FormControl } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { Link } from 'react-router-dom';
 import { CustomerLocation } from './site-types';
 import { getSelectOptions } from './options.helper';
 
@@ -15,13 +16,13 @@ const LocationSchema = yup.object().shape({
 });
 
 type Props = {
+  siteId: string;
   location: CustomerLocation;
   buttonText: string;
   onSubmit: (location: CustomerLocation) => void;
-  onCancel: () => void;
 };
 
-const CustomerLocationForm: VoidFunctionComponent<Props> = ({ location, buttonText, onSubmit, onCancel }) => {
+const CustomerLocationForm: VoidFunctionComponent<Props> = ({ location, buttonText, onSubmit, siteId }) => {
   const { values, errors, dirty, resetForm, handleChange, handleSubmit } = useFormik({
     initialValues: {
       ...location,
@@ -72,7 +73,9 @@ const CustomerLocationForm: VoidFunctionComponent<Props> = ({ location, buttonTe
           {buttonText}
         </Button>
         <Button onClick={() => resetForm()}>Clear</Button>
-        <Button onClick={onCancel}>Cancel</Button>
+        <Button as={Link} to={`../sites/${siteId}/locations`}>
+          Cancel
+        </Button>
       </Stack>
     </form>
   );

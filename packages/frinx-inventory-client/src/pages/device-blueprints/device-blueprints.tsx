@@ -21,7 +21,8 @@ import {
 import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { useMemo, VoidFunctionComponent } from 'react';
-import { gql, useQuery, useMutation } from 'urql';
+import { Link } from 'react-router-dom';
+import { gql, useMutation, useQuery } from 'urql';
 import { getLocalDateFromUTC } from '../../helpers/time.helpers';
 import {
   BlueprintsQuery,
@@ -53,12 +54,7 @@ const DELETE_BLUEPRINT_MUTATION = gql`
   }
 `;
 
-type Props = {
-  onAddButtonClick: () => void;
-  onEditBlueprintButtonClick: (blueprintId: string) => void;
-};
-
-const DeviceBlueprints: VoidFunctionComponent<Props> = ({ onAddButtonClick, onEditBlueprintButtonClick }) => {
+const DeviceBlueprints: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Blueprint'] }), []);
   const [{ data, fetching, error }] = useQuery<BlueprintsQuery, BlueprintsQueryVariables>({
     query: BLUEPRINTS_QUERY,
@@ -88,7 +84,7 @@ const DeviceBlueprints: VoidFunctionComponent<Props> = ({ onAddButtonClick, onEd
         <Heading as="h2" size="3xl">
           Device blueprints
         </Heading>
-        <Button colorScheme="blue" onClick={onAddButtonClick}>
+        <Button colorScheme="blue" as={Link} to="new">
           Add blueprint
         </Button>
       </Flex>
@@ -132,7 +128,8 @@ const DeviceBlueprints: VoidFunctionComponent<Props> = ({ onAddButtonClick, onEd
                       size="sm"
                       variant="unstyled"
                       icon={<Icon size={12} as={EditIcon} />}
-                      onClick={() => onEditBlueprintButtonClick(blueprint.id)}
+                      as={Link}
+                      to={`${blueprint.id}/edit`}
                     />
                     <IconButton
                       colorScheme="red"

@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { Progress } from '@chakra-ui/react';
 import { ExecutedWorkflowsFlat, ExecutedWorkflowsHierarchical, NestedExecutedWorkflow } from '../../../types/types';
 import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   fetchNewData,
   fetchParentWorkflows,
@@ -48,9 +48,7 @@ const initialState = {
 };
 
 const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
-  const location = useLocation();
-  console.log(location);
-  const history = useHistory();
+  const navigate = useNavigate();
   const query = useQueryParams();
   const searchKeyword = query.get('search') || '';
 
@@ -90,7 +88,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   ]);
 
   useEffect(() => {
-    history.replace({ search: state.workflowId ? `search=${state.workflowId}` : '' });
+    navigate({ search: state.workflowId ? `search=${state.workflowId}` : '' }, { replace: true });
   }, [state.workflowId]);
 
   useEffect(() => {

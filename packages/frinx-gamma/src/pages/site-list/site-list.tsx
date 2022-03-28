@@ -2,6 +2,7 @@ import { Box, Button, Container, Flex, Heading, HStack, useDisclosure } from '@c
 import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import { SearchIcon } from '@chakra-ui/icons';
 import diff from 'diff-arrays-of-objects';
+import { Link, useNavigate } from 'react-router-dom';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
@@ -14,23 +15,7 @@ import Pagination from '../../components/pagination/pagination';
 import { getChangedSitesWithStatus, getSavedSitesWithStatus } from './site-helpers';
 import FilterContext from '../../filter-provider';
 
-type Props = {
-  onAdvancedSearchClick: () => void;
-  onCreateVpnSiteClick: () => void;
-  onEditVpnSiteClick: (siteId: string) => void;
-  onLocationsVpnSiteClick: (siteId: string) => void;
-  onDevicesVpnSiteClick: (siteId: string) => void;
-  onDetailVpnSiteClick: (siteId: string) => void;
-};
-
-const SiteListPage: VoidFunctionComponent<Props> = ({
-  onAdvancedSearchClick,
-  onCreateVpnSiteClick,
-  onEditVpnSiteClick,
-  onLocationsVpnSiteClick,
-  onDevicesVpnSiteClick,
-  onDetailVpnSiteClick,
-}) => {
+const SiteListPage: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);
   const { site: siteFilters, onSiteFilterChange } = unwrap(filterContext);
   const [createdSites, setCreatedSites] = useState<VpnSite[] | null>(null);
@@ -43,6 +28,7 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
   const [pagination, setPagination] = usePagination();
   const [filters, setFilters] = useState<SiteFilters>(siteFilters);
   const [submittedFilters, setSubmittedFilters] = useState<SiteFilters>(siteFilters);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -105,6 +91,22 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
     setDetailId(isOpen ? rowId : null);
   };
 
+  const handleEditSiteRedirect = (siteId: string) => {
+    navigate(`../sites/edit/${siteId}`);
+  };
+
+  const handleDetailRedirect = (siteId: string) => {
+    navigate(`../sites/detail/${siteId}`);
+  };
+
+  const handleLocationsRedirect = (siteId: string) => {
+    navigate(`../sites/${siteId}/locations`);
+  };
+
+  const handleDevicesRedirect = (siteId: string) => {
+    navigate(`../sites/${siteId}/devices`);
+  };
+
   const changedSitesWithStatus = getChangedSitesWithStatus(createdSites, updatedSites, deletedSites);
   const savedSitesWithStatus = getSavedSitesWithStatus(sites, updatedSites, deletedSites);
 
@@ -136,10 +138,10 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
             Sites
           </Heading>
           <HStack>
-            <Button leftIcon={<SearchIcon />} colorScheme="blue" onClick={onAdvancedSearchClick}>
+            <Button leftIcon={<SearchIcon />} colorScheme="blue" as={Link} to="../search">
               Advanced Search
             </Button>
-            <Button colorScheme="blue" onClick={onCreateVpnSiteClick}>
+            <Button colorScheme="blue" as={Link} to="../sites/add">
               Add site
             </Button>
           </HStack>
@@ -156,10 +158,10 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
                       sites={changedSitesWithStatus}
                       size="sm"
                       detailId={detailId}
-                      onEditSiteButtonClick={onEditVpnSiteClick}
-                      onDetailSiteButtonClick={onDetailVpnSiteClick}
-                      onLocationsSiteButtonClick={onLocationsVpnSiteClick}
-                      onDevicesSiteButtonClick={onDevicesVpnSiteClick}
+                      onEditSiteButtonClick={handleEditSiteRedirect}
+                      onDetailSiteButtonClick={handleDetailRedirect}
+                      onLocationsSiteButtonClick={handleLocationsRedirect}
+                      onDevicesSiteButtonClick={handleDevicesRedirect}
                       onDeleteSiteButtonClick={handleDeleteButtonClick}
                       onRowClick={handleRowClick}
                     />
@@ -170,10 +172,10 @@ const SiteListPage: VoidFunctionComponent<Props> = ({
                 sites={savedSitesWithStatus}
                 size="md"
                 detailId={detailId}
-                onEditSiteButtonClick={onEditVpnSiteClick}
-                onDetailSiteButtonClick={onDetailVpnSiteClick}
-                onLocationsSiteButtonClick={onLocationsVpnSiteClick}
-                onDevicesSiteButtonClick={onDevicesVpnSiteClick}
+                onEditSiteButtonClick={handleEditSiteRedirect}
+                onDetailSiteButtonClick={handleDetailRedirect}
+                onLocationsSiteButtonClick={handleLocationsRedirect}
+                onDevicesSiteButtonClick={handleDevicesRedirect}
                 onDeleteSiteButtonClick={handleDeleteButtonClick}
                 onRowClick={handleRowClick}
               />
