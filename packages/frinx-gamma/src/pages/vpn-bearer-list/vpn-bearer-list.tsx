@@ -1,6 +1,7 @@
 import { Box, Button, Container, Flex, Heading, HStack, Icon, useDisclosure } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
@@ -14,21 +15,7 @@ import Pagination from '../../components/pagination/pagination';
 import { getChangedBearersWithStatus, getSavedBearersWithStatus } from './bearer-helpers';
 import FilterContext from '../../filter-provider';
 
-type Props = {
-  onCreateVpnNodeClick: () => void;
-  onCreateVpnCarrierClick: () => void;
-  onCreateVpnBearerClick: () => void;
-  onEditVpnBearerClick: (bearerId: string) => void;
-  onEvcAttachmentSiteClick: (bearerId: string) => void;
-};
-
-const VpnBearerList: VoidFunctionComponent<Props> = ({
-  onCreateVpnNodeClick,
-  onCreateVpnCarrierClick,
-  onCreateVpnBearerClick,
-  onEditVpnBearerClick,
-  onEvcAttachmentSiteClick,
-}) => {
+const VpnBearerList: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);
   const { bearer: bearerFilters, onBearerFilterChange } = unwrap(filterContext);
   const [createdBearers, setCreatedBearers] = useState<VpnBearer[] | null>(null);
@@ -41,6 +28,7 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
   const [pagination, setPagination] = usePagination();
   const [filters, setFilters] = useState<VpnBearerFilters>(bearerFilters);
   const [submittedFilters, setSubmittedFilters] = useState<VpnBearerFilters>(bearerFilters);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -103,6 +91,14 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
     setDetailId(isOpen ? rowId : null);
   };
 
+  const handleEditBearerRedirect = (bearerId: string) => {
+    navigate(`../vpn-bearers/edit/${bearerId}`);
+  };
+
+  const handleEvcAttachmentsRedirect = (bearerId: string) => {
+    navigate(`../vpn-bearers/${bearerId}/evc-attachments`);
+  };
+
   const changedBearersWithStatus = getChangedBearersWithStatus(createdBearers, updatedBearers, deletedBearers);
   const savedBearersWithStatus = getSavedBearersWithStatus(vpnBearers, updatedBearers, deletedBearers);
 
@@ -127,15 +123,16 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
             Bearers
           </Heading>
           <HStack>
-            <Button colorScheme="blue" onClick={onCreateVpnNodeClick}>
+            <Button colorScheme="blue" as={Link} to="../vpn-bearers/add-node">
               Nodes
             </Button>
-            <Button colorScheme="blue" onClick={onCreateVpnCarrierClick}>
+            <Button colorScheme="blue" as={Link} to="../vpn-bearers/add-carrier">
               Carriers
             </Button>
             <Button
               colorScheme="blue"
-              onClick={onCreateVpnBearerClick}
+              as={Link}
+              to="../vpn-bearers/add"
               leftIcon={<Icon as={FeatherIcon} icon="plus" />}
             >
               Add bearer
@@ -158,9 +155,9 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
                       size="sm"
                       detailId={detailId}
                       bearers={changedBearersWithStatus}
-                      onEditVpnBearerClick={onEditVpnBearerClick}
+                      onEditVpnBearerClick={handleEditBearerRedirect}
                       onDeleteVpnBearerClick={handleDeleteButtonClick}
-                      onEvcAttachmentSiteClick={onEvcAttachmentSiteClick}
+                      onEvcAttachmentSiteClick={handleEvcAttachmentsRedirect}
                       onRowClick={handleRowClick}
                     />
                   </Box>
@@ -170,9 +167,9 @@ const VpnBearerList: VoidFunctionComponent<Props> = ({
                 size="md"
                 detailId={detailId}
                 bearers={savedBearersWithStatus}
-                onEditVpnBearerClick={onEditVpnBearerClick}
+                onEditVpnBearerClick={handleEditBearerRedirect}
                 onDeleteVpnBearerClick={handleDeleteButtonClick}
-                onEvcAttachmentSiteClick={onEvcAttachmentSiteClick}
+                onEvcAttachmentSiteClick={handleEvcAttachmentsRedirect}
                 onRowClick={handleRowClick}
               />
               <Box m="4">

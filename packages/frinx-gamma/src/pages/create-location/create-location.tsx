@@ -1,6 +1,6 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import callbackUtils from '../../unistore-callback-utils';
 import { apiVpnSitesToClientVpnSite, clientVpnSiteToApiVpnSite } from '../../components/forms/converters';
 import CustomerLocationForm from '../../components/forms/customer-location-form';
@@ -20,20 +20,16 @@ const getDefaultLocation = (): CustomerLocation => {
   };
 };
 
-type Props = {
-  onSuccess: (siteId: string) => void;
-  onCancel: (siteId: string) => void;
-};
-
 function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
   const [vpnService] = sites.filter((s) => unwrap(s.siteId) === siteId);
   return vpnService;
 }
 
-const CreateLocationPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+const CreateLocationPage: VoidFunctionComponent = () => {
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const { siteId } = useParams<{ siteId: string }>();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,7 +37,7 @@ const CreateLocationPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel 
       // TODO: we can fetch all in promise all?
       const sites = await callbacks.getVpnSites(null, null);
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
-      setSelectedSite(getSelectedSite(clientVpnSites, siteId));
+      setSelectedSite(getSelectedSite(clientVpnSites, unwrap(siteId)));
     };
 
     fetchData();
@@ -65,7 +61,7 @@ const CreateLocationPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel 
     try {
       const apiSite = clientVpnSiteToApiVpnSite(editedSite);
       await callbacks.editVpnSite(apiSite);
-      onSuccess(unwrap(siteId));
+      navigate(`../sites/${siteId}/locations`);
     } catch (e) {
       setSubmitError(String(e));
     }
@@ -77,12 +73,10 @@ const CreateLocationPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel 
         <Heading size="md">Create customer location</Heading>
         {submitError && <ErrorMessage text={String(submitError)} />}
         <CustomerLocationForm
+          siteId={unwrap(siteId)}
           location={getDefaultLocation()}
           buttonText="Create location"
           onSubmit={handleFormSubmit}
-          onCancel={() => {
-            onCancel(siteId);
-          }}
         />
       </Box>
     </Container>

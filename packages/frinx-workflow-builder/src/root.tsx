@@ -1,6 +1,7 @@
 import { Box, ChakraProvider, Container, Heading } from '@chakra-ui/react';
 import { saveAs } from 'file-saver';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import { useParams } from 'react-router-dom';
 import App from './app';
 import callbackUtils from './callback-utils';
 import WorkflowForm from './components/workflow-form/workflow-form';
@@ -11,8 +12,6 @@ import { TaskActionsProvider } from './task-actions-context';
 import theme from './theme';
 
 type Props = {
-  name?: string;
-  version?: string;
   onClose: () => void;
   onExecuteSuccessClick: (workflowId: string) => void;
   onEditWorkflowClick: (name: string, version: string) => void;
@@ -20,13 +19,12 @@ type Props = {
 };
 
 const Root: VoidFunctionComponent<Props> = ({
-  name,
-  version,
   onClose,
   onExecuteSuccessClick,
   onEditWorkflowClick,
   onNewWorkflowClick,
 }) => {
+  const { name, version } = useParams<{ name: string; version: string }>();
   const [workflow, setWorkflow] = useState<Workflow<ExtendedTask> | null>(null);
   const [workflows, setWorkflows] = useState<Workflow[] | null>(null);
   const [taskDefinitions, setTaskDefinitions] = useState<TaskDefinition[] | null>(null);

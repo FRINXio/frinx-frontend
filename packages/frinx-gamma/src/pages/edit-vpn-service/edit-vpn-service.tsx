@@ -1,6 +1,6 @@
 import { Box, Container, Flex, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { apiVpnServiceToClientVpnService, clientVpnServiceToApiVpnService } from '../../components/forms/converters';
 import { VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
@@ -11,20 +11,16 @@ import { getSelectOptions } from '../../components/forms/options.helper';
 
 const extranetVpns = getSelectOptions(window.__GAMMA_FORM_OPTIONS__.service.extranet_vpns).map((item) => item.key);
 
-type Props = {
-  onSuccess: () => void;
-  onCancel: () => void;
-};
-
 function getSelectedService(services: VpnService[], serviceId: string): VpnService {
   const [vpnService] = services.filter((s) => unwrap(s.vpnId) === serviceId);
   return vpnService;
 }
 
-const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
+const EditVpnServicePage: VoidFunctionComponent = () => {
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const { serviceId } = useParams<{ serviceId: string }>();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +41,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
       const callbacks = callbackUtils.getCallbacks;
       const vpnService = clientVpnServiceToApiVpnService(service);
       await callbacks.editVpnServices(vpnService);
-      onSuccess();
+      navigate('../services');
     } catch (e) {
       setSubmitError(String(e));
     }
@@ -54,7 +50,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    onCancel();
+    navigate('../services');
   };
 
   // TODO: add some loading state
@@ -62,7 +58,7 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
     return null;
   }
 
-  const selectedService = getSelectedService(vpnServices, serviceId);
+  const selectedService = getSelectedService(vpnServices, unwrap(serviceId));
 
   return (
     <Container>
@@ -85,4 +81,4 @@ const CreateVpnServicePage: VoidFunctionComponent<Props> = ({ onSuccess, onCance
   );
 };
 
-export default CreateVpnServicePage;
+export default EditVpnServicePage;

@@ -2,6 +2,7 @@ import { Box, Button, Container, Flex, Heading, HStack, Progress, Spacer, useDis
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FC, useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
+import { Link } from 'react-router-dom';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal';
 import Pagination from '../../components/pagination';
 import unwrap from '../../helpers/unwrap';
@@ -108,12 +109,6 @@ const DELETE_DEVICE_MUTATION = gql`
   }
 `;
 
-type Props = {
-  onAddButtonClick: () => void;
-  onSettingsButtonClick: (deviceId: string) => void;
-  onEditButtonClick: (deviceId: string) => void;
-};
-
 type SortedBy = 'name' | 'created';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
@@ -160,7 +155,7 @@ function getSorting(sorting: Sorting | null, sortedBy: SortedBy): Sorting | null
   };
 }
 
-const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettingsButtonClick, onEditButtonClick }) => {
+const DeviceList: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const deleteModalDisclosure = useDisclosure();
   const { addToastNotification } = useNotifications();
@@ -434,7 +429,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
           <Heading as="h2" size="3xl">
             Devices
           </Heading>
-          <Button colorScheme="blue" onClick={onAddButtonClick}>
+          <Button as={Link} colorScheme="blue" to="../new">
             Add device
           </Button>
         </Flex>
@@ -488,9 +483,7 @@ const DeviceList: VoidFunctionComponent<Props> = ({ onAddButtonClick, onSettings
             onSortingClick={handleSortingChange}
             onInstallButtonClick={(deviceId) => installDevices([deviceId])}
             onUninstallButtonClick={handleUninstallButtonClick}
-            onSettingsButtonClick={onSettingsButtonClick}
             onDeleteBtnClick={handleDeleteBtnClick}
-            onEditDeviceButtonClick={onEditButtonClick}
             installLoadingMap={installLoadingMap}
             onDeviceSelection={handleDeviceSelection}
           />

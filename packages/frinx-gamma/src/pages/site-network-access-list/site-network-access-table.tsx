@@ -2,6 +2,7 @@ import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, 
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 import { SiteNetworkAccessWithStatus } from './site-network-access-helpers';
 import StatusTag from '../../components/status-tag/status-tag';
 import SiteNetworkAccessDetail from './site-network-access-detail';
@@ -12,7 +13,6 @@ type Props = {
   siteId: string;
   detailId: string | null;
   networkAccesses: SiteNetworkAccessWithStatus[];
-  onEditSiteNetworkAccessButtonClick: (siteId: string, accessId: string) => void;
   onDeleteSiteNetworkAccessButtonClick: (siteId: string) => void;
   onRowClick: (rowId: string, isOpen: boolean) => void;
 };
@@ -22,7 +22,6 @@ const SiteTable: VoidFunctionComponent<Props> = ({
   siteId,
   detailId,
   networkAccesses,
-  onEditSiteNetworkAccessButtonClick,
   onDeleteSiteNetworkAccessButtonClick,
   onRowClick,
 }) => {
@@ -78,7 +77,8 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                         aria-label="edit"
                         size="sm"
                         icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                        onClick={() => onEditSiteNetworkAccessButtonClick(siteId, access.siteNetworkAccessId)}
+                        as={Link}
+                        to={`../sites/detail/${siteId}/edit-access/${access.siteNetworkAccessId}`}
                       />
                     </Tooltip>
                     <Tooltip label="Delete site network access">

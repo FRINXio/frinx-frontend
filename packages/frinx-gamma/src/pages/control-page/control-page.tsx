@@ -12,12 +12,6 @@ import {
 } from '../../components/commit-status-modal/commit-status-modal.helpers';
 import DiscardChangesModal from '../../components/discard-changes-modal/discard-changes';
 
-type Props = {
-  onServicesSiteLinkClick: () => void;
-  onSitesSiteLinkClick: () => void;
-  onVpnBearerLinkClick: () => void;
-};
-
 type CountState = {
   services: number;
   sites: number;
@@ -65,11 +59,7 @@ function makeTotalCountState(
   return DEFAULT_UNCOMMITED_CHANGES;
 }
 
-const ControlPage: VoidFunctionComponent<Props> = ({
-  onServicesSiteLinkClick,
-  onSitesSiteLinkClick,
-  onVpnBearerLinkClick,
-}) => {
+const ControlPage: VoidFunctionComponent = () => {
   const discardChangesDisclosure = useDisclosure();
   const [countState, setCountState] = useState<TotalCountState>(DEFAULT_UNCOMMITED_CHANGES);
   const [workflowState, setWorkflowState] = useState<WorkflowState | null>(null);
@@ -211,9 +201,6 @@ const ControlPage: VoidFunctionComponent<Props> = ({
         </Flex>
         <Box>
           <ControlPageTable
-            onServicesSiteLinkClick={onServicesSiteLinkClick}
-            onSitesSiteLinkClick={onSitesSiteLinkClick}
-            onVpnBearerLinkClick={onVpnBearerLinkClick}
             countState={{
               ...uncommitedChanges,
               total: countState.total,

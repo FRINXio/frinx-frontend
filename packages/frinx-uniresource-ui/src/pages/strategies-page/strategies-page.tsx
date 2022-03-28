@@ -1,12 +1,13 @@
-import React, { FC, useCallback, useMemo, useState } from 'react';
-import { useQuery, useMutation } from 'urql';
-import gql from 'graphql-tag';
 import { Button, Flex, Heading, Icon, Spinner } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
+import gql from 'graphql-tag';
+import React, { useCallback, useMemo, useState, VoidFunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
+import { useMutation, useQuery } from 'urql';
 import {
-  QueryAllocationStrategiesQuery,
   DeleteStrategyMutation,
   DeleteStrategyMutationVariables,
+  QueryAllocationStrategiesQuery,
 } from '../../__generated__/graphql';
 import StrategiesTable from './strategies-table';
 import StrategyScriptModal from './strategy-script-modal';
@@ -35,11 +36,8 @@ type ScriptState = {
   lang: string;
   script: string;
 };
-type Props = {
-  onAddButtonClick: () => void;
-};
 
-const StrategiesPage: FC<Props> = ({ onAddButtonClick }) => {
+const StrategiesPage: VoidFunctionComponent = () => {
   const [scriptState, setScriptState] = useState<ScriptState | null>();
   const context = useMemo(() => ({ additionalTypenames: ['AllocationStrategy'] }), []);
   const [{ data, fetching, error }] = useQuery<QueryAllocationStrategiesQuery>({
@@ -87,9 +85,8 @@ const StrategiesPage: FC<Props> = ({ onAddButtonClick }) => {
           marginLeft="auto"
           leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
           colorScheme="blue"
-          onClick={() => {
-            onAddButtonClick();
-          }}
+          as={Link}
+          to="new"
         >
           Create new Strategy
         </Button>
