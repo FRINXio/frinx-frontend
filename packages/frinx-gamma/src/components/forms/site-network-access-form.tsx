@@ -556,7 +556,8 @@ const SiteNetAccessForm: FC<Props> = ({
         <Box paddingTop={6}>
           <Heading size="sm">IP Connection</Heading>
           <Grid templateColumns="repeat(4, 1fr)" gap="1">
-            <FormControl id="ip-address-allocation-type" my={1} isReadOnly>
+            {/* FD-190 hidden on gamma request */}
+            {/* <FormControl id="ip-address-allocation-type" my={1} isReadOnly>
               <FormLabel>Address Allocation Type</FormLabel>
               <Input
                 name="ip-address-allocation-type"
@@ -571,7 +572,7 @@ const SiteNetAccessForm: FC<Props> = ({
                   });
                 }}
               />
-            </FormControl>
+            </FormControl> */}
             <FormControl id="ip-prefix-length">
               <FormLabel>
                 <Flex justifyContent="space-between" alignItems="flex-start">
