@@ -101,7 +101,6 @@ function freeResources(customerAddress: string, siteId: string) {
 }
 
 const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCancel }) => {
-  const [workflowId, setWorkflowId] = useState<string | null>(null);
   const [customerAddress, setCustomerAddress] = useState<string | null>(null);
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
@@ -116,13 +115,6 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
   useEffect(() => {
     const fetchData = async () => {
       // TODO: we can fetch all in promise all?
-      const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
-      const workflowResult = await uniflowCallbacks.executeWorkflow({
-        name: 'Allocate_CustomerAddress',
-        version: 1,
-        input: {},
-      });
-      setWorkflowId(workflowResult.text);
       const callbacks = callbackUtils.getCallbacks;
       const sites = await callbacks.getVpnSites(null, null);
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
@@ -179,42 +171,7 @@ const CreateSiteNetAccessPage: VoidFunctionComponent<Props> = ({ onSuccess, onCa
     }
   };
 
-  const handleWorkflowFinish = (data: string | null) => {
-    if (data === null) {
-      return;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const { response_body }: CustomerAddressWorkflowData = JSON.parse(data);
-    setCustomerAddress(response_body.address);
-  };
-
-  if (!workflowId) {
-    return null;
-  }
-
-  if (!customerAddress) {
-    return (
-      <>
-        <Flex justifyContent="center">
-          <Spinner />
-        </Flex>
-        <PollWorkflowId workflowId={workflowId} onFinish={handleWorkflowFinish} />
-      </>
-    );
-  }
-
   const networkAccess: SiteNetworkAccess = getDefaultNetworkAccess(selectedSite);
-  networkAccess.ipConnection = {
-    ...networkAccess.ipConnection,
-    ipv4: {
-      ...networkAccess.ipConnection?.ipv4,
-      addresses: {
-        ...networkAccess.ipConnection?.ipv4?.addresses,
-        customerAddress,
-      },
-    },
-  };
 
   return (
     <Container maxWidth={1280}>
