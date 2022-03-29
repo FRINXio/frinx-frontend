@@ -150,7 +150,7 @@ const CreateSiteNetAccessPage: VoidFunctionComponent = () => {
       freeResources(customerAddress, unwrap(siteId));
     }
     if (providerAddress) {
-      freeResources(providerAddress, siteId);
+      freeResources(providerAddress, unwrap(siteId));
     }
     navigate(`../sites/detail/${selectedSite?.siteId}`);
   };
@@ -160,7 +160,7 @@ const CreateSiteNetAccessPage: VoidFunctionComponent = () => {
       freeResources(customerAddress, unwrap(siteId));
     }
     if (providerAddress) {
-      freeResources(providerAddress, siteId);
+      freeResources(providerAddress, unwrap(siteId));
     }
   };
 
