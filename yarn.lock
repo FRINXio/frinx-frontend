@@ -3059,13 +3059,13 @@ __metadata:
     html-webpack-plugin: 5.5.0
     immer: 9.0.12
     lodash: 4.17.21
-    minisearch: 3.3.0
+    minisearch: 4.0.3
     npm-run-all: 4.1.5
     react: 17.0.2
     react-ace: 9.5.0
     react-dom: 17.0.2
     react-flow-renderer: 9.7.4
-    react-router-dom: ^6.0.0
+    react-router-dom: 6.2.2
     style-loader: 2.0.0
     typescript: 4.6.2
     uuid: 8.3.2
@@ -12334,10 +12334,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minisearch@npm:3.3.0":
-  version: 3.3.0
-  resolution: "minisearch@npm:3.3.0"
-  checksum: bfc12beffedcc7bf0bd7f399abfebaef2b40b476cbd36748e7c378661d5968c9477f38f5ab39c39148a241554bb115232b95b41d9ca31f47200d12c5931b8ec1
+"minisearch@npm:4.0.3":
+  version: 4.0.3
+  resolution: "minisearch@npm:4.0.3"
+  checksum: 9730af234b69c5e37408b4eee54031300ff19b0b0c38877d8d69bf3957ad8ebe1113285a9f63b202db93115483b5bfb729884363db967a45b1c0f172a41d2c9e
   languageName: node
   linkType: hard
 
@@ -13999,7 +13999,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:6.2.2, react-router-dom@npm:^6.0.0":
+"react-router-dom@npm:6.2.2":
   version: 6.2.2
   resolution: "react-router-dom@npm:6.2.2"
   dependencies:

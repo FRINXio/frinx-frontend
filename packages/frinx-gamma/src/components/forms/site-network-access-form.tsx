@@ -632,12 +632,7 @@ const SiteNetAccessForm: FC<Props> = ({
                 />
               </Flex>
             </FormControl>
-            <FormControl
-              id="ip-provider-address"
-              my={1}
-              isInvalid={providerAddressError != null}
-              isDisabled={workflowId !== null}
-            >
+            <FormControl id="ip-provider-address" my={1} isInvalid={providerAddressError != null} isDisabled>
               <FormLabel>Provider Address</FormLabel>
               <Input
                 name="providerAddress"
@@ -662,12 +657,7 @@ const SiteNetAccessForm: FC<Props> = ({
                 </Text>
               )}
             </FormControl>
-            <FormControl
-              id="ip-customer-address"
-              my={1}
-              isInvalid={customerAddressError != null}
-              isDisabled={workflowId !== null}
-            >
+            <FormControl id="ip-customer-address" my={1} isInvalid={customerAddressError != null} isDisabled>
               <FormLabel>Customer Address</FormLabel>
               <Input
                 name="customer-address"
