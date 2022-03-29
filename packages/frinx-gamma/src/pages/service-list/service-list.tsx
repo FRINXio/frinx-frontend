@@ -96,7 +96,7 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
   };
 
   const handleEditRedirect = (serviceId: string) => {
-    navigate(`../edit/${unwrap(serviceId)}`);
+    navigate(`../services/edit/${unwrap(serviceId)}`);
   };
 
   const changedServicesWithStatus = getChangedServicesWithStatus(createdServices, updatedServices, deletedServices);
@@ -130,7 +130,7 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
             VPN Services
           </Heading>
           <HStack>
-            <Button colorScheme="blue" leftIcon={<Icon as={FeatherIcon} icon="plus" />} as={Link} to="../add">
+            <Button colorScheme="blue" leftIcon={<Icon as={FeatherIcon} icon="plus" />} as={Link} to="../services/add">
               Add service
             </Button>
           </HStack>
