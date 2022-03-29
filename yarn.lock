@@ -2706,7 +2706,7 @@ __metadata:
     "@frinx/workflow-builder": ^1.0.0
     "@frinx/workflow-ui": ^2.0.0
     "@types/node": 16.11.26
-    "@types/react": 17.0.42
+    "@types/react": 17.0.43
     "@types/react-dom": 17.0.14
     "@types/url-join": 4.0.1
     "@typescript-eslint/eslint-plugin": 5.16.0
@@ -2898,7 +2898,7 @@ __metadata:
     "@graphql-codegen/typescript": 1.23.0
     "@graphql-codegen/typescript-operations": 1.18.4
     "@types/json-templates": 3.0.0
-    "@types/react": 17.0.42
+    "@types/react": 17.0.43
     "@types/react-dom": 17.0.14
     "@typescript-eslint/eslint-plugin": 5.16.0
     "@typescript-eslint/parser": 5.16.0
@@ -2966,7 +2966,7 @@ __metadata:
     "@graphql-codegen/introspection": 1.18.2
     "@graphql-codegen/typescript": 1.23.0
     "@graphql-codegen/typescript-operations": 1.18.4
-    "@types/react": 17.0.42
+    "@types/react": 17.0.43
     "@types/react-dom": 17.0.14
     "@typescript-eslint/eslint-plugin": 5.16.0
     "@typescript-eslint/parser": 5.16.0
@@ -3036,7 +3036,7 @@ __metadata:
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@types/dagre": 0.7.47
     "@types/file-saver": 2.0.5
-    "@types/react": 17.0.42
+    "@types/react": 17.0.43
     "@types/react-dom": 17.0.14
     "@types/uuid": 8.3.4
     "@typescript-eslint/eslint-plugin": 5.16.0
@@ -4231,7 +4231,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:17.0.42, @types/react@npm:^17.0.15":
+"@types/react@npm:*, @types/react@npm:^17.0.15":
   version: 17.0.42
   resolution: "@types/react@npm:17.0.42"
   dependencies:
@@ -4239,6 +4239,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: 9a84374da1173901b5eba6b2dda9e70220842c8e70274628e5c93684fca59786b7f6215c93f492e34f8834983de096b2544f280c60da9b8fd4c3f20ffe7cc51e
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:17.0.43":
+  version: 17.0.43
+  resolution: "@types/react@npm:17.0.43"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: 981b0993f5b3ea9d3488b8cc883201e8ae47ba7732929f788f450a79fd72829e658080d5084e67caa008e58d989b0abc1d5f36ff0a1cda09315ea3a3c0c9dc11
   languageName: node
   linkType: hard
 
