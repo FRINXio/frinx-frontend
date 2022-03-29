@@ -28,7 +28,14 @@ const SiteNetworkAccessDetail: VoidFunctionComponent<Props> = ({ networkAccess }
       <DetailItem label="Site Network Access Id" value={networkAccess.siteNetworkAccessId} />
       <DetailItem label="Location Id" value={networkAccess.locationReference} />
       <DetailItem label="Device Id" value={networkAccess.deviceReference} />
-      <DetailItem label="Clan Id" value={networkAccess.bearer.requestedCLan} />
+      <DetailItem
+        label="Clan Id"
+        value={
+          networkAccess.bearer.defaultCVlan === 'custom'
+            ? networkAccess.bearer.customCVlan
+            : networkAccess.bearer.defaultCVlan
+        }
+      />
       <DetailItem label="Bearer Reference" value={networkAccess.bearer.bearerReference} />
       <DetailItem label="Provider Address" value={networkAccess.ipConnection?.ipv4?.addresses?.providerAddress} />
       <DetailItem label="Customer Address" value={networkAccess.ipConnection?.ipv4?.addresses?.customerAddress} />
