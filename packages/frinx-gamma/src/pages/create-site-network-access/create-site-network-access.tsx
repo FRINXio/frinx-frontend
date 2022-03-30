@@ -1,4 +1,4 @@
-import { Box, Container, Flex, Heading, Spinner } from '@chakra-ui/react';
+import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import unwrap from '../../helpers/unwrap';
@@ -16,7 +16,6 @@ import callbackUtils from '../../unistore-callback-utils';
 import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import { VpnService } from '../../components/forms/service-types';
 import { getSelectOptions } from '../../components/forms/options.helper';
-import PollWorkflowId from '../../components/poll-workflow-id/poll-worfklow-id';
 import { DefaultCVlanEnum } from '../../network-types';
 
 const getDefaultNetworkAccess = (selectedSite: VpnSite | null): SiteNetworkAccess => ({
@@ -68,13 +67,6 @@ const getDefaultNetworkAccess = (selectedSite: VpnSite | null): SiteNetworkAcces
   },
 });
 
-type CustomerAddressWorkflowData = {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  response_body: {
-    address: string;
-  };
-};
-
 // TODO: to be defined
 const getBandwidths = async () =>
   getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site_network_access.bandwidths).map((item) => Number(item.key));
@@ -84,21 +76,19 @@ function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
   return vpnService;
 }
 
-function freeResources(customerAddress: string, siteId: string) {
+function freeResources(address: string, siteId: string) {
   const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
   uniflowCallbacks.executeWorkflow({
-    name: 'Free_CustomerAddress',
+    name: 'Free_Addresses',
     version: 1,
     input: {
       site: siteId,
-      customer_address: unwrap(customerAddress), // eslint-disable-line @typescript-eslint/naming-convention
+      address: unwrap(address), // eslint-disable-line @typescript-eslint/naming-convention
     },
   });
 }
 
 const CreateSiteNetAccessPage: VoidFunctionComponent = () => {
-  const [workflowId, setWorkflowId] = useState<string | null>(null);
-  const [customerAddress, setCustomerAddress] = useState<string | null>(null);
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const [bfdProfiles, setBfdProfiles] = useState<string[]>([]);
@@ -113,13 +103,6 @@ const CreateSiteNetAccessPage: VoidFunctionComponent = () => {
   useEffect(() => {
     const fetchData = async () => {
       // TODO: we can fetch all in promise all?
-      const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
-      const workflowResult = await uniflowCallbacks.executeWorkflow({
-        name: 'Allocate_CustomerAddress',
-        version: 1,
-        input: {},
-      });
-      setWorkflowId(workflowResult.text);
       const callbacks = callbackUtils.getCallbacks;
       const sites = await callbacks.getVpnSites(null, null);
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
@@ -161,57 +144,28 @@ const CreateSiteNetAccessPage: VoidFunctionComponent = () => {
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = (customerAddress: string | null, providerAddress: string | null) => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
     if (customerAddress) {
       freeResources(customerAddress, unwrap(siteId));
     }
+    if (providerAddress) {
+      freeResources(providerAddress, unwrap(siteId));
+    }
     navigate(`../sites/detail/${selectedSite?.siteId}`);
   };
 
-  const handleReset = () => {
+  const handleReset = (customerAddress: string | null, providerAddress: string | null) => {
     if (customerAddress) {
       freeResources(customerAddress, unwrap(siteId));
     }
-  };
-
-  const handleWorkflowFinish = (data: string | null) => {
-    if (data === null) {
-      return;
+    if (providerAddress) {
+      freeResources(providerAddress, unwrap(siteId));
     }
-
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const { response_body }: CustomerAddressWorkflowData = JSON.parse(data);
-    setCustomerAddress(response_body.address);
   };
-
-  if (!workflowId) {
-    return null;
-  }
-
-  if (!customerAddress) {
-    return (
-      <>
-        <Flex justifyContent="center">
-          <Spinner />
-        </Flex>
-        <PollWorkflowId workflowId={workflowId} onFinish={handleWorkflowFinish} />
-      </>
-    );
-  }
 
   const networkAccess: SiteNetworkAccess = getDefaultNetworkAccess(selectedSite);
-  networkAccess.ipConnection = {
-    ...networkAccess.ipConnection,
-    ipv4: {
-      ...networkAccess.ipConnection?.ipv4,
-      addresses: {
-        ...networkAccess.ipConnection?.ipv4?.addresses,
-        customerAddress,
-      },
-    },
-  };
 
   return (
     <Container maxWidth={1280}>
