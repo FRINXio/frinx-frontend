@@ -318,7 +318,7 @@ function isValidProtocolPredicate(routingProtocol: RoutingProtocol): boolean {
     return false;
   }
   if (routingProtocol.type === 'static') {
-    if (!routingProtocol.static) {
+    if (!routingProtocol.static || routingProtocol.static.length === 0) {
       return false;
     }
     return !(!routingProtocol.static[0].lan || !routingProtocol.static[0].nextHop);
@@ -340,6 +340,7 @@ function filterValidRoutingProtocols(routingProtocols: RoutingProtocol[]): Routi
 
 function clientRoutingProtocolsToApiRoutingProtocols(routingProtocols: RoutingProtocol[]): CreateRoutingProtocolsInput {
   const validProtocols = filterValidRoutingProtocols(routingProtocols);
+  console.log(validProtocols);
   const protocols = validProtocols.map((p) => {
     const protocol: CreateRoutingProtocolItem = {
       type: p.type,

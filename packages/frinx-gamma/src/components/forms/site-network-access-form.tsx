@@ -122,14 +122,7 @@ type Props = {
 function getDefaultStaticRoutingProtocol(): StaticRoutingProtocol {
   return {
     type: 'static',
-    static: [
-      {
-        id: uuid(),
-        lan: '',
-        nextHop: '',
-        lanTag: null,
-      },
-    ],
+    static: [],
   };
 }
 
@@ -233,7 +226,7 @@ const SiteNetAccessForm: FC<Props> = ({
           // eslint-disable-next-line @typescript-eslint/naming-convention
           alt_id: getAltId(
             values.vpnAttachment || '',
-            '',
+            values.bearer.bearerReference,
             values.siteNetworkAccessId,
             values.ipConnection?.ipv4?.addresses?.customerAddress || '',
             'customer',
