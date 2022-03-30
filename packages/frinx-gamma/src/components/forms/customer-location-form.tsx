@@ -10,7 +10,7 @@ const LocationSchema = yup.object().shape({
   locationId: yup.string(),
   street: yup.string().required('Street is required field'),
   postalCode: yup.string().required('Postal code is required field'),
-  state: yup.string().required('State is required field'),
+  state: yup.string(),
   city: yup.string().required('City is required field'),
   countryCode: yup.mixed().oneOf(['UK', 'IE']).required(),
 });
@@ -40,7 +40,7 @@ const CustomerLocationForm: VoidFunctionComponent<Props> = ({ location, buttonTe
         <Input name="street" value={values.street} onChange={handleChange} />
         {errors.street && <FormErrorMessage>{errors.street}</FormErrorMessage>}
       </FormControl>
-      <FormControl my={6} isRequired isInvalid={errors.state != null}>
+      <FormControl my={6} isInvalid={errors.state != null}>
         <FormLabel>State</FormLabel>
         <Input name="state" value={values.state} onChange={handleChange} />
         {errors.state && <FormErrorMessage>{errors.state}</FormErrorMessage>}

@@ -419,27 +419,47 @@ const SiteNetAccessForm: FC<Props> = ({
             </FormControl>
           )}
 
-          <FormControl id="bearer-c-vlan" my={1}>
-            <FormLabel>Bearer - Requested C Vlan</FormLabel>
-            <Select
-              name="bearer-c-vlan"
-              value={values.bearer.requestedCLan}
-              onChange={(event) => {
-                setFieldValue('bearer', {
-                  ...values.bearer,
-                  requestedCLan: event.target.value,
-                });
-              }}
-            >
-              {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site_network_access.requested_cvlan).map((item) => {
-                return (
-                  <option key={`requested-cvlan-${item.key}`} value={item.key}>
-                    {item.label}
-                  </option>
-                );
-              })}
-            </Select>
-          </FormControl>
+          <Box>
+            <FormControl id="bearer-c-vlan" my={1}>
+              <FormLabel>Bearer - Requested C Vlan</FormLabel>
+              <Select
+                name="bearer-c-vlan"
+                value={values.bearer.defaultCVlan}
+                onChange={(event) => {
+                  setFieldValue('bearer', {
+                    ...values.bearer,
+                    defaultCVlan: event.target.value,
+                  });
+                }}
+              >
+                {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.service.default_cvlan).map((item) => {
+                  return (
+                    <option key={`default-cvlan-${item.key}`} value={item.key}>
+                      {item.label}
+                    </option>
+                  );
+                })}
+              </Select>
+            </FormControl>
+
+            {values.bearer.defaultCVlan === 'custom' && (
+              <FormControl id="custom-c-vlan" my={6} isRequired isInvalid={errors.bearer?.customCVlan != null}>
+                <FormLabel>Custom C-VLAN Identifier</FormLabel>
+                <Input
+                  name="customCVlan"
+                  value={values.bearer.customCVlan || ''}
+                  onChange={(event) => {
+                    const value = Number(event.target.value);
+                    if (Number.isNaN(value)) {
+                      return;
+                    }
+                    setFieldValue('bearer', { ...values.bearer, customCVlan: event.target.value });
+                  }}
+                />
+                {errors.bearer?.customCVlan && <FormErrorMessage>{errors.bearer.customCVlan}</FormErrorMessage>}
+              </FormControl>
+            )}
+          </Box>
 
           <FormControl id="maximum-routes" my={1}>
             <FormLabel>Maximum Routes</FormLabel>{' '}

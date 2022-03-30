@@ -186,6 +186,9 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
   }
 
   return networkAccess['site-network-access'].map((access) => {
+    const defaultCVlan = apiDefaultCVlanToClientDefaultCVlan(
+      access.bearer && access.bearer['requested-c-vlan'] ? access.bearer['requested-c-vlan'] : 0,
+    );
     const apiQosProfiles =
       access.service && access.service.qos && access.service.qos['qos-profile']
         ? access.service.qos['qos-profile']['qos-profile']
@@ -215,7 +218,7 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
       bearer: {
         alwaysOn: access?.bearer?.['always-on'] || false,
         bearerReference: access?.bearer?.['bearer-reference'] || '',
-        requestedCLan: String(access?.bearer?.['requested-c-vlan'] || ''),
+        // requestedCLan: String(access?.bearer?.['requested-c-vlan'] || ''),
         requestedType: {
           requestedType:
             access.bearer && access.bearer?.['requested-type'] && access.bearer['requested-type']['requested-type']
@@ -223,6 +226,7 @@ export function apiSiteNetworkAccessToClientSiteNetworkAccess(
               : '',
           strict: access.bearer?.['requested-type']?.strict || false,
         },
+        ...defaultCVlan,
       },
       service: {
         qosProfiles: [clientQosProfile],
@@ -412,6 +416,7 @@ function clientIPConnectionToApiIPConnection(ipConnection: IPConnection): Create
 function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAccess[]): CreateNetworkAccessInput {
   return {
     'site-network-access': networkAccesses.map((access) => {
+      const requestedCLan = getDefaultCVlan(access.bearer.defaultCVlan, access.bearer.customCVlan);
       return {
         'site-network-access-id': access.siteNetworkAccessId,
         'site-network-access-type': access.siteNetworkAccessType,
@@ -436,7 +441,7 @@ function clientNetworkAccessToApiNetworkAccess(networkAccesses: SiteNetworkAcces
             'requested-type': 'dot1ad',
             strict: access.bearer.requestedType.strict,
           },
-          'requested-c-vlan': Number(access.bearer.requestedCLan),
+          'requested-c-vlan': Number(requestedCLan),
         },
         service: {
           'svc-input-bandwidth': access.service?.svcInputBandwidth || 1000,
