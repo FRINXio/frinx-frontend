@@ -340,7 +340,6 @@ function filterValidRoutingProtocols(routingProtocols: RoutingProtocol[]): Routi
 
 function clientRoutingProtocolsToApiRoutingProtocols(routingProtocols: RoutingProtocol[]): CreateRoutingProtocolsInput {
   const validProtocols = filterValidRoutingProtocols(routingProtocols);
-  console.log(validProtocols);
   const protocols = validProtocols.map((p) => {
     const protocol: CreateRoutingProtocolItem = {
       type: p.type,
