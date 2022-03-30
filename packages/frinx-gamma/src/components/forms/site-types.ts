@@ -1,3 +1,5 @@
+import { DefaultCVlanEnum } from './service-types';
+
 /* eslint-disable @typescript-eslint/naming-convention */
 export type ProviderIdentifiers = {
   bfdIdentifiers: string[];
@@ -72,7 +74,8 @@ export type ClientRoutingProtocol = BaseRoutingProtocol & {
 export type Bearer = {
   alwaysOn: boolean;
   bearerReference: string;
-  requestedCLan: string;
+  defaultCVlan: DefaultCVlanEnum;
+  customCVlan?: number;
   requestedType: {
     requestedType: string;
     strict: boolean;

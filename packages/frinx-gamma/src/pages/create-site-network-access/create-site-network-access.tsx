@@ -17,6 +17,7 @@ import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import { VpnService } from '../../components/forms/service-types';
 import { getSelectOptions } from '../../components/forms/options.helper';
 import PollWorkflowId from '../../components/poll-workflow-id/poll-worfklow-id';
+import { DefaultCVlanEnum } from '../../network-types';
 
 const getDefaultNetworkAccess = (selectedSite: VpnSite | null): SiteNetworkAccess => ({
   siteNetworkAccessId: generateNetworkAccessId(),
@@ -46,7 +47,7 @@ const getDefaultNetworkAccess = (selectedSite: VpnSite | null): SiteNetworkAcces
   bearer: {
     alwaysOn: false,
     bearerReference: '',
-    requestedCLan: '400', // l3vpn
+    defaultCVlan: DefaultCVlanEnum['Main Corporate VPN'],
     requestedType: {
       requestedType: 'dot1ad',
       strict: false,
