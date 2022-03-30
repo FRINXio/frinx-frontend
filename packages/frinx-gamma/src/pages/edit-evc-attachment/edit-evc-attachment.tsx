@@ -27,8 +27,11 @@ function getSelectedEvcAttachment(bearer: VpnBearer, evcType: string, circuitRef
 const EditEvcAttachmentPage: VoidFunctionComponent = () => {
   const [selectedBearer, setSelectedBearer] = useState<VpnBearer | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
-  const { bearerId, evcType, circuitReference } =
-    useParams<{ bearerId: string; evcType: string; circuitReference: string }>();
+  const { bearerId, evcType, circuitReference } = useParams<{
+    bearerId: string;
+    evcType: string;
+    circuitReference: string;
+  }>();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const navigate = useNavigate();
 
