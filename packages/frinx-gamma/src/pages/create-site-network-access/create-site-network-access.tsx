@@ -76,14 +76,13 @@ function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
   return vpnService;
 }
 
-function freeResources(address: string, siteId: string) {
+function freeResources(siteNetworkAcessId: string) {
   const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
   uniflowCallbacks.executeWorkflow({
-    name: 'Free_Addresses',
+    name: 'Cleanup_ipv4_pool',
     version: 1,
     input: {
-      site: siteId,
-      address: unwrap(address), // eslint-disable-line @typescript-eslint/naming-convention
+      pool_tag: siteNetworkAcessId, // eslint-disable-line @typescript-eslint/naming-convention
     },
   });
 }
@@ -144,25 +143,15 @@ const CreateSiteNetAccessPage: VoidFunctionComponent = () => {
     }
   };
 
-  const handleCancel = (customerAddress: string | null, providerAddress: string | null) => {
+  const handleCancel = (siteNetworkAccessId: string) => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    if (customerAddress) {
-      freeResources(customerAddress, unwrap(siteId));
-    }
-    if (providerAddress) {
-      freeResources(providerAddress, unwrap(siteId));
-    }
+    freeResources(siteNetworkAccessId);
     navigate(`../sites/detail/${selectedSite?.siteId}`);
   };
 
-  const handleReset = (customerAddress: string | null, providerAddress: string | null) => {
-    if (customerAddress) {
-      freeResources(customerAddress, unwrap(siteId));
-    }
-    if (providerAddress) {
-      freeResources(providerAddress, unwrap(siteId));
-    }
+  const handleReset = (siteNetworkAccessId: string) => {
+    freeResources(siteNetworkAccessId);
   };
 
   const networkAccess: SiteNetworkAccess = getDefaultNetworkAccess(selectedSite);
