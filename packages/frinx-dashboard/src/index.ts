@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { AuthContext } from './auth-helpers';
 import unwrap from './helpers/unwrap';
 import Root from './root';
-import './set-public-path';
 import { ServiceKey } from './types';
 
 const ALL_SERVICES: ServiceKey[] = [
@@ -32,12 +31,19 @@ class DashboardApp {
     if (this.isInitialized) {
       throw new Error('DashboardApp is already initialized');
     }
+    // see https://github.com/remix-run/react-router/issues/8427
+    if (!window.location.pathname.includes(window.__CONFIG__.URLBasename)) {
+      window.history.replaceState(null, '', window.__CONFIG__.URLBasename);
+    }
     await Promise.all(
       ALL_SERVICES.map((service) => {
         const importFn = unwrap(serviceImportMap.get(service));
         return importFn();
       }),
     );
+    await import('./set-public-path').then(({ setWebpackPublicPath }) => {
+      setWebpackPublicPath();
+    });
     this.isInitialized = true;
 
     return this;
