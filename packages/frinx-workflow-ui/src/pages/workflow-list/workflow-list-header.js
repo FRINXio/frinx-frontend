@@ -99,7 +99,7 @@ const WorkflowListHeader = ({ onImportSuccess }: Props) => {
         </Heading>
         <Box marginLeft="auto">
           <HStack>
-            <Button as={Link} leftIcon={<SmallAddIcon />} colorScheme="blue" to="builder">
+            <Button as={Link} leftIcon={<SmallAddIcon />} colorScheme="blue" to="../builder">
               Create
             </Button>
             <Box>
