@@ -26,7 +26,7 @@
     "helmet": "5.0.2",
     "http-proxy-middleware": "2.0.4",
     "pino": "7.9.2",
-    "pino-pretty": "7.5.4"
+    "pino-pretty": "7.6.0"
   },
   "devDependencies": {
     "@frinx/eslint-config-typescript-base": "15.0.0-build.1",
