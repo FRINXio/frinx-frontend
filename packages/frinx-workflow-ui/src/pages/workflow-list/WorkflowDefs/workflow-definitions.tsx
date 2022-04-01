@@ -32,7 +32,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
 import DefinitionModal from './definition-modal/definition-modal';
 import DependencyModal from './DependencyModal/DependencyModal';
-import DiagramModal from './DiagramModal/DiagramModal';
+import DiagramModal from './diagram-modal/diagram-modal';
 import InputModal from './InputModal/input-modal';
 import PageContainer from '../../../common/PageContainer';
 import ScheduledWorkflowModal from '../scheduled-workflow/scheduled-workflow-modal/scheduled-workflow-modal';
