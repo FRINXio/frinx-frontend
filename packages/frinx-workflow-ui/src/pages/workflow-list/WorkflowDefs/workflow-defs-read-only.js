@@ -9,7 +9,7 @@
 */
 
 // @flow
-import DefinitionModal from './DefinitonModal/DefinitionModal';
+import DefinitionModal from './definition-modal/definition-modal';
 import DependencyModal from './DependencyModal/DependencyModal';
 import DiagramModal from './DiagramModal/DiagramModal';
 import InputModal from './InputModal/input-modal';
