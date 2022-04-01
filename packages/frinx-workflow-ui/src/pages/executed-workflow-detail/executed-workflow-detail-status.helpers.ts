@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Workflow, WorkflowInstanceDetail } from '../../types/types';
-import callbackUtils from '../../utils/callback-utils';
+import { Workflow, WorkflowInstanceDetail } from '@frinx/workflow-ui/src/helpers/types';
+import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 
 export type TaskStatus = 'COMPLETED' | 'FAILED' | 'SCHEDULED' | 'IN_PROGRESS';
 export type WorkflowStatus = 'COMPLETED' | 'FAILED' | 'RUNNING' | 'TERMINATED';

@@ -21,13 +21,13 @@ import {
 } from '@chakra-ui/react';
 import sortBy from 'lodash/sortBy';
 import FeatherIcon from 'feather-icons-react';
-import PageContainer from '../../../common/PageContainer';
-import { usePagination } from '../../../common/pagination-hook';
-import callbackUtils from '../../../utils/callback-utils';
+import PageContainer from '@frinx/workflow-ui/src/common/PageContainer';
+import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
+import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import SchedulingModal from './scheduled-workflow-modal/scheduled-workflow-modal';
-import { ScheduledWorkflow, StatusType } from '../../../types/types';
-import useNotifications from '../../../hooks/use-notifications';
-import Paginator from '../../../common/pagination';
+import { ScheduledWorkflow, StatusType } from '@frinx/workflow-ui/src/helpers/types';
+import useNotifications from '@frinx/workflow-ui/src/hooks/use-notifications';
+import Paginator from '@frinx/workflow-ui/src/common/pagination';
 
 function ScheduledWorkflowList() {
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<ScheduledWorkflow>([], 10);

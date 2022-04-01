@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Button, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
-import { ExecutedWorkflowTask } from '../../types/types';
+import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 
 type Props = {

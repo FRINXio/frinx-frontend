@@ -34,18 +34,18 @@ import DefinitionModal from './definition-modal/definition-modal';
 import DependencyModal from './DependencyModal/DependencyModal';
 import DiagramModal from './diagram-modal/diagram-modal';
 import InputModal from './InputModal/input-modal';
-import PageContainer from '../../../common/PageContainer';
+import PageContainer from '@frinx/workflow-ui/src/common/PageContainer';
 import ScheduledWorkflowModal from '../scheduled-workflow/scheduled-workflow-modal/scheduled-workflow-modal';
-import WfLabels from '../../../common/wf-labels';
+import WfLabels from '@frinx/workflow-ui/src/common/wf-labels';
 import WorkflowListViewModal from './WorkflowListViewModal/WorkflowListViewModal';
-import callbackUtils from '../../../utils/callback-utils';
-import { jsonParse } from '../../../common/utils';
-import { usePagination } from '../../../common/pagination-hook';
+import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
+import { jsonParse } from '@frinx/workflow-ui/src/common/utils';
+import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import WorkflowActions from './workflow-actions';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
-import useNotifications from '../../../hooks/use-notifications';
-import Paginator from '../../../common/pagination';
-import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/types/types';
+import useNotifications from '@frinx/workflow-ui/src/hooks/use-notifications';
+import Paginator from '@frinx/workflow-ui/src/common/pagination';
+import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/helpers/types';
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr = dataset.map(({ description }) => {

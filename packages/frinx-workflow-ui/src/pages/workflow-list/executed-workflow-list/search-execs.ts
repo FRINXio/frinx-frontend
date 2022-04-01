@@ -1,5 +1,5 @@
-import { NestedExecutedWorkflow, ExecutedWorkflow, ExecutedWorkflowsHierarchical } from '../../../types/types';
-import callbackUtils from '../../../utils/callback-utils';
+import { NestedExecutedWorkflow, ExecutedWorkflow } from '@frinx/workflow-ui/src/helpers/types';
+import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 
 const mapLabelsForApi = (labels: string[]): string => {
   return labels.reduce((prev, curr, currId) => {

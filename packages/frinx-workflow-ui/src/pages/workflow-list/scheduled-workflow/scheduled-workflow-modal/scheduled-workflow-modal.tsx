@@ -17,7 +17,7 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import Editor from 'react-ace';
-import { ScheduledWorkflow } from '../../../../types/types';
+import { ScheduledWorkflow } from '@frinx/workflow-ui/src/helpers/types';
 
 const DEFAULT_CRON_STRING = '* * * * *';
 

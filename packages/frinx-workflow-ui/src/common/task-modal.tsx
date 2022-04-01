@@ -21,7 +21,7 @@ import {
   Divider,
   Button,
 } from '@chakra-ui/react';
-import type { ExecutedWorkflowTask } from '../types/types';
+import type { ExecutedWorkflowTask } from '../helpers/types';
 import { jsonParse } from './utils';
 import { CopyIcon } from '@chakra-ui/icons';
 import unescapeJs from 'unescape-js';

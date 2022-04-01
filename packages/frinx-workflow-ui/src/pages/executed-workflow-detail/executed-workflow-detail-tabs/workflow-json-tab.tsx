@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Box, Stack, IconButton, Button, Text, Textarea } from '@chakra-ui/react';
 import { CopyIcon } from '@chakra-ui/icons';
-import { ExecutedWorkflowDetailResult } from '../../../types/types';
+import { ExecutedWorkflowDetailResult } from '@frinx/workflow-ui/src/helpers/types';
 
 type Props = {
   isEscaped: boolean;

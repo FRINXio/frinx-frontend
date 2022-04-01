@@ -22,7 +22,7 @@ import WorkflowJsonTab from './executed-workflow-detail-tabs/workflow-json-tab';
 import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
 import DetailsModalHeader from './executed-workflow-detail-header';
 import { useAsyncGenerator } from './executed-workflow-detail-status.helpers';
-import { ExecutedWorkflowTask } from '../../types/types';
+import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { useParams } from 'react-router-dom';
 
 const convertWorkflowVariablesToFormFormat = (
