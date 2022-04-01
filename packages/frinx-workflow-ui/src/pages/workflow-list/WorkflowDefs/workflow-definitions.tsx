@@ -103,7 +103,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const [data, setData] = useState<Workflow[]>([]);
   const [activeWf, setActiveWf] = useState<Workflow>();
   const definitionModal = useDisclosure();
-  const [diagramModal, setDiagramModal] = useState(false);
+  const diagramModal = useDisclosure();
   const [inputModal, setInputModal] = useState(false);
   const [dependencyModal, setDependencyModal] = useState(false);
   const [schedulingModal, setSchedulingModal] = useState(false);
@@ -240,11 +240,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     setActiveWf(workflow);
   };
 
-  const showDiagramModal = (workflow: Workflow) => {
-    setDiagramModal(!diagramModal);
-    setActiveWf(workflow);
-  };
-
   const onSchedulingModalClose = () => {
     setSchedulingModal(false);
     getData();
@@ -282,10 +277,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     return inputModal ? (
       <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} onWorkflowIdClick={onWorkflowIdClick} />
     ) : null;
-  };
-
-  const renderDiagramModal = () => {
-    return diagramModal ? <DiagramModal wf={activeWf} modalHandler={showDiagramModal} show={diagramModal} /> : null;
   };
 
   const renderWorkflowListViewModal = () => {
@@ -364,8 +355,8 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   return (
     <PageContainer>
       <DefinitionModal workflow={activeWf} isOpen={definitionModal.isOpen} onClose={definitionModal.onClose} />
+      <DiagramModal workflow={activeWf} onClose={diagramModal.onClose} isOpen={diagramModal.isOpen} />
       {renderInputModal()}
-      {renderDiagramModal()}
       {renderDependencyModal()}
       {renderSchedulingModal()}
       {renderConfirmDeleteModal()}
@@ -443,7 +434,8 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
                       updateFavourite(workflow);
                     }}
                     onDiagramBtnClick={() => {
-                      showDiagramModal(workflow);
+                      diagramModal.onOpen();
+                      setActiveWf(workflow);
                     }}
                     onDefinitionBtnClick={() => {
                       definitionModal.onOpen();

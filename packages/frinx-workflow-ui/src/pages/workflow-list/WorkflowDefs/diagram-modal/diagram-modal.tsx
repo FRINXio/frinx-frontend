@@ -1,5 +1,4 @@
-// @flow
-import React from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import WorkflowDia from '../../../executed-workflow-detail/WorkflowDia/WorkflowDia';
 import {
   Button,
@@ -11,19 +10,26 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
+import { Task, Workflow } from '@frinx/workflow-ui/src/types/types';
 
-const DiagramModal = (props) => {
+type ModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  workflow?: Workflow<Task>;
+};
+
+const DiagramModal: VoidFunctionComponent<ModalProps> = ({ isOpen, onClose, workflow }) => {
   return (
-    <Modal size="3xl" isOpen={props.show} onClose={props.modalHandler}>
+    <Modal size="3xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalCloseButton />
       <ModalContent>
         <ModalHeader>Workflow Diagram</ModalHeader>
         <ModalBody>
-          <WorkflowDia meta={props.wf} tasks={[]} def={true} />
+          <WorkflowDia meta={workflow} tasks={[]} def={true} />
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="gray" onClick={props.modalHandler}>
+          <Button colorScheme="gray" onClick={onClose}>
             Close
           </Button>
         </ModalFooter>
