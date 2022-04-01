@@ -25,6 +25,7 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -101,7 +102,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const [labels, setLabels] = useState<string[]>([]);
   const [data, setData] = useState<Workflow[]>([]);
   const [activeWf, setActiveWf] = useState<Workflow>();
-  const [defModal, setDefModal] = useState(false);
+  const definitionModal = useDisclosure();
   const [diagramModal, setDiagramModal] = useState(false);
   const [inputModal, setInputModal] = useState(false);
   const [dependencyModal, setDependencyModal] = useState(false);
@@ -228,11 +229,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     });
   };
 
-  const showDefinitionModal = (workflow: Workflow) => {
-    setDefModal(!defModal);
-    setActiveWf(workflow);
-  };
-
   const showInputModal = (workflow: Workflow) => {
     setInputModal(!inputModal);
     setActiveWf(workflow);
@@ -274,10 +270,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
       return wfJSON.includes(`"name": "${workflow.name}"`) && wf.name !== workflow.name;
     });
     return { length: usedInWfs.length, usedInWfs };
-  };
-
-  const renderDefinitionModal = () => {
-    return defModal ? <DefinitionModal wf={activeWf} modalHandler={showDefinitionModal} show={defModal} /> : null;
   };
 
   const renderInputModal = () => {
@@ -365,7 +357,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
 
   return (
     <PageContainer>
-      {renderDefinitionModal()}
+      <DefinitionModal workflow={activeWf} isOpen={definitionModal.isOpen} onClose={definitionModal.onClose} />
       {renderInputModal()}
       {renderDiagramModal()}
       {renderDependencyModal()}
@@ -448,7 +440,8 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
                       showDiagramModal(e);
                     }}
                     onDefinitionBtnClick={() => {
-                      showDefinitionModal(e);
+                      definitionModal.onOpen();
+                      setActiveWf(e);
                     }}
                     onListBtnClick={() => {
                       showWorkflowListViewModal(e);
