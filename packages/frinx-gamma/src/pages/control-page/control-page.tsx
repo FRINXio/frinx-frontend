@@ -162,7 +162,6 @@ const ControlPage: VoidFunctionComponent = () => {
       const data = await callbacks.getTransactionCookie();
       setTransactionId(data);
       discardChangesDisclosure.onClose();
-      console.log('discard/commit');
       setIsCommitedOrDiscarded(true);
     }
   };
