@@ -1,6 +1,6 @@
 import Dropdown from 'react-dropdown';
 import React, { useEffect, useState } from 'react';
-import callbackUtils from '../../../../utils/callback-utils';
+import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import {
   Box,
   Button,
@@ -23,10 +23,10 @@ import {
   Text,
   Textarea,
 } from '@chakra-ui/react';
-import { jsonParse } from '../../../../common/utils';
+import { jsonParse } from '@frinx/workflow-ui/src/common/utils';
 import { useDispatch } from 'react-redux';
-import WfAutoComplete from '../../../../common/wf-autocomplete';
-import { storeWorkflowId } from '../../../../store/actions/builder';
+import WfAutoComplete from '@frinx/workflow-ui/src/common/wf-autocomplete';
+import { storeWorkflowId } from '@frinx/workflow-ui/src/store/actions/builder';
 
 const getInputs = (def) => {
   const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)}/gim;
