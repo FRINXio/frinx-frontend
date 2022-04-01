@@ -30,10 +30,10 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
-import DefinitionModal from './definition-modal/definition-modal';
-import DependencyModal from './DependencyModal/DependencyModal';
-import DiagramModal from './diagram-modal/diagram-modal';
-import InputModal from './InputModal/input-modal';
+import DefinitionModal from '@frinx/workflow-ui/src/common/modals/definition-modal';
+import DependencyModal from '@frinx/workflow-ui/src/common/modals/DependencyModal';
+import DiagramModal from '@frinx/workflow-ui/src/common/modals/diagram-modal';
+import InputModal from '@frinx/workflow-ui/src/common/modals/input-modal';
 import PageContainer from '@frinx/workflow-ui/src/common/PageContainer';
 import ScheduledWorkflowModal from '../scheduled-workflow/scheduled-workflow-modal/scheduled-workflow-modal';
 import WfLabels from '@frinx/workflow-ui/src/common/wf-labels';

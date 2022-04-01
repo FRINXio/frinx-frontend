@@ -1,5 +1,5 @@
-import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import TaskModal from '../../common/task-modal';
+import React, { ChangeEvent, FC, useState } from 'react';
+import TaskModal from '../../common/modals/task-modal';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../utils/callback-utils';
 import moment from 'moment';
