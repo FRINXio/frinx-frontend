@@ -1,5 +1,3 @@
-// @flow
-import './DependencyModal.css';
 import React from 'react';
 import {
   Box,

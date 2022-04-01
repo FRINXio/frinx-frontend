@@ -31,7 +31,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
 import DefinitionModal from '@frinx/workflow-ui/src/common/modals/definition-modal';
-import DependencyModal from '@frinx/workflow-ui/src/common/modals/DependencyModal';
+import DependencyModal from '@frinx/workflow-ui/src/common/modals/dependency-modal';
 import DiagramModal from '@frinx/workflow-ui/src/common/modals/diagram-modal';
 import InputModal from '@frinx/workflow-ui/src/common/modals/input-modal';
 import PageContainer from '@frinx/workflow-ui/src/common/PageContainer';
