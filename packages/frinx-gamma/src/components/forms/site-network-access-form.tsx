@@ -114,22 +114,15 @@ type Props = {
   bgpProfiles: string[];
   vpnServices: VpnService[];
   bandwidths: number[];
-  onSubmit: (s: VpnSite) => void;
-  onCancel: (customerAddress: string | null, providerAddress: string | null) => void;
-  onReset: (customerAddress: string | null, providerAddress: string | null) => void;
+  onSubmit: (s: VpnSite) => Promise<void>;
+  onCancel: (siteNetworkAccessId: string) => void;
+  onReset: (siteNetworkAccessId: string) => void;
 };
 
 function getDefaultStaticRoutingProtocol(): StaticRoutingProtocol {
   return {
     type: 'static',
-    static: [
-      {
-        id: uuid(),
-        lan: '',
-        nextHop: '',
-        lanTag: null,
-      },
-    ],
+    static: [],
   };
 }
 
@@ -177,6 +170,18 @@ function getClientSelectedNetworkAccess(siteNetworkAccess: SiteNetworkAccess): C
   };
 }
 
+function getAltId(
+  vpnAttachment: string,
+  vpnNode: string,
+  siteNetworkAccessId: string,
+  address: string,
+  addressType: 'customer' | 'provider',
+): string {
+  return `{ "path": "/node=network/frinx-uniconfig-topology:configuration/gamma-l3vpn-ntw:l3vpn-ntw/vpn-services/vpn-service=${vpnAttachment}/vpn-nodes/vpn-node=${vpnNode}/vpn-network-accesses/vpn-network-access=${siteNetworkAccessId}/ip-connection/ipv4/address=${address}/${
+    addressType === 'customer' ? 'customer-address' : 'provider-address'
+  }" }`;
+}
+
 const SiteNetAccessForm: FC<Props> = ({
   mode,
   site,
@@ -199,16 +204,52 @@ const SiteNetAccessForm: FC<Props> = ({
   const { values, errors, dirty, isValid, resetForm, setFieldValue, handleSubmit } = useFormik({
     initialValues: getClientSelectedNetworkAccess(selectedNetworkAccess),
     validationSchema: NetworkAccessSchema,
-    onSubmit: (formValues) => {
+    onSubmit: async (formValues) => {
       if (!formValues) {
         return;
       }
       const oldNetworkAccesses = siteState.siteNetworkAccesses || [];
       const newNetworkAccesses =
         mode === 'add' ? [...oldNetworkAccesses, formValues] : getEditedNetworkAccesses(oldNetworkAccesses, formValues);
-      onSubmit({
+      await onSubmit({
         ...siteState,
         siteNetworkAccesses: newNetworkAccesses,
+      });
+
+      const uniflowCallbacks = uniflowCallbackUtils.getCallbacks;
+
+      await uniflowCallbacks.executeWorkflow({
+        name: 'Update_resource_alternative_id',
+        version: 1,
+        input: {
+          pool_tag: formValues.siteNetworkAccessId, // eslint-disable-line @typescript-eslint/naming-convention
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          alt_id: getAltId(
+            values.vpnAttachment || '',
+            values.bearer.bearerReference,
+            values.siteNetworkAccessId,
+            values.ipConnection?.ipv4?.addresses?.customerAddress || '',
+            'customer',
+          ),
+          resource_address: values.ipConnection?.ipv4?.addresses?.customerAddress || '', // eslint-disable-line @typescript-eslint/naming-convention
+        },
+      });
+
+      await uniflowCallbacks.executeWorkflow({
+        name: 'Update_resource_alternative_id',
+        version: 1,
+        input: {
+          pool_tag: formValues.siteNetworkAccessId, // eslint-disable-line @typescript-eslint/naming-convention
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          alt_id: getAltId(
+            values.vpnAttachment || '',
+            values.bearer.bearerReference,
+            values.siteNetworkAccessId,
+            values.ipConnection?.ipv4?.addresses?.providerAddress || '',
+            'provider',
+          ),
+          resource_address: values.ipConnection?.ipv4?.addresses?.customerAddress || '', // eslint-disable-line @typescript-eslint/naming-convention
+        },
       });
     },
   });
@@ -272,8 +313,13 @@ const SiteNetAccessForm: FC<Props> = ({
       name: 'Allocate_Addresses',
       version: 1,
       input: {
-        site: siteNetworkAccessId, // FIX: backend should rename this property in workflow
+        site: unwrap(site.siteId),
+        site_id: siteNetworkAccessId, // eslint-disable-line @typescript-eslint/naming-convention
         prefix_length: values.ipConnection?.ipv4?.addresses?.prefixLength || 31, // eslint-disable-line @typescript-eslint/naming-convention
+        vpn_service: '', // eslint-disable-line @typescript-eslint/naming-convention
+        vpn_node: '', // eslint-disable-line @typescript-eslint/naming-convention
+        vpn_network_access: '', // eslint-disable-line @typescript-eslint/naming-convention
+        address: '', // eslint-disable-line @typescript-eslint/naming-convention
       },
     });
 
@@ -282,15 +328,11 @@ const SiteNetAccessForm: FC<Props> = ({
 
   const handleReset = () => {
     resetForm();
-    const customerAddress = values.ipConnection?.ipv4?.addresses?.customerAddress || null;
-    const providerAddress = values.ipConnection?.ipv4?.addresses?.providerAddress || null;
-    onReset(customerAddress, providerAddress);
+    onReset(values.siteNetworkAccessId);
   };
 
   const handleCancel = () => {
-    const customerAddress = values.ipConnection?.ipv4?.addresses?.customerAddress || null;
-    const providerAddress = values.ipConnection?.ipv4?.addresses?.providerAddress || null;
-    onCancel(customerAddress, providerAddress);
+    onCancel(values.siteNetworkAccessId);
   };
 
   const locationItems = siteState.customerLocations.map((l) => {
