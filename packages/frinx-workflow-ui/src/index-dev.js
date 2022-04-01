@@ -1,11 +1,14 @@
 // @flow
 import App from './App';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import unwrap from './helpers/unwrap';
+
+const root = createRoot(unwrap(document.getElementById('root')));
 
 // TODO remove Router
-ReactDOM.render(
+root.render(
   <Router>
     <Switch>
       <Route path="/uniflow/ui">
@@ -16,5 +19,4 @@ ReactDOM.render(
       </Route>
     </Switch>
   </Router>,
-  document.getElementById('root'),
 );
