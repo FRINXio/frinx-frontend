@@ -35,6 +35,7 @@ module.exports = {
   },
   devServer: {
     open: false,
+    historyApiFallback: true,
     allowedHosts: 'all',
     port: 3000,
     static: fullPath('static'),

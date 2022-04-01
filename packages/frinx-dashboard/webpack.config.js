@@ -47,6 +47,7 @@ module.exports = {
   },
   devServer: {
     open: false,
+    historyApiFallback: true,
     allowedHosts: 'all',
     port: 2999,
     static: '../../build-client',
