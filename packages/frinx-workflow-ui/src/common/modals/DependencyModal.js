@@ -2,6 +2,7 @@
 import './DependencyModal.css';
 import React from 'react';
 import {
+  Box,
   Button,
   Modal,
   ModalBody,
@@ -56,13 +57,21 @@ const DependencyModal = (props) => {
       return (
         <TreeNode
           label={
-            <div
-              className="tree-node"
+            <Box
+              display="inline-block"
+              borderWidth={1}
+              borderColor="gray.200"
+              padding={5}
+              rounded="md"
+              cursor="pointer"
+              _hover={{
+                backgroundColor: 'gray.100',
+              }}
               title="Edit"
               onClick={() => props.onDefinitionClick(wf.workflow.name, wf.workflow.version)}
             >
               {p.workflow.name + ' / ' + p.workflow.version}
-            </div>
+            </Box>
           }
         >
           {nestBranch(p)}
@@ -76,13 +85,21 @@ const DependencyModal = (props) => {
       return (
         <Tree
           label={
-            <div
-              className="root-node tree-node"
+            <Box
+              display="inline-block"
+              borderWidth={2}
+              borderColor="gray.200"
+              padding={5}
+              rounded="md"
+              cursor="pointer"
+              _hover={{
+                backgroundColor: 'gray.100',
+              }}
               title="Edit"
               onClick={() => props.onDefinitionClick(wf.workflow.name, wf.workflow.version)}
             >
               {wf.workflow.name + ' / ' + wf.workflow.version}
-            </div>
+            </Box>
           }
         >
           {nestBranch(wf)}
@@ -92,14 +109,14 @@ const DependencyModal = (props) => {
   };
 
   return (
-    <Modal size="3xl" isOpen={props.show} onClose={props.modalHandler}>
+    <Modal size="3xl" isOpen={props.isOpen} onClose={props.onClose} isCentered>
       <ModalOverlay />
       <ModalCloseButton />
       <ModalContent>
         <ModalHeader>Workflow Dependency Tree</ModalHeader>
         <ModalBody overflowX="scroll">{DependencyTree()}</ModalBody>
         <ModalFooter>
-          <Button colorScheme="gray" onClick={props.modalHandler}>
+          <Button colorScheme="gray" onClick={props.onClose}>
             Close
           </Button>
         </ModalFooter>
