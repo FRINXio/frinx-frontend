@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { AuthContext } from './auth-helpers';
 import unwrap from './helpers/unwrap';
 import Root from './root';
@@ -50,7 +50,8 @@ class DashboardApp {
   }
 
   render() {
-    ReactDOM.render(
+    const root = createRoot(unwrap(document.getElementById('root')));
+    root.render(
       React.createElement(
         React.StrictMode,
         null,
@@ -59,7 +60,6 @@ class DashboardApp {
           enabledServices: this.enabledServices,
         }),
       ),
-      document.getElementById('root'),
     );
   }
 }
