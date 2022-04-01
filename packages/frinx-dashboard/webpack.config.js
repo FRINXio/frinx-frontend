@@ -46,12 +46,10 @@ module.exports = {
     publicPath: '/',
   },
   devServer: {
-    historyApiFallback: true,
-    inline: true,
     open: false,
-    disableHostCheck: true,
+    allowedHosts: 'all',
     port: 2999,
-    contentBase: '../../build-client',
+    static: '../../build-client',
   },
   devtool: isDev ? 'eval-cheap-module-source-map' : false,
   module: {

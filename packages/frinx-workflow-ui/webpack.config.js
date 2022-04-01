@@ -8,11 +8,9 @@ const isDev = process.env.NODE_ENV !== 'production';
 module.exports = {
   entry: isDev ? path.resolve(__dirname, 'src/index-dev.js') : path.resolve(__dirname, 'src/index.js'),
   devServer: {
-    historyApiFallback: true,
-    inline: true,
     hot: true,
     open: false,
-    disableHostCheck: true,
+    allowedHosts: 'all',
     port: 3000,
     proxy: {
       '/api/conductor': {
