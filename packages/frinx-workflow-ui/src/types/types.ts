@@ -310,6 +310,7 @@ export type ExtendedTask =
 
 export type Workflow<T extends Task = Task> = {
   name: string;
+  hasSchedule: boolean;
   description?: string;
   version: number;
   inputParameters?: string[];

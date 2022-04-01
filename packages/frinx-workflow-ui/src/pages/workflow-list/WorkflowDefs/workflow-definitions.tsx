@@ -43,9 +43,9 @@ import { jsonParse } from '../../../common/utils';
 import { usePagination } from '../../../common/pagination-hook';
 import WorkflowActions from './workflow-actions';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
-import { ScheduledWorkflow, Workflow } from '../../../types/types';
 import useNotifications from '../../../hooks/use-notifications';
 import Paginator from '../../../common/pagination';
+import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/types/types';
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr = dataset.map(({ description }) => {
@@ -110,7 +110,13 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const [workflowListViewModal, setWorkflowListViewModal] = useState(false);
   const [allLabels, setAllLabels] = useState([]);
-  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
+  const {
+    currentPage,
+    setCurrentPage,
+    pageItems: workflows,
+    setItemList,
+    totalPages,
+  } = usePagination<Workflow>([], 10);
 
   const { addToastNotification } = useNotifications();
 
@@ -381,23 +387,23 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
           </Tr>
         </Thead>
         <Tbody>
-          {pageItems.map((e: Workflow) => {
+          {workflows.map((workflow: Workflow) => {
             return (
-              <Tr key={`${e.name}-${e.version}`} role="group">
+              <Tr key={`${workflow.name}-${workflow.version}`} role="group">
                 <Td width={540}>
                   <Heading as="h6" size="xs" marginBottom={1}>
-                    {e.name} / {e.version}
+                    {workflow.name} / {workflow.version}
                   </Heading>
                   <Text fontStyle="italic" color="gray.600">
-                    {jsonParse(e.description)?.description ||
-                      (jsonParse(e.description)?.description !== '' && e.description) ||
+                    {jsonParse(workflow.description)?.description ||
+                      (jsonParse(workflow.description)?.description !== '' && workflow.description) ||
                       'no description'}
                   </Text>
                 </Td>
                 <Td width={64}>
                   <Labels
                     labels={allLabels}
-                    wf={e}
+                    wf={workflow}
                     onClick={(label: string) => {
                       setLabels((oldLabels) => [...new Set([...oldLabels, label])]);
                     }}
@@ -408,10 +414,10 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
                     <PopoverTrigger>
                       <Button
                         size="sm"
-                        disabled={getDependencies(e).length === 0}
-                        onClick={() => showDependencyModal(e)}
+                        disabled={getDependencies(workflow).length === 0}
+                        onClick={() => showDependencyModal(workflow)}
                       >
-                        {getDependencies(e).length + ' '} Tree{' '}
+                        {getDependencies(workflow).length + ' '} Tree{' '}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent>
@@ -419,7 +425,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
                       <PopoverCloseButton />
                       <PopoverHeader>Used directly in following workflows:</PopoverHeader>
                       <PopoverBody>
-                        {getDependencies(e).usedInWfs.map((wf) => (
+                        {getDependencies(workflow).usedInWfs.map((wf) => (
                           <p key={wf.name}>{wf.name}</p>
                         ))}
                       </PopoverBody>
@@ -428,32 +434,32 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
                 </Td>
                 <Td>
                   <WorkflowActions
-                    isFavourite={jsonParse(e.description)?.labels?.includes('FAVOURITE') ?? false}
-                    hasSchedule={e.hasSchedule}
+                    isFavourite={jsonParse(workflow.description)?.labels?.includes('FAVOURITE') ?? false}
+                    hasSchedule={workflow.hasSchedule}
                     onDeleteBtnClick={() => {
-                      showConfirmDeleteModal(e);
+                      showConfirmDeleteModal(workflow);
                     }}
                     onFavouriteBtnClick={() => {
-                      updateFavourite(e);
+                      updateFavourite(workflow);
                     }}
                     onDiagramBtnClick={() => {
-                      showDiagramModal(e);
+                      showDiagramModal(workflow);
                     }}
                     onDefinitionBtnClick={() => {
                       definitionModal.onOpen();
-                      setActiveWf(e);
+                      setActiveWf(workflow);
                     }}
                     onListBtnClick={() => {
-                      showWorkflowListViewModal(e);
+                      showWorkflowListViewModal(workflow);
                     }}
                     onEditBtnClick={() => {
-                      onDefinitionClick(e.name, e.version + '');
+                      onDefinitionClick(workflow.name, workflow.version + '');
                     }}
                     onScheduleBtnClick={() => {
-                      showSchedulingModal(e);
+                      showSchedulingModal(workflow);
                     }}
                     onExecuteBtnClick={() => {
-                      showInputModal(e);
+                      showInputModal(workflow);
                     }}
                   />
                 </Td>
