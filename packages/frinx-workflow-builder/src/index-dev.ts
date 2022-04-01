@@ -1,7 +1,7 @@
 /* eslint-disable */
 // @ts-nocheck
 import { createElement } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { getBuilderApiProvider } from './builder-api-provider';
 import { HTTPTask, TaskDefinition, Workflow, SubworkflowTask } from './helpers/types';
 import Root from './root';
@@ -282,5 +282,7 @@ const BuilderApiProvider = getBuilderApiProvider({
   getWorkflowInstanceDetail: () => Promise.resolve(),
 });
 
+const root = createRoot(mountElement);
+
 // @ts-ignore
-render(createElement(BuilderApiProvider, null, createElement(Root, { name: '1', version: '2' })), mountElement);
+root.render(createElement(BuilderApiProvider, null, createElement(Root, { name: '1', version: '2' })));
