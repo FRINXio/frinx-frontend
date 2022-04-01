@@ -37,9 +37,9 @@ module.exports = {
     historyApiFallback: true,
     inline: true,
     open: false,
-    disableHostCheck: true,
+    allowedHosts: 'all',
     port: 3000,
-    contentBase: fullPath('static'),
+    static: fullPath('static'),
   },
   devtool: isDev ? 'eval-cheap-module-source-map' : false,
   module: {
