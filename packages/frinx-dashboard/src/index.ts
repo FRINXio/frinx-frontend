@@ -52,14 +52,10 @@ class DashboardApp {
   render() {
     const root = createRoot(unwrap(document.getElementById('root')));
     root.render(
-      React.createElement(
-        React.StrictMode,
-        null,
-        React.createElement(Root, {
-          isAuthEnabled: AuthContext.isAuthEnabled(),
-          enabledServices: this.enabledServices,
-        }),
-      ),
+      React.createElement(Root, {
+        isAuthEnabled: AuthContext.isAuthEnabled(),
+        enabledServices: this.enabledServices,
+      }),
     );
   }
 }
