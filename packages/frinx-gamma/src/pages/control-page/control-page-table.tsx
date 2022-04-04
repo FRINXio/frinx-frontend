@@ -23,9 +23,7 @@ type Props = {
   workflowState: WorkflowState | null;
   countState: TotalCountState;
   onServiceCommitBtnClick: () => void;
-  onServiceDiscardBtnClick: () => void;
   onBearerCommitBtnClick: () => void;
-  onBearerDiscardBtnClick: () => void;
   onWorkflowFinish: (isCompleted: boolean) => void;
 };
 
@@ -36,9 +34,7 @@ const ControlPageTable: VoidFunctionComponent<Props> = ({
   workflowState,
   countState,
   onServiceCommitBtnClick,
-  onServiceDiscardBtnClick,
   onBearerCommitBtnClick,
-  onBearerDiscardBtnClick,
   onWorkflowFinish,
 }) => {
   return (
@@ -81,9 +77,7 @@ const ControlPageTable: VoidFunctionComponent<Props> = ({
           <Td>
             <ControlPageTableButtons
               onCommitBtnClick={onServiceCommitBtnClick}
-              onDiscardBtnClick={onServiceDiscardBtnClick}
               isCommitLoading={workflowState?.type === 'service'}
-              isDiscardLoading={false}
             />
           </Td>
         </Tr>
@@ -115,9 +109,7 @@ const ControlPageTable: VoidFunctionComponent<Props> = ({
           <Td>
             <ControlPageTableButtons
               onCommitBtnClick={onServiceCommitBtnClick}
-              onDiscardBtnClick={onServiceDiscardBtnClick}
               isCommitLoading={workflowState?.type === 'service'}
-              isDiscardLoading={false}
             />
           </Td>
         </Tr>
@@ -149,9 +141,7 @@ const ControlPageTable: VoidFunctionComponent<Props> = ({
           <Td>
             <ControlPageTableButtons
               onCommitBtnClick={onBearerCommitBtnClick}
-              onDiscardBtnClick={onBearerDiscardBtnClick}
               isCommitLoading={workflowState?.type === 'bearer'}
-              isDiscardLoading={false}
             />
           </Td>
         </Tr>
