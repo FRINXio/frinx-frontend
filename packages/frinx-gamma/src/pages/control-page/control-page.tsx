@@ -64,6 +64,7 @@ const ControlPage: VoidFunctionComponent = () => {
   const [countState, setCountState] = useState<TotalCountState>(DEFAULT_UNCOMMITED_CHANGES);
   const [workflowState, setWorkflowState] = useState<WorkflowState | null>(null);
   const [workflowId, setWorkflowId] = useState<string | null>(null);
+  const [isCommitedOrDiscarded, setIsCommitedOrDiscarded] = useState(false);
   const onFinish = () => {
     setWorkflowId(null);
   };
@@ -86,7 +87,7 @@ const ControlPage: VoidFunctionComponent = () => {
         },
       }));
     })();
-  }, []);
+  }, [isCommitedOrDiscarded]);
 
   useEffect(() => {
     const callbacks = uniflowCallbackUtils.getCallbacks;
@@ -124,6 +125,7 @@ const ControlPage: VoidFunctionComponent = () => {
           type: 'service',
           id: data.text,
         });
+        setIsCommitedOrDiscarded(true);
       });
   };
 
@@ -145,6 +147,7 @@ const ControlPage: VoidFunctionComponent = () => {
           type: 'bearer',
           id: data.text,
         });
+        setIsCommitedOrDiscarded(true);
       });
   };
 
@@ -159,6 +162,7 @@ const ControlPage: VoidFunctionComponent = () => {
       const data = await callbacks.getTransactionCookie();
       setTransactionId(data);
       discardChangesDisclosure.onClose();
+      setIsCommitedOrDiscarded(true);
     }
   };
 
@@ -181,7 +185,9 @@ const ControlPage: VoidFunctionComponent = () => {
     });
   };
 
-  const uncommitedChanges = makeTotalCountState(countState, workflowPayload);
+  const uncommitedChanges = isCommitedOrDiscarded
+    ? DEFAULT_UNCOMMITED_CHANGES
+    : makeTotalCountState(countState, workflowPayload);
 
   return (
     <>
