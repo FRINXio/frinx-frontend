@@ -1,49 +1,37 @@
-// @flow
 import React, { FC } from 'react';
 import { Box, Button, ButtonGroup, Menu, MenuButton, MenuItem, MenuList, Stack } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
+import { Link } from 'react-router-dom';
+import { Workflow } from '../../../helpers/types';
+import { jsonParse } from '../../../common/utils';
 
-type Workflow = {
-  name: string;
-  version: number;
-  description: string;
-  hasSchedule: boolean;
-};
 type Props = {
-  isFavourite: boolean;
-  hasSchedule: boolean;
+  workflow: Workflow;
   onDeleteBtnClick: () => void;
   onFavouriteBtnClick: () => void;
   onDiagramBtnClick: () => void;
   onDefinitionBtnClick: () => void;
   onListBtnClick: () => void;
-  onEditBtnClick: () => void;
   onScheduleBtnClick: () => void;
   onExecuteBtnClick: () => void;
 };
 
 const WorkflowActions: FC<Props> = ({
-  isFavourite,
-  hasSchedule,
+  workflow,
   onDeleteBtnClick,
   onFavouriteBtnClick,
   onDiagramBtnClick,
   onDefinitionBtnClick,
   onListBtnClick,
-  onEditBtnClick,
   onScheduleBtnClick,
   onExecuteBtnClick,
 }) => {
+  const isFavourite = jsonParse(workflow.description)?.labels?.includes('FAVOURITE') ?? false;
+
   return (
     <Stack direction="row" spacing={4}>
       <ButtonGroup>
-        <Button
-          colorScheme="red"
-          size="sm"
-          variant="outline"
-          onClick={onDeleteBtnClick}
-          // leftIcon={<Icon as={FontAwesomeIcon} icon={faTrash} />}
-        >
+        <Button colorScheme="red" size="sm" variant="outline" onClick={onDeleteBtnClick}>
           <Box as="span" flexShrink={0} alignSelf="center">
             <Box as={FeatherIcon} size="1em" icon="trash-2" flexShrink={0} lineHeight={4} verticalAlign="middle" />
           </Box>
@@ -52,20 +40,14 @@ const WorkflowActions: FC<Props> = ({
           colorScheme="black"
           size="sm"
           variant="outline"
-          // leftIcon={<Icon as={FontAwesomeIcon} icon={faEdit} />}
-          onClick={onEditBtnClick}
+          as={Link}
+          to={`/uniflow/builder/${workflow.name}/${workflow.version}`}
         >
           <Box as="span" flexShrink={0} alignSelf="center">
             <Box as={FeatherIcon} size="1em" icon="edit" flexShrink={0} lineHeight={4} verticalAlign="middle" />
           </Box>
         </Button>
-        <Button
-          colorScheme="blue"
-          size="sm"
-          variant="outline"
-          // leftIcon={<Icon as={FontAwesomeIcon} icon={faPlay} />}
-          onClick={onExecuteBtnClick}
-        >
+        <Button colorScheme="blue" size="sm" variant="outline" onClick={onExecuteBtnClick}>
           <Box as="span" flexShrink={0} alignSelf="center">
             <Box as={FeatherIcon} size="1em" icon="play" flexShrink={0} lineHeight={4} verticalAlign="middle" />
           </Box>
@@ -112,7 +94,7 @@ const WorkflowActions: FC<Props> = ({
               <Box as="span" fontSize="0.8em" marginRight={3} flexShrink={0} alignSelf="center">
                 <Box as={FeatherIcon} size="1em" icon="clock" flexShrink={0} lineHeight={4} verticalAlign="middle" />
               </Box>
-              {hasSchedule ? 'Edit schedule' : 'Create schedule'}
+              {workflow.hasSchedule ? 'Edit schedule' : 'Create schedule'}
             </MenuItem>
           </MenuList>
         </Menu>

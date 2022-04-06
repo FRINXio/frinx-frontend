@@ -305,17 +305,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     );
   };
 
-  const renderDependencyModal = () => {
-    return dependencyModal ? (
-      <DependencyModal
-        workflow={activeWf}
-        onClose={dependencyModal.onClose}
-        isOpen={dependencyModal.isOpen}
-        workflows={data}
-      />
-    ) : null;
-  };
-
   const renderConfirmDeleteModal = () => {
     return confirmDeleteModal ? (
       <Modal size="sm" isOpen={confirmDeleteModal} onClose={() => showConfirmDeleteModal(activeWf!)}>
@@ -350,8 +339,13 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     <PageContainer>
       <DefinitionModal workflow={activeWf} isOpen={definitionModal.isOpen} onClose={definitionModal.onClose} />
       <DiagramModal workflow={activeWf} onClose={diagramModal.onClose} isOpen={diagramModal.isOpen} />
+      <DependencyModal
+        workflow={activeWf}
+        onClose={dependencyModal.onClose}
+        isOpen={dependencyModal.isOpen}
+        workflows={data}
+      />
       {renderInputModal()}
-      {renderDependencyModal()}
       {renderSchedulingModal()}
       {renderConfirmDeleteModal()}
       {renderWorkflowListViewModal()}
@@ -422,8 +416,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
                 </Td>
                 <Td>
                   <WorkflowActions
-                    isFavourite={jsonParse(workflow.description)?.labels?.includes('FAVOURITE') ?? false}
-                    hasSchedule={workflow.hasSchedule}
+                    workflow={workflow}
                     onDeleteBtnClick={() => {
                       showConfirmDeleteModal(workflow);
                     }}
@@ -440,9 +433,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
                     }}
                     onListBtnClick={() => {
                       showWorkflowListViewModal(workflow);
-                    }}
-                    onEditBtnClick={() => {
-                      onDefinitionClick(workflow.name, workflow.version + '');
                     }}
                     onScheduleBtnClick={() => {
                       showSchedulingModal(workflow);
