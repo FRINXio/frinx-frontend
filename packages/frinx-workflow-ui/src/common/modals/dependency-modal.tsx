@@ -11,49 +11,40 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import { Tree, TreeNode } from 'react-organizational-chart';
+import { Workflow } from '../../helpers/types';
+import { Link } from 'react-router-dom';
 
-const DependencyModal = (props) => {
-  const createDepTree = (rootWorkflow) => {
-    let tree = [];
-    let parents = getWorkflowParents(rootWorkflow);
-    let rootNode = {
-      workflow: rootWorkflow,
-      parents,
-    };
-    tree.push(rootNode);
+type ModalProps = {
+  isOpen: boolean;
+  workflow?: Workflow;
+  workflows: Workflow[];
+  onClose: () => void;
+};
 
-    let parentStack = [tree[0].parents];
-    let currentParents = [];
+const DependencyModal = ({ workflow, workflows, isOpen, onClose }: ModalProps) => {
+  if (workflow == null) {
+    return null;
+  }
 
-    while (parentStack.length > 0) {
-      currentParents = parentStack.pop();
-      currentParents.forEach((wf, i) => {
-        let parentsTmp = getWorkflowParents(wf);
-        let node = {
-          workflow: wf,
-          parents: parentsTmp || [],
-        };
-        currentParents[i] = node;
-        parentStack.push(parentsTmp);
-      });
+  const nestBranch = (workflowName: string, workflows: Workflow[]) => {
+    const leafNodes = workflows.filter(({ tasks }) =>
+      tasks.some((task) => {
+        return JSON.stringify(task).includes(workflowName);
+      }),
+    );
+
+    if (leafNodes.length === 0) {
+      return null;
     }
-    return tree;
-  };
 
-  const getWorkflowParents = (workflow) => {
-    const usedInWfs = props.data.filter((wf) => {
-      let wfJSON = JSON.stringify(wf, null, 2);
-      let wfMatch = `"name": "${workflow.name}"`;
-      let wfMatchDF = `"expectedName": "${workflow.name}"`;
-      return (wfJSON.includes(wfMatch) || wfJSON.includes(wfMatchDF)) && wf.name !== workflow.name;
-    });
-    return usedInWfs;
-  };
+    const workflowsWithoutLeafNodes = workflows.filter(
+      (workflow) => !leafNodes.map((node) => node.name).includes(workflow.name),
+    );
 
-  const nestBranch = (wf) => {
-    return wf.parents.map((p) => {
+    return leafNodes.map(({ name, version }) => {
       return (
         <TreeNode
+          key={name + version}
           label={
             <Box
               display="inline-block"
@@ -66,55 +57,55 @@ const DependencyModal = (props) => {
                 backgroundColor: 'gray.100',
               }}
               title="Edit"
-              onClick={() => props.onDefinitionClick(wf.workflow.name, wf.workflow.version)}
+              as={Link}
+              to={`/uniflow/builder/${name}/${version}`}
             >
-              {p.workflow.name + ' / ' + p.workflow.version}
+              {name + ' / ' + version}
             </Box>
           }
         >
-          {nestBranch(p)}
+          {nestBranch(name, workflowsWithoutLeafNodes)}
         </TreeNode>
       );
     });
   };
 
   const DependencyTree = () => {
-    return createDepTree(props.wf).map((wf) => {
-      return (
-        <Tree
-          label={
-            <Box
-              display="inline-block"
-              borderWidth={2}
-              borderColor="gray.200"
-              padding={5}
-              rounded="md"
-              cursor="pointer"
-              _hover={{
-                backgroundColor: 'gray.100',
-              }}
-              title="Edit"
-              onClick={() => props.onDefinitionClick(wf.workflow.name, wf.workflow.version)}
-            >
-              {wf.workflow.name + ' / ' + wf.workflow.version}
-            </Box>
-          }
-        >
-          {nestBranch(wf)}
-        </Tree>
-      );
-    });
+    return (
+      <Tree
+        label={
+          <Box
+            display="inline-block"
+            borderWidth={2}
+            borderColor="gray.200"
+            padding={5}
+            rounded="md"
+            cursor="pointer"
+            _hover={{
+              backgroundColor: 'gray.100',
+            }}
+            title="Edit"
+            as={Link}
+            to={`uniflow/builder/${workflow.name}/${workflow.version}`}
+          >
+            {workflow.name + ' / ' + workflow.version}
+          </Box>
+        }
+      >
+        {nestBranch(workflow.name, workflows)}
+      </Tree>
+    );
   };
 
   return (
-    <Modal size="3xl" isOpen={props.isOpen} onClose={props.onClose} isCentered>
+    <Modal size="3xl" isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalCloseButton />
       <ModalContent>
         <ModalHeader>Workflow Dependency Tree</ModalHeader>
         <ModalBody overflowX="scroll">{DependencyTree()}</ModalBody>
         <ModalFooter>
-          <Button colorScheme="gray" onClick={props.onClose}>
+          <Button colorScheme="gray" onClick={onClose}>
             Close
           </Button>
         </ModalFooter>

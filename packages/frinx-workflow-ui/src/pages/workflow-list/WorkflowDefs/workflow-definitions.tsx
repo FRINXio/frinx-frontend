@@ -104,8 +104,8 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const [activeWf, setActiveWf] = useState<Workflow>();
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
+  const dependencyModal = useDisclosure();
   const [inputModal, setInputModal] = useState(false);
-  const [dependencyModal, setDependencyModal] = useState(false);
   const [schedulingModal, setSchedulingModal] = useState(false);
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const [workflowListViewModal, setWorkflowListViewModal] = useState(false);
@@ -250,11 +250,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     setActiveWf(workflow);
   };
 
-  const showDependencyModal = (workflow: Workflow) => {
-    setDependencyModal(!dependencyModal);
-    setActiveWf(workflow);
-  };
-
   const showConfirmDeleteModal = (workflow: Workflow) => {
     setConfirmDeleteModal(!confirmDeleteModal);
     setActiveWf(workflow);
@@ -313,11 +308,10 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const renderDependencyModal = () => {
     return dependencyModal ? (
       <DependencyModal
-        wf={activeWf}
-        modalHandler={showDependencyModal}
-        show={dependencyModal}
-        data={data}
-        onDefinitionClick={onDefinitionClick}
+        workflow={activeWf}
+        onClose={dependencyModal.onClose}
+        isOpen={dependencyModal.isOpen}
+        workflows={data}
       />
     ) : null;
   };
@@ -406,7 +400,10 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
                       <Button
                         size="sm"
                         disabled={getDependencies(workflow).length === 0}
-                        onClick={() => showDependencyModal(workflow)}
+                        onClick={() => {
+                          dependencyModal.onOpen();
+                          setActiveWf(workflow);
+                        }}
                       >
                         {getDependencies(workflow).length + ' '} Tree{' '}
                       </Button>
