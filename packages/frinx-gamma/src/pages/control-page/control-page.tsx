@@ -1,5 +1,6 @@
-import { Box, Container, Flex, Heading, useDisclosure } from '@chakra-ui/react';
+import { Box, Container, Flex, Heading, Icon, Button, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import FeatherIcon from 'feather-icons-react';
 import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import unistoreCallbackUtils from '../../unistore-callback-utils';
 import { getTransactionId, setTransactionId, removeTransactionId } from '../../helpers/transaction-id';
@@ -64,6 +65,7 @@ const ControlPage: VoidFunctionComponent = () => {
   const [countState, setCountState] = useState<TotalCountState>(DEFAULT_UNCOMMITED_CHANGES);
   const [workflowState, setWorkflowState] = useState<WorkflowState | null>(null);
   const [workflowId, setWorkflowId] = useState<string | null>(null);
+  const [isCommitedOrDiscarded, setIsCommitedOrDiscarded] = useState(false);
   const onFinish = () => {
     setWorkflowId(null);
   };
@@ -86,7 +88,7 @@ const ControlPage: VoidFunctionComponent = () => {
         },
       }));
     })();
-  }, []);
+  }, [isCommitedOrDiscarded]);
 
   useEffect(() => {
     const callbacks = uniflowCallbackUtils.getCallbacks;
@@ -124,6 +126,7 @@ const ControlPage: VoidFunctionComponent = () => {
           type: 'service',
           id: data.text,
         });
+        setIsCommitedOrDiscarded(true);
       });
   };
 
@@ -145,6 +148,7 @@ const ControlPage: VoidFunctionComponent = () => {
           type: 'bearer',
           id: data.text,
         });
+        setIsCommitedOrDiscarded(true);
       });
   };
 
@@ -159,6 +163,7 @@ const ControlPage: VoidFunctionComponent = () => {
       const data = await callbacks.getTransactionCookie();
       setTransactionId(data);
       discardChangesDisclosure.onClose();
+      setIsCommitedOrDiscarded(true);
     }
   };
 
@@ -181,7 +186,9 @@ const ControlPage: VoidFunctionComponent = () => {
     });
   };
 
-  const uncommitedChanges = makeTotalCountState(countState, workflowPayload);
+  const uncommitedChanges = isCommitedOrDiscarded
+    ? DEFAULT_UNCOMMITED_CHANGES
+    : makeTotalCountState(countState, workflowPayload);
 
   return (
     <>
@@ -198,6 +205,16 @@ const ControlPage: VoidFunctionComponent = () => {
           <Heading as="h2" size="lg">
             Control page
           </Heading>
+          <Tooltip label="Discard changes">
+            <Button
+              aria-label="Discard changes"
+              leftIcon={<Icon as={FeatherIcon} icon="trash" />}
+              onClick={handleDiscardBtnClick}
+              colorScheme="blue"
+            >
+              <Text>Discard Changes</Text>
+            </Button>
+          </Tooltip>
         </Flex>
         <Box>
           <ControlPageTable
@@ -208,8 +225,6 @@ const ControlPage: VoidFunctionComponent = () => {
             workflowState={workflowState}
             onServiceCommitBtnClick={handleServiceCommitBtnClick}
             onBearerCommitBtnClick={handleBearerCommitBtnClick}
-            onBearerDiscardBtnClick={handleDiscardBtnClick}
-            onServiceDiscardBtnClick={handleDiscardBtnClick}
             onWorkflowFinish={handleWorkflowFinish}
           />
         </Box>
