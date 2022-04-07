@@ -32,13 +32,7 @@ const Root: VoidFunctionComponent = () => {
                 setKey(uuid());
               }}
             />
-            <WorkflowDefinitions
-              key={key}
-              onDefinitionClick={(name, version) => {
-                navigate(`builder/${name}/${version}`);
-              }}
-              onWorkflowIdClick={handleExecutedWfIdClick}
-            />
+            <WorkflowDefinitions key={key} />
           </>
         }
       />

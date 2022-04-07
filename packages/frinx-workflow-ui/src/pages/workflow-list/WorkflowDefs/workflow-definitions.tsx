@@ -78,11 +78,7 @@ const Labels = (props: { wf: Workflow; labels: string[]; onClick: (label: string
   });
 };
 
-type Props = {
-  onWorkflowIdClick: (wfId: string) => void;
-};
-
-const WorkflowDefinitions = ({ onWorkflowIdClick }: Props) => {
+const WorkflowDefinitions = () => {
   const [keywords, setKeywords] = useState('');
   const [labels, setLabels] = useState<string[]>([]);
   const [data, setData] = useState<Workflow[]>([]);
@@ -238,9 +234,7 @@ const WorkflowDefinitions = ({ onWorkflowIdClick }: Props) => {
   };
 
   const renderInputModal = () => {
-    return inputModal ? (
-      <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} onWorkflowIdClick={onWorkflowIdClick} />
-    ) : null;
+    return inputModal ? <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} /> : null;
   };
 
   const renderConfirmDeleteModal = () => {

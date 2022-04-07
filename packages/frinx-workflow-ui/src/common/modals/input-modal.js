@@ -25,6 +25,7 @@ import {
 } from '@chakra-ui/react';
 import { jsonParse } from '@frinx/workflow-ui/src/common/utils';
 import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 import WfAutoComplete from '@frinx/workflow-ui/src/common/wf-autocomplete';
 import { storeWorkflowId } from '@frinx/workflow-ui/src/store/actions/builder';
 
@@ -266,7 +267,7 @@ function InputModal(props) {
           </form>
         </ModalBody>
         <ModalFooter justifyContent="space-between">
-          <Button variant="link" colorScheme="blue" justifySelf="start" onClick={() => props.onWorkflowIdClick(wfId)}>
+          <Button variant="link" colorScheme="blue" justifySelf="start" as={Link} to={`/uniflow/executed/${wfId}`}>
             {wfId}
           </Button>
           <Flex>
