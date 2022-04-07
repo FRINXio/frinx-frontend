@@ -11,7 +11,6 @@ type Props = {
   onFavouriteBtnClick: () => void;
   onDiagramBtnClick: () => void;
   onDefinitionBtnClick: () => void;
-  onListBtnClick: () => void;
   onScheduleBtnClick: () => void;
   onExecuteBtnClick: () => void;
 };
@@ -22,7 +21,6 @@ const WorkflowActions: FC<Props> = ({
   onFavouriteBtnClick,
   onDiagramBtnClick,
   onDefinitionBtnClick,
-  onListBtnClick,
   onScheduleBtnClick,
   onExecuteBtnClick,
 }) => {
@@ -83,12 +81,6 @@ const WorkflowActions: FC<Props> = ({
                 <Box as={FeatherIcon} size="1em" icon="code" flexShrink={0} lineHeight={4} verticalAlign="middle" />
               </Box>
               Show definition
-            </MenuItem>
-            <MenuItem onClick={onListBtnClick}>
-              <Box as="span" fontSize="0.8em" marginRight={3} flexShrink={0} alignSelf="center">
-                <Box as={FeatherIcon} size="1em" icon="list" flexShrink={0} lineHeight={4} verticalAlign="middle" />
-              </Box>
-              Show workflow list
             </MenuItem>
             <MenuItem onClick={onScheduleBtnClick}>
               <Box as="span" fontSize="0.8em" marginRight={3} flexShrink={0} alignSelf="center">

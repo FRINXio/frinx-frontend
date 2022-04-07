@@ -37,7 +37,6 @@ import InputModal from '@frinx/workflow-ui/src/common/modals/input-modal';
 import PageContainer from '@frinx/workflow-ui/src/common/PageContainer';
 import ScheduledWorkflowModal from '../scheduled-workflow/scheduled-workflow-modal/scheduled-workflow-modal';
 import WfLabels from '@frinx/workflow-ui/src/common/wf-labels';
-import WorkflowListViewModal from './WorkflowListViewModal/WorkflowListViewModal';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import { jsonParse } from '@frinx/workflow-ui/src/common/utils';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
@@ -93,11 +92,10 @@ const makeEmptyScheduledWorkflow = () => {
 };
 
 type Props = {
-  onDefinitionClick: (name: string, version: string) => void;
   onWorkflowIdClick: (wfId: string) => void;
 };
 
-const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) => {
+const WorkflowDefinitions = ({ onWorkflowIdClick }: Props) => {
   const [keywords, setKeywords] = useState('');
   const [labels, setLabels] = useState<string[]>([]);
   const [data, setData] = useState<Workflow[]>([]);
@@ -108,7 +106,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const [inputModal, setInputModal] = useState(false);
   const [schedulingModal, setSchedulingModal] = useState(false);
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
-  const [workflowListViewModal, setWorkflowListViewModal] = useState(false);
   const [allLabels, setAllLabels] = useState([]);
   const {
     currentPage,
@@ -255,11 +252,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     setActiveWf(workflow);
   };
 
-  const showWorkflowListViewModal = (workflow: Workflow) => {
-    setWorkflowListViewModal(!workflowListViewModal);
-    setActiveWf(workflow);
-  };
-
   const getDependencies = (workflow: Workflow) => {
     const usedInWfs = data.filter((wf) => {
       const wfJSON = JSON.stringify(wf, null, 2);
@@ -271,18 +263,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
   const renderInputModal = () => {
     return inputModal ? (
       <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} onWorkflowIdClick={onWorkflowIdClick} />
-    ) : null;
-  };
-
-  const renderWorkflowListViewModal = () => {
-    return workflowListViewModal ? (
-      <WorkflowListViewModal
-        wf={activeWf}
-        modalHandler={showWorkflowListViewModal}
-        show={workflowListViewModal}
-        data={data}
-        onDefinitionClick={onDefinitionClick}
-      />
     ) : null;
   };
 
@@ -348,7 +328,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
       {renderInputModal()}
       {renderSchedulingModal()}
       {renderConfirmDeleteModal()}
-      {renderWorkflowListViewModal()}
       <WorkflowDefinitionsHeader
         allLabels={allLabels}
         keywords={[keywords]}
@@ -430,9 +409,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
                     onDefinitionBtnClick={() => {
                       definitionModal.onOpen();
                       setActiveWf(workflow);
-                    }}
-                    onListBtnClick={() => {
-                      showWorkflowListViewModal(workflow);
                     }}
                     onScheduleBtnClick={() => {
                       showSchedulingModal(workflow);
