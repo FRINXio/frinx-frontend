@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import {
   Button,
   Checkbox,
@@ -17,19 +17,27 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import Editor from 'react-ace';
-import { ScheduledWorkflow } from '@frinx/workflow-ui/src/helpers/types';
+import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/helpers/types';
 
 const DEFAULT_CRON_STRING = '* * * * *';
 
 type Props = {
-  scheduledWorkflow: Partial<ScheduledWorkflow>;
+  workflow: Workflow;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (workflow: Partial<ScheduledWorkflow>) => void;
 };
 
-const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose, onSubmit }) => {
-  const [scheduledWf, setScheduledWf] = useState<Partial<ScheduledWorkflow>>(scheduledWorkflow);
+const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
+  const [scheduledWf, setScheduledWf] = useState<Partial<ScheduledWorkflow>>({
+    workflowName: workflow.name,
+    workflowVersion: workflow.version,
+    workflowContext: {},
+    name: `${workflow.name}:${workflow.version}`,
+    cronString: DEFAULT_CRON_STRING,
+    enabled: false,
+    correlationId: workflow.correlationId,
+  });
 
   const handleSubmit = () => {
     onSubmit(scheduledWf);
@@ -65,13 +73,13 @@ const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose, onSubm
     <Modal size="3xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Schedule Details - {scheduledWf?.name}</ModalHeader>
+        <ModalHeader>Schedule Details - {scheduledWf.workflowName}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <FormControl>
             <FormLabel>Cron Expression</FormLabel>
             <Input
-              value={scheduledWf?.cronString || DEFAULT_CRON_STRING}
+              value={scheduledWf.cronString || DEFAULT_CRON_STRING}
               onChange={(e) => {
                 e.persist();
                 setScheduledWf((prev) => ({ ...prev, cronString: e.target.value }));
@@ -86,7 +94,7 @@ const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose, onSubm
                 e.persist();
                 setScheduledWf((prev) => ({ ...prev, enabled: e.target.checked }));
               }}
-              isChecked={scheduledWf?.enabled || false}
+              isChecked={scheduledWf.enabled || false}
             >
               Enabled
             </Checkbox>
@@ -97,7 +105,7 @@ const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose, onSubm
               name="schedule_editor"
               mode="json"
               onChange={setWorkflowContext}
-              value={JSON.stringify(scheduledWf?.workflowContext, null, 2)}
+              value={JSON.stringify(scheduledWf.workflowContext, null, 2)}
               height="400px"
               width="100%"
             />

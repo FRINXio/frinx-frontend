@@ -78,19 +78,6 @@ const Labels = (props: { wf: Workflow; labels: string[]; onClick: (label: string
   });
 };
 
-const DEFAULT_CRON_STRING = '* * * * *';
-
-const makeEmptyScheduledWorkflow = () => {
-  return {
-    cronString: DEFAULT_CRON_STRING,
-    enabled: false,
-    name: '',
-    workflowContext: {},
-    workflowName: '',
-    workflowVersion: 0,
-  };
-};
-
 type Props = {
   onWorkflowIdClick: (wfId: string) => void;
 };
@@ -103,8 +90,8 @@ const WorkflowDefinitions = ({ onWorkflowIdClick }: Props) => {
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
   const dependencyModal = useDisclosure();
+  const schedulingModal = useDisclosure();
   const [inputModal, setInputModal] = useState(false);
-  const [schedulingModal, setSchedulingModal] = useState(false);
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const [allLabels, setAllLabels] = useState([]);
   const {
@@ -164,7 +151,7 @@ const WorkflowDefinitions = ({ onWorkflowIdClick }: Props) => {
     const { registerSchedule } = callbackUtils.getCallbacks;
 
     if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
-      registerSchedule(scheduledWf.workflowName, Number(scheduledWf.workflowVersion), scheduledWf)
+      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, scheduledWf)
         .then(() => {
           addToastNotification({
             type: 'success',
@@ -237,16 +224,6 @@ const WorkflowDefinitions = ({ onWorkflowIdClick }: Props) => {
     setActiveWf(workflow);
   };
 
-  const onSchedulingModalClose = () => {
-    setSchedulingModal(false);
-    getData();
-  };
-
-  const showSchedulingModal = (workflow: Workflow) => {
-    setSchedulingModal(!schedulingModal);
-    setActiveWf(workflow);
-  };
-
   const showConfirmDeleteModal = (workflow: Workflow) => {
     setConfirmDeleteModal(!confirmDeleteModal);
     setActiveWf(workflow);
@@ -264,25 +241,6 @@ const WorkflowDefinitions = ({ onWorkflowIdClick }: Props) => {
     return inputModal ? (
       <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} onWorkflowIdClick={onWorkflowIdClick} />
     ) : null;
-  };
-
-  const renderSchedulingModal = () => {
-    return (
-      activeWf != null &&
-      schedulingModal && (
-        <ScheduledWorkflowModal
-          scheduledWorkflow={{
-            ...makeEmptyScheduledWorkflow(),
-            workflowName: activeWf.name,
-            workflowVersion: activeWf.version.toString(),
-            name: `${activeWf.name}:${activeWf.version}`,
-          }}
-          onClose={onSchedulingModalClose}
-          isOpen={schedulingModal}
-          onSubmit={handleWorkflowSchedule}
-        />
-      )
-    );
   };
 
   const renderConfirmDeleteModal = () => {
@@ -325,8 +283,15 @@ const WorkflowDefinitions = ({ onWorkflowIdClick }: Props) => {
         isOpen={dependencyModal.isOpen}
         workflows={data}
       />
+      {activeWf != null && (
+        <ScheduledWorkflowModal
+          workflow={activeWf}
+          onClose={schedulingModal.onClose}
+          isOpen={schedulingModal.isOpen}
+          onSubmit={handleWorkflowSchedule}
+        />
+      )}
       {renderInputModal()}
-      {renderSchedulingModal()}
       {renderConfirmDeleteModal()}
       <WorkflowDefinitionsHeader
         allLabels={allLabels}
@@ -411,7 +376,8 @@ const WorkflowDefinitions = ({ onWorkflowIdClick }: Props) => {
                       setActiveWf(workflow);
                     }}
                     onScheduleBtnClick={() => {
-                      showSchedulingModal(workflow);
+                      setActiveWf(workflow);
+                      schedulingModal.onOpen();
                     }}
                     onExecuteBtnClick={() => {
                       showInputModal(workflow);

@@ -325,6 +325,7 @@ export type Workflow<T extends WorkflowTask = WorkflowTask> = {
   timeoutPolicy: string;
   timeoutSeconds: number;
   variables: Record<string, unknown>;
+  correlationId: string;
 };
 export type NodeData =
   | {
@@ -392,14 +393,10 @@ export type ScheduledWorkflow = {
   cronString: string;
   lastUpdate: string;
   name: string;
-  taskToDomain: {
-    [key: string]: string;
-  };
+  taskToDomain: Record<string, string>;
   workflowName: string;
-  workflowVersion: string;
-  workflowContext: {
-    [key: string]: any;
-  };
+  workflowVersion: number;
+  workflowContext: Record<string, any>;
   enabled: boolean;
   status: StatusType;
 };
