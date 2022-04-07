@@ -14,6 +14,7 @@ import {
   VpnSitesOutput,
   SiteDevicesOutput,
   EvcAttachmentItemsOutput,
+  VpnSiteOutput,
 } from './network-types';
 import { ServiceFilters } from './pages/service-list/service-filter';
 import { SiteFilters } from './pages/site-list/site-filter';
@@ -53,6 +54,7 @@ export type UnistoreCallbacks = {
     siteFilter: SiteFilters | null,
     contentType?: ContentType,
   ) => Promise<VpnSitesOutput>;
+  getVpnSite: (siteId: string, contentType?: ContentType) => Promise<VpnSiteOutput>;
   createVpnSite: (vpnSite: CreateVpnSiteInput) => Promise<void>;
   editVpnSite: (vpnSite: CreateVpnSiteInput) => Promise<void>;
   deleteVpnSite: (vpnSiteId: string) => Promise<void>;

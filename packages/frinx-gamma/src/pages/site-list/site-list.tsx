@@ -1,7 +1,6 @@
 import { Box, Button, Container, Flex, Heading, HStack, useDisclosure } from '@chakra-ui/react';
 import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import { SearchIcon } from '@chakra-ui/icons';
-import diff from 'diff-arrays-of-objects';
 import { Link, useNavigate } from 'react-router-dom';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
@@ -12,12 +11,15 @@ import SiteFilter, { SiteFilters } from './site-filter';
 import SiteTable from './site-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
-import { getChangedSitesWithStatus, getSavedSitesWithStatus } from './site-helpers';
+import { getSavedSitesWithStatus, getSiteChanges, VpnSiteWithStatus } from './site-helpers';
 import FilterContext from '../../filter-provider';
+import { CalcDiffContext } from '../../calcdiff-provider';
 
 const SiteListPage: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);
   const { site: siteFilters, onSiteFilterChange } = unwrap(filterContext);
+  const calcdiffContext = useContext(CalcDiffContext);
+  const { data: calcDiffData } = unwrap(calcdiffContext);
   const [createdSites, setCreatedSites] = useState<VpnSite[] | null>(null);
   const [updatedSites, setUpdatedSites] = useState<VpnSite[] | null>(null);
   const [deletedSites, setDeletedSites] = useState<VpnSite[] | null>(null);
@@ -28,6 +30,7 @@ const SiteListPage: VoidFunctionComponent = () => {
   const [pagination, setPagination] = usePagination();
   const [filters, setFilters] = useState<SiteFilters>(siteFilters);
   const [submittedFilters, setSubmittedFilters] = useState<SiteFilters>(siteFilters);
+  const [siteChanges, setSiteChanges] = useState<VpnSiteWithStatus[] | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,20 +48,20 @@ const SiteListPage: VoidFunctionComponent = () => {
         ...pagination,
         pageCount: Math.ceil(sitesCount / pagination.pageSize),
       });
-
-      // get data for changes table
-      const allSavedSites = await callbacks.getVpnSites(null, null, 'nonconfig');
-      const clientAllSavedSites = apiVpnSitesToClientVpnSite(allSavedSites);
-      const allUnsavedSites = await callbacks.getVpnSites(null, null);
-      const clientAllUnsavedSites = apiVpnSitesToClientVpnSite(allUnsavedSites);
-      const result = diff(clientAllSavedSites, clientAllUnsavedSites, 'siteId');
-      setCreatedSites(result.added);
-      setUpdatedSites(result.updated);
-      setDeletedSites(result.removed);
     };
 
     fetchData();
   }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (calcDiffData) {
+        const changes = await getSiteChanges(calcDiffData);
+        setSiteChanges(changes);
+      }
+    };
+    fetchData();
+  }, [calcDiffData]);
 
   const handleDeleteButtonClick = (siteId: string) => {
     setSiteIdToDelete(siteId);
@@ -107,7 +110,6 @@ const SiteListPage: VoidFunctionComponent = () => {
     navigate(`../sites/${siteId}/devices`);
   };
 
-  const changedSitesWithStatus = getChangedSitesWithStatus(createdSites, updatedSites, deletedSites);
   const savedSitesWithStatus = getSavedSitesWithStatus(sites, updatedSites, deletedSites);
 
   return (
@@ -150,12 +152,12 @@ const SiteListPage: VoidFunctionComponent = () => {
           {sites ? (
             <>
               <SiteFilter filters={filters} onFilterChange={handleFilterChange} onFilterSubmit={handleFilterSubmit} />
-              {changedSitesWithStatus.length ? (
+              {siteChanges && siteChanges.length ? (
                 <>
                   <Heading size="sm">Changes</Heading>
                   <Box my="2">
                     <SiteTable
-                      sites={changedSitesWithStatus}
+                      sites={siteChanges}
                       size="sm"
                       detailId={detailId}
                       onEditSiteButtonClick={handleEditSiteRedirect}
