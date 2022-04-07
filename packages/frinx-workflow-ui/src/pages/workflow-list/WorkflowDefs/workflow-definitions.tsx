@@ -35,7 +35,7 @@ import DependencyModal from '@frinx/workflow-ui/src/common/modals/dependency-mod
 import DiagramModal from '@frinx/workflow-ui/src/common/modals/diagram-modal';
 import InputModal from '@frinx/workflow-ui/src/common/modals/input-modal';
 import PageContainer from '@frinx/workflow-ui/src/common/PageContainer';
-import ScheduledWorkflowModal from '../scheduled-workflow/scheduled-workflow-modal/scheduled-workflow-modal';
+import ScheduledWorkflowModal from '../../../common/modals/scheduled-workflow-modal';
 import WfLabels from '@frinx/workflow-ui/src/common/wf-labels';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import { jsonParse } from '@frinx/workflow-ui/src/common/utils';
