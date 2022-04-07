@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Workflow, WorkflowInstanceDetail } from '../../types/types';
 import callbackUtils from '../../utils/callback-utils';
 
@@ -64,9 +64,7 @@ export async function* asyncGenerator(
   abortController: AbortController,
 ): AsyncGenerator<ExecutedWorkflowResponse | null, void, unknown> {
   let data = await getWorkflowExecOutput(workflowId, abortController);
-  // if (data == null) {
-  //   yield null;
-  // }
+
   while (data?.result.status === 'RUNNING' || data?.result.status === 'PAUSED') {
     await new Promise((resolve) => {
       setTimeout(resolve, 800);
