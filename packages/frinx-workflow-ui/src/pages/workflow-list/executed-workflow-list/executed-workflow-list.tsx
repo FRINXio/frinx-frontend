@@ -1,5 +1,5 @@
 import PageContainer from '../../../common/PageContainer';
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Progress } from '@chakra-ui/react';
 import {
   ExecutedWorkflowsFlat,
@@ -24,10 +24,6 @@ import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import useQueryParams from '@frinx/workflow-ui/src/hooks/use-query-params';
 
-type Props = {
-  onWorkflowIdClick: (workflowId: string) => void;
-};
-
 type StateProps = {
   selectedWorkflows: string[];
   detailsModal: boolean;
@@ -51,7 +47,7 @@ const initialState = {
   labels: [],
 };
 
-const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
+const ExecutedWorkflowList: VoidFunctionComponent = () => {
   const navigate = useNavigate();
   const query = useQueryParams();
   const searchKeyword = query.get('search') || '';
@@ -294,7 +290,6 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
             sortWf={sortWorkflow}
             indent={indent}
             hierarchicalWorkflows={hierarchy}
-            onExecutedWorkflowClick={onWorkflowIdClick}
             openParentWfs={state.openParentWorkflows}
             selectWf={selectWorkflow}
             selectedWfs={state.selectedWorkflows}
@@ -316,7 +311,6 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
           <ExecutedWorkflowFlatTable
             selectAllWorkflows={selectAllWorkflows}
             sortWf={sortWorkflow}
-            onExecutedWorkflowClick={onWorkflowIdClick}
             selectWf={selectWorkflow}
             selectedWfs={state.selectedWorkflows}
             sort={state.sort}
