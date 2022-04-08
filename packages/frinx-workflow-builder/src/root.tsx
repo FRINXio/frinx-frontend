@@ -13,17 +13,9 @@ import theme from './theme';
 
 type Props = {
   onClose: () => void;
-  onExecuteSuccessClick: (workflowId: string) => void;
-  onEditWorkflowClick: (name: string, version: string) => void;
-  onNewWorkflowClick: () => void;
 };
 
-const Root: VoidFunctionComponent<Props> = ({
-  onClose,
-  onExecuteSuccessClick,
-  onEditWorkflowClick,
-  onNewWorkflowClick,
-}) => {
+const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   const { name, version } = useParams<{ name: string; version: string }>();
   const [workflow, setWorkflow] = useState<Workflow<ExtendedTask> | null>(null);
   const [workflows, setWorkflows] = useState<Workflow[] | null>(null);
@@ -128,7 +120,6 @@ const Root: VoidFunctionComponent<Props> = ({
       <TaskActionsProvider>
         <App
           key={`${name}/${version}/${workflow.name}`}
-          onClose={onClose}
           workflow={workflow}
           onWorkflowChange={(editedWorkflow) => {
             setWorkflow((wf) => ({
@@ -138,9 +129,6 @@ const Root: VoidFunctionComponent<Props> = ({
           }}
           workflows={workflows}
           taskDefinitions={taskDefinitions}
-          onExecuteSuccessClick={onExecuteSuccessClick}
-          onEditWorkflowClick={onEditWorkflowClick}
-          onNewWorkflowClick={onNewWorkflowClick}
           onFileImport={handleFileImport}
           onFileExport={handleFileExport}
           onWorkflowDelete={handleWorkflowDelete}

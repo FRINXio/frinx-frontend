@@ -54,13 +54,6 @@ const Root: VoidFunctionComponent = () => {
                 onClose={() => {
                   navigate('definitions');
                 }}
-                onEditWorkflowClick={(name, version) => {
-                  navigate(`builder/${name}/${version}`);
-                }}
-                onNewWorkflowClick={() => {
-                  navigate('builder');
-                }}
-                onExecuteSuccessClick={handleExecutedWfIdClick}
               />
             </Box>
           }
@@ -73,13 +66,6 @@ const Root: VoidFunctionComponent = () => {
                 onClose={() => {
                   navigate('definitions');
                 }}
-                onEditWorkflowClick={(name, version) => {
-                  navigate(`builder/${name}/${version}`);
-                }}
-                onNewWorkflowClick={() => {
-                  navigate('builder');
-                }}
-                onExecuteSuccessClick={handleExecutedWfIdClick}
               />
             </Box>
           }

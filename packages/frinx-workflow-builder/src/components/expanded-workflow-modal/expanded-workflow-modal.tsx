@@ -18,6 +18,7 @@ import {
 } from '@chakra-ui/react';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';
+import { Link } from 'react-router-dom';
 import callbackUtils from '../../callback-utils';
 import { getElementsFromWorkflow } from '../../helpers/data.helpers';
 import { getLayoutedElements } from '../../helpers/layout.helpers';
@@ -36,7 +37,6 @@ const nodeTypes = {
 type Props = {
   workflowName: string;
   workflowVersion: number;
-  onEditBtnClick: (name: string, version: string) => void;
   onClose: () => void;
 };
 
@@ -54,7 +54,7 @@ const ExpandedWorkflowDiagram: FC<{ workflow: Workflow<Task> }> = ({ workflow })
   );
 };
 
-const ExpandedWorkflowModal: FC<Props> = ({ workflowName, workflowVersion, onClose, onEditBtnClick }) => {
+const ExpandedWorkflowModal: FC<Props> = ({ workflowName, workflowVersion, onClose }) => {
   const [workflowState, setWorkflowState] = useState<Workflow<Task> | null>(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const ref = useRef<HTMLButtonElement | null>(null);
@@ -117,10 +117,9 @@ const ExpandedWorkflowModal: FC<Props> = ({ workflowName, workflowVersion, onClo
               </Button>
               <Button
                 colorScheme="blue"
-                onClick={() => {
-                  onEditBtnClick(workflowState.name, workflowState.version.toString());
-                }}
                 marginLeft={3}
+                as={Link}
+                to={`/uniflow/builder/${workflowState.name}/${workflowState.version}`}
               >
                 Edit
               </Button>

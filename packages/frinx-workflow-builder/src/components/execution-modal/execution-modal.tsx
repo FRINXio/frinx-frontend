@@ -24,7 +24,7 @@ import {
 } from '@chakra-ui/react';
 import { Task, Workflow } from '../../helpers/types';
 import callbackUtils from '../../callback-utils';
-import unwrap from '../../helpers/unwrap';
+import { Link } from 'react-router-dom';
 
 function jsonParse<T>(json?: string | null): T | null {
   if (json == null) {
@@ -115,10 +115,9 @@ type Props = {
   onClose: () => void;
   shouldCloseAfterSubmit: boolean;
   isOpen: boolean;
-  onSuccessClick: (workflowId: string) => void;
 };
 
-const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, isOpen, onSuccessClick }) => {
+const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, isOpen }) => {
   const [warning, setWarning] = useState<boolean[]>([]);
   const [workflowForm, setWorkflowForm] = useState<Record<string, FormItem>>(getFormValues(workflow));
   const [waitingWfs, setWaitingWfs] = useState<unknown[]>([]);
@@ -297,42 +296,12 @@ const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, 
                     );
                 }
               })}
-              {/* {workflowForm.map((item, i) => {
-                return (
-                  <Box key={item.label}>
-                    <FormControl id={item.label}>
-                      <FormLabel>{item.label}</FormLabel>
-                      {warning[i] ? (
-                        <Box color="red" fontSize={12} float="right" marginTop={5}>
-                          Unnecessary space
-                        </Box>
-                      ) : null}
-                      {inputModel(item, i)}
-                      <FormHelperText className="text-muted">
-                        {item.description}
-                        <br />
-                        {item.constraint && (
-                          <>
-                            <strong>Constraint:</strong> {item.constraint}
-                          </>
-                        )}
-                      </FormHelperText>
-                    </FormControl>
-                  </Box>
-                );
-              })} */}
             </Grid>
           </ModalBody>
           <ModalFooter justifyContent="space-between">
             <HStack spacing={2}>
               {isSuccess ? (
-                <Button
-                  type="button"
-                  colorScheme="blue"
-                  onClick={() => {
-                    onSuccessClick(unwrap(workflowId));
-                  }}
-                >
+                <Button type="button" colorScheme="blue" as={Link} to={`/uniflow/executed/${workflowId}`}>
                   Continue to detail
                 </Button>
               ) : (
