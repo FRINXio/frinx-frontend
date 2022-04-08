@@ -23,7 +23,7 @@ import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
 import DetailsModalHeader from './executed-workflow-detail-header';
 import { useAsyncGenerator } from './executed-workflow-detail-status.helpers';
 import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import unwrap from '../../helpers/unwrap';
 
 const convertWorkflowVariablesToFormFormat = (
@@ -69,10 +69,9 @@ const convertWorkflowVariablesToFormFormat = (
 
 type Props = {
   onExecutedOperation: (workflowId: string) => void;
-  onWorkflowIdClick: (workflowId: string) => void;
 };
 
-const DetailsModal: FC<Props> = ({ onWorkflowIdClick, onExecutedOperation }) => {
+const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
   const { workflowId } = useParams<{ workflowId: string }>();
   const taskModalDisclosure = useDisclosure();
   const execPayload = useAsyncGenerator(unwrap(workflowId));
@@ -170,7 +169,7 @@ const DetailsModal: FC<Props> = ({ onWorkflowIdClick, onExecutedOperation }) => 
       </Heading>
       <Box>
         {result.parentWorkflowId && (
-          <Button display="inline" margin={2} onClick={() => onWorkflowIdClick(result.parentWorkflowId)}>
+          <Button display="inline" margin={2} as={Link} to={`/uniflow/executed/${result.parentWorkflowId}`}>
             Parent
           </Button>
         )}
@@ -196,12 +195,7 @@ const DetailsModal: FC<Props> = ({ onWorkflowIdClick, onExecutedOperation }) => 
           </TabList>
           <TabPanels>
             <TabPanel>
-              <TaskTable
-                tasks={result.tasks}
-                onTaskClick={handleOnOpenTaskModal}
-                onWorkflowClick={onWorkflowIdClick}
-                formatDate={formatDate}
-              />
+              <TaskTable tasks={result.tasks} onTaskClick={handleOnOpenTaskModal} formatDate={formatDate} />
             </TabPanel>
             <TabPanel>
               {isResultInputOutputLoaded && (
