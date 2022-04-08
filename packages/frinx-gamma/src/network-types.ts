@@ -346,6 +346,11 @@ const VpnSitesOutputValidator = t.type({
   ),
 });
 
+export type VpnSiteOutput = t.TypeOf<typeof VpnSitesOutputValidator>;
+export function decodeVpnSiteOutput(value: unknown): VpnSiteOutput {
+  return extractResult(VpnSitesOutputValidator.decode(value));
+}
+
 export type VpnSitesOutput = t.TypeOf<typeof VpnSitesOutputValidator>;
 
 export function decodeVpnSitesOutput(value: unknown): VpnSitesOutput {

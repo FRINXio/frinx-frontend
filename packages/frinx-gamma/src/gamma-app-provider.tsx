@@ -1,6 +1,7 @@
 import { Box, Button, Heading, Text } from '@chakra-ui/react';
 import React, { createContext, FC, useEffect, useState } from 'react';
 import { FilterProvider } from './filter-provider';
+import { CalcDiffProvider } from './calcdiff-provider';
 import { getTransactionId, removeTransactionId, setTransactionId } from './helpers/transaction-id';
 import uniflowCallbackUtils, { UniflowCallbacks } from './uniflow-callback-utils';
 import unistoreCallbackUtils, { UnistoreCallbacks } from './unistore-callback-utils';
@@ -41,51 +42,53 @@ const GammaAppProvider: FC<GammaAppProviderProps> = ({ children, hasTransactionE
   }
 
   return (
-    <UnistoreApiContext.Provider value>
-      <FilterProvider>
-        {hasTransactionError ? (
-          <Box
-            position="fixed"
-            inset={0}
-            _after={{
-              content: '""',
-              position: 'absolute',
-              inset: 0,
-              background: 'blackAlpha.700',
-              zIndex: 20,
-            }}
-          >
+    <CalcDiffProvider>
+      <UnistoreApiContext.Provider value>
+        <FilterProvider>
+          {hasTransactionError ? (
             <Box
               position="fixed"
-              top={4}
-              minWidth={96}
-              left="50%"
-              transform="translateX(-50%)"
-              paddingY={4}
-              paddingX={8}
-              borderRadius="md"
-              zIndex="modal"
-              background="white"
-              borderTop={4}
-              borderStyle="solid"
-              borderColor="red"
-              textAlign="center"
+              inset={0}
+              _after={{
+                content: '""',
+                position: 'absolute',
+                inset: 0,
+                background: 'blackAlpha.700',
+                zIndex: 20,
+              }}
             >
-              <Heading size="md" marginBottom={2}>
-                Transaction expired
-              </Heading>
-              <Text marginBottom={2}>All uncommited changes will be lost.</Text>
-              <Button type="button" colorScheme="blue" onClick={handleRefreshBtnClick}>
-                Refresh
-              </Button>
+              <Box
+                position="fixed"
+                top={4}
+                minWidth={96}
+                left="50%"
+                transform="translateX(-50%)"
+                paddingY={4}
+                paddingX={8}
+                borderRadius="md"
+                zIndex="modal"
+                background="white"
+                borderTop={4}
+                borderStyle="solid"
+                borderColor="red"
+                textAlign="center"
+              >
+                <Heading size="md" marginBottom={2}>
+                  Transaction expired
+                </Heading>
+                <Text marginBottom={2}>All uncommited changes will be lost.</Text>
+                <Button type="button" colorScheme="blue" onClick={handleRefreshBtnClick}>
+                  Refresh
+                </Button>
+              </Box>
+              {children}
             </Box>
-            {children}
-          </Box>
-        ) : (
-          children
-        )}
-      </FilterProvider>
-    </UnistoreApiContext.Provider>
+          ) : (
+            children
+          )}
+        </FilterProvider>
+      </UnistoreApiContext.Provider>
+    </CalcDiffProvider>
   );
 };
 
