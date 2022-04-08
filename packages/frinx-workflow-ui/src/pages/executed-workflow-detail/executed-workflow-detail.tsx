@@ -24,6 +24,7 @@ import DetailsModalHeader from './executed-workflow-detail-header';
 import { useAsyncGenerator } from './executed-workflow-detail-status.helpers';
 import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { useParams } from 'react-router-dom';
+import unwrap from '../../helpers/unwrap';
 
 const convertWorkflowVariablesToFormFormat = (
   workflowDetails: string,
@@ -74,7 +75,7 @@ type Props = {
 const DetailsModal: FC<Props> = ({ onWorkflowIdClick, onExecutedOperation }) => {
   const { workflowId } = useParams<{ workflowId: string }>();
   const taskModalDisclosure = useDisclosure();
-  const execPayload = useAsyncGenerator(workflowId ?? '');
+  const execPayload = useAsyncGenerator(unwrap(workflowId));
   const [openedTask, setOpenedTask] = useState<ExecutedWorkflowTask | null>(null);
   const [isEscaped, setIsEscaped] = useState(false);
   const [workflowVariables, setWorkflowVariables] = useState<Record<string, string> | null>(null);
