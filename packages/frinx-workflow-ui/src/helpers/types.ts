@@ -395,7 +395,7 @@ export type ScheduledWorkflow = {
   name: string;
   taskToDomain: Record<string, string>;
   workflowName: string;
-  workflowVersion: number;
+  workflowVersion: string;
   workflowContext: Record<string, any>;
   enabled: boolean;
   status: StatusType;

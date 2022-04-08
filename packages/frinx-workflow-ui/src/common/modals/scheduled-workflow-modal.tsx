@@ -31,7 +31,7 @@ type Props = {
 const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
   const [scheduledWf, setScheduledWf] = useState<Partial<ScheduledWorkflow>>({
     workflowName: workflow.name,
-    workflowVersion: workflow.version,
+    workflowVersion: workflow.version.toString(),
     workflowContext: {},
     name: `${workflow.name}:${workflow.version}`,
     cronString: DEFAULT_CRON_STRING,
@@ -40,7 +40,10 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
   });
 
   const handleSubmit = () => {
-    onSubmit(scheduledWf);
+    onSubmit({
+      ...scheduledWf,
+      workflowVersion: scheduledWf.workflowVersion,
+    });
     onClose();
   };
 

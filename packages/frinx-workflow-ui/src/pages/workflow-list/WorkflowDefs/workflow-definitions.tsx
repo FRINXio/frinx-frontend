@@ -147,7 +147,7 @@ const WorkflowDefinitions = () => {
     const { registerSchedule } = callbackUtils.getCallbacks;
 
     if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
-      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, scheduledWf)
+      registerSchedule(scheduledWf.workflowName, Number(scheduledWf.workflowVersion), scheduledWf)
         .then(() => {
           addToastNotification({
             type: 'success',
