@@ -36,7 +36,7 @@ const Root: VoidFunctionComponent = () => {
           </>
         }
       />
-      <Route path="executed" element={<ExecutedWorkflowList />} />
+      <Route path="executed" element={<ExecutedWorkflowList onWorkflowIdClick={handleExecutedWfIdClick} />} />
       <Route
         path="executed/:workflowId"
         element={

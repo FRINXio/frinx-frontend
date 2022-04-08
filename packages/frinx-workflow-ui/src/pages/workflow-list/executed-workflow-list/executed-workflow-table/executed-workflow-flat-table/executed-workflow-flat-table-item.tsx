@@ -2,15 +2,20 @@ import moment from 'moment';
 import React, { FC } from 'react';
 import { Tr, Td, Checkbox } from '@chakra-ui/react';
 import { ExecutedWorkflowsFlat } from '@frinx/workflow-ui/src/helpers/types';
-import { Link } from 'react-router-dom';
 
 type Props = {
   flatWorkflows: ExecutedWorkflowsFlat;
   selectedWfs: string[];
   selectWf: (workflowId: string, isChecked: boolean) => void;
+  onExecutedWorkflowClick(workflowId: string): void;
 };
 
-const ExecutedWorkflowFlatTableItem: FC<Props> = ({ flatWorkflows, selectWf, selectedWfs }) => {
+const ExecutedWorkflowFlatTableItem: FC<Props> = ({
+  flatWorkflows,
+  selectWf,
+  selectedWfs,
+  onExecutedWorkflowClick,
+}) => {
   let {
     result: { hits: data },
   } = flatWorkflows;
@@ -25,8 +30,7 @@ const ExecutedWorkflowFlatTableItem: FC<Props> = ({ flatWorkflows, selectWf, sel
             />
           </Td>
           <Td
-            as={Link}
-            to={`/uniflow/executed/${item.workflowId}`}
+            onClick={() => onExecutedWorkflowClick(item.workflowId)}
             cursor="pointer"
             style={{
               whiteSpace: 'nowrap',

@@ -11,11 +11,13 @@ type Props = {
   selectAllWorkflows: (isChecked: boolean) => void;
   sortWf: (sortType: number) => void;
   selectWf: (workflowId: string, isChecked: boolean) => void;
+  onExecutedWorkflowClick(workflowId: string): void;
 };
 
 const ExecutedWorkflowFlatTable: FC<Props> = ({
   sort,
   sortWf,
+  onExecutedWorkflowClick,
   selectedWfs,
   selectWf,
   flatWorkflows,
@@ -33,7 +35,12 @@ const ExecutedWorkflowFlatTable: FC<Props> = ({
           areSelectedAll={areSelectedAll}
         />
         <Tbody fontSize={13} textAlign="left">
-          <ExecutedWorkflowFlatTableItem selectWf={selectWf} selectedWfs={selectedWfs} flatWorkflows={flatWorkflows} />
+          <ExecutedWorkflowFlatTableItem
+            onExecutedWorkflowClick={onExecutedWorkflowClick}
+            selectWf={selectWf}
+            selectedWfs={selectedWfs}
+            flatWorkflows={flatWorkflows}
+          />
         </Tbody>
       </Table>
     </Box>

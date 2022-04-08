@@ -6,7 +6,6 @@ import {
   ExecutedWorkflowsHierarchical,
   NestedExecutedWorkflow,
 } from '@frinx/workflow-ui/src/helpers/types';
-import { Link } from 'react-router-dom';
 
 type Props = {
   hierarchicalWorkflows: ExecutedWorkflowsHierarchical;
@@ -20,9 +19,15 @@ type Props = {
     closeParentWfs: NestedExecutedWorkflow[] | null,
     closeChildWfs: NestedExecutedWorkflow[] | null,
   ): void;
+  onExecutedWorkflowClick(workflowId: string): void;
 };
 
-const ExecutedWorkflowTableHierarchicalItem: FC<Props> = ({ hierarchicalWorkflows, selectWf, selectedWfs }) => {
+const ExecutedWorkflowTableHierarchicalItem: FC<Props> = ({
+  hierarchicalWorkflows,
+  selectWf,
+  selectedWfs,
+  onExecutedWorkflowClick,
+}) => {
   let { parents } = hierarchicalWorkflows;
 
   return (
@@ -36,8 +41,7 @@ const ExecutedWorkflowTableHierarchicalItem: FC<Props> = ({ hierarchicalWorkflow
             />
           </Td>
           <Td
-            as={Link}
-            to={`/uniflow/executed/${item.workflowId}`}
+            onClick={() => onExecutedWorkflowClick(item.workflowId)}
             cursor="pointer"
             style={{
               whiteSpace: 'nowrap',

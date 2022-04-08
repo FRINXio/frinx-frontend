@@ -23,11 +23,13 @@ type Props = {
     closeParentWfs: NestedExecutedWorkflow[] | null,
     closeChildWfs: NestedExecutedWorkflow[] | null,
   ): void;
+  onExecutedWorkflowClick(workflowId: string): void;
 };
 
 const ExecutedWorkflowHierarchicalTable: FC<Props> = ({
   sort,
   sortWf,
+  onExecutedWorkflowClick,
   showChildrenWorkflows,
   selectedWfs,
   indent,
@@ -51,6 +53,7 @@ const ExecutedWorkflowHierarchicalTable: FC<Props> = ({
           <ExecutedWorkflowTableHierarchicalItem
             indent={indent}
             showChildrenWorkflows={showChildrenWorkflows}
+            onExecutedWorkflowClick={onExecutedWorkflowClick}
             openParentWfs={openParentWfs}
             selectWf={selectWf}
             selectedWfs={selectedWfs}
