@@ -47,6 +47,7 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick, onWorkflowClick, formatDate 
                   aria-label="show-subworkflow"
                   onClick={() => onWorkflowClick(task.subWorkflowId)}
                   icon={<Icon size={12} as={ArrowForwardIcon} />}
+                  isDisabled={task.subWorkflowId == null}
                 />
               ) : null}
             </Td>
