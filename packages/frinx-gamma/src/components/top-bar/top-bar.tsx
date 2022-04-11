@@ -37,7 +37,7 @@ const TopBar: VoidFunctionComponent = () => {
   const discardChangesDisclosure = useDisclosure();
   const location = useLocation();
   const [workflowState, setWorkflowState] = useState<WorkflowState | null>(null);
-  const { data: calcDiffData } = useCalcDiffContext();
+  const { data: calcDiffData, invalidateCache } = useCalcDiffContext();
   const isBearerPage = location.pathname.includes('vpn-bearers');
   const isCommitDiscardButtonDisabled = !getServicesSitesActionEnabled(calcDiffData);
 
@@ -51,6 +51,7 @@ const TopBar: VoidFunctionComponent = () => {
       removeTransactionId();
       const data = await callbacks.getTransactionCookie();
       setTransactionId(data);
+      invalidateCache();
       discardChangesDisclosure.onClose();
     }
   };
@@ -113,6 +114,7 @@ const TopBar: VoidFunctionComponent = () => {
     const unistoreCallbacks = unistoreCallbackUtils.getCallbacks;
     unistoreCallbacks.getTransactionCookie().then((data) => {
       setTransactionId(data);
+      invalidateCache();
     });
   };
 
