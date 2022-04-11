@@ -1,8 +1,7 @@
 import { Box, Button, Container, Flex, Heading, HStack, Icon, useDisclosure } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
@@ -12,12 +11,13 @@ import ServiceFilter, { ServiceFilters } from './service-filter';
 import ServiceTable from './service-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
-import { getChangedServicesWithStatus, getSavedServicesWithStatus } from './service-helpers';
+import { getSavedServicesWithStatus, getServiceChanges, VpnServiceWithStatus } from './service-helpers';
+import { CalcDiffContext } from '../../calcdiff-provider';
 
 const CreateVpnServicePage: VoidFunctionComponent = () => {
-  const [createdServices, setCreatedServices] = useState<VpnService[] | null>(null);
-  const [updatedServices, setUpdatedServices] = useState<VpnService[] | null>(null);
-  const [deletedServices, setDeletedServices] = useState<VpnService[] | null>(null);
+  const calcdiffContext = useContext(CalcDiffContext);
+  const { data: calcDiffData } = unwrap(calcdiffContext);
+  const [serviceChanges, setServiceChanges] = useState<VpnServiceWithStatus[] | null>(null);
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const [serviceIdToDelete, setServiceIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
@@ -50,20 +50,20 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
         ...pagination,
         pageCount: Math.ceil(servicesCount / pagination.pageSize),
       });
-
-      // get data for changes table
-      const allSavedServices = await callbacks.getVpnServices(null, null, 'nonconfig');
-      const clientAllSavedServices = apiVpnServiceToClientVpnService(allSavedServices);
-      const allUnsavedServices = await callbacks.getVpnServices(null, null);
-      const clientAllUnsavedServices = apiVpnServiceToClientVpnService(allUnsavedServices);
-      const result = diff(clientAllSavedServices, clientAllUnsavedServices, 'vpnId');
-      setCreatedServices(result.added);
-      setUpdatedServices(result.updated);
-      setDeletedServices(result.removed);
     };
 
     fetchData();
   }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (calcDiffData) {
+        const changes = await getServiceChanges(calcDiffData);
+        setServiceChanges(changes);
+      }
+    };
+    fetchData();
+  }, [calcDiffData]);
 
   const handleDeleteButtonClick = (serviceId: string) => {
     setServiceIdToDelete(serviceId);
@@ -99,8 +99,11 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
     navigate(`../services/edit/${unwrap(serviceId)}`);
   };
 
-  const changedServicesWithStatus = getChangedServicesWithStatus(createdServices, updatedServices, deletedServices);
-  const savedServicesWithStatus = getSavedServicesWithStatus(vpnServices, updatedServices, deletedServices);
+  const savedServicesWithStatus = getSavedServicesWithStatus(
+    vpnServices,
+    serviceChanges?.filter((s) => s.status === 'UPDATED') || [],
+    serviceChanges?.filter((s) => s.status === 'DELETED') || [],
+  );
 
   return (
     <>
@@ -109,14 +112,14 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
         onClose={deleteModalDisclosure.onClose}
         onConfirmBtnClick={() => {
           callbackUtils.getCallbacks.deleteVpnService(unwrap(serviceIdToDelete)).then(() => {
-            setCreatedServices(unwrap(createdServices).filter((service) => service.vpnId !== serviceIdToDelete));
-            setUpdatedServices(unwrap(updatedServices).filter((service) => service.vpnId !== serviceIdToDelete));
-            const deletedService = unwrap(vpnServices).find((s) => s.vpnId === serviceIdToDelete);
-            if (deletedService) {
-              const newDeletedServices =
-                deletedServices === null ? [deletedService] : [...deletedServices, deletedService];
-              setDeletedServices(newDeletedServices);
-            }
+            // setCreatedServices(unwrap(createdServices).filter((service) => service.vpnId !== serviceIdToDelete));
+            // setUpdatedServices(unwrap(updatedServices).filter((service) => service.vpnId !== serviceIdToDelete));
+            // const deletedService = unwrap(vpnServices).find((s) => s.vpnId === serviceIdToDelete);
+            // if (deletedService) {
+            //   const newDeletedServices =
+            //     deletedServices === null ? [deletedService] : [...deletedServices, deletedService];
+            //   setDeletedServices(newDeletedServices);
+            // }
             deleteModalDisclosure.onClose();
           });
         }}
@@ -143,14 +146,14 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
                 onFilterChange={handleFilterChange}
                 onFilterSubmit={handleFilterSubmit}
               />
-              {changedServicesWithStatus.length ? (
+              {serviceChanges && serviceChanges.length ? (
                 <>
                   <Heading size="sm">Changes</Heading>
                   <Box my="2">
                     <ServiceTable
                       size="sm"
                       detailId={detailId}
-                      services={changedServicesWithStatus}
+                      services={serviceChanges}
                       onEditServiceButtonClick={handleEditRedirect}
                       onDeleteServiceButtonClick={handleDeleteButtonClick}
                       onRowClick={handleRowClick}

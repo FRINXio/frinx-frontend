@@ -1,5 +1,5 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import callbackUtils from '../../unistore-callback-utils';
 import { apiVpnServiceToClientVpnService, clientVpnServiceToApiVpnService } from '../../components/forms/converters';
@@ -7,6 +7,8 @@ import { getSelectOptions } from '../../components/forms/options.helper';
 import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
 import ErrorMessage from '../../components/error-message/error-message';
+import { CalcDiffContext } from '../../calcdiff-provider';
+import unwrap from '../../helpers/unwrap';
 
 const defaultVpnService: VpnService = {
   customerName: '',
@@ -18,6 +20,8 @@ const defaultVpnService: VpnService = {
 const extranetVpns = getSelectOptions(window.__GAMMA_FORM_OPTIONS__.service.extranet_vpns).map((item) => item.label);
 
 const CreateVpnServicePage: VoidFunctionComponent = () => {
+  const calcdiffContext = useContext(CalcDiffContext);
+  const { invalidateCache } = unwrap(calcdiffContext);
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -46,6 +50,7 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
       const output = await callbacks.createVpnService(vpnService);
       // eslint-disable-next-line no-console
       console.log(output);
+      invalidateCache();
       navigate('../services');
     } catch (e) {
       setSubmitError(String(e));

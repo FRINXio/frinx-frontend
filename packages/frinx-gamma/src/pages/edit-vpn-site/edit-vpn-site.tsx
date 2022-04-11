@@ -1,5 +1,5 @@
 import { Box, Container, Flex, Heading } from '@chakra-ui/react';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   apiVpnSitesToClientVpnSite,
@@ -10,6 +10,7 @@ import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
 import ErrorMessage from '../../components/error-message/error-message';
 import callbackUtils from '../../unistore-callback-utils';
+import { CalcDiffContext } from '../../calcdiff-provider';
 import unwrap from '../../helpers/unwrap';
 
 function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
@@ -18,6 +19,8 @@ function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {
 }
 
 const EditVpnSitePage: VoidFunctionComponent = () => {
+  const calcdiffContext = useContext(CalcDiffContext);
+  const { invalidateCache } = unwrap(calcdiffContext);
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const { siteId } = useParams<{ siteId: string }>();
@@ -47,6 +50,7 @@ const EditVpnSitePage: VoidFunctionComponent = () => {
     try {
       const apiSite = clientVpnSiteToApiVpnSite(site);
       await callbacks.editVpnSite(apiSite);
+      invalidateCache();
       navigate('../sites');
     } catch (e) {
       setSubmitError(String(e));

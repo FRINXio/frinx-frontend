@@ -46,6 +46,7 @@ export type UnistoreCallbacks = {
     serviceFilter: ServiceFilters | null,
     contentType?: ContentType,
   ) => Promise<VpnServicesOutput>;
+  getVpnService: (serviceId: string, contentType?: ContentType) => Promise<VpnServicesOutput>;
   editVpnServices: (vpnService: CreateVpnServiceInput) => Promise<unknown>;
   deleteVpnService: (vpnServiceId: string) => Promise<unknown>;
   createVpnService: (vpnService: CreateVpnServiceInput) => Promise<void>;

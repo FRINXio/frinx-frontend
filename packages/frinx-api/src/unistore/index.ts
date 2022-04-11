@@ -75,6 +75,7 @@ export type UnistoreApiClient = {
     serviceFilter: ServiceFilter | null,
     contentType?: ContentType,
   ) => Promise<VpnServicesOutput>;
+  getVpnService: (serviceId: string, contentType?: ContentType) => Promise<VpnServicesOutput>;
   editVpnServices: (vpnService: CreateVpnServiceInput) => Promise<unknown>;
   deleteVpnService: (vpnServiceId: string) => Promise<unknown>;
   createVpnService: (vpnService: CreateVpnServiceInput) => Promise<void>;
@@ -157,6 +158,23 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
       const content = getContentParameter(contentType);
       const json = await sendGetRequest(
         `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service?${content}${paginationParams}${filterParams}`,
+      );
+      const data = decodeVpnServicesOutput(json);
+      return data;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return {
+        'vpn-service': [],
+      };
+    }
+  }
+
+  async function getVpnService(serviceId: string, contentType?: ContentType): Promise<VpnServicesOutput> {
+    try {
+      const content = getContentParameter(contentType);
+      const json = await sendGetRequest(
+        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${serviceId}?${content}`,
       );
       const data = decodeVpnServicesOutput(json);
       return data;
@@ -652,6 +670,7 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
 
   return {
     getVpnServices,
+    getVpnService,
     editVpnServices,
     deleteVpnService,
     createVpnService,
