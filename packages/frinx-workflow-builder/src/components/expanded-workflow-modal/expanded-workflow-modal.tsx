@@ -119,7 +119,7 @@ const ExpandedWorkflowModal: FC<Props> = ({ workflowName, workflowVersion, onClo
                 colorScheme="blue"
                 marginLeft={3}
                 as={Link}
-                to={`/uniflow/builder/${workflowState.name}/${workflowState.version}`}
+                to={`../builder/${workflowState.name}/${workflowState.version}`}
               >
                 Edit
               </Button>

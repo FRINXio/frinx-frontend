@@ -169,7 +169,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
       </Heading>
       <Box>
         {result.parentWorkflowId && (
-          <Button display="inline" margin={2} as={Link} to={`/uniflow/executed/${result.parentWorkflowId}`}>
+          <Button display="inline" margin={2} as={Link} to={`../executed/${result.parentWorkflowId}`}>
             Parent
           </Button>
         )}

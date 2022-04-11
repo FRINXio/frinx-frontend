@@ -39,7 +39,7 @@ const WorkflowActions: FC<Props> = ({
           size="sm"
           variant="outline"
           as={Link}
-          to={`/uniflow/builder/${workflow.name}/${workflow.version}`}
+          to={`../builder/${workflow.name}/${workflow.version}`}
         >
           <Box as="span" flexShrink={0} alignSelf="center">
             <Box as={FeatherIcon} size="1em" icon="edit" flexShrink={0} lineHeight={4} verticalAlign="middle" />

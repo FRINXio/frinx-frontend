@@ -46,7 +46,7 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick, formatDate }) => {
                   size="sm"
                   aria-label="show-subworkflow"
                   as={Link}
-                  to={`/uniflow/executed/${task.subWorkflowId}`}
+                  to={`../executed/${task.subWorkflowId}`}
                   icon={<Icon size={12} as={ArrowForwardIcon} />}
                   isDisabled={task.subWorkflowId == null}
                 />

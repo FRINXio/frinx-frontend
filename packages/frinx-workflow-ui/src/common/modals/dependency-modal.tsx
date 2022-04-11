@@ -58,7 +58,7 @@ const DependencyModal = ({ workflow, workflows, isOpen, onClose }: ModalProps) =
               }}
               title="Edit"
               as={Link}
-              to={`/uniflow/builder/${name}/${version}`}
+              to={`../builder/${name}/${version}`}
             >
               {name + ' / ' + version}
             </Box>
@@ -86,7 +86,7 @@ const DependencyModal = ({ workflow, workflows, isOpen, onClose }: ModalProps) =
             }}
             title="Edit"
             as={Link}
-            to={`uniflow/builder/${workflow.name}/${workflow.version}`}
+            to={`../builder/${workflow.name}/${workflow.version}`}
           >
             {workflow.name + ' / ' + workflow.version}
           </Box>

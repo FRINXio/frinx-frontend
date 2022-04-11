@@ -267,7 +267,7 @@ function InputModal(props) {
           </form>
         </ModalBody>
         <ModalFooter justifyContent="space-between">
-          <Button variant="link" colorScheme="blue" justifySelf="start" as={Link} to={`/uniflow/executed/${wfId}`}>
+          <Button variant="link" colorScheme="blue" justifySelf="start" as={Link} to={`../executed/${wfId}`}>
             {wfId}
           </Button>
           <Flex>
