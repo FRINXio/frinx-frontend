@@ -1,10 +1,10 @@
 import { Box, Button, Heading, Text } from '@chakra-ui/react';
 import React, { createContext, FC, useEffect, useState } from 'react';
-import { FilterProvider } from './filter-provider';
-import { CalcDiffProvider } from './calcdiff-provider';
-import { getTransactionId, removeTransactionId, setTransactionId } from './helpers/transaction-id';
-import uniflowCallbackUtils, { UniflowCallbacks } from './uniflow-callback-utils';
-import unistoreCallbackUtils, { UnistoreCallbacks } from './unistore-callback-utils';
+import { FilterProvider } from '../../filter-provider';
+import { CalcDiffProvider } from '../calcdiff-provider/calcdiff-provider';
+import { getTransactionId, removeTransactionId, setTransactionId } from '../../helpers/transaction-id';
+import uniflowCallbackUtils, { UniflowCallbacks } from '../../uniflow-callback-utils';
+import unistoreCallbackUtils, { UnistoreCallbacks } from '../../unistore-callback-utils';
 
 export const UnistoreApiContext = createContext(false);
 

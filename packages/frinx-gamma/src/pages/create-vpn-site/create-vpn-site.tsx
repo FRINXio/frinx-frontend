@@ -1,18 +1,17 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
-import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import callbackUtils from '../../unistore-callback-utils';
+import ErrorMessage from '../../components/error-message/error-message';
 import {
-  apiVpnSitesToClientVpnSite,
   apiProviderIdentifiersToClientIdentifers,
+  apiVpnSitesToClientVpnSite,
   clientVpnSiteToApiVpnSite,
 } from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
-import ErrorMessage from '../../components/error-message/error-message';
 import { generateSiteId } from '../../helpers/id-helpers';
-import { CalcDiffContext } from '../../calcdiff-provider';
-import unwrap from '../../helpers/unwrap';
+import useCalcDiffContext from '../../providers/calcdiff-provider/user-calcdiff-context';
+import callbackUtils from '../../unistore-callback-utils';
 
 const defaultVpnSite: VpnSite = {
   customerLocations: [],
@@ -26,8 +25,7 @@ const defaultVpnSite: VpnSite = {
 };
 
 const CreateVpnSitePage: VoidFunctionComponent = () => {
-  const calcdiffContext = useContext(CalcDiffContext);
-  const { invalidateCache } = unwrap(calcdiffContext);
+  const { invalidateCache } = useCalcDiffContext();
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const [submitError, setSubmitError] = useState<string | null>(null);

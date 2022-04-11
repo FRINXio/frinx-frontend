@@ -13,7 +13,7 @@ import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getSavedSitesWithStatus, getSiteChanges, VpnSiteWithStatus } from './site-helpers';
 import FilterContext from '../../filter-provider';
-import { CalcDiffContext } from '../../calcdiff-provider';
+import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-provider';
 
 const SiteListPage: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);
