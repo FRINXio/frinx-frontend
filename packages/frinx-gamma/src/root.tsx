@@ -25,61 +25,65 @@ import EditEvcAttachment from './pages/edit-evc-attachment/edit-evc-attachment';
 import CreateVpnCarrier from './pages/save-carrier/save-carrier';
 import CreateVpnNode from './pages/save-node/save-node';
 import SearchListPage from './pages/search-list/search-list';
+import TopBar from './components/top-bar/top-bar';
 
 const Root: VoidFunctionComponent = () => {
   return (
-    <Routes>
-      {/* <Route index element={<Navigate to="control-panel" />} /> */}
-      <Route path="/" element={<ControlPage />} />
+    <>
+      <TopBar />
+      <Routes>
+        {/* <Route index element={<Navigate to="control-panel" />} /> */}
+        <Route path="/" element={<ControlPage />} />
 
-      {/* services */}
-      <Route path="services" element={<ServiceList />} />
-      <Route path="services/add" element={<CreateVpnService />} />
-      <Route path="services/edit/:serviceId" element={<EditVpnService />} />
+        {/* services */}
+        <Route path="services" element={<ServiceList />} />
+        <Route path="services/add" element={<CreateVpnService />} />
+        <Route path="services/edit/:serviceId" element={<EditVpnService />} />
 
-      {/* sites */}
-      <Route path="sites" element={<SiteList />} />
-      <Route path="sites/add" element={<CreateVpnSite />} />
-      <Route path="sites/edit/:siteId" element={<EditVpnSite />} />
+        {/* sites */}
+        <Route path="sites" element={<SiteList />} />
+        <Route path="sites/add" element={<CreateVpnSite />} />
+        <Route path="sites/edit/:siteId" element={<EditVpnSite />} />
 
-      {/* network accesses */}
-      <Route path="sites/detail/:siteId" element={<SiteNetworkAccessList />} />
-      <Route path="sites/detail/:siteId/add-access" element={<CreateSiteNetAccess />} />
-      <Route path="sites/detail/:siteId/edit-access/:accessId" element={<EditSiteNetAccess />} />
+        {/* network accesses */}
+        <Route path="sites/detail/:siteId" element={<SiteNetworkAccessList />} />
+        <Route path="sites/detail/:siteId/add-access" element={<CreateSiteNetAccess />} />
+        <Route path="sites/detail/:siteId/edit-access/:accessId" element={<EditSiteNetAccess />} />
 
-      {/* devices via sites */}
-      <Route path="sites/:siteId/devices" element={<DeviceList />} />
-      <Route path="sites/:siteId/devices/add" element={<CreateDevice />} />
-      <Route path="sites/:siteId/devices/edit/:deviceId" element={<EditDevice />} />
+        {/* devices via sites */}
+        <Route path="sites/:siteId/devices" element={<DeviceList />} />
+        <Route path="sites/:siteId/devices/add" element={<CreateDevice />} />
+        <Route path="sites/:siteId/devices/edit/:deviceId" element={<EditDevice />} />
 
-      {/* devices via locations */}
-      <Route path="sites/:siteId/:locationId/devices" element={<DeviceList />} />
-      <Route path="sites/:siteId/:locationId/devices/add" element={<CreateDevice />} />
-      <Route path="sites/:siteId/:locationId/devices/edit/:deviceId" element={<EditDevice />} />
+        {/* devices via locations */}
+        <Route path="sites/:siteId/:locationId/devices" element={<DeviceList />} />
+        <Route path="sites/:siteId/:locationId/devices/add" element={<CreateDevice />} />
+        <Route path="sites/:siteId/:locationId/devices/edit/:deviceId" element={<EditDevice />} />
 
-      {/* locations */}
-      <Route path="sites/:siteId/locations" element={<LocationList />} />
-      <Route path="sites/:siteId/locations/add" element={<CreateLocation />} />
-      <Route path="sites/:siteId/locations/edit/:locationId" element={<EditLocation />} />
+        {/* locations */}
+        <Route path="sites/:siteId/locations" element={<LocationList />} />
+        <Route path="sites/:siteId/locations/add" element={<CreateLocation />} />
+        <Route path="sites/:siteId/locations/edit/:locationId" element={<EditLocation />} />
 
-      {/* bearers */}
-      <Route path="vpn-bearers" element={<VpnBearerList />} />
-      <Route path="vpn-bearers/add" element={<CreateBearer />} />
-      <Route path="vpn-bearers/add-carrier" element={<CreateVpnCarrier />} />
-      <Route path="vpn-bearers/add-node" element={<CreateVpnNode />} />
-      <Route path="vpn-bearers/edit/:bearerId" element={<EditBearer />} />
+        {/* bearers */}
+        <Route path="vpn-bearers" element={<VpnBearerList />} />
+        <Route path="vpn-bearers/add" element={<CreateBearer />} />
+        <Route path="vpn-bearers/add-carrier" element={<CreateVpnCarrier />} />
+        <Route path="vpn-bearers/add-node" element={<CreateVpnNode />} />
+        <Route path="vpn-bearers/edit/:bearerId" element={<EditBearer />} />
 
-      {/* evc attachments */}
-      <Route path="vpn-bearers/:bearerId/evc-attachments" element={<EvcAttachmentList />} />
-      <Route path="vpn-bearers/:bearerId/evc-attachments/add" element={<CreateEvcAttachment />} />
-      <Route
-        path="vpn-bearers/:bearerId/evc-attachments/edit/:evcType/:circuitReference"
-        element={<EditEvcAttachment />}
-      />
+        {/* evc attachments */}
+        <Route path="vpn-bearers/:bearerId/evc-attachments" element={<EvcAttachmentList />} />
+        <Route path="vpn-bearers/:bearerId/evc-attachments/add" element={<CreateEvcAttachment />} />
+        <Route
+          path="vpn-bearers/:bearerId/evc-attachments/edit/:evcType/:circuitReference"
+          element={<EditEvcAttachment />}
+        />
 
-      {/* horizontal search */}
-      <Route path="search" element={<SearchListPage />} />
-    </Routes>
+        {/* horizontal search */}
+        <Route path="search" element={<SearchListPage />} />
+      </Routes>
+    </>
   );
 };
 
