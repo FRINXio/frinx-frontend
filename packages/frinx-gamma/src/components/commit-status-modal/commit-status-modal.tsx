@@ -26,10 +26,11 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   workflowId: string;
+  onWorkflowFinish: (isCompleted: boolean) => void;
 };
 
-const CommitStatusModal: VoidFunctionComponent<Props> = ({ workflowId, isOpen, onClose }) => {
-  const execPayload = useAsyncGenerator<CommitDataPayload>({ workflowId });
+const CommitStatusModal: VoidFunctionComponent<Props> = ({ workflowId, isOpen, onClose, onWorkflowFinish }) => {
+  const execPayload = useAsyncGenerator<CommitDataPayload>({ workflowId, onFinish: onWorkflowFinish });
 
   if (execPayload == null) {
     return null;
