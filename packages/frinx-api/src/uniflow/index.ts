@@ -233,7 +233,7 @@ export default function createUniflowApiClient(apiHelpers: ApiHelpers): UniflowA
 
   // Returns workflowIds of deleted workflow
   async function terminateWorkflows(workflowIds: string[]): Promise<string[]> {
-    const workflowIdsRes = await sendDeleteRequest('/workflow/bulk/terminate', workflowIds);
+    const workflowIdsRes = await sendPostRequest('/workflow/bulk/terminate', workflowIds);
 
     return workflowIdsRes as string[];
   }
