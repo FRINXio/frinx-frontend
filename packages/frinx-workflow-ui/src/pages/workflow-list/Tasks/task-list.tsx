@@ -5,13 +5,13 @@ import { Button, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import AddTaskModal from './add-task-modal';
-import PageContainer from '../../../common/PageContainer';
-import callbackUtils from '../../../utils/callback-utils';
+import PageContainer from '@frinx/workflow-ui/src/common/PageContainer';
+import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
-import { taskDefinition } from '../../../constants';
-import { usePagination } from '../../../common/pagination-hook';
+import { taskDefinition } from '@frinx/workflow-ui/src/constants';
+import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import TaskTable from './task-table';
-import { TaskDefinition } from '../../../types/uniflow-types';
+import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
 import TaskConfigModal from './task-modal';
 
 function getFilteredResults<T extends { name: string }>(searchResult: SearchResult[], defs: T[]): T[] {

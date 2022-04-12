@@ -1,6 +1,6 @@
 import Dropdown from 'react-dropdown';
 import React, { useEffect, useState } from 'react';
-import callbackUtils from '../../../../utils/callback-utils';
+import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import {
   Box,
   Button,
@@ -23,10 +23,11 @@ import {
   Text,
   Textarea,
 } from '@chakra-ui/react';
-import { jsonParse } from '../../../../common/utils';
+import { jsonParse } from '@frinx/workflow-ui/src/common/utils';
 import { useDispatch } from 'react-redux';
-import WfAutoComplete from '../../../../common/wf-autocomplete';
-import { storeWorkflowId } from '../../../../store/actions/builder';
+import { Link } from 'react-router-dom';
+import WfAutoComplete from '@frinx/workflow-ui/src/common/wf-autocomplete';
+import { storeWorkflowId } from '@frinx/workflow-ui/src/store/actions/builder';
 
 const getInputs = (def) => {
   const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)}/gim;
@@ -41,23 +42,22 @@ const getInputs = (def) => {
   return [...new Set(inputsArray)];
 };
 
-function InputModal(props) {
+function InputModal({ wf, onClose, isOpen }) {
   const dispatch = useDispatch();
   const [wfId, setWfId] = useState();
   const [warning, setWarning] = useState([]);
   const [status, setStatus] = useState('Execute');
   const [workflowForm, setWorkflowForm] = useState([]);
   const [waitingWfs, setWaitingWfs] = useState([]);
-  const name = props.wf.name;
-  const version = Number(props.wf.version);
+  const name = wf.name;
+  const version = Number(wf.version);
   const wfdesc =
-    jsonParse(props.wf.description)?.description ||
-    (jsonParse(props.wf.description)?.description !== '' && props.wf.description);
+    jsonParse(wf.description)?.description || (jsonParse(wf.description)?.description !== '' && wf.description);
 
   useEffect(() => {
-    const definition = JSON.stringify(props.wf, null, 2);
+    const definition = JSON.stringify(wf, null, 2);
     const labels = getInputs(definition);
-    const inputParams = jsonParse(props.wf.inputParameters ? props.wf.inputParameters : null);
+    const inputParams = jsonParse(wf.inputParameters ? wf.inputParameters : null);
 
     const workflowForm = labels.map((label) => ({
       label: label,
@@ -70,7 +70,7 @@ function InputModal(props) {
       });
     }
     setWorkflowForm(workflowForm);
-  }, [props]);
+  }, [wf]);
 
   const getWaitingWorkflows = () => {
     return new Promise(() => {
@@ -102,10 +102,6 @@ function InputModal(props) {
         });
       });
     });
-  };
-
-  const handleClose = (openDetails = false) => {
-    props.modalHandler(openDetails);
   };
 
   const handleInput = (e, i) => {
@@ -158,8 +154,8 @@ function InputModal(props) {
       dispatch(storeWorkflowId(res.text));
       timeoutBtn();
 
-      if (props.fromBuilder) {
-        handleClose(true);
+      if (fromBuilder) {
+        onClose();
       }
     });
   };
@@ -224,7 +220,7 @@ function InputModal(props) {
   };
 
   return (
-    <Modal size="3xl" isOpen={props.show} onClose={handleClose}>
+    <Modal size="3xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalCloseButton />
       <ModalContent>
@@ -266,7 +262,7 @@ function InputModal(props) {
           </form>
         </ModalBody>
         <ModalFooter justifyContent="space-between">
-          <Button variant="link" colorScheme="blue" justifySelf="start" onClick={() => props.onWorkflowIdClick(wfId)}>
+          <Button variant="link" colorScheme="blue" justifySelf="start" as={Link} to={`../executed/${wfId}`}>
             {wfId}
           </Button>
           <Flex>
@@ -282,7 +278,7 @@ function InputModal(props) {
               {status === 'OK' ? <i className="fas fa-check-circle" /> : null}
               &nbsp;&nbsp;{status}
             </Button>
-            <Button colorScheme="gray" onClick={() => handleClose(false)}>
+            <Button colorScheme="gray" onClick={onClose}>
               Close
             </Button>
           </Flex>

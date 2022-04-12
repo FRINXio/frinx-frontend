@@ -19,8 +19,8 @@
     "noFallthroughCasesInSwitch": true,
     "isolatedModules": true,
     "noEmit": false,
-    "typeRoots": ["./types", "./node_modules/@types"]
+    "typeRoots": ["src/types", "./node_modules/@types"]
   },
-  "include": ["src", "*.ts", "*.js"],
+  "include": ["src", "*.ts", "*.js", "types"],
   "exclude": ["**/node_modules"]
 }
