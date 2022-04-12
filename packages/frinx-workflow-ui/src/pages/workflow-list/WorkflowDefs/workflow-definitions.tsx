@@ -87,7 +87,7 @@ const WorkflowDefinitions = () => {
   const diagramModal = useDisclosure();
   const dependencyModal = useDisclosure();
   const schedulingModal = useDisclosure();
-  const [inputModal, setInputModal] = useState(false);
+  const inputModal = useDisclosure();
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const [allLabels, setAllLabels] = useState([]);
   const {
@@ -215,14 +215,9 @@ const WorkflowDefinitions = () => {
     });
   };
 
-  const showInputModal = (workflow: Workflow) => {
-    setInputModal(!inputModal);
-    setActiveWf(workflow);
-  };
-
   const showConfirmDeleteModal = (workflow: Workflow) => {
-    setConfirmDeleteModal(!confirmDeleteModal);
     setActiveWf(workflow);
+    setConfirmDeleteModal(!confirmDeleteModal);
   };
 
   const getDependencies = (workflow: Workflow) => {
@@ -231,10 +226,6 @@ const WorkflowDefinitions = () => {
       return wfJSON.includes(`"name": "${workflow.name}"`) && wf.name !== workflow.name;
     });
     return { length: usedInWfs.length, usedInWfs };
-  };
-
-  const renderInputModal = () => {
-    return inputModal ? <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} /> : null;
   };
 
   const renderConfirmDeleteModal = () => {
@@ -285,7 +276,7 @@ const WorkflowDefinitions = () => {
           onSubmit={handleWorkflowSchedule}
         />
       )}
-      {renderInputModal()}
+      {activeWf != null && <InputModal onClose={inputModal.onClose} isOpen={inputModal.isOpen} wf={activeWf} />}
       {renderConfirmDeleteModal()}
       <WorkflowDefinitionsHeader
         allLabels={allLabels}
@@ -374,7 +365,8 @@ const WorkflowDefinitions = () => {
                       schedulingModal.onOpen();
                     }}
                     onExecuteBtnClick={() => {
-                      showInputModal(workflow);
+                      setActiveWf(workflow);
+                      inputModal.onOpen();
                     }}
                   />
                 </Td>

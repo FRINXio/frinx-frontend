@@ -40,10 +40,7 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
   });
 
   const handleSubmit = () => {
-    onSubmit({
-      ...scheduledWf,
-      workflowVersion: scheduledWf.workflowVersion,
-    });
+    onSubmit(scheduledWf);
     onClose();
   };
 
