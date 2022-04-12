@@ -1,7 +1,11 @@
 import moment from 'moment';
 import React, { FC } from 'react';
 import { Tr, Td, Checkbox } from '@chakra-ui/react';
-import { ExecutedWorkflow, ExecutedWorkflowsHierarchical, NestedExecutedWorkflow } from '../../../../../types/types';
+import {
+  ExecutedWorkflow,
+  ExecutedWorkflowsHierarchical,
+  NestedExecutedWorkflow,
+} from '@frinx/workflow-ui/src/helpers/types';
 
 type Props = {
   hierarchicalWorkflows: ExecutedWorkflowsHierarchical;

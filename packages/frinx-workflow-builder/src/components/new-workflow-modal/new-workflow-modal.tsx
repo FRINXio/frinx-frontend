@@ -10,14 +10,14 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
 };
 
-const NewWorkflowModal: FC<Props> = ({ isOpen, onClose, onConfirm }) => {
+const NewWorkflowModal: FC<Props> = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -30,7 +30,7 @@ const NewWorkflowModal: FC<Props> = ({ isOpen, onClose, onConfirm }) => {
         <ModalFooter>
           <HStack spacing={2}>
             <Button onClick={onClose}>Cancel</Button>
-            <Button onClick={onConfirm} colorScheme="blue">
+            <Button as={Link} to="../builder" colorScheme="blue">
               Create new workflow
             </Button>
           </HStack>

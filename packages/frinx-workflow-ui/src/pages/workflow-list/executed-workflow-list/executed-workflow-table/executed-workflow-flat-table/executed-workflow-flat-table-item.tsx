@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React, { FC } from 'react';
 import { Tr, Td, Checkbox } from '@chakra-ui/react';
-import { ExecutedWorkflowsFlat } from '../../../../../types/types';
+import { ExecutedWorkflowsFlat } from '@frinx/workflow-ui/src/helpers/types';
 
 type Props = {
   flatWorkflows: ExecutedWorkflowsFlat;

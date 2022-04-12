@@ -1,6 +1,10 @@
 import React, { FC } from 'react';
 import { Table, Tbody, Box } from '@chakra-ui/react';
-import { ExecutedWorkflow, ExecutedWorkflowsHierarchical, NestedExecutedWorkflow } from '../../../../../types/types';
+import {
+  ExecutedWorkflow,
+  ExecutedWorkflowsHierarchical,
+  NestedExecutedWorkflow,
+} from '@frinx/workflow-ui/src/helpers/types';
 import ExecutedWorkflowTableHierarchicalItem from './executed-workflow-hierarchical-table-item';
 import ExecutedWorkflowTableHead from '../executed-workflow-table-head';
 

@@ -10,9 +10,9 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { jsonParse } from '../../../common/utils';
-import Editor from '../../../common/editor';
-import { TaskDefinition } from '../../../types/uniflow-types';
+import { jsonParse } from '@frinx/workflow-ui/src/common/utils';
+import Editor from '@frinx/workflow-ui/src/common/editor';
+import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
 
 type TaskConfigModalProps = {
   isOpen: boolean;
