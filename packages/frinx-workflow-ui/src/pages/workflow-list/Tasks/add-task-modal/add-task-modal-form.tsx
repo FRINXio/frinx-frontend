@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, FormControl, FormLabel, Grid, Icon, Input, Select, Tag, Tooltip } from '@chakra-ui/react';
 import { taskDefinition } from '../../../../constants';
-import { TaskDefinition } from '../../../../types/uniflow-types';
+import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
 import { InfoIcon } from '@chakra-ui/icons';
 
 type Key = keyof typeof taskDefinition;
@@ -139,12 +139,7 @@ export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormP
               <Icon as={InfoIcon} ml={2} />
             </Tooltip>
           </FormLabel>
-          <Input
-            id="inputKeys"
-            label="Input Keys"
-            ref={inputKeysRef}
-            onKeyPress={(e) => handleKeyPress('inputKeys', e, inputKeysRef)}
-          />
+          <Input id="inputKeys" ref={inputKeysRef} onKeyPress={(e) => handleKeyPress('inputKeys', e, inputKeysRef)} />
           <Box mt={1}>
             {task.inputKeys != null &&
               task.inputKeys.length > 0 &&

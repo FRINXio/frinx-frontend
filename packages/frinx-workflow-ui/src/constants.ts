@@ -1,4 +1,4 @@
-import { TaskDefinition } from './types/uniflow-types';
+import { TaskDefinition } from './helpers/uniflow-types';
 
 export const wfLabelsColor = [
   '#7D6608',

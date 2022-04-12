@@ -21,11 +21,11 @@ import {
   Divider,
   Button,
 } from '@chakra-ui/react';
-import type { ExecutedWorkflowTask } from '../types/types';
-import { jsonParse } from './utils';
+import type { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
+import { jsonParse } from '../utils';
 import { CopyIcon } from '@chakra-ui/icons';
 import unescapeJs from 'unescape-js';
-import ExternalStorageModal from '../pages/executed-workflow-detail/executed-workflow-detail-tabs/external-storage-modal';
+import ExternalStorageModal from '@frinx/workflow-ui/src/pages/executed-workflow-detail/executed-workflow-detail-tabs/external-storage-modal';
 
 type Props = {
   task: ExecutedWorkflowTask;

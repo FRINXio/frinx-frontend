@@ -1,7 +1,11 @@
 import PageContainer from '../../../common/PageContainer';
 import React, { FC, useEffect, useState } from 'react';
 import { Progress } from '@chakra-ui/react';
-import { ExecutedWorkflowsFlat, ExecutedWorkflowsHierarchical, NestedExecutedWorkflow } from '../../../types/types';
+import {
+  ExecutedWorkflowsFlat,
+  ExecutedWorkflowsHierarchical,
+  NestedExecutedWorkflow,
+} from '@frinx/workflow-ui/src/helpers/types';
 import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -16,9 +20,9 @@ import ExecutedWorkflowHierarchicalTable from './executed-workflow-table/execute
 import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workflow-flat-table/executed-workflow-flat-table';
 import { orderBy } from 'lodash';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
-import Paginator from '../../../common/pagination';
-import { usePagination } from '../../../common/pagination-hook';
-import useQueryParams from '../../../hooks/use-query-params';
+import Paginator from '@frinx/workflow-ui/src/common/pagination';
+import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
+import useQueryParams from '@frinx/workflow-ui/src/hooks/use-query-params';
 
 type Props = {
   onWorkflowIdClick: (workflowId: string) => void;

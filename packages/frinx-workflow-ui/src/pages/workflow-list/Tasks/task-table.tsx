@@ -2,8 +2,8 @@ import React from 'react';
 import { Table, Thead, Tr, Th, Tbody, Tfoot, Icon, IconButton, Stack, Td } from '@chakra-ui/react';
 import { faFileCode, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Paginator from '../../../common/pagination';
-import { TaskDefinition } from '../../../types/uniflow-types';
+import Paginator from '@frinx/workflow-ui/src/common/pagination';
+import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
 
 type Pagination = {
   currentPage: number;

@@ -49,7 +49,6 @@ const edgeTypes = {
 };
 
 type Props = {
-  onClose: () => void;
   workflow: Workflow<ExtendedTask>;
   workflows: Workflow[];
   taskDefinitions: TaskDefinition[];
@@ -67,9 +66,6 @@ type Props = {
       | 'variables'
     >,
   ) => void;
-  onExecuteSuccessClick: (workflowId: string) => void;
-  onEditWorkflowClick: (name: string, version: string) => void;
-  onNewWorkflowClick: () => void;
   onFileImport: (file: File) => void;
   onFileExport: (workflow: Workflow) => void;
   onWorkflowDelete: () => void;
@@ -81,9 +77,6 @@ const App: VoidFunctionComponent<Props> = ({
   onWorkflowChange,
   workflows,
   taskDefinitions,
-  onExecuteSuccessClick,
-  onEditWorkflowClick,
-  onNewWorkflowClick,
   onFileImport,
   onFileExport,
   onWorkflowDelete,
@@ -321,24 +314,18 @@ const App: VoidFunctionComponent<Props> = ({
           }}
           workflowName={selectedTask.task.subWorkflowParam.name}
           workflowVersion={selectedTask.task.subWorkflowParam.version}
-          onEditBtnClick={onEditWorkflowClick}
         />
       )}
       {workflowDefinitionDisclosure.isOpen && (
         <WorkflowDefinitionModal isOpen onClose={workflowDefinitionDisclosure.onClose} workflow={workflow} />
       )}
-      <NewWorkflowModal
-        isOpen={workflowModalDisclosure.isOpen}
-        onClose={workflowModalDisclosure.onClose}
-        onConfirm={onNewWorkflowClick}
-      />
+      <NewWorkflowModal isOpen={workflowModalDisclosure.isOpen} onClose={workflowModalDisclosure.onClose} />
       {isInputModalShown && (
         <ExecutionModal
           workflow={workflow}
           onClose={() => setIsInputModalShown(false)}
           shouldCloseAfterSubmit={false}
           isOpen={isInputModalShown}
-          onSuccessClick={onExecuteSuccessClick}
         />
       )}
       {workflowEditorDisclosure.isOpen && (

@@ -308,8 +308,9 @@ export type ExtendedTask =
   | ExtendedKafkaPublishTask
   | ExtendedJsonJQTask;
 
-export type Workflow<T extends Task = Task> = {
+export type Workflow<T extends WorkflowTask = WorkflowTask> = {
   name: string;
+  hasSchedule: boolean;
   description?: string;
   version: number;
   inputParameters?: string[];
@@ -324,6 +325,7 @@ export type Workflow<T extends Task = Task> = {
   timeoutPolicy: string;
   timeoutSeconds: number;
   variables: Record<string, unknown>;
+  correlationId: string;
 };
 export type NodeData =
   | {
@@ -391,14 +393,10 @@ export type ScheduledWorkflow = {
   cronString: string;
   lastUpdate: string;
   name: string;
-  taskToDomain: {
-    [key: string]: string;
-  };
+  taskToDomain: Record<string, string>;
   workflowName: string;
   workflowVersion: string;
-  workflowContext: {
-    [key: string]: any;
-  };
+  workflowContext: Record<string, any>;
   enabled: boolean;
   status: StatusType;
 };
@@ -493,4 +491,93 @@ export type WorkflowInstanceDetail = {
   parentWorkflowId: string;
   externalInputPayloadStoragePath?: string;
   externalOutputPayloadStoragePath?: string;
+};
+
+//
+// this comes from the uniflow swagger api docs
+//
+
+export enum WorkflowTaskType {
+  SIMPLE,
+  DYNAMIC,
+  FORK_JOIN,
+  FORK_JOIN_DYNAMIC,
+  DECISION,
+  JOIN,
+  DO_WHILE,
+  SUB_WORKFLOW,
+  EVENT,
+  WAIT,
+  USER_DEFINED,
+  HTTP,
+  LAMBDA,
+  EXCLUSIVE_JOIN,
+  TERMINATE,
+  KAFKA_PUBLISH,
+  JSON_JQ_TRANSFORM,
+  SET_VARIABLE,
+}
+
+enum TimeoutPolicy {
+  TIME_OUT_WF,
+  ALERT_ONLY,
+}
+
+export type WorkflowTask = {
+  name: string;
+  description: string;
+  taskReferenceName: string;
+  inputParameters: Record<string, string>;
+  type: TaskType;
+  dynamicTaskParam: string;
+  caseValueParam: string;
+  caseExpression: string;
+  scriptExpression: string;
+  decisionCases: Record<string, string>;
+  dynamicForkTasksParam: string;
+  dynamicForkTasksInputParamName: string;
+  defaultCase: Record<string, string>[];
+  forkTasks: Task[][];
+  startDelay: number;
+  subWorkflowParam: SubWorkflowParam;
+  joinOn: string[];
+  sink: string;
+  optional: boolean;
+  taskDefinition: TaskDefinition;
+  rateLimited: boolean;
+  defaultExclusiveJoinTask: string[];
+  asyncComplete: boolean;
+  loopCondition: string;
+  loopOver: Record<string, string>[];
+  retryCount: number;
+  workflowTaskType: WorkflowTaskType;
+};
+
+export type SubWorkflowParam = {
+  name: string;
+  version: string;
+  taskToDomain: Record<string, string>;
+  workflowDefinition: WorkflowDefinition;
+};
+
+export type WorkflowDefinition = {
+  ownerApp: string;
+  createTime: number;
+  updateTime: number;
+  createdBy: string;
+  updatedBy: string;
+  name: string;
+  description: string;
+  version: number;
+  tasks: WorkflowTask[];
+  inputParameters: Record<string, string>[];
+  outputParameters: Record<string, string>;
+  failureWorkflow: string;
+  schemaVersion: number;
+  restartable: boolean;
+  workflowStatusListenerEnabled: boolean;
+  ownerEmail: string;
+  timeoutPolicy: TimeoutPolicy;
+  timeoutSeconds: number;
+  variables: Record<string, string>;
 };
