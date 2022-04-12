@@ -49,7 +49,7 @@ function makeTotalCountState(countState: TotalCountState, payload: CalcDiffPaylo
 
 const ControlPage: VoidFunctionComponent = () => {
   const { data } = useCalcDiffContext();
-  const countState = makeTotalCountState(DEFAULT_UNCOMMITED_CHANGES, data);
+  const countState = makeTotalCountState(DEFAULT_UNCOMMITED_CHANGES, data?.service ?? null);
 
   return (
     <Container maxWidth={1280} minHeight="60vh">
