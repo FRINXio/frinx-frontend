@@ -12,6 +12,7 @@ type Props = {
   sortWf: (sortType: number) => void;
   selectWf: (workflowId: string, isChecked: boolean) => void;
   onExecutedWorkflowClick(workflowId: string): void;
+  onRightClick: (e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, workflowId: string) => void;
 };
 
 const ExecutedWorkflowFlatTable: FC<Props> = ({
@@ -22,6 +23,7 @@ const ExecutedWorkflowFlatTable: FC<Props> = ({
   selectWf,
   flatWorkflows,
   selectAllWorkflows,
+  onRightClick,
 }) => {
   const areSelectedAll = flatWorkflows.result.hits.length === selectedWfs.length;
   return (
@@ -40,6 +42,7 @@ const ExecutedWorkflowFlatTable: FC<Props> = ({
             selectWf={selectWf}
             selectedWfs={selectedWfs}
             flatWorkflows={flatWorkflows}
+            onRightClick={onRightClick}
           />
         </Tbody>
       </Table>

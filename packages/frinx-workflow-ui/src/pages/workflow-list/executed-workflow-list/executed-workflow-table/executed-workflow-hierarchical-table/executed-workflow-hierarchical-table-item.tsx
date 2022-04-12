@@ -20,6 +20,7 @@ type Props = {
     closeChildWfs: NestedExecutedWorkflow[] | null,
   ): void;
   onExecutedWorkflowClick(workflowId: string): void;
+  onRightClick: (e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, workflowId: string) => void;
 };
 
 const ExecutedWorkflowTableHierarchicalItem: FC<Props> = ({
@@ -27,13 +28,14 @@ const ExecutedWorkflowTableHierarchicalItem: FC<Props> = ({
   selectWf,
   selectedWfs,
   onExecutedWorkflowClick,
+  onRightClick,
 }) => {
   let { parents } = hierarchicalWorkflows;
 
   return (
     <>
       {parents.map((item) => (
-        <Tr key={item.workflowId}>
+        <Tr key={item.workflowId} onContextMenu={(e) => onRightClick(e, item.workflowId)}>
           <Td>
             <Checkbox
               isChecked={selectedWfs.includes(item.workflowId)}

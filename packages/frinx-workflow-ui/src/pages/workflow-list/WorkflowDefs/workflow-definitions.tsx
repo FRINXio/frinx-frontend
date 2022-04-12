@@ -45,6 +45,9 @@ import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import useNotifications from '@frinx/workflow-ui/src/hooks/use-notifications';
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/helpers/types';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ContextMenu } from '../../../common/context-menu';
+import { useContextMenu } from '../../../hooks/use-context-menu';
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr = dataset.map(({ description }) => {
@@ -98,6 +101,7 @@ const WorkflowDefinitions = () => {
     totalPages,
   } = usePagination<Workflow>([], 10);
 
+  const contextMenu = useContextMenu();
   const { addToastNotification } = useNotifications();
 
   useEffect(() => {
@@ -258,8 +262,19 @@ const WorkflowDefinitions = () => {
     setLabels([...new Set(labels)]);
   };
 
+  const handleRightClick = (e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, workflow: Workflow) => {
+    contextMenu.onRightClick(e, () => setActiveWf(workflow));
+  };
+
   return (
     <PageContainer>
+      <ContextMenu
+        isOpen={contextMenu.isOpen}
+        x={contextMenu.position.x}
+        y={contextMenu.position.y}
+        onClose={contextMenu.onClose}
+        url={`../builder/${activeWf?.name}/${activeWf?.version}`}
+      />
       <DefinitionModal workflow={activeWf} isOpen={definitionModal.isOpen} onClose={definitionModal.onClose} />
       <DiagramModal workflow={activeWf} onClose={diagramModal.onClose} isOpen={diagramModal.isOpen} />
       <DependencyModal
@@ -297,7 +312,11 @@ const WorkflowDefinitions = () => {
         <Tbody>
           {workflows.map((workflow: Workflow) => {
             return (
-              <Tr key={`${workflow.name}-${workflow.version}`} role="group">
+              <Tr
+                key={`${workflow.name}-${workflow.version}`}
+                role="group"
+                onContextMenu={(e) => handleRightClick(e, workflow)}
+              >
                 <Td width={540}>
                   <Heading as="h6" size="xs" marginBottom={1}>
                     {workflow.name} / {workflow.version}

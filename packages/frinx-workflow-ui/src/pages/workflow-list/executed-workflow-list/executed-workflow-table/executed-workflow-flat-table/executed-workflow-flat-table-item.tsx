@@ -8,6 +8,7 @@ type Props = {
   selectedWfs: string[];
   selectWf: (workflowId: string, isChecked: boolean) => void;
   onExecutedWorkflowClick(workflowId: string): void;
+  onRightClick: (e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, workflowId: string) => void;
 };
 
 const ExecutedWorkflowFlatTableItem: FC<Props> = ({
@@ -15,6 +16,7 @@ const ExecutedWorkflowFlatTableItem: FC<Props> = ({
   selectWf,
   selectedWfs,
   onExecutedWorkflowClick,
+  onRightClick,
 }) => {
   let {
     result: { hits: data },
@@ -22,7 +24,7 @@ const ExecutedWorkflowFlatTableItem: FC<Props> = ({
   return (
     <>
       {data.map((item, i) => (
-        <Tr key={item.workflowId}>
+        <Tr key={item.workflowId} onContextMenu={(e) => onRightClick(e, item.workflowId)}>
           <Td>
             <Checkbox
               isChecked={selectedWfs.includes(item.workflowId)}

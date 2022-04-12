@@ -24,6 +24,7 @@ type Props = {
     closeChildWfs: NestedExecutedWorkflow[] | null,
   ): void;
   onExecutedWorkflowClick(workflowId: string): void;
+  onRightClick: (e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, workflowId: string) => void;
 };
 
 const ExecutedWorkflowHierarchicalTable: FC<Props> = ({
@@ -37,6 +38,7 @@ const ExecutedWorkflowHierarchicalTable: FC<Props> = ({
   openParentWfs,
   hierarchicalWorkflows,
   selectAllWorkflows,
+  onRightClick,
 }) => {
   const areSelectedAll = hierarchicalWorkflows.parents.length === selectedWfs.length;
 
@@ -58,6 +60,7 @@ const ExecutedWorkflowHierarchicalTable: FC<Props> = ({
             selectWf={selectWf}
             selectedWfs={selectedWfs}
             hierarchicalWorkflows={hierarchicalWorkflows}
+            onRightClick={onRightClick}
           />
         </Tbody>
       </Table>

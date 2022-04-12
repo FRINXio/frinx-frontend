@@ -1,6 +1,6 @@
 import PageContainer from '../../../common/PageContainer';
 import React, { FC, useEffect, useState } from 'react';
-import { Progress } from '@chakra-ui/react';
+import { Progress, useDisclosure } from '@chakra-ui/react';
 import {
   ExecutedWorkflowsFlat,
   ExecutedWorkflowsHierarchical,
@@ -23,6 +23,8 @@ import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operat
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import useQueryParams from '@frinx/workflow-ui/src/hooks/use-query-params';
+import { ContextMenu } from '../../../common/context-menu';
+import { useContextMenu } from '../../../hooks/use-context-menu';
 
 type Props = {
   onWorkflowIdClick: (workflowId: string) => void;
@@ -65,6 +67,8 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
   const [hierarchicalWorkflows, setHierarchicalWorkflows] = useState<ExecutedWorkflowsHierarchical | null>(null);
   const hierarchicalPagination = usePagination([], ITEMS_PER_PAGE);
   const flatViewPagination = usePagination([], ITEMS_PER_PAGE);
+  const contextMenu = useContextMenu();
+  const [activeWorkflowId, setActiveWorkflowId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchNewData(
@@ -242,6 +246,10 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
     }
   };
 
+  const handleRightClick = (e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, workflowId: string) => {
+    contextMenu.onRightClick(e, () => setActiveWorkflowId(workflowId));
+  };
+
   const hierarchy: ExecutedWorkflowsHierarchical = {
     parents: orderBy(
       hierarchicalWorkflows.parents.filter((parent) => isValid(parent, state.workflowId, state.labels)) ?? [],
@@ -287,6 +295,14 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
         query={state.workflowId}
       />
 
+      <ContextMenu
+        isOpen={contextMenu.isOpen}
+        x={contextMenu.position.x}
+        y={contextMenu.position.y}
+        onClose={contextMenu.onClose}
+        url={`../executed/${activeWorkflowId}`}
+      />
+
       {!state.isFlat && (
         <>
           <ExecutedWorkflowHierarchicalTable
@@ -300,6 +316,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
             selectedWfs={state.selectedWorkflows}
             showChildrenWorkflows={showChildrenWorkflows}
             sort={state.sort}
+            onRightClick={handleRightClick}
           />
 
           <Paginator
@@ -321,6 +338,7 @@ const ExecutedWorkflowList: FC<Props> = ({ onWorkflowIdClick }) => {
             selectedWfs={state.selectedWorkflows}
             sort={state.sort}
             flatWorkflows={flat}
+            onRightClick={handleRightClick}
           />
 
           <Paginator
