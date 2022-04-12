@@ -1,6 +1,6 @@
 import { ExecutedWorkflowResponse } from '../pages/executed-workflow-detail/executed-workflow-detail-status.helpers';
-import { ExecutedWorkflowsFlat, ExecutedWorkflowsHierarchical, ScheduledWorkflow, Workflow } from '../types/types';
-import { EventListener, Queue, TaskDefinition, WorkflowPayload } from '../types/uniflow-types';
+import { ExecutedWorkflowsFlat, ExecutedWorkflowsHierarchical, ScheduledWorkflow, Workflow } from '../helpers/types';
+import { EventListener, Queue, TaskDefinition, WorkflowPayload } from '../helpers/uniflow-types';
 
 export type Callbacks = {
   getWorkflows: () => Promise<Workflow[]>;

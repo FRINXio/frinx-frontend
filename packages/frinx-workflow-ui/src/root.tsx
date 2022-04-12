@@ -32,25 +32,14 @@ const Root: VoidFunctionComponent = () => {
                 setKey(uuid());
               }}
             />
-            <WorkflowDefinitions
-              key={key}
-              onDefinitionClick={(name, version) => {
-                navigate(`builder/${name}/${version}`);
-              }}
-              onWorkflowIdClick={handleExecutedWfIdClick}
-            />
+            <WorkflowDefinitions key={key} />
           </>
         }
       />
       <Route path="executed" element={<ExecutedWorkflowList onWorkflowIdClick={handleExecutedWfIdClick} />} />
       <Route
         path="executed/:workflowId"
-        element={
-          <ExecutedWorkflowDetail
-            onWorkflowIdClick={handleExecutedWfIdClick}
-            onExecutedOperation={handleExecutedWfIdClick}
-          />
-        }
+        element={<ExecutedWorkflowDetail onExecutedOperation={handleExecutedWfIdClick} />}
       />
       <Route path="scheduled" element={<ScheduledWorkflowList />} />
       <Route path="event-listeners" element={<EventListeners />} />
@@ -65,13 +54,6 @@ const Root: VoidFunctionComponent = () => {
                 onClose={() => {
                   navigate('definitions');
                 }}
-                onEditWorkflowClick={(name, version) => {
-                  navigate(`builder/${name}/${version}`);
-                }}
-                onNewWorkflowClick={() => {
-                  navigate('builder');
-                }}
-                onExecuteSuccessClick={handleExecutedWfIdClick}
               />
             </Box>
           }
@@ -84,13 +66,6 @@ const Root: VoidFunctionComponent = () => {
                 onClose={() => {
                   navigate('definitions');
                 }}
-                onEditWorkflowClick={(name, version) => {
-                  navigate(`builder/${name}/${version}`);
-                }}
-                onNewWorkflowClick={() => {
-                  navigate('builder');
-                }}
-                onExecuteSuccessClick={handleExecutedWfIdClick}
               />
             </Box>
           }
