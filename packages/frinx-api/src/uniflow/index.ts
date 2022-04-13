@@ -208,7 +208,7 @@ export default function createUniflowApiClient(apiHelpers: ApiHelpers): UniflowA
     start?: number,
     size?: string,
   ): Promise<unknown> {
-    const executions = sendGetRequest(`/hierarchical/?q=${query}&status=${label}&start=${start}&size=${size}`);
+    const executions = sendGetRequest(`/hierarchical/?workflowId=${query}&status=${label}&start=${start}&size=${size}`);
 
     return executions;
   }
@@ -233,7 +233,7 @@ export default function createUniflowApiClient(apiHelpers: ApiHelpers): UniflowA
 
   // Returns workflowIds of deleted workflow
   async function terminateWorkflows(workflowIds: string[]): Promise<string[]> {
-    const workflowIdsRes = await sendDeleteRequest('/workflow/bulk/terminate', workflowIds);
+    const workflowIdsRes = await sendPostRequest('/workflow/bulk/terminate', workflowIds);
 
     return workflowIdsRes as string[];
   }

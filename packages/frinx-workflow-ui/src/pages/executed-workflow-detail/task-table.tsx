@@ -1,16 +1,16 @@
 import React, { FC } from 'react';
-import { Button, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
-import { ExecutedWorkflowTask } from '../../types/types';
+import { Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
+import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
+import { Link } from 'react-router-dom';
 
 type Props = {
   tasks: ExecutedWorkflowTask[];
   onTaskClick: (task: ExecutedWorkflowTask) => void;
-  onWorkflowClick: (wfId: string) => void;
   formatDate: (date: number | string) => string;
 };
 
-const TaskTable: FC<Props> = ({ tasks, onTaskClick, onWorkflowClick, formatDate }) => {
+const TaskTable: FC<Props> = ({ tasks, onTaskClick, formatDate }) => {
   return (
     <Table size="sm">
       <Thead>
@@ -45,8 +45,10 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick, onWorkflowClick, formatDate 
                   colorScheme="blue"
                   size="sm"
                   aria-label="show-subworkflow"
-                  onClick={() => onWorkflowClick(task.subWorkflowId)}
+                  as={Link}
+                  to={`../executed/${task.subWorkflowId}`}
                   icon={<Icon size={12} as={ArrowForwardIcon} />}
+                  isDisabled={task.subWorkflowId == null}
                 />
               ) : null}
             </Td>

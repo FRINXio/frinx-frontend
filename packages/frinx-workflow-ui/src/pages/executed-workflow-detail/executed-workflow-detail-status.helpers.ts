@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Workflow, WorkflowInstanceDetail } from '../../types/types';
-import callbackUtils from '../../utils/callback-utils';
+import { Workflow, WorkflowInstanceDetail } from '@frinx/workflow-ui/src/helpers/types';
+import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 
 export type TaskStatus = 'COMPLETED' | 'FAILED' | 'SCHEDULED' | 'IN_PROGRESS';
 export type WorkflowStatus = 'COMPLETED' | 'FAILED' | 'RUNNING' | 'TERMINATED';
@@ -49,33 +49,41 @@ export type ExecutedWorkflowResponse = {
 async function getWorkflowExecOutput(
   workflowId: string,
   abortController: AbortController,
-): Promise<ExecutedWorkflowResponse> {
+): Promise<ExecutedWorkflowResponse | null> {
   const { getWorkflowInstanceDetail } = callbackUtils.getCallbacks;
-  const response = await getWorkflowInstanceDetail(workflowId, { signal: abortController.signal });
-  return response;
+  try {
+    const response = await getWorkflowInstanceDetail(workflowId, { signal: abortController.signal });
+    return response;
+  } catch {
+    return null;
+  }
 }
 
 export async function* asyncGenerator(
   workflowId: string,
   abortController: AbortController,
-): AsyncGenerator<ExecutedWorkflowResponse, void, unknown> {
+): AsyncGenerator<ExecutedWorkflowResponse | null, void, unknown> {
   let data = await getWorkflowExecOutput(workflowId, abortController);
-  while (data.result.status === 'RUNNING' || data.result.status === 'PAUSED') {
+
+  while (data?.result.status === 'RUNNING' || data?.result.status === 'PAUSED') {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 800);
+    });
     yield data;
     // eslint-disable-next-line no-await-in-loop
     data = await getWorkflowExecOutput(workflowId, abortController);
   }
   // we need to do an additional yield for the last task status change
-  if (data.result.status === 'FAILED' || data.result.status === 'COMPLETED' || data.result.status === 'TERMINATED') {
+  if (data?.result.status === 'FAILED' || data?.result.status === 'COMPLETED' || data?.result.status === 'TERMINATED') {
     yield data;
   }
 }
 
 export function useAsyncGenerator(workflowId: string): ExecutedWorkflowResponse | null {
-  const { current: controller } = useRef(new AbortController());
   const [execPayload, setExecPayload] = useState<ExecutedWorkflowResponse | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
     (async () => {
       // we have to use async iterator here, so we turn off this rule
       // eslint-disable-next-line no-restricted-syntax
@@ -83,14 +91,12 @@ export function useAsyncGenerator(workflowId: string): ExecutedWorkflowResponse 
         setExecPayload(data);
       }
     })();
-  }, [workflowId, controller]);
 
-  useEffect(() => {
-    // we need to abort all fetch requests on unmount, otherwise we will get an error
     return () => {
+      // we want to abort the request when user leaves view and/or changes the displayed workflow
       controller.abort();
     };
-  }, [controller]);
+  }, [workflowId]);
 
   return execPayload;
 }

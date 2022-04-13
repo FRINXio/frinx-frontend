@@ -25,26 +25,26 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
-import DefinitionModal from './DefinitonModal/DefinitionModal';
-import DependencyModal from './DependencyModal/DependencyModal';
-import DiagramModal from './DiagramModal/DiagramModal';
-import InputModal from './InputModal/input-modal';
-import PageContainer from '../../../common/PageContainer';
-import ScheduledWorkflowModal from '../scheduled-workflow/scheduled-workflow-modal/scheduled-workflow-modal';
-import WfLabels from '../../../common/wf-labels';
-import WorkflowListViewModal from './WorkflowListViewModal/WorkflowListViewModal';
-import callbackUtils from '../../../utils/callback-utils';
-import { jsonParse } from '../../../common/utils';
-import { usePagination } from '../../../common/pagination-hook';
+import DefinitionModal from '@frinx/workflow-ui/src/common/modals/definition-modal';
+import DependencyModal from '@frinx/workflow-ui/src/common/modals/dependency-modal';
+import DiagramModal from '@frinx/workflow-ui/src/common/modals/diagram-modal';
+import InputModal from '@frinx/workflow-ui/src/common/modals/input-modal';
+import PageContainer from '@frinx/workflow-ui/src/common/PageContainer';
+import ScheduledWorkflowModal from '../../../common/modals/scheduled-workflow-modal';
+import WfLabels from '@frinx/workflow-ui/src/common/wf-labels';
+import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
+import { jsonParse } from '@frinx/workflow-ui/src/common/utils';
+import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import WorkflowActions from './workflow-actions';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
-import { ScheduledWorkflow, Workflow } from '../../../types/types';
-import useNotifications from '../../../hooks/use-notifications';
-import Paginator from '../../../common/pagination';
+import useNotifications from '@frinx/workflow-ui/src/hooks/use-notifications';
+import Paginator from '@frinx/workflow-ui/src/common/pagination';
+import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/helpers/types';
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr = dataset.map(({ description }) => {
@@ -78,38 +78,25 @@ const Labels = (props: { wf: Workflow; labels: string[]; onClick: (label: string
   });
 };
 
-const DEFAULT_CRON_STRING = '* * * * *';
-
-const makeEmptyScheduledWorkflow = () => {
-  return {
-    cronString: DEFAULT_CRON_STRING,
-    enabled: false,
-    name: '',
-    workflowContext: {},
-    workflowName: '',
-    workflowVersion: 0,
-  };
-};
-
-type Props = {
-  onDefinitionClick: (name: string, version: string) => void;
-  onWorkflowIdClick: (wfId: string) => void;
-};
-
-const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) => {
+const WorkflowDefinitions = () => {
   const [keywords, setKeywords] = useState('');
   const [labels, setLabels] = useState<string[]>([]);
   const [data, setData] = useState<Workflow[]>([]);
   const [activeWf, setActiveWf] = useState<Workflow>();
-  const [defModal, setDefModal] = useState(false);
-  const [diagramModal, setDiagramModal] = useState(false);
-  const [inputModal, setInputModal] = useState(false);
-  const [dependencyModal, setDependencyModal] = useState(false);
-  const [schedulingModal, setSchedulingModal] = useState(false);
+  const definitionModal = useDisclosure();
+  const diagramModal = useDisclosure();
+  const dependencyModal = useDisclosure();
+  const schedulingModal = useDisclosure();
+  const inputModal = useDisclosure();
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
-  const [workflowListViewModal, setWorkflowListViewModal] = useState(false);
   const [allLabels, setAllLabels] = useState([]);
-  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
+  const {
+    currentPage,
+    setCurrentPage,
+    pageItems: workflows,
+    setItemList,
+    totalPages,
+  } = usePagination<Workflow>([], 10);
 
   const { addToastNotification } = useNotifications();
 
@@ -228,44 +215,9 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
     });
   };
 
-  const showDefinitionModal = (workflow: Workflow) => {
-    setDefModal(!defModal);
-    setActiveWf(workflow);
-  };
-
-  const showInputModal = (workflow: Workflow) => {
-    setInputModal(!inputModal);
-    setActiveWf(workflow);
-  };
-
-  const showDiagramModal = (workflow: Workflow) => {
-    setDiagramModal(!diagramModal);
-    setActiveWf(workflow);
-  };
-
-  const onSchedulingModalClose = () => {
-    setSchedulingModal(false);
-    getData();
-  };
-
-  const showSchedulingModal = (workflow: Workflow) => {
-    setSchedulingModal(!schedulingModal);
-    setActiveWf(workflow);
-  };
-
-  const showDependencyModal = (workflow: Workflow) => {
-    setDependencyModal(!dependencyModal);
-    setActiveWf(workflow);
-  };
-
   const showConfirmDeleteModal = (workflow: Workflow) => {
+    setActiveWf(workflow);
     setConfirmDeleteModal(!confirmDeleteModal);
-    setActiveWf(workflow);
-  };
-
-  const showWorkflowListViewModal = (workflow: Workflow) => {
-    setWorkflowListViewModal(!workflowListViewModal);
-    setActiveWf(workflow);
   };
 
   const getDependencies = (workflow: Workflow) => {
@@ -274,63 +226,6 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
       return wfJSON.includes(`"name": "${workflow.name}"`) && wf.name !== workflow.name;
     });
     return { length: usedInWfs.length, usedInWfs };
-  };
-
-  const renderDefinitionModal = () => {
-    return defModal ? <DefinitionModal wf={activeWf} modalHandler={showDefinitionModal} show={defModal} /> : null;
-  };
-
-  const renderInputModal = () => {
-    return inputModal ? (
-      <InputModal wf={activeWf} modalHandler={showInputModal} show={inputModal} onWorkflowIdClick={onWorkflowIdClick} />
-    ) : null;
-  };
-
-  const renderDiagramModal = () => {
-    return diagramModal ? <DiagramModal wf={activeWf} modalHandler={showDiagramModal} show={diagramModal} /> : null;
-  };
-
-  const renderWorkflowListViewModal = () => {
-    return workflowListViewModal ? (
-      <WorkflowListViewModal
-        wf={activeWf}
-        modalHandler={showWorkflowListViewModal}
-        show={workflowListViewModal}
-        data={data}
-        onDefinitionClick={onDefinitionClick}
-      />
-    ) : null;
-  };
-
-  const renderSchedulingModal = () => {
-    return (
-      activeWf != null &&
-      schedulingModal && (
-        <ScheduledWorkflowModal
-          scheduledWorkflow={{
-            ...makeEmptyScheduledWorkflow(),
-            workflowName: activeWf.name,
-            workflowVersion: activeWf.version.toString(),
-            name: `${activeWf.name}:${activeWf.version}`,
-          }}
-          onClose={onSchedulingModalClose}
-          isOpen={schedulingModal}
-          onSubmit={handleWorkflowSchedule}
-        />
-      )
-    );
-  };
-
-  const renderDependencyModal = () => {
-    return dependencyModal ? (
-      <DependencyModal
-        wf={activeWf}
-        modalHandler={showDependencyModal}
-        show={dependencyModal}
-        data={data}
-        onDefinitionClick={onDefinitionClick}
-      />
-    ) : null;
   };
 
   const renderConfirmDeleteModal = () => {
@@ -365,13 +260,24 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
 
   return (
     <PageContainer>
-      {renderDefinitionModal()}
-      {renderInputModal()}
-      {renderDiagramModal()}
-      {renderDependencyModal()}
-      {renderSchedulingModal()}
+      <DefinitionModal workflow={activeWf} isOpen={definitionModal.isOpen} onClose={definitionModal.onClose} />
+      <DiagramModal workflow={activeWf} onClose={diagramModal.onClose} isOpen={diagramModal.isOpen} />
+      <DependencyModal
+        workflow={activeWf}
+        onClose={dependencyModal.onClose}
+        isOpen={dependencyModal.isOpen}
+        workflows={data}
+      />
+      {activeWf != null && (
+        <ScheduledWorkflowModal
+          workflow={activeWf}
+          onClose={schedulingModal.onClose}
+          isOpen={schedulingModal.isOpen}
+          onSubmit={handleWorkflowSchedule}
+        />
+      )}
+      {activeWf != null && <InputModal onClose={inputModal.onClose} isOpen={inputModal.isOpen} wf={activeWf} />}
       {renderConfirmDeleteModal()}
-      {renderWorkflowListViewModal()}
       <WorkflowDefinitionsHeader
         allLabels={allLabels}
         keywords={[keywords]}
@@ -389,23 +295,23 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
           </Tr>
         </Thead>
         <Tbody>
-          {pageItems.map((e: Workflow) => {
+          {workflows.map((workflow: Workflow) => {
             return (
-              <Tr key={`${e.name}-${e.version}`} role="group">
+              <Tr key={`${workflow.name}-${workflow.version}`} role="group">
                 <Td width={540}>
                   <Heading as="h6" size="xs" marginBottom={1}>
-                    {e.name} / {e.version}
+                    {workflow.name} / {workflow.version}
                   </Heading>
                   <Text fontStyle="italic" color="gray.600">
-                    {jsonParse(e.description)?.description ||
-                      (jsonParse(e.description)?.description !== '' && e.description) ||
+                    {jsonParse(workflow.description)?.description ||
+                      (jsonParse(workflow.description)?.description !== '' && workflow.description) ||
                       'no description'}
                   </Text>
                 </Td>
                 <Td width={64}>
                   <Labels
                     labels={allLabels}
-                    wf={e}
+                    wf={workflow}
                     onClick={(label: string) => {
                       setLabels((oldLabels) => [...new Set([...oldLabels, label])]);
                     }}
@@ -416,10 +322,13 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
                     <PopoverTrigger>
                       <Button
                         size="sm"
-                        disabled={getDependencies(e).length === 0}
-                        onClick={() => showDependencyModal(e)}
+                        disabled={getDependencies(workflow).length === 0}
+                        onClick={() => {
+                          dependencyModal.onOpen();
+                          setActiveWf(workflow);
+                        }}
                       >
-                        {getDependencies(e).length + ' '} Tree{' '}
+                        {getDependencies(workflow).length + ' '} Tree{' '}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent>
@@ -427,7 +336,7 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
                       <PopoverCloseButton />
                       <PopoverHeader>Used directly in following workflows:</PopoverHeader>
                       <PopoverBody>
-                        {getDependencies(e).usedInWfs.map((wf) => (
+                        {getDependencies(workflow).usedInWfs.map((wf) => (
                           <p key={wf.name}>{wf.name}</p>
                         ))}
                       </PopoverBody>
@@ -436,31 +345,28 @@ const WorkflowDefinitions = ({ onDefinitionClick, onWorkflowIdClick }: Props) =>
                 </Td>
                 <Td>
                   <WorkflowActions
-                    isFavourite={jsonParse(e.description)?.labels?.includes('FAVOURITE') ?? false}
-                    hasSchedule={e.hasSchedule}
+                    workflow={workflow}
                     onDeleteBtnClick={() => {
-                      showConfirmDeleteModal(e);
+                      showConfirmDeleteModal(workflow);
                     }}
                     onFavouriteBtnClick={() => {
-                      updateFavourite(e);
+                      updateFavourite(workflow);
                     }}
                     onDiagramBtnClick={() => {
-                      showDiagramModal(e);
+                      diagramModal.onOpen();
+                      setActiveWf(workflow);
                     }}
                     onDefinitionBtnClick={() => {
-                      showDefinitionModal(e);
-                    }}
-                    onListBtnClick={() => {
-                      showWorkflowListViewModal(e);
-                    }}
-                    onEditBtnClick={() => {
-                      onDefinitionClick(e.name, e.version + '');
+                      definitionModal.onOpen();
+                      setActiveWf(workflow);
                     }}
                     onScheduleBtnClick={() => {
-                      showSchedulingModal(e);
+                      setActiveWf(workflow);
+                      schedulingModal.onOpen();
                     }}
                     onExecuteBtnClick={() => {
-                      showInputModal(e);
+                      setActiveWf(workflow);
+                      inputModal.onOpen();
                     }}
                   />
                 </Td>

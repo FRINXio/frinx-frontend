@@ -1,11 +1,10 @@
 // @flow
 import Clipboard from 'clipboard';
 import React, { Component } from 'react';
-import TaskModal from './task-modal';
+import TaskModal from './modals/task-modal';
 import d3 from 'd3';
 import dagreD3 from 'dagre-d3';
 import { Box, Flex } from '@chakra-ui/react';
-import type { Task } from '../types/task';
 
 new Clipboard('.btn');
 

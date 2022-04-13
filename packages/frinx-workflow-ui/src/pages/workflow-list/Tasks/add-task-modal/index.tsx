@@ -11,7 +11,7 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
-import { TaskDefinition } from '../../../../types/uniflow-types';
+import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
 import { AddTaskModalForm } from './add-task-modal-form';
 
 type AddTaskModalProps = {

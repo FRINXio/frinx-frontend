@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Box, Grid } from '@chakra-ui/react';
-import { Status } from '../../types/types';
+import { Status } from '@frinx/workflow-ui/src/helpers/types';
 import { isEmpty } from 'lodash';
 import DetailsModalHeaderActionButtons from './executed-workflow-detail-header-action-button';
 
@@ -39,28 +39,28 @@ const DetailsModalHeader: FC<Props> = ({
 }) => (
   <Box background="brand.600" borderRadius={4} padding={15} marginBottom={10}>
     <Grid templateColumns={status === 'COMPLETED' ? 'repeat(4, 1fr)' : 'repeat(5,1fr)'}>
-      <Box md="auto">
+      <Box mx="auto">
         <Box color="white">
           <b>Total Time (sec)</b>
           <br />
           {getExecutionTime(endTime, startTime)}
         </Box>
       </Box>
-      <Box md="auto">
+      <Box mx="auto">
         <Box color="white">
           <b>Start Time</b>
           <br />
           {startTime}
         </Box>
       </Box>
-      <Box md="auto">
+      <Box mx="auto">
         <Box color="white">
           <b>End Time</b>
           <br />
           {endTime}
         </Box>
       </Box>
-      <Box md="auto">
+      <Box mx="auto">
         <Box color="white">
           <b>Status</b>
           <br />

@@ -1,5 +1,5 @@
-import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import TaskModal from '../../common/task-modal';
+import React, { ChangeEvent, FC, useState } from 'react';
+import TaskModal from '../../common/modals/task-modal';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../utils/callback-utils';
 import moment from 'moment';
@@ -22,8 +22,9 @@ import WorkflowJsonTab from './executed-workflow-detail-tabs/workflow-json-tab';
 import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
 import DetailsModalHeader from './executed-workflow-detail-header';
 import { useAsyncGenerator } from './executed-workflow-detail-status.helpers';
-import { ExecutedWorkflowTask } from '../../types/types';
-import { useParams } from 'react-router-dom';
+import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
+import { Link, useParams } from 'react-router-dom';
+import unwrap from '../../helpers/unwrap';
 
 const convertWorkflowVariablesToFormFormat = (
   workflowDetails: string,
@@ -68,13 +69,12 @@ const convertWorkflowVariablesToFormFormat = (
 
 type Props = {
   onExecutedOperation: (workflowId: string) => void;
-  onWorkflowIdClick: (workflowId: string) => void;
 };
 
-const DetailsModal: FC<Props> = ({ onWorkflowIdClick, onExecutedOperation }) => {
+const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
   const { workflowId } = useParams<{ workflowId: string }>();
   const taskModalDisclosure = useDisclosure();
-  const execPayload = useAsyncGenerator(workflowId ?? '');
+  const execPayload = useAsyncGenerator(unwrap(workflowId));
   const [openedTask, setOpenedTask] = useState<ExecutedWorkflowTask | null>(null);
   const [isEscaped, setIsEscaped] = useState(false);
   const [workflowVariables, setWorkflowVariables] = useState<Record<string, string> | null>(null);
@@ -169,7 +169,7 @@ const DetailsModal: FC<Props> = ({ onWorkflowIdClick, onExecutedOperation }) => 
       </Heading>
       <Box>
         {result.parentWorkflowId && (
-          <Button display="inline" margin={2} onClick={() => onWorkflowIdClick(result.parentWorkflowId)}>
+          <Button display="inline" margin={2} as={Link} to={`../executed/${result.parentWorkflowId}`}>
             Parent
           </Button>
         )}
@@ -195,12 +195,7 @@ const DetailsModal: FC<Props> = ({ onWorkflowIdClick, onExecutedOperation }) => 
           </TabList>
           <TabPanels>
             <TabPanel>
-              <TaskTable
-                tasks={result.tasks}
-                onTaskClick={handleOnOpenTaskModal}
-                onWorkflowClick={onWorkflowIdClick}
-                formatDate={formatDate}
-              />
+              <TaskTable tasks={result.tasks} onTaskClick={handleOnOpenTaskModal} formatDate={formatDate} />
             </TabPanel>
             <TabPanel>
               {isResultInputOutputLoaded && (
