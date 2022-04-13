@@ -138,6 +138,7 @@ const TopBar: VoidFunctionComponent = () => {
           }}
           workflowId={workflowState.id}
           onWorkflowFinish={handleWorkflowFinish}
+          isLoading={isCommitLoading}
         />
       )}
       <DiscardChangesModal
