@@ -2,37 +2,62 @@ import { VpnSite } from '../../components/forms/site-types';
 import { CalcDiffPayload } from '../../components/commit-status-modal/commit-status-modal.helpers';
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import unistoreCallbackUtils from '../../unistore-callback-utils';
+import { VpnSitesOutput } from '../../network-types';
 
 export type Status = 'CREATED' | 'UPDATED' | 'DELETED' | 'NO_CHANGE';
 
 export type VpnSiteWithStatus = VpnSite & { status: Status };
 
+type DeletedPath = {
+  vpnSite: string;
+};
+
 type DeletedSite = {
   path: string;
-  [`path-keys`]: Record<'string', unknown>;
+  [`path-keys`]: DeletedPath;
   data: unknown;
 };
 
-function getIdList(record: Record<string, unknown>): string[] {
+function isSiteCreate(value: object): boolean {
+  return Object.keys(value).length === 0;
+}
+
+function isSiteChange(value: object): boolean {
+  return Object.keys(value).length > 0;
+}
+
+function getIdList(record: Record<string, unknown>, filterPredicate: (value: object) => boolean): string[] {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  return Object.keys(record).filter((k) => {
-    return true;
-  });
+  return Object.entries(record)
+    .filter((entry) => {
+      const [_, value] = entry;
+      const row = value as object;
+      return filterPredicate(value as object);
+    })
+    .map((entry) => {
+      const [key] = entry;
+      return key;
+    });
+}
+
+function getDeleteId(path: DeletedPath): string {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  return path.vpnSite;
 }
 
 export async function getSiteChanges(data: CalcDiffPayload): Promise<VpnSiteWithStatus[]> {
   const { changes } = data;
 
   // we get all site ids that were changed
-  const createdIds = getIdList(changes.creates.sites);
-  const updatedIds = getIdList(changes.updates.sites);
-  const deletedIds = (changes.deletes.site as DeletedSite[]).map((site) => getIdList(site['path-keys'])).flat();
+  const createdIds = getIdList(changes.creates.sites, isSiteCreate);
+  const updatedIds = getIdList(changes.updates.sites, isSiteChange);
+  const deletedIds = (changes.deletes.site as DeletedSite[]).map((site) => getDeleteId(site['path-keys']));
 
   // we get all config data for every site changed
   const callbacks = unistoreCallbackUtils.getCallbacks;
   const createdPromises = createdIds.map((siteId) => callbacks.getVpnSite(siteId));
   const updatedPromises = updatedIds.map((siteId) => callbacks.getVpnSite(siteId));
-  const deletedPromises = deletedIds.map((siteId) => callbacks.getVpnSite(siteId));
+  const deletedPromises = deletedIds.map((siteId) => callbacks.getVpnSite(siteId, 'nonconfig'));
   const createdSites = await Promise.all(createdPromises);
   const updatedSites = await Promise.all(updatedPromises);
   const deletedSites = await Promise.all(deletedPromises);

@@ -10,7 +10,7 @@ import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
 import ErrorMessage from '../../components/error-message/error-message';
 import callbackUtils from '../../unistore-callback-utils';
-import { CalcDiffContext } from '../../calcdiff-provider';
+import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-provider';
 import unwrap from '../../helpers/unwrap';
 
 function getSelectedSite(sites: VpnSite[], siteId: string): VpnSite {

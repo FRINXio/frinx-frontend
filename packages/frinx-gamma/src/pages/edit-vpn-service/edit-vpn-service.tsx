@@ -8,7 +8,7 @@ import ErrorMessage from '../../components/error-message/error-message';
 import callbackUtils from '../../unistore-callback-utils';
 import unwrap from '../../helpers/unwrap';
 import { getSelectOptions } from '../../components/forms/options.helper';
-import { CalcDiffContext } from '../../calcdiff-provider';
+import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-provider';
 
 const extranetVpns = getSelectOptions(window.__GAMMA_FORM_OPTIONS__.service.extranet_vpns).map((item) => item.key);
 

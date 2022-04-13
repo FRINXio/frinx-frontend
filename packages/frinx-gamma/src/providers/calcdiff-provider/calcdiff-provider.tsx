@@ -1,6 +1,7 @@
 import React, { createContext, FC, useEffect, useMemo, useState } from 'react';
 import { CalcDiffPayload } from '../../components/commit-status-modal/commit-status-modal.helpers';
 import { getCalcDiff } from './calcdiff-provider.helpers';
+import { calcDiffData } from './calcdiff-data.js';
 
 export type CalcDiffContextProps = {
   data: CalcDiffPayload | null;
@@ -39,6 +40,9 @@ export const CalcDiffProvider: FC = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await getCalcDiff();
+      // const data = calcDiffData.output;
+      // console.log(data);
+
       if (data) {
         // const siteChanges = await getSiteChanges(data);
         // console.log('-- site changes: ', siteChanges);

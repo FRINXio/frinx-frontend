@@ -7,7 +7,7 @@ import { getSelectOptions } from '../../components/forms/options.helper';
 import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
 import ErrorMessage from '../../components/error-message/error-message';
-import { CalcDiffContext } from '../../calcdiff-provider';
+import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-provider';
 import unwrap from '../../helpers/unwrap';
 
 const defaultVpnService: VpnService = {

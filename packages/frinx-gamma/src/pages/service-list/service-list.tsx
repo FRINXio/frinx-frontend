@@ -12,7 +12,7 @@ import ServiceTable from './service-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getSavedServicesWithStatus, getServiceChanges, VpnServiceWithStatus } from './service-helpers';
-import { CalcDiffContext } from '../../calcdiff-provider';
+import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-provider';
 
 const CreateVpnServicePage: VoidFunctionComponent = () => {
   const calcdiffContext = useContext(CalcDiffContext);

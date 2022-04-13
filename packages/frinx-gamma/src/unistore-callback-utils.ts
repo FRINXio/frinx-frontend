@@ -93,6 +93,11 @@ export type UnistoreCallbacks = {
     contentType?: ContentType,
   ) => Promise<SiteDevicesOutput>;
   getDevicesCount: (siteId: string, filters: DeviceFilters, contentType?: ContentType) => Promise<number>;
+  getSiteNetworkAccess: (
+    siteId: string,
+    siteNetworkAccessId: string,
+    contentType?: ContentType,
+  ) => Promise<SiteNetworkAccessOutput>;
   getSiteNetworkAccesses: (
     siteId: string,
     pagination: Pagination | null,

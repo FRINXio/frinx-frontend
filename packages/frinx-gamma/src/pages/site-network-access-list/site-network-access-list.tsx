@@ -13,12 +13,17 @@ import callbackUtils from '../../unistore-callback-utils';
 import SiteNetworkAccessFilter, { SiteNetworkAccessFilters } from './site-network-access-filter';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
+// import {
+//   getSavedNetworkAccessesWithStatus,
+//   getSiteNetworkChanges,
+//   SiteNetworkAccessWithStatus,
+// } from './site-network-access-helpers';
 import {
   getSavedNetworkAccessesWithStatus,
   getSiteNetworkChanges,
   SiteNetworkAccessWithStatus,
 } from './site-network-access-helpers';
-import { CalcDiffContext } from '../../calcdiff-provider';
+import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-provider';
 import unwrap from '../../helpers/unwrap';
 
 const SiteListPage: VoidFunctionComponent = () => {
@@ -62,7 +67,7 @@ const SiteListPage: VoidFunctionComponent = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (calcDiffData) {
-        const changes = await getSiteNetworkChanges(calcDiffData);
+        const changes = await getSiteNetworkChanges(calcDiffData, unwrap(siteId));
         setNetworkAccessChanges(changes);
       }
     };

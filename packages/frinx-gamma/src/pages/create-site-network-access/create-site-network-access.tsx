@@ -17,6 +17,7 @@ import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import { VpnService } from '../../components/forms/service-types';
 import { getSelectOptions } from '../../components/forms/options.helper';
 import { DefaultCVlanEnum } from '../../network-types';
+import useCalcDiffContext from '../../providers/calcdiff-provider/user-calcdiff-context';
 
 const getDefaultNetworkAccess = (selectedSite: VpnSite | null): SiteNetworkAccess => ({
   siteNetworkAccessId: generateNetworkAccessId(),
@@ -88,6 +89,7 @@ function freeResources(siteNetworkAcessId: string) {
 }
 
 const CreateSiteNetAccessPage: VoidFunctionComponent = () => {
+  const { invalidateCache } = useCalcDiffContext();
   const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [selectedSite, setSelectedSite] = useState<VpnSite | null>(null);
   const [bfdProfiles, setBfdProfiles] = useState<string[]>([]);
@@ -137,6 +139,7 @@ const CreateSiteNetAccessPage: VoidFunctionComponent = () => {
       await callbacks.editVpnSite(apiSite);
       // eslint-disable-next-line no-console
       console.log('site saved: network access added to site');
+      invalidateCache();
       navigate(`../sites/detail/${s.siteId}`);
     } catch (e) {
       setSubmitError(String(e));

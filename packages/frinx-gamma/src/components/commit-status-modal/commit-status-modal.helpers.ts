@@ -34,6 +34,14 @@ export type CalcDiffPayload = {
       'vpn-services': Record<string, unknown>;
     };
   };
+  // after: {
+  //   output: {
+  //     response_body: {
+  //       sites: unknown[];
+  //       'vpn-services': unknown[];
+  //     };
+  //   };
+  // };
 };
 /* eslint-enable */
 export type TaskStatusPayload = {

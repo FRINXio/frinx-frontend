@@ -122,6 +122,11 @@ export type UnistoreApiClient = {
     contentType?: ContentType,
   ) => Promise<SiteDevicesOutput>;
   getDevicesCount: (siteId: string, filters: DeviceFilter, contentType?: ContentType) => Promise<number>;
+  getSiteNetworkAccess: (
+    siteId: string,
+    siteNetworkAccessId: string,
+    contentType?: ContentType,
+  ) => Promise<SiteNetworkAccessOutput>;
   getSiteNetworkAccesses: (
     siteId: string,
     pagination: Pagination | null,
@@ -559,6 +564,26 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     }
   }
 
+  async function getSiteNetworkAccess(
+    siteId: string,
+    siteNetworkAccessId: string,
+    contentType?: ContentType,
+  ): Promise<SiteNetworkAccessOutput> {
+    try {
+      const content = getContentParameter(contentType);
+      const json = await sendGetRequest(
+        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access=${siteNetworkAccessId}?${content}`,
+      );
+      const data = decodeSiteNetworkAccessOutput(json);
+      return data;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      // if site does not have locations it the response is 404
+      return { 'site-network-access': [] };
+    }
+  }
+
   async function getSiteNetworkAccesses(
     siteId: string,
     pagination: Pagination | null,
@@ -698,6 +723,7 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     getLocations,
     getLocationsCount,
     getSiteNetworkAccesses,
+    getSiteNetworkAccess,
     getSiteNetworkAccessesCount,
     getTransactionCookie,
     closeTransaction,
