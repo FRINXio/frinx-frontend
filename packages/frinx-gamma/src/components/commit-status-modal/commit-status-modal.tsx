@@ -4,6 +4,7 @@ import {
   Button,
   Code,
   Heading,
+  HStack,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -20,6 +21,7 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 import { CommitDataPayload, getStatusBadgeColor, useAsyncGenerator } from './commit-status-modal.helpers';
 
 type Props = {
@@ -37,7 +39,7 @@ const CommitStatusModal: VoidFunctionComponent<Props> = ({ workflowId, isOpen, o
   }
 
   const { status, tasks, output } = execPayload;
-  const workflowOutput = JSON.stringify(output);
+  const workflowOutput = JSON.stringify(output, null, 2);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="3xl" closeOnOverlayClick={false}>
@@ -94,7 +96,12 @@ const CommitStatusModal: VoidFunctionComponent<Props> = ({ workflowId, isOpen, o
           </>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={onClose}>Close</Button>
+          <HStack spacing={2}>
+            <Button colorScheme="blue" as={Link} to={`/uniflow/executed/${workflowId}`}>
+              Go to detail
+            </Button>
+            <Button onClick={onClose}>Close</Button>
+          </HStack>
         </ModalFooter>
       </ModalContent>
     </Modal>

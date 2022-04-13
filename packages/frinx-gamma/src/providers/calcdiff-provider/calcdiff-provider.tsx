@@ -2,9 +2,12 @@ import React, { createContext, FC, useEffect, useMemo, useState } from 'react';
 import { CalcDiffPayload } from '../../components/commit-status-modal/commit-status-modal.helpers';
 import { getCalcDiff } from './calcdiff-provider.helpers';
 
+export type State = { service: CalcDiffPayload | null; bearer: CalcDiffPayload | null };
 export type CalcDiffContextProps = {
-  data: CalcDiffPayload | null;
+  data: { service: CalcDiffPayload | null; bearer: CalcDiffPayload | null } | null;
   invalidateCache: () => void;
+  isValid: boolean;
+  isLoading: boolean;
 };
 
 type CalcDiffState =
@@ -15,7 +18,7 @@ type CalcDiffState =
     }
   | {
       isLoading: false;
-      data: CalcDiffPayload;
+      data: State;
       error: null;
     }
   | {
@@ -39,7 +42,7 @@ export const CalcDiffProvider: FC = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await getCalcDiff();
-      if (data) {
+      if (data != null) {
         // const siteChanges = await getSiteChanges(data);
         // console.log('-- site changes: ', siteChanges);
         setDataState({
@@ -65,8 +68,10 @@ export const CalcDiffProvider: FC = ({ children }) => {
     () => ({
       data: dataState.data,
       invalidateCache: () => setIsValid(false),
+      isValid,
+      isLoading: dataState.isLoading,
     }),
-    [dataState.data],
+    [dataState, isValid],
   );
 
   return <CalcDiffContext.Provider value={value}>{children}</CalcDiffContext.Provider>;

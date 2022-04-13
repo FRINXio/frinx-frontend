@@ -4,7 +4,7 @@ import React, { useState, VoidFunctionComponent } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getTransactionId, removeTransactionId, setTransactionId } from '../../helpers/transaction-id';
 import unwrap from '../../helpers/unwrap';
-import useCalcDiffContext from '../../providers/calcdiff-provider/user-calcdiff-context';
+import useCalcDiffContext from '../../providers/calcdiff-provider/use-calcdiff-context';
 import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import unistoreCallbackUtils from '../../unistore-callback-utils';
 import CommitStatusModal from '../commit-status-modal/commit-status-modal';
@@ -15,20 +15,27 @@ function getKeysLength<T extends Record<string, unknown>>(value: T): number {
   return Object.keys(value).length;
 }
 
-function getServicesSitesActionEnabled(payload: CalcDiffPayload | null): boolean {
+function getServicesSitesActionEnabled(
+  payload: { service: CalcDiffPayload | null; bearer: CalcDiffPayload | null } | null,
+): { isServiceEnabled: boolean; isBearerEnabled: boolean } {
   if (payload == null) {
-    return false;
+    return { isServiceEnabled: false, isBearerEnabled: false };
   }
-  const { changes } = payload;
-  return (
-    getKeysLength(changes.creates.sites) +
-      getKeysLength(changes.creates['vpn-services']) +
-      getKeysLength(changes.updates.sites) +
-      getKeysLength(changes.updates['vpn-services']) +
-      changes.deletes.site.length +
-      changes.deletes.vpn_service.length >
-    0
-  );
+  const { service } = payload;
+  return {
+    isServiceEnabled:
+      service != null
+        ? getKeysLength(service.changes.creates.sites) +
+            getKeysLength(service.changes.creates['vpn-services']) +
+            getKeysLength(service.changes.updates.sites) +
+            getKeysLength(service.changes.updates['vpn-services']) +
+            service.changes.deletes.site.length +
+            service.changes.deletes.vpn_service.length >
+          0
+        : false,
+    // TODO: get bearer data
+    isBearerEnabled: false,
+  };
 }
 
 type WorkflowState = { type: 'service' | 'bearer'; id: string };
@@ -37,9 +44,10 @@ const TopBar: VoidFunctionComponent = () => {
   const discardChangesDisclosure = useDisclosure();
   const location = useLocation();
   const [workflowState, setWorkflowState] = useState<WorkflowState | null>(null);
+  const [isCommitLoading, setIsCommitLoading] = useState(false);
   const { data: calcDiffData, invalidateCache } = useCalcDiffContext();
   const isBearerPage = location.pathname.includes('vpn-bearers');
-  const isCommitDiscardButtonDisabled = !getServicesSitesActionEnabled(calcDiffData);
+  const { isServiceEnabled } = getServicesSitesActionEnabled(calcDiffData);
 
   const handleDiscardConfirmBtnClick = async () => {
     const callbacks = unistoreCallbackUtils.getCallbacks;
@@ -61,6 +69,7 @@ const TopBar: VoidFunctionComponent = () => {
   };
 
   const handleServiceCommitBtnClick = () => {
+    setIsCommitLoading(true);
     const callbacks = uniflowCallbackUtils.getCallbacks;
     callbacks
       .executeWorkflow({
@@ -82,6 +91,7 @@ const TopBar: VoidFunctionComponent = () => {
   };
 
   const handleBearerCommitBtnClick = () => {
+    setIsCommitLoading(true);
     const callbacks = uniflowCallbackUtils.getCallbacks;
     callbacks
       .executeWorkflow({
@@ -102,10 +112,10 @@ const TopBar: VoidFunctionComponent = () => {
       });
   };
 
-  const handleWorkflowFinish = (isCompleted: boolean) => {
-    setWorkflowState(null);
+  const handleWorkflowFinish = (isSuccessful: boolean) => {
+    setIsCommitLoading(false);
 
-    if (!isCompleted) {
+    if (!isSuccessful) {
       return;
     }
 
@@ -114,7 +124,6 @@ const TopBar: VoidFunctionComponent = () => {
     const unistoreCallbacks = unistoreCallbackUtils.getCallbacks;
     unistoreCallbacks.getTransactionCookie().then((data) => {
       setTransactionId(data);
-      invalidateCache();
     });
   };
 
@@ -124,6 +133,7 @@ const TopBar: VoidFunctionComponent = () => {
         <CommitStatusModal
           isOpen
           onClose={() => {
+            invalidateCache();
             setWorkflowState(null);
           }}
           workflowId={workflowState.id}
@@ -151,7 +161,8 @@ const TopBar: VoidFunctionComponent = () => {
             leftIcon={<Icon as={FeatherIcon} icon="trash" />}
             onClick={handleDiscardBtnClick}
             colorScheme="red"
-            isDisabled={isCommitDiscardButtonDisabled}
+            isDisabled={!isServiceEnabled}
+            isLoading={isCommitLoading}
           >
             Discard Changes
           </Button>
@@ -166,7 +177,8 @@ const TopBar: VoidFunctionComponent = () => {
               }
               return handleServiceCommitBtnClick();
             }}
-            isDisabled={isCommitDiscardButtonDisabled}
+            isDisabled={isBearerPage ? false : !isServiceEnabled}
+            isLoading={isCommitLoading}
           >
             Commit changes
           </Button>

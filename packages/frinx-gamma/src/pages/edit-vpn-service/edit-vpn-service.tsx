@@ -8,6 +8,7 @@ import ErrorMessage from '../../components/error-message/error-message';
 import callbackUtils from '../../unistore-callback-utils';
 import unwrap from '../../helpers/unwrap';
 import { getSelectOptions } from '../../components/forms/options.helper';
+import useCalcDiffContext from '../../providers/calcdiff-provider/use-calcdiff-context';
 
 const extranetVpns = getSelectOptions(window.__GAMMA_FORM_OPTIONS__.service.extranet_vpns).map((item) => item.key);
 
@@ -21,6 +22,7 @@ const EditVpnServicePage: VoidFunctionComponent = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { invalidateCache } = useCalcDiffContext();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,12 +37,11 @@ const EditVpnServicePage: VoidFunctionComponent = () => {
 
   const handleSubmit = async (service: VpnService) => {
     setSubmitError(null);
-    // eslint-disable-next-line no-console
-    console.log('submit clicked', service);
     try {
       const callbacks = callbackUtils.getCallbacks;
       const vpnService = clientVpnServiceToApiVpnService(service);
       await callbacks.editVpnServices(vpnService);
+      invalidateCache();
       navigate('../services');
     } catch (e) {
       setSubmitError(String(e));
@@ -48,8 +49,6 @@ const EditVpnServicePage: VoidFunctionComponent = () => {
   };
 
   const handleCancel = () => {
-    // eslint-disable-next-line no-console
-    console.log('cancel clicked');
     navigate('../services');
   };
 
