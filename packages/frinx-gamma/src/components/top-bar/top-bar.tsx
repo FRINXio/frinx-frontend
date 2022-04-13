@@ -4,7 +4,7 @@ import React, { useState, VoidFunctionComponent } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getTransactionId, removeTransactionId, setTransactionId } from '../../helpers/transaction-id';
 import unwrap from '../../helpers/unwrap';
-import useCalcDiffContext from '../../providers/calcdiff-provider/user-calcdiff-context';
+import useCalcDiffContext from '../../providers/calcdiff-provider/use-calcdiff-context';
 import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import unistoreCallbackUtils from '../../unistore-callback-utils';
 import CommitStatusModal from '../commit-status-modal/commit-status-modal';
@@ -124,7 +124,6 @@ const TopBar: VoidFunctionComponent = () => {
     const unistoreCallbacks = unistoreCallbackUtils.getCallbacks;
     unistoreCallbacks.getTransactionCookie().then((data) => {
       setTransactionId(data);
-      invalidateCache();
     });
   };
 
@@ -134,6 +133,7 @@ const TopBar: VoidFunctionComponent = () => {
         <CommitStatusModal
           isOpen
           onClose={() => {
+            invalidateCache();
             setWorkflowState(null);
           }}
           workflowId={workflowState.id}

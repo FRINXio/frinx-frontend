@@ -10,7 +10,7 @@ import {
 import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
 import { generateSiteId } from '../../helpers/id-helpers';
-import useCalcDiffContext from '../../providers/calcdiff-provider/user-calcdiff-context';
+import useCalcDiffContext from '../../providers/calcdiff-provider/use-calcdiff-context';
 import callbackUtils from '../../unistore-callback-utils';
 
 const defaultVpnSite: VpnSite = {

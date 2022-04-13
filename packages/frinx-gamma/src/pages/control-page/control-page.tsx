@@ -1,7 +1,8 @@
 import { Box, Container, Flex, Heading } from '@chakra-ui/react';
-import React, { VoidFunctionComponent } from 'react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { CalcDiffPayload } from '../../components/commit-status-modal/commit-status-modal.helpers';
-import useCalcDiffContext from '../../providers/calcdiff-provider/user-calcdiff-context';
+import useCalcDiffContext from '../../providers/calcdiff-provider/use-calcdiff-context';
+import unistoreCallbackUtils from '../../unistore-callback-utils';
 import ControlPageTable from './control-page-table';
 
 type CountState = {
@@ -49,7 +50,28 @@ function makeTotalCountState(countState: TotalCountState, payload: CalcDiffPaylo
 
 const ControlPage: VoidFunctionComponent = () => {
   const { data } = useCalcDiffContext();
-  const countState = makeTotalCountState(DEFAULT_UNCOMMITED_CHANGES, data?.service ?? null);
+  const [countState, setCountState] = useState(() =>
+    makeTotalCountState(DEFAULT_UNCOMMITED_CHANGES, data?.service ?? null),
+  );
+
+  useEffect(() => {
+    (async () => {
+      const callbacks = unistoreCallbackUtils.getCallbacks;
+      const [serviceCount, siteCount, bearerCount] = await Promise.all([
+        callbacks.getVpnServiceCount(null),
+        callbacks.getVpnSiteCount(null),
+        callbacks.getVpnBearerCount(null),
+      ]);
+      setCountState((prev) => ({
+        ...prev,
+        total: {
+          services: serviceCount,
+          sites: siteCount,
+          bearers: bearerCount,
+        },
+      }));
+    })();
+  }, [data]);
 
   return (
     <Container maxWidth={1280} minHeight="60vh">
