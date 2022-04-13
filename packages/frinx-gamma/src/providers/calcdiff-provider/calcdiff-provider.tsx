@@ -6,6 +6,8 @@ export type State = { service: CalcDiffPayload | null; bearer: CalcDiffPayload |
 export type CalcDiffContextProps = {
   data: { service: CalcDiffPayload | null; bearer: CalcDiffPayload | null } | null;
   invalidateCache: () => void;
+  isValid: boolean;
+  isLoading: boolean;
 };
 
 type CalcDiffState =
@@ -66,8 +68,10 @@ export const CalcDiffProvider: FC = ({ children }) => {
     () => ({
       data: dataState.data,
       invalidateCache: () => setIsValid(false),
+      isValid,
+      isLoading: dataState.isLoading,
     }),
-    [dataState.data],
+    [dataState, isValid],
   );
 
   return <CalcDiffContext.Provider value={value}>{children}</CalcDiffContext.Provider>;

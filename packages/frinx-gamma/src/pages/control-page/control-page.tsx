@@ -11,23 +11,25 @@ type CountState = {
   bearers: number;
 };
 type TotalCountState = {
-  total: CountState | null;
   added: CountState | null;
   updated: CountState | null;
   deleted: CountState | null;
 };
 const DEFAULT_UNCOMMITED_CHANGES: TotalCountState = {
-  total: null,
   added: null,
   updated: null,
   deleted: null,
 };
+const DEFAULT_TOTAL_COUNT: CountState = {
+  services: 0,
+  sites: 0,
+  bearers: 0,
+};
 
-function makeTotalCountState(countState: TotalCountState, payload: CalcDiffPayload | null): TotalCountState {
+function makeTotalCountState(payload: CalcDiffPayload | null): TotalCountState {
   if (payload != null) {
     const { changes } = payload;
     return {
-      total: countState.total,
       added: {
         services: Object.keys(changes.creates['vpn-services']).length,
         bearers: 0,
@@ -49,10 +51,9 @@ function makeTotalCountState(countState: TotalCountState, payload: CalcDiffPaylo
 }
 
 const ControlPage: VoidFunctionComponent = () => {
-  const { data } = useCalcDiffContext();
-  const [countState, setCountState] = useState(() =>
-    makeTotalCountState(DEFAULT_UNCOMMITED_CHANGES, data?.service ?? null),
-  );
+  const { data, isLoading, isValid } = useCalcDiffContext();
+  const [countState, setCountState] = useState(() => makeTotalCountState(data?.service ?? null));
+  const [totalCount, setTotalCount] = useState<CountState>(DEFAULT_TOTAL_COUNT);
 
   useEffect(() => {
     (async () => {
@@ -62,15 +63,14 @@ const ControlPage: VoidFunctionComponent = () => {
         callbacks.getVpnSiteCount(null),
         callbacks.getVpnBearerCount(null),
       ]);
-      setCountState((prev) => ({
-        ...prev,
-        total: {
-          services: serviceCount,
-          sites: siteCount,
-          bearers: bearerCount,
-        },
-      }));
+      setTotalCount({ services: serviceCount, sites: siteCount, bearers: bearerCount });
     })();
+  }, [isValid]);
+
+  useEffect(() => {
+    if (data != null) {
+      setCountState(makeTotalCountState(data.service));
+    }
   }, [data]);
 
   return (
@@ -81,12 +81,7 @@ const ControlPage: VoidFunctionComponent = () => {
         </Heading>
       </Flex>
       <Box>
-        <ControlPageTable
-          countState={{
-            ...countState,
-            total: countState.total,
-          }}
-        />
+        <ControlPageTable countState={countState} totalCount={totalCount} isDiffLoading={isLoading} />
       </Box>
     </Container>
   );

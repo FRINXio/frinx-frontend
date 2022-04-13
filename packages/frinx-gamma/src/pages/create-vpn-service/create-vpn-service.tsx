@@ -7,6 +7,7 @@ import { getSelectOptions } from '../../components/forms/options.helper';
 import { DefaultCVlanEnum, VpnService } from '../../components/forms/service-types';
 import VpnServiceForm from '../../components/forms/vpn-service-form';
 import ErrorMessage from '../../components/error-message/error-message';
+import useCalcDiffContext from '../../providers/calcdiff-provider/use-calcdiff-context';
 
 const defaultVpnService: VpnService = {
   customerName: '',
@@ -21,6 +22,7 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { invalidateCache } = useCalcDiffContext();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,14 +40,11 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
     const service = {
       ...data,
     };
-    // eslint-disable-next-line no-console
-    console.log('submit clicked', service);
     const callbacks = callbackUtils.getCallbacks;
     try {
       const vpnService = clientVpnServiceToApiVpnService(service);
-      const output = await callbacks.createVpnService(vpnService);
-      // eslint-disable-next-line no-console
-      console.log(output);
+      await callbacks.createVpnService(vpnService);
+      invalidateCache();
       navigate('../services');
     } catch (e) {
       setSubmitError(String(e));
@@ -53,7 +52,6 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
   };
 
   const handleCancel = async () => {
-    console.log('cancel clicked'); // eslint-disable-line no-console
     navigate('../services');
   };
 

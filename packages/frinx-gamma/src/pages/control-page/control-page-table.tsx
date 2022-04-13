@@ -1,4 +1,4 @@
-import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
+import { Button, Spinner, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -8,16 +8,17 @@ type CountState = {
   bearers: number;
 };
 type TotalCountState = {
-  total: CountState | null;
   added: CountState | null;
   updated: CountState | null;
   deleted: CountState | null;
 };
 type Props = {
   countState: TotalCountState;
+  totalCount: CountState;
+  isDiffLoading: boolean;
 };
 
-const ControlPageTable: VoidFunctionComponent<Props> = ({ countState }) => {
+const ControlPageTable: VoidFunctionComponent<Props> = ({ countState, totalCount, isDiffLoading }) => {
   return (
     <Table background="white" size="lg">
       <Thead>
@@ -37,16 +38,16 @@ const ControlPageTable: VoidFunctionComponent<Props> = ({ countState }) => {
             </Button>
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.total?.services ?? '-'}
+            {totalCount.services}
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.added?.services ?? '-'}
+            {isDiffLoading ? <Spinner size="xs" /> : countState.added?.services ?? '-'}
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.updated?.services ?? '-'}
+            {isDiffLoading ? <Spinner size="xs" /> : countState.updated?.services ?? '-'}
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.deleted?.services ?? '-'}
+            {isDiffLoading ? <Spinner size="xs" /> : countState.deleted?.services ?? '-'}
           </Td>
         </Tr>
         <Tr>
@@ -56,16 +57,16 @@ const ControlPageTable: VoidFunctionComponent<Props> = ({ countState }) => {
             </Button>
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.total?.sites ?? '-'}
+            {totalCount.sites}
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.added?.sites ?? '-'}
+            {isDiffLoading ? <Spinner size="xs" /> : countState.added?.sites ?? '-'}
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.updated?.sites ?? '-'}
+            {isDiffLoading ? <Spinner size="xs" /> : countState.updated?.sites ?? '-'}
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.deleted?.sites ?? '-'}
+            {isDiffLoading ? <Spinner size="xs" /> : countState.deleted?.sites ?? '-'}
           </Td>
         </Tr>
         <Tr>
@@ -75,16 +76,16 @@ const ControlPageTable: VoidFunctionComponent<Props> = ({ countState }) => {
             </Button>
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.total?.bearers ?? '-'}
+            {totalCount.bearers}
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.added?.bearers ?? '-'}
+            {isDiffLoading ? <Spinner size="xs" /> : countState.added?.bearers ?? '-'}
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.updated?.bearers ?? '-'}
+            {isDiffLoading ? <Spinner size="xs" /> : countState.updated?.bearers ?? '-'}
           </Td>
           <Td fontFamily="monospace" textAlign="right">
-            {countState.deleted?.bearers ?? '-'}
+            {isDiffLoading ? <Spinner size="xs" /> : countState.deleted?.bearers ?? '-'}
           </Td>
         </Tr>
       </Tbody>
