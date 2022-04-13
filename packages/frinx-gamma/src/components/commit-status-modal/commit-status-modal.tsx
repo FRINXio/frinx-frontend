@@ -29,9 +29,16 @@ type Props = {
   onClose: () => void;
   workflowId: string;
   onWorkflowFinish: (isCompleted: boolean) => void;
+  isLoading: boolean;
 };
 
-const CommitStatusModal: VoidFunctionComponent<Props> = ({ workflowId, isOpen, onClose, onWorkflowFinish }) => {
+const CommitStatusModal: VoidFunctionComponent<Props> = ({
+  workflowId,
+  isOpen,
+  onClose,
+  onWorkflowFinish,
+  isLoading,
+}) => {
   const execPayload = useAsyncGenerator<CommitDataPayload>({ workflowId, onFinish: onWorkflowFinish });
 
   if (execPayload == null) {
@@ -47,12 +54,11 @@ const CommitStatusModal: VoidFunctionComponent<Props> = ({ workflowId, isOpen, o
       <ModalContent>
         <ModalHeader display="flex" alignItems="center" paddingRight={16}>
           <Heading size="lg">Status</Heading>
-
           <Badge marginLeft="auto" colorScheme={getStatusBadgeColor(status)}>
             {status}
           </Badge>
         </ModalHeader>
-        <ModalCloseButton />
+        <ModalCloseButton isDisabled={isLoading} />
         <ModalBody pb={6}>
           <>
             <Table size="sm">
@@ -97,10 +103,12 @@ const CommitStatusModal: VoidFunctionComponent<Props> = ({ workflowId, isOpen, o
         </ModalBody>
         <ModalFooter>
           <HStack spacing={2}>
-            <Button colorScheme="blue" as={Link} to={`/uniflow/executed/${workflowId}`}>
+            <Button colorScheme="blue" as={Link} to={`/uniflow/executed/${workflowId}`} isDisabled={isLoading}>
               Go to detail
             </Button>
-            <Button onClick={onClose}>Close</Button>
+            <Button onClick={onClose} isDisabled={isLoading}>
+              Close
+            </Button>
           </HStack>
         </ModalFooter>
       </ModalContent>
