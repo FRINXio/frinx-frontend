@@ -1,5 +1,5 @@
 import { Box, Container, Flex, Heading } from '@chakra-ui/react';
-import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiVpnServiceToClientVpnService, clientVpnServiceToApiVpnService } from '../../components/forms/converters';
 import { VpnService } from '../../components/forms/service-types';
@@ -8,7 +8,7 @@ import ErrorMessage from '../../components/error-message/error-message';
 import callbackUtils from '../../unistore-callback-utils';
 import unwrap from '../../helpers/unwrap';
 import { getSelectOptions } from '../../components/forms/options.helper';
-import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-provider';
+import useCalcDiffContext from '../../providers/calcdiff-provider/use-calcdiff-context';
 
 const extranetVpns = getSelectOptions(window.__GAMMA_FORM_OPTIONS__.service.extranet_vpns).map((item) => item.key);
 
@@ -18,12 +18,11 @@ function getSelectedService(services: VpnService[], serviceId: string): VpnServi
 }
 
 const EditVpnServicePage: VoidFunctionComponent = () => {
-  const calcdiffContext = useContext(CalcDiffContext);
-  const { invalidateCache } = unwrap(calcdiffContext);
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const { serviceId } = useParams<{ serviceId: string }>();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { invalidateCache } = useCalcDiffContext();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,8 +37,6 @@ const EditVpnServicePage: VoidFunctionComponent = () => {
 
   const handleSubmit = async (service: VpnService) => {
     setSubmitError(null);
-    // eslint-disable-next-line no-console
-    console.log('submit clicked', service);
     try {
       const callbacks = callbackUtils.getCallbacks;
       const vpnService = clientVpnServiceToApiVpnService(service);
@@ -52,8 +49,6 @@ const EditVpnServicePage: VoidFunctionComponent = () => {
   };
 
   const handleCancel = () => {
-    // eslint-disable-next-line no-console
-    console.log('cancel clicked');
     navigate('../services');
   };
 

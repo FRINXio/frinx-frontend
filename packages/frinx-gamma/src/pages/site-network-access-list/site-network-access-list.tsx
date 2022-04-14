@@ -66,13 +66,13 @@ const SiteListPage: VoidFunctionComponent = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (calcDiffData) {
-        const changes = await getSiteNetworkChanges(calcDiffData, unwrap(siteId));
+      if (calcDiffData?.service) {
+        const changes = await getSiteNetworkChanges(calcDiffData.service, unwrap(siteId));
         setNetworkAccessChanges(changes);
       }
     };
     fetchData();
-  }, [calcDiffData]);
+  }, [calcDiffData, siteId]);
 
   useEffect(() => {
     const fetchData = async () => {

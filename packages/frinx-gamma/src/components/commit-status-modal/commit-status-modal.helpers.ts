@@ -81,7 +81,7 @@ async function getWorkflowExecOutput<T>(workflowId: string, abortController: Abo
 export type AsyncGeneratorParams = {
   workflowId: string;
   abortController: AbortController;
-  onFinish?: (isCompleted: boolean) => void;
+  onFinish?: (isSuccessful: boolean) => void;
 };
 
 export async function* asyncGenerator<T>({
@@ -103,14 +103,14 @@ export async function* asyncGenerator<T>({
   if (data?.result.status === 'FAILED' || data?.result.status === 'COMPLETED') {
     yield data;
     if (onFinish) {
-      onFinish(data.result.status === 'COMPLETED');
+      onFinish(data?.result.status === 'COMPLETED');
     }
   }
 }
 
 export type UseAsyncGeneratorParams = {
   workflowId: string | null;
-  onFinish?: (isCompleted: boolean) => void;
+  onFinish?: (isSuccessful: boolean) => void;
 };
 
 export function useAsyncGenerator<T>(props: UseAsyncGeneratorParams): ExecutedWorkflowPayload<T> | null {

@@ -57,8 +57,8 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (calcDiffData) {
-        const changes = await getServiceChanges(calcDiffData);
+      if (calcDiffData?.service) {
+        const changes = await getServiceChanges(calcDiffData.service);
         setServiceChanges(changes);
       }
     };

@@ -2,7 +2,6 @@ import { VpnSite } from '../../components/forms/site-types';
 import { CalcDiffPayload } from '../../components/commit-status-modal/commit-status-modal.helpers';
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import unistoreCallbackUtils from '../../unistore-callback-utils';
-import { VpnSitesOutput } from '../../network-types';
 
 export type Status = 'CREATED' | 'UPDATED' | 'DELETED' | 'NO_CHANGE';
 
@@ -30,8 +29,7 @@ function getIdList(record: Record<string, unknown>, filterPredicate: (value: obj
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return Object.entries(record)
     .filter((entry) => {
-      const [_, value] = entry;
-      const row = value as object;
+      const [, value] = entry;
       return filterPredicate(value as object);
     })
     .map((entry) => {

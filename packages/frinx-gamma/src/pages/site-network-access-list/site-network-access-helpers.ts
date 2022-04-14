@@ -1,7 +1,5 @@
 import { CalcDiffPayload } from '../../components/commit-status-modal/commit-status-modal.helpers';
 import { SiteNetworkAccess } from '../../components/forms/site-types';
-import { partition } from 'lodash';
-import { string } from 'fp-ts';
 import unistoreCallbackUtils from '../../unistore-callback-utils';
 import { apiSiteNetworkAccessToClientSiteNetworkAccess } from '../../components/forms/converters';
 
@@ -9,66 +7,47 @@ export type Status = 'CREATED' | 'UPDATED' | 'DELETED' | 'NO_CHANGE';
 
 export type SiteNetworkAccessWithStatus = SiteNetworkAccess & { status: Status };
 
-// type DeletedNetworkAccess = {
-//   path: string;
-//   [`path-keys`]: Record<'string', unknown>;
-//   data: unknown;
-// };
-
 function isSiteNetworkChange(value: object): boolean {
   return 'site-network-accesses' in value;
 }
 
-function isCreated(siteChange: Record<string, unknown>): boolean {
-  return siteChange.__directly_updated === true;
+type SiteChanges = Record<string, unknown>;
+type SiteNetworkChanges = Record<string, unknown>;
+
+function getSiteNetworkAccesses(changes: SiteChanges, siteId: string): SiteNetworkChanges {
+  // // we get site changes
+  const siteChanges: unknown | undefined = changes[siteId];
+  if (!siteChanges || !isSiteNetworkChange(siteChanges as object)) {
+    return {};
+  }
+
+  // we get sna changes
+  const { 'site-network-accesses': siteNetworkAccesses } = siteChanges as {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    'site-network-accesses': Record<string, unknown>;
+  };
+
+  return siteNetworkAccesses;
 }
 
-async function getNetworkList(
-  changes: Record<string, unknown>,
-  siteId: string,
-): Promise<SiteNetworkAccessWithStatus[]> {
-  const networkEntries = Object.entries(changes);
-  const [updatedEntries, createdEntries] = partition(networkEntries, isCreated);
+async function getNetworkList(changes: SiteChanges, siteId: string): Promise<SiteNetworkAccess[]> {
+  const siteNetworkAccessChanges = getSiteNetworkAccesses(changes, siteId);
+  const networkEntries = Object.entries(siteNetworkAccessChanges);
 
-  const updatedList = updatedEntries.map((entry) => {
-    const typedEntry = entry as [string, unknown];
-    return typedEntry[0];
-  });
-
-  const createdList = createdEntries.map((entry) => {
+  const networkList = networkEntries.map((entry) => {
     const typedEntry = entry as [string, unknown];
     return typedEntry[0];
   });
 
   const unistoreCallbacks = unistoreCallbackUtils.getCallbacks;
 
-  const updatedPromises = updatedList.map((siteNetworkAccessId) =>
-    unistoreCallbacks.getSiteNetworkAccess(siteId, siteNetworkAccessId),
-  );
-  const createdPromises = createdList.map((siteNetworkAccessId) =>
+  const networkPromises = networkList.map((siteNetworkAccessId) =>
     unistoreCallbacks.getSiteNetworkAccess(siteId, siteNetworkAccessId),
   );
 
-  const updated = await Promise.all(updatedPromises);
-  const created = await Promise.all(createdPromises);
-
-  const clientUpdated: SiteNetworkAccessWithStatus[] = updated
-    .map((sna) => apiSiteNetworkAccessToClientSiteNetworkAccess(sna))
-    .flat()
-    .map((sna) => ({
-      ...sna,
-      status: 'UPDATED' as Status,
-    }));
-
-  const clientCreated = created
-    .map((sna) => apiSiteNetworkAccessToClientSiteNetworkAccess(sna))
-    .flat()
-    .map((sna) => ({
-      ...sna,
-      status: 'CREATED' as Status,
-    }));
-
-  return [...clientUpdated, ...clientCreated];
+  const apiNetworks = await Promise.all(networkPromises);
+  const clientNetworks = apiNetworks.map((n) => apiSiteNetworkAccessToClientSiteNetworkAccess(n)).flat();
+  return clientNetworks;
 }
 
 export async function getSiteNetworkChanges(
@@ -76,27 +55,16 @@ export async function getSiteNetworkChanges(
   siteId: string,
 ): Promise<SiteNetworkAccessWithStatus[]> {
   const { changes } = data;
-  console.log('updates: ', changes.updates.sites);
-  // we get site changes
-  const siteChanges: unknown | undefined = changes.updates.sites[siteId];
+  const createdSiteNetworkChanges = changes.creates.sites;
+  const createdNetworksPromise = getNetworkList(createdSiteNetworkChanges, siteId);
 
-  if (!siteChanges || !isSiteNetworkChange(siteChanges as object)) {
-    return [];
-  }
+  const updatesSiteNetworkChanges = changes.updates.sites;
+  const updatedNetworksPromise = getNetworkList(updatesSiteNetworkChanges, siteId);
 
-  console.log('sna changes: ', siteChanges);
-  // we get sna changes
-  const { 'site-network-accesses': siteNetworkAccesses } = siteChanges as {
-    'site-network-accesses': Record<string, unknown>;
-  };
-  const networkList = await getNetworkList(siteNetworkAccesses, siteId);
-  console.log('networkList: ', networkList);
-
-  // const deletedIds = (changes.deletes.vpn_service as DeletedNetworkAccess[])
-  //   .map((site) => getIdList(site['path-keys']));
-  //   .flat();
-
-  return networkList;
+  const [createdNetworkList, updatedNetworkList] = await Promise.all([createdNetworksPromise, updatedNetworksPromise]);
+  const createdNetworkListWithStatus = createdNetworkList.map((n) => ({ ...n, status: 'CREATED' as Status }));
+  const updatedNetworkListWithStatus = updatedNetworkList.map((n) => ({ ...n, status: 'UPDATED' as Status }));
+  return [...createdNetworkListWithStatus, ...updatedNetworkListWithStatus];
 }
 
 export function getSavedNetworkAccessesWithStatus(

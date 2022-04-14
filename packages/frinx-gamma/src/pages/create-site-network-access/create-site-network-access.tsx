@@ -17,7 +17,7 @@ import uniflowCallbackUtils from '../../uniflow-callback-utils';
 import { VpnService } from '../../components/forms/service-types';
 import { getSelectOptions } from '../../components/forms/options.helper';
 import { DefaultCVlanEnum } from '../../network-types';
-import useCalcDiffContext from '../../providers/calcdiff-provider/user-calcdiff-context';
+import useCalcDiffContext from '../../providers/calcdiff-provider/use-calcdiff-context';
 
 const getDefaultNetworkAccess = (selectedSite: VpnSite | null): SiteNetworkAccess => ({
   siteNetworkAccessId: generateNetworkAccessId(),

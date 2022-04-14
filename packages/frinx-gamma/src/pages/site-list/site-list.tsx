@@ -13,13 +13,12 @@ import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getSavedSitesWithStatus, getSiteChanges, VpnSiteWithStatus } from './site-helpers';
 import FilterContext from '../../filter-provider';
-import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-provider';
+import useCalcDiffContext from '../../providers/calcdiff-provider/use-calcdiff-context';
 
 const SiteListPage: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);
   const { site: siteFilters, onSiteFilterChange } = unwrap(filterContext);
-  const calcdiffContext = useContext(CalcDiffContext);
-  const { data: calcDiffData } = unwrap(calcdiffContext);
+  const { data: calcDiffData } = useCalcDiffContext();
   const [createdSites, setCreatedSites] = useState<VpnSite[] | null>(null);
   const [updatedSites, setUpdatedSites] = useState<VpnSite[] | null>(null);
   const [deletedSites, setDeletedSites] = useState<VpnSite[] | null>(null);
@@ -55,8 +54,8 @@ const SiteListPage: VoidFunctionComponent = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (calcDiffData) {
-        const changes = await getSiteChanges(calcDiffData);
+      if (calcDiffData?.service) {
+        const changes = await getSiteChanges(calcDiffData.service);
         setSiteChanges(changes);
       }
     };
