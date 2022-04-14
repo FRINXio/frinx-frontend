@@ -1,7 +1,6 @@
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import { useDisclosure, Heading, Box, Container, Flex, Button } from '@chakra-ui/react';
 import { Link, useParams } from 'react-router-dom';
-import diff from 'diff-arrays-of-objects';
 import {
   apiSiteNetworkAccessToClientSiteNetworkAccess,
   apiVpnSitesToClientVpnSite,
@@ -14,10 +13,22 @@ import callbackUtils from '../../unistore-callback-utils';
 import SiteNetworkAccessFilter, { SiteNetworkAccessFilters } from './site-network-access-filter';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
-import { getChangedNetworkAccessesWithStatus, getSavedNetworkAccessesWithStatus } from './site-network-access-helpers';
+// import {
+//   getSavedNetworkAccessesWithStatus,
+//   getSiteNetworkChanges,
+//   SiteNetworkAccessWithStatus,
+// } from './site-network-access-helpers';
+import {
+  getSavedNetworkAccessesWithStatus,
+  getSiteNetworkChanges,
+  SiteNetworkAccessWithStatus,
+} from './site-network-access-helpers';
+import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-provider';
 import unwrap from '../../helpers/unwrap';
 
 const SiteListPage: VoidFunctionComponent = () => {
+  const calcdiffContext = useContext(CalcDiffContext);
+  const { data: calcDiffData } = unwrap(calcdiffContext);
   const [createdNetworkAccesses, setCreatedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
   const [updatedNetworkAccesses, setUpdatedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
   const [deletedNetworkAccesses, setDeletedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
@@ -38,6 +49,7 @@ const SiteListPage: VoidFunctionComponent = () => {
     locationId: null,
     deviceId: null,
   });
+  const [networkAccessChanges, setNetworkAccessChanges] = useState<SiteNetworkAccessWithStatus[] | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,6 +63,16 @@ const SiteListPage: VoidFunctionComponent = () => {
 
     fetchData();
   }, [siteId]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (calcDiffData?.service) {
+        const changes = await getSiteNetworkChanges(calcDiffData.service, unwrap(siteId));
+        setNetworkAccessChanges(changes);
+      }
+    };
+    fetchData();
+  }, [calcDiffData, siteId]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,16 +98,6 @@ const SiteListPage: VoidFunctionComponent = () => {
         ...pagination,
         pageCount: Math.ceil(networkAccessesCount / pagination.pageSize),
       });
-
-      // get data for changes table
-      const allSavedNetworkAccesses = await callbacks.getSiteNetworkAccesses(unwrap(siteId), null, null, 'nonconfig');
-      const clientAllSavedNetworkAccesses = apiSiteNetworkAccessToClientSiteNetworkAccess(allSavedNetworkAccesses);
-      const allUnsavedNetworkAccesses = await callbacks.getSiteNetworkAccesses(unwrap(siteId), null, null);
-      const clientAllUnsavedNetworkAccesses = apiSiteNetworkAccessToClientSiteNetworkAccess(allUnsavedNetworkAccesses);
-      const result = diff(clientAllSavedNetworkAccesses, clientAllUnsavedNetworkAccesses, 'siteNetworkAccessId');
-      setCreatedNetworkAccesses(result.added);
-      setUpdatedNetworkAccesses(result.updated);
-      setDeletedNetworkAccesses(result.removed);
     };
     fetchData();
   }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -124,11 +136,6 @@ const SiteListPage: VoidFunctionComponent = () => {
     return null;
   }
 
-  const changedNetworkAccessesWithStatus = getChangedNetworkAccessesWithStatus(
-    createdNetworkAccesses,
-    updatedNetworkAccesses,
-    deletedNetworkAccesses,
-  );
   const savedNetworkAccessesWithStatus = getSavedNetworkAccessesWithStatus(
     networkAccesses,
     updatedNetworkAccesses,
@@ -183,7 +190,7 @@ const SiteListPage: VoidFunctionComponent = () => {
               onFilterChange={handleFilterChange}
               onFilterSubmit={handleFilterSubmit}
             />
-            {changedNetworkAccessesWithStatus.length ? (
+            {networkAccessChanges && networkAccessChanges.length ? (
               <>
                 <Heading size="sm">Changes</Heading>
                 <Box my="2">
@@ -191,7 +198,7 @@ const SiteListPage: VoidFunctionComponent = () => {
                     siteId={unwrap(siteId)}
                     size="sm"
                     detailId={detailId}
-                    networkAccesses={changedNetworkAccessesWithStatus}
+                    networkAccesses={networkAccessChanges}
                     onDeleteSiteNetworkAccessButtonClick={handleDeleteButtonClick}
                     onRowClick={handleRowClick}
                   />

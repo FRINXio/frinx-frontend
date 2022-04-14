@@ -46,6 +46,7 @@ export type UnistoreCallbacks = {
     serviceFilter: ServiceFilters | null,
     contentType?: ContentType,
   ) => Promise<VpnServicesOutput>;
+  getVpnService: (serviceId: string, contentType?: ContentType) => Promise<VpnServicesOutput>;
   editVpnServices: (vpnService: CreateVpnServiceInput) => Promise<unknown>;
   deleteVpnService: (vpnServiceId: string) => Promise<unknown>;
   createVpnService: (vpnService: CreateVpnServiceInput) => Promise<void>;
@@ -92,6 +93,11 @@ export type UnistoreCallbacks = {
     contentType?: ContentType,
   ) => Promise<SiteDevicesOutput>;
   getDevicesCount: (siteId: string, filters: DeviceFilters, contentType?: ContentType) => Promise<number>;
+  getSiteNetworkAccess: (
+    siteId: string,
+    siteNetworkAccessId: string,
+    contentType?: ContentType,
+  ) => Promise<SiteNetworkAccessOutput>;
   getSiteNetworkAccesses: (
     siteId: string,
     pagination: Pagination | null,

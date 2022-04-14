@@ -41,7 +41,10 @@ export async function pollData(workflowId: string): Promise<CalcDiffPayload> {
   throw Error(`Could not get workflow data: ${workflowId}`);
 }
 
-export async function getCalcDiff(): Promise<{ service: CalcDiffPayload; bearer: CalcDiffPayload } | null> {
+export async function getCalcDiff(): Promise<{
+  service: CalcDiffPayload;
+  bearer: CalcDiffPayload;
+} | null> {
   try {
     const serviceWorkflowId = await getWorkflowId('service');
     const bearerWorkflowId = await getWorkflowId('vpn-bearer');
