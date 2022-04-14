@@ -2,6 +2,7 @@ import { CalcDiffPayload } from '../../components/commit-status-modal/commit-sta
 import { SiteNetworkAccess } from '../../components/forms/site-types';
 import unistoreCallbackUtils from '../../unistore-callback-utils';
 import { apiSiteNetworkAccessToClientSiteNetworkAccess } from '../../components/forms/converters';
+import { StatusEnum } from '../service-list/service-helpers';
 
 export type Status = 'CREATED' | 'UPDATED' | 'DELETED' | 'NO_CHANGE';
 
@@ -62,8 +63,8 @@ export async function getSiteNetworkChanges(
   const updatedNetworksPromise = getNetworkList(updatesSiteNetworkChanges, siteId);
 
   const [createdNetworkList, updatedNetworkList] = await Promise.all([createdNetworksPromise, updatedNetworksPromise]);
-  const createdNetworkListWithStatus = createdNetworkList.map((n) => ({ ...n, status: 'CREATED' as Status }));
-  const updatedNetworkListWithStatus = updatedNetworkList.map((n) => ({ ...n, status: 'UPDATED' as Status }));
+  const createdNetworkListWithStatus = createdNetworkList.map((n) => ({ ...n, status: StatusEnum.CREATED }));
+  const updatedNetworkListWithStatus = updatedNetworkList.map((n) => ({ ...n, status: StatusEnum.UPDATED }));
   return [...createdNetworkListWithStatus, ...updatedNetworkListWithStatus];
 }
 
@@ -79,7 +80,7 @@ export function getSavedNetworkAccessesWithStatus(
       if (updatedSite.length) {
         return {
           ...updatedSite[0],
-          status: 'UPDATED',
+          status: StatusEnum.UPDATED,
         };
       }
 
@@ -88,13 +89,13 @@ export function getSavedNetworkAccessesWithStatus(
       if (deletedSite.length) {
         return {
           ...deletedSite[0],
-          status: 'DELETED',
+          status: StatusEnum.DELETED,
         };
       }
 
       return {
         ...site,
-        status: 'NO_CHANGE',
+        status: StatusEnum.NO_CHANGE,
       };
     }) || []
   );

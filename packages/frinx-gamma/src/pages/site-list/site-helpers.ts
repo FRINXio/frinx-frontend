@@ -2,8 +2,7 @@ import { VpnSite } from '../../components/forms/site-types';
 import { CalcDiffPayload } from '../../components/commit-status-modal/commit-status-modal.helpers';
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import unistoreCallbackUtils from '../../unistore-callback-utils';
-
-export type Status = 'CREATED' | 'UPDATED' | 'DELETED' | 'NO_CHANGE';
+import { Status, StatusEnum } from '../service-list/service-helpers';
 
 export type VpnSiteWithStatus = VpnSite & { status: Status };
 
@@ -62,13 +61,13 @@ export async function getSiteChanges(data: CalcDiffPayload): Promise<VpnSiteWith
 
   // we inject status (created/updated/deleted) to every site, that was changed
   const createdSitesWithStatus: VpnSiteWithStatus[] = createdSites
-    .map((sites) => apiVpnSitesToClientVpnSite(sites).map((s) => ({ ...s, status: 'CREATED' as Status })))
+    .map((sites) => apiVpnSitesToClientVpnSite(sites).map((s) => ({ ...s, status: StatusEnum.CREATED })))
     .flat();
   const updatedSitesWithStatus: VpnSiteWithStatus[] = updatedSites
-    .map((sites) => apiVpnSitesToClientVpnSite(sites).map((s) => ({ ...s, status: 'UPDATED' as Status })))
+    .map((sites) => apiVpnSitesToClientVpnSite(sites).map((s) => ({ ...s, status: StatusEnum.UPDATED })))
     .flat();
   const deletedSitesWithStatus: VpnSiteWithStatus[] = deletedSites
-    .map((sites) => apiVpnSitesToClientVpnSite(sites).map((s) => ({ ...s, status: 'DELETED' as Status })))
+    .map((sites) => apiVpnSitesToClientVpnSite(sites).map((s) => ({ ...s, status: StatusEnum.DELETED })))
     .flat();
 
   return [...createdSitesWithStatus, ...updatedSitesWithStatus, ...deletedSitesWithStatus];
@@ -85,7 +84,7 @@ export function getSavedSitesWithStatus(
       if (updatedSite.length) {
         return {
           ...updatedSite[0],
-          status: 'UPDATED',
+          status: StatusEnum.UPDATED,
         };
       }
 
@@ -93,13 +92,13 @@ export function getSavedSitesWithStatus(
       if (deletedSite.length) {
         return {
           ...deletedSite[0],
-          status: 'DELETED',
+          status: StatusEnum.DELETED,
         };
       }
 
       return {
         ...site,
-        status: 'NO_CHANGE',
+        status: StatusEnum.NO_CHANGE,
       };
     }) || []
   );

@@ -7,6 +7,13 @@ export type Status = 'CREATED' | 'UPDATED' | 'DELETED' | 'NO_CHANGE';
 
 export type VpnServiceWithStatus = VpnService & { status: Status };
 
+export const StatusEnum = {
+  CREATED: 'CREATED' as const,
+  UPDATED: 'UPDATED' as const,
+  DELETED: 'DELETED' as const,
+  NO_CHANGE: 'NO_CHANGE' as const,
+};
+
 type DeletedService = {
   path: string;
   [`path-keys`]: Record<'string', unknown>;
@@ -40,14 +47,14 @@ export async function getServiceChanges(data: CalcDiffPayload): Promise<VpnServi
   const deletedServices = await Promise.all(deletedPromises);
 
   // we inject status (created/updated/deleted) to every site, that was changed
-  const createdServicesWithStatus: VpnServiceWithStatus[] = createdServices
-    .map((services) => apiVpnServiceToClientVpnService(services).map((s) => ({ ...s, status: 'CREATED' as Status })))
+  const createdServicesWithStatus = createdServices
+    .map((services) => apiVpnServiceToClientVpnService(services).map((s) => ({ ...s, status: StatusEnum.CREATED })))
     .flat();
-  const updatedServicesWithStatus: VpnServiceWithStatus[] = updatedServices
-    .map((services) => apiVpnServiceToClientVpnService(services).map((s) => ({ ...s, status: 'UPDATED' as Status })))
+  const updatedServicesWithStatus = updatedServices
+    .map((services) => apiVpnServiceToClientVpnService(services).map((s) => ({ ...s, status: StatusEnum.UPDATED })))
     .flat();
-  const deletedServicesWithStatus: VpnServiceWithStatus[] = deletedServices
-    .map((services) => apiVpnServiceToClientVpnService(services).map((s) => ({ ...s, status: 'DELETED' as Status })))
+  const deletedServicesWithStatus = deletedServices
+    .map((services) => apiVpnServiceToClientVpnService(services).map((s) => ({ ...s, status: StatusEnum.DELETED })))
     .flat();
 
   return [...createdServicesWithStatus, ...updatedServicesWithStatus, ...deletedServicesWithStatus];
@@ -58,27 +65,27 @@ export function getChangedServicesWithStatus(
   updatedServices: VpnService[] | null,
   deletedServices: VpnService[] | null,
 ): VpnServiceWithStatus[] {
-  const createdServicesWithStatus: VpnServiceWithStatus[] =
+  const createdServicesWithStatus =
     createdServices?.map((service) => {
       return {
         ...service,
-        status: 'CREATED',
+        status: StatusEnum.CREATED,
       };
     }) || [];
 
-  const updatedServicesWithStatus: VpnServiceWithStatus[] =
+  const updatedServicesWithStatus =
     updatedServices?.map((service) => {
       return {
         ...service,
-        status: 'UPDATED',
+        status: StatusEnum.UPDATED,
       };
     }) || [];
 
-  const deletedServicesWithStatus: VpnServiceWithStatus[] =
+  const deletedServicesWithStatus =
     deletedServices?.map((service) => {
       return {
         ...service,
-        status: 'DELETED',
+        status: StatusEnum.DELETED,
       };
     }) || [];
 
@@ -96,7 +103,7 @@ export function getSavedServicesWithStatus(
       if (updatedService.length) {
         return {
           ...updatedService[0],
-          status: 'UPDATED',
+          status: StatusEnum.UPDATED,
         };
       }
 
@@ -104,13 +111,13 @@ export function getSavedServicesWithStatus(
       if (deletedService.length) {
         return {
           ...deletedService[0],
-          status: 'DELETED',
+          status: StatusEnum.DELETED,
         };
       }
 
       return {
         ...service,
-        status: 'NO_CHANGE',
+        status: StatusEnum.NO_CHANGE,
       };
     }) || []
   );
