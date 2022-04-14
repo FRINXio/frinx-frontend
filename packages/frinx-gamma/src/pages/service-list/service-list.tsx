@@ -16,7 +16,7 @@ import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-prov
 
 const CreateVpnServicePage: VoidFunctionComponent = () => {
   const calcdiffContext = useContext(CalcDiffContext);
-  const { data: calcDiffData } = unwrap(calcdiffContext);
+  const { invalidateCache, data: calcDiffData } = unwrap(calcdiffContext);
   const [serviceChanges, setServiceChanges] = useState<VpnServiceWithStatus[] | null>(null);
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const [serviceIdToDelete, setServiceIdToDelete] = useState<string | null>(null);
@@ -112,6 +112,7 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
         onClose={deleteModalDisclosure.onClose}
         onConfirmBtnClick={() => {
           callbackUtils.getCallbacks.deleteVpnService(unwrap(serviceIdToDelete)).then(() => {
+            invalidateCache();
             deleteModalDisclosure.onClose();
           });
         }}

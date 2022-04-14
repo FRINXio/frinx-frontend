@@ -6,16 +6,6 @@ import { Status, StatusEnum } from '../service-list/service-helpers';
 
 export type VpnSiteWithStatus = VpnSite & { status: Status };
 
-type DeletedPath = {
-  vpnSite: string;
-};
-
-type DeletedSite = {
-  path: string;
-  [`path-keys`]: DeletedPath;
-  data: unknown;
-};
-
 function isSiteCreate(value: object): boolean {
   return Object.keys(value).length === 0;
 }
@@ -37,18 +27,13 @@ function getIdList(record: Record<string, unknown>, filterPredicate: (value: obj
     });
 }
 
-function getDeleteId(path: DeletedPath): string {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  return path.vpnSite;
-}
-
 export async function getSiteChanges(data: CalcDiffPayload): Promise<VpnSiteWithStatus[]> {
   const { changes } = data;
 
   // we get all site ids that were changed
   const createdIds = getIdList(changes.creates.sites, isSiteCreate);
   const updatedIds = getIdList(changes.updates.sites, isSiteChange);
-  const deletedIds = (changes.deletes.site as DeletedSite[]).map((site) => getDeleteId(site['path-keys']));
+  const deletedIds = changes.deletes.site.map((site) => site['path-keys'].vpnSite);
 
   // we get all config data for every site changed
   const callbacks = unistoreCallbackUtils.getCallbacks;

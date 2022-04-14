@@ -19,6 +19,28 @@ export type CommitDataPayload<T = WorkflowStatus> =
       response_body: unknown;
     };
 
+export type DeletedService = {
+  path: string;
+  [`path-keys`]: Record<string, string>;
+  data: unknown;
+};
+
+type VpnSitePathKeys = 'vpnSite';
+
+export type DeletedSite = {
+  path: string;
+  [`path-keys`]: Record<VpnSitePathKeys, string>;
+  data: unknown;
+};
+
+type NetworkAccessPathKeys = 'vpnSite' | 'siteNetworkAccess';
+
+export type DeletedNetworkAccess = {
+  path: string;
+  [`path-keys`]: Record<NetworkAccessPathKeys, string>;
+  data: unknown;
+};
+
 export type CalcDiffPayload = {
   changes: {
     creates: {
@@ -26,8 +48,9 @@ export type CalcDiffPayload = {
       'vpn-services': Record<string, unknown>;
     };
     deletes: {
-      site: unknown[];
-      vpn_service: unknown[];
+      site: DeletedSite[];
+      vpn_service: DeletedService[];
+      site_network_access: DeletedNetworkAccess[];
     };
     updates: {
       sites: Record<string, unknown>;
