@@ -8,8 +8,14 @@ export type Status = 'CREATED' | 'UPDATED' | 'DELETED' | 'NO_CHANGE';
 
 export type SiteNetworkAccessWithStatus = SiteNetworkAccess & { status: Status };
 
-function isSiteNetworkChange(value: object): boolean {
-  return 'site-network-accesses' in value;
+function isSiteNetworkChange(value: unknown): value is {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  'site-network-accesses': Record<string, unknown>;
+} {
+  if (value == null) {
+    return false;
+  }
+  return typeof value === 'object' && 'site-network-accesses' in value;
 }
 
 type SiteChanges = Record<string, unknown>;
@@ -18,17 +24,13 @@ type SiteNetworkChanges = Record<string, unknown>;
 function getSiteNetworkAccesses(changes: SiteChanges, siteId: string): SiteNetworkChanges {
   // // we get site changes
   const siteChanges: unknown | undefined = changes[siteId];
-  if (!siteChanges || !isSiteNetworkChange(siteChanges as object)) {
-    return {};
-  }
 
   // we get sna changes
-  const { 'site-network-accesses': siteNetworkAccesses } = siteChanges as {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    'site-network-accesses': Record<string, unknown>;
-  };
-
-  return siteNetworkAccesses;
+  if (isSiteNetworkChange(siteChanges)) {
+    const { 'site-network-accesses': siteNetworkAccesses } = siteChanges;
+    return siteNetworkAccesses;
+  }
+  return {};
 }
 
 async function getNetworkList(changes: SiteChanges, siteId: string): Promise<SiteNetworkAccess[]> {
@@ -36,7 +38,7 @@ async function getNetworkList(changes: SiteChanges, siteId: string): Promise<Sit
   const networkEntries = Object.entries(siteNetworkAccessChanges);
 
   const networkList = networkEntries.map((entry) => {
-    const typedEntry = entry as [string, unknown];
+    const typedEntry = entry;
     return typedEntry[0];
   });
 
