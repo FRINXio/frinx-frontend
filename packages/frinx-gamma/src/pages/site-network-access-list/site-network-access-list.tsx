@@ -13,11 +13,6 @@ import callbackUtils from '../../unistore-callback-utils';
 import SiteNetworkAccessFilter, { SiteNetworkAccessFilters } from './site-network-access-filter';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
-// import {
-//   getSavedNetworkAccessesWithStatus,
-//   getSiteNetworkChanges,
-//   SiteNetworkAccessWithStatus,
-// } from './site-network-access-helpers';
 import {
   getSavedNetworkAccessesWithStatus,
   getSiteNetworkChanges,
@@ -25,13 +20,11 @@ import {
 } from './site-network-access-helpers';
 import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-provider';
 import unwrap from '../../helpers/unwrap';
+import { StatusEnum } from '../service-list/service-helpers';
 
 const SiteListPage: VoidFunctionComponent = () => {
   const calcdiffContext = useContext(CalcDiffContext);
-  const { data: calcDiffData } = unwrap(calcdiffContext);
-  const [createdNetworkAccesses, setCreatedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
-  const [updatedNetworkAccesses, setUpdatedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
-  const [deletedNetworkAccesses, setDeletedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
+  const { invalidateCache, data: calcDiffData } = unwrap(calcdiffContext);
   const [site, setSite] = useState<VpnSite | null>(null);
   const [networkAccesses, setNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
   const [siteAccessIdToDelete, setSiteAccessIdToDelete] = useState<string | null>(null);
@@ -136,6 +129,8 @@ const SiteListPage: VoidFunctionComponent = () => {
     return null;
   }
 
+  const updatedNetworkAccesses = networkAccessChanges?.filter((n) => n.status === StatusEnum.UPDATED) || [];
+  const deletedNetworkAccesses = networkAccessChanges?.filter((n) => n.status === StatusEnum.DELETED) || [];
   const savedNetworkAccessesWithStatus = getSavedNetworkAccessesWithStatus(
     networkAccesses,
     updatedNetworkAccesses,
@@ -155,18 +150,7 @@ const SiteListPage: VoidFunctionComponent = () => {
           const apiSite = clientVpnSiteToApiVpnSite(editedVpnSite);
           callbackUtils.getCallbacks.editVpnSite(apiSite).then(() => {
             setSite(editedVpnSite);
-            setCreatedNetworkAccesses(
-              unwrap(createdNetworkAccesses).filter((access) => access.siteNetworkAccessId !== siteAccessIdToDelete),
-            );
-            setUpdatedNetworkAccesses(
-              unwrap(updatedNetworkAccesses).filter((access) => access.siteNetworkAccessId !== siteAccessIdToDelete),
-            );
-            const deletedAccess = unwrap(networkAccesses).find((a) => a.siteNetworkAccessId === siteAccessIdToDelete);
-            if (deletedAccess) {
-              const newDeletedAccesses =
-                deletedNetworkAccesses === null ? [deletedAccess] : [...deletedNetworkAccesses, deletedAccess];
-              setDeletedNetworkAccesses(newDeletedAccesses);
-            }
+            invalidateCache();
             deleteModalDisclosure.onClose();
           });
         }}

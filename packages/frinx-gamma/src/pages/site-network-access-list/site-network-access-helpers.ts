@@ -1,4 +1,7 @@
-import { CalcDiffPayload } from '../../components/commit-status-modal/commit-status-modal.helpers';
+import {
+  CalcDiffPayload,
+  DeletedNetworkAccess,
+} from '../../components/commit-status-modal/commit-status-modal.helpers';
 import { SiteNetworkAccess } from '../../components/forms/site-types';
 import unistoreCallbackUtils from '../../unistore-callback-utils';
 import { apiSiteNetworkAccessToClientSiteNetworkAccess } from '../../components/forms/converters';
@@ -53,6 +56,29 @@ async function getNetworkList(changes: SiteChanges, siteId: string): Promise<Sit
   return clientNetworks;
 }
 
+function getDeletedIds(deletedNetworkAccesses: DeletedNetworkAccess[], siteId: string): string[] {
+  return deletedNetworkAccesses
+    .filter((dna) => dna['path-keys'].vpnSite === siteId)
+    .map((dna) => {
+      const deletedIds = dna['path-keys'].siteNetworkAccess;
+      return deletedIds;
+    });
+}
+
+async function getDeletedNetworkData(networkIds: string[], siteId: string): Promise<SiteNetworkAccess[]> {
+  const unistoreCallbacks = unistoreCallbackUtils.getCallbacks;
+
+  const networkPromises = networkIds.map((siteNetworkAccessId) =>
+    unistoreCallbacks.getSiteNetworkAccess(siteId, siteNetworkAccessId, 'nonconfig'),
+  );
+
+  const deletedNetworkList = await Promise.all(networkPromises);
+  const clientDeletedNetworkList = deletedNetworkList
+    .map((n) => apiSiteNetworkAccessToClientSiteNetworkAccess(n))
+    .flat();
+  return clientDeletedNetworkList;
+}
+
 export async function getSiteNetworkChanges(
   data: CalcDiffPayload,
   siteId: string,
@@ -61,13 +87,22 @@ export async function getSiteNetworkChanges(
   const createdSiteNetworkChanges = changes.creates.sites;
   const createdNetworksPromise = getNetworkList(createdSiteNetworkChanges, siteId);
 
-  const updatesSiteNetworkChanges = changes.updates.sites;
-  const updatedNetworksPromise = getNetworkList(updatesSiteNetworkChanges, siteId);
+  const updatedSiteNetworkChanges = changes.updates.sites;
+  const updatedNetworksPromise = getNetworkList(updatedSiteNetworkChanges, siteId);
 
-  const [createdNetworkList, updatedNetworkList] = await Promise.all([createdNetworksPromise, updatedNetworksPromise]);
+  const deletedIds = getDeletedIds(changes.deletes.site_network_access, siteId);
+  const deletedNetworkPromise = getDeletedNetworkData(deletedIds, siteId);
+
+  const [createdNetworkList, updatedNetworkList, deletedNetworkList] = await Promise.all([
+    createdNetworksPromise,
+    updatedNetworksPromise,
+    deletedNetworkPromise,
+  ]);
   const createdNetworkListWithStatus = createdNetworkList.map((n) => ({ ...n, status: StatusEnum.CREATED }));
   const updatedNetworkListWithStatus = updatedNetworkList.map((n) => ({ ...n, status: StatusEnum.UPDATED }));
-  return [...createdNetworkListWithStatus, ...updatedNetworkListWithStatus];
+  const deletedNetworkListWithStatus = deletedNetworkList.map((n) => ({ ...n, status: StatusEnum.DELETED }));
+
+  return [...createdNetworkListWithStatus, ...updatedNetworkListWithStatus, ...deletedNetworkListWithStatus];
 }
 
 export function getSavedNetworkAccessesWithStatus(

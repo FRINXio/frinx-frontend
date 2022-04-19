@@ -29,6 +29,7 @@ function getServicesSitesActionEnabled(
             getKeysLength(service.changes.creates['vpn-services']) +
             getKeysLength(service.changes.updates.sites) +
             getKeysLength(service.changes.updates['vpn-services']) +
+            service.changes.deletes.site_network_access.length +
             service.changes.deletes.site.length +
             service.changes.deletes.vpn_service.length >
           0

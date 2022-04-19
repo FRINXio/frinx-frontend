@@ -14,14 +14,12 @@ import Pagination from '../../components/pagination/pagination';
 import { getSavedSitesWithStatus, getSiteChanges, VpnSiteWithStatus } from './site-helpers';
 import FilterContext from '../../filter-provider';
 import useCalcDiffContext from '../../providers/calcdiff-provider/use-calcdiff-context';
+import { StatusEnum } from '../service-list/service-helpers';
 
 const SiteListPage: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);
   const { site: siteFilters, onSiteFilterChange } = unwrap(filterContext);
-  const { data: calcDiffData } = useCalcDiffContext();
-  const [createdSites, setCreatedSites] = useState<VpnSite[] | null>(null);
-  const [updatedSites, setUpdatedSites] = useState<VpnSite[] | null>(null);
-  const [deletedSites, setDeletedSites] = useState<VpnSite[] | null>(null);
+  const { invalidateCache, data: calcDiffData } = useCalcDiffContext();
   const [sites, setSites] = useState<VpnSite[] | null>(null);
   const [siteIdToDelete, setSiteIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
@@ -109,6 +107,8 @@ const SiteListPage: VoidFunctionComponent = () => {
     navigate(`../sites/${siteId}/devices`);
   };
 
+  const updatedSites = siteChanges?.filter((s) => s.status === StatusEnum.UPDATED) || [];
+  const deletedSites = siteChanges?.filter((s) => s.status === StatusEnum.DELETED) || [];
   const savedSitesWithStatus = getSavedSitesWithStatus(sites, updatedSites, deletedSites);
 
   return (
@@ -118,14 +118,7 @@ const SiteListPage: VoidFunctionComponent = () => {
         onClose={deleteModalDisclosure.onClose}
         onConfirmBtnClick={() => {
           callbackUtils.getCallbacks.deleteVpnSite(unwrap(siteIdToDelete)).then(() => {
-            setSites(unwrap(sites).filter((site) => site.siteId !== siteIdToDelete));
-            setCreatedSites(unwrap(createdSites).filter((site) => site.siteId !== siteIdToDelete));
-            setUpdatedSites(unwrap(updatedSites).filter((site) => site.siteId !== siteIdToDelete));
-            const deletedSite = unwrap(sites).find((s) => s.siteId === siteIdToDelete);
-            if (deletedSite) {
-              const newDeletedSites = deletedSites === null ? [deletedSite] : [...deletedSites, deletedSite];
-              setDeletedSites(newDeletedSites);
-            }
+            invalidateCache();
             deleteModalDisclosure.onClose();
           });
         }}

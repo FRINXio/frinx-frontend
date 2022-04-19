@@ -1,4 +1,4 @@
-import { CalcDiffPayload } from '../../components/commit-status-modal/commit-status-modal.helpers';
+import { CalcDiffPayload, DeletedService } from '../../components/commit-status-modal/commit-status-modal.helpers';
 import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
 import { VpnService } from '../../components/forms/service-types';
 import unistoreCallbackUtils from '../../unistore-callback-utils';
@@ -14,17 +14,20 @@ export const StatusEnum = {
   NO_CHANGE: 'NO_CHANGE' as const,
 };
 
-type DeletedService = {
-  path: string;
-  [`path-keys`]: Record<'string', unknown>;
-  data: unknown;
-};
-
 function getIdList(record: Record<string, unknown>): string[] {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return Object.keys(record).filter((k) => {
     return true;
   });
+}
+
+function getDeletedIds(deletedServiceChanges: DeletedService[]): string[] {
+  const deletedIds = deletedServiceChanges
+    .map((service) => {
+      return Object.values(service['path-keys']);
+    })
+    .flat();
+  return deletedIds;
 }
 
 export async function getServiceChanges(data: CalcDiffPayload): Promise<VpnServiceWithStatus[]> {
@@ -33,15 +36,14 @@ export async function getServiceChanges(data: CalcDiffPayload): Promise<VpnServi
   // we get all site ids that were changed
   const createdIds = getIdList(changes.creates['vpn-services']);
   const updatedIds = getIdList(changes.updates['vpn-services']);
-  const deletedIds = (changes.deletes.vpn_service as DeletedService[])
-    .map((site) => getIdList(site['path-keys']))
-    .flat();
+  const deletedIds = getDeletedIds(changes.deletes.vpn_service);
 
   // we get all config data for every site changed
   const callbacks = unistoreCallbackUtils.getCallbacks;
   const createdPromises = createdIds.map((serviceId) => callbacks.getVpnService(serviceId));
   const updatedPromises = updatedIds.map((serviceId) => callbacks.getVpnService(serviceId));
-  const deletedPromises = deletedIds.map((serviceId) => callbacks.getVpnService(serviceId));
+  const deletedPromises = deletedIds.map((serviceId) => callbacks.getVpnService(serviceId, 'nonconfig'));
+
   const createdServices = await Promise.all(createdPromises);
   const updatedServices = await Promise.all(updatedPromises);
   const deletedServices = await Promise.all(deletedPromises);
