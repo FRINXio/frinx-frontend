@@ -29,10 +29,11 @@ export function getDefaultSiteFilter(): SiteFilters {
 type Props = {
   filters: SiteFilters;
   onFilterChange: (filter: SiteFilters) => void;
+  onFilterReset: (filter: SiteFilters) => void;
   onFilterSubmit: () => void;
 };
 
-const SiteFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onFilterSubmit }) => {
+const SiteFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onFilterReset, onFilterSubmit }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
@@ -44,7 +45,7 @@ const SiteFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onF
       </Box>
       {isOpen && (
         <HStack marginBottom="4" alignItems="flex-end">
-          <Grid templateColumns="repeat(5, 1fr)" gap="2">
+          <Grid templateColumns="repeat(4, 1fr)" gap="2">
             <FormControl>
               <FormLabel>Id:</FormLabel>
               <Input
@@ -166,11 +167,14 @@ const SiteFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onF
               />
             </FormControl>
           </Grid>
-          <Box>
+          <HStack>
+            <Button onClick={() => onFilterReset(getDefaultSiteFilter())} colorScheme="red">
+              Clear
+            </Button>
             <Button onClick={onFilterSubmit} colorScheme="blue">
               Search
             </Button>
-          </Box>
+          </HStack>
         </HStack>
       )}
     </>

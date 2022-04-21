@@ -31,10 +31,11 @@ export function getDefaultEvcFilters(): EvcFilters {
 type Props = {
   filters: EvcFilters;
   onFilterChange: (filter: EvcFilters) => void;
+  onFilterReset: (filter: EvcFilters) => void;
   onFilterSubmit: () => void;
 };
 
-const SiteFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onFilterSubmit }) => {
+const SiteFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onFilterReset, onFilterSubmit }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -184,11 +185,14 @@ const SiteFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onF
               />
             </FormControl>
           </Grid>
-          <Box>
+          <HStack>
+            <Button onClick={() => onFilterReset(getDefaultEvcFilters())} colorScheme="red">
+              Clear
+            </Button>
             <Button onClick={onFilterSubmit} colorScheme="blue">
               Search
             </Button>
-          </Box>
+          </HStack>
         </HStack>
       )}
     </>
