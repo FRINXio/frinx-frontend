@@ -179,7 +179,7 @@ const VpnBearerList: VoidFunctionComponent = () => {
           )}
         </Box>
         <Box py={6}>
-          <Button colorScheme="blue" as={Link} to={`../`}>
+          <Button colorScheme="blue" as={Link} to="../">
             Back to control page
           </Button>
         </Box>
