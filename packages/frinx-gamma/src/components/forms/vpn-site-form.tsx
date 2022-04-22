@@ -83,6 +83,7 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
             const value = event.target.value as SiteManagementType;
             setFieldValue('siteManagementType', value);
           }}
+          isDisabled
         >
           {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site.site_management).map((item) => {
             return (

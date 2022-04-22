@@ -15,7 +15,7 @@ import { generateSiteId } from '../../helpers/id-helpers';
 const defaultVpnSite: VpnSite = {
   customerLocations: [],
   siteDevices: [],
-  siteManagementType: 'provider-managed',
+  siteManagementType: 'co-managed',
   siteVpnFlavor: 'site-vpn-flavor-single',
   siteServiceQosProfile: '',
   enableBgpPicFastReroute: false,
