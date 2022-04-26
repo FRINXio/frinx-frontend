@@ -20,7 +20,7 @@ export function generateVpnId(): string {
 }
 
 export function generateSiteId(): string {
-  return `SITE_${getRandomString(8)}`;
+  return `${getRandomString(8)}`;
 }
 
 export function generateNetworkAccessId(): string {
