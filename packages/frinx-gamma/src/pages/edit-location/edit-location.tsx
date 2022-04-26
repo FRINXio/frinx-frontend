@@ -63,9 +63,10 @@ const EditLocationPage: VoidFunctionComponent = () => {
   return (
     <Container>
       <Box padding={6} margin={6} background="white">
-        <Heading size="md">Create customer location</Heading>
+        <Heading size="md">Edit customer location</Heading>
         {submitError && <ErrorMessage text={String(submitError)} />}
         <CustomerLocationForm
+          mode="UPDATE"
           siteId={unwrap(siteId)}
           location={location}
           buttonText="Edit location"

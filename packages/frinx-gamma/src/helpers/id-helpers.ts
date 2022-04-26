@@ -36,5 +36,5 @@ export function generateBearerId(): string {
 }
 
 export function generateLocationId(): string {
-  return `LOCATION_${getRandomString(8)}`;
+  return `${getRandomString(8)}`;
 }
