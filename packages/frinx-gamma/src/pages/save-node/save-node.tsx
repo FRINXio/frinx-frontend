@@ -9,7 +9,7 @@ import callbackUtils from '../../unistore-callback-utils';
 const getDefaultNode = (): VpnNode => ({
   neId: '',
   routerId: '',
-  role: null,
+  role: 'vpn-termination-role',
 });
 
 const SaveNodePage: VoidFunctionComponent = () => {

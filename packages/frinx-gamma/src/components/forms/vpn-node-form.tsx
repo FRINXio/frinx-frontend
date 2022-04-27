@@ -127,6 +127,7 @@ const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
           onChange={(event) => {
             setFieldValue('role', event.target.value || null);
           }}
+          isDisabled
         >
           {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.bearer.roles).map((item) => {
             return (
