@@ -19,6 +19,10 @@ type Props = {
   onRowClick: (rowId: string, isOpen: boolean) => void;
 };
 
+function hasNetworkAcceesses(site: VpnSiteWithStatus): boolean {
+  return site.siteNetworkAccesses.length > 0;
+}
+
 const SiteTable: VoidFunctionComponent<Props> = ({
   size,
   sites,
@@ -46,6 +50,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
       {sites.map((site) => {
         const rowId = unwrap(site.siteId);
         const isDetailOpen = rowId === detailId;
+        const isDeleteDisabled = hasNetworkAcceesses(site);
         return (
           <Tbody key={rowId}>
             <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
@@ -105,7 +110,10 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                         onClick={() => onDetailSiteButtonClick(unwrap(site.siteId))}
                       />
                     </Tooltip>
-                    <Tooltip label="Delete Site">
+                    <Tooltip
+                      shouldWrapChildren
+                      label={isDeleteDisabled ? 'First remove all site network accesses' : 'Delete Site'}
+                    >
                       <IconButton
                         aria-label="Delete site"
                         size="sm"
@@ -114,6 +122,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                         onClick={() => {
                           onDeleteSiteButtonClick(unwrap(site.siteId));
                         }}
+                        isDisabled={isDeleteDisabled}
                       />
                     </Tooltip>
                   </HStack>
