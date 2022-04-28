@@ -20,7 +20,7 @@ import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';
 import { Link } from 'react-router-dom';
 import callbackUtils from '../../callback-utils';
-import { getElementsFromWorkflow } from '../../helpers/data.helpers';
+import { getElementsFromWorkflow } from '../../helpers/api-to-graph.helpers';
 import { getLayoutedElements } from '../../helpers/layout.helpers';
 import { Task, Workflow } from '../../helpers/types';
 import BaseNode from '../workflow-nodes/base-node';

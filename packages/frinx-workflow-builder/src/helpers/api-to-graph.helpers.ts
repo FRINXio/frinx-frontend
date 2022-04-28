@@ -1,7 +1,7 @@
 import { Edge, Elements, Node } from 'react-flow-renderer';
 import { v4 as uuid } from 'uuid';
 import { getTaskLabel } from './task.helpers';
-import { DecisionTask, ExtendedTask, Task, TaskType } from './types';
+import { DecisionTask, ExtendedTask, ForkTask, JoinTask, Task, TaskType } from './types';
 
 type NodeType = 'decision' | 'fork_join' | 'join' | 'base';
 
@@ -191,6 +191,30 @@ function createAfterDecisionEdges(decisionTask: DecisionTask, currentTask: Task,
   ];
 }
 
+function nonNullPredicate<T>(value: T | null): value is T {
+  return value !== null;
+}
+
+function createJoinEdges(forkTask: ForkTask, joinTask: JoinTask): Edge[] {
+  const joinEdges = forkTask.forkTasks.map((fork) => {
+    const lastForkTask = fork.pop();
+
+    if (!lastForkTask) {
+      return null;
+    }
+
+    return {
+      id: `e${lastForkTask.taskReferenceName}-${joinTask.taskReferenceName}`,
+      source: lastForkTask.taskReferenceName,
+      target: joinTask.taskReferenceName,
+      type: 'buttonedge',
+    };
+  });
+
+  const filteredJoinEdges = joinEdges.filter(nonNullPredicate);
+  return filteredJoinEdges;
+}
+
 function createEdges(tasks: Task[]): Edge[] {
   const edges = tasks.reduce((prev: Edge[], curr: Task, index: number, array: Task[]) => {
     if (index === 0) {
@@ -278,13 +302,10 @@ function createEdges(tasks: Task[]): Edge[] {
 
     // edges for join task
     if (curr.type === 'JOIN') {
-      const joinEdges = curr.joinOn.map((forkTaskId) => ({
-        id: `e${forkTaskId}-${curr.taskReferenceName}`,
-        source: forkTaskId,
-        target: curr.taskReferenceName,
-        type: 'buttonedge',
-      }));
-      return [...prev, ...joinEdges];
+      if (previousTask.type === 'FORK_JOIN') {
+        const joinEdges = createJoinEdges(previousTask, curr);
+        return [...prev, ...joinEdges];
+      }
     }
 
     const newEdge = {
