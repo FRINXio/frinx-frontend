@@ -72,6 +72,17 @@ const SiteListPage: VoidFunctionComponent = () => {
     });
   };
 
+  const handleFilterReset = (newFilters: SiteFilters) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    const resetFilters = { ...newFilters };
+    setFilters(resetFilters);
+    setSubmittedFilters(resetFilters);
+    onSiteFilterChange(resetFilters);
+  };
+
   const handleFilterChange = (newFilters: SiteFilters) => {
     setFilters({
       ...newFilters,
@@ -143,7 +154,12 @@ const SiteListPage: VoidFunctionComponent = () => {
         <Box>
           {sites ? (
             <>
-              <SiteFilter filters={filters} onFilterChange={handleFilterChange} onFilterSubmit={handleFilterSubmit} />
+              <SiteFilter
+                filters={filters}
+                onFilterReset={handleFilterReset}
+                onFilterChange={handleFilterChange}
+                onFilterSubmit={handleFilterSubmit}
+              />
               {siteChanges && siteChanges.length ? (
                 <>
                   <Heading size="sm">Changes</Heading>

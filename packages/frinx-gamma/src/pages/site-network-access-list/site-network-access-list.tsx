@@ -20,9 +20,12 @@ import {
 } from './site-network-access-helpers';
 import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-provider';
 import unwrap from '../../helpers/unwrap';
+import FilterContext from '../../filter-provider';
 import { StatusEnum } from '../service-list/service-helpers';
 
 const SiteListPage: VoidFunctionComponent = () => {
+  const filterContext = useContext(FilterContext);
+  const { siteNetworkAccess: networkFilters, onSiteNetworkAccessFilterChange } = unwrap(filterContext);
   const calcdiffContext = useContext(CalcDiffContext);
   const { invalidateCache, data: calcDiffData } = unwrap(calcdiffContext);
   const [site, setSite] = useState<VpnSite | null>(null);
@@ -32,17 +35,9 @@ const SiteListPage: VoidFunctionComponent = () => {
   const [detailId, setDetailId] = useState<string | null>(null);
   const { siteId } = useParams<{ siteId: string }>();
   const [pagination, setPagination] = usePagination();
-  const [filters, setFilters] = useState<SiteNetworkAccessFilters>({
-    id: null,
-    locationId: null,
-    deviceId: null,
-  });
-  const [submittedFilters, setSubmittedFilters] = useState<SiteNetworkAccessFilters>({
-    id: null,
-    locationId: null,
-    deviceId: null,
-  });
   const [networkAccessChanges, setNetworkAccessChanges] = useState<SiteNetworkAccessWithStatus[] | null>(null);
+  const [filters, setFilters] = useState<SiteNetworkAccessFilters>(networkFilters);
+  const [submittedFilters, setSubmittedFilters] = useState<SiteNetworkAccessFilters>(networkFilters);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -105,6 +100,18 @@ const SiteListPage: VoidFunctionComponent = () => {
       ...pagination,
       page,
     });
+  };
+
+  const handleFilterReset = (newFilters: SiteNetworkAccessFilters) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setFilters({
+      ...newFilters,
+    });
+    setSubmittedFilters(newFilters);
+    onSiteNetworkAccessFilterChange(newFilters);
   };
 
   const handleFilterChange = (newFilters: SiteNetworkAccessFilters) => {
@@ -172,6 +179,7 @@ const SiteListPage: VoidFunctionComponent = () => {
             <SiteNetworkAccessFilter
               filters={filters}
               onFilterChange={handleFilterChange}
+              onFilterReset={handleFilterReset}
               onFilterSubmit={handleFilterSubmit}
             />
             {networkAccessChanges && networkAccessChanges.length ? (

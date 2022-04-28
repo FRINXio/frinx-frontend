@@ -41,10 +41,11 @@ export function getDefaultBearerFilters(): VpnBearerFilters {
 type Props = {
   filters: VpnBearerFilters;
   onFilterChange: (filter: VpnBearerFilters) => void;
+  onFilterReset: (filter: VpnBearerFilters) => void;
   onFilterSubmit: () => void;
 };
 
-const VpnBearerFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onFilterSubmit }) => {
+const VpnBearerFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onFilterReset, onFilterSubmit }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
@@ -255,11 +256,14 @@ const VpnBearerFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange
               />
             </FormControl>
           </Grid>
-          <Box>
+          <HStack>
+            <Button onClick={() => onFilterReset(getDefaultBearerFilters())} colorScheme="red">
+              Clear
+            </Button>
             <Button onClick={onFilterSubmit} colorScheme="blue">
               Search
             </Button>
-          </Box>
+          </HStack>
         </HStack>
       )}
     </>

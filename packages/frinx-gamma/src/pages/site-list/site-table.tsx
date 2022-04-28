@@ -19,6 +19,10 @@ type Props = {
   onRowClick: (rowId: string, isOpen: boolean) => void;
 };
 
+function hasNetworkAcceesses(site: VpnSiteWithStatus): boolean {
+  return site.siteNetworkAccesses.length > 0;
+}
+
 const SiteTable: VoidFunctionComponent<Props> = ({
   size,
   sites,
@@ -37,7 +41,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
           <Th />
           <Th>Id</Th>
           <Th>Management Type</Th>
-          <Th>Site Vpn Flavour</Th>
+          {/* <Th>Site Vpn Flavour</Th> */}
           <Th>Maximum Routes</Th>
           <Th>Enable BGP PIC Reroute</Th>
           <Th>Actions</Th>
@@ -46,6 +50,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
       {sites.map((site) => {
         const rowId = unwrap(site.siteId);
         const isDetailOpen = rowId === detailId;
+        const isDeleteDisabled = hasNetworkAcceesses(site);
         return (
           <Tbody key={rowId}>
             <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
@@ -61,11 +66,11 @@ const SiteTable: VoidFunctionComponent<Props> = ({
               <Td>
                 <Text as="span">{site.siteManagementType}</Text>
               </Td>
-              <Td>
+              {/* <Td>
                 <Text as="span">{site.siteVpnFlavor}</Text>
-              </Td>
+              </Td> */}
               <Td>
-                <Text as="span">{site.siteServiceQosProfile}</Text>
+                <Text as="span">{site.maximumRoutes}</Text>
               </Td>
               <Td>
                 <Text as="span">{site.enableBgpPicFastReroute}</Text>
@@ -79,14 +84,6 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                         size="sm"
                         icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                         onClick={() => onEditSiteButtonClick(unwrap(site.siteId))}
-                      />
-                    </Tooltip>
-                    <Tooltip label="Manage Site Network Accesses">
-                      <IconButton
-                        aria-label="detail"
-                        size="sm"
-                        icon={<Icon size={12} as={FeatherIcon} icon="share-2" />}
-                        onClick={() => onDetailSiteButtonClick(unwrap(site.siteId))}
                       />
                     </Tooltip>
                     <Tooltip label="Manage Site Locations">
@@ -105,7 +102,18 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                         onClick={() => onDevicesSiteButtonClick(unwrap(site.siteId))}
                       />
                     </Tooltip>
-                    <Tooltip label="Delete Site">
+                    <Tooltip label="Manage Site Network Accesses">
+                      <IconButton
+                        aria-label="detail"
+                        size="sm"
+                        icon={<Icon size={12} as={FeatherIcon} icon="share-2" />}
+                        onClick={() => onDetailSiteButtonClick(unwrap(site.siteId))}
+                      />
+                    </Tooltip>
+                    <Tooltip
+                      shouldWrapChildren
+                      label={isDeleteDisabled ? 'First remove all site network accesses' : 'Delete Site'}
+                    >
                       <IconButton
                         aria-label="Delete site"
                         size="sm"
@@ -114,6 +122,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                         onClick={() => {
                           onDeleteSiteButtonClick(unwrap(site.siteId));
                         }}
+                        isDisabled={isDeleteDisabled}
                       />
                     </Tooltip>
                   </HStack>

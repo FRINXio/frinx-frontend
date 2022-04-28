@@ -9,19 +9,18 @@ import {
 } from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
-import { generateSiteId } from '../../helpers/id-helpers';
 import useCalcDiffContext from '../../providers/calcdiff-provider/use-calcdiff-context';
 import callbackUtils from '../../unistore-callback-utils';
 
 const defaultVpnSite: VpnSite = {
   customerLocations: [],
   siteDevices: [],
-  siteManagementType: 'provider-managed',
+  siteManagementType: 'co-managed',
   siteVpnFlavor: 'site-vpn-flavor-single',
   siteServiceQosProfile: '',
   enableBgpPicFastReroute: false,
   siteNetworkAccesses: [],
-  maximumRoutes: null,
+  maximumRoutes: 1000,
 };
 
 const CreateVpnSitePage: VoidFunctionComponent = () => {
@@ -50,14 +49,9 @@ const CreateVpnSitePage: VoidFunctionComponent = () => {
     setSubmitError(null);
     // eslint-disable-next-line no-console
     console.log('submit clicked', site);
-    // eslint-disable-next-line no-param-reassign
-    const siteWithId = {
-      ...site,
-      siteId: generateSiteId(),
-    };
     const callbacks = callbackUtils.getCallbacks;
     try {
-      const apiSite = clientVpnSiteToApiVpnSite(siteWithId);
+      const apiSite = clientVpnSiteToApiVpnSite(site);
       await callbacks.createVpnSite(apiSite);
       // eslint-disable-next-line no-console
       console.log('site created');
@@ -81,6 +75,7 @@ const CreateVpnSitePage: VoidFunctionComponent = () => {
         {submitError && <ErrorMessage text={String(submitError)} />}
         {vpnSites && (
           <VpnSiteForm
+            mode="CREATE"
             site={defaultVpnSite}
             qosProfiles={qosProfiles}
             onSubmit={handleSubmit}

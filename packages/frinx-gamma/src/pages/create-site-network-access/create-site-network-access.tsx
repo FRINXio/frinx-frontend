@@ -63,7 +63,14 @@ const getDefaultNetworkAccess = (selectedSite: VpnSite | null): SiteNetworkAcces
   ipConnection: {
     ipv4: {
       addressAllocationType: 'static-address',
-      addresses: {},
+      addresses: {
+        prefixLength: 31,
+      },
+    },
+    oam: {
+      bfd: {
+        enabled: true,
+      },
     },
   },
 });

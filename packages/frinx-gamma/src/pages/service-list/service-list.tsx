@@ -11,23 +11,23 @@ import ServiceFilter, { ServiceFilters } from './service-filter';
 import ServiceTable from './service-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
-import { getSavedServicesWithStatus, getServiceChanges, VpnServiceWithStatus } from './service-helpers';
+import { getServiceChanges, getSavedServicesWithStatus, VpnServiceWithStatus } from './service-helpers';
 import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-provider';
+import FilterContext from '../../filter-provider';
 
 const CreateVpnServicePage: VoidFunctionComponent = () => {
   const calcdiffContext = useContext(CalcDiffContext);
   const { invalidateCache, data: calcDiffData } = unwrap(calcdiffContext);
   const [serviceChanges, setServiceChanges] = useState<VpnServiceWithStatus[] | null>(null);
+
+  const filterContext = useContext(FilterContext);
+  const { service: serviceFilters, onServiceFilterChange } = unwrap(filterContext);
   const [vpnServices, setVpnServices] = useState<VpnService[] | null>(null);
   const [serviceIdToDelete, setServiceIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
   const [detailId, setDetailId] = useState<string | null>(null);
   const [pagination, setPagination] = usePagination();
-  const [filters, setFilters] = useState<ServiceFilters>({
-    id: null,
-    customerName: null,
-    // defaultCVlan: null,
-  });
+  const [filters, setFilters] = useState<ServiceFilters>(serviceFilters);
   const [submittedFilters, setSubmittedFilters] = useState<ServiceFilters>({
     id: null,
     customerName: null,
@@ -75,6 +75,18 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
       ...pagination,
       page,
     });
+  };
+
+  const handleFilterReset = (newFilters: ServiceFilters) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setFilters({
+      ...newFilters,
+    });
+    setSubmittedFilters(newFilters);
+    onServiceFilterChange(newFilters);
   };
 
   const handleFilterChange = (newFilters: ServiceFilters) => {
@@ -137,6 +149,7 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
               <ServiceFilter
                 filters={filters}
                 onFilterChange={handleFilterChange}
+                onFilterReset={handleFilterReset}
                 onFilterSubmit={handleFilterSubmit}
               />
               {serviceChanges && serviceChanges.length ? (

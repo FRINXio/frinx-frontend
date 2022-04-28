@@ -1,10 +1,11 @@
 import React, { FC } from 'react';
-import { Divider, Button, Select, Stack, FormControl, FormLabel } from '@chakra-ui/react';
+import { Divider, Button, Select, Stack, FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { SiteManagementType, VpnSite, MaximumRoutes } from './site-types';
 import Autocomplete2 from '../autocomplete-2/autocomplete-2';
 import { getSelectOptions } from './options.helper';
+import { generateSiteId } from '../../helpers/id-helpers';
 
 const DeviceSchema = yup.object().shape({
   deviceId: yup.string().required(),
@@ -13,6 +14,7 @@ const DeviceSchema = yup.object().shape({
 });
 
 const SiteSchema = yup.object().shape({
+  siteId: yup.string().required(),
   // customerLocations: yup.array(),
   siteDevices: yup.array().of(DeviceSchema),
   siteManagementType: yup.mixed().oneOf(['point-to-point', 'provider-managed', 'co-managed', 'customer-managed']),
@@ -24,20 +26,23 @@ const SiteSchema = yup.object().shape({
 });
 
 type Props = {
+  mode: 'CREATE' | 'UPDATE';
   site: VpnSite;
   qosProfiles: string[];
   onSubmit: (s: VpnSite) => void;
   onCancel: () => void;
 };
 
-const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
-  const { values, errors, dirty, resetForm, setFieldValue, handleSubmit } = useFormik({
+const VpnSiteForm: FC<Props> = ({ mode, site, qosProfiles, onSubmit, onCancel }) => {
+  const { values, errors, dirty, isValid, resetForm, setFieldValue, handleSubmit } = useFormik({
     initialValues: {
       ...site,
     },
     validationSchema: SiteSchema,
     onSubmit: (formValues) => {
-      onSubmit(formValues);
+      const formValuesForSubmit =
+        mode === 'CREATE' ? { ...formValues, siteId: `${formValues.siteId}_${generateSiteId()}` } : { ...formValues };
+      onSubmit(formValuesForSubmit);
     },
   });
 
@@ -52,6 +57,19 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
 
   return (
     <form onSubmit={handleSubmit}>
+      {mode === 'CREATE' && (
+        <FormControl id="siteId" my={6} isRequired isInvalid={errors.siteId != null}>
+          <FormLabel>Site Name</FormLabel>
+          <Input
+            name="siteId"
+            value={values.siteId || ''}
+            onChange={(event) => {
+              setFieldValue('siteId', event.target.value);
+            }}
+          />
+          {errors.siteId && <FormErrorMessage>{errors.siteId}</FormErrorMessage>}
+        </FormControl>
+      )}
       <FormControl id="maxiumRoutes" my={6}>
         <FormLabel>Maximum Routes</FormLabel>
         <Select
@@ -83,6 +101,7 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
             const value = event.target.value as SiteManagementType;
             setFieldValue('siteManagementType', value);
           }}
+          isDisabled
         >
           {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.site.site_management).map((item) => {
             return (
@@ -122,7 +141,7 @@ const VpnSiteForm: FC<Props> = ({ site, qosProfiles, onSubmit, onCancel }) => {
 
       <Divider my={4} />
       <Stack direction="row" spacing={2} align="center">
-        <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
+        <Button type="submit" colorScheme="blue" isDisabled={!dirty || !isValid}>
           Save changes
         </Button>
         <Button onClick={() => resetForm()}>Clear</Button>

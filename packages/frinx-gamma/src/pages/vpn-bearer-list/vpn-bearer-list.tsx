@@ -78,6 +78,16 @@ const VpnBearerList: VoidFunctionComponent = () => {
     });
   };
 
+  const handleFilterReset = (newFilters: VpnBearerFilters) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setFilters({ ...newFilters });
+    setSubmittedFilters(newFilters);
+    onBearerFilterChange(newFilters);
+  };
+
   const handleFilterSubmit = () => {
     setPagination({
       ...pagination,
@@ -145,6 +155,7 @@ const VpnBearerList: VoidFunctionComponent = () => {
               <VpnBearerFilter
                 filters={filters}
                 onFilterChange={handleFilterChange}
+                onFilterReset={handleFilterReset}
                 onFilterSubmit={handleFilterSubmit}
               />
               {changedBearersWithStatus.length ? (

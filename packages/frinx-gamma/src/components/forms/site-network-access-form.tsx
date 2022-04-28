@@ -15,6 +15,7 @@ import {
   Text,
   FormControl,
   FormLabel,
+  Checkbox,
 } from '@chakra-ui/react';
 import { LinkIcon } from '@chakra-ui/icons';
 import { FormikErrors, useFormik } from 'formik';
@@ -131,7 +132,7 @@ function getDefaultBgpRoutingProtocol(): RoutingProtocol {
     type: 'bgp',
     bgp: {
       addressFamily: 'ipv4',
-      autonomousSystem: '',
+      autonomousSystem: '65000',
       bgpProfile: null,
     },
   };
@@ -187,6 +188,7 @@ const SiteNetAccessForm: FC<Props> = ({
   site,
   selectedNetworkAccess,
   qosProfiles,
+  bfdProfiles,
   bgpProfiles,
   vpnServices,
   bandwidths,
@@ -738,6 +740,56 @@ const SiteNetAccessForm: FC<Props> = ({
                 }}
               />
               {customerAddressError != null && <FormErrorMessage>{customerAddressError}</FormErrorMessage>}
+            </FormControl>
+
+            <FormControl gridColumn="1" id="bfdStatus" my={1}>
+              <FormLabel>BFD Enabled</FormLabel>
+              <Checkbox
+                name="bfd-status"
+                isChecked={values.ipConnection?.oam?.bfd?.enabled}
+                onChange={(event) => {
+                  setFieldValue('ipConnection', {
+                    ...values.ipConnection,
+                    oam: {
+                      ...values.ipConnection?.oam,
+                      bfd: {
+                        ...values.ipConnection?.oam?.bfd,
+                        enabled: event.target.checked,
+                      },
+                    },
+                  });
+                }}
+              />
+            </FormControl>
+
+            <FormControl id="bfdProfile" my={1} isDisabled={!values.ipConnection?.oam?.bfd?.enabled}>
+              <FormLabel>BFD Profile</FormLabel>
+              <Select
+                name="bfd-profile"
+                value={values.ipConnection?.oam?.bfd?.profileName || ''}
+                onChange={(event) => {
+                  if (!event.target.value) {
+                    return;
+                  }
+                  setFieldValue('ipConnection', {
+                    ...values.ipConnection,
+                    oam: {
+                      ...values.ipConnection?.oam,
+                      bfd: {
+                        ...values.ipConnection?.oam?.bfd,
+                        profileName: event.target.value,
+                      },
+                    },
+                  });
+                }}
+              >
+                <option value="0">--- choose profile</option>
+                {bfdProfiles.map((p) => (
+                  <option key={`bfd-profile-${p}`} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </Select>
             </FormControl>
           </Grid>
         </Box>

@@ -187,7 +187,7 @@ const VpnServiceForm: FC<Props> = ({ extranetVpns, service, services, onSubmit, 
   return (
     <form onSubmit={handleSubmit}>
       <FormControl id="vpn-id" my={6} isRequired isDisabled>
-        <FormLabel>Vpn Id</FormLabel>
+        <FormLabel>VPN ID</FormLabel>
         <Flex justifyContent="space-between" alignItems="center">
           {workflowId && (
             <Flex alignItems="center">

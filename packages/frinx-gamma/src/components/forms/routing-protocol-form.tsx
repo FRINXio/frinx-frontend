@@ -195,7 +195,7 @@ const RoutingProtocolForm: VoidFunctionComponent<Props> = ({
       <Divider gridColumn="1/5" my={2} />
 
       <FormControl id="bgp-autonomous-system" my={1}>
-        <FormLabel>CPE Bgp Autonomous System</FormLabel>
+        <FormLabel>BGP Autonomous System Number (CPE)</FormLabel>
         <Input
           name="bgp-autonomous-system"
           value={bgpProtocol.bgp ? bgpProtocol.bgp.autonomousSystem : ''}
