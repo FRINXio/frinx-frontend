@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { partition } from 'lodash';
 import { isNode } from 'react-flow-renderer';
 import { ExtendedTask, Workflow } from './types';
-import { getElementsFromWorkflow } from './data.helpers';
+import { getElementsFromWorkflow } from './api-to-graph.helpers';
 
 function loadWorkflow(fileName: string): Workflow<ExtendedTask> {
   return JSON.parse(readFileSync(`./src/helpers/workflows/${fileName}`).toString());
@@ -53,6 +53,23 @@ describe('data helpers', () => {
 
     assert.equal(nodes.length, 10);
     assert.equal(edges.length, 10);
+
+    const forkEdges = edges.filter((e) => e.source === 'fork_QUhd');
+    assert.isNotNull(forkEdges);
+    assert.equal(forkEdges.length, 2);
+
+    const joinEdges = edges.filter((e) => e.target === 'join2');
+    assert.isNotNull(joinEdges);
+    assert.equal(joinEdges.length, 2);
+  });
+
+  test('test nested fork workflow', () => {
+    const forkWorkflow = loadWorkflow('nested_fork_workflow.json');
+    const elements = getElementsFromWorkflow(forkWorkflow.tasks, false);
+    const [nodes, edges] = partition(elements, isNode);
+
+    assert.equal(nodes.length, 14);
+    assert.equal(edges.length, 15);
 
     const forkEdges = edges.filter((e) => e.source === 'fork_QUhd');
     assert.isNotNull(forkEdges);
