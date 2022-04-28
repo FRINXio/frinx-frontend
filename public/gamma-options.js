@@ -92,5 +92,9 @@ window.__GAMMA_FORM_OPTIONS__ = {
       'xe-0/1/6': 'xe-0/1/6',
       'xe-0/1/7': 'xe-0/1/7',
     },
+    roles: {
+      'layer-2-aggregation-role': 'layer-2-aggregation-role',
+      'vpn-termination-role': 'vpn-termination-role',
+    },
   },
 };

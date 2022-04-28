@@ -7,7 +7,6 @@ import CustomerLocationForm from '../../components/forms/customer-location-form'
 import { CustomerLocation, VpnSite } from '../../components/forms/site-types';
 import ErrorMessage from '../../components/error-message/error-message';
 import unwrap from '../../helpers/unwrap';
-import { generateLocationId } from '../../helpers/id-helpers';
 
 const getDefaultLocation = (): CustomerLocation => {
   return {
@@ -48,11 +47,7 @@ const CreateLocationPage: VoidFunctionComponent = () => {
     if (!selectedSite) {
       return;
     }
-    const newLocation = {
-      ...location,
-      locationId: generateLocationId(),
-    };
-    const newLocations = [...selectedSite.customerLocations, newLocation];
+    const newLocations = [...selectedSite.customerLocations, location];
     const editedSite: VpnSite = {
       ...selectedSite,
       customerLocations: newLocations,
@@ -73,6 +68,7 @@ const CreateLocationPage: VoidFunctionComponent = () => {
         <Heading size="md">Create customer location</Heading>
         {submitError && <ErrorMessage text={String(submitError)} />}
         <CustomerLocationForm
+          mode="CREATE"
           siteId={unwrap(siteId)}
           location={getDefaultLocation()}
           buttonText="Create location"

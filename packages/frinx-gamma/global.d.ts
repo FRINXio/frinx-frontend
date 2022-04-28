@@ -40,6 +40,7 @@ declare interface Window {
       tpid: Options;
       evc_type: Options;
       port_id: Options;
+      roles: Options;
     };
   }>;
 }

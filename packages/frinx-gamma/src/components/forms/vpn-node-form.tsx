@@ -8,6 +8,7 @@ import {
   FormErrorMessage,
   Heading,
   Input,
+  Select,
   FormControl,
   FormLabel,
   Stack,
@@ -15,6 +16,7 @@ import {
 import { uniqBy } from 'lodash';
 import { VpnNode } from './bearer-types';
 import Autocomplete2, { Item } from '../autocomplete-2/autocomplete-2';
+import { getSelectOptions } from './options.helper';
 
 const NodeSchema = yup.object().shape({
   neId: yup.string().required('Ne Id is required'),
@@ -97,7 +99,7 @@ const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
         </Button>
       </Flex>
       <FormControl id="vpn-node-id" my={6} isRequired isInvalid={errors.neId != null}>
-        <FormLabel>Ne Id</FormLabel>
+        <FormLabel>VPN Node</FormLabel>
         <Autocomplete2
           items={vpnNodeItems}
           selectedItem={selectedNode}
@@ -107,7 +109,7 @@ const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
         {errors.neId && <FormErrorMessage>{errors.neId}</FormErrorMessage>}
       </FormControl>
       <FormControl my={6} isRequired isInvalid={errors.routerId != null}>
-        <FormLabel>Router Id</FormLabel>
+        <FormLabel>Router ID</FormLabel>
         <Input
           name="vpn-node-router-id"
           value={values.routerId}
@@ -119,13 +121,22 @@ const NodeForm: FC<Props> = ({ node, nodes, onDelete, onSubmit, onCancel }) => {
       </FormControl>
       <FormControl my={6}>
         <FormLabel>Role</FormLabel>
-        <Input
+        <Select
           name="vpn-node-role"
           value={values.role || ''}
           onChange={(event) => {
             setFieldValue('role', event.target.value || null);
           }}
-        />
+          isDisabled
+        >
+          {getSelectOptions(window.__GAMMA_FORM_OPTIONS__.bearer.roles).map((item) => {
+            return (
+              <option key={`roles-${item.key}`} value={item.key}>
+                {item.label}
+              </option>
+            );
+          })}
+        </Select>
       </FormControl>
       <Divider my={4} />
       <Stack direction="row" spacing={2} align="center">

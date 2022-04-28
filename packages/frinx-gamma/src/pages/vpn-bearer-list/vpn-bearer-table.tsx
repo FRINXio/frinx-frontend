@@ -7,6 +7,10 @@ import BearerDetail from './bearer-detail';
 import { VpnBearerWithStatus } from './bearer-helpers';
 import unwrap from '../../helpers/unwrap';
 
+function hasEvcAttachments(bearer: VpnBearerWithStatus): boolean {
+  return bearer.evcAttachments.length > 0;
+}
+
 type Props = {
   size: 'sm' | 'md';
   bearers: VpnBearerWithStatus[];
@@ -44,6 +48,7 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
       {bearers.map((b) => {
         const rowId = unwrap(b.spBearerReference);
         const isDetailOpen = rowId === detailId;
+        const isDeleteDisabled = hasEvcAttachments(b);
         return (
           <Tbody key={b.spBearerReference}>
             <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
@@ -81,7 +86,10 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
                         onClick={() => onEvcAttachmentSiteClick(b.spBearerReference)}
                       />
                     </Tooltip>
-                    <Tooltip label="Delete Bearer">
+                    <Tooltip
+                      shouldWrapChildren
+                      label={isDeleteDisabled ? 'First remove evc attachments for this bearer' : 'Delete Bearer'}
+                    >
                       <IconButton
                         aria-label="Delete site"
                         size="sm"
@@ -90,6 +98,7 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
                         onClick={() => {
                           onDeleteVpnBearerClick(b.spBearerReference);
                         }}
+                        isDisabled={isDeleteDisabled}
                       />
                     </Tooltip>
                   </HStack>

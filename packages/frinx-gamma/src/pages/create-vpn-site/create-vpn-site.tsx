@@ -10,7 +10,6 @@ import {
 import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
 import ErrorMessage from '../../components/error-message/error-message';
-import { generateSiteId } from '../../helpers/id-helpers';
 
 const defaultVpnSite: VpnSite = {
   customerLocations: [],
@@ -48,14 +47,9 @@ const CreateVpnSitePage: VoidFunctionComponent = () => {
     setSubmitError(null);
     // eslint-disable-next-line no-console
     console.log('submit clicked', site);
-    // eslint-disable-next-line no-param-reassign
-    const siteWithId = {
-      ...site,
-      siteId: generateSiteId(),
-    };
     const callbacks = callbackUtils.getCallbacks;
     try {
-      const apiSite = clientVpnSiteToApiVpnSite(siteWithId);
+      const apiSite = clientVpnSiteToApiVpnSite(site);
       await callbacks.createVpnSite(apiSite);
       // eslint-disable-next-line no-console
       console.log('site created');
@@ -78,6 +72,7 @@ const CreateVpnSitePage: VoidFunctionComponent = () => {
         {submitError && <ErrorMessage text={String(submitError)} />}
         {vpnSites && (
           <VpnSiteForm
+            mode="CREATE"
             site={defaultVpnSite}
             qosProfiles={qosProfiles}
             onSubmit={handleSubmit}
