@@ -1,4 +1,4 @@
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import { useDisclosure, Heading, Box, Container, Flex, Button } from '@chakra-ui/react';
 import { Link, useParams } from 'react-router-dom';
 import diff from 'diff-arrays-of-objects';
@@ -16,8 +16,11 @@ import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getChangedNetworkAccessesWithStatus, getSavedNetworkAccessesWithStatus } from './site-network-access-helpers';
 import unwrap from '../../helpers/unwrap';
+import FilterContext from '../../filter-provider';
 
 const SiteListPage: VoidFunctionComponent = () => {
+  const filterContext = useContext(FilterContext);
+  const { siteNetworkAccess: networkFilters, onSiteNetworkAccessFilterChange } = unwrap(filterContext);
   const [createdNetworkAccesses, setCreatedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
   const [updatedNetworkAccesses, setUpdatedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
   const [deletedNetworkAccesses, setDeletedNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
@@ -28,16 +31,8 @@ const SiteListPage: VoidFunctionComponent = () => {
   const [detailId, setDetailId] = useState<string | null>(null);
   const { siteId } = useParams<{ siteId: string }>();
   const [pagination, setPagination] = usePagination();
-  const [filters, setFilters] = useState<SiteNetworkAccessFilters>({
-    id: null,
-    locationId: null,
-    deviceId: null,
-  });
-  const [submittedFilters, setSubmittedFilters] = useState<SiteNetworkAccessFilters>({
-    id: null,
-    locationId: null,
-    deviceId: null,
-  });
+  const [filters, setFilters] = useState<SiteNetworkAccessFilters>(networkFilters);
+  const [submittedFilters, setSubmittedFilters] = useState<SiteNetworkAccessFilters>(networkFilters);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,6 +95,18 @@ const SiteListPage: VoidFunctionComponent = () => {
       ...pagination,
       page,
     });
+  };
+
+  const handleFilterReset = (newFilters: SiteNetworkAccessFilters) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setFilters({
+      ...newFilters,
+    });
+    setSubmittedFilters(newFilters);
+    onSiteNetworkAccessFilterChange(newFilters);
   };
 
   const handleFilterChange = (newFilters: SiteNetworkAccessFilters) => {
@@ -181,6 +188,7 @@ const SiteListPage: VoidFunctionComponent = () => {
             <SiteNetworkAccessFilter
               filters={filters}
               onFilterChange={handleFilterChange}
+              onFilterReset={handleFilterReset}
               onFilterSubmit={handleFilterSubmit}
             />
             {changedNetworkAccessesWithStatus.length ? (

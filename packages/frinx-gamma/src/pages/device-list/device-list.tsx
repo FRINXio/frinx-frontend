@@ -1,5 +1,5 @@
 import { Box, Button, Container, Flex, Heading, useDisclosure } from '@chakra-ui/react';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
@@ -10,14 +10,17 @@ import {
   clientVpnSiteToApiVpnSite,
 } from '../../components/forms/converters';
 import { SiteDevice, VpnSite } from '../../components/forms/site-types';
-import DeviceFilter, { DeviceFilters, getDefaultDeviceFilters } from './device-filter';
+import DeviceFilter, { DeviceFilters } from './device-filter';
 import unwrap from '../../helpers/unwrap';
 import usePagination from '../../hooks/use-pagination';
 import { getChangedDevicesWithStatus, getSavedDevicesWithStatus } from './device-helpers';
 import Pagination from '../../components/pagination/pagination';
 import DeviceTable from './device-table';
+import FilterContext from '../../filter-provider';
 
 const DeviceListPage: VoidFunctionComponent = () => {
+  const filterContext = useContext(FilterContext);
+  const { device: deviceFilters, onDeviceFilterChange } = unwrap(filterContext);
   const [site, setSite] = useState<VpnSite | null>(null);
   const [createdDevices, setCreatedDevices] = useState<SiteDevice[] | null>(null);
   const [updatedDevices, setUpdatedDevices] = useState<SiteDevice[] | null>(null);
@@ -28,8 +31,8 @@ const DeviceListPage: VoidFunctionComponent = () => {
   const [detailId, setDetailId] = useState<string | null>(null);
   const { siteId, locationId } = useParams<{ siteId: string; locationId?: string }>();
   const [pagination, setPagination] = usePagination();
-  const [filters, setFilters] = useState<DeviceFilters>(getDefaultDeviceFilters());
-  const [submittedFilters, setSubmittedFilters] = useState<DeviceFilters>(getDefaultDeviceFilters(locationId));
+  const [filters, setFilters] = useState<DeviceFilters>(deviceFilters);
+  const [submittedFilters, setSubmittedFilters] = useState<DeviceFilters>(deviceFilters);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,6 +97,17 @@ const DeviceListPage: VoidFunctionComponent = () => {
     });
   };
 
+  const handleFilterReset = (newFilters: DeviceFilters) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    const resetFilters = { ...newFilters };
+    setFilters(resetFilters);
+    setSubmittedFilters(resetFilters);
+    onDeviceFilterChange(resetFilters);
+  };
+
   const handleFilterSubmit = () => {
     setPagination({
       ...pagination,
@@ -146,7 +160,12 @@ const DeviceListPage: VoidFunctionComponent = () => {
           </Button>
         </Flex>
         <Box>
-          <DeviceFilter filters={filters} onFilterChange={handleFilterChange} onFilterSubmit={handleFilterSubmit} />
+          <DeviceFilter
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onFilterReset={handleFilterReset}
+            onFilterSubmit={handleFilterSubmit}
+          />
           {changedDevicesWithStatus.length ? (
             <>
               <Heading size="sm">Changes</Heading>

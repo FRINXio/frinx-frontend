@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Box, Button, FormControl, FormLabel, HStack, Input } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, HStack, Input } from '@chakra-ui/react';
 
 export type SiteNetworkAccessFilters = {
   id: string | null;
@@ -7,13 +7,25 @@ export type SiteNetworkAccessFilters = {
   deviceId: string | null;
 };
 
+export const getDefaultSiteNetworkAccessFilters = (): SiteNetworkAccessFilters => ({
+  id: null,
+  locationId: null,
+  deviceId: null,
+});
+
 type Props = {
   filters: SiteNetworkAccessFilters;
   onFilterChange: (filter: SiteNetworkAccessFilters) => void;
+  onFilterReset: (filter: SiteNetworkAccessFilters) => void;
   onFilterSubmit: () => void;
 };
 
-const SiteNetworkAccessFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onFilterSubmit }) => {
+const SiteNetworkAccessFilter: VoidFunctionComponent<Props> = ({
+  filters,
+  onFilterChange,
+  onFilterReset,
+  onFilterSubmit,
+}) => {
   return (
     <HStack marginBottom="4" alignItems="flex-end">
       <FormControl>
@@ -61,11 +73,14 @@ const SiteNetworkAccessFilter: VoidFunctionComponent<Props> = ({ filters, onFilt
           }
         />
       </FormControl>
-      <Box>
+      <HStack>
+        <Button onClick={() => onFilterReset(getDefaultSiteNetworkAccessFilters())} colorScheme="red">
+          Clear
+        </Button>
         <Button onClick={onFilterSubmit} colorScheme="blue">
           Search
         </Button>
-      </Box>
+      </HStack>
     </HStack>
   );
 };

@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Box, Button, FormControl, FormLabel, HStack, Input } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, HStack, Input } from '@chakra-ui/react';
 
 export type DeviceFilters = {
   deviceId: string | null;
@@ -16,10 +16,11 @@ export const getDefaultDeviceFilters = (locationId?: string): DeviceFilters => (
 type Props = {
   filters: DeviceFilters;
   onFilterChange: (filter: DeviceFilters) => void;
+  onFilterReset: (filter: DeviceFilters) => void;
   onFilterSubmit: () => void;
 };
 
-const SiteFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onFilterSubmit }) => {
+const SiteFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onFilterReset, onFilterSubmit }) => {
   return (
     <HStack marginBottom="4" alignItems="flex-end">
       <FormControl>
@@ -52,11 +53,14 @@ const SiteFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onF
           }
         />
       </FormControl>
-      <Box>
+      <HStack>
+        <Button onClick={() => onFilterReset(getDefaultDeviceFilters())} colorScheme="red">
+          Clear
+        </Button>
         <Button onClick={onFilterSubmit} colorScheme="blue">
           Search
         </Button>
-      </Box>
+      </HStack>
     </HStack>
   );
 };

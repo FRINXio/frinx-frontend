@@ -1,5 +1,5 @@
 import { Box, Button, Container, Flex, Heading, useDisclosure } from '@chakra-ui/react';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
@@ -13,9 +13,12 @@ import unwrap from '../../helpers/unwrap';
 import LocationTable from './location-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
-import LocationFilter, { getDefaultLocationFilters, LocationFilters } from './location-filter';
+import LocationFilter, { LocationFilters } from './location-filter';
+import FilterContext from '../../filter-provider';
 
 const LocationListPage: VoidFunctionComponent = () => {
+  const filterContext = useContext(FilterContext);
+  const { location: locationFilters, onLocationFilterChange } = unwrap(filterContext);
   const [site, setSite] = useState<VpnSite | null>(null);
   const [locations, setLocations] = useState<CustomerLocation[] | null>(null);
   const [locationIdToDelete, setLocationIdToDelete] = useState<string | null>(null);
@@ -23,8 +26,8 @@ const LocationListPage: VoidFunctionComponent = () => {
   const [detailId, setDetailId] = useState<string | null>(null);
   const { siteId } = useParams<{ siteId: string }>();
   const [pagination, setPagination] = usePagination();
-  const [filters, setFilters] = useState<LocationFilters>(getDefaultLocationFilters());
-  const [submittedFilters, setSubmittedFilters] = useState<LocationFilters>(getDefaultLocationFilters());
+  const [filters, setFilters] = useState<LocationFilters>(locationFilters);
+  const [submittedFilters, setSubmittedFilters] = useState<LocationFilters>(locationFilters);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,6 +74,16 @@ const LocationListPage: VoidFunctionComponent = () => {
 
   const handleRowClick = (rowId: string, isOpen: boolean) => {
     setDetailId(isOpen ? rowId : null);
+  };
+
+  const handleFilterReset = (newFilters: LocationFilters) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setFilters({ ...newFilters });
+    setSubmittedFilters({ ...newFilters });
+    onLocationFilterChange({ ...newFilters });
   };
 
   const handleFilterChange = (newFilters: LocationFilters) => {
@@ -122,7 +135,12 @@ const LocationListPage: VoidFunctionComponent = () => {
         </Flex>
         <Box>
           <>
-            <LocationFilter filters={filters} onFilterChange={handleFilterChange} onFilterSubmit={handleFilterSubmit} />
+            <LocationFilter
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onFilterReset={handleFilterReset}
+              onFilterSubmit={handleFilterSubmit}
+            />
             <LocationTable
               site={site}
               detailId={detailId}
