@@ -1,4 +1,4 @@
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import { useDisclosure, Heading, Box, Container, Flex, Button } from '@chakra-ui/react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import diff from 'diff-arrays-of-objects';
@@ -13,11 +13,14 @@ import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-de
 import callbackUtils from '../../unistore-callback-utils';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
-import EvcFilter, { getDefaultEvcFilters, EvcFilters } from './evc-filter';
+import EvcFilter, { EvcFilters } from './evc-filter';
 import { getChangedEvcAttachmentsWithStatus, getSavedEvcAttachmentsWithStatus } from './evc-helpers';
 import unwrap from '../../helpers/unwrap';
+import FilterContext from '../../filter-provider';
 
 const EvcListPage: VoidFunctionComponent = () => {
+  const filterContext = useContext(FilterContext);
+  const { evc: evcFilters, onEvcFilterChange } = unwrap(filterContext);
   const [createdEvcAttachments, setCreatedEvcAttachments] = useState<EvcAttachment[] | null>(null);
   const [updatedEvcAttachments, setUpdatedEvcAttachments] = useState<EvcAttachment[] | null>(null);
   const [deletedEvcAttachments, setDeletedEvcAttachments] = useState<EvcAttachment[] | null>(null);
@@ -28,8 +31,8 @@ const EvcListPage: VoidFunctionComponent = () => {
   const [detailId, setDetailId] = useState<string | null>(null);
   const { bearerId } = useParams<{ bearerId: string }>();
   const [pagination, setPagination] = usePagination();
-  const [filters, setFilters] = useState<EvcFilters>(getDefaultEvcFilters());
-  const [submittedFilters, setSubmittedFilters] = useState<EvcFilters>(getDefaultEvcFilters());
+  const [filters, setFilters] = useState<EvcFilters>(evcFilters);
+  const [submittedFilters, setSubmittedFilters] = useState(evcFilters);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -103,6 +106,17 @@ const EvcListPage: VoidFunctionComponent = () => {
     });
   };
 
+  const handleFilterReset = (newFilters: EvcFilters) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    const resetFilters = { ...newFilters };
+    setFilters(resetFilters);
+    setSubmittedFilters(resetFilters);
+    onEvcFilterChange(resetFilters);
+  };
+
   const handleFilterSubmit = () => {
     setPagination({
       ...pagination,
@@ -172,7 +186,12 @@ const EvcListPage: VoidFunctionComponent = () => {
           </Button>
         </Flex>
         <Box>
-          <EvcFilter filters={filters} onFilterChange={handleFilterChange} onFilterSubmit={handleFilterSubmit} />
+          <EvcFilter
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onFilterReset={handleFilterReset}
+            onFilterSubmit={handleFilterSubmit}
+          />
           {changedEvcAttachmentsWithStatus.length ? (
             <>
               <Heading size="sm">Changes</Heading>

@@ -1,5 +1,5 @@
 import React, { FormEvent, VoidFunctionComponent } from 'react';
-import { Box, Button, FormControl, FormLabel, Grid, HStack, Input } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Grid, HStack, Input } from '@chakra-ui/react';
 
 export type SearchFilters = {
   vpnId: string | null;
@@ -33,10 +33,17 @@ type Props = {
   isFetching: boolean;
   filters: SearchFilters;
   onFilterChange: (filter: SearchFilters) => void;
+  onFilterReset: (filter: SearchFilters) => void;
   onFilterSubmit: () => void;
 };
 
-const SearchFilter: VoidFunctionComponent<Props> = ({ isFetching, filters, onFilterChange, onFilterSubmit }) => {
+const SearchFilter: VoidFunctionComponent<Props> = ({
+  isFetching,
+  filters,
+  onFilterChange,
+  onFilterReset,
+  onFilterSubmit,
+}) => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     onFilterSubmit();
@@ -197,11 +204,14 @@ const SearchFilter: VoidFunctionComponent<Props> = ({ isFetching, filters, onFil
             />
           </FormControl>
         </Grid>
-        <Box>
+        <HStack>
+          <Button onClick={() => onFilterReset(getDefaultSearchFilters())} colorScheme="red">
+            Clear
+          </Button>
           <Button type="submit" colorScheme="blue" isDisabled={isFetching}>
             Search
           </Button>
-        </Box>
+        </HStack>
       </HStack>
     </form>
   );
