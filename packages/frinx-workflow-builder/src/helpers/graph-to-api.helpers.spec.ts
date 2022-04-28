@@ -1,8 +1,8 @@
 import { assert, describe, test } from 'vitest';
 import { readFileSync } from 'fs';
 import { ExtendedTask, Workflow } from './types';
-import { getElementsFromWorkflow } from './data.helpers';
-import { convertToTasks } from './api.helpers';
+import { getElementsFromWorkflow } from './api-to-graph.helpers';
+import { convertToTasks } from './graph-to-api.helpers';
 
 function loadWorkflow(fileName: string): Workflow<ExtendedTask> {
   return JSON.parse(readFileSync(`./src/helpers/workflows/${fileName}`).toString());
