@@ -1,18 +1,24 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Box, Button, FormControl, FormLabel, HStack, Input } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, HStack, Input } from '@chakra-ui/react';
 
 export type ServiceFilters = {
   id: string | null;
   customerName: string | null;
 };
 
+export const getDefaultServiceFilters = (): ServiceFilters => ({
+  id: null,
+  customerName: null,
+});
+
 type Props = {
   filters: ServiceFilters;
   onFilterChange: (filter: ServiceFilters) => void;
+  onFilterReset: (filter: ServiceFilters) => void;
   onFilterSubmit: () => void;
 };
 
-const ServiceFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onFilterSubmit }) => {
+const ServiceFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onFilterReset, onFilterSubmit }) => {
   return (
     <HStack marginBottom="4" alignItems="flex-end">
       <FormControl>
@@ -68,11 +74,14 @@ const ServiceFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, 
           })}
         </Select>
       </FormControl> */}
-      <Box>
+      <HStack>
+        <Button onClick={() => onFilterReset(getDefaultServiceFilters())} colorScheme="red">
+          Clear
+        </Button>
         <Button onClick={onFilterSubmit} colorScheme="blue">
           Search
         </Button>
-      </Box>
+      </HStack>
     </HStack>
   );
 };

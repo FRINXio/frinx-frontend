@@ -106,6 +106,16 @@ const SearchListPage: VoidFunctionComponent = () => {
     });
   };
 
+  const handleFilterReset = (newFilters: SearchFilters) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    const resetFilters = { ...newFilters };
+    setFilters(resetFilters);
+    setSubmittedFilters(resetFilters);
+  };
+
   const handleFilterSubmit = () => {
     setPagination({
       ...pagination,
@@ -150,6 +160,7 @@ const SearchListPage: VoidFunctionComponent = () => {
             isFetching={isFetchingData}
             filters={filters}
             onFilterChange={handleFilterChange}
+            onFilterReset={handleFilterReset}
             onFilterSubmit={handleFilterSubmit}
           />
           {isFetchingData && (

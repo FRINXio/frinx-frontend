@@ -20,7 +20,7 @@ const defaultVpnSite: VpnSite = {
   siteServiceQosProfile: '',
   enableBgpPicFastReroute: false,
   siteNetworkAccesses: [],
-  maximumRoutes: null,
+  maximumRoutes: 1000,
 };
 
 const CreateVpnSitePage: VoidFunctionComponent = () => {

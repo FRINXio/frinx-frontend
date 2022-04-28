@@ -1,6 +1,6 @@
 import { Box, Button, Container, Flex, Heading, HStack, Icon, useDisclosure } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
@@ -13,8 +13,11 @@ import ServiceTable from './service-table';
 import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import { getChangedServicesWithStatus, getSavedServicesWithStatus } from './service-helpers';
+import FilterContext from '../../filter-provider';
 
 const CreateVpnServicePage: VoidFunctionComponent = () => {
+  const filterContext = useContext(FilterContext);
+  const { service: serviceFilters, onServiceFilterChange } = unwrap(filterContext);
   const [createdServices, setCreatedServices] = useState<VpnService[] | null>(null);
   const [updatedServices, setUpdatedServices] = useState<VpnService[] | null>(null);
   const [deletedServices, setDeletedServices] = useState<VpnService[] | null>(null);
@@ -23,11 +26,7 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
   const deleteModalDisclosure = useDisclosure();
   const [detailId, setDetailId] = useState<string | null>(null);
   const [pagination, setPagination] = usePagination();
-  const [filters, setFilters] = useState<ServiceFilters>({
-    id: null,
-    customerName: null,
-    // defaultCVlan: null,
-  });
+  const [filters, setFilters] = useState<ServiceFilters>(serviceFilters);
   const [submittedFilters, setSubmittedFilters] = useState<ServiceFilters>({
     id: null,
     customerName: null,
@@ -75,6 +74,18 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
       ...pagination,
       page,
     });
+  };
+
+  const handleFilterReset = (newFilters: ServiceFilters) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setFilters({
+      ...newFilters,
+    });
+    setSubmittedFilters(newFilters);
+    onServiceFilterChange(newFilters);
   };
 
   const handleFilterChange = (newFilters: ServiceFilters) => {
@@ -141,6 +152,7 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
               <ServiceFilter
                 filters={filters}
                 onFilterChange={handleFilterChange}
+                onFilterReset={handleFilterReset}
                 onFilterSubmit={handleFilterSubmit}
               />
               {changedServicesWithStatus.length ? (
