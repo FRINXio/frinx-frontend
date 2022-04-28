@@ -5,9 +5,10 @@ import * as yup from 'yup';
 import { Link } from 'react-router-dom';
 import { CustomerLocation } from './site-types';
 import { getSelectOptions } from './options.helper';
+import { generateLocationId } from '../../helpers/id-helpers';
 
 const LocationSchema = yup.object().shape({
-  locationId: yup.string(),
+  locationId: yup.string().required(),
   street: yup.string().required('Street is required field'),
   postalCode: yup.string().required('Postal code is required field'),
   state: yup.string(),
@@ -16,25 +17,37 @@ const LocationSchema = yup.object().shape({
 });
 
 type Props = {
+  mode: 'CREATE' | 'UPDATE';
   siteId: string;
   location: CustomerLocation;
   buttonText: string;
   onSubmit: (location: CustomerLocation) => void;
 };
 
-const CustomerLocationForm: VoidFunctionComponent<Props> = ({ location, buttonText, onSubmit, siteId }) => {
-  const { values, errors, dirty, resetForm, handleChange, handleSubmit } = useFormik({
+const CustomerLocationForm: VoidFunctionComponent<Props> = ({ mode, location, buttonText, onSubmit, siteId }) => {
+  const { values, errors, dirty, isValid, resetForm, handleChange, handleSubmit } = useFormik({
     initialValues: {
       ...location,
     },
     validationSchema: LocationSchema,
     onSubmit: (formValues) => {
-      onSubmit(formValues);
+      const formValuesForSubmit =
+        mode === 'CREATE'
+          ? { ...formValues, locationId: `${formValues.locationId}_${generateLocationId()}` }
+          : { ...formValues };
+      onSubmit(formValuesForSubmit);
     },
   });
 
   return (
     <form onSubmit={handleSubmit}>
+      {mode === 'CREATE' && (
+        <FormControl id="locationId" my={6} isRequired isInvalid={errors.locationId != null}>
+          <FormLabel>Location Name</FormLabel>
+          <Input name="locationId" value={values.locationId} onChange={handleChange} />
+          {errors.locationId && <FormErrorMessage>{errors.locationId}</FormErrorMessage>}
+        </FormControl>
+      )}
       <FormControl id="customer-locations-street" my={6} isRequired isInvalid={errors.street != null}>
         <FormLabel>Street</FormLabel>
         <Input name="street" value={values.street} onChange={handleChange} />
@@ -69,7 +82,7 @@ const CustomerLocationForm: VoidFunctionComponent<Props> = ({ location, buttonTe
         {errors.postalCode && <FormErrorMessage>{errors.postalCode}</FormErrorMessage>}
       </FormControl>
       <Stack direction="row" spacing={2} align="center">
-        <Button type="submit" colorScheme="blue" isDisabled={!dirty}>
+        <Button type="submit" colorScheme="blue" isDisabled={!dirty || !isValid}>
           {buttonText}
         </Button>
         <Button onClick={() => resetForm()}>Clear</Button>
