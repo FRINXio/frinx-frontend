@@ -1,0 +1,237 @@
+{
+  "updateTime": 1644406163567,
+  "name": "nested_fork_test",
+  "description": "",
+  "version": 1,
+  "inputParameters": [],
+  "outputParameters": {},
+  "schemaVersion": 2,
+  "restartable": true,
+  "workflowStatusListenerEnabled": false,
+  "ownerEmail": "admin-user",
+  "timeoutPolicy": "ALERT_ONLY",
+  "timeoutSeconds": 0,
+  "variables": {},
+  "tasks": [
+    {
+      "name": "HTTP_task",
+      "taskReferenceName": "http_GExB",
+      "inputParameters": {
+        "http_request": {
+          "contentType": "application/json",
+          "method": "GET",
+          "headers": {},
+          "timeout": 3600,
+          "uri": "${workflow.input.uri}"
+        }
+      },
+      "type": "SIMPLE",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "label": "http"
+    },
+    {
+      "name": "forkTask",
+      "taskReferenceName": "fork_QUhd",
+      "inputParameters": {
+        "param": "true",
+        "foo": "bar"
+      },
+      "type": "FORK_JOIN",
+      "caseValueParam": "param",
+      "forkTasks": [
+        [
+          {
+            "name": "LAMBDA_TASK1_FORK_1",
+            "taskReferenceName": "lambda_f1t1",
+            "inputParameters": {
+              "lambdaValue": "${workflow.input.lambdaValue}",
+              "scriptExpression": "if ($.lambdaValue == 1) { \n  return { testvalue: true } \n} else { \n  return { testvalue: false } \n}"
+            },
+            "type": "LAMBDA",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": [],
+            "label": "lambda"
+          },
+          {
+            "name": "LAMBDA_TASK2_FORK_1",
+            "taskReferenceName": "lambda_f1t2",
+            "inputParameters": {
+              "lambdaValue": "${workflow.input.lambdaValue}",
+              "scriptExpression": "if ($.lambdaValue == 1) { \n  return { testvalue: true } \n} else { \n  return { testvalue: false } \n}"
+            },
+            "type": "LAMBDA",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": [],
+            "label": "lambda"
+          }
+        ],
+        [
+          {
+            "name": "LAMBDA_TASK1_FORK_2",
+            "taskReferenceName": "lambda_f2t1",
+            "inputParameters": {
+              "lambdaValue": "${workflow.input.lambdaValue}",
+              "scriptExpression": "if ($.lambdaValue == 1) { \n  return { testvalue: true } \n} else { \n  return { testvalue: false } \n}"
+            },
+            "type": "LAMBDA",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": [],
+            "label": "lambda"
+          },
+          {
+            "name": "LAMBDA_TASK2_FORK_2",
+            "taskReferenceName": "lambda_f2t2",
+            "inputParameters": {
+              "lambdaValue": "${workflow.input.lambdaValue}",
+              "scriptExpression": "if ($.lambdaValue == 1) { \n  return { testvalue: true } \n} else { \n  return { testvalue: false } \n}"
+            },
+            "type": "LAMBDA",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": [],
+            "label": "lambda"
+          },
+          {
+            "name": "forkTask",
+            "taskReferenceName": "nested_fork_QUhd",
+            "inputParameters": {
+              "param": "true",
+              "foo": "bar"
+            },
+            "type": "FORK_JOIN",
+            "caseValueParam": "param",
+            "forkTasks": [
+              [
+                {
+                  "name": "NESTED_LAMBDA_TASK1_FORK_1",
+                  "taskReferenceName": "nested_lambda_f1t1",
+                  "inputParameters": {
+                    "lambdaValue": "${workflow.input.lambdaValue}",
+                    "scriptExpression": "if ($.lambdaValue == 1) { \n  return { testvalue: true } \n} else { \n  return { testvalue: false } \n}"
+                  },
+                  "type": "LAMBDA",
+                  "decisionCases": {},
+                  "defaultCase": [],
+                  "forkTasks": [],
+                  "startDelay": 0,
+                  "joinOn": [],
+                  "optional": false,
+                  "defaultExclusiveJoinTask": [],
+                  "asyncComplete": false,
+                  "loopOver": [],
+                  "label": "lambda"
+                }
+              ],
+              [
+                {
+                  "name": "NESTED_LAMBDA_TASK1_FORK_2",
+                  "taskReferenceName": "nested_lambda_f2t1",
+                  "inputParameters": {
+                    "lambdaValue": "${workflow.input.lambdaValue}",
+                    "scriptExpression": "if ($.lambdaValue == 1) { \n  return { testvalue: true } \n} else { \n  return { testvalue: false } \n}"
+                  },
+                  "type": "LAMBDA",
+                  "decisionCases": {},
+                  "defaultCase": [],
+                  "forkTasks": [],
+                  "startDelay": 0,
+                  "joinOn": [],
+                  "optional": false,
+                  "defaultExclusiveJoinTask": [],
+                  "asyncComplete": false,
+                  "loopOver": [],
+                  "label": "lambda"
+                }
+              ]
+            ],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": [],
+            "label": "fork"
+          },
+          {
+            "name": "join",
+            "taskReferenceName": "nested_join",
+            "type": "JOIN",
+            "joinOn": []
+          }
+        ]
+      ],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "label": "fork"
+    },
+    {
+      "name": "join",
+      "taskReferenceName": "join2",
+      "type": "JOIN",
+      "joinOn": ["lambda_f1t2", "lambda_f2t2"]
+    },
+    {
+      "name": "HTTP_task",
+      "taskReferenceName": "http_ZS85",
+      "inputParameters": {
+        "http_request": {
+          "contentType": "application/json",
+          "method": "GET",
+          "headers": {},
+          "timeout": 3600,
+          "uri": "${workflow.input.uri}"
+        }
+      },
+      "type": "SIMPLE",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "label": "http"
+    }
+  ]
+}
