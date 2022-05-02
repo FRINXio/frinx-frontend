@@ -24,6 +24,7 @@ declare interface Window {
     uniresourceApiURL: string;
     uniflowApiDocsURL: string;
     MSALAuthority: string;
+    commitHash: string;
   }>;
 
   __GAMMA_FORM_OPTIONS__: Readonly<{

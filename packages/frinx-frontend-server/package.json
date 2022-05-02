@@ -14,8 +14,8 @@
   "scripts": {
     "lint": "eslint --ext .ts 'src/**/*.ts' --max-warnings 0",
     "type-check": "tsc --noEmit",
-    "dev": "DEBUG='frinx-frontend-server' DEBUG_COLORS=true DOTENV_CONFIG_PATH=./.env ts-node-dev --transpile-only -r dotenv/config ./src/server.ts",
-    "build:ts": "NODE_ENV=production tsc",
+    "dev": "COMMIT_HASH=$(git rev-parse HEAD) DEBUG='frinx-frontend-server' DEBUG_COLORS=true DOTENV_CONFIG_PATH=./.env ts-node-dev --transpile-only -r dotenv/config ./src/server.ts",
+    "build:ts": "NODE_ENV=production COMMIT_HASH=$(git rev-parse HEAD) tsc",
     "build:clear": "rm -rf build",
     "build": "run-s build:clear build:ts",
     "start": "NODE_ENV=production node build-server/server.js"
