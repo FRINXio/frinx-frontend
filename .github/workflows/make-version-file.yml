@@ -1,4 +1,4 @@
-name: PR check
+name: Make version commit
 
 on:
   pull_request:
