@@ -96,7 +96,7 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
         </Box>
       </Container>
       <Box bg="gray.200" bottom={0} position="fixed" paddingX={4} fontSize="sm">
-        <Code>{COMMIT_HASH}</Code>
+        <Code>{window.__CONFIG__.commitHash}</Code>
       </Box>
     </>
   );
