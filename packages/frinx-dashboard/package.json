@@ -37,11 +37,11 @@
   },
   "scripts": {
     "copy:gamma": "cp ../../public/gamma-options.js ../../build-client/",
-    "dev": "COMMIT_HASH=$(git rev-parse HEAD) run-s copy:gamma build:api dev:webpack",
+    "dev": "run-s copy:gamma build:api dev:webpack",
     "dev:webpack": "webpack serve --mode development",
     "build:api": "cd ../frinx-api && yarn run build",
     "build:webpack": "NODE_ENV=production webpack --mode production",
-    "build": "COMMIT_HASH=$(git rev-parse HEAD) run-s build:api build:webpack",
+    "build": "run-s build:api build:webpack",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc --noEmit"
   },

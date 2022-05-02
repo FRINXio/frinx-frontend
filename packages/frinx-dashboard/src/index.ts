@@ -50,6 +50,8 @@ class DashboardApp {
   }
 
   render() {
+    // eslint-disable-next-line no-console
+    console.log(`Running version: ${window.__CONFIG__.commitHash}`);
     const root = createRoot(unwrap(document.getElementById('root')));
     root.render(
       React.createElement(Root, {
