@@ -12,8 +12,11 @@ jobs:
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v3
+      - name: Install dependencies
+        run: yarn install --immutable
       - name: Make version file
         run: yarn run make-version
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: update version file
+          file_pattern: packages/frinx-frontend-server/version
