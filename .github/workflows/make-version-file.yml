@@ -1,0 +1,19 @@
+name: PR check
+
+on:
+  pull_request:
+    branches:
+      - main
+      - gamma-project
+jobs:
+  pr-check:
+    runs-on: ubuntu-latest
+    container: node:16.14.2-alpine
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v3
+      - name: Make version file
+        run: yarn run make-version
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: update version file

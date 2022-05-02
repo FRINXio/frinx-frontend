@@ -1,4 +1,5 @@
 import { URL } from 'url';
+import { getVersion } from './get-version';
 
 function envString(key: string): string {
   const { env } = process;
@@ -60,7 +61,7 @@ const config = {
   uniflowApiDocsURL: envString('UNIFLOW_API_DOCS_URL'),
   MSALAuthority: envString('MSAL_AUTHORITY'),
   isGammaEnabled: stringToBoolean(envString('GAMMA_ENABLED')),
-  commitHash: envString('COMMIT_HASH'),
+  commitHash: getVersion(),
 };
 /* eslint-enable */
 

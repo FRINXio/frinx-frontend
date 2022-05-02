@@ -14,10 +14,12 @@
   "scripts": {
     "lint": "eslint --ext .ts 'src/**/*.ts' --max-warnings 0",
     "type-check": "tsc --noEmit",
-    "dev": "COMMIT_HASH=$(git rev-parse HEAD) DEBUG='frinx-frontend-server' DEBUG_COLORS=true DOTENV_CONFIG_PATH=./.env ts-node-dev --transpile-only -r dotenv/config ./src/server.ts",
+    "dev:server": "DEBUG='frinx-frontend-server' DEBUG_COLORS=true DOTENV_CONFIG_PATH=./.env ts-node-dev --transpile-only -r dotenv/config ./src/server.ts",
+    "dev": "run-s make-version dev:server",
+    "make-version": "rm -f ./version && git rev-parse HEAD >> version",
     "build:ts": "NODE_ENV=production COMMIT_HASH=$(git rev-parse HEAD) tsc",
     "build:clear": "rm -rf build",
-    "build": "run-s build:clear build:ts",
+    "build": "run-s build:clear make-version build:ts",
     "start": "NODE_ENV=production node build-server/server.js"
   },
   "dependencies": {

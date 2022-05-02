@@ -39,7 +39,8 @@
     "build": "run-s build:dashboard build:server",
     "dev:client": "cd packages/frinx-dashboard && yarn run dev",
     "dev:server": "cd packages/frinx-frontend-server && yarn run dev",
-    "dev": "run-p dev:client dev:server"
+    "dev": "run-p dev:client dev:server",
+    "make-version": "cd packages/frinx-frontend-server && yarn build:version"
   },
   "devDependencies": {
     "dedubcheck": "0.0.6",
