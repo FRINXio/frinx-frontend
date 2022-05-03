@@ -79,16 +79,20 @@ export async function* asyncGenerator<T>({
   onFinish,
 }: AsyncGeneratorParams): AsyncGenerator<ExecutedWorkflowResponse<T>, void, unknown> {
   let data = await getWorkflowExecOutput<ExecutedWorkflowResponse<T>>(workflowId, abortController);
-  while (data.result.status === 'RUNNING') {
+  while (data?.result.status === 'RUNNING') {
+    // eslint-disable-next-line no-await-in-loop
+    await new Promise((resolve) => {
+      setTimeout(resolve, 800);
+    });
     yield data;
     // eslint-disable-next-line no-await-in-loop
     data = await getWorkflowExecOutput(workflowId, abortController);
   }
   // we need to do an additional yield for the last task status change
-  if (data.result.status === 'FAILED' || data.result.status === 'COMPLETED') {
+  if (data?.result.status === 'FAILED' || data?.result.status === 'COMPLETED') {
     yield data;
     if (onFinish) {
-      onFinish(data.result.status === 'COMPLETED');
+      onFinish(data?.result.status === 'COMPLETED');
     }
   }
 }
