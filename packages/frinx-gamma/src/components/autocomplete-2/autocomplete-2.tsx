@@ -1,5 +1,5 @@
 import { Box, Icon, IconButton, Input, InputGroup, InputProps, InputRightElement } from '@chakra-ui/react';
-import Downshift, { UseComboboxStateChangeTypes, useCombobox, UseComboboxStateChange } from 'downshift';
+import { useCombobox, UseComboboxStateChange } from 'downshift';
 import FeatherIcon from 'feather-icons-react';
 import React, { useState, useEffect, useRef, VoidFunctionComponent } from 'react';
 import AutocompleteMenu from './autocomplete-menu';
@@ -85,7 +85,6 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
     onInputValueChange,
     itemToString: (item) => (item ? item.value : ''),
     onStateChange: (changes) => {
-      console.log(changes);
       switch (changes.type) {
         // in the case of blur we set input value to last selected item
         // so its obvious for user which value is set
