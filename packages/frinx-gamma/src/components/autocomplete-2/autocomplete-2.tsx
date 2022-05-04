@@ -2,6 +2,7 @@ import { Box, Icon, IconButton, Input, InputGroup, InputProps, InputRightElement
 import { useCombobox, UseComboboxStateChange } from 'downshift';
 import FeatherIcon from 'feather-icons-react';
 import React, { useState, useEffect, useRef, VoidFunctionComponent } from 'react';
+import Fuse from 'fuse.js';
 import AutocompleteMenu from './autocomplete-menu';
 import unwrap from '../../helpers/unwrap';
 
@@ -30,6 +31,14 @@ function getStrippedInputProps(inputProps: InputProps): Omit<InputProps, 'id' | 
   return rest;
 }
 
+function initFuse(items: Item[]): Fuse<Item> {
+  const options = {
+    keys: ['label', 'value'],
+    fieldNormWeight: 1,
+  };
+  return new Fuse(items, options);
+}
+
 const Autocomplete2: VoidFunctionComponent<Props> = ({
   items,
   onCreateItem,
@@ -38,13 +47,14 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
   selectedItem,
   isDisabled,
 }) => {
+  const fuse = initFuse(items);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [inputItems, setInputItems] = useState(items);
   const [menuDirection, setMenuDirection] = useState<Direction>('down');
 
   const onInputValueChange = ({ inputValue }: UseComboboxStateChange<Item>) => {
-    const filteredItems = items.filter((item) => item.value.toLowerCase().includes((inputValue || '').toLowerCase()));
+    const filteredItems: Item[] = inputValue ? fuse.search(inputValue).map((result) => result.item) : inputItems;
 
     if (isCreating && filteredItems.length > 0) {
       setIsCreating(false);
@@ -77,6 +87,7 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
     getItemProps,
     setHighlightedIndex,
     inputValue,
+    setInputValue,
   } = useCombobox({
     items: inputItems,
     onSelectedItemChange,
@@ -84,16 +95,26 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
     onInputValueChange,
     itemToString: (item) => (item ? item.value : ''),
     onStateChange: (changes) => {
-      if (changes.selectedItem?.value === inputValue && !items.includes(changes.selectedItem)) {
-        if (onCreateItem) {
-          onCreateItem({
-            ...changes.selectedItem,
-            label: changes.selectedItem.value,
-          });
-          closeMenu();
+      switch (changes.type) {
+        // in the case of blur we set input value to last selected item
+        // so its obvious for user which value is set
+        case '__input_blur__': {
+          setInputValue(selectedItem?.label || '');
+          return;
         }
-        setInputItems(inputItems);
-        setIsCreating(false);
+        default: {
+          if (changes.selectedItem?.value === inputValue && !items.includes(changes.selectedItem)) {
+            if (onCreateItem) {
+              onCreateItem({
+                ...changes.selectedItem,
+                label: changes.selectedItem.value,
+              });
+              closeMenu();
+            }
+            setInputItems(inputItems);
+            setIsCreating(false);
+          }
+        }
       }
     },
   });
@@ -127,7 +148,12 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
   return (
     <Box ref={inputRef}>
       <InputGroup {...getComboboxProps()} position="relative">
-        <Input isDisabled={isDisabled} variant={inputVariant} {...getStrippedInputProps(getInputProps())} />
+        <Input
+          isDisabled={isDisabled}
+          variant={inputVariant}
+          value={inputValue}
+          {...getStrippedInputProps(getInputProps())}
+        />
         <InputRightElement>
           <IconButton
             isDisabled={isDisabled}
