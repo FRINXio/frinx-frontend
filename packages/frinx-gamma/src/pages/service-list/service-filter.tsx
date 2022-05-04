@@ -1,4 +1,4 @@
-import React, { VoidFunctionComponent } from 'react';
+import React, { FormEvent, VoidFunctionComponent } from 'react';
 import { Button, FormControl, FormLabel, HStack, Input } from '@chakra-ui/react';
 
 export type ServiceFilters = {
@@ -19,39 +19,45 @@ type Props = {
 };
 
 const ServiceFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onFilterReset, onFilterSubmit }) => {
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    onFilterSubmit();
+  };
+
   return (
-    <HStack marginBottom="4" alignItems="flex-end">
-      <FormControl>
-        <FormLabel>VPN ID:</FormLabel>
-        <Input
-          name="id"
-          variant="filled"
-          bgColor="white"
-          value={filters.id || ''}
-          onChange={(event) =>
-            onFilterChange({
-              ...filters,
-              id: event.target.value,
-            })
-          }
-        />
-      </FormControl>
-      <FormControl>
-        <FormLabel>Customer Name / VPN Description:</FormLabel>
-        <Input
-          name="customerName"
-          variant="filled"
-          bgColor="white"
-          value={filters.customerName || ''}
-          onChange={(event) =>
-            onFilterChange({
-              ...filters,
-              customerName: event.target.value,
-            })
-          }
-        />
-      </FormControl>
-      {/* <FormControl>
+    <form onSubmit={handleSubmit}>
+      <HStack marginBottom="4" alignItems="flex-end">
+        <FormControl>
+          <FormLabel>VPN ID:</FormLabel>
+          <Input
+            name="id"
+            variant="filled"
+            bgColor="white"
+            value={filters.id || ''}
+            onChange={(event) =>
+              onFilterChange({
+                ...filters,
+                id: event.target.value,
+              })
+            }
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>Customer Name / VPN Description:</FormLabel>
+          <Input
+            name="customerName"
+            variant="filled"
+            bgColor="white"
+            value={filters.customerName || ''}
+            onChange={(event) =>
+              onFilterChange({
+                ...filters,
+                customerName: event.target.value,
+              })
+            }
+          />
+        </FormControl>
+        {/* <FormControl>
         <FormLabel>Default C Vlan:</FormLabel>
         <Select
           bgColor="white"
@@ -74,15 +80,16 @@ const ServiceFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, 
           })}
         </Select>
       </FormControl> */}
-      <HStack>
-        <Button onClick={() => onFilterReset(getDefaultServiceFilters())} colorScheme="red">
-          Clear
-        </Button>
-        <Button onClick={onFilterSubmit} colorScheme="blue">
-          Search
-        </Button>
+        <HStack>
+          <Button onClick={() => onFilterReset(getDefaultServiceFilters())} colorScheme="red">
+            Clear
+          </Button>
+          <Button type="submit" colorScheme="blue">
+            Search
+          </Button>
+        </HStack>
       </HStack>
-    </HStack>
+    </form>
   );
 };
 
