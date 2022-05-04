@@ -1,4 +1,4 @@
-import React, { useState, VoidFunctionComponent } from 'react';
+import React, { FormEvent, useState, VoidFunctionComponent } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import { Box, Button, FormControl, FormLabel, Grid, HStack, Input, Text } from '@chakra-ui/react';
 
@@ -47,8 +47,13 @@ type Props = {
 
 const VpnBearerFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange, onFilterReset, onFilterSubmit }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    onFilterSubmit();
+  };
+
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       <Box my="2">
         <Button onClick={() => setIsOpen(!isOpen)} variant="link">
           {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
@@ -260,13 +265,13 @@ const VpnBearerFilter: VoidFunctionComponent<Props> = ({ filters, onFilterChange
             <Button onClick={() => onFilterReset(getDefaultBearerFilters())} colorScheme="red">
               Clear
             </Button>
-            <Button onClick={onFilterSubmit} colorScheme="blue">
+            <Button type="submit" colorScheme="blue">
               Search
             </Button>
           </HStack>
         </HStack>
       )}
-    </>
+    </form>
   );
 };
 
