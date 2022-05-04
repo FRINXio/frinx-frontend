@@ -2,11 +2,7 @@ import { Box, Container, Heading } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ErrorMessage from '../../components/error-message/error-message';
-import {
-  apiProviderIdentifiersToClientIdentifers,
-  apiVpnSitesToClientVpnSite,
-  clientVpnSiteToApiVpnSite,
-} from '../../components/forms/converters';
+import { apiProviderIdentifiersToClientIdentifers, clientVpnSiteToApiVpnSite } from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
 import VpnSiteForm from '../../components/forms/vpn-site-form';
 import useCalcDiffContext from '../../providers/calcdiff-provider/use-calcdiff-context';
@@ -25,7 +21,6 @@ const defaultVpnSite: VpnSite = {
 
 const CreateVpnSitePage: VoidFunctionComponent = () => {
   const { invalidateCache } = useCalcDiffContext();
-  const [vpnSites, setVpnSites] = useState<VpnSite[] | null>(null);
   const [qosProfiles, setQosProfiles] = useState<string[]>([]);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -33,9 +28,6 @@ const CreateVpnSitePage: VoidFunctionComponent = () => {
   useEffect(() => {
     const fetchData = async () => {
       const callbacks = callbackUtils.getCallbacks;
-      const sites = await callbacks.getVpnSites(null, null);
-      const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
-      setVpnSites(clientVpnSites);
 
       const profiles = await callbacks.getValidProviderIdentifiers();
       const clientProfiles = apiProviderIdentifiersToClientIdentifers(profiles);
@@ -73,15 +65,13 @@ const CreateVpnSitePage: VoidFunctionComponent = () => {
       <Box padding={6} margin={6} background="white">
         <Heading size="md">Create VPN Site</Heading>
         {submitError && <ErrorMessage text={String(submitError)} />}
-        {vpnSites && (
-          <VpnSiteForm
-            mode="CREATE"
-            site={defaultVpnSite}
-            qosProfiles={qosProfiles}
-            onSubmit={handleSubmit}
-            onCancel={handleCancel}
-          />
-        )}
+        <VpnSiteForm
+          mode="CREATE"
+          site={defaultVpnSite}
+          qosProfiles={qosProfiles}
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+        />
       </Box>
     </Container>
   );

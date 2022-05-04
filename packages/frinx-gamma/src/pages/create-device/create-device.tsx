@@ -38,7 +38,7 @@ const CreateDevicePage: VoidFunctionComponent = () => {
     const fetchData = async () => {
       const callbacks = callbackUtils.getCallbacks;
       // TODO: we can fetch all in promise all?
-      const sites = await callbacks.getVpnSites(null, null);
+      const sites = await callbacks.getVpnSite(unwrap(siteId));
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
       setSelectedSite(getSelectedSite(clientVpnSites, unwrap(siteId)));
       const devices = await callbacks.getDevices(unwrap(siteId), null, null);
@@ -69,7 +69,7 @@ const CreateDevicePage: VoidFunctionComponent = () => {
       await callbacks.editVpnSite(apiSite);
       // eslint-disable-next-line no-console
       console.log('site saved: network access added to site');
-      const url = locationId ? `../sites/${siteId}/${locationId}/devices/add` : `../sites/${siteId}/devices`;
+      const url = locationId ? `../sites/${siteId}/${locationId}/devices` : `../sites/${siteId}/devices`;
       navigate(url);
     } catch (e) {
       setSubmitError(String(e));
@@ -79,7 +79,7 @@ const CreateDevicePage: VoidFunctionComponent = () => {
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    const url = locationId ? `../sites/${siteId}/${locationId}/devices/add` : `../sites/${siteId}/devices`;
+    const url = locationId ? `../sites/${siteId}/${locationId}/devices` : `../sites/${siteId}/devices`;
     navigate(url);
   };
 

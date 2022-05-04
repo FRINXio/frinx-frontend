@@ -112,7 +112,7 @@ const CreateSiteNetAccessPage: VoidFunctionComponent = () => {
     const fetchData = async () => {
       // TODO: we can fetch all in promise all?
       const callbacks = callbackUtils.getCallbacks;
-      const sites = await callbacks.getVpnSites(null, null);
+      const sites = await callbacks.getVpnSite(unwrap(siteId));
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
 
       const profiles = await callbacks.getValidProviderIdentifiers();

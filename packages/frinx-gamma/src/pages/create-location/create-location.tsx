@@ -34,7 +34,7 @@ const CreateLocationPage: VoidFunctionComponent = () => {
     const fetchData = async () => {
       const callbacks = callbackUtils.getCallbacks;
       // TODO: we can fetch all in promise all?
-      const sites = await callbacks.getVpnSites(null, null);
+      const sites = await callbacks.getVpnSite(unwrap(siteId));
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
       setSelectedSite(getSelectedSite(clientVpnSites, unwrap(siteId)));
     };

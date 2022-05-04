@@ -30,7 +30,7 @@ const EditVpnSitePage: VoidFunctionComponent = () => {
   useEffect(() => {
     const fetchData = async () => {
       const callbacks = callbackUtils.getCallbacks;
-      const sites = await callbacks.getVpnSites(null, null);
+      const sites = await callbacks.getVpnSite(unwrap(siteId));
       const clientVpnSites = apiVpnSitesToClientVpnSite(sites);
       setVpnSites(clientVpnSites);
 
@@ -40,7 +40,7 @@ const EditVpnSitePage: VoidFunctionComponent = () => {
     };
 
     fetchData();
-  }, []);
+  }, [siteId]);
 
   const handleSubmit = async (site: VpnSite) => {
     setSubmitError(null);
