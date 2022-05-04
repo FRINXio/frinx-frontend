@@ -94,11 +94,11 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                         onClick={() => onLocationsSiteButtonClick(unwrap(site.siteId))}
                       />
                     </Tooltip>
-                    <Tooltip label="Site Devices">
+                    <Tooltip label="Manage Devices">
                       <IconButton
-                        aria-label="devices"
+                        aria-label="Manage Devices"
                         size="sm"
-                        icon={<Icon size={12} as={FeatherIcon} icon="cpu" />}
+                        icon={<Icon size={12} as={FeatherIcon} icon="hard-drive" />}
                         onClick={() => onDevicesSiteButtonClick(unwrap(site.siteId))}
                       />
                     </Tooltip>

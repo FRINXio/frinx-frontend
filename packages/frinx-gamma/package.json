@@ -19,17 +19,17 @@
     "feather-icons-react": "0.5.0",
     "formik": "2.2.9",
     "fp-ts": "2.11.9",
-    "fuse.js": "6.5.3",
+    "fuse.js": "^6.6.0",
     "io-ts": "2.2.16",
     "url-join": "5.0.0",
     "uuid": "8.3.2",
     "yup": "0.32.11"
   },
   "scripts": {
-    "dev": "COMMIT_HASH=$(git rev-parse HEAD) run-s dev:webpack",
+    "dev": "run-s dev:webpack",
     "dev:webpack": "webpack serve --mode development",
     "build:webpack": "NODE_ENV=production webpack --mode production",
-    "build": "COMMIT_HASH=$(git rev-parse HEAD) run-s build:webpack generate:typings",
+    "build": "run-s build:webpack generate:typings",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc --noEmit",
     "generate:typings": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist global.d.ts src/index.ts"
