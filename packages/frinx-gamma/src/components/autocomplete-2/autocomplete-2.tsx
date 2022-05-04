@@ -77,6 +77,7 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
     getItemProps,
     setHighlightedIndex,
     inputValue,
+    setInputValue,
   } = useCombobox({
     items: inputItems,
     onSelectedItemChange,
@@ -84,16 +85,26 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
     onInputValueChange,
     itemToString: (item) => (item ? item.value : ''),
     onStateChange: (changes) => {
-      if (changes.selectedItem?.value === inputValue && !items.includes(changes.selectedItem)) {
-        if (onCreateItem) {
-          onCreateItem({
-            ...changes.selectedItem,
-            label: changes.selectedItem.value,
-          });
-          closeMenu();
+      switch (changes.type) {
+        // in the case of blur we set input value to last selected item
+        // so its obvious for user which value is set
+        case '__input_blur__': {
+          setInputValue(selectedItem?.label || '');
+          return;
         }
-        setInputItems(inputItems);
-        setIsCreating(false);
+        default: {
+          if (changes.selectedItem?.value === inputValue && !items.includes(changes.selectedItem)) {
+            if (onCreateItem) {
+              onCreateItem({
+                ...changes.selectedItem,
+                label: changes.selectedItem.value,
+              });
+              closeMenu();
+            }
+            setInputItems(inputItems);
+            setIsCreating(false);
+          }
+        }
       }
     },
   });
@@ -127,7 +138,12 @@ const Autocomplete2: VoidFunctionComponent<Props> = ({
   return (
     <Box ref={inputRef}>
       <InputGroup {...getComboboxProps()} position="relative">
-        <Input isDisabled={isDisabled} variant={inputVariant} {...getStrippedInputProps(getInputProps())} />
+        <Input
+          isDisabled={isDisabled}
+          variant={inputVariant}
+          value={inputValue}
+          {...getStrippedInputProps(getInputProps())}
+        />
         <InputRightElement>
           <IconButton
             isDisabled={isDisabled}
