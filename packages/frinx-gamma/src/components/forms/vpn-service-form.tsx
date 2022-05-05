@@ -72,7 +72,7 @@ const freeResources = async (vpnId: string, counter: number) => {
 const ServiceSchema = yup.object().shape({
   vpnId: yup.string().nullable(),
   customerName: yup.string().required('Customer Name is required'),
-  vpnServiceTopology: yup.mixed().oneOf(['any-to-any', 'hub-spoke', 'hub-spoke-disjointed', 'custom']),
+  vpnServiceTopology: yup.mixed().oneOf(['any-to-any', 'hub-spoke', 'hub-spoke-disjoint', 'custom']),
   defaultCVlan: yup.mixed().oneOf(['400', '1000', '50', 'custom']),
   customCVlan: yup
     .number()
