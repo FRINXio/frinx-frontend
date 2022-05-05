@@ -112,6 +112,19 @@ const AutocompleteMenu: VoidFunctionComponent<Props> = ({
               {`Create "${inputValue}"`}
             </Flex>
           )}
+          {items.length === 0 && !isCreating && (
+            <Flex
+              alignItems="center"
+              paddingY={1.5}
+              paddingX={3}
+              width="100%"
+              minHeight={12}
+              outline="#000 2px"
+              outlineOffset="2px"
+            >
+              No item found
+            </Flex>
+          )}
         </Box>
       )}
     </Box>
