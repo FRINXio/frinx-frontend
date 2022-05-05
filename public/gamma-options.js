@@ -3,7 +3,7 @@ window.__GAMMA_FORM_OPTIONS__ = {
     vpn_topology: {
       'any-to-any': 'any-to-any',
       'hub-spoke': 'hub-spoke',
-      'hub-spoke-disjointed': 'hub-spoke-disjointed',
+      'hub-spoke-disjoint': 'hub-spoke-disjoint',
     },
     default_cvlan: {
       400: 'Main Corporate VPN',
