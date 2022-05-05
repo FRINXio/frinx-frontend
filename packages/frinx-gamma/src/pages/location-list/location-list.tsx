@@ -1,6 +1,7 @@
 import { Box, Button, Container, Flex, Heading, useDisclosure } from '@chakra-ui/react';
 import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import diff from 'diff-arrays-of-objects';
 import callbackUtils from '../../unistore-callback-utils';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import {
@@ -15,11 +16,15 @@ import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
 import LocationFilter, { LocationFilters } from './location-filter';
 import FilterContext from '../../filter-provider';
+import { getChangedLocationsWithStatus, getSavedLocationsWithStatus } from './location-helpers';
 
 const LocationListPage: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);
   const { location: locationFilters, onLocationFilterChange } = unwrap(filterContext);
   const [site, setSite] = useState<VpnSite | null>(null);
+  const [createdLocations, setCreatedLocations] = useState<CustomerLocation[] | null>(null);
+  const [updatedLocations, setUpdatedLocations] = useState<CustomerLocation[] | null>(null);
+  const [deletedLocations, setDeletedLocations] = useState<CustomerLocation[] | null>(null);
   const [locations, setLocations] = useState<CustomerLocation[] | null>(null);
   const [locationIdToDelete, setLocationIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
@@ -56,6 +61,15 @@ const LocationListPage: VoidFunctionComponent = () => {
         ...pagination,
         pageCount: Math.ceil(locationsCount / pagination.pageSize),
       });
+      // get data for changes table
+      const allSavedLocations = await callbacks.getLocations(unwrap(siteId), null, null, 'nonconfig');
+      const clientAllSavedLocations = apiLocationsToClientLocations(allSavedLocations);
+      const allUnsavedLocations = await callbacks.getLocations(unwrap(siteId), null, null);
+      const clientAllUnsavedLocations = apiLocationsToClientLocations(allUnsavedLocations);
+      const result = diff(clientAllSavedLocations, clientAllUnsavedLocations, 'locationId');
+      setCreatedLocations(result.added);
+      setUpdatedLocations(result.updated);
+      setDeletedLocations(result.removed);
     };
     fetchData();
   }, [pagination.page, submittedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -104,6 +118,13 @@ const LocationListPage: VoidFunctionComponent = () => {
     return null;
   }
 
+  const changedLocationsWithStatus = getChangedLocationsWithStatus(
+    createdLocations,
+    updatedLocations,
+    deletedLocations,
+  );
+  const savedLocationsWithStatus = getSavedLocationsWithStatus(locations, updatedLocations, deletedLocations);
+
   return (
     <>
       <ConfirmDeleteModal
@@ -141,10 +162,26 @@ const LocationListPage: VoidFunctionComponent = () => {
               onFilterReset={handleFilterReset}
               onFilterSubmit={handleFilterSubmit}
             />
+            {changedLocationsWithStatus.length ? (
+              <>
+                <Heading size="sm">Changes</Heading>
+                <Box my="2">
+                  <LocationTable
+                    size="sm"
+                    site={site}
+                    detailId={detailId}
+                    locations={changedLocationsWithStatus}
+                    onDeleteLocationButtonClick={handleDeleteButtonClick}
+                    onRowClick={handleRowClick}
+                  />
+                </Box>
+              </>
+            ) : null}
             <LocationTable
+              size="md"
               site={site}
               detailId={detailId}
-              locations={locations || []}
+              locations={savedLocationsWithStatus}
               onDeleteLocationButtonClick={handleDeleteButtonClick}
               onRowClick={handleRowClick}
             />

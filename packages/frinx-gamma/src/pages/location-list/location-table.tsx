@@ -8,6 +8,7 @@ import unwrap from '../../helpers/unwrap';
 import LocationDetail from './location-detail';
 
 type Props = {
+  size: 'sm' | 'md';
   site: VpnSite;
   detailId: string | null;
   locations: CustomerLocation[];
@@ -16,6 +17,7 @@ type Props = {
 };
 
 const LocationTable: VoidFunctionComponent<Props> = ({
+  size,
   site,
   detailId,
   locations,
@@ -23,7 +25,7 @@ const LocationTable: VoidFunctionComponent<Props> = ({
   onRowClick,
 }) => {
   return (
-    <Table background="white" size="lg" marginBottom="12">
+    <Table background="white" size={size} marginBottom="12">
       <Thead>
         <Tr>
           <Th />
