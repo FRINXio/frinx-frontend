@@ -22,12 +22,13 @@ import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-prov
 import unwrap from '../../helpers/unwrap';
 import FilterContext from '../../filter-provider';
 import { StatusEnum } from '../service-list/service-helpers';
+import CalcdiffLoading from '../../components/calcdiff-loading/calcdiff-loading';
 
 const SiteListPage: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);
   const { siteNetworkAccess: networkFilters, onSiteNetworkAccessFilterChange } = unwrap(filterContext);
   const calcdiffContext = useContext(CalcDiffContext);
-  const { invalidateCache, data: calcDiffData } = unwrap(calcdiffContext);
+  const { invalidateCache, data: calcDiffData, isLoading: isCalcdiffLoading } = unwrap(calcdiffContext);
   const [site, setSite] = useState<VpnSite | null>(null);
   const [networkAccesses, setNetworkAccesses] = useState<SiteNetworkAccess[] | null>(null);
   const [siteAccessIdToDelete, setSiteAccessIdToDelete] = useState<string | null>(null);
@@ -182,7 +183,8 @@ const SiteListPage: VoidFunctionComponent = () => {
               onFilterReset={handleFilterReset}
               onFilterSubmit={handleFilterSubmit}
             />
-            {networkAccessChanges && networkAccessChanges.length ? (
+            {isCalcdiffLoading && <CalcdiffLoading />}
+            {!isCalcdiffLoading && networkAccessChanges && networkAccessChanges.length ? (
               <>
                 <Heading size="sm">Changes</Heading>
                 <Box my="2">

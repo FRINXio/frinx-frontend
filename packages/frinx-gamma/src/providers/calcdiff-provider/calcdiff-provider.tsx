@@ -41,10 +41,13 @@ export const CalcDiffProvider: FC = ({ children }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setDataState({
+        isLoading: true,
+        data: null,
+        error: null,
+      });
       const data = await getCalcDiff();
       if (data != null) {
-        // const siteChanges = await getSiteChanges(data);
-        // console.log('-- site changes: ', siteChanges);
         setDataState({
           isLoading: false,
           data,

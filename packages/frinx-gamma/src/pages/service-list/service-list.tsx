@@ -14,10 +14,11 @@ import Pagination from '../../components/pagination/pagination';
 import { getServiceChanges, getSavedServicesWithStatus, VpnServiceWithStatus } from './service-helpers';
 import { CalcDiffContext } from '../../providers/calcdiff-provider/calcdiff-provider';
 import FilterContext from '../../filter-provider';
+import CalcdiffLoading from '../../components/calcdiff-loading/calcdiff-loading';
 
 const CreateVpnServicePage: VoidFunctionComponent = () => {
   const calcdiffContext = useContext(CalcDiffContext);
-  const { invalidateCache, data: calcDiffData } = unwrap(calcdiffContext);
+  const { invalidateCache, data: calcDiffData, isLoading: isCalcdiffLoading } = unwrap(calcdiffContext);
   const [serviceChanges, setServiceChanges] = useState<VpnServiceWithStatus[] | null>(null);
 
   const filterContext = useContext(FilterContext);
@@ -152,7 +153,8 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
                 onFilterReset={handleFilterReset}
                 onFilterSubmit={handleFilterSubmit}
               />
-              {serviceChanges && serviceChanges.length ? (
+              {isCalcdiffLoading && <CalcdiffLoading />}
+              {!isCalcdiffLoading && serviceChanges && serviceChanges.length ? (
                 <>
                   <Heading size="sm">Changes</Heading>
                   <Box my="2">

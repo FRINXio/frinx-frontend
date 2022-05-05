@@ -15,11 +15,12 @@ import { getSavedSitesWithStatus, getSiteChanges, VpnSiteWithStatus } from './si
 import FilterContext from '../../filter-provider';
 import useCalcDiffContext from '../../providers/calcdiff-provider/use-calcdiff-context';
 import { StatusEnum } from '../service-list/service-helpers';
+import CalcdiffLoading from '../../components/calcdiff-loading/calcdiff-loading';
 
 const SiteListPage: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);
   const { site: siteFilters, onSiteFilterChange } = unwrap(filterContext);
-  const { invalidateCache, data: calcDiffData } = useCalcDiffContext();
+  const { invalidateCache, data: calcDiffData, isLoading: isCalcdiffLoading } = useCalcDiffContext();
   const [sites, setSites] = useState<VpnSite[] | null>(null);
   const [siteIdToDelete, setSiteIdToDelete] = useState<string | null>(null);
   const deleteModalDisclosure = useDisclosure();
@@ -160,7 +161,8 @@ const SiteListPage: VoidFunctionComponent = () => {
                 onFilterChange={handleFilterChange}
                 onFilterSubmit={handleFilterSubmit}
               />
-              {siteChanges && siteChanges.length ? (
+              {isCalcdiffLoading && <CalcdiffLoading />}
+              {!isCalcdiffLoading && siteChanges && siteChanges.length ? (
                 <>
                   <Heading size="sm">Changes</Heading>
                   <Box my="2">
