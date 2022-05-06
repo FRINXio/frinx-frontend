@@ -19,7 +19,7 @@ import { Link } from 'react-router-dom';
 import { GetAllPoolsQuery, PoolCapacityPayload } from '../../__generated__/graphql';
 
 type Props = {
-  pools?: GetAllPoolsQuery['QueryResourcePools'];
+  pools: GetAllPoolsQuery['QueryResourcePools'];
   isLoading: boolean;
   onDeleteBtnClick: (id: string) => void;
   isNestedShown?: boolean;
@@ -58,7 +58,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({ pools, onDeleteBtnClick, isL
       </Thead>
       {isLoading ? null : (
         <Tbody>
-          {pools !== undefined && pools.length > 0 ? (
+          {pools.length > 0 ? (
             pools.map((pool) => {
               const capacityValue = getCapacityValue(pool.Capacity);
               const totalCapacity = getTotalCapacity(pool.Capacity);
@@ -66,7 +66,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({ pools, onDeleteBtnClick, isL
               const hasNestedPools = nestedPoolsCount > 0;
 
               return (
-                <Tr key={pool.id}>
+                <Tr key={pool.id} opacity={isLoading ? 0.5 : 1} pointerEvents={isLoading ? 'none' : 'all'}>
                   {isNestedShown && (
                     <Td>
                       <Button
