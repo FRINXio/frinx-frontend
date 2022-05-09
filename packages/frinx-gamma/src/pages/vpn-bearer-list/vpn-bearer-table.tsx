@@ -54,7 +54,7 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
           <Th>Description</Th>
           <Th>Node Id</Th>
           <Th>Port Id</Th>
-          <Th>EVC Count</Th>
+          <Th>Carrier reference</Th>
           <Th>Sub. Bandwidth</Th>
           <Th>Status</Th>
           <Th>Actions</Th>
@@ -88,7 +88,7 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
               <Td>{b.description}</Td>
               <Td>{b.neId}</Td>
               <Td>{b.portId}</Td>
-              <Td>{b.evcAttachments.length}</Td>
+              <Td>{b.carrier?.carrierReference}</Td>
               <Td>{b.evcAttachments.map((a) => a.inputBandwidth).reduce((i, j) => i + j, 0)}</Td>
               <Td>{b.status?.adminStatus?.status}</Td>
               <Td>
