@@ -1,19 +1,19 @@
-import { Box, Button, Container, Flex, Heading, HStack, useDisclosure } from '@chakra-ui/react';
-import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
 import { SearchIcon } from '@chakra-ui/icons';
+import { Box, Button, Container, Flex, Heading, HStack, useDisclosure } from '@chakra-ui/react';
 import diff from 'diff-arrays-of-objects';
-import { Link, useNavigate } from 'react-router-dom';
-import callbackUtils from '../../unistore-callback-utils';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import { apiVpnSitesToClientVpnSite } from '../../components/forms/converters';
 import { VpnSite } from '../../components/forms/site-types';
-import unwrap from '../../helpers/unwrap';
-import SiteFilter, { SiteFilters } from './site-filter';
-import SiteTable from './site-table';
-import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
-import { getChangedSitesWithStatus, getSavedSitesWithStatus } from './site-helpers';
 import FilterContext from '../../filter-provider';
+import unwrap from '../../helpers/unwrap';
+import usePagination from '../../hooks/use-pagination';
+import callbackUtils from '../../unistore-callback-utils';
+import SiteFilter, { SiteFilters } from './site-filter';
+import { getChangedSitesWithStatus, getSavedSitesWithStatus } from './site-helpers';
+import SiteTable from './site-table';
 
 const SiteListPage: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);
@@ -28,7 +28,6 @@ const SiteListPage: VoidFunctionComponent = () => {
   const [pagination, setPagination] = usePagination();
   const [filters, setFilters] = useState<SiteFilters>(siteFilters);
   const [submittedFilters, setSubmittedFilters] = useState<SiteFilters>(siteFilters);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -102,22 +101,6 @@ const SiteListPage: VoidFunctionComponent = () => {
     setDetailId(isOpen ? rowId : null);
   };
 
-  const handleEditSiteRedirect = (siteId: string) => {
-    navigate(`../sites/edit/${siteId}`);
-  };
-
-  const handleDetailRedirect = (siteId: string) => {
-    navigate(`../sites/detail/${siteId}`);
-  };
-
-  const handleLocationsRedirect = (siteId: string) => {
-    navigate(`../sites/${siteId}/locations`);
-  };
-
-  const handleDevicesRedirect = (siteId: string) => {
-    navigate(`../sites/${siteId}/devices`);
-  };
-
   const changedSitesWithStatus = getChangedSitesWithStatus(createdSites, updatedSites, deletedSites);
   const savedSitesWithStatus = getSavedSitesWithStatus(sites, updatedSites, deletedSites);
 
@@ -174,10 +157,6 @@ const SiteListPage: VoidFunctionComponent = () => {
                       sites={changedSitesWithStatus}
                       size="sm"
                       detailId={detailId}
-                      onEditSiteButtonClick={handleEditSiteRedirect}
-                      onDetailSiteButtonClick={handleDetailRedirect}
-                      onLocationsSiteButtonClick={handleLocationsRedirect}
-                      onDevicesSiteButtonClick={handleDevicesRedirect}
                       onDeleteSiteButtonClick={handleDeleteButtonClick}
                       onRowClick={handleRowClick}
                     />
@@ -188,10 +167,6 @@ const SiteListPage: VoidFunctionComponent = () => {
                 sites={savedSitesWithStatus}
                 size="md"
                 detailId={detailId}
-                onEditSiteButtonClick={handleEditSiteRedirect}
-                onDetailSiteButtonClick={handleDetailRedirect}
-                onLocationsSiteButtonClick={handleLocationsRedirect}
-                onDevicesSiteButtonClick={handleDevicesRedirect}
                 onDeleteSiteButtonClick={handleDeleteButtonClick}
                 onRowClick={handleRowClick}
               />
