@@ -1,19 +1,19 @@
 import { Box, Button, Container, Flex, Heading, HStack, Icon, useDisclosure } from '@chakra-ui/react';
+import diff from 'diff-arrays-of-objects';
 import FeatherIcon from 'feather-icons-react';
 import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import diff from 'diff-arrays-of-objects';
-import callbackUtils from '../../unistore-callback-utils';
+import { Link } from 'react-router-dom';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import { VpnBearer } from '../../components/forms/bearer-types';
 import { apiBearerToClientBearer } from '../../components/forms/converters';
+import Pagination from '../../components/pagination/pagination';
+import FilterContext from '../../filter-provider';
 import unwrap from '../../helpers/unwrap';
+import usePagination from '../../hooks/use-pagination';
+import callbackUtils from '../../unistore-callback-utils';
+import { getChangedBearersWithStatus, getSavedBearersWithStatus } from './bearer-helpers';
 import VpnBearerFilter, { VpnBearerFilters } from './vpn-bearer-filter';
 import VpnBearerTable from './vpn-bearer-table';
-import usePagination from '../../hooks/use-pagination';
-import Pagination from '../../components/pagination/pagination';
-import { getChangedBearersWithStatus, getSavedBearersWithStatus } from './bearer-helpers';
-import FilterContext from '../../filter-provider';
 
 const VpnBearerList: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);
@@ -28,7 +28,6 @@ const VpnBearerList: VoidFunctionComponent = () => {
   const [pagination, setPagination] = usePagination();
   const [filters, setFilters] = useState<VpnBearerFilters>(bearerFilters);
   const [submittedFilters, setSubmittedFilters] = useState<VpnBearerFilters>(bearerFilters);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -101,14 +100,6 @@ const VpnBearerList: VoidFunctionComponent = () => {
     setDetailId(isOpen ? rowId : null);
   };
 
-  const handleEditBearerRedirect = (bearerId: string) => {
-    navigate(`../vpn-bearers/edit/${bearerId}`);
-  };
-
-  const handleEvcAttachmentsRedirect = (bearerId: string) => {
-    navigate(`../vpn-bearers/${bearerId}/evc-attachments`);
-  };
-
   const changedBearersWithStatus = getChangedBearersWithStatus(createdBearers, updatedBearers, deletedBearers);
   const savedBearersWithStatus = getSavedBearersWithStatus(vpnBearers, updatedBearers, deletedBearers);
 
@@ -166,9 +157,7 @@ const VpnBearerList: VoidFunctionComponent = () => {
                       size="sm"
                       detailId={detailId}
                       bearers={changedBearersWithStatus}
-                      onEditVpnBearerClick={handleEditBearerRedirect}
                       onDeleteVpnBearerClick={handleDeleteButtonClick}
-                      onEvcAttachmentSiteClick={handleEvcAttachmentsRedirect}
                       onRowClick={handleRowClick}
                     />
                   </Box>
@@ -178,9 +167,7 @@ const VpnBearerList: VoidFunctionComponent = () => {
                 size="md"
                 detailId={detailId}
                 bearers={savedBearersWithStatus}
-                onEditVpnBearerClick={handleEditBearerRedirect}
                 onDeleteVpnBearerClick={handleDeleteButtonClick}
-                onEvcAttachmentSiteClick={handleEvcAttachmentsRedirect}
                 onRowClick={handleRowClick}
               />
               <Box m="4">

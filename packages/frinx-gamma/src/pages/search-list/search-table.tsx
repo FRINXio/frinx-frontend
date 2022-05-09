@@ -1,9 +1,9 @@
-import { Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
-import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
+import { Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
-import { TableItem } from './search-helper';
-import SearchDetail from './search-detail';
 import unwrap from '../../helpers/unwrap';
+import SearchDetail from './search-detail';
+import { TableItem } from './search-helper';
 
 type Props = {
   size: 'sm' | 'md';
@@ -31,8 +31,17 @@ const ServiceTable: VoidFunctionComponent<Props> = ({ detailId, size, rows, onRo
         const isDetailOpen = rowId === detailId;
         return (
           <Tbody key={`${row.vpnId}-${row.siteNetworkAccessId}`}>
-            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
-              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
+            <Tr _hover={{ background: 'gray.200' }}>
+              <Td>
+                <IconButton
+                  size="sm"
+                  onClick={() => {
+                    onRowClick(rowId, !isDetailOpen);
+                  }}
+                  aria-label="toggle details"
+                  icon={<Icon as={FeatherIcon} icon={isDetailOpen ? 'chevron-up' : 'chevron-down'} />}
+                />
+              </Td>
               <Td>
                 <Text as="span">{row.vpnId}</Text>
               </Td>
