@@ -1,5 +1,22 @@
-import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
-import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
+import {
+  Button,
+  HStack,
+  Icon,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Portal,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tooltip,
+  Tr,
+} from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
@@ -43,8 +60,17 @@ const LocationTable: VoidFunctionComponent<Props> = ({
         const isDetailOpen = detailId === location.locationId;
         return (
           <Tbody key={location.locationId}>
-            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
-              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
+            <Tr _hover={{ background: 'gray.200' }}>
+              <Td>
+                <IconButton
+                  size="sm"
+                  onClick={() => {
+                    onRowClick(rowId, !isDetailOpen);
+                  }}
+                  aria-label="toggle details"
+                  icon={<Icon as={FeatherIcon} icon={isDetailOpen ? 'chevron-up' : 'chevron-down'} />}
+                />
+              </Td>
               <Td>
                 <Text as="span" fontWeight={600}>
                   {location.locationId}
@@ -67,22 +93,30 @@ const LocationTable: VoidFunctionComponent<Props> = ({
               </Td>
               <Td>
                 <HStack>
+                  <Menu size="sm">
+                    <MenuButton size="sm" as={Button} rightIcon={<Icon as={FeatherIcon} icon="chevron-down" />}>
+                      Manage
+                    </MenuButton>
+                    <Portal>
+                      <MenuList>
+                        <MenuItem
+                          as={Link}
+                          to={`../sites/${site.siteId}/devices`}
+                          icon={<Icon size={12} as={FeatherIcon} icon="hard-drive" />}
+                        >
+                          Devices
+                        </MenuItem>
+                      </MenuList>
+                    </Portal>
+                  </Menu>
                   <Tooltip label="Edit location">
                     <IconButton
                       aria-label="edit"
+                      colorScheme="blue"
                       size="sm"
                       icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                       as={Link}
                       to={`../sites/${site.siteId}/locations/edit/${location.locationId}`}
-                    />
-                  </Tooltip>
-                  <Tooltip label="Manage devices">
-                    <IconButton
-                      aria-label="devices"
-                      size="sm"
-                      icon={<Icon size={12} as={FeatherIcon} icon="hard-drive" />}
-                      as={Link}
-                      to={`../sites/${site.siteId}/${location.locationId}/devices`}
                     />
                   </Tooltip>
                   <Tooltip label="Delete location">
