@@ -1,12 +1,11 @@
-import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
-import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
+import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import StatusTag from '../../components/status-tag/status-tag';
 import { VpnSite } from '../../components/forms/site-types';
-import DeviceDetail from './device-detail';
+import StatusTag from '../../components/status-tag/status-tag';
 import unwrap from '../../helpers/unwrap';
+import DeviceDetail from './device-detail';
 import { SiteDeviceWithStatus } from './device-helpers';
 
 type Props = {
@@ -47,8 +46,17 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
         const isDetailOpen = rowId === detailId;
         return (
           <Tbody key={device.deviceId}>
-            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
-              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
+            <Tr _hover={{ background: 'gray.200' }}>
+              <Td>
+                <IconButton
+                  size="sm"
+                  onClick={() => {
+                    onRowClick(rowId, !isDetailOpen);
+                  }}
+                  aria-label="toggle details"
+                  icon={<Icon as={FeatherIcon} icon={isDetailOpen ? 'chevron-up' : 'chevron-down'} />}
+                />
+              </Td>
               <Td>
                 <Flex alignItems="center">
                   <Text as="span" fontWeight={600}>
@@ -72,6 +80,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                   <Tooltip label="Edit device">
                     <IconButton
                       aria-label="edit"
+                      colorScheme="blue"
                       size="sm"
                       icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                       as={Link}

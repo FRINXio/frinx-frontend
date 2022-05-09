@@ -1,7 +1,26 @@
-import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
-import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
+import {
+  Button,
+  Flex,
+  HStack,
+  Icon,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Portal,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tooltip,
+  Tr,
+} from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 import StatusTag from '../../components/status-tag/status-tag';
 import unwrap from '../../helpers/unwrap';
 import SiteDetail from './site-detail';
@@ -11,10 +30,6 @@ type Props = {
   size: 'sm' | 'md';
   sites: VpnSiteWithStatus[];
   detailId: string | null;
-  onEditSiteButtonClick: (siteId: string) => void;
-  onDetailSiteButtonClick: (siteId: string) => void;
-  onLocationsSiteButtonClick: (siteId: string) => void;
-  onDevicesSiteButtonClick: (siteId: string) => void;
   onDeleteSiteButtonClick: (siteId: string) => void;
   onRowClick: (rowId: string, isOpen: boolean) => void;
 };
@@ -23,17 +38,7 @@ function hasNetworkAcceesses(site: VpnSiteWithStatus): boolean {
   return site.siteNetworkAccesses.length > 0;
 }
 
-const SiteTable: VoidFunctionComponent<Props> = ({
-  size,
-  sites,
-  detailId,
-  onEditSiteButtonClick,
-  onDetailSiteButtonClick,
-  onLocationsSiteButtonClick,
-  onDevicesSiteButtonClick,
-  onDeleteSiteButtonClick,
-  onRowClick,
-}) => {
+const SiteTable: VoidFunctionComponent<Props> = ({ size, sites, detailId, onDeleteSiteButtonClick, onRowClick }) => {
   return (
     <Table background="white" size={size}>
       <Thead>
@@ -53,8 +58,17 @@ const SiteTable: VoidFunctionComponent<Props> = ({
         const isDeleteDisabled = hasNetworkAcceesses(site);
         return (
           <Tbody key={rowId}>
-            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
-              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
+            <Tr _hover={{ background: 'gray.200' }}>
+              <Td>
+                <IconButton
+                  size="sm"
+                  onClick={() => {
+                    onRowClick(rowId, !isDetailOpen);
+                  }}
+                  aria-label="toggle details"
+                  icon={<Icon as={FeatherIcon} icon={isDetailOpen ? 'chevron-up' : 'chevron-down'} />}
+                />
+              </Td>
               <Td>
                 <Flex alignItems="center">
                   <Text as="span" fontWeight={600} paddingRight="4">
@@ -78,36 +92,44 @@ const SiteTable: VoidFunctionComponent<Props> = ({
               <Td>
                 {site.status !== 'DELETED' && (
                   <HStack>
+                    <Menu size="sm">
+                      <MenuButton size="sm" as={Button} rightIcon={<Icon as={FeatherIcon} icon="chevron-down" />}>
+                        Manage
+                      </MenuButton>
+                      <Portal>
+                        <MenuList>
+                          <MenuItem
+                            as={Link}
+                            to={`${rowId}/locations`}
+                            icon={<Icon size={12} as={FeatherIcon} icon="map-pin" />}
+                          >
+                            Locations
+                          </MenuItem>
+                          <MenuItem
+                            as={Link}
+                            to={`${rowId}/devices`}
+                            icon={<Icon size={12} as={FeatherIcon} icon="hard-drive" />}
+                          >
+                            Devices
+                          </MenuItem>
+                          <MenuItem
+                            as={Link}
+                            to={`detail/${rowId}`}
+                            icon={<Icon size={12} as={FeatherIcon} icon="share-2" />}
+                          >
+                            Site network accesses
+                          </MenuItem>
+                        </MenuList>
+                      </Portal>
+                    </Menu>
                     <Tooltip label="Edit Site">
                       <IconButton
                         aria-label="edit"
+                        colorScheme="blue"
                         size="sm"
                         icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                        onClick={() => onEditSiteButtonClick(unwrap(site.siteId))}
-                      />
-                    </Tooltip>
-                    <Tooltip label="Manage Site Locations">
-                      <IconButton
-                        aria-label="locations"
-                        size="sm"
-                        icon={<Icon size={12} as={FeatherIcon} icon="map-pin" />}
-                        onClick={() => onLocationsSiteButtonClick(unwrap(site.siteId))}
-                      />
-                    </Tooltip>
-                    <Tooltip label="Manage Devices">
-                      <IconButton
-                        aria-label="Manage Devices"
-                        size="sm"
-                        icon={<Icon size={12} as={FeatherIcon} icon="hard-drive" />}
-                        onClick={() => onDevicesSiteButtonClick(unwrap(site.siteId))}
-                      />
-                    </Tooltip>
-                    <Tooltip label="Manage Site Network Accesses">
-                      <IconButton
-                        aria-label="detail"
-                        size="sm"
-                        icon={<Icon size={12} as={FeatherIcon} icon="share-2" />}
-                        onClick={() => onDetailSiteButtonClick(unwrap(site.siteId))}
+                        as={Link}
+                        to={`edit/${rowId}`}
                       />
                     </Tooltip>
                     <Tooltip

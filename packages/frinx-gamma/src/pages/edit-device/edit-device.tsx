@@ -55,7 +55,7 @@ const EditDevicePage: VoidFunctionComponent = () => {
     try {
       const apiSite = clientVpnSiteToApiVpnSite(editedSite);
       await callbacks.editVpnSite(apiSite);
-      const url = locationId ? `sites/${siteId}/${locationId}/devices` : `sites/${siteId}/devices`;
+      const url = locationId ? `../sites/${siteId}/${locationId}/devices` : `../sites/${siteId}/devices`;
       navigate(url);
     } catch (e) {
       setSubmitError(String(e));
@@ -65,7 +65,7 @@ const EditDevicePage: VoidFunctionComponent = () => {
   const handleCancel = () => {
     // eslint-disable-next-line no-console
     console.log('cancel clicked');
-    const url = locationId ? `sites/${siteId}/${locationId}/devices` : `sites/${siteId}/devices`;
+    const url = locationId ? `../sites/${siteId}/${locationId}/devices` : `../sites/${siteId}/devices`;
     navigate(url);
   };
 

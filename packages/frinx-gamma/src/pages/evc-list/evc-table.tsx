@@ -1,11 +1,11 @@
-import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
-import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
+import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 import { VpnBearer } from '../../components/forms/bearer-types';
 import StatusTag from '../../components/status-tag/status-tag';
-import EvcDetail from './evc-detail';
 import unwrap from '../../helpers/unwrap';
+import EvcDetail from './evc-detail';
 import { EvcAttachmentWithStatus } from './evc-helpers';
 
 type Props = {
@@ -13,7 +13,6 @@ type Props = {
   bearer: VpnBearer;
   evcAttachments: EvcAttachmentWithStatus[];
   detailId: string | null;
-  onEditEvcButtonClick: (bearerId: string, evcType: string, circuitReference: string) => void;
   onDeleteEvcButtonClick: (evcType: string, circuitReference: string) => void;
   onRowClick: (rowId: string, isOpen: boolean) => void;
 };
@@ -23,7 +22,6 @@ const EvcTable: VoidFunctionComponent<Props> = ({
   bearer,
   evcAttachments,
   detailId,
-  onEditEvcButtonClick,
   onDeleteEvcButtonClick,
   onRowClick,
 }) => {
@@ -45,8 +43,17 @@ const EvcTable: VoidFunctionComponent<Props> = ({
         const isDetailOpen = rowId === detailId;
         return (
           <Tbody key={`${evc.evcType}${evc.circuitReference}`}>
-            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
-              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
+            <Tr _hover={{ background: 'gray.200' }}>
+              <Td>
+                <IconButton
+                  size="sm"
+                  onClick={() => {
+                    onRowClick(rowId, !isDetailOpen);
+                  }}
+                  aria-label="toggle details"
+                  icon={<Icon as={FeatherIcon} icon={isDetailOpen ? 'chevron-up' : 'chevron-down'} />}
+                />
+              </Td>
               <Td>
                 <StatusTag status={evc.evcStatus} />
               </Td>
@@ -68,11 +75,11 @@ const EvcTable: VoidFunctionComponent<Props> = ({
                     <Tooltip label="Edit Evc Attachment">
                       <IconButton
                         aria-label="edit"
+                        colorScheme="blue"
                         size="sm"
                         icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                        onClick={() =>
-                          onEditEvcButtonClick(bearer.spBearerReference, evc.evcType, evc.circuitReference)
-                        }
+                        as={Link}
+                        to={`../vpn-bearers/${bearer.spBearerReference}/evc-attachments/edit/${evc.evcType}/${evc.circuitReference}`}
                       />
                     </Tooltip>
                     <Tooltip label="Delete Evc Attachment">
