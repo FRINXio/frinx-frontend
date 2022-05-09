@@ -206,6 +206,8 @@ const SiteNetAccessForm: FC<Props> = ({
   const { values, errors, dirty, isValid, resetForm, setFieldValue, handleSubmit } = useFormik({
     initialValues: getClientSelectedNetworkAccess(selectedNetworkAccess),
     validationSchema: NetworkAccessSchema,
+    isInitialValid: true,
+    validateOnBlur: false,
     onSubmit: async (formValues) => {
       if (!formValues) {
         return;
@@ -613,7 +615,7 @@ const SiteNetAccessForm: FC<Props> = ({
 
         <Box paddingTop={6}>
           <Heading size="sm">Routing Protocol</Heading>
-          <Grid templateColumns="repeat(4, 1fr)" gap="1">
+          <Grid templateColumns="repeat(3, 1fr)" gap="1">
             <RoutingProtocolForm
               errors={errors}
               bgpProfileItems={bgpProfileItems}
@@ -627,7 +629,7 @@ const SiteNetAccessForm: FC<Props> = ({
 
         <Box paddingTop={6}>
           <Heading size="sm">IP Connection</Heading>
-          <Grid templateColumns="repeat(4, 1fr)" gap="1">
+          <Grid templateColumns="repeat(3, 1fr)" gap="1">
             {/* FD-190 hidden on gamma request */}
             {/* <FormControl id="ip-address-allocation-type" my={1} isReadOnly>
               <FormLabel>Address Allocation Type</FormLabel>
