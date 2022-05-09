@@ -1,12 +1,11 @@
-import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Tooltip } from '@chakra-ui/react';
-import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
+import { Flex, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { SiteNetworkAccessWithStatus } from './site-network-access-helpers';
 import StatusTag from '../../components/status-tag/status-tag';
-import SiteNetworkAccessDetail from './site-network-access-detail';
 import unwrap from '../../helpers/unwrap';
+import SiteNetworkAccessDetail from './site-network-access-detail';
+import { SiteNetworkAccessWithStatus } from './site-network-access-helpers';
 
 type Props = {
   size: 'sm' | 'md';
@@ -44,8 +43,17 @@ const SiteTable: VoidFunctionComponent<Props> = ({
         const isDetailOpen = rowId === detailId;
         return (
           <Tbody key={access.siteNetworkAccessId}>
-            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
-              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
+            <Tr _hover={{ background: 'gray.200' }}>
+              <Td>
+                <IconButton
+                  size="sm"
+                  onClick={() => {
+                    onRowClick(rowId, !isDetailOpen);
+                  }}
+                  aria-label="toggle details"
+                  icon={<Icon as={FeatherIcon} icon={isDetailOpen ? 'chevron-up' : 'chevron-down'} />}
+                />
+              </Td>
               <Td>
                 <Flex alignItems="center">
                   <Text as="span" fontWeight={600}>
@@ -75,6 +83,7 @@ const SiteTable: VoidFunctionComponent<Props> = ({
                     <Tooltip label="Edit site network access">
                       <IconButton
                         aria-label="edit"
+                        colorScheme="blue"
                         size="sm"
                         icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                         as={Link}

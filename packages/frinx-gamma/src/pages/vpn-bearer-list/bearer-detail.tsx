@@ -30,7 +30,6 @@ const BearerDetail: VoidFunctionComponent<Props> = ({ bearer }) => {
       <DetailItem label="Ne Id" value={bearer.neId} />
       <DetailItem label="Port Id" value={bearer.portId} />
       <DetailItem label="Carrier Name" value={bearer.carrier?.carrierName} />
-      <DetailItem label="Carrier Reference" value={bearer.carrier?.carrierReference} />
       <DetailItem label="Service Type" value={bearer.carrier?.serviceType} />
       <DetailItem label="Service Status" value={bearer.carrier?.serviceStatus} />
       <DetailItem label="Encapsulation Type" value={bearer.connection?.encapsulationType} />

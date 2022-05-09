@@ -91,7 +91,7 @@ const TaskList = () => {
     }
   };
 
-  const result = searchTerm.length > 2 ? searchFn() : tasks;
+  const result = searchTerm.length > 0 ? searchFn() : tasks;
 
   return (
     <PageContainer>

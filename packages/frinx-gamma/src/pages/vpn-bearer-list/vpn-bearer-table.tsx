@@ -1,11 +1,30 @@
-import { Flex, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, HStack, Tooltip } from '@chakra-ui/react';
-import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
+import {
+  Button,
+  Flex,
+  HStack,
+  Icon,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Portal,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tooltip,
+  Tr,
+} from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
+import { Link } from 'react-router-dom';
 import StatusTag from '../../components/status-tag/status-tag';
+import unwrap from '../../helpers/unwrap';
 import BearerDetail from './bearer-detail';
 import { VpnBearerWithStatus } from './bearer-helpers';
-import unwrap from '../../helpers/unwrap';
 
 function hasEvcAttachments(bearer: VpnBearerWithStatus): boolean {
   return bearer.evcAttachments.length > 0;
@@ -16,8 +35,6 @@ type Props = {
   bearers: VpnBearerWithStatus[];
   detailId: string | null;
   onDeleteVpnBearerClick: (id: string) => void;
-  onEditVpnBearerClick: (id: string) => void;
-  onEvcAttachmentSiteClick: (bearerId: string) => void;
   onRowClick: (rowId: string, isOpen: boolean) => void;
 };
 
@@ -25,9 +42,7 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
   size,
   bearers,
   detailId,
-  onEditVpnBearerClick,
   onDeleteVpnBearerClick,
-  onEvcAttachmentSiteClick,
   onRowClick,
 }) => {
   return (
@@ -39,7 +54,7 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
           <Th>Description</Th>
           <Th>Node Id</Th>
           <Th>Port Id</Th>
-          <Th>EVC Count</Th>
+          <Th>Carrier reference</Th>
           <Th>Sub. Bandwidth</Th>
           <Th>Status</Th>
           <Th>Actions</Th>
@@ -51,8 +66,17 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
         const isDeleteDisabled = hasEvcAttachments(b);
         return (
           <Tbody key={b.spBearerReference}>
-            <Tr onClick={() => onRowClick(rowId, !isDetailOpen)} _hover={{ cursor: 'pointer', background: 'gray.200' }}>
-              <Td>{isDetailOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}</Td>
+            <Tr _hover={{ background: 'gray.200' }}>
+              <Td>
+                <IconButton
+                  size="sm"
+                  onClick={() => {
+                    onRowClick(rowId, !isDetailOpen);
+                  }}
+                  aria-label="toggle details"
+                  icon={<Icon as={FeatherIcon} icon={isDetailOpen ? 'chevron-up' : 'chevron-down'} />}
+                />
+              </Td>
               <Td>
                 <Flex alignItems="center">
                   <Text as="span" fontWeight={600} paddingRight="4">
@@ -64,26 +88,36 @@ const VpnBearerTable: VoidFunctionComponent<Props> = ({
               <Td>{b.description}</Td>
               <Td>{b.neId}</Td>
               <Td>{b.portId}</Td>
-              <Td>{b.evcAttachments.length}</Td>
+              <Td>{b.carrier?.carrierReference}</Td>
               <Td>{b.evcAttachments.map((a) => a.inputBandwidth).reduce((i, j) => i + j, 0)}</Td>
               <Td>{b.status?.adminStatus?.status}</Td>
               <Td>
                 {b.editStatus !== 'DELETED' && (
                   <HStack>
+                    <Menu size="sm">
+                      <MenuButton size="sm" as={Button} rightIcon={<Icon as={FeatherIcon} icon="chevron-down" />}>
+                        Manage
+                      </MenuButton>
+                      <Portal>
+                        <MenuList>
+                          <MenuItem
+                            as={Link}
+                            to={`${b.spBearerReference}/evc-attachments`}
+                            icon={<Icon size={12} as={FeatherIcon} icon="anchor" />}
+                          >
+                            Evc attachments
+                          </MenuItem>
+                        </MenuList>
+                      </Portal>
+                    </Menu>
                     <Tooltip label="Edit bearer">
                       <IconButton
+                        colorScheme="blue"
                         aria-label="edit"
                         size="sm"
+                        as={Link}
                         icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                        onClick={() => onEditVpnBearerClick(b.spBearerReference)}
-                      />
-                    </Tooltip>
-                    <Tooltip label="Evc Attachments">
-                      <IconButton
-                        aria-label="evc-attachments"
-                        size="sm"
-                        icon={<Icon size={12} as={FeatherIcon} icon="anchor" />}
-                        onClick={() => onEvcAttachmentSiteClick(b.spBearerReference)}
+                        to={`edit/${b.spBearerReference}`}
                       />
                     </Tooltip>
                     <Tooltip

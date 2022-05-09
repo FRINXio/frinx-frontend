@@ -1,22 +1,22 @@
-import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
-import { useDisclosure, Heading, Box, Container, Flex, Button } from '@chakra-ui/react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Box, Button, Container, Flex, Heading, useDisclosure } from '@chakra-ui/react';
 import diff from 'diff-arrays-of-objects';
+import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
+import { EvcAttachment, VpnBearer } from '../../components/forms/bearer-types';
 import {
   apiBearerToClientBearer,
-  clientBearerToApiBearer,
   apiEvcAttachmentsToClientEvcAttachments,
+  clientBearerToApiBearer,
 } from '../../components/forms/converters';
-import EvcTable from './evc-table';
-import { EvcAttachment, VpnBearer } from '../../components/forms/bearer-types';
-import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
-import callbackUtils from '../../unistore-callback-utils';
-import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
+import FilterContext from '../../filter-provider';
+import unwrap from '../../helpers/unwrap';
+import usePagination from '../../hooks/use-pagination';
+import callbackUtils from '../../unistore-callback-utils';
 import EvcFilter, { EvcFilters } from './evc-filter';
 import { getChangedEvcAttachmentsWithStatus, getSavedEvcAttachmentsWithStatus } from './evc-helpers';
-import unwrap from '../../helpers/unwrap';
-import FilterContext from '../../filter-provider';
+import EvcTable from './evc-table';
 
 const EvcListPage: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);
@@ -33,7 +33,6 @@ const EvcListPage: VoidFunctionComponent = () => {
   const [pagination, setPagination] = usePagination();
   const [filters, setFilters] = useState<EvcFilters>(evcFilters);
   const [submittedFilters, setSubmittedFilters] = useState(evcFilters);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -125,10 +124,6 @@ const EvcListPage: VoidFunctionComponent = () => {
     setSubmittedFilters(filters);
   };
 
-  const handleEditEvcRedirect = (vpnBearerId: string, evcType: string, circuitReference: string) => {
-    navigate(`../vpn-bearers/${vpnBearerId}/evc-attachments/edit/${evcType}/${circuitReference}`);
-  };
-
   if (!bearer) {
     return null;
   }
@@ -201,7 +196,6 @@ const EvcListPage: VoidFunctionComponent = () => {
                   bearer={bearer}
                   evcAttachments={changedEvcAttachmentsWithStatus}
                   detailId={detailId}
-                  onEditEvcButtonClick={handleEditEvcRedirect}
                   onDeleteEvcButtonClick={handleDeleteButtonClick}
                   onRowClick={handleRowClick}
                 />
@@ -213,7 +207,6 @@ const EvcListPage: VoidFunctionComponent = () => {
             bearer={bearer}
             evcAttachments={savedEvcAttachmentsWithStatus}
             detailId={detailId}
-            onEditEvcButtonClick={handleEditEvcRedirect}
             onDeleteEvcButtonClick={handleDeleteButtonClick}
             onRowClick={handleRowClick}
           />
