@@ -52,11 +52,14 @@ const DELETE_POOL_MUTATION = gql`
 
 const PoolsPage: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-  const [{ data, fetching, error }] = useQuery<GetAllPoolsQuery>({
+  const [{ data, fetching: isQueryLoading, error }] = useQuery<GetAllPoolsQuery>({
     query: POOLS_QUERY,
     context,
   });
-  const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
+  const [{ fetching: isMutationLoading }, deletePool] = useMutation<
+    DeletePoolMutation,
+    DeletePoolMutationMutationVariables
+  >(DELETE_POOL_MUTATION);
   const { addToastNotification } = useNotifications();
 
   const handleDeleteBtnClick = async (id: string) => {
@@ -77,8 +80,12 @@ const PoolsPage: VoidFunctionComponent = () => {
     }
   };
 
-  if (error != null && data === null) {
-    return <div>{error.message}</div>;
+  if (error != null) {
+    return <div>{error?.message}</div>;
+  }
+
+  if (data == null && isQueryLoading) {
+    return <Progress isIndeterminate size="lg" />;
   }
 
   return (
@@ -101,9 +108,13 @@ const PoolsPage: VoidFunctionComponent = () => {
       </Flex>
       <Box position="relative" marginBottom={5}>
         <Box position="absolute" top={0} left={0} right={0}>
-          {fetching && <Progress isIndeterminate size="xs" />}
+          {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
-        <PoolsTable pools={data?.QueryResourcePools} isLoading={fetching} onDeleteBtnClick={handleDeleteBtnClick} />
+        <PoolsTable
+          pools={data?.QueryResourcePools ?? []}
+          isLoading={isQueryLoading || isMutationLoading}
+          onDeleteBtnClick={handleDeleteBtnClick}
+        />
       </Box>
     </>
   );
