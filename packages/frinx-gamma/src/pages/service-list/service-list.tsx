@@ -1,19 +1,19 @@
 import { Box, Button, Container, Flex, Heading, HStack, Icon, useDisclosure } from '@chakra-ui/react';
+import diff from 'diff-arrays-of-objects';
 import FeatherIcon from 'feather-icons-react';
 import React, { useContext, useEffect, useState, VoidFunctionComponent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import diff from 'diff-arrays-of-objects';
-import callbackUtils from '../../unistore-callback-utils';
+import { Link } from 'react-router-dom';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal/confirm-delete-modal';
 import { apiVpnServiceToClientVpnService } from '../../components/forms/converters';
 import { VpnService } from '../../components/forms/service-types';
-import unwrap from '../../helpers/unwrap';
-import ServiceFilter, { ServiceFilters } from './service-filter';
-import ServiceTable from './service-table';
-import usePagination from '../../hooks/use-pagination';
 import Pagination from '../../components/pagination/pagination';
-import { getChangedServicesWithStatus, getSavedServicesWithStatus } from './service-helpers';
 import FilterContext from '../../filter-provider';
+import unwrap from '../../helpers/unwrap';
+import usePagination from '../../hooks/use-pagination';
+import callbackUtils from '../../unistore-callback-utils';
+import ServiceFilter, { ServiceFilters } from './service-filter';
+import { getChangedServicesWithStatus, getSavedServicesWithStatus } from './service-helpers';
+import ServiceTable from './service-table';
 
 const CreateVpnServicePage: VoidFunctionComponent = () => {
   const filterContext = useContext(FilterContext);
@@ -32,7 +32,6 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
     customerName: null,
     // defaultCVlan: null,
   });
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,10 +105,6 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
     setDetailId(isOpen ? rowId : null);
   };
 
-  const handleEditRedirect = (serviceId: string) => {
-    navigate(`../services/edit/${unwrap(serviceId)}`);
-  };
-
   const changedServicesWithStatus = getChangedServicesWithStatus(createdServices, updatedServices, deletedServices);
   const savedServicesWithStatus = getSavedServicesWithStatus(vpnServices, updatedServices, deletedServices);
 
@@ -163,7 +158,6 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
                       size="sm"
                       detailId={detailId}
                       services={changedServicesWithStatus}
-                      onEditServiceButtonClick={handleEditRedirect}
                       onDeleteServiceButtonClick={handleDeleteButtonClick}
                       onRowClick={handleRowClick}
                     />
@@ -173,7 +167,6 @@ const CreateVpnServicePage: VoidFunctionComponent = () => {
               <ServiceTable
                 size="md"
                 detailId={detailId}
-                onEditServiceButtonClick={handleEditRedirect}
                 onDeleteServiceButtonClick={handleDeleteButtonClick}
                 services={savedServicesWithStatus}
                 onRowClick={handleRowClick}
