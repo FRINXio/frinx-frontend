@@ -88,7 +88,7 @@
     "eslint-plugin-react-hooks": "4.4.0",
     "flow-bin": "0.173.0",
     "flow-remove-types": "2.174.0",
-    "framer-motion": "6.2.8",
+    "framer-motion": "6.3.3",
     "graphql": "15.8.0",
     "jsdoc": "3.6.10",
     "react": "18.0.0",
