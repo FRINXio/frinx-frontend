@@ -2673,6 +2673,10 @@ __metadata:
   resolution: "@frinx/api@workspace:packages/frinx-api"
   dependencies:
     "@frinx/eslint-config-typescript": 19.0.4-build.1
+    "@rollup/plugin-commonjs": ^22.0.0
+    "@rollup/plugin-json": ^4.1.0
+    "@rollup/plugin-node-resolve": ^13.3.0
+    "@rollup/plugin-typescript": ^8.3.2
     "@typescript-eslint/eslint-plugin": 5.17.0
     "@typescript-eslint/parser": 5.17.0
     "@urql/exchange-retry": 0.3.2
@@ -2686,9 +2690,9 @@ __metadata:
     eslint-plugin-react-hooks: 4.4.0
     fp-ts: 2.11.9
     io-ts: 2.2.16
-    rollup: 2.70.1
-    rollup-plugin-dts: 4.2.0
-    rollup-plugin-esbuild: 4.7.2
+    rollup: ^2.72.1
+    rollup-plugin-dts: ^4.2.1
+    rollup-plugin-peer-deps-external: ^2.2.4
     typescript: 4.6.3
     url-join: 5.0.0
     urql: 2.2.0
@@ -2721,11 +2725,11 @@ __metadata:
     "@fortawesome/react-fontawesome": 0.1.18
     "@frinx/api": 0.0.1
     "@frinx/eslint-config-typescript": 19.0.4-build.1
-    "@frinx/gamma": ^0.0.1
     "@frinx/inventory-client": ^0.0.1
     "@frinx/uniresource-ui": ^0.0.1
     "@frinx/workflow-builder": ^1.0.0
     "@frinx/workflow-ui": ^2.0.0
+    "@frinxio/gamma": 0.0.2
     "@types/node": 16.11.26
     "@types/react": 17.0.42
     "@types/react-dom": 17.0.14
@@ -2822,78 +2826,6 @@ __metadata:
     pino-pretty: 7.6.0
     ts-node-dev: 1.1.8
     typescript: 4.6.3
-  languageName: unknown
-  linkType: soft
-
-"@frinx/gamma@^0.0.1, @frinx/gamma@workspace:packages/frinx-gamma":
-  version: 0.0.0-use.local
-  resolution: "@frinx/gamma@workspace:packages/frinx-gamma"
-  dependencies:
-    "@babel/core": 7.17.8
-    "@babel/plugin-proposal-class-properties": 7.16.7
-    "@babel/plugin-proposal-nullish-coalescing-operator": 7.16.7
-    "@babel/plugin-proposal-object-rest-spread": 7.17.3
-    "@babel/plugin-proposal-optional-chaining": 7.16.7
-    "@babel/preset-env": 7.16.11
-    "@babel/preset-flow": 7.16.7
-    "@babel/preset-react": 7.16.7
-    "@babel/preset-typescript": 7.16.7
-    "@chakra-ui/icons": 1.1.7
-    "@chakra-ui/react": 1.8.8
-    "@emotion/react": 11.9.0
-    "@emotion/styled": 11.8.1
-    "@fortawesome/fontawesome-svg-core": 6.1.1
-    "@fortawesome/free-solid-svg-icons": 6.1.1
-    "@fortawesome/react-fontawesome": 0.1.18
-    "@frinx/eslint-config-typescript": 19.0.4-build.1
-    "@types/lodash": 4.14.181
-    "@types/url-join": 4.0.1
-    "@typescript-eslint/eslint-plugin": 5.17.0
-    "@typescript-eslint/parser": 5.17.0
-    babel-loader: 8.2.4
-    babel-plugin-relay: 10.1.3
-    chakra-ui-autocomplete: 1.4.5
-    css-loader: 5.2.7
-    diff-arrays-of-objects: 1.1.9
-    downshift: 6.1.7
-    eslint: 8.12.0
-    eslint-config-prettier: 7.2.0
-    eslint-import-resolver-typescript: 2.7.1
-    eslint-plugin-import: 2.25.4
-    eslint-plugin-jsx-a11y: 6.5.1
-    eslint-plugin-react: 7.29.4
-    eslint-plugin-react-hooks: 4.4.0
-    feather-icons-react: 0.5.0
-    formik: 2.2.9
-    fp-ts: 2.11.9
-    framer-motion: 6.2.8
-    fuse.js: ^6.6.0
-    graphql: 15.8.0
-    html-webpack-plugin: 5.5.0
-    io-ts: 2.2.16
-    npm-run-all: 4.1.5
-    react: 18.0.0
-    react-dom: 18.0.0
-    react-router-dom: 6.3.0
-    react-svg-loader: 3.0.3
-    sass-loader: 12.6.0
-    style-loader: 2.0.0
-    typescript: 4.6.3
-    url-join: 5.0.0
-    url-loader: 4.1.1
-    uuid: 8.3.2
-    webpack: 5.51.0
-    webpack-cli: 4.9.2
-    yup: 0.32.11
-  peerDependencies:
-    "@chakra-ui/icons": ^1.0.15
-    "@chakra-ui/react": ^1.6.7
-    "@emotion/react": ^11.1.4
-    "@emotion/styled": ^11.0.0
-    framer-motion: ^4.1.3 || ^6.0.0
-    react: ^18.0.0
-    react-dom: ^18.0.0
-    react-router-dom: ^6.0.0
   languageName: unknown
   linkType: soft
 
@@ -3189,6 +3121,37 @@ __metadata:
     react-router-dom: ^6.0.0
   languageName: unknown
   linkType: soft
+
+"@frinxio/gamma@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@frinxio/gamma@npm:0.0.2::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40frinxio%2Fgamma%2F0.0.2%2F515d1c1b11319e9960e2c2837877e378a7872c6954c7de79334b75cd65d1b3ea"
+  dependencies:
+    "@types/lodash": 4.14.181
+    "@types/url-join": 4.0.1
+    "@types/uuid": ^8.3.4
+    chakra-ui-autocomplete: 1.4.5
+    diff-arrays-of-objects: 1.1.9
+    downshift: 6.1.7
+    feather-icons-react: 0.5.0
+    formik: 2.2.9
+    fp-ts: 2.11.9
+    fuse.js: ^6.6.0
+    io-ts: 2.2.16
+    url-join: 5.0.0
+    uuid: 8.3.2
+    yup: 0.32.11
+  peerDependencies:
+    "@chakra-ui/icons": ^1.0.15
+    "@chakra-ui/react": ^1.6.7
+    "@emotion/react": ^11.1.4
+    "@emotion/styled": ^11.0.0
+    framer-motion: ^4.1.3 || ^6.0.0
+    react: ^18.0.0
+    react-dom: ^18.0.0
+    react-router-dom: ^6.0.0
+  checksum: 5720afcc4959130ac11cfc9f5b22c7418e904071befb118a1a5612fe40875b1d49defd33c0972571295e8f5cdc56f7104146165304ee574a67a95fb7c5f07a64
+  languageName: node
+  linkType: hard
 
 "@gar/promisify@npm:^1.1.3":
   version: 1.1.3
@@ -3863,13 +3826,74 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/pluginutils@npm:^4.1.1":
-  version: 4.2.0
-  resolution: "@rollup/pluginutils@npm:4.2.0"
+"@rollup/plugin-commonjs@npm:^22.0.0":
+  version: 22.0.0
+  resolution: "@rollup/plugin-commonjs@npm:22.0.0"
   dependencies:
+    "@rollup/pluginutils": ^3.1.0
+    commondir: ^1.0.1
     estree-walker: ^2.0.1
+    glob: ^7.1.6
+    is-reference: ^1.2.1
+    magic-string: ^0.25.7
+    resolve: ^1.17.0
+  peerDependencies:
+    rollup: ^2.68.0
+  checksum: fdcce2bf58875fde0e06f001544c0d9a0509a12929393862f72dcef8fcbf4d5d0ba0d5db6cf10ba4351335caf67a3dbdb95000678c468585e3972994f92e2ce9
+  languageName: node
+  linkType: hard
+
+"@rollup/plugin-json@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "@rollup/plugin-json@npm:4.1.0"
+  dependencies:
+    "@rollup/pluginutils": ^3.0.8
+  peerDependencies:
+    rollup: ^1.20.0 || ^2.0.0
+  checksum: 867bc9339b4ccf0b9ff3b2617a95b3b8920115163f86c8e3b1f068a14ca25949472d3c05b09a5ac38ca0fe2185756e34617eaeb219d4a2b6e2307c501c7d4552
+  languageName: node
+  linkType: hard
+
+"@rollup/plugin-node-resolve@npm:^13.3.0":
+  version: 13.3.0
+  resolution: "@rollup/plugin-node-resolve@npm:13.3.0"
+  dependencies:
+    "@rollup/pluginutils": ^3.1.0
+    "@types/resolve": 1.17.1
+    deepmerge: ^4.2.2
+    is-builtin-module: ^3.1.0
+    is-module: ^1.0.0
+    resolve: ^1.19.0
+  peerDependencies:
+    rollup: ^2.42.0
+  checksum: ec5418e6b3c23a9e30683056b3010e9d325316dcfae93fbc673ae64dad8e56a2ce761c15c48f5e2dcfe0c822fdc4a4905ee6346e3dcf90603ba2260afef5a5e6
+  languageName: node
+  linkType: hard
+
+"@rollup/plugin-typescript@npm:^8.3.2":
+  version: 8.3.2
+  resolution: "@rollup/plugin-typescript@npm:8.3.2"
+  dependencies:
+    "@rollup/pluginutils": ^3.1.0
+    resolve: ^1.17.0
+  peerDependencies:
+    rollup: ^2.14.0
+    tslib: "*"
+    typescript: ">=3.7.0"
+  checksum: bdbf3c11d26b04244228cbe2bd48dbac66044c16df4ee3658276480b1e050c33f9bc72ef7b6e05a88c4a48db3d5359ab6a3acf7ff288482af29863478d014881
+  languageName: node
+  linkType: hard
+
+"@rollup/pluginutils@npm:^3.0.8, @rollup/pluginutils@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@rollup/pluginutils@npm:3.1.0"
+  dependencies:
+    "@types/estree": 0.0.39
+    estree-walker: ^1.0.1
     picomatch: ^2.2.2
-  checksum: 2e86d9bfb95919727bcba0bbbdbedc98e25a1e51fe3047f18ec6d85e0743d1c73e1c0de3f9fdbd2ff6b90c32f30d4b2706c9e794f3c2e7a80156980081558e2e
+  peerDependencies:
+    rollup: ^1.20.0||^2.0.0
+  checksum: 8be16e27863c219edbb25a4e6ec2fe0e1e451d9e917b6a43cf2ae5bc025a6b8faaa40f82a6e53b66d0de37b58ff472c6c3d57a83037ae635041f8df959d6d9aa
   languageName: node
   linkType: hard
 
@@ -4002,6 +4026,13 @@ __metadata:
   version: 0.0.51
   resolution: "@types/estree@npm:0.0.51"
   checksum: e56a3bcf759fd9185e992e7fdb3c6a5f81e8ff120e871641607581fb3728d16c811702a7d40fa5f869b7f7b4437ab6a87eb8d98ffafeee51e85bbe955932a189
+  languageName: node
+  linkType: hard
+
+"@types/estree@npm:0.0.39":
+  version: 0.0.39
+  resolution: "@types/estree@npm:0.0.39"
+  checksum: 412fb5b9868f2c418126451821833414189b75cc6bf84361156feed733e3d92ec220b9d74a89e52722e03d5e241b2932732711b7497374a404fad49087adc248
   languageName: node
   linkType: hard
 
@@ -4272,6 +4303,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/resolve@npm:1.17.1":
+  version: 1.17.1
+  resolution: "@types/resolve@npm:1.17.1"
+  dependencies:
+    "@types/node": "*"
+  checksum: dc6a6df507656004e242dcb02c784479deca516d5f4b58a1707e708022b269ae147e1da0521f3e8ad0d63638869d87e0adc023f0bd5454aa6f72ac66c7525cf5
+  languageName: node
+  linkType: hard
+
 "@types/responselike@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/responselike@npm:1.0.0"
@@ -4344,7 +4384,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/uuid@npm:8.3.4":
+"@types/uuid@npm:8.3.4, @types/uuid@npm:^8.3.4":
   version: 8.3.4
   resolution: "@types/uuid@npm:8.3.4"
   checksum: 6f11f3ff70f30210edaa8071422d405e9c1d4e53abbe50fdce365150d3c698fe7bbff65c1e71ae080cbfb8fded860dbb5e174da96fdbbdfcaa3fb3daa474d20f
@@ -6035,6 +6075,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"builtin-modules@npm:^3.0.0":
+  version: 3.3.0
+  resolution: "builtin-modules@npm:3.3.0"
+  checksum: db021755d7ed8be048f25668fe2117620861ef6703ea2c65ed2779c9e3636d5c3b82325bd912244293959ff3ae303afa3471f6a15bf5060c103e4cc3a839749d
+  languageName: node
+  linkType: hard
+
 "bytes@npm:3.0.0":
   version: 3.0.0
   resolution: "bytes@npm:3.0.0"
@@ -7588,6 +7635,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"deepmerge@npm:^4.2.2":
+  version: 4.2.2
+  resolution: "deepmerge@npm:4.2.2"
+  checksum: a8c43a1ed8d6d1ed2b5bf569fa4c8eb9f0924034baf75d5d406e47e157a451075c4db353efea7b6bcc56ec48116a8ce72fccf867b6e078e7c561904b5897530b
+  languageName: node
+  linkType: hard
+
 "default-gateway@npm:^6.0.3":
   version: 6.0.3
   resolution: "default-gateway@npm:6.0.3"
@@ -8891,6 +8945,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"estree-walker@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "estree-walker@npm:1.0.1"
+  checksum: 7e70da539691f6db03a08e7ce94f394ce2eef4180e136d251af299d41f92fb2d28ebcd9a6e393e3728d7970aeb5358705ddf7209d52fbcb2dd4693f95dcf925f
+  languageName: node
+  linkType: hard
+
 "estree-walker@npm:^2.0.1":
   version: 2.0.2
   resolution: "estree-walker@npm:2.0.2"
@@ -9490,9 +9551,9 @@ __metadata:
   linkType: hard
 
 "fuse.js@npm:^6.6.0":
-  version: 6.6.0
-  resolution: "fuse.js@npm:6.6.0"
-  checksum: ebabf54309fecbe955e6db2dddfaa7cd781018e1b8f09f3acd5f094d03cbca6aa48cc8cfa09f2a23f7b86b881f5b2fb65a5960dd7a4ee36b01f5e84c091fca0e
+  version: 6.6.2
+  resolution: "fuse.js@npm:6.6.2"
+  checksum: 17ae758ce205276ebd88bd9c9f088a100be0b4896abac9f6b09847151269d1690f41d7f98ff5813d4a58973162dbd99d0072ce807020fee6f9de60170f6b08eb
   languageName: node
   linkType: hard
 
@@ -10490,6 +10551,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-builtin-module@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "is-builtin-module@npm:3.1.0"
+  dependencies:
+    builtin-modules: ^3.0.0
+  checksum: f1e5dd2cd5f252d4d799b20a0c8c4f7e9c399c4d141749af76ca0121058d4062c3015d026f1b1409dd3d2a4ddfb9b15cf6eb9c370fed53fea8652ce35b5e95cb
+  languageName: node
+  linkType: hard
+
 "is-callable@npm:^1.1.4, is-callable@npm:^1.2.4":
   version: 1.2.4
   resolution: "is-callable@npm:1.2.4"
@@ -10588,6 +10658,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-module@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "is-module@npm:1.0.0"
+  checksum: 8cd5390730c7976fb4e8546dd0b38865ee6f7bacfa08dfbb2cc07219606755f0b01709d9361e01f13009bbbd8099fa2927a8ed665118a6105d66e40f1b838c3f
+  languageName: node
+  linkType: hard
+
 "is-negative-zero@npm:^2.0.1":
   version: 2.0.2
   resolution: "is-negative-zero@npm:2.0.2"
@@ -10661,6 +10738,15 @@ __metadata:
   version: 2.2.2
   resolution: "is-promise@npm:2.2.2"
   checksum: 18bf7d1c59953e0ad82a1ed963fb3dc0d135c8f299a14f89a17af312fc918373136e56028e8831700e1933519630cc2fd4179a777030330fde20d34e96f40c78
+  languageName: node
+  linkType: hard
+
+"is-reference@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "is-reference@npm:1.2.1"
+  dependencies:
+    "@types/estree": "*"
+  checksum: e7b48149f8abda2c10849ea51965904d6a714193d68942ad74e30522231045acf06cbfae5a4be2702fede5d232e61bf50b3183acdc056e6e3afe07fcf4f4b2bc
   languageName: node
   linkType: hard
 
@@ -10830,7 +10916,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"joycon@npm:^3.0.1, joycon@npm:^3.1.1":
+"joycon@npm:^3.1.1":
   version: 3.1.1
   resolution: "joycon@npm:3.1.1"
   checksum: 8003c9c3fc79c5c7602b1c7e9f7a2df2e9916f046b0dbad862aa589be78c15734d11beb9fe846f5e06138df22cb2ad29961b6a986ba81c4920ce2b15a7f11067
@@ -11021,13 +11107,6 @@ __metadata:
   bin:
     json5: lib/cli.js
   checksum: 74b8a23b102a6f2bf2d224797ae553a75488b5adbaee9c9b6e5ab8b510a2fc6e38f876d4c77dea672d4014a44b2399e15f2051ac2b37b87f74c0c7602003543b
-  languageName: node
-  linkType: hard
-
-"jsonc-parser@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "jsonc-parser@npm:3.0.0"
-  checksum: 1df2326f1f9688de30c70ff19c5b2a83ba3b89a1036160da79821d1361090775e9db502dc57a67c11b56e1186fc1ed70b887f25c5febf9a3ec4f91435836c99d
   languageName: node
   linkType: hard
 
@@ -11524,6 +11603,15 @@ __metadata:
   version: 7.7.1
   resolution: "lru-cache@npm:7.7.1"
   checksum: f362c5a2cfa8ad6fe557ec43dc1b7a9695cce84a5652a43ff813609f782f5da576631e7dfad41878bf19a7a69438f38375178635ee80de269aa314280ca2f59e
+  languageName: node
+  linkType: hard
+
+"magic-string@npm:^0.25.7":
+  version: 0.25.9
+  resolution: "magic-string@npm:0.25.9"
+  dependencies:
+    sourcemap-codec: ^1.4.8
+  checksum: 9a0e55a15c7303fc360f9572a71cffba1f61451bc92c5602b1206c9d17f492403bf96f946dfce7483e66822d6b74607262e24392e87b0ac27b786e69a40e9b1a
   languageName: node
   linkType: hard
 
@@ -13878,7 +13966,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.0.0, resolve@npm:^1.10.0, resolve@npm:^1.12.0, resolve@npm:^1.14.2, resolve@npm:^1.20.0, resolve@npm:^1.22.0, resolve@npm:^1.9.0":
+"resolve@npm:^1.0.0, resolve@npm:^1.10.0, resolve@npm:^1.12.0, resolve@npm:^1.14.2, resolve@npm:^1.17.0, resolve@npm:^1.19.0, resolve@npm:^1.20.0, resolve@npm:^1.22.0, resolve@npm:^1.9.0":
   version: 1.22.0
   resolution: "resolve@npm:1.22.0"
   dependencies:
@@ -13901,7 +13989,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.0.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.9.0#~builtin<compat/resolve>":
+"resolve@patch:resolve@^1.0.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.9.0#~builtin<compat/resolve>":
   version: 1.22.0
   resolution: "resolve@patch:resolve@npm%3A1.22.0#~builtin<compat/resolve>::version=1.22.0&hash=07638b"
   dependencies:
@@ -14003,37 +14091,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup-plugin-dts@npm:4.2.0":
-  version: 4.2.0
-  resolution: "rollup-plugin-dts@npm:4.2.0"
+"rollup-plugin-dts@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "rollup-plugin-dts@npm:4.2.1"
   dependencies:
     "@babel/code-frame": ^7.16.7
     magic-string: ^0.26.1
   peerDependencies:
-    rollup: ^2.55
-    typescript: ^4.1
+    rollup: ^2.70
+    typescript: ^4.6
   dependenciesMeta:
     "@babel/code-frame":
       optional: true
-  checksum: 2b8394bf62c3903a68722266999adf3e85768bf1a7e93286841b466afaabf5cb30501f71d40075c3393cc33defa6ed13d3276bae0d8cb7a87a95d06f7a93c04d
+  checksum: 70a593db76007159a7bbc06c26824c3275ab1d8d4d6b6e8bc06d1345f337d9d118aa8d4ec175155bc072a66b78da4242a915c3516a3270006b9758004eadeb43
   languageName: node
   linkType: hard
 
-"rollup-plugin-esbuild@npm:4.7.2":
-  version: 4.7.2
-  resolution: "rollup-plugin-esbuild@npm:4.7.2"
-  dependencies:
-    "@rollup/pluginutils": ^4.1.1
-    joycon: ^3.0.1
-    jsonc-parser: ^3.0.0
+"rollup-plugin-peer-deps-external@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "rollup-plugin-peer-deps-external@npm:2.2.4"
   peerDependencies:
-    esbuild: ">=0.10.1"
-    rollup: ^1.20.0 || ^2.0.0
-  checksum: 14d35699349ed573e533a416823885b730cdb27757e2d7f935749c8e6bb59aaa6f2bc60a20843c927d647cd561c4865fcaaddaaeea6e38677915037bb3930e41
+    rollup: "*"
+  checksum: 597bc7631f4e3cfc066a7da4e09e507258aba932008148328c1a4b48e7ffa755592ef4bcf0165320bbd5019afbdd326f569cd0c68406d820da9ab52e971c009b
   languageName: node
   linkType: hard
 
-"rollup@npm:2.70.1, rollup@npm:^2.59.0":
+"rollup@npm:^2.59.0":
   version: 2.70.1
   resolution: "rollup@npm:2.70.1"
   dependencies:
@@ -14044,6 +14127,20 @@ __metadata:
   bin:
     rollup: dist/bin/rollup
   checksum: 06c62933e6e81a1c8c684d7d576e507081aabdb63cc0c91bca86b7348b66df03b77827068e4990b8b6c738bd3ef66dcc8c7ed7e0ea40b736068e7618f693133e
+  languageName: node
+  linkType: hard
+
+"rollup@npm:^2.72.1":
+  version: 2.72.1
+  resolution: "rollup@npm:2.72.1"
+  dependencies:
+    fsevents: ~2.3.2
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    rollup: dist/bin/rollup
+  checksum: 3dca122129f560acc3c54dd5bd5f9470dd562d74f61c652c57b6a4355a963c0828640382ebff544f1b0e71387733a51fb963d6f761ae1f05a84f5923bbde883c
   languageName: node
   linkType: hard
 

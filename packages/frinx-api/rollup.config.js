@@ -1,7 +1,10 @@
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import typescript from '@rollup/plugin-typescript';
+import external from 'rollup-plugin-peer-deps-external';
+import json from '@rollup/plugin-json';
 import dts from 'rollup-plugin-dts';
-import esbuild from 'rollup-plugin-esbuild';
-
-const name = require('./package.json').main.replace(/\.js$/, '');
+import pkg from './package.json';
 
 const bundle = (config) => ({
   ...config,
@@ -10,25 +13,23 @@ const bundle = (config) => ({
 
 export default [
   bundle({
-    plugins: [esbuild({ experimentalBundling: true })],
+    plugins: [external(), resolve(), commonjs(), typescript({ tsconfig: './tsconfig.json' }), json()],
     output: [
       {
-        file: `${name}.js`,
+        file: pkg.main,
         format: 'cjs',
         sourcemap: true,
+        name: 'frinx-api',
       },
       {
-        file: `${name}.mjs`,
+        file: pkg.module,
         format: 'es',
         sourcemap: true,
       },
     ],
   }),
   bundle({
+    output: [{ file: pkg.typings, format: 'esm' }],
     plugins: [dts()],
-    output: {
-      file: `${name}.d.ts`,
-      format: 'es',
-    },
   }),
 ];

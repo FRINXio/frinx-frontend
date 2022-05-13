@@ -1,9 +1,9 @@
 import { UniflowApi, UnistoreApi } from '@frinx/api';
-import { GammaAppProviderProps } from '@frinx/gamma/src';
+import { GammaAppProviderProps } from '@frinxio/gamma';
 import React, { FC, useEffect, useState, VoidFunctionComponent } from 'react';
 import { authContext } from './auth-helpers';
 
-type GammaComponents = Omit<typeof import('@frinx/gamma/src'), 'getGammaAppProvider'> & {
+type GammaComponents = Omit<typeof import('@frinxio/gamma'), 'getGammaAppProvider'> & {
   GammaAppProvider: FC<GammaAppProviderProps>;
 };
 
@@ -12,7 +12,7 @@ const GammaApp: VoidFunctionComponent = () => {
   const [hasTransactionError, setHasTransactionError] = useState(false);
 
   useEffect(() => {
-    import('@frinx/gamma/src').then((gammaImport) => {
+    import('@frinxio/gamma').then((gammaImport) => {
       const { getGammaAppProvider, GammaApp: App } = gammaImport;
 
       setComponents({

@@ -15,7 +15,7 @@ const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
   ['isUniflowEnabled', () => import('@frinx/workflow-ui')],
   ['isInventoryEnabled', () => import('@frinx/inventory-client')],
   ['isUniresourceEnabled', () => import('@frinx/uniresource-ui')],
-  ['isGammaEnabled', () => import('@frinx/gamma')],
+  ['isGammaEnabled', () => import('@frinxio/gamma')],
 ]);
 
 class DashboardApp {
