@@ -9,6 +9,8 @@ jobs:
   pr-check:
     runs-on: ubuntu-latest
     container: node:16.14.2-alpine
+    env:
+      YARN_NPM_AUTH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v3
@@ -16,8 +18,6 @@ jobs:
         run: cp yarn.lock yarn.lock.orig
       - name: Install dependencies
         run: yarn install --immutable
-          env:
-            YARN_NPM_AUTH_TOKEN:${{ secrets.PACKAGE_TOKEN }}
       - name: Check code formatting
         run: yarn run formatter:check
       - name: Build dependencies
