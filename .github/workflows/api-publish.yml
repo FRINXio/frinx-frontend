@@ -1,0 +1,34 @@
+name: frinx-api package
+
+on:
+  push:
+    tags:
+      - api-*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.14.2
+      - run: yarn install --immutable
+      - run: yarn run build:api
+
+  publish-gpr:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.14.2
+          registry-url: https://registry.npmjs.org/
+          always-auth: true
+      - run: cd packages/frinx-api && yarn npm publish --access public
+        env:
+          YARN_NPM_AUTH_TOKEN: ${{secrets.PUBLISH_TOKEN}}
