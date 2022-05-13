@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - main
-      - gamma-project
 jobs:
   pr-check:
     runs-on: ubuntu-latest
@@ -34,8 +33,6 @@ jobs:
         run: yarn run lint:inventory
       - name: Run eslint check in Uniresource UI
         run: yarn run lint:uniresource
-      - name: Run eslint check in Gamma
-        run: yarn run lint:gamma
       - name: Check types in Workflow Builder
         run: yarn run type-check:workflow-builder
       - name: Check types in Inventory client
@@ -46,5 +43,3 @@ jobs:
         run: yarn run type-check:dashboard
       - name: Check types in Frinx api
         run: yarn run type-check:api
-      - name: Check types in Gamma
-        run: yarn run type-check:gamma
