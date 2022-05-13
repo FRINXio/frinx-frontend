@@ -16,6 +16,8 @@ jobs:
         run: cp yarn.lock yarn.lock.orig
       - name: Install dependencies
         run: yarn install --immutable
+          env:
+            YARN_NPM_AUTH_TOKEN:${{ secrets.PACKAGE_TOKEN }}
       - name: Check code formatting
         run: yarn run formatter:check
       - name: Build dependencies
