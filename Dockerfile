@@ -1,5 +1,6 @@
 FROM node:16.14.2-alpine as build
 
+ARG YARN_NPM_AUTH_TOKEN
 ENV YARN_NPM_AUTH_TOKEN=$YARN_NPM_AUTH_TOKEN
 
 RUN mkdir /build
