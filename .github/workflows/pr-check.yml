@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     container: node:16.14.2-alpine
     env:
-      YARN_NPM_AUTH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+      PRIVATE_GH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v3
