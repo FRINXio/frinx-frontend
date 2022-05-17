@@ -16,6 +16,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16.14.2
+      - run: cp .yarnrc.ci.yml .yarnrc.yml
       - run: yarn install --immutable
       - run: yarn run build:api
       - run: cd packages/frinx-api && yarn npm publish --access public

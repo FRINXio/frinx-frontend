@@ -9,6 +9,7 @@ RUN mkdir /build
 COPY . /build/
 
 WORKDIR /build
+RUN cp .yarnrc.ci.yml .yarnrc.yml
 RUN yarn install --immutable
 ENV NODE_ENV production
 RUN yarn run build

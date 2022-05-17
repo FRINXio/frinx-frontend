@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v3
+      - name: Use CI yarnrc
+        run: cp .yarnrc.ci.yml .yarnrc.yml
       - name: Copy yarn.lock file
         run: cp yarn.lock yarn.lock.orig
       - name: Install dependencies
