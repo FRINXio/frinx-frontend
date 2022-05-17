@@ -8,13 +8,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PRIVATE_GH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+      PRIVATE_NPM_TOKEN: ${{secrets.PUBLISH_TOKEN}}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16.14.2
-          registry-url: https://registry.npmjs.org/
-          always-auth: true
-      - run: YARN_NPM_AUTH_TOKEN=${{ secrets.PACKAGE_TOKEN }} yarn install --immutable
+      - run: yarn install --immutable
       - run: yarn run build:api
-      - run: YARN_NPM_AUTH_TOKEN=${{secrets.PUBLISH_TOKEN}} cd packages/frinx-api && yarn npm publish --access public
+      - run: cd packages/frinx-api && yarn npm publish --access public
