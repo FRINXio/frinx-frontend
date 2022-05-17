@@ -31,6 +31,7 @@ import {
   decodeVpnCarriersOutput,
   decodeVpnNodesOutput,
   decodeVpnServicesOutput,
+  decodeVpnSiteOutput,
   decodeVpnSitesOutput,
   EvcAttachmentItemsOutput,
   LocationsOutput,
@@ -44,6 +45,7 @@ import {
   VpnNodeInput,
   VpnNodesOutput,
   VpnServicesOutput,
+  VpnSiteOutput,
   VpnSitesOutput,
 } from './types';
 
@@ -73,6 +75,7 @@ export type UnistoreApiClient = {
     serviceFilter: ServiceFilter | null,
     contentType?: ContentType,
   ) => Promise<VpnServicesOutput>;
+  getVpnService: (serviceId: string, contentType?: ContentType) => Promise<VpnServicesOutput>;
   editVpnServices: (vpnService: CreateVpnServiceInput) => Promise<unknown>;
   deleteVpnService: (vpnServiceId: string) => Promise<unknown>;
   createVpnService: (vpnService: CreateVpnServiceInput) => Promise<void>;
@@ -81,6 +84,7 @@ export type UnistoreApiClient = {
     siteFilter: SiteFilter | null,
     contentType?: ContentType,
   ) => Promise<VpnSitesOutput>;
+  getVpnSite: (siteId: string, contentType?: ContentType) => Promise<VpnSiteOutput>;
   createVpnSite: (vpnSite: CreateVpnSiteInput) => Promise<void>;
   editVpnSite: (vpnSite: CreateVpnSiteInput) => Promise<void>;
   deleteVpnSite: (vpnSiteId: string) => Promise<void>;
@@ -118,6 +122,11 @@ export type UnistoreApiClient = {
     contentType?: ContentType,
   ) => Promise<SiteDevicesOutput>;
   getDevicesCount: (siteId: string, filters: DeviceFilter, contentType?: ContentType) => Promise<number>;
+  getSiteNetworkAccess: (
+    siteId: string,
+    siteNetworkAccessId: string,
+    contentType?: ContentType,
+  ) => Promise<SiteNetworkAccessOutput>;
   getSiteNetworkAccesses: (
     siteId: string,
     pagination: Pagination | null,
@@ -166,6 +175,23 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     }
   }
 
+  async function getVpnService(serviceId: string, contentType?: ContentType): Promise<VpnServicesOutput> {
+    try {
+      const content = getContentParameter(contentType);
+      const json = await sendGetRequest(
+        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${serviceId}?${content}`,
+      );
+      const data = decodeVpnServicesOutput(json);
+      return data;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return {
+        'vpn-service': [],
+      };
+    }
+  }
+
   async function editVpnServices(vpnService: CreateVpnServiceInput): Promise<unknown> {
     const json = await sendPutRequest(
       `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${vpnService['vpn-service'][0]['vpn-id']}?${SERVICE_SCHEMA_PARAMETER}`,
@@ -201,6 +227,23 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
         `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site?${content}${paginationParams}${filterParams}`,
       );
       const data = decodeVpnSitesOutput(json);
+      return data;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return {
+        site: [],
+      };
+    }
+  }
+
+  async function getVpnSite(siteId: string, contentType?: ContentType): Promise<VpnSiteOutput> {
+    try {
+      const content = getContentParameter(contentType);
+      const json = await sendGetRequest(
+        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}?${content}`,
+      );
+      const data = decodeVpnSiteOutput(json);
       return data;
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -521,6 +564,26 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     }
   }
 
+  async function getSiteNetworkAccess(
+    siteId: string,
+    siteNetworkAccessId: string,
+    contentType?: ContentType,
+  ): Promise<SiteNetworkAccessOutput> {
+    try {
+      const content = getContentParameter(contentType);
+      const json = await sendGetRequest(
+        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access=${siteNetworkAccessId}?${content}`,
+      );
+      const data = decodeSiteNetworkAccessOutput(json);
+      return data;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      // if site does not have locations it the response is 404
+      return { 'site-network-access': [] };
+    }
+  }
+
   async function getSiteNetworkAccesses(
     siteId: string,
     pagination: Pagination | null,
@@ -632,10 +695,12 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
 
   return {
     getVpnServices,
+    getVpnService,
     editVpnServices,
     deleteVpnService,
     createVpnService,
     getVpnSites,
+    getVpnSite,
     createVpnSite,
     editVpnSite,
     deleteVpnSite,
@@ -658,6 +723,7 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     getLocations,
     getLocationsCount,
     getSiteNetworkAccesses,
+    getSiteNetworkAccess,
     getSiteNetworkAccessesCount,
     getTransactionCookie,
     closeTransaction,
