@@ -10,6 +10,7 @@ jobs:
     container: node:16.14.2-alpine
     env:
       PRIVATE_GH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+      PRIVATE_NPM_TOKEN: ${{secrets.PUBLISH_TOKEN}}
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v3

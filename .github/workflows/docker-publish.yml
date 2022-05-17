@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build image
-        run: docker build . --file Dockerfile --build-arg COMMIT_HASH=${{ github.sha }} --build-arg PRIVATE_GH_TOKEN=${{ secrets.PACKAGE_TOKEN }} --tag $IMAGE_NAME
+        run: docker build . --file Dockerfile --build-arg COMMIT_HASH=${{ github.sha }} --build-arg PRIVATE_GH_TOKEN=${{ secrets.PACKAGE_TOKEN }} --build-arg PRIVATE_NPM_TOKEN=${{ secrets.PUBLISH_TOKEN }} --tag $IMAGE_NAME
 
       - name: Log into docker hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
