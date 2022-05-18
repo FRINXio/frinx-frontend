@@ -94,6 +94,7 @@ export type UnistoreApiClient = {
     vpnBearerFilter: VpnBearerFilter | null,
     contentType?: ContentType,
   ) => Promise<VpnBearerOutput>;
+  getVpnBearer: (bearerId: string, contentType?: ContentType) => Promise<VpnBearerOutput>;
   createVpnBearer: (bearer: VpnBearerInput) => Promise<void>;
   editVpnBearer: (bearer: VpnBearerInput) => Promise<void>;
   deleteVpnBearer: (id: string) => Promise<void>;
@@ -293,6 +294,24 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
       const content = getContentParameter(contentType);
       const json = await sendGetRequest(
         `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer?${content}${paginationParams}${filterParams}`,
+      );
+      const data = decodeVpnBearerOutput(json);
+
+      return data;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return {
+        'vpn-bearer': [],
+      };
+    }
+  }
+
+  async function getVpnBearer(bearerId: string, contentType?: ContentType): Promise<VpnBearerOutput> {
+    try {
+      const content = getContentParameter(contentType);
+      const json = await sendGetRequest(
+        `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${bearerId}?${content}`,
       );
       const data = decodeVpnBearerOutput(json);
 
@@ -706,6 +725,7 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     deleteVpnSite,
     getValidProviderIdentifiers,
     getVpnBearers,
+    getVpnBearer,
     createVpnBearer,
     editVpnBearer,
     deleteVpnBearer,
