@@ -83,7 +83,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
       )}
       <Modal size="5xl" isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent css="display: flex; flex-direction: column; height: -webkit-fill-available" my="0.75em">
+        <ModalContent css="display: flex; flex-direction: column;" my="0.75em">
           <ModalHeader>
             {task.taskType} ({task.status})
           </ModalHeader>
