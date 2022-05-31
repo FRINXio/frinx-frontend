@@ -14,7 +14,7 @@
     "@fortawesome/fontawesome-svg-core": "6.1.1",
     "@fortawesome/free-solid-svg-icons": "6.1.1",
     "@fortawesome/react-fontawesome": "0.1.18",
-    "@frinx/api": "0.0.4",
+    "@frinx/api": "0.0.5",
     "@frinx/inventory-client": "^0.0.1",
     "@frinx/uniresource-ui": "^0.0.1",
     "@frinx/workflow-builder": "^1.0.0",
