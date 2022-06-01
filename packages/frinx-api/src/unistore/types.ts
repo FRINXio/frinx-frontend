@@ -367,7 +367,7 @@ export type CreateRoutingProtocolItem = {
     };
   };
   bgp?: {
-    'bgp-profiles': {
+    'bgp-profiles'?: {
       'bgp-profile': {
         profile: string;
       }[];
