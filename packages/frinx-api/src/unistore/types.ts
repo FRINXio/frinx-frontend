@@ -367,12 +367,10 @@ export type CreateRoutingProtocolItem = {
     };
   };
   bgp?: {
-    'bgp-profiles': {
-      'bgp-profile': [
-        {
-          profile: string;
-        },
-      ];
+    'bgp-profiles'?: {
+      'bgp-profile': {
+        profile: string;
+      }[];
     };
     'autonomous-system': number;
     'address-family': ['ipv4'];
