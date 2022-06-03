@@ -3524,7 +3524,7 @@ __metadata:
     file-loader: ^6.2.0
     file-saver: ^2.0.5
     flow-bin: 0.173.0
-    flow-remove-types: 2.174.0
+    flow-remove-types: 2.179.0
     formik: ^2.2.9
     framer-motion: 6.2.8
     graphql: 15.8.0
@@ -9986,24 +9986,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flow-parser@npm:^0.174.0":
-  version: 0.174.1
-  resolution: "flow-parser@npm:0.174.1"
-  checksum: b56077cab003bf9389cccf5b35bf27f14f977d831e6063fd35092df51295f74a95e2af3b90024c931b55059ddc9d92c873cd96e15d41c36abc70fa7701f42d7d
+"flow-parser@npm:^0.179.0":
+  version: 0.179.0
+  resolution: "flow-parser@npm:0.179.0"
+  checksum: 939ef4e35dd126ecbfc461f996fbb796a8506b416bc018920fc13a5a0f705c2a688533a6459411b9edca3719fb7d8489287f142b8c164abff85f9232ca251e17
   languageName: node
   linkType: hard
 
-"flow-remove-types@npm:2.174.0":
-  version: 2.174.0
-  resolution: "flow-remove-types@npm:2.174.0"
+"flow-remove-types@npm:2.179.0":
+  version: 2.179.0
+  resolution: "flow-remove-types@npm:2.179.0"
   dependencies:
-    flow-parser: ^0.174.0
+    flow-parser: ^0.179.0
     pirates: ^3.0.2
     vlq: ^0.2.1
   bin:
     flow-node: flow-node
     flow-remove-types: flow-remove-types
-  checksum: e9275b7363613189fcd4a0d4e2629da68507cdf450ad4f6185751db918083e179785724a654fd0a3f63736643adc148d6d7d3c652c6e59d491cdf7778503cbb7
+  checksum: 2da36b01be3bc0ef3e53d830c537b3acf22db98a8582ffc4131bf11a9602c6059581151072dae44b3c686dee59732ec5293510168d0c8ced279d381d263e1c69
   languageName: node
   linkType: hard
 
