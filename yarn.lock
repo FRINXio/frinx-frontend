@@ -3134,7 +3134,7 @@ __metadata:
     eslint-plugin-jsx-a11y: 6.5.1
     eslint-plugin-react: 7.30.0
     eslint-plugin-react-hooks: 4.4.0
-    fp-ts: 2.11.9
+    fp-ts: 2.12.1
     io-ts: 2.2.16
     rollup: ^2.72.1
     rollup-plugin-dts: 4.2.2
@@ -3195,7 +3195,7 @@ __metadata:
     eslint-plugin-react-hooks: 4.4.0
     eventemitter3: 4.0.7
     feather-icons-react: 0.5.0
-    fp-ts: 2.11.9
+    fp-ts: 2.12.1
     framer-motion: 6.2.8
     graphql: 15.8.0
     html-webpack-harddisk-plugin: 2.0.0
@@ -10089,6 +10089,13 @@ __metadata:
   version: 2.11.9
   resolution: "fp-ts@npm:2.11.9"
   checksum: bcab4b9d97f9b77fa7283d5834fd847e58955067d5560eb0a9316900d6c92e959d8109038caf78ffb8ba93015ba8044a7a922c5acae8ca2fda4067f7e4e24bab
+  languageName: node
+  linkType: hard
+
+"fp-ts@npm:2.12.1":
+  version: 2.12.1
+  resolution: "fp-ts@npm:2.12.1"
+  checksum: 1e20e6b468191640a5f83cd52ccbfb361d27a6afbc47230870e63094b569cd9ae8763d0b9dee50eaed568bce8dd72e32ad1d695161bda8ec73e0296a02359832
   languageName: node
   linkType: hard
 
