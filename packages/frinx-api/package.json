@@ -28,7 +28,7 @@
     "@typescript-eslint/eslint-plugin": "5.17.0",
     "@typescript-eslint/parser": "5.17.0",
     "@urql/exchange-retry": "0.3.3",
-    "esbuild": "0.14.36",
+    "esbuild": "0.14.42",
     "eslint": "8.16.0",
     "eslint-config-prettier": "7.2.0",
     "eslint-import-resolver-typescript": "2.7.1",
