@@ -1,11 +1,14 @@
 import { Table, Thead, Tr, Th, Tbody, Td, ButtonGroup, Button } from '@chakra-ui/react';
 import React, { FC } from 'react';
+import Pagination from '../../components/pagination';
 import { AllocatedResourcesQuery } from '../../__generated__/graphql';
 
 type Props = {
   allocatedResources: AllocatedResourcesQuery['QueryResources'];
   canFreeResource: boolean;
   onFreeResource: (userInput: Record<string, string | number>) => void;
+  onPrevious: (cursor: string | null) => () => void;
+  onNext: (cursor: string | null) => () => void;
 };
 
 const getNamesOfAllocatedResources = (allocatedResources: AllocatedResourcesQuery['QueryResources']) => {
@@ -23,42 +26,56 @@ const getNamesOfAllocatedResources = (allocatedResources: AllocatedResourcesQuer
   ];
 };
 
-const PoolDetailAllocatingTable: FC<Props> = ({ allocatedResources, onFreeResource, canFreeResource }) => {
+const PoolDetailAllocatingTable: FC<Props> = ({
+  allocatedResources,
+  onFreeResource,
+  canFreeResource,
+  onPrevious,
+  onNext,
+}) => {
   const allocatedResourcesKeys = getNamesOfAllocatedResources(allocatedResources);
 
   return (
-    <Table background="white">
-      <Thead>
-        <Tr>
-          {allocatedResourcesKeys.map((key) => (key ? <Th key={key}>{key}</Th> : null))}
-          <Th>description</Th>
-          <Th>action</Th>
-        </Tr>
-      </Thead>
-      <Tbody>
-        {allocatedResources != null && allocatedResources.length > 0 ? (
-          allocatedResources.map((resource) => (
-            <Tr key={resource.id} title={resource.Description ?? ''}>
-              {allocatedResourcesKeys.map((key) =>
-                key ? <Td key={`${key}-${resource.id}`}>{resource.Properties[key]}</Td> : null,
-              )}
-              <Td>{resource.Description}</Td>
-              <Td>
-                <ButtonGroup>
-                  <Button isDisabled={!canFreeResource} onClick={() => onFreeResource(resource.Properties)}>
-                    Deallocate
-                  </Button>
-                </ButtonGroup>
-              </Td>
-            </Tr>
-          ))
-        ) : (
+    <>
+      <Table background="white">
+        <Thead>
           <Tr>
-            <Td>There are no allocated resources yet.</Td>
+            {allocatedResourcesKeys.map((key) => (key ? <Th key={key}>{key}</Th> : null))}
+            <Th>description</Th>
+            <Th>action</Th>
           </Tr>
-        )}
-      </Tbody>
-    </Table>
+        </Thead>
+        <Tbody>
+          {allocatedResources != null && allocatedResources.length > 0 ? (
+            allocatedResources.map((resource) => (
+              <Tr key={resource.id} title={resource.Description ?? ''}>
+                {allocatedResourcesKeys.map((key) =>
+                  key ? <Td key={`${key}-${resource.id}`}>{resource.Properties[key]}</Td> : null,
+                )}
+                <Td>{resource.Description}</Td>
+                <Td>
+                  <ButtonGroup>
+                    <Button isDisabled={!canFreeResource} onClick={() => onFreeResource(resource.Properties)}>
+                      Deallocate
+                    </Button>
+                  </ButtonGroup>
+                </Td>
+              </Tr>
+            ))
+          ) : (
+            <Tr>
+              <Td>There are no allocated resources yet.</Td>
+            </Tr>
+          )}
+        </Tbody>
+      </Table>
+      <Pagination
+        onPrevious={onPrevious(allocatedResources.pageInfo.startCursor.ID)}
+        onNext={onNext(allocatedResources.pageInfo.endCursor.ID)}
+        hasNextPage={allocatedResources.pageInfo.hasNextPage}
+        hasPreviousPage={allocatedResources.pageInfo.hasPreviousPage}
+      />
+    </>
   );
 };
 
