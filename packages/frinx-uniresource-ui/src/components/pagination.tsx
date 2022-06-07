@@ -18,14 +18,14 @@ const Pagination: VoidFunctionComponent<Props> = (props) => {
             Previous
           </Button>
         ) : (
-          <Text>Previous</Text>
+          <Text cursor="not-allowed">Previous</Text>
         )}
         {hasNextPage ? (
           <Button color="blue.600" onClick={onNext} variant="link">
             Next
           </Button>
         ) : (
-          <Text>Next</Text>
+          <Text cursor="not-allowed">Next</Text>
         )}
       </HStack>
     </Box>
