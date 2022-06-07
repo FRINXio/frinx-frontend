@@ -3139,7 +3139,7 @@ __metadata:
     rollup: ^2.72.1
     rollup-plugin-dts: 4.2.2
     rollup-plugin-peer-deps-external: ^2.2.4
-    typescript: 4.6.3
+    typescript: 4.7.3
     url-join: 5.0.0
     urql: 2.2.1
   languageName: unknown
@@ -3208,7 +3208,7 @@ __metadata:
     react-svg-loader: 3.0.3
     sass-loader: 12.6.0
     style-loader: 2.0.0
-    typescript: 4.6.3
+    typescript: 4.7.3
     url-join: 5.0.0
     url-loader: 4.1.1
     uuid: 8.3.2
@@ -3260,18 +3260,18 @@ __metadata:
     "@types/express": 4.17.13
     "@typescript-eslint/eslint-plugin": 5.17.0
     "@typescript-eslint/parser": 5.17.0
-    dotenv: 16.0.0
+    dotenv: 16.0.1
     eslint: 8.16.0
     eslint-config-prettier: 7.2.0
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
     express: 4.18.1
     helmet: 5.0.2
-    http-proxy-middleware: 2.0.4
+    http-proxy-middleware: 2.0.6
     pino: 7.9.2
-    pino-pretty: 7.6.0
+    pino-pretty: 7.6.1
     ts-node-dev: 1.1.8
-    typescript: 4.6.3
+    typescript: 4.7.3
   languageName: unknown
   linkType: soft
 
@@ -3325,7 +3325,7 @@ __metadata:
     react-ace: 9.5.0
     react-dom: 18.0.0
     react-router-dom: 6.3.0
-    typescript: 4.6.3
+    typescript: 4.7.3
     urql: 2.2.1
     uuid: 8.3.2
     webpack: 5.51.0
@@ -3397,7 +3397,7 @@ __metadata:
     react-hook-form: 7.12.2
     react-router-dom: 6.3.0
     style-loader: 2.0.0
-    typescript: 4.6.3
+    typescript: 4.7.3
     urql: 2.2.1
     uuid: 8.3.2
     webpack: 5.51.0
@@ -3456,7 +3456,7 @@ __metadata:
     file-saver: 2.0.5
     framer-motion: 6.2.8
     html-webpack-plugin: 5.5.0
-    immer: 9.0.12
+    immer: 9.0.14
     lodash: 4.17.21
     minisearch: 4.0.3
     npm-run-all: 4.1.5
@@ -3466,7 +3466,7 @@ __metadata:
     react-flow-renderer: 9.7.4
     react-router-dom: 6.3.0
     style-loader: 2.0.0
-    typescript: 4.6.3
+    typescript: 4.7.3
     uuid: 8.3.2
     vitest: 0.9.0
     webpack: 5.51.0
@@ -8459,14 +8459,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:16.0.0":
-  version: 16.0.0
-  resolution: "dotenv@npm:16.0.0"
-  checksum: 664cebb51f0a9a1d1b930f51f0271e72e26d62feaecc9dc03df39453dd494b4e724809ca480fb3ec3213382b1ed3f791aaeb83569a137f9329ce58efd4853dbf
-  languageName: node
-  linkType: hard
-
-"dotenv@npm:^16.0.0":
+"dotenv@npm:16.0.1, dotenv@npm:^16.0.0":
   version: 16.0.1
   resolution: "dotenv@npm:16.0.1"
   checksum: f459ffce07b977b7f15d8cc4ee69cdff77d4dd8c5dc8c85d2d485ee84655352c2415f9dd09d42b5b5985ced3be186130871b34e2f3e2569ebc72fbc2e8096792
@@ -10870,7 +10863,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-proxy-middleware@npm:2.0.4, http-proxy-middleware@npm:^2.0.0":
+"http-proxy-middleware@npm:2.0.6":
+  version: 2.0.6
+  resolution: "http-proxy-middleware@npm:2.0.6"
+  dependencies:
+    "@types/http-proxy": ^1.17.8
+    http-proxy: ^1.18.1
+    is-glob: ^4.0.1
+    is-plain-obj: ^3.0.0
+    micromatch: ^4.0.2
+  peerDependencies:
+    "@types/express": ^4.17.13
+  peerDependenciesMeta:
+    "@types/express":
+      optional: true
+  checksum: 2ee85bc878afa6cbf34491e972ece0f5be0a3e5c98a60850cf40d2a9a5356e1fc57aab6cff33c1fc37691b0121c3a42602d2b1956c52577e87a5b77b62ae1c3a
+  languageName: node
+  linkType: hard
+
+"http-proxy-middleware@npm:^2.0.0":
   version: 2.0.4
   resolution: "http-proxy-middleware@npm:2.0.4"
   dependencies:
@@ -10980,10 +10991,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immer@npm:9.0.12":
-  version: 9.0.12
-  resolution: "immer@npm:9.0.12"
-  checksum: bcbec6d76dac65e49068eb67ece4d407116e62b8cde3126aa89c801e408f5047763ba0aeb62f1938c1aa704bb6612f1d8302bb2a86fa1fc60fcc12d8b25dc895
+"immer@npm:9.0.14":
+  version: 9.0.14
+  resolution: "immer@npm:9.0.14"
+  checksum: 17f1365c06d653e672a4f609f08e7203e9ab4b4284818332d6ca9b3f3577a0e3c0066ca7933b636fbae560df79a4b3fde70ed717ce3c6e95c39bf3d5861d5be9
   languageName: node
   linkType: hard
 
@@ -13592,9 +13603,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino-pretty@npm:7.6.0":
-  version: 7.6.0
-  resolution: "pino-pretty@npm:7.6.0"
+"pino-pretty@npm:7.6.1":
+  version: 7.6.1
+  resolution: "pino-pretty@npm:7.6.1"
   dependencies:
     args: ^5.0.1
     colorette: ^2.0.7
@@ -13611,7 +13622,7 @@ __metadata:
     strip-json-comments: ^3.1.1
   bin:
     pino-pretty: bin.js
-  checksum: 4ad640b6b08570d8b4b92b2370f886a28231cada6ed330fe5ea34392a40ccd8cdaca80f9e093bd3ff570512fd15f5571fd20b8e3780f0956f83e9264ab84ad28
+  checksum: 31e0e03bfd94aabdc03744e19a9599e200f94d962cbeb04f3b6fe1eb6caadb92434c41cef948fe039773966c83e5669b52470a355ada7b5affd801ce1d5a67aa
   languageName: node
   linkType: hard
 
@@ -16402,23 +16413,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:4.6.3":
-  version: 4.6.3
-  resolution: "typescript@npm:4.6.3"
+"typescript@npm:4.7.3":
+  version: 4.7.3
+  resolution: "typescript@npm:4.7.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 255bb26c8cb846ca689dd1c3a56587af4f69055907aa2c154796ea28ee0dea871535b1c78f85a6212c77f2657843a269c3a742d09d81495b97b914bf7920415b
+  checksum: fd13a1ce53790a36bb8350e1f5e5e384b5f6cb9b0635114a6d01d49cb99916abdcfbc13c7521cdae2f2d3f6d8bc4a8ae7625edf645a04ee940588cd5e7597b2f
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@4.6.3#~builtin<compat/typescript>":
-  version: 4.6.3
-  resolution: "typescript@patch:typescript@npm%3A4.6.3#~builtin<compat/typescript>::version=4.6.3&hash=bda367"
+"typescript@patch:typescript@4.7.3#~builtin<compat/typescript>":
+  version: 4.7.3
+  resolution: "typescript@patch:typescript@npm%3A4.7.3#~builtin<compat/typescript>::version=4.7.3&hash=bda367"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 6bf45caf847062420592e711bc9c28bf5f9a9a7fa8245343b81493e4ededae33f1774009d1234d911422d1646a2c839f44e1a23ecb111b40a60ac2ea4c1482a8
+  checksum: 8257ce7ecbbf9416da60045a76a99d473698ca9e973fa0ddab7137cacb1587255431176cbbcc801a650938c4dc8109ab88355774829a714fabe56a53a2fe4524
   languageName: node
   linkType: hard
 

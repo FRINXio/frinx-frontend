@@ -28,7 +28,7 @@
     "dagre": "0.8.5",
     "feather-icons-react": "0.5.0",
     "file-saver": "2.0.5",
-    "immer": "9.0.12",
+    "immer": "9.0.14",
     "lodash": "4.17.21",
     "minisearch": "4.0.3",
     "react-ace": "9.5.0",
@@ -69,7 +69,7 @@
     "react-dom": "18.0.0",
     "react-router-dom": "6.3.0",
     "style-loader": "2.0.0",
-    "typescript": "4.6.3",
+    "typescript": "4.7.3",
     "vitest": "0.9.0",
     "webpack": "5.51.0",
     "webpack-cli": "4.9.2"

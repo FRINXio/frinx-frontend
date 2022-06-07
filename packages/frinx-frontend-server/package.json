@@ -24,20 +24,20 @@
     "@types/express": "4.17.13",
     "express": "4.18.1",
     "helmet": "5.0.2",
-    "http-proxy-middleware": "2.0.4",
+    "http-proxy-middleware": "2.0.6",
     "pino": "7.9.2",
-    "pino-pretty": "7.6.0"
+    "pino-pretty": "7.6.1"
   },
   "devDependencies": {
     "@frinx/eslint-config-typescript-base": "15.0.0-build.1",
     "@typescript-eslint/eslint-plugin": "5.17.0",
     "@typescript-eslint/parser": "5.17.0",
-    "dotenv": "16.0.0",
+    "dotenv": "16.0.1",
     "eslint": "8.16.0",
     "eslint-config-prettier": "7.2.0",
     "eslint-import-resolver-typescript": "2.7.1",
     "eslint-plugin-import": "2.26.0",
     "ts-node-dev": "1.1.8",
-    "typescript": "4.6.3"
+    "typescript": "4.7.3"
   }
 }
