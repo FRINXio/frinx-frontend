@@ -171,7 +171,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     variables: { poolId: unwrap(poolId) },
   });
 
-  const [paginationArgs, { nextPage, previousPage }] = usePagination(2);
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
   const [{ data: allocatedResources, fetching: isLoadingResources }] = useQuery<
     AllocatedResourcesQuery,
     AllocatedResourcesQueryVariables
