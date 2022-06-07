@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-type PaginationArgs = {
+export type PaginationArgs = {
   first?: number;
   after?: string | null;
   last?: number;
