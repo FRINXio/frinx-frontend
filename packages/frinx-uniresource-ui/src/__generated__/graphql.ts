@@ -1,4 +1,5 @@
 export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -12,7 +13,6 @@ export type Scalars = {
   /** Represents data-type where variable keys and values can be used */
   Map: any;
 };
-
 
 /** Represents an allocation strategy */
 export type AllocationStrategy = Node & {
@@ -32,13 +32,13 @@ export type AllocationStrategyLang =
 /** Input parameters for creating an allocation pool */
 export type CreateAllocatingPoolInput = {
   allocationStrategyId: Scalars['ID'];
-  description?: Maybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
   poolDealocationSafetyPeriod: Scalars['Int'];
   poolName: Scalars['String'];
   poolProperties: Scalars['Map'];
   poolPropertyTypes: Scalars['Map'];
   resourceTypeId: Scalars['ID'];
-  tags?: Maybe<Array<Scalars['String']>>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
 /** Output of creating an allocating pool */
@@ -49,10 +49,10 @@ export type CreateAllocatingPoolPayload = {
 
 /** Input parameters for creating a new allocation strategy */
 export type CreateAllocationStrategyInput = {
-  name: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
-  script: Scalars['String'];
+  description?: InputMaybe<Scalars['String']>;
   lang: AllocationStrategyLang;
+  name: Scalars['String'];
+  script: Scalars['String'];
 };
 
 /** Output of creating a new allocation strategy */
@@ -64,12 +64,12 @@ export type CreateAllocationStrategyPayload = {
 /** Input parameters for creating a nested allocation pool */
 export type CreateNestedAllocatingPoolInput = {
   allocationStrategyId: Scalars['ID'];
-  description?: Maybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
   parentResourceId: Scalars['ID'];
   poolDealocationSafetyPeriod: Scalars['Int'];
   poolName: Scalars['String'];
   resourceTypeId: Scalars['ID'];
-  tags?: Maybe<Array<Scalars['String']>>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
 /** Output of creating a nested allocating pool */
@@ -80,13 +80,13 @@ export type CreateNestedAllocatingPoolPayload = {
 
 /** Input parameters for creating a nested set pool */
 export type CreateNestedSetPoolInput = {
-  description?: Maybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
   parentResourceId: Scalars['ID'];
   poolDealocationSafetyPeriod: Scalars['Int'];
   poolName: Scalars['String'];
-  poolValues: Array<Maybe<Scalars['Map']>>;
+  poolValues: Array<InputMaybe<Scalars['Map']>>;
   resourceTypeId: Scalars['ID'];
-  tags?: Maybe<Array<Scalars['String']>>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
 /** Output of creating a nested set pool */
@@ -97,12 +97,12 @@ export type CreateNestedSetPoolPayload = {
 
 /** Input parameters for creating a nested singleton pool */
 export type CreateNestedSingletonPoolInput = {
-  description?: Maybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
   parentResourceId: Scalars['ID'];
   poolName: Scalars['String'];
-  poolValues: Array<Maybe<Scalars['Map']>>;
+  poolValues: Array<InputMaybe<Scalars['Map']>>;
   resourceTypeId: Scalars['ID'];
-  tags?: Maybe<Array<Scalars['String']>>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
 /** Output of creating a nested singleton pool */
@@ -130,12 +130,12 @@ export type CreateResourceTypePayload = {
 
 /** Input parameters for creating a set pool */
 export type CreateSetPoolInput = {
-  description?: Maybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
   poolDealocationSafetyPeriod: Scalars['Int'];
   poolName: Scalars['String'];
   poolValues: Array<Scalars['Map']>;
   resourceTypeId: Scalars['ID'];
-  tags?: Maybe<Array<Scalars['String']>>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
 /** Output of creating set pool */
@@ -146,11 +146,11 @@ export type CreateSetPoolPayload = {
 
 /** Input parameters for creating a singleton pool */
 export type CreateSingletonPoolInput = {
-  description?: Maybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
   poolName: Scalars['String'];
   poolValues: Array<Scalars['Map']>;
   resourceTypeId: Scalars['ID'];
-  tags?: Maybe<Array<Scalars['String']>>;
+  tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
 /** Output of creating a singleton pool */
@@ -214,31 +214,85 @@ export type DeleteTagPayload = {
   tagId: Scalars['ID'];
 };
 
-
 export type Mutation = {
   __typename?: 'Mutation';
-  CreateTag: CreateTagPayload;
-  UpdateTag: UpdateTagPayload;
-  DeleteTag: DeleteTagPayload;
-  TagPool: TagPoolPayload;
-  UntagPool: UntagPoolPayload;
-  CreateAllocationStrategy: CreateAllocationStrategyPayload;
-  DeleteAllocationStrategy: DeleteAllocationStrategyPayload;
-  TestAllocationStrategy: Scalars['Map'];
   ClaimResource: Resource;
   ClaimResourceWithAltId: Resource;
-  FreeResource: Scalars['String'];
-  CreateSetPool: CreateSetPoolPayload;
-  CreateNestedSetPool: CreateNestedSetPoolPayload;
-  CreateSingletonPool: CreateSingletonPoolPayload;
-  CreateNestedSingletonPool: CreateNestedSingletonPoolPayload;
   CreateAllocatingPool: CreateAllocatingPoolPayload;
+  CreateAllocationStrategy: CreateAllocationStrategyPayload;
   CreateNestedAllocatingPool: CreateNestedAllocatingPoolPayload;
-  DeleteResourcePool: DeleteResourcePoolPayload;
+  CreateNestedSetPool: CreateNestedSetPoolPayload;
+  CreateNestedSingletonPool: CreateNestedSingletonPoolPayload;
   CreateResourceType: CreateResourceTypePayload;
+  CreateSetPool: CreateSetPoolPayload;
+  CreateSingletonPool: CreateSingletonPoolPayload;
+  CreateTag: CreateTagPayload;
+  DeleteAllocationStrategy: DeleteAllocationStrategyPayload;
+  DeleteResourcePool: DeleteResourcePoolPayload;
   DeleteResourceType: DeleteResourceTypePayload;
-  UpdateResourceTypeName: UpdateResourceTypeNamePayload;
+  DeleteTag: DeleteTagPayload;
+  FreeResource: Scalars['String'];
+  TagPool: TagPoolPayload;
+  TestAllocationStrategy: Scalars['Map'];
+  UntagPool: UntagPoolPayload;
   UpdateResourceAltId: Resource;
+  UpdateResourceTypeName: UpdateResourceTypeNamePayload;
+  UpdateTag: UpdateTagPayload;
+};
+
+
+export type MutationClaimResourceArgs = {
+  description?: InputMaybe<Scalars['String']>;
+  poolId: Scalars['ID'];
+  userInput: Scalars['Map'];
+};
+
+
+export type MutationClaimResourceWithAltIdArgs = {
+  alternativeId: Scalars['Map'];
+  description?: InputMaybe<Scalars['String']>;
+  poolId: Scalars['ID'];
+  userInput: Scalars['Map'];
+};
+
+
+export type MutationCreateAllocatingPoolArgs = {
+  input?: InputMaybe<CreateAllocatingPoolInput>;
+};
+
+
+export type MutationCreateAllocationStrategyArgs = {
+  input?: InputMaybe<CreateAllocationStrategyInput>;
+};
+
+
+export type MutationCreateNestedAllocatingPoolArgs = {
+  input: CreateNestedAllocatingPoolInput;
+};
+
+
+export type MutationCreateNestedSetPoolArgs = {
+  input: CreateNestedSetPoolInput;
+};
+
+
+export type MutationCreateNestedSingletonPoolArgs = {
+  input: CreateNestedSingletonPoolInput;
+};
+
+
+export type MutationCreateResourceTypeArgs = {
+  input: CreateResourceTypeInput;
+};
+
+
+export type MutationCreateSetPoolArgs = {
+  input: CreateSetPoolInput;
+};
+
+
+export type MutationCreateSingletonPoolArgs = {
+  input?: InputMaybe<CreateSingletonPoolInput>;
 };
 
 
@@ -247,56 +301,23 @@ export type MutationCreateTagArgs = {
 };
 
 
-export type MutationUpdateTagArgs = {
-  input: UpdateTagInput;
+export type MutationDeleteAllocationStrategyArgs = {
+  input?: InputMaybe<DeleteAllocationStrategyInput>;
+};
+
+
+export type MutationDeleteResourcePoolArgs = {
+  input: DeleteResourcePoolInput;
+};
+
+
+export type MutationDeleteResourceTypeArgs = {
+  input: DeleteResourceTypeInput;
 };
 
 
 export type MutationDeleteTagArgs = {
   input: DeleteTagInput;
-};
-
-
-export type MutationTagPoolArgs = {
-  input: TagPoolInput;
-};
-
-
-export type MutationUntagPoolArgs = {
-  input: UntagPoolInput;
-};
-
-
-export type MutationCreateAllocationStrategyArgs = {
-  input?: Maybe<CreateAllocationStrategyInput>;
-};
-
-
-export type MutationDeleteAllocationStrategyArgs = {
-  input?: Maybe<DeleteAllocationStrategyInput>;
-};
-
-
-export type MutationTestAllocationStrategyArgs = {
-  allocationStrategyId: Scalars['ID'];
-  resourcePool: ResourcePoolInput;
-  currentResources: Array<ResourceInput>;
-  userInput: Scalars['Map'];
-};
-
-
-export type MutationClaimResourceArgs = {
-  poolId: Scalars['ID'];
-  description?: Maybe<Scalars['String']>;
-  userInput: Scalars['Map'];
-};
-
-
-export type MutationClaimResourceWithAltIdArgs = {
-  poolId: Scalars['ID'];
-  description?: Maybe<Scalars['String']>;
-  userInput: Scalars['Map'];
-  alternativeId: Scalars['Map'];
 };
 
 
@@ -306,48 +327,28 @@ export type MutationFreeResourceArgs = {
 };
 
 
-export type MutationCreateSetPoolArgs = {
-  input: CreateSetPoolInput;
+export type MutationTagPoolArgs = {
+  input: TagPoolInput;
 };
 
 
-export type MutationCreateNestedSetPoolArgs = {
-  input: CreateNestedSetPoolInput;
+export type MutationTestAllocationStrategyArgs = {
+  allocationStrategyId: Scalars['ID'];
+  currentResources: Array<ResourceInput>;
+  resourcePool: ResourcePoolInput;
+  userInput: Scalars['Map'];
 };
 
 
-export type MutationCreateSingletonPoolArgs = {
-  input?: Maybe<CreateSingletonPoolInput>;
+export type MutationUntagPoolArgs = {
+  input: UntagPoolInput;
 };
 
 
-export type MutationCreateNestedSingletonPoolArgs = {
-  input: CreateNestedSingletonPoolInput;
-};
-
-
-export type MutationCreateAllocatingPoolArgs = {
-  input?: Maybe<CreateAllocatingPoolInput>;
-};
-
-
-export type MutationCreateNestedAllocatingPoolArgs = {
-  input: CreateNestedAllocatingPoolInput;
-};
-
-
-export type MutationDeleteResourcePoolArgs = {
-  input: DeleteResourcePoolInput;
-};
-
-
-export type MutationCreateResourceTypeArgs = {
-  input: CreateResourceTypeInput;
-};
-
-
-export type MutationDeleteResourceTypeArgs = {
-  input: DeleteResourceTypeInput;
+export type MutationUpdateResourceAltIdArgs = {
+  alternativeId: Scalars['Map'];
+  input: Scalars['Map'];
+  poolId: Scalars['ID'];
 };
 
 
@@ -356,10 +357,8 @@ export type MutationUpdateResourceTypeNameArgs = {
 };
 
 
-export type MutationUpdateResourceAltIdArgs = {
-  input: Scalars['Map'];
-  poolId: Scalars['ID'];
-  alternativeId: Scalars['Map'];
+export type MutationUpdateTagArgs = {
+  input: UpdateTagInput;
 };
 
 /** Interface for entities needed by the relay-framework */
@@ -386,8 +385,8 @@ export type PageInfo = {
 /** Entity representing capacity of a pool */
 export type PoolCapacityPayload = {
   __typename?: 'PoolCapacityPayload';
-  freeCapacity: Scalars['Float'];
-  utilizedCapacity: Scalars['Float'];
+  freeCapacity: Scalars['String'];
+  utilizedCapacity: Scalars['String'];
 };
 
 /** Defines the type of pool */
@@ -410,29 +409,60 @@ export type PropertyType = Node & {
 
 export type Query = {
   __typename?: 'Query';
+  QueryAllocationStrategies: Array<AllocationStrategy>;
+  QueryAllocationStrategy: AllocationStrategy;
+  QueryEmptyResourcePools: Array<ResourcePool>;
+  QueryLeafResourcePools: Array<ResourcePool>;
   QueryPoolCapacity: PoolCapacityPayload;
   QueryPoolTypes: Array<PoolType>;
+  QueryRecentlyActiveResources: ResourceConnection;
   QueryResource: Resource;
-  QueryResources: Array<Resource>;
-  QueryResourcesByAltId: Array<Resource>;
-  QueryAllocationStrategy: AllocationStrategy;
-  QueryAllocationStrategies: Array<AllocationStrategy>;
-  QueryResourceTypes: Array<ResourceType>;
   QueryResourcePool: ResourcePool;
-  QueryEmptyResourcePools: Array<ResourcePool>;
-  QueryResourcePools: Array<ResourcePool>;
-  QueryRecentlyActiveResourcePools: Array<ResourcePool>;
   QueryResourcePoolHierarchyPath: Array<ResourcePool>;
+  QueryResourcePools: Array<ResourcePool>;
+  QueryResourceTypes: Array<ResourceType>;
+  QueryResources: ResourceConnection;
+  QueryResourcesByAltId: ResourceConnection;
   QueryRootResourcePools: Array<ResourcePool>;
-  QueryLeafResourcePools: Array<ResourcePool>;
-  SearchPoolsByTags: Array<ResourcePool>;
   QueryTags: Array<Tag>;
+  SearchPoolsByTags: Array<ResourcePool>;
   node: Maybe<Node>;
+};
+
+
+export type QueryQueryAllocationStrategiesArgs = {
+  byName?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryQueryAllocationStrategyArgs = {
+  allocationStrategyId: Scalars['ID'];
+};
+
+
+export type QueryQueryEmptyResourcePoolsArgs = {
+  resourceTypeId?: InputMaybe<Scalars['ID']>;
+};
+
+
+export type QueryQueryLeafResourcePoolsArgs = {
+  resourceTypeId?: InputMaybe<Scalars['ID']>;
+  tags?: InputMaybe<TagOr>;
 };
 
 
 export type QueryQueryPoolCapacityArgs = {
   poolId: Scalars['ID'];
+};
+
+
+export type QueryQueryRecentlyActiveResourcesArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  fromDatetime: Scalars['String'];
+  last?: InputMaybe<Scalars['Int']>;
+  toDatetime?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -442,51 +472,8 @@ export type QueryQueryResourceArgs = {
 };
 
 
-export type QueryQueryResourcesArgs = {
-  poolId: Scalars['ID'];
-};
-
-
-export type QueryQueryResourcesByAltIdArgs = {
-  input: Scalars['Map'];
-  poolId?: Maybe<Scalars['ID']>;
-};
-
-
-export type QueryQueryAllocationStrategyArgs = {
-  allocationStrategyId: Scalars['ID'];
-};
-
-
-export type QueryQueryAllocationStrategiesArgs = {
-  byName?: Maybe<Scalars['String']>;
-};
-
-
-export type QueryQueryResourceTypesArgs = {
-  byName?: Maybe<Scalars['String']>;
-};
-
-
 export type QueryQueryResourcePoolArgs = {
   poolId: Scalars['ID'];
-};
-
-
-export type QueryQueryEmptyResourcePoolsArgs = {
-  resourceTypeId?: Maybe<Scalars['ID']>;
-};
-
-
-export type QueryQueryResourcePoolsArgs = {
-  resourceTypeId?: Maybe<Scalars['ID']>;
-  tags?: Maybe<TagOr>;
-};
-
-
-export type QueryQueryRecentlyActiveResourcePoolsArgs = {
-  fromDatetime: Scalars['String'];
-  toDatetime?: Maybe<Scalars['String']>;
 };
 
 
@@ -495,20 +482,44 @@ export type QueryQueryResourcePoolHierarchyPathArgs = {
 };
 
 
-export type QueryQueryRootResourcePoolsArgs = {
-  resourceTypeId?: Maybe<Scalars['ID']>;
-  tags?: Maybe<TagOr>;
+export type QueryQueryResourcePoolsArgs = {
+  resourceTypeId?: InputMaybe<Scalars['ID']>;
+  tags?: InputMaybe<TagOr>;
 };
 
 
-export type QueryQueryLeafResourcePoolsArgs = {
-  resourceTypeId?: Maybe<Scalars['ID']>;
-  tags?: Maybe<TagOr>;
+export type QueryQueryResourceTypesArgs = {
+  byName?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryQueryResourcesArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  poolId: Scalars['ID'];
+};
+
+
+export type QueryQueryResourcesByAltIdArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  input: Scalars['Map'];
+  last?: InputMaybe<Scalars['Int']>;
+  poolId?: InputMaybe<Scalars['ID']>;
+};
+
+
+export type QueryQueryRootResourcePoolsArgs = {
+  resourceTypeId?: InputMaybe<Scalars['ID']>;
+  tags?: InputMaybe<TagOr>;
 };
 
 
 export type QuerySearchPoolsByTagsArgs = {
-  tags?: Maybe<TagOr>;
+  tags?: InputMaybe<TagOr>;
 };
 
 
@@ -519,11 +530,11 @@ export type QueryNodeArgs = {
 /** Represents an allocated resource */
 export type Resource = Node & {
   __typename?: 'Resource';
+  AlternativeId: Scalars['Map'];
   Description: Maybe<Scalars['String']>;
   NestedPool: Maybe<ResourcePool>;
   ParentPool: ResourcePool;
   Properties: Scalars['Map'];
-  AlternativeId: Scalars['Map'];
   id: Scalars['ID'];
 };
 
@@ -568,14 +579,15 @@ export type ResourcePool = Node & {
 
 /** A pool is an entity that contains allocated and free resources */
 export type ResourcePoolAllocatedResourcesArgs = {
-  first?: Maybe<Scalars['Int']>;
-  last?: Maybe<Scalars['Int']>;
-  before?: Maybe<Scalars['String']>;
-  after?: Maybe<Scalars['String']>;
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
 };
 
 /** Convenience entity representing the identity of a pool in some calls */
 export type ResourcePoolInput = {
+  ResourcePoolID: Scalars['ID'];
   ResourcePoolName: Scalars['String'];
   poolProperties: Scalars['Map'];
 };
@@ -609,8 +621,8 @@ export type TagOr = {
 
 /** Input parameters for a call adding a tag to pool */
 export type TagPoolInput = {
-  tagId: Scalars['ID'];
   poolId: Scalars['ID'];
+  tagId: Scalars['ID'];
 };
 
 /** Output of adding a specific tag to a pool */
@@ -621,8 +633,8 @@ export type TagPoolPayload = {
 
 /** Input parameters for a call removing a tag from pool */
 export type UntagPoolInput = {
-  tagId: Scalars['ID'];
   poolId: Scalars['ID'];
+  tagId: Scalars['ID'];
 };
 
 /** Output of removing a specific tag from a pool */
@@ -633,8 +645,8 @@ export type UntagPoolPayload = {
 
 /** Input parameters updating the name of a resource-type */
 export type UpdateResourceTypeNameInput = {
-  resourceTypeId: Scalars['ID'];
   resourceName: Scalars['String'];
+  resourceTypeId: Scalars['ID'];
 };
 
 /** Output of updating the name of a resource-type */
@@ -657,108 +669,54 @@ export type UpdateTagPayload = {
 
 export type ClaimResourceMutationMutationVariables = Exact<{
   poolId: Scalars['ID'];
-  description?: Maybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
   userInput: Scalars['Map'];
 }>;
 
 
-export type ClaimResourceMutationMutation = (
-  { __typename?: 'Mutation' }
-  & { ClaimResource: (
-    { __typename?: 'Resource' }
-    & Pick<Resource, 'id'>
-  ) }
-);
+export type ClaimResourceMutationMutation = { __typename?: 'Mutation', ClaimResource: { __typename?: 'Resource', id: string } };
 
 export type CreateNestedPoolMutationMutationVariables = Exact<{
   input: CreateNestedSetPoolInput;
 }>;
 
 
-export type CreateNestedPoolMutationMutation = (
-  { __typename?: 'Mutation' }
-  & { CreateNestedSetPool: (
-    { __typename?: 'CreateNestedSetPoolPayload' }
-    & { pool: Maybe<(
-      { __typename?: 'ResourcePool' }
-      & Pick<ResourcePool, 'id'>
-    )> }
-  ) }
-);
+export type CreateNestedPoolMutationMutation = { __typename?: 'Mutation', CreateNestedSetPool: { __typename?: 'CreateNestedSetPoolPayload', pool: { __typename?: 'ResourcePool', id: string } | null } };
 
 export type AddResourceTypeMutationMutationVariables = Exact<{
   input: CreateResourceTypeInput;
 }>;
 
 
-export type AddResourceTypeMutationMutation = (
-  { __typename?: 'Mutation' }
-  & { CreateResourceType: (
-    { __typename?: 'CreateResourceTypePayload' }
-    & { resourceType: (
-      { __typename?: 'ResourceType' }
-      & Pick<ResourceType, 'Name'>
-    ) }
-  ) }
-);
+export type AddResourceTypeMutationMutation = { __typename?: 'Mutation', CreateResourceType: { __typename?: 'CreateResourceTypePayload', resourceType: { __typename?: 'ResourceType', Name: string } } };
 
 export type AddStrategyMutationMutationVariables = Exact<{
   input: CreateAllocationStrategyInput;
 }>;
 
 
-export type AddStrategyMutationMutation = (
-  { __typename?: 'Mutation' }
-  & { CreateAllocationStrategy: (
-    { __typename?: 'CreateAllocationStrategyPayload' }
-    & { strategy: Maybe<(
-      { __typename?: 'AllocationStrategy' }
-      & Pick<AllocationStrategy, 'id' | 'Name' | 'Lang' | 'Script'>
-    )> }
-  ) }
-);
+export type AddStrategyMutationMutation = { __typename?: 'Mutation', CreateAllocationStrategy: { __typename?: 'CreateAllocationStrategyPayload', strategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang, Script: string } | null } };
 
 export type DeletePoolMutationMutationVariables = Exact<{
   input: DeleteResourcePoolInput;
 }>;
 
 
-export type DeletePoolMutationMutation = (
-  { __typename?: 'Mutation' }
-  & { DeleteResourcePool: (
-    { __typename?: 'DeleteResourcePoolPayload' }
-    & Pick<DeleteResourcePoolPayload, 'resourcePoolId'>
-  ) }
-);
+export type DeletePoolMutationMutation = { __typename?: 'Mutation', DeleteResourcePool: { __typename?: 'DeleteResourcePoolPayload', resourcePoolId: string } };
 
 export type DeleteResourceTypeMutationMutationVariables = Exact<{
   input: DeleteResourceTypeInput;
 }>;
 
 
-export type DeleteResourceTypeMutationMutation = (
-  { __typename?: 'Mutation' }
-  & { DeleteResourceType: (
-    { __typename?: 'DeleteResourceTypePayload' }
-    & Pick<DeleteResourceTypePayload, 'resourceTypeId'>
-  ) }
-);
+export type DeleteResourceTypeMutationMutation = { __typename?: 'Mutation', DeleteResourceType: { __typename?: 'DeleteResourceTypePayload', resourceTypeId: string } };
 
 export type DeleteStrategyMutationMutationVariables = Exact<{
   input: DeleteAllocationStrategyInput;
 }>;
 
 
-export type DeleteStrategyMutationMutation = (
-  { __typename?: 'Mutation' }
-  & { DeleteAllocationStrategy: (
-    { __typename?: 'DeleteAllocationStrategyPayload' }
-    & { strategy: Maybe<(
-      { __typename?: 'AllocationStrategy' }
-      & Pick<AllocationStrategy, 'id'>
-    )> }
-  ) }
-);
+export type DeleteStrategyMutationMutation = { __typename?: 'Mutation', DeleteAllocationStrategy: { __typename?: 'DeleteAllocationStrategyPayload', strategy: { __typename?: 'AllocationStrategy', id: string } | null } };
 
 export type FreeResourceMutationMutationVariables = Exact<{
   poolId: Scalars['ID'];
@@ -766,340 +724,111 @@ export type FreeResourceMutationMutationVariables = Exact<{
 }>;
 
 
-export type FreeResourceMutationMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'FreeResource'>
-);
+export type FreeResourceMutationMutation = { __typename?: 'Mutation', FreeResource: string };
 
 export type QueryAllPoolsNestedQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type QueryAllPoolsNestedQuery = (
-  { __typename?: 'Query' }
-  & { QueryRootResourcePools: Array<(
-    { __typename?: 'ResourcePool' }
-    & Pick<ResourcePool, 'id' | 'Name'>
-    & { Resources: Array<(
-      { __typename?: 'Resource' }
-      & Pick<Resource, 'id' | 'Properties'>
-      & { NestedPool: Maybe<(
-        { __typename?: 'ResourcePool' }
-        & Pick<ResourcePool, 'id' | 'Name' | 'PoolType'>
-        & { Resources: Array<(
-          { __typename?: 'Resource' }
-          & Pick<Resource, 'id' | 'Properties'>
-        )> }
-      )> }
-    )> }
-  )> }
-);
+export type QueryAllPoolsNestedQuery = { __typename?: 'Query', QueryRootResourcePools: Array<{ __typename?: 'ResourcePool', id: string, Name: string, Resources: Array<{ __typename?: 'Resource', id: string, Properties: any, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, Resources: Array<{ __typename?: 'Resource', id: string, Properties: any }> } | null }> }> };
 
 export type ResourceTypesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ResourceTypesQuery = (
-  { __typename?: 'Query' }
-  & { QueryResourceTypes: Array<(
-    { __typename?: 'ResourceType' }
-    & Pick<ResourceType, 'id' | 'Name'>
-    & { PropertyTypes: Array<(
-      { __typename?: 'PropertyType' }
-      & Pick<PropertyType, 'Name' | 'Type'>
-    )>, Pools: Array<(
-      { __typename?: 'ResourcePool' }
-      & Pick<ResourcePool, 'id' | 'Name'>
-    )> }
-  )> }
-);
+export type ResourceTypesQuery = { __typename?: 'Query', QueryResourceTypes: Array<{ __typename?: 'ResourceType', id: string, Name: string, PropertyTypes: Array<{ __typename?: 'PropertyType', Name: string, Type: string }>, Pools: Array<{ __typename?: 'ResourcePool', id: string, Name: string }> }> };
 
 export type QueryAllocationStrategiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type QueryAllocationStrategiesQuery = (
-  { __typename?: 'Query' }
-  & { QueryAllocationStrategies: Array<(
-    { __typename?: 'AllocationStrategy' }
-    & Pick<AllocationStrategy, 'id' | 'Name' | 'Lang' | 'Script'>
-  )> }
-);
+export type QueryAllocationStrategiesQuery = { __typename?: 'Query', QueryAllocationStrategies: Array<{ __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang, Script: string }> };
 
 export type GetNestedPoolsDetailQueryVariables = Exact<{
   poolId: Scalars['ID'];
 }>;
 
 
-export type GetNestedPoolsDetailQuery = (
-  { __typename?: 'Query' }
-  & { QueryResourcePool: (
-    { __typename?: 'ResourcePool' }
-    & Pick<ResourcePool, 'id' | 'Name' | 'PoolType' | 'PoolProperties'>
-    & { Tags: Array<(
-      { __typename?: 'Tag' }
-      & Pick<Tag, 'id' | 'Tag'>
-    )>, AllocationStrategy: Maybe<(
-      { __typename?: 'AllocationStrategy' }
-      & Pick<AllocationStrategy, 'id' | 'Name' | 'Lang'>
-    )>, ResourceType: (
-      { __typename?: 'ResourceType' }
-      & Pick<ResourceType, 'id' | 'Name'>
-    ), Resources: Array<(
-      { __typename?: 'Resource' }
-      & Pick<Resource, 'id'>
-      & { NestedPool: Maybe<(
-        { __typename?: 'ResourcePool' }
-        & Pick<ResourcePool, 'id' | 'Name' | 'PoolType' | 'PoolProperties'>
-        & { Tags: Array<(
-          { __typename?: 'Tag' }
-          & Pick<Tag, 'id' | 'Tag'>
-        )>, AllocationStrategy: Maybe<(
-          { __typename?: 'AllocationStrategy' }
-          & Pick<AllocationStrategy, 'id' | 'Name' | 'Lang'>
-        )>, ResourceType: (
-          { __typename?: 'ResourceType' }
-          & Pick<ResourceType, 'id' | 'Name'>
-        ), Resources: Array<(
-          { __typename?: 'Resource' }
-          & Pick<Resource, 'id'>
-          & { NestedPool: Maybe<(
-            { __typename?: 'ResourcePool' }
-            & Pick<ResourcePool, 'id' | 'Name'>
-          )> }
-        )>, Capacity: Maybe<(
-          { __typename?: 'PoolCapacityPayload' }
-          & Pick<PoolCapacityPayload, 'freeCapacity' | 'utilizedCapacity'>
-        )> }
-      )> }
-    )>, Capacity: Maybe<(
-      { __typename?: 'PoolCapacityPayload' }
-      & Pick<PoolCapacityPayload, 'freeCapacity' | 'utilizedCapacity'>
-    )> }
-  ) }
-);
+export type GetNestedPoolsDetailQuery = { __typename?: 'Query', QueryResourcePool: { __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, PoolProperties: any, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, AllocationStrategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang } | null, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, PoolProperties: any, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, AllocationStrategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang } | null, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null } };
 
 export type DeletePoolMutationVariables = Exact<{
   input: DeleteResourcePoolInput;
 }>;
 
 
-export type DeletePoolMutation = (
-  { __typename?: 'Mutation' }
-  & { DeleteResourcePool: (
-    { __typename?: 'DeleteResourcePoolPayload' }
-    & Pick<DeleteResourcePoolPayload, 'resourcePoolId'>
-  ) }
-);
+export type DeletePoolMutation = { __typename?: 'Mutation', DeleteResourcePool: { __typename?: 'DeleteResourcePoolPayload', resourcePoolId: string } };
 
 export type CreateSetPoolMutationVariables = Exact<{
   input: CreateSetPoolInput;
 }>;
 
 
-export type CreateSetPoolMutation = (
-  { __typename?: 'Mutation' }
-  & { CreateSetPool: (
-    { __typename?: 'CreateSetPoolPayload' }
-    & { pool: Maybe<(
-      { __typename?: 'ResourcePool' }
-      & Pick<ResourcePool, 'id'>
-    )> }
-  ) }
-);
+export type CreateSetPoolMutation = { __typename?: 'Mutation', CreateSetPool: { __typename?: 'CreateSetPoolPayload', pool: { __typename?: 'ResourcePool', id: string } | null } };
 
 export type CreateNestedSetPoolMutationVariables = Exact<{
   input: CreateNestedSetPoolInput;
 }>;
 
 
-export type CreateNestedSetPoolMutation = (
-  { __typename?: 'Mutation' }
-  & { CreateNestedSetPool: (
-    { __typename?: 'CreateNestedSetPoolPayload' }
-    & { pool: Maybe<(
-      { __typename?: 'ResourcePool' }
-      & Pick<ResourcePool, 'id'>
-    )> }
-  ) }
-);
+export type CreateNestedSetPoolMutation = { __typename?: 'Mutation', CreateNestedSetPool: { __typename?: 'CreateNestedSetPoolPayload', pool: { __typename?: 'ResourcePool', id: string } | null } };
 
 export type CreateSingletonPoolMutationVariables = Exact<{
   input: CreateSingletonPoolInput;
 }>;
 
 
-export type CreateSingletonPoolMutation = (
-  { __typename?: 'Mutation' }
-  & { CreateSingletonPool: (
-    { __typename?: 'CreateSingletonPoolPayload' }
-    & { pool: Maybe<(
-      { __typename?: 'ResourcePool' }
-      & Pick<ResourcePool, 'id'>
-    )> }
-  ) }
-);
+export type CreateSingletonPoolMutation = { __typename?: 'Mutation', CreateSingletonPool: { __typename?: 'CreateSingletonPoolPayload', pool: { __typename?: 'ResourcePool', id: string } | null } };
 
 export type CreateNestedSingletonPoolMutationVariables = Exact<{
   input: CreateNestedSingletonPoolInput;
 }>;
 
 
-export type CreateNestedSingletonPoolMutation = (
-  { __typename?: 'Mutation' }
-  & { CreateNestedSingletonPool: (
-    { __typename?: 'CreateNestedSingletonPoolPayload' }
-    & { pool: Maybe<(
-      { __typename?: 'ResourcePool' }
-      & Pick<ResourcePool, 'id'>
-    )> }
-  ) }
-);
+export type CreateNestedSingletonPoolMutation = { __typename?: 'Mutation', CreateNestedSingletonPool: { __typename?: 'CreateNestedSingletonPoolPayload', pool: { __typename?: 'ResourcePool', id: string } | null } };
 
 export type CreateAllocationPoolMutationVariables = Exact<{
   input: CreateAllocatingPoolInput;
 }>;
 
 
-export type CreateAllocationPoolMutation = (
-  { __typename?: 'Mutation' }
-  & { CreateAllocatingPool: (
-    { __typename?: 'CreateAllocatingPoolPayload' }
-    & { pool: Maybe<(
-      { __typename?: 'ResourcePool' }
-      & Pick<ResourcePool, 'id'>
-    )> }
-  ) }
-);
+export type CreateAllocationPoolMutation = { __typename?: 'Mutation', CreateAllocatingPool: { __typename?: 'CreateAllocatingPoolPayload', pool: { __typename?: 'ResourcePool', id: string } | null } };
 
 export type CreateNestedAllocationPoolMutationVariables = Exact<{
   input: CreateNestedAllocatingPoolInput;
 }>;
 
 
-export type CreateNestedAllocationPoolMutation = (
-  { __typename?: 'Mutation' }
-  & { CreateNestedAllocatingPool: (
-    { __typename?: 'CreateNestedAllocatingPoolPayload' }
-    & { pool: Maybe<(
-      { __typename?: 'ResourcePool' }
-      & Pick<ResourcePool, 'id'>
-    )> }
-  ) }
-);
+export type CreateNestedAllocationPoolMutation = { __typename?: 'Mutation', CreateNestedAllocatingPool: { __typename?: 'CreateNestedAllocatingPoolPayload', pool: { __typename?: 'ResourcePool', id: string } | null } };
 
 export type SelectResourceTypesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SelectResourceTypesQuery = (
-  { __typename?: 'Query' }
-  & { QueryResourceTypes: Array<(
-    { __typename?: 'ResourceType' }
-    & Pick<ResourceType, 'Name' | 'id'>
-  )> }
-);
+export type SelectResourceTypesQuery = { __typename?: 'Query', QueryResourceTypes: Array<{ __typename?: 'ResourceType', Name: string, id: string }> };
 
 export type SelectPoolsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SelectPoolsQuery = (
-  { __typename?: 'Query' }
-  & { QueryResourcePools: Array<(
-    { __typename?: 'ResourcePool' }
-    & Pick<ResourcePool, 'id' | 'Name'>
-    & { ResourceType: (
-      { __typename?: 'ResourceType' }
-      & Pick<ResourceType, 'id' | 'Name'>
-    ), Resources: Array<(
-      { __typename?: 'Resource' }
-      & Pick<Resource, 'Description' | 'Properties' | 'id'>
-      & { ParentPool: (
-        { __typename?: 'ResourcePool' }
-        & Pick<ResourcePool, 'id' | 'Name'>
-      ), NestedPool: Maybe<(
-        { __typename?: 'ResourcePool' }
-        & Pick<ResourcePool, 'id' | 'PoolProperties'>
-      )> }
-    )> }
-  )> }
-);
+export type SelectPoolsQuery = { __typename?: 'Query', QueryResourcePools: Array<{ __typename?: 'ResourcePool', id: string, Name: string, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', Description: string | null, Properties: any, id: string, ParentPool: { __typename?: 'ResourcePool', id: string, Name: string }, NestedPool: { __typename?: 'ResourcePool', id: string, PoolProperties: any } | null }> }> };
 
 export type SelectAllocationStrategiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SelectAllocationStrategiesQuery = (
-  { __typename?: 'Query' }
-  & { QueryAllocationStrategies: Array<(
-    { __typename?: 'AllocationStrategy' }
-    & Pick<AllocationStrategy, 'id' | 'Name'>
-  )> }
-);
+export type SelectAllocationStrategiesQuery = { __typename?: 'Query', QueryAllocationStrategies: Array<{ __typename?: 'AllocationStrategy', id: string, Name: string }> };
 
 export type GetPoolDetailQueryVariables = Exact<{
   poolId: Scalars['ID'];
 }>;
 
 
-export type GetPoolDetailQuery = (
-  { __typename?: 'Query' }
-  & { QueryResourcePool: (
-    { __typename?: 'ResourcePool' }
-    & Pick<ResourcePool, 'id' | 'Name' | 'PoolType'>
-    & { Resources: Array<(
-      { __typename?: 'Resource' }
-      & Pick<Resource, 'Description' | 'Properties' | 'id'>
-      & { NestedPool: Maybe<(
-        { __typename?: 'ResourcePool' }
-        & Pick<ResourcePool, 'id' | 'Name' | 'PoolType' | 'PoolProperties'>
-        & { Tags: Array<(
-          { __typename?: 'Tag' }
-          & Pick<Tag, 'id' | 'Tag'>
-        )>, ParentResource: Maybe<(
-          { __typename?: 'Resource' }
-          & { ParentPool: (
-            { __typename?: 'ResourcePool' }
-            & Pick<ResourcePool, 'id' | 'Name'>
-          ) }
-        )>, AllocationStrategy: Maybe<(
-          { __typename?: 'AllocationStrategy' }
-          & Pick<AllocationStrategy, 'id' | 'Name' | 'Lang'>
-        )>, ResourceType: (
-          { __typename?: 'ResourceType' }
-          & Pick<ResourceType, 'id' | 'Name'>
-        ), Resources: Array<(
-          { __typename?: 'Resource' }
-          & Pick<Resource, 'id'>
-          & { NestedPool: Maybe<(
-            { __typename?: 'ResourcePool' }
-            & Pick<ResourcePool, 'id' | 'Name'>
-          )> }
-        )>, Capacity: Maybe<(
-          { __typename?: 'PoolCapacityPayload' }
-          & Pick<PoolCapacityPayload, 'freeCapacity' | 'utilizedCapacity'>
-        )> }
-      )> }
-    )>, Tags: Array<(
-      { __typename?: 'Tag' }
-      & Pick<Tag, 'id' | 'Tag'>
-    )>, Capacity: Maybe<(
-      { __typename?: 'PoolCapacityPayload' }
-      & Pick<PoolCapacityPayload, 'freeCapacity' | 'utilizedCapacity'>
-    )>, ResourceType: (
-      { __typename?: 'ResourceType' }
-      & Pick<ResourceType, 'id' | 'Name'>
-    ) }
-  ) }
-);
+export type GetPoolDetailQuery = { __typename?: 'Query', QueryResourcePool: { __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, Resources: Array<{ __typename?: 'Resource', Description: string | null, Properties: any, id: string, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, PoolProperties: any, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, ParentResource: { __typename?: 'Resource', ParentPool: { __typename?: 'ResourcePool', id: string, Name: string } } | null, AllocationStrategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang } | null, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null } | null }>, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null, ResourceType: { __typename?: 'ResourceType', id: string, Name: string } } };
 
 export type AllocatedResourcesQueryVariables = Exact<{
   poolId: Scalars['ID'];
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  before?: InputMaybe<Scalars['String']>;
+  after?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type AllocatedResourcesQuery = (
-  { __typename?: 'Query' }
-  & { QueryResources: Array<(
-    { __typename?: 'Resource' }
-    & Pick<Resource, 'id' | 'Properties' | 'Description'>
-  )> }
-);
+export type AllocatedResourcesQuery = { __typename?: 'Query', QueryResources: { __typename?: 'ResourceConnection', totalCount: number, edges: Array<{ __typename?: 'ResourceEdge', node: { __typename?: 'Resource', id: string, Properties: any, Description: string | null } } | null>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, startCursor: { __typename?: 'OutputCursor', ID: string }, endCursor: { __typename?: 'OutputCursor', ID: string } } } };
 
 export type ClaimResourceMutationVariables = Exact<{
   poolId: Scalars['ID'];
@@ -1108,13 +837,7 @@ export type ClaimResourceMutationVariables = Exact<{
 }>;
 
 
-export type ClaimResourceMutation = (
-  { __typename?: 'Mutation' }
-  & { ClaimResource: (
-    { __typename?: 'Resource' }
-    & Pick<Resource, 'id' | 'Properties'>
-  ) }
-);
+export type ClaimResourceMutation = { __typename?: 'Mutation', ClaimResource: { __typename?: 'Resource', id: string, Properties: any } };
 
 export type FreeResourceMutationVariables = Exact<{
   poolId: Scalars['ID'];
@@ -1122,54 +845,16 @@ export type FreeResourceMutationVariables = Exact<{
 }>;
 
 
-export type FreeResourceMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'FreeResource'>
-);
+export type FreeResourceMutation = { __typename?: 'Mutation', FreeResource: string };
 
 export type GetAllPoolsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllPoolsQuery = (
-  { __typename?: 'Query' }
-  & { QueryResourcePools: Array<(
-    { __typename?: 'ResourcePool' }
-    & Pick<ResourcePool, 'id' | 'Name' | 'PoolType' | 'PoolProperties'>
-    & { Tags: Array<(
-      { __typename?: 'Tag' }
-      & Pick<Tag, 'id' | 'Tag'>
-    )>, AllocationStrategy: Maybe<(
-      { __typename?: 'AllocationStrategy' }
-      & Pick<AllocationStrategy, 'id' | 'Name' | 'Lang'>
-    )>, ResourceType: (
-      { __typename?: 'ResourceType' }
-      & Pick<ResourceType, 'id' | 'Name'>
-    ), Resources: Array<(
-      { __typename?: 'Resource' }
-      & Pick<Resource, 'id'>
-      & { NestedPool: Maybe<(
-        { __typename?: 'ResourcePool' }
-        & Pick<ResourcePool, 'id' | 'Name'>
-      )> }
-    )>, Capacity: Maybe<(
-      { __typename?: 'PoolCapacityPayload' }
-      & Pick<PoolCapacityPayload, 'freeCapacity' | 'utilizedCapacity'>
-    )> }
-  )> }
-);
+export type GetAllPoolsQuery = { __typename?: 'Query', QueryResourcePools: Array<{ __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, PoolProperties: any, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, AllocationStrategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang } | null, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null }> };
 
 export type DeleteStrategyMutationVariables = Exact<{
   input: DeleteAllocationStrategyInput;
 }>;
 
 
-export type DeleteStrategyMutation = (
-  { __typename?: 'Mutation' }
-  & { DeleteAllocationStrategy: (
-    { __typename?: 'DeleteAllocationStrategyPayload' }
-    & { strategy: Maybe<(
-      { __typename?: 'AllocationStrategy' }
-      & Pick<AllocationStrategy, 'id'>
-    )> }
-  ) }
-);
+export type DeleteStrategyMutation = { __typename?: 'Mutation', DeleteAllocationStrategy: { __typename?: 'DeleteAllocationStrategyPayload', strategy: { __typename?: 'AllocationStrategy', id: string } | null } };

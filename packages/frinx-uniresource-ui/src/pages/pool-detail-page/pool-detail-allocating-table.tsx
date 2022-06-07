@@ -1,24 +1,26 @@
 import { Table, Thead, Tr, Th, Tbody, Td, ButtonGroup, Button } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import Pagination from '../../components/pagination';
+import { PaginationArgs } from '../../hooks/use-pagination';
 import { AllocatedResourcesQuery } from '../../__generated__/graphql';
 
 type Props = {
-  allocatedResources: AllocatedResourcesQuery['QueryResources'];
+  allocatedResources?: AllocatedResourcesQuery['QueryResources'];
   canFreeResource: boolean;
   onFreeResource: (userInput: Record<string, string | number>) => void;
   onPrevious: (cursor: string | null) => () => void;
   onNext: (cursor: string | null) => () => void;
+  paginationArgs: PaginationArgs;
 };
 
-const getNamesOfAllocatedResources = (allocatedResources: AllocatedResourcesQuery['QueryResources']) => {
+const getNamesOfAllocatedResources = (allocatedResources?: AllocatedResourcesQuery['QueryResources']) => {
   if (allocatedResources == null) return [];
 
   return [
     ...new Set(
-      allocatedResources.reduce(
+      allocatedResources.edges.reduce(
         (prev, curr) => {
-          return prev.concat(Object.keys(curr.Properties));
+          return prev.concat(Object.keys(curr?.node.Properties));
         },
         [''],
       ),
@@ -32,6 +34,7 @@ const PoolDetailAllocatingTable: FC<Props> = ({
   canFreeResource,
   onPrevious,
   onNext,
+  paginationArgs,
 }) => {
   const allocatedResourcesKeys = getNamesOfAllocatedResources(allocatedResources);
 
@@ -46,22 +49,28 @@ const PoolDetailAllocatingTable: FC<Props> = ({
           </Tr>
         </Thead>
         <Tbody>
-          {allocatedResources != null && allocatedResources.length > 0 ? (
-            allocatedResources.map((resource) => (
-              <Tr key={resource.id} title={resource.Description ?? ''}>
-                {allocatedResourcesKeys.map((key) =>
-                  key ? <Td key={`${key}-${resource.id}`}>{resource.Properties[key]}</Td> : null,
-                )}
-                <Td>{resource.Description}</Td>
-                <Td>
-                  <ButtonGroup>
-                    <Button isDisabled={!canFreeResource} onClick={() => onFreeResource(resource.Properties)}>
-                      Deallocate
-                    </Button>
-                  </ButtonGroup>
-                </Td>
-              </Tr>
-            ))
+          {allocatedResources != null && allocatedResources.edges != null && allocatedResources.edges.length > 0 ? (
+            allocatedResources.edges.map((node) => {
+              const resource = node?.node;
+
+              return resource != null ? (
+                <Tr key={resource.id} title={resource.Description ?? ''}>
+                  {allocatedResourcesKeys.map((key) =>
+                    key ? <Td key={`${key}-${resource.id}`}>{resource.Properties[key]}</Td> : null,
+                  )}
+                  <Td>{resource.Description}</Td>
+                  <Td>
+                    <ButtonGroup>
+                      <Button isDisabled={!canFreeResource} onClick={() => onFreeResource(resource.Properties)}>
+                        Deallocate
+                      </Button>
+                    </ButtonGroup>
+                  </Td>
+                </Tr>
+              ) : (
+                <Tr>There is no record</Tr>
+              );
+            })
           ) : (
             <Tr>
               <Td>There are no allocated resources yet.</Td>
@@ -69,12 +78,16 @@ const PoolDetailAllocatingTable: FC<Props> = ({
           )}
         </Tbody>
       </Table>
-      <Pagination
-        onPrevious={onPrevious(allocatedResources.pageInfo.startCursor.ID)}
-        onNext={onNext(allocatedResources.pageInfo.endCursor.ID)}
-        hasNextPage={allocatedResources.pageInfo.hasNextPage}
-        hasPreviousPage={allocatedResources.pageInfo.hasPreviousPage}
-      />
+      {allocatedResources != null && (
+        <Pagination
+          after={paginationArgs.after}
+          before={paginationArgs.before}
+          onPrevious={onPrevious(String(allocatedResources.pageInfo.startCursor))}
+          onNext={onNext(String(allocatedResources.pageInfo.endCursor))}
+          hasNextPage={allocatedResources.pageInfo.hasNextPage}
+          hasPreviousPage={allocatedResources.pageInfo.hasPreviousPage}
+        />
+      )}
     </>
   );
 };

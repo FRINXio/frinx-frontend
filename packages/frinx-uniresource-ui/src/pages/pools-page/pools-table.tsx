@@ -29,7 +29,7 @@ function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
   if (capacity == null) {
     return 0;
   }
-  return capacity.freeCapacity + capacity.utilizedCapacity;
+  return Number(capacity.freeCapacity) + Number(capacity.utilizedCapacity);
 }
 function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   if (capacity == null) {
@@ -39,7 +39,7 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   if (totalCapacity === 0) {
     return 0;
   }
-  return (capacity.utilizedCapacity / totalCapacity) * 100;
+  return (Number(capacity.utilizedCapacity) / totalCapacity) * 100;
 }
 
 const PoolsTable: VoidFunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoading, isNestedShown = true }) => {
@@ -119,7 +119,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({ pools, onDeleteBtnClick, isL
                         onClick={() => {
                           onDeleteBtnClick(pool.id);
                         }}
-                        isDisabled={pool.Capacity?.freeCapacity !== totalCapacity}
+                        isDisabled={Number(pool.Capacity?.freeCapacity) !== totalCapacity}
                       />
                     </HStack>
                   </Td>

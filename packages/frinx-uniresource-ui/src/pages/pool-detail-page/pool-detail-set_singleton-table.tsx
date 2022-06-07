@@ -3,6 +3,7 @@ import { keys } from 'lodash';
 import React, { VoidFunctionComponent } from 'react';
 import Pagination from '../../components/pagination';
 import useNotifications from '../../hooks/use-notifications';
+import { PaginationArgs } from '../../hooks/use-pagination';
 import { AllocatedResourcesQuery, Maybe, Resource } from '../../__generated__/graphql';
 
 type PoolResources = Array<
@@ -13,8 +14,9 @@ type PoolResources = Array<
 >;
 
 type Props = {
-  allocatedResources: AllocatedResourcesQuery['QueryResources'];
+  allocatedResources?: AllocatedResourcesQuery['QueryResources'];
   resources: PoolResources;
+  paginationArgs: PaginationArgs;
   onFreeResource: (userInput: Record<string, string | number>) => void;
   onClaimResource: (description: string, userInput?: Record<string, string | number>) => void;
   onPrevious: (cursor: string | null) => () => void;
@@ -43,10 +45,18 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
   allocatedResources,
   onPrevious,
   onNext,
+  paginationArgs,
 }) => {
   const toast = useNotifications();
   const mappedResources = resources.map((resource) => {
-    if (allocatedResources.find((res) => res.id === resource.id)) {
+    if (allocatedResources == null) {
+      return {
+        ...resource,
+        isClaimed: false,
+      };
+    }
+
+    if (allocatedResources.edges.find((res) => res?.node.id === resource.id)) {
       return { ...resource, isClaimed: true };
     }
 
@@ -112,12 +122,16 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
           )}
         </Tbody>
       </Table>
-      <Pagination
-        onNext={onNext(allocatedResources.pageInfo.startCursor.ID)}
-        onPrevious={onPrevious(allocatedResources.pageInfo.endCursor.ID)}
-        hasNextPage={allocatedResources.pageInfo.hasNextPage}
-        hasPreviousPage={allocatedResources.pageInfo.hasPreviousPage}
-      />
+      {allocatedResources != null && (
+        <Pagination
+          after={paginationArgs.after}
+          before={paginationArgs.before}
+          onNext={onNext(allocatedResources.pageInfo.startCursor.ID)}
+          onPrevious={onPrevious(allocatedResources.pageInfo.endCursor.ID)}
+          hasNextPage={allocatedResources.pageInfo.hasNextPage}
+          hasPreviousPage={allocatedResources.pageInfo.hasPreviousPage}
+        />
+      )}
     </>
   );
 };

@@ -6,6 +6,7 @@ import PageContainer from '../../components/page-container';
 import { omitNullValue } from '../../helpers/omit-null-value';
 import unwrap from '../../helpers/unwrap';
 import useNotifications from '../../hooks/use-notifications';
+import { usePagination } from '../../hooks/use-pagination';
 import {
   AllocatedResourcesQuery,
   AllocatedResourcesQueryVariables,
@@ -94,11 +95,26 @@ const POOL_DETAIL_QUERY = gql`
 `;
 
 const POOL_RESOURCES_QUERY = gql`
-  query AllocatedResources($poolId: ID!) {
-    QueryResources(poolId: $poolId) {
-      id
-      Properties
-      Description
+  query AllocatedResources($poolId: ID!, $first: Int, $last: Int, $before: String, $after: String) {
+    QueryResources(poolId: $poolId, first: $first, last: $last, before: $before, after: $after) {
+      edges {
+        node {
+          id
+          Properties
+          Description
+        }
+      }
+      pageInfo {
+        startCursor {
+          ID
+        }
+        endCursor {
+          ID
+        }
+        hasNextPage
+        hasPreviousPage
+      }
+      totalCount
     }
   }
 `;
@@ -130,7 +146,7 @@ function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
   if (capacity == null) {
     return 0;
   }
-  return capacity.freeCapacity + capacity.utilizedCapacity;
+  return Number(capacity.freeCapacity) + Number(capacity.utilizedCapacity);
 }
 function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   if (capacity == null) {
@@ -140,7 +156,7 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   if (totalCapacity === 0) {
     return 0;
   }
-  return (capacity.utilizedCapacity / totalCapacity) * 100;
+  return (Number(capacity.utilizedCapacity) / totalCapacity) * 100;
 }
 
 const PoolDetailPage: VoidFunctionComponent = () => {
@@ -154,12 +170,14 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     query: POOL_DETAIL_QUERY,
     variables: { poolId: unwrap(poolId) },
   });
+
+  const [paginationArgs, { nextPage, previousPage }] = usePagination(2);
   const [{ data: allocatedResources, fetching: isLoadingResources }] = useQuery<
     AllocatedResourcesQuery,
     AllocatedResourcesQueryVariables
   >({
     query: POOL_RESOURCES_QUERY,
-    variables: { poolId: unwrap(poolId) },
+    variables: { poolId: unwrap(poolId), ...paginationArgs },
     context: allocatedResourcesContext,
   });
 
@@ -236,7 +254,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     return <Progress isIndeterminate mt={-10} size="xs" />;
   }
 
-  if (poolData == null || poolData.QueryResourcePool == null || allocatedResources == null) {
+  if (poolData == null || poolData.QueryResourcePool == null) {
     return <Box textAlign="center">Resource pool does not exists</Box>;
   }
 
@@ -250,9 +268,9 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     resourcePool.Resources.length !== resourcePool.Resources.filter((resource) => resource.NestedPool !== null).length;
   const canClaimResources =
     resourcePool.Capacity != null &&
-    resourcePool.Capacity.freeCapacity > 0 &&
-    resourcePool.Capacity.freeCapacity <= totalCapacity;
-  const canFreeResource = resourcePool.Capacity != null && resourcePool.Capacity.freeCapacity !== totalCapacity;
+    Number(resourcePool.Capacity.freeCapacity) > 0 &&
+    Number(resourcePool.Capacity.freeCapacity) <= totalCapacity;
+  const canFreeResource = resourcePool.Capacity != null && Number(resourcePool.Capacity.freeCapacity) !== totalCapacity;
 
   return (
     <PageContainer>
@@ -294,17 +312,23 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         </Heading>
         {resourcePool.PoolType === 'allocating' && (
           <PoolDetailAllocatingTable
-            allocatedResources={allocatedResources.QueryResources}
+            allocatedResources={allocatedResources?.QueryResources}
             onFreeResource={freePoolResource}
             canFreeResource={canFreeResource}
+            onNext={nextPage}
+            onPrevious={previousPage}
+            paginationArgs={paginationArgs}
           />
         )}
         {(resourcePool.PoolType === 'set' || resourcePool.PoolType === 'singleton') && (
           <PoolDetailSetSingletonTable
             resources={resourcePool.Resources}
-            allocatedResources={allocatedResources.QueryResources}
+            allocatedResources={allocatedResources?.QueryResources}
             onFreeResource={freePoolResource}
             onClaimResource={claimPoolResource}
+            onNext={nextPage}
+            onPrevious={previousPage}
+            paginationArgs={paginationArgs}
           />
         )}
       </Box>
