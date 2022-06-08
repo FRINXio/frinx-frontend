@@ -1,7 +1,9 @@
 import { Table, Thead, Tr, Th, Tbody, Td, ButtonGroup, Button } from '@chakra-ui/react';
 import { keys } from 'lodash';
 import React, { VoidFunctionComponent } from 'react';
+import Pagination from '../../components/pagination';
 import useNotifications from '../../hooks/use-notifications';
+import { PaginationArgs } from '../../hooks/use-pagination';
 import { AllocatedResourcesQuery, Maybe, Resource } from '../../__generated__/graphql';
 
 type PoolResources = Array<
@@ -12,10 +14,13 @@ type PoolResources = Array<
 >;
 
 type Props = {
-  allocatedResources: AllocatedResourcesQuery['QueryResources'];
+  allocatedResources?: AllocatedResourcesQuery['QueryResources'];
   resources: PoolResources;
+  paginationArgs: PaginationArgs;
   onFreeResource: (userInput: Record<string, string | number>) => void;
   onClaimResource: (description: string, userInput?: Record<string, string | number>) => void;
+  onPrevious: (cursor: string | null) => () => void;
+  onNext: (cursor: string | null) => () => void;
 };
 
 const getNamesOfAllocatedResources = (
@@ -38,10 +43,20 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
   onClaimResource,
   resources,
   allocatedResources,
+  onPrevious,
+  onNext,
+  paginationArgs,
 }) => {
   const toast = useNotifications();
   const mappedResources = resources.map((resource) => {
-    if (allocatedResources.find((res) => res.id === resource.id)) {
+    if (allocatedResources == null) {
+      return {
+        ...resource,
+        isClaimed: false,
+      };
+    }
+
+    if (allocatedResources.edges.find((res) => res?.node.id === resource.id)) {
       return { ...resource, isClaimed: true };
     }
 
@@ -62,50 +77,62 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
   };
 
   return (
-    <Table background="white">
-      <Thead>
-        <Tr>
-          {allocatedResourcesKeys.map((key) => (
-            <Th key={key}>{key}</Th>
-          ))}
-          <Th>state</Th>
-          <Th>description</Th>
-          <Th>action</Th>
-        </Tr>
-      </Thead>
-      <Tbody>
-        {mappedResources != null && mappedResources.length > 0 ? (
-          mappedResources.map((resource) => {
-            return (
-              <Tr key={resource.id}>
-                {allocatedResourcesKeys.map((key) => {
-                  return <Td key={`${key}-${resource.id}`}>{resource.Properties[key]}</Td>;
-                })}
-                <Td>{resource.isClaimed ? 'Claimed' : 'Unclaimed'}</Td>
-                <Td>{resource.Description}</Td>
-                <Td>
-                  <ButtonGroup>
-                    <Button
-                      isDisabled={resource.isClaimed}
-                      onClick={() => handleOnClaimResource(resource.Description, resource.Properties)}
-                    >
-                      Claim
-                    </Button>
-                    <Button isDisabled={!resource.isClaimed} onClick={() => onFreeResource(resource.Properties)}>
-                      Deallocate
-                    </Button>
-                  </ButtonGroup>
-                </Td>
-              </Tr>
-            );
-          })
-        ) : (
+    <>
+      <Table background="white">
+        <Thead>
           <Tr>
-            <Td>There are no allocated resources yet.</Td>
+            {allocatedResourcesKeys.map((key) => (
+              <Th key={key}>{key}</Th>
+            ))}
+            <Th>state</Th>
+            <Th>description</Th>
+            <Th>action</Th>
           </Tr>
-        )}
-      </Tbody>
-    </Table>
+        </Thead>
+        <Tbody>
+          {mappedResources != null && mappedResources.length > 0 ? (
+            mappedResources.map((resource) => {
+              return (
+                <Tr key={resource.id}>
+                  {allocatedResourcesKeys.map((key) => {
+                    return <Td key={`${key}-${resource.id}`}>{resource.Properties[key]}</Td>;
+                  })}
+                  <Td>{resource.isClaimed ? 'Claimed' : 'Unclaimed'}</Td>
+                  <Td>{resource.Description}</Td>
+                  <Td>
+                    <ButtonGroup>
+                      <Button
+                        isDisabled={resource.isClaimed}
+                        onClick={() => handleOnClaimResource(resource.Description, resource.Properties)}
+                      >
+                        Claim
+                      </Button>
+                      <Button isDisabled={!resource.isClaimed} onClick={() => onFreeResource(resource.Properties)}>
+                        Deallocate
+                      </Button>
+                    </ButtonGroup>
+                  </Td>
+                </Tr>
+              );
+            })
+          ) : (
+            <Tr>
+              <Td>There are no allocated resources yet.</Td>
+            </Tr>
+          )}
+        </Tbody>
+      </Table>
+      {allocatedResources != null && (
+        <Pagination
+          after={paginationArgs.after}
+          before={paginationArgs.before}
+          onNext={onNext(allocatedResources.pageInfo.startCursor.ID)}
+          onPrevious={onPrevious(allocatedResources.pageInfo.endCursor.ID)}
+          hasNextPage={allocatedResources.pageInfo.hasNextPage}
+          hasPreviousPage={allocatedResources.pageInfo.hasPreviousPage}
+        />
+      )}
+    </>
   );
 };
 
