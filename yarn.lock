@@ -3127,7 +3127,7 @@ __metadata:
     "@typescript-eslint/parser": 5.17.0
     "@urql/exchange-retry": 0.3.3
     esbuild: 0.14.43
-    eslint: 8.16.0
+    eslint: 8.17.0
     eslint-config-prettier: 7.2.0
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
@@ -3175,7 +3175,7 @@ __metadata:
     "@frinx/uniresource-ui": ^0.0.1
     "@frinx/workflow-builder": ^1.0.0
     "@frinx/workflow-ui": ^2.0.0
-    "@frinxio/gamma": 0.0.5
+    "@frinxio/gamma": 0.0.6
     "@types/node": 16.11.38
     "@types/react": 17.0.42
     "@types/react-dom": 17.0.14
@@ -3186,7 +3186,7 @@ __metadata:
     babel-plugin-relay: 10.1.3
     copy-webpack-plugin: 10.2.4
     css-loader: 5.2.7
-    eslint: 8.16.0
+    eslint: 8.17.0
     eslint-config-prettier: 7.2.0
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
@@ -3261,7 +3261,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.17.0
     "@typescript-eslint/parser": 5.17.0
     dotenv: 16.0.1
-    eslint: 8.16.0
+    eslint: 8.17.0
     eslint-config-prettier: 7.2.0
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
@@ -3294,8 +3294,8 @@ __metadata:
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@graphql-codegen/cli": 2.6.2
     "@graphql-codegen/introspection": 2.1.1
-    "@graphql-codegen/typescript": 2.4.11
-    "@graphql-codegen/typescript-operations": 2.4.0
+    "@graphql-codegen/typescript": 2.5.0
+    "@graphql-codegen/typescript-operations": 2.4.1
     "@types/json-templates": 3.0.0
     "@types/react": 17.0.42
     "@types/react-dom": 17.0.14
@@ -3307,7 +3307,7 @@ __metadata:
     chakra-ui-autocomplete: 1.4.5
     date-fns: 2.28.0
     date-fns-tz: 1.3.2
-    eslint: 8.16.0
+    eslint: 8.17.0
     eslint-config-prettier: 7.2.0
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
@@ -3363,8 +3363,8 @@ __metadata:
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@graphql-codegen/cli": 2.6.2
     "@graphql-codegen/introspection": 2.1.1
-    "@graphql-codegen/typescript": 2.4.11
-    "@graphql-codegen/typescript-operations": 2.4.0
+    "@graphql-codegen/typescript": 2.5.0
+    "@graphql-codegen/typescript-operations": 2.4.1
     "@types/react": 17.0.42
     "@types/react-dom": 17.0.14
     "@typescript-eslint/eslint-plugin": 5.17.0
@@ -3375,7 +3375,7 @@ __metadata:
     babel-loader: 8.2.5
     chakra-ui-autocomplete: 1.4.5
     css-loader: 5.2.7
-    eslint: 8.16.0
+    eslint: 8.17.0
     eslint-config-prettier: 7.2.0
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
@@ -3445,7 +3445,7 @@ __metadata:
     babel-loader: 8.2.5
     css-loader: 5.2.7
     dagre: 0.8.5
-    eslint: 8.16.0
+    eslint: 8.17.0
     eslint-config-prettier: 7.2.0
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
@@ -3512,7 +3512,7 @@ __metadata:
     css-loader: ^5.0.1
     d3: ^3.5.16
     dagre-d3: ^0.6.4
-    eslint: 8.16.0
+    eslint: 8.17.0
     eslint-config-airbnb: 19.0.4
     eslint-config-prettier: 7.2.0
     eslint-plugin-flowtype: 8.0.3
@@ -3568,9 +3568,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@frinxio/gamma@npm:0.0.5":
-  version: 0.0.5
-  resolution: "@frinxio/gamma@npm:0.0.5::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40frinxio%2Fgamma%2F0.0.5%2F0045a032480bdcf7694c4bf0f96555b74b5e56469467c75dd57622a16effff62"
+"@frinxio/gamma@npm:0.0.6":
+  version: 0.0.6
+  resolution: "@frinxio/gamma@npm:0.0.6::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40frinxio%2Fgamma%2F0.0.6%2F957fe263537b745c6b5ff7364563878b575edf152a165a2d6a93f15aa4ca1ca4"
   dependencies:
     "@types/lodash": 4.14.181
     "@types/url-join": 4.0.1
@@ -3595,7 +3595,7 @@ __metadata:
     react: ^18.0.0
     react-dom: ^18.0.0
     react-router-dom: ^6.0.0
-  checksum: f2a74d1ed61782a50cc20daaeafed400032d1253d98e9f2f7bd0aa6715491ffdc1c197c6a2a8ddaa7608a800b59d78189e3e6445cefc332b7f2cfd0465218aeb
+  checksum: fa06d95140be718e20f66e01a1ee10cd811a39a043bda8ce014a4ee1fc4668e9db356e72d845c82877bf0eaba29f0980cb2c5adca384e8b94be17634104acb26
   languageName: node
   linkType: hard
 
@@ -3715,39 +3715,39 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/typescript-operations@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@graphql-codegen/typescript-operations@npm:2.4.0"
+"@graphql-codegen/typescript-operations@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@graphql-codegen/typescript-operations@npm:2.4.1"
   dependencies:
     "@graphql-codegen/plugin-helpers": ^2.4.0
-    "@graphql-codegen/typescript": ^2.4.11
-    "@graphql-codegen/visitor-plugin-common": 2.8.0
+    "@graphql-codegen/typescript": ^2.5.0
+    "@graphql-codegen/visitor-plugin-common": 2.9.0
     auto-bind: ~4.0.0
     tslib: ~2.4.0
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: c36ebe8bd2c0a1f0f894a70f494bd2e97309bf1cfcd1fc15561bd664875d42fad26f9af402a9f195e92148214be74f8cfb526f938d0af4ec47e5f2660d321463
+  checksum: e05856dfdb35abaa02265c4da876a435af0553f14fbf22f2f10b1bafd45c1ec48831db386d5cad0f73ddd97445cbc3524c852c99f1844dfb60659d591b4dade1
   languageName: node
   linkType: hard
 
-"@graphql-codegen/typescript@npm:2.4.11, @graphql-codegen/typescript@npm:^2.4.11":
-  version: 2.4.11
-  resolution: "@graphql-codegen/typescript@npm:2.4.11"
+"@graphql-codegen/typescript@npm:2.5.0, @graphql-codegen/typescript@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "@graphql-codegen/typescript@npm:2.5.0"
   dependencies:
     "@graphql-codegen/plugin-helpers": ^2.4.0
     "@graphql-codegen/schema-ast": ^2.4.1
-    "@graphql-codegen/visitor-plugin-common": 2.8.0
+    "@graphql-codegen/visitor-plugin-common": 2.9.0
     auto-bind: ~4.0.0
     tslib: ~2.4.0
   peerDependencies:
     graphql: ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 481b581ab8505434c4ed84648b225e9bc4a4dcde488179014539e2093dc4f8bb4ee20e2d8899b4ce457da3036eaa5886b7d71b3ddb6b9a115bb78457d273711c
+  checksum: ead7ef64d530b84d757e6deb487190cea6713c2dbcf7a0441f61f2e436496b8bc604a88bd5a2d3d8501ea3c434c168091e36da4c799a3e1143ea983b5f8bb37f
   languageName: node
   linkType: hard
 
-"@graphql-codegen/visitor-plugin-common@npm:2.8.0":
-  version: 2.8.0
-  resolution: "@graphql-codegen/visitor-plugin-common@npm:2.8.0"
+"@graphql-codegen/visitor-plugin-common@npm:2.9.0":
+  version: 2.9.0
+  resolution: "@graphql-codegen/visitor-plugin-common@npm:2.9.0"
   dependencies:
     "@graphql-codegen/plugin-helpers": ^2.4.0
     "@graphql-tools/optimize": ^1.0.1
@@ -3761,7 +3761,7 @@ __metadata:
     tslib: ~2.4.0
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 84f1e0b900d5df80537e5ec2dc2f8b245f572994308cef9119bc602d4042c5d91a45dcb298fc334431a82fb36b47b5772209c29f8db6d14506a7467366c3fe35
+  checksum: 20a5e9183e7d80761946dc2c88d3f367f056a5b5b3502da45c71689125ac0ea4be76c884ed1fe8ae9f68a824f35e03c293491ea40214ab600c8e7142af3c3b26
   languageName: node
   linkType: hard
 
@@ -9430,9 +9430,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:8.16.0":
-  version: 8.16.0
-  resolution: "eslint@npm:8.16.0"
+"eslint@npm:8.17.0":
+  version: 8.17.0
+  resolution: "eslint@npm:8.17.0"
   dependencies:
     "@eslint/eslintrc": ^1.3.0
     "@humanwhocodes/config-array": ^0.9.2
@@ -9471,7 +9471,7 @@ __metadata:
     v8-compile-cache: ^2.0.3
   bin:
     eslint: bin/eslint.js
-  checksum: 654a0200b49dc07280673fee13cdfb04326466790e031dfa9660b69fba3b1cf766a51504328f9de56bd18e6b5eb7578985cf29dc7f016c5ec851220ff9db95eb
+  checksum: b484c96681c6b19f5b437f664623f1cd310d3ee9be88400d8450e086e664cd968a9dc202f0b0678578fd50e7a445b92586efe8c787de5073ff2f83213b00bb7b
   languageName: node
   linkType: hard
 
