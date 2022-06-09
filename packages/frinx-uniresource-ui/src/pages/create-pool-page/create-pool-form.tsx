@@ -120,6 +120,10 @@ function getSchema(poolType: string, isNested: boolean) {
           .required('Please enter a dealocation safety period')
           .typeError('Please enter a number'),
         poolValues: yup.lazy((poolValues: Array<Record<string, string>>) => {
+          const ipv4: RegExp = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
+          const ipv6: RegExp =
+            /(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$)/;
+
           return yup
             .array()
             .of(
@@ -127,7 +131,12 @@ function getSchema(poolType: string, isNested: boolean) {
                 ...Object.keys(poolValues[0] ?? {}).reduce((acc, key) => {
                   return {
                     ...acc,
-                    [key]: yup.string().required('Please enter a value'),
+                    [key]: yup
+                      .string()
+                      .required('Please enter a value')
+                      .matches(ipv4 || ipv6, {
+                        message: 'Invalid ipv4 address' || 'Invalid ipv6 address',
+                      }),
                   };
                 }, {}),
               }),
