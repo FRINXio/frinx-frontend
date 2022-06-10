@@ -1,4 +1,4 @@
-import { ExecutedWorkflowPayload, ExecutedWorkflowResponse, TaskDefinition, Workflow } from './helpers/types';
+import { ExecutedWorkflowResponse, TaskDefinition, Workflow, WorkflowExecutionPayload } from './helpers/types';
 
 export type Callbacks = {
   getWorkflows: () => Promise<Workflow[]>;
@@ -6,7 +6,7 @@ export type Callbacks = {
   getWorkflow: (name: string, version: number) => Promise<Workflow>;
   deleteWorkflow: (name: string, version: string) => Promise<Workflow>;
   putWorkflow: (workflows: Workflow[]) => Promise<Workflow[]>;
-  getWorkflowExecutions: (payload: ExecutedWorkflowPayload) => Promise<ExecutedWorkflowResponse>;
+  getWorkflowExecutions: (payload: WorkflowExecutionPayload) => Promise<ExecutedWorkflowResponse>;
   getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<ExecutedWorkflowResponse>;
   executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<{ text: string }>;
 };

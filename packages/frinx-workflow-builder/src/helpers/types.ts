@@ -445,3 +445,15 @@ export type ExecutedWorkflowResponse = {
   meta: Workflow;
   subworkflows: WorkflowInstanceDetail[];
 };
+
+export type WorkflowExecutionPayload = {
+  workflowId: string;
+  label: string;
+  start?: number;
+  size?: string;
+  sortBy?: ExecutedWorkflowSortBy;
+  sortOrder?: ExecutedWorkflowSortOrder;
+};
+
+export type ExecutedWorkflowSortBy = 'workflowId' | 'startTime' | 'endTime';
+export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';
