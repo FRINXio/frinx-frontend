@@ -454,6 +454,31 @@ export type WorkflowExecutionPayload = {
   sortBy?: ExecutedWorkflowSortBy;
   sortOrder?: ExecutedWorkflowSortOrder;
 };
+export type ExecutedWorkflow = {
+  correlationId: string;
+  endTime: string;
+  executionTime: number;
+  failedReferenceTaskNames: string;
+  input: string;
+  inputSize: number;
+  output: string;
+  outputSize: number;
+  priority: number;
+  reasonForIncompletion?: string;
+  startTime: string;
+  status: string;
+  updateTime: string;
+  version: number;
+  workflowId: string;
+  workflowType: string;
+};
+
+export type WorkflowExecutionResult = {
+  result: {
+    hits: ExecutedWorkflow[];
+    totalHits: number;
+  };
+};
 
 export type ExecutedWorkflowSortBy = 'workflowId' | 'startTime' | 'endTime';
 export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';
