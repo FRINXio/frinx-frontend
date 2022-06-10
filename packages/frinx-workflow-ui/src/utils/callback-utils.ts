@@ -1,12 +1,13 @@
 import { ExecutedWorkflowResponse } from '../pages/executed-workflow-detail/executed-workflow-detail-status.helpers';
+import { ScheduledWorkflow, Workflow } from '../helpers/types';
 import {
-  ExecutedWorkflows,
-  ExecutedWorkflowSortBy,
-  ExecutedWorkflowSortOrder,
-  ScheduledWorkflow,
-  Workflow,
-} from '../helpers/types';
-import { EventListener, Queue, TaskDefinition, WorkflowPayload } from '../helpers/uniflow-types';
+  EventListener,
+  Queue,
+  TaskDefinition,
+  WorkflowExecutionPayload,
+  WorkflowExecutionResult,
+  WorkflowPayload,
+} from '../helpers/uniflow-types';
 
 export type Callbacks = {
   getWorkflows: () => Promise<Workflow[]>;
@@ -25,22 +26,8 @@ export type Callbacks = {
   registerEventListener: (eventListener: EventListener) => Promise<EventListener>;
   deleteEventListener: (name: string) => Promise<EventListener>;
   getQueues: () => Promise<Queue[]>;
-  getWorkflowExecutions: (
-    workflowId: string,
-    label: string,
-    start: number,
-    size: string,
-    sortBy?: ExecutedWorkflowSortBy,
-    sortOrder?: ExecutedWorkflowSortOrder,
-  ) => Promise<ExecutedWorkflows>;
-  getWorkflowExecutionsHierarchical: (
-    query: string,
-    label: string,
-    start?: number,
-    size?: string,
-    sortBy?: ExecutedWorkflowSortBy,
-    sortOrder?: ExecutedWorkflowSortOrder,
-  ) => Promise<ExecutedWorkflows>;
+  getWorkflowExecutions: (payload: WorkflowExecutionPayload) => Promise<WorkflowExecutionResult>;
+  getWorkflowExecutionsHierarchical: (payload: WorkflowExecutionPayload) => Promise<WorkflowExecutionResult>;
   getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<ExecutedWorkflowResponse>;
   executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<{ text: string }>;
   terminateWorkflows: (workflowIds: string[]) => Promise<string[]>;

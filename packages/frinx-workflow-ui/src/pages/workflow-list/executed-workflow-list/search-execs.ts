@@ -14,7 +14,12 @@ export const fetchNewData = (workflowName: string, viewedPage: number, defaultPa
   const mappedLabels = getApiLabels(labels);
 
   const { getWorkflowExecutions } = callbackUtils.getCallbacks;
-  return getWorkflowExecutions(workflowName, mappedLabels, page, defaultPages.toString());
+  return getWorkflowExecutions({
+    workflowId: workflowName,
+    label: mappedLabels,
+    start: page,
+    size: defaultPages.toString(),
+  });
 };
 
 // TODO: should be removed here and in bulk.js
@@ -29,7 +34,12 @@ export const fetchParentWorkflows = (
   const mappedLabels = getApiLabels(labels);
 
   const { getWorkflowExecutionsHierarchical } = callbackUtils.getCallbacks;
-  return getWorkflowExecutionsHierarchical(workflowName, mappedLabels, page, defaultPages.toString());
+  return getWorkflowExecutionsHierarchical({
+    workflowId: workflowName,
+    label: mappedLabels,
+    start: page,
+    size: defaultPages.toString(),
+  });
 };
 
 export const getSortOrder = (sortBy: SortBy, previousSortBy: SortBy, previousSortOrder: SortOrder): SortOrder => {
@@ -52,6 +62,13 @@ export const getWorkflows = (
   const { getWorkflowExecutions, getWorkflowExecutionsHierarchical } = callbackUtils.getCallbacks;
   const apiLabels = getApiLabels(labels);
   return isFlat
-    ? getWorkflowExecutions(workflowId, apiLabels, start, size.toString(), sortBy, sortOrder)
-    : getWorkflowExecutionsHierarchical(workflowId, apiLabels, start, size.toString(), sortBy, sortOrder);
+    ? getWorkflowExecutions({ workflowId, label: apiLabels, start, size: size.toString(), sortBy, sortOrder })
+    : getWorkflowExecutionsHierarchical({
+        workflowId,
+        label: apiLabels,
+        start,
+        size: size.toString(),
+        sortBy,
+        sortOrder,
+      });
 };
