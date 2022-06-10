@@ -3523,7 +3523,7 @@ __metadata:
     feather-icons-react: ^0.5.0
     file-loader: ^6.2.0
     file-saver: ^2.0.5
-    flow-bin: 0.173.0
+    flow-bin: 0.180.0
     flow-remove-types: 2.174.0
     formik: ^2.2.9
     framer-motion: 6.2.8
@@ -9834,12 +9834,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flow-bin@npm:0.173.0":
-  version: 0.173.0
-  resolution: "flow-bin@npm:0.173.0"
+"flow-bin@npm:0.180.0":
+  version: 0.180.0
+  resolution: "flow-bin@npm:0.180.0"
   bin:
     flow: cli.js
-  checksum: f00f07609b112bcadfef84973b89624a91451672c4d5a0a4735207dccd14659382f71b5bc3ff19989f250bd8677bf6c18048e9ad0b6ba2428674d50bc345d5c2
+  checksum: 101515e4b4c19e2ae0620a18c2ecaa5d8bb807ecc098c0088db6bce336e192fb720ae3a3cc50b617cc4af369a8024592cb22130d0104298e88840181bc55e5f6
   languageName: node
   linkType: hard
 
