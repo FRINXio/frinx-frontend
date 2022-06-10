@@ -1,39 +1,44 @@
 import React, { FC } from 'react';
 import { Table, Tbody, Box } from '@chakra-ui/react';
-import { ExecutedWorkflowsFlat } from '@frinx/workflow-ui/src/helpers/types';
+import { ExecutedWorkflows } from '@frinx/workflow-ui/src/helpers/types';
 import ExecutedWorkflowFlatTableItem from './executed-workflow-flat-table-item';
 import ExecutedWorkflowTableHead from '../executed-workflow-table-head';
 
+type SortBy = 'workflowId' | 'startTime' | 'endTime';
+type SortOrder = 'ASC' | 'DESC';
 type Props = {
-  sort: number[];
-  flatWorkflows: ExecutedWorkflowsFlat;
+  sortBy: SortBy;
+  sortOrder: SortOrder;
+  workflows: ExecutedWorkflows;
   selectedWfs: string[];
   selectAllWorkflows: (isChecked: boolean) => void;
-  sortWf: (sortType: number) => void;
+  sortWf: (sortBy: SortBy) => void;
   selectWf: (workflowId: string, isChecked: boolean) => void;
 };
 
 const ExecutedWorkflowFlatTable: FC<Props> = ({
-  sort,
+  sortBy,
+  sortOrder,
   sortWf,
   selectedWfs,
   selectWf,
-  flatWorkflows,
+  workflows,
   selectAllWorkflows,
 }) => {
-  const areSelectedAll = flatWorkflows.result.hits.length === selectedWfs.length;
+  const areSelectedAll = workflows.result.hits.length === selectedWfs.length;
   return (
     <Box marginBottom={10}>
       <Table background="white" variant="striped">
         <ExecutedWorkflowTableHead
           isFlatTable
-          sort={sort}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
           sortWf={sortWf}
           selectAllWorkflows={selectAllWorkflows}
           areSelectedAll={areSelectedAll}
         />
         <Tbody fontSize={13} textAlign="left">
-          <ExecutedWorkflowFlatTableItem selectWf={selectWf} selectedWfs={selectedWfs} flatWorkflows={flatWorkflows} />
+          <ExecutedWorkflowFlatTableItem selectWf={selectWf} selectedWfs={selectedWfs} flatWorkflows={workflows} />
         </Tbody>
       </Table>
     </Box>

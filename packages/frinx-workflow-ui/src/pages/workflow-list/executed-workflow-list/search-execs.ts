@@ -1,25 +1,23 @@
-import { NestedExecutedWorkflow, ExecutedWorkflow } from '@frinx/workflow-ui/src/helpers/types';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 
-const mapLabelsForApi = (labels: string[]): string => {
-  return labels.reduce((prev, curr, currId) => {
-    if (currId !== labels.length - 1) {
-      return prev.concat(`${curr}&`);
-    } else {
-      return prev.concat(`${curr}`);
-    }
-  }, '');
+type SortBy = 'workflowId' | 'startTime' | 'endTime';
+type SortOrder = 'ASC' | 'DESC';
+
+const getApiLabels = (labels: string[]): string => {
+  return labels.join('&');
 };
 
+// TODO: should be removed here and in bulk.js
 export const fetchNewData = (workflowName: string, viewedPage: number, defaultPages: number, labels: string[]) => {
   const viewedPageStartFromZero = viewedPage - 1;
   const page = viewedPageStartFromZero * defaultPages;
-  const mappedLabels = mapLabelsForApi(labels);
+  const mappedLabels = getApiLabels(labels);
 
   const { getWorkflowExecutions } = callbackUtils.getCallbacks;
   return getWorkflowExecutions(workflowName, mappedLabels, page, defaultPages.toString());
 };
 
+// TODO: should be removed here and in bulk.js
 export const fetchParentWorkflows = (
   workflowName: string,
   viewedPage: number,
@@ -28,54 +26,32 @@ export const fetchParentWorkflows = (
 ) => {
   const viewedPageStartFromZero = viewedPage - 1;
   const page = viewedPageStartFromZero * defaultPages;
-  const mappedLabels = mapLabelsForApi(labels);
+  const mappedLabels = getApiLabels(labels);
 
   const { getWorkflowExecutionsHierarchical } = callbackUtils.getCallbacks;
   return getWorkflowExecutionsHierarchical(workflowName, mappedLabels, page, defaultPages.toString());
 };
 
-export const isValid = (
-  item: NestedExecutedWorkflow | ExecutedWorkflow,
-  searchTerm: string,
+export const getSortOrder = (sortBy: SortBy, previousSortBy: SortBy, previousSortOrder: SortOrder): SortOrder => {
+  if (sortBy !== previousSortBy) {
+    return 'ASC';
+  }
+
+  return previousSortOrder === 'ASC' ? 'DESC' : 'ASC';
+};
+
+export const getWorkflows = (
+  workflowId: string,
   labels: string[],
-): boolean => {
-  if (searchTerm.trim().length === 0 && labels.length === 0) {
-    return true;
-  }
-  return item.workflowType.includes(searchTerm) || labels.includes(item.status);
-};
-
-export const getSortValue = (value: number) => {
-  if (value || value === 2) {
-    return 0;
-  }
-  return 1;
-};
-
-export const getValueOfProperty = (sortValues: number[]): string => {
-  const index = sortValues.findIndex((value) => value != 2);
-
-  switch (index) {
-    case 0:
-      return 'workflowId';
-    case 1:
-      return 'startTime';
-    case 2:
-      return 'endTime';
-    default:
-      return 'startTime';
-  }
-};
-
-export const getOrderValue = (sortValues: number[]) => {
-  switch (getValueOfProperty(sortValues)) {
-    case 'workflowId':
-      return sortValues[0] ? 'asc' : 'desc';
-    case 'startTime':
-      return sortValues[1] ? 'asc' : 'desc';
-    case 'endTime':
-      return sortValues[2] ? 'asc' : 'desc';
-    default:
-      return 'desc';
-  }
+  start: number,
+  size: number,
+  sortBy: SortBy,
+  sortOrder: SortOrder,
+  isFlat: boolean,
+) => {
+  const { getWorkflowExecutions, getWorkflowExecutionsHierarchical } = callbackUtils.getCallbacks;
+  const apiLabels = getApiLabels(labels);
+  return isFlat
+    ? getWorkflowExecutions(workflowId, apiLabels, start, size.toString(), sortBy, sortOrder)
+    : getWorkflowExecutionsHierarchical(workflowId, apiLabels, start, size.toString(), sortBy, sortOrder);
 };

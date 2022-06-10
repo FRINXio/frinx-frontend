@@ -1,18 +1,36 @@
-import React, { FC } from 'react';
+import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { ButtonGroup, Button, Box, Flex, FormControl, Grid, Input, Text, IconButton, Icon } from '@chakra-ui/react';
 import WfAutoComplete from '../../../../common/wf-autocomplete';
 import FeatherIcon from 'feather-icons-react';
+import { debounce } from 'lodash';
 
 type Props = {
   showFlat: boolean;
   labels: string[];
-  query: string;
   changeLabels: (e: string[]) => void;
   changeView: () => void;
   changeQuery: (e: string) => void;
 };
 
-const ExecutedWorkflowSearchBox: FC<Props> = ({ changeLabels, changeQuery, changeView, showFlat, labels, query }) => {
+const ExecutedWorkflowSearchBox: FC<Props> = ({ changeLabels, changeQuery, changeView, showFlat, labels }) => {
+  const [searchText, setSearchText] = useState('');
+
+  const debouncedSearch = useCallback(
+    debounce((query) => {
+      changeQuery(query);
+    }, 300),
+    [],
+  );
+
+  useEffect(() => {
+    debouncedSearch(searchText);
+  }, [searchText]);
+
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    console.log(event.target.value);
+    setSearchText(event.target.value);
+  };
+
   return (
     <>
       <Flex alignItems="center" marginBottom={4}>
@@ -40,9 +58,9 @@ const ExecutedWorkflowSearchBox: FC<Props> = ({ changeLabels, changeQuery, chang
         <Box flexGrow={1}>
           <FormControl>
             <Input
-              value={query}
-              onChange={(e) => changeQuery(e.target.value)}
-              placeholder="Search by keyword."
+              value={searchText}
+              onChange={handleSearchChange}
+              placeholder="Search by keyword. (case sensitive)"
               background="white"
             />
           </FormControl>

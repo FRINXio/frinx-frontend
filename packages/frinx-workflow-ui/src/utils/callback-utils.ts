@@ -1,5 +1,11 @@
 import { ExecutedWorkflowResponse } from '../pages/executed-workflow-detail/executed-workflow-detail-status.helpers';
-import { ExecutedWorkflowsFlat, ExecutedWorkflowsHierarchical, ScheduledWorkflow, Workflow } from '../helpers/types';
+import {
+  ExecutedWorkflows,
+  ExecutedWorkflowSortBy,
+  ExecutedWorkflowSortOrder,
+  ScheduledWorkflow,
+  Workflow,
+} from '../helpers/types';
 import { EventListener, Queue, TaskDefinition, WorkflowPayload } from '../helpers/uniflow-types';
 
 export type Callbacks = {
@@ -24,13 +30,17 @@ export type Callbacks = {
     label: string,
     start: number,
     size: string,
-  ) => Promise<ExecutedWorkflowsFlat>;
+    sortBy?: ExecutedWorkflowSortBy,
+    sortOrder?: ExecutedWorkflowSortOrder,
+  ) => Promise<ExecutedWorkflows>;
   getWorkflowExecutionsHierarchical: (
     query: string,
     label: string,
     start?: number,
     size?: string,
-  ) => Promise<ExecutedWorkflowsHierarchical>;
+    sortBy?: ExecutedWorkflowSortBy,
+    sortOrder?: ExecutedWorkflowSortOrder,
+  ) => Promise<ExecutedWorkflows>;
   getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<ExecutedWorkflowResponse>;
   executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<{ text: string }>;
   terminateWorkflows: (workflowIds: string[]) => Promise<string[]>;
