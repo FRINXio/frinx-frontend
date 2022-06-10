@@ -185,11 +185,16 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
 }
 
 function getResourceTypeId(parentResourceTypeName: string, resourceTypes: Record<string, string>) {
-  if (parentResourceTypeName === 'ipv4_prefix') {
-    return resourceTypes.ipv4;
+  switch (parentResourceTypeName) {
+    case 'ipv4_prefix':
+      return resourceTypes.ipv4;
+    case 'ipv6_prefix':
+      return resourceTypes.ipv6;
+    case 'vlan_range':
+      return resourceTypes.vlan;
+    default:
+      throw new Error(`Unknown resource type: ${parentResourceTypeName}`);
   }
-
-  return resourceTypes.ipv6;
 }
 
 const PoolDetailPage: VoidFunctionComponent = () => {
