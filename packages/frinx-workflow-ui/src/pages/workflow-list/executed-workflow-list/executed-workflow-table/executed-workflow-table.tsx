@@ -1,12 +1,14 @@
 import React, { FC } from 'react';
 import { Table, Tbody, Box } from '@chakra-ui/react';
 import { ExecutedWorkflows } from '@frinx/workflow-ui/src/helpers/types';
-import ExecutedWorkflowFlatTableItem from './executed-workflow-flat-table-item';
-import ExecutedWorkflowTableHead from '../executed-workflow-table-head';
+import ExecutedWorkflowFlatTableItem from './executed-workflow-flat-table/executed-workflow-flat-table-item';
+import ExecutedWorkflowTableHead from './executed-workflow-table-head';
+import ExecutedWorkflowHierarchicalTableItem from './executed-workflow-hierarchical-table/executed-workflow-hierarchical-table-item';
 
 type SortBy = 'workflowId' | 'startTime' | 'endTime';
 type SortOrder = 'ASC' | 'DESC';
 type Props = {
+  isFlat: boolean;
   sortBy: SortBy;
   sortOrder: SortOrder;
   workflows: ExecutedWorkflows;
@@ -16,7 +18,8 @@ type Props = {
   selectWf: (workflowId: string, isChecked: boolean) => void;
 };
 
-const ExecutedWorkflowFlatTable: FC<Props> = ({
+const ExecutedWorkflowTable: FC<Props> = ({
+  isFlat,
   sortBy,
   sortOrder,
   sortWf,
@@ -38,11 +41,19 @@ const ExecutedWorkflowFlatTable: FC<Props> = ({
           areSelectedAll={areSelectedAll}
         />
         <Tbody fontSize={13} textAlign="left">
-          <ExecutedWorkflowFlatTableItem selectWf={selectWf} selectedWfs={selectedWfs} flatWorkflows={workflows} />
+          {isFlat ? (
+            <ExecutedWorkflowFlatTableItem selectWf={selectWf} selectedWfs={selectedWfs} flatWorkflows={workflows} />
+          ) : (
+            <ExecutedWorkflowHierarchicalTableItem
+              selectWf={selectWf}
+              selectedWfs={selectedWfs}
+              workflows={workflows}
+            />
+          )}
         </Tbody>
       </Table>
     </Box>
   );
 };
 
-export default ExecutedWorkflowFlatTable;
+export default ExecutedWorkflowTable;
