@@ -158,7 +158,6 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
   };
 
   const isResultInputOutputLoaded = result != null && result.input != null && result.output != null;
-  console.log(result.tasks);
 
   return (
     <Container maxWidth={1280}>
