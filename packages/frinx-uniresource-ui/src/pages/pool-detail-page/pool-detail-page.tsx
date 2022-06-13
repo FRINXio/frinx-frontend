@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
@@ -10,8 +10,10 @@ import { usePagination } from '../../hooks/use-pagination';
 import {
   AllocatedResourcesQuery,
   AllocatedResourcesQueryVariables,
-  ClaimResourceMutationMutation,
-  ClaimResourceMutationMutationVariables,
+  ClaimAddressMutation,
+  ClaimAddressMutationVariables,
+  ClaimResourceMutation,
+  ClaimResourceMutationVariables,
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
   FreeResourceMutationMutation,
@@ -19,9 +21,12 @@ import {
   GetAllPoolsQuery,
   GetPoolDetailQuery,
   GetPoolDetailQueryVariables,
+  GetResourceTypeByNameQuery,
+  GetResourceTypeByNameQueryVariables,
   PoolCapacityPayload,
 } from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
+import { ClaimAddressModal } from './claim-address-modal';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
 import PoolDetailAllocatingTable from './pool-detail-allocating-table';
 import PoolDetailSetSingletonTable from './pool-detail-set_singleton-table';
@@ -37,6 +42,7 @@ const POOL_DETAIL_QUERY = gql`
       id
       Name
       PoolType
+      PoolProperties
       Resources {
         Description
         Properties
@@ -119,8 +125,27 @@ const POOL_RESOURCES_QUERY = gql`
   }
 `;
 
+const GET_RESOURCE_TYPE_BYNAME_QUERY = gql`
+  query GetResourceTypeByName {
+    QueryResourceTypes {
+      id
+      Name
+    }
+  }
+`;
+
+const CLAIM_ADDRESS_MUTATION = gql`
+  mutation ClaimAddress($input: CreateNestedSetPoolInput!) {
+    CreateNestedSetPool(input: $input) {
+      pool {
+        id
+      }
+    }
+  }
+`;
+
 const CLAIM_RESOURCES_MUTATION = gql`
-  mutation ClaimResource($poolId: ID!, $description: String!, $userInput: Map!) {
+  mutation ClaimResource($poolId: ID!, $description: String, $userInput: Map!) {
     ClaimResource(poolId: $poolId, description: $description, userInput: $userInput) {
       id
       Properties
@@ -159,16 +184,37 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   return (Number(capacity.utilizedCapacity) / totalCapacity) * 100;
 }
 
+function getResourceTypeId(parentResourceTypeName: string, resourceTypes: Record<string, string>) {
+  switch (parentResourceTypeName) {
+    case 'ipv4_prefix':
+      return resourceTypes.ipv4;
+    case 'ipv6_prefix':
+      return resourceTypes.ipv6;
+    case 'vlan_range':
+      return resourceTypes.vlan;
+    default:
+      throw new Error(`Unknown resource type: ${parentResourceTypeName}`);
+  }
+}
+
 const PoolDetailPage: VoidFunctionComponent = () => {
   const { poolId } = useParams<{ poolId: string }>();
   const allocatedResourcesContext = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
+  const mutationResourcesContext = useMemo(() => ({ additionalTypenames: ['Resource', 'ResourcePool'] }), []);
 
   const claimResourceModal = useDisclosure();
+  const claimAddressModal = useDisclosure();
   const { addToastNotification } = useNotifications();
 
   const [{ data: poolData, fetching: isLoadingPool }] = useQuery<GetPoolDetailQuery, GetPoolDetailQueryVariables>({
     query: POOL_DETAIL_QUERY,
     variables: { poolId: unwrap(poolId) },
+  });
+  const [{ data: resourceTypes, fetching: isLoadingResourceTypes }] = useQuery<
+    GetResourceTypeByNameQuery,
+    GetResourceTypeByNameQueryVariables
+  >({
+    query: GET_RESOURCE_TYPE_BYNAME_QUERY,
   });
 
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
@@ -181,26 +227,27 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     context: allocatedResourcesContext,
   });
 
-  const [, claimResource] = useMutation<ClaimResourceMutationMutation, ClaimResourceMutationMutationVariables>(
+  const [, claimResource] = useMutation<ClaimResourceMutation, ClaimResourceMutationVariables>(
     CLAIM_RESOURCES_MUTATION,
   );
   const [, freeResource] = useMutation<FreeResourceMutationMutation, FreeResourceMutationMutationVariables>(
     FREE_RESOURCES_MUTATION,
   );
   const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
+  const [, claimAddress] = useMutation<ClaimAddressMutation, ClaimAddressMutationVariables>(CLAIM_ADDRESS_MUTATION);
 
   if (poolId == null) {
     return null;
   }
 
-  const claimPoolResource = (description: string, userInput: Record<string, string | number> = {}) => {
+  const claimPoolResource = (description?: string | null, userInput: Record<string, string | number> = {}) => {
     claimResource(
       {
         poolId,
         userInput,
         ...(description != null && { description }),
       },
-      { additionalTypenames: ['Resource', 'ResourcePool'] },
+      mutationResourcesContext,
     )
       .then((response) => {
         if (response.error) {
@@ -220,13 +267,93 @@ const PoolDetailPage: VoidFunctionComponent = () => {
       });
   };
 
+  const handleOnClaimAddress = (formValues: { poolName: string; description: string }) => {
+    if (poolData?.QueryResourcePool.ResourceType.id == null) {
+      return addToastNotification({
+        type: 'error',
+        content: 'We could not claim address from subnet. Please try again later',
+      });
+    }
+
+    try {
+      const resourceTypesMap = resourceTypes?.QueryResourceTypes.reduce((acc, curr) => {
+        acc[curr.Name] = curr.id;
+        return acc;
+      }, {} as Record<string, string>);
+      const resourceTypeId = getResourceTypeId(poolData.QueryResourcePool.ResourceType.Name, unwrap(resourceTypesMap));
+
+      if (resourceTypeId == null) {
+        throw new Error('Could not find resource type id');
+      }
+
+      return claimResource(
+        {
+          poolId,
+          userInput: {
+            desiredSize: 2,
+          },
+          description: formValues.description,
+        },
+        mutationResourcesContext,
+      )
+        .then((createdResource) => {
+          if (createdResource.error) {
+            throw new Error(createdResource.error.message);
+          }
+
+          if (createdResource.data?.ClaimResource.id == null) {
+            throw new Error('Resource was not allocated');
+          }
+
+          return claimAddress({
+            input: {
+              parentResourceId: createdResource.data.ClaimResource.id,
+              poolDealocationSafetyPeriod: 0,
+              poolName: formValues.poolName,
+              poolValues: [
+                {
+                  address: createdResource.data.ClaimResource.Properties.address,
+                },
+              ],
+              resourceTypeId,
+              description: formValues.description,
+            },
+          })
+            .then((response) => {
+              if (response.error) {
+                throw new Error(response.error.message);
+              }
+
+              addToastNotification({
+                type: 'success',
+                content: `Successfully claimed address ${createdResource.data?.ClaimResource.Properties.address}`,
+              });
+            })
+            .catch((error) => {
+              addToastNotification({
+                type: 'error',
+                content: error.message || 'There was a problem with claiming address from pool',
+              });
+            });
+        })
+        .catch((error) => {
+          throw new Error(error.message);
+        });
+    } catch (error) {
+      return addToastNotification({
+        type: 'error',
+        content: 'We could not claim address from subnet. Please try again later',
+      });
+    }
+  };
+
   const freePoolResource = (userInput: Record<string, string | number>) => {
     freeResource(
       {
         poolId,
         input: userInput,
       },
-      { additionalTypenames: ['Resource', 'ResourcePool'] },
+      mutationResourcesContext,
     )
       .then((response) => {
         if (response.error) {
@@ -247,10 +374,10 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   };
 
   const handleDeleteBtnClick = (id: string) => {
-    deletePool({ input: { resourcePoolId: id } }, { additionalTypenames: ['ResourcePool', 'Resource'] });
+    deletePool({ input: { resourcePoolId: id } }, mutationResourcesContext);
   };
 
-  if (isLoadingPool || isLoadingResources) {
+  if (isLoadingPool || isLoadingResources || isLoadingResourceTypes) {
     return <Progress isIndeterminate mt={-10} size="xs" />;
   }
 
@@ -264,13 +391,14 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   const nestedPools: GetAllPoolsQuery['QueryResourcePools'] = resourcePool.Resources.map((resource) =>
     resource.NestedPool !== null ? resource.NestedPool : null,
   ).filter(omitNullValue);
-  const canCreateNestedPool =
-    resourcePool.Resources.length !== resourcePool.Resources.filter((resource) => resource.NestedPool !== null).length;
   const canClaimResources =
     resourcePool.Capacity != null &&
     Number(resourcePool.Capacity.freeCapacity) > 0 &&
     Number(resourcePool.Capacity.freeCapacity) <= totalCapacity;
   const canFreeResource = resourcePool.Capacity != null && Number(resourcePool.Capacity.freeCapacity) !== totalCapacity;
+  const canCreateNestedPool =
+    resourcePool.Resources.length > resourcePool.Resources.filter((resource) => resource.NestedPool != null).length;
+  const isAllocating = /(ipv4_prefix|ipv6_prefix|vlan_range)/.test(resourcePool.ResourceType.Name);
 
   return (
     <PageContainer>
@@ -281,21 +409,42 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         poolName={resourcePool.Name}
         variant={resourcePool.ResourceType.Name}
       />
+      {isAllocating && (
+        <ClaimAddressModal
+          isCentered
+          isOpen={claimAddressModal.isOpen}
+          onClose={claimAddressModal.onClose}
+          resourceProperties={resourcePool.PoolProperties}
+          onClaimAddress={handleOnClaimAddress}
+        />
+      )}
       <Flex alignItems="center">
         <Heading size="3xl" as="h2" mb={6}>
           {resourcePool.Name}
         </Heading>
         <Spacer />
-        <Box>
-          <Button
-            onClick={() => claimResourceModal.onOpen()}
-            colorScheme="blue"
-            variant="outline"
-            isDisabled={!canClaimResources}
-          >
-            Claim resources
-          </Button>
-        </Box>
+        {isAllocating && (
+          <Box>
+            <ButtonGroup>
+              <Button
+                onClick={claimResourceModal.onOpen}
+                colorScheme="blue"
+                variant="outline"
+                isDisabled={!canClaimResources}
+              >
+                Claim resource
+              </Button>
+              <Button
+                onClick={claimAddressModal.onOpen}
+                colorScheme="blue"
+                variant="solid"
+                isDisabled={!canClaimResources}
+              >
+                Claim address
+              </Button>
+            </ButtonGroup>
+          </Box>
+        )}
       </Flex>
 
       <Box background="white" padding={5}>
@@ -339,15 +488,11 @@ const PoolDetailPage: VoidFunctionComponent = () => {
             Nested Pools
           </Heading>
           <Spacer />
-          <Button
-            colorScheme="blue"
-            isDisabled={!canCreateNestedPool}
-            title={canCreateNestedPool ? '' : 'Cannot create nested pool, because there are no free resources'}
-            as={Link}
-            to={`../pools/new?parentPoolId=${poolId}&isNested=true`}
-          >
-            Create nested pool
-          </Button>
+          {canCreateNestedPool && (
+            <Button colorScheme="blue" as={Link} to={`../pools/new?parentPoolId=${poolId}&isNested=true`}>
+              Create nested pool
+            </Button>
+          )}
         </Flex>
         <PoolsTable pools={nestedPools} isLoading={isLoadingPool} onDeleteBtnClick={handleDeleteBtnClick} />
       </Box>

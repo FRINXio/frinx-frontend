@@ -47,7 +47,7 @@ const ClaimResourceAllocatingVlanRangeModal: FC<Props> = ({ poolName, isOpen, on
           <Input ref={inputRef} defaultValue={1} />
           <FormErrorMessage>{errors.desiredSize}</FormErrorMessage>
         </FormControl>
-        <FormControl isRequired isInvalid={errors.description !== null}>
+        <FormControl isInvalid={errors.description !== null}>
           <FormLabel>Description</FormLabel>
           <Input ref={descriptionRef} placeholder="Enter description for allocated resources" />
           <FormErrorMessage>{errors.description}</FormErrorMessage>
