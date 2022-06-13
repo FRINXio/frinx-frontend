@@ -47,7 +47,7 @@ const ClaimResourceAllocIpv6PrefixModal: FC<Props> = ({ poolName, isOpen, onClai
         <Input ref={inputRef} defaultValue={254} />
         <FormErrorMessage>{errors.desiredSize}</FormErrorMessage>
       </FormControl>
-      <FormControl isRequired isInvalid={errors.description !== null}>
+      <FormControl isInvalid={errors.description !== null}>
         <FormLabel>Description</FormLabel>
         <Input ref={descriptionInputRef} placeholder="Please enter description" />
         <FormErrorMessage>{errors.description}</FormErrorMessage>

@@ -24,7 +24,7 @@ const ClaimResourceAllocVlanModal: React.FC<Props> = ({ poolName, isOpen, onClai
   };
   return (
     <ClaimResourceLayout {...{ poolName, isOpen, onClose, onClaim: handleOnClaim }}>
-      <FormControl isRequired isInvalid={error !== null}>
+      <FormControl isInvalid={error !== null}>
         <FormLabel>Description</FormLabel>
         <Input ref={descriptionInputRef} placeholder="Please enter description" />
         <FormErrorMessage>{error}</FormErrorMessage>

@@ -21,8 +21,9 @@ type Props = {
 const ClaimResourceModal: FC<Props> = ({ variant, ...props }) => {
   return (
     <>
-      {variant === ClaimModalVariant.IPV6_PREFIX ||
-        (variant === ClaimModalVariant.IPV4_PREFIX && <ClaimResourceAllocIpvXPrefixModal {...props} />)}
+      {(variant === ClaimModalVariant.IPV6_PREFIX || variant === ClaimModalVariant.IPV4_PREFIX) && (
+        <ClaimResourceAllocIpvXPrefixModal {...props} />
+      )}
       {variant === ClaimModalVariant.VLAN_RANGE && <ClaimResourceAllocatingVlanRangeModal {...props} />}
       {variant !== ClaimModalVariant.IPV4_PREFIX &&
         variant !== ClaimModalVariant.IPV6_PREFIX &&
