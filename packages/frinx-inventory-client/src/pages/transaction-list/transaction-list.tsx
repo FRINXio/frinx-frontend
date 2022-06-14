@@ -95,7 +95,7 @@ const TransactionList: VoidFunctionComponent = () => {
       if (res.data?.revertChanges.isOk) {
         // we have to close current transaction to see reverted changes in UI
         const transactionData = getTransactionData();
-        if (transactionData != null && transactionData.transactionId === transactionId) {
+        if (transactionData != null) {
           closeTransaction({ deviceId: transactionData.deviceId, transactionId: transactionData.transactionId }).then(
             () => {
               removeTransactionData();
