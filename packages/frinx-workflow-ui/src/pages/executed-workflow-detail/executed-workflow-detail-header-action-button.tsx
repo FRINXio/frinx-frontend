@@ -44,7 +44,7 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
     onWorkflowActionExecution(workflowId);
   };
 
-  if (status === 'FAILED' || status === 'TERMINATED') {
+  if (status === 'FAILED' || status === 'TERMINATED' || status === 'TIMED_OUT') {
     return (
       <ButtonGroup float="right">
         <Button onClick={restartWorkflows} colorScheme="blue">

@@ -3,7 +3,7 @@ import { Workflow, WorkflowInstanceDetail } from '@frinx/workflow-ui/src/helpers
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 
 export type TaskStatus = 'COMPLETED' | 'FAILED' | 'SCHEDULED' | 'IN_PROGRESS';
-export type WorkflowStatus = 'COMPLETED' | 'FAILED' | 'RUNNING' | 'TERMINATED';
+export type WorkflowStatus = 'COMPLETED' | 'FAILED' | 'RUNNING' | 'TERMINATED' | 'TIMED_OUT';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export type OutputDataPayload<T> =
@@ -74,7 +74,12 @@ export async function* asyncGenerator(
     data = await getWorkflowExecOutput(workflowId, abortController);
   }
   // we need to do an additional yield for the last task status change
-  if (data?.result.status === 'FAILED' || data?.result.status === 'COMPLETED' || data?.result.status === 'TERMINATED') {
+  if (
+    data?.result.status === 'FAILED' ||
+    data?.result.status === 'COMPLETED' ||
+    data?.result.status === 'TERMINATED' ||
+    data?.result.status === 'TIMED_OUT'
+  ) {
     yield data;
   }
 }
@@ -109,6 +114,7 @@ export function getStatusBadgeColor(status: WorkflowStatus | TaskStatus): string
     case 'COMPLETED':
       return 'green';
     case 'FAILED':
+    case 'TIMED_OUT':
       return 'red';
     case 'SCHEDULED':
       return 'purple';
