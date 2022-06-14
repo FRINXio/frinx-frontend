@@ -145,8 +145,6 @@ const ExecutedWorkflowList = () => {
     setPagination((prev) => ({ ...prev, page: pageNumber }));
   };
 
-  console.log(pagination);
-
   return (
     <PageContainer>
       <ExecutedWorkflowBulkOperationsBlock

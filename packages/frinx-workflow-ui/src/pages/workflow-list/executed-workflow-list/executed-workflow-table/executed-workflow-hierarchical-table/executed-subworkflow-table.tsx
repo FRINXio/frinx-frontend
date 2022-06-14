@@ -14,7 +14,6 @@ type Props = {
 };
 const ExecutedSubWorkflowTable = ({ workflowId, subWorkflows }: Props) => {
   const workflows = subWorkflows.get(workflowId);
-  console.log(workflows);
 
   if (workflows == null) {
     return null;
