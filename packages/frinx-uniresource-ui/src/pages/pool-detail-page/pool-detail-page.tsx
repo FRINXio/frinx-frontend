@@ -388,7 +388,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   const { QueryResourcePool: resourcePool } = poolData;
   const capacityValue = getCapacityValue(resourcePool.Capacity);
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
-  const nestedPools: GetAllPoolsQuery['QueryResourcePools'] = resourcePool.Resources.map((resource) =>
+  const nestedPools: GetAllPoolsQuery['QueryRootResourcePools'] = resourcePool.Resources.map((resource) =>
     resource.NestedPool !== null ? resource.NestedPool : null,
   ).filter(omitNullValue);
   const canClaimResources =
