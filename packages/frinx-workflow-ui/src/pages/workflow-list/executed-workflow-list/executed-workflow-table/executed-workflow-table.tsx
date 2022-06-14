@@ -5,7 +5,7 @@ import ExecutedWorkflowFlatTableItem from './executed-workflow-flat-table/execut
 import ExecutedWorkflowTableHead from './executed-workflow-table-head';
 import ExecutedWorkflowHierarchicalTableItem from './executed-workflow-hierarchical-table/executed-workflow-hierarchical-table-item';
 
-type SortBy = 'workflowId' | 'startTime' | 'endTime';
+type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 type SortOrder = 'ASC' | 'DESC';
 type Props = {
   isFlat: boolean;

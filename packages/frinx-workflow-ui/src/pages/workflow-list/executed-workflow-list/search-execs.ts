@@ -1,7 +1,7 @@
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import { ExecutedWorkflow } from '../../../helpers/types';
 
-type SortBy = 'workflowId' | 'startTime' | 'endTime';
+type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 type SortOrder = 'ASC' | 'DESC';
 
 const getApiLabels = (labels: string[]): string => {

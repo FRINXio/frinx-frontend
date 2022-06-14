@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { FC, Fragment, useState } from 'react';
+import React, { FC, Fragment, useEffect, useState } from 'react';
 import { Tr, Td, Checkbox } from '@chakra-ui/react';
 import { ExecutedWorkflow, ExecutedWorkflows, ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link } from 'react-router-dom';
@@ -25,9 +25,11 @@ type ExecutedSubWorkflows = {
 };
 
 const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, selectWf, selectedWfs }) => {
-  const [nestedWorkflows, setNestedWorkflows] = useState<NestedWorkflow[]>(
-    workflows.result.hits.map((w) => ({ ...w, isExpanded: false })),
-  );
+  const [nestedWorkflows, setNestedWorkflows] = useState<NestedWorkflow[]>([]);
+
+  useEffect(() => {
+    setNestedWorkflows(workflows.result.hits.map((w) => ({ ...w, isExpanded: false })));
+  }, [workflows]);
 
   const [subWorkflows, setSubWorkflows] = useState<Map<string, ExecutedSubWorkflows>>(new Map());
 

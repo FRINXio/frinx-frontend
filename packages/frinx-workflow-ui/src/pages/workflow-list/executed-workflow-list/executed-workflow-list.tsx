@@ -11,7 +11,7 @@ import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import useQueryParams from '@frinx/workflow-ui/src/hooks/use-query-params';
 import usePagination from '../../../hooks/use-pagination';
 
-type SortBy = 'workflowId' | 'startTime' | 'endTime';
+type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 type SortOrder = 'ASC' | 'DESC';
 
 type StateProps = {
@@ -144,6 +144,8 @@ const ExecutedWorkflowList = () => {
   const handlePaginationClick = (pageNumber: number) => {
     setPagination((prev) => ({ ...prev, page: pageNumber }));
   };
+
+  console.log(pagination);
 
   return (
     <PageContainer>
