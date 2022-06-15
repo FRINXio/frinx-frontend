@@ -3114,7 +3114,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@frinx/api@0.0.7, @frinx/api@workspace:packages/frinx-api":
+"@frinx/api@0.0.8, @frinx/api@workspace:packages/frinx-api":
   version: 0.0.0-use.local
   resolution: "@frinx/api@workspace:packages/frinx-api"
   dependencies:
@@ -3169,7 +3169,7 @@ __metadata:
     "@fortawesome/fontawesome-svg-core": 6.1.1
     "@fortawesome/free-solid-svg-icons": 6.1.1
     "@fortawesome/react-fontawesome": 0.1.18
-    "@frinx/api": 0.0.7
+    "@frinx/api": 0.0.8
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@frinx/inventory-client": ^0.0.1
     "@frinx/uniresource-ui": ^0.0.1
