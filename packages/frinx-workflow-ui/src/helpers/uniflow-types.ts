@@ -260,7 +260,7 @@ export type Workflow<T extends Task = Task> = {
   variables: Record<string, unknown>;
 };
 
-export type ExecutedWorkflowSortBy = 'workflowId' | 'startTime' | 'endTime';
+export type ExecutedWorkflowSortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';
 
 export type WorkflowExecutionPayload = {

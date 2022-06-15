@@ -5,13 +5,13 @@ import { ExecutedWorkflows, NestedExecutedWorkflow } from '@frinx/workflow-ui/sr
 import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
 import { useNavigate } from 'react-router-dom';
 import { getSortOrder, getWorkflows } from './search-execs';
-import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workflow-flat-table/executed-workflow-flat-table';
+import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workflow-table';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import useQueryParams from '@frinx/workflow-ui/src/hooks/use-query-params';
 import usePagination from '../../../hooks/use-pagination';
 
-type SortBy = 'workflowId' | 'startTime' | 'endTime';
+type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 type SortOrder = 'ASC' | 'DESC';
 
 type StateProps = {
@@ -170,6 +170,7 @@ const ExecutedWorkflowList = () => {
           sortBy={state.sortBy}
           sortOrder={state.sortOrder}
           workflows={workflows}
+          isFlat={state.isFlat}
         />
 
         <Paginator
