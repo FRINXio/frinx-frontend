@@ -10,7 +10,7 @@ import PoolsTable from './pools-table';
 
 const POOLS_QUERY = gql`
   query GetAllPools {
-    QueryResourcePools {
+    QueryRootResourcePools {
       id
       Name
       PoolType
@@ -111,7 +111,7 @@ const PoolsPage: VoidFunctionComponent = () => {
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
         <PoolsTable
-          pools={data?.QueryResourcePools ?? []}
+          pools={data?.QueryRootResourcePools ?? []}
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}
         />
