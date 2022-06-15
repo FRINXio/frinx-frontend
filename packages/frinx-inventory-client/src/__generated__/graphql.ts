@@ -1,4 +1,5 @@
 export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -22,14 +23,14 @@ export type AddBlueprintPayload = {
 };
 
 export type AddDeviceInput = {
+  address?: InputMaybe<Scalars['String']>;
+  labelIds?: InputMaybe<Array<Scalars['String']>>;
+  model?: InputMaybe<Scalars['String']>;
+  mountParameters?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
+  serviceState?: InputMaybe<DeviceServiceState>;
+  vendor?: InputMaybe<Scalars['String']>;
   zoneId: Scalars['String'];
-  labelIds?: Maybe<Array<Scalars['String']>>;
-  serviceState?: Maybe<DeviceServiceState>;
-  mountParameters?: Maybe<Scalars['String']>;
-  model?: Maybe<Scalars['String']>;
-  vendor?: Maybe<Scalars['String']>;
-  address?: Maybe<Scalars['String']>;
 };
 
 export type AddDevicePayload = {
@@ -38,8 +39,8 @@ export type AddDevicePayload = {
 };
 
 export type AddLocationInput = {
-  name: Scalars['String'];
   countryId: Scalars['String'];
+  name: Scalars['String'];
 };
 
 export type AddLocationPayload = {
@@ -48,8 +49,8 @@ export type AddLocationPayload = {
 };
 
 export type AddSnapshotInput = {
-  name: Scalars['String'];
   deviceId: Scalars['String'];
+  name: Scalars['String'];
 };
 
 export type AddSnapshotPayload = {
@@ -79,11 +80,11 @@ export type ApplySnapshotPayload = {
 
 export type Blueprint = Node & {
   __typename?: 'Blueprint';
+  createdAt: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
-  createdAt: Scalars['String'];
-  updatedAt: Scalars['String'];
   template: Scalars['String'];
+  updatedAt: Scalars['String'];
 };
 
 export type BlueprintConnection = {
@@ -95,8 +96,8 @@ export type BlueprintConnection = {
 
 export type BlueprintEdge = {
   __typename?: 'BlueprintEdge';
-  node: Blueprint;
   cursor: Scalars['String'];
+  node: Blueprint;
 };
 
 export type CalculatedDiffPayload = {
@@ -113,9 +114,9 @@ export type CalculatedDiffResult = {
 
 export type CalculatedUpdateDiffData = {
   __typename?: 'CalculatedUpdateDiffData';
-  path: Scalars['String'];
-  intendedData: Scalars['String'];
   actualData: Scalars['String'];
+  intendedData: Scalars['String'];
+  path: Scalars['String'];
 };
 
 export type CloseTransactionPayload = {
@@ -125,14 +126,14 @@ export type CloseTransactionPayload = {
 
 export type CommitConfigInput = {
   deviceId: Scalars['String'];
-  shouldDryRun?: Maybe<Scalars['Boolean']>;
+  shouldDryRun?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type CommitConfigOutput = {
   __typename?: 'CommitConfigOutput';
+  configuration: Maybe<Scalars['String']>;
   deviceId: Scalars['String'];
   message: Maybe<Scalars['String']>;
-  configuration: Maybe<Scalars['String']>;
 };
 
 export type CommitConfigPayload = {
@@ -142,9 +143,9 @@ export type CommitConfigPayload = {
 
 export type Country = Node & {
   __typename?: 'Country';
+  code: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
-  code: Scalars['String'];
 };
 
 export type CountryConnection = {
@@ -156,8 +157,8 @@ export type CountryConnection = {
 
 export type CountryEdge = {
   __typename?: 'CountryEdge';
-  node: Country;
   cursor: Scalars['String'];
+  node: Country;
 };
 
 export type CreateLabelInput = {
@@ -176,8 +177,8 @@ export type CreateTransactionPayload = {
 
 export type DataStore = {
   __typename?: 'DataStore';
-  config: Maybe<Scalars['String']>;
-  operational: Maybe<Scalars['String']>;
+  config: Scalars['String'];
+  operational: Scalars['String'];
   snapshots: Array<Snapshot>;
 };
 
@@ -209,28 +210,28 @@ export type DeleteSnapshotPayload = {
 
 export type Device = Node & {
   __typename?: 'Device';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  createdAt: Scalars['String'];
-  updatedAt: Scalars['String'];
-  model: Maybe<Scalars['String']>;
-  vendor: Maybe<Scalars['String']>;
   address: Maybe<Scalars['String']>;
-  mountParameters: Maybe<Scalars['String']>;
-  source: DeviceSource;
-  serviceState: DeviceServiceState;
+  createdAt: Scalars['String'];
+  id: Scalars['ID'];
   isInstalled: Scalars['Boolean'];
-  zone: Zone;
   labels: LabelConnection;
   location: Maybe<Location>;
+  model: Maybe<Scalars['String']>;
+  mountParameters: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  serviceState: DeviceServiceState;
+  source: DeviceSource;
+  updatedAt: Scalars['String'];
+  vendor: Maybe<Scalars['String']>;
+  zone: Zone;
 };
 
 
 export type DeviceLabelsArgs = {
-  first?: Maybe<Scalars['Int']>;
-  after?: Maybe<Scalars['String']>;
-  last?: Maybe<Scalars['Int']>;
-  before?: Maybe<Scalars['String']>;
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
 };
 
 export type DeviceConnection = {
@@ -242,34 +243,34 @@ export type DeviceConnection = {
 
 export type DeviceEdge = {
   __typename?: 'DeviceEdge';
-  node: Device;
   cursor: Scalars['String'];
+  node: Device;
 };
 
 export type DeviceOrderByInput = {
-  sortKey: SortDeviceBy;
   direction: SortDirection;
+  sortKey: SortDeviceBy;
 };
 
 export type DeviceServiceState =
-  | 'PLANNING'
   | 'IN_SERVICE'
-  | 'OUT_OF_SERVICE';
+  | 'OUT_OF_SERVICE'
+  | 'PLANNING';
 
 export type DeviceSource =
-  | 'MANUAL'
   | 'DISCOVERED'
-  | 'IMPORTED';
+  | 'IMPORTED'
+  | 'MANUAL';
 
 export type DiffData = {
   __typename?: 'DiffData';
-  path: Scalars['String'];
   data: Scalars['String'];
+  path: Scalars['String'];
 };
 
 export type FilterDevicesInput = {
-  labelIds?: Maybe<Array<Scalars['String']>>;
-  deviceName?: Maybe<Scalars['String']>;
+  deviceName?: InputMaybe<Scalars['String']>;
+  labelIds?: InputMaybe<Array<Scalars['String']>>;
 };
 
 export type InstallDevicePayload = {
@@ -279,9 +280,9 @@ export type InstallDevicePayload = {
 
 export type Label = Node & {
   __typename?: 'Label';
+  createdAt: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
-  createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
 
@@ -294,17 +295,17 @@ export type LabelConnection = {
 
 export type LabelEdge = {
   __typename?: 'LabelEdge';
-  node: Label;
   cursor: Scalars['String'];
+  node: Label;
 };
 
 export type Location = Node & {
   __typename?: 'Location';
+  country: Scalars['String'];
+  createdAt: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
-  createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
-  country: Scalars['String'];
 };
 
 export type LocationConnection = {
@@ -316,33 +317,39 @@ export type LocationConnection = {
 
 export type LocationEdge = {
   __typename?: 'LocationEdge';
-  node: Location;
   cursor: Scalars['String'];
+  node: Location;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addDevice: AddDevicePayload;
-  updateDevice: UpdateDevicePayload;
-  deleteDevice: DeleteDevicePayload;
-  installDevice: InstallDevicePayload;
-  uninstallDevice: UninstallDevicePayload;
-  addZone: AddZonePayload;
-  updateDataStore: UpdateDataStorePayload;
-  commitConfig: CommitConfigPayload;
-  resetConfig: ResetConfigPayload;
-  addSnapshot: Maybe<AddSnapshotPayload>;
-  deleteSnapshot: Maybe<DeleteSnapshotPayload>;
-  applySnapshot: ApplySnapshotPayload;
-  syncFromNetwork: SyncFromNetworkPayload;
-  createTransaction: CreateTransactionPayload;
-  closeTransaction: CloseTransactionPayload;
-  createLabel: CreateLabelPayload;
-  deleteLabel: DeleteLabelPayload;
-  addLocation: AddLocationPayload;
   addBlueprint: AddBlueprintPayload;
-  updateBlueprint: UpdateBlueprintPayload;
+  addDevice: AddDevicePayload;
+  addLocation: AddLocationPayload;
+  addSnapshot: Maybe<AddSnapshotPayload>;
+  addZone: AddZonePayload;
+  applySnapshot: ApplySnapshotPayload;
+  closeTransaction: CloseTransactionPayload;
+  commitConfig: CommitConfigPayload;
+  createLabel: CreateLabelPayload;
+  createTransaction: CreateTransactionPayload;
   deleteBlueprint: DeleteBlueprintPayload;
+  deleteDevice: DeleteDevicePayload;
+  deleteLabel: DeleteLabelPayload;
+  deleteSnapshot: Maybe<DeleteSnapshotPayload>;
+  installDevice: InstallDevicePayload;
+  resetConfig: ResetConfigPayload;
+  revertChanges: RevertChangesPayload;
+  syncFromNetwork: SyncFromNetworkPayload;
+  uninstallDevice: UninstallDevicePayload;
+  updateBlueprint: UpdateBlueprintPayload;
+  updateDataStore: UpdateDataStorePayload;
+  updateDevice: UpdateDevicePayload;
+};
+
+
+export type MutationAddBlueprintArgs = {
+  input: AddBlueprintInput;
 };
 
 
@@ -351,48 +358,8 @@ export type MutationAddDeviceArgs = {
 };
 
 
-export type MutationUpdateDeviceArgs = {
-  id: Scalars['String'];
-  input: UpdateDeviceInput;
-};
-
-
-export type MutationDeleteDeviceArgs = {
-  id: Scalars['String'];
-};
-
-
-export type MutationInstallDeviceArgs = {
-  id: Scalars['String'];
-};
-
-
-export type MutationUninstallDeviceArgs = {
-  id: Scalars['String'];
-};
-
-
-export type MutationAddZoneArgs = {
-  input: AddZoneInput;
-};
-
-
-export type MutationUpdateDataStoreArgs = {
-  deviceId: Scalars['String'];
-  transactionId: Scalars['String'];
-  input: UpdateDataStoreInput;
-};
-
-
-export type MutationCommitConfigArgs = {
-  transactionId: Scalars['String'];
-  input: CommitConfigInput;
-};
-
-
-export type MutationResetConfigArgs = {
-  deviceId: Scalars['String'];
-  transactionId: Scalars['String'];
+export type MutationAddLocationArgs = {
+  input: AddLocationInput;
 };
 
 
@@ -402,13 +369,71 @@ export type MutationAddSnapshotArgs = {
 };
 
 
-export type MutationDeleteSnapshotArgs = {
-  input: DeleteSnapshotInput;
+export type MutationAddZoneArgs = {
+  input: AddZoneInput;
 };
 
 
 export type MutationApplySnapshotArgs = {
   input: ApplySnapshotInput;
+  transactionId: Scalars['String'];
+};
+
+
+export type MutationCloseTransactionArgs = {
+  deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
+};
+
+
+export type MutationCommitConfigArgs = {
+  input: CommitConfigInput;
+  transactionId: Scalars['String'];
+};
+
+
+export type MutationCreateLabelArgs = {
+  input: CreateLabelInput;
+};
+
+
+export type MutationCreateTransactionArgs = {
+  deviceId: Scalars['String'];
+};
+
+
+export type MutationDeleteBlueprintArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationDeleteDeviceArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationDeleteLabelArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationDeleteSnapshotArgs = {
+  input: DeleteSnapshotInput;
+};
+
+
+export type MutationInstallDeviceArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationResetConfigArgs = {
+  deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
+};
+
+
+export type MutationRevertChangesArgs = {
   transactionId: Scalars['String'];
 };
 
@@ -419,34 +444,8 @@ export type MutationSyncFromNetworkArgs = {
 };
 
 
-export type MutationCreateTransactionArgs = {
-  deviceId: Scalars['String'];
-};
-
-
-export type MutationCloseTransactionArgs = {
-  deviceId: Scalars['String'];
-  transactionId: Scalars['String'];
-};
-
-
-export type MutationCreateLabelArgs = {
-  input: CreateLabelInput;
-};
-
-
-export type MutationDeleteLabelArgs = {
+export type MutationUninstallDeviceArgs = {
   id: Scalars['String'];
-};
-
-
-export type MutationAddLocationArgs = {
-  input: AddLocationInput;
-};
-
-
-export type MutationAddBlueprintArgs = {
-  input: AddBlueprintInput;
 };
 
 
@@ -456,8 +455,16 @@ export type MutationUpdateBlueprintArgs = {
 };
 
 
-export type MutationDeleteBlueprintArgs = {
+export type MutationUpdateDataStoreArgs = {
+  deviceId: Scalars['String'];
+  input: UpdateDataStoreInput;
+  transactionId: Scalars['String'];
+};
+
+
+export type MutationUpdateDeviceArgs = {
   id: Scalars['String'];
+  input: UpdateDeviceInput;
 };
 
 export type Node = {
@@ -466,52 +473,32 @@ export type Node = {
 
 export type PageInfo = {
   __typename?: 'PageInfo';
-  startCursor: Maybe<Scalars['String']>;
   endCursor: Maybe<Scalars['String']>;
   hasNextPage: Scalars['Boolean'];
   hasPreviousPage: Scalars['Boolean'];
+  startCursor: Maybe<Scalars['String']>;
 };
 
 export type Query = {
   __typename?: 'Query';
-  node: Maybe<Node>;
-  devices: DeviceConnection;
-  zones: ZonesConnection;
-  dataStore: Maybe<DataStore>;
-  calculatedDiff: CalculatedDiffPayload;
-  labels: LabelConnection;
-  countries: CountryConnection;
-  locations: LocationConnection;
   blueprints: BlueprintConnection;
+  calculatedDiff: CalculatedDiffPayload;
+  countries: CountryConnection;
+  dataStore: Maybe<DataStore>;
+  devices: DeviceConnection;
+  labels: LabelConnection;
+  locations: LocationConnection;
+  node: Maybe<Node>;
+  transactions: Array<Transaction>;
+  zones: ZonesConnection;
 };
 
 
-export type QueryNodeArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryDevicesArgs = {
-  first?: Maybe<Scalars['Int']>;
-  after?: Maybe<Scalars['String']>;
-  last?: Maybe<Scalars['Int']>;
-  before?: Maybe<Scalars['String']>;
-  filter?: Maybe<FilterDevicesInput>;
-  orderBy?: Maybe<DeviceOrderByInput>;
-};
-
-
-export type QueryZonesArgs = {
-  first?: Maybe<Scalars['Int']>;
-  after?: Maybe<Scalars['String']>;
-  last?: Maybe<Scalars['Int']>;
-  before?: Maybe<Scalars['String']>;
-};
-
-
-export type QueryDataStoreArgs = {
-  deviceId: Scalars['String'];
-  transactionId: Scalars['String'];
+export type QueryBlueprintsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -521,35 +508,56 @@ export type QueryCalculatedDiffArgs = {
 };
 
 
-export type QueryLabelsArgs = {
-  first?: Maybe<Scalars['Int']>;
-  after?: Maybe<Scalars['String']>;
-  last?: Maybe<Scalars['Int']>;
-  before?: Maybe<Scalars['String']>;
+export type QueryCountriesArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
 };
 
 
-export type QueryCountriesArgs = {
-  first?: Maybe<Scalars['Int']>;
-  after?: Maybe<Scalars['String']>;
-  last?: Maybe<Scalars['Int']>;
-  before?: Maybe<Scalars['String']>;
+export type QueryDataStoreArgs = {
+  deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
+};
+
+
+export type QueryDevicesArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  filter?: InputMaybe<FilterDevicesInput>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<DeviceOrderByInput>;
+};
+
+
+export type QueryLabelsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
 };
 
 
 export type QueryLocationsArgs = {
-  first?: Maybe<Scalars['Int']>;
-  after?: Maybe<Scalars['String']>;
-  last?: Maybe<Scalars['Int']>;
-  before?: Maybe<Scalars['String']>;
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
 };
 
 
-export type QueryBlueprintsArgs = {
-  first?: Maybe<Scalars['Int']>;
-  after?: Maybe<Scalars['String']>;
-  last?: Maybe<Scalars['Int']>;
-  before?: Maybe<Scalars['String']>;
+export type QueryNodeArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryZonesArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
 };
 
 export type ResetConfigPayload = {
@@ -557,15 +565,20 @@ export type ResetConfigPayload = {
   dataStore: DataStore;
 };
 
+export type RevertChangesPayload = {
+  __typename?: 'RevertChangesPayload';
+  isOk: Scalars['Boolean'];
+};
+
 export type Snapshot = {
   __typename?: 'Snapshot';
-  name: Scalars['String'];
   createdAt: Scalars['String'];
+  name: Scalars['String'];
 };
 
 export type SortDeviceBy =
-  | 'NAME'
-  | 'CREATED_AT';
+  | 'CREATED_AT'
+  | 'NAME';
 
 export type SortDirection =
   | 'ASC'
@@ -576,14 +589,21 @@ export type SyncFromNetworkPayload = {
   dataStore: Maybe<DataStore>;
 };
 
+export type Transaction = {
+  __typename?: 'Transaction';
+  devices: Array<Device>;
+  lastCommitTime: Scalars['String'];
+  transactionId: Scalars['String'];
+};
+
 export type UninstallDevicePayload = {
   __typename?: 'UninstallDevicePayload';
   device: Device;
 };
 
 export type UpdateBlueprintInput = {
-  name?: Maybe<Scalars['String']>;
-  template?: Maybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
+  template?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateBlueprintPayload = {
@@ -601,13 +621,13 @@ export type UpdateDataStorePayload = {
 };
 
 export type UpdateDeviceInput = {
-  mountParameters?: Maybe<Scalars['String']>;
-  model?: Maybe<Scalars['String']>;
-  vendor?: Maybe<Scalars['String']>;
-  address?: Maybe<Scalars['String']>;
-  labelIds?: Maybe<Array<Scalars['String']>>;
-  serviceState?: Maybe<DeviceServiceState>;
-  locationId?: Maybe<Scalars['String']>;
+  address?: InputMaybe<Scalars['String']>;
+  labelIds?: InputMaybe<Array<Scalars['String']>>;
+  locationId?: InputMaybe<Scalars['String']>;
+  model?: InputMaybe<Scalars['String']>;
+  mountParameters?: InputMaybe<Scalars['String']>;
+  serviceState?: InputMaybe<DeviceServiceState>;
+  vendor?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateDevicePayload = {
@@ -617,16 +637,16 @@ export type UpdateDevicePayload = {
 
 export type Zone = Node & {
   __typename?: 'Zone';
+  createdAt: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
-  createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
 
 export type ZoneEdge = {
   __typename?: 'ZoneEdge';
-  node: Zone;
   cursor: Scalars['String'];
+  node: Zone;
 };
 
 export type ZonesConnection = {
@@ -641,149 +661,55 @@ export type AddBlueprintMutationVariables = Exact<{
 }>;
 
 
-export type AddBlueprintMutation = (
-  { __typename?: 'Mutation' }
-  & { addBlueprint: (
-    { __typename?: 'AddBlueprintPayload' }
-    & { blueprint: (
-      { __typename?: 'Blueprint' }
-      & Pick<Blueprint, 'id' | 'createdAt' | 'name'>
-    ) }
-  ) }
-);
+export type AddBlueprintMutation = { __typename?: 'Mutation', addBlueprint: { __typename?: 'AddBlueprintPayload', blueprint: { __typename?: 'Blueprint', id: string, createdAt: string, name: string } } };
 
 export type AddDeviceMutationVariables = Exact<{
   input: AddDeviceInput;
 }>;
 
 
-export type AddDeviceMutation = (
-  { __typename?: 'Mutation' }
-  & { addDevice: (
-    { __typename?: 'AddDevicePayload' }
-    & { device: (
-      { __typename?: 'Device' }
-      & Pick<Device, 'id' | 'name' | 'isInstalled'>
-      & { zone: (
-        { __typename?: 'Zone' }
-        & Pick<Zone, 'id' | 'name'>
-      ) }
-    ) }
-  ) }
-);
+export type AddDeviceMutation = { __typename?: 'Mutation', addDevice: { __typename?: 'AddDevicePayload', device: { __typename?: 'Device', id: string, name: string, isInstalled: boolean, zone: { __typename?: 'Zone', id: string, name: string } } } };
 
 export type ZonesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ZonesQuery = (
-  { __typename?: 'Query' }
-  & { zones: (
-    { __typename?: 'ZonesConnection' }
-    & { edges: Array<(
-      { __typename?: 'ZoneEdge' }
-      & { node: (
-        { __typename?: 'Zone' }
-        & Pick<Zone, 'id' | 'name'>
-      ) }
-    )> }
-  ) }
-);
+export type ZonesQuery = { __typename?: 'Query', zones: { __typename?: 'ZonesConnection', edges: Array<{ __typename?: 'ZoneEdge', node: { __typename?: 'Zone', id: string, name: string } }> } };
 
 export type DeviceBlueprintsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type DeviceBlueprintsQuery = (
-  { __typename?: 'Query' }
-  & { blueprints: (
-    { __typename?: 'BlueprintConnection' }
-    & { edges: Array<(
-      { __typename?: 'BlueprintEdge' }
-      & { node: (
-        { __typename?: 'Blueprint' }
-        & Pick<Blueprint, 'id' | 'name' | 'template'>
-      ) }
-    )> }
-  ) }
-);
+export type DeviceBlueprintsQuery = { __typename?: 'Query', blueprints: { __typename?: 'BlueprintConnection', edges: Array<{ __typename?: 'BlueprintEdge', node: { __typename?: 'Blueprint', id: string, name: string, template: string } }> } };
 
 export type CreateLabelMutationVariables = Exact<{
   input: CreateLabelInput;
 }>;
 
 
-export type CreateLabelMutation = (
-  { __typename?: 'Mutation' }
-  & { newLabel: (
-    { __typename?: 'CreateLabelPayload' }
-    & { label: Maybe<(
-      { __typename?: 'Label' }
-      & Pick<Label, 'id' | 'name' | 'createdAt' | 'updatedAt'>
-    )> }
-  ) }
-);
+export type CreateLabelMutation = { __typename?: 'Mutation', newLabel: { __typename?: 'CreateLabelPayload', label: { __typename?: 'Label', id: string, name: string, createdAt: string, updatedAt: string } | null } };
 
 export type LabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type LabelsQuery = (
-  { __typename?: 'Query' }
-  & { labels: (
-    { __typename?: 'LabelConnection' }
-    & { edges: Array<(
-      { __typename?: 'LabelEdge' }
-      & { node: (
-        { __typename?: 'Label' }
-        & Pick<Label, 'id' | 'name'>
-      ) }
-    )> }
-  ) }
-);
+export type LabelsQuery = { __typename?: 'Query', labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } };
 
 export type BlueprintsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type BlueprintsQuery = (
-  { __typename?: 'Query' }
-  & { blueprints: (
-    { __typename?: 'BlueprintConnection' }
-    & { edges: Array<(
-      { __typename?: 'BlueprintEdge' }
-      & { node: (
-        { __typename?: 'Blueprint' }
-        & Pick<Blueprint, 'id' | 'createdAt' | 'name'>
-      ) }
-    )> }
-  ) }
-);
+export type BlueprintsQuery = { __typename?: 'Query', blueprints: { __typename?: 'BlueprintConnection', edges: Array<{ __typename?: 'BlueprintEdge', node: { __typename?: 'Blueprint', id: string, createdAt: string, name: string } }> } };
 
 export type DeleteBlueprintMutationVariables = Exact<{
   id: Scalars['String'];
 }>;
 
 
-export type DeleteBlueprintMutation = (
-  { __typename?: 'Mutation' }
-  & { deleteBlueprint: (
-    { __typename?: 'DeleteBlueprintPayload' }
-    & { blueprint: Maybe<(
-      { __typename?: 'Blueprint' }
-      & Pick<Blueprint, 'id'>
-    )> }
-  ) }
-);
+export type DeleteBlueprintMutation = { __typename?: 'Mutation', deleteBlueprint: { __typename?: 'DeleteBlueprintPayload', blueprint: { __typename?: 'Blueprint', id: string } | null } };
 
 export type DeviceNameQueryVariables = Exact<{
   deviceId: Scalars['ID'];
 }>;
 
 
-export type DeviceNameQuery = (
-  { __typename?: 'Query' }
-  & { node: Maybe<{ __typename?: 'Blueprint' } | { __typename?: 'Country' } | (
-    { __typename?: 'Device' }
-    & Pick<Device, 'id' | 'name'>
-  ) | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Zone' }> }
-);
+export type DeviceNameQuery = { __typename?: 'Query', node: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Zone' } | null };
 
 export type DataStoreQueryVariables = Exact<{
   deviceId: Scalars['String'];
@@ -791,17 +717,7 @@ export type DataStoreQueryVariables = Exact<{
 }>;
 
 
-export type DataStoreQuery = (
-  { __typename?: 'Query' }
-  & { dataStore: Maybe<(
-    { __typename?: 'DataStore' }
-    & Pick<DataStore, 'config' | 'operational'>
-    & { snapshots: Array<(
-      { __typename?: 'Snapshot' }
-      & Pick<Snapshot, 'name' | 'createdAt'>
-    )> }
-  )> }
-);
+export type DataStoreQuery = { __typename?: 'Query', dataStore: { __typename?: 'DataStore', config: string, operational: string, snapshots: Array<{ __typename?: 'Snapshot', name: string, createdAt: string }> } | null };
 
 export type UpdateDataStoreMutationVariables = Exact<{
   deviceId: Scalars['String'];
@@ -810,16 +726,7 @@ export type UpdateDataStoreMutationVariables = Exact<{
 }>;
 
 
-export type UpdateDataStoreMutation = (
-  { __typename?: 'Mutation' }
-  & { updateDataStore: (
-    { __typename?: 'UpdateDataStorePayload' }
-    & { dataStore: (
-      { __typename?: 'DataStore' }
-      & Pick<DataStore, 'config' | 'operational'>
-    ) }
-  ) }
-);
+export type UpdateDataStoreMutation = { __typename?: 'Mutation', updateDataStore: { __typename?: 'UpdateDataStorePayload', dataStore: { __typename?: 'DataStore', config: string, operational: string } } };
 
 export type CommitDataStoreConfigMutationVariables = Exact<{
   transactionId: Scalars['String'];
@@ -827,16 +734,7 @@ export type CommitDataStoreConfigMutationVariables = Exact<{
 }>;
 
 
-export type CommitDataStoreConfigMutation = (
-  { __typename?: 'Mutation' }
-  & { commitConfig: (
-    { __typename?: 'CommitConfigPayload' }
-    & { output: (
-      { __typename?: 'CommitConfigOutput' }
-      & Pick<CommitConfigOutput, 'configuration' | 'message'>
-    ) }
-  ) }
-);
+export type CommitDataStoreConfigMutation = { __typename?: 'Mutation', commitConfig: { __typename?: 'CommitConfigPayload', output: { __typename?: 'CommitConfigOutput', configuration: string | null, message: string | null } } };
 
 export type ResetConfigMutationVariables = Exact<{
   deviceId: Scalars['String'];
@@ -844,16 +742,7 @@ export type ResetConfigMutationVariables = Exact<{
 }>;
 
 
-export type ResetConfigMutation = (
-  { __typename?: 'Mutation' }
-  & { resetConfig: (
-    { __typename?: 'ResetConfigPayload' }
-    & { dataStore: (
-      { __typename?: 'DataStore' }
-      & Pick<DataStore, 'config' | 'operational'>
-    ) }
-  ) }
-);
+export type ResetConfigMutation = { __typename?: 'Mutation', resetConfig: { __typename?: 'ResetConfigPayload', dataStore: { __typename?: 'DataStore', config: string, operational: string } } };
 
 export type AddSnapshotMutationVariables = Exact<{
   transactionId: Scalars['String'];
@@ -861,16 +750,7 @@ export type AddSnapshotMutationVariables = Exact<{
 }>;
 
 
-export type AddSnapshotMutation = (
-  { __typename?: 'Mutation' }
-  & { addSnapshot: Maybe<(
-    { __typename?: 'AddSnapshotPayload' }
-    & { snapshot: Maybe<(
-      { __typename?: 'Snapshot' }
-      & Pick<Snapshot, 'name'>
-    )> }
-  )> }
-);
+export type AddSnapshotMutation = { __typename?: 'Mutation', addSnapshot: { __typename?: 'AddSnapshotPayload', snapshot: { __typename?: 'Snapshot', name: string } | null } | null };
 
 export type ApplySnapshotMutationVariables = Exact<{
   transactionId: Scalars['String'];
@@ -878,13 +758,7 @@ export type ApplySnapshotMutationVariables = Exact<{
 }>;
 
 
-export type ApplySnapshotMutation = (
-  { __typename?: 'Mutation' }
-  & { applySnapshot: (
-    { __typename?: 'ApplySnapshotPayload' }
-    & Pick<ApplySnapshotPayload, 'isOk' | 'output'>
-  ) }
-);
+export type ApplySnapshotMutation = { __typename?: 'Mutation', applySnapshot: { __typename?: 'ApplySnapshotPayload', isOk: boolean, output: string } };
 
 export type SyncFromNetworkMutationVariables = Exact<{
   deviceId: Scalars['String'];
@@ -892,45 +766,21 @@ export type SyncFromNetworkMutationVariables = Exact<{
 }>;
 
 
-export type SyncFromNetworkMutation = (
-  { __typename?: 'Mutation' }
-  & { syncFromNetwork: (
-    { __typename?: 'SyncFromNetworkPayload' }
-    & { dataStore: Maybe<(
-      { __typename?: 'DataStore' }
-      & Pick<DataStore, 'operational'>
-    )> }
-  ) }
-);
+export type SyncFromNetworkMutation = { __typename?: 'Mutation', syncFromNetwork: { __typename?: 'SyncFromNetworkPayload', dataStore: { __typename?: 'DataStore', operational: string } | null } };
 
 export type DeleteSnapshotMutationVariables = Exact<{
   input: DeleteSnapshotInput;
 }>;
 
 
-export type DeleteSnapshotMutation = (
-  { __typename?: 'Mutation' }
-  & { deleteSnapshot: Maybe<(
-    { __typename?: 'DeleteSnapshotPayload' }
-    & { snapshot: Maybe<(
-      { __typename?: 'Snapshot' }
-      & Pick<Snapshot, 'name'>
-    )> }
-  )> }
-);
+export type DeleteSnapshotMutation = { __typename?: 'Mutation', deleteSnapshot: { __typename?: 'DeleteSnapshotPayload', snapshot: { __typename?: 'Snapshot', name: string } | null } | null };
 
 export type CreateTransactionMutationVariables = Exact<{
   deviceId: Scalars['String'];
 }>;
 
 
-export type CreateTransactionMutation = (
-  { __typename?: 'Mutation' }
-  & { createTransaction: (
-    { __typename?: 'CreateTransactionPayload' }
-    & Pick<CreateTransactionPayload, 'transactionId'>
-  ) }
-);
+export type CreateTransactionMutation = { __typename?: 'Mutation', createTransaction: { __typename?: 'CreateTransactionPayload', transactionId: string | null } };
 
 export type CloseTransactionMutationVariables = Exact<{
   deviceId: Scalars['String'];
@@ -938,13 +788,7 @@ export type CloseTransactionMutationVariables = Exact<{
 }>;
 
 
-export type CloseTransactionMutation = (
-  { __typename?: 'Mutation' }
-  & { closeTransaction: (
-    { __typename?: 'CloseTransactionPayload' }
-    & Pick<CloseTransactionPayload, 'isOk'>
-  ) }
-);
+export type CloseTransactionMutation = { __typename?: 'Mutation', closeTransaction: { __typename?: 'CloseTransactionPayload', isOk: boolean } };
 
 export type CalculatedDiffQueryVariables = Exact<{
   deviceId: Scalars['String'];
@@ -952,150 +796,53 @@ export type CalculatedDiffQueryVariables = Exact<{
 }>;
 
 
-export type CalculatedDiffQuery = (
-  { __typename?: 'Query' }
-  & { calculatedDiff: (
-    { __typename?: 'CalculatedDiffPayload' }
-    & { result: (
-      { __typename?: 'CalculatedDiffResult' }
-      & { createdData: Array<(
-        { __typename?: 'DiffData' }
-        & Pick<DiffData, 'path' | 'data'>
-      )>, deletedData: Array<(
-        { __typename?: 'DiffData' }
-        & Pick<DiffData, 'path' | 'data'>
-      )>, updatedData: Array<(
-        { __typename?: 'CalculatedUpdateDiffData' }
-        & Pick<CalculatedUpdateDiffData, 'path' | 'actualData' | 'intendedData'>
-      )> }
-    ) }
-  ) }
-);
+export type CalculatedDiffQuery = { __typename?: 'Query', calculatedDiff: { __typename?: 'CalculatedDiffPayload', result: { __typename?: 'CalculatedDiffResult', createdData: Array<{ __typename?: 'DiffData', path: string, data: string }>, deletedData: Array<{ __typename?: 'DiffData', path: string, data: string }>, updatedData: Array<{ __typename?: 'CalculatedUpdateDiffData', path: string, actualData: string, intendedData: string }> } } };
 
 export type DevicesQueryVariables = Exact<{
-  labelIds?: Maybe<Array<Scalars['String']> | Scalars['String']>;
-  deviceName?: Maybe<Scalars['String']>;
-  orderBy?: Maybe<DeviceOrderByInput>;
-  first?: Maybe<Scalars['Int']>;
-  after?: Maybe<Scalars['String']>;
-  last?: Maybe<Scalars['Int']>;
-  before?: Maybe<Scalars['String']>;
+  labelIds?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
+  deviceName?: InputMaybe<Scalars['String']>;
+  orderBy?: InputMaybe<DeviceOrderByInput>;
+  first?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']>;
+  last?: InputMaybe<Scalars['Int']>;
+  before?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type DevicesQuery = (
-  { __typename?: 'Query' }
-  & { devices: (
-    { __typename?: 'DeviceConnection' }
-    & { edges: Array<(
-      { __typename?: 'DeviceEdge' }
-      & { node: (
-        { __typename?: 'Device' }
-        & Pick<Device, 'id' | 'name' | 'createdAt' | 'isInstalled' | 'serviceState'>
-        & { zone: (
-          { __typename?: 'Zone' }
-          & Pick<Zone, 'id' | 'name'>
-        ) }
-      ) }
-    )>, pageInfo: (
-      { __typename?: 'PageInfo' }
-      & Pick<PageInfo, 'startCursor' | 'endCursor' | 'hasNextPage' | 'hasPreviousPage'>
-    ) }
-  ) }
-);
+export type DevicesQuery = { __typename?: 'Query', devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string, createdAt: string, isInstalled: boolean, serviceState: DeviceServiceState, zone: { __typename?: 'Zone', id: string, name: string } } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } };
 
 export type InstallDeviceMutationVariables = Exact<{
   id: Scalars['String'];
 }>;
 
 
-export type InstallDeviceMutation = (
-  { __typename?: 'Mutation' }
-  & { installDevice: (
-    { __typename?: 'InstallDevicePayload' }
-    & { device: (
-      { __typename?: 'Device' }
-      & Pick<Device, 'id' | 'createdAt' | 'isInstalled' | 'serviceState'>
-    ) }
-  ) }
-);
+export type InstallDeviceMutation = { __typename?: 'Mutation', installDevice: { __typename?: 'InstallDevicePayload', device: { __typename?: 'Device', id: string, createdAt: string, isInstalled: boolean, serviceState: DeviceServiceState } } };
 
 export type UninstallDeviceMutationVariables = Exact<{
   id: Scalars['String'];
 }>;
 
 
-export type UninstallDeviceMutation = (
-  { __typename?: 'Mutation' }
-  & { uninstallDevice: (
-    { __typename?: 'UninstallDevicePayload' }
-    & { device: (
-      { __typename?: 'Device' }
-      & Pick<Device, 'id' | 'createdAt' | 'isInstalled' | 'serviceState'>
-    ) }
-  ) }
-);
+export type UninstallDeviceMutation = { __typename?: 'Mutation', uninstallDevice: { __typename?: 'UninstallDevicePayload', device: { __typename?: 'Device', id: string, createdAt: string, isInstalled: boolean, serviceState: DeviceServiceState } } };
 
 export type FilterLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FilterLabelsQuery = (
-  { __typename?: 'Query' }
-  & { labels: (
-    { __typename?: 'LabelConnection' }
-    & { edges: Array<(
-      { __typename?: 'LabelEdge' }
-      & { node: (
-        { __typename?: 'Label' }
-        & Pick<Label, 'id' | 'name'>
-      ) }
-    )> }
-  ) }
-);
+export type FilterLabelsQuery = { __typename?: 'Query', labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } };
 
 export type DeleteDeviceMutationVariables = Exact<{
   deviceId: Scalars['String'];
 }>;
 
 
-export type DeleteDeviceMutation = (
-  { __typename?: 'Mutation' }
-  & { deleteDevice: (
-    { __typename?: 'DeleteDevicePayload' }
-    & { device: Maybe<(
-      { __typename?: 'Device' }
-      & Pick<Device, 'id'>
-    )> }
-  ) }
-);
+export type DeleteDeviceMutation = { __typename?: 'Mutation', deleteDevice: { __typename?: 'DeleteDevicePayload', device: { __typename?: 'Device', id: string } | null } };
 
 export type BlueprintQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type BlueprintQuery = (
-  { __typename?: 'Query' }
-  & { blueprint: Maybe<(
-    { __typename?: 'Blueprint' }
-    & Pick<Blueprint, 'name' | 'template' | 'id'>
-  ) | (
-    { __typename?: 'Country' }
-    & Pick<Country, 'id'>
-  ) | (
-    { __typename?: 'Device' }
-    & Pick<Device, 'id'>
-  ) | (
-    { __typename?: 'Label' }
-    & Pick<Label, 'id'>
-  ) | (
-    { __typename?: 'Location' }
-    & Pick<Location, 'id'>
-  ) | (
-    { __typename?: 'Zone' }
-    & Pick<Zone, 'id'>
-  )> }
-);
+export type BlueprintQuery = { __typename?: 'Query', blueprint: { __typename?: 'Blueprint', name: string, template: string, id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'Zone', id: string } | null };
 
 export type UpdateBlueprintMutationVariables = Exact<{
   id: Scalars['String'];
@@ -1103,57 +850,14 @@ export type UpdateBlueprintMutationVariables = Exact<{
 }>;
 
 
-export type UpdateBlueprintMutation = (
-  { __typename?: 'Mutation' }
-  & { updateBlueprint: (
-    { __typename?: 'UpdateBlueprintPayload' }
-    & { blueprint: (
-      { __typename?: 'Blueprint' }
-      & Pick<Blueprint, 'id' | 'name' | 'template'>
-    ) }
-  ) }
-);
+export type UpdateBlueprintMutation = { __typename?: 'Mutation', updateBlueprint: { __typename?: 'UpdateBlueprintPayload', blueprint: { __typename?: 'Blueprint', id: string, name: string, template: string } } };
 
 export type DeviceQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type DeviceQuery = (
-  { __typename?: 'Query' }
-  & { device: Maybe<(
-    { __typename?: 'Blueprint' }
-    & Pick<Blueprint, 'id'>
-  ) | (
-    { __typename?: 'Country' }
-    & Pick<Country, 'id'>
-  ) | (
-    { __typename?: 'Device' }
-    & Pick<Device, 'name' | 'serviceState' | 'mountParameters' | 'id'>
-    & { zone: (
-      { __typename?: 'Zone' }
-      & Pick<Zone, 'id' | 'name'>
-    ), labels: (
-      { __typename?: 'LabelConnection' }
-      & { edges: Array<(
-        { __typename?: 'LabelEdge' }
-        & { node: (
-          { __typename?: 'Label' }
-          & Pick<Label, 'id' | 'name'>
-        ) }
-      )> }
-    ) }
-  ) | (
-    { __typename?: 'Label' }
-    & Pick<Label, 'id'>
-  ) | (
-    { __typename?: 'Location' }
-    & Pick<Location, 'id'>
-  ) | (
-    { __typename?: 'Zone' }
-    & Pick<Zone, 'id'>
-  )> }
-);
+export type DeviceQuery = { __typename?: 'Query', device: { __typename?: 'Blueprint', id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', name: string, serviceState: DeviceServiceState, mountParameters: string | null, id: string, zone: { __typename?: 'Zone', id: string, name: string }, labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'Zone', id: string } | null };
 
 export type UpdateDeviceMutationVariables = Exact<{
   id: Scalars['String'];
@@ -1161,17 +865,24 @@ export type UpdateDeviceMutationVariables = Exact<{
 }>;
 
 
-export type UpdateDeviceMutation = (
-  { __typename?: 'Mutation' }
-  & { updateDevice: (
-    { __typename?: 'UpdateDevicePayload' }
-    & { device: Maybe<(
-      { __typename?: 'Device' }
-      & Pick<Device, 'id' | 'name' | 'isInstalled'>
-      & { zone: (
-        { __typename?: 'Zone' }
-        & Pick<Zone, 'id' | 'name'>
-      ) }
-    )> }
-  ) }
-);
+export type UpdateDeviceMutation = { __typename?: 'Mutation', updateDevice: { __typename?: 'UpdateDevicePayload', device: { __typename?: 'Device', id: string, name: string, isInstalled: boolean, zone: { __typename?: 'Zone', id: string, name: string } } | null } };
+
+export type TransactionsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TransactionsQuery = { __typename?: 'Query', transactions: Array<{ __typename?: 'Transaction', transactionId: string, lastCommitTime: string, devices: Array<{ __typename?: 'Device', id: string, name: string }> }> };
+
+export type RevertChangesMutationVariables = Exact<{
+  transactionId: Scalars['String'];
+}>;
+
+
+export type RevertChangesMutation = { __typename?: 'Mutation', revertChanges: { __typename?: 'RevertChangesPayload', isOk: boolean } };
+
+export type CloseTransactionListMutationVariables = Exact<{
+  deviceId: Scalars['String'];
+  transactionId: Scalars['String'];
+}>;
+
+
+export type CloseTransactionListMutation = { __typename?: 'Mutation', closeTransaction: { __typename?: 'CloseTransactionPayload', isOk: boolean } };

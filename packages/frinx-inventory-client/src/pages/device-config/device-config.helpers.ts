@@ -34,7 +34,7 @@ function setTranscationData(deviceId: string, transactionId: string) {
   const data = JSON.stringify({ deviceId, transactionId });
   localStorage.setItem(TRANSACTION_ID_KEY, data);
 }
-function getTransactionData(): TransactionIdData | null {
+export function getTransactionData(): TransactionIdData | null {
   const data = localStorage.getItem(TRANSACTION_ID_KEY);
   if (data == null) {
     return null;
@@ -45,6 +45,9 @@ function getTransactionData(): TransactionIdData | null {
   } catch (e) {
     return null;
   }
+}
+export function removeTransactionData(): void {
+  localStorage.removeItem(TRANSACTION_ID_KEY);
 }
 
 export type UseTransactionId = {
@@ -66,7 +69,7 @@ export const useTransactionId = (deviceId: string): UseTransactionId => {
   const [transactionIdData, setTransactionIdData] = useState<TransactionIdData | null>(getTransactionData());
 
   const removeTransaction = () => {
-    localStorage.removeItem(TRANSACTION_ID_KEY);
+    removeTransactionData();
     setTransactionIdData(null);
   };
 
