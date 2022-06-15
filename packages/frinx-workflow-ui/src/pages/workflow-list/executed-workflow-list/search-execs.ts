@@ -1,6 +1,7 @@
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
+import { ExecutedWorkflow } from '../../../helpers/types';
 
-type SortBy = 'workflowId' | 'startTime' | 'endTime';
+type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 type SortOrder = 'ASC' | 'DESC';
 
 const getApiLabels = (labels: string[]): string => {
@@ -40,6 +41,24 @@ export const fetchParentWorkflows = (
     start: page,
     size: defaultPages.toString(),
   });
+};
+
+// TODO: currently not used
+// this function can be used to detect if workflow has subworkflows by parsing its output
+// we can use it to further optimize ui, for example in hierarchical view the row can be
+// non clickable if it does not have subworkflows
+// if this function is not necessary, we can remove it
+export const getSubWorkflowIds = (workflow: ExecutedWorkflow): string[] => {
+  const regex = /subWorkflowId=([^,]*),/g;
+  const result = workflow.output.matchAll(regex);
+
+  let output: string[] = [];
+
+  for (const r of result) {
+    output.push(r[1]);
+  }
+
+  return output;
 };
 
 export const getSortOrder = (sortBy: SortBy, previousSortBy: SortBy, previousSortOrder: SortOrder): SortOrder => {

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Thead, Tr, Th, Checkbox } from '@chakra-ui/react';
 
-type SortBy = 'workflowId' | 'startTime' | 'endTime';
+type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 type SortOrder = 'ASC' | 'DESC';
 type Props = {
   sortBy: SortBy;
@@ -26,13 +26,16 @@ const ExecutedWorkflowTableHead: FC<Props> = ({
         <Th>
           <Checkbox onChange={(e) => selectAllWorkflows(e.target.checked)} isChecked={areSelectedAll} />
         </Th>
-        <Th onClick={() => sortWf('workflowId')} cursor="pointer">
+        <Th onClick={() => sortWf('workflowType')} cursor="pointer">
           Name &nbsp;
-          {sortBy === 'workflowId' ? (
+          {sortBy === 'workflowType' ? (
             <i className={sortOrder === 'ASC' ? 'fas fa-sort-up' : 'fas fa-sort-down'} />
           ) : null}
         </Th>
-        <Th>Status</Th>
+        <Th onClick={() => sortWf('status')} cursor="pointer">
+          Status &nbsp;
+          {sortBy === 'status' ? <i className={sortOrder === 'ASC' ? 'fas fa-sort-down' : 'fas fa-sort-up'} /> : null}
+        </Th>
         <Th onClick={() => sortWf('startTime')} cursor="pointer">
           Start Time &nbsp;
           {sortBy === 'startTime' ? (
