@@ -19,7 +19,7 @@ import {
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import FeatherIcon from 'feather-icons-react';
-import React, { VoidFunctionComponent } from 'react';
+import React, { useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import useNotifications from '../../hooks/use-notifications';
@@ -32,15 +32,23 @@ import {
   TransactionsQueryVariables,
 } from '../../__generated__/graphql';
 import { getTransactionData, removeTransactionData } from '../device-config/device-config.helpers';
+import TransactionDiffModal from './transaction-diff-modal';
 
 const TRANSACTIONS_QUERY = gql`
   query Transactions {
     transactions {
       transactionId
       lastCommitTime
-      devices {
-        id
-        name
+      changes {
+        device {
+          id
+          name
+        }
+        diff {
+          path
+          dataBefore
+          dataAfter
+        }
       }
     }
   }
@@ -62,6 +70,7 @@ const CLOSE_TRANSACTION_MUTATION = gql`
 
 const TransactionList: VoidFunctionComponent = () => {
   const { addToastNotification } = useNotifications();
+  const [selectedTransaction, setSelectedTransaction] = useState<TransactionsQuery['transactions'][0] | null>(null);
   const [{ data: transactionQData, fetching: isFetchingTransactions, error }] = useQuery<
     TransactionsQuery,
     TransactionsQueryVariables
@@ -115,74 +124,91 @@ const TransactionList: VoidFunctionComponent = () => {
           title: 'Error',
         });
       }
+      setSelectedTransaction(null);
     });
   };
 
   return (
-    <Container maxWidth={1280}>
-      <Flex justify="space-between" align="center" marginBottom={6}>
-        <Heading as="h2" size="3xl">
-          Transactions
-        </Heading>
-      </Flex>
-      <Box>
-        <Table background="white" size="lg">
-          <Thead>
-            <Tr>
-              <Th>Transaction id</Th>
-              <Th>Last commit time</Th>
-              <Th>Devices</Th>
-              <Th>Actions</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {transactionQData.transactions.map((transaction) => {
-              return (
-                <Tr key={transaction.transactionId}>
-                  <Td>
-                    <Code>{transaction.transactionId}</Code>
-                  </Td>
-                  <Td>
-                    {format(
-                      utcToZonedTime(transaction.lastCommitTime, Intl.DateTimeFormat().resolvedOptions().timeZone),
-                      'dd/MM/yyyy, k:mm',
-                    )}
-                  </Td>
-                  <Td>
-                    {transaction.devices.map((device) => (
-                      <Badge
-                        key={device.id}
-                        as={Link}
-                        to={`../config/${device.id}`}
-                        _hover={{
-                          background: 'gray.300',
-                        }}
-                      >
-                        {device.name}
-                      </Badge>
-                    ))}
-                  </Td>
-                  <Td>
-                    <Tooltip label="Revert">
-                      <IconButton
-                        colorScheme="blue"
-                        size="sm"
-                        aria-label="Revert"
-                        isLoading={isMutationFetching}
-                        icon={<Icon as={FeatherIcon} icon="rotate-ccw" size={20} />}
-                        onClick={() => {
-                          handleRevertBtnClick(transaction.transactionId);
-                        }}
-                      />
-                    </Tooltip>
-                  </Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </Table>
-      </Box>
-    </Container>
+    <>
+      {selectedTransaction != null && (
+        <TransactionDiffModal
+          changes={selectedTransaction.changes}
+          isLoading={isMutationFetching}
+          onClose={() => {
+            setSelectedTransaction(null);
+          }}
+          onRevertBtnClick={() => {
+            handleRevertBtnClick(selectedTransaction.transactionId);
+          }}
+        />
+      )}
+      <Container maxWidth={1280}>
+        <Flex justify="space-between" align="center" marginBottom={6}>
+          <Heading as="h2" size="3xl">
+            Transactions
+          </Heading>
+        </Flex>
+        <Box>
+          <Table background="white" size="lg">
+            <Thead>
+              <Tr>
+                <Th>Transaction id</Th>
+                <Th>Last commit time</Th>
+                <Th>Devices</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {transactionQData.transactions.map((transaction) => {
+                return (
+                  <Tr key={transaction.transactionId}>
+                    <Td>
+                      <Code>{transaction.transactionId}</Code>
+                    </Td>
+                    <Td>
+                      {format(
+                        utcToZonedTime(transaction.lastCommitTime, Intl.DateTimeFormat().resolvedOptions().timeZone),
+                        'dd/MM/yyyy, k:mm',
+                      )}
+                    </Td>
+                    <Td>
+                      {transaction.changes.map((c) => {
+                        return (
+                          <Badge
+                            key={c.device.id}
+                            as={Link}
+                            to={`../config/${c.device.id}`}
+                            _hover={{
+                              background: 'gray.300',
+                            }}
+                          >
+                            {c.device.name}
+                          </Badge>
+                        );
+                      })}
+                    </Td>
+                    <Td>
+                      <Tooltip label="Revert">
+                        <IconButton
+                          colorScheme="blue"
+                          size="sm"
+                          aria-label="Revert"
+                          isLoading={isMutationFetching}
+                          icon={<Icon as={FeatherIcon} icon="rotate-ccw" size={20} />}
+                          onClick={() => {
+                            setSelectedTransaction(transaction);
+                          }}
+                        />
+                      </Tooltip>
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </Table>
+        </Box>
+      </Container>
+    </>
   );
 };
 
