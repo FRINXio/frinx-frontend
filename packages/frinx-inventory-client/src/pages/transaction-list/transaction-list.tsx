@@ -144,10 +144,7 @@ const TransactionList: VoidFunctionComponent = () => {
                   </Td>
                   <Td>
                     {format(
-                      utcToZonedTime(
-                        new Date(transaction.lastCommitTime).toISOString(),
-                        Intl.DateTimeFormat().resolvedOptions().timeZone,
-                      ),
+                      utcToZonedTime(transaction.lastCommitTime, Intl.DateTimeFormat().resolvedOptions().timeZone),
                       'dd/MM/yyyy, k:mm',
                     )}
                   </Td>
