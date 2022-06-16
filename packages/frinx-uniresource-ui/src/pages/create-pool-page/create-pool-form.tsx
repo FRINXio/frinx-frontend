@@ -78,8 +78,9 @@ type AllocStrategy = {
 };
 
 function getSchema(poolType: string, isNested: boolean) {
-  const ipv4: RegExp= /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
-  const ipv6: RegExp=/(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$)/;
+  const ipv4: RegExp = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
+  const ipv6: RegExp =
+    /(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$)/;
   switch (poolType) {
     case 'allocating':
       return yup.object({
@@ -124,48 +125,40 @@ function getSchema(poolType: string, isNested: boolean) {
         poolValues: yup.array(
           yup.lazy((poolValues: Array<Record<string, string>>) => {
             return yup.array().of(
-              yup.string()
-              .when('resourceTypeId', {
-                is: '25769803777',
-                then: yup
-                  .string()
-                  .required()
-                  .matches(ipv4, {
+              yup
+                .string()
+                .when('resourceTypeId', {
+                  is: '25769803777',
+                  then: yup.string().required().matches(ipv4, {
                     message: 'Invalid ip address',
-                  }),})
-              .when('resourceTypeId', {
-                is: '25769803780',
-                then: yup
-                  .string()
-                  .required()
-                  .matches(ipv4, {
+                  }),
+                })
+                .when('resourceTypeId', {
+                  is: '25769803780',
+                  then: yup.string().required().matches(ipv4, {
                     message: 'Invalid ip address',
-                  }),})
-              .when('resourceTypeId', {
-                is: '25769803776',
-                then: yup
-                  .string()
-                  .required()
-                  .matches(ipv6, {
+                  }),
+                })
+                .when('resourceTypeId', {
+                  is: '25769803776',
+                  then: yup.string().required().matches(ipv6, {
                     message: 'Invalid ip address',
-                  }),})
-              .when('resourceTypeId', {
-                is: '25769803779',
-                then: yup
-                  .string()
-                  .required()
-                  .matches(ipv6, {
+                  }),
+                })
+                .when('resourceTypeId', {
+                  is: '25769803779',
+                  then: yup.string().required().matches(ipv6, {
                     message: 'Invalid ip address',
-                  }),        
-                otherwise: yup.object().shape({
-                  ...Object.keys(poolValues[0] ?? {}).reduce((acc, key) => {
-                    return {
-                      ...acc,
-                      [key]: yup.string().required('Please enter a value'),
-                    };
-                  }, {}),
+                  }),
+                  otherwise: yup.object().shape({
+                    ...Object.keys(poolValues[0] ?? {}).reduce((acc, key) => {
+                      return {
+                        ...acc,
+                        [key]: yup.string().required('Please enter a value'),
+                      };
+                    }, {}),
+                  }),
                 }),
-              }),
             );
           }),
         ),
