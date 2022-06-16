@@ -591,9 +591,22 @@ export type SyncFromNetworkPayload = {
 
 export type Transaction = {
   __typename?: 'Transaction';
-  devices: Array<Device>;
+  changes: Array<TransactionChange>;
   lastCommitTime: Scalars['String'];
   transactionId: Scalars['String'];
+};
+
+export type TransactionChange = {
+  __typename?: 'TransactionChange';
+  device: Device;
+  diff: Array<TransactionDiff>;
+};
+
+export type TransactionDiff = {
+  __typename?: 'TransactionDiff';
+  dataAfter: Maybe<Scalars['String']>;
+  dataBefore: Maybe<Scalars['String']>;
+  path: Scalars['String'];
 };
 
 export type UninstallDevicePayload = {
@@ -870,7 +883,7 @@ export type UpdateDeviceMutation = { __typename?: 'Mutation', updateDevice: { __
 export type TransactionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TransactionsQuery = { __typename?: 'Query', transactions: Array<{ __typename?: 'Transaction', transactionId: string, lastCommitTime: string, devices: Array<{ __typename?: 'Device', id: string, name: string }> }> };
+export type TransactionsQuery = { __typename?: 'Query', transactions: Array<{ __typename?: 'Transaction', transactionId: string, lastCommitTime: string, changes: Array<{ __typename?: 'TransactionChange', device: { __typename?: 'Device', id: string, name: string }, diff: Array<{ __typename?: 'TransactionDiff', path: string, dataBefore: string | null, dataAfter: string | null }> }> }> };
 
 export type RevertChangesMutationVariables = Exact<{
   transactionId: Scalars['String'];
