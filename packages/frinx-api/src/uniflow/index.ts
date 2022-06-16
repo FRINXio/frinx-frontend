@@ -6,6 +6,8 @@ import {
   EventListener,
   ExecutedWorkflowResponse,
   ScheduledWorkflow,
+  WorkflowExecutionPayload,
+  WorkflowExecutionResult,
 } from './types';
 import { isArrayTypeOf, isEventListener, isQueue, isTaskDefinition, isWorkflow } from './type-guards';
 import { ApiHelpers } from '../api-helpers';
@@ -27,8 +29,8 @@ export type UniflowApiClient = {
   registerEventListener: (eventListener: EventListener) => Promise<EventListener>;
   deleteEventListener: (name: string) => Promise<EventListener>;
   getQueues: () => Promise<Queue[]>;
-  getWorkflowExecutions: (workflowId: string, label: string, start: number, size: string) => Promise<unknown>;
-  getWorkflowExecutionsHierarchical: (query: string, label: string, start?: number, size?: string) => Promise<unknown>;
+  getWorkflowExecutions: (payload: WorkflowExecutionPayload) => Promise<WorkflowExecutionResult>;
+  getWorkflowExecutionsHierarchical: (payload: WorkflowExecutionPayload) => Promise<WorkflowExecutionResult>;
   getWorkflowInstanceDetail: (workflowId: string, options?: RequestInit) => Promise<ExecutedWorkflowResponse>;
   executeWorkflow: (workflowPayload: WorkflowPayload) => Promise<{ text: string }>;
   terminateWorkflows: (workflowIds: string[]) => Promise<string[]>;
@@ -192,25 +194,28 @@ export default function createUniflowApiClient(apiHelpers: ApiHelpers): UniflowA
 
   // TODO: Just copy-pasted for now, needs rework in uniflow-api
   // Returns list of running workflows
-  async function getWorkflowExecutions(workflowId = '*', label = '"RUNNING"', start = 0, size = ''): Promise<unknown> {
-    const executions = sendGetRequest(
-      `/executions/?workflowId=${workflowId}&status=${label}&start=${start}&size=${size}`,
+  async function getWorkflowExecutions(payload: WorkflowExecutionPayload): Promise<WorkflowExecutionResult> {
+    const { workflowId, label, start, size, sortBy, sortOrder } = payload;
+    const orderQuery = sortBy && sortOrder ? `&order=${sortBy}:${sortOrder}` : '';
+    const executions = await sendGetRequest(
+      `/executions/?workflowId=${workflowId}&status=${label}&start=${start}&size=${size}${orderQuery}`,
     );
 
-    return executions;
+    return executions as WorkflowExecutionResult;
   }
 
   // TODO: Just copy-pasted for now, needs rework in uniflow-api
   // Returns list of running workflows in hierarchical strucutre
   async function getWorkflowExecutionsHierarchical(
-    query: string,
-    label: string,
-    start?: number,
-    size?: string,
-  ): Promise<unknown> {
-    const executions = sendGetRequest(`/hierarchical/?workflowId=${query}&status=${label}&start=${start}&size=${size}`);
+    payload: WorkflowExecutionPayload,
+  ): Promise<WorkflowExecutionResult> {
+    const { workflowId, label, start, size, sortBy, sortOrder } = payload;
+    const orderQuery = sortBy && sortOrder ? `&order=${sortBy}:${sortOrder}` : '';
+    const executions = await sendGetRequest(
+      `/hierarchical/?workflowId=${workflowId}&status=${label}&start=${start}&size=${size}${orderQuery}`,
+    );
 
-    return executions;
+    return executions as WorkflowExecutionResult;
   }
 
   // TODO: needs rework in uniflow-api

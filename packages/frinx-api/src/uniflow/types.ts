@@ -568,3 +568,22 @@ export type WorkflowPayload = {
   name: string;
   version: number;
 };
+
+export type WorkflowExecutionPayload = {
+  workflowId: string;
+  label: string;
+  start?: number;
+  size?: string;
+  sortBy?: ExecutedWorkflowSortBy;
+  sortOrder?: ExecutedWorkflowSortOrder;
+};
+
+export type WorkflowExecutionResult = {
+  result: {
+    hits: ExecutedWorkflow[];
+    totalHits: number;
+  };
+};
+
+export type ExecutedWorkflowSortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
+export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';

@@ -441,18 +441,11 @@ export type NestedExecutedWorkflow = {
   workflowType: string;
 };
 
-export type ExecutedWorkflowsFlat = {
+export type ExecutedWorkflows = {
   result: {
     hits: ExecutedWorkflow[];
     totalHits: number;
   };
-};
-
-export type ExecutedWorkflowsHierarchical = {
-  parents: ExecutedWorkflow[];
-  children: NestedExecutedWorkflow[];
-  count: number;
-  hits: number;
 };
 
 export type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED' | 'COMPLETED';
@@ -581,3 +574,6 @@ export type WorkflowDefinition = {
   timeoutSeconds: number;
   variables: Record<string, string>;
 };
+
+export type ExecutedWorkflowSortBy = 'workflowId' | 'startTime' | 'endTime';
+export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';

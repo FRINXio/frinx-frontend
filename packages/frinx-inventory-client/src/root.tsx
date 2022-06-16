@@ -7,6 +7,7 @@ import DeviceConfigPage from './pages/device-config/device-config-page';
 import DeviceList from './pages/device-list/device-list';
 import EditBlueprintPage from './pages/edit-blueprint/edit-blueprint-page';
 import EditDevicePage from './pages/edit-device/edit-device-page';
+import TransactionList from './pages/transaction-list/transaction-list';
 
 const Root: VoidFunctionComponent = () => {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const Root: VoidFunctionComponent = () => {
         path="blueprints/:blueprintId/edit"
         element={<EditBlueprintPage onSuccess={handleBlueprintListRedirect} onCancel={handleBlueprintListRedirect} />}
       />
+      <Route path="/transactions" element={<TransactionList />} />
     </Routes>
   );
 };

@@ -1,16 +1,20 @@
 import React, { FC } from 'react';
 import { Thead, Tr, Th, Checkbox } from '@chakra-ui/react';
 
+type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
+type SortOrder = 'ASC' | 'DESC';
 type Props = {
-  sort: number[];
+  sortBy: SortBy;
+  sortOrder: SortOrder;
   isFlatTable?: boolean;
   areSelectedAll: boolean;
-  sortWf: (sort: number) => void;
+  sortWf: (sortBy: SortBy) => void;
   selectAllWorkflows: (isChecked: boolean) => void;
 };
 
 const ExecutedWorkflowTableHead: FC<Props> = ({
-  sort,
+  sortBy,
+  sortOrder,
   sortWf,
   isFlatTable = false,
   selectAllWorkflows,
@@ -22,18 +26,25 @@ const ExecutedWorkflowTableHead: FC<Props> = ({
         <Th>
           <Checkbox onChange={(e) => selectAllWorkflows(e.target.checked)} isChecked={areSelectedAll} />
         </Th>
-        <Th onClick={() => sortWf(0)} cursor="pointer">
+        <Th onClick={() => sortWf('workflowType')} cursor="pointer">
           Name &nbsp;
-          {sort[0] !== 2 ? <i className={sort[0] ? 'fas fa-sort-up' : 'fas fa-sort-down'} /> : null}
+          {sortBy === 'workflowType' ? (
+            <i className={sortOrder === 'ASC' ? 'fas fa-sort-up' : 'fas fa-sort-down'} />
+          ) : null}
         </Th>
-        <Th>Status</Th>
-        <Th onClick={() => sortWf(1)} cursor="pointer">
+        <Th onClick={() => sortWf('status')} cursor="pointer">
+          Status &nbsp;
+          {sortBy === 'status' ? <i className={sortOrder === 'ASC' ? 'fas fa-sort-down' : 'fas fa-sort-up'} /> : null}
+        </Th>
+        <Th onClick={() => sortWf('startTime')} cursor="pointer">
           Start Time &nbsp;
-          {sort[1] !== 2 ? <i className={sort[1] ? 'fas fa-sort-down' : 'fas fa-sort-up'} /> : null}
+          {sortBy === 'startTime' ? (
+            <i className={sortOrder === 'ASC' ? 'fas fa-sort-down' : 'fas fa-sort-up'} />
+          ) : null}
         </Th>
-        <Th onClick={() => sortWf(2)} cursor="pointer">
+        <Th onClick={() => sortWf('endTime')} cursor="pointer">
           End Time &nbsp;
-          {sort[2] !== 2 ? <i className={sort[2] ? 'fas fa-sort-down' : 'fas fa-sort-up'} /> : null}
+          {sortBy == 'endTime' ? <i className={sortOrder === 'ASC' ? 'fas fa-sort-down' : 'fas fa-sort-up'} /> : null}
         </Th>
       </Tr>
     </Thead>
