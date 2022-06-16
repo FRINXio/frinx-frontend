@@ -115,7 +115,7 @@ function getSchema(poolType: string, isNested: boolean) {
       return yup.object({
         name: yup.string().required('Please enter a name'),
         description: yup.string().notRequired(),
-        resourceTypeId: yup.string().required('Please enter resource type'), //.when(['address'], {is: 'ipv4', then:  yup.string().required()}),
+        resourceTypeId: yup.string().required('Please enter resource type'),
         tags: yup.array(),
         dealocationSafetyPeriod: yup
           .number()
