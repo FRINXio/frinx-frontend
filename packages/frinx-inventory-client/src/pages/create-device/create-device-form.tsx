@@ -1,13 +1,13 @@
 import { Button, Divider, FormControl, FormErrorMessage, FormLabel, Input, Select, Switch } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import React, { useState, VoidFunctionComponent } from 'react';
-import Editor from 'react-ace';
 import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
 import { DeviceBlueprintsQuery, Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 import BlueprintForm from './blueprint-form';
 import { ServiceState, serviceStateOptions } from '../../helpers/types';
+import Editor from '../../components/editor';
 
 type Props = {
   zones: ZonesQuery['zones']['edges'];
