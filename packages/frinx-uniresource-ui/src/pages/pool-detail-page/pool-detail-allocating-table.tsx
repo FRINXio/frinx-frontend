@@ -7,10 +7,10 @@ import { AllocatedResourcesQuery } from '../../__generated__/graphql';
 type Props = {
   allocatedResources?: AllocatedResourcesQuery['QueryResources'];
   canFreeResource: boolean;
+  paginationArgs: PaginationArgs;
   onFreeResource: (userInput: Record<string, string | number>) => void;
   onPrevious: (cursor: string | null) => () => void;
   onNext: (cursor: string | null) => () => void;
-  paginationArgs: PaginationArgs;
 };
 
 const getNamesOfAllocatedResources = (allocatedResources?: AllocatedResourcesQuery['QueryResources']) => {
@@ -61,7 +61,11 @@ const PoolDetailAllocatingTable: FC<Props> = ({
                   <Td>{resource.Description}</Td>
                   <Td>
                     <ButtonGroup>
-                      <Button isDisabled={!canFreeResource} onClick={() => onFreeResource(resource.Properties)}>
+                      <Button
+                        title="Deallocate subnet"
+                        isDisabled={!canFreeResource}
+                        onClick={() => onFreeResource(resource.Properties)}
+                      >
                         Deallocate
                       </Button>
                     </ButtonGroup>

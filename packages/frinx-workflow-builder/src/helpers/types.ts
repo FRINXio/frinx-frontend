@@ -445,3 +445,40 @@ export type ExecutedWorkflowResponse = {
   meta: Workflow;
   subworkflows: WorkflowInstanceDetail[];
 };
+
+export type WorkflowExecutionPayload = {
+  workflowId: string;
+  label: string;
+  start?: number;
+  size?: string;
+  sortBy?: ExecutedWorkflowSortBy;
+  sortOrder?: ExecutedWorkflowSortOrder;
+};
+export type ExecutedWorkflow = {
+  correlationId: string;
+  endTime: string;
+  executionTime: number;
+  failedReferenceTaskNames: string;
+  input: string;
+  inputSize: number;
+  output: string;
+  outputSize: number;
+  priority: number;
+  reasonForIncompletion?: string;
+  startTime: string;
+  status: string;
+  updateTime: string;
+  version: number;
+  workflowId: string;
+  workflowType: string;
+};
+
+export type WorkflowExecutionResult = {
+  result: {
+    hits: ExecutedWorkflow[];
+    totalHits: number;
+  };
+};
+
+export type ExecutedWorkflowSortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
+export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';

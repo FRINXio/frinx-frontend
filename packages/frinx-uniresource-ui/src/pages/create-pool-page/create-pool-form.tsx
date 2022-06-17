@@ -122,7 +122,7 @@ function getSchema(poolType: string, isNested: boolean) {
           .min(0, 'Please enter positive number')
           .required('Please enter a dealocation safety period')
           .typeError('Please enter a number'),
-        poolValues: yup.array(yup.object().when('resourceTypeId', {
+        poolValues: yup.array(yup.string().when('resourceTypeId', {
           is: '25769803777',
           then: yup. string().required().matches(ipv4, {message: 'Invalid ipv4 address form'}),
           otherwise:  yup.lazy((poolValues: Array<Record<string, string>>) => {
@@ -175,10 +175,12 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   );
   const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik<FormValues>({
     initialValues: getInitialValues(window.location.search),
+
     validationSchema: poolSchema,
     validateOnChange: false,
     onSubmit: async (data) => {
       const resourceTypeName = resourceTypes.find((resourceType) => resourceType.id === data.resourceTypeId)?.Name;
+      console.log(values);
       const allocationStratedyId = allocStrategies.find(
         (allocationStrategy) => allocationStrategy.name === resourceTypeName,
       )?.id;

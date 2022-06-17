@@ -2,7 +2,6 @@ import { Table, Thead, Tr, Th, Tbody, Td, ButtonGroup, Button } from '@chakra-ui
 import { keys } from 'lodash';
 import React, { VoidFunctionComponent } from 'react';
 import Pagination from '../../components/pagination';
-import useNotifications from '../../hooks/use-notifications';
 import { PaginationArgs } from '../../hooks/use-pagination';
 import { AllocatedResourcesQuery, Maybe, Resource } from '../../__generated__/graphql';
 
@@ -18,7 +17,7 @@ type Props = {
   resources: PoolResources;
   paginationArgs: PaginationArgs;
   onFreeResource: (userInput: Record<string, string | number>) => void;
-  onClaimResource: (description: string, userInput?: Record<string, string | number>) => void;
+  onClaimResource: (description?: string | null, userInput?: Record<string, string | number>) => void;
   onPrevious: (cursor: string | null) => () => void;
   onNext: (cursor: string | null) => () => void;
 };
@@ -47,7 +46,6 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
   onNext,
   paginationArgs,
 }) => {
-  const toast = useNotifications();
   const mappedResources = resources.map((resource) => {
     if (allocatedResources == null) {
       return {
@@ -64,16 +62,8 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
   });
   const allocatedResourcesKeys = getNamesOfAllocatedResources(mappedResources);
 
-  const handleOnClaimResource = (description: string | null, userInput?: Record<string, string | number>) => {
-    if (description == null) {
-      toast.addToastNotification({
-        title: 'Cannot claim resource',
-        content: 'Please provide a description for the resource.',
-        type: 'error',
-      });
-    } else {
-      onClaimResource(description, userInput);
-    }
+  const handleOnClaimResource = (description?: string | null, userInput?: Record<string, string | number>) => {
+    onClaimResource(description, userInput);
   };
 
   return (

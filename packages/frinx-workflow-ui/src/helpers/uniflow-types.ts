@@ -1,3 +1,5 @@
+import { ExecutedWorkflow } from './types';
+
 /* eslint-disable @typescript-eslint/naming-convention */
 type AnyJson = JsonArray | JsonMap;
 type JsonMap = {
@@ -256,4 +258,23 @@ export type Workflow<T extends Task = Task> = {
   timeoutPolicy: string;
   timeoutSeconds: number;
   variables: Record<string, unknown>;
+};
+
+export type ExecutedWorkflowSortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
+export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';
+
+export type WorkflowExecutionPayload = {
+  workflowId: string;
+  label: string;
+  start?: number;
+  size?: string;
+  sortBy?: ExecutedWorkflowSortBy;
+  sortOrder?: ExecutedWorkflowSortOrder;
+};
+
+export type WorkflowExecutionResult = {
+  result: {
+    hits: ExecutedWorkflow[];
+    totalHits: number;
+  };
 };
