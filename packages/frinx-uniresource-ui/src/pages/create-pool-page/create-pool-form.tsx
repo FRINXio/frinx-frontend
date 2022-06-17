@@ -1,4 +1,4 @@
-import React, { useCallback, VoidFunctionComponent, useState, useEffect } from 'react';
+import React, { useCallback, VoidFunctionComponent, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import {
@@ -78,9 +78,9 @@ type AllocStrategy = {
 };
 
 function getSchema(poolType: string, isNested: boolean) {
-  const ipv4: RegExp = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
-   const ipv6: RegExp =
-     /(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$)/;
+  const ipv4Regex = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
+  const ipv6Regex =
+    /(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$)/;
   switch (poolType) {
     case 'allocating':
       return yup.object({
@@ -116,26 +116,83 @@ function getSchema(poolType: string, isNested: boolean) {
         name: yup.string().required('Please enter a name'),
         description: yup.string().notRequired(),
         resourceTypeId: yup.string().required('Please enter resource type'),
-        tags: yup.array(),
+        tags: yup.array().of(yup.string()).notRequired(),
         dealocationSafetyPeriod: yup
           .number()
           .min(0, 'Please enter positive number')
           .required('Please enter a dealocation safety period')
           .typeError('Please enter a number'),
-        poolValues: yup.array(yup.object().when('resourceTypeId', {
-          is: '25769803777',
-          then: yup. string().required().matches(ipv4, {message: 'Invalid ipv4 address form'}),
-          otherwise:  yup.lazy((poolValues: Array<Record<string, string>>) => {
-          return yup.object({ ...Object.keys(poolValues[0] ?? {}).reduce((acc, key) => {
-                  return {
-                    ...acc,
-                    [key]: yup.string().required('Please enter a value'),
-                  };
-                }, {})
-              })
+        poolValues: yup.lazy((poolValues: Array<Record<string, string>>) => {
+          return yup
+            .array()
+            .when('$ipv4', {
+              is: true,
+              then: yup.array().of(
+                yup.object().shape({
+                  ...Object.keys(poolValues[0] ?? {}).reduce((acc, key) => {
+                    if (key === 'address') {
+                      return {
+                        ...acc,
+                        [key]: yup
+                          .string()
+                          .matches(ipv4Regex, 'Please enter a valid IPv6 address')
+                          .required('Please enter an IPv6 address'),
+                      };
+                    } else {
+                      return {
+                        ...acc,
+                        [key]: yup.string().required('Please enter a value'),
+                      };
+                    }
+                  }, {}),
+                }),
+              ),
             })
-            
-        })),
+            .when('$ipv6', ([ipv6]) => {
+              return ipv6
+                ? yup.array().of(
+                    yup.object().shape({
+                      ...Object.keys(poolValues[0] ?? {}).reduce((acc, key) => {
+                        if (key === 'address') {
+                          return {
+                            ...acc,
+                            [key]: yup
+                              .string()
+                              .matches(ipv6Regex, 'Please enter a valid IPv6 address')
+                              .required('Please enter an IPv6 address'),
+                          };
+                        } else {
+                          return {
+                            ...acc,
+                            [key]: yup.string().required('Please enter a value'),
+                          };
+                        }
+                      }, {}),
+                    }),
+                  )
+                : yup.array().of(
+                    yup.object().shape({
+                      ...Object.keys(poolValues[0] ?? {}).reduce((acc, key) => {
+                        if (key === 'address') {
+                          return {
+                            ...acc,
+                            [key]: yup
+                              .string()
+                              .matches(ipv6, 'Please enter a valid IPv6 address')
+                              .required('Please enter an IPv6 address'),
+                          };
+                        } else {
+                          return {
+                            ...acc,
+                            [key]: yup.string().required('Please enter a value'),
+                          };
+                        }
+                      }, {}),
+                    }),
+                  );
+            })
+            .min(1, 'Please enter at least one value');
+        }),
         ...(isNested && {
           parentPoolId: yup.string().required('Please choose parent pool'),
           parentResourceId: yup.string().required('Please choose allocated resource from parent'),
@@ -170,17 +227,32 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   allocStrategies,
 }) => {
   const { selectedTags, handleTagCreation, handleOnSelectionChange } = useTagsInput();
-  const [poolSchema, setPoolSchema] = useState(
-    getSchema(getInitialValues(window.location.search).poolType, getInitialValues(window.location.search).isNested),
-  );
   const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik<FormValues>({
     initialValues: getInitialValues(window.location.search),
+    validate(formValues) {
+      const formErrors = {};
+      const schema = getSchema(formValues.poolType, formValues.isNested);
+      const formError = schema.validateSync(formValues, {
+        abortEarly: false,
+        context: {
+          ipv4: resourceTypes.find(
+            (resourceType) =>
+              resourceType.id === formValues.resourceTypeId &&
+              (resourceType.Name === 'ipv4' || resourceType.Name === 'ipv4_prefix'),
+          ),
+          ipv6: resourceTypes.find(
+            (resourceType) =>
+              resourceType.id === formValues.resourceTypeId &&
+              (resourceType.Name === 'ipv6' || resourceType.Name === 'ipv6_prefix'),
+          ),
+        },
+      });
 
-    validationSchema: poolSchema,
+      return formError ? formErrors : {};
+    },
     validateOnChange: false,
     onSubmit: async (data) => {
       const resourceTypeName = resourceTypes.find((resourceType) => resourceType.id === data.resourceTypeId)?.Name;
-      console.log(values);
       const allocationStratedyId = allocStrategies.find(
         (allocationStrategy) => allocationStrategy.name === resourceTypeName,
       )?.id;
@@ -212,8 +284,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   );
 
   useEffect(() => {
-    setPoolSchema(getSchema(values.poolType, isNested));
-
     if (!isNested) {
       setFieldValue('parentPoolId', '');
       setFieldValue('parentResourceId', '');
