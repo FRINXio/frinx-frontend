@@ -122,7 +122,7 @@ function getSchema(poolType: string, isNested: boolean) {
           .min(0, 'Please enter positive number')
           .required('Please enter a dealocation safety period')
           .typeError('Please enter a number'),
-        poolValues: yup.array(yup.string().when('resourceTypeId', {
+        poolValues: yup.array(yup.object().when('resourceTypeId', {
           is: '25769803777',
           then: yup. string().required().matches(ipv4, {message: 'Invalid ipv4 address form'}),
           otherwise:  yup.lazy((poolValues: Array<Record<string, string>>) => {
