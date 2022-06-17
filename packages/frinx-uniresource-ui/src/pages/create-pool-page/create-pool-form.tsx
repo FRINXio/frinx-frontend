@@ -235,12 +235,12 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       const formError = schema.validateSync(formValues, {
         abortEarly: false,
         context: {
-          ipv4: resourceTypes.find(
+          ipv4: !!resourceTypes.find(
             (resourceType) =>
               resourceType.id === formValues.resourceTypeId &&
               (resourceType.Name === 'ipv4' || resourceType.Name === 'ipv4_prefix'),
           ),
-          ipv6: resourceTypes.find(
+          ipv6: !!resourceTypes.find(
             (resourceType) =>
               resourceType.id === formValues.resourceTypeId &&
               (resourceType.Name === 'ipv6' || resourceType.Name === 'ipv6_prefix'),
