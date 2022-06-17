@@ -64,10 +64,17 @@ export type EvcFilter = {
   operStatus: string | null;
 };
 
-// we filter non null filters and joined them with && operator
+function notEmpty<T>(value: T | null): value is T {
+  return value !== null && value !== undefined;
+}
+
+// we filter non null filters, encode them and joined them with && operator
 export function joinNonNullFilters(filters: (string | null)[]): string {
   const separator = encodeURIComponent('&&'); // AND operator must be url encoded
-  return filters.filter((f) => f !== null).join(separator);
+  return filters
+    .filter(notEmpty)
+    .map((f) => encodeURIComponent(f))
+    .join(separator);
 }
 
 export function getServiceFilterParams(serviceFilter: ServiceFilter): string {
@@ -83,39 +90,29 @@ export function getSiteFilterParams(siteFilter: SiteFilter): string {
   filters.push(siteFilter.id ? `@."site-id"like_regex"${siteFilter.id}"` : null);
   filters.push(
     siteFilter.locationId
-      ? encodeURIComponent(`exists({@/locations/location}[*] ? (@."location-id"like_regex"${siteFilter.locationId}"))`)
+      ? `exists({@/locations/location}[*] ? (@."location-id"like_regex"${siteFilter.locationId}"))`
       : null,
   );
   filters.push(
-    siteFilter.deviceId
-      ? encodeURIComponent(`exists({@/devices/device}[*]  ? (@."device-id"like_regex"${siteFilter.deviceId}"))`)
-      : null,
+    siteFilter.deviceId ? `exists({@/devices/device}[*]  ? (@."device-id"like_regex"${siteFilter.deviceId}"))` : null,
   );
   filters.push(
-    siteFilter.street
-      ? encodeURIComponent(`exists({@/locations/location}[*]  ? (@."address"like_regex"${siteFilter.street}"))`)
-      : null,
+    siteFilter.street ? `exists({@/locations/location}[*]  ? (@."address"like_regex"${siteFilter.street}"))` : null,
   );
   filters.push(
     siteFilter.postalCode
-      ? encodeURIComponent(`exists({@/locations/location}[*]  ? (@."postal-code"like_regex"${siteFilter.postalCode}"))`)
+      ? `exists({@/locations/location}[*]  ? (@."postal-code"like_regex"${siteFilter.postalCode}"))`
       : null,
   );
   filters.push(
-    siteFilter.state
-      ? encodeURIComponent(`exists({@/locations/location}[*]  ? (@."state"like_regex"${siteFilter.state}"))`)
-      : null,
+    siteFilter.state ? `exists({@/locations/location}[*]  ? (@."state"like_regex"${siteFilter.state}"))` : null,
   );
   filters.push(
-    siteFilter.city
-      ? encodeURIComponent(`exists({@/locations/location}[*]  ? (@."city"like_regex"${siteFilter.city}"))`)
-      : null,
+    siteFilter.city ? `exists({@/locations/location}[*]  ? (@."city"like_regex"${siteFilter.city}"))` : null,
   );
   filters.push(
     siteFilter.countryCode
-      ? encodeURIComponent(
-          `exists({@/locations/location}[*]  ? (@."country-code"like_regex"${siteFilter.countryCode}"))`,
-        )
+      ? `exists({@/locations/location}[*]  ? (@."country-code"like_regex"${siteFilter.countryCode}"))`
       : null,
   );
   const joinedFilters = joinNonNullFilters(filters);
@@ -160,34 +157,24 @@ export function getVpnBearerFilterParams(vpnBearerFilter: VpnBearerFilter): stri
   // evc filters
   filters.push(
     vpnBearerFilter.circuitReference
-      ? encodeURIComponent(
-          `exists({@/evc-attachments/evc-attachment}[*] ? (@."circuit-reference"like_regex"${vpnBearerFilter.circuitReference}"))`,
-        )
+      ? `exists({@/evc-attachments/evc-attachment}[*] ? (@."circuit-reference"like_regex"${vpnBearerFilter.circuitReference}"))`
       : null,
   );
   filters.push(
     vpnBearerFilter.carrierEvcReference
-      ? encodeURIComponent(
-          `exists({@/evc-attachments/evc-attachment}[*] ? (@."carrier-reference"like_regex"${vpnBearerFilter.carrierEvcReference}"))`,
-        )
+      ? `exists({@/evc-attachments/evc-attachment}[*] ? (@."carrier-reference"like_regex"${vpnBearerFilter.carrierEvcReference}"))`
       : null,
   );
   filters.push(
     vpnBearerFilter.inputBandwidth
-      ? encodeURIComponent(
-          `exists({@/evc-attachments/evc-attachment}[*] ? (@."input-bandwidth" == ${vpnBearerFilter.inputBandwidth}))`,
-        )
+      ? `exists({@/evc-attachments/evc-attachment}[*] ? (@."input-bandwidth" == ${vpnBearerFilter.inputBandwidth}))`
       : null,
   );
   filters.push(
-    vpnBearerFilter.adminStatus
-      ? encodeURIComponent(`{@/status/admin-status/status} like_regex "${vpnBearerFilter.adminStatus}"`)
-      : null,
+    vpnBearerFilter.adminStatus ? `{@/status/admin-status/status} like_regex "${vpnBearerFilter.adminStatus}"` : null,
   );
   filters.push(
-    vpnBearerFilter.operStatus
-      ? encodeURIComponent(`{@/status/oper-status/status} like_regex "${vpnBearerFilter.operStatus}"`)
-      : null,
+    vpnBearerFilter.operStatus ? `{@/status/oper-status/status} like_regex "${vpnBearerFilter.operStatus}"` : null,
   );
 
   const joinedFilters = joinNonNullFilters(filters);
@@ -223,16 +210,8 @@ export function getEvcFilterParams(evcFilter: EvcFilter): string {
   filters.push(evcFilter.svlanId ? `@."svlan-id"like_regex"${evcFilter.svlanId}"` : null);
   filters.push(evcFilter.qosProfile ? `@."qos-input-profile"like_regex"${evcFilter.qosProfile}"` : null);
   filters.push(evcFilter.inputBandwidth ? `@."input-bandwidth"like_regex"${evcFilter.inputBandwidth}"` : null); // TODO: does not work
-  filters.push(
-    evcFilter.adminStatus
-      ? encodeURIComponent(`{@/status/admin-status/status} like_regex "${evcFilter.adminStatus}"`)
-      : null,
-  ); // TODO: does not work
-  filters.push(
-    evcFilter.operStatus
-      ? encodeURIComponent(`{@/status/oper-status/status} like_regex "${evcFilter.operStatus}"`)
-      : null,
-  ); // TODO: does not work
+  filters.push(evcFilter.adminStatus ? `{@/status/admin-status/status} like_regex "${evcFilter.adminStatus}"` : null); // TODO: does not work
+  filters.push(evcFilter.operStatus ? `{@/status/oper-status/status} like_regex "${evcFilter.operStatus}"` : null); // TODO: does not work
   const joinedFilters = joinNonNullFilters(filters);
   return joinedFilters ? `&jsonb-filter=${joinNonNullFilters(filters)}` : '';
 }
