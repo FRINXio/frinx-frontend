@@ -78,6 +78,9 @@ type AllocStrategy = {
 };
 
 function getSchema(poolType: string, isNested: boolean) {
+  const ipv4: RegExp = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
+   const ipv6: RegExp =
+     /(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$)/;
   switch (poolType) {
     case 'allocating':
       return yup.object({
@@ -119,35 +122,20 @@ function getSchema(poolType: string, isNested: boolean) {
           .min(0, 'Please enter positive number')
           .required('Please enter a dealocation safety period')
           .typeError('Please enter a number'),
-        poolValues: yup.lazy((poolValues: Array<Record<string, string>>) => {
-          return yup
-            .array()
-            .of(
-              yup.object().shape({
-                ...Object.keys(poolValues[0] ?? {}).reduce((acc, address, key) => {
+        poolValues: yup.array(yup.object().when('resourceTypeId', {
+          is: '25769803777',
+          then: yup. string().required().matches(ipv4, {message: 'Invalid ipv4 address form'}),
+          otherwise:  yup.lazy((poolValues: Array<Record<string, string>>) => {
+          return yup.object({ ...Object.keys(poolValues[0] ?? {}).reduce((acc, key) => {
                   return {
                     ...acc,
-                    [key]: yup
-                      .string()
-                      .required('Please enter a value')
-                      .when(address, {
-                        is: 'ipv4',
-                        then: yup
-                          .string()
-                          .required()
-                          .matches(/(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/, {
-                            message: 'Invalid ip address',
-                          }),
-                      }),
-                    //  .matches(/(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)|(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$)/, {
-                    //    message: 'Invalid ip address',
-                    //  }),
+                    [key]: yup.string().required('Please enter a value'),
                   };
-                }, {}),
-              }),
-            )
-            .min(1, 'Please enter at least one value');
-        }),
+                }, {})
+              })
+            })
+            
+        })),
         ...(isNested && {
           parentPoolId: yup.string().required('Please choose parent pool'),
           parentResourceId: yup.string().required('Please choose allocated resource from parent'),
