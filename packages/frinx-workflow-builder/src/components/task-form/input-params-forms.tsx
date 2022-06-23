@@ -1,18 +1,41 @@
 import React, { ReactNode } from 'react';
 import { FormikErrors } from 'formik';
+import * as yup from 'yup';
 import DecisionInputForm from './decision-input-form';
 import EventInputForm from './event-input-form';
-import GraphQLInputsForm from './graphql-input-form';
+import GraphQLInputsForm, { GraphQLInputParamsSchema } from './graphql-input-form';
 import KafkaInputsForm from './kafka-input-form';
 import JsonInputsForm from './json-input-form';
-import HTTPInputsForm from './http-input-form';
+import HTTPInputsForm, { HttpInputParamsSchema } from './http-input-form';
 import LambdaInputsForm from './lambda-input-form';
 import TerminateInputForm from './terminate-input-form';
 import WhileInputForm from './while-input-form';
 import GenericInputForm from './generic-input-form';
-import { ExtendedTask, HTTPInputParams, InputParameters } from '../../helpers/types';
+import { ExtendedTask, GraphQLInputParams, HTTPInputParams, InputParameters } from '../../helpers/types';
 import { isGraphQLTaskInputParams, isHttpTaskInputParams, isLambdaTaskInputParams } from '../../helpers/task.helpers';
 import RawInputForm from './raw-input-form';
+
+const SettingsSchema = yup.object().shape({
+  taskReferenceName: yup.string().required('Please enter task reference name'),
+  startDelay: yup.number().required('Please enter start delay'),
+});
+
+export function getValidationSchema(task: ExtendedTask) {
+  switch (task.type) {
+    case 'HTTP':
+      return SettingsSchema.concat(HttpInputParamsSchema);
+    case 'SIMPLE':
+      if (isHttpTaskInputParams(task.inputParameters)) {
+        return SettingsSchema.concat(HttpInputParamsSchema);
+      }
+      if (isGraphQLTaskInputParams(task.inputParameters)) {
+        return SettingsSchema.concat(GraphQLInputParamsSchema);
+      }
+      return SettingsSchema;
+    default:
+      return SettingsSchema;
+  }
+}
 
 export function renderInputParamForm(
   task: ExtendedTask,
@@ -47,7 +70,16 @@ export function renderInputParamForm(
     }
     if (task.type === 'SIMPLE') {
       if (isGraphQLTaskInputParams(task.inputParameters)) {
-        return <GraphQLInputsForm params={task.inputParameters} onChange={onChange} tasks={tasks} task={task} />;
+        const graphQLInputErrors = errors as FormikErrors<{ inputParameters: GraphQLInputParams }>;
+        return (
+          <GraphQLInputsForm
+            params={task.inputParameters}
+            errors={graphQLInputErrors}
+            onChange={onChange}
+            tasks={tasks}
+            task={task}
+          />
+        );
       }
       if (isHttpTaskInputParams(task.inputParameters)) {
         const httpInputErrors = errors as FormikErrors<{ inputParameters: HTTPInputParams }>;
