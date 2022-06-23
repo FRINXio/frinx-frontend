@@ -36,6 +36,7 @@ import { getLayoutedElements } from './helpers/layout.helpers';
 import { ExtendedTask, TaskDefinition, Workflow } from './helpers/types';
 import unwrap from './helpers/unwrap';
 import { useTaskActions } from './task-actions-context';
+import useNotifications from './hooks/use-notifications';
 
 const nodeTypes = {
   decision: DecisionNode,
@@ -82,6 +83,7 @@ const App: VoidFunctionComponent<Props> = ({
   onWorkflowDelete,
   onWorkflowClone,
 }) => {
+  const { addToastNotification } = useNotifications();
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
   const workflowEditorDisclosure = useDisclosure();
@@ -199,15 +201,23 @@ const App: VoidFunctionComponent<Props> = ({
                     setIsEditing(true);
                   }}
                   onSaveWorkflowBtnClick={() => {
-                    const newTasks = convertToTasks(elements);
-                    const { tasks, ...rest } = workflow;
-                    const { putWorkflow } = callbackUtils.getCallbacks;
-                    putWorkflow([
-                      {
-                        ...rest,
-                        tasks: newTasks,
-                      },
-                    ]);
+                    try {
+                      const newTasks = convertToTasks(elements);
+                      const { tasks, ...rest } = workflow;
+                      const { putWorkflow } = callbackUtils.getCallbacks;
+                      putWorkflow([
+                        {
+                          ...rest,
+                          tasks: newTasks,
+                        },
+                      ]);
+                    } catch (e) {
+                      addToastNotification({
+                        title: 'Saving workflow error',
+                        content: 'Workflow could not be saved/wrong definition',
+                        type: 'error',
+                      });
+                    }
                   }}
                   onFileImport={onFileImport}
                   onFileExport={() => {
