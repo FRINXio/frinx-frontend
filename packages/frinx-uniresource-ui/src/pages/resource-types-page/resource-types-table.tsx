@@ -1,6 +1,6 @@
 import { DeleteIcon } from '@chakra-ui/icons';
 import { Table, Thead, Tr, Th, Tbody, Td, HStack, IconButton } from '@chakra-ui/react';
-import React from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import { ResourceTypesQuery } from '../../__generated__/graphql';
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
   onDelete: (id: string) => void;
 };
 
-export const ResourceTypesTable = ({ resourceTypes, onDelete }: Props) => {
+const ResourceTypesTable: VoidFunctionComponent<Props> = ({ resourceTypes, onDelete }) => {
   return (
     <Table backgroundColor="white">
       <Thead>
@@ -42,3 +42,5 @@ export const ResourceTypesTable = ({ resourceTypes, onDelete }: Props) => {
     </Table>
   );
 };
+
+export default ResourceTypesTable;

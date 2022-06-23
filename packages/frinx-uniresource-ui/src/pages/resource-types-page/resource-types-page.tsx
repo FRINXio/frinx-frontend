@@ -1,6 +1,6 @@
 import { Button, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
 import gql from 'graphql-tag';
-import React, { FC } from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import { useMutation, useQuery } from 'urql';
 import useNotifications from '../../hooks/use-notifications';
 import {
@@ -10,8 +10,8 @@ import {
   DeleteResourceTypeMutationVariables,
   ResourceTypesQuery,
 } from '../../__generated__/graphql';
-import { CreateResourceTypeModal } from './create-resource-type-modal';
-import { ResourceTypesTable } from './resource-types-table';
+import CreateResourceTypeModal from './create-resource-type-modal';
+import ResourceTypesTable from './resource-types-table';
 
 const RESOURCE_TYPES_QUERY = gql`
   query ResourceTypes {
@@ -40,7 +40,7 @@ const DELETE_RESOURCE_TYPE_MUTATION = gql`
   }
 `;
 
-const ResourceTypesPage: FC = () => {
+const ResourceTypesPage: VoidFunctionComponent = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const notification = useNotifications();
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import {
   Button,
   FormControl,
@@ -27,7 +27,7 @@ const validationSchema = yup.object({
   resourceTypeName: yup.string().required('Resource type name is required'),
 });
 
-export const CreateResourceTypeModal = ({ isOpen, onClose, onCreate }: Props) => {
+const CreateResourceTypeModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, onCreate }) => {
   const { errors, values, handleChange, submitForm, isSubmitting, isValidating } = useFormik({
     initialValues: {
       resourceTypeName: '',
@@ -62,3 +62,5 @@ export const CreateResourceTypeModal = ({ isOpen, onClose, onCreate }: Props) =>
     </Modal>
   );
 };
+
+export default CreateResourceTypeModal;
