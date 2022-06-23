@@ -9,7 +9,7 @@ import JsonInputsForm from './json-input-form';
 import HTTPInputsForm, { HttpInputParamsSchema } from './http-input-form';
 import LambdaInputsForm, { LambdaInputParamsSchema } from './lambda-input-form';
 import TerminateInputForm from './terminate-input-form';
-import WhileInputForm from './while-input-form';
+import WhileInputForm, { WhileInputParamsSchema } from './while-input-form';
 import GenericInputForm from './generic-input-form';
 import {
   EventInputParams,
@@ -18,6 +18,7 @@ import {
   HTTPInputParams,
   InputParameters,
   LambdaInputParams,
+  WhileInputParams,
 } from '../../helpers/types';
 import { isGraphQLTaskInputParams, isHttpTaskInputParams, isLambdaTaskInputParams } from '../../helpers/task.helpers';
 import RawInputForm from './raw-input-form';
@@ -35,6 +36,8 @@ export function getValidationSchema(task: ExtendedTask) {
       return SettingsSchema.concat(LambdaInputParamsSchema);
     case 'EVENT':
       return SettingsSchema.concat(EventInputParamsSchema);
+    case 'DO_WHILE':
+      return SettingsSchema.concat(WhileInputParamsSchema);
     case 'SIMPLE':
       if (isHttpTaskInputParams(task.inputParameters)) {
         return SettingsSchema.concat(HttpInputParamsSchema);
@@ -131,7 +134,8 @@ export function renderInputParamForm(
       return <GenericInputForm params={task.inputParameters} onChange={onChange} tasks={tasks} task={task} />;
     }
     if (task.type === 'DO_WHILE') {
-      return <WhileInputForm params={task.inputParameters} onChange={onChange} />;
+      const whileInputErrors = errors as FormikErrors<{ inputParameters: WhileInputParams }>;
+      return <WhileInputForm params={task.inputParameters} errors={whileInputErrors} onChange={onChange} />;
     }
     if (task.type === 'TERMINATE') {
       return <TerminateInputForm params={task.inputParameters} onChange={onChange} />;

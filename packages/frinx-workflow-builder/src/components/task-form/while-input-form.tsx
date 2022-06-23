@@ -1,17 +1,26 @@
 import React, { FC } from 'react';
-import { FormControl, FormLabel, Input } from '@chakra-ui/react';
+import { FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react';
+import { FormikErrors } from 'formik';
+import * as yup from 'yup';
 import { WhileInputParams } from '../../helpers/types';
+
+export const WhileInputParamsSchema = yup.object({
+  inputParameters: yup.object({
+    iterations: yup.number().required('Iterations is required'),
+  }),
+});
 
 type Props = {
   params: WhileInputParams;
+  errors: FormikErrors<{ inputParameters: WhileInputParams }>;
   onChange: (p: WhileInputParams) => void;
 };
 
-const WhileInputForm: FC<Props> = ({ params, onChange }) => {
+const WhileInputForm: FC<Props> = ({ params, errors, onChange }) => {
   const { iterations } = params;
 
   return (
-    <FormControl id="iterations" my={6}>
+    <FormControl id="iterations" my={6} isInvalid={errors.inputParameters?.iterations != null}>
       <FormLabel>Iterations</FormLabel>
       <Input
         name="iterations"
@@ -19,11 +28,15 @@ const WhileInputForm: FC<Props> = ({ params, onChange }) => {
         value={iterations}
         onChange={(event) => {
           event.persist();
+          if (Number.isNaN(event.target.value)) {
+            return;
+          }
           onChange({
             iterations: Number(event.target.value),
           });
         }}
       />
+      <FormErrorMessage>{errors.inputParameters?.iterations}</FormErrorMessage>
     </FormControl>
   );
 };
