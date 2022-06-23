@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { FormikErrors } from 'formik';
 import * as yup from 'yup';
-import DecisionInputForm from './decision-input-form';
+import DecisionInputForm, { DecisionInputParamsSchema } from './decision-input-form';
 import EventInputForm, { EventInputParamsSchema } from './event-input-form';
 import GraphQLInputsForm, { GraphQLInputParamsSchema } from './graphql-input-form';
 import KafkaInputsForm, { KafkaPublishInputParamsSchema } from './kafka-input-form';
@@ -12,6 +12,7 @@ import TerminateInputForm, { TerminateInputParamsSchema } from './terminate-inpu
 import WhileInputForm, { WhileInputParamsSchema } from './while-input-form';
 import GenericInputForm from './generic-input-form';
 import {
+  DecisionInputParams,
   EventInputParams,
   ExtendedTask,
   GraphQLInputParams,
@@ -36,6 +37,8 @@ export function getValidationSchema(task: ExtendedTask) {
   switch (task.type) {
     case 'HTTP':
       return SettingsSchema.concat(HttpInputParamsSchema);
+    case 'DECISION':
+      return SettingsSchema.concat(DecisionInputParamsSchema);
     case 'LAMBDA':
       return SettingsSchema.concat(LambdaInputParamsSchema);
     case 'EVENT':
@@ -71,7 +74,8 @@ export function renderInputParamForm(
 ): ReactNode | null {
   if ('inputParameters' in task) {
     if (task.type === 'DECISION') {
-      return <DecisionInputForm params={task.inputParameters} onChange={onChange} />;
+      const decisionInputErrors = errors as FormikErrors<{ inputParameters: DecisionInputParams }>;
+      return <DecisionInputForm params={task.inputParameters} errors={decisionInputErrors} onChange={onChange} />;
     }
     if (task.type === 'LAMBDA') {
       const lambdaInputErrors = errors as FormikErrors<{ inputParameters: LambdaInputParams }>;
