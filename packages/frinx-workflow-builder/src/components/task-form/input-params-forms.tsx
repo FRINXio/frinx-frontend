@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import DecisionInputForm from './decision-input-form';
 import EventInputForm, { EventInputParamsSchema } from './event-input-form';
 import GraphQLInputsForm, { GraphQLInputParamsSchema } from './graphql-input-form';
-import KafkaInputsForm from './kafka-input-form';
+import KafkaInputsForm, { KafkaPublishInputParamsSchema } from './kafka-input-form';
 import JsonInputsForm from './json-input-form';
 import HTTPInputsForm, { HttpInputParamsSchema } from './http-input-form';
 import LambdaInputsForm, { LambdaInputParamsSchema } from './lambda-input-form';
@@ -17,6 +17,7 @@ import {
   GraphQLInputParams,
   HTTPInputParams,
   InputParameters,
+  KafkaPublishInputParams,
   LambdaInputParams,
   RawInputParams,
   TerminateInputParams,
@@ -44,6 +45,8 @@ export function getValidationSchema(task: ExtendedTask) {
       return SettingsSchema.concat(RawInputParamsSchema);
     case 'TERMINATE':
       return SettingsSchema.concat(TerminateInputParamsSchema);
+    case 'KAFKA_PUBLISH':
+      return SettingsSchema.concat(KafkaPublishInputParamsSchema);
     case 'SIMPLE':
       if (isHttpTaskInputParams(task.inputParameters)) {
         return SettingsSchema.concat(HttpInputParamsSchema);
@@ -92,7 +95,16 @@ export function renderInputParamForm(
       );
     }
     if (task.type === 'KAFKA_PUBLISH') {
-      return <KafkaInputsForm params={task.inputParameters} onChange={onChange} tasks={tasks} task={task} />;
+      const kafkaInputErrors = errors as FormikErrors<{ inputParameters: KafkaPublishInputParams }>;
+      return (
+        <KafkaInputsForm
+          params={task.inputParameters}
+          errors={kafkaInputErrors}
+          onChange={onChange}
+          tasks={tasks}
+          task={task}
+        />
+      );
     }
     if (task.type === 'JSON_JQ_TRANSFORM') {
       return <JsonInputsForm params={task.inputParameters} onChange={onChange} tasks={tasks} task={task} />;

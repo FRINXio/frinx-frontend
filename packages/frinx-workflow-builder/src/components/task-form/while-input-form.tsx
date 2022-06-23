@@ -28,11 +28,12 @@ const WhileInputForm: FC<Props> = ({ params, errors, onChange }) => {
         value={iterations}
         onChange={(event) => {
           event.persist();
-          if (Number.isNaN(event.target.value)) {
+          const value = Number(event.target.value);
+          if (Number.isNaN(value)) {
             return;
           }
           onChange({
-            iterations: Number(event.target.value),
+            iterations: value,
           });
         }}
       />
