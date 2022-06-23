@@ -8,7 +8,7 @@ import KafkaInputsForm from './kafka-input-form';
 import JsonInputsForm from './json-input-form';
 import HTTPInputsForm, { HttpInputParamsSchema } from './http-input-form';
 import LambdaInputsForm, { LambdaInputParamsSchema } from './lambda-input-form';
-import TerminateInputForm from './terminate-input-form';
+import TerminateInputForm, { TerminateInputParamsSchema } from './terminate-input-form';
 import WhileInputForm, { WhileInputParamsSchema } from './while-input-form';
 import GenericInputForm from './generic-input-form';
 import {
@@ -19,6 +19,7 @@ import {
   InputParameters,
   LambdaInputParams,
   RawInputParams,
+  TerminateInputParams,
   WhileInputParams,
 } from '../../helpers/types';
 import { isGraphQLTaskInputParams, isHttpTaskInputParams, isLambdaTaskInputParams } from '../../helpers/task.helpers';
@@ -41,6 +42,8 @@ export function getValidationSchema(task: ExtendedTask) {
       return SettingsSchema.concat(WhileInputParamsSchema);
     case 'RAW':
       return SettingsSchema.concat(RawInputParamsSchema);
+    case 'TERMINATE':
+      return SettingsSchema.concat(TerminateInputParamsSchema);
     case 'SIMPLE':
       if (isHttpTaskInputParams(task.inputParameters)) {
         return SettingsSchema.concat(HttpInputParamsSchema);
@@ -141,7 +144,8 @@ export function renderInputParamForm(
       return <WhileInputForm params={task.inputParameters} errors={whileInputErrors} onChange={onChange} />;
     }
     if (task.type === 'TERMINATE') {
-      return <TerminateInputForm params={task.inputParameters} onChange={onChange} />;
+      const terminateInputErrors = errors as FormikErrors<{ inputParameters: TerminateInputParams }>;
+      return <TerminateInputForm params={task.inputParameters} errors={terminateInputErrors} onChange={onChange} />;
     }
     if (task.type === 'EVENT') {
       const eventInputErrors = errors as FormikErrors<{ inputParameters: EventInputParams }>;
