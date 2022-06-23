@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { useFormik } from 'formik';
-import * as yup from 'yup';
 import {
   Box,
   Button,
@@ -24,15 +23,7 @@ import {
 } from '@chakra-ui/react';
 import { omitBy } from 'lodash';
 import { InputParameters, ExtendedTask } from '../../helpers/types';
-import { renderInputParamForm } from './input-params-forms';
-import { HttpInputParamsSchema } from './http-input-form';
-
-const SettingsSchema = yup.object().shape({
-  taskReferenceName: yup.string().required('Please enter task reference name'),
-  startDelay: yup.number().required('Please enter start delay'),
-});
-
-const ValidationSchema = SettingsSchema.concat(HttpInputParamsSchema);
+import { getValidationSchema, renderInputParamForm } from './input-params-forms';
 
 type Props = {
   task: ExtendedTask;
@@ -44,7 +35,7 @@ type Props = {
 const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
   const { errors, values, handleSubmit, handleChange, isSubmitting, isValid, setFieldValue } = useFormik<ExtendedTask>({
     initialValues: task,
-    validationSchema: ValidationSchema,
+    validationSchema: getValidationSchema(task),
     onSubmit: (formValues) => {
       onFormSubmit(formValues);
       onClose();

@@ -1,17 +1,37 @@
 import React, { FC, useState } from 'react';
-import { Box, FormControl, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
+import { Box, FormControl, FormErrorMessage, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
+import { FormikErrors } from 'formik';
+import * as yup from 'yup';
 import { ExtendedTask, GraphQLInputParams } from '../../helpers/types';
 import Editor from '../common/editor';
 import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-name/autocomplete-task-reference-name-menu';
 
+export const GraphQLInputParamsSchema = yup.object({
+  inputParameters: yup.object({
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    http_request: yup.object({
+      uri: yup.string().required('Please enter task URI'),
+      method: yup.string().required('Please enter task method'),
+      contentType: yup.string().required('Please enter task content type'),
+      timeout: yup.string().required('Please enter task timeout'),
+      body: yup.object({
+        query: yup.string().required(),
+        variables: yup.object().shape({}),
+      }),
+      headers: yup.object().shape({}),
+    }),
+  }),
+});
+
 type Props = {
   params: GraphQLInputParams;
+  errors: FormikErrors<{ inputParameters: GraphQLInputParams }>;
   tasks: ExtendedTask[];
   task: ExtendedTask;
   onChange: (params: GraphQLInputParams) => void;
 };
 
-const GraphQLInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
+const GraphQLInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) => {
   const { contentType, method, uri, body, timeout, headers } = params.http_request;
   const { query, variables } = body;
   const theme = useTheme();
@@ -33,7 +53,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
 
   return (
     <>
-      <FormControl id="uri" my={6}>
+      <FormControl id="uri" my={6} isInvalid={errors.inputParameters?.http_request?.uri != null}>
         <FormLabel>URI</FormLabel>
         <AutocompleteTaskReferenceNameMenu tasks={tasks} task={task} onChange={handleOnChange} inputValue={uriVal}>
           <Input
@@ -47,8 +67,9 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
             }}
           />
         </AutocompleteTaskReferenceNameMenu>
+        <FormErrorMessage>{errors.inputParameters?.http_request?.uri}</FormErrorMessage>
       </FormControl>
-      <FormControl id="method" my={6}>
+      <FormControl id="method" my={6} isInvalid={errors.inputParameters?.http_request?.method != null}>
         <FormLabel>Method</FormLabel>
         <Select variant="filled" isDisabled name="method" defaultValue={method}>
           {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((m) => (
@@ -57,8 +78,9 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
             </option>
           ))}
         </Select>
+        <FormErrorMessage>{errors.inputParameters?.http_request?.method}</FormErrorMessage>
       </FormControl>
-      <FormControl id="contentType" my={6}>
+      <FormControl id="contentType" my={6} isInvalid={errors.inputParameters?.http_request?.contentType != null}>
         <FormLabel>Content type</FormLabel>
         <Input
           variant="filled"
@@ -76,8 +98,9 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
             });
           }}
         />
+        <FormErrorMessage>{errors.inputParameters?.http_request?.contentType}</FormErrorMessage>
       </FormControl>
-      <FormControl id="timeout" my={6}>
+      <FormControl id="timeout" my={6} isInvalid={errors.inputParameters?.http_request?.timeout != null}>
         <Box w="50%">
           <FormLabel>Timeout</FormLabel>
           <Input
@@ -97,6 +120,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
             }}
           />
         </Box>
+        <FormErrorMessage>{errors.inputParameters?.http_request?.timeout}</FormErrorMessage>
       </FormControl>
       <FormControl id="headers">
         <FormLabel>Headers</FormLabel>
