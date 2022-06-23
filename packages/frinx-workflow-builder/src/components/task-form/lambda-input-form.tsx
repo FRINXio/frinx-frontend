@@ -1,17 +1,27 @@
 import React, { FC, useState } from 'react';
-import { FormControl, FormLabel, Input, useTheme } from '@chakra-ui/react';
+import { FormControl, FormErrorMessage, FormLabel, Input, useTheme } from '@chakra-ui/react';
+import { FormikErrors } from 'formik';
+import * as yup from 'yup';
 import { ExtendedTask, LambdaInputParams } from '../../helpers/types';
 import Editor from '../common/editor';
 import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-name/autocomplete-task-reference-name-menu';
 
+export const LambdaInputParamsSchema = yup.object({
+  inputParameters: yup.object({
+    lambdaValue: yup.string().required('Lambda value is required'),
+    scriptExpression: yup.string().required('Script expression is required'),
+  }),
+});
+
 type Props = {
   params: LambdaInputParams;
+  errors: FormikErrors<{ inputParameters: LambdaInputParams }>;
   tasks: ExtendedTask[];
   task: ExtendedTask;
   onChange: (p: LambdaInputParams) => void;
 };
 
-const LambdaInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
+const LambdaInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) => {
   const { lambdaValue, scriptExpression } = params;
   const theme = useTheme();
   const [lambdaVal, setLambdaValue] = useState(lambdaValue);
@@ -27,7 +37,7 @@ const LambdaInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
 
   return (
     <>
-      <FormControl id="lambdaValue" my={6}>
+      <FormControl id="lambdaValue" my={6} isInvalid={errors.inputParameters?.lambdaValue != null}>
         <FormLabel>Lambda value</FormLabel>
         <AutocompleteTaskReferenceNameMenu tasks={tasks} onChange={handleOnChange} inputValue={lambdaVal} task={task}>
           <Input
@@ -41,8 +51,9 @@ const LambdaInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
             }}
           />
         </AutocompleteTaskReferenceNameMenu>
+        <FormErrorMessage>{errors.inputParameters?.lambdaValue}</FormErrorMessage>
       </FormControl>
-      <FormControl id="scriptExpression" my={6}>
+      <FormControl id="scriptExpression" my={6} isInvalid={errors.inputParameters?.scriptExpression != null}>
         <FormLabel>Script expression</FormLabel>
         <Editor
           name="lambda-editor"
@@ -60,6 +71,7 @@ const LambdaInputsForm: FC<Props> = ({ params, onChange, tasks, task }) => {
             borderRadius: theme.radii.md,
           }}
         />
+        <FormErrorMessage>{errors.inputParameters?.scriptExpression}</FormErrorMessage>
       </FormControl>
     </>
   );
