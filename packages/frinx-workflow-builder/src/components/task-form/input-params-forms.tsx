@@ -18,10 +18,11 @@ import {
   HTTPInputParams,
   InputParameters,
   LambdaInputParams,
+  RawInputParams,
   WhileInputParams,
 } from '../../helpers/types';
 import { isGraphQLTaskInputParams, isHttpTaskInputParams, isLambdaTaskInputParams } from '../../helpers/task.helpers';
-import RawInputForm from './raw-input-form';
+import RawInputForm, { RawInputParamsSchema } from './raw-input-form';
 
 const SettingsSchema = yup.object().shape({
   taskReferenceName: yup.string().required('Please enter task reference name'),
@@ -38,6 +39,8 @@ export function getValidationSchema(task: ExtendedTask) {
       return SettingsSchema.concat(EventInputParamsSchema);
     case 'DO_WHILE':
       return SettingsSchema.concat(WhileInputParamsSchema);
+    case 'RAW':
+      return SettingsSchema.concat(RawInputParamsSchema);
     case 'SIMPLE':
       if (isHttpTaskInputParams(task.inputParameters)) {
         return SettingsSchema.concat(HttpInputParamsSchema);
@@ -153,7 +156,8 @@ export function renderInputParamForm(
       );
     }
     if (task.type === 'RAW') {
-      return <RawInputForm params={task.inputParameters} onChange={onChange} />;
+      const rawInputErrors = errors as FormikErrors<{ inputParameters: RawInputParams }>;
+      return <RawInputForm params={task.inputParameters} errors={rawInputErrors} onChange={onChange} />;
     }
     return null;
   }
