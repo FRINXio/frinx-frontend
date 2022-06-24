@@ -41,8 +41,7 @@ type Props = {
 
 const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEditName }) => {
   const [workflowState, setWorkflowState] = useState(workflow);
-  const { name, description, version, restartable, ownerEmail, timeoutPolicy, timeoutSeconds, outputParameters } =
-    workflowState;
+  const { name, description, version, restartable, timeoutPolicy, timeoutSeconds, outputParameters } = workflowState;
   const [newParam, setNewParam] = useState<string>('');
   const isNameInvalid = canEditName ? !isWorkflowNameAvailable(workflows, name) : false;
 
@@ -93,20 +92,6 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
             setWorkflowState((wf) => ({
               ...wf,
               version: Number(event.target.value),
-            }));
-          }}
-        />
-      </FormControl>
-      <FormControl id="ownerEmail" my={6}>
-        <FormLabel>Owner e-mail</FormLabel>
-        <Input
-          name="ownerEmail"
-          value={ownerEmail}
-          onChange={(event) => {
-            event.persist();
-            setWorkflowState((wf) => ({
-              ...wf,
-              ownerEmail: event.target.value,
             }));
           }}
         />
