@@ -178,7 +178,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                   Strategies
                 </Link>
                 <Link
-                  to="/uniresource/resourceTypes"
+                  to="/uniresource/resource_types"
                   as={NavLink}
                   color="brand.50"
                   display="flex"
