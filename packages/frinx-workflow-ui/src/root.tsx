@@ -49,7 +49,7 @@ const Root: VoidFunctionComponent = () => {
         <Route
           index
           element={
-            <Box marginTop={-10} height="calc(100vh - 64px)">
+            <Box marginTop={-10}>
               <WorkflowBuilder
                 onClose={() => {
                   navigate('definitions');
@@ -61,7 +61,7 @@ const Root: VoidFunctionComponent = () => {
         <Route
           path=":name/:version"
           element={
-            <Box marginTop={-10} height="calc(100vh - 64px)">
+            <Box marginTop={-10}>
               <WorkflowBuilder
                 onClose={() => {
                   navigate('definitions');
