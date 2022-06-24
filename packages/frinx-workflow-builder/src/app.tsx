@@ -132,7 +132,7 @@ const App: VoidFunctionComponent<Props> = ({
       if (t.type === 'DECISION') {
         newElement.data = {
           ...newElement.data,
-          handles: ['default'],
+          handles: ['default', 'other'],
         };
       }
 
