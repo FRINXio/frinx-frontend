@@ -22,21 +22,22 @@ import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/helpers/type
 const DEFAULT_CRON_STRING = '* * * * *';
 
 type Props = {
-  workflow: Workflow;
+  // workflow: Workflow;
+  scheduledWorkflow: Workflow;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (workflow: Partial<ScheduledWorkflow>) => void;
 };
 
-const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
+const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose, onSubmit }) => {
   const [scheduledWf, setScheduledWf] = useState<Partial<ScheduledWorkflow>>({
-    workflowName: workflow.name,
-    workflowVersion: workflow.version.toString(),
+    workflowName: scheduledWorkflow.name,
+    workflowVersion: scheduledWorkflow.version.toString(),
     workflowContext: {},
-    name: `${workflow.name}:${workflow.version}`,
+    name: `${scheduledWorkflow.name}:${scheduledWorkflow.version}`,
     cronString: DEFAULT_CRON_STRING,
     enabled: false,
-    correlationId: workflow.correlationId,
+    correlationId: scheduledWorkflow.correlationId,
   });
 
   const handleSubmit = () => {
