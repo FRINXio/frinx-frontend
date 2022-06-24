@@ -169,7 +169,7 @@ const App: VoidFunctionComponent<Props> = ({
 
   return (
     <>
-      <Grid templateColumns="384px 1fr" templateRows="64px 1fr" minHeight="100%" maxHeight="100%">
+      <Grid templateColumns="384px 1fr" templateRows="64px 1fr" minHeight="100%" height="calc(100vh - 64px)">
         <Flex
           alignItems="center"
           px={4}
