@@ -1,23 +1,42 @@
 import React, { FC } from 'react';
-import { FormControl, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
+import { FormControl, FormErrorMessage, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
+import { FormikErrors } from 'formik';
+import * as yup from 'yup';
 import { ExtendedTask, KafkaPublishInputParams, SerializerEnum } from '../../helpers/types';
 import Editor from '../common/editor';
 
+export const KafkaPublishInputParamsSchema = yup.object({
+  inputParameters: yup.object({
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    kafka_request: yup.object({
+      topic: yup.string(),
+      value: yup.string(),
+      requestTimeoutMs: yup.number(),
+      maxBlockMs: yup.number(),
+      bootStrapServers: yup.string(),
+      headers: yup.object().shape({}),
+      key: yup.string(),
+      keySerializer: yup.string(),
+    }),
+  }),
+});
+
 type Props = {
   params: KafkaPublishInputParams;
+  errors: FormikErrors<{ inputParameters: KafkaPublishInputParams }>;
   tasks: ExtendedTask[]; // eslint-disable-line react/no-unused-prop-types
   task: ExtendedTask; // eslint-disable-line react/no-unused-prop-types
   onChange: (p: KafkaPublishInputParams) => void;
 };
 
-const KafkaPublishInputsForm: FC<Props> = ({ params, onChange }) => {
+const KafkaPublishInputsForm: FC<Props> = ({ params, errors, onChange }) => {
   const { topic, key, value, keySerializer, requestTimeoutMs, maxBlockMs, bootStrapServers, headers } =
     params.kafka_request;
   const theme = useTheme();
 
   return (
     <>
-      <FormControl id="topic" my={6}>
+      <FormControl id="topic" my={6} isInvalid={errors.inputParameters?.kafka_request?.topic != null}>
         <FormLabel>Topic</FormLabel>
         <Input
           variant="filled"
@@ -34,6 +53,7 @@ const KafkaPublishInputsForm: FC<Props> = ({ params, onChange }) => {
             });
           }}
         />
+        <FormErrorMessage>{errors.inputParameters?.kafka_request?.topic}</FormErrorMessage>
       </FormControl>
       <FormControl id="key" my={6}>
         <FormLabel>Key</FormLabel>
@@ -130,15 +150,19 @@ const KafkaPublishInputsForm: FC<Props> = ({ params, onChange }) => {
         <Input
           variant="filled"
           name="requestTimeoutMs"
-          value={requestTimeoutMs}
+          value={requestTimeoutMs || ''}
           onChange={(event) => {
             event.persist();
+            const eventValue = Number(event.target.value);
+            if (Number.isNaN(eventValue)) {
+              return;
+            }
             onChange({
               ...params,
               // eslint-disable-next-line @typescript-eslint/naming-convention
               kafka_request: {
                 ...params.kafka_request,
-                requestTimeoutMs: Number(event.target.value),
+                requestTimeoutMs: eventValue || undefined,
               },
             });
           }}
@@ -149,15 +173,19 @@ const KafkaPublishInputsForm: FC<Props> = ({ params, onChange }) => {
         <Input
           variant="filled"
           name="maxBlockMs"
-          value={maxBlockMs}
+          value={maxBlockMs || ''}
           onChange={(event) => {
             event.persist();
+            const eventValue = Number(event.target.value);
+            if (Number.isNaN(eventValue)) {
+              return;
+            }
             onChange({
               ...params,
               // eslint-disable-next-line @typescript-eslint/naming-convention
               kafka_request: {
                 ...params.kafka_request,
-                maxBlockMs: Number(event.target.value),
+                maxBlockMs: eventValue || undefined,
               },
             });
           }}

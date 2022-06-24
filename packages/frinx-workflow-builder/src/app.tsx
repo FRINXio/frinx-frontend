@@ -10,6 +10,7 @@ import ReactFlow, {
   Edge,
   Elements,
   MiniMap,
+  Node,
   ReactFlowProvider,
   removeElements,
   updateEdge,
@@ -117,19 +118,25 @@ const App: VoidFunctionComponent<Props> = ({
 
   const handleAddButtonClick = (t: ExtendedTask) => {
     setElements((els) => {
-      return [
-        ...els,
-        {
-          id: t.taskReferenceName,
-          type: getNodeType(t.type),
-          position: { x: 0, y: 0 },
-          data: {
-            label: t.taskReferenceName,
-            task: t,
-            isReadOnly: false,
-          },
+      const newElement: Node = {
+        id: t.taskReferenceName,
+        type: getNodeType(t.type),
+        position: { x: 0, y: 0 },
+        data: {
+          label: t.taskReferenceName,
+          task: t,
+          isReadOnly: false,
         },
-      ];
+      };
+
+      if (t.type === 'DECISION') {
+        newElement.data = {
+          ...newElement.data,
+          handles: ['default', 'other'],
+        };
+      }
+
+      return [...els, newElement];
     });
     setWorkflowTasks((prevTasks) => [...prevTasks, t]);
   };
