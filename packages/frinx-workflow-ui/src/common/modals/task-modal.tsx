@@ -184,7 +184,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
                       id="t_output"
                       variant="filled"
                       minH={200}
-                      height="-webkit-fill-available"
+                      height="46vh"
                     />
                   </Box>
                 </TabPanel>

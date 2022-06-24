@@ -218,7 +218,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   });
 
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
-  const [{ data: allocatedResources, fetching: isLoadingResources }] = useQuery<
+  const [{ data: allocatedResources, fetching: isLoadingResources }, reloadAllocatedResources] = useQuery<
     AllocatedResourcesQuery,
     AllocatedResourcesQueryVariables
   >({
@@ -258,6 +258,8 @@ const PoolDetailPage: VoidFunctionComponent = () => {
           type: 'success',
           content: 'Successfully claimed resource from pool',
         });
+
+        reloadAllocatedResources();
       })
       .catch((error) => {
         addToastNotification({

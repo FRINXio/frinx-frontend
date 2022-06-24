@@ -1,6 +1,6 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
-import ResourceTypesList from './components/resource-types-list';
+import ResourceTypesPage from './pages/resource-types-page/resource-types-page';
 import NestedPoolsDetailPage from './nested-pools-detail-page/nested-pools-detail-page';
 import CreatePoolPage from './pages/create-pool-page/create-pool-page';
 import CreateStrategyPage from './pages/create-strategy-page/create-strategy-page';
@@ -37,7 +37,7 @@ const Root: VoidFunctionComponent = () => {
           />
         }
       />
-      <Route path="resource_types" element={<ResourceTypesList />} />
+      <Route path="resource_types" element={<ResourceTypesPage />} />
     </Routes>
   );
 };
