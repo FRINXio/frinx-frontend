@@ -101,6 +101,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
               onSubmit={(wf) => {
                 setWorkflow({
                   ...wf,
+                  ownerEmail: '',
                   schemaVersion: 2,
                   tasks: [],
                   updateTime: 0,

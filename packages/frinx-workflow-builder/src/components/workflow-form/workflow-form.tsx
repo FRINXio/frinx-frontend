@@ -24,7 +24,6 @@ type PartialWorkflow = Pick<
   | 'name'
   | 'description'
   | 'version'
-  | 'ownerEmail'
   | 'restartable'
   | 'timeoutPolicy'
   | 'timeoutSeconds'
