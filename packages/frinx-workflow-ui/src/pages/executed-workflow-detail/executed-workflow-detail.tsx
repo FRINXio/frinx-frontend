@@ -25,6 +25,7 @@ import { useAsyncGenerator } from './executed-workflow-detail-status.helpers';
 import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link, useParams } from 'react-router-dom';
 import unwrap from '../../helpers/unwrap';
+import useNotifications from '../../hooks/use-notifications';
 
 const convertWorkflowVariablesToFormFormat = (
   workflowDetails: string,
@@ -78,6 +79,8 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
   const [openedTask, setOpenedTask] = useState<ExecutedWorkflowTask | null>(null);
   const [isEscaped, setIsEscaped] = useState(false);
   const [workflowVariables, setWorkflowVariables] = useState<Record<string, string> | null>(null);
+  const { addToastNotification } = useNotifications();
+  const [tabIndex, setTabIndex] = useState(0);
 
   if (execPayload == null) {
     return null;
@@ -119,6 +122,11 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
     };
     executeWorkflow(workflowPayload).then((res) => {
       onExecutedOperation(res.text);
+      setTabIndex(0);
+      addToastNotification({
+        content: 'Successfully executed workflow',
+        type: 'success',
+      });
     });
   };
 
@@ -183,7 +191,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
         status={result.status}
       />
       <Box background="white" borderRadius={4}>
-        <Tabs>
+        <Tabs index={tabIndex} onChange={setTabIndex}>
           <TabList>
             <Tab>Task Details</Tab>
             <Tab>Input/Output</Tab>
