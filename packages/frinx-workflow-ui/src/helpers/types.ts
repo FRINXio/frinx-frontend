@@ -312,7 +312,7 @@ export type Workflow<T extends WorkflowTask = WorkflowTask> = {
   name: string;
   hasSchedule: boolean;
   description?: string;
-  version: number;
+  version: string;
   inputParameters?: string[];
   outputParameters: Record<string, string>;
   failureWorkflow?: boolean;
@@ -399,6 +399,7 @@ export type ScheduledWorkflow = {
   workflowContext: Record<string, any>;
   enabled: boolean;
   status: StatusType;
+  version: string;
 };
 
 export type ExecutedWorkflow = {
