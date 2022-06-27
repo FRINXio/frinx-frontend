@@ -60,7 +60,6 @@ type Props = {
       | 'name'
       | 'description'
       | 'version'
-      | 'ownerEmail'
       | 'restartable'
       | 'timeoutPolicy'
       | 'timeoutSeconds'
