@@ -109,6 +109,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
                 setShouldCreateWorkflow(false);
               }}
               canEditName
+              isCreatingWorkflow
             />
           </Box>
         </Container>
