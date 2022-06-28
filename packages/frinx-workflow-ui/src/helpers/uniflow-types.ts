@@ -56,9 +56,6 @@ export type EventInputParams = {
   targetTaskRefName: string;
   action: string;
 };
-export type RawInputParams = {
-  raw: string;
-};
 export type DynamicForkInputParams = {
   expectedName: string;
   expectedType: string;
@@ -74,7 +71,6 @@ export type InputParameters =
   | TerminateInputParams
   | HTTPInputParams
   | EventInputParams
-  | RawInputParams
   | DynamicForkInputParams;
 
 export type WorkflowPayload = {
@@ -208,9 +204,6 @@ export type DynamicForkTask = BaseTask<DynamicForkInputParams> & {
     version: number;
   };
 };
-export type RawTask = BaseTask<RawInputParams> & {
-  type: 'RAW';
-};
 export type StartTask = BaseTask & {
   type: 'START_TASK';
 };
@@ -236,7 +229,6 @@ export type Task =
   | TerminateTask
   | WhileTask
   | WhileEndTask
-  | RawTask
   | StartTask
   | EndTask;
 
