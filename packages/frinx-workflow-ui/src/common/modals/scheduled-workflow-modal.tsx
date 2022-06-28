@@ -17,9 +17,18 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import Editor from 'react-ace';
-import { ScheduledWorkflow, ScheduledWorkflowModal } from '@frinx/workflow-ui/src/helpers/types';
+import { ScheduledWorkflow } from '@frinx/workflow-ui/src/helpers/types';
 
 const DEFAULT_CRON_STRING = '* * * * *';
+
+export type ScheduledWorkflowModal = {
+  workflowName?: string;
+  workflowVersion?: string;
+  workflowContext?: Record<string, string>;
+  cronString?: string;
+  enabled?: boolean;
+  correlationId: string;
+};
 
 type Props = {
   workflow: ScheduledWorkflowModal;

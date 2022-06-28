@@ -63,7 +63,7 @@ function ScheduledWorkflowList() {
   function handleWorkflowUpdate(scheduledWf: Partial<ScheduledWorkflow>) {
     const { registerSchedule } = callbackUtils.getCallbacks;
 
-    registerSchedule(scheduledWf.workflowName!, String(scheduledWf.workflowVersion!), scheduledWf)
+    registerSchedule(scheduledWf.workflowName!, scheduledWf.workflowVersion!, scheduledWf)
       .then((res) => {
         addToastNotification({
           content: 'Schedule successfully registered',
