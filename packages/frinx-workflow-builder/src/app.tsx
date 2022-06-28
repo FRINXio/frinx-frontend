@@ -90,7 +90,7 @@ const App: VoidFunctionComponent<Props> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isInputModalShown, setIsInputModalShown] = useState(false);
   const [workflowTasks, setWorkflowTasks] = useState(workflow.tasks);
-  const [elements, setElements] = useState(getElementsFromWorkflow(workflowTasks, false));
+  const [elements, setElements] = useState(getLayoutedElements(getElementsFromWorkflow(workflowTasks, false)));
 
   const handleConnect = (edge: Edge<unknown> | Connection) => {
     setElements((els) => addEdge({ ...edge, type: 'buttonedge' }, els));
@@ -162,7 +162,6 @@ const App: VoidFunctionComponent<Props> = ({
     );
   };
 
-  const layoutedElements = useMemo(() => getLayoutedElements(elements), [elements]);
   const removeEdgeContextValue = useMemo(
     () => ({
       removeEdge: (id: string) => {
@@ -208,19 +207,34 @@ const App: VoidFunctionComponent<Props> = ({
                   }}
                   onSaveWorkflowBtnClick={() => {
                     try {
-                      const newTasks = convertToTasks(elements);
                       const { tasks, ...rest } = workflow;
+                      const newTasks = convertToTasks(elements);
+
                       const { putWorkflow } = callbackUtils.getCallbacks;
                       putWorkflow([
                         {
                           ...rest,
                           tasks: newTasks,
                         },
-                      ]);
+                      ])
+                        .then(() => {
+                          addToastNotification({
+                            title: 'Workflow Saved',
+                            content: 'Workflow was successfully saved',
+                            type: 'success',
+                          });
+                        })
+                        .catch((e) => {
+                          addToastNotification({
+                            title: 'Saving wofklow error',
+                            content: `Workflow could not be saved: ${e}`,
+                            type: 'error',
+                          });
+                        });
                     } catch (e) {
                       addToastNotification({
-                        title: 'Saving workflow error',
-                        content: 'Workflow could not be saved/wrong definition',
+                        title: 'Conversion workflow error',
+                        content: 'Workflow could not be converted/wrong definition',
                         type: 'error',
                       });
                     }
@@ -267,7 +281,7 @@ const App: VoidFunctionComponent<Props> = ({
           <EdgeRemoveContext.Provider value={removeEdgeContextValue}>
             <ReactFlowProvider>
               <ReactFlow
-                elements={layoutedElements}
+                elements={elements}
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
                 snapToGrid
@@ -317,6 +331,7 @@ const App: VoidFunctionComponent<Props> = ({
                   }}
                   canEditName={false}
                   workflows={workflows}
+                  isCreatingWorkflow={false}
                 />
               </Box>
             </RightDrawer>

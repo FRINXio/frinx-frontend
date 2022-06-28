@@ -16,7 +16,6 @@ import {
   ExtendedTerminateTask,
   ExtendedEventTask,
   ExtendedWaitTask,
-  ExtendedRawTask,
   ExtendedSubworkflowTask,
   ExtendedHTTPTask,
   ExtendedGraphQLTask,
@@ -289,20 +288,6 @@ function createWaitTask(label: TaskLabel): ExtendedWaitTask {
   };
 }
 
-function createRawTask(label: TaskLabel): ExtendedRawTask {
-  return {
-    id: uuid(),
-    label,
-    name: 'rawTask',
-    type: 'RAW',
-    taskReferenceName: `raw_${getRandomString(4)}`,
-    inputParameters: {
-      raw: '',
-    },
-    ...DEFAULT_TASK_OPTIONS,
-  };
-}
-
 function convertSubWorkflowTaskParams(params: string[]): Record<string, string> {
   return params.reduce((acc, curr) => {
     const values = JSON.parse(curr);
@@ -368,8 +353,6 @@ export function createTask(taskLabel: TaskLabel): ExtendedTask {
       return createEventTask(taskLabel);
     case 'wait':
       return createWaitTask(taskLabel);
-    case 'raw':
-      return createRawTask(taskLabel);
     case 'kafka publish':
       return createKafkaPublishTask(taskLabel);
     case 'json jq':
@@ -406,7 +389,6 @@ export function createSystemTasks(): TaskLabel[] {
     'fork',
     'join',
     'exclusive join',
-    'raw',
     'terminate',
     'wait',
     'while end',
@@ -434,8 +416,6 @@ export function getTaskLabel(t: Task): TaskLabel {
       return 'exclusive join';
     case 'LAMBDA':
       return 'lambda';
-    case 'RAW':
-      return 'raw';
     case 'START_TASK':
       return 'start';
     case 'TERMINATE':
