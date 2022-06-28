@@ -270,7 +270,7 @@ const WorkflowDefinitions = () => {
       />
       {activeWf != null && (
         <ScheduledWorkflowModal
-          scheduledWorkflow={activeWf}
+          workflow={activeWf}
           onClose={schedulingModal.onClose}
           isOpen={schedulingModal.isOpen}
           onSubmit={handleWorkflowSchedule}

@@ -58,7 +58,6 @@ function ScheduledWorkflowList() {
   function onEdit(workflow: ScheduledWorkflow) {
     setSelectedWorkflow(workflow);
     onOpen();
-    console.log(pageItems)
   }
 
   function handleWorkflowUpdate(scheduledWf: Partial<ScheduledWorkflow>) {

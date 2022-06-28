@@ -575,5 +575,13 @@ export type WorkflowDefinition = {
   variables: Record<string, string>;
 };
 
+export type ScheduledWorkflowModal = {
+  workflowName?: string;
+  workflowVersion?: string;
+  workflowContext?: Record<string, string>;
+  cronString?: string;
+  enabled?: boolean;
+  correlationId: string;
+}
 export type ExecutedWorkflowSortBy = 'workflowId' | 'startTime' | 'endTime';
 export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';
