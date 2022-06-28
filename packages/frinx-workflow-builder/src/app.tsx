@@ -207,19 +207,34 @@ const App: VoidFunctionComponent<Props> = ({
                   }}
                   onSaveWorkflowBtnClick={() => {
                     try {
-                      const newTasks = convertToTasks(elements);
                       const { tasks, ...rest } = workflow;
+                      const newTasks = convertToTasks(elements);
+
                       const { putWorkflow } = callbackUtils.getCallbacks;
                       putWorkflow([
                         {
                           ...rest,
                           tasks: newTasks,
                         },
-                      ]);
+                      ])
+                        .then(() => {
+                          addToastNotification({
+                            title: 'Workflow Saved',
+                            content: 'Workflow was successfully saved',
+                            type: 'success',
+                          });
+                        })
+                        .catch((e) => {
+                          addToastNotification({
+                            title: 'Saving wofklow error',
+                            content: `Workflow could not be saved: ${e}`,
+                            type: 'error',
+                          });
+                        });
                     } catch (e) {
                       addToastNotification({
-                        title: 'Saving workflow error',
-                        content: 'Workflow could not be saved/wrong definition',
+                        title: 'Conversion workflow error',
+                        content: 'Workflow could not be converted/wrong definition',
                         type: 'error',
                       });
                     }
