@@ -21,12 +21,10 @@ import {
   JsonJQInputParams,
   KafkaPublishInputParams,
   LambdaInputParams,
-  RawInputParams,
   TerminateInputParams,
   WhileInputParams,
 } from '../../helpers/types';
 import { isGraphQLTaskInputParams, isHttpTaskInputParams, isLambdaTaskInputParams } from '../../helpers/task.helpers';
-import RawInputForm, { RawInputParamsSchema } from './raw-input-form';
 
 const SettingsSchema = yup.object().shape({
   taskReferenceName: yup.string().required('Please enter task reference name'),
@@ -45,8 +43,6 @@ export function getValidationSchema(task: ExtendedTask) {
       return SettingsSchema.concat(EventInputParamsSchema);
     case 'DO_WHILE':
       return SettingsSchema.concat(WhileInputParamsSchema);
-    case 'RAW':
-      return SettingsSchema.concat(RawInputParamsSchema);
     case 'TERMINATE':
       return SettingsSchema.concat(TerminateInputParamsSchema);
     case 'KAFKA_PUBLISH':
@@ -186,10 +182,6 @@ export function renderInputParamForm(
           task={task}
         />
       );
-    }
-    if (task.type === 'RAW') {
-      const rawInputErrors = errors as FormikErrors<{ inputParameters: RawInputParams }>;
-      return <RawInputForm params={task.inputParameters} errors={rawInputErrors} onChange={onChange} />;
     }
     return null;
   }
