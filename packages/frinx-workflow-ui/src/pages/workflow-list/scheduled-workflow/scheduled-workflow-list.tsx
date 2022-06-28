@@ -58,6 +58,7 @@ function ScheduledWorkflowList() {
   function onEdit(workflow: ScheduledWorkflow) {
     setSelectedWorkflow(workflow);
     onOpen();
+    console.log(pageItems)
   }
 
   function handleWorkflowUpdate(scheduledWf: Partial<ScheduledWorkflow>) {
@@ -132,7 +133,7 @@ function ScheduledWorkflowList() {
     <PageContainer>
       {isOpen && selectedWorkflow != null && (
         <SchedulingModal
-          scheduledWorkflow={selectedWorkflow}
+          workflow={selectedWorkflow}
           isOpen={isOpen}
           onClose={onClose}
           onSubmit={handleWorkflowUpdate}

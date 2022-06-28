@@ -399,7 +399,6 @@ export type ScheduledWorkflow = {
   workflowContext: Record<string, any>;
   enabled: boolean;
   status: StatusType;
-  version: string;
 };
 
 export type ExecutedWorkflow = {

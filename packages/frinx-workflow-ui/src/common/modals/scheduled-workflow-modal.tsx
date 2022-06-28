@@ -17,26 +17,26 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import Editor from 'react-ace';
-import { ScheduledWorkflow } from '@frinx/workflow-ui/src/helpers/types';
+import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/helpers/types';
 
 const DEFAULT_CRON_STRING = '* * * * *';
 
 type Props = {
-  scheduledWorkflow: ScheduledWorkflow;
+  workflow: Workflow;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (workflow: Partial<ScheduledWorkflow>) => void;
 };
 
-const SchedulingModal: FC<Props> = ({ scheduledWorkflow, isOpen, onClose, onSubmit }) => {
+const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
   const [scheduledWf, setScheduledWf] = useState<Partial<ScheduledWorkflow>>({
-    workflowName: scheduledWorkflow.name,
-    workflowVersion: scheduledWorkflow.version,
+    workflowName: workflow.name,
+    workflowVersion: workflow.version,
     workflowContext: {},
-    name: `${scheduledWorkflow.name}:${scheduledWorkflow.version}`,
+    name: `${workflow.name}:${workflow.version}`,
     cronString: DEFAULT_CRON_STRING,
     enabled: false,
-    correlationId: scheduledWorkflow.correlationId,
+    correlationId: workflow.correlationId,
   });
 
   const handleSubmit = () => {
