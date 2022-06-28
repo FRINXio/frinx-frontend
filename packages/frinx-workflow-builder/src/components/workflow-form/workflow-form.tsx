@@ -36,9 +36,10 @@ type Props = {
   canEditName: boolean;
   workflows: Workflow[];
   onClose?: () => void;
+  isCreatingWorkflow: boolean;
 };
 
-const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEditName }) => {
+const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEditName, isCreatingWorkflow }) => {
   const [workflowState, setWorkflowState] = useState(workflow);
   const { name, description, version, restartable, timeoutPolicy, timeoutSeconds, outputParameters } = workflowState;
   const [newParam, setNewParam] = useState<string>('');
@@ -95,40 +96,42 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
           }}
         />
       </FormControl>
-      <HStack spacing={2} my={6}>
-        <FormControl id="timeoutPolicy">
-          <FormLabel>Timeout policy</FormLabel>
-          <Select
-            name="timeoutPolicy"
-            value={timeoutPolicy}
-            onChange={(event) => {
-              event.persist();
-              setWorkflowState((wf) => ({
-                ...wf,
-                timeoutPolicy: event.target.value,
-              }));
-            }}
-          >
-            <option value="RETRY">RETRY</option>
-            <option value="TIME_OUT_WF">TIME_OUT_WF</option>
-            <option value="ALERT_ONLY">ALERT_ONLY</option>
-          </Select>
-        </FormControl>
-        <FormControl id="timeoutSeconds">
-          <FormLabel>Timeout seconds</FormLabel>
-          <Input
-            name="timeoutSeconds"
-            value={timeoutSeconds}
-            onChange={(event) => {
-              event.persist();
-              setWorkflowState((wf) => ({
-                ...wf,
-                timeoutSeconds: Number(event.target.value),
-              }));
-            }}
-          />
-        </FormControl>
-      </HStack>
+      {!isCreatingWorkflow && (
+        <HStack spacing={2} my={6}>
+          <FormControl id="timeoutPolicy">
+            <FormLabel>Timeout policy</FormLabel>
+            <Select
+              name="timeoutPolicy"
+              value={timeoutPolicy}
+              onChange={(event) => {
+                event.persist();
+                setWorkflowState((wf) => ({
+                  ...wf,
+                  timeoutPolicy: event.target.value,
+                }));
+              }}
+            >
+              <option value="RETRY">RETRY</option>
+              <option value="TIME_OUT_WF">TIME_OUT_WF</option>
+              <option value="ALERT_ONLY">ALERT_ONLY</option>
+            </Select>
+          </FormControl>
+          <FormControl id="timeoutSeconds">
+            <FormLabel>Timeout seconds</FormLabel>
+            <Input
+              name="timeoutSeconds"
+              value={timeoutSeconds}
+              onChange={(event) => {
+                event.persist();
+                setWorkflowState((wf) => ({
+                  ...wf,
+                  timeoutSeconds: Number(event.target.value),
+                }));
+              }}
+            />
+          </FormControl>
+        </HStack>
+      )}
       <FormControl my={6}>
         <Flex alignItems="center">
           <Checkbox
