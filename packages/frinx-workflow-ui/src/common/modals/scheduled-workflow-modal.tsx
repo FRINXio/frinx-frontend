@@ -28,7 +28,7 @@ type Props = {
   onSubmit: (workflow: Partial<ScheduledWorkflow>) => void;
 };
 
-const SchedulingModal: FC<Props> = ({workflow, isOpen, onClose, onSubmit }) => {
+const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
   const [scheduledWf, setScheduledWf] = useState<Partial<ScheduledWorkflow>>({
     workflowName: workflow.workflowName,
     workflowVersion: workflow.workflowVersion,
