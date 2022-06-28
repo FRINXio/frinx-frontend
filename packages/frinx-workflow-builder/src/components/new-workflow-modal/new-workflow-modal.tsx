@@ -30,7 +30,7 @@ const NewWorkflowModal: FC<Props> = ({ isOpen, onClose }) => {
         <ModalFooter>
           <HStack spacing={2}>
             <Button onClick={onClose}>Cancel</Button>
-            <Button as={Link} to="../builder" colorScheme="blue">
+            <Button as={Link} to="../" colorScheme="blue">
               Create new workflow
             </Button>
           </HStack>

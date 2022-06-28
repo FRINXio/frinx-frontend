@@ -316,6 +316,7 @@ const App: VoidFunctionComponent<Props> = ({
                   }}
                   canEditName={false}
                   workflows={workflows}
+                  isCreatingWorkflow={false}
                 />
               </Box>
             </RightDrawer>
