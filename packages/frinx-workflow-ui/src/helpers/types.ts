@@ -582,6 +582,6 @@ export type ScheduledWorkflowModal = {
   cronString?: string;
   enabled?: boolean;
   correlationId: string;
-}
+};
 export type ExecutedWorkflowSortBy = 'workflowId' | 'startTime' | 'endTime';
 export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';
