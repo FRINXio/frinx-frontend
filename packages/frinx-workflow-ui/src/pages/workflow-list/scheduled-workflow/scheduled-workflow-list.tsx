@@ -63,7 +63,7 @@ function ScheduledWorkflowList() {
   function handleWorkflowUpdate(scheduledWf: Partial<ScheduledWorkflow>) {
     const { registerSchedule } = callbackUtils.getCallbacks;
 
-    registerSchedule(scheduledWf.workflowName!, Number(scheduledWf.workflowVersion!), scheduledWf)
+    registerSchedule(scheduledWf.workflowName!, scheduledWf.workflowVersion!, scheduledWf)
       .then((res) => {
         addToastNotification({
           content: 'Schedule successfully registered',
@@ -83,7 +83,7 @@ function ScheduledWorkflowList() {
 
   const handleDeleteBtnClick = (workflow: ScheduledWorkflow) => {
     const { deleteSchedule } = callbackUtils.getCallbacks;
-    deleteSchedule(workflow.workflowName, Number(workflow.workflowVersion))
+    deleteSchedule(workflow.workflowName, String(workflow.workflowVersion))
       .then(() => {
         addToastNotification({
           content: 'Deleted successfuly',
@@ -132,7 +132,7 @@ function ScheduledWorkflowList() {
     <PageContainer>
       {isOpen && selectedWorkflow != null && (
         <SchedulingModal
-          scheduledWorkflow={selectedWorkflow}
+          workflow={selectedWorkflow}
           isOpen={isOpen}
           onClose={onClose}
           onSubmit={handleWorkflowUpdate}
