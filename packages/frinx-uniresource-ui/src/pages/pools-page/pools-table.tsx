@@ -19,7 +19,7 @@ import { Link } from 'react-router-dom';
 import { GetAllPoolsQuery, PoolCapacityPayload } from '../../__generated__/graphql';
 
 type Props = {
-  pools: GetAllPoolsQuery['QueryResourcePools'];
+  pools: GetAllPoolsQuery['QueryRootResourcePools'];
   isLoading: boolean;
   onDeleteBtnClick: (id: string) => void;
   isNestedShown?: boolean;

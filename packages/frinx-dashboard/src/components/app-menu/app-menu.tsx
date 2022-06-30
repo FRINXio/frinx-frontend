@@ -178,7 +178,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                   Strategies
                 </Link>
                 <Link
-                  to="/uniresource/resourceTypes"
+                  to="/uniresource/resource_types"
                   as={NavLink}
                   color="brand.50"
                   display="flex"
@@ -242,6 +242,25 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                   }}
                 >
                   Blueprints
+                </Link>
+                <Link
+                  to="/inventory/transactions"
+                  as={NavLink}
+                  color="brand.50"
+                  display="flex"
+                  alignItems="center"
+                  paddingX={4}
+                  borderBottomWidth={4}
+                  borderColor="transparent"
+                  borderStyle="solid"
+                  _hover={{
+                    borderColor: 'brand.50',
+                  }}
+                  _active={{
+                    background: 'brand.800',
+                  }}
+                >
+                  Transactions
                 </Link>
               </>
             }

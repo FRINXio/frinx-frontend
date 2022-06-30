@@ -683,13 +683,6 @@ export type CreateNestedPoolMutationMutationVariables = Exact<{
 
 export type CreateNestedPoolMutationMutation = { __typename?: 'Mutation', CreateNestedSetPool: { __typename?: 'CreateNestedSetPoolPayload', pool: { __typename?: 'ResourcePool', id: string } | null } };
 
-export type AddResourceTypeMutationMutationVariables = Exact<{
-  input: CreateResourceTypeInput;
-}>;
-
-
-export type AddResourceTypeMutationMutation = { __typename?: 'Mutation', CreateResourceType: { __typename?: 'CreateResourceTypePayload', resourceType: { __typename?: 'ResourceType', Name: string } } };
-
 export type AddStrategyMutationMutationVariables = Exact<{
   input: CreateAllocationStrategyInput;
 }>;
@@ -703,13 +696,6 @@ export type DeletePoolMutationMutationVariables = Exact<{
 
 
 export type DeletePoolMutationMutation = { __typename?: 'Mutation', DeleteResourcePool: { __typename?: 'DeleteResourcePoolPayload', resourcePoolId: string } };
-
-export type DeleteResourceTypeMutationMutationVariables = Exact<{
-  input: DeleteResourceTypeInput;
-}>;
-
-
-export type DeleteResourceTypeMutationMutation = { __typename?: 'Mutation', DeleteResourceType: { __typename?: 'DeleteResourceTypePayload', resourceTypeId: string } };
 
 export type DeleteStrategyMutationMutationVariables = Exact<{
   input: DeleteAllocationStrategyInput;
@@ -730,11 +716,6 @@ export type QueryAllPoolsNestedQueryVariables = Exact<{ [key: string]: never; }>
 
 
 export type QueryAllPoolsNestedQuery = { __typename?: 'Query', QueryRootResourcePools: Array<{ __typename?: 'ResourcePool', id: string, Name: string, Resources: Array<{ __typename?: 'Resource', id: string, Properties: any, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, Resources: Array<{ __typename?: 'Resource', id: string, Properties: any }> } | null }> }> };
-
-export type ResourceTypesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ResourceTypesQuery = { __typename?: 'Query', QueryResourceTypes: Array<{ __typename?: 'ResourceType', id: string, Name: string, PropertyTypes: Array<{ __typename?: 'PropertyType', Name: string, Type: string }>, Pools: Array<{ __typename?: 'ResourcePool', id: string, Name: string }> }> };
 
 export type QueryAllocationStrategiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -862,7 +843,26 @@ export type FreeResourceMutation = { __typename?: 'Mutation', FreeResource: stri
 export type GetAllPoolsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllPoolsQuery = { __typename?: 'Query', QueryResourcePools: Array<{ __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, PoolProperties: any, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, AllocationStrategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang } | null, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null }> };
+export type GetAllPoolsQuery = { __typename?: 'Query', QueryRootResourcePools: Array<{ __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, PoolProperties: any, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, AllocationStrategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang } | null, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null }> };
+
+export type ResourceTypesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ResourceTypesQuery = { __typename?: 'Query', QueryResourceTypes: Array<{ __typename?: 'ResourceType', id: string, Name: string }> };
+
+export type CreateResourceTypeMutationVariables = Exact<{
+  input: CreateResourceTypeInput;
+}>;
+
+
+export type CreateResourceTypeMutation = { __typename?: 'Mutation', CreateResourceType: { __typename?: 'CreateResourceTypePayload', resourceType: { __typename?: 'ResourceType', Name: string } } };
+
+export type DeleteResourceTypeMutationVariables = Exact<{
+  input: DeleteResourceTypeInput;
+}>;
+
+
+export type DeleteResourceTypeMutation = { __typename?: 'Mutation', DeleteResourceType: { __typename?: 'DeleteResourceTypePayload', resourceTypeId: string } };
 
 export type DeleteStrategyMutationVariables = Exact<{
   input: DeleteAllocationStrategyInput;

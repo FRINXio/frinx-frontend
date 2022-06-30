@@ -10,6 +10,7 @@ import ReactFlow, {
   Edge,
   Elements,
   MiniMap,
+  Node,
   ReactFlowProvider,
   removeElements,
   updateEdge,
@@ -36,6 +37,7 @@ import { getLayoutedElements } from './helpers/layout.helpers';
 import { ExtendedTask, TaskDefinition, Workflow } from './helpers/types';
 import unwrap from './helpers/unwrap';
 import { useTaskActions } from './task-actions-context';
+import useNotifications from './hooks/use-notifications';
 
 const nodeTypes = {
   decision: DecisionNode,
@@ -58,7 +60,6 @@ type Props = {
       | 'name'
       | 'description'
       | 'version'
-      | 'ownerEmail'
       | 'restartable'
       | 'timeoutPolicy'
       | 'timeoutSeconds'
@@ -82,13 +83,14 @@ const App: VoidFunctionComponent<Props> = ({
   onWorkflowDelete,
   onWorkflowClone,
 }) => {
+  const { addToastNotification } = useNotifications();
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
   const workflowEditorDisclosure = useDisclosure();
   const [isEditing, setIsEditing] = useState(false);
   const [isInputModalShown, setIsInputModalShown] = useState(false);
   const [workflowTasks, setWorkflowTasks] = useState(workflow.tasks);
-  const [elements, setElements] = useState(getElementsFromWorkflow(workflowTasks, false));
+  const [elements, setElements] = useState(getLayoutedElements(getElementsFromWorkflow(workflowTasks, false)));
 
   const handleConnect = (edge: Edge<unknown> | Connection) => {
     setElements((els) => addEdge({ ...edge, type: 'buttonedge' }, els));
@@ -115,19 +117,25 @@ const App: VoidFunctionComponent<Props> = ({
 
   const handleAddButtonClick = (t: ExtendedTask) => {
     setElements((els) => {
-      return [
-        ...els,
-        {
-          id: t.taskReferenceName,
-          type: getNodeType(t.type),
-          position: { x: 0, y: 0 },
-          data: {
-            label: t.taskReferenceName,
-            task: t,
-            isReadOnly: false,
-          },
+      const newElement: Node = {
+        id: t.taskReferenceName,
+        type: getNodeType(t.type),
+        position: { x: 0, y: 0 },
+        data: {
+          label: t.taskReferenceName,
+          task: t,
+          isReadOnly: false,
         },
-      ];
+      };
+
+      if (t.type === 'DECISION') {
+        newElement.data = {
+          ...newElement.data,
+          handles: ['default', 'other'],
+        };
+      }
+
+      return [...els, newElement];
     });
     setWorkflowTasks((prevTasks) => [...prevTasks, t]);
   };
@@ -154,7 +162,6 @@ const App: VoidFunctionComponent<Props> = ({
     );
   };
 
-  const layoutedElements = useMemo(() => getLayoutedElements(elements), [elements]);
   const removeEdgeContextValue = useMemo(
     () => ({
       removeEdge: (id: string) => {
@@ -169,7 +176,7 @@ const App: VoidFunctionComponent<Props> = ({
 
   return (
     <>
-      <Grid templateColumns="384px 1fr" templateRows="64px 1fr" minHeight="100%" maxHeight="100%">
+      <Grid templateColumns="384px 1fr" templateRows="64px 1fr" minHeight="100%" height="calc(100vh - 64px)">
         <Flex
           alignItems="center"
           px={4}
@@ -199,15 +206,38 @@ const App: VoidFunctionComponent<Props> = ({
                     setIsEditing(true);
                   }}
                   onSaveWorkflowBtnClick={() => {
-                    const newTasks = convertToTasks(elements);
-                    const { tasks, ...rest } = workflow;
-                    const { putWorkflow } = callbackUtils.getCallbacks;
-                    putWorkflow([
-                      {
-                        ...rest,
-                        tasks: newTasks,
-                      },
-                    ]);
+                    try {
+                      const { tasks, ...rest } = workflow;
+                      const newTasks = convertToTasks(elements);
+
+                      const { putWorkflow } = callbackUtils.getCallbacks;
+                      putWorkflow([
+                        {
+                          ...rest,
+                          tasks: newTasks,
+                        },
+                      ])
+                        .then(() => {
+                          addToastNotification({
+                            title: 'Workflow Saved',
+                            content: 'Workflow was successfully saved',
+                            type: 'success',
+                          });
+                        })
+                        .catch((e) => {
+                          addToastNotification({
+                            title: 'Saving wofklow error',
+                            content: `Workflow could not be saved: ${e}`,
+                            type: 'error',
+                          });
+                        });
+                    } catch (e) {
+                      addToastNotification({
+                        title: 'Conversion workflow error',
+                        content: 'Workflow could not be converted/wrong definition',
+                        type: 'error',
+                      });
+                    }
                   }}
                   onFileImport={onFileImport}
                   onFileExport={() => {
@@ -251,7 +281,7 @@ const App: VoidFunctionComponent<Props> = ({
           <EdgeRemoveContext.Provider value={removeEdgeContextValue}>
             <ReactFlowProvider>
               <ReactFlow
-                elements={layoutedElements}
+                elements={elements}
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
                 snapToGrid
@@ -301,6 +331,7 @@ const App: VoidFunctionComponent<Props> = ({
                   }}
                   canEditName={false}
                   workflows={workflows}
+                  isCreatingWorkflow={false}
                 />
               </Box>
             </RightDrawer>

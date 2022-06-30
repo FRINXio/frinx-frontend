@@ -1,6 +1,6 @@
 {
   "name": "@frinx/dashboard",
-  "version": "1.0.4",
+  "version": "1.0.7",
   "private": true,
   "dependencies": {
     "@azure/msal-browser": "2.24.0",
@@ -14,12 +14,12 @@
     "@fortawesome/fontawesome-svg-core": "6.1.1",
     "@fortawesome/free-solid-svg-icons": "6.1.1",
     "@fortawesome/react-fontawesome": "0.1.18",
-    "@frinx/api": "0.0.7",
+    "@frinx/api": "0.0.8",
     "@frinx/inventory-client": "^0.0.1",
     "@frinx/uniresource-ui": "^0.0.1",
     "@frinx/workflow-builder": "^1.0.0",
     "@frinx/workflow-ui": "^2.0.0",
-    "@frinxio/gamma": "0.0.6",
+    "@frinxio/gamma": "0.0.9",
     "@types/node": "16.11.38",
     "@types/react": "17.0.42",
     "@types/react-dom": "17.0.14",

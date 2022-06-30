@@ -1,5 +1,6 @@
-import React, { useCallback, VoidFunctionComponent, useState, useEffect } from 'react';
+import React, { useCallback, VoidFunctionComponent, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
+import { omit } from 'lodash';
 import * as yup from 'yup';
 import {
   Box,
@@ -38,6 +39,7 @@ export type FormValues = {
   name: string;
   description: string;
   resourceTypeId: string;
+  resourceTypeName: string;
   tags: string[];
   allocationStrategyId?: string;
   poolProperties?: Record<string, string>;
@@ -58,6 +60,7 @@ const getInitialValues = (url: string): FormValues => {
     description: '',
     dealocationSafetyPeriod: 0,
     resourceTypeId: '',
+    resourceTypeName: '',
     isNested: !!query.get('isNested') || false,
     poolType: 'set',
     poolValues: [],
@@ -71,6 +74,38 @@ const getInitialValues = (url: string): FormValues => {
     tags: [],
   };
 };
+
+function getSchemaForPoolValues(
+  poolValues: Record<string, string>[],
+  options: { isIpv6?: boolean; isIpv4?: boolean } = { isIpv4: false, isIpv6: false },
+) {
+  const ipv4Regex = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
+  const ipv6Regex =
+    /(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$)/;
+  return yup.array().of(
+    yup.object().shape({
+      ...Object.keys(poolValues[0] ?? {}).reduce((acc, key) => {
+        if (key === 'address') {
+          return {
+            ...acc,
+            [key]: yup
+              .string()
+              .matches(
+                options.isIpv4 ? ipv4Regex : ipv6Regex,
+                `Please enter a valid ${options.isIpv4 ? 'IPv4' : 'IPv6'} address`,
+              )
+              .required(`Please enter an ${options.isIpv4 ? 'IPv4' : 'IPv6'} address`),
+          };
+        } else {
+          return {
+            ...acc,
+            [key]: yup.string().required('Please enter a value'),
+          };
+        }
+      }, {}),
+    }),
+  );
+}
 
 type AllocStrategy = {
   id: string;
@@ -113,7 +148,7 @@ function getSchema(poolType: string, isNested: boolean) {
         name: yup.string().required('Please enter a name'),
         description: yup.string().notRequired(),
         resourceTypeId: yup.string().required('Please enter resource type'),
-        tags: yup.array(),
+        tags: yup.array().of(yup.string()).notRequired(),
         dealocationSafetyPeriod: yup
           .number()
           .min(0, 'Please enter positive number')
@@ -122,16 +157,22 @@ function getSchema(poolType: string, isNested: boolean) {
         poolValues: yup.lazy((poolValues: Array<Record<string, string>>) => {
           return yup
             .array()
-            .of(
-              yup.object().shape({
-                ...Object.keys(poolValues[0] ?? {}).reduce((acc, key) => {
-                  return {
-                    ...acc,
-                    [key]: yup.string().required('Please enter a value'),
-                  };
-                }, {}),
-              }),
-            )
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => resourceTypeName === 'ipv4' || resourceTypeName === 'ipv4_prefix',
+              then: getSchemaForPoolValues(poolValues, { isIpv4: true }),
+            })
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => resourceTypeName === 'ipv6' || resourceTypeName === 'ipv6_prefix',
+              then: getSchemaForPoolValues(poolValues, { isIpv6: true }),
+              otherwise: yup.array().of(
+                yup.object().shape({
+                  ...Object.keys(poolValues[0] ?? {}).reduce(
+                    (acc, key) => ({ ...acc, [key]: yup.string().required('Please enter a value') }),
+                    {},
+                  ),
+                }),
+              ),
+            })
             .min(1, 'Please enter at least one value');
         }),
         ...(isNested && {
@@ -155,7 +196,7 @@ function getSchema(poolType: string, isNested: boolean) {
 }
 
 type Props = {
-  onFormSubmit: (values: FormValues) => void;
+  onFormSubmit: (values: Omit<FormValues, 'resourceTypeName'>) => void;
   resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'];
   resourcePools: SelectPoolsQuery;
   allocStrategies: AllocStrategy[];
@@ -180,8 +221,8 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       const allocationStratedyId = allocStrategies.find(
         (allocationStrategy) => allocationStrategy.name === resourceTypeName,
       )?.id;
-      const updatedData: FormValues = {
-        ...data,
+      const updatedData = {
+        ...omit(data, ['resourceTypeName']),
         tags: selectedTags.map(({ label }: Item) => label),
         allocationStrategyId: allocationStratedyId,
       };
@@ -209,7 +250,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
 
   useEffect(() => {
     setPoolSchema(getSchema(values.poolType, isNested));
-
     if (!isNested) {
       setFieldValue('parentPoolId', '');
       setFieldValue('parentResourceId', '');
@@ -239,6 +279,14 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   const canSelectAllocatingType = canSelectAllocatingStrategy(resourceTypes, resourceTypeId);
   const availablePoolProperties = getAvailablePoolProperties(resourcePools, parentPoolId, parentResourceId);
   const formattedSuggestedProperties = formatSuggestedProperties(parentResourceTypeName, availablePoolProperties);
+
+  const handleOnResourceTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    handleChange(e);
+    setFieldValue(
+      'resourceTypeName',
+      [...availableResourceTypes, ...derivedFromAvailableResourceTypes].find((rt) => rt.id === e.target.value)?.Name,
+    );
+  };
 
   const [poolProperties, poolPropertyTypes] = getPoolPropertiesSkeleton(
     resourceTypes,
@@ -307,7 +355,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
           <Select
             name="resourceTypeId"
             value={resourceTypeId}
-            onChange={handleChange}
+            onChange={handleOnResourceTypeChange}
             placeholder="Select resource type"
           >
             {[...availableResourceTypes, ...derivedFromAvailableResourceTypes].map((rt) => (

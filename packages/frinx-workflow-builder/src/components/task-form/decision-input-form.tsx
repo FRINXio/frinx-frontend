@@ -1,15 +1,21 @@
 import React, { FC, useState } from 'react';
 import { Box, Divider, FormControl, FormLabel, HStack, IconButton, Input } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
+import { FormikErrors } from 'formik';
+import * as yup from 'yup';
 import { omitBy } from 'lodash';
 import { DecisionInputParams } from '../../helpers/types';
 
+// TODO: dynamic object should be specified more precisely in yup
+export const DecisionInputParamsSchema = yup.object().shape({});
+
 type Props = {
   params: DecisionInputParams;
+  errors: FormikErrors<{ inputParameters: DecisionInputParams }>;
   onChange: (p: DecisionInputParams) => void;
 };
 
-const DecisionInputForm: FC<Props> = ({ params, onChange }) => {
+const DecisionInputForm: FC<Props> = ({ params, errors, onChange }) => {
   const [newParam, setNewParam] = useState<string>('');
 
   return (
@@ -48,7 +54,7 @@ const DecisionInputForm: FC<Props> = ({ params, onChange }) => {
       <Box width="50%">
         <Divider />
         {Object.keys(params).map((key) => (
-          <FormControl id="param" my={2} key={key}>
+          <FormControl id="param" my={2} key={key} isInvalid={errors.inputParameters?.key != null}>
             <FormLabel>{key}</FormLabel>
             <HStack spacing={2}>
               <Input

@@ -71,9 +71,6 @@ export type EventInputParams = {
   targetTaskRefName: string;
   action: string;
 };
-export type RawInputParams = {
-  raw: string;
-};
 export type DynamicForkInputParams = {
   expectedName: string;
   expectedType: string;
@@ -95,7 +92,6 @@ export type InputParameters =
   | TerminateInputParams
   | HTTPInputParams
   | EventInputParams
-  | RawInputParams
   | DynamicForkInputParams;
 
 export type TaskType =
@@ -203,9 +199,6 @@ export type SubworkflowTask = BaseTask<Record<string, string>> & {
     version: number;
   };
 };
-export type RawTask = BaseTask<RawInputParams> & {
-  type: 'RAW';
-};
 export type StartTask = BaseTask & {
   type: 'START_TASK';
 };
@@ -236,7 +229,6 @@ export type Task =
   | TerminateTask
   | WhileTask
   | WhileEndTask
-  | RawTask
   | StartTask
   | EndTask
   | SimpleTask;
@@ -250,7 +242,6 @@ export type TaskLabel =
   | 'join'
   | 'exclusive join'
   | 'lambda'
-  | 'raw'
   | 'start'
   | 'sub workflow'
   | 'terminate'
@@ -281,7 +272,6 @@ export type ExtendedJSPythonTask = JSPythonTask & { id: string; label: TaskLabel
 export type ExtendedTerminateTask = TerminateTask & { id: string; label: TaskLabel };
 export type ExtendedWhileTask = WhileTask & { id: string; label: TaskLabel };
 export type ExtendedWhileEndTask = WhileEndTask & { id: string; label: TaskLabel };
-export type ExtendedRawTask = RawTask & { id: string; label: TaskLabel };
 export type ExtendedStartTask = StartTask & { id: string; label: TaskLabel };
 export type ExtendedEndTask = EndTask & { id: string; label: TaskLabel };
 export type ExtendedSimpleTask = SimpleTask & { id: string; label: TaskLabel };
@@ -301,7 +291,6 @@ export type ExtendedTask =
   | ExtendedTerminateTask
   | ExtendedWhileTask
   | ExtendedWhileEndTask
-  | ExtendedRawTask
   | ExtendedStartTask
   | ExtendedEndTask
   | ExtendedSimpleTask
@@ -312,7 +301,7 @@ export type Workflow<T extends WorkflowTask = WorkflowTask> = {
   name: string;
   hasSchedule: boolean;
   description?: string;
-  version: number;
+  version: string;
   inputParameters?: string[];
   outputParameters: Record<string, string>;
   failureWorkflow?: boolean;
@@ -441,18 +430,11 @@ export type NestedExecutedWorkflow = {
   workflowType: string;
 };
 
-export type ExecutedWorkflowsFlat = {
+export type ExecutedWorkflows = {
   result: {
     hits: ExecutedWorkflow[];
     totalHits: number;
   };
-};
-
-export type ExecutedWorkflowsHierarchical = {
-  parents: ExecutedWorkflow[];
-  children: NestedExecutedWorkflow[];
-  count: number;
-  hits: number;
 };
 
 export type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED' | 'COMPLETED';
@@ -581,3 +563,6 @@ export type WorkflowDefinition = {
   timeoutSeconds: number;
   variables: Record<string, string>;
 };
+
+export type ExecutedWorkflowSortBy = 'workflowId' | 'startTime' | 'endTime';
+export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';

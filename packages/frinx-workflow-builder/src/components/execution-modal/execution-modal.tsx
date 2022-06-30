@@ -301,7 +301,7 @@ const ExecutionModal: FC<Props> = ({ workflow, onClose, shouldCloseAfterSubmit, 
           <ModalFooter justifyContent="space-between">
             <HStack spacing={2}>
               {isSuccess ? (
-                <Button type="button" colorScheme="blue" as={Link} to={`../executed/${workflowId}`}>
+                <Button type="button" colorScheme="blue" as={Link} to={`../../executed/${workflowId}`}>
                   Continue to detail
                 </Button>
               ) : (

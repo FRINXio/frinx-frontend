@@ -1,3 +1,5 @@
+import { ExecutedWorkflow } from './types';
+
 /* eslint-disable @typescript-eslint/naming-convention */
 type AnyJson = JsonArray | JsonMap;
 type JsonMap = {
@@ -54,9 +56,6 @@ export type EventInputParams = {
   targetTaskRefName: string;
   action: string;
 };
-export type RawInputParams = {
-  raw: string;
-};
 export type DynamicForkInputParams = {
   expectedName: string;
   expectedType: string;
@@ -72,7 +71,6 @@ export type InputParameters =
   | TerminateInputParams
   | HTTPInputParams
   | EventInputParams
-  | RawInputParams
   | DynamicForkInputParams;
 
 export type WorkflowPayload = {
@@ -206,9 +204,6 @@ export type DynamicForkTask = BaseTask<DynamicForkInputParams> & {
     version: number;
   };
 };
-export type RawTask = BaseTask<RawInputParams> & {
-  type: 'RAW';
-};
 export type StartTask = BaseTask & {
   type: 'START_TASK';
 };
@@ -234,7 +229,6 @@ export type Task =
   | TerminateTask
   | WhileTask
   | WhileEndTask
-  | RawTask
   | StartTask
   | EndTask;
 
@@ -256,4 +250,23 @@ export type Workflow<T extends Task = Task> = {
   timeoutPolicy: string;
   timeoutSeconds: number;
   variables: Record<string, unknown>;
+};
+
+export type ExecutedWorkflowSortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
+export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';
+
+export type WorkflowExecutionPayload = {
+  workflowId: string;
+  label: string;
+  start?: number;
+  size?: string;
+  sortBy?: ExecutedWorkflowSortBy;
+  sortOrder?: ExecutedWorkflowSortOrder;
+};
+
+export type WorkflowExecutionResult = {
+  result: {
+    hits: ExecutedWorkflow[];
+    totalHits: number;
+  };
 };
