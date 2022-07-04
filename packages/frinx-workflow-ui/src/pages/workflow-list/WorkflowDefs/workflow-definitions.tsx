@@ -270,7 +270,13 @@ const WorkflowDefinitions = () => {
       />
       {activeWf != null && (
         <ScheduledWorkflowModal
-          workflow={activeWf}
+          workflow={{
+            workflowName:activeWf.name,
+            workflowVersion:activeWf.version,
+            correlationId:activeWf.correlationId,
+            enabled:activeWf.workflowStatusListenerEnabled,
+           // workflowContext:activeWf.
+          }}
           onClose={schedulingModal.onClose}
           isOpen={schedulingModal.isOpen}
           onSubmit={handleWorkflowSchedule}
@@ -363,6 +369,7 @@ const WorkflowDefinitions = () => {
                     onScheduleBtnClick={() => {
                       setActiveWf(workflow);
                       schedulingModal.onOpen();
+                      console.log(workflow)
                     }}
                     onExecuteBtnClick={() => {
                       setActiveWf(workflow);
