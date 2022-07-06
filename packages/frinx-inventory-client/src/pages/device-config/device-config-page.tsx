@@ -1,5 +1,5 @@
 import { Box, Button, Container, Flex, Heading, Progress, useDisclosure } from '@chakra-ui/react';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import unwrap from '../../helpers/unwrap';
@@ -128,6 +128,7 @@ const DELETE_SNAPSHOT_MUTATION = gql`
 `;
 
 const DeviceConfig: VoidFunctionComponent = () => {
+  const context = useMemo(() => ({ additionalTypenames: ['Transaction'] }), []);
   const { deviceId } = useParams<{ deviceId: string }>();
   const [{ data: deviceData, fetching: isFetchingDevice, error: deviceError }] = useQuery<
     DeviceNameQuery,
@@ -230,10 +231,13 @@ const DeviceConfig: VoidFunctionComponent = () => {
   };
 
   const handleOnCommitConfig = async (isDryRun?: boolean) => {
-    const { data: responseData, error: responseError } = await commitConfig({
-      transactionId,
-      input: { deviceId, shouldDryRun: isDryRun },
-    });
+    const { data: responseData, error: responseError } = await commitConfig(
+      {
+        transactionId,
+        input: { deviceId, shouldDryRun: isDryRun },
+      },
+      context,
+    );
 
     if (responseError != null) {
       addToastNotification({
