@@ -301,7 +301,7 @@ export type Workflow<T extends WorkflowTask = WorkflowTask> = {
   name: string;
   hasSchedule: boolean;
   description?: string;
-  version: number;
+  version: string;
   inputParameters?: string[];
   outputParameters: Record<string, string>;
   failureWorkflow?: boolean;
