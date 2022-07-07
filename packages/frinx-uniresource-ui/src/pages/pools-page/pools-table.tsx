@@ -44,7 +44,7 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
 
 const PoolsTable: VoidFunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoading, isNestedShown = true }) => {
   return (
-    <Table background="white">
+    <Table background="white" size="sm">
       <Thead>
         <Tr>
           {isNestedShown && <Th>Children</Th>}
@@ -74,6 +74,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({ pools, onDeleteBtnClick, isL
                         as={Link}
                         to={`nested/${pool.id}`}
                         rightIcon={<FeatherIcon icon="chevron-down" size={20} />}
+                        size="xs"
                       >
                         {nestedPoolsCount}
                       </Button>
