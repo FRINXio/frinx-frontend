@@ -68,7 +68,7 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
 
   return (
     <>
-      <Table background="white">
+      <Table background="white" size="sm">
         <Thead>
           <Tr>
             {allocatedResourcesKeys.map((key) => (
@@ -90,7 +90,7 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
                   <Td>{resource.isClaimed ? 'Claimed' : 'Unclaimed'}</Td>
                   <Td>{resource.Description}</Td>
                   <Td>
-                    <ButtonGroup>
+                    <ButtonGroup size="xs">
                       <Button
                         isDisabled={resource.isClaimed}
                         onClick={() => handleOnClaimResource(resource.Description, resource.Properties)}

@@ -72,7 +72,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({ pools, onDeleteBtnClick, isL
                       <Button
                         isDisabled={!hasNestedPools}
                         as={Link}
-                        to={`nested/${pool.id}`}
+                        to={`/uniresource/pools/nested/${pool.id}`}
                         rightIcon={<FeatherIcon icon="chevron-down" size={20} />}
                         size="xs"
                       >

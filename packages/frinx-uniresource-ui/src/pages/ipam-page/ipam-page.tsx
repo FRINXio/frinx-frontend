@@ -107,7 +107,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
             leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
             colorScheme="blue"
             as={Link}
-            to="new"
+            to="/uniresource/pools/new"
           >
             Create Pool
           </Button>

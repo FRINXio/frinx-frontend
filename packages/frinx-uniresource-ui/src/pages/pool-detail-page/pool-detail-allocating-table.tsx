@@ -40,7 +40,7 @@ const PoolDetailAllocatingTable: FC<Props> = ({
 
   return (
     <>
-      <Table background="white">
+      <Table background="white" size="sm">
         <Thead>
           <Tr>
             {allocatedResourcesKeys.map((key) => (key ? <Th key={key}>{key}</Th> : null))}
@@ -65,6 +65,7 @@ const PoolDetailAllocatingTable: FC<Props> = ({
                         title="Deallocate subnet"
                         isDisabled={!canFreeResource}
                         onClick={() => onFreeResource(resource.Properties)}
+                        size="xs"
                       >
                         Deallocate
                       </Button>
