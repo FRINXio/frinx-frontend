@@ -141,13 +141,25 @@ const WorkflowDefinitions = () => {
         setAllLabels(getLabels(dataset));
       }
     });
+    const { getSchedules } = callbackUtils.getCallbacks;
+
+    getSchedules()
+      .then((schedules) => {})
+      .catch((err: Error) => {
+        addToastNotification({
+          content: err.message,
+          type: 'error',
+          title: 'Error',
+        });
+      });
   };
 
   function handleWorkflowSchedule(scheduledWf: Partial<ScheduledWorkflow>) {
     const { registerSchedule } = callbackUtils.getCallbacks;
+    const { getSchedules } = callbackUtils.getCallbacks;
 
     if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
-      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, scheduledWf)
+      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion.toString(), scheduledWf)
         .then(() => {
           addToastNotification({
             type: 'success',
@@ -271,11 +283,8 @@ const WorkflowDefinitions = () => {
       {activeWf != null && (
         <ScheduledWorkflowModal
           workflow={{
-            workflowName:activeWf.name,
-            workflowVersion:activeWf.version,
-            correlationId:activeWf.correlationId,
-            enabled:activeWf.workflowStatusListenerEnabled,
-           // workflowContext:activeWf.
+            workflowName: activeWf.name,
+            workflowVersion: activeWf.version.toString(),
           }}
           onClose={schedulingModal.onClose}
           isOpen={schedulingModal.isOpen}
@@ -369,7 +378,6 @@ const WorkflowDefinitions = () => {
                     onScheduleBtnClick={() => {
                       setActiveWf(workflow);
                       schedulingModal.onOpen();
-                      console.log(workflow)
                     }}
                     onExecuteBtnClick={() => {
                       setActiveWf(workflow);

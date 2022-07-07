@@ -22,12 +22,12 @@ import { ScheduledWorkflow } from '@frinx/workflow-ui/src/helpers/types';
 const DEFAULT_CRON_STRING = '* * * * *';
 
 export type ScheduledWorkflowModal = {
-  workflowName?: string;
-  workflowVersion?: string;
+  workflowName: string;
+  workflowVersion: string;
   workflowContext?: Record<string, string>;
   cronString?: string;
   enabled?: boolean;
-  correlationId: string;
+  correlationId?: string;
 };
 
 type Props = {
