@@ -141,25 +141,13 @@ const WorkflowDefinitions = () => {
         setAllLabels(getLabels(dataset));
       }
     });
-    const { getSchedules } = callbackUtils.getCallbacks;
-
-    getSchedules()
-      .then((schedules) => {})
-      .catch((err: Error) => {
-        addToastNotification({
-          content: err.message,
-          type: 'error',
-          title: 'Error',
-        });
-      });
   };
 
   function handleWorkflowSchedule(scheduledWf: Partial<ScheduledWorkflow>) {
     const { registerSchedule } = callbackUtils.getCallbacks;
     const { getSchedules } = callbackUtils.getCallbacks;
-
     if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
-      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion.toString(), scheduledWf)
+      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, scheduledWf)
         .then(() => {
           addToastNotification({
             type: 'success',
@@ -176,6 +164,7 @@ const WorkflowDefinitions = () => {
           });
         });
     }
+    getSchedules();
   }
 
   const updateFavourite = (workflow: Workflow) => {
