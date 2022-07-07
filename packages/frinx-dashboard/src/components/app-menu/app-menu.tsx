@@ -158,7 +158,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                     }}
                     rightIcon={<ChevronDownIcon />}
                   >
-                    Actions
+                    IPAM
                   </MenuButton>
                   <MenuList>
                     <MenuItem to="/uniresource/ipam" as={NavLink}>
