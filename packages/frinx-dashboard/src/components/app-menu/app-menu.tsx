@@ -1,4 +1,5 @@
-import { Flex, Link } from '@chakra-ui/react';
+import { ChevronDownIcon } from '@chakra-ui/icons';
+import { Flex, Link, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { NavLink, Route, Routes } from 'react-router-dom';
 import { ServiceKey } from '../../types';
@@ -139,6 +140,36 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
             path="/uniresource/*"
             element={
               <>
+                <Menu>
+                  <MenuButton
+                    as={Link}
+                    color="brand.50"
+                    display="flex"
+                    alignItems="center"
+                    paddingX={4}
+                    borderBottomWidth={4}
+                    borderColor="transparent"
+                    borderStyle="solid"
+                    _hover={{
+                      borderColor: 'brand.50',
+                    }}
+                    _active={{
+                      background: 'brand.800',
+                    }}
+                    rightIcon={<ChevronDownIcon />}
+                  >
+                    IPAM
+                  </MenuButton>
+                  <MenuList>
+                    <MenuItem to="/uniresource/ipam" as={NavLink}>
+                      IPAM
+                    </MenuItem>
+                    {/* <MenuItem>IP Ranges</MenuItem>
+                    <MenuItem>Aggregates</MenuItem>
+                    <MenuItem>Prefixes</MenuItem> */}
+                  </MenuList>
+                </Menu>
+
                 <Link
                   to="/uniresource/pools"
                   as={NavLink}
