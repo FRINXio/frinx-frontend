@@ -1,21 +1,17 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MiniSearch, { SearchResult } from 'minisearch';
 import { throttle } from 'lodash';
 
 type Item<T> = T & { Name: string };
-
-type HookArgs = {
-  searchText?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  items?: Item<any>[];
-};
 
 export function getFilteredResults<T extends { Name: string }>(searchResult: SearchResult[], items: T[]): T[] {
   const resultIds = searchResult.map((r) => r.id);
   return items.filter((item) => resultIds.includes(item.Name));
 }
 
-const useMinisearch = ({ searchText, items }: HookArgs) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const useMinisearch = (items?: Item<any>[]) => {
+  const [searchText, setSearchText] = useState('');
   const { current: minisearch } = useRef(new MiniSearch({ fields: ['Name'], idField: 'Name' }));
   const searchFn = () =>
     throttle(() => {
@@ -32,6 +28,8 @@ const useMinisearch = ({ searchText, items }: HookArgs) => {
 
   return {
     results: results || [],
+    searchText,
+    handleSearchTextChange: setSearchText,
   };
 };
 

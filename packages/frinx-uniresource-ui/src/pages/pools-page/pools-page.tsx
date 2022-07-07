@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
-import React, { useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { useMemo, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
 import useNotifications from '../../hooks/use-notifications';
@@ -63,8 +63,7 @@ const PoolsPage: VoidFunctionComponent = () => {
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
   const { addToastNotification } = useNotifications();
-  const [searchText, setSearchText] = useState<string>('');
-  const { results } = useMinisearch({ searchText, items: data?.QueryRootResourcePools });
+  const { results, searchText, handleSearchTextChange } = useMinisearch(data?.QueryRootResourcePools);
 
   const handleDeleteBtnClick = async (id: string) => {
     try {
@@ -110,7 +109,7 @@ const PoolsPage: VoidFunctionComponent = () => {
           </Button>
         </Box>
       </Flex>
-      <Searchbar value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+      <Searchbar value={searchText} onChange={(e) => handleSearchTextChange(e.target.value)} />
       <Box position="relative" marginBottom={5}>
         <Box position="absolute" top={0} left={0} right={0}>
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
