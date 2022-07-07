@@ -18,6 +18,13 @@ import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import { omitBy } from 'lodash';
 import { Workflow } from '../../helpers/types';
 import { isWorkflowNameAvailable } from '../../helpers/workflow.helpers';
+import LabelsInput from './labels-input';
+import { parseDescription, parseLabels } from '../left-menu/left-menu.helpers';
+
+type Description = {
+  description: string;
+  labels: string[];
+};
 
 type PartialWorkflow = Pick<
   Workflow,
@@ -44,6 +51,29 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
   const { name, description, version, restartable, timeoutPolicy, timeoutSeconds, outputParameters } = workflowState;
   const [newParam, setNewParam] = useState<string>('');
   const isNameInvalid = canEditName ? !isWorkflowNameAvailable(workflows, name) : false;
+
+  const handleDescriptionChange = (value: string) => {
+    const oldDescription: Description = JSON.parse(description || '');
+    const newDescription = { ...oldDescription, description: value };
+
+    setWorkflowState((ws) => ({
+      ...ws,
+      description: JSON.stringify(newDescription),
+    }));
+  };
+
+  const handleLabelsChange = (labels: string[]) => {
+    const oldDescription: Description = JSON.parse(description || '');
+    const newDescription = { ...oldDescription, labels };
+
+    setWorkflowState((ws) => ({
+      ...ws,
+      description: JSON.stringify(newDescription),
+    }));
+  };
+
+  const descriptionText = parseDescription(description) || '';
+  const labels = parseLabels(description) || [];
 
   return (
     <form
@@ -72,15 +102,16 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
         <FormLabel>Description</FormLabel>
         <Input
           name="description"
-          value={description}
+          value={descriptionText}
           onChange={(event) => {
             event.persist();
-            setWorkflowState((wf) => ({
-              ...wf,
-              description: event.target.value,
-            }));
+            handleDescriptionChange(event.target.value);
           }}
         />
+      </FormControl>
+      <FormControl id="label" my={6}>
+        <FormLabel>Label</FormLabel>
+        <LabelsInput labels={labels} onChange={handleLabelsChange} />
       </FormControl>
       <FormControl id="version" my={6}>
         <FormLabel>Version</FormLabel>

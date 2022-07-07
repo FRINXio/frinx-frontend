@@ -257,7 +257,7 @@ export function getEvcFilterParams(evcFilter: EvcFilter): string {
   filters.push(
     evcFilter.carrierReference ? `@."carrier-reference"like_regex"${addSlashes(evcFilter.carrierReference)}"` : null,
   );
-  filters.push(evcFilter.svlanId ? `@."svlan-id"like_regex"${addSlashes(evcFilter.svlanId)}"` : null);
+  filters.push(evcFilter.svlanId ? `@."svlan-id"==${addSlashes(evcFilter.svlanId)}` : null);
   filters.push(evcFilter.qosProfile ? `@."qos-input-profile"like_regex"${addSlashes(evcFilter.qosProfile)}"` : null);
   filters.push(
     evcFilter.inputBandwidth ? `@."input-bandwidth"like_regex"${addSlashes(evcFilter.inputBandwidth)}"` : null,
