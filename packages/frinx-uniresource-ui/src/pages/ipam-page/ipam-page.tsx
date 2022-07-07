@@ -4,6 +4,8 @@ import gql from 'graphql-tag';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
+import { Searchbar } from '../../components/searchbar';
+import useMinisearch from '../../hooks/use-minisearch';
 import useNotifications from '../../hooks/use-notifications';
 import { DeletePoolMutation, DeletePoolMutationMutationVariables, GetAllPoolsQuery } from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
@@ -61,6 +63,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
   const { addToastNotification } = useNotifications();
+  const { searchText, handleSearchTextChange, results } = useMinisearch(data?.QueryRootResourcePools);
 
   const handleDeleteBtnClick = async (id: string) => {
     try {
@@ -88,7 +91,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     return <Progress isIndeterminate size="lg" />;
   }
 
-  const ipPools = data.QueryRootResourcePools.filter(
+  const ipPools = results.filter(
     (pool) => pool.ResourceType.Name === 'ipv4_prefix' || pool.ResourceType.Name === 'ipv6_prefix',
   );
 
@@ -114,8 +117,9 @@ const IpamPoolPage: VoidFunctionComponent = () => {
         <Box position="absolute" top={0} left={0} right={0}>
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
+        <Searchbar value={searchText} onChange={(e) => handleSearchTextChange(e.target.value)} />
         <PoolsTable
-          pools={ipPools ?? []}
+          pools={ipPools}
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}
         />
