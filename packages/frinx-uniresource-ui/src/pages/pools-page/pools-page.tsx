@@ -1,12 +1,14 @@
 import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
-import React, { useMemo, VoidFunctionComponent } from 'react';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
 import useNotifications from '../../hooks/use-notifications';
 import { DeletePoolMutation, DeletePoolMutationMutationVariables, GetAllPoolsQuery } from '../../__generated__/graphql';
 import PoolsTable from './pools-table';
+import { Searchbar } from '../../components/searchbar';
+import useMinisearch from '../../hooks/use-minisearch';
 
 const POOLS_QUERY = gql`
   query GetAllPools {
@@ -61,6 +63,8 @@ const PoolsPage: VoidFunctionComponent = () => {
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
   const { addToastNotification } = useNotifications();
+  const [searchText, setSearchText] = useState<string>('');
+  const { results } = useMinisearch({ searchText, items: data?.QueryRootResourcePools });
 
   const handleDeleteBtnClick = async (id: string) => {
     try {
@@ -80,11 +84,11 @@ const PoolsPage: VoidFunctionComponent = () => {
     }
   };
 
-  if (error != null) {
+  if (error != null || data == null) {
     return <div>{error?.message}</div>;
   }
 
-  if (data == null && isQueryLoading) {
+  if (isQueryLoading) {
     return <Progress isIndeterminate size="lg" />;
   }
 
@@ -106,12 +110,13 @@ const PoolsPage: VoidFunctionComponent = () => {
           </Button>
         </Box>
       </Flex>
+      <Searchbar value={searchText} onChange={(e) => setSearchText(e.target.value)} />
       <Box position="relative" marginBottom={5}>
         <Box position="absolute" top={0} left={0} right={0}>
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
         <PoolsTable
-          pools={data?.QueryRootResourcePools ?? []}
+          pools={results}
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}
         />
