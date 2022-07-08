@@ -130,7 +130,7 @@ function ScheduledWorkflowList() {
 
   return (
     <PageContainer>
-      {isOpen && selectedWorkflow != null && (
+      {selectedWorkflow != null && (
         <SchedulingModal
           workflow={selectedWorkflow}
           isOpen={isOpen}
