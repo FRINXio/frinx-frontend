@@ -1,4 +1,5 @@
 import { Box, Button, Flex, Heading, HStack, Icon, Progress, Tag, Text, Tooltip } from '@chakra-ui/react';
+import { InfoIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
 import React, { useMemo, VoidFunctionComponent } from 'react';
@@ -127,12 +128,15 @@ const PoolsPage: VoidFunctionComponent = () => {
         {selectedTags.length > 0 ? (
           <Button onClick={clearAllTags}>Clear all</Button>
         ) : (
-          <Tooltip
-            label="By clicking on tag of resource pool you can start filtering. By clicking on the same tag you will unselect
-          tag"
-          >
+          <HStack>
             <Text fontSize="sm">Currently you have not selected any tag</Text>
-          </Tooltip>
+            <Tooltip
+              label="By clicking on tag of resource pool you can start filtering. By clicking on the same tag you will unselect
+          tag"
+            >
+              <Icon cursor="pointer" as={InfoIcon} />
+            </Tooltip>
+          </HStack>
         )}
         <HStack>
           {selectedTags.map((tag) => (
