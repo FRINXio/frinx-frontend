@@ -1,5 +1,4 @@
-import { Box, Button, Flex, Heading, HStack, Icon, Progress, Tag, Text, Tooltip } from '@chakra-ui/react';
-import { InfoIcon } from '@chakra-ui/icons';
+import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
 import React, { useMemo, VoidFunctionComponent } from 'react';
@@ -16,6 +15,7 @@ import PoolsTable from './pools-table';
 import { Searchbar } from '../../components/searchbar';
 import useMinisearch from '../../hooks/use-minisearch';
 import useTags from '../../hooks/use-tags';
+import SearchTags from '../../components/search-tags';
 
 const ALL_POOLS_QUERY = gql`
   query GetPools {
@@ -124,28 +124,7 @@ const PoolsPage: VoidFunctionComponent = () => {
         </Box>
       </Flex>
       <Searchbar value={searchText} onChange={(e) => setSearchText(e.target.value)} />
-      <HStack mb={5}>
-        {selectedTags.length > 0 ? (
-          <Button onClick={clearAllTags}>Clear all</Button>
-        ) : (
-          <HStack>
-            <Text fontSize="sm">Currently you have not selected any tag</Text>
-            <Tooltip
-              label="By clicking on tag of resource pool you can start filtering. By clicking on the same tag you will unselect
-          tag"
-            >
-              <Icon cursor="pointer" as={InfoIcon} />
-            </Tooltip>
-          </HStack>
-        )}
-        <HStack>
-          {selectedTags.map((tag) => (
-            <Tag variant="solid" colorScheme="blue" cursor="pointer" key={tag} onClick={() => handleOnTagClick(tag)}>
-              {tag}
-            </Tag>
-          ))}
-        </HStack>
-      </HStack>
+      <SearchTags selectedTags={selectedTags} handleOnTagClick={handleOnTagClick} clearAllTags={clearAllTags} />
       <Box position="relative" marginBottom={5}>
         <Box position="absolute" top={0} left={0} right={0}>
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}

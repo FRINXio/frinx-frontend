@@ -4,9 +4,11 @@ import gql from 'graphql-tag';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
+import SearchTags from '../../components/search-tags';
 import { Searchbar } from '../../components/searchbar';
 import useMinisearch from '../../hooks/use-minisearch';
 import useNotifications from '../../hooks/use-notifications';
+import useTags from '../../hooks/use-tags';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
@@ -68,6 +70,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
   >(DELETE_POOL_MUTATION);
   const { addToastNotification } = useNotifications();
   const { searchText, setSearchText, results } = useMinisearch({ items: data?.QueryRootResourcePools });
+  const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
 
   const handleDeleteBtnClick = async (id: string) => {
     try {
@@ -122,10 +125,12 @@ const IpamPoolPage: VoidFunctionComponent = () => {
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
         <Searchbar value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+        <SearchTags selectedTags={selectedTags} handleOnTagClick={handleOnTagClick} clearAllTags={clearAllTags} />
         <PoolsTable
           pools={ipPools}
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}
+          onTagClick={handleOnTagClick}
         />
       </Box>
     </>
