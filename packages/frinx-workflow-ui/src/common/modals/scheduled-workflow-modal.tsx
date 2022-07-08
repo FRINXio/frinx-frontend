@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import {
   Button,
   Checkbox,
@@ -19,16 +19,13 @@ import {
 import Editor from 'react-ace';
 import { ScheduledWorkflow } from '@frinx/workflow-ui/src/helpers/types';
 import { useFormik } from 'formik';
+import callbackUtils from '../../utils/callback-utils';
 
 const DEFAULT_CRON_STRING = '* * * * *';
 
 export type ScheduledWorkflowModal = {
   workflowName: string;
   workflowVersion: string;
-  workflowContext?: Record<string, string>;
-  cronString?: string;
-  enabled?: boolean;
-  correlationId?: string;
 };
 
 type Props = {
@@ -39,11 +36,13 @@ type Props = {
 };
 
 const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
+  const { getSchedule } = callbackUtils.getCallbacks;
+
   const { values, handleChange, handleSubmit, submitForm, setFieldValue } = useFormik({
     initialValues: {
       workflowName: workflow.workflowName,
       workflowVersion: workflow.workflowVersion,
-      workflowContext: workflow.workflowContext,
+      workflowContext: {},
       name: `${workflow.workflowName}:${workflow.workflowVersion}`,
       cronString: DEFAULT_CRON_STRING,
       enabled: false,
@@ -53,6 +52,12 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
       onClose();
     },
   });
+
+  useEffect(() => {
+    getSchedule(workflow.workflowName, workflow.workflowVersion).then((scheduledWorkflow) => {
+      setFieldValue('workflowContext', scheduledWorkflow.workflowContext ?? {});
+    });
+  }, [workflow]);
 
   const getCrontabGuruUrl = () => {
     const cronString = values.cronString || DEFAULT_CRON_STRING;
@@ -68,7 +73,9 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
     <Modal size="3xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Schedule Details - {values.workflowName}</ModalHeader>
+        <ModalHeader>
+          Schedule Details - {values.workflowName}:{values.workflowVersion}
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <form

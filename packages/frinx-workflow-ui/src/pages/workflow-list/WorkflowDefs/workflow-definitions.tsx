@@ -144,9 +144,7 @@ const WorkflowDefinitions = () => {
   };
 
   function handleWorkflowSchedule(scheduledWf: Partial<ScheduledWorkflow>) {
-    console.log(scheduledWf);
     const { registerSchedule } = callbackUtils.getCallbacks;
-    const { getSchedules } = callbackUtils.getCallbacks;
     if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
       registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, {
         ...scheduledWf,
@@ -168,7 +166,6 @@ const WorkflowDefinitions = () => {
           });
         });
     }
-    getSchedules();
   }
 
   const updateFavourite = (workflow: Workflow) => {
