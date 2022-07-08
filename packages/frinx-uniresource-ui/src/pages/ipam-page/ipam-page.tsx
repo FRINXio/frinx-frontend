@@ -63,7 +63,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
   const { addToastNotification } = useNotifications();
-  const { searchText, handleSearchTextChange, results } = useMinisearch(data?.QueryRootResourcePools);
+  const { searchText, setSearchText, results } = useMinisearch({ items: data?.QueryRootResourcePools });
 
   const handleDeleteBtnClick = async (id: string) => {
     try {
@@ -117,7 +117,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
         <Box position="absolute" top={0} left={0} right={0}>
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
-        <Searchbar value={searchText} onChange={(e) => handleSearchTextChange(e.target.value)} />
+        <Searchbar value={searchText} onChange={(e) => setSearchText(e.target.value)} />
         <PoolsTable
           pools={ipPools}
           isLoading={isQueryLoading || isMutationLoading}

@@ -63,7 +63,7 @@ const PoolsPage: VoidFunctionComponent = () => {
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
   const { addToastNotification } = useNotifications();
-  const { results, searchText, handleSearchTextChange } = useMinisearch(data?.QueryRootResourcePools);
+  const { results, searchText, setSearchText } = useMinisearch({ items: data?.QueryRootResourcePools });
 
   const handleDeleteBtnClick = async (id: string) => {
     try {
@@ -109,7 +109,7 @@ const PoolsPage: VoidFunctionComponent = () => {
           </Button>
         </Box>
       </Flex>
-      <Searchbar value={searchText} onChange={(e) => handleSearchTextChange(e.target.value)} />
+      <Searchbar value={searchText} onChange={(e) => setSearchText(e.target.value)} />
       <Box position="relative" marginBottom={5}>
         <Box position="absolute" top={0} left={0} right={0}>
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}

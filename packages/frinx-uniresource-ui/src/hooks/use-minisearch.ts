@@ -9,10 +9,16 @@ export function getFilteredResults<T extends { Name: string }>(searchResult: Sea
   return items.filter((item) => resultIds.includes(item.Name));
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const useMinisearch = (items?: Item<any>[]) => {
+const useMinisearch = ({
+  items,
+  searchFields = ['Name'],
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  items?: Item<any>[];
+  searchFields?: string[];
+}) => {
   const [searchText, setSearchText] = useState('');
-  const { current: minisearch } = useRef(new MiniSearch({ fields: ['Name'], idField: 'Name' }));
+  const { current: minisearch } = useRef(new MiniSearch({ fields: searchFields, idField: 'Name' }));
   const searchFn = () =>
     throttle(() => {
       if (searchText != null) {
@@ -29,7 +35,7 @@ const useMinisearch = (items?: Item<any>[]) => {
   return {
     results: results || [],
     searchText,
-    handleSearchTextChange: setSearchText,
+    setSearchText,
   };
 };
 
