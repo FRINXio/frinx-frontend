@@ -7,11 +7,15 @@ import { useMutation, useQuery } from 'urql';
 import { Searchbar } from '../../components/searchbar';
 import useMinisearch from '../../hooks/use-minisearch';
 import useNotifications from '../../hooks/use-notifications';
-import { DeletePoolMutation, DeletePoolMutationMutationVariables, GetAllPoolsQuery } from '../../__generated__/graphql';
+import {
+  DeletePoolMutation,
+  DeletePoolMutationMutationVariables,
+  GetAllIpPoolsQuery,
+} from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
 
 const POOLS_QUERY = gql`
-  query GetAllPools {
+  query GetAllIPPools {
     QueryRootResourcePools {
       id
       Name
@@ -54,7 +58,7 @@ const DELETE_POOL_MUTATION = gql`
 
 const IpamPoolPage: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-  const [{ data, fetching: isQueryLoading, error }] = useQuery<GetAllPoolsQuery>({
+  const [{ data, fetching: isQueryLoading, error }] = useQuery<GetAllIpPoolsQuery>({
     query: POOLS_QUERY,
     context,
   });

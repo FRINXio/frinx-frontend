@@ -9,12 +9,12 @@ export function getFilteredResults<T extends { Name: string }>(searchResult: Sea
   return items.filter((item) => resultIds.includes(item.Name));
 }
 
-const useMinisearch = ({
+const useMinisearch = <T>({
   items,
   searchFields = ['Name'],
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  items?: Item<any>[];
+  items?: Item<T>[];
   searchFields?: string[];
 }) => {
   const [searchText, setSearchText] = useState('');
