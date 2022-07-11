@@ -4,8 +4,7 @@ import gql from 'graphql-tag';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
-import SearchTags from '../../components/search-tags';
-import { Searchbar } from '../../components/searchbar';
+import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import useMinisearch from '../../hooks/use-minisearch';
 import useNotifications from '../../hooks/use-notifications';
 import useTags from '../../hooks/use-tags';
@@ -90,6 +89,11 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     }
   };
 
+  const clearSearch = () => {
+    setSearchText('');
+    clearAllTags();
+  };
+
   if (error != null || data == null) {
     return <div>{error?.message}</div>;
   }
@@ -124,8 +128,14 @@ const IpamPoolPage: VoidFunctionComponent = () => {
         <Box position="absolute" top={0} left={0} right={0}>
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
-        <Searchbar value={searchText} onChange={(e) => setSearchText(e.target.value)} />
-        <SearchTags selectedTags={selectedTags} handleOnTagClick={handleOnTagClick} clearAllTags={clearAllTags} />
+        <SearchFilterPoolsBar
+          setSearchText={setSearchText}
+          searchText={searchText}
+          selectedTags={selectedTags}
+          clearAllTags={clearAllTags}
+          handleOnTagClick={handleOnTagClick}
+          clearSearch={clearSearch}
+        />
         <PoolsTable
           pools={ipPools}
           isLoading={isQueryLoading || isMutationLoading}

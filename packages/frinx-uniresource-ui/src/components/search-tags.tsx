@@ -1,6 +1,6 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Icon, InfoIcon } from '@chakra-ui/icons';
-import { HStack, Button, Tooltip, Tag, Text } from '@chakra-ui/react';
+import { HStack, Button, Tooltip, Tag, Text, Box } from '@chakra-ui/react';
 
 type Props = {
   selectedTags: string[];
@@ -10,9 +10,9 @@ type Props = {
 
 const SearchTags: VoidFunctionComponent<Props> = ({ selectedTags, handleOnTagClick, clearAllTags }) => {
   return (
-    <HStack mb={5}>
+    <HStack>
       {selectedTags.length > 0 ? (
-        <Button onClick={clearAllTags}>Clear all</Button>
+        <Button onClick={clearAllTags}>Clear tags</Button>
       ) : (
         <HStack>
           <Text fontSize="sm">Currently you have not selected any tag</Text>
@@ -24,13 +24,20 @@ const SearchTags: VoidFunctionComponent<Props> = ({ selectedTags, handleOnTagCli
           </Tooltip>
         </HStack>
       )}
-      <HStack>
+      <Box>
         {selectedTags.map((tag) => (
-          <Tag variant="solid" colorScheme="blue" cursor="pointer" key={tag} onClick={() => handleOnTagClick(tag)}>
+          <Tag
+            variant="solid"
+            colorScheme="blue"
+            cursor="pointer"
+            m={1}
+            key={tag}
+            onClick={() => handleOnTagClick(tag)}
+          >
             {tag}
           </Tag>
         ))}
-      </HStack>
+      </Box>
     </HStack>
   );
 };
