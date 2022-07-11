@@ -1,4 +1,3 @@
-import { ChevronDownIcon } from '@chakra-ui/icons';
 import { Flex, Link, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { NavLink, Route, Routes } from 'react-router-dom';
@@ -156,7 +155,6 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                     _active={{
                       background: 'brand.800',
                     }}
-                    rightIcon={<ChevronDownIcon />}
                   >
                     IPAM
                   </MenuButton>

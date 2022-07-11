@@ -1,16 +1,26 @@
 import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
-import React, { useMemo, VoidFunctionComponent } from 'react';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
 import useNotifications from '../../hooks/use-notifications';
-import { DeletePoolMutation, DeletePoolMutationMutationVariables, GetAllPoolsQuery } from '../../__generated__/graphql';
+import {
+  DeletePoolMutation,
+  DeletePoolMutationMutationVariables,
+  GetPoolsQuery,
+  GetPoolsQueryVariables,
+  GetResourceTypesQuery,
+  GetResourceTypesQueryVariables,
+} from '../../__generated__/graphql';
 import PoolsTable from './pools-table';
+import useMinisearch from '../../hooks/use-minisearch';
+import useTags from '../../hooks/use-tags';
+import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 
-const POOLS_QUERY = gql`
-  query GetAllPools {
-    QueryRootResourcePools {
+const ALL_POOLS_QUERY = gql`
+  query GetPools($resourceTypeId: ID) {
+    QueryRootResourcePools(resourceTypeId: $resourceTypeId) {
       id
       Name
       PoolType
@@ -42,6 +52,7 @@ const POOLS_QUERY = gql`
     }
   }
 `;
+
 const DELETE_POOL_MUTATION = gql`
   mutation DeletePool($input: DeleteResourcePoolInput!) {
     DeleteResourcePool(input: $input) {
@@ -50,17 +61,32 @@ const DELETE_POOL_MUTATION = gql`
   }
 `;
 
+const GET_RESOURCE_TYPES = gql`
+  query GetResourceTypes {
+    QueryResourceTypes {
+      id
+      Name
+    }
+  }
+`;
+
 const PoolsPage: VoidFunctionComponent = () => {
+  const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
+  const [selectedResourceType, setSelectedResourceType] = useState<string>('');
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-  const [{ data, fetching: isQueryLoading, error }] = useQuery<GetAllPoolsQuery>({
-    query: POOLS_QUERY,
+  const [{ data, fetching: isQueryLoading, error }] = useQuery<GetPoolsQuery, GetPoolsQueryVariables>({
+    query: ALL_POOLS_QUERY,
     context,
+  });
+  const [{ data: resourceTypes }] = useQuery<GetResourceTypesQuery, GetResourceTypesQueryVariables>({
+    query: GET_RESOURCE_TYPES,
   });
   const [{ fetching: isMutationLoading }, deletePool] = useMutation<
     DeletePoolMutation,
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
   const { addToastNotification } = useNotifications();
+  const { results, searchText, setSearchText } = useMinisearch({ items: data?.QueryRootResourcePools });
 
   const handleDeleteBtnClick = async (id: string) => {
     try {
@@ -80,13 +106,39 @@ const PoolsPage: VoidFunctionComponent = () => {
     }
   };
 
-  if (error != null) {
+  const clearSearch = () => {
+    setSearchText('');
+    clearAllTags();
+    setSelectedResourceType('');
+  };
+
+  if (error != null || data == null) {
     return <div>{error?.message}</div>;
   }
 
-  if (data == null && isQueryLoading) {
+  if (isQueryLoading) {
     return <Progress isIndeterminate size="lg" />;
   }
+
+  const isSelectedResourceTypeEmpty = selectedResourceType == null || selectedResourceType.trim().length === 0;
+
+  const resourcePools = results.filter((pool) => {
+    if (!isSelectedResourceTypeEmpty && selectedTags.length > 0) {
+      return (
+        pool.Tags.some((poolTag) => selectedTags.includes(poolTag.Tag)) && pool.ResourceType.id === selectedResourceType
+      );
+    }
+
+    if (!isSelectedResourceTypeEmpty) {
+      return pool.ResourceType.id === selectedResourceType;
+    }
+
+    if (selectedTags.length > 0) {
+      return pool.Tags.some((poolTag) => selectedTags.includes(poolTag.Tag));
+    }
+
+    return true;
+  });
 
   return (
     <>
@@ -106,14 +158,28 @@ const PoolsPage: VoidFunctionComponent = () => {
           </Button>
         </Box>
       </Flex>
+      <SearchFilterPoolsBar
+        setSearchText={setSearchText}
+        searchText={searchText}
+        selectedTags={selectedTags}
+        selectedResourceType={selectedResourceType}
+        setSelectedResourceType={setSelectedResourceType}
+        clearAllTags={clearAllTags}
+        handleOnTagClick={handleOnTagClick}
+        clearSearch={clearSearch}
+        resourceTypes={resourceTypes?.QueryResourceTypes}
+        canFilterByResourceType
+      />
+
       <Box position="relative" marginBottom={5}>
         <Box position="absolute" top={0} left={0} right={0}>
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
         <PoolsTable
-          pools={data?.QueryRootResourcePools ?? []}
+          pools={resourcePools}
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}
+          onTagClick={handleOnTagClick}
         />
       </Box>
     </>

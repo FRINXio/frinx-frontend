@@ -793,6 +793,11 @@ export type SelectAllocationStrategiesQueryVariables = Exact<{ [key: string]: ne
 
 export type SelectAllocationStrategiesQuery = { __typename?: 'Query', QueryAllocationStrategies: Array<{ __typename?: 'AllocationStrategy', id: string, Name: string }> };
 
+export type GetAllIpPoolsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllIpPoolsQuery = { __typename?: 'Query', QueryRootResourcePools: Array<{ __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, PoolProperties: any, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, AllocationStrategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang } | null, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null }> };
+
 export type GetPoolDetailQueryVariables = Exact<{
   poolId: Scalars['ID'];
 }>;
@@ -840,10 +845,17 @@ export type FreeResourceMutationVariables = Exact<{
 
 export type FreeResourceMutation = { __typename?: 'Mutation', FreeResource: string };
 
-export type GetAllPoolsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetPoolsQueryVariables = Exact<{
+  resourceTypeId?: InputMaybe<Scalars['ID']>;
+}>;
 
 
-export type GetAllPoolsQuery = { __typename?: 'Query', QueryRootResourcePools: Array<{ __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, PoolProperties: any, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, AllocationStrategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang } | null, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null }> };
+export type GetPoolsQuery = { __typename?: 'Query', QueryRootResourcePools: Array<{ __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, PoolProperties: any, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, AllocationStrategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang } | null, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null }> };
+
+export type GetResourceTypesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetResourceTypesQuery = { __typename?: 'Query', QueryResourceTypes: Array<{ __typename?: 'ResourceType', id: string, Name: string }> };
 
 export type ResourceTypesQueryVariables = Exact<{ [key: string]: never; }>;
 

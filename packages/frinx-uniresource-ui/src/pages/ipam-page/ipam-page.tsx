@@ -4,12 +4,19 @@ import gql from 'graphql-tag';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
+import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
+import useMinisearch from '../../hooks/use-minisearch';
 import useNotifications from '../../hooks/use-notifications';
-import { DeletePoolMutation, DeletePoolMutationMutationVariables, GetAllPoolsQuery } from '../../__generated__/graphql';
+import useTags from '../../hooks/use-tags';
+import {
+  DeletePoolMutation,
+  DeletePoolMutationMutationVariables,
+  GetAllIpPoolsQuery,
+} from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
 
 const POOLS_QUERY = gql`
-  query GetAllPools {
+  query GetAllIPPools {
     QueryRootResourcePools {
       id
       Name
@@ -52,7 +59,7 @@ const DELETE_POOL_MUTATION = gql`
 
 const IpamPoolPage: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-  const [{ data, fetching: isQueryLoading, error }] = useQuery<GetAllPoolsQuery>({
+  const [{ data, fetching: isQueryLoading, error }] = useQuery<GetAllIpPoolsQuery>({
     query: POOLS_QUERY,
     context,
   });
@@ -61,6 +68,8 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
   const { addToastNotification } = useNotifications();
+  const { searchText, setSearchText, results } = useMinisearch({ items: data?.QueryRootResourcePools });
+  const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
 
   const handleDeleteBtnClick = async (id: string) => {
     try {
@@ -80,6 +89,11 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     }
   };
 
+  const clearSearch = () => {
+    setSearchText('');
+    clearAllTags();
+  };
+
   if (error != null || data == null) {
     return <div>{error?.message}</div>;
   }
@@ -88,7 +102,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     return <Progress isIndeterminate size="lg" />;
   }
 
-  const ipPools = data.QueryRootResourcePools.filter(
+  const ipPools = results.filter(
     (pool) => pool.ResourceType.Name === 'ipv4_prefix' || pool.ResourceType.Name === 'ipv6_prefix',
   );
 
@@ -104,7 +118,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
             leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
             colorScheme="blue"
             as={Link}
-            to="new"
+            to="/uniresource/pools/new"
           >
             Create Pool
           </Button>
@@ -114,10 +128,19 @@ const IpamPoolPage: VoidFunctionComponent = () => {
         <Box position="absolute" top={0} left={0} right={0}>
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
+        <SearchFilterPoolsBar
+          setSearchText={setSearchText}
+          searchText={searchText}
+          selectedTags={selectedTags}
+          clearAllTags={clearAllTags}
+          handleOnTagClick={handleOnTagClick}
+          clearSearch={clearSearch}
+        />
         <PoolsTable
-          pools={ipPools ?? []}
+          pools={ipPools}
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}
+          onTagClick={handleOnTagClick}
         />
       </Box>
     </>

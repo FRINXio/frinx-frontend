@@ -17,6 +17,7 @@
     "graphql": "15.8.0",
     "lodash": "4.17.21",
     "match-sorter": "6.3.1",
+    "minisearch": "^5.0.0",
     "react-ace": "9.5.0",
     "react-hook-form": "7.12.2",
     "urql": "2.2.2",

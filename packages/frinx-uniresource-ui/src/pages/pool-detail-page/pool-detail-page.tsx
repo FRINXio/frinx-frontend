@@ -18,9 +18,9 @@ import {
   DeletePoolMutationMutationVariables,
   FreeResourceMutationMutation,
   FreeResourceMutationMutationVariables,
-  GetAllPoolsQuery,
   GetPoolDetailQuery,
   GetPoolDetailQueryVariables,
+  GetPoolsQuery,
   GetResourceTypeByNameQuery,
   GetResourceTypeByNameQueryVariables,
   PoolCapacityPayload,
@@ -390,7 +390,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   const { QueryResourcePool: resourcePool } = poolData;
   const capacityValue = getCapacityValue(resourcePool.Capacity);
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
-  const nestedPools: GetAllPoolsQuery['QueryRootResourcePools'] = resourcePool.Resources.map((resource) =>
+  const nestedPools: GetPoolsQuery['QueryRootResourcePools'] = resourcePool.Resources.map((resource) =>
     resource.NestedPool !== null ? resource.NestedPool : null,
   ).filter(omitNullValue);
   const canClaimResources =

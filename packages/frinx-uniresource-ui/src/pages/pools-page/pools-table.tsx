@@ -16,13 +16,14 @@
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { GetAllPoolsQuery, PoolCapacityPayload } from '../../__generated__/graphql';
+import { GetPoolsQuery, PoolCapacityPayload, Tag as TagType } from '../../__generated__/graphql';
 
 type Props = {
-  pools: GetAllPoolsQuery['QueryRootResourcePools'];
+  pools: GetPoolsQuery['QueryRootResourcePools'];
   isLoading: boolean;
-  onDeleteBtnClick: (id: string) => void;
   isNestedShown?: boolean;
+  onDeleteBtnClick: (id: string) => void;
+  onTagClick?: (tag: string) => void;
 };
 
 function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
@@ -42,7 +43,13 @@ function getCapacityValue(capacity: PoolCapacityPayload | null): number {
   return (Number(capacity.utilizedCapacity) / totalCapacity) * 100;
 }
 
-const PoolsTable: VoidFunctionComponent<Props> = ({ pools, onDeleteBtnClick, isLoading, isNestedShown = true }) => {
+const PoolsTable: VoidFunctionComponent<Props> = ({
+  pools,
+  onDeleteBtnClick,
+  isLoading,
+  isNestedShown = true,
+  onTagClick,
+}) => {
   return (
     <Table background="white" size="sm">
       <Thead>
@@ -72,7 +79,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({ pools, onDeleteBtnClick, isL
                       <Button
                         isDisabled={!hasNestedPools}
                         as={Link}
-                        to={`nested/${pool.id}`}
+                        to={`/uniresource/pools/nested/${pool.id}`}
                         rightIcon={<FeatherIcon icon="chevron-down" size={20} />}
                         size="xs"
                       >
@@ -86,8 +93,17 @@ const PoolsTable: VoidFunctionComponent<Props> = ({ pools, onDeleteBtnClick, isL
                     </Text>
                   </Td>
                   <Td>
-                    {pool.Tags?.map((t) => (
-                      <Tag key={t.id} marginRight={1}>
+                    {pool.Tags?.map((t: Omit<TagType, 'Pools'>) => (
+                      <Tag
+                        key={t.id}
+                        marginRight={1}
+                        cursor="pointer"
+                        onClick={() => {
+                          if (t && onTagClick) {
+                            onTagClick(t.Tag);
+                          }
+                        }}
+                      >
                         {t.Tag}
                       </Tag>
                     ))}
