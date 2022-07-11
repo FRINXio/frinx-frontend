@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import {
   Button,
   Checkbox,
@@ -18,16 +18,14 @@ import {
 } from '@chakra-ui/react';
 import Editor from 'react-ace';
 import { ScheduledWorkflow } from '@frinx/workflow-ui/src/helpers/types';
+import { useFormik } from 'formik';
+import callbackUtils from '../../utils/callback-utils';
 
 const DEFAULT_CRON_STRING = '* * * * *';
 
 export type ScheduledWorkflowModal = {
-  workflowName?: string;
-  workflowVersion?: string;
-  workflowContext?: Record<string, string>;
-  cronString?: string;
-  enabled?: boolean;
-  correlationId: string;
+  workflowName: string;
+  workflowVersion: string;
 };
 
 type Props = {
@@ -38,38 +36,31 @@ type Props = {
 };
 
 const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
-  const [scheduledWf, setScheduledWf] = useState<Partial<ScheduledWorkflow>>({
-    workflowName: workflow.workflowName,
-    workflowVersion: workflow.workflowVersion,
-    workflowContext: workflow.workflowContext,
-    name: `${workflow.workflowName}:${workflow.workflowVersion}`,
-    cronString: DEFAULT_CRON_STRING,
-    enabled: false,
-    correlationId: workflow.correlationId,
+  const { getSchedule } = callbackUtils.getCallbacks;
+
+  const { values, handleChange, handleSubmit, submitForm, setFieldValue } = useFormik({
+    initialValues: {
+      workflowName: workflow.workflowName,
+      workflowVersion: workflow.workflowVersion,
+      workflowContext: {},
+      name: `${workflow.workflowName}:${workflow.workflowVersion}`,
+      cronString: DEFAULT_CRON_STRING,
+      enabled: false,
+    },
+    onSubmit: (formValues) => {
+      onSubmit(formValues);
+      onClose();
+    },
   });
 
-  const handleSubmit = () => {
-    onSubmit(scheduledWf);
-    onClose();
-  };
-
-  const setWorkflowContext = (workflowContext: string) => {
-    try {
-      const ctx = JSON.parse(workflowContext);
-      const myScheduleWf = {
-        ...scheduledWf,
-        workflowContext: ctx,
-      };
-      setScheduledWf(myScheduleWf);
-    } catch (e) {
-      if (e instanceof Error) {
-        console.error(e.message);
-      }
-    }
-  };
+  useEffect(() => {
+    getSchedule(workflow.workflowName, workflow.workflowVersion).then((scheduledWorkflow) => {
+      setFieldValue('workflowContext', scheduledWorkflow.workflowContext ?? {});
+    });
+  }, [workflow]);
 
   const getCrontabGuruUrl = () => {
-    const cronString = scheduledWf.cronString || DEFAULT_CRON_STRING;
+    const cronString = values.cronString || DEFAULT_CRON_STRING;
     const url = 'https://crontab.guru/#' + cronString.replace(/\s/g, '_');
     return (
       <Link href={url} color="brand.500">
@@ -82,47 +73,53 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
     <Modal size="3xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Schedule Details - {scheduledWf.workflowName}</ModalHeader>
+        <ModalHeader>
+          Schedule Details - {values.workflowName}:{values.workflowVersion}
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <FormControl>
-            <FormLabel>Cron Expression</FormLabel>
-            <Input
-              value={scheduledWf.cronString || DEFAULT_CRON_STRING}
-              onChange={(e) => {
-                e.persist();
-                setScheduledWf((prev) => ({ ...prev, cronString: e.target.value }));
-              }}
-              placeholder="Enter cron expression"
-            />
-            <FormHelperText>Verify using {getCrontabGuruUrl()}</FormHelperText>
-          </FormControl>
-          <FormControl marginTop={5} marginBottom={5}>
-            <Checkbox
-              onChange={(e) => {
-                e.persist();
-                setScheduledWf((prev) => ({ ...prev, enabled: e.target.checked }));
-              }}
-              isChecked={scheduledWf.enabled || false}
-            >
-              Enabled
-            </Checkbox>
-          </FormControl>
-          <FormControl>
-            <FormLabel>Workflow Context</FormLabel>
-            <Editor
-              name="schedule_editor"
-              mode="json"
-              onChange={setWorkflowContext}
-              value={JSON.stringify(scheduledWf.workflowContext, null, 2)}
-              height="400px"
-              width="100%"
-            />
-          </FormControl>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit(e);
+            }}
+          >
+            <FormControl>
+              <FormLabel>Cron Expression</FormLabel>
+              <Input
+                value={values.cronString}
+                onChange={handleChange}
+                name="cronString"
+                placeholder="Enter cron expression"
+              />
+              <FormHelperText>Verify using {getCrontabGuruUrl()}</FormHelperText>
+            </FormControl>
+            <FormControl marginTop={5} marginBottom={5}>
+              <Checkbox onChange={handleChange} name="enabled" isChecked={values.enabled}>
+                Enabled
+              </Checkbox>
+            </FormControl>
+            <FormControl>
+              <FormLabel>Workflow Context</FormLabel>
+              <Editor
+                name="workflowContext"
+                mode="json"
+                onChange={(e) => {
+                  try {
+                    const parsedJSON = JSON.parse(e);
+                    setFieldValue('workflowContext', parsedJSON);
+                  } catch (error) {}
+                }}
+                value={JSON.stringify(values.workflowContext, null, 2)}
+                height="400px"
+                width="100%"
+              />
+            </FormControl>
+          </form>
         </ModalBody>
         <ModalFooter>
           <HStack spacing={2}>
-            <Button colorScheme="blue" onClick={handleSubmit}>
+            <Button colorScheme="blue" onClick={submitForm}>
               Update
             </Button>
             <Button onClick={onClose}>Close</Button>

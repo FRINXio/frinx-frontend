@@ -145,9 +145,11 @@ const WorkflowDefinitions = () => {
 
   function handleWorkflowSchedule(scheduledWf: Partial<ScheduledWorkflow>) {
     const { registerSchedule } = callbackUtils.getCallbacks;
-
     if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
-      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, scheduledWf)
+      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, {
+        ...scheduledWf,
+        workflowVersion: String(scheduledWf.workflowVersion),
+      })
         .then(() => {
           addToastNotification({
             type: 'success',
@@ -270,7 +272,10 @@ const WorkflowDefinitions = () => {
       />
       {activeWf != null && (
         <ScheduledWorkflowModal
-          workflow={activeWf}
+          workflow={{
+            workflowName: activeWf.name,
+            workflowVersion: activeWf.version,
+          }}
           onClose={schedulingModal.onClose}
           isOpen={schedulingModal.isOpen}
           onSubmit={handleWorkflowSchedule}
