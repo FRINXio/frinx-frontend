@@ -145,7 +145,7 @@ const ExecutedWorkflowList = () => {
     setPagination((prev) => ({ ...prev, page: pageNumber }));
   };
 
-  const handleOnSuccessfullFetch = () => {
+  const handleSuccessfullOperation = () => {
     fetchData();
   };
 
@@ -155,7 +155,7 @@ const ExecutedWorkflowList = () => {
         workflowsAmount={workflows.result.totalHits}
         selectedWorkflows={state.selectedWorkflows}
         selectAllWorkflows={selectAllWorkflows}
-        onSuccessfullFetch={handleOnSuccessfullFetch}
+        onSuccessfullOperation={handleSuccessfullOperation}
       />
 
       <ExecutedWorkflowSearchBox
