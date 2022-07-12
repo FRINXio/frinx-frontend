@@ -51,7 +51,7 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
       const operations = callbackUtils.getCallbacks;
       Promise.all(selectedWorkflows.map(async (workflow) => await operations[operationFunctionName](workflow)))
         .then(() => {
-          addToastNotification({ content: 'Successfully deleted bulk operation', type: 'success', title: 'Success' });
+          addToastNotification({ content: 'Successfully deleted executed workflows', type: 'success', title: 'Success' });
           onSuccessfullDelete();
         })
         .catch((err) => addToastNotification({ content: err.message, type: 'error', title: 'Error' }))
