@@ -30,9 +30,15 @@ type Props = {
   workflowsAmount: number;
   selectedWorkflows: string[];
   selectAllWorkflows: (isChecked: boolean) => void;
+  onSuccessfullDelete: () => void;
 };
 
-const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({ workflowsAmount, selectedWorkflows, selectAllWorkflows }) => {
+const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
+  workflowsAmount,
+  selectedWorkflows,
+  selectAllWorkflows,
+  onSuccessfullDelete,
+}) => {
   const [isFetching, setIsFetching] = useState(false);
   const { addToastNotification } = useNotifications();
 
@@ -44,9 +50,10 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({ workflowsAmount, selec
     if (operationFunctionName === 'deleteWorkflowInstance') {
       const operations = callbackUtils.getCallbacks;
       Promise.all(selectedWorkflows.map(async (workflow) => await operations[operationFunctionName](workflow)))
-        .then(() =>
-          addToastNotification({ content: 'Successfully deleted bulk operation', type: 'success', title: 'Success' }),
-        )
+        .then(() => {
+          addToastNotification({ content: 'Successfully deleted bulk operation', type: 'success', title: 'Success' });
+          onSuccessfullDelete();
+        })
         .catch((err) => addToastNotification({ content: err.message, type: 'error', title: 'Error' }))
         .finally(() => {
           setIsFetching(false);

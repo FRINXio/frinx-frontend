@@ -145,12 +145,31 @@ const ExecutedWorkflowList = () => {
     setPagination((prev) => ({ ...prev, page: pageNumber }));
   };
 
+  const onSuccessfullDelete = () => {
+    const fetchData = async () => {
+      const executedWorkflows = await getWorkflows(
+        state.workflowId,
+        state.labels,
+        (pagination.page - 1) * pagination.pageSize,
+        pagination.pageSize,
+        state.sortBy,
+        state.sortOrder,
+        state.isFlat,
+      );
+
+      setWorkflows(executedWorkflows);
+      setPagination((prev) => ({ ...prev, pageCount: Math.ceil(executedWorkflows.result.totalHits / prev.pageSize) }));
+    };
+    fetchData();
+  };
+
   return (
     <PageContainer>
       <ExecutedWorkflowBulkOperationsBlock
         workflowsAmount={workflows.result.totalHits}
         selectedWorkflows={state.selectedWorkflows}
         selectAllWorkflows={selectAllWorkflows}
+        onSuccessfullDelete={onSuccessfullDelete}
       />
 
       <ExecutedWorkflowSearchBox
