@@ -63,7 +63,7 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
   };
 
   if (fetching) {
-    return <Progress isIndeterminate size="xs" mt={-20} />;
+    return <Progress isIndeterminate size="sm" mt={-10} />;
   }
 
   if (error != null) {
