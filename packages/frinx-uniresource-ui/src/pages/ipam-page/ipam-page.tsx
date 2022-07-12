@@ -89,7 +89,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     }
   };
 
-  const clearSearch = () => {
+  const handleOnClearSearch = () => {
     setSearchText('');
     clearAllTags();
   };
@@ -133,8 +133,8 @@ const IpamPoolPage: VoidFunctionComponent = () => {
           searchText={searchText}
           selectedTags={selectedTags}
           clearAllTags={clearAllTags}
-          handleOnTagClick={handleOnTagClick}
-          clearSearch={clearSearch}
+          onTagClick={handleOnTagClick}
+          onClearSearch={handleOnClearSearch}
         />
         <PoolsTable
           pools={ipPools}

@@ -106,7 +106,7 @@ const PoolsPage: VoidFunctionComponent = () => {
     }
   };
 
-  const clearSearch = () => {
+  const handleOnClearSearch = () => {
     setSearchText('');
     clearAllTags();
     setSelectedResourceType('');
@@ -165,8 +165,8 @@ const PoolsPage: VoidFunctionComponent = () => {
         selectedResourceType={selectedResourceType}
         setSelectedResourceType={setSelectedResourceType}
         clearAllTags={clearAllTags}
-        handleOnTagClick={handleOnTagClick}
-        clearSearch={clearSearch}
+        onTagClick={handleOnTagClick}
+        onClearSearch={handleOnClearSearch}
         resourceTypes={resourceTypes?.QueryResourceTypes}
         canFilterByResourceType
       />

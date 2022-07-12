@@ -162,8 +162,10 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                     <MenuItem to="/uniresource/ipam" as={NavLink}>
                       IPAM
                     </MenuItem>
+                    <MenuItem as={NavLink} to="/uniresource/ipam/aggregates">
+                      Aggregates
+                    </MenuItem>
                     {/* <MenuItem>IP Ranges</MenuItem>
-                    <MenuItem>Aggregates</MenuItem>
                     <MenuItem>Prefixes</MenuItem> */}
                   </MenuList>
                 </Menu>

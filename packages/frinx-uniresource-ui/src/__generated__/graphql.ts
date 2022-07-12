@@ -793,6 +793,11 @@ export type SelectAllocationStrategiesQueryVariables = Exact<{ [key: string]: ne
 
 export type SelectAllocationStrategiesQuery = { __typename?: 'Query', QueryAllocationStrategies: Array<{ __typename?: 'AllocationStrategy', id: string, Name: string }> };
 
+export type GetIpPoolsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetIpPoolsQuery = { __typename?: 'Query', QueryRootResourcePools: Array<{ __typename?: 'ResourcePool', id: string, Name: string, PoolProperties: any, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null }> };
+
 export type GetAllIpPoolsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
