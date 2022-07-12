@@ -3415,6 +3415,7 @@ __metadata:
     graphql: 15.8.0
     graphql-tag: 2.12.6
     html-webpack-plugin: 5.5.0
+    ipaddr.js: ^2.0.1
     lodash: 4.17.21
     match-sorter: 6.3.1
     minisearch: ^5.0.0

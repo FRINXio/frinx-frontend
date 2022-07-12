@@ -4,11 +4,11 @@ import { HStack, Button, Tooltip, Tag, Text, Box } from '@chakra-ui/react';
 
 type Props = {
   selectedTags: string[];
-  handleOnTagClick: (tag: string) => void;
+  onTagClick: (tag: string) => void;
   clearAllTags: () => void;
 };
 
-const SearchTags: VoidFunctionComponent<Props> = ({ selectedTags, handleOnTagClick, clearAllTags }) => {
+const SearchTags: VoidFunctionComponent<Props> = ({ selectedTags, onTagClick, clearAllTags }) => {
   return (
     <HStack>
       {selectedTags.length > 0 ? (
@@ -26,14 +26,7 @@ const SearchTags: VoidFunctionComponent<Props> = ({ selectedTags, handleOnTagCli
       )}
       <Box>
         {selectedTags.map((tag) => (
-          <Tag
-            variant="solid"
-            colorScheme="blue"
-            cursor="pointer"
-            m={1}
-            key={tag}
-            onClick={() => handleOnTagClick(tag)}
-          >
+          <Tag variant="solid" colorScheme="blue" cursor="pointer" m={1} key={tag} onClick={() => onTagClick(tag)}>
             {tag}
           </Tag>
         ))}
