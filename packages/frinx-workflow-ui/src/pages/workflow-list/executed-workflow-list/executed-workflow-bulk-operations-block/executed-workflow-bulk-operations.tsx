@@ -30,14 +30,14 @@ type Props = {
   workflowsAmount: number;
   selectedWorkflows: string[];
   selectAllWorkflows: (isChecked: boolean) => void;
-  onSuccessfullDelete: () => void;
+  onSuccessfullFetch: () => void;
 };
 
 const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
   workflowsAmount,
   selectedWorkflows,
   selectAllWorkflows,
-  onSuccessfullDelete,
+  onSuccessfullFetch,
 }) => {
   const [isFetching, setIsFetching] = useState(false);
   const { addToastNotification } = useNotifications();
@@ -56,7 +56,7 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
             type: 'success',
             title: 'Success',
           });
-          onSuccessfullDelete();
+          onSuccessfullFetch();
         })
         .catch((err) => addToastNotification({ content: err.message, type: 'error', title: 'Error' }))
         .finally(() => {
@@ -66,9 +66,10 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
     } else {
       const operations = callbackUtils.getCallbacks;
       operations[operationFunctionName](selectedWorkflows)
-        .then(() =>
+        .then(() => {
           addToastNotification({ content: 'Successfully executed bulk operation', type: 'success', title: 'Success' }),
-        )
+            onSuccessfullFetch();
+        })
         .catch((err) => addToastNotification({ content: err.message, type: 'error', title: 'Error' }))
         .finally(() => {
           setIsFetching(false);
