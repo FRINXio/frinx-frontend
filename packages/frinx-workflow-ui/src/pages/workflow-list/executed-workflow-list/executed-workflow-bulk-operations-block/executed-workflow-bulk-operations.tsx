@@ -45,7 +45,7 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({ workflowsAmount, selec
       const operations = callbackUtils.getCallbacks;
       Promise.all(selectedWorkflows.map(async (workflow) => await operations[operationFunctionName](workflow)))
         .then(() =>
-          addToastNotification({ content: 'Successfully executed bulk operation', type: 'success', title: 'Success' }),
+          addToastNotification({ content: 'Successfully deleted bulk operation', type: 'success', title: 'Success' }),
         )
         .catch((err) => addToastNotification({ content: err.message, type: 'error', title: 'Error' }))
         .finally(() => {
