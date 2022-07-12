@@ -49,9 +49,13 @@ function getDecisionTask(tasks: Task[], elements: Elements, currentNode: Node): 
   const [decisionCases, defaultCase] = partition(decisionTasks, (d) => d[0] !== 'default');
 
   // we convert [string, Task[]][] -> Record<string, Task[]>
-  currentTask.decisionCases = decisionCases.reduce((acc, cur) => ({ ...acc, [cur[0]]: cur[1] }), {});
+  const newDecisionCases = decisionCases.reduce((acc, cur) => ({ ...acc, [cur[0]]: cur[1] }), {});
   const defaultCaseTasks = defaultCase[0][1];
-  currentTask.defaultCase = defaultCaseTasks;
+  const editedTask = {
+    ...currentTask,
+    decisionCases: newDecisionCases,
+    defaultCase: defaultCaseTasks,
+  };
 
   // it is possible that current decision task is nested
   // we need to find all elements after decision end node till the diagram end or when there is another join
@@ -59,10 +63,10 @@ function getDecisionTask(tasks: Task[], elements: Elements, currentNode: Node): 
   try {
     const nextJoinNode = findForkOrDecisionEndNode(elements, decisionEndNode, 0);
     const nextTasks: Task[] = traverseElements([], elements, decisionEndNode.id, nextJoinNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
-    return [...tasks, currentTask, ...nextTasks];
+    return [...tasks, editedTask, ...nextTasks];
   } catch {
     const nextTasks: Task[] = traverseElements([], elements, decisionEndNode.id, 'end'); // eslint-disable-line @typescript-eslint/no-use-before-define
-    return [...tasks, currentTask, ...nextTasks];
+    return [...tasks, editedTask, ...nextTasks];
   }
 }
 
