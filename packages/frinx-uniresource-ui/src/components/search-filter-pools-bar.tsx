@@ -11,9 +11,9 @@ type Props = {
   canFilterByResourceType?: boolean;
   setSearchText: (text: string) => void;
   setSelectedResourceType?: (value: string) => void;
-  clearSearch?: () => void;
+  onClearSearch?: () => void;
   clearAllTags: () => void;
-  handleOnTagClick: (tag: string) => void;
+  onTagClick: (tag: string) => void;
 };
 
 const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
@@ -22,8 +22,8 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
   selectedTags,
   resourceTypes,
   clearAllTags,
-  clearSearch,
-  handleOnTagClick,
+  onClearSearch,
+  onTagClick,
   selectedResourceType,
   setSelectedResourceType,
   canFilterByResourceType = false,
@@ -51,9 +51,9 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
         )}
       </HStack>
       <HStack mb={5}>
-        <SearchTags selectedTags={selectedTags} handleOnTagClick={handleOnTagClick} clearAllTags={clearAllTags} />
+        <SearchTags selectedTags={selectedTags} onTagClick={onTagClick} clearAllTags={clearAllTags} />
         <Spacer />
-        <Button variant="outline" colorScheme="red" onClick={() => clearSearch && clearSearch()}>
+        <Button variant="outline" colorScheme="red" onClick={() => onClearSearch && onClearSearch()}>
           Clear all
         </Button>
       </HStack>

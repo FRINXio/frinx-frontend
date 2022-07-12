@@ -12,13 +12,17 @@ export function getFilteredResults<T extends { Name: string }>(searchResult: Sea
 const useMinisearch = <T>({
   items,
   searchFields = ['Name'],
+  extractField,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   items?: Item<T>[];
   searchFields?: string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  extractField?: (document: any, fieldName: string) => string;
 }) => {
   const [searchText, setSearchText] = useState('');
-  const { current: minisearch } = useRef(new MiniSearch({ fields: searchFields, idField: 'Name' }));
+  const { current: minisearch } = useRef(
+    new MiniSearch({ fields: searchFields, idField: 'Name', ...(extractField != null && { extractField }) }),
+  );
   const searchFn = () =>
     throttle(() => {
       if (searchText != null) {
