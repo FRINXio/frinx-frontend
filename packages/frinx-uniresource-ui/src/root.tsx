@@ -10,6 +10,7 @@ import StrategiesPage from './pages/strategies-page/strategies-page';
 import IpamPage from './pages/ipam-page/ipam-page';
 import IpamAggregatesPage from './pages/ipam-page/ipam-aggregates-page';
 import IpamIpRangesPage from './pages/ipam-page/ipam-ip-ranges-page';
+import IpamNestedIpRangesDetailPage from './pages/ipam-page/ipam-nested-ip-ranges-detail-page/ipam-nested-ip-ranges-detail-page';
 
 const Root: VoidFunctionComponent = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const Root: VoidFunctionComponent = () => {
       <Route path="ipam" element={<IpamPage />} />
       <Route path="ipam/aggregates" element={<IpamAggregatesPage />} />
       <Route path="ipam/ip-ranges" element={<IpamIpRangesPage />} />
+      <Route path="ipam/ip-ranges/:id/nested-ranges" element={<IpamNestedIpRangesDetailPage />} />
       <Route path="pools" element={<PoolsPage />} />
       <Route path="pools/:poolId" element={<PoolDetailPage />} />
       <Route
