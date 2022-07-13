@@ -1,36 +1,47 @@
 import { Heading, Progress } from '@chakra-ui/react';
-import React, { VoidFunctionComponent } from 'react';
-import { gql, useQuery } from 'urql';
 import { IPv4, IPv6 } from 'ipaddr.js';
-import useMinisearch from '../../hooks/use-minisearch';
-import useTags from '../../hooks/use-tags';
-import { GetPoolIpRangesQuery, GetPoolIpRangesQueryVariables } from '../../__generated__/graphql';
-import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
-import IpRangesTable from './ip-ranges-table';
+import { compact } from 'lodash';
+import React, { VoidFunctionComponent } from 'react';
+import { useParams } from 'react-router-dom';
+import { gql, useQuery } from 'urql';
+import SearchFilterPoolsBar from '../../../components/search-filter-pools-bar';
+import useMinisearch from '../../../hooks/use-minisearch';
+import useTags from '../../../hooks/use-tags';
+import { GetIpRangeDetailQuery, GetIpRangeDetailQueryVariables } from '../../../__generated__/graphql';
+import IpRangesTable from '../ip-ranges-table';
 
-const GET_POOLS_QUERY = gql`
-  query GetPoolIpRanges {
-    QueryRootResourcePools {
-      id
+const GET_RANGE_DETAIL_QUERY = gql`
+  query GetIpRangeDetail($poolId: ID!) {
+    QueryResourcePool(poolId: $poolId) {
       Name
-      Tags {
-        id
-        Tag
-      }
-      ResourceType {
-        id
-        Name
-      }
-      PoolProperties
       Resources {
+        Properties
         id
         NestedPool {
           id
+          Name
+          PoolType
+          Tags {
+            id
+            Tag
+          }
+          PoolProperties
+          ResourceType {
+            id
+            Name
+          }
+          Resources {
+            id
+            NestedPool {
+              id
+              Name
+            }
+          }
+          Capacity {
+            freeCapacity
+            utilizedCapacity
+          }
         }
-      }
-      Capacity {
-        freeCapacity
-        utilizedCapacity
       }
     }
   }
@@ -47,16 +58,19 @@ const getAddressesFromCIDR = (cidr: string, resourceTypeName: string) => ({
     : IPv6.broadcastAddressFromCIDR(cidr).toString(),
 });
 
-const IpamIpRangesPage: VoidFunctionComponent = () => {
-  const [{ data, fetching, error }] = useQuery<GetPoolIpRangesQuery, GetPoolIpRangesQueryVariables>({
-    query: GET_POOLS_QUERY,
+const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
+  const { id } = useParams();
+
+  const [{ data, fetching, error }] = useQuery<GetIpRangeDetailQuery, GetIpRangeDetailQueryVariables>({
+    query: GET_RANGE_DETAIL_QUERY,
+    variables: {
+      poolId: id || '',
+    },
   });
 
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
   const { results, searchText, setSearchText } = useMinisearch({
-    items: data?.QueryRootResourcePools.filter(
-      (pool) => pool.ResourceType.Name === 'ipv4_prefix' || pool.ResourceType.Name === 'ipv6_prefix',
-    ),
+    items: compact(data?.QueryResourcePool.Resources.map((resource) => resource.NestedPool)),
     searchFields: ['Name', 'PoolProperties'],
     extractField: (document, fieldName) => {
       if (fieldName === 'PoolProperties') {
@@ -77,20 +91,18 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
   }
 
   if (error != null) {
-    return <Heading>There was problem with loading of ip ranges</Heading>;
+    return <Heading>There was problem to load nested ip ranges</Heading>;
   }
 
-  const ipRanges = results
-    .filter((result) =>
-      selectedTags.length > 0 ? result.Tags.some(({ Tag: tag }) => selectedTags.includes(tag)) : true,
-    )
-    .map(({ Capacity, Name, PoolProperties, Tags, id, ResourceType, Resources }) => {
+  const nestedIpRanges = results
+    .filter(({ Tags }) => (selectedTags.length > 0 ? Tags.some(({ Tag: tag }) => selectedTags.includes(tag)) : true))
+    .map(({ Capacity, Name, PoolProperties, Tags, id: ipRangeId, ResourceType, Resources }) => {
       const { network, broadcast } = getAddressesFromCIDR(
         `${PoolProperties.address}/${PoolProperties.prefix}`,
         ResourceType.Name,
       );
       return {
-        id,
+        id: ipRangeId,
         name: Name,
         size: Capacity != null ? BigInt(Capacity.utilizedCapacity) + BigInt(Capacity.freeCapacity) : 0,
         tags: Tags,
@@ -106,7 +118,7 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
   return (
     <>
       <Heading as="h1" size="lg" mb={5}>
-        IP Ranges
+        IP Ranges of {data?.QueryResourcePool.Name}
       </Heading>
       <SearchFilterPoolsBar
         searchText={searchText}
@@ -116,9 +128,9 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
         onTagClick={handleOnTagClick}
         onClearSearch={handleOnClearSearch}
       />
-      <IpRangesTable ipRanges={ipRanges} onTagClick={handleOnTagClick} />
+      <IpRangesTable ipRanges={nestedIpRanges} onTagClick={handleOnTagClick} />
     </>
   );
 };
 
-export default IpamIpRangesPage;
+export default IpamNestedIpRangesDetailPage;
