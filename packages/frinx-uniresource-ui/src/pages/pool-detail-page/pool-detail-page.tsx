@@ -95,7 +95,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         />
       )}
       <Flex alignItems="center">
-        <Heading size="3xl" as="h2" mb={6}>
+        <Heading as="h1" size="lg" mb={6}>
           {resourcePool.Name}
         </Heading>
         <Spacer />
@@ -132,7 +132,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
       </Box>
 
       <Box my={10}>
-        <Heading size="lg" mb={5}>
+        <Heading size="md" mb={5}>
           Allocated Resources
         </Heading>
         {resourcePool.PoolType === 'allocating' && (
@@ -160,7 +160,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
 
       <Box my={10}>
         <Flex>
-          <Heading size="lg" mb={5}>
+          <Heading size="md" mb={5}>
             Nested Pools
           </Heading>
           <Spacer />

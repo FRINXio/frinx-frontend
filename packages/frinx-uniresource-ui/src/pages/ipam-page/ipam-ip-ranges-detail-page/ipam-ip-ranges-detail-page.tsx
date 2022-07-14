@@ -26,7 +26,7 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [poolId, setPoolId] = useState('');
 
-  const [{ poolDetail }, { handleOnClaimAddress }] = useResourcePoolActions({ poolId: id });
+  const [{ poolDetail }, { handleOnClaimAddress, deleteResourcePool }] = useResourcePoolActions({ poolId: id });
 
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
   const { results, searchText, setSearchText } = useMinisearch({
@@ -69,6 +69,7 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
         id: ipRangeId,
         name: Name,
         size: Capacity != null ? BigInt(Capacity.utilizedCapacity) + BigInt(Capacity.freeCapacity) : 0,
+        freeCapacity: Capacity != null ? BigInt(Capacity.freeCapacity) : 0,
         tags: Tags,
         network: `${network}/${PoolProperties.prefix}`,
         broadcast: `${broadcast}/${PoolProperties.prefix}`,
@@ -113,6 +114,7 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
           setPoolId(selectedPoolId);
           onOpen();
         }}
+        onDeleteBtnClick={deleteResourcePool}
       />
     </>
   );
