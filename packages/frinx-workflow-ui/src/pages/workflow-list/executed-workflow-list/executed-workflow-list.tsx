@@ -37,7 +37,7 @@ const initialState: StateProps = {
   sortOrder: 'DESC',
   labels: [],
 };
-const fetchData = async (state: StateProps, pagination: PaginationState) => {
+const loadExecutedWorkflows = async (state: StateProps, pagination: PaginationState) => {
   const executedWorkflows = await getWorkflows(
     state.workflowId,
     state.labels,
@@ -64,7 +64,7 @@ const ExecutedWorkflowList = () => {
   const [workflows, setWorkflows] = useState<ExecutedWorkflows | null>(null);
 
   useEffect(() => {
-    fetchData(state, pagination).then((executedWorkflows) => {
+    loadExecutedWorkflows(state, pagination).then((executedWorkflows) => {
       setWorkflows(executedWorkflows);
       setPagination((prev) => ({ ...prev, pageCount: Math.ceil(executedWorkflows.result.totalHits / prev.pageSize) }));
     });
@@ -147,7 +147,7 @@ const ExecutedWorkflowList = () => {
   };
 
   const handleSuccessfullOperation = () => {
-    fetchData(state, pagination);
+    loadExecutedWorkflows(state, pagination);
   };
 
   return (
