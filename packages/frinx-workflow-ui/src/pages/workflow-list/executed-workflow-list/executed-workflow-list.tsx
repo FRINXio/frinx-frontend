@@ -24,7 +24,6 @@ type StateProps = {
   sortBy: SortBy;
   sortOrder: SortOrder;
   labels: string[];
-  //state: any;
 };
 
 const initialState: StateProps = {
