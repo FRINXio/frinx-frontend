@@ -7,7 +7,7 @@ export type PaginationArgs = {
   before?: string | null;
 };
 
-type CallbackFunctions = {
+export type CallbackFunctions = {
   nextPage: (cursor: string | null) => () => void;
   previousPage: (cursor: string | null) => () => void;
   firstPage: () => void;

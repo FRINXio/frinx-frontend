@@ -26,6 +26,10 @@ const GET_POOLS_QUERY = gql`
         id
         NestedPool {
           id
+          ResourceType {
+            id
+            Name
+          }
         }
       }
       Capacity {
@@ -96,10 +100,16 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
         tags: Tags,
         network: `${network}/${PoolProperties.prefix}`,
         broadcast: `${broadcast}/${PoolProperties.prefix}`,
-        nestedRanges: Resources.filter(({ NestedPool }) => NestedPool != null).map((resource) => ({
-          id: resource.id,
-          nestedPoolId: resource.NestedPool?.id,
-        })),
+        nestedRanges: Resources.filter(({ NestedPool }) => NestedPool != null)
+          .filter(
+            (resource) =>
+              resource?.NestedPool?.ResourceType.Name === 'ipv4_prefix' ||
+              resource?.NestedPool?.ResourceType.Name === 'ipv6_prefix',
+          )
+          .map((resource) => ({
+            id: resource.id,
+            nestedPoolId: resource.NestedPool?.id,
+          })),
       };
     });
 

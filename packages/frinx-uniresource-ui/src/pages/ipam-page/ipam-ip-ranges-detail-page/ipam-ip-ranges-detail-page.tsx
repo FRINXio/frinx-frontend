@@ -1,51 +1,14 @@
-import { Heading, Progress } from '@chakra-ui/react';
+import { Heading, Progress, useDisclosure } from '@chakra-ui/react';
 import { IPv4, IPv6 } from 'ipaddr.js';
 import { compact } from 'lodash';
-import React, { VoidFunctionComponent } from 'react';
+import React, { useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
-import { gql, useQuery } from 'urql';
 import SearchFilterPoolsBar from '../../../components/search-filter-pools-bar';
 import useMinisearch from '../../../hooks/use-minisearch';
 import useTags from '../../../hooks/use-tags';
-import { GetIpRangeDetailQuery, GetIpRangeDetailQueryVariables } from '../../../__generated__/graphql';
+import useResourcePoolActions from '../../../hooks/use-resource-pool-actions';
+import { ClaimAddressModal } from '../../pool-detail-page/claim-address-modal';
 import IpRangesTable from '../ip-ranges-table';
-
-const GET_RANGE_DETAIL_QUERY = gql`
-  query GetIpRangeDetail($poolId: ID!) {
-    QueryResourcePool(poolId: $poolId) {
-      Name
-      Resources {
-        Properties
-        id
-        NestedPool {
-          id
-          Name
-          PoolType
-          Tags {
-            id
-            Tag
-          }
-          PoolProperties
-          ResourceType {
-            id
-            Name
-          }
-          Resources {
-            id
-            NestedPool {
-              id
-              Name
-            }
-          }
-          Capacity {
-            freeCapacity
-            utilizedCapacity
-          }
-        }
-      }
-    }
-  }
-`;
 
 const isIpv4 = (name: string) => name === 'ipv4_prefix';
 
@@ -60,17 +23,18 @@ const getAddressesFromCIDR = (cidr: string, resourceTypeName: string) => ({
 
 const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
   const { id } = useParams();
+  const { isOpen, onClose, onOpen } = useDisclosure();
+  const [poolId, setPoolId] = useState('');
 
-  const [{ data, fetching, error }] = useQuery<GetIpRangeDetailQuery, GetIpRangeDetailQueryVariables>({
-    query: GET_RANGE_DETAIL_QUERY,
-    variables: {
-      poolId: id || '',
-    },
-  });
+  const [{ poolDetail }, { handleOnClaimAddress }] = useResourcePoolActions({ poolId: id });
 
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
   const { results, searchText, setSearchText } = useMinisearch({
-    items: compact(data?.QueryResourcePool.Resources.map((resource) => resource.NestedPool)),
+    items: compact(
+      poolDetail.data?.QueryResourcePool.Resources.map((resource) => resource.NestedPool).filter(
+        (resource) => resource?.ResourceType.Name === 'ipv4_prefix' || resource?.ResourceType.Name === 'ipv6_prefix',
+      ),
+    ),
     searchFields: ['Name', 'PoolProperties'],
     extractField: (document, fieldName) => {
       if (fieldName === 'PoolProperties') {
@@ -86,11 +50,11 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
     setSearchText('');
   };
 
-  if (fetching) {
+  if (poolDetail.fetching) {
     return <Progress isIndeterminate size="sm" mt={-10} />;
   }
 
-  if (error != null) {
+  if (poolDetail.error != null) {
     return <Heading>There was problem to load nested ip ranges</Heading>;
   }
 
@@ -108,17 +72,31 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
         tags: Tags,
         network: `${network}/${PoolProperties.prefix}`,
         broadcast: `${broadcast}/${PoolProperties.prefix}`,
-        nestedRanges: Resources.filter(({ NestedPool }) => NestedPool != null).map((resource) => ({
-          id: resource.id,
-          nestedPoolId: resource.NestedPool?.id,
-        })),
+        nestedRanges: Resources.filter(({ NestedPool }) => NestedPool != null)
+          .filter(
+            (resource) =>
+              resource?.NestedPool?.ResourceType.Name === 'ipv4_prefix' ||
+              resource?.NestedPool?.ResourceType.Name === 'ipv6_prefix',
+          )
+          .map((resource) => ({
+            id: resource.id,
+            nestedPoolId: resource.NestedPool?.id,
+          })),
       };
     });
 
   return (
     <>
+      {poolId && (
+        <ClaimAddressModal
+          isOpen={isOpen}
+          onClose={onClose}
+          onClaimAddress={(formValues) => handleOnClaimAddress(poolId, formValues)}
+          resourceProperties={poolDetail.data?.QueryResourcePool.PoolProperties}
+        />
+      )}
       <Heading as="h1" size="lg" mb={5}>
-        IP Ranges of {data?.QueryResourcePool.Name}
+        IP Ranges of {poolDetail.data?.QueryResourcePool.Name}
       </Heading>
       <SearchFilterPoolsBar
         searchText={searchText}
@@ -128,7 +106,14 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
         onTagClick={handleOnTagClick}
         onClearSearch={handleOnClearSearch}
       />
-      <IpRangesTable ipRanges={nestedIpRanges} onTagClick={handleOnTagClick} />
+      <IpRangesTable
+        ipRanges={nestedIpRanges}
+        onTagClick={handleOnTagClick}
+        onGetAddressClick={(selectedPoolId) => {
+          setPoolId(selectedPoolId);
+          onOpen();
+        }}
+      />
     </>
   );
 };

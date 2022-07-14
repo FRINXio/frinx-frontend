@@ -32,9 +32,10 @@ type IpRange = {
 type Props = {
   ipRanges: IpRange[];
   onTagClick: (tagName: string) => void;
+  onGetAddressClick?: (poolId: string) => void;
 };
 
-const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick }) => {
+const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onGetAddressClick }) => {
   return (
     <TableContainer bgColor="white">
       <Table size="sm">
@@ -80,6 +81,11 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick }) =
                     as={Link}
                     to={`../pools/${id}`}
                   />
+                  {onGetAddressClick && (
+                    <Button variant="solid" colorScheme="blue" size="xs" onClick={() => onGetAddressClick(id)}>
+                      Get address
+                    </Button>
+                  )}
                 </Td>
               </Tr>
             ))
