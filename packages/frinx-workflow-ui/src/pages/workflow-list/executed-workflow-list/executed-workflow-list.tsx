@@ -9,7 +9,7 @@ import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workfl
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import useQueryParams from '@frinx/workflow-ui/src/hooks/use-query-params';
-import usePagination from '../../../hooks/use-pagination';
+import usePagination, { PaginationState } from '../../../hooks/use-pagination';
 
 type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 type SortOrder = 'ASC' | 'DESC';
@@ -24,6 +24,7 @@ type StateProps = {
   sortBy: SortBy;
   sortOrder: SortOrder;
   labels: string[];
+  //state: any;
 };
 
 const initialState: StateProps = {
@@ -37,6 +38,18 @@ const initialState: StateProps = {
   sortOrder: 'DESC',
   labels: [],
 };
+const fetchData = async (state: StateProps, pagination: PaginationState) => {
+  const executedWorkflows = await getWorkflows(
+    state.workflowId,
+    state.labels,
+    (pagination.page - 1) * pagination.pageSize,
+    pagination.pageSize,
+    state.sortBy,
+    state.sortOrder,
+    state.isFlat,
+  );
+  return executedWorkflows;
+};
 
 const ExecutedWorkflowList = () => {
   const navigate = useNavigate();
@@ -48,25 +61,14 @@ const ExecutedWorkflowList = () => {
     ...initialState,
     workflowId: searchKeyword,
   });
-  const fetchData = async () => {
-    const executedWorkflows = await getWorkflows(
-      state.workflowId,
-      state.labels,
-      (pagination.page - 1) * pagination.pageSize,
-      pagination.pageSize,
-      state.sortBy,
-      state.sortOrder,
-      state.isFlat,
-    );
-
-    setWorkflows(executedWorkflows);
-    setPagination((prev) => ({ ...prev, pageCount: Math.ceil(executedWorkflows.result.totalHits / prev.pageSize) }));
-  };
 
   const [workflows, setWorkflows] = useState<ExecutedWorkflows | null>(null);
 
   useEffect(() => {
-    fetchData();
+    fetchData(state, pagination).then((executedWorkflows) => {
+      setWorkflows(executedWorkflows);
+      setPagination((prev) => ({ ...prev, pageCount: Math.ceil(executedWorkflows.result.totalHits / prev.pageSize) }));
+    });
   }, [
     state.workflowId,
     state.isFlat,
@@ -146,7 +148,7 @@ const ExecutedWorkflowList = () => {
   };
 
   const handleSuccessfullOperation = () => {
-    fetchData();
+    fetchData(state, pagination);
   };
 
   return (
