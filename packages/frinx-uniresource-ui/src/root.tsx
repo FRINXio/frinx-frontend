@@ -10,7 +10,7 @@ import StrategiesPage from './pages/strategies-page/strategies-page';
 import IpamPage from './pages/ipam-page/ipam-page';
 import IpamAggregatesPage from './pages/ipam-page/ipam-aggregates-page';
 import IpamIpRangesPage from './pages/ipam-page/ipam-ip-ranges-page';
-import IpamNestedIpRangesDetailPage from './pages/ipam-page/ipam-nested-ip-ranges-detail-page/ipam-nested-ip-ranges-detail-page';
+import IpamNestedIpRangesDetailPage from './pages/ipam-page/ipam-ip-ranges-detail-page/ipam-ip-ranges-detail-page';
 
 const Root: VoidFunctionComponent = () => {
   const navigate = useNavigate();
