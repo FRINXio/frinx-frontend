@@ -18,8 +18,6 @@ const GammaApp: VoidFunctionComponent = () => {
       setComponents({
         GammaApp: App,
         GammaAppProvider: getGammaAppProvider({
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           unistoreCallbacks: UnistoreApi.create({ url: window.__CONFIG__.unistoreApiURL, authContext }, '').client,
           uniflowCallbacks: UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext }).client,
         }),
