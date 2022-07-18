@@ -1,6 +1,6 @@
 import { SetStateAction, useState } from 'react';
 
-type PaginationState = {
+export type PaginationState = {
   pageSize: number;
   pageCount: number;
   page: number;

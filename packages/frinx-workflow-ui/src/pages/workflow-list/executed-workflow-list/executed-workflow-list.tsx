@@ -9,7 +9,7 @@ import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workfl
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import useQueryParams from '@frinx/workflow-ui/src/hooks/use-query-params';
-import usePagination from '../../../hooks/use-pagination';
+import usePagination, { PaginationState } from '../../../hooks/use-pagination';
 
 type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 type SortOrder = 'ASC' | 'DESC';
@@ -37,6 +37,18 @@ const initialState: StateProps = {
   sortOrder: 'DESC',
   labels: [],
 };
+const loadExecutedWorkflows = async (state: StateProps, pagination: PaginationState) => {
+  const executedWorkflows = await getWorkflows(
+    state.workflowId,
+    state.labels,
+    (pagination.page - 1) * pagination.pageSize,
+    pagination.pageSize,
+    state.sortBy,
+    state.sortOrder,
+    state.isFlat,
+  );
+  return executedWorkflows;
+};
 
 const ExecutedWorkflowList = () => {
   const navigate = useNavigate();
@@ -52,21 +64,10 @@ const ExecutedWorkflowList = () => {
   const [workflows, setWorkflows] = useState<ExecutedWorkflows | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const executedWorkflows = await getWorkflows(
-        state.workflowId,
-        state.labels,
-        (pagination.page - 1) * pagination.pageSize,
-        pagination.pageSize,
-        state.sortBy,
-        state.sortOrder,
-        state.isFlat,
-      );
-
+    loadExecutedWorkflows(state, pagination).then((executedWorkflows) => {
       setWorkflows(executedWorkflows);
       setPagination((prev) => ({ ...prev, pageCount: Math.ceil(executedWorkflows.result.totalHits / prev.pageSize) }));
-    };
-    fetchData();
+    });
   }, [
     state.workflowId,
     state.isFlat,
@@ -145,12 +146,17 @@ const ExecutedWorkflowList = () => {
     setPagination((prev) => ({ ...prev, page: pageNumber }));
   };
 
+  const handleSuccessfullOperation = () => {
+    loadExecutedWorkflows(state, pagination);
+  };
+
   return (
     <PageContainer>
       <ExecutedWorkflowBulkOperationsBlock
         workflowsAmount={workflows.result.totalHits}
         selectedWorkflows={state.selectedWorkflows}
         selectAllWorkflows={selectAllWorkflows}
+        onSuccessfullOperation={handleSuccessfullOperation}
       />
 
       <ExecutedWorkflowSearchBox
