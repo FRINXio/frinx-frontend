@@ -515,10 +515,10 @@ export type WorkflowTask = {
   caseValueParam: string;
   caseExpression: string;
   scriptExpression: string;
-  decisionCases: Record<string, string>;
+  decisionCases: Record<string, Task[]>;
   dynamicForkTasksParam: string;
   dynamicForkTasksInputParamName: string;
-  defaultCase: Record<string, string>[];
+  defaultCase: Task[];
   forkTasks: Task[][];
   startDelay: number;
   subWorkflowParam: SubWorkflowParam;
@@ -542,27 +542,44 @@ export type SubWorkflowParam = {
   workflowDefinition: WorkflowDefinition;
 };
 
-export type WorkflowDefinition = {
-  ownerApp: string;
-  createTime: number;
-  updateTime: number;
-  createdBy: string;
-  updatedBy: string;
+export type WorkflowDefinition<T extends Task = Task> = {
   name: string;
-  description: string;
+  description?: string;
   version: number;
-  tasks: WorkflowTask[];
-  inputParameters: Record<string, string>[];
+  inputParameters?: string[];
   outputParameters: Record<string, string>;
-  failureWorkflow: string;
-  schemaVersion: number;
+  failureWorkflow?: boolean;
+  schemaVersion: 2;
   restartable: boolean;
-  workflowStatusListenerEnabled: boolean;
   ownerEmail: string;
-  timeoutPolicy: TimeoutPolicy;
+  workflowStatusListenerEnabled?: boolean;
+  tasks: T[];
+  updateTime: number;
+  timeoutPolicy: string;
   timeoutSeconds: number;
-  variables: Record<string, string>;
+  variables: Record<string, unknown>;
 };
+// export type WorkflowDefinition = {
+//   ownerApp: string;
+//   createTime: number;
+//   updateTime: number;
+//   createdBy: string;
+//   updatedBy: string;
+//   name: string;
+//   description: string;
+//   version: number;
+//   tasks: WorkflowTask[];
+//   inputParameters: Record<string, string>[];
+//   outputParameters: Record<string, string>;
+//   failureWorkflow: string;
+//   schemaVersion: number;
+//   restartable: boolean;
+//   workflowStatusListenerEnabled: boolean;
+//   ownerEmail: string;
+//   timeoutPolicy: TimeoutPolicy;
+//   timeoutSeconds: number;
+//   variables: Record<string, string>;
+// };
 
 export type ExecutedWorkflowSortBy = 'workflowId' | 'startTime' | 'endTime';
 export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';

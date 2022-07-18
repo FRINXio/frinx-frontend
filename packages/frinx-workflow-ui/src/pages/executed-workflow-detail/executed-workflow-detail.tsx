@@ -1,9 +1,10 @@
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, { ChangeEvent, FC, useState, useEffect } from 'react';
 import TaskModal from '../../common/modals/task-modal';
-import WorkflowDia from './WorkflowDia/WorkflowDia';
+// import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../utils/callback-utils';
 import moment from 'moment';
 import unescapeJs from 'unescape-js';
+import ReactFlow from 'react-flow-renderer'; // updateEdge, // removeElements, // ReactFlowProvider, // Node, // MiniMap, // Elements, // Edge, // Controls, // Connection, // BackgroundVariant, // Background, // addEdge,
 import {
   Box,
   Button,
@@ -26,6 +27,7 @@ import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link, useParams } from 'react-router-dom';
 import unwrap from '../../helpers/unwrap';
 import useNotifications from '../../hooks/use-notifications';
+import ExecutedWorkflowGraph from './executed-workflow-graph';
 
 const convertWorkflowVariablesToFormFormat = (
   workflowDetails: string,
@@ -74,6 +76,7 @@ type Props = {
 
 const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
   const { workflowId } = useParams<{ workflowId: string }>();
+  // const [workflow, setWorkflow] = useState<Workflow<ExtendedTask> | null>(null);
   const taskModalDisclosure = useDisclosure();
   const execPayload = useAsyncGenerator(unwrap(workflowId));
   const [openedTask, setOpenedTask] = useState<ExecutedWorkflowTask | null>(null);
@@ -114,7 +117,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
     const { executeWorkflow } = callbackUtils.getCallbacks;
     const workflowPayload = {
       name: meta.name,
-      version: meta.version,
+      version: Number(meta.version),
       input: {
         ...result.input,
         ...workflowVariables,
@@ -242,9 +245,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
                 onRerunClick={handleWorkflowExecution}
               />
             </TabPanel>
-            <TabPanel>
-              <WorkflowDia meta={meta} wfe={result} subworkflows={subworkflows} />
-            </TabPanel>
+            <TabPanel>{result && <ExecutedWorkflowGraph meta={meta} result={result} />}</TabPanel>
           </TabPanels>
         </Tabs>
       </Box>
