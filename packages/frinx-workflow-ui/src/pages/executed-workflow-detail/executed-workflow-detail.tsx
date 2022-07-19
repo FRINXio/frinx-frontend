@@ -21,7 +21,7 @@ import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
 import WorkflowJsonTab from './executed-workflow-detail-tabs/workflow-json-tab';
 import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
 import DetailsModalHeader from './executed-workflow-detail-header';
-import { useAsyncGenerator } from './executed-workflow-detail-status.helpers';
+import { useWorkflowGenerator } from './executed-workflow-detail-status.helpers';
 import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link, useParams } from 'react-router-dom';
 import unwrap from '../../helpers/unwrap';
@@ -75,7 +75,7 @@ type Props = {
 const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
   const { workflowId } = useParams<{ workflowId: string }>();
   const taskModalDisclosure = useDisclosure();
-  const execPayload = useAsyncGenerator(unwrap(workflowId));
+  const execPayload = useWorkflowGenerator(unwrap(workflowId));
   const [openedTask, setOpenedTask] = useState<ExecutedWorkflowTask | null>(null);
   const [isEscaped, setIsEscaped] = useState(false);
   const [workflowVariables, setWorkflowVariables] = useState<Record<string, string> | null>(null);

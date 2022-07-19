@@ -16,6 +16,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.0.0",
     "@fortawesome/free-solid-svg-icons": "^6.0.0",
     "@fortawesome/react-fontawesome": "^0.1.11",
+    "@frinx/shared": "^0.0.1",
     "@types/react-redux": "^7.1.19",
     "ace-builds": "^1.4.12",
     "babel-polyfill": "^6.26.0",

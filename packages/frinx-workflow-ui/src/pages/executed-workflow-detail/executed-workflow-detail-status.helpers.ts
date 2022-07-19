@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Workflow, WorkflowInstanceDetail } from '@frinx/workflow-ui/src/helpers/types';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
+import { useAsyncGenerator } from '@frinx/shared/src/hooks';
 
 export type TaskStatus = 'COMPLETED' | 'FAILED' | 'SCHEDULED' | 'IN_PROGRESS';
 export type WorkflowStatus = 'COMPLETED' | 'FAILED' | 'RUNNING' | 'TERMINATED' | 'TIMED_OUT';
@@ -59,51 +60,13 @@ async function getWorkflowExecOutput(
   }
 }
 
-export async function* asyncGenerator(
-  workflowId: string,
-  abortController: AbortController,
-): AsyncGenerator<ExecutedWorkflowResponse | null, void, unknown> {
-  let data = await getWorkflowExecOutput(workflowId, abortController);
+export function useWorkflowGenerator(workflowId: string): ExecutedWorkflowResponse | null {
+  const { data } = useAsyncGenerator<ExecutedWorkflowResponse>({
+    repeatTill: (data) => data?.result.status === 'RUNNING' || data?.result.status === 'PAUSED',
+    fn: (abortController) => () => getWorkflowExecOutput(workflowId, abortController),
+  });
 
-  while (data?.result.status === 'RUNNING' || data?.result.status === 'PAUSED') {
-    await new Promise((resolve) => {
-      setTimeout(resolve, 800);
-    });
-    yield data;
-    // eslint-disable-next-line no-await-in-loop
-    data = await getWorkflowExecOutput(workflowId, abortController);
-  }
-  // we need to do an additional yield for the last task status change
-  if (
-    data?.result.status === 'FAILED' ||
-    data?.result.status === 'COMPLETED' ||
-    data?.result.status === 'TERMINATED' ||
-    data?.result.status === 'TIMED_OUT'
-  ) {
-    yield data;
-  }
-}
-
-export function useAsyncGenerator(workflowId: string): ExecutedWorkflowResponse | null {
-  const [execPayload, setExecPayload] = useState<ExecutedWorkflowResponse | null>(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    (async () => {
-      // we have to use async iterator here, so we turn off this rule
-      // eslint-disable-next-line no-restricted-syntax
-      for await (const data of asyncGenerator(workflowId, controller)) {
-        setExecPayload(data);
-      }
-    })();
-
-    return () => {
-      // we want to abort the request when user leaves view and/or changes the displayed workflow
-      controller.abort();
-    };
-  }, [workflowId]);
-
-  return execPayload;
+  return data;
 }
 
 export function getStatusBadgeColor(status: WorkflowStatus | TaskStatus): string {

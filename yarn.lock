@@ -3370,6 +3370,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@frinx/shared@^0.0.1, @frinx/shared@workspace:packages/shared":
+  version: 0.0.0-use.local
+  resolution: "@frinx/shared@workspace:packages/shared"
+  languageName: unknown
+  linkType: soft
+
 "@frinx/uniresource-ui@^0.0.1, @frinx/uniresource-ui@workspace:packages/frinx-uniresource-ui":
   version: 0.0.0-use.local
   resolution: "@frinx/uniresource-ui@workspace:packages/frinx-uniresource-ui"
@@ -3533,6 +3539,7 @@ __metadata:
     "@fortawesome/free-regular-svg-icons": ^6.0.0
     "@fortawesome/free-solid-svg-icons": ^6.0.0
     "@fortawesome/react-fontawesome": ^0.1.11
+    "@frinx/shared": ^0.0.1
     "@frinx/workflow-builder": ^1.0.0
     "@types/react-redux": ^7.1.19
     ace-builds: ^1.4.12
@@ -15095,12 +15102,6 @@ __metadata:
   checksum: 39b3dd9630a774aba288a680e7d2901f5c0eae7b8387fc5c8ea559918b29b3da144b7bdb990d7ccd9e11be05508ac9e459ce51d01fd65e583282f6ffafcba2e7
   languageName: node
   linkType: hard
-
-"shared@workspace:packages/shared":
-  version: 0.0.0-use.local
-  resolution: "shared@workspace:packages/shared"
-  languageName: unknown
-  linkType: soft
 
 "shebang-command@npm:^1.2.0":
   version: 1.2.0
