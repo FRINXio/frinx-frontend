@@ -5,21 +5,21 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@ajna/pagination@npm:1.4.17":
-  version: 1.4.17
-  resolution: "@ajna/pagination@npm:1.4.17"
+"@ajna/pagination@npm:1.4.19":
+  version: 1.4.19
+  resolution: "@ajna/pagination@npm:1.4.19"
   dependencies:
-    framer-motion: ^6.2.8
+    framer-motion: ^6.3.11
     lodash.union: ^4.6.0
   peerDependencies:
-    "@chakra-ui/react": ^1.6.5
-    "@emotion/react": ^11.4.0
-    "@emotion/styled": ^11.3.0
-    framer-motion: ^6.2.8
-    react: ^17.0.2
-    react-dom: ^17.0.2
-    react-scripts: 4.0.3
-  checksum: b505a291e713950786beb0eba5a3a53efbd5dbd049e3e97ac983e17ec7aba4aaebae7db77661265ac16b794e4ab60315262402388e87771768845f5473a0a3cc
+    "@chakra-ui/react": ^2.2.1
+    "@emotion/react": ^11.9.0
+    "@emotion/styled": ^11.8.1
+    framer-motion: ^6.3.11
+    react: ^18.1.0
+    react-dom: ^18.1.0
+    react-scripts: 5.0.1
+  checksum: 5ad82c71a15a51edf4ae737554add4ae1019aa86410c60585b4c6dca890604a8efbaa02d0dd1496bdaea0e17bb787c6afc4eeb8fdd2ada5cbe8f350da28b7f33
   languageName: node
   linkType: hard
 
@@ -3518,7 +3518,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@frinx/workflow-ui@workspace:packages/frinx-workflow-ui"
   dependencies:
-    "@ajna/pagination": 1.4.17
+    "@ajna/pagination": 1.4.19
     "@babel/core": 7.18.5
     "@babel/plugin-proposal-class-properties": 7.17.12
     "@babel/plugin-transform-runtime": 7.18.5
@@ -4179,6 +4179,71 @@ __metadata:
   version: 2.0.4
   resolution: "@leichtgewicht/ip-codec@npm:2.0.4"
   checksum: 468de1f04d33de6d300892683d7c8aecbf96d1e2c5fe084f95f816e50a054d45b7c1ebfb141a1447d844b86a948733f6eebd92234da8581c84a1ad4de2946a2d
+  languageName: node
+  linkType: hard
+
+"@motionone/animation@npm:^10.12.0":
+  version: 10.13.1
+  resolution: "@motionone/animation@npm:10.13.1"
+  dependencies:
+    "@motionone/easing": ^10.13.1
+    "@motionone/types": ^10.13.0
+    "@motionone/utils": ^10.13.1
+    tslib: ^2.3.1
+  checksum: bf3f95f1c100a18e170fd55fa3d16c6f674fe02dd0f344e78a8ae7e6ffac3510612e9f0b7a5a73fae3bb91b7c3d4e287f605e4feeb8a92538c3588d3ab8a4a70
+  languageName: node
+  linkType: hard
+
+"@motionone/dom@npm:10.12.0":
+  version: 10.12.0
+  resolution: "@motionone/dom@npm:10.12.0"
+  dependencies:
+    "@motionone/animation": ^10.12.0
+    "@motionone/generators": ^10.12.0
+    "@motionone/types": ^10.12.0
+    "@motionone/utils": ^10.12.0
+    hey-listen: ^1.0.8
+    tslib: ^2.3.1
+  checksum: 123356f28e44362c4f081aae3df22e576f46bfcb07e01257b2ac64a115668448f29b8de67e4b6e692c5407cffb78ffe7cf9fa1bc064007482bab5dd23a69d380
+  languageName: node
+  linkType: hard
+
+"@motionone/easing@npm:^10.13.1":
+  version: 10.13.1
+  resolution: "@motionone/easing@npm:10.13.1"
+  dependencies:
+    "@motionone/utils": ^10.13.1
+    tslib: ^2.3.1
+  checksum: 04d3c2d1458795d207067a8341ac23b5037b11d9e7160f91bb953438551255d072012dd22aaed678d0f88792143ad16c9566e131003ec047ef7938529a27b485
+  languageName: node
+  linkType: hard
+
+"@motionone/generators@npm:^10.12.0":
+  version: 10.13.1
+  resolution: "@motionone/generators@npm:10.13.1"
+  dependencies:
+    "@motionone/types": ^10.13.0
+    "@motionone/utils": ^10.13.1
+    tslib: ^2.3.1
+  checksum: d4b91d0352c00275644c5e33bf031545212f94821aa6f7fdc26fa92f054138c76ff89c77a3b10ca167b447e4cf7c019a9628688c9635a21528da2ea260724fbc
+  languageName: node
+  linkType: hard
+
+"@motionone/types@npm:^10.12.0, @motionone/types@npm:^10.13.0":
+  version: 10.13.0
+  resolution: "@motionone/types@npm:10.13.0"
+  checksum: 4c0a4593562f3c8fa30660a3b796ec012d592029137fc35f3029b34e69e5c364efa24c2016dd66b21db580d0a9d4107730b30f55496b416b2ed9dbe437865eab
+  languageName: node
+  linkType: hard
+
+"@motionone/utils@npm:^10.12.0, @motionone/utils@npm:^10.13.1":
+  version: 10.13.1
+  resolution: "@motionone/utils@npm:10.13.1"
+  dependencies:
+    "@motionone/types": ^10.13.0
+    hey-listen: ^1.0.8
+    tslib: ^2.3.1
+  checksum: 2ec2de91d07f7bd1dcb157d96c0c0f7565d1e8c6ac9adec0ce33811a321fea72d45a4c51833d2c3e432c26b3904e17e3296d553ad87b4b6705d6fba93cd22aca
   languageName: node
   linkType: hard
 
@@ -9983,7 +10048,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:6.2.8, framer-motion@npm:^6.2.8":
+"framer-motion@npm:6.2.8":
   version: 6.2.8
   resolution: "framer-motion@npm:6.2.8"
   dependencies:
@@ -10000,6 +10065,27 @@ __metadata:
     "@emotion/is-prop-valid":
       optional: true
   checksum: d84b716ab5e9480804856088551dbb493092e63625fe2d29c05ce734025d3e5cfded223443c604e807e8fca09064282aed9fb05f3ff590c9fb6ff4502f1ca1a6
+  languageName: node
+  linkType: hard
+
+"framer-motion@npm:^6.3.11":
+  version: 6.5.1
+  resolution: "framer-motion@npm:6.5.1"
+  dependencies:
+    "@emotion/is-prop-valid": ^0.8.2
+    "@motionone/dom": 10.12.0
+    framesync: 6.0.1
+    hey-listen: ^1.0.8
+    popmotion: 11.0.3
+    style-value-types: 5.0.0
+    tslib: ^2.1.0
+  peerDependencies:
+    react: ">=16.8 || ^17.0.0 || ^18.0.0"
+    react-dom: ">=16.8 || ^17.0.0 || ^18.0.0"
+  dependenciesMeta:
+    "@emotion/is-prop-valid":
+      optional: true
+  checksum: 737959063137b4ccafe01e0ac0c9e5a9531bf3f729f62c34ca7a5d7955e6664f70affd22b044f7db51df41acb21d120a4f71a860e17a80c4db766ad66f2153a1
   languageName: node
   linkType: hard
 
@@ -16139,7 +16225,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:~2.4.0":
+"tslib@npm:^2.3.1, tslib@npm:~2.4.0":
   version: 2.4.0
   resolution: "tslib@npm:2.4.0"
   checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113
