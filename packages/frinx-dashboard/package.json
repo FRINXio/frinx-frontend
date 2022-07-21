@@ -21,7 +21,7 @@
     "@frinx/workflow-ui": "^2.0.0",
     "@frinxio/gamma": "0.0.13",
     "@types/node": "16.11.38",
-    "@types/react": "17.0.42",
+    "@types/react": "17.0.47",
     "@types/react-dom": "17.0.14",
     "@types/url-join": "4.0.1",
     "eventemitter3": "4.0.7",
