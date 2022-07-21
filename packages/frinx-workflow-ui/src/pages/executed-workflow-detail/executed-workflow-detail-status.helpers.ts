@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
 import { Workflow, WorkflowInstanceDetail } from '@frinx/workflow-ui/src/helpers/types';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import { useAsyncGenerator } from '@frinx/shared/src/hooks';

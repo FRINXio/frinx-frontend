@@ -25,7 +25,7 @@ import { useWorkflowGenerator } from './executed-workflow-detail-status.helpers'
 import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link, useParams } from 'react-router-dom';
 import unwrap from '../../helpers/unwrap';
-import useNotifications from '../../hooks/use-notifications';
+import { useNotifications } from '@frinx/shared/src/hooks';
 
 const convertWorkflowVariablesToFormFormat = (
   workflowDetails: string,

@@ -1,5 +1,5 @@
+import { CustomToastProvider } from '@frinx/shared/src/contexts/notification-context';
 import React, { createContext, FC } from 'react';
-import { CustomToastProvider } from './notifications-context';
 import callbackUtils, { Callbacks } from './utils/callback-utils';
 
 export const UniflowApiContext = createContext(false);

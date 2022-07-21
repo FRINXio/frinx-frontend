@@ -76,7 +76,7 @@ export type InputParameters =
 export type WorkflowPayload = {
   input: Record<string, string>;
   name: string;
-  version: number;
+  version: string;
 };
 
 export type TaskType =
