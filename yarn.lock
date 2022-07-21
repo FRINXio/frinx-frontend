@@ -3166,7 +3166,7 @@ __metadata:
     rollup: 2.77.0
     rollup-plugin-dts: 4.2.2
     rollup-plugin-peer-deps-external: ^2.2.4
-    typescript: 4.7.3
+    typescript: 4.7.4
     url-join: 5.0.0
     urql: 2.2.2
   languageName: unknown
@@ -3235,7 +3235,7 @@ __metadata:
     react-svg-loader: 3.0.3
     sass-loader: 12.6.0
     style-loader: 2.0.0
-    typescript: 4.7.3
+    typescript: 4.7.4
     url-join: 5.0.0
     url-loader: 4.1.1
     uuid: 8.3.2
@@ -3298,7 +3298,7 @@ __metadata:
     pino: 7.11.0
     pino-pretty: 7.6.1
     ts-node-dev: 1.1.8
-    typescript: 4.7.3
+    typescript: 4.7.4
   languageName: unknown
   linkType: soft
 
@@ -3352,7 +3352,7 @@ __metadata:
     react-ace: 9.5.0
     react-dom: 18.1.0
     react-router-dom: 6.3.0
-    typescript: 4.7.3
+    typescript: 4.7.4
     urql: 2.2.2
     uuid: 8.3.2
     webpack: 5.73.0
@@ -3426,7 +3426,7 @@ __metadata:
     react-hook-form: 7.12.2
     react-router-dom: 6.3.0
     style-loader: 2.0.0
-    typescript: 4.7.3
+    typescript: 4.7.4
     urql: 2.2.2
     uuid: 8.3.2
     webpack: 5.73.0
@@ -3496,7 +3496,7 @@ __metadata:
     react-flow-renderer: 9.7.4
     react-router-dom: 6.3.0
     style-loader: 2.0.0
-    typescript: 4.7.3
+    typescript: 4.7.4
     uuid: 8.3.2
     vitest: 0.14.1
     webpack: 5.73.0
@@ -16197,23 +16197,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:4.7.3":
-  version: 4.7.3
-  resolution: "typescript@npm:4.7.3"
+"typescript@npm:4.7.4":
+  version: 4.7.4
+  resolution: "typescript@npm:4.7.4"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: fd13a1ce53790a36bb8350e1f5e5e384b5f6cb9b0635114a6d01d49cb99916abdcfbc13c7521cdae2f2d3f6d8bc4a8ae7625edf645a04ee940588cd5e7597b2f
+  checksum: 5750181b1cd7e6482c4195825547e70f944114fb47e58e4aa7553e62f11b3f3173766aef9c281783edfd881f7b8299cf35e3ca8caebe73d8464528c907a164df
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@4.7.3#~builtin<compat/typescript>":
-  version: 4.7.3
-  resolution: "typescript@patch:typescript@npm%3A4.7.3#~builtin<compat/typescript>::version=4.7.3&hash=bda367"
+"typescript@patch:typescript@4.7.4#~builtin<compat/typescript>":
+  version: 4.7.4
+  resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=bda367"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 8257ce7ecbbf9416da60045a76a99d473698ca9e973fa0ddab7137cacb1587255431176cbbcc801a650938c4dc8109ab88355774829a714fabe56a53a2fe4524
+  checksum: 96d3030cb01143570567cb4f3a616b10df65f658f0e74e853e77a089a6a954e35c800be7db8b9bfe9a1ae05d9c2897e281359f65e4caa1caf266368e1c4febd3
   languageName: node
   linkType: hard
 
