@@ -3560,7 +3560,7 @@ __metadata:
     framer-motion: 6.2.8
     graphql: 15.8.0
     html-loader: ^1.1.0
-    jsdoc: 3.6.10
+    jsdoc: 3.6.11
     jszip: ^3.2.2
     lodash: ^4.17.20
     match-sorter: ^6.3.0
@@ -10418,7 +10418,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graceful-fs@npm:^4.2.9":
+"graceful-fs@npm:^4.1.9, graceful-fs@npm:^4.2.9":
   version: 4.2.10
   resolution: "graceful-fs@npm:4.2.10"
   checksum: 3f109d70ae123951905d85032ebeae3c2a5a7a997430df00ea30df0e3a6c60cf6689b109654d6fdacd28810a053348c4d14642da1d075049e6be1ba5216218da
@@ -11591,9 +11591,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsdoc@npm:3.6.10":
-  version: 3.6.10
-  resolution: "jsdoc@npm:3.6.10"
+"jsdoc@npm:3.6.11":
+  version: 3.6.11
+  resolution: "jsdoc@npm:3.6.11"
   dependencies:
     "@babel/parser": ^7.9.4
     "@types/markdown-it": ^12.2.3
@@ -11601,7 +11601,7 @@ __metadata:
     catharsis: ^0.9.0
     escape-string-regexp: ^2.0.0
     js2xmlparser: ^4.0.2
-    klaw: ^4.0.1
+    klaw: ^3.0.0
     markdown-it: ^12.3.2
     markdown-it-anchor: ^8.4.1
     marked: ^4.0.10
@@ -11612,7 +11612,7 @@ __metadata:
     underscore: ~1.13.2
   bin:
     jsdoc: jsdoc.js
-  checksum: 8902aa91a51c393036e0c4701ec6b1134dee5f0b42e6b9c7660958410200868368d6bf3df537d1c0fbcd193da83cbea9b8a60804f93bca658bc10e37ae999ab7
+  checksum: 7920b5cba6200c8f56c9ac2ac5e89d06b6581dd1ce22e66976409fad8b68c16bfd8cd30fe9af58baeacc9f6bd9ba06d901ca4f5e234944f42a3c37e55e4ddcf0
   languageName: node
   linkType: hard
 
@@ -11809,10 +11809,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"klaw@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "klaw@npm:4.0.1"
-  checksum: 7835649ef632f96099d500f94b38c032acf1432ad5e87da596a2509c2f6a63a7fc346fb357e2227091cc433af5c1378ed448e1c0522ed028981dcd446152291e
+"klaw@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "klaw@npm:3.0.0"
+  dependencies:
+    graceful-fs: ^4.1.9
+  checksum: 1bf9de22392c80d28de8a2babd6f0de29fa52fcdc1654838fd35174b3641c168ec32b8b03022191e3c190efd535c31fce23f85e29cb260245571da7263ef418e
   languageName: node
   linkType: hard
 
