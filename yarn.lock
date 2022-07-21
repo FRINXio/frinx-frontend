@@ -3163,7 +3163,7 @@ __metadata:
     eslint-plugin-react-hooks: 4.5.0
     fp-ts: 2.12.1
     io-ts: 2.2.16
-    rollup: ^2.72.1
+    rollup: 2.77.0
     rollup-plugin-dts: 4.2.2
     rollup-plugin-peer-deps-external: ^2.2.4
     typescript: 4.7.3
@@ -14680,6 +14680,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rollup@npm:2.77.0":
+  version: 2.77.0
+  resolution: "rollup@npm:2.77.0"
+  dependencies:
+    fsevents: ~2.3.2
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    rollup: dist/bin/rollup
+  checksum: 74ccc98429709984a89af636250833e7502d87f1d9c6d96ebfe4b52030ebf94b9f6b84b8ab476670329a61d54b681d35eecdc601bac5b5396b099b1ea69970ef
+  languageName: node
+  linkType: hard
+
 "rollup@npm:^2.59.0":
   version: 2.70.1
   resolution: "rollup@npm:2.70.1"
@@ -14691,20 +14705,6 @@ __metadata:
   bin:
     rollup: dist/bin/rollup
   checksum: 06c62933e6e81a1c8c684d7d576e507081aabdb63cc0c91bca86b7348b66df03b77827068e4990b8b6c738bd3ef66dcc8c7ed7e0ea40b736068e7618f693133e
-  languageName: node
-  linkType: hard
-
-"rollup@npm:^2.72.1":
-  version: 2.72.1
-  resolution: "rollup@npm:2.72.1"
-  dependencies:
-    fsevents: ~2.3.2
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  bin:
-    rollup: dist/bin/rollup
-  checksum: 3dca122129f560acc3c54dd5bd5f9470dd562d74f61c652c57b6a4355a963c0828640382ebff544f1b0e71387733a51fb963d6f761ae1f05a84f5923bbde883c
   languageName: node
   linkType: hard
 
