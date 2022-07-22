@@ -57,7 +57,7 @@
     "@graphql-codegen/typescript-operations": "2.4.1",
     "@typescript-eslint/eslint-plugin": "5.27.1",
     "@typescript-eslint/parser": "5.27.1",
-    "@webpack-cli/serve": "1.6.1",
+    "@webpack-cli/serve": "1.7.0",
     "babel-loader": "8.2.5",
     "eslint": "8.20.0",
     "eslint-config-prettier": "7.2.0",
