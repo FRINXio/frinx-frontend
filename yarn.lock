@@ -3509,7 +3509,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.27.1
     "@typescript-eslint/parser": 5.27.1
     "@urql/exchange-retry": 0.3.3
-    "@webpack-cli/serve": 1.6.1
+    "@webpack-cli/serve": 1.7.0
     babel-loader: 8.2.5
     chakra-ui-autocomplete: 1.4.5
     date-fns: 2.28.0
@@ -3577,7 +3577,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.27.1
     "@typescript-eslint/parser": 5.27.1
     "@urql/exchange-retry": 0.3.3
-    "@webpack-cli/serve": 1.6.1
+    "@webpack-cli/serve": 1.7.0
     ace-builds: 1.4.14
     babel-loader: 8.2.5
     chakra-ui-autocomplete: 1.4.5
@@ -3649,7 +3649,7 @@ __metadata:
     "@types/uuid": 8.3.4
     "@typescript-eslint/eslint-plugin": 5.27.1
     "@typescript-eslint/parser": 5.27.1
-    "@webpack-cli/serve": 1.6.1
+    "@webpack-cli/serve": 1.7.0
     ace-builds: 1.4.14
     babel-loader: 8.2.5
     css-loader: 5.2.7
@@ -5432,7 +5432,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webpack-cli/serve@npm:1.6.1, @webpack-cli/serve@npm:^1.6.1":
+"@webpack-cli/serve@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@webpack-cli/serve@npm:1.7.0"
+  peerDependencies:
+    webpack-cli: 4.x.x
+  peerDependenciesMeta:
+    webpack-dev-server:
+      optional: true
+  checksum: d475e8effa23eb7ff9a48b14d4de425989fd82f906ce71c210921cc3852327c22873be00c35e181a25a6bd03d424ae2b83e7f3b3f410ac7ee31b128ab4ac7713
+  languageName: node
+  linkType: hard
+
+"@webpack-cli/serve@npm:^1.6.1":
   version: 1.6.1
   resolution: "@webpack-cli/serve@npm:1.6.1"
   peerDependencies:

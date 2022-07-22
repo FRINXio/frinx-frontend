@@ -54,7 +54,7 @@
     "@types/dagre": "0.7.47",
     "@typescript-eslint/eslint-plugin": "5.27.1",
     "@typescript-eslint/parser": "5.27.1",
-    "@webpack-cli/serve": "1.6.1",
+    "@webpack-cli/serve": "1.7.0",
     "babel-loader": "8.2.5",
     "css-loader": "5.2.7",
     "eslint": "8.20.0",
