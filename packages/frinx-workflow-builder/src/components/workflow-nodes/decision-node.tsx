@@ -22,7 +22,7 @@ const DecisionNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
     <Box
       background="white"
       paddingX={10}
-      // width={64}
+      width={64}
       borderWidth={2}
       borderStyle="solid"
       borderColor={task.id === selectedTask?.task.id ? 'pink.400' : 'gray.200'}

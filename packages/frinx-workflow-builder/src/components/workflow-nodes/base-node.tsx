@@ -1,17 +1,12 @@
 import { Box, Flex, Heading, Theme, useTheme } from '@chakra-ui/react';
 import React, { memo, VoidFunctionComponent } from 'react';
 import { Handle, NodeProps, Position } from 'react-flow-renderer';
+import { NodeData } from '../../helpers/api-to-graph.helpers';
 import { ExtendedTask, TaskType } from '../../helpers/types';
 import { useTaskActions } from '../../task-actions-context';
 import NodeButtons from '../nodes/node-buttons';
 
-type Props = NodeProps<{
-  type: string;
-  label: string;
-  handles: string[];
-  task: ExtendedTask;
-  isReadOnly: boolean;
-}>;
+type Props = NodeProps<NodeData>;
 
 function getBorderColor(taskType: TaskType) {
   switch (taskType) {
@@ -41,7 +36,7 @@ const BaseNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
     <Box
       background="white"
       paddingX={10}
-      // width={64}
+      width={64}
       borderWidth={2}
       borderStyle="solid"
       borderColor={task.id === selectedTask?.task.id ? topColor : 'gray.200'}
@@ -106,7 +101,7 @@ const BaseNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
         </Handle>
       </Flex>
 
-      <Box paddingX={2} paddingTop={4} minHeight={14}>
+      <Box paddingX={2} paddingY={4} minHeight={14}>
         <Heading as="h6" size="xs">
           {task.taskReferenceName}
         </Heading>

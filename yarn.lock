@@ -2088,7 +2088,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.10.5, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.14.8, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.16.7, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.10.5, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.14.8, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2":
   version: 7.17.8
   resolution: "@babel/runtime@npm:7.17.8"
   dependencies:
@@ -3682,7 +3682,7 @@ __metadata:
     react: 18.1.0
     react-ace: 9.5.0
     react-dom: 18.1.0
-    react-flow-renderer: 9.7.4
+    react-flow-renderer: 10.3.11
     react-router-dom: 6.3.0
     style-loader: 2.0.0
     typescript: 4.7.4
@@ -7256,13 +7256,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "clsx@npm:1.1.1"
-  checksum: ff052650329773b9b245177305fc4c4dc3129f7b2be84af4f58dc5defa99538c61d4207be7419405a5f8f3d92007c954f4daba5a7b74e563d5de71c28c830063
-  languageName: node
-  linkType: hard
-
 "coa@npm:^2.0.2":
   version: 2.0.2
   resolution: "coa@npm:2.0.2"
@@ -7887,7 +7880,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"d3-drag@npm:2 - 3":
+"d3-drag@npm:2 - 3, d3-drag@npm:^3.0.0":
   version: 3.0.0
   resolution: "d3-drag@npm:3.0.0"
   dependencies:
@@ -13978,7 +13971,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.8, prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.5.8, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -14134,19 +14127,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-draggable@npm:^4.4.4":
-  version: 4.4.4
-  resolution: "react-draggable@npm:4.4.4"
-  dependencies:
-    clsx: ^1.1.1
-    prop-types: ^15.6.0
-  peerDependencies:
-    react: ">= 16.3.0"
-    react-dom: ">= 16.3.0"
-  checksum: b8258a58938c261a79f1b9ffd67774283c1ac732423c1c9c9f5fe4d17a06886edd659891e445ba089828ca59f1885e5b909262e24cf60640b8ed05c8499c88bb
-  languageName: node
-  linkType: hard
-
 "react-dropdown@npm:^1.6.4":
   version: 1.9.2
   resolution: "react-dropdown@npm:1.9.2"
@@ -14173,22 +14153,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-flow-renderer@npm:9.7.4":
-  version: 9.7.4
-  resolution: "react-flow-renderer@npm:9.7.4"
+"react-flow-renderer@npm:10.3.11":
+  version: 10.3.11
+  resolution: "react-flow-renderer@npm:10.3.11"
   dependencies:
-    "@babel/runtime": ^7.16.7
+    "@babel/runtime": ^7.18.9
     classcat: ^5.0.3
+    d3-drag: ^3.0.0
     d3-selection: ^3.0.0
     d3-zoom: ^3.0.0
-    fast-deep-equal: ^3.1.3
-    react-draggable: ^4.4.4
-    react-redux: ^7.2.6
-    redux: ^4.1.2
+    zustand: ^3.7.2
   peerDependencies:
-    react: 16 || 17
-    react-dom: 16 || 17
-  checksum: d31d453c4f92263264dba9c591de73a7ad0f32b0a5a7165919fcf1444d47d6e445971cfd1f88ab44c503ae38b52389caa768421d5260e3034443334b60c79349
+    react: 16 || 17 || 18
+    react-dom: 16 || 17 || 18
+  checksum: 994e66dcd8e61b733fb4ce570bb03ed40f5ea75e2b86ff76d0228cd3ddbe37c35a5174e1b0bb2d911261f472b430d0051cc4a54447dd0a1881fae270cf137583
   languageName: node
   linkType: hard
 
@@ -14256,7 +14234,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-redux@npm:^7.1.0, react-redux@npm:^7.2.6":
+"react-redux@npm:^7.1.0":
   version: 7.2.6
   resolution: "react-redux@npm:7.2.6"
   dependencies:
@@ -14493,7 +14471,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redux@npm:^4.0.0, redux@npm:^4.0.1, redux@npm:^4.1.2":
+"redux@npm:^4.0.0, redux@npm:^4.0.1":
   version: 4.1.2
   resolution: "redux@npm:4.1.2"
   dependencies:
@@ -17421,5 +17399,17 @@ __metadata:
     property-expr: ^2.0.4
     toposort: ^2.0.2
   checksum: 43a16786b47cc910fed4891cebdd89df6d6e31702e9462e8f969c73eac88551ce750732608012201ea6b93802c8847cb0aa27b5d57370640f4ecf30f9f97d4b0
+  languageName: node
+  linkType: hard
+
+"zustand@npm:^3.7.2":
+  version: 3.7.2
+  resolution: "zustand@npm:3.7.2"
+  peerDependencies:
+    react: ">=16.8"
+  peerDependenciesMeta:
+    react:
+      optional: true
+  checksum: 18f025b1b666a311121d3855303ff58e6a21fd107920ca474307e86984c13338d6c4cfa5cdf13382a9e0f76821f2554a12d4d200a98a66b58637e729f149797b
   languageName: node
   linkType: hard
