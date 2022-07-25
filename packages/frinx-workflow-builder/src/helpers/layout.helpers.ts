@@ -1,5 +1,6 @@
 import dagre from 'dagre';
-import { Elements, isNode, Position } from 'react-flow-renderer';
+import { Elements, isNode, Node, Position } from 'react-flow-renderer';
+import { ExtendedTask } from './types';
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -8,16 +9,23 @@ dagreGraph.setDefaultEdgeLabel(() => ({}));
 // In a real world app you would use the correct width and height values of
 // const nodes = useStoreState(state => state.nodes) and then node.__rf.width, node.__rf.height
 
-const nodeWidth = 300;
+const nodeWidth = 565;
 const nodeHeight = 55;
 
-export const getLayoutedElements = (elements: Elements, direction = 'LR'): Elements => {
+function getNodeWidth(node: Node<{ task?: ExtendedTask }>): number {
+  if (node.data?.task?.type === 'START_TASK' || node.data?.task?.type === 'END_TASK') {
+    return 85;
+  }
+  return nodeWidth;
+}
+
+export const getLayoutedElements = (elements: Elements<{ task?: ExtendedTask }>, direction = 'LR'): Elements => {
   const isHorizontal = direction === 'LR';
   dagreGraph.setGraph({ rankdir: direction });
 
   elements.forEach((el) => {
     if (isNode(el)) {
-      dagreGraph.setNode(el.id, { width: nodeWidth, height: nodeHeight });
+      dagreGraph.setNode(el.id, { width: getNodeWidth(el), height: nodeHeight });
     } else {
       dagreGraph.setEdge(el.source, el.target);
     }
