@@ -75,9 +75,14 @@ function getForkTask(tasks: Task[], elements: Elements, currentNode: Node): Task
   const children = getOutgoers(currentNode, elements);
   const joinNode = findForkOrDecisionEndNode(elements, currentNode, 0);
 
-  currentTask.forkTasks = children.map((fork) => {
+  const forkTasks = children.map((fork) => {
     return traverseElements([], elements, fork.id, joinNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
   });
+
+  const editedTask = {
+    ...currentTask,
+    forkTasks,
+  };
 
   // it is possible that current fork task is nested
   // we need to find all elements after fork end node till the diagram end or when there is another join
@@ -85,10 +90,10 @@ function getForkTask(tasks: Task[], elements: Elements, currentNode: Node): Task
   try {
     const nextJoinNode = findForkOrDecisionEndNode(elements, joinNode, 0);
     const nextTasks: Task[] = traverseElements([], elements, joinNode.id, nextJoinNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
-    return [...tasks, currentTask, ...nextTasks];
+    return [...tasks, editedTask, ...nextTasks];
   } catch {
     const nextTasks: Task[] = traverseElements([], elements, joinNode.id, 'end'); // eslint-disable-line @typescript-eslint/no-use-before-define
-    return [...tasks, currentTask, ...nextTasks];
+    return [...tasks, editedTask, ...nextTasks];
   }
 }
 

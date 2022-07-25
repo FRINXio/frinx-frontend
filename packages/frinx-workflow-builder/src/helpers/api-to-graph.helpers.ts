@@ -197,7 +197,8 @@ function nonNullPredicate<T>(value: T | null): value is T {
 
 function createJoinEdges(forkTask: ForkTask, joinTask: JoinTask): Edge[] {
   const joinEdges = forkTask.forkTasks.map((fork) => {
-    const lastForkTask = fork.pop();
+    const copyFork = [...fork];
+    const lastForkTask = copyFork.pop();
 
     if (!lastForkTask) {
       return null;
