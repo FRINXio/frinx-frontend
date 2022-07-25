@@ -34,8 +34,7 @@
       "optional": false,
       "defaultExclusiveJoinTask": [],
       "asyncComplete": false,
-      "loopOver": [],
-      "label": "http"
+      "loopOver": []
     },
     {
       "name": "decisionTask",
@@ -64,8 +63,7 @@
             "optional": false,
             "defaultExclusiveJoinTask": [],
             "asyncComplete": false,
-            "loopOver": [],
-            "label": "lambda"
+            "loopOver": []
           },
           {
             "name": "decisionTask",
@@ -94,8 +92,7 @@
                   "optional": false,
                   "defaultExclusiveJoinTask": [],
                   "asyncComplete": false,
-                  "loopOver": [],
-                  "label": "lambda"
+                  "loopOver": []
                 }
               ]
             },
@@ -125,8 +122,7 @@
                 "optional": false,
                 "defaultExclusiveJoinTask": [],
                 "asyncComplete": false,
-                "loopOver": [],
-                "label": "graphql"
+                "loopOver": []
               }
             ],
             "forkTasks": [],
@@ -135,8 +131,7 @@
             "optional": false,
             "defaultExclusiveJoinTask": [],
             "asyncComplete": false,
-            "loopOver": [],
-            "label": "decision"
+            "loopOver": []
           },
           {
             "name": "LAMBDA_TASK",
@@ -154,8 +149,7 @@
             "optional": false,
             "defaultExclusiveJoinTask": [],
             "asyncComplete": false,
-            "loopOver": [],
-            "label": "lambda"
+            "loopOver": []
           }
         ],
         "blue": [
@@ -175,8 +169,7 @@
             "optional": false,
             "defaultExclusiveJoinTask": [],
             "asyncComplete": false,
-            "loopOver": [],
-            "label": "lambda"
+            "loopOver": []
           }
         ]
       },
@@ -206,8 +199,7 @@
           "optional": false,
           "defaultExclusiveJoinTask": [],
           "asyncComplete": false,
-          "loopOver": [],
-          "label": "graphql"
+          "loopOver": []
         }
       ],
       "forkTasks": [],
@@ -216,8 +208,7 @@
       "optional": false,
       "defaultExclusiveJoinTask": [],
       "asyncComplete": false,
-      "loopOver": [],
-      "label": "decision"
+      "loopOver": []
     },
     {
       "name": "HTTP_task",
@@ -240,8 +231,7 @@
       "optional": false,
       "defaultExclusiveJoinTask": [],
       "asyncComplete": false,
-      "loopOver": [],
-      "label": "http"
+      "loopOver": []
     }
   ]
 }

@@ -5,7 +5,9 @@ import unwrap from './unwrap';
 
 function convertNodeToTask(node: Node): Task {
   const { data } = node;
-  return data.task;
+  const { task } = data;
+  const { id, label, ...rest } = task;
+  return rest;
 }
 
 function isConnectionNode(node: Node, elements: Elements): boolean {

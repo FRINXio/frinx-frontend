@@ -34,8 +34,7 @@
       "optional": false,
       "defaultExclusiveJoinTask": [],
       "asyncComplete": false,
-      "loopOver": [],
-      "label": "http"
+      "loopOver": []
     },
     {
       "name": "forkTask",
@@ -64,8 +63,7 @@
             "optional": false,
             "defaultExclusiveJoinTask": [],
             "asyncComplete": false,
-            "loopOver": [],
-            "label": "lambda"
+            "loopOver": []
           },
           {
             "name": "LAMBDA_TASK2_FORK_1",
@@ -83,8 +81,7 @@
             "optional": false,
             "defaultExclusiveJoinTask": [],
             "asyncComplete": false,
-            "loopOver": [],
-            "label": "lambda"
+            "loopOver": []
           }
         ],
         [
@@ -104,8 +101,7 @@
             "optional": false,
             "defaultExclusiveJoinTask": [],
             "asyncComplete": false,
-            "loopOver": [],
-            "label": "lambda"
+            "loopOver": []
           },
           {
             "name": "LAMBDA_TASK2_FORK_2",
@@ -123,8 +119,7 @@
             "optional": false,
             "defaultExclusiveJoinTask": [],
             "asyncComplete": false,
-            "loopOver": [],
-            "label": "lambda"
+            "loopOver": []
           }
         ]
       ],
@@ -133,8 +128,7 @@
       "optional": false,
       "defaultExclusiveJoinTask": [],
       "asyncComplete": false,
-      "loopOver": [],
-      "label": "fork"
+      "loopOver": []
     },
     {
       "name": "join",
@@ -163,8 +157,7 @@
       "optional": false,
       "defaultExclusiveJoinTask": [],
       "asyncComplete": false,
-      "loopOver": [],
-      "label": "http"
+      "loopOver": []
     }
   ]
 }
