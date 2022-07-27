@@ -29,6 +29,8 @@ const PollData = () => {
       ? data
       : data.filter((e) => {
           const searchedKeys = ['queueName', 'qsize', 'lastPollTime', 'workerId'];
+          const queryWords = keywords.toUpperCase();
+          const wfName = e.queueName.toUpperCase();
 
           for (let i = 0; i < searchedKeys.length; i += 1) {
             if (searchedKeys[i] === 'lastPollTime') {
@@ -42,7 +44,7 @@ const PollData = () => {
                 return true;
               }
             }
-            if (e[searchedKeys[i]].toString().toLowerCase().includes(keywords.toLocaleLowerCase())) {
+            if (wfName.includes(queryWords)) {
               return true;
             }
           }
