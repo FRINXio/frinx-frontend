@@ -52,7 +52,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
 }) => {
   return (
     <Table background="white" size="sm">
-      <Thead>
+      <Thead bgColor="gray.200">
         <Tr>
           {isNestedShown && <Th>Children</Th>}
           <Th>Name</Th>
@@ -121,7 +121,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                     <HStack spacing={2}>
                       <IconButton
                         aria-label="config"
-                        size="sm"
+                        size="xs"
                         variant="outline"
                         icon={<Icon as={FeatherIcon} size={20} icon="settings" />}
                         as={Link}
@@ -129,7 +129,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                       />
                       <IconButton
                         variant="outline"
-                        size="sm"
+                        size="xs"
                         colorScheme="red"
                         aria-label="delete"
                         icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}

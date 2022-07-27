@@ -117,7 +117,7 @@ const PoolsPage: VoidFunctionComponent = () => {
   }
 
   if (isQueryLoading) {
-    return <Progress isIndeterminate size="lg" />;
+    return <Progress isIndeterminate size="sm" mt={-10} />;
   }
 
   const isSelectedResourceTypeEmpty = selectedResourceType == null || selectedResourceType.trim().length === 0;

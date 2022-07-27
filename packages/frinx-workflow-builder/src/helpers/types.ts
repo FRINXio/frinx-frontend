@@ -297,14 +297,6 @@ export type Workflow<T extends Task = Task> = {
   timeoutSeconds: number;
   variables: Record<string, unknown>;
 };
-export type NodeData =
-  | {
-      task: Exclude<ExtendedTask, ExtendedDecisionTask>;
-    }
-  | {
-      task: ExtendedDecisionTask;
-      decisionCases: Record<string, string>;
-    };
 
 export type TaskDefinition = {
   name: string;
@@ -471,3 +463,11 @@ export type WorkflowExecutionResult = {
 
 export type ExecutedWorkflowSortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';
+
+export type NodeData = {
+  label: string;
+  isReadOnly: boolean;
+} & {
+  task?: ExtendedTask;
+  handles?: string[];
+};

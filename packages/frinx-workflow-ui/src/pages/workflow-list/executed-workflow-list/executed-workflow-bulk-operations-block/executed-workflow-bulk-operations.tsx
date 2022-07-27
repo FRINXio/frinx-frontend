@@ -30,9 +30,15 @@ type Props = {
   workflowsAmount: number;
   selectedWorkflows: string[];
   selectAllWorkflows: (isChecked: boolean) => void;
+  onSuccessfullOperation: () => void;
 };
 
-const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({ workflowsAmount, selectedWorkflows, selectAllWorkflows }) => {
+const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
+  workflowsAmount,
+  selectedWorkflows,
+  selectAllWorkflows,
+  onSuccessfullOperation,
+}) => {
   const [isFetching, setIsFetching] = useState(false);
   const { addToastNotification } = useNotifications();
 
@@ -44,9 +50,14 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({ workflowsAmount, selec
     if (operationFunctionName === 'deleteWorkflowInstance') {
       const operations = callbackUtils.getCallbacks;
       Promise.all(selectedWorkflows.map(async (workflow) => await operations[operationFunctionName](workflow)))
-        .then(() =>
-          addToastNotification({ content: 'Successfully executed bulk operation', type: 'success', title: 'Success' }),
-        )
+        .then(() => {
+          addToastNotification({
+            content: 'Successfully deleted executed workflows',
+            type: 'success',
+            title: 'Success',
+          });
+          onSuccessfullOperation();
+        })
         .catch((err) => addToastNotification({ content: err.message, type: 'error', title: 'Error' }))
         .finally(() => {
           setIsFetching(false);
@@ -55,9 +66,10 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({ workflowsAmount, selec
     } else {
       const operations = callbackUtils.getCallbacks;
       operations[operationFunctionName](selectedWorkflows)
-        .then(() =>
+        .then(() => {
           addToastNotification({ content: 'Successfully executed bulk operation', type: 'success', title: 'Success' }),
-        )
+            onSuccessfullOperation();
+        })
         .catch((err) => addToastNotification({ content: err.message, type: 'error', title: 'Error' }))
         .finally(() => {
           setIsFetching(false);

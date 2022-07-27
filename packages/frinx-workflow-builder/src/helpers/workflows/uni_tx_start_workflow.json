@@ -95,9 +95,7 @@
       "optional": false,
       "defaultExclusiveJoinTask": [],
       "asyncComplete": false,
-      "loopOver": [],
-      "id": "7f9f2ea1-7335-4879-8341-4a7278658202",
-      "label": "decision"
+      "loopOver": []
     }
   ]
 }

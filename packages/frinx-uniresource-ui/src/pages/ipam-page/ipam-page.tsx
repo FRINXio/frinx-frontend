@@ -68,7 +68,11 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
   const { addToastNotification } = useNotifications();
-  const { searchText, setSearchText, results } = useMinisearch({ items: data?.QueryRootResourcePools });
+  const { searchText, setSearchText, results } = useMinisearch({
+    items: data?.QueryRootResourcePools.filter(
+      (pool) => pool.ResourceType.Name === 'ipv4_prefix' || pool.ResourceType.Name === 'ipv6_prefix',
+    ),
+  });
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
 
   const handleDeleteBtnClick = async (id: string) => {
@@ -102,8 +106,8 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     return <Progress isIndeterminate size="lg" />;
   }
 
-  const ipPools = results.filter(
-    (pool) => pool.ResourceType.Name === 'ipv4_prefix' || pool.ResourceType.Name === 'ipv6_prefix',
+  const ipPools = results.filter((pool) =>
+    selectedTags.length > 0 ? pool.Tags.some(({ Tag }) => selectedTags.includes(Tag)) : true,
   );
 
   return (

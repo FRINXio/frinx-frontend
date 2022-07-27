@@ -51,9 +51,15 @@ const AggregatesTable: VoidFunctionComponent<Props> = ({ aggregates, onTagClick 
             </Tr>
           ) : (
             aggregates.map(({ id, aggregate, freeCapacity, prefixes, utilizedCapacity, tags }) => {
-              const capacityUtilization = Math.floor(
-                (Number(utilizedCapacity) / (Number(freeCapacity) + Number(utilizedCapacity))) * 100,
-              );
+              const capacityUtilization =
+                utilizedCapacity && freeCapacity
+                  ? Math.floor(
+                      Number(
+                        (BigInt(utilizedCapacity) / (BigInt(freeCapacity) + BigInt(utilizedCapacity))) * BigInt(100),
+                      ),
+                    )
+                  : 0;
+
               return (
                 <Tr key={id}>
                   <Td>{aggregate}</Td>

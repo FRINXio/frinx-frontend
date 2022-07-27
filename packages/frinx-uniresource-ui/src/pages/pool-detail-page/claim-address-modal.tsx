@@ -4,7 +4,6 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Heading,
   Input,
   Modal,
   ModalBody,
@@ -14,6 +13,8 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
+  Spacer,
+  Text,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -46,7 +47,24 @@ export function ClaimAddressModal({ onClaimAddress, resourceProperties, ...props
   });
 
   if (resourceProperties == null) {
-    return <Heading>This resource has no properties.</Heading>;
+    return (
+      <Modal isOpen={props.isOpen} onClose={props.onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalHeader>There was a problem with claiming resource</ModalHeader>
+          <ModalBody>
+            <Text as="h3">This resource has no properties.</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Spacer />
+            <Button variant="solid" colorScheme="blue" onClick={props.onClose}>
+              Close modal
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    );
   }
 
   return (
