@@ -109,8 +109,6 @@ const App: VoidFunctionComponent<Props> = ({
   };
 
   const onNodesChange = useCallback((changes) => {
-    console.log(' ==== test');
-    console.log(changes);
     setElements((els) => ({
       ...els,
       nodes: applyNodeChanges(changes, els.nodes),
