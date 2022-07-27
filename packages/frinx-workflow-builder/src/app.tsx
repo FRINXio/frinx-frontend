@@ -108,14 +108,14 @@ const App: VoidFunctionComponent<Props> = ({
     }));
   };
 
-  const onNodesChange = useCallback(
-    (changes) =>
-      setElements((els) => ({
-        ...els,
-        nodes: applyNodeChanges(changes, els.nodes),
-      })),
-    [],
-  );
+  const onNodesChange = useCallback((changes) => {
+    console.log(' ==== test');
+    console.log(changes);
+    setElements((els) => ({
+      ...els,
+      nodes: applyNodeChanges(changes, els.nodes),
+    }));
+  }, []);
   const onEdgesChange = useCallback(
     (changes) =>
       setElements((els) => ({
@@ -129,7 +129,10 @@ const App: VoidFunctionComponent<Props> = ({
     setElements((els) => {
       return {
         ...els,
-        nodes: applyNodeChanges([{ id, type: 'remove' }], els.nodes),
+        nodes: applyNodeChanges(
+          [{ id, type: 'remove' }],
+          els.nodes.filter((n) => n.data.task?.id !== id),
+        ),
       };
     });
   };
@@ -318,7 +321,6 @@ const App: VoidFunctionComponent<Props> = ({
                 onEdgeUpdate={handleEdgeUpdate}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
-                // onElementsRemove={handleElementsRemove}
                 onInit={(instance) => instance.fitView()}
               >
                 <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
