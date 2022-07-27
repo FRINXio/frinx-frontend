@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 import { ButtonGroup, Button, Box, Flex, FormControl, Grid, Input, Text, IconButton, Icon } from '@chakra-ui/react';
 import WfAutoComplete from '../../../../common/wf-autocomplete';
 import FeatherIcon from 'feather-icons-react';
@@ -10,11 +10,19 @@ type Props = {
   changeLabels: (e: string[]) => void;
   changeView: () => void;
   changeQuery: (e: string) => void;
+  keywords: string;
+  onKeywordsChange: (keywords: string) => void;
 };
 
-const ExecutedWorkflowSearchBox: FC<Props> = ({ changeLabels, changeQuery, changeView, showFlat, labels }) => {
-  const [searchText, setSearchText] = useState('');
-
+const ExecutedWorkflowSearchBox: FC<Props> = ({
+  changeLabels,
+  changeQuery,
+  changeView,
+  showFlat,
+  labels,
+  keywords,
+  onKeywordsChange,
+}) => {
   const debouncedSearch = useCallback(
     debounce((query) => {
       changeQuery(query);
@@ -23,13 +31,8 @@ const ExecutedWorkflowSearchBox: FC<Props> = ({ changeLabels, changeQuery, chang
   );
 
   useEffect(() => {
-    debouncedSearch(searchText);
-  }, [searchText]);
-
-  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.value);
-    setSearchText(event.target.value);
-  };
+    debouncedSearch(keywords);
+  }, [keywords]);
 
   return (
     <>
@@ -58,8 +61,8 @@ const ExecutedWorkflowSearchBox: FC<Props> = ({ changeLabels, changeQuery, chang
         <Box flexGrow={1}>
           <FormControl>
             <Input
-              value={searchText}
-              onChange={handleSearchChange}
+              value={keywords}
+              onChange={(e) => onKeywordsChange(e.target.value)}
               placeholder="Search by keyword. (case sensitive)"
               background="white"
             />

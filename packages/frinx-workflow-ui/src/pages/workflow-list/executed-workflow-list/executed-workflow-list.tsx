@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { Progress } from '@chakra-ui/react';
 import { ExecutedWorkflows, NestedExecutedWorkflow } from '@frinx/workflow-ui/src/helpers/types';
 import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
-import { useNavigate } from 'react-router-dom';
 import { getSortOrder, getWorkflows } from './search-execs';
 import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workflow-table';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
@@ -51,7 +50,7 @@ const loadExecutedWorkflows = async (state: StateProps, pagination: PaginationSt
 };
 
 const ExecutedWorkflowList = () => {
-  const navigate = useNavigate();
+  const [keywords, setKeywords] = useState('');
   const query = useQueryParams();
   const [pagination, setPagination] = usePagination();
   const searchKeyword = query.get('search') || '';
@@ -77,10 +76,6 @@ const ExecutedWorkflowList = () => {
     pagination.pageSize,
     state.labels,
   ]);
-
-  useEffect(() => {
-    navigate({ search: state.workflowId ? `search=${state.workflowId}` : '' }, { replace: true });
-  }, [state.workflowId]);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, selectedWorkflows: [...new Set<string>()] }));
@@ -165,6 +160,8 @@ const ExecutedWorkflowList = () => {
         changeQuery={changeQuery}
         changeView={changeView}
         labels={state.labels}
+        keywords={keywords}
+        onKeywordsChange={setKeywords}
       />
 
       <>
