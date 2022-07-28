@@ -9,6 +9,7 @@ import { Icon, Input, InputGroup, InputLeftElement, Table, Tbody, Td, Tfoot, Th,
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
 import { usePagination } from '../../../common/pagination-hook';
+import { Queue } from '../../../helpers/uniflow-types';
 
 const PollData = () => {
   const [sorted, setSorted] = useState(false);
@@ -19,7 +20,7 @@ const PollData = () => {
   useEffect(() => {
     const { getQueues } = callbackUtils.getCallbacks;
 
-    getQueues().then((queues) => {
+    getQueues().then((queues: any) => {
       setData(queues);
     });
   }, []);
@@ -27,15 +28,16 @@ const PollData = () => {
   useEffect(() => {
     const results = !keywords
       ? data
-      : data.filter((e) => {
+      : data.filter((e: string[] | any) => {
           const searchedKeys = ['queueName', 'qsize', 'lastPollTime', 'workerId'];
           const queryWords = keywords.toUpperCase();
           const wfName = e.queueName.toUpperCase();
 
           for (let i = 0; i < searchedKeys.length; i += 1) {
-            if (searchedKeys[i] === 'lastPollTime') {
+            console.log(i);
+            if (searchedKeys[wfName] === 'lastPollTime') {
               if (
-                moment(e[searchedKeys[i]])
+                moment(e[searchedKeys[wfName]])
                   .format('MM/DD/YYYY, HH:mm:ss:SSS')
                   .toString()
                   .toLowerCase()
@@ -48,12 +50,13 @@ const PollData = () => {
               return true;
             }
           }
+
           return false;
         });
     setItemList(results);
   }, [keywords, data]);
 
-  const sortArray = (key) => {
+  const sortArray = (key: string) => {
     const sortedArray = data;
 
     sortedArray.sort(sorted ? sortDescBy(key) : sortAscBy(key));
@@ -79,8 +82,8 @@ const PollData = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {pageItems.map((e) => {
-            console.log(e);
+          {pageItems.map((e: any) => {
+            // console.log(e);
             return (
               <Tr key={e.queueName}>
                 <Td>{e.queueName}</Td>
