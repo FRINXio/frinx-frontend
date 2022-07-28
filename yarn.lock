@@ -3760,7 +3760,7 @@ __metadata:
     react-ace: ^9.2.1
     react-dom: 18.1.0
     react-dropdown: ^1.6.4
-    react-flow-renderer: 9.7.4
+    react-flow-renderer: 10.3.11
     react-organizational-chart: ^2.0.0
     react-redux: ^7.1.0
     react-router-dom: 6.3.0

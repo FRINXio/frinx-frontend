@@ -25,13 +25,13 @@ const DecisionNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
         borderStyle="solid"
         borderRadius="md"
         position="relative"
-        width="200px"
+        minWidth="300px"
       >
         <Flex background="gray.100" alignItems="stretch" width="100%" position="absolute" top={0} left={0}>
           <Handle type="target" position={Position.Top} />
         </Flex>
 
-        <Box paddingX={2} paddingTop={4} minHeight={14}>
+        <Box paddingX={2} paddingTop={4} minHeight={14} textAlign="center">
           <Heading as="h6" size="xs">
             {task.taskReferenceName}
           </Heading>

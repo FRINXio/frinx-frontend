@@ -1,5 +1,5 @@
 import dagre from 'dagre';
-import { Elements, isNode, Position } from 'react-flow-renderer';
+import { Edge, Node, Position } from 'react-flow-renderer';
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -11,36 +11,39 @@ dagreGraph.setDefaultEdgeLabel(() => ({}));
 const nodeWidth = 300;
 const nodeHeight = 55;
 
-export const getLayoutedElements = (elements: Elements, direction = 'LR'): Elements => {
+export const getLayoutedElements = (
+  elements: { nodes: Node[]; edges: Edge[] },
+  direction = 'LR',
+): { nodes: Node[]; edges: Edge[] } => {
   const isHorizontal = direction === 'LR';
   dagreGraph.setGraph({ rankdir: direction });
+  const { nodes, edges } = elements;
 
-  elements.forEach((el) => {
-    if (isNode(el)) {
-      dagreGraph.setNode(el.id, { width: nodeWidth, height: nodeHeight });
-    } else {
-      dagreGraph.setEdge(el.source, el.target);
-    }
+  nodes.forEach((n) => {
+    dagreGraph.setNode(n.id, { width: nodeWidth, height: nodeHeight });
+  });
+  edges.forEach((e) => {
+    dagreGraph.setEdge(e.source, e.target);
   });
 
   dagre.layout(dagreGraph);
 
-  return elements.map((el) => {
-    const newEl = { ...el };
-    if (isNode(newEl)) {
-      const nodeWithPosition = dagreGraph.node(newEl.id);
-      newEl.targetPosition = isHorizontal ? Position.Left : Position.Top;
-      newEl.sourcePosition = isHorizontal ? Position.Right : Position.Bottom;
+  return {
+    nodes: nodes.map((n) => {
+      const nodeCopy = { ...n };
+      const nodeWithPosition = dagreGraph.node(nodeCopy.id);
+      nodeCopy.targetPosition = isHorizontal ? Position.Left : Position.Top;
+      nodeCopy.sourcePosition = isHorizontal ? Position.Right : Position.Bottom;
 
       // unfortunately we need this little hack to pass a slightly different position
       // to notify react flow about the change. Moreover we are shifting the dagre node position
       // (anchor=center center) to the top left so it matches the react flow node anchor point (top left).
-      newEl.position = {
+      nodeCopy.position = {
         x: nodeWithPosition.x - nodeWidth / 2 + Math.random() / 1000,
         y: nodeWithPosition.y - nodeHeight / 2,
       };
-    }
-
-    return newEl;
-  });
+      return nodeCopy;
+    }),
+    edges,
+  };
 };

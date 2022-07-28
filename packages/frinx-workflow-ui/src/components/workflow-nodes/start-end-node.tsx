@@ -14,7 +14,7 @@ const StartEndNode: VoidFunctionComponent<Props> = memo(({ type }) => {
   const theme = useTheme<Theme>();
 
   return (
-    <Flex width="200px" justifyContent="center">
+    <Flex width="300px" justifyContent="center">
       <Box
         background="white"
         width={20}

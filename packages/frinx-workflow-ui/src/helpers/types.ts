@@ -94,25 +94,7 @@ export type InputParameters =
   | EventInputParams
   | DynamicForkInputParams;
 
-export type TaskType =
-  | 'DECISION'
-  | 'EVENT'
-  | 'SIMPLE'
-  | 'FORK_JOIN'
-  | 'JOIN'
-  | 'WAIT'
-  | 'LAMBDA'
-  | 'TERMINATE'
-  | 'DO_WHILE'
-  | 'WHILE_END'
-  | 'SUB_WORKFLOW'
-  | 'CUSTOM'
-  | 'FORK_JOIN_DYNAMIC'
-  | 'EXCLUSIVE_JOIN'
-  | 'HTTP'
-  | 'KAFKA_PUBLISH'
-  | 'JSON_JQ';
-
+export type TaskType = Task['type'];
 type TaskValues = {
   name: string;
   taskReferenceName: string;
@@ -301,7 +283,7 @@ export type Workflow<T extends WorkflowTask = WorkflowTask> = {
   name: string;
   hasSchedule: boolean;
   description?: string;
-  version: string;
+  version: number;
   inputParameters?: string[];
   outputParameters: Record<string, string>;
   failureWorkflow?: boolean;
@@ -316,14 +298,6 @@ export type Workflow<T extends WorkflowTask = WorkflowTask> = {
   variables: Record<string, unknown>;
   correlationId: string;
 };
-export type NodeData =
-  | {
-      task: Exclude<ExtendedTask, ExtendedDecisionTask>;
-    }
-  | {
-      task: ExtendedDecisionTask;
-      decisionCases: Record<string, string>;
-    };
 
 export type TaskDefinition = {
   name: string;
@@ -344,6 +318,12 @@ export type TaskDefinition = {
   ownerEmail: string;
 };
 
+// eslint-disable-next-line no-shadow
+export enum SerializerEnum {
+  IntegerSerializer = 'org.apache.kafka.common.serialization.IntegerSerializer',
+  LongSerializer = 'org.apache.kafka.common.serialization.LongSerializer',
+  StringSerializer = 'org.apache.kafka.common.serialization.StringSerializer',
+}
 export type ExecutedWorkflowTask = {
   taskType: string;
   status: string;
@@ -351,9 +331,9 @@ export type ExecutedWorkflowTask = {
   referenceTaskName: string;
   callbackAfterSeconds: number;
   pollCount: number;
-  logs: {};
-  inputData: {};
-  outputData: {};
+  logs: Record<string, string>;
+  inputData: Record<string, string>;
+  outputData: Record<string, string>;
   workflowTask: {
     description: string;
     taskDefinition: {
@@ -366,75 +346,6 @@ export type ExecutedWorkflowTask = {
   endTime: number;
   externalOutputPayloadStoragePath?: string;
   externalInputPayloadStoragePath?: string;
-};
-
-// eslint-disable-next-line no-shadow
-export enum SerializerEnum {
-  IntegerSerializer = 'org.apache.kafka.common.serialization.IntegerSerializer',
-  LongSerializer = 'org.apache.kafka.common.serialization.LongSerializer',
-  StringSerializer = 'org.apache.kafka.common.serialization.StringSerializer',
-}
-
-export type StatusType = 'COMPLETED' | 'RUNNING' | 'FAILED';
-
-export type ScheduledWorkflow = {
-  correlationId: string;
-  cronString: string;
-  lastUpdate: string;
-  name: string;
-  taskToDomain: Record<string, string>;
-  workflowName: string;
-  workflowVersion: string;
-  workflowContext: Record<string, any>;
-  enabled: boolean;
-  status: StatusType;
-};
-
-export type ExecutedWorkflow = {
-  correlationId: string;
-  endTime: string;
-  executionTime: number;
-  failedReferenceTaskNames: string;
-  input: string;
-  inputSize: number;
-  output: string;
-  outputSize: number;
-  priority: number;
-  reasonForIncompletion?: string;
-  startTime: string;
-  status: string;
-  updateTime: string;
-  version: number;
-  workflowId: string;
-  workflowType: string;
-};
-
-export type NestedExecutedWorkflow = {
-  correlationId: string;
-  endTime: string;
-  executionTime: number;
-  failedReferenceTaskNames: string;
-  index: number;
-  input: string;
-  inputSize: number;
-  output: string;
-  outputSize: number;
-  parentWorkflowId: string;
-  priority: number;
-  reasonForIncompletion: string;
-  startTime: string;
-  status: string;
-  updateTime: string;
-  version: number;
-  workflowId: string;
-  workflowType: string;
-};
-
-export type ExecutedWorkflows = {
-  result: {
-    hits: ExecutedWorkflow[];
-    totalHits: number;
-  };
 };
 
 export type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED' | 'COMPLETED';
@@ -463,9 +374,9 @@ export type WorkflowInstanceDetail = {
     '*': string;
   };
   failedReferenceTaskNames: string[];
-  workflowDefinition: {};
+  workflowDefinition: Record<string, string>;
   priority: number;
-  variables: {};
+  variables: Record<string, string>;
   lastRetriedTime: number;
   startTime: number;
   workflowName: string;
@@ -474,36 +385,111 @@ export type WorkflowInstanceDetail = {
   externalInputPayloadStoragePath?: string;
   externalOutputPayloadStoragePath?: string;
 };
+export type TaskStatus = 'COMPLETED' | 'FAILED' | 'SCHEDULED' | 'IN_PROGRESS';
 
-//
-// this comes from the uniflow swagger api docs
-//
+/* eslint-disable @typescript-eslint/naming-convention */
+export type OutputDataPayload<T> =
+  | {
+      error_message: {
+        response_body: {
+          output: {
+            'overall-status': T;
+          };
+        };
+      };
+    }
+  | {
+      response_body: unknown;
+    };
+/* eslint-enable */
+export type TaskStatusPayload = {
+  seq: number;
+  status: TaskStatus;
+  taskType: string;
+  referenceTaskName: string;
+  startTime: number;
+  updateTime: number;
+  endTime: number;
+  workflowType: string;
+  outputData: OutputDataPayload<TaskStatus>;
+};
+export type ExecutedWorkflowPayload = {
+  createTime: number;
+  updateTime: number;
+  endTime: number;
+  status: Status;
+  workflowId: string;
+  tasks: TaskStatusPayload[];
+  output: OutputDataPayload<Status>;
+};
+export type ExecutedWorkflowResponse = {
+  result: WorkflowInstanceDetail;
+  meta: Workflow;
+  subworkflows: WorkflowInstanceDetail[];
+};
 
-export enum WorkflowTaskType {
-  SIMPLE,
-  DYNAMIC,
-  FORK_JOIN,
-  FORK_JOIN_DYNAMIC,
-  DECISION,
-  JOIN,
-  DO_WHILE,
-  SUB_WORKFLOW,
-  EVENT,
-  WAIT,
-  USER_DEFINED,
-  HTTP,
-  LAMBDA,
-  EXCLUSIVE_JOIN,
-  TERMINATE,
-  KAFKA_PUBLISH,
-  JSON_JQ_TRANSFORM,
-  SET_VARIABLE,
-}
+export type WorkflowExecutionPayload = {
+  workflowId: string;
+  label: string;
+  start?: number;
+  size?: string;
+  sortBy?: ExecutedWorkflowSortBy;
+  sortOrder?: ExecutedWorkflowSortOrder;
+};
+export type ExecutedWorkflow = {
+  correlationId: string;
+  endTime: string;
+  executionTime: number;
+  failedReferenceTaskNames: string;
+  input: string;
+  inputSize: number;
+  output: string;
+  outputSize: number;
+  priority: number;
+  reasonForIncompletion?: string;
+  startTime: string;
+  status: string;
+  updateTime: string;
+  version: number;
+  workflowId: string;
+  workflowType: string;
+};
 
-enum TimeoutPolicy {
-  TIME_OUT_WF,
-  ALERT_ONLY,
-}
+export type WorkflowExecutionResult = {
+  result: {
+    hits: ExecutedWorkflow[];
+    totalHits: number;
+  };
+};
+
+export type ExecutedWorkflowSortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
+export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';
+
+export type NodeData = {
+  label: string;
+  isReadOnly: boolean;
+} & {
+  task?: ExtendedTask;
+  handles?: string[];
+};
+
+export type WorkflowDefinition<T extends Task = Task> = {
+  name: string;
+  description?: string;
+  version: number;
+  inputParameters?: string[];
+  outputParameters: Record<string, string>;
+  failureWorkflow?: boolean;
+  schemaVersion: 2;
+  restartable: boolean;
+  ownerEmail: string;
+  workflowStatusListenerEnabled?: boolean;
+  tasks: T[];
+  updateTime: number;
+  timeoutPolicy: string;
+  timeoutSeconds: number;
+  variables: Record<string, unknown>;
+};
 
 export type WorkflowTask = {
   name: string;
@@ -535,51 +521,30 @@ export type WorkflowTask = {
   workflowTaskType: WorkflowTaskType;
 };
 
+export enum WorkflowTaskType {
+  SIMPLE,
+  DYNAMIC,
+  FORK_JOIN,
+  FORK_JOIN_DYNAMIC,
+  DECISION,
+  JOIN,
+  DO_WHILE,
+  SUB_WORKFLOW,
+  EVENT,
+  WAIT,
+  USER_DEFINED,
+  HTTP,
+  LAMBDA,
+  EXCLUSIVE_JOIN,
+  TERMINATE,
+  KAFKA_PUBLISH,
+  JSON_JQ_TRANSFORM,
+  SET_VARIABLE,
+}
+
 export type SubWorkflowParam = {
   name: string;
   version: string;
   taskToDomain: Record<string, string>;
   workflowDefinition: WorkflowDefinition;
 };
-
-export type WorkflowDefinition<T extends Task = Task> = {
-  name: string;
-  description?: string;
-  version: number;
-  inputParameters?: string[];
-  outputParameters: Record<string, string>;
-  failureWorkflow?: boolean;
-  schemaVersion: 2;
-  restartable: boolean;
-  ownerEmail: string;
-  workflowStatusListenerEnabled?: boolean;
-  tasks: T[];
-  updateTime: number;
-  timeoutPolicy: string;
-  timeoutSeconds: number;
-  variables: Record<string, unknown>;
-};
-// export type WorkflowDefinition = {
-//   ownerApp: string;
-//   createTime: number;
-//   updateTime: number;
-//   createdBy: string;
-//   updatedBy: string;
-//   name: string;
-//   description: string;
-//   version: number;
-//   tasks: WorkflowTask[];
-//   inputParameters: Record<string, string>[];
-//   outputParameters: Record<string, string>;
-//   failureWorkflow: string;
-//   schemaVersion: number;
-//   restartable: boolean;
-//   workflowStatusListenerEnabled: boolean;
-//   ownerEmail: string;
-//   timeoutPolicy: TimeoutPolicy;
-//   timeoutSeconds: number;
-//   variables: Record<string, string>;
-// };
-
-export type ExecutedWorkflowSortBy = 'workflowId' | 'startTime' | 'endTime';
-export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';

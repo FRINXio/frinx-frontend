@@ -31,6 +31,7 @@ import {
   ExtendedSimpleTask,
   ExtendedExclusiveJoinTask,
   SerializerEnum,
+  WorkflowTask,
 } from './types';
 
 const DEFAULT_TASK_OPTIONS: Pick<Task, 'optional' | 'startDelay'> = {

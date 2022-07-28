@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ReactFlow, { Elements, isNode } from 'react-flow-renderer';
+import ReactFlow, { Edge, Node } from 'react-flow-renderer';
 import { getElementsFromWorkflow } from '../../helpers/api-to-graph.helpers';
 import { getLayoutedElements } from '../../helpers/layout.helpers';
 import {
@@ -16,6 +16,8 @@ import { Box } from '@chakra-ui/react';
 import BaseNode from '../../components/workflow-nodes/base-node';
 import DecisionNode from '../../components/workflow-nodes/decision-node';
 import StartEndNode from '../../components/workflow-nodes/start-end-node';
+import { v4 as uuid } from 'uuid';
+import { getTaskLabel } from '../../helpers/task.helpers';
 
 const nodeTypes = {
   base: BaseNode,
@@ -48,11 +50,13 @@ type ExtendedTaskType = Exclude<TaskType, 'CUSTOM' | 'JSON_JQ'> | 'JSON_JQ_TRANS
 //   }
 // }
 
-function convertWorkflowTaskToTask(workflowTask: WorkflowTask): Task {
+function convertWorkflowTaskToExtendedTask(workflowTask: WorkflowTask): ExtendedTask {
   const { name, taskReferenceName, optional, startDelay, inputParameters, type } = workflowTask;
   switch (type) {
     case 'DECISION': {
       return {
+        id: uuid(),
+        label: getTaskLabel(workflowTask as Task),
         name,
         taskReferenceName,
         optional,
@@ -65,33 +69,45 @@ function convertWorkflowTaskToTask(workflowTask: WorkflowTask): Task {
       };
     }
     default: {
-      return { name, taskReferenceName, optional, startDelay, inputParameters, type: 'SIMPLE' };
+      return {
+        id: uuid(),
+        label: getTaskLabel(workflowTask as Task),
+        name,
+        taskReferenceName,
+        optional,
+        startDelay,
+        inputParameters,
+        type: 'SIMPLE',
+      };
     }
   }
 }
 
 type ExecutionState = 'RUNNING' | 'COMPLETED' | 'FAILED' | 'NONE';
+type NodeData = {
+  label: string;
+  isReadOnly: boolean;
+} & {
+  task?: ExtendedTask;
+  handles?: string[];
+};
 
 const ExecutedWorkflowGraph = ({ meta, result }: Props) => {
   useState<WorkflowDefinition<ExtedendedTaskWithExecutionData> | null>(null);
 
   const taskMap = new Map(result.tasks.map((t) => [t.referenceTaskName, t]));
-  // console.log(taskMap);
-  const elements: Elements<{ task: Task }> = getLayoutedElements(
-    getElementsFromWorkflow(meta.tasks.map(convertWorkflowTaskToTask), true),
+  const elements: { nodes: Node<NodeData>[]; edges: Edge[] } = getLayoutedElements(
+    getElementsFromWorkflow(meta.tasks.map(convertWorkflowTaskToExtendedTask), true),
     'TB',
   );
-  const elementsWithExecutionState = elements.map((e) => {
-    if (!isNode(e)) {
-      return e;
-    }
-    const taskReferenceName = e.data?.task?.taskReferenceName || '';
+  const nodesWithExecutionState = elements.nodes.map((n) => {
+    const taskReferenceName = n.data?.task?.taskReferenceName || '';
     const status = taskMap.get(taskReferenceName)?.status || 'NONE';
     return {
-      ...e,
+      ...n,
       draggable: false,
       data: {
-        ...e.data,
+        ...n.data,
         status,
       },
     };
@@ -100,8 +116,9 @@ const ExecutedWorkflowGraph = ({ meta, result }: Props) => {
   return (
     <Box width="800" height="600">
       <ReactFlow
-        elements={elementsWithExecutionState}
-        paneMoveable={false}
+        nodes={nodesWithExecutionState}
+        edges={elements.edges}
+        panOnDrag={false}
         zoomOnScroll={false}
         draggable={false}
         nodeTypes={nodeTypes}

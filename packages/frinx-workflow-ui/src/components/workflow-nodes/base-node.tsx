@@ -18,7 +18,7 @@ const BaseNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
 
   return (
     <Box
-      width={200}
+      minWidth={300}
       borderWidth={2}
       borderStyle="solid"
       borderRadius="md"
