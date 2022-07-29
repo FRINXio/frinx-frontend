@@ -10,6 +10,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: any;
 };
 
 export type AddBlueprintInput = {
@@ -98,6 +100,16 @@ export type BlueprintEdge = {
   __typename?: 'BlueprintEdge';
   cursor: Scalars['String'];
   node: Blueprint;
+};
+
+export type CsvImport = {
+  __typename?: 'CSVImport';
+  isOk: Maybe<Scalars['Boolean']>;
+};
+
+export type CsvImportInput = {
+  file?: InputMaybe<Scalars['Upload']>;
+  zoneId: Scalars['String'];
 };
 
 export type CalculatedDiffPayload = {
@@ -337,6 +349,7 @@ export type Mutation = {
   deleteDevice: DeleteDevicePayload;
   deleteLabel: DeleteLabelPayload;
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
+  importCSV: Maybe<CsvImport>;
   installDevice: InstallDevicePayload;
   resetConfig: ResetConfigPayload;
   revertChanges: RevertChangesPayload;
@@ -419,6 +432,11 @@ export type MutationDeleteLabelArgs = {
 
 export type MutationDeleteSnapshotArgs = {
   input: DeleteSnapshotInput;
+};
+
+
+export type MutationImportCsvArgs = {
+  input: CsvImportInput;
 };
 
 
@@ -668,6 +686,18 @@ export type ZonesConnection = {
   pageInfo: PageInfo;
   totalCount: Scalars['Int'];
 };
+
+export type UploadFileMutationVariables = Exact<{
+  input: CsvImportInput;
+}>;
+
+
+export type UploadFileMutation = { __typename?: 'Mutation', importCSV: { __typename?: 'CSVImport', isOk: boolean | null } | null };
+
+export type ZonesImportQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ZonesImportQuery = { __typename?: 'Query', zones: { __typename?: 'ZonesConnection', edges: Array<{ __typename?: 'ZoneEdge', node: { __typename?: 'Zone', id: string, name: string } }> } };
 
 export type AddBlueprintMutationVariables = Exact<{
   input: AddBlueprintInput;
