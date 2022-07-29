@@ -13,14 +13,14 @@ import { Queue } from '../../../helpers/uniflow-types';
 
 const PollData = () => {
   const [sorted, setSorted] = useState(false);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<Queue[]>([]);
   const [keywords, setKeywords] = useState('');
-  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
+  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<Queue>([], 10);
 
   useEffect(() => {
     const { getQueues } = callbackUtils.getCallbacks;
 
-    getQueues().then((queues: any) => {
+    getQueues().then((queues: Queue[]) => {
       setData(queues);
     });
   }, []);
