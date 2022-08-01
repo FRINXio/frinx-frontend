@@ -1,7 +1,20 @@
-import { Edge, Elements, Node } from 'react-flow-renderer';
+import { Edge, Node } from 'react-flow-renderer';
 import { v4 as uuid } from 'uuid';
 import { getTaskLabel } from './task.helpers';
-import { DecisionTask, ExtendedTask, ForkTask, JoinTask, Task, TaskType } from './types';
+import {
+  DecisionTask,
+  ExtendedDecisionTask,
+  ExtendedEndTask,
+  ExtendedForkTask,
+  ExtendedJoinTask,
+  ExtendedStartTask,
+  ExtendedTask,
+  ForkTask,
+  JoinTask,
+  NodeData,
+  Task,
+  TaskType,
+} from './types';
 
 type NodeType = 'decision' | 'fork_join' | 'join' | 'base';
 
@@ -11,7 +24,7 @@ function getNodeStyle() {
   return {};
 }
 
-function convertTaskToExtendedTask(task: Task): ExtendedTask {
+export function convertTaskToExtendedTask(task: Task): ExtendedTask {
   return { ...task, id: uuid(), label: getTaskLabel(task) };
 }
 
@@ -32,25 +45,25 @@ export function getNodeType(taskType: TaskType): NodeType {
       return 'base';
   }
 }
-function createStartNode(isReadOnly: boolean): Node {
+function createStartNode(isReadOnly: boolean): Node<NodeData> {
   return {
     id: 'start',
     type: 'start',
     position: getNodePosition(),
-    data: { label: 'start', type: 'START', isReadOnly },
+    data: { label: 'start', isReadOnly },
   };
 }
 
-function createEndNode(isReadOnly: boolean): Node {
+function createEndNode(isReadOnly: boolean): Node<NodeData> {
   return {
     id: 'end',
     type: 'end',
     position: getNodePosition(),
-    data: { label: 'end', type: 'END', isReadOnly },
+    data: { label: 'end', isReadOnly },
   };
 }
 
-function convertTaskToNode(task: Task, isReadOnly: boolean): Node[] {
+function convertTaskToNode(task: ExtendedTask, isReadOnly: boolean): Node<NodeData>[] {
   const { taskReferenceName, type } = task;
 
   const node = {
@@ -111,15 +124,15 @@ function convertTaskToNode(task: Task, isReadOnly: boolean): Node[] {
   return [node];
 }
 
-function createNodes(tasks: Task[], isReadOnly: boolean): Node[] {
-  const nodes = tasks.reduce((prev: Node[], curr: Task) => {
+function createNodes(tasks: ExtendedTask[], isReadOnly: boolean): Node<NodeData>[] {
+  const nodes = tasks.reduce((prev: Node<NodeData>[], curr: ExtendedTask) => {
     const node = convertTaskToNode(curr, isReadOnly);
     return [...prev, ...node];
   }, []);
   return nodes;
 }
 
-function createAllNodes(tasks: Task[], isReadOnly: boolean): Node[] {
+function createAllNodes(tasks: ExtendedTask[], isReadOnly: boolean): Node<NodeData>[] {
   const startNode = createStartNode(isReadOnly);
   const nodes = createNodes(tasks, isReadOnly);
   const endNode = createEndNode(isReadOnly);
@@ -127,7 +140,11 @@ function createAllNodes(tasks: Task[], isReadOnly: boolean): Node[] {
 }
 
 // cretes edges from decision node to joining node after
-function createAfterDecisionEdges(decisionTask: DecisionTask, currentTask: Task, output: Edge[]): Edge[] {
+function createAfterDecisionEdges(
+  decisionTask: ExtendedDecisionTask | DecisionTask,
+  currentTask: ExtendedTask | Task,
+  output: Edge[],
+): Edge[] {
   // decision cases edges
   const decisionCaseEdges = Object.keys(decisionTask.decisionCases)
     .map((d) => {
@@ -195,9 +212,9 @@ function nonNullPredicate<T>(value: T | null): value is T {
   return value !== null;
 }
 
-function createJoinEdges(forkTask: ForkTask, joinTask: JoinTask): Edge[] {
+function createJoinEdges(forkTask: ExtendedForkTask | ForkTask, joinTask: ExtendedJoinTask | JoinTask): Edge[] {
   const joinEdges = forkTask.forkTasks.map((fork) => {
-    const lastForkTask = fork.pop();
+    const lastForkTask = fork.at(-1);
 
     if (!lastForkTask) {
       return null;
@@ -215,8 +232,8 @@ function createJoinEdges(forkTask: ForkTask, joinTask: JoinTask): Edge[] {
   return filteredJoinEdges;
 }
 
-function createEdges(tasks: Task[]): Edge[] {
-  const edges = tasks.reduce((prev: Edge[], curr: Task, index: number, array: Task[]) => {
+function createEdges(tasks: ExtendedTask[]): Edge[] {
+  const edges = tasks.reduce((prev: Edge[], curr: ExtendedTask, index: number, array: ExtendedTask[]) => {
     if (index === 0) {
       return prev;
     }
@@ -239,7 +256,7 @@ function createEdges(tasks: Task[]): Edge[] {
       };
       const decisionEdges = Object.keys(curr.decisionCases)
         .map((d) => {
-          const decisionTasks = curr.decisionCases[d];
+          const decisionTasks = curr.decisionCases[d].map(convertTaskToExtendedTask);
           const currentDecisionEdges = createEdges(decisionTasks);
 
           // edge connecting decision task with cases
@@ -256,7 +273,7 @@ function createEdges(tasks: Task[]): Edge[] {
         })
         .flat();
 
-      const defaultCaseEdges = createEdges(curr.defaultCase);
+      const defaultCaseEdges = createEdges(curr.defaultCase.map(convertTaskToExtendedTask));
       const startDefaultCaseEdge = curr.defaultCase.length
         ? {
             id: `e${curr.taskReferenceName}-${curr.defaultCase[0].taskReferenceName}`,
@@ -291,7 +308,7 @@ function createEdges(tasks: Task[]): Edge[] {
                 type: 'buttonedge',
               }
             : null;
-          const forkBranchEdges = createEdges(forkTasks);
+          const forkBranchEdges = createEdges(forkTasks.map(convertTaskToExtendedTask));
           const allBranchEdges = firstBranchEdge ? [firstBranchEdge, ...forkBranchEdges] : forkBranchEdges;
           return allBranchEdges;
         })
@@ -316,33 +333,40 @@ function createEdges(tasks: Task[]): Edge[] {
     };
 
     return [...prev, newEdge];
-  }, []);
+  }, [] as Edge[]);
 
   return edges;
 }
 
-function createAllEdges(tasks: Task[]): Edge[] {
-  const startTask: Task = {
+function createAllEdges(tasks: ExtendedTask[]): Edge[] {
+  const startTask: ExtendedStartTask = {
     type: 'START_TASK',
     name: 'start',
     taskReferenceName: 'start',
     optional: false,
     startDelay: 0,
+    id: uuid(),
+    label: 'start',
   };
-  const endTask: Task = {
+  const endTask: ExtendedEndTask = {
     type: 'END_TASK',
     name: 'end',
     taskReferenceName: 'end',
     optional: false,
     startDelay: 0,
+    id: uuid(),
+    label: 'end',
   };
   const tasksWithStartEndNodes = [startTask, ...tasks, endTask];
   const edges = createEdges(tasksWithStartEndNodes);
   return edges;
 }
 
-export function getElementsFromWorkflow(tasks: Task[], isReadOnly: boolean): Elements {
+export function getElementsFromWorkflow(
+  tasks: ExtendedTask[],
+  isReadOnly: boolean,
+): { nodes: Node<NodeData>[]; edges: Edge[] } {
   const nodes = createAllNodes(tasks, isReadOnly);
   const edges = createAllEdges(tasks);
-  return [...nodes, ...edges];
+  return { nodes, edges };
 }
