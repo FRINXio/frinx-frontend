@@ -37,7 +37,7 @@ const PollData = () => {
   useEffect(() => {
     const { getQueues } = callbackUtils.getCallbacks;
 
-    getQueues().then((queues: Queue[]) => {
+    getQueues().then((queues) => {
       setData(queues);
     });
   }, []);
