@@ -37,13 +37,13 @@ const PollData = () => {
   useEffect(() => {
     const { getQueues } = callbackUtils.getCallbacks;
 
-    getQueues().then((queues: Queue[]) => {
+    getQueues().then((queues) => {
       setData(queues);
     });
   }, []);
 
   useEffect(() => {
-    const results = !keywords ? data : data.filter((q: Queue) => filterBySearchKeyword(q, keywords));
+    const results = !keywords ? data : data.filter((q) => filterBySearchKeyword(q, keywords));
 
     setItemList(results);
   }, [keywords, data]);
