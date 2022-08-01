@@ -463,3 +463,11 @@ export type WorkflowExecutionResult = {
 
 export type ExecutedWorkflowSortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';
+
+export type NodeData = {
+  label: string;
+  isReadOnly: boolean;
+} & {
+  task?: ExtendedTask;
+  handles?: string[];
+};

@@ -1,9 +1,7 @@
-import { assert, describe, test } from 'vitest';
 import { readFileSync } from 'fs';
-import { partition } from 'lodash';
-import { isNode } from 'react-flow-renderer';
-import { ExtendedTask, Workflow } from './types';
+import { assert, describe, test } from 'vitest';
 import { getElementsFromWorkflow } from './api-to-graph.helpers';
+import { ExtendedTask, Workflow } from './types';
 
 function loadWorkflow(fileName: string): Workflow<ExtendedTask> {
   return JSON.parse(readFileSync(`./src/helpers/workflows/${fileName}`).toString());
@@ -13,7 +11,7 @@ describe('data helpers', () => {
   test('test decision workflow', () => {
     const decisionWorkflow = loadWorkflow('decision_workflow.json');
     const elements = getElementsFromWorkflow(decisionWorkflow.tasks, false);
-    const [nodes, edges] = partition(elements, isNode);
+    const { nodes, edges } = elements;
 
     assert.equal(nodes.length, 8);
     assert.equal(edges.length, 9);
@@ -25,7 +23,7 @@ describe('data helpers', () => {
   test('test decision 2 workflow', () => {
     const decisionWorkflow = loadWorkflow('decision_workflow2.json');
     const elements = getElementsFromWorkflow(decisionWorkflow.tasks, false);
-    const [nodes, edges] = partition(elements, isNode);
+    const { nodes, edges } = elements;
 
     assert.equal(nodes.length, 6);
     assert.equal(edges.length, 7);
@@ -37,7 +35,7 @@ describe('data helpers', () => {
   test('test nested decision workflow', () => {
     const decisionWorkflow = loadWorkflow('nested_decision_workflow.json');
     const elements = getElementsFromWorkflow(decisionWorkflow.tasks, false);
-    const [nodes, edges] = partition(elements, isNode);
+    const { nodes, edges } = elements;
 
     assert.equal(nodes.length, 12);
     assert.equal(edges.length, 14);
@@ -49,7 +47,7 @@ describe('data helpers', () => {
   test('test fork workflow', () => {
     const forkWorkflow = loadWorkflow('fork_workflow.json');
     const elements = getElementsFromWorkflow(forkWorkflow.tasks, false);
-    const [nodes, edges] = partition(elements, isNode);
+    const { nodes, edges } = elements;
 
     assert.equal(nodes.length, 10);
     assert.equal(edges.length, 10);
@@ -66,7 +64,7 @@ describe('data helpers', () => {
   test('test nested fork workflow', () => {
     const forkWorkflow = loadWorkflow('nested_fork_workflow.json');
     const elements = getElementsFromWorkflow(forkWorkflow.tasks, false);
-    const [nodes, edges] = partition(elements, isNode);
+    const { nodes, edges } = elements;
 
     assert.equal(nodes.length, 14);
     assert.equal(edges.length, 15);
@@ -83,7 +81,7 @@ describe('data helpers', () => {
   test('test uni_tx_start workflow', () => {
     const forkWorkflow = loadWorkflow('uni_tx_start_workflow.json');
     const elements = getElementsFromWorkflow(forkWorkflow.tasks, false);
-    const [nodes, edges] = partition(elements, isNode);
+    const { nodes, edges } = elements;
 
     assert.equal(nodes.length, 6);
     assert.equal(edges.length, 7);

@@ -1,18 +1,13 @@
 import { Box, Flex, Heading, Theme, Tooltip, useTheme } from '@chakra-ui/react';
 import React, { memo, VoidFunctionComponent } from 'react';
 import { Handle, NodeProps, Position } from 'react-flow-renderer';
-import { ExtendedTask, TaskType } from '../../helpers/types';
+import { NodeData, TaskType } from '../../helpers/types';
+import unwrap from '../../helpers/unwrap';
 import { useTaskActions } from '../../task-actions-context';
 import NodeButtons from '../nodes/node-buttons';
 import { truncateFromMiddle } from './node.helpers';
 
-type Props = NodeProps<{
-  type: string;
-  label: string;
-  handles: string[];
-  task: ExtendedTask;
-  isReadOnly: boolean;
-}>;
+type Props = NodeProps<NodeData>;
 
 function getBorderColor(taskType: TaskType) {
   switch (taskType) {
@@ -30,11 +25,14 @@ function getBorderColor(taskType: TaskType) {
     }
   }
 }
-
 const BaseNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
   const theme = useTheme<Theme>();
   const { selectTask, selectedTask, setRemovedTaskId } = useTaskActions();
-  const { task, isReadOnly } = data;
+  const { isReadOnly } = data;
+
+  // the only node type that do not contain task data is start/end node
+  // so we can safely unwrap
+  const task = unwrap(data.task);
 
   const topColor = getBorderColor(task.type);
   const isSelected = task.id === selectedTask?.task.id;

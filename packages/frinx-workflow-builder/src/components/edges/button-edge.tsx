@@ -1,7 +1,7 @@
 import { CloseIcon } from '@chakra-ui/icons';
 import { Box, IconButton } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { EdgeProps, getBezierPath, getEdgeCenter, getMarkerEnd } from 'react-flow-renderer';
+import { EdgeProps, getBezierPath, getEdgeCenter } from 'react-flow-renderer';
 import { useEdgeRemoveContext } from '../../edge-remove-context';
 
 const foreignObjectSize = 40;
@@ -15,8 +15,7 @@ const ButtonEdge: VoidFunctionComponent<EdgeProps> = ({
   sourcePosition,
   targetPosition,
   style = {},
-  arrowHeadType,
-  markerEndId,
+  markerEnd,
 }) => {
   const { removeEdge } = useEdgeRemoveContext();
 
@@ -32,7 +31,7 @@ const ButtonEdge: VoidFunctionComponent<EdgeProps> = ({
     targetY,
     targetPosition,
   });
-  const markerEnd = getMarkerEnd(arrowHeadType, markerEndId);
+  // const markerEnd = getMarkerEnd(arrowHeadType, markerEndId);
   const [edgeCenterX, edgeCenterY] = getEdgeCenter({
     sourceX,
     sourceY,
