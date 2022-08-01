@@ -11,6 +11,23 @@ import { sortAscBy, sortDescBy } from '../workflowUtils';
 import { usePagination } from '../../../common/pagination-hook';
 import { Queue } from '../../../helpers/uniflow-types';
 
+function filterBySearchKeyword(queue: Queue, keyword: string): boolean {
+  const query = keyword.toUpperCase();
+  const worfklowName = queue.queueName.toUpperCase();
+  const searchedKeys = Object.keys(queue);
+
+  return searchedKeys.some((k) => {
+    if (k === 'lastPollTime') {
+      return moment(queue[k])
+        .format('MM/DD/YYYY, HH:mm:ss:SSS')
+        .toString()
+        .toLowerCase()
+        .includes(query.toLocaleLowerCase());
+    }
+    return worfklowName.includes(query);
+  });
+}
+
 const PollData = () => {
   const [sorted, setSorted] = useState(false);
   const [data, setData] = useState<Queue[]>([]);
@@ -26,33 +43,8 @@ const PollData = () => {
   }, []);
 
   useEffect(() => {
-    const results = !keywords
-      ? data
-      : data.filter((e: string[] | any) => {
-          const searchedKeys = ['queueName', 'qsize', 'lastPollTime', 'workerId'];
-          const queryWords = keywords.toUpperCase();
-          const wfName = e.queueName.toUpperCase();
+    const results = !keywords ? data : data.filter((q: Queue) => filterBySearchKeyword(q, keywords));
 
-          for (let i = 0; i < searchedKeys.length; i += 1) {
-            console.log(i);
-            if (searchedKeys[wfName] === 'lastPollTime') {
-              if (
-                moment(e[searchedKeys[wfName]])
-                  .format('MM/DD/YYYY, HH:mm:ss:SSS')
-                  .toString()
-                  .toLowerCase()
-                  .includes(keywords.toLocaleLowerCase())
-              ) {
-                return true;
-              }
-            }
-            if (wfName.includes(queryWords)) {
-              return true;
-            }
-          }
-
-          return false;
-        });
     setItemList(results);
   }, [keywords, data]);
 
