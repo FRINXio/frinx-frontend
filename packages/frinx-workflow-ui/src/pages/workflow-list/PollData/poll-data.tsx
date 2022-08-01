@@ -75,7 +75,6 @@ const PollData = () => {
         </Thead>
         <Tbody>
           {pageItems.map((e: any) => {
-            // console.log(e);
             return (
               <Tr key={e.queueName}>
                 <Td>{e.queueName}</Td>
