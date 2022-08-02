@@ -108,7 +108,7 @@ export type CsvImport = {
 };
 
 export type CsvImportInput = {
-  file?: InputMaybe<Scalars['Upload']>;
+  file: Scalars['Upload'];
   zoneId: Scalars['String'];
 };
 
@@ -282,7 +282,7 @@ export type DiffData = {
 
 export type FilterDevicesInput = {
   deviceName?: InputMaybe<Scalars['String']>;
-  labelIds?: InputMaybe<Array<Scalars['String']>>;
+  labels?: InputMaybe<Array<Scalars['String']>>;
 };
 
 export type InstallDevicePayload = {
@@ -842,7 +842,7 @@ export type CalculatedDiffQueryVariables = Exact<{
 export type CalculatedDiffQuery = { __typename?: 'Query', calculatedDiff: { __typename?: 'CalculatedDiffPayload', result: { __typename?: 'CalculatedDiffResult', createdData: Array<{ __typename?: 'DiffData', path: string, data: string }>, deletedData: Array<{ __typename?: 'DiffData', path: string, data: string }>, updatedData: Array<{ __typename?: 'CalculatedUpdateDiffData', path: string, actualData: string, intendedData: string }> } } };
 
 export type DevicesQueryVariables = Exact<{
-  labelIds?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
+  labels?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
   deviceName?: InputMaybe<Scalars['String']>;
   orderBy?: InputMaybe<DeviceOrderByInput>;
   first?: InputMaybe<Scalars['Int']>;

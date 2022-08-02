@@ -26,7 +26,7 @@ import DeviceTable from './device-table';
 
 const DEVICES_QUERY = gql`
   query Devices(
-    $labelIds: [String!]
+    $labels: [String!]
     $deviceName: String
     $orderBy: DeviceOrderByInput
     $first: Int
@@ -35,7 +35,7 @@ const DEVICES_QUERY = gql`
     $before: String
   ) {
     devices(
-      filter: { labelIds: $labelIds, deviceName: $deviceName }
+      filter: { labels: $labels, deviceName: $deviceName }
       orderBy: $orderBy
       first: $first
       after: $after
@@ -173,7 +173,7 @@ const DeviceList: VoidFunctionComponent = () => {
   const [{ data: deviceData, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
     variables: {
-      labelIds: selectedLabels.map((label) => label.value),
+      labels: selectedLabels.map((label) => label.label),
       deviceName: deviceNameFilter,
       orderBy: sorting
         ? {
