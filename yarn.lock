@@ -3412,7 +3412,7 @@ __metadata:
     eventemitter3: 4.0.7
     feather-icons-react: 0.5.0
     fp-ts: 2.12.1
-    framer-motion: 6.2.8
+    framer-motion: 6.5.1
     graphql: 15.8.0
     html-webpack-harddisk-plugin: 2.0.0
     html-webpack-plugin: 5.5.0
@@ -3533,7 +3533,7 @@ __metadata:
     eslint-plugin-react-hooks: 4.5.0
     feather-icons-react: 0.5.0
     formik: 2.2.9
-    framer-motion: 6.2.8
+    framer-motion: 6.5.1
     graphql: 15.8.0
     html-webpack-plugin: 5.5.0
     json-templates: 4.2.0
@@ -3601,7 +3601,7 @@ __metadata:
     eslint-plugin-react-hooks: 4.5.0
     feather-icons-react: 0.5.0
     formik: 2.2.9
-    framer-motion: 6.2.8
+    framer-motion: 6.5.1
     graphql: 15.8.0
     graphql-tag: 2.12.6
     html-webpack-plugin: 5.5.0
@@ -3674,7 +3674,7 @@ __metadata:
     feather-icons-react: 0.5.0
     file-saver: 2.0.5
     formik: ^2.2.9
-    framer-motion: 6.2.8
+    framer-motion: 6.5.1
     html-webpack-plugin: 5.5.0
     immer: 9.0.15
     lodash: 4.17.21
@@ -3747,7 +3747,7 @@ __metadata:
     flow-bin: 0.173.0
     flow-remove-types: 2.174.0
     formik: ^2.2.9
-    framer-motion: 6.2.8
+    framer-motion: 6.5.1
     graphql: 15.8.0
     html-loader: ^1.1.0
     jsdoc: 3.6.10
@@ -10269,27 +10269,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:6.2.8":
-  version: 6.2.8
-  resolution: "framer-motion@npm:6.2.8"
-  dependencies:
-    "@emotion/is-prop-valid": ^0.8.2
-    framesync: 6.0.1
-    hey-listen: ^1.0.8
-    popmotion: 11.0.3
-    style-value-types: 5.0.0
-    tslib: ^2.1.0
-  peerDependencies:
-    react: ">=16.8 || ^17.0.0 || ^18.0.0"
-    react-dom: ">=16.8 || ^17.0.0 || ^18.0.0"
-  dependenciesMeta:
-    "@emotion/is-prop-valid":
-      optional: true
-  checksum: d84b716ab5e9480804856088551dbb493092e63625fe2d29c05ce734025d3e5cfded223443c604e807e8fca09064282aed9fb05f3ff590c9fb6ff4502f1ca1a6
-  languageName: node
-  linkType: hard
-
-"framer-motion@npm:^6.3.11":
+"framer-motion@npm:6.5.1, framer-motion@npm:^6.3.11":
   version: 6.5.1
   resolution: "framer-motion@npm:6.5.1"
   dependencies:
