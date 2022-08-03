@@ -8410,14 +8410,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dedubcheck@npm:0.0.6":
-  version: 0.0.6
-  resolution: "dedubcheck@npm:0.0.6"
+"dedubcheck@npm:0.0.8":
+  version: 0.0.8
+  resolution: "dedubcheck@npm:0.0.8"
   dependencies:
     lodash: "*"
   bin:
     dedubcheck: bin/dedubcheck.js
-  checksum: 08aa7d767120e5ebecd4d2e7cce99b39dcf7c5b1ad14d4070cba042e03282a7635ecb044313ff64c2f9c134496776a8102bfeadf480e1aa32605f3a7a5d31598
+  checksum: fbc2d45a9567d4696743541dd8caed0f1c89cf8fd96706ecb9e5e73d74f9b96f98ad1e4771bbbf0639d010d72435ba13bf84dad9fe998586669a421b648b7d39
   languageName: node
   linkType: hard
 
@@ -15093,7 +15093,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    dedubcheck: 0.0.6
+    dedubcheck: 0.0.8
     npm-run-all: 4.1.5
     prettier: 2.6.2
   languageName: unknown
