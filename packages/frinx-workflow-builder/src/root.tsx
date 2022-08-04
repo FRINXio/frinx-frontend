@@ -87,6 +87,27 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     }
   };
 
+  const handleWorkflowChange = (
+    editedWorkflow: Pick<
+      Workflow,
+      | 'name'
+      | 'description'
+      | 'version'
+      | 'restartable'
+      | 'timeoutPolicy'
+      | 'timeoutSeconds'
+      | 'outputParameters'
+      | 'variables'
+    >,
+  ) => {
+    const { description, ...rest } = editedWorkflow;
+    setWorkflow((wf) => ({
+      ...unwrap(wf),
+      ...rest,
+      description: JSON.stringify(description),
+    }));
+  };
+
   if (shouldCreateWorkflow && workflows != null) {
     return (
       <ChakraProvider theme={theme}>
@@ -123,12 +144,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
         <App
           key={`${name}/${version}/${workflow.name}`}
           workflow={workflow}
-          onWorkflowChange={(editedWorkflow) => {
-            setWorkflow((wf) => ({
-              ...unwrap(wf),
-              ...editedWorkflow,
-            }));
-          }}
+          onWorkflowChange={handleWorkflowChange}
           workflows={workflows}
           taskDefinitions={taskDefinitions}
           onFileImport={handleFileImport}
