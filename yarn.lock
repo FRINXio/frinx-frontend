@@ -3502,6 +3502,7 @@ __metadata:
     "@emotion/react": 11.9.0
     "@emotion/styled": 11.8.1
     "@frinx/eslint-config-typescript": 19.0.4-build.1
+    "@frinx/shared": "workspace:^"
     "@types/dagre": 0.7.47
     "@types/file-saver": 2.0.5
     "@types/react": 17.0.42
