@@ -1,6 +1,6 @@
 import { Workflow, WorkflowInstanceDetail } from '@frinx/workflow-ui/src/helpers/types';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
-import { useAsyncGenerator } from '@frinx/shared/src/hooks';
+import { useAsyncGenerator } from '@frinx/shared/src';
 
 export type TaskStatus = 'COMPLETED' | 'FAILED' | 'SCHEDULED' | 'IN_PROGRESS';
 export type WorkflowStatus = 'COMPLETED' | 'FAILED' | 'RUNNING' | 'TERMINATED' | 'TIMED_OUT';
@@ -54,15 +54,17 @@ async function getWorkflowExecOutput(
   try {
     const response = await getWorkflowInstanceDetail(workflowId, { signal: abortController.signal });
     return response;
-  } catch {
+  } catch (error) {
+    console.log(error);
     return null;
   }
 }
 
 export function useWorkflowGenerator(workflowId: string): ExecutedWorkflowResponse | null {
   const { data } = useAsyncGenerator<ExecutedWorkflowResponse>({
-    repeatTill: (data) => data?.result.status === 'RUNNING' || data?.result.status === 'PAUSED',
+    repeatTill: (workflow) => workflow?.result.status === 'RUNNING' || workflow?.result.status === 'PAUSED',
     fn: (abortController) => () => getWorkflowExecOutput(workflowId, abortController),
+    updateDeps: [workflowId],
   });
 
   return data;

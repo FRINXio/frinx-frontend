@@ -14,8 +14,10 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  Text,
   useDisclosure,
 } from '@chakra-ui/react';
+import { useNotifications } from '@frinx/shared/src';
 import TaskTable from './task-table';
 import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
 import WorkflowJsonTab from './executed-workflow-detail-tabs/workflow-json-tab';
@@ -25,7 +27,6 @@ import { useWorkflowGenerator } from './executed-workflow-detail-status.helpers'
 import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link, useParams } from 'react-router-dom';
 import unwrap from '../../helpers/unwrap';
-import { useNotifications } from '@frinx/shared/src/hooks';
 
 const convertWorkflowVariablesToFormFormat = (
   workflowDetails: string,
@@ -83,7 +84,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
   const [tabIndex, setTabIndex] = useState(0);
 
   if (execPayload == null) {
-    return null;
+    return <Text>Nothing to see here</Text>;
   }
 
   if (workflowId == null) {
