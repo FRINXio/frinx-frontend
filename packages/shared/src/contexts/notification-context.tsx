@@ -1,4 +1,4 @@
-import React, { createContext, FC, ReactNode, useState } from 'react';
+import React, { createContext, FC, ReactNode, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import ToastNotification from '../components/toast-notification';
 
@@ -21,26 +21,31 @@ export const CustomToastProvider: FC = ({ children }) => {
   const [toasts, setToasts] = useState<ToastPropsId[]>([]);
   const [visibleToasts, setVisibleToasts] = useState<Set<string>>(new Set());
 
-  const addToastNotification = (tProps: ToastProps) => {
-    const id = uuid();
-    setVisibleToasts((v) => {
-      const v2 = new Set(v);
-      v2.add(id);
-      return v2;
-    });
-    setToasts((t) =>
-      [
-        {
-          ...tProps,
-          id,
-        },
-        ...t,
-      ].slice(0, MAX_NOTIFICATION_COUNT),
-    );
-  };
+  const handlers = useMemo(
+    () => ({
+      addToastNotification: (tProps: ToastProps) => {
+        const id = uuid();
+        setVisibleToasts((v) => {
+          const v2 = new Set(v);
+          v2.add(id);
+          return v2;
+        });
+        setToasts((t) =>
+          [
+            {
+              ...tProps,
+              id,
+            },
+            ...t,
+          ].slice(0, MAX_NOTIFICATION_COUNT),
+        );
+      },
+    }),
+    [],
+  );
 
   return (
-    <NotificationContext.Provider value={{ addToastNotification }}>
+    <NotificationContext.Provider value={handlers}>
       {toasts.map((t, index) => (
         <ToastNotification
           index={index}

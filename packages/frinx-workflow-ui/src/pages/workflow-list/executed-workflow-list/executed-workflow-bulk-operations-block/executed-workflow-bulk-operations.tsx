@@ -17,7 +17,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import callbackUtils from '../../../../utils/callback-utils';
-import { useNotifications } from '@frinx/shared/src/hooks';
+import { useNotifications } from '@frinx/shared/src';
 
 type CallBackUtilsFunctionNames =
   | 'restartWorkflows'

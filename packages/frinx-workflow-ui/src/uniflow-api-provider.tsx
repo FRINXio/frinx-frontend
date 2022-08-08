@@ -1,4 +1,4 @@
-import { CustomToastProvider } from '@frinx/shared/src/contexts/notification-context';
+import { CustomToastProvider } from '@frinx/shared/src';
 import React, { createContext, FC } from 'react';
 import callbackUtils, { Callbacks } from './utils/callback-utils';
 

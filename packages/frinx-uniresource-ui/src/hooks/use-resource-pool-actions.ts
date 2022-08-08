@@ -1,3 +1,4 @@
+import { useNotifications } from '@frinx/shared/src';
 import { useMemo } from 'react';
 import { gql, useMutation, useQuery, UseQueryState } from 'urql';
 import unwrap from '../helpers/unwrap';
@@ -19,7 +20,6 @@ import {
   Exact,
   InputMaybe,
 } from '../__generated__/graphql';
-import useNotifications from './use-notifications';
 import { CallbackFunctions, PaginationArgs, usePagination } from './use-pagination';
 
 const POOL_DETAIL_QUERY = gql`

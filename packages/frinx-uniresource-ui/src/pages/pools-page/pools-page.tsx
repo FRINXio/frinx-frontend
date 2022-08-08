@@ -4,8 +4,7 @@ import gql from 'graphql-tag';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
-import { useMinisearch } from '@frinx/shared/src';
-import useNotifications from '../../hooks/use-notifications';
+import { useMinisearch, useNotifications } from '@frinx/shared/src';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,

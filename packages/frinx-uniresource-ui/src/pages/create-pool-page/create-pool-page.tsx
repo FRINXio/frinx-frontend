@@ -1,6 +1,7 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Client, useClient, useQuery } from 'urql';
 import { Box, Flex, Heading, Progress } from '@chakra-ui/react';
+import { useNotifications } from '@frinx/shared/src';
 import gql from 'graphql-tag';
 import {
   CreateAllocationPoolMutation,
@@ -20,7 +21,6 @@ import {
   SelectResourceTypesQuery,
 } from '../../__generated__/graphql';
 import CreatePoolForm from './create-pool-form';
-import useNotifications from '../../hooks/use-notifications';
 
 const CREATE_SET_POOL_MUTATION = gql`
   mutation CreateSetPool($input: CreateSetPoolInput!) {

@@ -27,7 +27,7 @@ import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import SchedulingModal from '../../../common/modals/scheduled-workflow-modal';
 import { ScheduledWorkflow, StatusType } from '@frinx/workflow-ui/src/helpers/types';
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
-import { useNotifications } from '@frinx/shared/src/hooks';
+import { useNotifications } from '@frinx/shared/src';
 
 function ScheduledWorkflowList() {
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<ScheduledWorkflow>([], 10);
