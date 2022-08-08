@@ -3755,7 +3755,7 @@ __metadata:
     react: 18.1.0
     react-ace: 9.5.0
     react-dom: 18.1.0
-    react-flow-renderer: 10.3.11
+    react-flow-renderer: 10.3.14
     react-router-dom: 6.3.0
     style-loader: 2.0.0
     typescript: 4.7.4
@@ -14308,9 +14308,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-flow-renderer@npm:10.3.11":
-  version: 10.3.11
-  resolution: "react-flow-renderer@npm:10.3.11"
+"react-flow-renderer@npm:10.3.14":
+  version: 10.3.14
+  resolution: "react-flow-renderer@npm:10.3.14"
   dependencies:
     "@babel/runtime": ^7.18.9
     classcat: ^5.0.3
@@ -14321,7 +14321,7 @@ __metadata:
   peerDependencies:
     react: 16 || 17 || 18
     react-dom: 16 || 17 || 18
-  checksum: 994e66dcd8e61b733fb4ce570bb03ed40f5ea75e2b86ff76d0228cd3ddbe37c35a5174e1b0bb2d911261f472b430d0051cc4a54447dd0a1881fae270cf137583
+  checksum: 470b383bdb6a1e21f23deb837240ef0d53d6761de58f470e9a56d837f7d59e721355caf9e8709e73d9c24eb54380e76034aaf469e573af3999d5d6c2c240f231
   languageName: node
   linkType: hard
 
