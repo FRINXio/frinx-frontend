@@ -204,10 +204,12 @@ const RoutingProtocolItemValidator = t.type({
     t.type({
       'bgp-profiles': optional(
         t.type({
-          'bgp-profile': t.array(
-            t.type({
-              profile: t.string,
-            }),
+          'bgp-profile': optional(
+            t.array(
+              t.type({
+                profile: t.string,
+              }),
+            ),
           ),
         }),
       ),
