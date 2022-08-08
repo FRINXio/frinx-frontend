@@ -1,9 +1,10 @@
-import { Box, Flex, Heading, Text, Theme, useTheme } from '@chakra-ui/react';
+import { Box, Flex, Heading, Text, Theme, Tooltip, useTheme } from '@chakra-ui/react';
 import React, { memo, VoidFunctionComponent } from 'react';
 import { Handle, NodeProps, Position } from 'react-flow-renderer';
 import { ExtendedDecisionTask } from '../../helpers/types';
 import { useTaskActions } from '../../task-actions-context';
 import NodeButtons from '../nodes/node-buttons';
+import { truncateFromMiddle } from './node.helpers';
 
 type Props = NodeProps<{
   type: string;
@@ -22,7 +23,7 @@ const DecisionNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
     <Box
       background="white"
       paddingX={10}
-      // width={64}
+      width={80}
       borderWidth={2}
       borderStyle="solid"
       borderColor={task.id === selectedTask?.task.id ? 'pink.400' : 'gray.200'}
@@ -81,9 +82,11 @@ const DecisionNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
       </Flex>
 
       <Box paddingX={2} paddingTop={4} minHeight={14}>
-        <Heading as="h6" size="xs">
-          {task.taskReferenceName}
-        </Heading>
+        <Tooltip label={task.taskReferenceName}>
+          <Heading as="h6" size="xs" fontFamily="monospace" cursor="default">
+            {truncateFromMiddle(task.taskReferenceName, 24)}
+          </Heading>
+        </Tooltip>
         <Flex height={8} alignItems="center" justifyContent="center" isTruncated>
           <Text size="sm" color="gray.700" fontFamily="monospace">
             if {task.caseValueParam} ==

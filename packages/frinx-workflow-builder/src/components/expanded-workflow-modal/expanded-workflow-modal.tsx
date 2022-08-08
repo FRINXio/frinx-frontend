@@ -20,7 +20,7 @@ import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';
 import { Link } from 'react-router-dom';
 import callbackUtils from '../../callback-utils';
-import { getElementsFromWorkflow } from '../../helpers/api-to-graph.helpers';
+import { convertTaskToExtendedTask, getElementsFromWorkflow } from '../../helpers/api-to-graph.helpers';
 import { getLayoutedElements } from '../../helpers/layout.helpers';
 import { Task, Workflow } from '../../helpers/types';
 import BaseNode from '../workflow-nodes/base-node';
@@ -41,11 +41,17 @@ type Props = {
 };
 
 const ExpandedWorkflowDiagram: FC<{ workflow: Workflow<Task> }> = ({ workflow }) => {
-  const elements = getElementsFromWorkflow(workflow.tasks, true);
+  const elements = getElementsFromWorkflow(workflow.tasks.map(convertTaskToExtendedTask), true);
   const layoutedElements = useMemo(() => getLayoutedElements(elements), [elements]);
   return (
     <ReactFlowProvider>
-      <ReactFlow elements={layoutedElements} nodeTypes={nodeTypes} snapToGrid onLoad={(instance) => instance.fitView()}>
+      <ReactFlow
+        nodes={layoutedElements.nodes}
+        edges={layoutedElements.edges}
+        nodeTypes={nodeTypes}
+        snapToGrid
+        onInit={(instance) => instance.fitView()}
+      >
         <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
         <MiniMap />
         <Controls />

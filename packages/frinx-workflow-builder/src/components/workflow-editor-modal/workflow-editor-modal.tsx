@@ -20,28 +20,19 @@ type Props = {
 };
 
 const parseWorkflow = (workflow: Workflow<ExtendedTask>) => {
-  const workflowEntries = Object.entries(workflow);
-  const result = Object.fromEntries(
-    workflowEntries
-      .map((item) => {
-        if (typeof item[1] !== 'string') return [item[0], item[1]];
-
-        try {
-          const parsedValue = JSON.parse(item[1]);
-          return [item[0], parsedValue];
-        } catch (error) {
-          return [item[0], item[1]];
-        }
-      })
-      .filter(([key]) => {
-        return key !== 'name';
-      }),
+  const { name, description, ...rest } = workflow;
+  return JSON.stringify(
+    {
+      description: JSON.parse(description ?? ''),
+      ...rest,
+    },
+    null,
+    2,
   );
-  return result;
 };
 
 const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave }) => {
-  const [editedWorkflow, setEditedWorkflow] = useState(JSON.stringify(parseWorkflow(workflow), null, 2));
+  const [editedWorkflow, setEditedWorkflow] = useState(parseWorkflow(workflow));
   const [isJsonValid, setIsJsonValid] = useState(true);
 
   const handleSave = () => {

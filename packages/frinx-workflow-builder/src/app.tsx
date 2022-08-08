@@ -1,21 +1,21 @@
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
+import { unwrap, useNotifications } from '@frinx/shared/src';
 import produce from 'immer';
-import React, { useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { useCallback, useMemo, useState, VoidFunctionComponent } from 'react';
 import ReactFlow, {
   addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
   Background,
   BackgroundVariant,
   Connection,
   Controls,
   Edge,
-  Elements,
   MiniMap,
   Node,
   ReactFlowProvider,
-  removeElements,
   updateEdge,
 } from 'react-flow-renderer';
-import { useNotifications, unwrap } from '@frinx/shared/src';
 import callbackUtils from './callback-utils';
 import ActionsMenu from './components/actions-menu/actions-menu';
 import ButtonEdge from './components/edges/button-edge';
@@ -32,10 +32,10 @@ import BaseNode from './components/workflow-nodes/base-node';
 import DecisionNode from './components/workflow-nodes/decision-node';
 import StartEndNode from './components/workflow-nodes/start-end-node';
 import { EdgeRemoveContext } from './edge-remove-context';
-import { convertToTasks } from './helpers/graph-to-api.helpers';
 import { getElementsFromWorkflow, getNodeType } from './helpers/api-to-graph.helpers';
+import { convertToTasks } from './helpers/graph-to-api.helpers';
 import { getLayoutedElements } from './helpers/layout.helpers';
-import { ExtendedTask, TaskDefinition, Workflow } from './helpers/types';
+import { ExtendedTask, NodeData, TaskDefinition, Workflow } from './helpers/types';
 import { useTaskActions } from './task-actions-context';
 
 const nodeTypes = {
@@ -89,24 +89,48 @@ const App: VoidFunctionComponent<Props> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isInputModalShown, setIsInputModalShown] = useState(false);
   const [workflowTasks, setWorkflowTasks] = useState(workflow.tasks);
-  const [elements, setElements] = useState(getLayoutedElements(getElementsFromWorkflow(workflowTasks, false)));
+  const [elements, setElements] = useState<{ nodes: Node<NodeData>[]; edges: Edge[] }>(
+    getLayoutedElements(getElementsFromWorkflow(workflowTasks, false)),
+  );
 
   const handleConnect = (edge: Edge<unknown> | Connection) => {
-    setElements((els) => addEdge({ ...edge, type: 'buttonedge' }, els));
+    setElements((els) => ({
+      ...els,
+      edges: addEdge({ ...edge, type: 'buttonedge' }, els.edges),
+    }));
   };
 
   const handleEdgeUpdate = (oldEdge: Edge<unknown>, newConnection: Connection) => {
-    setElements((els) => updateEdge(oldEdge, newConnection, els));
+    setElements((els) => ({
+      ...els,
+      edges: updateEdge(oldEdge, newConnection, els.edges),
+    }));
   };
 
-  const handleElementsRemove = (elementsToRemove: Elements<unknown>) => {
-    setElements((els) => removeElements(elementsToRemove, els));
-  };
+  const onNodesChange = useCallback((changes) => {
+    setElements((els) => ({
+      ...els,
+      nodes: applyNodeChanges(changes, els.nodes),
+    }));
+  }, []);
+  const onEdgesChange = useCallback(
+    (changes) =>
+      setElements((els) => ({
+        ...els,
+        edges: applyEdgeChanges(changes, els.edges),
+      })),
+    [],
+  );
 
   const handleDeleteButtonClick = (id: string) => {
     setElements((els) => {
-      const elementsToRemove = els.filter((e) => e.data?.task?.id === id);
-      return removeElements(elementsToRemove, els);
+      return {
+        ...els,
+        nodes: applyNodeChanges(
+          [{ id, type: 'remove' }],
+          els.nodes.filter((n) => n.data.task?.id !== id),
+        ),
+      };
     });
   };
 
@@ -134,7 +158,10 @@ const App: VoidFunctionComponent<Props> = ({
         };
       }
 
-      return [...els, newElement];
+      return {
+        ...elements,
+        nodes: [...els.nodes, newElement],
+      };
     });
     setWorkflowTasks((prevTasks) => [...prevTasks, t]);
   };
@@ -142,8 +169,8 @@ const App: VoidFunctionComponent<Props> = ({
   const handleFormSubmit = (t: ExtendedTask) => {
     setElements((els) => {
       return produce(els, (acc) => {
-        const index = acc.findIndex((n) => n.data?.task?.id === t.id);
-        unwrap(acc[index].data).task = t;
+        const index = acc.nodes.findIndex((n) => n.data?.task?.id === t.id);
+        unwrap(acc.nodes[index].data).task = t;
         return acc;
       });
     });
@@ -165,8 +192,10 @@ const App: VoidFunctionComponent<Props> = ({
     () => ({
       removeEdge: (id: string) => {
         setElements((els) => {
-          const elementsToRemove = els.filter((e) => e.id === id);
-          return removeElements(elementsToRemove, els);
+          return {
+            ...els,
+            edges: applyEdgeChanges([{ id, type: 'remove' }], els.edges),
+          };
         });
       },
     }),
@@ -280,14 +309,16 @@ const App: VoidFunctionComponent<Props> = ({
           <EdgeRemoveContext.Provider value={removeEdgeContextValue}>
             <ReactFlowProvider>
               <ReactFlow
-                elements={elements}
+                nodes={elements.nodes}
+                edges={elements.edges}
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
                 snapToGrid
                 onConnect={handleConnect}
                 onEdgeUpdate={handleEdgeUpdate}
-                onElementsRemove={handleElementsRemove}
-                onLoad={(instance) => instance.fitView()}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onInit={(instance) => instance.fitView()}
               >
                 <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
                 <MiniMap />

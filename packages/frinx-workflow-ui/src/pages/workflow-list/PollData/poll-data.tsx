@@ -9,12 +9,30 @@ import { Icon, Input, InputGroup, InputLeftElement, Table, Tbody, Td, Tfoot, Th,
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
 import { usePagination } from '../../../common/pagination-hook';
+import { Queue } from '../../../helpers/uniflow-types';
+
+function filterBySearchKeyword(queue: Queue, keyword: string): boolean {
+  const query = keyword.toUpperCase();
+  const worfklowName = queue.queueName.toUpperCase();
+  const searchedKeys = Object.keys(queue);
+
+  return searchedKeys.some((k) => {
+    if (k === 'lastPollTime') {
+      return moment(queue[k])
+        .format('MM/DD/YYYY, HH:mm:ss:SSS')
+        .toString()
+        .toLowerCase()
+        .includes(query.toLocaleLowerCase());
+    }
+    return worfklowName.includes(query);
+  });
+}
 
 const PollData = () => {
   const [sorted, setSorted] = useState(false);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<Queue[]>([]);
   const [keywords, setKeywords] = useState('');
-  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
+  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<Queue>([], 10);
 
   useEffect(() => {
     const { getQueues } = callbackUtils.getCallbacks;
@@ -25,33 +43,12 @@ const PollData = () => {
   }, []);
 
   useEffect(() => {
-    const results = !keywords
-      ? data
-      : data.filter((e) => {
-          const searchedKeys = ['queueName', 'qsize', 'lastPollTime', 'workerId'];
+    const results = !keywords ? data : data.filter((q) => filterBySearchKeyword(q, keywords));
 
-          for (let i = 0; i < searchedKeys.length; i += 1) {
-            if (searchedKeys[i] === 'lastPollTime') {
-              if (
-                moment(e[searchedKeys[i]])
-                  .format('MM/DD/YYYY, HH:mm:ss:SSS')
-                  .toString()
-                  .toLowerCase()
-                  .includes(keywords.toLocaleLowerCase())
-              ) {
-                return true;
-              }
-            }
-            if (e[searchedKeys[i]].toString().toLowerCase().includes(keywords.toLocaleLowerCase())) {
-              return true;
-            }
-          }
-          return false;
-        });
     setItemList(results);
   }, [keywords, data]);
 
-  const sortArray = (key) => {
+  const sortArray = (key: string) => {
     const sortedArray = data;
 
     sortedArray.sort(sorted ? sortDescBy(key) : sortAscBy(key));
@@ -77,8 +74,7 @@ const PollData = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {pageItems.map((e) => {
-            console.log(e);
+          {pageItems.map((e: any) => {
             return (
               <Tr key={e.queueName}>
                 <Td>{e.queueName}</Td>
