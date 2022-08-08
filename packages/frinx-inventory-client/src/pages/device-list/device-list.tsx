@@ -3,10 +3,10 @@ import { Item } from 'chakra-ui-autocomplete';
 import React, { FC, useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { Link } from 'react-router-dom';
+import { useNotifications } from '@frinx/shared/src';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal';
 import Pagination from '../../components/pagination';
 import unwrap from '../../helpers/unwrap';
-import useNotifications from '../../hooks/use-notifications';
 import { usePagination } from '../../hooks/use-pagination';
 import {
   DeleteDeviceMutation,

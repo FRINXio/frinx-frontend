@@ -1,9 +1,9 @@
 import { Box, Container, Heading, Progress } from '@chakra-ui/react';
+import { useResponseToasts } from '@frinx/shared/src';
 import React, { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import unwrap from '../../helpers/unwrap';
-import useResponseToasts from '../../hooks/user-response-toasts';
 import {
   CreateLabelMutation,
   CreateLabelMutationVariables,

@@ -1,7 +1,7 @@
 import React, { createContext, FC, useRef } from 'react';
 import { retryExchange } from '@urql/exchange-retry';
 import { Provider, createClient, ClientOptions, dedupExchange, cacheExchange, fetchExchange } from 'urql';
-import { CustomToastProvider } from './notifications-context';
+import { CustomToastProvider } from '@frinx/shared/src';
 
 export const InventoryAPIContext = createContext(false);
 
