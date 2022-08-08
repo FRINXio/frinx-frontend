@@ -24,13 +24,13 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
+import { Editor } from '@frinx/shared/src';
 import PageContainer from '../../../common/PageContainer';
 import Paginator from '../../../common/pagination';
 import callbackUtils from '../../../utils/callback-utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { usePagination } from '../../../common/pagination-hook';
-import Editor from '../../../common/editor';
 
 const EventListeners = () => {
   const [eventListeners, setEventListeners] = useState([]);

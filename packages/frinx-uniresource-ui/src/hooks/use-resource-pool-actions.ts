@@ -1,7 +1,6 @@
-import { useNotifications } from '@frinx/shared/src';
+import { useNotifications, unwrap } from '@frinx/shared/src';
 import { useMemo } from 'react';
 import { gql, useMutation, useQuery, UseQueryState } from 'urql';
-import unwrap from '../helpers/unwrap';
 import {
   ClaimResourceMutation,
   ClaimResourceMutationVariables,

@@ -1,9 +1,8 @@
 import { Box, Button, Container, Flex, Heading, Progress, useDisclosure } from '@chakra-ui/react';
-import { useNotifications } from '@frinx/shared/src';
+import { useNotifications, unwrap } from '@frinx/shared/src';
 import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
-import unwrap from '../../helpers/unwrap';
 import {
   AddSnapshotMutation,
   AddSnapshotMutationVariables,

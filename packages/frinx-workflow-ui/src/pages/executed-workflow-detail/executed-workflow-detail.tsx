@@ -26,7 +26,7 @@ import DetailsModalHeader from './executed-workflow-detail-header';
 import { useWorkflowGenerator } from './executed-workflow-detail-status.helpers';
 import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link, useParams } from 'react-router-dom';
-import unwrap from '../../helpers/unwrap';
+import { unwrap } from '@frinx/shared/src';
 
 const convertWorkflowVariablesToFormFormat = (
   workflowDetails: string,

@@ -16,6 +16,7 @@
     "@fortawesome/react-fontawesome": "0.1.18",
     "@frinx/api": "0.0.10",
     "@frinx/inventory-client": "^0.0.1",
+    "@frinx/shared": "workspace:^",
     "@frinx/uniresource-ui": "^0.0.1",
     "@frinx/workflow-builder": "^1.0.0",
     "@frinx/workflow-ui": "^2.0.0",

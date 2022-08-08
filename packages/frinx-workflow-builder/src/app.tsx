@@ -15,7 +15,7 @@ import ReactFlow, {
   removeElements,
   updateEdge,
 } from 'react-flow-renderer';
-import { useNotifications } from '@frinx/shared/src';
+import { useNotifications, unwrap } from '@frinx/shared/src';
 import callbackUtils from './callback-utils';
 import ActionsMenu from './components/actions-menu/actions-menu';
 import ButtonEdge from './components/edges/button-edge';
@@ -36,7 +36,6 @@ import { convertToTasks } from './helpers/graph-to-api.helpers';
 import { getElementsFromWorkflow, getNodeType } from './helpers/api-to-graph.helpers';
 import { getLayoutedElements } from './helpers/layout.helpers';
 import { ExtendedTask, TaskDefinition, Workflow } from './helpers/types';
-import unwrap from './helpers/unwrap';
 import { useTaskActions } from './task-actions-context';
 
 const nodeTypes = {
