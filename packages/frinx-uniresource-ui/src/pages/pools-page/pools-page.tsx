@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
-import { useMinisearch, useNotifications } from '@frinx/shared/src';
+import { useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
@@ -14,7 +14,6 @@ import {
   GetResourceTypesQueryVariables,
 } from '../../__generated__/graphql';
 import PoolsTable from './pools-table';
-import useTags from '../../hooks/use-tags';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 
 const ALL_POOLS_QUERY = gql`

@@ -1,4 +1,4 @@
-import { useAsyncGenerator, useNotifications, useMinisearch, useResponseToasts } from './hooks';
+import { useAsyncGenerator, useNotifications, useMinisearch, useResponseToasts, useTags, useTagsInput } from './hooks';
 import { CustomToastProvider, NotificationContext } from './contexts';
 import { Editor, ToastNotification } from './components';
 import { omitMaybeType, omitNullValue } from './helpers/omit-null-value';
@@ -16,4 +16,6 @@ export {
   unwrap,
   useMinisearch,
   useResponseToasts,
+  useTags,
+  useTagsInput,
 };

@@ -19,10 +19,10 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
+import { useTagsInput } from '@frinx/shared/src';
 import PoolValuesForm from './pool-values-form';
 import PoolPropertiesForm from './pool-properties-form';
 import SearchByTagInput from '../../components/search-by-tag-input';
-import { useTagsInput } from '../../hooks/use-tags-input';
 import { SelectPoolsQuery, SelectResourceTypesQuery } from '../../__generated__/graphql';
 import {
   canSelectAllocatingStrategy,

@@ -1,12 +1,11 @@
 import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
-import { useMinisearch, useNotifications } from '@frinx/shared/src';
+import { useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
-import useTags from '../../hooks/use-tags';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
