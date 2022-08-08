@@ -2,9 +2,9 @@ import { Heading, Progress, Text } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { gql, useQuery } from 'urql';
 import ipaddr from 'ipaddr.js';
+import { useMinisearch } from '@frinx/shared/src';
 import { GetIpPoolsQuery, GetIpPoolsQueryVariables } from '../../__generated__/graphql';
 import useTags from '../../hooks/use-tags';
-import useMinisearch from '../../hooks/use-minisearch';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import AggregatesTable from './aggregates-table';
 

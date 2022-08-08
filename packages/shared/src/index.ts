@@ -1,4 +1,4 @@
-import { useAsyncGenerator, useNotifications } from './hooks';
+import { useAsyncGenerator, useNotifications, useMinisearch } from './hooks';
 import { CustomToastProvider, NotificationContext } from './contexts';
 import { Editor, ToastNotification } from './components';
 import { omitMaybeType, omitNullValue } from './helpers/omit-null-value';
@@ -14,4 +14,5 @@ export {
   omitMaybeType,
   omitNullValue,
   unwrap,
+  useMinisearch,
 };

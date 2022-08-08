@@ -3370,7 +3370,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@frinx/shared@^0.0.1, @frinx/shared@workspace:packages/shared":
+"@frinx/shared@^0.0.1, @frinx/shared@workspace:^, @frinx/shared@workspace:packages/shared":
   version: 0.0.0-use.local
   resolution: "@frinx/shared@workspace:packages/shared"
   dependencies:
@@ -3380,6 +3380,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.27.1
     "@typescript-eslint/parser": 5.27.1
     "@webpack-cli/serve": 1.6.1
+    chakra-ui-autocomplete: ^1.4.5
     eslint: 8.17.0
     eslint-config-prettier: 7.2.0
     eslint-import-resolver-typescript: 2.7.1
@@ -3388,6 +3389,8 @@ __metadata:
     eslint-plugin-react: 7.30.0
     eslint-plugin-react-hooks: 4.5.0
     html-webpack-plugin: ^5.5.0
+    lodash: ^4.17.21
+    minisearch: ^5.0.0
     npm-run-all: 4.1.5
     typescript: 4.7.3
     uuid: ^8.3.2
@@ -3423,6 +3426,7 @@ __metadata:
     "@emotion/react": 11.9.0
     "@emotion/styled": 11.8.1
     "@frinx/eslint-config-typescript": 19.0.4-build.1
+    "@frinx/shared": "workspace:^"
     "@graphql-codegen/cli": 2.6.2
     "@graphql-codegen/introspection": 2.1.1
     "@graphql-codegen/typescript": 2.5.0
@@ -6769,7 +6773,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chakra-ui-autocomplete@npm:1.4.5":
+"chakra-ui-autocomplete@npm:1.4.5, chakra-ui-autocomplete@npm:^1.4.5":
   version: 1.4.5
   resolution: "chakra-ui-autocomplete@npm:1.4.5"
   dependencies:
