@@ -33,7 +33,7 @@ export default function useAsyncGenerator<T>({
   fn: (abortController: AbortController) => () => Promise<T | null>;
   repeatTill: (data?: T | null) => boolean;
   timeout?: number;
-  updateDeps?: any[];
+  updateDeps?: unknown[];
 }): {
   data: T | null;
 } {
@@ -50,7 +50,6 @@ export default function useAsyncGenerator<T>({
         repeatTill,
         timeout,
       })) {
-        console.log(data);
         setItem(data);
       }
     })();
