@@ -1,9 +1,8 @@
 import React from 'react';
 import { Table, Thead, Tr, Th, Tbody, Tfoot, Icon, IconButton, Stack, Td } from '@chakra-ui/react';
-import { faFileCode, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
+import FeatherIcon from 'feather-icons-react';
 
 type Pagination = {
   currentPage: number;
@@ -68,7 +67,7 @@ export default function TaskTable({
                   isRound
                   variant="outline"
                   title="Definition"
-                  icon={<Icon as={FontAwesomeIcon} icon={faFileCode} />}
+                  icon={<Icon size={20} as={FeatherIcon} icon="code" />}
                   onClick={() => onTaskConfigClick(task)}
                 />
                 <IconButton
@@ -78,7 +77,7 @@ export default function TaskTable({
                   variant="outline"
                   onClick={() => onTaskDelete(task.name)}
                   title="Delete"
-                  icon={<Icon as={FontAwesomeIcon} icon={faTrash} />}
+                  icon={<Icon size={20} as={FeatherIcon} icon="trash-2" />}
                 />
               </Stack>
             </Td>

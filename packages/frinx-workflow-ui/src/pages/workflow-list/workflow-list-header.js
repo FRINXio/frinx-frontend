@@ -19,7 +19,6 @@ import {
 } from '@chakra-ui/react';
 import { SettingsIcon, SmallAddIcon } from '@chakra-ui/icons';
 import JSZip from 'jszip';
-import { faCogs, faFileExport, faFileImport, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { saveAs } from 'file-saver';
 import FeatherIcon from 'feather-icons-react';
 import useNotifications from '../../hooks/use-notifications';

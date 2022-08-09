@@ -11,9 +11,8 @@ import {
   Tag,
   TagCloseButton,
 } from '@chakra-ui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { matchSorter } from 'match-sorter';
+import FeatherIcon from 'feather-icons-react';
 
 type Props = {
   options: string[];
@@ -134,7 +133,7 @@ const WfAutoComplete = forwardRef((props: Props, ref) => {
               aria-label="Clear"
               variant="ghost"
               colorScheme="gray"
-              icon={<Icon as={FontAwesomeIcon} icon={faTimes} />}
+              icon={<Icon size={20} as={FeatherIcon} icon="x" />}
               onClick={() => onChange([])}
             />
           </InputRightElement>

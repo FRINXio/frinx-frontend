@@ -1,11 +1,8 @@
 // @flow
 import React, { FC } from 'react';
 import { Box, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faStar } from '@fortawesome/free-solid-svg-icons';
-import { faStar as faStarOutlined } from '@fortawesome/free-regular-svg-icons';
 import WfAutoComplete from '../../../common/wf-autocomplete';
-
+import FeatherIcon from 'feather-icons-react';
 type Props = {
   allLabels: string[];
   keywords: string[];
@@ -42,7 +39,7 @@ const WorkflowDefinitionsHeader: FC<Props> = ({ allLabels, keywords, onKeywordsC
           width={9}
           onClick={searchFavourites}
           title="Favourites"
-          icon={<Icon as={FontAwesomeIcon} icon={labels.includes('FAVOURITE') ? faStar : faStarOutlined} />}
+          icon={<Icon size={20} as={FeatherIcon} icon={labels.includes('FAVOURITE') ? 'star' : 'StarOutlined'} />}
         />
       </Box>
       <Box flex={1}>
@@ -56,7 +53,7 @@ const WorkflowDefinitionsHeader: FC<Props> = ({ allLabels, keywords, onKeywordsC
       <Box flex={1}>
         <InputGroup marginBottom={0}>
           <InputLeftElement>
-            <Icon as={FontAwesomeIcon} icon={faSearch} color="grey" />
+            <Icon size={20} as={FeatherIcon} icon="search" color="grey" />
           </InputLeftElement>
           <Input
             value={keywords}
