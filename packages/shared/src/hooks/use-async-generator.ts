@@ -1,14 +1,23 @@
 import { useState, useEffect } from 'react';
 
+export type AsyncGeneratorHookParams<T> = {
+  fn: (abortController: AbortController) => () => Promise<T | null>;
+  repeatTill: (data?: T | null) => boolean;
+  timeout?: number;
+  updateDeps?: unknown[];
+};
+
+export type AsyncGeneratorParams<T> = {
+  fn: () => Promise<T | null>;
+  repeatTill: (data?: T | null) => boolean;
+  timeout?: number;
+};
+
 export async function* asyncGenerator<T>({
   fn,
   repeatTill,
   timeout = 800,
-}: {
-  fn: () => Promise<T | null>;
-  repeatTill: (data?: T | null) => boolean;
-  timeout?: number;
-}): AsyncGenerator<T | null, void, unknown> {
+}: AsyncGeneratorParams<T>): AsyncGenerator<T | null, void, unknown> {
   let data = await fn();
 
   while (repeatTill(data)) {
@@ -29,14 +38,7 @@ export default function useAsyncGenerator<T>({
   repeatTill,
   timeout = 800,
   updateDeps = [],
-}: {
-  fn: (abortController: AbortController) => () => Promise<T | null>;
-  repeatTill: (data?: T | null) => boolean;
-  timeout?: number;
-  updateDeps?: unknown[];
-}): {
-  data: T | null;
-} {
+}: AsyncGeneratorHookParams<T>): T | null {
   const [item, setItem] = useState<T | null>(null);
 
   useEffect(() => {
@@ -60,7 +62,5 @@ export default function useAsyncGenerator<T>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, updateDeps);
 
-  return {
-    data: item,
-  };
+  return item;
 }
