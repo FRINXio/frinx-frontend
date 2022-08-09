@@ -1,19 +1,18 @@
-import { Item } from 'chakra-ui-autocomplete';
 import { useState } from 'react';
 
 type ReturnType = {
-  selectedTags: Item[];
-  handleTagCreation: (tag: Item) => void;
-  handleOnSelectionChange: (tags?: Item[]) => void;
+  selectedTags: string[];
+  handleTagCreation: (tag: string) => void;
+  handleOnSelectionChange: (tags?: string[]) => void;
 };
 
-export const useTagsInput = (): ReturnType => {
-  const [selectedTags, setSelectedTags] = useState<Item[]>([]);
-  const handleTagCreation = (tag: Item) => {
-    setSelectedTags(selectedTags.concat({ label: tag.label, value: tag.value }));
+export const useTagsInput = (tags: string[] = []): ReturnType => {
+  const [selectedTags, setSelectedTags] = useState<string[]>(tags);
+  const handleTagCreation = (value: string) => {
+    setSelectedTags([...new Set([...selectedTags, value])]);
   };
 
-  const handleOnSelectionChange = (selectedItems?: Item[]) => {
+  const handleOnSelectionChange = (selectedItems?: string[]) => {
     if (selectedItems) {
       setSelectedTags([...new Set(selectedItems)]);
     }
