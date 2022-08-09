@@ -61,7 +61,7 @@ async function getWorkflowExecOutput(
 }
 
 export function useWorkflowGenerator(workflowId: string): ExecutedWorkflowResponse | null {
-  const { data } = useAsyncGenerator<ExecutedWorkflowResponse>({
+  const data = useAsyncGenerator<ExecutedWorkflowResponse>({
     repeatTill: (workflow) => workflow?.result.status === 'RUNNING' || workflow?.result.status === 'PAUSED',
     fn: (abortController) => () => getWorkflowExecOutput(workflowId, abortController),
     updateDeps: [workflowId],
