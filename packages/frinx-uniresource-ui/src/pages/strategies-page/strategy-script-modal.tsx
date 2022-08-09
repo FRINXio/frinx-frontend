@@ -9,7 +9,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import AceEditor from 'react-ace';
+import { Editor } from '@frinx/shared/src';
 
 type Props = {
   script?: string;
@@ -27,7 +27,7 @@ const StrategyScriptModal: VoidFunctionComponent<Props> = ({ script, lang, isOpe
         <ModalCloseButton />
         <ModalBody>
           {script != null && lang != null && (
-            <AceEditor
+            <Editor
               height="450px"
               width="100%"
               mode={lang === 'js' ? 'javascript' : 'python'}

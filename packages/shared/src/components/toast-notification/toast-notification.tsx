@@ -1,5 +1,5 @@
+import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import { Heading, Flex, keyframes, Icon, Box } from '@chakra-ui/react';
-import FeatherIcon from 'feather-icons-react';
 import React, { FC, useState, useEffect, useRef } from 'react';
 
 const DEFAULT_TIMEOUT_DISMISS = 3000; // default timeout in which notification will automatically dismiss (ms)\
@@ -38,12 +38,12 @@ const getToastBackground = (type: NotificationType): string => {
     case 'error':
       return 'red.400';
     case 'info':
-    default:
-      return 'blue.400';
     case 'success':
       return 'green.400';
     case 'warning':
       return 'yellow.400';
+    default:
+      return 'blue.400';
   }
 };
 
@@ -51,12 +51,20 @@ const getToastIcon = (type: NotificationType): React.ReactNode => {
   switch (type) {
     case 'success':
     default:
-      return <Icon as={FeatherIcon} icon="check" size={24} color="white" />;
+      return <Icon as={CheckIcon} size={24} color="white" />;
   }
 };
 
-const ToastNotification: FC<Props> = (props) => {
-  const { isVisible, onClose, timeout, type, title, children, index } = props;
+const ToastNotification: FC<Props> = ({
+  isVisible,
+  onClose,
+  timeout,
+  type,
+  title,
+  children,
+  index,
+  onAnimationEnd,
+}) => {
   const [isRendered, setRendered] = useState(isVisible);
   const timeoutID = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
@@ -75,10 +83,10 @@ const ToastNotification: FC<Props> = (props) => {
     };
   }, [isVisible, onClose, timeout]);
 
-  const onAnimationEnd = () => {
-    if (!props.isVisible) {
+  const handleOnAnimationEnd = () => {
+    if (!isVisible) {
       setRendered(false);
-      props.onAnimationEnd();
+      onAnimationEnd();
     }
   };
 
@@ -86,7 +94,7 @@ const ToastNotification: FC<Props> = (props) => {
     <Flex
       alignItems="center"
       animation={`${isVisible ? slideIn : slideOut} 0.4s ease-out`}
-      onAnimationEnd={onAnimationEnd}
+      onAnimationEnd={handleOnAnimationEnd}
       background={getToastBackground(type)}
       color="whiteAlpha.900"
       borderRadius="md"
@@ -131,10 +139,10 @@ const ToastNotification: FC<Props> = (props) => {
             clearTimeout(timeoutID.current);
           }
           timeoutID.current = null;
-          props.onClose();
+          onClose();
         }}
       >
-        <Icon as={FeatherIcon} icon="x" size={20} />
+        <Icon as={CloseIcon} icon="x" size={20} />
       </Flex>
     </Flex>
   ) : null;

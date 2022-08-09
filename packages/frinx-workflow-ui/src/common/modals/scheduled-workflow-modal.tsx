@@ -16,7 +16,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import Editor from 'react-ace';
+import { Editor } from '@frinx/shared/src';
 import { ScheduledWorkflow } from '@frinx/workflow-ui/src/helpers/types';
 import { useFormik } from 'formik';
 import callbackUtils from '../../utils/callback-utils';

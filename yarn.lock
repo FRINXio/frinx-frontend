@@ -3595,6 +3595,7 @@ __metadata:
     "@urql/exchange-retry": 0.3.3
     "@webpack-cli/serve": 1.7.0
     babel-loader: 8.2.5
+    chakra-ui-autocomplete: ^1.4.5
     date-fns: 2.29.1
     date-fns-tz: 1.3.6
     eslint: 8.21.0
@@ -3636,6 +3637,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@frinx/shared@workspace:packages/shared"
   dependencies:
+    "@chakra-ui/icons": 1.1.7
+    "@chakra-ui/react": 1.8.8
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@types/react": 17.0.42
     "@types/react-dom": 17.0.14
@@ -3650,6 +3653,7 @@ __metadata:
     eslint-plugin-jsx-a11y: 6.5.1
     eslint-plugin-react: 7.30.0
     eslint-plugin-react-hooks: 4.5.0
+    feather-icons-react: 0.5.0
     html-webpack-plugin: ^5.5.0
     lodash: ^4.17.21
     minisearch: ^5.0.0
@@ -3661,8 +3665,6 @@ __metadata:
     webpack: 5.73.0
     webpack-cli: 4.9.2
   peerDependencies:
-    "@chakra-ui/icons": ^1.0.15
-    "@chakra-ui/react": ^1.6.7
     "@emotion/react": ^11.1.4
     "@emotion/styled": ^11.0.0
     framer-motion: ^4.1.3 || ^6.0.0
@@ -3702,6 +3704,7 @@ __metadata:
     "@webpack-cli/serve": 1.7.0
     ace-builds: 1.4.14
     babel-loader: 8.2.5
+    chakra-ui-autocomplete: ^1.4.5
     css-loader: 5.2.7
     eslint: 8.21.0
     eslint-config-prettier: 7.2.0
@@ -3788,6 +3791,7 @@ __metadata:
     html-webpack-plugin: 5.5.0
     immer: 9.0.15
     lodash: 4.17.21
+    minisearch: ^5.0.0
     npm-run-all: 4.1.5
     react: 18.1.0
     react-dom: 18.1.0

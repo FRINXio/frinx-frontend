@@ -1,6 +1,6 @@
 import React, { createContext, FC, ReactNode, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
-import ToastNotification from '../components/toast-notification';
+import ToastNotification from '../components/toast-notification/toast-notification';
 
 const MAX_NOTIFICATION_COUNT = 4;
 
