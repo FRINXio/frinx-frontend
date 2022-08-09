@@ -3356,52 +3356,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fortawesome/fontawesome-common-types@npm:6.1.1":
-  version: 6.1.1
-  resolution: "@fortawesome/fontawesome-common-types@npm:6.1.1"
-  checksum: 4db285557dd9d178e313a9596ad1c4ba84e9d47efb53dea3206de1bf98252574e0d95c3a0b114cc3cb5f162e2622a2cf8f037011fc98818ccade7bfb6c0c335b
-  languageName: node
-  linkType: hard
-
-"@fortawesome/fontawesome-svg-core@npm:6.1.1, @fortawesome/fontawesome-svg-core@npm:^6.0.0":
-  version: 6.1.1
-  resolution: "@fortawesome/fontawesome-svg-core@npm:6.1.1"
-  dependencies:
-    "@fortawesome/fontawesome-common-types": 6.1.1
-  checksum: bf3b09a1ec3c5d6be30ea04c83dffb921c5a457c547fb1b99b814591489efabf939f669878cc5b48deb9771ef705209a1bb1b3088e66f6873cc9b34cbf4c781c
-  languageName: node
-  linkType: hard
-
-"@fortawesome/free-regular-svg-icons@npm:^6.0.0":
-  version: 6.1.1
-  resolution: "@fortawesome/free-regular-svg-icons@npm:6.1.1"
-  dependencies:
-    "@fortawesome/fontawesome-common-types": 6.1.1
-  checksum: 945ec9267a53127302905f16ae6ca4be0cefbc7f3399a41a5c685ab2a73a807e8616c7202d70a775cddfcb63f21fa920aea4a1c48515a85c40f489924165a6c8
-  languageName: node
-  linkType: hard
-
-"@fortawesome/free-solid-svg-icons@npm:6.1.1, @fortawesome/free-solid-svg-icons@npm:^6.0.0":
-  version: 6.1.1
-  resolution: "@fortawesome/free-solid-svg-icons@npm:6.1.1"
-  dependencies:
-    "@fortawesome/fontawesome-common-types": 6.1.1
-  checksum: 9c42f45af9e75410d9e20a110c4262ded1a778887dc3b1200c0576f6b226e6a5568fb85a862090b45b06060f878798ddde60b987ef56aafccbaa1e7a378dd17c
-  languageName: node
-  linkType: hard
-
-"@fortawesome/react-fontawesome@npm:0.1.18, @fortawesome/react-fontawesome@npm:^0.1.11":
-  version: 0.1.18
-  resolution: "@fortawesome/react-fontawesome@npm:0.1.18"
-  dependencies:
-    prop-types: ^15.8.1
-  peerDependencies:
-    "@fortawesome/fontawesome-svg-core": ~1 || ~6
-    react: ">=16.x"
-  checksum: eba711234541928e1877435905bcd94ab6aea1cf228833a55fc7c6a2fc18dd08d3f7f327ca4af0f3ba365188ad0869d7ecd31be5940d27f4e2bbe7e12cbcf520
-  languageName: node
-  linkType: hard
-
 "@frinx/api@0.0.11, @frinx/api@workspace:packages/frinx-api":
   version: 0.0.0-use.local
   resolution: "@frinx/api@workspace:packages/frinx-api"
@@ -3454,9 +3408,6 @@ __metadata:
     "@chakra-ui/system": 1.12.1
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
-    "@fortawesome/fontawesome-svg-core": 6.1.1
-    "@fortawesome/free-solid-svg-icons": 6.1.1
-    "@fortawesome/react-fontawesome": 0.1.18
     "@frinx/api": 0.0.11
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@frinx/inventory-client": ^0.0.1
@@ -3791,10 +3742,6 @@ __metadata:
     "@chakra-ui/react": 1.8.8
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
-    "@fortawesome/fontawesome-svg-core": ^6.0.0
-    "@fortawesome/free-regular-svg-icons": ^6.0.0
-    "@fortawesome/free-solid-svg-icons": ^6.0.0
-    "@fortawesome/react-fontawesome": ^0.1.11
     "@frinx/workflow-builder": ^1.0.0
     "@types/react-redux": ^7.1.19
     ace-builds: ^1.4.12
