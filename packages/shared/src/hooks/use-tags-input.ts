@@ -7,7 +7,7 @@ type ReturnType = {
   handleOnSelectionChange: (tags?: Item[]) => void;
 };
 
-export const useTagsInput = (): ReturnType => {
+const useTagsInput = (): ReturnType => {
   const [selectedTags, setSelectedTags] = useState<Item[]>([]);
   const handleTagCreation = (tag: Item) => {
     setSelectedTags(selectedTags.concat({ label: tag.label, value: tag.value }));
@@ -25,3 +25,5 @@ export const useTagsInput = (): ReturnType => {
     handleOnSelectionChange,
   };
 };
+
+export default useTagsInput;

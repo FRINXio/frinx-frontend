@@ -4,11 +4,11 @@ import * as yup from 'yup';
 
 import { Item } from 'chakra-ui-autocomplete';
 import { Button, Divider, FormControl, FormLabel, HStack, Select } from '@chakra-ui/react';
+import { Editor } from '@frinx/shared/src';
 
 import { serviceStateOptions } from '../../helpers/types';
 import { DeviceServiceState, Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
-import Editor from '../../components/editor';
 
 type FormValues = {
   zoneId: string;

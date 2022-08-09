@@ -1,8 +1,8 @@
 import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';
 import { retryExchange } from '@urql/exchange-retry';
+import { CustomToastProvider } from '@frinx/shared/src';
 import React, { createContext, FC, useRef } from 'react';
 import { cacheExchange, ClientOptions, createClient, dedupExchange, Provider } from 'urql';
-import { CustomToastProvider } from './notifications-context';
 
 export const InventoryAPIContext = createContext(false);
 

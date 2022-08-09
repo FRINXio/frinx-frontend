@@ -4,7 +4,7 @@ import { throttle } from 'lodash';
 
 type Item<T> = T & { Name: string };
 
-export function getFilteredResults<T extends { Name: string }>(searchResult: SearchResult[], items: T[]): T[] {
+function getFilteredResults<T extends { Name: string }>(searchResult: SearchResult[], items: T[]): T[] {
   const resultIds = searchResult.map((r) => r.id);
   return items.filter((item) => resultIds.includes(item.Name));
 }

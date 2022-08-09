@@ -24,12 +24,11 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
+import { Editor } from '@frinx/shared/src';
 import PageContainer from '../../../common/PageContainer';
 import Paginator from '../../../common/pagination';
 import callbackUtils from '../../../utils/callback-utils';
 import { usePagination } from '../../../common/pagination-hook';
-import Editor from '../../../common/editor';
-import FeatherIcon from 'feather-icons-react';
 
 const EventListeners = () => {
   const [eventListeners, setEventListeners] = useState([]);

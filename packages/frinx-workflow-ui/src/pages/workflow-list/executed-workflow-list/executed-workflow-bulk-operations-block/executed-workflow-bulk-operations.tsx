@@ -14,9 +14,9 @@ import {
   Spinner,
   Stack,
 } from '@chakra-ui/react';
-import callbackUtils from '../../../../utils/callback-utils';
-import useNotifications from '../../../../hooks/use-notifications';
 import FeatherIcon from 'feather-icons-react';
+import { useNotifications } from '@frinx/shared/src';
+import callbackUtils from '../../../../utils/callback-utils';
 
 type CallBackUtilsFunctionNames =
   | 'restartWorkflows'

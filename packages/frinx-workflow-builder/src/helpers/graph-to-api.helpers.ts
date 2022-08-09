@@ -1,7 +1,7 @@
+import { unwrap } from '@frinx/shared/src';
 import { partition } from 'lodash';
 import { Edge, getConnectedEdges, getIncomers, getOutgoers, Node } from 'react-flow-renderer';
 import { ExtendedDecisionTask, ExtendedForkTask, ExtendedTask, Task } from './types';
-import unwrap from './unwrap';
 
 function convertNodeToTask(node: Node): ExtendedTask {
   const { data } = node;

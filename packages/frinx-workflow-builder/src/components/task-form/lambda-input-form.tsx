@@ -2,8 +2,8 @@ import React, { FC, useState } from 'react';
 import { FormControl, FormErrorMessage, FormLabel, Input, useTheme } from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
 import * as yup from 'yup';
+import { Editor } from '@frinx/shared/src';
 import { ExtendedTask, LambdaInputParams } from '../../helpers/types';
-import Editor from '../common/editor';
 import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-name/autocomplete-task-reference-name-menu';
 
 export const LambdaInputParamsSchema = yup.object({

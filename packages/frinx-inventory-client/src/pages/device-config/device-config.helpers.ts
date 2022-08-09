@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { gql, useMutation } from 'urql';
-import unwrap from '../../helpers/unwrap';
+import { unwrap } from '@frinx/shared/src';
 import {
   CloseTransactionMutation,
   CloseTransactionMutationVariables,
