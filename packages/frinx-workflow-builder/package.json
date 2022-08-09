@@ -33,7 +33,7 @@
     "lodash": "4.17.21",
     "minisearch": "4.0.3",
     "react-ace": "9.5.0",
-    "react-flow-renderer": "10.3.11",
+    "react-flow-renderer": "10.3.14",
     "uuid": "8.3.2",
     "yup": "^0.32.11"
   },
@@ -57,7 +57,7 @@
     "@webpack-cli/serve": "1.7.0",
     "babel-loader": "8.2.5",
     "css-loader": "5.2.7",
-    "eslint": "8.20.0",
+    "eslint": "8.21.0",
     "eslint-config-prettier": "7.2.0",
     "eslint-import-resolver-typescript": "2.7.1",
     "eslint-plugin-import": "2.26.0",
