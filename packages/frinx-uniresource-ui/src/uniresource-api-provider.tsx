@@ -1,8 +1,8 @@
 import { cacheExchange, ClientOptions, createClient, dedupExchange, fetchExchange, Provider } from 'urql';
 import { retryExchange } from '@urql/exchange-retry';
 import React, { FC, useRef } from 'react';
+import { CustomToastProvider } from '@frinx/shared/src';
 import PageContainer from './components/page-container';
-import { CustomToastProvider } from './notifications-context';
 
 export type InventoryApiClient = {
   clientOptions: ClientOptions;

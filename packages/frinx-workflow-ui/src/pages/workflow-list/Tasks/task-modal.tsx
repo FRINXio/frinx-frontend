@@ -11,7 +11,7 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import { jsonParse } from '@frinx/workflow-ui/src/common/utils';
-import Editor from '@frinx/workflow-ui/src/common/editor';
+import { Editor } from '@frinx/shared/src';
 import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
 
 type TaskConfigModalProps = {
@@ -31,12 +31,7 @@ export default function TaskConfigModal({ isOpen, task, onClose }: TaskConfigMod
           <Text color="gray.500" mb={4}>
             {jsonParse(task.description)?.description || task.description}
           </Text>
-          <Editor
-            name="task_details_editor"
-            value={JSON.stringify(task, null, 2)}
-            isReadOnly={true}
-            onChange={undefined}
-          />
+          <Editor name="task_details_editor" value={JSON.stringify(task, null, 2)} readOnly onChange={undefined} />
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="gray" onClick={onClose}>

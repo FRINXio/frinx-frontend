@@ -2,7 +2,7 @@ import { Box, Container, Heading, Progress } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
-import useResponseToasts from '../../hooks/user-response-toasts';
+import { useResponseToasts } from '@frinx/shared/src';
 import { UpdateBlueprintMutation, UpdateBlueprintMutationVariables } from '../../__generated__/graphql';
 import EditBlueprintForm, { FormValues } from './edit-blueprint-form';
 

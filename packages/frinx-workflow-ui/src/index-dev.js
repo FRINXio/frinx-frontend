@@ -3,7 +3,7 @@ import App from './App';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import unwrap from './helpers/unwrap';
+import { unwrap } from '@frinx/shared/src';
 
 const root = createRoot(unwrap(document.getElementById('root')));
 

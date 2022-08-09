@@ -1,7 +1,7 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
 import { useFormik } from 'formik';
-import AceEditor from 'react-ace';
+import { Editor } from '@frinx/shared/src';
 import { AllocationStrategyLang } from '../../__generated__/graphql';
 import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-javascript';
@@ -59,7 +59,7 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
         </Select>
       </FormControl>
       <FormControl marginY={5}>
-        <AceEditor
+        <Editor
           height="450px"
           width="100%"
           mode={values.lang === 'js' ? 'javascript' : 'python'}

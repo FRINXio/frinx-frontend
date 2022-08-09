@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import NotificationContext, { ContextProps } from '../notifications-context';
+import NotificationContext, { ContextProps } from '../contexts/notification-context';
 import unwrap from '../helpers/unwrap';
 
 const useNotifications = (): ContextProps => {

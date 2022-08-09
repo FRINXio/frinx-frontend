@@ -1,5 +1,4 @@
 import React, { VoidFunctionComponent } from 'react';
-import AceEditor from 'react-ace';
 import {
   Button,
   Modal,
@@ -11,6 +10,7 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import { Workflow } from '@frinx/workflow-ui/src/helpers/types';
+import { Editor } from '@frinx/shared/src';
 
 type ModalProps = {
   isOpen: boolean;
@@ -25,7 +25,7 @@ const DefinitionModal: VoidFunctionComponent<ModalProps> = ({ isOpen, onClose, w
     <ModalContent>
       <ModalHeader>{workflow?.name}</ModalHeader>
       <ModalBody>
-        <AceEditor value={JSON.stringify(workflow, null, 2)} readOnly name="workflow-definition" width="100%" />
+        <Editor value={JSON.stringify(workflow, null, 2)} readOnly name="workflow-definition" width="100%" />
       </ModalBody>
       <ModalFooter>
         <Button colorScheme="gray" onClick={onClose}>

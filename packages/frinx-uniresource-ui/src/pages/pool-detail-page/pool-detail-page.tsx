@@ -1,8 +1,8 @@
 import { Box, Button, ButtonGroup, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import { omitNullValue } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import PageContainer from '../../components/page-container';
-import { omitNullValue } from '../../helpers/omit-null-value';
 import useResourcePoolActions from '../../hooks/use-resource-pool-actions';
 import { GetPoolsQuery, PoolCapacityPayload } from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';

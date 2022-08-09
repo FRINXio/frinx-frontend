@@ -16,13 +16,13 @@ import {
   Tooltip,
   Tr,
 } from '@chakra-ui/react';
+import { useNotifications } from '@frinx/shared/src';
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
-import useNotifications from '../../hooks/use-notifications';
 import {
   CloseTransactionMutation,
   CloseTransactionMutationVariables,
