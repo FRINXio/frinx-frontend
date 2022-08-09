@@ -9,6 +9,7 @@ import {
   Button,
   Container,
   Heading,
+  Progress,
   Tab,
   TabList,
   TabPanel,
@@ -84,7 +85,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
   const [tabIndex, setTabIndex] = useState(0);
 
   if (execPayload == null) {
-    return <Text>Nothing to see here</Text>;
+    return <Progress isIndeterminate size="xs" mt={-10} />;
   }
 
   if (workflowId == null) {

@@ -44,7 +44,7 @@
     "html-webpack-plugin": "^5.5.0",
     "lodash": "^4.17.21",
     "minisearch": "^5.0.0",
-    "react-ace": "^10.1.0",
+    "react-ace": "9.5.0",
     "uuid": "^8.3.2"
   },
   "peerDependencies": {
