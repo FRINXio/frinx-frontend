@@ -10,12 +10,14 @@ const ALL_SERVICES: ServiceKey[] = [
   'isInventoryEnabled' as const,
   'isUniresourceEnabled' as const,
   'isGammaEnabled' as const,
+  'isDeviceTopologyEnabled' as const,
 ];
 const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
   ['isUniflowEnabled', () => import('@frinx/workflow-ui')],
-  ['isInventoryEnabled', () => import('@frinx/inventory-client')],
-  ['isUniresourceEnabled', () => import('@frinx/uniresource-ui')],
+  ['isInventoryEnabled', () => import('@frinx/inventory-client/src')],
+  ['isUniresourceEnabled', () => import('@frinx/uniresource-ui/src')],
   ['isGammaEnabled', () => import('@frinxio/gamma')],
+  ['isDeviceTopologyEnabled', () => import('@frinxio/device-topology/src')],
 ]);
 
 class DashboardApp {

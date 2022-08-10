@@ -1,0 +1,64 @@
+{
+  "name": "@frinxio/device-topology",
+  "version": "0.0.1",
+  "private": true,
+  "main": "dist/index.js",
+  "module": "src/index.ts",
+  "typings": "dist/index.d.ts",
+  "packageManager": "yarn@3.2.0",
+  "author": "Frinx.io",
+  "files": [
+    "dist/*"
+  ],
+  "scripts": {
+    "dev": "webpack serve --mode development",
+    "build:webpack": "NODE_ENV=production webpack --mode production",
+    "build": "run-s build:webpack generate:typings",
+    "generate:typings": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist src/index.ts",
+    "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
+    "type-check": "tsc --noEmit",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@frinx/eslint-config-typescript": "19.0.4-build.1",
+    "@types/react": "17.0.42",
+    "@types/react-dom": "17.0.14",
+    "@typescript-eslint/eslint-plugin": "5.27.1",
+    "@typescript-eslint/parser": "5.27.1",
+    "@webpack-cli/serve": "1.6.1",
+    "eslint": "8.17.0",
+    "eslint-config-prettier": "7.2.0",
+    "eslint-import-resolver-typescript": "2.7.1",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-jsx-a11y": "6.5.1",
+    "eslint-plugin-react": "7.30.0",
+    "eslint-plugin-react-hooks": "4.5.0",
+    "npm-run-all": "4.1.5",
+    "typescript": "4.7.3",
+    "vitest": "0.14.1",
+    "webpack": "5.73.0",
+    "webpack-cli": "4.9.2"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "1.1.7",
+    "@chakra-ui/react": "1.8.8",
+    "@frinx/shared": "workspace:^",
+    "@urql/exchange-multipart-fetch": "^0.1.14",
+    "@urql/exchange-retry": "0.3.3",
+    "chakra-ui-autocomplete": "^1.4.5",
+    "feather-icons-react": "0.5.0",
+    "html-webpack-plugin": "^5.5.0",
+    "lodash": "^4.17.21",
+    "minisearch": "^5.0.0",
+    "react-ace": "9.5.0",
+    "urql": "2.2.3",
+    "uuid": "^8.3.2"
+  },
+  "peerDependencies": {
+    "@emotion/react": "^11.1.4",
+    "@emotion/styled": "^11.0.0",
+    "framer-motion": "^4.1.3 || ^6.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}
