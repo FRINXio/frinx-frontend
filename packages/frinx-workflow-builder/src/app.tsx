@@ -1,4 +1,5 @@
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
+import { unwrap, useNotifications } from '@frinx/shared/src';
 import produce from 'immer';
 import React, { useCallback, useMemo, useState, VoidFunctionComponent } from 'react';
 import ReactFlow, {
@@ -35,8 +36,6 @@ import { getElementsFromWorkflow, getNodeType } from './helpers/api-to-graph.hel
 import { convertToTasks } from './helpers/graph-to-api.helpers';
 import { getLayoutedElements } from './helpers/layout.helpers';
 import { ExtendedTask, NodeData, TaskDefinition, Workflow } from './helpers/types';
-import unwrap from './helpers/unwrap';
-import useNotifications from './hooks/use-notifications';
 import { useTaskActions } from './task-actions-context';
 
 const nodeTypes = {

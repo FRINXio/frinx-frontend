@@ -5,7 +5,6 @@ import callbackUtils from '../../utils/callback-utils';
 import {
   Box,
   Button,
-  ButtonGroup,
   Flex,
   Heading,
   HStack,
@@ -19,22 +18,22 @@ import {
 } from '@chakra-ui/react';
 import { SettingsIcon, SmallAddIcon } from '@chakra-ui/icons';
 import JSZip from 'jszip';
-import { faCogs, faFileExport, faFileImport, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { saveAs } from 'file-saver';
 import FeatherIcon from 'feather-icons-react';
-import useNotifications from '../../hooks/use-notifications';
 import { Link } from 'react-router-dom';
+import { useNotifications } from '@frinx/shared/src';
+import { compact } from 'lodash';
 
 type Props = {
-  onImportSuccess: () => void,
+  onImportSuccess: () => void;
 };
 
-function readFile(file: File) {
+function readFile(file: File): Promise<any> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.addEventListener('load', (event) => {
       try {
-        const json = JSON.parse(event.target.result);
+        const json = JSON.parse(JSON.stringify(event.target?.result));
         resolve(json);
       } catch (e) {
         reject(e);
@@ -49,13 +48,13 @@ function readFile(file: File) {
 }
 
 const WorkflowListHeader = ({ onImportSuccess }: Props) => {
-  const inputRef = useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
   const { addToastNotification } = useNotifications();
 
-  const importFiles = async (e) => {
+  const importFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.currentTarget;
     try {
-      const readFiles = await Promise.all(Array.from(files).map((f) => readFile(f)));
+      const readFiles = await Promise.all(Array.from(compact(files)).map((f) => readFile(f)));
       const { putWorkflow } = callbackUtils.getCallbacks;
       await putWorkflow(readFiles);
       onImportSuccess();

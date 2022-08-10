@@ -13,7 +13,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import AceEditor from 'react-ace';
+import { Editor } from '@frinx/shared/src';
 
 type ViewStrategyScriptProps = {
   script: string;
@@ -31,7 +31,7 @@ const ViewStrategyScript: FC<ViewStrategyScriptProps> = ({ script, lang }) => {
           <ModalHeader>View Strategy</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <AceEditor
+            <Editor
               height="450px"
               width="100%"
               mode={lang === 'js' ? 'javascript' : 'python'}

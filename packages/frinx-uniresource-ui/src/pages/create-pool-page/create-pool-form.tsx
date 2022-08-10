@@ -23,9 +23,8 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
+import { useTagsInput, SearchByTagInput } from '@frinx/shared/src';
 import PoolValuesForm from './pool-values-form';
-import SearchByTagInput from '../../components/search-by-tag-input';
-import { useTagsInput } from '../../hooks/use-tags-input';
 import { SelectPoolsQuery, SelectResourceTypesQuery } from '../../__generated__/graphql';
 import {
   getAvailableAllocatedResources,

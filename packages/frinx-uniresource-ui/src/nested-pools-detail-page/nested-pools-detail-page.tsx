@@ -2,9 +2,8 @@ import { Box, Heading, Progress } from '@chakra-ui/react';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
+import { unwrap, omitNullValue } from '@frinx/shared/src';
 import PageContainer from '../components/page-container';
-import { omitNullValue } from '../helpers/omit-null-value';
-import unwrap from '../helpers/unwrap';
 import PoolsTable from '../pages/pools-page/pools-table';
 import {
   DeletePoolMutation,

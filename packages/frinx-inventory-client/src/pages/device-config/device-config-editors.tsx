@@ -16,11 +16,11 @@ import {
   Portal,
   Text,
 } from '@chakra-ui/react';
+import { Editor } from '@frinx/shared/src';
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
-import AceEditor from 'react-ace';
 import { Snapshot } from '../../__generated__/graphql';
 
 type Props = {
@@ -98,7 +98,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
               </Button>
             </ButtonGroup>
           </Flex>
-          <AceEditor
+          <Editor
             width="100%"
             mode="json"
             value={config}
@@ -178,7 +178,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
               Sync from network
             </Button>
           </Flex>
-          <AceEditor width="100%" mode="json" value={operational} theme="tomorrow" readOnly />
+          <Editor width="100%" mode="json" value={operational} theme="tomorrow" readOnly />
         </GridItem>
       </Grid>
     </Box>

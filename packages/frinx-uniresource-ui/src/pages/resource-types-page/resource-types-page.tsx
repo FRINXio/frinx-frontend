@@ -1,8 +1,8 @@
 import { Button, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import { useNotifications } from '@frinx/shared/src';
 import gql from 'graphql-tag';
 import React, { VoidFunctionComponent } from 'react';
 import { useMutation, useQuery } from 'urql';
-import useNotifications from '../../hooks/use-notifications';
 import {
   CreateResourceTypeMutation,
   CreateResourceTypeMutationVariables,
