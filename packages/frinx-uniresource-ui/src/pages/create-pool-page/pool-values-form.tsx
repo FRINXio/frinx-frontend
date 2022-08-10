@@ -102,7 +102,8 @@ const PoolValuesForm: FC<Props> = ({ onChange, resourceTypeName, existingPoolVal
         </Button>
       </HStack>
       {poolValues.map((pv, index) => (
-        <HStack>
+        // eslint-disable-next-line react/no-array-index-key
+        <HStack key={`${Object.keys(pv)[0]}/${index}`}>
           {Object.keys(pv).map((key) => {
             const value = pv[key];
             const isPristine = isEqual(existingPoolValues[index], poolValues[index]);

@@ -107,75 +107,39 @@ type AllocStrategy = {
 };
 
 function getSchema(poolType: string, isNested: boolean) {
-  switch (poolType) {
-    case 'allocating':
-      return yup.object({
-        name: yup.string().required('Please enter a name'),
-        description: yup.string().notRequired(),
-        resourceTypeId: yup.string().required('Please enter resource type'),
-        tags: yup.array().notRequired(),
-        dealocationSafetyPeriod: yup
-          .number()
-          .min(0, 'Please enter positive number')
-          .required('Please enter a dealocation safety period')
-          .typeError('Please enter a number'),
-        allocationStrategyId: yup.string().notRequired(),
-        ...(isNested && {
-          parentPoolId: yup.string().required('Please choose parent pool'),
-          parentResourceId: yup.string().required('Please choose allocated resource from parent'),
-        }),
-      });
-
-    case 'set':
-      return yup.object({
-        name: yup.string().required('Please enter a name'),
-        description: yup.string().notRequired(),
-        resourceTypeId: yup.string().required('Please enter resource type'),
-        tags: yup.array().of(yup.string()).notRequired(),
-        dealocationSafetyPeriod: yup
-          .number()
-          .min(0, 'Please enter positive number')
-          .required('Please enter a dealocation safety period')
-          .typeError('Please enter a number'),
-        poolValues: yup.lazy((poolValues: Array<Record<string, string>>) => {
-          return yup
-            .array()
-            .when('resourceTypeName', {
-              is: (resourceTypeName: string) => resourceTypeName === 'ipv4' || resourceTypeName === 'ipv4_prefix',
-              then: getSchemaForPoolValues(poolValues, { isIpv4: true }),
-            })
-            .when('resourceTypeName', {
-              is: (resourceTypeName: string) => resourceTypeName === 'ipv6' || resourceTypeName === 'ipv6_prefix',
-              then: getSchemaForPoolValues(poolValues, { isIpv6: true }),
-              otherwise: yup.array().of(
-                yup.object().shape({
-                  ...Object.keys(poolValues[0] ?? {}).reduce(
-                    (acc, key) => ({ ...acc, [key]: yup.string().required('Please enter a value') }),
-                    {},
-                  ),
-                }),
+  return yup.object({
+    name: yup.string().required('Please enter a name'),
+    description: yup.string(),
+    resourceTypeId: yup.string().required('Please enter resource type'),
+    tags: yup.array().notRequired(),
+    dealocationSafetyPeriod: yup.number().min(0, 'Please enter positive number').typeError('Please enter a number'),
+    allocationStrategyId: yup.string(),
+    ...(isNested && {
+      parentPoolId: yup.string().required('Please choose parent pool'),
+      parentResourceId: yup.string().required('Please choose allocated resource from parent'),
+    }),
+    poolValues: yup.lazy((poolValues: Array<Record<string, string>>) => {
+      return yup
+        .array()
+        .when('resourceTypeName', {
+          is: (resourceTypeName: string) => resourceTypeName === 'ipv4' || resourceTypeName === 'ipv4_prefix',
+          then: getSchemaForPoolValues(poolValues, { isIpv4: true }),
+        })
+        .when('resourceTypeName', {
+          is: (resourceTypeName: string) => resourceTypeName === 'ipv6' || resourceTypeName === 'ipv6_prefix',
+          then: getSchemaForPoolValues(poolValues, { isIpv6: true }),
+          otherwise: yup.array().of(
+            yup.object().shape({
+              ...Object.keys(poolValues[0] ?? {}).reduce(
+                (acc, key) => ({ ...acc, [key]: yup.string().required('Please enter a value') }),
+                {},
               ),
-            })
-            .min(1, 'Please enter at least one value');
-        }),
-        ...(isNested && {
-          parentPoolId: yup.string().required('Please choose parent pool'),
-          parentResourceId: yup.string().required('Please choose allocated resource from parent'),
-        }),
-      });
-
-    default:
-      return yup.object({
-        name: yup.string().required('Please enter a name'),
-        description: yup.string().notRequired(),
-        tags: yup.array(),
-        resourceTypeId: yup.string().required('Please enter resource type'),
-        ...(isNested && {
-          parentPoolId: yup.string().required('Please choose parent pool'),
-          parentResourceId: yup.string().required('Please choose allocated resource from parent'),
-        }),
-      });
-  }
+            }),
+          ),
+        })
+        .min(1, 'Please enter at least one value');
+    }),
+  });
 }
 
 type Props = {
@@ -213,6 +177,8 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
         tags: [...selectedTags, data.name],
         allocationStrategyId: allocationStratedyId,
       };
+
+      console.log(updatedData);
 
       onFormSubmit(updatedData);
     },
