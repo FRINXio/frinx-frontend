@@ -28,8 +28,6 @@ import { Editor } from '@frinx/shared/src';
 import PageContainer from '../../../common/PageContainer';
 import Paginator from '../../../common/pagination';
 import callbackUtils from '../../../utils/callback-utils';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { usePagination } from '../../../common/pagination-hook';
 
 const EventListeners = () => {
@@ -137,7 +135,7 @@ const EventListeners = () => {
       {editModal()}
       <InputGroup marginBottom={8}>
         <InputLeftElement>
-          <Icon as={FontAwesomeIcon} icon={faSearch} color="grey" />
+          <Icon size={20} as={FeatherIcon} icon="search" color="grey" />
         </InputLeftElement>
         <Input value={searchTerm} placeholder="Search..." onChange={handleChange} background="white" />
       </InputGroup>
@@ -169,14 +167,14 @@ const EventListeners = () => {
                 <Td textAlign="center">
                   <Stack direction="row" spacing={1}>
                     <IconButton
-                      icon={<Icon as={FontAwesomeIcon} icon={faEdit} />}
+                      icon={<Icon as={FeatherIcon} icon="edit" />}
                       variant="outline"
                       isRound
                       colorScheme="gray"
                       onClick={() => setSelectedEvent(e)}
                     />
                     <IconButton
-                      icon={<Icon as={FontAwesomeIcon} icon={faTrash} />}
+                      icon={<Icon size={20} as={FeatherIcon} icon="trash-2" />}
                       variant="outline"
                       isRound
                       colorScheme="red"

@@ -4,13 +4,13 @@ import React, { useState, VoidFunctionComponent } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import ExecutedWorkflowDetail from './pages/executed-workflow-detail/executed-workflow-detail';
-import EventListeners from './pages/workflow-list/EventListeners/event-listeners';
+import EventListeners from './pages/workflow-list/event-listeners/event-listeners';
 import ExecutedWorkflowList from './pages/workflow-list/executed-workflow-list/executed-workflow-list';
-import PollData from './pages/workflow-list/PollData/poll-data';
+import PollData from './pages/workflow-list/poll-data/poll-data';
 import ScheduledWorkflowList from './pages/workflow-list/scheduled-workflow/scheduled-workflow-list';
-import TaskList from './pages/workflow-list/Tasks/task-list';
+import TaskList from './pages/workflow-list/tasks/task-list';
 import WorkflowListHeader from './pages/workflow-list/workflow-list-header';
-import WorkflowDefinitions from './pages/workflow-list/WorkflowDefs/workflow-definitions';
+import WorkflowDefinitions from './pages/workflow-list/workflow-definitions/workflow-definitions';
 
 const Root: VoidFunctionComponent = () => {
   const [key, setKey] = useState(uuid());
