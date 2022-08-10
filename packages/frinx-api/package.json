@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "fp-ts": "2.12.1",
-    "io-ts": "2.2.16",
+    "io-ts": "2.2.17",
     "url-join": "5.0.0"
   },
   "devDependencies": {

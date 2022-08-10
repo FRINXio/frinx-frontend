@@ -3377,7 +3377,7 @@ __metadata:
     eslint-plugin-react: 7.30.1
     eslint-plugin-react-hooks: 4.5.0
     fp-ts: 2.12.1
-    io-ts: 2.2.16
+    io-ts: 2.2.17
     rollup: 2.77.2
     rollup-plugin-dts: 4.2.2
     rollup-plugin-peer-deps-external: ^2.2.4
@@ -3440,7 +3440,7 @@ __metadata:
     graphql: 15.8.0
     html-webpack-harddisk-plugin: 2.0.0
     html-webpack-plugin: 5.5.0
-    io-ts: 2.2.16
+    io-ts: 2.2.17
     npm-run-all: 4.1.5
     react: 18.1.0
     react-dom: 18.1.0
@@ -11539,6 +11539,15 @@ __metadata:
   peerDependencies:
     fp-ts: ^2.5.0
   checksum: 1b5855682e413cc92cfb5c51d0bdb24c99e407ab4e67821a53078f5d8dedbc387840c5b240cb19dd5d542bbdd2e2317ece17674a674f3de561ca0f00ae765bba
+  languageName: node
+  linkType: hard
+
+"io-ts@npm:2.2.17":
+  version: 2.2.17
+  resolution: "io-ts@npm:2.2.17"
+  peerDependencies:
+    fp-ts: ^2.5.0
+  checksum: 51e8f2f3487a41e5f327be1529e63e6da042317a9153a7bfa4f799dc6a7332938b656ea9ca02ccdda391dc4e43571d44f9899dba0ef32e2c19bc6a6153dc5cac
   languageName: node
   linkType: hard
 
