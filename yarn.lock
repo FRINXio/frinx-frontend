@@ -3415,7 +3415,7 @@ __metadata:
     "@frinx/uniresource-ui": ^0.0.1
     "@frinx/workflow-builder": ^1.0.0
     "@frinx/workflow-ui": ^2.0.0
-    "@frinxio/device-topology": "workspace:^"
+    "@frinxio/device-topology": ^0.0.1
     "@frinxio/gamma": 0.0.15
     "@types/node": 16.11.38
     "@types/react": 17.0.42
@@ -3849,7 +3849,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@frinxio/device-topology@workspace:^, @frinxio/device-topology@workspace:packages/frinx-device-topology":
+"@frinxio/device-topology@^0.0.1, @frinxio/device-topology@workspace:packages/frinx-device-topology":
   version: 0.0.0-use.local
   resolution: "@frinxio/device-topology@workspace:packages/frinx-device-topology"
   dependencies:
