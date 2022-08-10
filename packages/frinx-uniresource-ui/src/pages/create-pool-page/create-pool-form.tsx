@@ -11,7 +11,6 @@ import {
   FormLabel,
   Heading,
   HStack,
-  Icon,
   Input,
   List,
   ListItem,
@@ -22,16 +21,19 @@ import {
   Textarea,
   useDisclosure,
 } from '@chakra-ui/react';
-import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
+import { ChevronDownIcon, ChevronUpIcon, Icon } from '@chakra-ui/icons';
 import { useTagsInput, SearchByTagInput } from '@frinx/shared/src';
 import PoolValuesForm from './pool-values-form';
+import PoolPropertiesForm from './pool-properties-form';
 import { SelectPoolsQuery, SelectResourceTypesQuery } from '../../__generated__/graphql';
 import {
+  canSelectAllocatingStrategy,
   getAvailableAllocatedResources,
   getAvailablePoolProperties,
   getAvailableResourceTypes,
   deriveResourceTypesFromAvailableResourceTypes,
   formatSuggestedProperties,
+  getPoolPropertiesSkeleton,
 } from '../../helpers/create-pool-form.helpers';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
@@ -42,6 +44,8 @@ export type FormValues = {
   resourceTypeName: string;
   tags: string[];
   allocationStrategyId?: string;
+  poolProperties?: Record<string, string>;
+  poolPropertyTypes?: Record<string, 'int' | 'string'>;
   dealocationSafetyPeriod?: number;
   poolType: PoolType;
   poolValues: Record<string, string>[];
@@ -65,6 +69,8 @@ const getInitialValues = (url: string, resourceTypes: SelectResourceTypesQuery['
     parentPoolId: query.get('parentPoolId') || undefined,
     parentResourceId: undefined,
     allocationStrategyId: '',
+    poolProperties: {},
+    poolPropertyTypes: {},
     tags: [],
   };
 };
@@ -107,39 +113,86 @@ type AllocStrategy = {
 };
 
 function getSchema(poolType: string, isNested: boolean) {
-  return yup.object({
-    name: yup.string().required('Please enter a name'),
-    description: yup.string(),
-    resourceTypeId: yup.string().required('Please enter resource type'),
-    tags: yup.array().notRequired(),
-    dealocationSafetyPeriod: yup.number().min(0, 'Please enter positive number').typeError('Please enter a number'),
-    allocationStrategyId: yup.string(),
-    ...(isNested && {
-      parentPoolId: yup.string().required('Please choose parent pool'),
-      parentResourceId: yup.string().required('Please choose allocated resource from parent'),
-    }),
-    poolValues: yup.lazy((poolValues: Array<Record<string, string>>) => {
-      return yup
-        .array()
-        .when('resourceTypeName', {
-          is: (resourceTypeName: string) => resourceTypeName === 'ipv4' || resourceTypeName === 'ipv4_prefix',
-          then: getSchemaForPoolValues(poolValues, { isIpv4: true }),
-        })
-        .when('resourceTypeName', {
-          is: (resourceTypeName: string) => resourceTypeName === 'ipv6' || resourceTypeName === 'ipv6_prefix',
-          then: getSchemaForPoolValues(poolValues, { isIpv6: true }),
-          otherwise: yup.array().of(
-            yup.object().shape({
-              ...Object.keys(poolValues[0] ?? {}).reduce(
-                (acc, key) => ({ ...acc, [key]: yup.string().required('Please enter a value') }),
-                {},
+  switch (poolType) {
+    case 'allocating':
+      return yup.object({
+        name: yup.string().required('Please enter a name'),
+        description: yup.string().notRequired(),
+        resourceTypeId: yup.string().required('Please enter resource type'),
+        tags: yup.array().notRequired(),
+        dealocationSafetyPeriod: yup
+          .number()
+          .min(0, 'Please enter positive number')
+          .required('Please enter a dealocation safety period')
+          .typeError('Please enter a number'),
+        allocationStrategyId: yup.string().notRequired(),
+        poolProperties: yup.lazy((poolProperties) => {
+          return yup.object({
+            ...Object.keys(poolProperties).reduce((acc, key) => {
+              return {
+                ...acc,
+                [key]: yup.string().required('Please enter a value'),
+              };
+            }, {}),
+          });
+        }),
+        poolPropertyTypes: yup.object().required(),
+        ...(isNested && {
+          parentPoolId: yup.string().required('Please choose parent pool'),
+          parentResourceId: yup.string().required('Please choose allocated resource from parent'),
+        }),
+      });
+
+    case 'set':
+      return yup.object({
+        name: yup.string().required('Please enter a name'),
+        description: yup.string().notRequired(),
+        resourceTypeId: yup.string().required('Please enter resource type'),
+        tags: yup.array().of(yup.string()).notRequired(),
+        dealocationSafetyPeriod: yup
+          .number()
+          .min(0, 'Please enter positive number')
+          .required('Please enter a dealocation safety period')
+          .typeError('Please enter a number'),
+        poolValues: yup.lazy((poolValues: Array<Record<string, string>>) => {
+          return yup
+            .array()
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => resourceTypeName === 'ipv4' || resourceTypeName === 'ipv4_prefix',
+              then: getSchemaForPoolValues(poolValues, { isIpv4: true }),
+            })
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => resourceTypeName === 'ipv6' || resourceTypeName === 'ipv6_prefix',
+              then: getSchemaForPoolValues(poolValues, { isIpv6: true }),
+              otherwise: yup.array().of(
+                yup.object().shape({
+                  ...Object.keys(poolValues[0] ?? {}).reduce(
+                    (acc, key) => ({ ...acc, [key]: yup.string().required('Please enter a value') }),
+                    {},
+                  ),
+                }),
               ),
-            }),
-          ),
-        })
-        .min(1, 'Please enter at least one value');
-    }),
-  });
+            })
+            .min(1, 'Please enter at least one value');
+        }),
+        ...(isNested && {
+          parentPoolId: yup.string().required('Please choose parent pool'),
+          parentResourceId: yup.string().required('Please choose allocated resource from parent'),
+        }),
+      });
+
+    default:
+      return yup.object({
+        name: yup.string().required('Please enter a name'),
+        description: yup.string().notRequired(),
+        tags: yup.array(),
+        resourceTypeId: yup.string().required('Please enter resource type'),
+        ...(isNested && {
+          parentPoolId: yup.string().required('Please choose parent pool'),
+          parentResourceId: yup.string().required('Please choose allocated resource from parent'),
+        }),
+      });
+  }
 }
 
 type Props = {
@@ -178,8 +231,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
         allocationStrategyId: allocationStratedyId,
       };
 
-      console.log(updatedData);
-
       onFormSubmit(updatedData);
     },
   });
@@ -192,6 +243,14 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     },
     [setFieldValue],
   );
+  const handlePoolPropertiesChange = useCallback(
+    (pProperties) => {
+      if (values.poolType === 'allocating') {
+        setFieldValue('poolProperties', { ...values.poolProperties, [pProperties.key]: pProperties.value });
+      }
+    },
+    [setFieldValue, values.poolType, values.poolProperties],
+  );
 
   useEffect(() => {
     setPoolSchema(getSchema(values.poolType, isNested));
@@ -201,8 +260,19 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     }
   }, [isNested, values.poolType, setFieldValue]);
 
+  useEffect(() => {
+    const [poolProperties, poolPropertyTypes] = getPoolPropertiesSkeleton(
+      resourceTypes,
+      resourceTypeId,
+      values.poolProperties,
+    );
+    setFieldValue('poolProperties', { ...poolProperties });
+    setFieldValue('poolPropertyTypes', { ...poolPropertyTypes });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resourceTypes, resourceTypeId, setFieldValue]);
+
   const { QueryResourcePools: pools } = resourcePools;
-  const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.Name ?? 'ipv4';
+  const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.Name ?? null;
   const parentResourceTypeName = pools.find((pool) => pool.id === parentPoolId)?.ResourceType.Name ?? null;
   const availableResourceTypes = getAvailableResourceTypes(resourceTypes, pools, parentPoolId);
   const availableAllocatedResources = getAvailableAllocatedResources(pools, parentPoolId);
@@ -210,6 +280,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     resourceTypes,
     availableResourceTypes,
   );
+  const canSelectAllocatingType = canSelectAllocatingStrategy(resourceTypes, resourceTypeId);
   const availablePoolProperties = getAvailablePoolProperties(resourcePools, parentPoolId, parentResourceId);
   const formattedSuggestedProperties = formatSuggestedProperties(parentResourceTypeName, availablePoolProperties);
 
@@ -220,6 +291,12 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       [...availableResourceTypes, ...derivedFromAvailableResourceTypes].find((rt) => rt.id === e.target.value)?.Name,
     );
   };
+
+  const [poolProperties, poolPropertyTypes] = getPoolPropertiesSkeleton(
+    resourceTypes,
+    resourceTypeId,
+    values.poolProperties,
+  );
 
   return (
     <form onSubmit={handleSubmit}>
@@ -287,48 +364,95 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
           <FormErrorMessage>{errors.name}</FormErrorMessage>
         </FormControl>
       </HStack>
-      <Divider marginY={5} orientation="horizontal" color="gray.200" />
-      <PoolValuesForm
-        onChange={handleFormValuesChange}
-        resourceTypeName={resourceTypeName}
-        existingPoolValues={values.poolValues}
-        poolValuesErrors={errors.poolValues}
-      >
-        <Heading as="h4" size="md">
-          Set pool values
-        </Heading>
-        {isNested && (
-          <>
-            <Text color="gray">available resources (allocated in selected parent):</Text>
-            <List>
-              {formattedSuggestedProperties.map((property) => (
-                <ListItem ml={2} color="gray" fontSize="sm" key={property}>
-                  {property}
-                </ListItem>
-              ))}
-            </List>
-          </>
-        )}
-      </PoolValuesForm>
-      <HStack onClick={advancedOptionsDisclosure.onToggle} cursor="pointer">
-        <Divider />
-        <HStack>
-          <Text width="max-content" textColor="gray.400">
-            Advanced options
-          </Text>
-          <Icon
-            as={advancedOptionsDisclosure.isOpen ? ChevronUpIcon : ChevronDownIcon}
-            fontSize="2xl"
-            color="gray.400"
+
+      <FormControl id="description">
+        <FormLabel>Descripton</FormLabel>
+        <Textarea
+          onChange={handleChange}
+          name="description"
+          value={values.description}
+          placeholder="Enter description"
+        />
+      </FormControl>
+
+      {values.poolType !== 'allocating' && resourceTypeName != null && (
+        <>
+          <Divider marginY={5} orientation="horizontal" color="gray.200" />
+          <Heading as="h4" size="md">
+            Set pool values
+          </Heading>
+          {isNested && (
+            <>
+              <Text color="gray">available resources (allocated in selected parent):</Text>
+              <List>
+                {formattedSuggestedProperties.map((property) => (
+                  <ListItem ml={2} color="gray" fontSize="sm" key={property}>
+                    {property}
+                  </ListItem>
+                ))}
+              </List>
+            </>
+          )}
+          <PoolValuesForm
+            onChange={handleFormValuesChange}
+            resourceTypeName={resourceTypeName}
+            existingPoolValues={values.poolValues}
+            poolValuesErrors={errors.poolValues}
           />
+        </>
+      )}
+      {values.poolType === 'allocating' && resourceTypeName != null && (
+        <>
+          <Divider marginY={5} orientation="horizontal" color="gray.200" />
+          <Heading as="h4" size="md">
+            Set pool properties
+          </Heading>
+          {isNested && (
+            <>
+              <Text color="gray">available resources (allocated in selected parent):</Text>
+              <List>
+                {formattedSuggestedProperties.map((property) => (
+                  <ListItem ml={2} color="gray" fontSize="sm" key={property}>
+                    {property}
+                  </ListItem>
+                ))}
+              </List>
+            </>
+          )}
+          <PoolPropertiesForm
+            poolProperties={poolProperties}
+            poolPropertyTypes={poolPropertyTypes}
+            onChange={handlePoolPropertiesChange}
+            poolPropertyErrors={errors.poolProperties}
+            resourceTypeName={resourceTypeName}
+          />
+        </>
+      )}
+      <HStack my={3}>
+        <Divider />
+        <HStack cursor="pointer" textColor="gray.500" onClick={advancedOptionsDisclosure.onToggle}>
+          <Text width="max-content">Advanced options</Text>
+          <Icon as={advancedOptionsDisclosure.isOpen ? ChevronUpIcon : ChevronDownIcon} />
         </HStack>
         <Divider />
       </HStack>
       {advancedOptionsDisclosure.isOpen && (
         <Box>
           <HStack>
+            <FormControl id="poolType">
+              <FormLabel>Pool type</FormLabel>
+              <Select name="poolType" value={poolType} onChange={handleChange}>
+                {['set', 'allocating', 'singleton']
+                  .filter((type) => (type === 'allocating' ? canSelectAllocatingType : true))
+                  .map((o) => (
+                    <option value={o} key={o}>
+                      {o}
+                    </option>
+                  ))}
+              </Select>
+            </FormControl>
             {values.poolType !== 'singleton' && (
-              <FormControl id="dealocationSafetyPeriod" my={2} isInvalid={errors.dealocationSafetyPeriod !== undefined}>
+              <FormControl id="dealocationSafetyPeriod" isInvalid={errors.dealocationSafetyPeriod !== undefined}>
                 <FormLabel>Dealocation safety period</FormLabel>
                 <Input
                   type="text"
@@ -340,31 +464,13 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
                 <FormErrorMessage>{errors.dealocationSafetyPeriod}</FormErrorMessage>
               </FormControl>
             )}
-            <FormControl id="poolType" my={2}>
-              <FormLabel>Pool type</FormLabel>
-              <Select name="poolType" value={poolType} onChange={handleChange}>
-                {['set', 'allocating', 'singleton'].map((o) => (
-                  <option value={o} key={o}>
-                    {o}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
           </HStack>
+
           <FormControl mt={2}>
             <SearchByTagInput
               selectedTags={selectedTags}
               onTagCreate={handleTagCreation}
               onSelectionChange={handleOnSelectionChange}
-            />
-          </FormControl>
-          <FormControl id="description">
-            <FormLabel>Descripton</FormLabel>
-            <Textarea
-              onChange={handleChange}
-              name="description"
-              value={values.description}
-              placeholder="Enter description"
             />
           </FormControl>
         </Box>

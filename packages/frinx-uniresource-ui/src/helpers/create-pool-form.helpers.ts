@@ -107,11 +107,13 @@ export function getPoolPropertiesSkeleton(
   let result: [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string'>] = [{}, {}];
 
   switch (resourceTypeName) {
+    case 'ipv4':
+    case 'ipv6':
     case 'ipv6_prefix':
     case 'ipv4_prefix':
       result = [
-        { prefix: values?.prefix || '', address: values?.address || '' },
-        { prefix: 'int', address: 'string' },
+        { address: values?.address || '', prefix: values?.prefix || '' },
+        { address: 'string', prefix: 'int' },
       ];
       break;
     case 'random_signed_int32':
@@ -119,10 +121,6 @@ export function getPoolPropertiesSkeleton(
       break;
     case 'route_distinguisher':
       result = [{ rd: values?.rd || '' }, { rd: 'string' }];
-      break;
-    case 'ipv4':
-    case 'ipv6':
-      result = [{ address: values?.address || '' }, { address: 'string' }];
       break;
     case 'vlan':
       result = [{ vlan: values?.vlan || '' }, { vlan: 'int' }];
