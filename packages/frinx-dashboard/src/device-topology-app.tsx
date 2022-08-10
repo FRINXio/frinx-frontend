@@ -2,12 +2,12 @@ import { InventoryApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
 
-type DeviceTopologyComponents = typeof import('@frinxio/device-toplogy');
+type DeviceTopologyComponents = typeof import('@frinxio/device-topology/src');
 const DeviceTopologyApp: FC = () => {
   const [components, setComponents] = useState<DeviceTopologyComponents | null>(null);
 
   useEffect(() => {
-    import('@frinxio/device-topology').then((mod) => {
+    import('@frinxio/device-topology/src').then((mod) => {
       setComponents(mod);
     });
   }, []);
