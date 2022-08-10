@@ -3415,6 +3415,7 @@ __metadata:
     "@frinx/uniresource-ui": ^0.0.1
     "@frinx/workflow-builder": ^1.0.0
     "@frinx/workflow-ui": ^2.0.0
+    "@frinxio/device-topology": "workspace:^"
     "@frinxio/gamma": 0.0.15
     "@types/node": 16.11.38
     "@types/react": 17.0.42
@@ -3845,6 +3846,50 @@ __metadata:
     react: ^18.0.0
     react-dom: ^18.0.0
     react-router-dom: ^6.0.0
+  languageName: unknown
+  linkType: soft
+
+"@frinxio/device-topology@workspace:^, @frinxio/device-topology@workspace:packages/frinx-device-topology":
+  version: 0.0.0-use.local
+  resolution: "@frinxio/device-topology@workspace:packages/frinx-device-topology"
+  dependencies:
+    "@chakra-ui/icons": 1.1.7
+    "@chakra-ui/react": 1.8.8
+    "@frinx/eslint-config-typescript": 19.0.4-build.1
+    "@frinx/shared": "workspace:^"
+    "@types/react": 17.0.42
+    "@types/react-dom": 17.0.14
+    "@typescript-eslint/eslint-plugin": 5.27.1
+    "@typescript-eslint/parser": 5.27.1
+    "@urql/exchange-multipart-fetch": ^0.1.14
+    "@urql/exchange-retry": 0.3.3
+    "@webpack-cli/serve": 1.6.1
+    chakra-ui-autocomplete: ^1.4.5
+    eslint: 8.17.0
+    eslint-config-prettier: 7.2.0
+    eslint-import-resolver-typescript: 2.7.1
+    eslint-plugin-import: 2.26.0
+    eslint-plugin-jsx-a11y: 6.5.1
+    eslint-plugin-react: 7.30.0
+    eslint-plugin-react-hooks: 4.5.0
+    feather-icons-react: 0.5.0
+    html-webpack-plugin: ^5.5.0
+    lodash: ^4.17.21
+    minisearch: ^5.0.0
+    npm-run-all: 4.1.5
+    react-ace: 9.5.0
+    typescript: 4.7.3
+    urql: 2.2.3
+    uuid: ^8.3.2
+    vitest: 0.14.1
+    webpack: 5.73.0
+    webpack-cli: 4.9.2
+  peerDependencies:
+    "@emotion/react": ^11.1.4
+    "@emotion/styled": ^11.0.0
+    framer-motion: ^4.1.3 || ^6.0.0
+    react: ^18.0.0
+    react-dom: ^18.0.0
   languageName: unknown
   linkType: soft
 

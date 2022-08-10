@@ -64,6 +64,12 @@ const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled, enabledServices }
                   <Text fontWeight="bold">L3VPN Automation</Text>
                 </MenuItem>
               )}
+              {enabledServices.get('isDeviceTopologyEnabled') && (
+                <MenuItem as={Link} to="/device-topology">
+                  <Icon size={20} as={FeatherIcon} icon="hard-drive" color="brand.700" marginRight={2} />
+                  <Text fontWeight="bold">Device Topology</Text>
+                </MenuItem>
+              )}
             </MenuList>
           </Portal>
         </Menu>
