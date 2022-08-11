@@ -1,4 +1,3 @@
-import { AddIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -79,7 +78,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
                 Refresh
               </Button>
               <Menu>
-                <MenuButton as={IconButton} icon={<ChevronDownIcon />} />
+                <MenuButton as={IconButton} icon={<Icon size={30} as={FeatherIcon} icon="chevron-down" />} />
                 <Portal>
                   <MenuList zIndex="tooltip">
                     <MenuItem isDisabled={isResetLoading} onClick={onReplaceBtnClick}>
@@ -116,7 +115,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
           </Box>
           <Flex justifyContent="flex-end" marginBottom={4} paddingY={2}>
             <ButtonGroup isAttached size="sm" marginRight="auto">
-              <Button onClick={onCreateSnapshotBtnClick} leftIcon={<AddIcon />}>
+              <Button onClick={onCreateSnapshotBtnClick} leftIcon={<Icon size={30} as={FeatherIcon} icon="plus" />}>
                 Create snapshot
               </Button>
               <Menu>

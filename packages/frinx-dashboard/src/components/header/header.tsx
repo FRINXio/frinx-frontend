@@ -17,7 +17,6 @@ import {
   LinkOverlay,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import { HamburgerIcon } from '@chakra-ui/icons';
 import UserNav from '../user-nav/user-nav';
 import logo from './logo-min.png';
 import AppMenu from '../app-menu/app-menu';
@@ -33,7 +32,12 @@ const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled, enabledServices }
     <Flex height={16} alignItems="center" px={4} boxShadow="md" position="relative" background="brand.600">
       <Box marginRight={4}>
         <Menu>
-          <MenuButton colorScheme="brand" size="md" as={IconButton} icon={<HamburgerIcon />} />
+          <MenuButton
+            colorScheme="brand"
+            size="md"
+            as={IconButton}
+            icon={<Icon size={30} as={FeatherIcon} icon="menu" />}
+          />
           <Portal>
             <MenuList zIndex="tooltip">
               <MenuItem as={Link} to="/">

@@ -1,5 +1,4 @@
 import { AuthenticatedTemplate, UnauthenticatedTemplate } from '@azure/msal-react';
-import { ChevronDownIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -16,6 +15,7 @@ import {
 import React, { FC } from 'react';
 import { authContext } from '../../auth-helpers';
 import useAuth from '../../use-auth';
+import FeatherIcon from 'feather-icons-react';
 
 const UserNav: FC = () => {
   const { inProgress, login, logout } = useAuth();
@@ -35,7 +35,12 @@ const UserNav: FC = () => {
           const [currentAccount] = authProps.accounts;
           return (
             <Menu>
-              <MenuButton colorScheme="brand" as={Button} size="md" rightIcon={<ChevronDownIcon />}>
+              <MenuButton
+                colorScheme="brand"
+                as={Button}
+                size="md"
+                rightIcon={<Icon size={30} as={FeatherIcon} icon="chevron-down" />}
+              >
                 {currentAccount.name}
               </MenuButton>
               <MenuList>
