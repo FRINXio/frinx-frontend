@@ -39,7 +39,9 @@ const WorkflowDefinitionsHeader: FC<Props> = ({ allLabels, keywords, onKeywordsC
           width={9}
           onClick={searchFavourites}
           title="Favourites"
-          icon={<Icon size={20} as={FeatherIcon} icon={labels.includes('FAVOURITE') ? 'star' : 'StarOutlined'} />}
+          icon={
+            <Icon size={20} as={FeatherIcon} color={labels.includes('FAVOURITE') ? 'yellow' : 'white'} icon="star" />
+          }
         />
       </Box>
       <Box flex={1}>
