@@ -23,7 +23,7 @@ const ClaimResourceLayout: FC<Props> = ({ poolName, isOpen, onClose, onClaim, ch
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent minW={800}>
         <ModalHeader>Claim resource for {poolName}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>

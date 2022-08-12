@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import ClaimResourceAllocIpvXPrefixModal from './claim-resource-allocating-modals/claim-resource-allocating-ipvx_prefix';
 import ClaimResourceAllocatingVlanRangeModal from './claim-resource-allocating-modals/claim-resource-allocationg-vlan_range-modal';
 import ClaimResourceDefaultModal from './claim-resource-allocating-modals/claim-resource-default-modal';
+import { AlternativeIdValue } from '../../../hooks/use-resource-pool-actions';
 
 // eslint-disable-next-line no-shadow
 enum ClaimModalVariant {
@@ -16,6 +17,11 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   onClaim: (description: string, userInput?: Record<string, number | string>) => void;
+  onClaimWithAltId: (
+    alternativeId: Record<string, AlternativeIdValue>,
+    description: string,
+    userInput?: Record<string, number | string>,
+  ) => void;
 };
 
 const ClaimResourceModal: FC<Props> = ({ variant, ...props }) => {
