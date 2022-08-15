@@ -56,13 +56,14 @@ export type FormValues = {
 
 const getInitialValues = (url: string, resourceTypes: SelectResourceTypesQuery['QueryResourceTypes']): FormValues => {
   const query = new URLSearchParams(url);
+  const resourceType = query.get('resource-type-name') || 'ipv4';
 
   return {
     name: '',
     description: '',
     dealocationSafetyPeriod: 0,
-    resourceTypeId: resourceTypes.find(({ Name }) => Name === query.get('resource-type-name') ?? 'ipv4')?.id || '',
-    resourceTypeName: query.get('resource-type-name') ?? 'ipv4',
+    resourceTypeId: resourceTypes.find(({ Name }) => Name === resourceType)?.id || '',
+    resourceTypeName: resourceType,
     isNested: !!query.get('isNested') || false,
     poolType: 'allocating',
     poolValues: [],

@@ -142,7 +142,14 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
             })
           ) : (
             <Tr textAlign="center">
-              <Td>There are no resource pools</Td>
+              <Td>
+                <HStack>
+                  <Text>There are no resource pools</Text>
+                  <Button colorScheme="blue" size="xs" as={Link} to="/uniresource/pools/new">
+                    Create pool
+                  </Button>
+                </HStack>
+              </Td>
             </Tr>
           )}
         </Tbody>
