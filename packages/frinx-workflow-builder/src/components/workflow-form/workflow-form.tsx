@@ -16,9 +16,9 @@ import {
 } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import { omitBy } from 'lodash';
+import { LabelsInput } from '@frinx/shared/src';
 import { Workflow } from '../../helpers/types';
 import { isWorkflowNameAvailable } from '../../helpers/workflow.helpers';
-import { LabelsInput } from '@frinx/shared/src';
 import { parseDescription, parseLabels } from '../left-menu/left-menu.helpers';
 
 type Description = {
