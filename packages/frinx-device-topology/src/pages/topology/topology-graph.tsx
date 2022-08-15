@@ -1,5 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { useTheme } from '@emotion/react';
+import { useTheme } from '@chakra-ui/react';
 import * as d3 from 'd3';
 import React, { createRef, FunctionComponent, useEffect } from 'react';
 
