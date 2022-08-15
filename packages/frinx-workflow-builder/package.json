@@ -14,7 +14,7 @@
     "dev": "webpack serve --mode development",
     "build:webpack": "NODE_ENV=production webpack --mode production",
     "build": "run-s build:webpack generate:typings",
-    "generate:typings": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist src/index.ts",
+    "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist src/index.ts",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc --noEmit",
     "test": "vitest"

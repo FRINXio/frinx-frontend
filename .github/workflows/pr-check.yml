@@ -24,25 +24,5 @@ jobs:
         run: yarn run formatter:check
       - name: Build dependencies
         run: yarn run build:api
-      - name: Generate types
-        run: yarn run typegen
-      - name: Run eslint check in Dashboard
-        run: yarn run lint:dashboard
-      - name: Run eslint check in Workflow Builder
-        run: yarn run lint:workflow-builder
-      - name: Run eslint check in Frinx api
-        run: yarn run lint:api
-      - name: Run eslint check in Inventory client
-        run: yarn run lint:inventory
-      - name: Run eslint check in Uniresource UI
-        run: yarn run lint:uniresource
-      - name: Check types in Workflow Builder
-        run: yarn run type-check:workflow-builder
-      - name: Check types in Inventory client
-        run: yarn run type-check:inventory
-      - name: Check types in Uniresource
-        run: yarn run type-check:uniresource
-      - name: Check types in Dashboard
-        run: yarn run type-check:dashboard
-      - name: Check types in Frinx api
-        run: yarn run type-check:api
+      -name: Run PR check
+        run: yarn run pr

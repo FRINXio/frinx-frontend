@@ -1,0 +1,13 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "pipeline": {
+    "lint": {
+      "inputs": ["src/**/*.tsx", "src/**/*.ts"]
+    },
+    "type-check": {
+      "dependsOn": ["lint"],
+      "inputs": ["src/**/*.tsx", "src/**/*.ts"]
+    },
+    "typegen": {}
+  }
+}
