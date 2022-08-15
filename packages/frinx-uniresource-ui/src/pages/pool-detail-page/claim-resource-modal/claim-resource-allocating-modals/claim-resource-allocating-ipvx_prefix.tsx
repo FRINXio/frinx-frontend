@@ -59,12 +59,15 @@ const ClaimResourceAllocIpv6PrefixModal: FC<Props> = ({ poolName, isOpen, onClai
     setFieldValue('alternativeIds', changedAlternativeIds);
   };
 
+  type FormErrors = typeof errors & FormikErrors<{ duplicateAlternativeIds?: string }>;
+  const formErrors: FormErrors = errors;
+
   return (
     <ClaimResourceLayout {...{ poolName, isOpen, onClose, onClaim: submitForm }}>
       <form>
         <FormControl isRequired isInvalid={errors.desiredSize != null}>
           <FormLabel>Desired size (number of allocated addresses)</FormLabel>
-          <Input id="desiredSize" name="desiredSize" onChange={handleChange} defaultValue={254} />
+          <Input id="desiredSize" name="desiredSize" onChange={handleChange} />
           <FormErrorMessage>{errors.desiredSize}</FormErrorMessage>
         </FormControl>
         <FormControl isInvalid={errors.description != null}>
@@ -75,6 +78,7 @@ const ClaimResourceAllocIpv6PrefixModal: FC<Props> = ({ poolName, isOpen, onClai
         <AlternativeIdForm
           alternativeIds={values.alternativeIds}
           errors={errors.alternativeIds as FormikErrors<AlternativeId>[]}
+          duplicateError={formErrors.duplicateAlternativeIds}
           onChange={handleAlternativeIdsChange}
         />
       </form>

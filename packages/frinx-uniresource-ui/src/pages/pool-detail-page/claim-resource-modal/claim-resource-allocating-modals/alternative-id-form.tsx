@@ -8,19 +8,43 @@ import {
   HStack,
   IconButton,
   Input,
+  Text,
 } from '@chakra-ui/react';
 import React, { ChangeEvent, VoidFunctionComponent } from 'react';
 import * as yup from 'yup';
-import { LabelsInput } from '@frinx/shared/src';
+import { LabelsInput, unwrap } from '@frinx/shared/src';
 import { DeleteIcon } from '@chakra-ui/icons';
-import { FormikErrors } from 'formik';
+import { FormikErrors, FormikValues } from 'formik';
+
+// eslint-disable-next-line func-names
+yup.addMethod(yup.array, 'unique', function (message, mapper = (a: unknown) => a) {
+  return this.test('unique', message, (list, context) => {
+    const l = unwrap(list);
+    if (l.length !== new Set(l.map(mapper)).size) {
+      // we want to have duplicate error in another path to be able
+      // to distinguish it frow ordinary alternateId errors (key, value)
+      throw context.createError({
+        path: 'duplicateAlternativeIds',
+        message,
+      });
+    }
+
+    return true;
+  });
+});
 
 const AlternativeIdSchema = yup.object({
   key: yup.string().required(),
   value: yup.array().of(yup.string()).min(1),
 });
 
-export const ValidationSchema = yup.array(AlternativeIdSchema);
+export const ValidationSchema = yup
+  .array(AlternativeIdSchema)
+  // TODO: check suggested solution https://github.com/jquense/yup/issues/345#issuecomment-634718990
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  .unique('duplicate keys', (a: FormikValues) => a.key)
+  .min(1);
 
 type AlternativeId = {
   key: string;
@@ -30,11 +54,12 @@ type AlternativeId = {
 type Props = {
   alternativeIds: AlternativeId[];
   errors?: FormikErrors<AlternativeId>[];
+  duplicateError?: string;
   onChange: (aid: AlternativeId[]) => void;
 };
 
 const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
-  const { alternativeIds, errors, onChange } = props;
+  const { alternativeIds, errors, duplicateError, onChange } = props;
 
   const handleAdd = () => {
     const newValues = [...alternativeIds, { key: 'status', value: ['active'] }];
@@ -98,6 +123,11 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
           </Box>
         );
       })}
+      {duplicateError && (
+        <Text color="red.500" fontSize="14px" marginTop={2}>
+          {duplicateError}
+        </Text>
+      )}
     </Box>
   );
 };
