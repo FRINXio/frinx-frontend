@@ -14,6 +14,7 @@ import {
   Icon,
   IconButton,
   ButtonGroup,
+  Button,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
@@ -53,7 +54,19 @@ const AggregatesTable: VoidFunctionComponent<Props> = ({ aggregates, onTagClick,
         <Tbody>
           {aggregates == null || aggregates.length === 0 ? (
             <Tr>
-              <Td>Currently there are no aggregates created yet</Td>
+              <Td>
+                There are no aggregates to be shown yet{' '}
+                <Button
+                  variant="solid"
+                  colorScheme="blue"
+                  as={Link}
+                  to="/uniresource/pools/new?resource-type-name=ipv4_prefix"
+                  size="xs"
+                  ml={5}
+                >
+                  Create aggregate
+                </Button>
+              </Td>
             </Tr>
           ) : (
             aggregates.map(({ id, aggregate, freeCapacity, prefixes, utilizedCapacity, tags }) => {
