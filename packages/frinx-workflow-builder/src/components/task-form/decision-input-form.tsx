@@ -1,10 +1,10 @@
 import React, { FC, useState } from 'react';
-import { Box, Divider, FormControl, FormLabel, HStack, IconButton, Input } from '@chakra-ui/react';
-import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
+import { Box, Divider, FormControl, FormLabel, HStack, IconButton, Input, Icon } from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
 import * as yup from 'yup';
 import { omitBy } from 'lodash';
 import { DecisionInputParams } from '../../helpers/types';
+import FeatherIcon from 'feather-icons-react';
 
 // TODO: dynamic object should be specified more precisely in yup
 export const DecisionInputParamsSchema = yup.object().shape({});
@@ -39,7 +39,7 @@ const DecisionInputForm: FC<Props> = ({ params, errors, onChange }) => {
               isDisabled={newParam === ''}
               aria-label="add param"
               colorScheme="blue"
-              icon={<AddIcon />}
+              icon={<Icon as={FeatherIcon} icon="plus" size={20} />}
               onClick={() => {
                 onChange({
                   ...params,
@@ -72,7 +72,7 @@ const DecisionInputForm: FC<Props> = ({ params, errors, onChange }) => {
               <IconButton
                 aria-label="remove param"
                 colorScheme="red"
-                icon={<DeleteIcon />}
+                icon={<Icon as={FeatherIcon} icon="trash-2" size={20} />}
                 onClick={() => {
                   onChange(omitBy(params, (_, k) => k === key));
                 }}

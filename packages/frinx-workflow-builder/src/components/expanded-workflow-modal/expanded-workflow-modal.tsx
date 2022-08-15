@@ -1,4 +1,3 @@
-import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
   AlertDialog,
   AlertDialogBody,
@@ -15,6 +14,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Icon,
 } from '@chakra-ui/react';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';
@@ -26,6 +26,7 @@ import { Task, Workflow } from '../../helpers/types';
 import BaseNode from '../workflow-nodes/base-node';
 import DecisionNode from '../workflow-nodes/decision-node';
 import StartEndNode from '../workflow-nodes/start-end-node';
+import FeatherIcon from 'feather-icons-react';
 
 const nodeTypes = {
   decision: DecisionNode,
@@ -91,7 +92,7 @@ const ExpandedWorkflowModal: FC<Props> = ({ workflowName, workflowVersion, onClo
           <ModalFooter>
             <Button
               colorScheme="blue"
-              leftIcon={<ExternalLinkIcon />}
+              leftIcon={<Icon as={FeatherIcon} icon="external-link" size={10} />}
               onClick={() => {
                 setIsAlertOpen(true);
               }}

@@ -9,28 +9,21 @@ type Props = {
 };
 
 const SearchTags: VoidFunctionComponent<Props> = ({ selectedTags, onTagClick, clearAllTags }) => {
-  const [isHovering, setIsHovering] = useState(false);
-  const handleMouseOver = () => {
-    setIsHovering(true);
-  };
-  const handleMouseOut = () => {
-    setIsHovering(false);
-  };
-
   return (
     <HStack>
       {selectedTags.length > 0 ? (
         <Button onClick={clearAllTags}>Clear tags</Button>
       ) : (
         <HStack>
+          <Text fontSize="sm">Currently you have not selected any tag</Text>
           <Tooltip
             openDelay={10}
             placement="right"
             label="By clicking on tag of resource pool you can start filtering. By clicking on the same tag you will unselect tag"
           >
-            <Text fontSize="sm">
-              Currently you have not selected any tag <Icon as={FeatherIcon} icon="info" />
-            </Text>
+            <Box>
+              <Icon verticalAlign="middle" as={FeatherIcon} icon="info" />
+            </Box>
           </Tooltip>
         </HStack>
       )}

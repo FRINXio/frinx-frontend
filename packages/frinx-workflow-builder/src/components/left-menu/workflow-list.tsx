@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState, VoidFunctionComponent } from 'react';
-import { AddIcon, SearchIcon } from '@chakra-ui/icons';
 import {
   Badge,
   Box,
@@ -13,12 +12,14 @@ import {
   Tooltip,
   Wrap,
   WrapItem,
+  Icon,
 } from '@chakra-ui/react';
 import MiniSearch from 'minisearch';
 import throttle from 'lodash/throttle';
 import { createSubWorkflowTask } from '../../helpers/task.helpers';
 import { ExtendedTask, Workflow } from '../../helpers/types';
 import { getFilteredResults, parseDescription, parseLabels } from './left-menu.helpers';
+import FeatherIcon from 'feather-icons-react';
 
 type Props = {
   onTaskAdd: (task: ExtendedTask) => void;
@@ -40,7 +41,7 @@ const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflows }) =>
     <Box>
       <InputGroup>
         <InputLeftElement pointerEvents="none">
-          <SearchIcon />
+          <Icon as={FeatherIcon} icon="search" size={20} />
         </InputLeftElement>
         <Input
           type="text"
@@ -83,7 +84,7 @@ const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflows }) =>
             <IconButton
               size="sm"
               aria-label="Add task"
-              icon={<AddIcon />}
+              icon={<Icon as={FeatherIcon} icon="plus" size={20} />}
               onClick={() => {
                 onTaskAdd(createSubWorkflowTask(wf.name, wf.version.toString(), wf.inputParameters));
               }}

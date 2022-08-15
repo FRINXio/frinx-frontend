@@ -10,9 +10,10 @@ import {
   InputRightElement,
   HStack,
   InputLeftElement,
-  Tooltip,
   FormErrorMessage,
   Icon,
+  Tooltip,
+  Box,
 } from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
 import { isObject } from 'lodash';
@@ -89,7 +90,13 @@ const PoolValuesForm: VoidFunctionComponent<Props> = ({
               <FormLabel>{key}</FormLabel>
               <InputGroup>
                 <InputLeftElement>
-                  {isPristine && <Icon as={FeatherIcon} icon="check" color="blue.400" />}
+                  {isPristine && (
+                    <Tooltip label="Saved">
+                      <Box>
+                        <Icon as={FeatherIcon} size="1em" icon="check" color="blue.400" />
+                      </Box>
+                    </Tooltip>
+                  )}
                 </InputLeftElement>
                 <Input
                   borderColor={isPristine ? 'blue.400' : 'inherit'}

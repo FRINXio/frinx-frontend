@@ -1,4 +1,3 @@
-import { EditIcon, SettingsIcon, TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons';
 import {
   Badge,
   Checkbox,
@@ -46,9 +45,9 @@ type Props = {
 
 function getSortingIcon(direction: Direction) {
   if (direction === 'ASC') {
-    return <TriangleUpIcon />;
+    return <Icon as={FeatherIcon} size={12} icon="triangle" />;
   }
-  return <TriangleDownIcon />;
+  return <Icon as={FeatherIcon} size={12} icon="triangle" style={{ transform: 'rotate(180deg)' }} />;
 }
 
 const DeviceTable: VoidFunctionComponent<Props> = ({
@@ -149,7 +148,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     size="sm"
                     variant="unstyled"
                     isDisabled={!isInstalled}
-                    icon={<Icon size={12} as={SettingsIcon} />}
+                    icon={<Icon size={12} as={FeatherIcon} icon="settings" />}
                     as={Link}
                     to={`../config/${device.id}`}
                   />
@@ -158,7 +157,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     size="sm"
                     variant="unstyled"
                     isDisabled={isInstalled}
-                    icon={<Icon size={12} as={EditIcon} />}
+                    icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                     as={Link}
                     to={`../${device.id}/edit`}
                   />
