@@ -27,9 +27,8 @@ type IpRange = {
     id: string;
     nestedPoolId: string | undefined;
   }[];
-  size: bigint | number;
+  totalCapacity: bigint | number;
   freeCapacity: bigint | number;
-  totalCapacity?: bigint | number;
 };
 
 type Props = {
@@ -54,7 +53,7 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onD
         </Thead>
         <Tbody>
           {ipRanges.length > 0 ? (
-            ipRanges.map(({ broadcast, network, size, tags, id, name, nestedRanges, freeCapacity }) => {
+            ipRanges.map(({ broadcast, network, totalCapacity, tags, id, name, nestedRanges, freeCapacity }) => {
               return (
                 <Tr key={id}>
                   {nestedRanges.length > 0 ? (
@@ -67,7 +66,7 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onD
                     <Td>{network}</Td>
                   )}
                   <Td>{broadcast}</Td>
-                  <Td>{new Intl.NumberFormat('fr').format(size)}</Td>
+                  <Td>{new Intl.NumberFormat('fr').format(totalCapacity)}</Td>
                   <Td>{name}</Td>
                   <Td>
                     {tags.map(({ Tag: tagName, id: tagId }) => (
@@ -93,7 +92,12 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onD
                           colorScheme="red"
                           aria-label="delete"
                           icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
-                          disabled={freeCapacity !== 0}
+                          isDisabled={BigInt(freeCapacity ?? 0) !== BigInt(totalCapacity)}
+                          title={
+                            BigInt(freeCapacity ?? 0n) !== BigInt(totalCapacity)
+                              ? 'Cannot delete pool until you delete all allocated resources'
+                              : ''
+                          }
                           onClick={() => {
                             onDeleteBtnClick(id);
                           }}
@@ -108,7 +112,14 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onD
             <Tr>
               <Td>
                 There are no ip ranges yet{' '}
-                <Button variant="solid" colorScheme="blue" as={Link} to="/uniresource/pools/new" size="xs" ml={5}>
+                <Button
+                  variant="solid"
+                  colorScheme="blue"
+                  as={Link}
+                  to="/uniresource/pools/new?resource-type-name=ipv4_prefix"
+                  size="xs"
+                  ml={5}
+                >
                   Create one
                 </Button>
               </Td>

@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Heading, HStack, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
 import { omitNullValue } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -58,11 +58,12 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     resourcePool.Capacity != null &&
     Number(resourcePool.Capacity.freeCapacity) > 0 &&
     Number(resourcePool.Capacity.freeCapacity) <= totalCapacity;
-  const canCreateNestedPool =
-    resourcePool.Resources.some((resource) => resource.NestedPool == null) &&
-    (resourcePool.ResourceType.Name === 'ipv4_prefix' ||
-      resourcePool.ResourceType.Name === 'ipv6_prefix' ||
-      resourcePool.ResourceType.Name === 'vlan_range');
+  const isPrefixOrRange =
+    resourcePool.ResourceType.Name === 'ipv4_prefix' ||
+    resourcePool.ResourceType.Name === 'ipv6_prefix' ||
+    resourcePool.ResourceType.Name === 'vlan_range';
+  const canCreateNestedPool = resourcePool.Resources.some((resource) => resource.NestedPool == null) && isPrefixOrRange;
+
   const isAllocating = resourcePool.PoolType === 'allocating';
 
   return (
@@ -74,8 +75,8 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         poolName={resourcePool.Name}
         resourceTypeName={resourcePool.ResourceType.Name}
       />
-      <Flex alignItems="center">
-        <Heading as="h1" size="lg" mb={6}>
+      <HStack mb={5}>
+        <Heading as="h1" size="lg">
           {resourcePool.Name}
         </Heading>
         <Spacer />
@@ -89,7 +90,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
             Claim resource
           </Button>
         )}
-      </Flex>
+      </HStack>
 
       <Box background="white" padding={5}>
         <Text fontSize="lg">Utilized capacity</Text>
@@ -128,20 +129,22 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         )}
       </Box>
 
-      <Box my={10}>
-        <Flex>
-          <Heading size="md" mb={5}>
-            Nested Pools
-          </Heading>
-          <Spacer />
-          {canCreateNestedPool && (
-            <Button colorScheme="blue" as={Link} to={`../pools/new?parentPoolId=${poolId}&isNested=true`}>
-              Create nested pool
-            </Button>
-          )}
-        </Flex>
-        <PoolsTable pools={nestedPools} isLoading={isLoadingPool} onDeleteBtnClick={deleteResourcePool} />
-      </Box>
+      {isPrefixOrRange ? (
+        <Box my={10}>
+          <HStack mb={5}>
+            <Heading size="md">Nested Pools</Heading>
+            <Spacer />
+            {canCreateNestedPool && (
+              <Button colorScheme="blue" as={Link} to={`../pools/new?parentPoolId=${poolId}&isNested=true`}>
+                Create nested pool
+              </Button>
+            )}
+          </HStack>
+          <PoolsTable pools={nestedPools} isLoading={isLoadingPool} onDeleteBtnClick={deleteResourcePool} />
+        </Box>
+      ) : (
+        <Box textAlign="center">This pool cannot have nested pools</Box>
+      )}
     </PageContainer>
   );
 };

@@ -64,9 +64,8 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
       return {
         id: ipRangeId,
         name: Name,
-        size: Capacity != null ? BigInt(Capacity.utilizedCapacity) + BigInt(Capacity.freeCapacity) : 0,
-        freeCapacity: Capacity != null ? BigInt(Capacity.freeCapacity) : 0,
         totalCapacity: Capacity != null ? BigInt(Capacity.utilizedCapacity) + BigInt(Capacity.freeCapacity) : 0,
+        freeCapacity: Capacity != null ? BigInt(Capacity.freeCapacity) : 0,
         tags: Tags,
         network: `${network}/${PoolProperties.prefix}`,
         broadcast: `${broadcast}/${PoolProperties.prefix}`,

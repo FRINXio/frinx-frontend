@@ -745,13 +745,6 @@ export type GetResourceTypeByNameQueryVariables = Exact<{ [key: string]: never; 
 
 export type GetResourceTypeByNameQuery = { __typename?: 'Query', QueryResourceTypes: Array<{ __typename?: 'ResourceType', id: string, Name: string }> };
 
-export type ClaimAddressMutationVariables = Exact<{
-  input: CreateNestedSetPoolInput;
-}>;
-
-
-export type ClaimAddressMutation = { __typename?: 'Mutation', CreateNestedSetPool: { __typename?: 'CreateNestedSetPoolPayload', pool: { __typename?: 'ResourcePool', id: string } | null } };
-
 export type ClaimResourceMutationVariables = Exact<{
   poolId: Scalars['ID'];
   description?: InputMaybe<Scalars['String']>;
@@ -849,6 +842,13 @@ export type GetPoolIpRangesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetPoolIpRangesQuery = { __typename?: 'Query', QueryRootResourcePools: Array<{ __typename?: 'ResourcePool', id: string, Name: string, PoolProperties: any, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, NestedPool: { __typename?: 'ResourcePool', id: string, ResourceType: { __typename?: 'ResourceType', id: string, Name: string } } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null }> };
+
+export type DeleteResourcePoolMutationVariables = Exact<{
+  input: DeleteResourcePoolInput;
+}>;
+
+
+export type DeleteResourcePoolMutation = { __typename?: 'Mutation', DeleteResourcePool: { __typename?: 'DeleteResourcePoolPayload', resourcePoolId: string } };
 
 export type GetAllIpPoolsQueryVariables = Exact<{ [key: string]: never; }>;
 

@@ -9,7 +9,6 @@ import {
   FormLabel,
   Input,
   FormErrorMessage,
-  Divider,
   ModalFooter,
   Button,
   Textarea,
@@ -36,7 +35,7 @@ const validationSchema = (resourceTypeName: string) =>
     description: yup.string().notRequired(),
     userInput:
       resourceTypeName === 'ípv4_prefix' || resourceTypeName === 'ipv6_prefix' || resourceTypeName === 'vlan_range'
-        ? yup.string().required('Must not be empty')
+        ? yup.string().required('Cannot be empty')
         : yup.string().notRequired(),
   });
 
@@ -69,29 +68,34 @@ const ClaimResourceModal: FC<Props> = ({ poolName, onClaim, onClose, isOpen, res
   });
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered size="lg">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Claim resource for {poolName}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <>
-            <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
+            <fieldset disabled={isSubmitting}>
               {shouldBeDesiredSize ? (
-                <FormControl isRequired isInvalid={errors.userInput !== null}>
+                <FormControl isRequired isInvalid={errors.userInput != null}>
                   <FormLabel>Desired size (number of allocated addresses)</FormLabel>
                   <Input value={values.userInput} onChange={handleChange} name="userInput" placeholder="254" />
                   <FormErrorMessage>{errors.userInput}</FormErrorMessage>
                 </FormControl>
               ) : (
-                <FormControl isInvalid={errors.userInput !== null}>
+                <FormControl isInvalid={errors.userInput != null}>
                   <FormLabel>Desired value (optional input)</FormLabel>
-                  <Input value={values.userInput} onChange={handleChange} name="userInput" placeholder="254" />
+                  <Input
+                    value={values.userInput}
+                    onChange={handleChange}
+                    name="userInput"
+                    placeholder={`Set specific value that you want to allocate from ${poolName}`}
+                  />
                   <FormErrorMessage>{errors.userInput}</FormErrorMessage>
                 </FormControl>
               )}
 
-              <FormControl isInvalid={errors.description !== null}>
+              <FormControl isInvalid={errors.description != null}>
                 <FormLabel>Description</FormLabel>
                 <Textarea
                   value={values.description}
@@ -101,9 +105,8 @@ const ClaimResourceModal: FC<Props> = ({ poolName, onClaim, onClose, isOpen, res
                 />
                 <FormErrorMessage>{errors.description}</FormErrorMessage>
               </FormControl>
-            </form>
-            <Divider marginY={5} orientation="horizontal" color="gray.200" />
-          </>
+            </fieldset>
+          </form>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="blue" onClick={submitForm} isLoading={isSubmitting}>

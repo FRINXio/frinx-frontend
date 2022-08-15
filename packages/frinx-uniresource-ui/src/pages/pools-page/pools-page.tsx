@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
+import { Box, Button, Heading, HStack, Icon, Progress, Spacer } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
@@ -110,12 +110,12 @@ const PoolsPage: VoidFunctionComponent = () => {
     setSelectedResourceType('');
   };
 
-  if (error != null || data == null) {
-    return <div>{error?.message}</div>;
-  }
-
   if (isQueryLoading) {
     return <Progress isIndeterminate size="sm" mt={-10} />;
+  }
+
+  if (error != null || data == null) {
+    return <div>{error?.message}</div>;
   }
 
   const isSelectedResourceTypeEmpty = selectedResourceType == null || selectedResourceType.trim().length === 0;
@@ -140,10 +140,11 @@ const PoolsPage: VoidFunctionComponent = () => {
 
   return (
     <>
-      <Flex as="header" alignItems="center" marginBottom={5}>
+      <HStack mb={5}>
         <Heading as="h1" size="lg">
           Pools
         </Heading>
+        <Spacer />
         <Box marginLeft="auto">
           <Button
             mr={2}
@@ -155,7 +156,7 @@ const PoolsPage: VoidFunctionComponent = () => {
             Create Pool
           </Button>
         </Box>
-      </Flex>
+      </HStack>
       <SearchFilterPoolsBar
         setSearchText={setSearchText}
         searchText={searchText}
