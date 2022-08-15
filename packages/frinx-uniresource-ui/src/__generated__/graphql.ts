@@ -761,6 +761,16 @@ export type ClaimResourceMutationVariables = Exact<{
 
 export type ClaimResourceMutation = { __typename?: 'Mutation', ClaimResource: { __typename?: 'Resource', id: string, Properties: any } };
 
+export type ClaimResourceWithAltIdMutationVariables = Exact<{
+  poolId: Scalars['ID'];
+  description?: InputMaybe<Scalars['String']>;
+  userInput: Scalars['Map'];
+  alternativeId: Scalars['Map'];
+}>;
+
+
+export type ClaimResourceWithAltIdMutation = { __typename?: 'Mutation', ClaimResourceWithAltId: { __typename?: 'Resource', id: string, Properties: any } };
+
 export type FreeResourceMutationVariables = Exact<{
   poolId: Scalars['ID'];
   input: Scalars['Map'];

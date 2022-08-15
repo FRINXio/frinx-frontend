@@ -2,11 +2,12 @@ import React, { useState, VoidFunctionComponent } from 'react';
 import { HStack, Input, InputGroup, InputLeftAddon, Tag, TagCloseButton, Text } from '@chakra-ui/react';
 
 type Props = {
+  placeholder: string;
   labels: string[];
   onChange: (labels: string[]) => void;
 };
 
-const LabelsInput: VoidFunctionComponent<Props> = ({ labels, onChange }: Props) => {
+const LabelsInput: VoidFunctionComponent<Props> = ({ placeholder, labels, onChange }: Props) => {
   const [inputValue, setInputValue] = useState('');
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +52,7 @@ const LabelsInput: VoidFunctionComponent<Props> = ({ labels, onChange }: Props) 
       )}
       <Input
         type="text"
-        placeholder="Add Labels (press Enter to add)"
+        placeholder={placeholder}
         value={inputValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}

@@ -18,8 +18,12 @@ import {
   GetResourceTypeByNameQueryVariables,
   Exact,
   InputMaybe,
+  ClaimResourceWithAltIdMutation,
+  ClaimResourceWithAltIdMutationVariables,
 } from '../__generated__/graphql';
 import { CallbackFunctions, PaginationArgs, usePagination } from './use-pagination';
+
+export type AlternativeIdValue = string | number | (string | number)[];
 
 const POOL_DETAIL_QUERY = gql`
   query GetPoolDetail($poolId: ID!) {
@@ -142,6 +146,20 @@ const CLAIM_RESOURCES_MUTATION = gql`
   }
 `;
 
+const CLAIM_RESOURCES_WITH_ALT_ID_MUTATION = gql`
+  mutation ClaimResourceWithAltId($poolId: ID!, $description: String, $userInput: Map!, $alternativeId: Map!) {
+    ClaimResourceWithAltId(
+      poolId: $poolId
+      description: $description
+      userInput: $userInput
+      alternativeId: $alternativeId
+    ) {
+      id
+      Properties
+    }
+  }
+`;
+
 const FREE_RESOURCES_MUTATION = gql`
   mutation FreeResource($poolId: ID!, $input: Map!) {
     FreeResource(input: $input, poolId: $poolId)
@@ -201,6 +219,11 @@ const useResourcePoolActions = ({
   },
   {
     claimPoolResource: (description?: string | null, userInput?: Record<string, string | number>) => void;
+    claimPoolResourceWithAltId: (
+      alternativeId: Record<string, AlternativeIdValue>,
+      description?: string | null,
+      userInput?: Record<string, string | number>,
+    ) => void;
     handleOnClaimAddress: (id: string, formValues: { poolName: string; description: string }) => void | Promise<void>;
     freePoolResource: (userInput: Record<string, string | number>) => void;
     deleteResourcePool: (id: string) => void;
@@ -234,6 +257,10 @@ const useResourcePoolActions = ({
   const [, freeResource] = useMutation<FreeResourceMutationMutation, FreeResourceMutationMutationVariables>(
     FREE_RESOURCES_MUTATION,
   );
+  const [, claimResourceWithAltId] = useMutation<
+    ClaimResourceWithAltIdMutation,
+    ClaimResourceWithAltIdMutationVariables
+  >(CLAIM_RESOURCES_WITH_ALT_ID_MUTATION);
   const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
   const [, claimAddress] = useMutation<ClaimAddressMutation, ClaimAddressMutationVariables>(CLAIM_ADDRESS_MUTATION);
 
@@ -258,6 +285,37 @@ const useResourcePoolActions = ({
               content: 'Successfully claimed resource from pool',
             });
 
+            reloadAllocatedResources();
+          })
+          .catch((error) => {
+            addToastNotification({
+              type: 'error',
+              content: error.message || 'There was a problem with claiming resource from pool',
+            });
+          });
+      },
+      claimPoolResourceWithAltId: (
+        alternativeId: Record<string, string | number | (string | number)[]>,
+        description?: string | null,
+        userInput: Record<string, string | number> = {},
+      ) => {
+        claimResourceWithAltId(
+          {
+            alternativeId,
+            poolId: poolId || '',
+            userInput,
+            description,
+          },
+          mutationResourcesContext,
+        )
+          .then((response) => {
+            if (response.error) {
+              throw new Error(response.error.message);
+            }
+            addToastNotification({
+              type: 'success',
+              content: 'Successfully claimed resource from pool',
+            });
             reloadAllocatedResources();
           })
           .catch((error) => {
@@ -386,6 +444,7 @@ const useResourcePoolActions = ({
       poolId,
       claimAddress,
       claimResource,
+      claimResourceWithAltId,
       freeResource,
       mutationResourcesContext,
       deletePool,
