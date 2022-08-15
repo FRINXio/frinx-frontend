@@ -29,16 +29,16 @@ type IpRange = {
   }[];
   size: bigint | number;
   freeCapacity: bigint | number;
+  totalCapacity?: bigint | number;
 };
 
 type Props = {
   ipRanges: IpRange[];
   onTagClick: (tagName: string) => void;
-  onGetAddressClick?: (poolId: string) => void;
   onDeleteBtnClick?: (poolId: string) => void;
 };
 
-const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onGetAddressClick, onDeleteBtnClick }) => {
+const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onDeleteBtnClick }) => {
   return (
     <TableContainer bgColor="white">
       <Table size="sm">
@@ -78,17 +78,6 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onG
                   </Td>
                   <Td>
                     <ButtonGroup spacing={1}>
-                      {onGetAddressClick && (
-                        <Button
-                          variant="solid"
-                          colorScheme="blue"
-                          size="xs"
-                          onClick={() => onGetAddressClick(id)}
-                          disabled={freeCapacity > 0}
-                        >
-                          Get address
-                        </Button>
-                      )}
                       <IconButton
                         aria-label="config"
                         size="xs"

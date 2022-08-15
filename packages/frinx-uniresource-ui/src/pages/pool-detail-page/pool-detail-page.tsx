@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
 import { omitNullValue } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -6,7 +6,6 @@ import PageContainer from '../../components/page-container';
 import useResourcePoolActions from '../../hooks/use-resource-pool-actions';
 import { GetPoolsQuery, PoolCapacityPayload } from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
-import { ClaimAddressModal } from './claim-address-modal';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
 import PoolDetailAllocatingTable from './pool-detail-allocating-table';
 import PoolDetailSetSingletonTable from './pool-detail-set_singleton-table';
@@ -16,28 +15,17 @@ export type PoolResource = {
   poolPropertyTypes: Record<string, 'int' | 'string'>;
 };
 
-function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
+function getTotalCapacity(capacity: PoolCapacityPayload | null): bigint {
   if (capacity == null) {
-    return 0;
+    return 0n;
   }
-  return Number(capacity.freeCapacity) + Number(capacity.utilizedCapacity);
-}
-function getCapacityValue(capacity: PoolCapacityPayload | null): number {
-  if (capacity == null) {
-    return 0;
-  }
-  const totalCapacity = getTotalCapacity(capacity);
-  if (totalCapacity === 0) {
-    return 0;
-  }
-  return (Number(capacity.utilizedCapacity) / totalCapacity) * 100;
+  return BigInt(capacity.freeCapacity) + BigInt(capacity.utilizedCapacity);
 }
 
 const PoolDetailPage: VoidFunctionComponent = () => {
   const { poolId } = useParams<{ poolId: string }>();
 
   const claimResourceModal = useDisclosure();
-  const claimAddressModal = useDisclosure();
 
   const [
     {
@@ -46,7 +34,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
       resourceTypes: { fetching: isLoadingResourceTypes },
       paginationArgs,
     },
-    { claimPoolResource, freePoolResource, deleteResourcePool, handleOnClaimAddress, nextPage, previousPage },
+    { claimPoolResource, freePoolResource, deleteResourcePool, nextPage, previousPage },
   ] = useResourcePoolActions({ poolId });
 
   if (poolId == null) {
@@ -62,7 +50,6 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   }
 
   const { QueryResourcePool: resourcePool } = poolData;
-  const capacityValue = getCapacityValue(resourcePool.Capacity);
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
   const nestedPools: GetPoolsQuery['QueryRootResourcePools'] = resourcePool.Resources.map((resource) =>
     resource.NestedPool !== null ? resource.NestedPool : null,
@@ -71,10 +58,12 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     resourcePool.Capacity != null &&
     Number(resourcePool.Capacity.freeCapacity) > 0 &&
     Number(resourcePool.Capacity.freeCapacity) <= totalCapacity;
-  const canFreeResource = resourcePool.Capacity != null && Number(resourcePool.Capacity.freeCapacity) !== totalCapacity;
   const canCreateNestedPool =
-    resourcePool.Resources.length > resourcePool.Resources.filter((resource) => resource.NestedPool != null).length;
-  const isAllocating = /(ipv4_prefix|ipv6_prefix|vlan_range)/.test(resourcePool.ResourceType.Name);
+    resourcePool.Resources.some((resource) => resource.NestedPool == null) &&
+    (resourcePool.ResourceType.Name === 'ipv4_prefix' ||
+      resourcePool.ResourceType.Name === 'ipv6_prefix' ||
+      resourcePool.ResourceType.Name === 'vlan_range');
+  const isAllocating = resourcePool.PoolType === 'allocating';
 
   return (
     <PageContainer>
@@ -83,51 +72,33 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         onClose={claimResourceModal.onClose}
         onClaim={claimPoolResource}
         poolName={resourcePool.Name}
-        variant={resourcePool.ResourceType.Name}
+        resourceTypeName={resourcePool.ResourceType.Name}
       />
-      {isAllocating && (
-        <ClaimAddressModal
-          isCentered
-          isOpen={claimAddressModal.isOpen}
-          onClose={claimAddressModal.onClose}
-          resourceProperties={resourcePool.PoolProperties}
-          onClaimAddress={(formValues) => handleOnClaimAddress(poolId, formValues)}
-        />
-      )}
       <Flex alignItems="center">
         <Heading as="h1" size="lg" mb={6}>
           {resourcePool.Name}
         </Heading>
         <Spacer />
         {isAllocating && (
-          <Box>
-            <ButtonGroup>
-              <Button
-                onClick={claimResourceModal.onOpen}
-                colorScheme="blue"
-                variant="outline"
-                isDisabled={!canClaimResources}
-              >
-                Claim resource
-              </Button>
-              <Button
-                onClick={claimAddressModal.onOpen}
-                colorScheme="blue"
-                variant="solid"
-                isDisabled={!canClaimResources}
-              >
-                Claim address
-              </Button>
-            </ButtonGroup>
-          </Box>
+          <Button
+            onClick={claimResourceModal.onOpen}
+            colorScheme="blue"
+            variant="solid"
+            isDisabled={!canClaimResources}
+          >
+            Claim resource
+          </Button>
         )}
       </Flex>
 
       <Box background="white" padding={5}>
         <Text fontSize="lg">Utilized capacity</Text>
-        <Progress size="xs" value={capacityValue} />
+        <Progress
+          size="xs"
+          value={Number((BigInt(resourcePool.Capacity?.utilizedCapacity ?? 0n) * 100n) / totalCapacity)}
+        />
         <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
-          {resourcePool.Capacity?.freeCapacity ?? 0} / {totalCapacity}
+          {resourcePool.Capacity?.freeCapacity ?? 0} / {totalCapacity.toString()}
         </Text>
       </Box>
 
@@ -139,7 +110,6 @@ const PoolDetailPage: VoidFunctionComponent = () => {
           <PoolDetailAllocatingTable
             allocatedResources={allocatedResources?.QueryResources}
             onFreeResource={freePoolResource}
-            canFreeResource={canFreeResource}
             onNext={nextPage}
             onPrevious={previousPage}
             paginationArgs={paginationArgs}

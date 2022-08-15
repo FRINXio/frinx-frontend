@@ -1,34 +1,117 @@
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  FormControl,
+  FormLabel,
+  Input,
+  FormErrorMessage,
+  Divider,
+  ModalFooter,
+  Button,
+  Textarea,
+} from '@chakra-ui/react';
+import { useFormik } from 'formik';
 import React, { FC } from 'react';
-import ClaimResourceAllocIpvXPrefixModal from './claim-resource-allocating-modals/claim-resource-allocating-ipvx_prefix';
-import ClaimResourceAllocatingVlanRangeModal from './claim-resource-allocating-modals/claim-resource-allocationg-vlan_range-modal';
-import ClaimResourceDefaultModal from './claim-resource-allocating-modals/claim-resource-default-modal';
-
-// eslint-disable-next-line no-shadow
-enum ClaimModalVariant {
-  IPV4_PREFIX = 'ipv4_prefix',
-  IPV6_PREFIX = 'ipv6_prefix',
-  VLAN_RANGE = 'vlan_range',
-}
+import * as yup from 'yup';
 
 type Props = {
-  variant: string;
   poolName: string;
+  resourceTypeName: string;
   isOpen: boolean;
   onClose: () => void;
   onClaim: (description: string, userInput?: Record<string, number | string>) => void;
 };
 
-const ClaimResourceModal: FC<Props> = ({ variant, ...props }) => {
+type FormValues = {
+  description: string;
+  userInput: string;
+};
+
+const validationSchema = (resourceTypeName: string) =>
+  yup.object().shape({
+    description: yup.string().notRequired(),
+    userInput:
+      resourceTypeName === 'ípv4_prefix' || resourceTypeName === 'ipv6_prefix' || resourceTypeName === 'vlan_range'
+        ? yup.string().required('Must not be empty')
+        : yup.string().notRequired(),
+  });
+
+const ClaimResourceModal: FC<Props> = ({ poolName, onClaim, onClose, isOpen, resourceTypeName }) => {
+  const shouldBeDesiredSize =
+    resourceTypeName === 'vlan_range' || resourceTypeName === 'ipv4_prefix' || resourceTypeName === 'ipv6_prefix';
+  const { values, handleChange, handleSubmit, submitForm, isSubmitting, errors } = useFormik<FormValues>({
+    initialValues: {
+      description: '',
+      userInput: '',
+    },
+    onSubmit: (formValues) => {
+      let userInput = {};
+
+      if (shouldBeDesiredSize) {
+        userInput = {
+          desiredSize: formValues.userInput,
+        };
+      }
+
+      if (!shouldBeDesiredSize && formValues.userInput) {
+        userInput = {
+          desiredValue: formValues.userInput,
+        };
+      }
+      onClaim(formValues.description, userInput);
+      onClose();
+    },
+    validationSchema: validationSchema(resourceTypeName),
+  });
+
   return (
-    <>
-      {(variant === ClaimModalVariant.IPV6_PREFIX || variant === ClaimModalVariant.IPV4_PREFIX) && (
-        <ClaimResourceAllocIpvXPrefixModal {...props} />
-      )}
-      {variant === ClaimModalVariant.VLAN_RANGE && <ClaimResourceAllocatingVlanRangeModal {...props} />}
-      {variant !== ClaimModalVariant.IPV4_PREFIX &&
-        variant !== ClaimModalVariant.IPV6_PREFIX &&
-        variant !== ClaimModalVariant.VLAN_RANGE && <ClaimResourceDefaultModal {...props} />}
-    </>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Claim resource for {poolName}</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <>
+            <form onSubmit={handleSubmit}>
+              {shouldBeDesiredSize ? (
+                <FormControl isRequired isInvalid={errors.userInput !== null}>
+                  <FormLabel>Desired size (number of allocated addresses)</FormLabel>
+                  <Input value={values.userInput} onChange={handleChange} name="userInput" placeholder="254" />
+                  <FormErrorMessage>{errors.userInput}</FormErrorMessage>
+                </FormControl>
+              ) : (
+                <FormControl isInvalid={errors.userInput !== null}>
+                  <FormLabel>Desired value (optional input)</FormLabel>
+                  <Input value={values.userInput} onChange={handleChange} name="userInput" placeholder="254" />
+                  <FormErrorMessage>{errors.userInput}</FormErrorMessage>
+                </FormControl>
+              )}
+
+              <FormControl isInvalid={errors.description !== null}>
+                <FormLabel>Description</FormLabel>
+                <Textarea
+                  value={values.description}
+                  onChange={handleChange}
+                  name="description"
+                  placeholder="Please enter description"
+                />
+                <FormErrorMessage>{errors.description}</FormErrorMessage>
+              </FormControl>
+            </form>
+            <Divider marginY={5} orientation="horizontal" color="gray.200" />
+          </>
+        </ModalBody>
+        <ModalFooter>
+          <Button colorScheme="blue" onClick={submitForm} isLoading={isSubmitting}>
+            Claim resource
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 

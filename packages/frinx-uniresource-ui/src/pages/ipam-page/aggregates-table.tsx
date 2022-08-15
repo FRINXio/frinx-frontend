@@ -54,9 +54,7 @@ const AggregatesTable: VoidFunctionComponent<Props> = ({ aggregates, onTagClick 
               const capacityUtilization =
                 utilizedCapacity && freeCapacity
                   ? Math.floor(
-                      Number(
-                        (BigInt(utilizedCapacity) / (BigInt(freeCapacity) + BigInt(utilizedCapacity))) * BigInt(100),
-                      ),
+                      Number((BigInt(utilizedCapacity) * 100n) / (BigInt(freeCapacity) + BigInt(utilizedCapacity))),
                     )
                   : 0;
 

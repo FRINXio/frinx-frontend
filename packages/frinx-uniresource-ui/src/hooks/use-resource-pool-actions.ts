@@ -8,8 +8,6 @@ import {
   FreeResourceMutationMutationVariables,
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
-  ClaimAddressMutation,
-  ClaimAddressMutationVariables,
   GetResourceTypeByNameQuery,
   AllocatedResourcesQuery,
   AllocatedResourcesQueryVariables,
@@ -97,6 +95,10 @@ const POOL_RESOURCES_QUERY = gql`
           id
           Properties
           Description
+          NestedPool {
+            id
+            Name
+          }
         }
       }
       pageInfo {
@@ -123,16 +125,6 @@ const GET_RESOURCE_TYPE_BYNAME_QUERY = gql`
   }
 `;
 
-const CLAIM_ADDRESS_MUTATION = gql`
-  mutation ClaimAddress($input: CreateNestedSetPoolInput!) {
-    CreateNestedSetPool(input: $input) {
-      pool {
-        id
-      }
-    }
-  }
-`;
-
 const CLAIM_RESOURCES_MUTATION = gql`
   mutation ClaimResource($poolId: ID!, $description: String, $userInput: Map!) {
     ClaimResource(poolId: $poolId, description: $description, userInput: $userInput) {
@@ -155,19 +147,6 @@ const DELETE_POOL_MUTATION = gql`
     }
   }
 `;
-
-function getResourceTypeId(parentResourceTypeName: string, resourceTypes: Record<string, string>) {
-  switch (parentResourceTypeName) {
-    case 'ipv4_prefix':
-      return resourceTypes.ipv4;
-    case 'ipv6_prefix':
-      return resourceTypes.ipv6;
-    case 'vlan_range':
-      return resourceTypes.vlan;
-    default:
-      throw new Error(`Unknown resource type: ${parentResourceTypeName}`);
-  }
-}
 
 const useResourcePoolActions = ({
   poolId,
@@ -201,7 +180,6 @@ const useResourcePoolActions = ({
   },
   {
     claimPoolResource: (description?: string | null, userInput?: Record<string, string | number>) => void;
-    handleOnClaimAddress: (id: string, formValues: { poolName: string; description: string }) => void | Promise<void>;
     freePoolResource: (userInput: Record<string, string | number>) => void;
     deleteResourcePool: (id: string) => void;
   } & CallbackFunctions,
@@ -235,7 +213,6 @@ const useResourcePoolActions = ({
     FREE_RESOURCES_MUTATION,
   );
   const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
-  const [, claimAddress] = useMutation<ClaimAddressMutation, ClaimAddressMutationVariables>(CLAIM_ADDRESS_MUTATION);
 
   const handlers = useMemo(
     () => ({
@@ -266,89 +243,6 @@ const useResourcePoolActions = ({
               content: error.message || 'There was a problem with claiming resource from pool',
             });
           });
-      },
-
-      handleOnClaimAddress: (id: string, formValues: { poolName: string; description: string }) => {
-        if (poolDetail.data?.QueryResourcePool.ResourceType.id == null) {
-          return addToastNotification({
-            type: 'error',
-            content: 'We could not claim address from subnet. Please try again later',
-          });
-        }
-
-        try {
-          const resourceTypesMap = resourceTypes.data?.QueryResourceTypes.reduce((acc, curr) => {
-            acc[curr.Name] = curr.id;
-            return acc;
-          }, {} as Record<string, string>);
-          const resourceTypeId = getResourceTypeId(
-            poolDetail.data.QueryResourcePool.ResourceType.Name,
-            unwrap(resourceTypesMap),
-          );
-
-          if (resourceTypeId == null) {
-            throw new Error('Could not find resource type id');
-          }
-
-          return claimResource(
-            {
-              poolId: id,
-              userInput: {
-                desiredSize: 2,
-              },
-              description: formValues.description,
-            },
-            mutationResourcesContext,
-          )
-            .then((createdResource) => {
-              if (createdResource.error) {
-                throw new Error(createdResource.error.message);
-              }
-
-              if (createdResource.data?.ClaimResource.id == null) {
-                throw new Error('Resource was not allocated');
-              }
-
-              return claimAddress({
-                input: {
-                  parentResourceId: createdResource.data.ClaimResource.id,
-                  poolDealocationSafetyPeriod: 0,
-                  poolName: formValues.poolName,
-                  poolValues: [
-                    {
-                      address: createdResource.data.ClaimResource.Properties.address,
-                    },
-                  ],
-                  resourceTypeId,
-                  description: formValues.description,
-                },
-              })
-                .then((response) => {
-                  if (response.error) {
-                    throw new Error(response.error.message);
-                  }
-
-                  addToastNotification({
-                    type: 'success',
-                    content: `Successfully claimed address ${createdResource.data?.ClaimResource.Properties.address}`,
-                  });
-                })
-                .catch((error) => {
-                  addToastNotification({
-                    type: 'error',
-                    content: error.message || 'There was a problem with claiming address from pool',
-                  });
-                });
-            })
-            .catch((error) => {
-              throw new Error(error.message);
-            });
-        } catch (error) {
-          return addToastNotification({
-            type: 'error',
-            content: 'We could not claim address from subnet. Please try again later',
-          });
-        }
       },
 
       freePoolResource: (userInput: Record<string, string | number>) => {
@@ -384,13 +278,10 @@ const useResourcePoolActions = ({
     [
       addToastNotification,
       poolId,
-      claimAddress,
       claimResource,
       freeResource,
       mutationResourcesContext,
       deletePool,
-      poolDetail,
-      resourceTypes,
       reloadAllocatedResources,
     ],
   );

@@ -26,21 +26,11 @@ type Props = {
   onTagClick?: (tag: string) => void;
 };
 
-function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
+function getTotalCapacity(capacity: PoolCapacityPayload | null): bigint {
   if (capacity == null) {
-    return 0;
+    return 0n;
   }
-  return Number(capacity.freeCapacity) + Number(capacity.utilizedCapacity);
-}
-function getCapacityValue(capacity: PoolCapacityPayload | null): number {
-  if (capacity == null) {
-    return 0;
-  }
-  const totalCapacity = getTotalCapacity(capacity);
-  if (totalCapacity === 0) {
-    return 0;
-  }
-  return (Number(capacity.utilizedCapacity) / totalCapacity) * 100;
+  return BigInt(capacity.freeCapacity) + BigInt(capacity.utilizedCapacity);
 }
 
 const PoolsTable: VoidFunctionComponent<Props> = ({
@@ -67,7 +57,6 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
         <Tbody>
           {pools.length > 0 ? (
             pools.map((pool) => {
-              const capacityValue = getCapacityValue(pool.Capacity);
               const totalCapacity = getTotalCapacity(pool.Capacity);
               const nestedPoolsCount = pool.Resources.filter((resource) => resource.NestedPool != null).length;
               const hasNestedPools = nestedPoolsCount > 0;
@@ -115,7 +104,10 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                     </Text>
                   </Td>
                   <Td isNumeric>
-                    <Progress size="xs" value={capacityValue} />
+                    <Progress
+                      size="xs"
+                      value={Number((BigInt(pool.Capacity?.utilizedCapacity ?? 0n) * 100n) / totalCapacity)}
+                    />
                   </Td>
                   <Td>
                     <HStack spacing={2}>
@@ -136,7 +128,12 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                         onClick={() => {
                           onDeleteBtnClick(pool.id);
                         }}
-                        isDisabled={Number(pool.Capacity?.freeCapacity) !== totalCapacity}
+                        isDisabled={BigInt(pool.Capacity?.freeCapacity ?? 0n) !== totalCapacity}
+                        title={
+                          BigInt(pool.Capacity?.freeCapacity ?? 0n) !== totalCapacity
+                            ? 'Cannot delete pool until you delete all allocated resources'
+                            : ''
+                        }
                       />
                     </HStack>
                   </Td>
