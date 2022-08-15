@@ -10,8 +10,8 @@ type Props = {
 
 const ResourceTypesTable: VoidFunctionComponent<Props> = ({ resourceTypes, onDelete }) => {
   return (
-    <Table backgroundColor="white">
-      <Thead>
+    <Table backgroundColor="white" size="sm">
+      <Thead bgColor="gray.200">
         <Tr>
           <Th>ID</Th>
           <Th>Name</Th>
@@ -26,6 +26,7 @@ const ResourceTypesTable: VoidFunctionComponent<Props> = ({ resourceTypes, onDel
             <Td>
               <HStack>
                 <IconButton
+                  size="xs"
                   variant="outline"
                   colorScheme="red"
                   aria-label="delete"

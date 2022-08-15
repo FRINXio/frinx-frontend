@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import { HStack, Icon, IconButton, Table, Tbody, Td, Th, Thead, Tr, Text } from '@chakra-ui/react';
+import { Icon, IconButton, Table, Tbody, Td, Th, Thead, Tr, Text, ButtonGroup } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { QueryAllocationStrategiesQuery } from '../../__generated__/graphql';
 
@@ -11,8 +11,8 @@ type Props = {
 
 const StrategiesTable: VoidFunctionComponent<Props> = ({ strategies, onScriptBtnClick, onDeleteBtnClick }) => {
   return (
-    <Table background="white">
-      <Thead>
+    <Table background="white" size="sm">
+      <Thead bgColor="gray.200">
         <Tr>
           <Th>Name</Th>
           <Th>Language</Th>
@@ -33,19 +33,16 @@ const StrategiesTable: VoidFunctionComponent<Props> = ({ strategies, onScriptBtn
               </Text>
             </Td>
             <Td>
-              <HStack spacing={2}>
+              <ButtonGroup variant="outline" spacing={2} size="xs">
                 <IconButton
-                  variant="outline"
                   colorScheme="blue"
-                  ml={2}
-                  aria-label="delete"
+                  aria-label="code"
                   icon={<Icon size={20} as={FeatherIcon} icon="code" color="blue" />}
                   onClick={() => {
                     onScriptBtnClick(strategy.Lang, strategy.Script);
                   }}
                 />
                 <IconButton
-                  variant="outline"
                   colorScheme="red"
                   aria-label="delete"
                   icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
@@ -53,7 +50,7 @@ const StrategiesTable: VoidFunctionComponent<Props> = ({ strategies, onScriptBtn
                     onDeleteBtnClick(strategy.id);
                   }}
                 />
-              </HStack>
+              </ButtonGroup>
             </Td>
           </Tr>
         ))}
