@@ -35,7 +35,7 @@
     "formatter": "prettier --write '**/*.ts' '**/*.tsx' '**/*.js' '**/*.jsx' '**/*.json' '**/*.md'",
     "codegen": "graphql-codegen --config codegen.yml",
     "codegen:clean": "rm -r src/__generated__",
-    "generate:typings": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist src/index.ts"
+    "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist src/index.ts"
   },
   "devDependencies": {
     "@babel/cli": "7.18.10",

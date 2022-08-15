@@ -32,8 +32,6 @@ const Topology: VoidFunctionComponent = () => {
 
   const nodes = data?.topology.nodes.map((n) => ({ id: n.id, name: n.device.name })) ?? [];
 
-  console.log({ nodes, edges: data?.topology.edges ?? [] });
-
   return (
     <Container maxWidth={1280}>
       <Flex justify="space-between" align="center" marginBottom={6}>
