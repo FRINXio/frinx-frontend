@@ -15,8 +15,8 @@ import {
   MenuItem,
   MenuList,
   VisuallyHidden,
+  Icon,
 } from '@chakra-ui/react';
-import { SettingsIcon, SmallAddIcon } from '@chakra-ui/icons';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import FeatherIcon from 'feather-icons-react';
@@ -98,12 +98,21 @@ const WorkflowListHeader = ({ onImportSuccess }: Props) => {
         </Heading>
         <Box marginLeft="auto">
           <HStack>
-            <Button as={Link} leftIcon={<SmallAddIcon />} colorScheme="blue" to="../builder">
+            <Button
+              as={Link}
+              leftIcon={<Icon as={FeatherIcon} icon="plus" size={20} />}
+              colorScheme="blue"
+              to="../builder"
+            >
               Create
             </Button>
             <Box>
               <Menu isLazy>
-                <MenuButton as={IconButton} icon={<SettingsIcon />} variant="ghost" />
+                <MenuButton
+                  as={IconButton}
+                  icon={<Icon as={FeatherIcon} icon="settings" size={20} />}
+                  variant="ghost"
+                />
                 <MenuList>
                   <MenuItem onClick={openFileUpload}>
                     <Box as="span" fontSize="sm" paddingRight={3} flexShrink={0}>
