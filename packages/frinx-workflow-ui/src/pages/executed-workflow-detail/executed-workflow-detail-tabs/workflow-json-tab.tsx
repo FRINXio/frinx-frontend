@@ -29,7 +29,7 @@ const WorkflowJsonTab: FC<Props> = ({ isEscaped, result, copyToClipBoard, onEsca
           {isEscaped ? 'Unescape' : 'Escape'}
         </Button>
       </Stack>
-      <Textarea value={getUnescapedJSON(result)} isReadOnly={true} id="json" variant="filled" minH={200} />
+      <Textarea value={getUnescapedJSON(result)} isReadOnly={true} id="json" variant="filled" minH={500} />
     </Box>
   );
 };
