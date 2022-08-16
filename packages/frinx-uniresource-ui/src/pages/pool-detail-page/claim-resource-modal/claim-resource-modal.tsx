@@ -30,6 +30,26 @@ type FormValues = {
   userInput: string;
 };
 
+function getDefaultValue(name: string, poolProperties: Record<string, string>): Record<string, string> {
+  switch (name) {
+    case 'random_signed_int32':
+      return { int: poolProperties.int };
+    case 'route_distinguisher':
+      return { rd: poolProperties.rd };
+    case 'ipv6_prefix':
+    case 'ipv6':
+    case 'ipv4_prefix':
+    case 'ipv4':
+      return { address: poolProperties.address, prefix: poolProperties.prefix };
+    case 'vlan':
+    case 'vlan_range':
+    case 'unique_id':
+      return { from: poolProperties.from, to: poolProperties.to };
+    default:
+      return {};
+  }
+}
+
 const validationSchema = (resourceTypeName: string) =>
   yup.object().shape({
     description: yup.string().notRequired(),

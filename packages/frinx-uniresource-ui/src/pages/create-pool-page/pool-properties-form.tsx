@@ -1,11 +1,22 @@
 import React, { VoidFunctionComponent } from 'react';
-import { FormControl, Input, HStack, FormErrorMessage, FormLabel } from '@chakra-ui/react';
+import {
+  FormControl,
+  Input,
+  HStack,
+  FormErrorMessage,
+  FormLabel,
+  NumberInputField,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputStepper,
+} from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
 
 type PoolProperties = Record<string, string>;
 type PoolPropertyTypes = Record<string, 'int' | 'string'>;
 type Props = {
-  onChange: (values: { key: string; type: 'int' | 'string'; value: string }) => void;
+  onChange: (values: { key: string; type: 'int' | 'string'; value: string | number }) => void;
   poolProperties: PoolProperties;
   poolPropertyTypes: PoolPropertyTypes;
   poolPropertyErrors?: string | string[] | FormikErrors<Record<string, string>>;
@@ -14,6 +25,8 @@ type Props = {
 
 function getPlaceholder(name: string): Record<string, string> {
   switch (name) {
+    case 'unique_id':
+      return { from: '0', to: '1_000_000_000' };
     case 'random_signed_int32':
       return { int: '2147483648' };
     case 'route_distinguisher':
@@ -25,7 +38,6 @@ function getPlaceholder(name: string): Record<string, string> {
     case 'ipv4':
       return { address: '192.168.0.1', prefix: '24' };
     case 'vlan':
-      return { vlan: '1' };
     case 'vlan_range':
       return { from: '1', to: '4094' };
     default:
@@ -46,23 +58,47 @@ const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
       {Object.keys(poolProperties).map((pKey) => {
         const pValue = poolProperties[pKey];
         const pType = poolPropertyTypes[pKey];
+        const shouldBeNumber = pType === 'int';
         return (
-          <FormControl key={pKey} id={pKey} isInvalid={errors[pKey] !== undefined} isRequired>
-            <FormLabel htmlFor={pKey}>{pKey}</FormLabel>
-            <Input
-              placeholder={getPlaceholder(resourceTypeName)[pKey]}
-              name={pKey}
-              onChange={(e) =>
-                onChange({
-                  key: pKey,
-                  type: pType,
-                  value: e.target.value,
-                })
-              }
-              value={pValue}
-            />
-            {[errors[pKey]] && <FormErrorMessage>{errors[pKey]}</FormErrorMessage>}
-          </FormControl>
+          pKey !== 'idFormat' && (
+            <FormControl key={pKey} id={pKey} isInvalid={errors[pKey] !== undefined} isRequired>
+              <FormLabel htmlFor={pKey}>{pKey}</FormLabel>
+              {shouldBeNumber ? (
+                <NumberInput
+                  placeholder={getPlaceholder(resourceTypeName)[pKey]}
+                  name={pKey}
+                  onChange={(e) =>
+                    onChange({
+                      key: pKey,
+                      type: pType,
+                      value: Number(e),
+                    })
+                  }
+                  value={pValue}
+                >
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              ) : (
+                <Input
+                  placeholder={getPlaceholder(resourceTypeName)[pKey]}
+                  name={pKey}
+                  onChange={(e) =>
+                    onChange({
+                      key: pKey,
+                      type: pType,
+                      value: e.target.value,
+                    })
+                  }
+                  value={pValue}
+                />
+              )}
+              {[errors[pKey]] && <FormErrorMessage>{errors[pKey]}</FormErrorMessage>}
+            </FormControl>
+          )
         );
       })}
     </HStack>

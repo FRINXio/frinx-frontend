@@ -27,7 +27,6 @@ import PoolValuesForm from './pool-values-form';
 import PoolPropertiesForm from './pool-properties-form';
 import { SelectPoolsQuery, SelectResourceTypesQuery } from '../../__generated__/graphql';
 import {
-  canSelectAllocatingStrategy,
   getAvailableAllocatedResources,
   getAvailablePoolProperties,
   getAvailableResourceTypes,
@@ -53,6 +52,10 @@ export type FormValues = {
   parentPoolId?: string;
   parentResourceId?: string;
 };
+
+const IPV4_REGEX = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
+const IPV6_REGEX =
+  /(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$)/;
 
 const getInitialValues = (url: string, resourceTypes: SelectResourceTypesQuery['QueryResourceTypes']): FormValues => {
   const query = new URLSearchParams(url);
@@ -80,9 +83,6 @@ function getSchemaForPoolValues(
   poolValues: Record<string, string>[],
   options: { isIpv6?: boolean; isIpv4?: boolean } = { isIpv4: false, isIpv6: false },
 ) {
-  const ipv4Regex = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
-  const ipv6Regex =
-    /(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$)/;
   return yup.array().of(
     yup.object().shape({
       ...Object.keys(poolValues[0] ?? {}).reduce((acc, key) => {
@@ -92,7 +92,7 @@ function getSchemaForPoolValues(
             [key]: yup
               .string()
               .matches(
-                options.isIpv4 ? ipv4Regex : ipv6Regex,
+                options.isIpv4 ? IPV4_REGEX : IPV6_REGEX,
                 `Please enter a valid ${options.isIpv4 ? 'IPv4' : 'IPv6'} address`,
               )
               .required(`Please enter an ${options.isIpv4 ? 'IPv4' : 'IPv6'} address`),
@@ -127,16 +127,66 @@ function getSchema(poolType: string, isNested: boolean) {
           .required('Please enter a dealocation safety period')
           .typeError('Please enter a number'),
         allocationStrategyId: yup.string().notRequired(),
-        poolProperties: yup.lazy((poolProperties) => {
-          return yup.object({
-            ...Object.keys(poolProperties).reduce((acc, key) => {
-              return {
-                ...acc,
-                [key]: yup.string().required('Please enter a value'),
-              };
-            }, {}),
-          });
-        }),
+        poolProperties: yup.lazy((poolProperties) =>
+          yup
+            .object()
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => resourceTypeName === 'ipv4' || resourceTypeName === 'ipv4_prefix',
+              then: yup.object().shape({
+                ...Object.keys(poolProperties).reduce((acc, key) => {
+                  if (key === 'from' || key === 'to' || key === 'prefix' || key === 'id') {
+                    return {
+                      ...acc,
+                      [key]: yup.number().typeError('Please enter a number').required(`Please enter a value`),
+                    };
+                  }
+
+                  if (key === 'address') {
+                    return {
+                      ...acc,
+                      [key]: yup
+                        .string()
+                        .matches(IPV4_REGEX, `Please enter a valid IPv4 address`)
+                        .required(`Please enter an IPv4 address`),
+                    };
+                  }
+
+                  return {
+                    ...acc,
+                    [key]: yup.string().required('Please enter a value'),
+                  };
+                }, {}),
+              }),
+            })
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => resourceTypeName === 'ipv6' || resourceTypeName === 'ipv6_prefix',
+              then: yup.object().shape({
+                ...Object.keys(poolProperties).reduce((acc, key) => {
+                  if (key === 'from' || key === 'to' || key === 'prefix' || key === 'id') {
+                    return {
+                      ...acc,
+                      [key]: yup.number().typeError('Please enter a number').required(`Please enter a value`),
+                    };
+                  }
+
+                  if (key === 'address') {
+                    return {
+                      ...acc,
+                      [key]: yup
+                        .string()
+                        .matches(IPV6_REGEX, `Please enter a valid IPv6 address`)
+                        .required(`Please enter an IPv6 address`),
+                    };
+                  }
+
+                  return {
+                    ...acc,
+                    [key]: yup.string().required('Please enter a value'),
+                  };
+                }, {}),
+              }),
+            }),
+        ),
         poolPropertyTypes: yup.object().required(),
         ...(isNested && {
           parentPoolId: yup.string().required('Please choose parent pool'),
@@ -221,7 +271,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     initialValues: getInitialValues(window.location.search, resourceTypes),
     validationSchema: poolSchema,
     validateOnChange: false,
-    onSubmit: async (data) => {
+    onSubmit: (data) => {
       const resourceTypeName = resourceTypes.find((resourceType) => resourceType.id === data.resourceTypeId)?.Name;
       const allocationStratedyId = allocStrategies.find(
         (allocationStrategy) => allocationStrategy.name === resourceTypeName,
@@ -281,7 +331,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     resourceTypes,
     availableResourceTypes,
   );
-  const canSelectAllocatingType = canSelectAllocatingStrategy(resourceTypes, resourceTypeId);
   const availablePoolProperties = getAvailablePoolProperties(resourcePools, parentPoolId, parentResourceId);
   const formattedSuggestedProperties = formatSuggestedProperties(parentResourceTypeName, availablePoolProperties);
 
@@ -443,13 +492,11 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
             <FormControl id="poolType">
               <FormLabel>Pool type</FormLabel>
               <Select name="poolType" value={poolType} onChange={handleChange}>
-                {['set', 'allocating', 'singleton']
-                  .filter((type) => (type === 'allocating' ? canSelectAllocatingType : true))
-                  .map((o) => (
-                    <option value={o} key={o}>
-                      {o}
-                    </option>
-                  ))}
+                {['set', 'allocating', 'singleton'].map((o) => (
+                  <option value={o} key={o}>
+                    {o}
+                  </option>
+                ))}
               </Select>
             </FormControl>
             {values.poolType !== 'singleton' && (

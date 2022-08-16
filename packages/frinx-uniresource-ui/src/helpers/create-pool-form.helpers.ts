@@ -123,8 +123,6 @@ export function getPoolPropertiesSkeleton(
       result = [{ rd: values?.rd || '' }, { rd: 'string' }];
       break;
     case 'vlan':
-      result = [{ vlan: values?.vlan || '' }, { vlan: 'int' }];
-      break;
     case 'vlan_range':
       result = [
         { from: values?.from || '', to: values?.to || '' },
@@ -132,7 +130,10 @@ export function getPoolPropertiesSkeleton(
       ];
       break;
     case 'unique_id':
-      result = [{ id: values?.id || '' }, { id: 'string' }];
+      result = [
+        { from: values?.from || '', to: values?.to || '', idFormat: '{counter}' },
+        { from: 'int', to: 'int', idFormat: 'string' },
+      ];
       break;
     default:
       break;
