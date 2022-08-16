@@ -1,6 +1,6 @@
 import React, { FC, memo } from 'react';
-import { Box, Flex, Heading, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
+import { Box, Flex, Heading, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Icon } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 import { ExtendedTask, TaskDefinition, Workflow } from '../../helpers/types';
 import { createSystemTasks, createTask } from '../../helpers/task.helpers';
 import TaskList from './task-list';
@@ -41,7 +41,7 @@ const LeftMenu: FC<Props> = memo(({ onTaskAdd, workflows, taskDefinitions }) => 
                 <Box marginLeft="auto">
                   <IconButton
                     aria-label="Add task"
-                    icon={<AddIcon />}
+                    icon={<Icon as={FeatherIcon} icon="plus" size={20} />}
                     onClick={() => {
                       onTaskAdd(createTask(label));
                     }}
