@@ -20,12 +20,13 @@ import {
   IconButton,
   Divider,
   Button,
+  Icon,
 } from '@chakra-ui/react';
 import type { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { jsonParse } from '../utils';
-import { CopyIcon } from '@chakra-ui/icons';
 import unescapeJs from 'unescape-js';
 import ExternalStorageModal from '@frinx/workflow-ui/src/pages/executed-workflow-detail/executed-workflow-detail-tabs/external-storage-modal';
+import FeatherIcon from 'feather-icons-react';
 
 type Props = {
   task: ExecutedWorkflowTask;
@@ -123,7 +124,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
                       </Text>
                       <IconButton
                         aria-label="Copy summary input"
-                        icon={<CopyIcon />}
+                        icon={<Icon as={FeatherIcon} icon="copy" size={20} />}
                         size="sm"
                         className="clp"
                         onClick={() => copyToClipBoard(inputData)}
@@ -158,7 +159,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
                       </Text>
                       <IconButton
                         aria-label="Copy summary output"
-                        icon={<CopyIcon />}
+                        icon={<Icon as={FeatherIcon} icon="copy" size={20} />}
                         size="sm"
                         className="clp"
                         onClick={() => copyToClipBoard(outputData)}
@@ -196,7 +197,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
                       </Text>
                       <IconButton
                         aria-label="Copy JSON"
-                        icon={<CopyIcon />}
+                        icon={<Icon as={FeatherIcon} icon="copy" size={20} />}
                         size="sm"
                         className="clp"
                         onClick={() => copyToClipBoard(task)}
@@ -223,7 +224,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
                       </Text>
                       <IconButton
                         aria-label="Copy logs"
-                        icon={<CopyIcon />}
+                        icon={<Icon as={FeatherIcon} icon="copy" size={20} />}
                         size="sm"
                         className="clp"
                         onClick={() => copyToClipBoard(logs)}

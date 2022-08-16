@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
 import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
-import { ArrowForwardIcon } from '@chakra-ui/icons';
 import { Link } from 'react-router-dom';
+import FeatherIcon from 'feather-icons-react';
 
 type Props = {
   tasks: ExecutedWorkflowTask[];
@@ -47,7 +47,7 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick, formatDate }) => {
                   aria-label="show-subworkflow"
                   as={Link}
                   to={`../executed/${task.subWorkflowId}`}
-                  icon={<Icon size={12} as={ArrowForwardIcon} />}
+                  icon={<Icon size={12} as={FeatherIcon} icon="arrow-right" />}
                   isDisabled={task.subWorkflowId == null}
                 />
               ) : null}
@@ -76,5 +76,3 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick, formatDate }) => {
     </Table>
   );
 };
-
-export default TaskTable;
