@@ -22,7 +22,6 @@ import { saveAs } from 'file-saver';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
 import { useNotifications } from '@frinx/shared/src';
-import { compact } from 'lodash';
 
 type Props = {
   onImportSuccess: () => void;
@@ -54,9 +53,13 @@ const WorkflowListHeader = ({ onImportSuccess }: Props) => {
   const importFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.currentTarget;
     try {
-      const readFiles = await Promise.all(Array.from(compact(files)).map((f) => readFile(f)));
+      if (!files) {
+        return;
+      }
+      const readFiles = await Promise.all(Array.from(files).map((f) => readFile(f)));
+      const json = readFiles.map((data) => JSON.parse(data));
       const { putWorkflow } = callbackUtils.getCallbacks;
-      await putWorkflow(readFiles);
+      await putWorkflow(json);
       onImportSuccess();
       addToastNotification({
         type: 'success',
