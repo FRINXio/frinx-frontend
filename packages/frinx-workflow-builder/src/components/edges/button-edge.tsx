@@ -1,5 +1,5 @@
-import { CloseIcon } from '@chakra-ui/icons';
-import { Box, IconButton } from '@chakra-ui/react';
+import { Box, IconButton, Icon } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { EdgeProps, getBezierPath, getEdgeCenter } from 'react-flow-renderer';
 import { useEdgeRemoveContext } from '../../edge-remove-context';
@@ -62,7 +62,7 @@ const ButtonEdge: VoidFunctionComponent<EdgeProps> = ({
             aria-label="Remove edge"
             borderRadius="50%"
             size="xs"
-            icon={<CloseIcon />}
+            icon={<Icon as={FeatherIcon} icon="x" size={20} />}
             onClick={(event) => handleEdgeClick(event, id)}
           />
         </Box>

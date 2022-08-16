@@ -16,8 +16,8 @@ import {
   MenuList,
   Portal,
   useDisclosure,
+  Icon,
 } from '@chakra-ui/react';
-import { ChevronDownIcon } from '@chakra-ui/icons';
 import FeatherIcon from 'feather-icons-react';
 import CloneWorkflowModal from '../clone-workflow-modal/clone-worflow-modal';
 import { Workflow } from '../../helpers/types';
@@ -114,7 +114,7 @@ const ActionsMenu: FC<Props> = ({
         }}
       />
       <Menu isLazy>
-        <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+        <MenuButton as={Button} rightIcon={<Icon as={FeatherIcon} icon="chevron-down" size={20} />}>
           Actions
         </MenuButton>
         <Portal>
