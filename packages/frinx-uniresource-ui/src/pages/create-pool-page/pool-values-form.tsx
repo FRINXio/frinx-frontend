@@ -10,12 +10,14 @@ import {
   InputRightElement,
   HStack,
   InputLeftElement,
-  Tooltip,
   FormErrorMessage,
+  Icon,
+  Tooltip,
+  Box,
 } from '@chakra-ui/react';
-import { DeleteIcon, CheckIcon } from '@chakra-ui/icons';
 import { FormikErrors } from 'formik';
 import { isObject } from 'lodash';
+import FeatherIcon from 'feather-icons-react';
 
 type PoolValue = Record<string, string>;
 type Props = {
@@ -90,7 +92,9 @@ const PoolValuesForm: VoidFunctionComponent<Props> = ({
                 <InputLeftElement>
                   {isPristine && (
                     <Tooltip label="Saved">
-                      <CheckIcon color="blue.400" />
+                      <Box>
+                        <Icon as={FeatherIcon} size="1em" icon="check" color="blue.400" />
+                      </Box>
                     </Tooltip>
                   )}
                 </InputLeftElement>
@@ -114,7 +118,7 @@ const PoolValuesForm: VoidFunctionComponent<Props> = ({
                     colorScheme="red"
                     isDisabled={index === 0}
                     aria-label="remove"
-                    icon={<DeleteIcon />}
+                    icon={<Icon as={FeatherIcon} icon="trash-2" />}
                     onClick={() => {
                       setPoolValues((prev) => {
                         const newPoolValues = [...prev].filter((_, i) => i !== index);
