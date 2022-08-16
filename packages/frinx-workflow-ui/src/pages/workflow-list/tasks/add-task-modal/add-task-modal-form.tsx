@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, FormControl, FormLabel, Grid, Icon, Input, Select, Tag, Tooltip } from '@chakra-ui/react';
 import { taskDefinition } from '../../../../constants';
 import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
-import { InfoIcon } from '@chakra-ui/icons';
+import FeatherIcon from 'feather-icons-react';
 
 type Key = keyof typeof taskDefinition;
 
@@ -136,7 +136,7 @@ export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormP
           <FormLabel htmlFor="inputKeys">
             Input Keys
             <Tooltip label="Hit enter to add input key">
-              <Icon as={InfoIcon} ml={2} />
+              <Icon as={FeatherIcon} icon="info" size={12} ml={2} />
             </Tooltip>
           </FormLabel>
           <Input id="inputKeys" ref={inputKeysRef} onKeyPress={(e) => handleKeyPress('inputKeys', e, inputKeysRef)} />
@@ -154,7 +154,7 @@ export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormP
           <FormLabel htmlFor="outputKeys">
             Output Keys
             <Tooltip label="Hit enter to add output key">
-              <Icon as={InfoIcon} ml={2} />
+              <Icon as={FeatherIcon} icon="info" size={12} ml={2} />
             </Tooltip>
           </FormLabel>
           <Input

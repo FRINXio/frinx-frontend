@@ -1,7 +1,7 @@
 import React, { VoidFunctionComponent, useState } from 'react';
-import { IconButton, Button, SimpleGrid, Box, Stack, Textarea, Text } from '@chakra-ui/react';
-import { CopyIcon } from '@chakra-ui/icons';
+import { IconButton, Button, SimpleGrid, Box, Stack, Textarea, Text, Icon } from '@chakra-ui/react';
 import ExternalStorageModal from './external-storage-modal';
+import FeatherIcon from 'feather-icons-react';
 
 type Props = {
   isEscaped: boolean;
@@ -45,7 +45,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
             </Text>
             <IconButton
               aria-label="copy"
-              icon={<CopyIcon />}
+              icon={<Icon as={FeatherIcon} icon="copy" size={20} />}
               size="sm"
               className="clp"
               onClick={() => copyToClipBoard(input)}
@@ -73,7 +73,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
             </Text>
             <IconButton
               aria-label="copy"
-              icon={<CopyIcon />}
+              icon={<Icon as={FeatherIcon} icon="copy" size={20} />}
               size="sm"
               className="clp"
               onClick={() => copyToClipBoard(output)}
