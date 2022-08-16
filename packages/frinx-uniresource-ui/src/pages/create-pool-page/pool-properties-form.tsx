@@ -25,18 +25,17 @@ type Props = {
 
 function getPlaceholder(name: string): Record<string, string> {
   switch (name) {
-    case 'unique_id':
-      return { from: '0', to: '1_000_000_000' };
-    case 'random_signed_int32':
-      return { int: '2147483648' };
     case 'route_distinguisher':
-      return { rd: '1:1' };
+      return { rd: '1' };
     case 'ipv6_prefix':
     case 'ipv6':
       return { address: '2001:db8:1::', prefix: '64' };
     case 'ipv4_prefix':
     case 'ipv4':
       return { address: '192.168.0.1', prefix: '24' };
+    case 'random_signed_int32':
+      return { from: '-2147483648', to: '2147483647' };
+    case 'unique_id':
     case 'vlan':
     case 'vlan_range':
       return { from: '1', to: '4094' };
@@ -65,7 +64,6 @@ const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
               <FormLabel htmlFor={pKey}>{pKey}</FormLabel>
               {shouldBeNumber ? (
                 <NumberInput
-                  placeholder={getPlaceholder(resourceTypeName)[pKey]}
                   name={pKey}
                   onChange={(e) =>
                     onChange({
@@ -76,7 +74,7 @@ const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
                   }
                   value={pValue}
                 >
-                  <NumberInputField />
+                  <NumberInputField placeholder={getPlaceholder(resourceTypeName)[pKey]} />
                   <NumberInputStepper>
                     <NumberIncrementStepper />
                     <NumberDecrementStepper />

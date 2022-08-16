@@ -116,12 +116,10 @@ export function getPoolPropertiesSkeleton(
         { address: 'string', prefix: 'int' },
       ];
       break;
-    case 'random_signed_int32':
-      result = [{ int: values?.int || '' }, { int: 'int' }];
-      break;
     case 'route_distinguisher':
       result = [{ rd: values?.rd || '' }, { rd: 'string' }];
       break;
+    case 'random_signed_int32':
     case 'vlan':
     case 'vlan_range':
       result = [

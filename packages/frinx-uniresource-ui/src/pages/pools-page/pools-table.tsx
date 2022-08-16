@@ -106,7 +106,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                   <Td isNumeric>
                     <Progress
                       size="xs"
-                      value={Number((BigInt(pool.Capacity?.utilizedCapacity ?? 0n) * 100n) / totalCapacity)}
+                      value={Number((BigInt(pool.Capacity?.utilizedCapacity ?? 0) * 100n) / totalCapacity)}
                     />
                   </Td>
                   <Td>

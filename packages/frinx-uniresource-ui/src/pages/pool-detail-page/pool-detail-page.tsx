@@ -7,6 +7,7 @@ import useResourcePoolActions from '../../hooks/use-resource-pool-actions';
 import { GetPoolsQuery, PoolCapacityPayload } from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
+import ClaimRouteDistinguisherResourceModal from './claim-resource-modal/claim-route_distinguisher-resource-modal';
 import PoolDetailAllocatingTable from './pool-detail-allocating-table';
 import PoolDetailSetSingletonTable from './pool-detail-set_singleton-table';
 
@@ -26,6 +27,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   const { poolId } = useParams<{ poolId: string }>();
 
   const claimResourceModal = useDisclosure();
+  const claimRouteDistinguisherResourceModal = useDisclosure();
 
   const [
     {
@@ -49,6 +51,14 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     return <Box textAlign="center">Resource pool does not exists</Box>;
   }
 
+  const handleOnOpenClaimResourceModal = () => {
+    if (poolData.QueryResourcePool.ResourceType.Name === 'route_distinguisher') {
+      claimRouteDistinguisherResourceModal.onOpen();
+    } else {
+      claimResourceModal.onOpen();
+    }
+  };
+
   const { QueryResourcePool: resourcePool } = poolData;
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
   const nestedPools: GetPoolsQuery['QueryRootResourcePools'] = resourcePool.Resources.map((resource) =>
@@ -56,8 +66,8 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   ).filter(omitNullValue);
   const canClaimResources =
     resourcePool.Capacity != null &&
-    Number(resourcePool.Capacity.freeCapacity) > 0 &&
-    Number(resourcePool.Capacity.freeCapacity) <= totalCapacity;
+    BigInt(resourcePool.Capacity.freeCapacity) > 0n &&
+    BigInt(resourcePool.Capacity.freeCapacity) <= totalCapacity;
   const isPrefixOrRange =
     resourcePool.ResourceType.Name === 'ipv4_prefix' ||
     resourcePool.ResourceType.Name === 'ipv6_prefix' ||
@@ -68,12 +78,20 @@ const PoolDetailPage: VoidFunctionComponent = () => {
 
   return (
     <PageContainer>
+      <ClaimRouteDistinguisherResourceModal
+        isOpen={claimRouteDistinguisherResourceModal.isOpen}
+        onClose={claimRouteDistinguisherResourceModal.onClose}
+        onClaim={claimPoolResource}
+        poolName={resourcePool.Name}
+      />
       <ClaimResourceModal
         isOpen={claimResourceModal.isOpen}
         onClose={claimResourceModal.onClose}
         onClaim={claimPoolResource}
         poolName={resourcePool.Name}
         resourceTypeName={resourcePool.ResourceType.Name}
+        totalCapacity={totalCapacity}
+        poolProperties={resourcePool.PoolProperties}
       />
       <HStack mb={5}>
         <Heading as="h1" size="lg">
@@ -82,7 +100,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         <Spacer />
         {isAllocating && (
           <Button
-            onClick={claimResourceModal.onOpen}
+            onClick={handleOnOpenClaimResourceModal}
             colorScheme="blue"
             variant="solid"
             isDisabled={!canClaimResources}

@@ -185,6 +185,22 @@ function getSchema(poolType: string, isNested: boolean) {
                   };
                 }, {}),
               }),
+            })
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => resourceTypeName === 'random_signed_int32',
+              then: yup.object().shape({
+                ...Object.keys(poolProperties).reduce((acc, key) => {
+                  return {
+                    ...acc,
+                    [key]: yup
+                      .number()
+                      .typeError('Please enter a number')
+                      .min(-2147483648, 'Please enter a number between -2147483648 and 2147483647')
+                      .max(2147483647, 'Please enter a number between -2147483648 and 2147483647')
+                      .required('Please enter a value'),
+                  };
+                }, {}),
+              }),
             }),
         ),
         poolPropertyTypes: yup.object().required(),
