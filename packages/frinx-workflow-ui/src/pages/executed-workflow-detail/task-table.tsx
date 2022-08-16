@@ -76,3 +76,5 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick, formatDate }) => {
     </Table>
   );
 };
+
+export default TaskTable;
