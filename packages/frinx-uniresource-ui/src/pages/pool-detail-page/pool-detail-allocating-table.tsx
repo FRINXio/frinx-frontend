@@ -39,7 +39,7 @@ const PoolDetailAllocatingTable: FC<Props> = ({
   return (
     <>
       <Table background="white" size="sm">
-        <Thead>
+        <Thead bgColor="gray.200">
           <Tr>
             {allocatedResourcesKeys.map((key) => (key ? <Th key={key}>{key}</Th> : null))}
             <Th>description</Th>

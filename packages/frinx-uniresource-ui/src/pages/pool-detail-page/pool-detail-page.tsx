@@ -71,7 +71,8 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   const isPrefixOrRange =
     resourcePool.ResourceType.Name === 'ipv4_prefix' ||
     resourcePool.ResourceType.Name === 'ipv6_prefix' ||
-    resourcePool.ResourceType.Name === 'vlan_range';
+    resourcePool.ResourceType.Name === 'vlan_range' ||
+    resourcePool.ResourceType.Name === 'route_distinguisher';
   const canCreateNestedPool = resourcePool.Resources.some((resource) => resource.NestedPool == null) && isPrefixOrRange;
 
   const isAllocating = resourcePool.PoolType === 'allocating';

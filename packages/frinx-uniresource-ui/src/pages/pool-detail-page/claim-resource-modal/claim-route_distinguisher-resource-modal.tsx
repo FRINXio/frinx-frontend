@@ -48,7 +48,7 @@ const validationSchema = yup.object().shape({
     ipv4: yup
       .string()
       .matches(IPV4_REGEX, { message: 'Please enter a valid IPv4 address' })
-      .required('Please enter an IPv4 address'),
+      .required('Please enter a IPv4 address'),
   }),
 });
 
@@ -115,7 +115,7 @@ const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaim, on
                 <Input
                   id="ipv4"
                   value={values.userInput.ipv4}
-                  onChange={(e) => setFieldValue('userInput', { ...values.userInput, ipv4: e.target.value })}
+                  onChange={handleChange}
                   name="userInput.ipv4"
                   placeholder="Please enter IPv4"
                 />

@@ -36,7 +36,7 @@ type Props = {
 
 type FormValues = {
   description: string;
-  userInput: string;
+  userInput: string | number;
 };
 
 const IPV4_REGEX = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
@@ -45,10 +45,6 @@ const IPV6_REGEX =
 
 function getHint(name: string, poolProperties: Record<string, string>, totalCapacity: bigint): string {
   switch (name) {
-    case 'random_signed_int32':
-      return poolProperties.int;
-    case 'route_distinguisher':
-      return poolProperties.rd;
     case 'ipv6':
       return `Your address should be between ${ipaddr.IPv6.networkAddressFromCIDR(
         `${poolProperties.address}/${poolProperties.prefix}`,
@@ -62,6 +58,7 @@ function getHint(name: string, poolProperties: Record<string, string>, totalCapa
       return `Your address should be between ${ipaddr.IPv4.networkAddressFromCIDR(
         `${poolProperties.address}/${poolProperties.prefix}`,
       )} and ${ipaddr.IPv4.broadcastAddressFromCIDR(`${poolProperties.address}/${poolProperties.prefix}`)}.`;
+    case 'random_signed_int32':
     case 'vlan':
       return `Enter value between ${poolProperties.from} - ${poolProperties.to}`;
     default:
@@ -72,7 +69,7 @@ function getHint(name: string, poolProperties: Record<string, string>, totalCapa
 const validationSchema = (resourceTypeName: string) => {
   let userInputSchema;
   if (resourceTypeName === 'ípv4_prefix' || resourceTypeName === 'ipv6_prefix' || resourceTypeName === 'vlan_range') {
-    userInputSchema = yup.number().required();
+    userInputSchema = yup.number().typeError('Please enter a number').required('This field is required');
   }
 
   if (resourceTypeName === 'ipv4') {
@@ -99,33 +96,36 @@ const ClaimResourceModal: FC<Props> = ({
 }) => {
   const shouldBeDesiredSize =
     resourceTypeName === 'vlan_range' || resourceTypeName === 'ipv4_prefix' || resourceTypeName === 'ipv6_prefix';
-  const { values, handleChange, handleSubmit, submitForm, isSubmitting, errors } = useFormik<FormValues>({
-    initialValues: {
-      description: '',
-      userInput: '',
+  const { values, handleChange, handleSubmit, submitForm, isSubmitting, errors, setFieldValue } = useFormik<FormValues>(
+    {
+      initialValues: {
+        description: '',
+        userInput: '',
+      },
+      onSubmit: (formValues) => {
+        let userInput = {};
+
+        if (shouldBeDesiredSize) {
+          userInput = {
+            desiredSize: formValues.userInput,
+          };
+        }
+
+        if (!shouldBeDesiredSize && formValues.userInput) {
+          userInput = {
+            desiredValue: formValues.userInput,
+          };
+        }
+        onClaim(formValues.description, userInput);
+        onClose();
+      },
+      validationSchema: validationSchema(resourceTypeName),
     },
-    onSubmit: (formValues) => {
-      let userInput = {};
+  );
 
-      if (shouldBeDesiredSize) {
-        userInput = {
-          desiredSize: formValues.userInput,
-        };
-      }
-
-      if (!shouldBeDesiredSize && formValues.userInput) {
-        userInput = {
-          desiredValue: formValues.userInput,
-        };
-      }
-      onClaim(formValues.description, userInput);
-      onClose();
-    },
-    validationSchema: validationSchema(resourceTypeName),
-  });
-
-  const canShowDesiredValueInput = shouldBeDesiredSize || resourceTypeName !== 'unique_id';
-  const shouldBeNumber = resourceTypeName === 'vlan' || resourceTypeName === 'random_signed_int32';
+  const canShowDesiredValueInput =
+    shouldBeDesiredSize || (resourceTypeName !== 'unique_id' && resourceTypeName !== 'random_signed_int32');
+  const shouldBeNumber = resourceTypeName === 'vlan';
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl">
@@ -139,7 +139,11 @@ const ClaimResourceModal: FC<Props> = ({
               {shouldBeDesiredSize ? (
                 <FormControl isRequired isInvalid={errors.userInput != null} mb={5}>
                   <FormLabel>Desired size (number of allocated addresses)</FormLabel>
-                  <NumberInput value={values.userInput} onChange={handleChange} name="userInput">
+                  <NumberInput
+                    value={values.userInput}
+                    onChange={(value) => setFieldValue('userInput', value)}
+                    name="userInput"
+                  >
                     <NumberInputField placeholder="254" />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
@@ -154,9 +158,14 @@ const ClaimResourceModal: FC<Props> = ({
               ) : (
                 canShowDesiredValueInput && (
                   <FormControl isInvalid={errors.userInput != null} mb={5}>
-                    <FormLabel>Desired value (optional input)</FormLabel>
+                    <FormLabel htmlFor="desiredValue">Desired value (optional input)</FormLabel>
                     {shouldBeNumber ? (
-                      <NumberInput value={values.userInput} onChange={handleChange} name="userInput">
+                      <NumberInput
+                        value={values.userInput}
+                        id="desiredValue"
+                        name="userInput"
+                        onChange={(value) => setFieldValue('userInput', value)}
+                      >
                         <NumberInputField
                           placeholder={`Set specific value that you want to allocate from ${poolName}`}
                         />
