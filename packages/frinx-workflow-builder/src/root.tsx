@@ -1,15 +1,14 @@
-import { Box, ChakraProvider, Container, Heading } from '@chakra-ui/react';
+import { Box, Container, Heading } from '@chakra-ui/react';
+import { unwrap } from '@frinx/shared/src';
 import { saveAs } from 'file-saver';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
-import { unwrap } from '@frinx/shared/src';
 import App from './app';
 import callbackUtils from './callback-utils';
 import WorkflowForm from './components/workflow-form/workflow-form';
 import { ExtendedTask, TaskDefinition, Workflow } from './helpers/types';
 import { convertWorkflow, createEmptyWorkflow } from './helpers/workflow.helpers';
 import { TaskActionsProvider } from './task-actions-context';
-import theme from './theme';
 
 type Props = {
   onClose: () => void;
@@ -110,50 +109,46 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
 
   if (shouldCreateWorkflow && workflows != null) {
     return (
-      <ChakraProvider theme={theme}>
-        <Container maxWidth={1200}>
-          <Box background="white" paddingY={8} paddingX={4}>
-            <Heading as="h1" size="lg">
-              Create new workflow
-            </Heading>
-            <WorkflowForm
-              workflow={createEmptyWorkflow()}
-              workflows={workflows}
-              onSubmit={(wf) => {
-                setWorkflow({
-                  ...wf,
-                  ownerEmail: '',
-                  schemaVersion: 2,
-                  tasks: [],
-                  updateTime: 0,
-                });
-                setShouldCreateWorkflow(false);
-              }}
-              canEditName
-              isCreatingWorkflow
-            />
-          </Box>
-        </Container>
-      </ChakraProvider>
+      <Container maxWidth={1200}>
+        <Box background="white" paddingY={8} paddingX={4}>
+          <Heading as="h1" size="lg">
+            Create new workflow
+          </Heading>
+          <WorkflowForm
+            workflow={createEmptyWorkflow()}
+            workflows={workflows}
+            onSubmit={(wf) => {
+              setWorkflow({
+                ...wf,
+                ownerEmail: '',
+                schemaVersion: 2,
+                tasks: [],
+                updateTime: 0,
+              });
+              setShouldCreateWorkflow(false);
+            }}
+            canEditName
+            isCreatingWorkflow
+          />
+        </Box>
+      </Container>
     );
   }
 
   return workflow != null && workflows != null && taskDefinitions != null ? (
-    <ChakraProvider theme={theme}>
-      <TaskActionsProvider>
-        <App
-          key={`${name}/${version}/${workflow.name}`}
-          workflow={workflow}
-          onWorkflowChange={handleWorkflowChange}
-          workflows={workflows}
-          taskDefinitions={taskDefinitions}
-          onFileImport={handleFileImport}
-          onFileExport={handleFileExport}
-          onWorkflowDelete={handleWorkflowDelete}
-          onWorkflowClone={handleWorkflowClone}
-        />
-      </TaskActionsProvider>
-    </ChakraProvider>
+    <TaskActionsProvider>
+      <App
+        key={`${name}/${version}/${workflow.name}`}
+        workflow={workflow}
+        onWorkflowChange={handleWorkflowChange}
+        workflows={workflows}
+        taskDefinitions={taskDefinitions}
+        onFileImport={handleFileImport}
+        onFileExport={handleFileExport}
+        onWorkflowDelete={handleWorkflowDelete}
+        onWorkflowClone={handleWorkflowClone}
+      />
+    </TaskActionsProvider>
   ) : null;
 };
 
