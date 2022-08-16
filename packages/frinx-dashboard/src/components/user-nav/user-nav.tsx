@@ -13,9 +13,9 @@ import {
   Text,
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
+import FeatherIcon from 'feather-icons-react';
 import { authContext } from '../../auth-helpers';
 import useAuth from '../../use-auth';
-import FeatherIcon from 'feather-icons-react';
 
 const UserNav: FC = () => {
   const { inProgress, login, logout } = useAuth();
