@@ -1,11 +1,11 @@
 import moment from 'moment';
 import React, { FC, Fragment, useEffect, useState } from 'react';
-import { Tr, Td, Checkbox } from '@chakra-ui/react';
+import { Tr, Td, Checkbox, Icon } from '@chakra-ui/react';
 import { ExecutedWorkflow, ExecutedWorkflows, ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link } from 'react-router-dom';
-import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import ExecutedSubWorkflowTable from './executed-subworkflow-table';
+import FeatherIcon from 'feather-icons-react';
 
 type Props = {
   workflows: ExecutedWorkflows;
@@ -79,9 +79,9 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, selectWf,
               title={item.workflowType}
             >
               {item.isExpanded ? (
-                <ChevronUpIcon w="6" h="6" paddingRight={2} />
+                <Icon as={FeatherIcon} icon="chevron-up" size={20} w="6" h="6" paddingRight={2} />
               ) : (
-                <ChevronDownIcon w="6" h="6" paddingRight={2} />
+                <Icon as={FeatherIcon} icon="chevron-down" size={20} w="6" h="6" paddingRight={2} />
               )}
               <Link to={`../executed/${item.workflowId}`}>{item.workflowType}</Link>
             </Td>
