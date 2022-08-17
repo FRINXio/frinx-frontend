@@ -18,15 +18,27 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from '@chakra-ui/react';
-import { useFormik } from 'formik';
+import { FormikErrors, useFormik } from 'formik';
 import React, { FC } from 'react';
 import * as yup from 'yup';
+import { AlternativeIdValue } from '../../../hooks/use-resource-pool-actions';
+import AlternativeIdForm, { ValidationSchema as AlternativeIdSchema } from './alternative-id-form';
 
 type Props = {
   poolName: string;
   isOpen: boolean;
   onClose: () => void;
-  onClaim: (description: string, userInput?: Record<string, number | string>) => void;
+  // onClaim: (description: string, userInput?: Record<string, number | string>) => void;
+  onClaimWithAltId: (
+    alternativeId: Record<string, AlternativeIdValue>,
+    description: string,
+    userInput?: Record<string, number | string>,
+  ) => void;
+};
+
+type AlternativeId = {
+  key: string;
+  value: string[];
 };
 
 type FormValues = {
@@ -36,6 +48,7 @@ type FormValues = {
     as?: number;
     ipv4?: string;
   };
+  alternativeIds: AlternativeId[];
 };
 
 const IPV4_REGEX = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
@@ -50,25 +63,52 @@ const validationSchema = yup.object().shape({
       .matches(IPV4_REGEX, { message: 'Please enter a valid IPv4 address' })
       .required('Please enter a IPv4 address'),
   }),
+  alternativeIds: AlternativeIdSchema,
 });
 
-const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaim, onClose, isOpen }) => {
+const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaimWithAltId, onClose, isOpen }) => {
   const { values, handleChange, handleSubmit, submitForm, isSubmitting, errors, resetForm, setFieldValue } =
     useFormik<FormValues>({
       initialValues: {
         description: '',
         userInput: {},
+        alternativeIds: [],
       },
       onSubmit: (formValues) => {
-        onClaim(formValues.description, values.userInput);
+        const { alternativeIds: formAlternativeIds, description, userInput } = formValues;
+        const alternativeIdObject: Record<string, string | string[]> = {};
+
+        formAlternativeIds.forEach(({ key, value }) => {
+          if (value.length > 1) {
+            alternativeIdObject[key] = value;
+          }
+          const [v] = value;
+          alternativeIdObject[key] = v;
+        });
+
+        onClaimWithAltId(alternativeIdObject, description, userInput);
         onClose();
         resetForm();
       },
       validationSchema,
     });
 
+  const handleAlternativeIdsChange = (changedAlternativeIds: AlternativeId[]) => {
+    setFieldValue('alternativeIds', changedAlternativeIds);
+  };
+  type FormErrors = typeof errors & FormikErrors<{ duplicateAlternativeIds?: string }>;
+  const formErrors: FormErrors = errors;
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        onClose();
+        resetForm();
+      }}
+      isCentered
+      size="xl"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Claim resource for {poolName}</ModalHeader>
@@ -81,7 +121,9 @@ const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaim, on
                 <NumberInput
                   id="assignedNumber"
                   value={values.userInput.assignedNumber}
-                  onChange={(value) => setFieldValue('userInput', { ...values.userInput, assignedNumber: value })}
+                  onChange={(_: string, value: number) =>
+                    setFieldValue('userInput', { ...values.userInput, assignedNumber: value })
+                  }
                   name="userInput.assignedNumber"
                 >
                   <NumberInputField placeholder="Enter a number" />
@@ -98,7 +140,9 @@ const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaim, on
                 <NumberInput
                   id="as"
                   value={values.userInput.as}
-                  onChange={(value) => setFieldValue('userInput', { ...values.userInput, as: value })}
+                  onChange={(_: string, value: number) =>
+                    setFieldValue('userInput', { ...values.userInput, as: value })
+                  }
                   name="userInput.as"
                 >
                   <NumberInputField placeholder="Enter a number" />
@@ -133,6 +177,13 @@ const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaim, on
                 />
                 <FormErrorMessage>{errors.description}</FormErrorMessage>
               </FormControl>
+
+              <AlternativeIdForm
+                alternativeIds={values.alternativeIds}
+                errors={errors.alternativeIds as FormikErrors<AlternativeId>[]}
+                duplicateError={formErrors.duplicateAlternativeIds}
+                onChange={handleAlternativeIdsChange}
+              />
             </fieldset>
           </form>
         </ModalBody>

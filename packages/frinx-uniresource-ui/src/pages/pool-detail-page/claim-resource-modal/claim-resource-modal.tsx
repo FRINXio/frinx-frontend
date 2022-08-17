@@ -24,9 +24,7 @@ import React, { FC } from 'react';
 import * as yup from 'yup';
 import ipaddr from 'ipaddr.js';
 import { AlternativeIdValue } from '../../../hooks/use-resource-pool-actions';
-import AlternativeIdForm, {
-  ValidationSchema as AlternativeIdSchema,
-} from './claim-resource-allocating-modals/alternative-id-form';
+import AlternativeIdForm, { ValidationSchema as AlternativeIdSchema } from './alternative-id-form';
 
 type Props = {
   poolName: string;
@@ -112,13 +110,12 @@ const ClaimResourceModal: FC<Props> = ({
 }) => {
   const shouldBeDesiredSize =
     resourceTypeName === 'vlan_range' || resourceTypeName === 'ipv4_prefix' || resourceTypeName === 'ipv6_prefix';
-  const alternativeIds: AlternativeId[] = [];
   const { values, handleChange, handleSubmit, submitForm, isSubmitting, errors, setFieldValue } = useFormik<FormValues>(
     {
       initialValues: {
         description: '',
         userInput: '',
-        alternativeIds,
+        alternativeIds: [],
       },
       onSubmit: (formValues) => {
         let userInput = {};
@@ -178,7 +175,7 @@ const ClaimResourceModal: FC<Props> = ({
                   <FormLabel>Desired size (number of allocated addresses)</FormLabel>
                   <NumberInput
                     value={values.userInput}
-                    onChange={(_, value) => setFieldValue('userInput', value)}
+                    onChange={(_: string, value: number) => setFieldValue('userInput', value)}
                     name="userInput"
                   >
                     <NumberInputField placeholder="254" />
@@ -201,7 +198,7 @@ const ClaimResourceModal: FC<Props> = ({
                         value={values.userInput}
                         id="desiredValue"
                         name="userInput"
-                        onChange={(_, value) => setFieldValue('userInput', value)}
+                        onChange={(_: string, value: number) => setFieldValue('userInput', value)}
                       >
                         <NumberInputField
                           placeholder={`Set specific value that you want to allocate from ${poolName}`}

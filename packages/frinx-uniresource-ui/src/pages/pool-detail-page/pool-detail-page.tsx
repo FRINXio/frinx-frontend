@@ -82,13 +82,12 @@ const PoolDetailPage: VoidFunctionComponent = () => {
       <ClaimRouteDistinguisherResourceModal
         isOpen={claimRouteDistinguisherResourceModal.isOpen}
         onClose={claimRouteDistinguisherResourceModal.onClose}
-        onClaim={claimPoolResource}
         poolName={resourcePool.Name}
+        onClaimWithAltId={claimPoolResourceWithAltId}
       />
       <ClaimResourceModal
         isOpen={claimResourceModal.isOpen}
         onClose={claimResourceModal.onClose}
-        onClaim={claimPoolResource}
         onClaimWithAltId={claimPoolResourceWithAltId}
         poolName={resourcePool.Name}
         resourceTypeName={resourcePool.ResourceType.Name}
