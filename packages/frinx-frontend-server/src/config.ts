@@ -60,6 +60,7 @@ const config = {
   uniflowApiDocsURL: envString('UNIFLOW_API_DOCS_URL'),
   MSALAuthority: envString('MSAL_AUTHORITY'),
   isGammaEnabled: stringToBoolean(envString('GAMMA_ENABLED')),
+  isDeviceTopologyEnabled: stringToBoolean(envString('DEVICE_TOPOLOGY_ENABLED')),
   commitHash: envString('COMMIT_HASH'),
 };
 /* eslint-enable */

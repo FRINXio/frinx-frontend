@@ -27,8 +27,6 @@ import {
   Tr,
   useDisclosure,
 } from '@chakra-ui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
 import DefinitionModal from '@frinx/workflow-ui/src/common/modals/definition-modal';
 import DependencyModal from '@frinx/workflow-ui/src/common/modals/dependency-modal';
@@ -44,6 +42,7 @@ import WorkflowActions from './workflow-actions';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/helpers/types';
+import FeatherIcon from 'feather-icons-react';
 import { useNotifications } from '@frinx/shared/src';
 
 const getLabels = (dataset: Workflow[]) => {
@@ -244,7 +243,7 @@ const WorkflowDefinitions = () => {
           </ModalBody>
           <ModalFooter>
             <Button marginRight={4} colorScheme="red" onClick={() => deleteWorkflow(activeWf!)}>
-              <Icon as={FontAwesomeIcon} icon={faTrash} />
+              <Icon size={20} as={FeatherIcon} icon="trash-2" />
               &nbsp;&nbsp;Delete
             </Button>
             <Button colorScheme="gray" onClick={() => showConfirmDeleteModal(activeWf!)}>

@@ -36,7 +36,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
       resourceTypes: { fetching: isLoadingResourceTypes },
       paginationArgs,
     },
-    { claimPoolResource, freePoolResource, deleteResourcePool, nextPage, previousPage },
+    { claimPoolResource, freePoolResource, deleteResourcePool, nextPage, previousPage, claimPoolResourceWithAltId },
   ] = useResourcePoolActions({ poolId });
 
   if (poolId == null) {
@@ -89,6 +89,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         isOpen={claimResourceModal.isOpen}
         onClose={claimResourceModal.onClose}
         onClaim={claimPoolResource}
+        onClaimWithAltId={claimPoolResourceWithAltId}
         poolName={resourcePool.Name}
         resourceTypeName={resourcePool.ResourceType.Name}
         totalCapacity={totalCapacity}

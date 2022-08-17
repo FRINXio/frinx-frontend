@@ -6,6 +6,7 @@ import ToastNotification from './components/toast-notification/toast-notificatio
 import Editor from './components/editor/editor';
 import SearchByTagInput from './components/search-by-tag/search-by-tag-input';
 import SearchByTag from './components/search-by-tag/search-by-tag';
+import LabelsInput from './components/labels-input/labels-input';
 
 export {
   useAsyncGenerator,
@@ -16,6 +17,7 @@ export {
   Editor,
   SearchByTagInput,
   SearchByTag,
+  LabelsInput,
   omitMaybeType,
   omitNullValue,
   unwrap,

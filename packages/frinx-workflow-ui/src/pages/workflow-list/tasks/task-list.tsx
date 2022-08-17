@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import MiniSearch, { SearchResult } from 'minisearch';
 import { throttle } from 'lodash';
 import { Button, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import AddTaskModal from './add-task-modal';
 import PageContainer from '@frinx/workflow-ui/src/common/PageContainer';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
@@ -13,6 +11,7 @@ import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import TaskTable from './task-table';
 import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
 import TaskConfigModal from './task-modal';
+import FeatherIcon from 'feather-icons-react';
 
 function getFilteredResults<T extends { name: string }>(searchResult: SearchResult[], defs: T[]): T[] {
   const resultIds = searchResult.map((r) => r.id);
@@ -105,7 +104,7 @@ const TaskList = () => {
       <Flex marginBottom={8}>
         <InputGroup>
           <InputLeftElement>
-            <Icon as={FontAwesomeIcon} icon={faSearch} color="grey" />
+            <Icon size={20} as={FeatherIcon} icon="Search" color="grey" />
           </InputLeftElement>
           <Input
             value={searchTerm}

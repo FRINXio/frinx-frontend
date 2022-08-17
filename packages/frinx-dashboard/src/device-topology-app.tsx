@@ -2,12 +2,12 @@ import { InventoryApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
 
-type InventoryComponents = typeof import('@frinx/inventory-client/src');
-const InventoryApp: FC = () => {
-  const [components, setComponents] = useState<InventoryComponents | null>(null);
+type DeviceTopologyComponents = typeof import('@frinxio/device-topology/src');
+const DeviceTopologyApp: FC = () => {
+  const [components, setComponents] = useState<DeviceTopologyComponents | null>(null);
 
   useEffect(() => {
-    import('@frinx/inventory-client/src').then((mod) => {
+    import('@frinxio/device-topology/src').then((mod) => {
       setComponents(mod);
     });
   }, []);
@@ -16,7 +16,7 @@ const InventoryApp: FC = () => {
     return null;
   }
 
-  const { InventoryAPIProvider, InventoryApp: App } = components;
+  const { InventoryAPIProvider, DeviceTopologyApp: App } = components;
 
   return (
     <InventoryAPIProvider client={InventoryApi.create({ url: window.__CONFIG__.inventoryApiURL, authContext }).client}>
@@ -25,4 +25,4 @@ const InventoryApp: FC = () => {
   );
 };
 
-export default InventoryApp;
+export default DeviceTopologyApp;

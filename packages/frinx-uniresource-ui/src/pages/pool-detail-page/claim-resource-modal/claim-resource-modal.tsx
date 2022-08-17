@@ -19,10 +19,14 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from '@chakra-ui/react';
-import { useFormik } from 'formik';
+import { FormikErrors, useFormik } from 'formik';
 import React, { FC } from 'react';
 import * as yup from 'yup';
 import ipaddr from 'ipaddr.js';
+import { AlternativeIdValue } from '../../../hooks/use-resource-pool-actions';
+import AlternativeIdForm, {
+  ValidationSchema as AlternativeIdSchema,
+} from './claim-resource-allocating-modals/alternative-id-form';
 
 type Props = {
   poolName: string;
@@ -31,12 +35,23 @@ type Props = {
   totalCapacity: bigint;
   poolProperties: Record<string, string>;
   onClose: () => void;
-  onClaim: (description: string, userInput?: Record<string, number | string>) => void;
+  // onClaim: (description: string, userInput?: Record<string, number | string>) => void;
+  onClaimWithAltId: (
+    alternativeId: Record<string, AlternativeIdValue>,
+    description: string,
+    userInput?: Record<string, number | string>,
+  ) => void;
+};
+
+type AlternativeId = {
+  key: string;
+  value: string[];
 };
 
 type FormValues = {
   description: string;
   userInput: string | number;
+  alternativeIds: AlternativeId[];
 };
 
 const IPV4_REGEX = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
@@ -82,25 +97,28 @@ const validationSchema = (resourceTypeName: string) => {
   return yup.object().shape({
     description: yup.string().notRequired(),
     userInput: userInputSchema || yup.number().typeError('Please enter a number').notRequired(),
+    alternativeIds: AlternativeIdSchema,
   });
 };
 
 const ClaimResourceModal: FC<Props> = ({
   poolName,
-  onClaim,
   onClose,
   isOpen,
   resourceTypeName,
   totalCapacity,
   poolProperties,
+  onClaimWithAltId,
 }) => {
   const shouldBeDesiredSize =
     resourceTypeName === 'vlan_range' || resourceTypeName === 'ipv4_prefix' || resourceTypeName === 'ipv6_prefix';
+  const alternativeIds: AlternativeId[] = [];
   const { values, handleChange, handleSubmit, submitForm, isSubmitting, errors, setFieldValue } = useFormik<FormValues>(
     {
       initialValues: {
         description: '',
         userInput: '',
+        alternativeIds,
       },
       onSubmit: (formValues) => {
         let userInput = {};
@@ -116,16 +134,35 @@ const ClaimResourceModal: FC<Props> = ({
             desiredValue: formValues.userInput,
           };
         }
-        onClaim(formValues.description, userInput);
+
+        const { alternativeIds: formAlternativeIds, description } = formValues;
+        const alternativeIdObject: Record<string, string | string[]> = {};
+
+        formAlternativeIds.forEach(({ key, value }) => {
+          if (value.length > 1) {
+            alternativeIdObject[key] = value;
+          }
+          const [v] = value;
+          alternativeIdObject[key] = v;
+        });
+
+        onClaimWithAltId(alternativeIdObject, description, userInput);
         onClose();
       },
       validationSchema: validationSchema(resourceTypeName),
     },
   );
 
+  const handleAlternativeIdsChange = (changedAlternativeIds: AlternativeId[]) => {
+    setFieldValue('alternativeIds', changedAlternativeIds);
+  };
+
   const canShowDesiredValueInput =
     shouldBeDesiredSize || (resourceTypeName !== 'unique_id' && resourceTypeName !== 'random_signed_int32');
   const shouldBeNumber = resourceTypeName === 'vlan';
+
+  type FormErrors = typeof errors & FormikErrors<{ duplicateAlternativeIds?: string }>;
+  const formErrors: FormErrors = errors;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl">
@@ -141,7 +178,7 @@ const ClaimResourceModal: FC<Props> = ({
                   <FormLabel>Desired size (number of allocated addresses)</FormLabel>
                   <NumberInput
                     value={values.userInput}
-                    onChange={(value) => setFieldValue('userInput', value)}
+                    onChange={(_, value) => setFieldValue('userInput', value)}
                     name="userInput"
                   >
                     <NumberInputField placeholder="254" />
@@ -164,7 +201,7 @@ const ClaimResourceModal: FC<Props> = ({
                         value={values.userInput}
                         id="desiredValue"
                         name="userInput"
-                        onChange={(value) => setFieldValue('userInput', value)}
+                        onChange={(_, value) => setFieldValue('userInput', value)}
                       >
                         <NumberInputField
                           placeholder={`Set specific value that you want to allocate from ${poolName}`}
@@ -200,6 +237,13 @@ const ClaimResourceModal: FC<Props> = ({
                 />
                 <FormErrorMessage>{errors.description}</FormErrorMessage>
               </FormControl>
+
+              <AlternativeIdForm
+                alternativeIds={values.alternativeIds}
+                errors={errors.alternativeIds as FormikErrors<AlternativeId>[]}
+                duplicateError={formErrors.duplicateAlternativeIds}
+                onChange={handleAlternativeIdsChange}
+              />
             </fieldset>
           </form>
         </ModalBody>

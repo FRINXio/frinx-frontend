@@ -4,12 +4,11 @@ import Paginator from '../../../common/pagination';
 import React, { useEffect, useState } from 'react';
 import callbackUtils from '../../../utils/callback-utils';
 import moment from 'moment';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Icon, Input, InputGroup, InputLeftElement, Table, Tbody, Td, Tfoot, Th, Thead, Tr } from '@chakra-ui/react';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { sortAscBy, sortDescBy } from '../workflowUtils';
 import { usePagination } from '../../../common/pagination-hook';
 import { Queue } from '../../../helpers/uniflow-types';
+import FeatherIcon from 'feather-icons-react';
 
 function filterBySearchKeyword(queue: Queue, keyword: string): boolean {
   const query = keyword.toUpperCase();
@@ -102,7 +101,7 @@ const PollData = () => {
     <PageContainer>
       <InputGroup marginBottom={8}>
         <InputLeftElement>
-          <Icon as={FontAwesomeIcon} icon={faSearch} color="grey" />
+          <Icon size={20} as={FeatherIcon} icon="search" color="grey" />
         </InputLeftElement>
         <Input
           value={keywords}

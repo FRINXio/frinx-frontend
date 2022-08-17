@@ -19,6 +19,7 @@ declare interface Window {
     isUniflowEnabled: boolean;
     isInventoryEnabled: boolean;
     isGammaEnabled: boolean;
+    isDeviceTopologyEnabled: boolean;
     URLBasename: string;
     inventoryApiURL: string;
     uniresourceApiURL: string;

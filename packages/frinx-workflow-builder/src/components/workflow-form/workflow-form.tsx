@@ -16,9 +16,9 @@ import {
 } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import { omitBy } from 'lodash';
+import { LabelsInput } from '@frinx/shared/src';
 import { Workflow } from '../../helpers/types';
 import { isWorkflowNameAvailable } from '../../helpers/workflow.helpers';
-import LabelsInput from './labels-input';
 import { parseDescription, parseLabels } from '../left-menu/left-menu.helpers';
 
 type Description = {
@@ -111,7 +111,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
       </FormControl>
       <FormControl id="label" my={6}>
         <FormLabel>Label</FormLabel>
-        <LabelsInput labels={labels} onChange={handleLabelsChange} />
+        <LabelsInput labels={labels} onChange={handleLabelsChange} placeholder="Add Labels (press Enter to add)" />
       </FormControl>
       <FormControl id="version" my={6}>
         <FormLabel>Version</FormLabel>
