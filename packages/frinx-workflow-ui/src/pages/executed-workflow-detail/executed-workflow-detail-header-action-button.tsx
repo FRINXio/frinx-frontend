@@ -24,7 +24,6 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
     const result = await terminateWorkflows([workflowId]);
     onWorkflowActionExecution(workflowId);
   };
-  console.log(visibleRestartButton);
   const pauseWorkflows = () => {
     const { pauseWorkflows } = callbackUtils.getCallbacks;
 
