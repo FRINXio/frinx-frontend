@@ -16,6 +16,7 @@
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
+import DeletePoolPopover from '../../components/delete-pool-popover';
 import { GetPoolsQuery, PoolCapacityPayload, Tag as TagType } from '../../__generated__/graphql';
 
 type Props = {
@@ -119,22 +120,20 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                         as={Link}
                         to={`../pools/${pool.id}`}
                       />
-                      <IconButton
-                        variant="outline"
-                        size="xs"
-                        colorScheme="red"
-                        aria-label="delete"
-                        icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
-                        onClick={() => {
-                          onDeleteBtnClick(pool.id);
-                        }}
-                        isDisabled={BigInt(pool.Capacity?.freeCapacity ?? 0n) !== totalCapacity}
-                        title={
-                          BigInt(pool.Capacity?.freeCapacity ?? 0n) !== totalCapacity
-                            ? 'Cannot delete pool until you delete all allocated resources'
-                            : ''
-                        }
-                      />
+                      <DeletePoolPopover
+                        onDelete={() => onDeleteBtnClick(pool.id)}
+                        canDeletePool={pool.Resources.length === 0}
+                      >
+                        <IconButton
+                          variant="outline"
+                          size="xs"
+                          colorScheme="red"
+                          aria-label="delete"
+                          icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
+                          isDisabled={pool.Resources.length > 0}
+                          title="Delete pool"
+                        />
+                      </DeletePoolPopover>
                     </HStack>
                   </Td>
                 </Tr>

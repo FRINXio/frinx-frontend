@@ -1,27 +1,8 @@
-import {
-  Box,
-  Button,
-  Divider,
-  Heading,
-  HStack,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverFooter,
-  PopoverHeader,
-  PopoverTrigger,
-  Portal,
-  Progress,
-  Spacer,
-  Text,
-  Tooltip,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Box, Button, Divider, Heading, HStack, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
 import { omitNullValue } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import DeletePoolPopover from '../../components/delete-pool-popover';
 import PageContainer from '../../components/page-container';
 import useResourcePoolActions from '../../hooks/use-resource-pool-actions';
 import { GetPoolsQuery, PoolCapacityPayload } from '../../__generated__/graphql';
@@ -196,36 +177,14 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         <Text size="sm" textColor="gray.400">
           <strong>Warning:</strong> By deleting this pool, all data will be lost.
         </Text>
-        {canDeletePool ? (
-          <Popover placement="right">
-            <PopoverTrigger>
-              <Button mt={5} variant="outline" colorScheme="red">
-                Delete resource pool
-              </Button>
-            </PopoverTrigger>
-            <Portal>
-              <PopoverContent>
-                <PopoverArrow />
-                <PopoverHeader>Are you sure you want to delete this pool?</PopoverHeader>
-                <PopoverCloseButton />
-                <PopoverBody mx="auto">
-                  <Button
-                    colorScheme="red"
-                    onClick={() => deleteResourcePool(poolId, { redirectOnSuccess: '/uniresource/pools' })}
-                  >
-                    Yes, delete this resource pool
-                  </Button>
-                </PopoverBody>
-              </PopoverContent>
-            </Portal>
-          </Popover>
-        ) : (
-          <Tooltip label="Firstly you need to delete all allocated resources" shouldWrapChildren>
-            <Button mt={5} variant="outline" colorScheme="red" isDisabled>
-              Delete resource pool
-            </Button>
-          </Tooltip>
-        )}
+        <DeletePoolPopover
+          onDelete={() => deleteResourcePool(poolId, { redirectOnSuccess: '/uniresource/pools' })}
+          canDeletePool={canDeletePool}
+        >
+          <Button mt={5} variant="outline" colorScheme="red" isDisabled={!canDeletePool}>
+            Delete resource pool
+          </Button>
+        </DeletePoolPopover>
       </Box>
     </PageContainer>
   );

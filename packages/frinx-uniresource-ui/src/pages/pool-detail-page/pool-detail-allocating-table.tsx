@@ -1,4 +1,3 @@
-import { InfoIcon } from '@chakra-ui/icons';
 import { Table, Thead, Tr, Th, Tbody, Td, Button, Tooltip, HStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import Pagination from '../../components/pagination';
@@ -50,7 +49,7 @@ const PoolDetailAllocatingTable: FC<Props> = ({
           {allocatedResources != null && allocatedResources.edges != null && allocatedResources.edges.length > 0 ? (
             allocatedResources.edges.map((node) => {
               const resource = node?.node;
-              const canDeallocatedResource = node?.node.NestedPool != null;
+              const canDeallocateResource = node?.node.NestedPool != null;
 
               return resource != null ? (
                 <Tr key={resource.id}>
@@ -60,19 +59,20 @@ const PoolDetailAllocatingTable: FC<Props> = ({
                   <Td>{resource.Description}</Td>
                   <Td>
                     <HStack>
-                      <Button
-                        title="Deallocate resource"
-                        isDisabled={canDeallocatedResource}
-                        onClick={() => onFreeResource(resource.Properties)}
-                        size="xs"
+                      <Tooltip
+                        label="Firstly you need to delete nested pools attached to this resource"
+                        shouldWrapChildren
+                        isDisabled={!canDeallocateResource}
                       >
-                        Deallocate
-                      </Button>
-                      {canDeallocatedResource && (
-                        <Tooltip label="To deallocated resource, firstly you need to delete nested pools of this resource">
-                          <InfoIcon />
-                        </Tooltip>
-                      )}
+                        <Button
+                          title="Deallocate resource"
+                          isDisabled={canDeallocateResource}
+                          onClick={() => onFreeResource(resource.Properties)}
+                          size="xs"
+                        >
+                          Deallocate
+                        </Button>
+                      </Tooltip>
                     </HStack>
                   </Td>
                 </Tr>
