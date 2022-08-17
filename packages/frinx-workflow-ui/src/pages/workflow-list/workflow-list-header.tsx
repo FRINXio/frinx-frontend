@@ -55,8 +55,9 @@ const WorkflowListHeader = ({ onImportSuccess }: Props) => {
     const { files } = e.currentTarget;
     try {
       const readFiles = await Promise.all(Array.from(compact(files)).map((f) => readFile(f)));
+      const json = readFiles.map((data) => JSON.parse(data));
       const { putWorkflow } = callbackUtils.getCallbacks;
-      await putWorkflow(readFiles);
+      await putWorkflow(json);
       onImportSuccess();
       addToastNotification({
         type: 'success',
@@ -67,6 +68,13 @@ const WorkflowListHeader = ({ onImportSuccess }: Props) => {
         type: 'error',
         content: `Workflow upload error. Check workflow definition and/or syntax.`,
       });
+    } finally {
+      // chrome does not allow to send same file twice (so we nullify it after sending the data)
+      // onchange event occurs when a control loses the input focus
+      // and its value has been modified since gaining focus
+      if (inputRef.current) {
+        inputRef.current.value = '';
+      }
     }
   };
 
