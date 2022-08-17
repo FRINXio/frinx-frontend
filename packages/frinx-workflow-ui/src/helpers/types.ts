@@ -463,7 +463,7 @@ export type WorkflowInstanceDetail = {
     '*': string;
   };
   failedReferenceTaskNames: string[];
-  workflowDefinition: {};
+  workflowDefinition: { restartable: boolean };
   priority: number;
   variables: {};
   lastRetriedTime: number;
