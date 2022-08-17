@@ -349,6 +349,19 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   );
   const availablePoolProperties = getAvailablePoolProperties(resourcePools, parentPoolId, parentResourceId);
   const formattedSuggestedProperties = formatSuggestedProperties(parentResourceTypeName, availablePoolProperties);
+  const canSelectResourceType = (resourceName: string) => {
+    return (
+      resourceName === 'ipv4' ||
+      resourceName === 'ipv4_prefix' ||
+      resourceName === 'ipv6' ||
+      resourceName === 'ipv6_prefix' ||
+      resourceName === 'vlan_range' ||
+      resourceName === 'vlan' ||
+      resourceName === 'route_distinguisher' ||
+      resourceName === 'unique_id' ||
+      resourceName === 'random_signed_int32'
+    );
+  };
 
   const handleOnResourceTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     handleChange(e);
@@ -428,11 +441,13 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
             onChange={handleOnResourceTypeChange}
             placeholder="Select resource type"
           >
-            {[...availableResourceTypes, ...derivedFromAvailableResourceTypes].map((rt) => (
-              <option value={rt.id} key={rt.id}>
-                {rt.Name}
-              </option>
-            ))}
+            {[...availableResourceTypes, ...derivedFromAvailableResourceTypes]
+              .filter((resourceType) => canSelectResourceType(resourceType.Name))
+              .map((rt) => (
+                <option value={rt.id} key={rt.id}>
+                  {rt.Name}
+                </option>
+              ))}
           </Select>
           <FormErrorMessage>{errors.resourceTypeId}</FormErrorMessage>
         </FormControl>
