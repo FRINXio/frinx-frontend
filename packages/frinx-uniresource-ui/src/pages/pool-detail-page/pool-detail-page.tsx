@@ -2,7 +2,7 @@ import { Box, Button, Divider, Heading, HStack, Progress, Spacer, Text, useDiscl
 import { omitNullValue } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import DeletePoolPopover from '../../components/delete-pool-popover';
+import DeletePoolPopover from '../../components/delete-pool-modal';
 import PageContainer from '../../components/page-container';
 import useResourcePoolActions from '../../hooks/use-resource-pool-actions';
 import { GetPoolsQuery, PoolCapacityPayload } from '../../__generated__/graphql';
@@ -180,6 +180,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         <DeletePoolPopover
           onDelete={() => deleteResourcePool(poolId, { redirectOnSuccess: '/uniresource/pools' })}
           canDeletePool={canDeletePool}
+          poolName={resourcePool.Name}
         >
           <Button mt={5} variant="outline" colorScheme="red" isDisabled={!canDeletePool}>
             Delete resource pool

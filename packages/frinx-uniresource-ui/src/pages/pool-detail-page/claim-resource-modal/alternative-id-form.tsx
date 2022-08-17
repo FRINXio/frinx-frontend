@@ -98,7 +98,7 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
         return (
           // eslint-disable-next-line react/no-array-index-key
           <Box key={`alternative-id-${i}`}>
-            <HStack spacing="2" paddingTop="2">
+            <HStack spacing="2" paddingTop="2" align="flex-start">
               <FormControl maxW={150} isInvalid={keyError != null} isRequired>
                 {i === 0 && <FormLabel margin="0">Key:</FormLabel>}
                 <Input value={key} placeholder="Key" onChange={(v) => handleKeyChange(v, i)} />
