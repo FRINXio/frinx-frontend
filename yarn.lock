@@ -2501,7 +2501,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chakra-ui/icons@npm:1.1.7, @chakra-ui/icons@npm:^1.0.3":
+"@chakra-ui/icons@npm:^1.0.3":
   version: 1.1.7
   resolution: "@chakra-ui/icons@npm:1.1.7"
   dependencies:
@@ -3730,7 +3730,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@frinx/shared@workspace:packages/shared"
   dependencies:
-    "@chakra-ui/icons": 1.1.7
     "@chakra-ui/react": 1.8.8
     "@emotion/react": ^11.1.4
     "@emotion/styled": ^11.0.0
@@ -3761,7 +3760,6 @@ __metadata:
     uuid: ^8.3.2
     vitest: 0.14.1
   peerDependencies:
-    "@chakra-ui/icons": 1.1.7
     "@chakra-ui/react": 1.8.8
     "@emotion/react": ^11.1.4
     "@emotion/styled": ^11.0.0
