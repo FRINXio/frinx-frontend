@@ -372,9 +372,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       </FormControl>
       {isNested && (
         <HStack spacing={2} marginY={5}>
-          <FormControl id="parentPoolId" isInvalid={errors.parentPoolId !== undefined}>
-            <FormLabel>Parent pool</FormLabel>
+          <FormControl id="parentPoolId" isInvalid={errors.parentPoolId !== undefined} isRequired>
+            <FormLabel htmlFor="parentPool">Parent pool</FormLabel>
             <Select
+              id="parentPool"
               name="parentPoolId"
               onChange={handleChange}
               value={parentPoolId}
@@ -389,9 +390,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
             <FormErrorMessage>{errors.parentPoolId}</FormErrorMessage>
           </FormControl>
 
-          <FormControl id="parentResourceId" isInvalid={errors.parentResourceId !== undefined}>
-            <FormLabel>Parent allocated resources</FormLabel>
+          <FormControl id="parentResourceId" isInvalid={errors.parentResourceId !== undefined} isRequired>
+            <FormLabel htmlFor="parentResource">Parent allocated resources</FormLabel>
             <Select
+              id="parentResource"
               name="parentResourceId"
               onChange={handleChange}
               value={parentResourceId}
@@ -409,8 +411,9 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       )}
       <HStack spacing={2} marginY={5}>
         <FormControl id="resourceTypeId" isInvalid={errors.resourceTypeId !== undefined} isRequired>
-          <FormLabel>Resource type</FormLabel>
+          <FormLabel htmlFor="resourceType">Resource type</FormLabel>
           <Select
+            id="resourceType"
             name="resourceTypeId"
             value={resourceTypeId}
             onChange={handleOnResourceTypeChange}
@@ -425,15 +428,23 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
           <FormErrorMessage>{errors.resourceTypeId}</FormErrorMessage>
         </FormControl>
         <FormControl id="name" marginY={5} isInvalid={errors.name !== undefined} isRequired>
-          <FormLabel>Name</FormLabel>
-          <Input type="text" onChange={handleChange} name="name" value={values.name} placeholder="Enter name" />
+          <FormLabel htmlFor="poolName">Name</FormLabel>
+          <Input
+            id="poolName"
+            type="text"
+            onChange={handleChange}
+            name="name"
+            value={values.name}
+            placeholder="Enter name"
+          />
           <FormErrorMessage>{errors.name}</FormErrorMessage>
         </FormControl>
       </HStack>
 
       <FormControl id="description">
-        <FormLabel>Descripton</FormLabel>
+        <FormLabel htmlFor="descriptionField">Descripton</FormLabel>
         <Textarea
+          id="descriptionField"
           onChange={handleChange}
           name="description"
           value={values.description}
@@ -506,8 +517,8 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
         <Box>
           <HStack>
             <FormControl id="poolType">
-              <FormLabel>Pool type</FormLabel>
-              <Select name="poolType" value={poolType} onChange={handleChange}>
+              <FormLabel htmlFor="poolTypeName">Pool type</FormLabel>
+              <Select id="poolTypeName" name="poolType" value={poolType} onChange={handleChange}>
                 {['set', 'allocating', 'singleton'].map((o) => (
                   <option value={o} key={o}>
                     {o}
@@ -517,8 +528,9 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
             </FormControl>
             {values.poolType !== 'singleton' && (
               <FormControl id="dealocationSafetyPeriod" isInvalid={errors.dealocationSafetyPeriod !== undefined}>
-                <FormLabel>Dealocation safety period</FormLabel>
+                <FormLabel htmlFor="dealocationPeriod">Dealocation safety period</FormLabel>
                 <Input
+                  id="dealocationPeriod"
                   type="text"
                   onChange={handleChange}
                   name="dealocationSafetyPeriod"

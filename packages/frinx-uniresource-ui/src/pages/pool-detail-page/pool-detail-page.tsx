@@ -1,4 +1,24 @@
-import { Box, Button, Heading, HStack, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Divider,
+  Heading,
+  HStack,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverFooter,
+  PopoverHeader,
+  PopoverTrigger,
+  Portal,
+  Progress,
+  Spacer,
+  Text,
+  Tooltip,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { omitNullValue } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -74,8 +94,8 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     resourcePool.ResourceType.Name === 'vlan_range' ||
     resourcePool.ResourceType.Name === 'route_distinguisher';
   const canCreateNestedPool = resourcePool.Resources.some((resource) => resource.NestedPool == null) && isPrefixOrRange;
-
   const isAllocating = resourcePool.PoolType === 'allocating';
+  const canDeletePool = resourcePool.Resources.length === 0;
 
   return (
     <PageContainer>
@@ -164,6 +184,49 @@ const PoolDetailPage: VoidFunctionComponent = () => {
       ) : (
         <Box textAlign="center">This pool cannot have nested pools</Box>
       )}
+
+      <Box my={5} border="1px" borderColor="gray.300" borderRadius="md" bgColor="white" padding={5}>
+        <Heading textColor="red.500" size="md">
+          Danger zone
+        </Heading>
+        <Text size="xs" textColor="gray.400">
+          Delete resource pool
+        </Text>
+        <Divider my={3} />
+        <Text size="sm" textColor="gray.400">
+          <strong>Warning:</strong> By deleting this pool, all data will be lost.
+        </Text>
+        {canDeletePool ? (
+          <Popover placement="right">
+            <PopoverTrigger>
+              <Button mt={5} variant="outline" colorScheme="red">
+                Delete resource pool
+              </Button>
+            </PopoverTrigger>
+            <Portal>
+              <PopoverContent>
+                <PopoverArrow />
+                <PopoverHeader>Are you sure you want to delete this pool?</PopoverHeader>
+                <PopoverCloseButton />
+                <PopoverBody mx="auto">
+                  <Button
+                    colorScheme="red"
+                    onClick={() => deleteResourcePool(poolId, { redirectOnSuccess: '/uniresource/pools' })}
+                  >
+                    Yes, delete this resource pool
+                  </Button>
+                </PopoverBody>
+              </PopoverContent>
+            </Portal>
+          </Popover>
+        ) : (
+          <Tooltip label="Firstly you need to delete all allocated resources" shouldWrapChildren>
+            <Button mt={5} variant="outline" colorScheme="red" isDisabled>
+              Delete resource pool
+            </Button>
+          </Tooltip>
+        )}
+      </Box>
     </PageContainer>
   );
 };

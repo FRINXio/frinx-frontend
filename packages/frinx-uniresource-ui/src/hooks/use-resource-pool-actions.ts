@@ -1,5 +1,6 @@
 import { useNotifications, unwrap } from '@frinx/shared/src';
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { gql, useMutation, useQuery, UseQueryState } from 'urql';
 import {
   ClaimResourceMutation,
@@ -57,7 +58,7 @@ export type ResourcePoolActionHandlers = {
     userInput?: Record<string, string | number>,
   ) => void;
   freePoolResource: (userInput: Record<string, string | number>) => void;
-  deleteResourcePool: (id: string) => void;
+  deleteResourcePool: (id: string, options?: { redirectOnSuccess?: string; redirectOnError?: string }) => void;
 } & CallbackFunctions;
 
 const POOL_DETAIL_QUERY = gql`
@@ -211,6 +212,7 @@ const useResourcePoolActions = ({
   const { addToastNotification } = useNotifications();
   const mutationResourcesContext = useMemo(() => ({ additionalTypenames: ['Resource', 'ResourcePool'] }), []);
   const allocatedResourcesContext = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
+  const navigate = useNavigate();
 
   const [poolDetail] = useQuery<GetPoolDetailQuery, GetPoolDetailQueryVariables>({
     query: POOL_DETAIL_QUERY,
@@ -330,8 +332,32 @@ const useResourcePoolActions = ({
           });
       },
 
-      deleteResourcePool: (id: string) => {
-        deletePool({ input: { resourcePoolId: id } }, mutationResourcesContext);
+      deleteResourcePool: (id: string, options?: { redirectOnSuccess?: string; redirectOnError?: string }) => {
+        deletePool({ input: { resourcePoolId: id } }, mutationResourcesContext)
+          .then(({ error }) => {
+            if (error) {
+              throw error;
+            }
+
+            addToastNotification({
+              type: 'success',
+              content: 'Successfully deleted resource pool',
+            });
+
+            if (options?.redirectOnSuccess) {
+              navigate(options.redirectOnSuccess);
+            }
+          })
+          .catch((error) => {
+            addToastNotification({
+              type: 'error',
+              content: error.message || 'There was a problem with deleting resource pool',
+            });
+
+            if (options?.redirectOnError) {
+              navigate(options.redirectOnError);
+            }
+          });
       },
     }),
     [
@@ -343,6 +369,7 @@ const useResourcePoolActions = ({
       mutationResourcesContext,
       deletePool,
       reloadAllocatedResources,
+      navigate,
     ],
   );
 
