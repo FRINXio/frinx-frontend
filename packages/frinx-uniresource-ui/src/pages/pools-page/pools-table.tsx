@@ -17,7 +17,8 @@ import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import DeletePoolPopover from '../../components/delete-pool-modal';
-import { GetPoolsQuery, PoolCapacityPayload, Tag as TagType } from '../../__generated__/graphql';
+import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
+import { GetPoolsQuery, Tag as TagType } from '../../__generated__/graphql';
 
 type Props = {
   pools: GetPoolsQuery['QueryRootResourcePools'];
@@ -26,13 +27,6 @@ type Props = {
   onDeleteBtnClick: (id: string) => void;
   onTagClick?: (tag: string) => void;
 };
-
-function getTotalCapacity(capacity: PoolCapacityPayload | null): bigint {
-  if (capacity == null) {
-    return 0n;
-  }
-  return BigInt(capacity.freeCapacity) + BigInt(capacity.utilizedCapacity);
-}
 
 const PoolsTable: VoidFunctionComponent<Props> = ({
   pools,

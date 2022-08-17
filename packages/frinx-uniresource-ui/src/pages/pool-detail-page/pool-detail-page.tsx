@@ -4,8 +4,9 @@ import React, { VoidFunctionComponent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import DeletePoolPopover from '../../components/delete-pool-modal';
 import PageContainer from '../../components/page-container';
+import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
 import useResourcePoolActions from '../../hooks/use-resource-pool-actions';
-import { GetPoolsQuery, PoolCapacityPayload } from '../../__generated__/graphql';
+import { GetPoolsQuery } from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
 import ClaimRouteDistinguisherResourceModal from './claim-resource-modal/claim-route_distinguisher-resource-modal';
@@ -16,13 +17,6 @@ export type PoolResource = {
   poolProperties: Record<string, string>;
   poolPropertyTypes: Record<string, 'int' | 'string'>;
 };
-
-function getTotalCapacity(capacity: PoolCapacityPayload | null): bigint {
-  if (capacity == null) {
-    return 0n;
-  }
-  return BigInt(capacity.freeCapacity) + BigInt(capacity.utilizedCapacity);
-}
 
 const PoolDetailPage: VoidFunctionComponent = () => {
   const { poolId } = useParams<{ poolId: string }>();
