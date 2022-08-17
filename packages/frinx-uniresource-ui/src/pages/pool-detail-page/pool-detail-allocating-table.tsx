@@ -65,12 +65,11 @@ const PoolDetailAllocatingTable: FC<Props> = ({
                         isDisabled={!canDeallocateResource}
                       >
                         <Button
-                          title="Deallocate resource"
                           isDisabled={canDeallocateResource}
                           onClick={() => onFreeResource(resource.Properties)}
                           size="xs"
                         >
-                          Deallocate
+                          Deallocate resource
                         </Button>
                       </Tooltip>
                     </HStack>

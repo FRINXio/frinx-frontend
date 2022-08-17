@@ -131,7 +131,6 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                           aria-label="delete"
                           icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
                           isDisabled={pool.Resources.length > 0}
-                          title="Delete pool"
                         />
                       </DeletePoolPopover>
                     </HStack>

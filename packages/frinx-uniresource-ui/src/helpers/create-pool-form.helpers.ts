@@ -6,7 +6,7 @@ export function getAvailableAllocatedResources(
 ): { Name: string; id: string; parentId: string; hasNestedPools: boolean }[] {
   return pools.flatMap((resourcePool) =>
     resourcePool.Resources.map((resource) => ({
-      Name: `${resource.Description}`,
+      Name: `${resource.Properties[Object.keys(resource.Properties)[0]]}`,
       id: resource.id,
       parentId: resource.ParentPool.id,
       hasNestedPools: resource.NestedPool !== null,

@@ -381,11 +381,20 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
               value={parentPoolId}
               placeholder="Select parent resource type"
             >
-              {pools.map((pool) => (
-                <option value={pool.id} key={pool.id}>
-                  {pool.Name}
-                </option>
-              ))}
+              {pools
+                .filter(
+                  (pool) =>
+                    pool.Resources.length > 0 &&
+                    (pool.ResourceType.Name === 'ipv4_prefix' ||
+                      pool.ResourceType.Name === 'ipv6_prefix' ||
+                      pool.ResourceType.Name === 'vlan_range' ||
+                      pool.ResourceType.Name === 'route_distinguisher'),
+                )
+                .map((pool) => (
+                  <option value={pool.id} key={pool.id}>
+                    {pool.Name}
+                  </option>
+                ))}
             </Select>
             <FormErrorMessage>{errors.parentPoolId}</FormErrorMessage>
           </FormControl>
