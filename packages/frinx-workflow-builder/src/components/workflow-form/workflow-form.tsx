@@ -13,8 +13,9 @@ import {
   IconButton,
   Input,
   Select,
+  Icon,
 } from '@chakra-ui/react';
-import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
+import FeatherIcon from 'feather-icons-react';
 import { omitBy } from 'lodash';
 import { Workflow } from '../../helpers/types';
 import { isWorkflowNameAvailable } from '../../helpers/workflow.helpers';
@@ -204,7 +205,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
               isDisabled={newParam === ''}
               aria-label="add param"
               colorScheme="blue"
-              icon={<AddIcon />}
+              icon={<Icon as={FeatherIcon} icon="plus" size={20} />}
               onClick={() => {
                 setWorkflowState((wf) => ({
                   ...wf,
@@ -243,7 +244,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
               <IconButton
                 aria-label="remove param"
                 colorScheme="red"
-                icon={<DeleteIcon />}
+                icon={<Icon as={FeatherIcon} icon="trash-2" size={20} />}
                 onClick={() => {
                   setWorkflowState((wf) => ({
                     ...wf,
