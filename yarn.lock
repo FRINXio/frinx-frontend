@@ -2501,7 +2501,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chakra-ui/icons@npm:1.1.7, @chakra-ui/icons@npm:^1.0.15, @chakra-ui/icons@npm:^1.0.3":
+"@chakra-ui/icons@npm:^1.0.3":
   version: 1.1.7
   resolution: "@chakra-ui/icons@npm:1.1.7"
   dependencies:
@@ -3730,7 +3730,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@frinx/shared@workspace:packages/shared"
   dependencies:
-    "@chakra-ui/icons": 1.1.7
     "@chakra-ui/react": 1.8.8
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@types/react": 17.0.42
@@ -3988,7 +3987,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@frinxio/device-topology@workspace:packages/frinx-device-topology"
   dependencies:
-    "@chakra-ui/icons": ^1.0.15
     "@chakra-ui/react": ^1.6.7
     "@emotion/react": ^11.1.4
     "@emotion/styled": ^11.0.0
@@ -4026,7 +4024,6 @@ __metadata:
     webpack: 5.73.0
     webpack-cli: 4.9.2
   peerDependencies:
-    "@chakra-ui/icons": ^1.0.15
     "@chakra-ui/react": ^1.6.7
     "@emotion/react": ^11.1.4
     "@emotion/styled": ^11.0.0

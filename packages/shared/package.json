@@ -40,7 +40,6 @@
     "webpack-cli": "4.9.2"
   },
   "dependencies": {
-    "@chakra-ui/icons": "1.1.7",
     "@chakra-ui/react": "1.8.8",
     "chakra-ui-autocomplete": "^1.4.5",
     "feather-icons-react": "0.5.0",

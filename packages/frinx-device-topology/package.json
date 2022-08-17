@@ -20,7 +20,6 @@
     "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist src/index.ts"
   },
   "devDependencies": {
-    "@chakra-ui/icons": "^1.0.15",
     "@chakra-ui/react": "^1.6.7",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
@@ -63,7 +62,6 @@
     "urql": "2.2.3"
   },
   "peerDependencies": {
-    "@chakra-ui/icons": "^1.0.15",
     "@chakra-ui/react": "^1.6.7",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
