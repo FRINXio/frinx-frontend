@@ -1,9 +1,14 @@
 import { Heading, Progress, Text } from '@chakra-ui/react';
-import React, { VoidFunctionComponent } from 'react';
-import { gql, useQuery } from 'urql';
+import React, { useMemo, VoidFunctionComponent } from 'react';
+import { gql, useMutation, useQuery } from 'urql';
 import ipaddr from 'ipaddr.js';
-import { useMinisearch, useTags } from '@frinx/shared/src';
-import { GetIpPoolsQuery, GetIpPoolsQueryVariables } from '../../__generated__/graphql';
+import { useMinisearch, useTags, useNotifications } from '@frinx/shared/src';
+import {
+  DeleteIpPoolMutation,
+  DeleteIpPoolMutationVariables,
+  GetIpPoolsQuery,
+  GetIpPoolsQueryVariables,
+} from '../../__generated__/graphql';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import AggregatesTable from './aggregates-table';
 
@@ -36,13 +41,25 @@ const GET_IP_POOLS = gql`
   }
 `;
 
+const DELETE_POOL_MUTATION = gql`
+  mutation DeleteIpPool($input: DeleteResourcePoolInput!) {
+    DeleteResourcePool(input: $input) {
+      resourcePoolId
+    }
+  }
+`;
+
 const isIpv4 = (name: string) => name === 'ipv4_prefix';
 
 const IpamAggregatesPage: VoidFunctionComponent = () => {
+  const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [{ data: aggregatesQuery, fetching, error }] = useQuery<GetIpPoolsQuery, GetIpPoolsQueryVariables>({
     query: GET_IP_POOLS,
+    context,
   });
+  const [, deletePoolMutation] = useMutation<DeleteIpPoolMutation, DeleteIpPoolMutationVariables>(DELETE_POOL_MUTATION);
 
+  const { addToastNotification } = useNotifications();
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
   const { results, searchText, setSearchText } = useMinisearch({
     items: aggregatesQuery?.QueryRootResourcePools,
@@ -59,6 +76,33 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
   const handleOnClearSearch = () => {
     setSearchText('');
     clearAllTags();
+  };
+
+  const handleOnDeletePool = (poolId: string) => {
+    deletePoolMutation(
+      {
+        input: {
+          resourcePoolId: poolId,
+        },
+      },
+      context,
+    )
+      .then(({ error: deletePoolError }) => {
+        if (deletePoolError) {
+          throw deletePoolError;
+        }
+
+        addToastNotification({
+          content: 'Pool deleted successfully',
+          type: 'success',
+        });
+      })
+      .catch((err) =>
+        addToastNotification({
+          content: err.message,
+          type: 'error',
+        }),
+      );
   };
 
   if (fetching) {
@@ -107,7 +151,11 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
         setSearchText={setSearchText}
         onClearSearch={handleOnClearSearch}
       />
-      <AggregatesTable aggregates={filteredAggregates} onTagClick={handleOnTagClick} />
+      <AggregatesTable
+        aggregates={filteredAggregates}
+        onTagClick={handleOnTagClick}
+        onDeletePoolClick={handleOnDeletePool}
+      />
     </>
   );
 };

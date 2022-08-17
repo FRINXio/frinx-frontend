@@ -1,6 +1,6 @@
 import { HStack, Select, Spacer, Button } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import SearchTags from './search-tags';
+import { SearchByTag } from '@frinx/shared/src';
 import { Searchbar } from './searchbar';
 
 type Props = {
@@ -51,7 +51,7 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
         )}
       </HStack>
       <HStack mb={5}>
-        <SearchTags selectedTags={selectedTags} onTagClick={onTagClick} clearAllTags={clearAllTags} />
+        <SearchByTag selectedTags={selectedTags} onTagClick={onTagClick} clearAllTags={clearAllTags} />
         <Spacer />
         <Button variant="outline" colorScheme="red" onClick={() => onClearSearch && onClearSearch()}>
           Clear all

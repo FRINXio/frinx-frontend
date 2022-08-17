@@ -1,13 +1,13 @@
 import {
   Box,
   Button,
-  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   HStack,
   IconButton,
   Input,
+  Spacer,
   Text,
 } from '@chakra-ui/react';
 import React, { ChangeEvent, VoidFunctionComponent } from 'react';
@@ -34,8 +34,8 @@ yup.addMethod(yup.array, 'unique', function (message, mapper = (a: unknown) => a
 });
 
 const AlternativeIdSchema = yup.object({
-  key: yup.string().required(),
-  value: yup.array().of(yup.string()).min(1),
+  key: yup.string().required('Key is required'),
+  value: yup.array().of(yup.string()).min(1, 'Please enter at least one value'),
 });
 
 export const ValidationSchema = yup
@@ -43,8 +43,8 @@ export const ValidationSchema = yup
   // TODO: check suggested solution https://github.com/jquense/yup/issues/345#issuecomment-634718990
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  .unique('duplicate keys', (a: FormikValues) => a.key)
-  .min(1);
+  .unique('Keys cannot repeat', (a: FormikValues) => a.key)
+  .min(1, 'Please enter at least one alternative ID value');
 
 type AlternativeId = {
   key: string;
@@ -87,9 +87,10 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
     onChange(newValues);
   };
 
+  const canShowErrors = typeof errors === 'string';
+
   return (
     <Box paddingTop="2">
-      <Button onClick={handleAdd}>Add alternative id</Button>
       {alternativeIds.map(({ key, value }, i) => {
         const keyError = errors?.[i]?.key;
         const valueError = errors?.[i]?.value;
@@ -97,35 +98,46 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
         return (
           // eslint-disable-next-line react/no-array-index-key
           <Box key={`alternative-id-${i}`}>
-            {i === 0 && (
-              <Flex paddingTop="2" marginRight="2">
-                <FormLabel w={150} margin="0">
-                  Key:
-                </FormLabel>
-                <FormLabel margin="0">Value:</FormLabel>
-              </Flex>
-            )}
-            <HStack spacing="2" paddingTop="2" alignItems="flex-start">
-              <FormControl maxW={150} isInvalid={keyError != null}>
+            <HStack spacing="2" paddingTop="2" align="flex-start">
+              <FormControl maxW={150} isInvalid={keyError != null} isRequired>
+                {i === 0 && <FormLabel margin="0">Key:</FormLabel>}
                 <Input value={key} placeholder="Key" onChange={(v) => handleKeyChange(v, i)} />
                 <FormErrorMessage>{keyError}</FormErrorMessage>
               </FormControl>
-              <FormControl isInvalid={valueError != null}>
-                <LabelsInput
-                  labels={value}
-                  placeholder="Value (press Enter to add value)"
-                  onChange={(values) => handleValueChange(values, i)}
-                />
+              <FormControl isInvalid={valueError != null} isRequired>
+                {i === 0 && <FormLabel margin="0">Value:</FormLabel>}
+                <HStack>
+                  <LabelsInput
+                    labels={value}
+                    placeholder="Value (press Enter to add value)"
+                    onChange={(values) => handleValueChange(values, i)}
+                  />
+                  <IconButton
+                    icon={<DeleteIcon />}
+                    aria-label="Delete Alternative Id"
+                    onClick={() => handleDelete(i)}
+                  />
+                </HStack>
                 <FormErrorMessage>{valueError}</FormErrorMessage>
               </FormControl>
-              <IconButton icon={<DeleteIcon />} aria-label="Delete Alternative Id" onClick={() => handleDelete(i)} />
             </HStack>
           </Box>
         );
       })}
+      <HStack mt={3}>
+        <Spacer />
+        <Button size="xs" onClick={handleAdd}>
+          Add alternative id
+        </Button>
+      </HStack>
       {duplicateError && (
         <Text color="red.500" fontSize="14px" marginTop={2}>
           {duplicateError}
+        </Text>
+      )}
+      {canShowErrors && (
+        <Text color="red.500" fontSize="14px" marginTop={2}>
+          {errors}
         </Text>
       )}
     </Box>

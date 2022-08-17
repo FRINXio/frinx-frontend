@@ -1,4 +1,4 @@
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import isEqual from 'lodash/isEqual';
 import {
   FormControl,
@@ -9,11 +9,11 @@ import {
   InputGroup,
   InputRightElement,
   HStack,
-  InputLeftElement,
-  Tooltip,
   FormErrorMessage,
+  Spacer,
+  Box,
 } from '@chakra-ui/react';
-import { DeleteIcon, CheckIcon } from '@chakra-ui/icons';
+import { DeleteIcon } from '@chakra-ui/icons';
 import { FormikErrors } from 'formik';
 import { isObject } from 'lodash';
 
@@ -33,10 +33,9 @@ function getDefaultValue(name: string): PoolValue {
       return { rd: '' };
     case 'ipv6_prefix':
     case 'ipv4_prefix':
-      return { address: '', prefix: '' };
     case 'ipv4':
     case 'ipv6':
-      return { address: '' };
+      return { address: '', prefix: '' };
     case 'vlan':
       return {
         vlan: '',
@@ -48,14 +47,29 @@ function getDefaultValue(name: string): PoolValue {
   }
 }
 
-const PoolValuesForm: VoidFunctionComponent<Props> = ({
-  onChange,
-  resourceTypeName,
-  existingPoolValues,
-  poolValuesErrors,
-}) => {
+function getPlaceholder(name: string): PoolValue {
+  switch (name) {
+    case 'random_signed_int32':
+      return { int: '2147483648' };
+    case 'route_distinguisher':
+      return { rd: '1:1' };
+    case 'ipv6_prefix':
+    case 'ipv6':
+      return { address: '2001:db8:1::', prefix: '64' };
+    case 'ipv4_prefix':
+    case 'ipv4':
+      return { address: '192.168.0.1', prefix: '24' };
+    case 'vlan':
+      return { vlan: '1' };
+    case 'vlan_range':
+      return { from: '1', to: '4094' };
+    default:
+      return {};
+  }
+}
+
+const PoolValuesForm: FC<Props> = ({ onChange, resourceTypeName, existingPoolValues, poolValuesErrors, children }) => {
   const [poolValues, setPoolValues] = useState<PoolValue[]>([getDefaultValue(resourceTypeName)]);
-  const isButtonDisabled = isEqual(poolValues, existingPoolValues);
 
   useEffect(() => {
     setPoolValues([getDefaultValue(resourceTypeName)]);
@@ -73,75 +87,9 @@ const PoolValuesForm: VoidFunctionComponent<Props> = ({
 
   return (
     <>
-      {poolValues.map((pv, index) =>
-        Object.keys(pv).map((key) => {
-          const value = pv[key];
-          const isPristine = isEqual(existingPoolValues[index], poolValues[index]);
-          return (
-            <FormControl
-              id={`${key}/${index}`}
-              // eslint-disable-next-line react/no-array-index-key
-              key={`${key}/${index}`}
-              marginY={5}
-              isInvalid={isPoolValueInvalid(index, key)}
-            >
-              <FormLabel>{key}</FormLabel>
-              <InputGroup>
-                <InputLeftElement>
-                  {isPristine && (
-                    <Tooltip label="Saved">
-                      <CheckIcon color="blue.400" />
-                    </Tooltip>
-                  )}
-                </InputLeftElement>
-                <Input
-                  borderColor={isPristine ? 'blue.400' : 'inherit'}
-                  name={`${key}/${index}`}
-                  type="text"
-                  value={value}
-                  onChange={(event) => {
-                    event.persist();
-                    setPoolValues((prev) => {
-                      const copy = [...prev];
-                      copy[index] = { ...copy[index], [key]: event.target.value };
-                      return copy;
-                    });
-                  }}
-                />
-                <InputRightElement>
-                  <IconButton
-                    size="sm"
-                    colorScheme="red"
-                    isDisabled={index === 0}
-                    aria-label="remove"
-                    icon={<DeleteIcon />}
-                    onClick={() => {
-                      setPoolValues((prev) => {
-                        const newPoolValues = [...prev].filter((_, i) => i !== index);
-                        return newPoolValues;
-                      });
-                    }}
-                  />
-                </InputRightElement>
-              </InputGroup>
-              {errors && errors[index] && <FormErrorMessage>{errors[index][key]}</FormErrorMessage>}
-              {typeof poolValuesErrors === 'string' && <FormErrorMessage>{poolValuesErrors}</FormErrorMessage>}
-            </FormControl>
-          );
-        }),
-      )}
-      <HStack spacing={4}>
-        <Button
-          size="sm"
-          type="button"
-          colorScheme="blackAlpha"
-          isDisabled={isButtonDisabled}
-          onClick={() => {
-            onChange(poolValues);
-          }}
-        >
-          Save pool values
-        </Button>
+      <HStack>
+        <Box>{children}</Box>
+        <Spacer />
         <Button
           size="sm"
           type="button"
@@ -153,6 +101,62 @@ const PoolValuesForm: VoidFunctionComponent<Props> = ({
           Add new value
         </Button>
       </HStack>
+      {poolValues.map((pv, index) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <HStack key={`${Object.keys(pv)[0]}/${index}`}>
+          {Object.keys(pv).map((key) => {
+            const value = pv[key];
+            const isPristine = isEqual(existingPoolValues[index], poolValues[index]);
+            return (
+              <FormControl
+                isRequired={index === 0}
+                id={`${key}/${index}`}
+                // eslint-disable-next-line react/no-array-index-key
+                key={`${key}/${index}`}
+                marginY={2}
+                isInvalid={isPoolValueInvalid(index, key)}
+              >
+                <FormLabel>{key}</FormLabel>
+                <InputGroup>
+                  <Input
+                    borderColor={isPristine ? 'blue.400' : 'inherit'}
+                    name={`${key}/${index}`}
+                    type="text"
+                    value={value}
+                    placeholder={getPlaceholder(resourceTypeName)[key]}
+                    onChange={(event) => {
+                      event.persist();
+                      setPoolValues((prev) => {
+                        const copy = [...prev];
+                        copy[index] = { ...copy[index], [key]: event.target.value };
+                        return copy;
+                      });
+                      onChange(poolValues);
+                    }}
+                  />
+                  <InputRightElement>
+                    <IconButton
+                      size="sm"
+                      colorScheme="red"
+                      isDisabled={index === 0}
+                      aria-label="remove"
+                      icon={<DeleteIcon />}
+                      onClick={() => {
+                        setPoolValues((prev) => {
+                          const newPoolValues = [...prev].filter((_, i) => i !== index);
+                          return newPoolValues;
+                        });
+                      }}
+                    />
+                  </InputRightElement>
+                </InputGroup>
+                {errors && errors[index] && <FormErrorMessage>{errors[index][key]}</FormErrorMessage>}
+                {typeof poolValuesErrors === 'string' && <FormErrorMessage>{poolValuesErrors}</FormErrorMessage>}
+              </FormControl>
+            );
+          })}
+        </HStack>
+      ))}
     </>
   );
 };

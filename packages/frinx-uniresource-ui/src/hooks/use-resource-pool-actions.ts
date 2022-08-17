@@ -1,5 +1,6 @@
 import { useNotifications, unwrap } from '@frinx/shared/src';
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { gql, useMutation, useQuery, UseQueryState } from 'urql';
 import {
   ClaimResourceMutation,
@@ -8,8 +9,6 @@ import {
   FreeResourceMutationMutationVariables,
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
-  ClaimAddressMutation,
-  ClaimAddressMutationVariables,
   GetResourceTypeByNameQuery,
   AllocatedResourcesQuery,
   AllocatedResourcesQueryVariables,
@@ -24,6 +23,43 @@ import {
 import { CallbackFunctions, PaginationArgs, usePagination } from './use-pagination';
 
 export type AlternativeIdValue = string | number | (string | number)[];
+
+export type ResourcePoolActionData = {
+  poolDetail: UseQueryState<
+    GetPoolDetailQuery,
+    Exact<{
+      poolId: string;
+    }>
+  >;
+  allocatedResources: UseQueryState<
+    AllocatedResourcesQuery,
+    Exact<{
+      poolId: string;
+      first?: InputMaybe<number> | undefined;
+      last?: InputMaybe<number> | undefined;
+      before?: InputMaybe<string> | undefined;
+      after?: InputMaybe<string> | undefined;
+    }>
+  >;
+  resourceTypes: UseQueryState<
+    GetResourceTypeByNameQuery,
+    Exact<{
+      [key: string]: never;
+    }>
+  >;
+  paginationArgs: PaginationArgs;
+};
+
+export type ResourcePoolActionHandlers = {
+  claimPoolResource: (description?: string | null, userInput?: Record<string, string | number>) => void;
+  claimPoolResourceWithAltId: (
+    alternativeId: Record<string, AlternativeIdValue>,
+    description?: string | null,
+    userInput?: Record<string, string | number>,
+  ) => void;
+  freePoolResource: (userInput: Record<string, string | number>) => void;
+  deleteResourcePool: (id: string, options?: { redirectOnSuccess?: string; redirectOnError?: string }) => void;
+} & CallbackFunctions;
 
 const POOL_DETAIL_QUERY = gql`
   query GetPoolDetail($poolId: ID!) {
@@ -101,6 +137,10 @@ const POOL_RESOURCES_QUERY = gql`
           id
           Properties
           Description
+          NestedPool {
+            id
+            Name
+          }
         }
       }
       pageInfo {
@@ -123,16 +163,6 @@ const GET_RESOURCE_TYPE_BYNAME_QUERY = gql`
     QueryResourceTypes {
       id
       Name
-    }
-  }
-`;
-
-const CLAIM_ADDRESS_MUTATION = gql`
-  mutation ClaimAddress($input: CreateNestedSetPoolInput!) {
-    CreateNestedSetPool(input: $input) {
-      pool {
-        id
-      }
     }
   }
 `;
@@ -174,64 +204,15 @@ const DELETE_POOL_MUTATION = gql`
   }
 `;
 
-function getResourceTypeId(parentResourceTypeName: string, resourceTypes: Record<string, string>) {
-  switch (parentResourceTypeName) {
-    case 'ipv4_prefix':
-      return resourceTypes.ipv4;
-    case 'ipv6_prefix':
-      return resourceTypes.ipv6;
-    case 'vlan_range':
-      return resourceTypes.vlan;
-    default:
-      throw new Error(`Unknown resource type: ${parentResourceTypeName}`);
-  }
-}
-
 const useResourcePoolActions = ({
   poolId,
 }: {
   poolId?: string;
-}): [
-  {
-    poolDetail: UseQueryState<
-      GetPoolDetailQuery,
-      Exact<{
-        poolId: string;
-      }>
-    >;
-    allocatedResources: UseQueryState<
-      AllocatedResourcesQuery,
-      Exact<{
-        poolId: string;
-        first?: InputMaybe<number> | undefined;
-        last?: InputMaybe<number> | undefined;
-        before?: InputMaybe<string> | undefined;
-        after?: InputMaybe<string> | undefined;
-      }>
-    >;
-    resourceTypes: UseQueryState<
-      GetResourceTypeByNameQuery,
-      Exact<{
-        [key: string]: never;
-      }>
-    >;
-    paginationArgs: PaginationArgs;
-  },
-  {
-    claimPoolResource: (description?: string | null, userInput?: Record<string, string | number>) => void;
-    claimPoolResourceWithAltId: (
-      alternativeId: Record<string, AlternativeIdValue>,
-      description?: string | null,
-      userInput?: Record<string, string | number>,
-    ) => void;
-    handleOnClaimAddress: (id: string, formValues: { poolName: string; description: string }) => void | Promise<void>;
-    freePoolResource: (userInput: Record<string, string | number>) => void;
-    deleteResourcePool: (id: string) => void;
-  } & CallbackFunctions,
-] => {
+}): [ResourcePoolActionData, ResourcePoolActionHandlers] => {
   const { addToastNotification } = useNotifications();
   const mutationResourcesContext = useMemo(() => ({ additionalTypenames: ['Resource', 'ResourcePool'] }), []);
   const allocatedResourcesContext = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
+  const navigate = useNavigate();
 
   const [poolDetail] = useQuery<GetPoolDetailQuery, GetPoolDetailQueryVariables>({
     query: POOL_DETAIL_QUERY,
@@ -262,7 +243,6 @@ const useResourcePoolActions = ({
     ClaimResourceWithAltIdMutationVariables
   >(CLAIM_RESOURCES_WITH_ALT_ID_MUTATION);
   const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
-  const [, claimAddress] = useMutation<ClaimAddressMutation, ClaimAddressMutationVariables>(CLAIM_ADDRESS_MUTATION);
 
   const handlers = useMemo(
     () => ({
@@ -326,89 +306,6 @@ const useResourcePoolActions = ({
           });
       },
 
-      handleOnClaimAddress: (id: string, formValues: { poolName: string; description: string }) => {
-        if (poolDetail.data?.QueryResourcePool.ResourceType.id == null) {
-          return addToastNotification({
-            type: 'error',
-            content: 'We could not claim address from subnet. Please try again later',
-          });
-        }
-
-        try {
-          const resourceTypesMap = resourceTypes.data?.QueryResourceTypes.reduce((acc, curr) => {
-            acc[curr.Name] = curr.id;
-            return acc;
-          }, {} as Record<string, string>);
-          const resourceTypeId = getResourceTypeId(
-            poolDetail.data.QueryResourcePool.ResourceType.Name,
-            unwrap(resourceTypesMap),
-          );
-
-          if (resourceTypeId == null) {
-            throw new Error('Could not find resource type id');
-          }
-
-          return claimResource(
-            {
-              poolId: id,
-              userInput: {
-                desiredSize: 2,
-              },
-              description: formValues.description,
-            },
-            mutationResourcesContext,
-          )
-            .then((createdResource) => {
-              if (createdResource.error) {
-                throw new Error(createdResource.error.message);
-              }
-
-              if (createdResource.data?.ClaimResource.id == null) {
-                throw new Error('Resource was not allocated');
-              }
-
-              return claimAddress({
-                input: {
-                  parentResourceId: createdResource.data.ClaimResource.id,
-                  poolDealocationSafetyPeriod: 0,
-                  poolName: formValues.poolName,
-                  poolValues: [
-                    {
-                      address: createdResource.data.ClaimResource.Properties.address,
-                    },
-                  ],
-                  resourceTypeId,
-                  description: formValues.description,
-                },
-              })
-                .then((response) => {
-                  if (response.error) {
-                    throw new Error(response.error.message);
-                  }
-
-                  addToastNotification({
-                    type: 'success',
-                    content: `Successfully claimed address ${createdResource.data?.ClaimResource.Properties.address}`,
-                  });
-                })
-                .catch((error) => {
-                  addToastNotification({
-                    type: 'error',
-                    content: error.message || 'There was a problem with claiming address from pool',
-                  });
-                });
-            })
-            .catch((error) => {
-              throw new Error(error.message);
-            });
-        } catch (error) {
-          return addToastNotification({
-            type: 'error',
-            content: 'We could not claim address from subnet. Please try again later',
-          });
-        }
-      },
-
       freePoolResource: (userInput: Record<string, string | number>) => {
         freeResource(
           {
@@ -435,22 +332,44 @@ const useResourcePoolActions = ({
           });
       },
 
-      deleteResourcePool: (id: string) => {
-        deletePool({ input: { resourcePoolId: id } }, mutationResourcesContext);
+      deleteResourcePool: (id: string, options?: { redirectOnSuccess?: string; redirectOnError?: string }) => {
+        deletePool({ input: { resourcePoolId: id } }, mutationResourcesContext)
+          .then(({ error }) => {
+            if (error) {
+              throw error;
+            }
+
+            addToastNotification({
+              type: 'success',
+              content: 'Successfully deleted resource pool',
+            });
+
+            if (options?.redirectOnSuccess) {
+              navigate(options.redirectOnSuccess);
+            }
+          })
+          .catch((error) => {
+            addToastNotification({
+              type: 'error',
+              content: error.message || 'There was a problem with deleting resource pool',
+            });
+
+            if (options?.redirectOnError) {
+              navigate(options.redirectOnError);
+            }
+          });
       },
     }),
     [
       addToastNotification,
       poolId,
-      claimAddress,
       claimResource,
       claimResourceWithAltId,
       freeResource,
       mutationResourcesContext,
       deletePool,
-      poolDetail,
-      resourceTypes,
       reloadAllocatedResources,
+      navigate,
     ],
   );
 
