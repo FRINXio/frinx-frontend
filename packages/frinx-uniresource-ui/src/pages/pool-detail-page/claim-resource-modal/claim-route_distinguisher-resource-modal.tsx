@@ -72,7 +72,12 @@ const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaimWith
       initialValues: {
         description: '',
         userInput: {},
-        alternativeIds: [],
+        alternativeIds: [
+          {
+            key: 'status',
+            value: ['active'],
+          },
+        ],
       },
       onSubmit: (formValues) => {
         const { alternativeIds: formAlternativeIds, description, userInput } = formValues;

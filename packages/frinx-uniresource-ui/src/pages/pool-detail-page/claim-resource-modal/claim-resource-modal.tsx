@@ -110,12 +110,17 @@ const ClaimResourceModal: FC<Props> = ({
 }) => {
   const shouldBeDesiredSize =
     resourceTypeName === 'vlan_range' || resourceTypeName === 'ipv4_prefix' || resourceTypeName === 'ipv6_prefix';
-  const { values, handleChange, handleSubmit, submitForm, isSubmitting, errors, setFieldValue } = useFormik<FormValues>(
-    {
+  const { values, handleChange, handleSubmit, submitForm, isSubmitting, errors, setFieldValue, resetForm } =
+    useFormik<FormValues>({
       initialValues: {
         description: '',
         userInput: '',
-        alternativeIds: [],
+        alternativeIds: [
+          {
+            key: 'status',
+            value: ['active'],
+          },
+        ],
       },
       onSubmit: (formValues) => {
         let userInput = {};
@@ -145,10 +150,10 @@ const ClaimResourceModal: FC<Props> = ({
 
         onClaimWithAltId(alternativeIdObject, description, userInput);
         onClose();
+        resetForm();
       },
       validationSchema: validationSchema(resourceTypeName),
-    },
-  );
+    });
 
   const handleAlternativeIdsChange = (changedAlternativeIds: AlternativeId[]) => {
     setFieldValue('alternativeIds', changedAlternativeIds);
@@ -162,7 +167,15 @@ const ClaimResourceModal: FC<Props> = ({
   const formErrors: FormErrors = errors;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        onClose();
+        resetForm();
+      }}
+      isCentered
+      size="xl"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Claim resource for {poolName}</ModalHeader>
