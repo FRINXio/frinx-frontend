@@ -3781,7 +3781,6 @@ __metadata:
     "@babel/preset-env": 7.18.10
     "@babel/preset-react": 7.18.6
     "@babel/preset-typescript": 7.18.6
-    "@chakra-ui/icons": 1.1.7
     "@chakra-ui/react": 1.8.8
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
@@ -3831,7 +3830,6 @@ __metadata:
     webpack-dev-server: 4.9.3
     yup: 0.32.11
   peerDependencies:
-    "@chakra-ui/icons": ^1.0.15
     "@chakra-ui/react": ^1.6.7
     "@emotion/react": ^11.1.4
     "@emotion/styled": ^11.0.0

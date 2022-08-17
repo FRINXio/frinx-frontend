@@ -1,6 +1,6 @@
-import { DeleteIcon } from '@chakra-ui/icons';
-import { Table, Thead, Tr, Th, Tbody, Td, HStack, IconButton } from '@chakra-ui/react';
+import { Table, Thead, Tr, Th, Tbody, Td, HStack, IconButton, Icon } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
+import FeatherIcon from 'feather-icons-react';
 import { ResourceTypesQuery } from '../../__generated__/graphql';
 
 type Props = {
@@ -29,7 +29,7 @@ const ResourceTypesTable: VoidFunctionComponent<Props> = ({ resourceTypes, onDel
                   variant="outline"
                   colorScheme="red"
                   aria-label="delete"
-                  icon={<DeleteIcon />}
+                  icon={<Icon as={FeatherIcon} icon="trash-2" />}
                   onClick={() => {
                     onDelete(resourceType.id);
                   }}

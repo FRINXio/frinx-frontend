@@ -1,6 +1,6 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Icon, InfoIcon } from '@chakra-ui/icons';
-import { HStack, Button, Tooltip, Tag, Text, Box } from '@chakra-ui/react';
+import { HStack, Button, Tooltip, Tag, Text, Box, Icon } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 
 type Props = {
   selectedTags: string[];
@@ -17,10 +17,13 @@ const SearchTags: VoidFunctionComponent<Props> = ({ selectedTags, onTagClick, cl
         <HStack>
           <Text fontSize="sm">Currently you have not selected any tag</Text>
           <Tooltip
-            label="By clicking on tag of resource pool you can start filtering. By clicking on the same tag you will unselect
-    tag"
+            openDelay={10}
+            placement="right"
+            label="By clicking on tag of resource pool you can start filtering. By clicking on the same tag you will unselect tag"
           >
-            <Icon cursor="pointer" as={InfoIcon} />
+            <Box>
+              <Icon verticalAlign="middle" as={FeatherIcon} icon="info" />
+            </Box>
           </Tooltip>
         </HStack>
       )}
