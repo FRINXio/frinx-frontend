@@ -3,7 +3,7 @@ import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import { useAsyncGenerator } from '@frinx/shared/src';
 
 export type TaskStatus = 'COMPLETED' | 'FAILED' | 'SCHEDULED' | 'IN_PROGRESS';
-export type WorkflowStatus = 'COMPLETED' | 'FAILED' | 'RUNNING' | 'TERMINATED' | 'TIMED_OUT';
+export type WorkflowStatus = 'COMPLETED' | 'FAILED' | 'RUNNING' | 'TERMINATED' | 'TIMED_OUT' | 'PAUSED';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export type OutputDataPayload<T> =
