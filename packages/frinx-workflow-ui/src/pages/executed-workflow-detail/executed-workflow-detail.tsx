@@ -191,6 +191,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
         startTime={formatDate(result.startTime)}
         restartWorkflows={restartWorkflows}
         status={result.status}
+        visibleRestartButton={result.workflowDefinition.restartable}
       />
       <Box background="white" borderRadius={4}>
         <Tabs index={tabIndex} onChange={setTabIndex}>
