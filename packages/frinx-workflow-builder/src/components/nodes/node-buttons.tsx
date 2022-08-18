@@ -1,6 +1,6 @@
 import { Box, Divider, HStack, Icon, IconButton, Menu, MenuButton, MenuItem, MenuList, Portal } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useEffect, useRef, useState } from 'react';
 
 type Props = {
   onEditButtonClick: () => void;
@@ -9,6 +9,33 @@ type Props = {
 };
 
 const NodeButtons: FC<Props> = memo(({ onEditButtonClick, onDeleteButtonClick, onExpandButtonClick }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // we are using native event handlers here, because thats how react-flow is working
+  // https://github.com/wbkd/react-flow/issues/1676
+  useEffect(() => {
+    const handleClick = (event: MouseEvent) => {
+      if (buttonRef.current && buttonRef.current.contains(event.target as Node)) {
+        return;
+      }
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('click', handleClick, true);
+
+    return () => {
+      window.removeEventListener('click', handleClick, true);
+    };
+  }, []);
+
+  const handleButtonClick = () => {
+    setIsOpen((prev) => !prev);
+  };
+
   return (
     <HStack marginLeft="auto" spacing={1}>
       <IconButton
@@ -19,10 +46,16 @@ const NodeButtons: FC<Props> = memo(({ onEditButtonClick, onDeleteButtonClick, o
         colorScheme="blue"
       />
       <Box>
-        <Menu isLazy>
-          <MenuButton size="xs" as={IconButton} icon={<Icon as={FeatherIcon} icon="more-horizontal" size={12} />} />
+        <Menu isLazy isOpen={isOpen} onClose={() => setIsOpen(false)}>
+          <MenuButton
+            ref={buttonRef}
+            onClick={handleButtonClick}
+            size="xs"
+            as={IconButton}
+            icon={<Icon as={FeatherIcon} icon="more-horizontal" size={12} />}
+          />
           <Portal>
-            <MenuList zIndex="dropdown" maxWidth={40}>
+            <MenuList ref={menuRef} border={5} zIndex="dropdown" maxWidth={40}>
               {onExpandButtonClick && (
                 <>
                   <MenuItem fontSize="sm" onClick={onExpandButtonClick}>

@@ -15,8 +15,8 @@ import {
   MenuItem,
   MenuList,
   VisuallyHidden,
+  Icon,
 } from '@chakra-ui/react';
-import { SettingsIcon, SmallAddIcon } from '@chakra-ui/icons';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import FeatherIcon from 'feather-icons-react';
@@ -55,8 +55,9 @@ const WorkflowListHeader = ({ onImportSuccess }: Props) => {
     const { files } = e.currentTarget;
     try {
       const readFiles = await Promise.all(Array.from(compact(files)).map((f) => readFile(f)));
+      const json = readFiles.map((data) => JSON.parse(data));
       const { putWorkflow } = callbackUtils.getCallbacks;
-      await putWorkflow(readFiles);
+      await putWorkflow(json);
       onImportSuccess();
       addToastNotification({
         type: 'success',
@@ -67,6 +68,13 @@ const WorkflowListHeader = ({ onImportSuccess }: Props) => {
         type: 'error',
         content: `Workflow upload error. Check workflow definition and/or syntax.`,
       });
+    } finally {
+      // chrome does not allow to send same file twice (so we nullify it after sending the data)
+      // onchange event occurs when a control loses the input focus
+      // and its value has been modified since gaining focus
+      if (inputRef.current) {
+        inputRef.current.value = '';
+      }
     }
   };
 
@@ -98,12 +106,21 @@ const WorkflowListHeader = ({ onImportSuccess }: Props) => {
         </Heading>
         <Box marginLeft="auto">
           <HStack>
-            <Button as={Link} leftIcon={<SmallAddIcon />} colorScheme="blue" to="../builder">
+            <Button
+              as={Link}
+              leftIcon={<Icon as={FeatherIcon} icon="plus" size={20} />}
+              colorScheme="blue"
+              to="../builder"
+            >
               Create
             </Button>
             <Box>
               <Menu isLazy>
-                <MenuButton as={IconButton} icon={<SettingsIcon />} variant="ghost" />
+                <MenuButton
+                  as={IconButton}
+                  icon={<Icon as={FeatherIcon} icon="settings" size={20} />}
+                  variant="ghost"
+                />
                 <MenuList>
                   <MenuItem onClick={openFileUpload}>
                     <Box as="span" fontSize="sm" paddingRight={3} flexShrink={0}>

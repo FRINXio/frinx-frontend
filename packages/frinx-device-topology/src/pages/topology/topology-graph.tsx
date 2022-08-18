@@ -1,5 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { useTheme } from '@emotion/react';
+import { Box, Theme, useTheme } from '@chakra-ui/react';
 import * as d3 from 'd3';
 import React, { createRef, FunctionComponent, useEffect } from 'react';
 
@@ -30,7 +31,7 @@ type Props = {
 const TopologyGraph: FunctionComponent<Props> = ({ data }) => {
   const { nodes, edges } = data;
   const svgRef = createRef<SVGSVGElement>();
-  const theme = useTheme();
+  const { colors } = useTheme<Theme>();
 
   useEffect(() => {
     const forceNode = d3.forceManyBody().strength(-500);
@@ -69,7 +70,7 @@ const TopologyGraph: FunctionComponent<Props> = ({ data }) => {
       .data(edges)
       .join('line')
       .attr('stroke-width', 1)
-      .attr('stroke', 'black');
+      .attr('stroke', colors.gray[700]);
 
     const node = svg.append('g').selectAll('g').data(nodes).join('g').attr('transform-origin', '50% 50%');
     // .on('mouseover', (event, n) => {
@@ -87,7 +88,7 @@ const TopologyGraph: FunctionComponent<Props> = ({ data }) => {
       .attr('stroke-opacity', nodeStrokeOpacity)
       .attr('stroke-width', nodeStrokeWidth)
       .attr('r', 15)
-      .attr('fill', theme.colors.gray[400]);
+      .attr('fill', colors.gray[400]);
 
     node
       .append('text')
@@ -109,11 +110,9 @@ const TopologyGraph: FunctionComponent<Props> = ({ data }) => {
   });
 
   return (
-    <div className="App">
-      <div>
-        <svg ref={svgRef} />
-      </div>
-    </div>
+    <Box background="white" borderRadius="md">
+      <svg ref={svgRef} />
+    </Box>
   );
 };
 

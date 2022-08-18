@@ -1,7 +1,6 @@
 module.exports = (api) => {
   const plugins = [
     // TODO: remove this later
-    'relay',
     '@babel/plugin-proposal-object-rest-spread',
     '@babel/plugin-proposal-nullish-coalescing-operator',
     '@babel/plugin-proposal-optional-chaining',
@@ -20,7 +19,7 @@ module.exports = (api) => {
         '@babel/env',
         {
           targets: {
-            browsers: ['last 4 chrome versions', 'last 4 firefox versions'],
+            browsers: 'last 2 years',
           },
         },
       ],

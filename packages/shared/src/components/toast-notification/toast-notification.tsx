@@ -1,6 +1,6 @@
-import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import { Heading, Flex, keyframes, Icon, Box } from '@chakra-ui/react';
 import React, { FC, useState, useEffect, useRef } from 'react';
+import FeatherIcon from 'feather-icons-react';
 
 const DEFAULT_TIMEOUT_DISMISS = 3000; // default timeout in which notification will automatically dismiss (ms)\
 
@@ -51,7 +51,7 @@ const getToastIcon = (type: NotificationType): React.ReactNode => {
   switch (type) {
     case 'success':
     default:
-      return <Icon as={CheckIcon} size={24} color="white" />;
+      return <Icon as={FeatherIcon} size={24} color="white" icon="check" />;
   }
 };
 
@@ -142,7 +142,7 @@ const ToastNotification: FC<Props> = ({
           onClose();
         }}
       >
-        <Icon as={CloseIcon} icon="x" size={20} />
+        <Icon as={FeatherIcon} icon="x" size={20} />
       </Flex>
     </Flex>
   ) : null;

@@ -12,10 +12,11 @@ import {
   FormErrorMessage,
   Spacer,
   Box,
+  Icon,
 } from '@chakra-ui/react';
-import { DeleteIcon } from '@chakra-ui/icons';
 import { FormikErrors } from 'formik';
 import { isObject } from 'lodash';
+import FeatherIcon from 'feather-icons-react';
 
 type PoolValue = Record<string, string>;
 type Props = {
@@ -140,7 +141,7 @@ const PoolValuesForm: FC<Props> = ({ onChange, resourceTypeName, existingPoolVal
                       colorScheme="red"
                       isDisabled={index === 0}
                       aria-label="remove"
-                      icon={<DeleteIcon />}
+                      icon={<Icon as={FeatherIcon} icon="trash-2" />}
                       onClick={() => {
                         setPoolValues((prev) => {
                           const newPoolValues = [...prev].filter((_, i) => i !== index);
