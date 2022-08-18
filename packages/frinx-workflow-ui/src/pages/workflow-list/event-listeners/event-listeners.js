@@ -24,6 +24,7 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 import { Editor } from '@frinx/shared/src';
 import PageContainer from '../../../common/PageContainer';
 import Paginator from '../../../common/pagination';
