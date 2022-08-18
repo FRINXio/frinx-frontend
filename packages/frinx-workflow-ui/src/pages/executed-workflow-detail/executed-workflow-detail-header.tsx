@@ -76,7 +76,7 @@ const DetailsModalHeader: FC<Props> = ({
             workflowId={workflowId}
             status={status}
             onWorkflowActionExecution={onWorkflowActionExecution}
-            visibleRestartButton={visibleRestartButton}
+            isVisibleRestartButton={visibleRestartButton}
           />
         </Box>
       )}

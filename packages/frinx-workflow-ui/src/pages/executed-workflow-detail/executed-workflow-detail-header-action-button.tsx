@@ -8,7 +8,7 @@ type Props = {
   status: WorkflowStatus | undefined;
   restartWorkflows: () => void;
   onWorkflowActionExecution: (workflowId: string) => void;
-  visibleRestartButton: boolean;
+  isVisibleRestartButton: boolean;
 };
 
 const DetailsModalHeaderActionButtons: FC<Props> = ({
@@ -16,7 +16,7 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
   onWorkflowActionExecution,
   restartWorkflows,
   workflowId,
-  visibleRestartButton,
+  isVisibleRestartButton,
 }) => {
   const terminateWorkflows = async () => {
     const { terminateWorkflows } = callbackUtils.getCallbacks;
@@ -48,7 +48,7 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
   if (status === 'FAILED' || status === 'TERMINATED' || status === 'TIMED_OUT') {
     return (
       <ButtonGroup float="right">
-        <Button isDisabled={!visibleRestartButton} onClick={restartWorkflows} colorScheme="blue">
+        <Button isDisabled={!isVisibleRestartButton} onClick={restartWorkflows} colorScheme="blue">
           <i className="fas fa-redo" />
           &nbsp;&nbsp;Restart
         </Button>
