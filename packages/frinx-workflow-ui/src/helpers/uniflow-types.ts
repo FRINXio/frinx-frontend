@@ -134,6 +134,7 @@ export type EventListener = {
   event: string;
   actions: Action[];
   active?: boolean;
+  state: boolean;
 };
 
 export type Queue = {
