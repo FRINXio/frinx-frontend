@@ -27,6 +27,7 @@ import { jsonParse } from '../utils';
 import unescapeJs from 'unescape-js';
 import ExternalStorageModal from '@frinx/workflow-ui/src/pages/executed-workflow-detail/executed-workflow-detail-tabs/external-storage-modal';
 import FeatherIcon from 'feather-icons-react';
+import copyToClipBoard from '../../helpers/copy-to-clipboard';
 
 type Props = {
   task: ExecutedWorkflowTask;
@@ -65,10 +66,6 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
           .replace(/\\f/g, '\\f')
       : unescapeJs(jsonString);
   }
-
-  const copyToClipBoard = (textToCopy: any) => {
-    navigator.clipboard.writeText(JSON.stringify(textToCopy));
-  };
 
   return (
     <>
