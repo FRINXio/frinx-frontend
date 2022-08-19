@@ -36,19 +36,19 @@ const EventListeners = () => {
   const [eventListeners, setEventListeners] = useState<EventListener[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<EventListener | null>(null);
-  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
+  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<EventListener>([], 10);
 
   useEffect(() => {
     getData();
   }, []);
 
   useEffect(() => {
-    const results: any = !searchTerm
+    const results = !searchTerm
       ? eventListeners
-      : eventListeners.filter((e: string[] | any) => {
-          const searchedKeys = ['name', 'event'];
+      : eventListeners.filter((e: EventListener) => {
+          const searchedKeys: Array<keyof EventListener> = ['name', 'event'];
           for (let i = 0; i < searchedKeys.length; i += 1) {
-            if (e[searchedKeys[i]].toString().toLowerCase().includes(searchTerm.toLocaleLowerCase())) {
+            if (e[searchedKeys[i]]?.toString().toLowerCase().includes(searchTerm.toLocaleLowerCase())) {
               return true;
             }
           }
@@ -67,7 +67,11 @@ const EventListeners = () => {
     });
   };
 
-  const editEvent = (state: any, event: EventListener | any) => {
+  const editEvent = (state: boolean | null, event: EventListener | null) => {
+    if (!event) {
+      return;
+    }
+
     if (state !== null) {
       event.active = state;
     }
