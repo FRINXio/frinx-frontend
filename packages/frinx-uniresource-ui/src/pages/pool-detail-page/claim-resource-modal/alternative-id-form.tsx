@@ -5,6 +5,7 @@ import {
   FormErrorMessage,
   FormLabel,
   HStack,
+  Icon,
   IconButton,
   Input,
   Spacer,
@@ -13,8 +14,8 @@ import {
 import React, { ChangeEvent, VoidFunctionComponent } from 'react';
 import * as yup from 'yup';
 import { LabelsInput, unwrap } from '@frinx/shared/src';
-import { DeleteIcon } from '@chakra-ui/icons';
 import { FormikErrors, FormikValues } from 'formik';
+import FeatherIcon from 'feather-icons-react';
 
 // eslint-disable-next-line func-names
 yup.addMethod(yup.array, 'unique', function (message, mapper = (a: unknown) => a) {
@@ -113,7 +114,7 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
                     onChange={(values) => handleValueChange(values, i)}
                   />
                   <IconButton
-                    icon={<DeleteIcon />}
+                    icon={<Icon size="sm" as={FeatherIcon} icon="trash-2" />}
                     aria-label="Delete Alternative Id"
                     onClick={() => handleDelete(i)}
                   />

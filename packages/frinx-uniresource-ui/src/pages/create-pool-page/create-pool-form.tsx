@@ -21,8 +21,8 @@ import {
   Textarea,
   useDisclosure,
 } from '@chakra-ui/react';
-import { ChevronDownIcon, ChevronUpIcon, Icon } from '@chakra-ui/icons';
 import { useTagsInput, SearchByTagInput } from '@frinx/shared/src';
+import FeatherIcon from 'feather-icons-react';
 import PoolValuesForm from './pool-values-form';
 import PoolPropertiesForm from './pool-properties-form';
 import { SelectPoolsQuery, SelectResourceTypesQuery } from '../../__generated__/graphql';
@@ -533,7 +533,11 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
         <Divider />
         <HStack cursor="pointer" textColor="gray.500" onClick={advancedOptionsDisclosure.onToggle}>
           <Text width="max-content">Advanced options</Text>
-          <Icon as={advancedOptionsDisclosure.isOpen ? ChevronUpIcon : ChevronDownIcon} />
+          {advancedOptionsDisclosure.isOpen ? (
+            <FeatherIcon icon="chevron-up" size={20} />
+          ) : (
+            <FeatherIcon icon="chevron-down" size={20} />
+          )}
         </HStack>
         <Divider />
       </HStack>
