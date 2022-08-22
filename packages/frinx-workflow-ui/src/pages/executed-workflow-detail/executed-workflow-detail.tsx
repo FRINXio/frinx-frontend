@@ -28,6 +28,7 @@ import { useWorkflowGenerator } from './executed-workflow-detail-status.helpers'
 import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link, useParams } from 'react-router-dom';
 import { unwrap } from '@frinx/shared/src';
+import copyToClipBoard from '../../helpers/copy-to-clipboard';
 
 const convertWorkflowVariablesToFormFormat = (
   workflowDetails: string,
@@ -93,10 +94,6 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
   }
 
   const { result, meta, subworkflows } = execPayload;
-
-  const copyToClipBoard = (textToCopy: any) => {
-    navigator.clipboard.writeText(JSON.stringify(textToCopy));
-  };
 
   const getUnescapedJSON = (data: any) => {
     return isEscaped
