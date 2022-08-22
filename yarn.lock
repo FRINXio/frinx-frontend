@@ -3356,7 +3356,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@frinx/api@0.0.11, @frinx/api@workspace:packages/frinx-api":
+"@frinx/api@0.0.12, @frinx/api@workspace:packages/frinx-api":
   version: 0.0.0-use.local
   resolution: "@frinx/api@workspace:packages/frinx-api"
   dependencies:
@@ -3407,7 +3407,7 @@ __metadata:
     "@chakra-ui/system": 1.12.1
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
-    "@frinx/api": 0.0.11
+    "@frinx/api": 0.0.12
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@frinx/inventory-client": ^0.0.1
     "@frinx/shared": "workspace:^"
@@ -3415,7 +3415,7 @@ __metadata:
     "@frinx/workflow-builder": ^1.0.0
     "@frinx/workflow-ui": ^2.0.0
     "@frinxio/device-topology": ^0.0.1
-    "@frinxio/gamma": 0.0.15
+    "@frinxio/gamma": 0.0.16
     "@types/node": 16.11.38
     "@types/react": 17.0.42
     "@types/react-dom": 17.0.14
@@ -3891,9 +3891,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@frinxio/gamma@npm:0.0.15":
-  version: 0.0.15
-  resolution: "@frinxio/gamma@npm:0.0.15::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40frinxio%2Fgamma%2F0.0.15%2F90c10586a8ddfe3e05fc0fe506cbdf14c5c34d4cc60f0e31ce3badc8c95f7b76"
+"@frinxio/gamma@npm:0.0.16":
+  version: 0.0.16
+  resolution: "@frinxio/gamma@npm:0.0.16::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40FRINXio%2Fgamma%2F0.0.16%2F3b4c97891c8cfd192acd7c8f62d89643b6c12529"
   dependencies:
     "@types/lodash": 4.14.181
     "@types/url-join": 4.0.1
@@ -3918,7 +3918,7 @@ __metadata:
     react: ^18.0.0
     react-dom: ^18.0.0
     react-router-dom: ^6.0.0
-  checksum: 82062a43f1aa8734d805f8bc847f0c9853a5899f11b10de69a81e9ef69e664ec976939033b2588754a863a9c31341293fef91254ebb2e5ec3ebf8cc547ee2090
+  checksum: 54ce34916a57a27ed448c9a66ab68b82916bf78ff28da6eb7663425fd06d20213d22e5026f651b3857d79e2bddd7dd3ec7c22fe849a3397e8c3e6be062cabc9f
   languageName: node
   linkType: hard
 
