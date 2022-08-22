@@ -3356,7 +3356,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@frinx/api@0.0.11, @frinx/api@workspace:packages/frinx-api":
+"@frinx/api@0.0.12, @frinx/api@workspace:packages/frinx-api":
   version: 0.0.0-use.local
   resolution: "@frinx/api@workspace:packages/frinx-api"
   dependencies:
@@ -3407,7 +3407,7 @@ __metadata:
     "@chakra-ui/system": 1.12.1
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
-    "@frinx/api": 0.0.11
+    "@frinx/api": 0.0.12
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@frinx/inventory-client": ^0.0.1
     "@frinx/shared": "workspace:^"
