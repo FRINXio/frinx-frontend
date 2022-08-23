@@ -1,9 +1,16 @@
-import { Heading, Progress } from '@chakra-ui/react';
-import React, { VoidFunctionComponent } from 'react';
-import { gql, useQuery } from 'urql';
+import { Button, Heading, HStack, Icon, Progress, Spacer } from '@chakra-ui/react';
+import React, { useMemo, VoidFunctionComponent } from 'react';
+import { gql, useMutation, useQuery } from 'urql';
 import { IPv4, IPv6 } from 'ipaddr.js';
-import { useMinisearch, useTags } from '@frinx/shared/src';
-import { GetPoolIpRangesQuery, GetPoolIpRangesQueryVariables } from '../../__generated__/graphql';
+import { useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
+import FeatherIcon from 'feather-icons-react';
+import { Link } from 'react-router-dom';
+import {
+  DeleteResourcePoolMutation,
+  DeleteResourcePoolMutationVariables,
+  GetPoolIpRangesQuery,
+  GetPoolIpRangesQueryVariables,
+} from '../../__generated__/graphql';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import IpRangesTable from './ip-ranges-table';
 
@@ -39,6 +46,14 @@ const GET_POOLS_QUERY = gql`
   }
 `;
 
+const DELETE_POOL_MUTATION = gql`
+  mutation DeleteResourcePool($input: DeleteResourcePoolInput!) {
+    DeleteResourcePool(input: $input) {
+      resourcePoolId
+    }
+  }
+`;
+
 const isIpv4 = (name: string) => name === 'ipv4_prefix';
 
 const getAddressesFromCIDR = (cidr: string, resourceTypeName: string) => ({
@@ -51,10 +66,17 @@ const getAddressesFromCIDR = (cidr: string, resourceTypeName: string) => ({
 });
 
 const IpamIpRangesPage: VoidFunctionComponent = () => {
+  const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [{ data, fetching, error }] = useQuery<GetPoolIpRangesQuery, GetPoolIpRangesQueryVariables>({
     query: GET_POOLS_QUERY,
+    context,
   });
 
+  const [, deletePool] = useMutation<DeleteResourcePoolMutation, DeleteResourcePoolMutationVariables>(
+    DELETE_POOL_MUTATION,
+  );
+
+  const { addToastNotification } = useNotifications();
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
   const { results, searchText, setSearchText } = useMinisearch({
     items: data?.QueryRootResourcePools.filter(
@@ -73,6 +95,34 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
   const handleOnClearSearch = () => {
     clearAllTags();
     setSearchText('');
+  };
+
+  const handleOnDeletePool = (resourcePoolId: string) => {
+    deletePool(
+      {
+        input: {
+          resourcePoolId,
+        },
+      },
+      context,
+    )
+      .then(({ error: deleteError }) => {
+        if (deleteError) {
+          throw deleteError;
+        }
+
+        addToastNotification({
+          content: 'Pool has been deleted',
+          type: 'success',
+        });
+      })
+      .catch((deleteError) => {
+        addToastNotification({
+          title: 'Error deleting pool',
+          content: deleteError.message,
+          type: 'error',
+        });
+      });
   };
 
   if (fetching) {
@@ -95,7 +145,7 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
       return {
         id,
         name: Name,
-        size: Capacity != null ? BigInt(Capacity.utilizedCapacity) + BigInt(Capacity.freeCapacity) : 0,
+        totalCapacity: Capacity != null ? BigInt(Capacity.utilizedCapacity) + BigInt(Capacity.freeCapacity) : 0,
         freeCapacity: Capacity != null ? BigInt(Capacity.freeCapacity) : 0,
         tags: Tags,
         network: `${network}/${PoolProperties.prefix}`,
@@ -115,9 +165,21 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
 
   return (
     <>
-      <Heading as="h1" size="lg" mb={5}>
-        IP Ranges
-      </Heading>
+      <HStack mb={5}>
+        <Heading as="h1" size="lg">
+          IP Ranges
+        </Heading>
+        <Spacer />
+        <Button
+          mr={2}
+          leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
+          colorScheme="blue"
+          as={Link}
+          to="/uniresource/pools/new?resource-type-name=ipv4_prefix"
+        >
+          Create Pool
+        </Button>
+      </HStack>
       <SearchFilterPoolsBar
         searchText={searchText}
         setSearchText={setSearchText}
@@ -126,7 +188,7 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
         onTagClick={handleOnTagClick}
         onClearSearch={handleOnClearSearch}
       />
-      <IpRangesTable ipRanges={ipRanges} onTagClick={handleOnTagClick} />
+      <IpRangesTable ipRanges={ipRanges} onTagClick={handleOnTagClick} onDeleteBtnClick={handleOnDeletePool} />
     </>
   );
 };

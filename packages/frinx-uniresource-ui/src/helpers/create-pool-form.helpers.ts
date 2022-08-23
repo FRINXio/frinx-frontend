@@ -6,7 +6,7 @@ export function getAvailableAllocatedResources(
 ): { Name: string; id: string; parentId: string; hasNestedPools: boolean }[] {
   return pools.flatMap((resourcePool) =>
     resourcePool.Resources.map((resource) => ({
-      Name: `${resource.Description}`,
+      Name: `${resource.Properties[Object.keys(resource.Properties)[0]]}`,
       id: resource.id,
       parentId: resource.ParentPool.id,
       hasNestedPools: resource.NestedPool !== null,
@@ -107,26 +107,20 @@ export function getPoolPropertiesSkeleton(
   let result: [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string'>] = [{}, {}];
 
   switch (resourceTypeName) {
+    case 'ipv4':
+    case 'ipv6':
     case 'ipv6_prefix':
     case 'ipv4_prefix':
       result = [
-        { prefix: values?.prefix || '', address: values?.address || '' },
-        { prefix: 'int', address: 'string' },
+        { address: values?.address || '', prefix: values?.prefix || '' },
+        { address: 'string', prefix: 'int' },
       ];
-      break;
-    case 'random_signed_int32':
-      result = [{ int: values?.int || '' }, { int: 'int' }];
       break;
     case 'route_distinguisher':
       result = [{ rd: values?.rd || '' }, { rd: 'string' }];
       break;
-    case 'ipv4':
-    case 'ipv6':
-      result = [{ address: values?.address || '' }, { address: 'string' }];
-      break;
+    case 'random_signed_int32':
     case 'vlan':
-      result = [{ vlan: values?.vlan || '' }, { vlan: 'int' }];
-      break;
     case 'vlan_range':
       result = [
         { from: values?.from || '', to: values?.to || '' },
@@ -134,7 +128,10 @@ export function getPoolPropertiesSkeleton(
       ];
       break;
     case 'unique_id':
-      result = [{ id: values?.id || '' }, { id: 'string' }];
+      result = [
+        { from: values?.from || '', to: values?.to || '', idFormat: '{counter}' },
+        { from: 'int', to: 'int', idFormat: 'string' },
+      ];
       break;
     default:
       break;
