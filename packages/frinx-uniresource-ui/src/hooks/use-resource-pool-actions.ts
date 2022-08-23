@@ -141,6 +141,7 @@ const POOL_RESOURCES_QUERY = gql`
             id
             Name
           }
+          AlternativeId
         }
       }
       pageInfo {

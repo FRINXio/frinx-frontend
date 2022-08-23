@@ -19,7 +19,30 @@ const getNamesOfAllocatedResources = (allocatedResources?: AllocatedResourcesQue
     ...new Set(
       allocatedResources.edges.reduce(
         (prev, curr) => {
-          return prev.concat(Object.keys(curr?.node.Properties));
+          return prev.concat(
+            Object.keys({
+              ...curr?.node.Properties,
+            }),
+          );
+        },
+        [''],
+      ),
+    ),
+  ];
+};
+
+const getAltIdsOfAllocatedResources = (allocatedResources?: AllocatedResourcesQuery['QueryResources']) => {
+  if (allocatedResources == null) return [];
+
+  return [
+    ...new Set(
+      allocatedResources.edges.reduce(
+        (prev, curr) => {
+          return prev.concat(
+            Object.keys({
+              ...curr?.node.AlternativeId,
+            }),
+          );
         },
         [''],
       ),
@@ -35,6 +58,8 @@ const PoolDetailAllocatingTable: FC<Props> = ({
   paginationArgs,
 }) => {
   const allocatedResourcesKeys = getNamesOfAllocatedResources(allocatedResources);
+  const allocatedResourcesAltIds = getAltIdsOfAllocatedResources(allocatedResources);
+
   return (
     <>
       <Table background="white" size="sm">
@@ -42,6 +67,7 @@ const PoolDetailAllocatingTable: FC<Props> = ({
           <Tr>
             {allocatedResourcesKeys.map((key) => (key ? <Th key={key}>{key}</Th> : null))}
             <Th>description</Th>
+            {allocatedResourcesAltIds.map((altId) => (altId ? <Th key={altId}>{altId}</Th> : null))}
             <Th>action</Th>
           </Tr>
         </Thead>
@@ -57,6 +83,9 @@ const PoolDetailAllocatingTable: FC<Props> = ({
                     key ? <Td key={`${key}-${resource.id}`}>{resource.Properties[key]}</Td> : null,
                   )}
                   <Td>{resource.Description}</Td>
+                  {allocatedResourcesAltIds.map((altId) =>
+                    altId ? <Td key={`${altId}-${resource.id}`}>{resource.AlternativeId[altId]}</Td> : null,
+                  )}
                   <Td>
                     <HStack>
                       <Tooltip
@@ -76,7 +105,9 @@ const PoolDetailAllocatingTable: FC<Props> = ({
                   </Td>
                 </Tr>
               ) : (
-                <Tr>There is no record</Tr>
+                <Tr>
+                  <Td>There is no record</Td>
+                </Tr>
               );
             })
           ) : (

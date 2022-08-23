@@ -1,4 +1,16 @@
-import { Box, Button, Divider, Heading, HStack, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  FormLabel,
+  Heading,
+  HStack,
+  Progress,
+  Spacer,
+  Text,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { omitNullValue } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -72,6 +84,8 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   const isAllocating = resourcePool.PoolType === 'allocating';
   const canDeletePool = resourcePool.Resources.length === 0;
 
+  console.log(allocatedResources);
+
   return (
     <PageContainer>
       <ClaimRouteDistinguisherResourceModal
@@ -121,6 +135,11 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         <Heading size="md" mb={5}>
           Allocated Resources
         </Heading>
+        {/* <FormControl>
+          <FormLabel>
+
+          </FormLabel>
+        </FormControl> */}
         {resourcePool.PoolType === 'allocating' && (
           <PoolDetailAllocatingTable
             allocatedResources={allocatedResources?.QueryResources}
