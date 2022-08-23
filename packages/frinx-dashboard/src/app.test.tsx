@@ -1,36 +1,28 @@
-import React, { ReactChildren } from 'react';
-import { afterAll, assert, beforeAll, describe, expect, test, vi } from 'vitest';
+import React, { ReactElement } from 'react';
+import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import App from './app';
-// import AuthProvider from './auth-provider';
 import { ServiceKey } from './types';
-import unwrap from './helpers/unwrap';
-import '@frinx/workflow-ui';
-
-// const ALL_SERVICES: ServiceKey[] = [
-//   'isUniflowEnabled' as const,
-//   'isInventoryEnabled' as const,
-//   'isUniresourceEnabled' as const,
-//   'isGammaEnabled' as const,
-//   'isDeviceTopologyEnabled' as const,
-// ];
 
 const enabledServices = new Map<ServiceKey, boolean>([
-  ['isUniflowEnabled', false],
-  ['isInventoryEnabled', false],
-  ['isUniflowEnabled', false],
-  ['isGammaEnabled', false],
-  ['isDeviceTopologyEnabled', false],
+  ['isUniflowEnabled', true],
+  ['isGammaEnabled', true],
+  ['isInventoryEnabled', true],
+  ['isUniresourceEnabled', true],
+  ['isDeviceTopologyEnabled', true],
 ]);
 
 describe('Dashboard app', () => {
   beforeAll(() => {
-    console.log('hey');
+    const config = {
+      uniconfigApiDocsURL:
+        'https://editor.swagger.io/?url=https://gist.githubusercontent.com/marosmars/4951c0395837cc04cae374c2a01eb209/raw/fb2e3d579679753b424f86170b54135bec668768/uniconfig_427.yaml',
+    };
+    vi.stubGlobal('__CONFIG__', config);
   });
 
-  test('should render', () => {
-    console.log('ok');
-    // render(<App enabledServices={enabledServices} basename="" isAuthEnabled={false} />);
-    // expect(screen.findAllByRole('alert')).toBeDefined();
+  test('should render version', () => {
+    render(<App enabledServices={enabledServices} basename="" isAuthEnabled={false} />);
+    expect(screen.getByTestId('version-info')).toBeDefined();
   });
 });
