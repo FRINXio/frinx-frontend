@@ -16,7 +16,9 @@
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { GetPoolsQuery, PoolCapacityPayload, Tag as TagType } from '../../__generated__/graphql';
+import DeletePoolPopover from '../../components/delete-pool-modal';
+import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
+import { GetPoolsQuery, Tag as TagType } from '../../__generated__/graphql';
 
 type Props = {
   pools: GetPoolsQuery['QueryRootResourcePools'];
@@ -25,23 +27,6 @@ type Props = {
   onDeleteBtnClick: (id: string) => void;
   onTagClick?: (tag: string) => void;
 };
-
-function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
-  if (capacity == null) {
-    return 0;
-  }
-  return Number(capacity.freeCapacity) + Number(capacity.utilizedCapacity);
-}
-function getCapacityValue(capacity: PoolCapacityPayload | null): number {
-  if (capacity == null) {
-    return 0;
-  }
-  const totalCapacity = getTotalCapacity(capacity);
-  if (totalCapacity === 0) {
-    return 0;
-  }
-  return (Number(capacity.utilizedCapacity) / totalCapacity) * 100;
-}
 
 const PoolsTable: VoidFunctionComponent<Props> = ({
   pools,
@@ -67,7 +52,6 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
         <Tbody>
           {pools.length > 0 ? (
             pools.map((pool) => {
-              const capacityValue = getCapacityValue(pool.Capacity);
               const totalCapacity = getTotalCapacity(pool.Capacity);
               const nestedPoolsCount = pool.Resources.filter((resource) => resource.NestedPool != null).length;
               const hasNestedPools = nestedPoolsCount > 0;
@@ -115,7 +99,10 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                     </Text>
                   </Td>
                   <Td isNumeric>
-                    <Progress size="xs" value={capacityValue} />
+                    <Progress
+                      size="xs"
+                      value={Number((BigInt(pool.Capacity?.utilizedCapacity ?? 0) * 100n) / totalCapacity)}
+                    />
                   </Td>
                   <Td>
                     <HStack spacing={2}>
@@ -127,17 +114,20 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                         as={Link}
                         to={`../pools/${pool.id}`}
                       />
-                      <IconButton
-                        variant="outline"
-                        size="xs"
-                        colorScheme="red"
-                        aria-label="delete"
-                        icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
-                        onClick={() => {
-                          onDeleteBtnClick(pool.id);
-                        }}
-                        isDisabled={Number(pool.Capacity?.freeCapacity) !== totalCapacity}
-                      />
+                      <DeletePoolPopover
+                        onDelete={() => onDeleteBtnClick(pool.id)}
+                        canDeletePool={pool.Resources.length === 0}
+                        poolName={pool.Name}
+                      >
+                        <IconButton
+                          variant="outline"
+                          size="xs"
+                          colorScheme="red"
+                          aria-label="delete"
+                          icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
+                          isDisabled={pool.Resources.length > 0}
+                        />
+                      </DeletePoolPopover>
                     </HStack>
                   </Td>
                 </Tr>
@@ -145,7 +135,14 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
             })
           ) : (
             <Tr textAlign="center">
-              <Td>There are no resource pools</Td>
+              <Td>
+                <HStack>
+                  <Text>There are no resource pools</Text>
+                  <Button colorScheme="blue" size="xs" as={Link} to="/uniresource/pools/new">
+                    Create pool
+                  </Button>
+                </HStack>
+              </Td>
             </Tr>
           )}
         </Tbody>
