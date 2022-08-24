@@ -299,7 +299,6 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
             }
           />
         )}
-        <Route path="/" element={<></>} />
       </Routes>
     </Flex>
   );
