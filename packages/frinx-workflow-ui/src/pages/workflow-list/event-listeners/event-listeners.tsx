@@ -24,17 +24,19 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 import { Editor } from '@frinx/shared/src';
 import PageContainer from '../../../common/PageContainer';
 import Paginator from '../../../common/pagination';
 import callbackUtils from '../../../utils/callback-utils';
 import { usePagination } from '../../../common/pagination-hook';
+import { EventListener } from '../../../helpers/uniflow-types';
 
 const EventListeners = () => {
-  const [eventListeners, setEventListeners] = useState([]);
+  const [eventListeners, setEventListeners] = useState<EventListener[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination([], 10);
+  const [selectedEvent, setSelectedEvent] = useState<EventListener | null>(null);
+  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<EventListener>([], 10);
 
   useEffect(() => {
     getData();
@@ -43,10 +45,10 @@ const EventListeners = () => {
   useEffect(() => {
     const results = !searchTerm
       ? eventListeners
-      : eventListeners.filter((e) => {
-          const searchedKeys = ['name', 'event'];
+      : eventListeners.filter((e: EventListener) => {
+          const searchedKeys: Array<keyof EventListener> = ['name', 'event'];
           for (let i = 0; i < searchedKeys.length; i += 1) {
-            if (e[searchedKeys[i]].toString().toLowerCase().includes(searchTerm.toLocaleLowerCase())) {
+            if (e[searchedKeys[i]]?.toString().toLowerCase().includes(searchTerm.toLocaleLowerCase())) {
               return true;
             }
           }
@@ -65,7 +67,11 @@ const EventListeners = () => {
     });
   };
 
-  const editEvent = (state, event) => {
+  const editEvent = (state: boolean | null, event: EventListener | null) => {
+    if (!event) {
+      return;
+    }
+
     if (state !== null) {
       event.active = state;
     }
@@ -82,7 +88,7 @@ const EventListeners = () => {
     setSelectedEvent(null);
   };
 
-  const deleteEvent = (name) => {
+  const deleteEvent = (name: string) => {
     const { deleteEventListener } = callbackUtils.getCallbacks;
 
     deleteEventListener(name)
@@ -94,11 +100,11 @@ const EventListeners = () => {
       });
   };
 
-  const handleChange = (event) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  const parseJSON = (data) => {
+  const parseJSON = (data: string) => {
     try {
       const parsedJSON = JSON.parse(data);
       setSelectedEvent(parsedJSON);
@@ -153,7 +159,7 @@ const EventListeners = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {pageItems.map((e) => {
+          {pageItems.map((e: EventListener) => {
             return (
               <Tr key={e.event}>
                 <Td textAlign="center">
@@ -167,11 +173,12 @@ const EventListeners = () => {
                 <Td textAlign="center">
                   <Stack direction="row" spacing={1}>
                     <IconButton
-                      icon={<Icon as={FeatherIcon} icon="edit" />}
+                      icon={<Icon size={20} as={FeatherIcon} icon="edit" />}
                       variant="outline"
                       isRound
                       colorScheme="gray"
                       onClick={() => setSelectedEvent(e)}
+                      aria-label="edit"
                     />
                     <IconButton
                       icon={<Icon size={20} as={FeatherIcon} icon="trash-2" />}
@@ -179,6 +186,7 @@ const EventListeners = () => {
                       isRound
                       colorScheme="red"
                       onClick={() => deleteEvent(e.name)}
+                      aria-label="delete"
                     />
                   </Stack>
                 </Td>
