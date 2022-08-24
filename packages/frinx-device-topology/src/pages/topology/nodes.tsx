@@ -2,7 +2,7 @@ import { unwrap } from '@frinx/shared';
 import React, { useState, VoidFunctionComponent } from 'react';
 import { Position } from './graph.helpers';
 
-type StatePosition = Position & {
+type StatePosition = {
   nodeId: string | null;
   isActive: boolean;
   offset: Position;
@@ -16,8 +16,6 @@ type Props = {
 const Nodes: VoidFunctionComponent<Props> = ({ nodes, positions, onNodePositionUpdate }) => {
   const [position, setPosition] = useState<StatePosition>({
     nodeId: null,
-    x: 100,
-    y: 100,
     isActive: false,
     offset: { x: 0, y: 0 },
   });
@@ -29,8 +27,6 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodes, positions, onNodePositionU
     const y = event.clientY - bbox.top;
     el.setPointerCapture(event.pointerId);
     setPosition({
-      x: positions[nodeId].x,
-      y: positions[nodeId].y,
       nodeId,
       isActive: true,
       offset: {
@@ -44,22 +40,14 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodes, positions, onNodePositionU
       const bbox = event.currentTarget.getBoundingClientRect();
       const x = event.clientX - bbox.left;
       const y = event.clientY - bbox.top;
-      setPosition((prev) => {
-        const newX = position.x - (position.offset.x - x);
-        const newY = position.y - (position.offset.y - y);
-        onNodePositionUpdate(unwrap(position.nodeId), { x: newX, y: newY });
-        return {
-          ...prev,
-          x: newX,
-          y: newY,
-        };
-      });
+      const nodeId = unwrap(position.nodeId);
+      const newX = positions[nodeId].x - (position.offset.x - x);
+      const newY = positions[nodeId].y - (position.offset.y - y);
+      onNodePositionUpdate(nodeId, { x: newX, y: newY });
     }
   };
   const handlePointerUp = () => {
     setPosition({
-      x: 0,
-      y: 0,
       offset: { x: 0, y: 0 },
       nodeId: null,
       isActive: false,
