@@ -41,7 +41,7 @@
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "typescript": "4.7.3",
-    "vitest": "0.14.1"
+    "vitest": "^0.22.1"
   },
   "dependencies": {
     "chakra-ui-autocomplete": "^1.4.5",

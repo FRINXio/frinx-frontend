@@ -95,7 +95,7 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
           </HStack>
         </Box>
       </Container>
-      <Box bg="gray.200" bottom={0} position="fixed" paddingX={4} fontSize="sm">
+      <Box data-testid="version-info" bg="gray.200" bottom={0} position="fixed" paddingX={4} fontSize="sm">
         <Code>{window.__CONFIG__.commitHash}</Code>
       </Box>
     </>

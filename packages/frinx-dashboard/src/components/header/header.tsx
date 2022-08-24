@@ -37,9 +37,10 @@ const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled, enabledServices }
             size="md"
             as={IconButton}
             icon={<Icon size={30} as={FeatherIcon} icon="menu" />}
+            data-testid="menu-button"
           />
           <Portal>
-            <MenuList zIndex="tooltip">
+            <MenuList zIndex="tooltip" data-testid="menu-list">
               <MenuItem as={Link} to="/">
                 <Icon size={20} as={FeatherIcon} icon="grid" color="brand.700" marginRight={2} />
                 <Text fontWeight="bold">Dashboard</Text>

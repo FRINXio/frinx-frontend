@@ -1,6 +1,6 @@
 import { Flex, Link, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import { NavLink, Route, Routes } from 'react-router-dom';
+import { NavLink, Route, Router, Routes } from 'react-router-dom';
 import { ServiceKey } from '../../types';
 
 type Props = {
