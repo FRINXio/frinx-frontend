@@ -30,8 +30,6 @@ const Topology: VoidFunctionComponent = () => {
     return null;
   }
 
-  const nodes = data?.topology.nodes.map((n) => ({ id: n.id, name: n.device.name })) ?? [];
-
   return (
     <Container maxWidth={1280}>
       <Flex justify="space-between" align="center" marginBottom={6}>
@@ -40,7 +38,7 @@ const Topology: VoidFunctionComponent = () => {
         </Heading>
       </Flex>
       <Box>
-        <TopologyGraph data={{ nodes, edges: data?.topology.edges ?? [] }} />
+        <TopologyGraph data={{ nodes: data?.topology.nodes ?? [], edges: data?.topology.edges ?? [] }} />
       </Box>
     </Container>
   );
