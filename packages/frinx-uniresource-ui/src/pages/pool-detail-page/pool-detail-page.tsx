@@ -1,18 +1,14 @@
-import { Box, Button, Divider, Heading, HStack, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
-import { omitNullValue } from '@frinx/shared/src';
-import React, { useState, VoidFunctionComponent } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Box, Button, Center, Divider, Heading, HStack, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import React, { VoidFunctionComponent } from 'react';
+import { useParams } from 'react-router-dom';
 import DeletePoolPopover from '../../components/delete-pool-modal';
 import PageContainer from '../../components/page-container';
 import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
 import useResourcePoolActions from '../../hooks/use-resource-pool-actions';
-import { GetPoolsQuery } from '../../__generated__/graphql';
-import PoolsTable from '../pools-page/pools-table';
-import AlternativeIdForm, { AlternativeId } from './claim-resource-modal/alternative-id-form';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
 import ClaimRouteDistinguisherResourceModal from './claim-resource-modal/claim-route_distinguisher-resource-modal';
-import PoolDetailAllocatingTable from './pool-detail-allocating-table';
-import PoolDetailSetSingletonTable from './pool-detail-set_singleton-table';
+import PoolDetailAllocatedResourceBox from './pool-detail-allocated-resources-box';
+import PoolDetailNestedPoolsTable from './pool-detail-nested-pools-table';
 
 export type PoolResource = {
   poolProperties: Record<string, string>;
@@ -22,7 +18,6 @@ export type PoolResource = {
 const PoolDetailPage: VoidFunctionComponent = () => {
   const { poolId } = useParams<{ poolId: string }>();
 
-  const [altIds, setAltIds] = useState<AlternativeId[]>([{ key: 'status', value: ['active'] }]);
   const claimResourceModal = useDisclosure();
   const claimRouteDistinguisherResourceModal = useDisclosure();
 
@@ -30,7 +25,6 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     {
       poolDetail: { data: poolData, fetching: isLoadingPool },
       allocatedResources: { data: allocatedResources, fetching: isLoadingResources },
-      resourceTypes: { fetching: isLoadingResourceTypes },
       paginationArgs,
     },
     {
@@ -45,10 +39,10 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   ] = useResourcePoolActions({ poolId });
 
   if (poolId == null) {
-    return null;
+    return <Center>The pool identifier is missing in the URL</Center>;
   }
 
-  if (isLoadingPool || isLoadingResources || isLoadingResourceTypes) {
+  if (isLoadingPool) {
     return <Progress isIndeterminate mt={-10} size="xs" />;
   }
 
@@ -64,34 +58,12 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     }
   };
 
-  const handleOnAlternativeIdsChange = (userInput: AlternativeId[]) => {
-    setAltIds(userInput);
-
-    handleAlternativeIdsChange(
-      userInput.reduce((prev, curr) => {
-        return {
-          ...prev,
-          [curr.key]: curr.value,
-        };
-      }, Object.create({})),
-    );
-  };
-
   const { QueryResourcePool: resourcePool } = poolData;
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
-  const nestedPools: GetPoolsQuery['QueryRootResourcePools'] = resourcePool.Resources.map((resource) =>
-    resource.NestedPool !== null ? resource.NestedPool : null,
-  ).filter(omitNullValue);
   const canClaimResources =
     resourcePool.Capacity != null &&
     BigInt(resourcePool.Capacity.freeCapacity) > 0n &&
     BigInt(resourcePool.Capacity.freeCapacity) <= totalCapacity;
-  const isPrefixOrRange =
-    resourcePool.ResourceType.Name === 'ipv4_prefix' ||
-    resourcePool.ResourceType.Name === 'ipv6_prefix' ||
-    resourcePool.ResourceType.Name === 'vlan_range' ||
-    resourcePool.ResourceType.Name === 'route_distinguisher';
-  const canCreateNestedPool = resourcePool.Resources.some((resource) => resource.NestedPool == null) && isPrefixOrRange;
   const isAllocating = resourcePool.PoolType === 'allocating';
   const canDeletePool = resourcePool.Resources.length === 0;
 
@@ -140,53 +112,22 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         </Text>
       </Box>
 
-      <Box my={10}>
-        <Heading size="md" mb={5}>
-          Allocated Resources
-        </Heading>
-        {resourcePool.PoolType === 'allocating' && (
-          <>
-            <Box my={5}>
-              <AlternativeIdForm alternativeIds={altIds} onChange={handleOnAlternativeIdsChange} />
-            </Box>
-            <PoolDetailAllocatingTable
-              allocatedResources={allocatedResources?.QueryResourcesByAltId}
-              onFreeResource={freePoolResource}
-              onNext={nextPage}
-              onPrevious={previousPage}
-              paginationArgs={paginationArgs}
-            />
-          </>
-        )}
-        {(resourcePool.PoolType === 'set' || resourcePool.PoolType === 'singleton') && (
-          <PoolDetailSetSingletonTable
-            resources={resourcePool.Resources}
-            allocatedResources={allocatedResources?.QueryResourcesByAltId}
-            onFreeResource={freePoolResource}
-            onClaimResource={claimPoolResource}
-            onNext={nextPage}
-            onPrevious={previousPage}
-            paginationArgs={paginationArgs}
-          />
-        )}
-      </Box>
+      <PoolDetailAllocatedResourceBox
+        allocatedResources={allocatedResources}
+        claimPoolResource={claimPoolResource}
+        freePoolResource={freePoolResource}
+        handleAlternativeIdsChange={handleAlternativeIdsChange}
+        isLoadingResources={isLoadingResources}
+        pagination={{ nextPage, previousPage, paginationArgs }}
+        resourcePool={resourcePool}
+      />
 
-      {isPrefixOrRange ? (
-        <Box my={10}>
-          <HStack mb={5}>
-            <Heading size="md">Nested Pools</Heading>
-            <Spacer />
-            {canCreateNestedPool && (
-              <Button colorScheme="blue" as={Link} to={`../pools/new?parentPoolId=${poolId}&isNested=true`}>
-                Create nested pool
-              </Button>
-            )}
-          </HStack>
-          <PoolsTable pools={nestedPools} isLoading={isLoadingPool} onDeleteBtnClick={deleteResourcePool} />
-        </Box>
-      ) : (
-        <Box textAlign="center">This pool cannot have nested pools</Box>
-      )}
+      <PoolDetailNestedPoolsTable
+        deleteResourcePool={deleteResourcePool}
+        isLoadingPool={isLoadingPool}
+        resourcePool={resourcePool}
+        poolId={poolId}
+      />
 
       <Box my={5} border="1px" borderColor="gray.300" borderRadius="md" bgColor="white" padding={5}>
         <Heading textColor="red.500" size="md">
