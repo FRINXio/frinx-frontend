@@ -1,18 +1,6 @@
-import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  FormLabel,
-  Heading,
-  HStack,
-  Progress,
-  Spacer,
-  Text,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Box, Button, Divider, Heading, HStack, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
 import { omitNullValue } from '@frinx/shared/src';
-import React, { VoidFunctionComponent } from 'react';
+import React, { useState, VoidFunctionComponent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import DeletePoolPopover from '../../components/delete-pool-modal';
 import PageContainer from '../../components/page-container';
@@ -20,6 +8,7 @@ import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
 import useResourcePoolActions from '../../hooks/use-resource-pool-actions';
 import { GetPoolsQuery } from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
+import AlternativeIdForm, { AlternativeId } from './claim-resource-modal/alternative-id-form';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
 import ClaimRouteDistinguisherResourceModal from './claim-resource-modal/claim-route_distinguisher-resource-modal';
 import PoolDetailAllocatingTable from './pool-detail-allocating-table';
@@ -33,6 +22,7 @@ export type PoolResource = {
 const PoolDetailPage: VoidFunctionComponent = () => {
   const { poolId } = useParams<{ poolId: string }>();
 
+  const [altIds, setAltIds] = useState<AlternativeId[]>([{ key: 'status', value: ['active'] }]);
   const claimResourceModal = useDisclosure();
   const claimRouteDistinguisherResourceModal = useDisclosure();
 
@@ -43,7 +33,15 @@ const PoolDetailPage: VoidFunctionComponent = () => {
       resourceTypes: { fetching: isLoadingResourceTypes },
       paginationArgs,
     },
-    { claimPoolResource, freePoolResource, deleteResourcePool, nextPage, previousPage, claimPoolResourceWithAltId },
+    {
+      claimPoolResource,
+      freePoolResource,
+      deleteResourcePool,
+      nextPage,
+      previousPage,
+      claimPoolResourceWithAltId,
+      handleAlternativeIdsChange,
+    },
   ] = useResourcePoolActions({ poolId });
 
   if (poolId == null) {
@@ -66,6 +64,19 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     }
   };
 
+  const handleOnAlternativeIdsChange = (userInput: AlternativeId[]) => {
+    setAltIds(userInput);
+
+    handleAlternativeIdsChange(
+      userInput.reduce((prev, curr) => {
+        return {
+          ...prev,
+          [curr.key]: curr.value,
+        };
+      }, Object.create({})),
+    );
+  };
+
   const { QueryResourcePool: resourcePool } = poolData;
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
   const nestedPools: GetPoolsQuery['QueryRootResourcePools'] = resourcePool.Resources.map((resource) =>
@@ -83,8 +94,6 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   const canCreateNestedPool = resourcePool.Resources.some((resource) => resource.NestedPool == null) && isPrefixOrRange;
   const isAllocating = resourcePool.PoolType === 'allocating';
   const canDeletePool = resourcePool.Resources.length === 0;
-
-  console.log(allocatedResources);
 
   return (
     <PageContainer>
@@ -135,24 +144,24 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         <Heading size="md" mb={5}>
           Allocated Resources
         </Heading>
-        {/* <FormControl>
-          <FormLabel>
-
-          </FormLabel>
-        </FormControl> */}
         {resourcePool.PoolType === 'allocating' && (
-          <PoolDetailAllocatingTable
-            allocatedResources={allocatedResources?.QueryResources}
-            onFreeResource={freePoolResource}
-            onNext={nextPage}
-            onPrevious={previousPage}
-            paginationArgs={paginationArgs}
-          />
+          <>
+            <Box my={5}>
+              <AlternativeIdForm alternativeIds={altIds} onChange={handleOnAlternativeIdsChange} />
+            </Box>
+            <PoolDetailAllocatingTable
+              allocatedResources={allocatedResources?.QueryResourcesByAltId}
+              onFreeResource={freePoolResource}
+              onNext={nextPage}
+              onPrevious={previousPage}
+              paginationArgs={paginationArgs}
+            />
+          </>
         )}
         {(resourcePool.PoolType === 'set' || resourcePool.PoolType === 'singleton') && (
           <PoolDetailSetSingletonTable
             resources={resourcePool.Resources}
-            allocatedResources={allocatedResources?.QueryResources}
+            allocatedResources={allocatedResources?.QueryResourcesByAltId}
             onFreeResource={freePoolResource}
             onClaimResource={claimPoolResource}
             onNext={nextPage}

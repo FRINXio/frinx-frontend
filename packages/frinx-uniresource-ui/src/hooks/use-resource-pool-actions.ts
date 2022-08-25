@@ -1,5 +1,5 @@
 import { useNotifications, unwrap } from '@frinx/shared/src';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gql, useMutation, useQuery, UseQueryState } from 'urql';
 import {
@@ -59,6 +59,7 @@ export type ResourcePoolActionHandlers = {
   ) => void;
   freePoolResource: (userInput: Record<string, string | number>) => void;
   deleteResourcePool: (id: string, options?: { redirectOnSuccess?: string; redirectOnError?: string }) => void;
+  handleAlternativeIdsChange: (userInput: Record<string, string | string[]>) => void;
 } & CallbackFunctions;
 
 const POOL_DETAIL_QUERY = gql`
@@ -130,8 +131,8 @@ const POOL_DETAIL_QUERY = gql`
 `;
 
 const POOL_RESOURCES_QUERY = gql`
-  query AllocatedResources($poolId: ID!, $first: Int, $last: Int, $before: String, $after: String) {
-    QueryResources(poolId: $poolId, first: $first, last: $last, before: $before, after: $after) {
+  query AllocatedResources($input: Map!, $poolId: ID!, $first: Int, $last: Int, $before: String, $after: String) {
+    QueryResourcesByAltId(input: $input, poolId: $poolId, first: $first, last: $last, before: $before, after: $after) {
       edges {
         node {
           id
@@ -214,6 +215,7 @@ const useResourcePoolActions = ({
   const mutationResourcesContext = useMemo(() => ({ additionalTypenames: ['Resource', 'ResourcePool'] }), []);
   const allocatedResourcesContext = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
   const navigate = useNavigate();
+  const [allocatedResourcesInput, setAllocatedResourcesInput] = useState({});
 
   const [poolDetail] = useQuery<GetPoolDetailQuery, GetPoolDetailQueryVariables>({
     query: POOL_DETAIL_QUERY,
@@ -229,7 +231,11 @@ const useResourcePoolActions = ({
     AllocatedResourcesQueryVariables
   >({
     query: POOL_RESOURCES_QUERY,
-    variables: { poolId: unwrap(poolId), ...paginationArgs },
+    variables: {
+      input: allocatedResourcesInput,
+      poolId: unwrap(poolId),
+      ...paginationArgs,
+    },
     context: allocatedResourcesContext,
   });
 
@@ -359,6 +365,10 @@ const useResourcePoolActions = ({
               navigate(options.redirectOnError);
             }
           });
+      },
+
+      handleAlternativeIdsChange: (userInput: Record<string, string | string[]>) => {
+        setAllocatedResourcesInput(userInput);
       },
     }),
     [

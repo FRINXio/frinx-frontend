@@ -1,18 +1,23 @@
-import { Table, Thead, Tr, Th, Tbody, Td, Button, Tooltip, HStack } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import { Table, Thead, Tr, Th, Tbody, Td, Button, Tooltip, HStack, useDisclosure } from '@chakra-ui/react';
+import { omitNullValue } from '@frinx/shared/src';
+import React, { FC, useState } from 'react';
+import AlternativeIdModal from '../../components/alternative-id-modal';
 import Pagination from '../../components/pagination';
 import { PaginationArgs } from '../../hooks/use-pagination';
 import { AllocatedResourcesQuery } from '../../__generated__/graphql';
 
+type AllocatedResources = AllocatedResourcesQuery['QueryResourcesByAltId'];
+type AllocatedResource = NonNullable<AllocatedResources['edges'][0]>['node'];
+
 type Props = {
-  allocatedResources?: AllocatedResourcesQuery['QueryResources'];
+  allocatedResources?: AllocatedResources;
   paginationArgs: PaginationArgs;
   onFreeResource: (userInput: Record<string, string | number>) => void;
   onPrevious: (cursor: string | null) => () => void;
   onNext: (cursor: string | null) => () => void;
 };
 
-const getNamesOfAllocatedResources = (allocatedResources?: AllocatedResourcesQuery['QueryResources']) => {
+const getNamesOfAllocatedResources = (allocatedResources?: AllocatedResources) => {
   if (allocatedResources == null) return [];
 
   return [
@@ -28,26 +33,7 @@ const getNamesOfAllocatedResources = (allocatedResources?: AllocatedResourcesQue
         [''],
       ),
     ),
-  ];
-};
-
-const getAltIdsOfAllocatedResources = (allocatedResources?: AllocatedResourcesQuery['QueryResources']) => {
-  if (allocatedResources == null) return [];
-
-  return [
-    ...new Set(
-      allocatedResources.edges.reduce(
-        (prev, curr) => {
-          return prev.concat(
-            Object.keys({
-              ...curr?.node.AlternativeId,
-            }),
-          );
-        },
-        [''],
-      ),
-    ),
-  ];
+  ].filter(omitNullValue);
 };
 
 const PoolDetailAllocatingTable: FC<Props> = ({
@@ -57,17 +43,23 @@ const PoolDetailAllocatingTable: FC<Props> = ({
   onNext,
   paginationArgs,
 }) => {
+  const [selectedResource, setSelectedResource] = useState<AllocatedResource | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const allocatedResourcesKeys = getNamesOfAllocatedResources(allocatedResources);
-  const allocatedResourcesAltIds = getAltIdsOfAllocatedResources(allocatedResources);
 
   return (
     <>
+      {selectedResource != null && (
+        <AlternativeIdModal isOpen={isOpen} onClose={onClose} altIds={selectedResource.AlternativeId} />
+      )}
       <Table background="white" size="sm">
         <Thead bgColor="gray.200">
           <Tr>
-            {allocatedResourcesKeys.map((key) => (key ? <Th key={key}>{key}</Th> : null))}
+            {allocatedResourcesKeys.map((key) => (
+              <Th key={key}>{key}</Th>
+            ))}
             <Th>description</Th>
-            {allocatedResourcesAltIds.map((altId) => (altId ? <Th key={altId}>{altId}</Th> : null))}
+            <Th>alternative ids</Th>
             <Th>action</Th>
           </Tr>
         </Thead>
@@ -83,9 +75,17 @@ const PoolDetailAllocatingTable: FC<Props> = ({
                     key ? <Td key={`${key}-${resource.id}`}>{resource.Properties[key]}</Td> : null,
                   )}
                   <Td>{resource.Description}</Td>
-                  {allocatedResourcesAltIds.map((altId) =>
-                    altId ? <Td key={`${altId}-${resource.id}`}>{resource.AlternativeId[altId]}</Td> : null,
-                  )}
+                  <Td>
+                    <Button
+                      onClick={() => {
+                        setSelectedResource(resource);
+                        onOpen();
+                      }}
+                      size="xs"
+                    >
+                      Show alternative ids
+                    </Button>
+                  </Td>
                   <Td>
                     <HStack>
                       <Tooltip

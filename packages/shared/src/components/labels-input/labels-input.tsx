@@ -37,7 +37,7 @@ const LabelsInput: VoidFunctionComponent<Props> = ({ placeholder, labels, onChan
   return (
     <InputGroup>
       {labels.length && (
-        <InputLeftAddon bg="white">
+        <InputLeftAddon bg="white" overflow="scroll" maxWidth="2xs">
           <HStack spacing={2}>
             {labels.map((l) => {
               return (
