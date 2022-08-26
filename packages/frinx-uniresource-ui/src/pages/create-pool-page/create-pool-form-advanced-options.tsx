@@ -10,8 +10,7 @@ import {
   useDisclosure,
   Text,
 } from '@chakra-ui/react';
-import type { TagsInputReturnType } from '@frinx/shared/src/hooks/use-tags-input';
-import { SearchByTagInput } from '@frinx/shared';
+import { SearchByTagInput, TagsInputReturnType } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import FeatherIcon from 'feather-icons-react';
 import { FormikErrors, FormikHandlers } from 'formik';
