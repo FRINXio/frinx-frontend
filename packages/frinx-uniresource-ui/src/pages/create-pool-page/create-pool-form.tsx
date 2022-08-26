@@ -137,7 +137,11 @@ function getSchema(poolType: string, isNested: boolean) {
                   if (key === 'from' || key === 'to' || key === 'prefix' || key === 'id') {
                     return {
                       ...acc,
-                      [key]: yup.number().typeError('Please enter a number').required(`Please enter a value`),
+                      [key]: yup
+                        .number()
+                        .min(1, 'Minimal required value is 1')
+                        .typeError('Please enter a number')
+                        .required(`Please enter a value`),
                     };
                   }
 
