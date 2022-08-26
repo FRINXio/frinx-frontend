@@ -7,6 +7,7 @@ import Editor from './components/editor/editor';
 import SearchByTagInput from './components/search-by-tag/search-by-tag-input';
 import SearchByTag from './components/search-by-tag/search-by-tag';
 import LabelsInput from './components/labels-input/labels-input';
+import type { TagsInputReturnType } from './hooks/use-tags-input';
 
 export {
   useAsyncGenerator,
@@ -25,4 +26,5 @@ export {
   useResponseToasts,
   useTags,
   useTagsInput,
+  TagsInputReturnType,
 };

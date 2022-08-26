@@ -2,7 +2,6 @@ import React, { useCallback, VoidFunctionComponent, useEffect, useState } from '
 import { useFormik } from 'formik';
 import { omit } from 'lodash';
 import {
-  Box,
   Button,
   Divider,
   FormControl,
@@ -18,11 +17,9 @@ import {
   Switch,
   Text,
   Textarea,
-  useDisclosure,
 } from '@chakra-ui/react';
-import { useTagsInput, SearchByTagInput } from '@frinx/shared/src';
+import { useTagsInput } from '@frinx/shared/src';
 import { useNavigate } from 'react-router-dom';
-import FeatherIcon from 'feather-icons-react';
 import PoolValuesForm from './pool-values-form';
 import PoolPropertiesForm from './pool-properties-form';
 import { SelectPoolsQuery, SelectResourceTypesQuery } from '../../__generated__/graphql';
@@ -36,8 +33,9 @@ import {
   getSchemaForCreatePoolForm,
   canSelectDefaultResourceTypes,
   canSelectIpResourceTypes,
-  canSelectCustomResourceTypes,
 } from '../../helpers/create-pool-form.helpers';
+import AdvancedOptions from './create-pool-form-advanced-options';
+import NestedFormPart from './create-pool-form-nested-part';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
 export type FormValues = {
@@ -55,6 +53,18 @@ export type FormValues = {
   isNested: boolean;
   parentPoolId?: string;
   parentResourceId?: string;
+};
+
+type AllocStrategy = {
+  id: string;
+  name: string;
+};
+
+type Props = {
+  onFormSubmit: (values: Omit<FormValues, 'resourceTypeName'>) => void;
+  resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'];
+  resourcePools: SelectPoolsQuery;
+  allocStrategies: AllocStrategy[];
 };
 
 const getInitialValues = (url: string, resourceTypes: SelectResourceTypesQuery['QueryResourceTypes']): FormValues => {
@@ -79,18 +89,6 @@ const getInitialValues = (url: string, resourceTypes: SelectResourceTypesQuery['
   };
 };
 
-type AllocStrategy = {
-  id: string;
-  name: string;
-};
-
-type Props = {
-  onFormSubmit: (values: Omit<FormValues, 'resourceTypeName'>) => void;
-  resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'];
-  resourcePools: SelectPoolsQuery;
-  allocStrategies: AllocStrategy[];
-};
-
 const CreatePoolForm: VoidFunctionComponent<Props> = ({
   onFormSubmit,
   resourceTypes,
@@ -98,8 +96,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   allocStrategies,
 }) => {
   const navigate = useNavigate();
-  const { selectedTags, handleTagCreation, handleOnSelectionChange } = useTagsInput();
-  const advancedOptionsDisclosure = useDisclosure();
+  const tagsInput = useTagsInput();
   const [poolSchema, setPoolSchema] = useState(
     getSchemaForCreatePoolForm(
       getInitialValues(window.location.search, resourceTypes).poolType,
@@ -118,7 +115,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
         )?.id;
         const updatedData = {
           ...omit(data, ['resourceTypeName']),
-          tags: [...new Set([...selectedTags, data.name])],
+          tags: [...new Set([...tagsInput.selectedTags, data.name])],
           allocationStrategyId: allocationStratedyId,
         };
 
@@ -197,54 +194,14 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
         <Switch onChange={handleChange} name="isNested" isChecked={isNested} />
       </FormControl>
       {isNested && (
-        <HStack spacing={2} marginY={5}>
-          <FormControl id="parentPoolId" isInvalid={errors.parentPoolId !== undefined} isRequired>
-            <FormLabel htmlFor="parentPool">Parent pool</FormLabel>
-            <Select
-              id="parentPool"
-              name="parentPoolId"
-              onChange={handleChange}
-              value={parentPoolId}
-              placeholder="Select parent resource type"
-            >
-              {pools
-                .filter(
-                  (pool) =>
-                    pool.Resources.length > 0 &&
-                    canSelectCustomResourceTypes(pool.ResourceType.Name, [
-                      'ipv4_prefix',
-                      'ipv6_prefix',
-                      'vlan_range',
-                      'route_distinguisher',
-                    ]),
-                )
-                .map((pool) => (
-                  <option value={pool.id} key={pool.id}>
-                    {pool.Name}
-                  </option>
-                ))}
-            </Select>
-            <FormErrorMessage>{errors.parentPoolId}</FormErrorMessage>
-          </FormControl>
-
-          <FormControl id="parentResourceId" isInvalid={errors.parentResourceId !== undefined} isRequired>
-            <FormLabel htmlFor="parentResource">Parent allocated resources</FormLabel>
-            <Select
-              id="parentResource"
-              name="parentResourceId"
-              onChange={handleChange}
-              value={parentResourceId}
-              placeholder="Select parent resource type"
-            >
-              {availableAllocatedResources.map((pool) => (
-                <option value={pool.id} key={pool.id}>
-                  {pool.Name}
-                </option>
-              ))}
-            </Select>
-            <FormErrorMessage>{errors.parentResourceId}</FormErrorMessage>
-          </FormControl>
-        </HStack>
+        <NestedFormPart
+          availableAllocatedResources={availableAllocatedResources}
+          errors={errors}
+          handleChange={handleChange}
+          parentPoolId={parentPoolId}
+          parentResourceId={parentResourceId}
+          pools={pools}
+        />
       )}
       <HStack spacing={2} marginY={5}>
         <FormControl id="resourceTypeId" isInvalid={errors.resourceTypeId !== undefined} isRequired>
@@ -348,56 +305,15 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
           />
         </>
       )}
-      <HStack my={3}>
-        <Divider />
-        <HStack cursor="pointer" textColor="gray.500" onClick={advancedOptionsDisclosure.onToggle}>
-          <Text width="max-content">Advanced options</Text>
-          {advancedOptionsDisclosure.isOpen ? (
-            <FeatherIcon icon="chevron-up" size={20} />
-          ) : (
-            <FeatherIcon icon="chevron-down" size={20} />
-          )}
-        </HStack>
-        <Divider />
-      </HStack>
-      {advancedOptionsDisclosure.isOpen && (
-        <Box>
-          <HStack>
-            <FormControl id="poolType">
-              <FormLabel htmlFor="poolTypeName">Pool type</FormLabel>
-              <Select id="poolTypeName" name="poolType" value={poolType} onChange={handleChange}>
-                {['set', 'allocating', 'singleton'].map((o) => (
-                  <option value={o} key={o}>
-                    {o}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-            {values.poolType !== 'singleton' && (
-              <FormControl id="dealocationSafetyPeriod" isInvalid={errors.dealocationSafetyPeriod !== undefined}>
-                <FormLabel htmlFor="dealocationPeriod">Dealocation safety period</FormLabel>
-                <Input
-                  id="dealocationPeriod"
-                  type="text"
-                  onChange={handleChange}
-                  name="dealocationSafetyPeriod"
-                  value={values.dealocationSafetyPeriod}
-                  placeholder="Enter dealocation safety period"
-                />
-                <FormErrorMessage>{errors.dealocationSafetyPeriod}</FormErrorMessage>
-              </FormControl>
-            )}
-          </HStack>
 
-          <FormControl mt={2}>
-            <SearchByTagInput
-              selectedTags={selectedTags}
-              onTagCreate={handleTagCreation}
-              onSelectionChange={handleOnSelectionChange}
-            />
-          </FormControl>
-        </Box>
-      )}
+      <AdvancedOptions
+        poolPropertiesErrors={errors}
+        poolType={poolType}
+        tagsParams={tagsInput}
+        values={values}
+        handleChange={handleChange}
+      />
+
       <HStack mt={4}>
         <Spacer />
         <Button onClick={() => navigate(-1)} variant="solid">
