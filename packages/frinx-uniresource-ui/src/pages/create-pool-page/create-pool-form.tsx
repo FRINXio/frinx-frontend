@@ -283,7 +283,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       getInitialValues(window.location.search, resourceTypes).isNested,
     ),
   );
-  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik<FormValues>({
+  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors, resetForm } = useFormik<FormValues>({
     initialValues: getInitialValues(window.location.search, resourceTypes),
     validationSchema: poolSchema,
     validateOnChange: false,
@@ -299,6 +299,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       };
 
       onFormSubmit(updatedData);
+      resetForm();
     },
   });
 
