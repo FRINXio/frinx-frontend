@@ -7,15 +7,17 @@ import AlternativeIdForm, { AlternativeId } from './claim-resource-modal/alterna
 import PoolDetailAllocatingTable from './pool-detail-allocating-table';
 import PoolDetailSetSingletonTable from './pool-detail-set_singleton-table';
 
+type Pagination = {
+  nextPage: (cursor: string | null) => () => void;
+  previousPage: (cursor: string | null) => () => void;
+  paginationArgs: PaginationArgs;
+};
+
 type Props = {
   isLoadingResources: boolean;
   resourcePool: GetPoolDetailQuery['QueryResourcePool'];
   allocatedResources?: AllocatedResourcesQuery;
-  pagination: {
-    nextPage: (cursor: string | null) => () => void;
-    previousPage: (cursor: string | null) => () => void;
-    paginationArgs: PaginationArgs;
-  };
+  pagination: Pagination;
   handleAlternativeIdsChange: (altIdsObject: Record<string, string | string[]>) => void;
   claimPoolResource: (
     description?: string | null | undefined,
@@ -56,7 +58,7 @@ const PoolDetailAllocatedResourceBox: VoidFunctionComponent<Props> = ({
         }
 
         return { ...prev, [curr.key]: curr.value };
-      }, Object.create({})),
+      }, {} as Record<string, string | string[]>),
     );
 
     handleAlternativeIdsChange(

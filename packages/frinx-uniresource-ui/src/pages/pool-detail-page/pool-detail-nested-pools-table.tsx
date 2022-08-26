@@ -2,6 +2,7 @@ import { Box, HStack, Heading, Spacer, Button } from '@chakra-ui/react';
 import { omitNullValue } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
+import { DeleteResourcePoolOptions } from '../../hooks/use-resource-pool-actions';
 import { GetPoolDetailQuery, GetPoolsQuery } from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
 
@@ -9,15 +10,7 @@ type Props = {
   poolId: string;
   resourcePool: GetPoolDetailQuery['QueryResourcePool'];
   isLoadingPool: boolean;
-  deleteResourcePool: (
-    id: string,
-    options?:
-      | {
-          redirectOnSuccess?: string | undefined;
-          redirectOnError?: string | undefined;
-        }
-      | undefined,
-  ) => void;
+  deleteResourcePool: (id: string, options?: DeleteResourcePoolOptions | undefined) => void;
 };
 
 const PoolDetailNestedPoolsTable: VoidFunctionComponent<Props> = ({

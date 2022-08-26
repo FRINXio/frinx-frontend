@@ -206,6 +206,11 @@ const DELETE_POOL_MUTATION = gql`
   }
 `;
 
+export type DeleteResourcePoolOptions = {
+  redirectOnSuccess?: string | undefined;
+  redirectOnError?: string | undefined;
+};
+
 const useResourcePoolActions = ({
   poolId,
 }: {
@@ -339,7 +344,7 @@ const useResourcePoolActions = ({
           });
       },
 
-      deleteResourcePool: (id: string, options?: { redirectOnSuccess?: string; redirectOnError?: string }) => {
+      deleteResourcePool: (id: string, options?: DeleteResourcePoolOptions) => {
         deletePool({ input: { resourcePoolId: id } }, mutationResourcesContext)
           .then(({ error }) => {
             if (error) {

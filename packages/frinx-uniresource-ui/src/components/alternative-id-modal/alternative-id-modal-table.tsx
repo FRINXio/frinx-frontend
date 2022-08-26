@@ -1,31 +1,13 @@
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Text,
-  Table,
-  Thead,
-  Tbody,
-  Th,
-  Tr,
-  Td,
-  VStack,
-} from '@chakra-ui/react';
+import { Table, Thead, Tr, Th, Tbody, Td, VStack, Text } from '@chakra-ui/react';
 import { isArray, toArray } from 'lodash';
 import React, { VoidFunctionComponent } from 'react';
 
 type Props = {
-  isOpen: boolean;
   altIds: Record<string, string | string[]>;
-  onClose: () => void;
+  altIdKeys: string[];
 };
 
-const altIdValueItem = (altIds: Record<string, string | string[]>, altIdKeys: string[]) => {
+const AlternativeIdModalTable: VoidFunctionComponent<Props> = ({ altIdKeys, altIds }) => {
   return (
     <Table size="sm">
       <Thead bgColor="gray.200">
@@ -68,22 +50,4 @@ const altIdValueItem = (altIds: Record<string, string | string[]>, altIdKeys: st
   );
 };
 
-const AlternativeIdsModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, altIds }) => {
-  const altIdKeys = Object.keys(altIds);
-
-  return (
-    <Modal size="2xl" isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Alternative Ids</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>{altIdValueItem(altIds, altIdKeys)}</ModalBody>
-        <ModalFooter>
-          <Button onClick={onClose}>Close</Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  );
-};
-
-export default AlternativeIdsModal;
+export default AlternativeIdModalTable;

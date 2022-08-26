@@ -144,7 +144,7 @@ const ClaimResourceModal: FC<Props> = ({
             ...prev,
             [curr.key]: curr.value,
           };
-        }, Object.create({}));
+        }, {} as Record<string, string | string[]>);
 
         onClaimWithAltId(alternativeIdObject, description, userInput);
         onClose();
