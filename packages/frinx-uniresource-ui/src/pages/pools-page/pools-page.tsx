@@ -151,7 +151,7 @@ const PoolsPage: VoidFunctionComponent = () => {
             leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
             colorScheme="blue"
             as={Link}
-            to="new"
+            to="new?type=default"
           >
             Create Pool
           </Button>

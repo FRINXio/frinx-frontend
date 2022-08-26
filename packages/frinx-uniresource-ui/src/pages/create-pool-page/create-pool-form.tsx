@@ -1,7 +1,6 @@
 import React, { useCallback, VoidFunctionComponent, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import { omit } from 'lodash';
-import * as yup from 'yup';
 import {
   Box,
   Button,
@@ -22,6 +21,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { useTagsInput, SearchByTagInput } from '@frinx/shared/src';
+import { useNavigate } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import PoolValuesForm from './pool-values-form';
 import PoolPropertiesForm from './pool-properties-form';
@@ -33,6 +33,10 @@ import {
   deriveResourceTypesFromAvailableResourceTypes,
   formatSuggestedProperties,
   getPoolPropertiesSkeleton,
+  getSchemaForCreatePoolForm,
+  canSelectDefaultResourceTypes,
+  canSelectIpResourceTypes,
+  canSelectCustomResourceTypes,
 } from '../../helpers/create-pool-form.helpers';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
@@ -52,10 +56,6 @@ export type FormValues = {
   parentPoolId?: string;
   parentResourceId?: string;
 };
-
-const IPV4_REGEX = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
-const IPV6_REGEX =
-  /(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$)/;
 
 const getInitialValues = (url: string, resourceTypes: SelectResourceTypesQuery['QueryResourceTypes']): FormValues => {
   const query = new URLSearchParams(url);
@@ -79,192 +79,10 @@ const getInitialValues = (url: string, resourceTypes: SelectResourceTypesQuery['
   };
 };
 
-function getSchemaForPoolValues(
-  poolValues: Record<string, string>[],
-  options: { isIpv6?: boolean; isIpv4?: boolean } = { isIpv4: false, isIpv6: false },
-) {
-  return yup.array().of(
-    yup.object().shape({
-      ...Object.keys(poolValues[0] ?? {}).reduce((acc, key) => {
-        if (key === 'address') {
-          return {
-            ...acc,
-            [key]: yup
-              .string()
-              .matches(
-                options.isIpv4 ? IPV4_REGEX : IPV6_REGEX,
-                `Please enter a valid ${options.isIpv4 ? 'IPv4' : 'IPv6'} address`,
-              )
-              .required(`Please enter an ${options.isIpv4 ? 'IPv4' : 'IPv6'} address`),
-          };
-        } else {
-          return {
-            ...acc,
-            [key]: yup.string().required('Please enter a value'),
-          };
-        }
-      }, {}),
-    }),
-  );
-}
-
 type AllocStrategy = {
   id: string;
   name: string;
 };
-
-function getSchema(poolType: string, isNested: boolean) {
-  switch (poolType) {
-    case 'allocating':
-      return yup.object({
-        name: yup.string().required('Please enter a name'),
-        description: yup.string().notRequired(),
-        resourceTypeId: yup.string().required('Please enter resource type'),
-        tags: yup.array().notRequired(),
-        dealocationSafetyPeriod: yup
-          .number()
-          .min(0, 'Please enter positive number')
-          .required('Please enter a dealocation safety period')
-          .typeError('Please enter a number'),
-        allocationStrategyId: yup.string().notRequired(),
-        poolProperties: yup.lazy((poolProperties) =>
-          yup
-            .object()
-            .when('resourceTypeName', {
-              is: (resourceTypeName: string) => resourceTypeName === 'ipv4' || resourceTypeName === 'ipv4_prefix',
-              then: yup.object().shape({
-                ...Object.keys(poolProperties).reduce((acc, key) => {
-                  if (key === 'from' || key === 'to' || key === 'prefix' || key === 'id') {
-                    return {
-                      ...acc,
-                      [key]: yup
-                        .number()
-                        .min(1, 'Minimal required value is 1')
-                        .typeError('Please enter a number')
-                        .required(`Please enter a value`),
-                    };
-                  }
-
-                  if (key === 'address') {
-                    return {
-                      ...acc,
-                      [key]: yup
-                        .string()
-                        .matches(IPV4_REGEX, `Please enter a valid IPv4 address`)
-                        .required(`Please enter an IPv4 address`),
-                    };
-                  }
-
-                  return {
-                    ...acc,
-                    [key]: yup.string().required('Please enter a value'),
-                  };
-                }, {}),
-              }),
-            })
-            .when('resourceTypeName', {
-              is: (resourceTypeName: string) => resourceTypeName === 'ipv6' || resourceTypeName === 'ipv6_prefix',
-              then: yup.object().shape({
-                ...Object.keys(poolProperties).reduce((acc, key) => {
-                  if (key === 'from' || key === 'to' || key === 'prefix' || key === 'id') {
-                    return {
-                      ...acc,
-                      [key]: yup.number().typeError('Please enter a number').required(`Please enter a value`),
-                    };
-                  }
-
-                  if (key === 'address') {
-                    return {
-                      ...acc,
-                      [key]: yup
-                        .string()
-                        .matches(IPV6_REGEX, `Please enter a valid IPv6 address`)
-                        .required(`Please enter an IPv6 address`),
-                    };
-                  }
-
-                  return {
-                    ...acc,
-                    [key]: yup.string().required('Please enter a value'),
-                  };
-                }, {}),
-              }),
-            })
-            .when('resourceTypeName', {
-              is: (resourceTypeName: string) => resourceTypeName === 'random_signed_int32',
-              then: yup.object().shape({
-                ...Object.keys(poolProperties).reduce((acc, key) => {
-                  return {
-                    ...acc,
-                    [key]: yup
-                      .number()
-                      .typeError('Please enter a number')
-                      .min(-2147483648, 'Please enter a number between -2147483648 and 2147483647')
-                      .max(2147483647, 'Please enter a number between -2147483648 and 2147483647')
-                      .required('Please enter a value'),
-                  };
-                }, {}),
-              }),
-            }),
-        ),
-        poolPropertyTypes: yup.object().required(),
-        ...(isNested && {
-          parentPoolId: yup.string().required('Please choose parent pool'),
-          parentResourceId: yup.string().required('Please choose allocated resource from parent'),
-        }),
-      });
-
-    case 'set':
-      return yup.object({
-        name: yup.string().required('Please enter a name'),
-        description: yup.string().notRequired(),
-        resourceTypeId: yup.string().required('Please enter resource type'),
-        tags: yup.array().of(yup.string()).notRequired(),
-        dealocationSafetyPeriod: yup
-          .number()
-          .min(0, 'Please enter positive number')
-          .required('Please enter a dealocation safety period')
-          .typeError('Please enter a number'),
-        poolValues: yup.lazy((poolValues: Array<Record<string, string>>) => {
-          return yup
-            .array()
-            .when('resourceTypeName', {
-              is: (resourceTypeName: string) => resourceTypeName === 'ipv4' || resourceTypeName === 'ipv4_prefix',
-              then: getSchemaForPoolValues(poolValues, { isIpv4: true }),
-            })
-            .when('resourceTypeName', {
-              is: (resourceTypeName: string) => resourceTypeName === 'ipv6' || resourceTypeName === 'ipv6_prefix',
-              then: getSchemaForPoolValues(poolValues, { isIpv6: true }),
-              otherwise: yup.array().of(
-                yup.object().shape({
-                  ...Object.keys(poolValues[0] ?? {}).reduce(
-                    (acc, key) => ({ ...acc, [key]: yup.string().required('Please enter a value') }),
-                    {},
-                  ),
-                }),
-              ),
-            })
-            .min(1, 'Please enter at least one value');
-        }),
-        ...(isNested && {
-          parentPoolId: yup.string().required('Please choose parent pool'),
-          parentResourceId: yup.string().required('Please choose allocated resource from parent'),
-        }),
-      });
-
-    default:
-      return yup.object({
-        name: yup.string().required('Please enter a name'),
-        description: yup.string().notRequired(),
-        tags: yup.array(),
-        resourceTypeId: yup.string().required('Please enter resource type'),
-        ...(isNested && {
-          parentPoolId: yup.string().required('Please choose parent pool'),
-          parentResourceId: yup.string().required('Please choose allocated resource from parent'),
-        }),
-      });
-  }
-}
 
 type Props = {
   onFormSubmit: (values: Omit<FormValues, 'resourceTypeName'>) => void;
@@ -279,33 +97,35 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   resourcePools,
   allocStrategies,
 }) => {
+  const navigate = useNavigate();
   const { selectedTags, handleTagCreation, handleOnSelectionChange } = useTagsInput();
   const advancedOptionsDisclosure = useDisclosure();
   const [poolSchema, setPoolSchema] = useState(
-    getSchema(
+    getSchemaForCreatePoolForm(
       getInitialValues(window.location.search, resourceTypes).poolType,
       getInitialValues(window.location.search, resourceTypes).isNested,
     ),
   );
-  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors, resetForm } = useFormik<FormValues>({
-    initialValues: getInitialValues(window.location.search, resourceTypes),
-    validationSchema: poolSchema,
-    validateOnChange: false,
-    onSubmit: (data) => {
-      const resourceTypeName = resourceTypes.find((resourceType) => resourceType.id === data.resourceTypeId)?.Name;
-      const allocationStratedyId = allocStrategies.find(
-        (allocationStrategy) => allocationStrategy.name === resourceTypeName,
-      )?.id;
-      const updatedData = {
-        ...omit(data, ['resourceTypeName']),
-        tags: [...selectedTags, data.name],
-        allocationStrategyId: allocationStratedyId,
-      };
+  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors, setSubmitting } =
+    useFormik<FormValues>({
+      initialValues: getInitialValues(window.location.search, resourceTypes),
+      validationSchema: poolSchema,
+      validateOnChange: false,
+      onSubmit: (data) => {
+        const resourceTypeName = resourceTypes.find((resourceType) => resourceType.id === data.resourceTypeId)?.Name;
+        const allocationStratedyId = allocStrategies.find(
+          (allocationStrategy) => allocationStrategy.name === resourceTypeName,
+        )?.id;
+        const updatedData = {
+          ...omit(data, ['resourceTypeName']),
+          tags: [...new Set([...selectedTags, data.name])],
+          allocationStrategyId: allocationStratedyId,
+        };
 
-      onFormSubmit(updatedData);
-      resetForm();
-    },
-  });
+        onFormSubmit(updatedData);
+        setSubmitting(false);
+      },
+    });
 
   const { isNested, poolType, resourceTypeId, parentPoolId, parentResourceId } = values;
 
@@ -325,7 +145,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   );
 
   useEffect(() => {
-    setPoolSchema(getSchema(values.poolType, isNested));
+    setPoolSchema(getSchemaForCreatePoolForm(values.poolType, isNested));
     if (!isNested) {
       setFieldValue('parentPoolId', '');
       setFieldValue('parentResourceId', '');
@@ -354,19 +174,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   );
   const availablePoolProperties = getAvailablePoolProperties(resourcePools, parentPoolId, parentResourceId);
   const formattedSuggestedProperties = formatSuggestedProperties(parentResourceTypeName, availablePoolProperties);
-  const canSelectResourceType = (resourceName: string) => {
-    return (
-      resourceName === 'ipv4' ||
-      resourceName === 'ipv4_prefix' ||
-      resourceName === 'ipv6' ||
-      resourceName === 'ipv6_prefix' ||
-      resourceName === 'vlan_range' ||
-      resourceName === 'vlan' ||
-      resourceName === 'route_distinguisher' ||
-      resourceName === 'unique_id' ||
-      resourceName === 'random_signed_int32'
-    );
-  };
+  const initialResourceNameType = new URLSearchParams(window.location.search).get('type') || 'default';
 
   const handleOnResourceTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     handleChange(e);
@@ -403,10 +211,12 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
                 .filter(
                   (pool) =>
                     pool.Resources.length > 0 &&
-                    (pool.ResourceType.Name === 'ipv4_prefix' ||
-                      pool.ResourceType.Name === 'ipv6_prefix' ||
-                      pool.ResourceType.Name === 'vlan_range' ||
-                      pool.ResourceType.Name === 'route_distinguisher'),
+                    canSelectCustomResourceTypes(pool.ResourceType.Name, [
+                      'ipv4_prefix',
+                      'ipv6_prefix',
+                      'vlan_range',
+                      'route_distinguisher',
+                    ]),
                 )
                 .map((pool) => (
                   <option value={pool.id} key={pool.id}>
@@ -447,7 +257,11 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
             placeholder="Select resource type"
           >
             {[...availableResourceTypes, ...derivedFromAvailableResourceTypes]
-              .filter((resourceType) => canSelectResourceType(resourceType.Name))
+              .filter((resourceType) =>
+                initialResourceNameType === 'ip'
+                  ? canSelectIpResourceTypes(resourceType.Name)
+                  : canSelectDefaultResourceTypes(resourceType.Name),
+              )
               .map((rt) => (
                 <option value={rt.id} key={rt.id}>
                   {rt.Name}
@@ -586,6 +400,9 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       )}
       <HStack mt={4}>
         <Spacer />
+        <Button onClick={() => navigate(-1)} variant="solid">
+          Cancel
+        </Button>
         <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
           Create pool
         </Button>
