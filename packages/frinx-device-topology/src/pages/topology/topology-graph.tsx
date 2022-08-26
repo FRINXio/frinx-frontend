@@ -33,6 +33,10 @@ const TopologyGraph: FunctionComponent<Props> = ({ data }) => {
     setSelectedDeviceId(deviceId);
   };
 
+  const handleInfoPanelClose = () => {
+    setSelectedDeviceId(null);
+  };
+
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
@@ -42,6 +46,7 @@ const TopologyGraph: FunctionComponent<Props> = ({ data }) => {
           positions={positions}
           onNodePositionUpdate={handleNodePositionUpdate}
           onDeviceIdSelect={handleDeviceIdSelect}
+          selectedDeviceId={selectedDeviceId}
         />
       </svg>
       {selectedDeviceId != null && (
@@ -56,7 +61,7 @@ const TopologyGraph: FunctionComponent<Props> = ({ data }) => {
           width={60}
           boxShadow="md"
         >
-          <DeviceInfoPanel deviceId={selectedDeviceId} />
+          <DeviceInfoPanel deviceId={selectedDeviceId} onClose={handleInfoPanelClose} />
         </Box>
       )}
     </Box>

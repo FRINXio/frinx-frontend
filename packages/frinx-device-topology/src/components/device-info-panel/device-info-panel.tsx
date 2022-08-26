@@ -1,4 +1,4 @@
-import { Badge, Box, Button, Flex, Heading, Icon, Spinner, Text } from '@chakra-ui/react';
+import { Badge, Box, Button, Flex, Heading, HStack, Icon, Spinner, Text } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import React, { VoidFunctionComponent } from 'react';
@@ -27,9 +27,10 @@ const DEVICE_QUERY = gql`
 
 type Props = {
   deviceId: string;
+  onClose: () => void;
 };
 
-const DeviceInfoPanel: VoidFunctionComponent<Props> = ({ deviceId }) => {
+const DeviceInfoPanel: VoidFunctionComponent<Props> = ({ deviceId, onClose }) => {
   const [{ data, fetching, error }] = useQuery<DeviceQuery, DeviceQueryVariables>({
     query: DEVICE_QUERY,
     variables: { id: deviceId },
@@ -68,7 +69,7 @@ const DeviceInfoPanel: VoidFunctionComponent<Props> = ({ deviceId }) => {
       <Text as="span" fontSize="xs" color="gray.700">
         {format(localDate, 'dd/MM/yyyy, k:mm')}
       </Text>
-      <Box marginTop={4}>
+      <HStack spacing={2} marginTop={4}>
         <Button
           as={Link}
           to={`/inventory/config/${node.id}`}
@@ -78,7 +79,10 @@ const DeviceInfoPanel: VoidFunctionComponent<Props> = ({ deviceId }) => {
         >
           Config
         </Button>
-      </Box>
+        <Button size="sm" onClick={onClose}>
+          Close
+        </Button>
+      </HStack>
     </Box>
   );
 };
