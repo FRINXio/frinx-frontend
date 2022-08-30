@@ -7,11 +7,19 @@ export type Position = {
   y: number;
 };
 
-export function getDefaultNodesPositions(nodes: { id: string; device: { name: string } }[]): Record<string, Position> {
+export type Device = {
+  id: string;
+  name: string;
+  position: Position | null;
+};
+
+export function getDefaultNodesPositions(nodes: { id: string; device: Device }[]): Record<string, Position> {
   return nodes.reduce((acc, curr) => {
+    const { device } = curr;
+    const { position } = device;
     return {
       ...acc,
-      [curr.device.name]: { x: getRandomInt(1000), y: getRandomInt(600) },
+      [curr.device.name]: { x: position?.x ?? getRandomInt(1000), y: position?.y ?? getRandomInt(600) },
     };
   }, {} as Record<string, Position>);
 }
