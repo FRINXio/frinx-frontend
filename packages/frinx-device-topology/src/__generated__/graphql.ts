@@ -231,6 +231,7 @@ export type Device = Node & {
   model: Maybe<Scalars['String']>;
   mountParameters: Maybe<Scalars['String']>;
   name: Scalars['String'];
+  position: Maybe<Position>;
   serviceState: DeviceServiceState;
   source: DeviceSource;
   updatedAt: Scalars['String'];
@@ -371,6 +372,7 @@ export type Mutation = {
   updateBlueprint: UpdateBlueprintPayload;
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
+  updateDeviceMetadata: UpdateDeviceMetadataPayload;
 };
 
 
@@ -498,6 +500,11 @@ export type MutationUpdateDeviceArgs = {
   input: UpdateDeviceInput;
 };
 
+
+export type MutationUpdateDeviceMetadataArgs = {
+  input: Array<PositionInput>;
+};
+
 export type Node = {
   id: Scalars['ID'];
 };
@@ -508,6 +515,22 @@ export type PageInfo = {
   hasNextPage: Scalars['Boolean'];
   hasPreviousPage: Scalars['Boolean'];
   startCursor: Maybe<Scalars['String']>;
+};
+
+export type Position = {
+  __typename?: 'Position';
+  x: Scalars['Int'];
+  y: Scalars['Int'];
+};
+
+export type PositionInput = {
+  deviceId: Scalars['ID'];
+  position: PositionInputField;
+};
+
+export type PositionInputField = {
+  x: Scalars['Int'];
+  y: Scalars['Int'];
 };
 
 export type Query = {
@@ -681,6 +704,11 @@ export type UpdateDeviceInput = {
   vendor?: InputMaybe<Scalars['String']>;
 };
 
+export type UpdateDeviceMetadataPayload = {
+  __typename?: 'UpdateDeviceMetadataPayload';
+  devices: Maybe<Array<Maybe<Device>>>;
+};
+
 export type UpdateDevicePayload = {
   __typename?: 'UpdateDevicePayload';
   device: Maybe<Device>;
@@ -717,4 +745,11 @@ export type DeviceQuery = { __typename?: 'Query', node: { __typename?: 'Blueprin
 export type TopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, device: { __typename?: 'Device', id: string, name: string } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: string, target: string }> } };
+export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, device: { __typename?: 'Device', id: string, name: string, position: { __typename?: 'Position', x: number, y: number } | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: string, target: string }> } };
+
+export type UpdatePositionMutationVariables = Exact<{
+  input: Array<PositionInput> | PositionInput;
+}>;
+
+
+export type UpdatePositionMutation = { __typename?: 'Mutation', updateDeviceMetadata: { __typename?: 'UpdateDeviceMetadataPayload', devices: Array<{ __typename?: 'Device', id: string } | null> | null } };
