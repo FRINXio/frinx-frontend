@@ -138,15 +138,13 @@ const ClaimResourceModal: FC<Props> = ({
         }
 
         const { alternativeIds: formAlternativeIds, description } = formValues;
-        const alternativeIdObject: Record<string, string | string[]> = {};
 
-        formAlternativeIds.forEach(({ key, value }) => {
-          if (value.length > 1) {
-            alternativeIdObject[key] = value;
-          }
-          const [v] = value;
-          alternativeIdObject[key] = v;
-        });
+        const alternativeIdObject = formAlternativeIds.reduce((prev, curr) => {
+          return {
+            ...prev,
+            [curr.key]: curr.value,
+          };
+        }, {} as Record<string, string | string[]>);
 
         onClaimWithAltId(alternativeIdObject, description, userInput);
         onClose();
@@ -174,7 +172,7 @@ const ClaimResourceModal: FC<Props> = ({
         resetForm();
       }}
       isCentered
-      size="xl"
+      size="3xl"
     >
       <ModalOverlay />
       <ModalContent>
