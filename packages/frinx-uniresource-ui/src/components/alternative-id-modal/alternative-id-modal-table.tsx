@@ -1,5 +1,4 @@
 import { Table, Thead, Tr, Th, Tbody, Td, VStack, Text } from '@chakra-ui/react';
-import { isArray, toArray } from 'lodash';
 import React, { VoidFunctionComponent } from 'react';
 
 type Props = {
@@ -19,9 +18,8 @@ const AlternativeIdModalTable: VoidFunctionComponent<Props> = ({ altIdKeys, altI
       <Tbody>
         {altIdKeys.map((altId) => {
           let badgeItem;
-          if (isArray(altIds[altId])) {
-            const arr = toArray(altIds[altId]);
-            badgeItem = arr.map((id) => (
+          if (Array.isArray(altIds[altId])) {
+            badgeItem = [...altIds[altId]].map((id) => (
               <Text bgColor="gray.100" fontWeight="semibold" py={0.5} px={1} borderRadius="sm" key={id} fontSize="xs">
                 {id}
               </Text>
