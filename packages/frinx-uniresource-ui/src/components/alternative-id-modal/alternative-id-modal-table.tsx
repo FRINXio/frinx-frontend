@@ -6,6 +6,8 @@ type Props = {
   altIdKeys: string[];
 };
 
+const isArray = (value: string | string[]): value is string[] => Array.isArray(value);
+
 const AlternativeIdModalTable: VoidFunctionComponent<Props> = ({ altIdKeys, altIds }) => {
   return (
     <Table size="sm">
@@ -18,8 +20,10 @@ const AlternativeIdModalTable: VoidFunctionComponent<Props> = ({ altIdKeys, altI
       <Tbody>
         {altIdKeys.map((altId) => {
           let badgeItem;
-          if (Array.isArray(altIds[altId])) {
-            badgeItem = [...altIds[altId]].map((id) => (
+          const alternativeIds = altIds[altId];
+
+          if (isArray(alternativeIds)) {
+            badgeItem = alternativeIds.map((id) => (
               <Text bgColor="gray.100" fontWeight="semibold" py={0.5} px={1} borderRadius="sm" key={id} fontSize="xs">
                 {id}
               </Text>
@@ -27,7 +31,7 @@ const AlternativeIdModalTable: VoidFunctionComponent<Props> = ({ altIdKeys, altI
           } else {
             badgeItem = (
               <Text fontSize="xs" bgColor="gray.100" fontWeight="semibold" py={0.5} px={1} borderRadius="sm">
-                {altIds[altId]}
+                {alternativeIds}
               </Text>
             );
           }
