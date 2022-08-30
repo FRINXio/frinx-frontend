@@ -17,7 +17,7 @@
     "type-check": "tsc --noEmit",
     "codegen": "graphql-codegen --config codegen.yml",
     "codegen:clean": "rm -r src/__generated__",
-    "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist src/index.ts"
+    "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist feather-icons-react.d.ts custom.d.ts src/index.ts"
   },
   "devDependencies": {
     "@chakra-ui/react": "1.8.8",
@@ -54,6 +54,8 @@
     "@types/react-dom": "17.0.14",
     "@urql/exchange-retry": "0.3.3",
     "d3": "^7.6.1",
+    "date-fns": "^2.29.2",
+    "date-fns-tz": "^1.3.6",
     "feather-icons-react": "0.5.0",
     "graphql": "15.8.0",
     "urql": "2.2.3"
