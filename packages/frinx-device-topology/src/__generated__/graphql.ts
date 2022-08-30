@@ -707,6 +707,13 @@ export type ZonesConnection = {
   totalCount: Scalars['Int'];
 };
 
+export type DeviceQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeviceQuery = { __typename?: 'Query', node: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string, isInstalled: boolean, createdAt: string, serviceState: DeviceServiceState } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Zone' } | null };
+
 export type TopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
