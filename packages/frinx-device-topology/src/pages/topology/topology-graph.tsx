@@ -4,7 +4,7 @@ import React, { FunctionComponent, useRef, useState } from 'react';
 import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
 import { GraphEdge } from '../../__generated__/graphql';
 import Edges from './edges';
-import { Device, getDefaultNodesPositions, Position } from './graph.helpers';
+import { getDefaultNodesPositions, getUpdatedInterfacesPositions, GraphNode, Position } from './graph.helpers';
 import BackgroundSvg from './img/background.svg';
 import Nodes from './nodes';
 
@@ -13,7 +13,7 @@ const height = 600;
 
 type Props = {
   data: {
-    nodes: { id: string; device: Device }[];
+    nodes: GraphNode[];
     edges: GraphEdge[];
   };
   onNodePositionUpdate: (positions: { deviceId: string; position: Position }[]) => Promise<void>;
@@ -36,7 +36,14 @@ const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate })
       lastPositionRef.current = { deviceId: node.device.id, position };
       return {
         ...prev,
-        [nodeId]: position,
+        nodes: {
+          ...prev.nodes,
+          [nodeId]: position,
+        },
+        interfaces: {
+          ...prev.interfaces,
+          ...getUpdatedInterfacesPositions(node, position),
+        },
       };
     });
   };
@@ -64,10 +71,12 @@ const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate })
     setSelectedDeviceId(null);
   };
 
+  const selectedNode = nodes.find((n) => n.device.id === selectedDeviceId);
+
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        <Edges edges={edges} positions={positions} />
+        <Edges edges={edges} positions={positions} selectedNodeId={selectedNode?.device.name ?? null} />
         <Nodes
           nodes={nodes}
           positions={positions}
