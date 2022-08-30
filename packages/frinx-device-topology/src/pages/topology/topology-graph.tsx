@@ -65,7 +65,14 @@ const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate })
   };
 
   return (
-    <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
+    <Box
+      background="white"
+      borderRadius="md"
+      position="relative"
+      backgroundImage={`url(${BackgroundSvg})`}
+      position="relative"
+      backgroundImage={`url(${BackgroundSvg})`}
+    >
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         <Edges edges={edges} positions={positions} />
         <Nodes
@@ -77,6 +84,21 @@ const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate })
           onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
         />
       </svg>
+      {selectedDeviceId != null && (
+        <Box
+          position="absolute"
+          top={2}
+          right={2}
+          background="white"
+          borderRadius="md"
+          paddingX={4}
+          paddingY={6}
+          width={60}
+          boxShadow="md"
+        >
+          <DeviceInfoPanel deviceId={selectedDeviceId} onClose={handleInfoPanelClose} />
+        </Box>
+      )}
       {selectedDeviceId != null && (
         <Box
           position="absolute"

@@ -37,6 +37,10 @@ const UPDATE_POSITION_MUTATION = gql`
     updateDeviceMetadata(input: $input) {
       devices {
         id
+        position {
+          x
+          y
+        }
       }
     }
   }

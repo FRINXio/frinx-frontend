@@ -12,6 +12,7 @@ type Props = {
   nodes: { id: string; device: Device }[];
   positions: Record<string, Position>;
   selectedDeviceId: string | null;
+  selectedDeviceId: string | null;
   onNodePositionUpdate: (nodeId: string, position: Position) => void;
   onDeviceIdSelect: (deviceId: string) => void;
   onNodePositionUpdateFinish: () => void;
@@ -31,6 +32,7 @@ const Nodes: VoidFunctionComponent<Props> = ({
     offset: { x: 0, y: 0 },
   });
   const timeoutRef = useRef<number | null>(null);
+  const timeoutRef = useRef<number | null>(null);
 
   const handlePointerDown = (event: React.PointerEvent<SVGCircleElement>, device: { id: string; name: string }) => {
     timeoutRef.current = Number(
@@ -44,7 +46,7 @@ const Nodes: VoidFunctionComponent<Props> = ({
     const y = event.clientY - bbox.top;
     el.setPointerCapture(event.pointerId);
     setPosition({
-      nodeId: device.name,
+      nodeId: device.name: device.name,
       isActive: true,
       offset: {
         x,
@@ -54,6 +56,9 @@ const Nodes: VoidFunctionComponent<Props> = ({
   };
   const handlePointerMove = (event: React.PointerEvent<SVGCircleElement>) => {
     if (position.isActive) {
+      if (timeoutRef.current != null) {
+        clearTimeout(timeoutRef.current);
+      }
       if (timeoutRef.current != null) {
         clearTimeout(timeoutRef.current);
       }
@@ -85,6 +90,8 @@ const Nodes: VoidFunctionComponent<Props> = ({
           }}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
+          position={positions[node.device.name]}
+          isSelected={selectedDeviceId === node.device.id}
           position={positions[node.device.name]}
           isSelected={selectedDeviceId === node.device.id}
         />
