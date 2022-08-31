@@ -21,7 +21,7 @@ type Props = {
 
 const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate }) => {
   const [positions, setPositions] = useState(getDefaultNodesPositions(data.nodes));
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+  const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const lastPositionRef = useRef<{ deviceId: string; position: Position } | null>(null);
   const positionListRef = useRef<{ deviceId: string; position: Position }[]>([]);
   const timeoutRef = useRef<number>();
@@ -63,30 +63,36 @@ const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate })
     }
   };
 
-  const handleDeviceIdSelect = (deviceId: string) => {
-    setSelectedDeviceId(deviceId);
+  const handleNodeSelect = (node: GraphNode) => {
+    setSelectedNode(node);
   };
 
   const handleInfoPanelClose = () => {
-    setSelectedDeviceId(null);
+    setSelectedNode(null);
   };
 
-  const selectedNode = nodes.find((n) => n.device.id === selectedDeviceId);
+  const connectedEdges = edges.filter(
+    (e) => selectedNode?.device.name === e.source.nodeId || selectedNode?.device.name === e.target.nodeId,
+  );
+  const connectedNodeIds = [
+    ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
+  ];
 
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        <Edges edges={edges} positions={positions} selectedNodeId={selectedNode?.device.name ?? null} />
+        <Edges edges={edges} positions={positions} selectedNodeIds={connectedNodeIds} />
         <Nodes
           nodes={nodes}
           positions={positions}
           onNodePositionUpdate={handleNodePositionUpdate}
-          onDeviceIdSelect={handleDeviceIdSelect}
-          selectedDeviceId={selectedDeviceId}
+          onNodeSelect={handleNodeSelect}
+          selectedNodeIds={connectedNodeIds}
           onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
+          selectedDeviceId={selectedNode?.device.id ?? null}
         />
       </svg>
-      {selectedDeviceId != null && (
+      {selectedNode != null && (
         <Box
           position="absolute"
           top={2}
@@ -98,22 +104,7 @@ const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate })
           width={60}
           boxShadow="md"
         >
-          <DeviceInfoPanel deviceId={selectedDeviceId} onClose={handleInfoPanelClose} />
-        </Box>
-      )}
-      {selectedDeviceId != null && (
-        <Box
-          position="absolute"
-          top={2}
-          right={2}
-          background="white"
-          borderRadius="md"
-          paddingX={4}
-          paddingY={6}
-          width={60}
-          boxShadow="md"
-        >
-          <DeviceInfoPanel deviceId={selectedDeviceId} onClose={handleInfoPanelClose} />
+          <DeviceInfoPanel deviceId={selectedNode.device.id} onClose={handleInfoPanelClose} />
         </Box>
       )}
     </Box>

@@ -6,21 +6,19 @@ import { PositionsMap } from './graph.helpers';
 type Props = {
   edges: GraphEdge[];
   positions: PositionsMap;
-  selectedNodeId: string | null;
+  selectedNodeIds: string[];
 };
 
-const Edges: VoidFunctionComponent<Props> = ({ edges, positions, selectedNodeId }) => {
+const Edges: VoidFunctionComponent<Props> = ({ edges, positions, selectedNodeIds }) => {
   return (
     <g>
       {edges.map((edge) => {
-        const sourcePosition =
-          selectedNodeId === edge.source.nodeId
-            ? positions.interfaces[edge.source.interface]
-            : positions.nodes[edge.source.nodeId];
-        const targetPosition =
-          selectedNodeId === edge.target.nodeId
-            ? positions.interfaces[edge.target.interface]
-            : positions.nodes[edge.target.nodeId];
+        const sourcePosition = selectedNodeIds.includes(edge.source.nodeId)
+          ? positions.interfaces[edge.source.interface]
+          : positions.nodes[edge.source.nodeId];
+        const targetPosition = selectedNodeIds.includes(edge.target.nodeId)
+          ? positions.interfaces[edge.target.interface]
+          : positions.nodes[edge.target.nodeId];
         return (
           <Box
             as="line"
@@ -32,6 +30,7 @@ const Edges: VoidFunctionComponent<Props> = ({ edges, positions, selectedNodeId 
             stroke="gray.800"
             strokeWidth={1}
             strokeLinecap="round"
+            transition="all .2s ease-in-out"
           />
         );
       })}

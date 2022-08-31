@@ -33,14 +33,14 @@ export const POSITIONS = [
 ];
 
 export const POSITIONS_MAP = {
-  TOP_LEFT: [-20, -20],
-  TOP_CENTER: [0, -20],
-  TOP_RIGHT: [20, -20],
-  CENTER_RIGHT: [20, 0],
-  BOTTOM_RIGHT: [20, 20],
-  BOTTOM_CENTER: [0, 20],
-  BOTTOM_LEFT: [-20, 20],
-  CENTER_LEFT: [-20, 0],
+  TOP_LEFT: [-30, -30],
+  TOP_CENTER: [0, -30],
+  TOP_RIGHT: [30, -30],
+  CENTER_RIGHT: [30, 0],
+  BOTTOM_RIGHT: [30, 30],
+  BOTTOM_CENTER: [0, 30],
+  BOTTOM_LEFT: [-30, 30],
+  CENTER_LEFT: [-30, 0],
 };
 
 export type PositionsMap = {
@@ -54,7 +54,7 @@ export function getDefaultNodesPositions(nodes: GraphNode[]): PositionsMap {
     const { position } = device;
     return {
       ...acc,
-      [curr.device.name]: { x: position?.x ?? getRandomInt(1000), y: position?.y ?? getRandomInt(600) },
+      [device.name]: { x: position?.x ?? getRandomInt(1000), y: position?.y ?? getRandomInt(600) },
     };
   }, {} as Record<string, Position>);
   const interfacesMap = nodes

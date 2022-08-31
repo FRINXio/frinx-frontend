@@ -5,6 +5,7 @@ import { GraphNode, Position, POSITIONS, POSITIONS_MAP } from '../../pages/topol
 type Props = {
   position: Position;
   isSelected: boolean;
+  isFocused: boolean;
   node: GraphNode;
   onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
@@ -17,6 +18,7 @@ const Text = chakra('text');
 
 const NodeIcon: VoidFunctionComponent<Props> = ({
   position,
+  isFocused,
   isSelected,
   node,
   onPointerDown,
@@ -26,25 +28,31 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   const { interfaces, device } = node;
   return (
     <G
-      style={{
-        cursor: 'pointer',
-        transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
-        transformOrigin: 'center center',
-      }}
+      cursor="pointer"
+      transform={`translate3d(${position.x}px, ${position.y}px, 0)`}
+      transformOrigin="center center"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
     >
       <Rect
-        width="60px"
-        height="60px"
-        fill={isSelected ? 'blackAlpha.100' : 'none'}
+        width={isFocused ? '60px' : 0}
+        height={isFocused ? '60px' : 0}
+        fill="blackAlpha.100"
         transform="translate3d(-30px, -30px, 0)"
         strokeOpacity={0.4}
-        stroke={isSelected ? 'gray.500' : undefined}
+        stroke="gray.500"
+        transition="all .2s ease-in-out"
       />
       <G>
         {interfaces.map((intf, i) => {
           const [x, y] = POSITIONS_MAP[POSITIONS[i]];
           return (
-            <G key={intf} transform={isSelected ? `translate3d(${x - 2.5}px, ${y - 2.5}px, 0)` : undefined}>
+            <G
+              key={intf}
+              transform={isFocused ? `translate3d(${x - 2.5}px, ${y - 2.5}px, 0)` : undefined}
+              transition="all .2s ease-in-out"
+            >
               <Rect width="5px" height="5px" fill="purple" />
             </G>
           );
@@ -54,19 +62,16 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
         width="30px"
         height="30px"
         transform="translate3d(-15px, -15px, 0)"
-        fill="gray.400"
-        strokeWidth={2}
-        stroke={isSelected ? 'gray.600' : 'gray.400'}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
+        fill={isSelected ? 'blue.500' : 'gray.400'}
+        strokeWidth={1}
+        stroke={isSelected ? 'blue.600' : 'gray.400'}
       />
-      <Text height="15px" transform="translate3d(30px, 5px, 0)" fontWeight="600">
+      <Text height="15px" transform="translate3d(35px, 5px, 0)" fontWeight="600">
         {device.name}
       </Text>
       <G
         fill="none"
-        stroke="gray.600"
+        stroke={isSelected ? 'whiteAlpha.800' : 'gray.600'}
         strokeWidth="2px"
         strokeLinecap="round"
         strokeLinejoin="round"

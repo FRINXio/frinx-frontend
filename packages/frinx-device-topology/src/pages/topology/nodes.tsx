@@ -11,18 +11,20 @@ type StatePosition = {
 type Props = {
   nodes: GraphNode[];
   positions: PositionsMap;
+  selectedNodeIds: string[];
   selectedDeviceId: string | null;
   onNodePositionUpdate: (nodeId: string, position: Position) => void;
-  onDeviceIdSelect: (deviceId: string) => void;
+  onNodeSelect: (node: GraphNode) => void;
   onNodePositionUpdateFinish: () => void;
 };
 
 const Nodes: VoidFunctionComponent<Props> = ({
   nodes,
   positions,
+  selectedNodeIds,
   selectedDeviceId,
   onNodePositionUpdate,
-  onDeviceIdSelect,
+  onNodeSelect,
   onNodePositionUpdateFinish,
 }) => {
   const [position, setPosition] = useState<StatePosition>({
@@ -32,19 +34,19 @@ const Nodes: VoidFunctionComponent<Props> = ({
   });
   const timeoutRef = useRef<number | null>(null);
 
-  const handlePointerDown = (event: React.PointerEvent<SVGRectElement>, device: { id: string; name: string }) => {
+  const handlePointerDown = (event: React.PointerEvent<SVGRectElement>, node: GraphNode) => {
     timeoutRef.current = Number(
       setTimeout(() => {
-        onDeviceIdSelect(device.id);
+        onNodeSelect(node);
       }, 250),
     );
-    const el = event.currentTarget;
-    const bbox = event.currentTarget.getBoundingClientRect();
+    const element = event.currentTarget;
+    const bbox = element.getBoundingClientRect();
     const x = event.clientX - bbox.left;
     const y = event.clientY - bbox.top;
-    el.setPointerCapture(event.pointerId);
+    element.setPointerCapture(event.pointerId);
     setPosition({
-      nodeId: device.name,
+      nodeId: node.device.name,
       isActive: true,
       offset: {
         x,
@@ -54,9 +56,6 @@ const Nodes: VoidFunctionComponent<Props> = ({
   };
   const handlePointerMove = (event: React.PointerEvent<SVGRectElement>) => {
     if (position.isActive) {
-      if (timeoutRef.current != null) {
-        clearTimeout(timeoutRef.current);
-      }
       if (timeoutRef.current != null) {
         clearTimeout(timeoutRef.current);
       }
@@ -84,11 +83,12 @@ const Nodes: VoidFunctionComponent<Props> = ({
         <NodeIcon
           key={node.id}
           onPointerDown={(event) => {
-            handlePointerDown(event, node.device);
+            handlePointerDown(event, node);
           }}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           position={positions.nodes[node.device.name]}
+          isFocused={selectedNodeIds.includes(node.device.name)}
           isSelected={selectedDeviceId === node.device.id}
           node={node}
         />
