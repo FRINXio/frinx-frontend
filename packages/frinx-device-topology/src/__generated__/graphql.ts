@@ -281,6 +281,12 @@ export type DiffData = {
   path: Scalars['String'];
 };
 
+export type EdgeSourceTarget = {
+  __typename?: 'EdgeSourceTarget';
+  interface: Scalars['String'];
+  nodeId: Scalars['String'];
+};
+
 export type FilterDevicesInput = {
   deviceName?: InputMaybe<Scalars['String']>;
   labels?: InputMaybe<Array<Scalars['String']>>;
@@ -289,14 +295,15 @@ export type FilterDevicesInput = {
 export type GraphEdge = {
   __typename?: 'GraphEdge';
   id: Scalars['ID'];
-  source: Scalars['String'];
-  target: Scalars['String'];
+  source: EdgeSourceTarget;
+  target: EdgeSourceTarget;
 };
 
 export type GraphNode = {
   __typename?: 'GraphNode';
   device: Device;
   id: Scalars['ID'];
+  interfaces: Array<Scalars['String']>;
 };
 
 export type InstallDevicePayload = {
@@ -745,7 +752,7 @@ export type DeviceQuery = { __typename?: 'Query', node: { __typename?: 'Blueprin
 export type TopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, device: { __typename?: 'Device', id: string, name: string, position: { __typename?: 'Position', x: number, y: number } | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: string, target: string }> } };
+export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, interfaces: Array<string>, device: { __typename?: 'Device', id: string, name: string, position: { __typename?: 'Position', x: number, y: number } | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } };
 
 export type UpdatePositionMutationVariables = Exact<{
   input: Array<PositionInput> | PositionInput;

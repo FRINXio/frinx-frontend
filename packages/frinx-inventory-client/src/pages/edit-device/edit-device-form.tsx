@@ -3,7 +3,7 @@ import React, { FC, useMemo } from 'react';
 import * as yup from 'yup';
 
 import { Item } from 'chakra-ui-autocomplete';
-import { Button, Divider, FormControl, FormLabel, HStack, Select } from '@chakra-ui/react';
+import { Button, Divider, FormControl, FormErrorMessage, FormLabel, HStack, Input, Select } from '@chakra-ui/react';
 import { Editor } from '@frinx/shared/src';
 
 import { serviceStateOptions } from '../../helpers/types';
@@ -15,6 +15,9 @@ type FormValues = {
   mountParameters: string;
   labels: string[];
   serviceState: DeviceServiceState;
+  vendor: string;
+  model: string;
+  address: string;
 };
 
 type Props = {
@@ -32,6 +35,9 @@ type Props = {
 const EditDeviceFormSchema = yup.object().shape({
   // zoneId: yup.string().required('Zone is required'),
   serviceState: yup.string().required('Service state is required'),
+  vendor: yup.string(),
+  model: yup.string(),
+  address: yup.string(),
 });
 
 const EditDeviceForm: FC<Props> = ({
@@ -50,6 +56,9 @@ const EditDeviceForm: FC<Props> = ({
       mountParameters: mountParameters ?? '',
       labels: initialSelectedLabels.map(({ node: { id } }) => id),
       serviceState,
+      vendor: '',
+      model: '',
+      address: '',
     };
   }, [zoneId, mountParameters, initialSelectedLabels, serviceState]);
 
@@ -57,7 +66,7 @@ const EditDeviceForm: FC<Props> = ({
     initialSelectedLabels.map(({ node: { id, name } }) => ({ value: id, label: name })),
   );
 
-  const { values, isSubmitting, handleSubmit, setFieldValue } = useFormik<FormValues>({
+  const { values, isSubmitting, handleSubmit, setFieldValue, handleChange, errors } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: EditDeviceFormSchema,
     onSubmit: (data) => {
@@ -82,27 +91,7 @@ const EditDeviceForm: FC<Props> = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* <FormControl id="zone" marginY={6} isInvalid={errors.zoneId !== undefined}>
-        <FormLabel>Zone</FormLabel>
-        <Select
-          onChange={(event) => {
-            event.persist();
-            setFieldValue('zoneId', event.target.value);
-          }}
-          name="zone"
-          placeholder="Select zone of device"
-          defaultValue={values.zoneId}
-        >
-          {zones.map(({ node: zone }) => (
-            <option key={zone.id} value={zone.id}>
-              {zone.name}
-            </option>
-          ))}
-        </Select>
-        <FormErrorMessage>{errors.zoneId}</FormErrorMessage>
-      </FormControl> */}
-
-      <FormControl my={6}>
+      <FormControl my={6} isRequired isInvalid={errors.serviceState != null}>
         <FormLabel>Service state</FormLabel>
         <Select
           onChange={(event) => {
@@ -119,6 +108,27 @@ const EditDeviceForm: FC<Props> = ({
             </option>
           ))}
         </Select>
+        <FormErrorMessage>{errors.serviceState}</FormErrorMessage>
+      </FormControl>
+
+      <FormControl my={6}>
+        <FormLabel>Vendor</FormLabel>
+        <Input name="vendor" onChange={handleChange} placeholder="Enter vendor of the device" value={values.vendor} />
+      </FormControl>
+
+      <FormControl my={6}>
+        <FormLabel>Model</FormLabel>
+        <Input name="model" onChange={handleChange} placeholder="Enter model of the device" value={values.model} />
+      </FormControl>
+
+      <FormControl my={6}>
+        <FormLabel>Address</FormLabel>
+        <Input
+          name="address"
+          onChange={handleChange}
+          placeholder="Enter address of the device"
+          value={values.address}
+        />
       </FormControl>
 
       <FormControl my={6}>
