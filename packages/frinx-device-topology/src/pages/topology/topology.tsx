@@ -23,11 +23,18 @@ const TOPOLOGY_QUERY = gql`
             y
           }
         }
+        interfaces
       }
       edges {
         id
-        source
-        target
+        source {
+          nodeId
+          interface
+        }
+        target {
+          nodeId
+          interface
+        }
       }
     }
   }

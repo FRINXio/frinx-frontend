@@ -4,7 +4,7 @@ import React, { FunctionComponent, useRef, useState } from 'react';
 import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
 import { GraphEdge } from '../../__generated__/graphql';
 import Edges from './edges';
-import { Device, getDefaultNodesPositions, Position } from './graph.helpers';
+import { getDefaultNodesPositions, getUpdatedInterfacesPositions, GraphNode, Position } from './graph.helpers';
 import BackgroundSvg from './img/background.svg';
 import Nodes from './nodes';
 
@@ -13,7 +13,7 @@ const height = 600;
 
 type Props = {
   data: {
-    nodes: { id: string; device: Device }[];
+    nodes: GraphNode[];
     edges: GraphEdge[];
   };
   onNodePositionUpdate: (positions: { deviceId: string; position: Position }[]) => Promise<void>;
@@ -21,7 +21,7 @@ type Props = {
 
 const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate }) => {
   const [positions, setPositions] = useState(getDefaultNodesPositions(data.nodes));
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+  const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const lastPositionRef = useRef<{ deviceId: string; position: Position } | null>(null);
   const positionListRef = useRef<{ deviceId: string; position: Position }[]>([]);
   const timeoutRef = useRef<number>();
@@ -36,7 +36,14 @@ const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate })
       lastPositionRef.current = { deviceId: node.device.id, position };
       return {
         ...prev,
-        [nodeId]: position,
+        nodes: {
+          ...prev.nodes,
+          [nodeId]: position,
+        },
+        interfaces: {
+          ...prev.interfaces,
+          ...getUpdatedInterfacesPositions(node, position),
+        },
       };
     });
   };
@@ -56,28 +63,36 @@ const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate })
     }
   };
 
-  const handleDeviceIdSelect = (deviceId: string) => {
-    setSelectedDeviceId(deviceId);
+  const handleNodeSelect = (node: GraphNode) => {
+    setSelectedNode(node);
   };
 
   const handleInfoPanelClose = () => {
-    setSelectedDeviceId(null);
+    setSelectedNode(null);
   };
+
+  const connectedEdges = edges.filter(
+    (e) => selectedNode?.device.name === e.source.nodeId || selectedNode?.device.name === e.target.nodeId,
+  );
+  const connectedNodeIds = [
+    ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
+  ];
 
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        <Edges edges={edges} positions={positions} />
+        <Edges edges={edges} positions={positions} selectedNodeIds={connectedNodeIds} />
         <Nodes
           nodes={nodes}
           positions={positions}
           onNodePositionUpdate={handleNodePositionUpdate}
-          onDeviceIdSelect={handleDeviceIdSelect}
-          selectedDeviceId={selectedDeviceId}
+          onNodeSelect={handleNodeSelect}
+          selectedNodeIds={connectedNodeIds}
           onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
+          selectedDeviceId={selectedNode?.device.id ?? null}
         />
       </svg>
-      {selectedDeviceId != null && (
+      {selectedNode != null && (
         <Box
           position="absolute"
           top={2}
@@ -89,22 +104,7 @@ const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate })
           width={60}
           boxShadow="md"
         >
-          <DeviceInfoPanel deviceId={selectedDeviceId} onClose={handleInfoPanelClose} />
-        </Box>
-      )}
-      {selectedDeviceId != null && (
-        <Box
-          position="absolute"
-          top={2}
-          right={2}
-          background="white"
-          borderRadius="md"
-          paddingX={4}
-          paddingY={6}
-          width={60}
-          boxShadow="md"
-        >
-          <DeviceInfoPanel deviceId={selectedDeviceId} onClose={handleInfoPanelClose} />
+          <DeviceInfoPanel deviceId={selectedNode.device.id} onClose={handleInfoPanelClose} />
         </Box>
       )}
     </Box>
