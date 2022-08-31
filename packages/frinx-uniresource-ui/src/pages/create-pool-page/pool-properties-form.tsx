@@ -53,7 +53,7 @@ const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
 }) => {
   const errors = JSON.parse(JSON.stringify(poolPropertyErrors) || '{}');
   return (
-    <HStack mt={2}>
+    <HStack mt={2} align="flex-start">
       {Object.keys(poolProperties).map((pKey) => {
         const pValue = poolProperties[pKey];
         const pType = poolPropertyTypes[pKey];
