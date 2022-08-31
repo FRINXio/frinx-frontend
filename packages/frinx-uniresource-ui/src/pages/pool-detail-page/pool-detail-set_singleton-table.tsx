@@ -13,7 +13,7 @@ type PoolResources = Array<
 >;
 
 type Props = {
-  allocatedResources?: AllocatedResourcesQuery['QueryResources'];
+  allocatedResources?: AllocatedResourcesQuery['QueryResourcesByAltId'];
   resources: PoolResources;
   paginationArgs: PaginationArgs;
   onFreeResource: (userInput: Record<string, string | number>) => void;

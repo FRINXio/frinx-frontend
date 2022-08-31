@@ -1,8 +1,11 @@
 import { Box } from '@chakra-ui/react';
-import React, { FunctionComponent, useState } from 'react';
+import { unwrap } from '@frinx/shared';
+import React, { FunctionComponent, useRef, useState } from 'react';
+import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
 import { GraphEdge } from '../../__generated__/graphql';
 import Edges from './edges';
-import { getDefaultNodesPositions, Position } from './graph.helpers';
+import { Device, getDefaultNodesPositions, Position } from './graph.helpers';
+import BackgroundSvg from './img/background.svg';
 import Nodes from './nodes';
 
 const width = 1248;
@@ -10,28 +13,100 @@ const height = 600;
 
 type Props = {
   data: {
-    nodes: { id: string; device: { name: string } }[];
+    nodes: { id: string; device: Device }[];
     edges: GraphEdge[];
   };
+  onNodePositionUpdate: (positions: { deviceId: string; position: Position }[]) => Promise<void>;
 };
 
-const TopologyGraph: FunctionComponent<Props> = ({ data }) => {
+const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate }) => {
   const [positions, setPositions] = useState(getDefaultNodesPositions(data.nodes));
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+  const lastPositionRef = useRef<{ deviceId: string; position: Position } | null>(null);
+  const positionListRef = useRef<{ deviceId: string; position: Position }[]>([]);
+  const timeoutRef = useRef<number>();
   const { nodes, edges } = data;
 
   const handleNodePositionUpdate = (nodeId: string, position: Position) => {
-    setPositions((prev) => ({
-      ...prev,
-      [nodeId]: position,
-    }));
+    if (timeoutRef.current != null) {
+      clearTimeout(timeoutRef.current);
+    }
+    setPositions((prev) => {
+      const node = unwrap(nodes.find((n) => n.device.name === nodeId));
+      lastPositionRef.current = { deviceId: node.device.id, position };
+      return {
+        ...prev,
+        [nodeId]: position,
+      };
+    });
+  };
+
+  const handleNodePositionUpdateFinish = () => {
+    if (lastPositionRef.current) {
+      positionListRef.current.push(lastPositionRef.current);
+      lastPositionRef.current = null;
+      timeoutRef.current = Number(
+        setTimeout(() => {
+          onNodePositionUpdate(positionListRef.current).then(() => {
+            positionListRef.current = [];
+            clearTimeout(timeoutRef.current);
+          });
+        }, 3000),
+      );
+    }
+  };
+
+  const handleDeviceIdSelect = (deviceId: string) => {
+    setSelectedDeviceId(deviceId);
+  };
+
+  const handleInfoPanelClose = () => {
+    setSelectedDeviceId(null);
   };
 
   return (
-    <Box background="white" borderRadius="md">
+    <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         <Edges edges={edges} positions={positions} />
-        <Nodes nodes={nodes} positions={positions} onNodePositionUpdate={handleNodePositionUpdate} />
+        <Nodes
+          nodes={nodes}
+          positions={positions}
+          onNodePositionUpdate={handleNodePositionUpdate}
+          onDeviceIdSelect={handleDeviceIdSelect}
+          selectedDeviceId={selectedDeviceId}
+          onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
+        />
       </svg>
+      {selectedDeviceId != null && (
+        <Box
+          position="absolute"
+          top={2}
+          right={2}
+          background="white"
+          borderRadius="md"
+          paddingX={4}
+          paddingY={6}
+          width={60}
+          boxShadow="md"
+        >
+          <DeviceInfoPanel deviceId={selectedDeviceId} onClose={handleInfoPanelClose} />
+        </Box>
+      )}
+      {selectedDeviceId != null && (
+        <Box
+          position="absolute"
+          top={2}
+          right={2}
+          background="white"
+          borderRadius="md"
+          paddingX={4}
+          paddingY={6}
+          width={60}
+          boxShadow="md"
+        >
+          <DeviceInfoPanel deviceId={selectedDeviceId} onClose={handleInfoPanelClose} />
+        </Box>
+      )}
     </Box>
   );
 };

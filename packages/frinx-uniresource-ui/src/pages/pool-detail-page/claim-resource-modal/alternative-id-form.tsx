@@ -47,7 +47,7 @@ export const ValidationSchema = yup
   .unique('Keys cannot repeat', (a: FormikValues) => a.key)
   .min(1, 'Please enter at least one alternative ID value');
 
-type AlternativeId = {
+export type AlternativeId = {
   key: string;
   value: string[];
 };
