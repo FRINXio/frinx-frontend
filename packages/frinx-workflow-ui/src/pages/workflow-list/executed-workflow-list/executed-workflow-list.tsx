@@ -73,7 +73,11 @@ const ExecutedWorkflowList = ({ reloadPage }: Props) => {
       return executedWorkflows;
     },
     repeatTill: (executedWorkflows) => {
-      return executedWorkflows!.result.hits.some((executedWorkflow) => executedWorkflow.status === 'RUNNING');
+      if (executedWorkflows == null) {
+        return true;
+      }
+
+      return executedWorkflows.result.hits.some((executedWorkflow) => executedWorkflow.status === 'RUNNING');
     },
     timeout: 500,
     updateDeps: [

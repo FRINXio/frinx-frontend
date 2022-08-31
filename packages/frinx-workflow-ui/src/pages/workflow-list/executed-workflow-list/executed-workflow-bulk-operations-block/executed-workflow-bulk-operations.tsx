@@ -69,7 +69,6 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
           setIsFetching(false);
           selectAllWorkflows(false);
         });
-      onBulkOperationExecute();
     } else {
       const operations = callbackUtils.getCallbacks;
       operations[operationFunctionName](selectedWorkflows)
