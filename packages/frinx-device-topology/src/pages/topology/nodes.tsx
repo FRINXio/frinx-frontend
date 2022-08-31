@@ -1,7 +1,7 @@
 import { unwrap } from '@frinx/shared/src';
 import React, { useRef, useState, VoidFunctionComponent } from 'react';
 import NodeIcon from '../../components/device-info-panel/node-icon';
-import { Position } from './graph.helpers';
+import { Device, Position } from './graph.helpers';
 
 type StatePosition = {
   nodeId: string | null;
@@ -9,11 +9,12 @@ type StatePosition = {
   offset: Position;
 };
 type Props = {
-  nodes: { id: string; device: { name: string; id: string } }[];
+  nodes: { id: string; device: Device }[];
   positions: Record<string, Position>;
   selectedDeviceId: string | null;
   onNodePositionUpdate: (nodeId: string, position: Position) => void;
   onDeviceIdSelect: (deviceId: string) => void;
+  onNodePositionUpdateFinish: () => void;
 };
 
 const Nodes: VoidFunctionComponent<Props> = ({
@@ -22,6 +23,7 @@ const Nodes: VoidFunctionComponent<Props> = ({
   selectedDeviceId,
   onNodePositionUpdate,
   onDeviceIdSelect,
+  onNodePositionUpdateFinish,
 }) => {
   const [position, setPosition] = useState<StatePosition>({
     nodeId: null,
@@ -55,6 +57,9 @@ const Nodes: VoidFunctionComponent<Props> = ({
       if (timeoutRef.current != null) {
         clearTimeout(timeoutRef.current);
       }
+      if (timeoutRef.current != null) {
+        clearTimeout(timeoutRef.current);
+      }
       const bbox = event.currentTarget.getBoundingClientRect();
       const x = event.clientX - bbox.left;
       const y = event.clientY - bbox.top;
@@ -70,6 +75,7 @@ const Nodes: VoidFunctionComponent<Props> = ({
       nodeId: null,
       isActive: false,
     });
+    onNodePositionUpdateFinish();
   };
 
   return (
