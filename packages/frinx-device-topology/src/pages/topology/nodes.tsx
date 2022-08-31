@@ -1,7 +1,7 @@
 import { unwrap } from '@frinx/shared/src';
 import React, { useRef, useState, VoidFunctionComponent } from 'react';
 import NodeIcon from '../../components/device-info-panel/node-icon';
-import { Device, Position } from './graph.helpers';
+import { GraphNode, Position, PositionsMap } from './graph.helpers';
 
 type StatePosition = {
   nodeId: string | null;
@@ -9,20 +9,22 @@ type StatePosition = {
   offset: Position;
 };
 type Props = {
-  nodes: { id: string; device: Device }[];
-  positions: Record<string, Position>;
+  nodes: GraphNode[];
+  positions: PositionsMap;
+  selectedNodeIds: string[];
   selectedDeviceId: string | null;
   onNodePositionUpdate: (nodeId: string, position: Position) => void;
-  onDeviceIdSelect: (deviceId: string) => void;
+  onNodeSelect: (node: GraphNode) => void;
   onNodePositionUpdateFinish: () => void;
 };
 
 const Nodes: VoidFunctionComponent<Props> = ({
   nodes,
   positions,
+  selectedNodeIds,
   selectedDeviceId,
   onNodePositionUpdate,
-  onDeviceIdSelect,
+  onNodeSelect,
   onNodePositionUpdateFinish,
 }) => {
   const [position, setPosition] = useState<StatePosition>({
@@ -32,19 +34,19 @@ const Nodes: VoidFunctionComponent<Props> = ({
   });
   const timeoutRef = useRef<number | null>(null);
 
-  const handlePointerDown = (event: React.PointerEvent<SVGCircleElement>, device: { id: string; name: string }) => {
+  const handlePointerDown = (event: React.PointerEvent<SVGRectElement>, node: GraphNode) => {
     timeoutRef.current = Number(
       setTimeout(() => {
-        onDeviceIdSelect(device.id);
+        onNodeSelect(node);
       }, 250),
     );
-    const el = event.currentTarget;
-    const bbox = event.currentTarget.getBoundingClientRect();
+    const element = event.currentTarget;
+    const bbox = element.getBoundingClientRect();
     const x = event.clientX - bbox.left;
     const y = event.clientY - bbox.top;
-    el.setPointerCapture(event.pointerId);
+    element.setPointerCapture(event.pointerId);
     setPosition({
-      nodeId: device.name,
+      nodeId: node.device.name,
       isActive: true,
       offset: {
         x,
@@ -52,11 +54,8 @@ const Nodes: VoidFunctionComponent<Props> = ({
       },
     });
   };
-  const handlePointerMove = (event: React.PointerEvent<SVGCircleElement>) => {
+  const handlePointerMove = (event: React.PointerEvent<SVGRectElement>) => {
     if (position.isActive) {
-      if (timeoutRef.current != null) {
-        clearTimeout(timeoutRef.current);
-      }
       if (timeoutRef.current != null) {
         clearTimeout(timeoutRef.current);
       }
@@ -64,8 +63,8 @@ const Nodes: VoidFunctionComponent<Props> = ({
       const x = event.clientX - bbox.left;
       const y = event.clientY - bbox.top;
       const nodeId = unwrap(position.nodeId);
-      const newX = positions[nodeId].x - (position.offset.x - x);
-      const newY = positions[nodeId].y - (position.offset.y - y);
+      const newX = positions.nodes[nodeId].x - (position.offset.x - x);
+      const newY = positions.nodes[nodeId].y - (position.offset.y - y);
       onNodePositionUpdate(nodeId, { x: newX, y: newY });
     }
   };
@@ -84,12 +83,14 @@ const Nodes: VoidFunctionComponent<Props> = ({
         <NodeIcon
           key={node.id}
           onPointerDown={(event) => {
-            handlePointerDown(event, node.device);
+            handlePointerDown(event, node);
           }}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
-          position={positions[node.device.name]}
+          position={positions.nodes[node.device.name]}
+          isFocused={selectedNodeIds.includes(node.device.name)}
           isSelected={selectedDeviceId === node.device.id}
+          node={node}
         />
       ))}
     </g>
