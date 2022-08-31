@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
-type ReturnType = {
+export type TagsInputReturnType = {
   selectedTags: string[];
   handleTagCreation: (tag: string) => void;
   handleOnSelectionChange: (tags?: string[]) => void;
 };
 
-const useTagsInput = (tags: string[] = []): ReturnType => {
+const useTagsInput = (tags: string[] = []): TagsInputReturnType => {
   const [selectedTags, setSelectedTags] = useState<string[]>(tags);
 
   const handleTagCreation = (value: string) => setSelectedTags([...new Set([...selectedTags, value])]);
