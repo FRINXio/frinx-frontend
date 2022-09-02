@@ -18,6 +18,8 @@ import {
 import FeatherIcon from 'feather-icons-react';
 import { omitBy } from 'lodash';
 import { LabelsInput } from '@frinx/shared/src';
+import * as yup from 'yup';
+import { useFormik } from 'formik';
 import { Workflow } from '../../helpers/types';
 import { isWorkflowNameAvailable } from '../../helpers/workflow.helpers';
 import { parseDescription, parseLabels } from '../left-menu/left-menu.helpers';
@@ -47,57 +49,61 @@ type Props = {
   isCreatingWorkflow: boolean;
 };
 
+const validationSchema = (isCreatingWorkflow: boolean) =>
+  yup.object({
+    name: yup.string().required('Name is required field and must be unique'),
+    description: yup.string(),
+    version: yup.number().typeError('This field must be a number').required('Version is required field'),
+    restartable: yup.boolean().required('Restartable is required field'),
+    ...(!isCreatingWorkflow && {
+      timeoutPolicy: yup.string().required('Timeout policy is required'),
+      timeoutSeconds: yup
+        .number()
+        .typeError('This field must be a number')
+        .required('Timeout seconds is required field'),
+    }),
+  });
+
 const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEditName, isCreatingWorkflow }) => {
-  const [workflowState, setWorkflowState] = useState(workflow);
-  const { name, description, version, restartable, timeoutPolicy, timeoutSeconds, outputParameters } = workflowState;
+  const { errors, values, handleSubmit, setFieldValue, handleChange, isSubmitting } = useFormik<PartialWorkflow>({
+    initialValues: workflow,
+    onSubmit: (formValues) => {
+      onSubmit(formValues);
+    },
+    validationSchema: validationSchema(isCreatingWorkflow),
+    validateOnBlur: true,
+  });
   const [newParam, setNewParam] = useState<string>('');
-  const isNameInvalid = canEditName ? !isWorkflowNameAvailable(workflows, name) : false;
+  const isNameInvalid = canEditName ? !isWorkflowNameAvailable(workflows, values.name) : false;
 
   const handleDescriptionChange = (value: string) => {
-    const oldDescription: Description = JSON.parse(description || '');
+    const oldDescription: Description = JSON.parse(values.description || '');
     const newDescription = { ...oldDescription, description: value };
 
-    setWorkflowState((ws) => ({
-      ...ws,
-      description: JSON.stringify(newDescription),
-    }));
+    setFieldValue('description', JSON.stringify(newDescription));
   };
 
   const handleLabelsChange = (labels: string[]) => {
-    const oldDescription: Description = JSON.parse(description || '');
+    const oldDescription: Description = JSON.parse(values.description || '');
     const newDescription = { ...oldDescription, labels };
 
-    setWorkflowState((ws) => ({
-      ...ws,
-      description: JSON.stringify(newDescription),
-    }));
+    setFieldValue('description', JSON.stringify(newDescription));
   };
 
-  const descriptionText = parseDescription(description) || '';
-  const labels = parseLabels(description) || [];
+  const descriptionText = parseDescription(values.description) || '';
+  const labels = parseLabels(values.description) || [];
 
   return (
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        onSubmit(workflowState);
+        handleSubmit(event);
       }}
     >
-      <FormControl my={6} isInvalid={isNameInvalid}>
+      <FormControl my={6} isInvalid={isNameInvalid || errors.name != null} isRequired>
         <FormLabel>Name</FormLabel>
-        <Input
-          isDisabled={!canEditName}
-          value={name}
-          name="name"
-          onChange={(event) => {
-            event.persist();
-            setWorkflowState((wf) => ({
-              ...wf,
-              name: event.target.value,
-            }));
-          }}
-        />
-        <FormErrorMessage>Workflow name should be unique, choose a different one</FormErrorMessage>
+        <Input isDisabled={!canEditName} value={values.name} name="name" onChange={handleChange} />
+        <FormErrorMessage>{errors.name}</FormErrorMessage>
       </FormControl>
       <FormControl id="description" my={6}>
         <FormLabel>Description</FormLabel>
@@ -114,74 +120,37 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
         <FormLabel>Label</FormLabel>
         <LabelsInput labels={labels} onChange={handleLabelsChange} placeholder="Add Labels (press Enter to add)" />
       </FormControl>
-      <FormControl id="version" my={6}>
+      <FormControl id="version" my={6} isRequired isInvalid={errors.version != null}>
         <FormLabel>Version</FormLabel>
-        <Input
-          name="version"
-          value={version}
-          onChange={(event) => {
-            event.persist();
-            setWorkflowState((wf) => ({
-              ...wf,
-              version: Number(event.target.value),
-            }));
-          }}
-        />
+        <Input name="version" value={values.version} onChange={handleChange} />
+        <FormErrorMessage>{errors.version}</FormErrorMessage>
       </FormControl>
       {!isCreatingWorkflow && (
         <HStack spacing={2} my={6}>
-          <FormControl id="timeoutPolicy">
+          <FormControl id="timeoutPolicy" isRequired isInvalid={errors.timeoutPolicy != null}>
             <FormLabel>Timeout policy</FormLabel>
-            <Select
-              name="timeoutPolicy"
-              value={timeoutPolicy}
-              onChange={(event) => {
-                event.persist();
-                setWorkflowState((wf) => ({
-                  ...wf,
-                  timeoutPolicy: event.target.value,
-                }));
-              }}
-            >
+            <Select name="timeoutPolicy" value={values.timeoutPolicy} onChange={handleChange}>
               <option value="RETRY">RETRY</option>
               <option value="TIME_OUT_WF">TIME_OUT_WF</option>
               <option value="ALERT_ONLY">ALERT_ONLY</option>
             </Select>
+            <FormErrorMessage>{errors.timeoutPolicy}</FormErrorMessage>
           </FormControl>
-          <FormControl id="timeoutSeconds">
+          <FormControl id="timeoutSeconds" isRequired isInvalid={errors.timeoutSeconds != null}>
             <FormLabel>Timeout seconds</FormLabel>
-            <Input
-              name="timeoutSeconds"
-              value={timeoutSeconds}
-              onChange={(event) => {
-                event.persist();
-                setWorkflowState((wf) => ({
-                  ...wf,
-                  timeoutSeconds: Number(event.target.value),
-                }));
-              }}
-            />
+            <Input name="timeoutSeconds" value={values.timeoutSeconds} onChange={handleChange} />
+            <FormErrorMessage>{errors.timeoutSeconds}</FormErrorMessage>
           </FormControl>
         </HStack>
       )}
-      <FormControl my={6}>
+      <FormControl my={6} isRequired isInvalid={errors.restartable != null}>
         <Flex alignItems="center">
-          <Checkbox
-            name="restartable"
-            isChecked={restartable}
-            onChange={(event) => {
-              event.persist();
-              setWorkflowState((wf) => ({
-                ...wf,
-                restartable: event.target.checked,
-              }));
-            }}
-            id="restartable"
-          />
+          <Checkbox name="restartable" isChecked={values.restartable} onChange={handleChange} id="restartable" />
           <FormLabel htmlFor="restartable" mb={0} ml={2}>
             Restartable
           </FormLabel>
         </Flex>
+        <FormErrorMessage>{errors.restartable}</FormErrorMessage>
       </FormControl>
       <Heading as="h3" size="md">
         Output parameters
@@ -207,13 +176,10 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
               colorScheme="blue"
               icon={<Icon as={FeatherIcon} icon="plus" size={20} />}
               onClick={() => {
-                setWorkflowState((wf) => ({
-                  ...wf,
-                  outputParameters: {
-                    ...wf.outputParameters,
-                    [newParam]: '',
-                  },
-                }));
+                setFieldValue('outputParameters', {
+                  ...values.outputParameters,
+                  [newParam]: '',
+                });
                 setNewParam('');
               }}
             />
@@ -222,35 +188,31 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
       </Box>
       <Box width="50%">
         <Divider />
-        {Object.keys(outputParameters).map((key) => (
+        {Object.keys(values.outputParameters).map((key) => (
           <FormControl id="param" my={2} key={key}>
             <FormLabel>{key}</FormLabel>
             <HStack spacing={2}>
               <Input
                 name="param"
                 variant="filled"
-                value={outputParameters[key]}
-                onChange={(event) => {
-                  event.persist();
-                  setWorkflowState((wf) => ({
-                    ...wf,
-                    outputParameters: {
-                      ...wf.outputParameters,
-                      [key]: event.target.value,
-                    },
-                  }));
-                }}
+                value={values.outputParameters[key]}
+                onChange={(event) =>
+                  setFieldValue('outputParameters', {
+                    ...values.outputParameters,
+                    [key]: event.target.value,
+                  })
+                }
               />
               <IconButton
                 aria-label="remove param"
                 colorScheme="red"
                 icon={<Icon as={FeatherIcon} icon="trash-2" size={20} />}
-                onClick={() => {
-                  setWorkflowState((wf) => ({
-                    ...wf,
-                    outputParameters: omitBy(outputParameters, (_, k) => k === key),
-                  }));
-                }}
+                onClick={() =>
+                  setFieldValue(
+                    'outputParameters',
+                    omitBy(values.outputParameters, (_, k) => k === key),
+                  )
+                }
               />
             </HStack>
           </FormControl>
@@ -258,7 +220,11 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
       </Box>
       <Divider my={6} />
       <HStack spacing={2} align="center">
-        <Button type="submit" colorScheme="blue" isDisabled={isNameInvalid && name.trim().length === 0}>
+        <Button
+          type="submit"
+          colorScheme="blue"
+          isDisabled={(isNameInvalid && values.name.trim().length === 0) || isSubmitting}
+        >
           Save changes
         </Button>
         {onClose && <Button onClick={onClose}>Cancel</Button>}
