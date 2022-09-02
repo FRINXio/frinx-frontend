@@ -16,18 +16,12 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { omitBy } from 'lodash';
+import { omit, omitBy } from 'lodash';
 import { LabelsInput } from '@frinx/shared/src';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { Workflow } from '../../helpers/types';
 import { isWorkflowNameAvailable } from '../../helpers/workflow.helpers';
-import { parseDescription, parseLabels } from '../left-menu/left-menu.helpers';
-
-type Description = {
-  description: string;
-  labels: string[];
-};
 
 type PartialWorkflow = Pick<
   Workflow,
@@ -49,10 +43,34 @@ type Props = {
   isCreatingWorkflow: boolean;
 };
 
+type FormValues = PartialWorkflow & { labels?: string[] };
+
+const getInitialValues = (initialWorkflow: PartialWorkflow): FormValues => {
+  const { description, labels } = JSON.parse(initialWorkflow.description || '{}');
+  let initialValues: FormValues = initialWorkflow;
+
+  if (description != null) {
+    initialValues = {
+      ...initialValues,
+      description,
+    };
+  }
+
+  if (labels != null) {
+    initialValues = {
+      ...initialValues,
+      labels,
+    };
+  }
+
+  return initialValues;
+};
+
 const validationSchema = (isCreatingWorkflow: boolean) =>
   yup.object({
     name: yup.string().required('Name is required field and must be unique'),
     description: yup.string(),
+    labels: yup.array().of(yup.string()),
     version: yup.number().typeError('This field must be a number').required('Version is required field'),
     restartable: yup.boolean().required('Restartable is required field'),
     ...(!isCreatingWorkflow && {
@@ -65,33 +83,26 @@ const validationSchema = (isCreatingWorkflow: boolean) =>
   });
 
 const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEditName, isCreatingWorkflow }) => {
-  const { errors, values, handleSubmit, setFieldValue, handleChange, isSubmitting } = useFormik<PartialWorkflow>({
-    initialValues: workflow,
+  const { errors, values, handleSubmit, setFieldValue, handleChange } = useFormik<FormValues>({
+    initialValues: getInitialValues(workflow),
     onSubmit: (formValues) => {
-      onSubmit(formValues);
+      const updatedValues = omit(
+        {
+          ...formValues,
+          description: JSON.stringify({
+            description: formValues.description,
+            labels: formValues.labels,
+          }),
+        },
+        ['labels'],
+      );
+      onSubmit(updatedValues);
     },
     validationSchema: validationSchema(isCreatingWorkflow),
     validateOnBlur: true,
   });
   const [newParam, setNewParam] = useState<string>('');
   const isNameInvalid = canEditName ? !isWorkflowNameAvailable(workflows, values.name) : false;
-
-  const handleDescriptionChange = (value: string) => {
-    const oldDescription: Description = JSON.parse(values.description || '');
-    const newDescription = { ...oldDescription, description: value };
-
-    setFieldValue('description', JSON.stringify(newDescription));
-  };
-
-  const handleLabelsChange = (labels: string[]) => {
-    const oldDescription: Description = JSON.parse(values.description || '');
-    const newDescription = { ...oldDescription, labels };
-
-    setFieldValue('description', JSON.stringify(newDescription));
-  };
-
-  const descriptionText = parseDescription(values.description) || '';
-  const labels = parseLabels(values.description) || [];
 
   return (
     <form
@@ -107,18 +118,15 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
       </FormControl>
       <FormControl id="description" my={6}>
         <FormLabel>Description</FormLabel>
-        <Input
-          name="description"
-          value={descriptionText}
-          onChange={(event) => {
-            event.persist();
-            handleDescriptionChange(event.target.value);
-          }}
-        />
+        <Input name="description" value={values.description} onChange={handleChange} />
       </FormControl>
       <FormControl id="label" my={6}>
         <FormLabel>Label</FormLabel>
-        <LabelsInput labels={labels} onChange={handleLabelsChange} placeholder="Add Labels (press Enter to add)" />
+        <LabelsInput
+          labels={values.labels || []}
+          onChange={(labels) => setFieldValue('labels', labels)}
+          placeholder="Add Labels (press Enter to add)"
+        />
       </FormControl>
       <FormControl id="version" my={6} isRequired isInvalid={errors.version != null}>
         <FormLabel>Version</FormLabel>
@@ -126,7 +134,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
         <FormErrorMessage>{errors.version}</FormErrorMessage>
       </FormControl>
       {!isCreatingWorkflow && (
-        <HStack spacing={2} my={6}>
+        <HStack spacing={2} my={6} alignItems="start">
           <FormControl id="timeoutPolicy" isRequired isInvalid={errors.timeoutPolicy != null}>
             <FormLabel>Timeout policy</FormLabel>
             <Select name="timeoutPolicy" value={values.timeoutPolicy} onChange={handleChange}>
@@ -220,11 +228,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
       </Box>
       <Divider my={6} />
       <HStack spacing={2} align="center">
-        <Button
-          type="submit"
-          colorScheme="blue"
-          isDisabled={(isNameInvalid && values.name.trim().length === 0) || isSubmitting}
-        >
+        <Button type="submit" colorScheme="blue" isDisabled={isNameInvalid && values.name.trim().length === 0}>
           Save changes
         </Button>
         {onClose && <Button onClick={onClose}>Cancel</Button>}

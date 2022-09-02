@@ -23,7 +23,7 @@ const parseWorkflow = (workflow: Workflow<ExtendedTask>) => {
   const { name, description, ...rest } = workflow;
   return JSON.stringify(
     {
-      description: JSON.parse(description ?? ''),
+      description,
       ...rest,
     },
     null,
