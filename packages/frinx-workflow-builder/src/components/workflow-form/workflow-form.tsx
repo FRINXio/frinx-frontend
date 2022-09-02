@@ -36,11 +36,11 @@ type PartialWorkflow = Pick<
 >;
 type Props = {
   workflow: PartialWorkflow;
-  onSubmit: (workflow: PartialWorkflow) => void;
   canEditName: boolean;
   workflows: Workflow[];
-  onClose?: () => void;
   isCreatingWorkflow: boolean;
+  onClose?: () => void;
+  onSubmit: (workflow: PartialWorkflow) => void;
 };
 
 type FormValues = PartialWorkflow & { labels?: string[] };
@@ -72,7 +72,7 @@ const validationSchema = (isCreatingWorkflow: boolean) =>
     description: yup.string(),
     labels: yup.array().of(yup.string()),
     version: yup.number().typeError('This field must be a number').required('Version is required field'),
-    restartable: yup.boolean().required('Restartable is required field'),
+    restartable: yup.boolean().typeError('Restartable must be true or false'),
     ...(!isCreatingWorkflow && {
       timeoutPolicy: yup.string().required('Timeout policy is required'),
       timeoutSeconds: yup
@@ -151,7 +151,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
           </FormControl>
         </HStack>
       )}
-      <FormControl my={6} isRequired isInvalid={errors.restartable != null}>
+      <FormControl my={6} isInvalid={errors.restartable != null}>
         <Flex alignItems="center">
           <Checkbox name="restartable" isChecked={values.restartable} onChange={handleChange} id="restartable" />
           <FormLabel htmlFor="restartable" mb={0} ml={2}>

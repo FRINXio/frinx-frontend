@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Flex, Grid, Heading, HStack, useDisclosure } from '@chakra-ui/react';
 import { unwrap, useNotifications } from '@frinx/shared/src';
 import produce from 'immer';
 import React, { useCallback, useMemo, useState, VoidFunctionComponent } from 'react';
@@ -35,8 +35,20 @@ import { EdgeRemoveContext } from './edge-remove-context';
 import { getElementsFromWorkflow, getNodeType } from './helpers/api-to-graph.helpers';
 import { convertToTasks } from './helpers/graph-to-api.helpers';
 import { getLayoutedElements } from './helpers/layout.helpers';
-import { ExtendedTask, NodeData, TaskDefinition, Workflow } from './helpers/types';
+import { ExtendedTask, NodeData, Task, TaskDefinition, Workflow } from './helpers/types';
 import { useTaskActions } from './task-actions-context';
+
+type WorkflowParam = Pick<
+  Workflow,
+  | 'name'
+  | 'description'
+  | 'version'
+  | 'restartable'
+  | 'timeoutPolicy'
+  | 'timeoutSeconds'
+  | 'outputParameters'
+  | 'variables'
+>;
 
 const nodeTypes = {
   decision: DecisionNode,
@@ -53,19 +65,7 @@ type Props = {
   workflow: Workflow<ExtendedTask>;
   workflows: Workflow[];
   taskDefinitions: TaskDefinition[];
-  onWorkflowChange: (
-    workflow: Pick<
-      Workflow,
-      | 'name'
-      | 'description'
-      | 'version'
-      | 'restartable'
-      | 'timeoutPolicy'
-      | 'timeoutSeconds'
-      | 'outputParameters'
-      | 'variables'
-    >,
-  ) => void;
+  onWorkflowChange: (workflow: WorkflowParam) => void;
   onFileImport: (file: File) => void;
   onFileExport: (workflow: Workflow) => void;
   onWorkflowDelete: () => void;
@@ -202,6 +202,42 @@ const App: VoidFunctionComponent<Props> = ({
     [],
   );
 
+  const handleOnSaveWorkflow = (editedWorkflow: Workflow<Task>) => {
+    try {
+      const { tasks, ...rest } = editedWorkflow;
+      const newTasks = convertToTasks(elements);
+
+      const { putWorkflow } = callbackUtils.getCallbacks;
+      putWorkflow([
+        {
+          ...rest,
+          tasks: newTasks,
+        },
+      ])
+        .then(() => {
+          onWorkflowChange(editedWorkflow);
+          addToastNotification({
+            title: 'Workflow Saved',
+            content: 'Workflow was successfully saved',
+            type: 'success',
+          });
+        })
+        .catch((e) => {
+          addToastNotification({
+            title: 'Saving wofklow error',
+            content: `Workflow could not be saved: ${e}`,
+            type: 'error',
+          });
+        });
+    } catch (e) {
+      addToastNotification({
+        title: 'Conversion workflow error',
+        content: 'Workflow could not be converted/wrong definition',
+        type: 'error',
+      });
+    }
+  };
+
   return (
     <>
       <Grid templateColumns="384px 1fr" templateRows="64px 1fr" minHeight="100%" height="calc(100vh - 64px)">
@@ -219,9 +255,6 @@ const App: VoidFunctionComponent<Props> = ({
             <Heading size="lg" mb={2}>
               {name}
             </Heading>
-            <Text color="gray.700" size="sm">
-              {/* {JSON.parse(description).description} */}
-            </Text>
           </Box>
           <Box ml="auto">
             <HStack spacing={2}>
@@ -233,40 +266,7 @@ const App: VoidFunctionComponent<Props> = ({
                   onEditWorkflowBtnClick={() => {
                     setIsEditing(true);
                   }}
-                  onSaveWorkflowBtnClick={() => {
-                    try {
-                      const { tasks, ...rest } = workflow;
-                      const newTasks = convertToTasks(elements);
-
-                      const { putWorkflow } = callbackUtils.getCallbacks;
-                      putWorkflow([
-                        {
-                          ...rest,
-                          tasks: newTasks,
-                        },
-                      ])
-                        .then(() => {
-                          addToastNotification({
-                            title: 'Workflow Saved',
-                            content: 'Workflow was successfully saved',
-                            type: 'success',
-                          });
-                        })
-                        .catch((e) => {
-                          addToastNotification({
-                            title: 'Saving wofklow error',
-                            content: `Workflow could not be saved: ${e}`,
-                            type: 'error',
-                          });
-                        });
-                    } catch (e) {
-                      addToastNotification({
-                        title: 'Conversion workflow error',
-                        content: 'Workflow could not be converted/wrong definition',
-                        type: 'error',
-                      });
-                    }
-                  }}
+                  onSaveWorkflowBtnClick={() => handleOnSaveWorkflow(workflow)}
                   onFileImport={onFileImport}
                   onFileExport={() => {
                     const newTasks = convertToTasks(elements);
@@ -352,9 +352,7 @@ const App: VoidFunctionComponent<Props> = ({
                 </Heading>
                 <WorkflowForm
                   workflow={workflow}
-                  onSubmit={(wf) => {
-                    onWorkflowChange(wf);
-                  }}
+                  onSubmit={(partialWorkflow) => handleOnSaveWorkflow({ ...workflow, ...partialWorkflow })}
                   onClose={() => {
                     onWorkflowChange(workflow);
                     setIsEditing(false);
@@ -393,7 +391,7 @@ const App: VoidFunctionComponent<Props> = ({
         <WorkflowEditorModal
           workflow={workflow}
           isOpen={workflowEditorDisclosure.isOpen}
-          onSave={onWorkflowChange}
+          onSave={handleOnSaveWorkflow}
           onClose={workflowEditorDisclosure.onClose}
         />
       )}
