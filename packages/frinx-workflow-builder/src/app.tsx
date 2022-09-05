@@ -273,7 +273,7 @@ const App: VoidFunctionComponent<Props> = ({
                   onEditWorkflowBtnClick={() => {
                     setIsEditing(true);
                   }}
-                  onSaveWorkflowBtnClick={() => handleOnWorkflowChange(workflow)}
+                  onSaveWorkflowBtnClick={() => handleOnSaveWorkflow(workflow)}
                   onFileImport={onFileImport}
                   onFileExport={() => {
                     const newTasks = convertToTasks(elements);
