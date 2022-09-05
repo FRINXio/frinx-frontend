@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Grid, Heading, HStack, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Flex, Grid, Heading, HStack, useDisclosure, Text } from '@chakra-ui/react';
 import { unwrap, useNotifications } from '@frinx/shared/src';
 import produce from 'immer';
 import React, { useCallback, useMemo, useState, VoidFunctionComponent } from 'react';
@@ -92,6 +92,7 @@ const App: VoidFunctionComponent<Props> = ({
   const [elements, setElements] = useState<{ nodes: Node<NodeData>[]; edges: Edge[] }>(
     getLayoutedElements(getElementsFromWorkflow(workflowTasks, false)),
   );
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const handleConnect = (edge: Edge<unknown> | Connection) => {
     setElements((els) => ({
@@ -202,6 +203,11 @@ const App: VoidFunctionComponent<Props> = ({
     [],
   );
 
+  const handleOnWorkflowChange = (editedWorkflow: Workflow<Task>) => {
+    onWorkflowChange(editedWorkflow);
+    setHasUnsavedChanges(true);
+  };
+
   const handleOnSaveWorkflow = (editedWorkflow: Workflow<Task>) => {
     try {
       const { tasks, ...rest } = editedWorkflow;
@@ -215,7 +221,8 @@ const App: VoidFunctionComponent<Props> = ({
         },
       ])
         .then(() => {
-          onWorkflowChange(editedWorkflow);
+          setHasUnsavedChanges(false);
+          setIsInputModalShown(true);
           addToastNotification({
             title: 'Workflow Saved',
             content: 'Workflow was successfully saved',
@@ -266,7 +273,7 @@ const App: VoidFunctionComponent<Props> = ({
                   onEditWorkflowBtnClick={() => {
                     setIsEditing(true);
                   }}
-                  onSaveWorkflowBtnClick={() => handleOnSaveWorkflow(workflow)}
+                  onSaveWorkflowBtnClick={() => handleOnWorkflowChange(workflow)}
                   onFileImport={onFileImport}
                   onFileExport={() => {
                     const newTasks = convertToTasks(elements);
@@ -281,24 +288,27 @@ const App: VoidFunctionComponent<Props> = ({
                   workflows={workflows}
                 />
               </Box>
-              <Button
-                colorScheme="blue"
-                onClick={() => {
-                  const newTasks = convertToTasks(elements);
-                  const { tasks, ...rest } = workflow;
-                  const { putWorkflow } = callbackUtils.getCallbacks;
-                  putWorkflow([
-                    {
+              <HStack>
+                <Button
+                  colorScheme="blue"
+                  onClick={() => {
+                    const newTasks = convertToTasks(elements);
+                    const { tasks, ...rest } = workflow;
+
+                    handleOnSaveWorkflow({
                       ...rest,
                       tasks: newTasks,
-                    },
-                  ]).then(() => {
-                    setIsInputModalShown(true);
-                  });
-                }}
-              >
-                Save and execute
-              </Button>
+                    });
+                  }}
+                >
+                  Save and execute
+                </Button>
+                {hasUnsavedChanges && (
+                  <Text textColor="red" fontSize="sm">
+                    You have unsaved changes
+                  </Text>
+                )}
+              </HStack>
             </HStack>
           </Box>
         </Flex>
@@ -352,9 +362,12 @@ const App: VoidFunctionComponent<Props> = ({
                 </Heading>
                 <WorkflowForm
                   workflow={workflow}
-                  onSubmit={(partialWorkflow) => handleOnSaveWorkflow({ ...workflow, ...partialWorkflow })}
+                  onSubmit={(partialWorkflow) => {
+                    handleOnWorkflowChange({ ...workflow, ...partialWorkflow });
+                    setIsEditing(false);
+                  }}
                   onClose={() => {
-                    onWorkflowChange(workflow);
+                    handleOnWorkflowChange(workflow);
                     setIsEditing(false);
                   }}
                   canEditName={false}
@@ -391,7 +404,7 @@ const App: VoidFunctionComponent<Props> = ({
         <WorkflowEditorModal
           workflow={workflow}
           isOpen={workflowEditorDisclosure.isOpen}
-          onSave={handleOnSaveWorkflow}
+          onSave={handleOnWorkflowChange}
           onClose={workflowEditorDisclosure.onClose}
         />
       )}
