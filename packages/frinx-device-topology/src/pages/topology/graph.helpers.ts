@@ -31,29 +31,7 @@ export type GraphEdge = {
   target: SourceTarget;
 };
 
-export const POSITIONS = [
-  'TOP_LEFT' as const,
-  'TOP_CENTER' as const,
-  'TOP_RIGHT' as const,
-  'CENTER_RIGHT' as const,
-  'BOTTOM_RIGHT' as const,
-  'BOTTOM_CENTER' as const,
-  'BOTTOM_LEFT' as const,
-  'CENTER_LEFT' as const,
-];
-
-export const POSITIONS_MAP = {
-  TOP_LEFT: [-30, -30],
-  TOP_CENTER: [0, -30],
-  TOP_RIGHT: [30, -30],
-  CENTER_RIGHT: [30, 0],
-  BOTTOM_RIGHT: [30, 30],
-  BOTTOM_CENTER: [0, 30],
-  BOTTOM_LEFT: [-30, 30],
-  CENTER_LEFT: [-30, 0],
-};
-
-const SIDE_LENGHT = 30;
+export const NODE_CIRCLE_RADIUS = 30;
 
 export type PositionsMap = {
   nodes: Record<string, Position>;
@@ -81,8 +59,8 @@ export function getInterfacesPositions({ nodes, edges, positionMap }: UpdateInte
     const pos1 = positionMap[sourceNode.device.name];
     const pos2 = positionMap[targetNode.device.name];
     const angle = getAngleBetweenPoints(pos1, pos2);
-    const y = SIDE_LENGHT * Math.sin(angle);
-    const x = SIDE_LENGHT * Math.cos(angle);
+    const y = NODE_CIRCLE_RADIUS * Math.sin(angle);
+    const x = NODE_CIRCLE_RADIUS * Math.cos(angle);
     return {
       ...acc,
       [curr]: { x: pos1.x + x, y: pos1.y + y },

@@ -1,6 +1,6 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
-import { GraphNode, PositionsMap } from '../../pages/topology/graph.helpers';
+import { GraphNode, NODE_CIRCLE_RADIUS, PositionsMap } from '../../pages/topology/graph.helpers';
 
 type Props = {
   positions: PositionsMap;
@@ -37,7 +37,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
       onPointerUp={onPointerUp}
     >
       <Circle
-        r={isFocused ? '30px' : 0}
+        r={isFocused ? `${NODE_CIRCLE_RADIUS}px` : 0}
         fill="blackAlpha.100"
         strokeOpacity={0.4}
         stroke="gray.500"
@@ -60,13 +60,13 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
           })}
         </G>
         <Circle
-          r="15px"
+          r={`${NODE_CIRCLE_RADIUS / 2}px`}
           fill={isSelected ? 'blue.500' : 'gray.400'}
           strokeWidth={1}
           stroke={isSelected ? 'blue.600' : 'gray.400'}
         />
       </G>
-      <Text height="15px" transform="translate3d(35px, 5px, 0)" fontWeight="600">
+      <Text height={`${NODE_CIRCLE_RADIUS / 2}px`} transform="translate3d(35px, 5px, 0)" fontWeight="600">
         {device.name}
       </Text>
       <G
