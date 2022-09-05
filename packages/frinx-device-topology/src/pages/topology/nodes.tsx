@@ -87,7 +87,7 @@ const Nodes: VoidFunctionComponent<Props> = ({
           }}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
-          position={positions.nodes[node.device.name]}
+          positions={positions}
           isFocused={selectedNodeIds.includes(node.device.name)}
           isSelected={selectedDeviceId === node.device.id}
           node={node}

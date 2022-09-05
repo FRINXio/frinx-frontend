@@ -21,6 +21,16 @@ export type GraphNode = {
   interfaces: string[];
 };
 
+export type SourceTarget = {
+  nodeId: string;
+  interface: string;
+};
+export type GraphEdge = {
+  id: string;
+  source: SourceTarget;
+  target: SourceTarget;
+};
+
 export const POSITIONS = [
   'TOP_LEFT' as const,
   'TOP_CENTER' as const,
@@ -43,12 +53,44 @@ export const POSITIONS_MAP = {
   CENTER_LEFT: [-30, 0],
 };
 
+const SIDE_LENGHT = 30;
+
 export type PositionsMap = {
   nodes: Record<string, Position>;
   interfaces: Record<string, Position>;
 };
 
-export function getDefaultNodesPositions(nodes: GraphNode[]): PositionsMap {
+function getAngleBetweenPoints(p1: Position, p2: Position): number {
+  return Math.atan2(p2.y - p1.y, p2.x - p1.x);
+}
+
+export type UpdateInterfacePositionParams = {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  positionMap: Record<string, Position>;
+};
+
+export function getInterfacesPositions({ nodes, edges, positionMap }: UpdateInterfacePositionParams) {
+  const allInterfaces = nodes.map((n) => n.interfaces).flat();
+  return allInterfaces.reduce((acc, curr) => {
+    const target = unwrap(
+      edges.find((e) => e.source.interface === curr)?.target ?? edges.find((e) => e.target.interface === curr)?.source,
+    );
+    const sourceNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
+    const targetNode = unwrap(nodes.find((n) => n.interfaces.includes(target.interface)));
+    const pos1 = positionMap[sourceNode.device.name];
+    const pos2 = positionMap[targetNode.device.name];
+    const angle = getAngleBetweenPoints(pos1, pos2);
+    const y = SIDE_LENGHT * Math.sin(angle);
+    const x = SIDE_LENGHT * Math.cos(angle);
+    return {
+      ...acc,
+      [curr]: { x: pos1.x + x, y: pos1.y + y },
+    };
+  }, {});
+}
+
+export function getDefaultNodesPositions(nodes: GraphNode[], edges: GraphEdge[]): PositionsMap {
   const nodesMap = nodes.reduce((acc, curr) => {
     const { device } = curr;
     const { position } = device;
@@ -57,32 +99,8 @@ export function getDefaultNodesPositions(nodes: GraphNode[]): PositionsMap {
       [device.name]: { x: position?.x ?? getRandomInt(1000), y: position?.y ?? getRandomInt(600) },
     };
   }, {} as Record<string, Position>);
-  const interfacesMap = nodes
-    .map((n) => n.interfaces)
-    .flat()
-    .reduce((acc, curr) => {
-      const node = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
-      const index = node.interfaces.findIndex((n) => n === curr);
-      const position = nodesMap[node.device.name];
-      const [offsetX, offsetY] = POSITIONS_MAP[POSITIONS[index]];
-      return {
-        ...acc,
-        [curr]: { x: position.x + offsetX, y: position.y + offsetY },
-      };
-    }, {} as Record<string, Position>);
   return {
     nodes: nodesMap,
-    interfaces: interfacesMap,
+    interfaces: getInterfacesPositions({ nodes, edges, positionMap: nodesMap }),
   };
-}
-
-export function getUpdatedInterfacesPositions(node: GraphNode, position: Position): Record<string, Position> {
-  const { interfaces } = node;
-  return interfaces.reduce((acc, curr, index) => {
-    const [offsetX, offsetY] = POSITIONS_MAP[POSITIONS[index]];
-    return {
-      ...acc,
-      [curr]: { x: position.x + offsetX, y: position.y + offsetY },
-    };
-  }, {});
 }

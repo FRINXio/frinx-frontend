@@ -1,9 +1,9 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
-import { GraphNode, Position, POSITIONS, POSITIONS_MAP } from '../../pages/topology/graph.helpers';
+import { GraphNode, PositionsMap } from '../../pages/topology/graph.helpers';
 
 type Props = {
-  position: Position;
+  positions: PositionsMap;
   isSelected: boolean;
   isFocused: boolean;
   node: GraphNode;
@@ -13,11 +13,11 @@ type Props = {
 };
 
 const G = chakra('g');
-const Rect = chakra('rect');
+const Circle = chakra('circle');
 const Text = chakra('text');
 
 const NodeIcon: VoidFunctionComponent<Props> = ({
-  position,
+  positions,
   isFocused,
   isSelected,
   node,
@@ -26,46 +26,46 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   onPointerUp,
 }) => {
   const { interfaces, device } = node;
+  const { x, y } = positions.nodes[node.device.name];
   return (
     <G
       cursor="pointer"
-      transform={`translate3d(${position.x}px, ${position.y}px, 0)`}
+      transform={`translate3d(${x}px, ${y}px, 0)`}
       transformOrigin="center center"
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
     >
-      <Rect
-        width={isFocused ? '60px' : 0}
-        height={isFocused ? '60px' : 0}
+      <Circle
+        r={isFocused ? '30px' : 0}
         fill="blackAlpha.100"
-        transform="translate3d(-30px, -30px, 0)"
         strokeOpacity={0.4}
         stroke="gray.500"
         transition="all .2s ease-in-out"
       />
       <G>
-        {interfaces.map((intf, i) => {
-          const [x, y] = POSITIONS_MAP[POSITIONS[i]];
-          return (
-            <G
-              key={intf}
-              transform={isFocused ? `translate3d(${x - 2.5}px, ${y - 2.5}px, 0)` : undefined}
-              transition="all .2s ease-in-out"
-            >
-              <Rect width="5px" height="5px" fill="purple" />
-            </G>
-          );
-        })}
+        <G>
+          {interfaces.map((intf) => {
+            const iPosition = positions.interfaces[intf];
+            return (
+              <Circle
+                r="2px"
+                fill="purple"
+                key={intf}
+                style={{
+                  transform: isFocused ? `translate3d(${iPosition.x - x}px, ${iPosition.y - y}px, 0)` : undefined,
+                }}
+              />
+            );
+          })}
+        </G>
+        <Circle
+          r="15px"
+          fill={isSelected ? 'blue.500' : 'gray.400'}
+          strokeWidth={1}
+          stroke={isSelected ? 'blue.600' : 'gray.400'}
+        />
       </G>
-      <Rect
-        width="30px"
-        height="30px"
-        transform="translate3d(-15px, -15px, 0)"
-        fill={isSelected ? 'blue.500' : 'gray.400'}
-        strokeWidth={1}
-        stroke={isSelected ? 'blue.600' : 'gray.400'}
-      />
       <Text height="15px" transform="translate3d(35px, 5px, 0)" fontWeight="600">
         {device.name}
       </Text>
@@ -75,7 +75,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
         strokeWidth="2px"
         strokeLinecap="round"
         strokeLinejoin="round"
-        transform="translate3d(-12px, -12px, 0)"
+        transform="translate3d(-10px, -10px, 0) scale(.8)"
       >
         <path strokeWidth="1.2" d="M9 21H3v-6M15 3h6v6M21 3l-7 7M3 21l7-7" />
         <g strokeWidth="1.2">
