@@ -1,10 +1,11 @@
 import { Box } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared';
-import React, { FunctionComponent, useRef, useState } from 'react';
+import React, { FunctionComponent, useRef } from 'react';
 import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
-import { GraphEdge } from '../../__generated__/graphql';
+import { setSelectedNode, updateNodePosition } from '../../state.actions';
+import { useStateContext } from '../../state.provider';
 import Edges from './edges';
-import { getDefaultNodesPositions, getInterfacesPositions, GraphNode, Position } from './graph.helpers';
+import { Position } from './graph.helpers';
 import BackgroundSvg from './img/background.svg';
 import Nodes from './nodes';
 
@@ -12,41 +13,23 @@ const width = 1248;
 const height = 600;
 
 type Props = {
-  data: {
-    nodes: GraphNode[];
-    edges: GraphEdge[];
-  };
   onNodePositionUpdate: (positions: { deviceId: string; position: Position }[]) => Promise<void>;
 };
 
-const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate }) => {
-  const [positions, setPositions] = useState(getDefaultNodesPositions(data.nodes, data.edges));
-  const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
+const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
+  const { state, dispatch } = useStateContext();
   const lastPositionRef = useRef<{ deviceId: string; position: Position } | null>(null);
   const positionListRef = useRef<{ deviceId: string; position: Position }[]>([]);
   const timeoutRef = useRef<number>();
-  const { nodes, edges } = data;
+  const { nodes, selectedNode } = state;
 
   const handleNodePositionUpdate = (nodeId: string, position: Position) => {
     if (timeoutRef.current != null) {
       clearTimeout(timeoutRef.current);
     }
-    setPositions((prev) => {
-      const node = unwrap(nodes.find((n) => n.device.name === nodeId));
-      lastPositionRef.current = { deviceId: node.device.id, position };
-      const nodeMap = {
-        ...prev.nodes,
-        [nodeId]: position,
-      };
-      return {
-        ...prev,
-        nodes: nodeMap,
-        interfaces: {
-          ...prev.interfaces,
-          ...getInterfacesPositions({ nodes, edges, positionMap: nodeMap }),
-        },
-      };
-    });
+    const node = unwrap(nodes.find((n) => n.device.name === nodeId));
+    lastPositionRef.current = { deviceId: node.device.id, position };
+    dispatch(updateNodePosition(nodeId, position));
   };
 
   const handleNodePositionUpdateFinish = () => {
@@ -64,33 +47,17 @@ const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate })
     }
   };
 
-  const handleNodeSelect = (node: GraphNode) => {
-    setSelectedNode(node);
-  };
-
   const handleInfoPanelClose = () => {
-    setSelectedNode(null);
+    dispatch(setSelectedNode(null));
   };
-
-  const connectedEdges = edges.filter(
-    (e) => selectedNode?.device.name === e.source.nodeId || selectedNode?.device.name === e.target.nodeId,
-  );
-  const connectedNodeIds = [
-    ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
-  ];
 
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        <Edges edges={edges} positions={positions} selectedNodeIds={connectedNodeIds} />
+        <Edges />
         <Nodes
-          nodes={nodes}
-          positions={positions}
           onNodePositionUpdate={handleNodePositionUpdate}
-          onNodeSelect={handleNodeSelect}
-          selectedNodeIds={connectedNodeIds}
           onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
-          selectedDeviceId={selectedNode?.device.id ?? null}
         />
       </svg>
       {selectedNode != null && (

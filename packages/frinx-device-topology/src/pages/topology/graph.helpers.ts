@@ -68,7 +68,7 @@ export function getInterfacesPositions({ nodes, edges, positionMap }: UpdateInte
   }, {});
 }
 
-export function getDefaultNodesPositions(nodes: GraphNode[], edges: GraphEdge[]): PositionsMap {
+export function getDefaultPositionsMap(nodes: GraphNode[], edges: GraphEdge[]): PositionsMap {
   const nodesMap = nodes.reduce((acc, curr) => {
     const { device } = curr;
     const { position } = device;

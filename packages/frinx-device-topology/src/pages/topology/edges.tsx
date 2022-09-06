@@ -1,24 +1,19 @@
 import { Box } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { GraphEdge } from '../../__generated__/graphql';
-import { PositionsMap } from './graph.helpers';
+import { useStateContext } from '../../state.provider';
 
-type Props = {
-  edges: GraphEdge[];
-  positions: PositionsMap;
-  selectedNodeIds: string[];
-};
-
-const Edges: VoidFunctionComponent<Props> = ({ edges, positions, selectedNodeIds }) => {
+const Edges: VoidFunctionComponent = () => {
+  const { state } = useStateContext();
+  const { edges, nodePositions, interfacePositions, connectedNodeIds } = state;
   return (
     <g>
       {edges.map((edge) => {
-        const sourcePosition = selectedNodeIds.includes(edge.source.nodeId)
-          ? positions.interfaces[edge.source.interface]
-          : positions.nodes[edge.source.nodeId];
-        const targetPosition = selectedNodeIds.includes(edge.target.nodeId)
-          ? positions.interfaces[edge.target.interface]
-          : positions.nodes[edge.target.nodeId];
+        const sourcePosition = connectedNodeIds.includes(edge.source.nodeId)
+          ? interfacePositions[edge.source.interface]
+          : nodePositions[edge.source.nodeId];
+        const targetPosition = connectedNodeIds.includes(edge.target.nodeId)
+          ? interfacePositions[edge.target.interface]
+          : nodePositions[edge.target.nodeId];
         return (
           <Box
             as="line"
