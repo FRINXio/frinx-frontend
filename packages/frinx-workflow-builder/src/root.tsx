@@ -99,11 +99,9 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
       | 'variables'
     >,
   ) => {
-    const { description, ...rest } = editedWorkflow;
     setWorkflow((wf) => ({
       ...unwrap(wf),
-      ...rest,
-      description: JSON.stringify(description),
+      ...editedWorkflow,
     }));
   };
 
