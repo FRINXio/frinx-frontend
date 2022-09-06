@@ -4,7 +4,7 @@ import React, { FunctionComponent, useRef, useState } from 'react';
 import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
 import { GraphEdge } from '../../__generated__/graphql';
 import Edges from './edges';
-import { getDefaultNodesPositions, getUpdatedInterfacesPositions, GraphNode, Position } from './graph.helpers';
+import { getDefaultNodesPositions, getInterfacesPositions, GraphNode, Position } from './graph.helpers';
 import BackgroundSvg from './img/background.svg';
 import Nodes from './nodes';
 
@@ -20,7 +20,7 @@ type Props = {
 };
 
 const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate }) => {
-  const [positions, setPositions] = useState(getDefaultNodesPositions(data.nodes));
+  const [positions, setPositions] = useState(getDefaultNodesPositions(data.nodes, data.edges));
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const lastPositionRef = useRef<{ deviceId: string; position: Position } | null>(null);
   const positionListRef = useRef<{ deviceId: string; position: Position }[]>([]);
@@ -34,15 +34,16 @@ const TopologyGraph: FunctionComponent<Props> = ({ data, onNodePositionUpdate })
     setPositions((prev) => {
       const node = unwrap(nodes.find((n) => n.device.name === nodeId));
       lastPositionRef.current = { deviceId: node.device.id, position };
+      const nodeMap = {
+        ...prev.nodes,
+        [nodeId]: position,
+      };
       return {
         ...prev,
-        nodes: {
-          ...prev.nodes,
-          [nodeId]: position,
-        },
+        nodes: nodeMap,
         interfaces: {
           ...prev.interfaces,
-          ...getUpdatedInterfacesPositions(node, position),
+          ...getInterfacesPositions({ nodes, edges, positionMap: nodeMap }),
         },
       };
     });
