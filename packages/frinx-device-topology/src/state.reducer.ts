@@ -49,6 +49,9 @@ export function stateReducer(state: State, action: StateAction): State {
         return acc;
       }
       case 'SET_SELECTED_NODE': {
+        if (acc.selectedNode?.id !== action.node?.id) {
+          acc.selectedEdge = null;
+        }
         acc.selectedNode = action.node;
         const connectedEdges = acc.edges.filter(
           (e) => action.node?.device.name === e.source.nodeId || action.node?.device.name === e.target.nodeId,
