@@ -3,7 +3,17 @@ import React, { FC, useMemo } from 'react';
 import * as yup from 'yup';
 
 import { Item } from 'chakra-ui-autocomplete';
-import { Button, Divider, FormControl, FormErrorMessage, FormLabel, HStack, Input, Select } from '@chakra-ui/react';
+import {
+  Button,
+  Divider,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  HStack,
+  Input,
+  Select,
+  Spacer,
+} from '@chakra-ui/react';
 import { Editor } from '@frinx/shared/src';
 
 import { serviceStateOptions } from '../../helpers/types';
@@ -164,8 +174,9 @@ const EditDeviceForm: FC<Props> = ({
       </FormControl>
 
       <Divider my={6} />
-      <FormControl>
+      <FormControl mb={6}>
         <HStack>
+          <Spacer />
           <Button onClick={onCancel} colorScheme="gray" ml={3}>
             Cancel
           </Button>
