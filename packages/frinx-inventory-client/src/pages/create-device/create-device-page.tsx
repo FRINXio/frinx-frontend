@@ -90,6 +90,15 @@ type FormValues = {
   mountParameters: string;
   labels: string[];
   serviceState: DeviceServiceState;
+  blueprintId: string;
+  model: string;
+  address: string;
+  username: string;
+  password: string;
+  deviceType: string;
+  version: string;
+  vendor: string;
+  port: number;
 };
 type Props = {
   onAddDeviceSuccess: () => void;
@@ -119,13 +128,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
 
   const handleSubmit = async (values: FormValues) => {
     addDevice({
-      input: {
-        name: values.name,
-        mountParameters: values.mountParameters,
-        zoneId: values.zoneId,
-        labelIds: values.labels,
-        serviceState: values.serviceState,
-      },
+      input: values,
     }).then(() => {
       toast({
         position: 'top-right',
