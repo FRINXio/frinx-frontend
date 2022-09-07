@@ -1,11 +1,11 @@
-import { Box } from '@chakra-ui/react';
+import { Box, position } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared';
-import React, { FunctionComponent, useRef } from 'react';
+import React, { FunctionComponent, useEffect, useRef } from 'react';
 import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
 import { setSelectedNode, updateNodePosition } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import Edges from './edges';
-import { Position } from './graph.helpers';
+import { GraphNode, Position } from './graph.helpers';
 import BackgroundSvg from './img/background.svg';
 import Nodes from './nodes';
 
@@ -16,12 +16,26 @@ type Props = {
   onNodePositionUpdate: (positions: { deviceId: string; position: Position }[]) => Promise<void>;
 };
 
+function getPositionsList(
+  nodes: GraphNode[],
+  nodePositions: Record<string, Position>,
+): { deviceId: string; position: Position }[] {
+  const positionsList = nodes.map((n) => ({
+    deviceId: n.device.id,
+    position: nodePositions[n.device.name],
+  }));
+  return positionsList;
+}
+
 const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
   const { state, dispatch } = useStateContext();
   const lastPositionRef = useRef<{ deviceId: string; position: Position } | null>(null);
   const positionListRef = useRef<{ deviceId: string; position: Position }[]>([]);
   const timeoutRef = useRef<number>();
   const { nodes, selectedNode } = state;
+
+  // console.log(positionListRef);
+  // console.log(getDefaultPositionsList(state.nodes, state.nodePositions));
 
   const handleNodePositionUpdate = (nodeId: string, position: Position) => {
     if (timeoutRef.current != null) {
@@ -38,7 +52,8 @@ const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
       lastPositionRef.current = null;
       timeoutRef.current = Number(
         setTimeout(() => {
-          onNodePositionUpdate(positionListRef.current).then(() => {
+          const nodePositionsList = getPositionsList(state.nodes, state.nodePositions);
+          onNodePositionUpdate(nodePositionsList).then(() => {
             positionListRef.current = [];
             clearTimeout(timeoutRef.current);
           });
