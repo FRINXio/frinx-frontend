@@ -14,6 +14,7 @@ export type State = {
   nodePositions: Record<string, Position>;
   interfacePositions: Record<string, Position>;
   selectedNode: GraphNode | null;
+  selectedEdge: GraphEdge | null;
   connectedNodeIds: string[];
 };
 
@@ -23,6 +24,7 @@ export const initialState: State = {
   nodePositions: {},
   interfacePositions: {},
   selectedNode: null,
+  selectedEdge: null,
   connectedNodeIds: [],
 };
 
@@ -55,6 +57,10 @@ export function stateReducer(state: State, action: StateAction): State {
           ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
         ];
         acc.connectedNodeIds = connectedNodeIds;
+        return acc;
+      }
+      case 'SET_SELECTED_EDGE': {
+        acc.selectedEdge = action.edge;
         return acc;
       }
       default:

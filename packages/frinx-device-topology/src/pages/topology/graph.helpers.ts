@@ -38,7 +38,7 @@ export type PositionsMap = {
   interfaces: Record<string, Position>;
 };
 
-function getAngleBetweenPoints(p1: Position, p2: Position): number {
+export function getAngleBetweenPoints(p1: Position, p2: Position): number {
   return Math.atan2(p2.y - p1.y, p2.x - p1.x);
 }
 
