@@ -278,7 +278,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
           />
         </>
       )}
-      {values.poolType === 'allocating' && resourceTypeName != null && (
+      {resourceTypeName !== 'route_distinguisher' && values.poolType === 'allocating' && resourceTypeName != null && (
         <>
           <Divider marginY={5} orientation="horizontal" color="gray.200" />
           <Heading as="h4" size="md">
@@ -296,6 +296,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
               </List>
             </>
           )}
+
           <PoolPropertiesForm
             poolProperties={poolProperties}
             poolPropertyTypes={poolPropertyTypes}
