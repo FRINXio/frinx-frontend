@@ -30,7 +30,6 @@ type Props = {
   selectedWorkflows: string[];
   selectAllWorkflows: (isChecked: boolean) => void;
   onSuccessfullOperation: () => void;
-  onBulkOperationExecute: () => void;
 };
 
 const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
@@ -38,15 +37,9 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
   selectedWorkflows,
   selectAllWorkflows,
   onSuccessfullOperation,
-  onBulkOperationExecute,
 }) => {
   const [isFetching, setIsFetching] = useState(false);
   const { addToastNotification } = useNotifications();
-  const [timer, setTimer] = useState<NodeJS.Timeout>();
-
-  useEffect(() => {
-    () => clearTimeout(timer);
-  }, []);
 
   const executeBulkOperation = (operationFunctionName: CallBackUtilsFunctionNames) => {
     if (selectedWorkflows.length === 0) return;
@@ -81,11 +74,6 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
           setIsFetching(false);
           selectAllWorkflows(false);
         });
-      setTimer(
-        setTimeout(() => {
-          onBulkOperationExecute();
-        }, 500),
-      );
     }
   };
 
