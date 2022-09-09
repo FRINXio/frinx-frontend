@@ -51,9 +51,18 @@ export type UpdateInterfacePositionParams = {
 export function getInterfacesPositions({ nodes, edges, positionMap }: UpdateInterfacePositionParams) {
   const allInterfaces = nodes.map((n) => n.interfaces).flat();
   return allInterfaces.reduce((acc, curr) => {
-    const target = unwrap(
-      edges.find((e) => e.source.interface === curr)?.target ?? edges.find((e) => e.target.interface === curr)?.source,
-    );
+    const target =
+      edges.find((e) => e.source.interface === curr)?.target ?? edges.find((e) => e.target.interface === curr)?.source;
+
+    // if interface does not have defined connections, we will not display it
+    // because we cannot count angle to properly display it
+    // we should be able to display info about not connected interface somewhere in UI
+    // for example when you click on particular node
+    if (!target) {
+      return {
+        ...acc,
+      };
+    }
     const sourceNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
     const targetNode = unwrap(nodes.find((n) => n.interfaces.includes(target.interface)));
     const pos1 = positionMap[sourceNode.device.name];
