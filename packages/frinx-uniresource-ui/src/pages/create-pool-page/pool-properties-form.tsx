@@ -25,8 +25,6 @@ type Props = {
 
 function getPlaceholder(name: string): Record<string, string> {
   switch (name) {
-    case 'route_distinguisher':
-      return { rd: '1' };
     case 'ipv6_prefix':
     case 'ipv6':
       return { address: '2001:db8:1::', prefix: '64' };
