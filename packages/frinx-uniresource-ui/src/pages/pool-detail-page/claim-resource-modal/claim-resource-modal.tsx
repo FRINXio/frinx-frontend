@@ -13,11 +13,7 @@ import {
   Button,
   Textarea,
   Text,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
+  Heading,
 } from '@chakra-ui/react';
 import { FormikErrors, useFormik } from 'formik';
 import React, { FC } from 'react';
@@ -48,7 +44,7 @@ type AlternativeId = {
 
 type FormValues = {
   description: string;
-  userInput: string | number;
+  userInput?: string | number;
   alternativeIds: AlternativeId[];
 };
 
@@ -81,7 +77,7 @@ function getHint(name: string, poolProperties: Record<string, string>, totalCapa
 
 const validationSchema = (resourceTypeName: string) => {
   let userInputSchema;
-  if (resourceTypeName === 'ípv4_prefix' || resourceTypeName === 'ipv6_prefix' || resourceTypeName === 'vlan_range') {
+  if (resourceTypeName === 'ipv4_prefix' || resourceTypeName === 'ipv6_prefix' || resourceTypeName === 'vlan_range') {
     userInputSchema = yup.number().typeError('Please enter a number').required('This field is required');
   }
 
@@ -114,7 +110,6 @@ const ClaimResourceModal: FC<Props> = ({
     useFormik<FormValues>({
       initialValues: {
         description: '',
-        userInput: '',
         alternativeIds: [
           {
             key: 'status',
@@ -138,21 +133,21 @@ const ClaimResourceModal: FC<Props> = ({
         }
 
         const { alternativeIds: formAlternativeIds, description } = formValues;
-        const alternativeIdObject: Record<string, string | string[]> = {};
 
-        formAlternativeIds.forEach(({ key, value }) => {
-          if (value.length > 1) {
-            alternativeIdObject[key] = value;
-          }
-          const [v] = value;
-          alternativeIdObject[key] = v;
-        });
+        const alternativeIdObject = formAlternativeIds.reduce((prev, curr) => {
+          return {
+            ...prev,
+            [curr.key]: curr.value,
+          };
+        }, {} as Record<string, string | string[]>);
 
         onClaimWithAltId(alternativeIdObject, description, userInput);
         onClose();
         resetForm();
       },
       validationSchema: validationSchema(resourceTypeName),
+      validateOnBlur: false,
+      validateOnChange: false,
     });
 
   const handleAlternativeIdsChange = (changedAlternativeIds: AlternativeId[]) => {
@@ -161,7 +156,6 @@ const ClaimResourceModal: FC<Props> = ({
 
   const canShowDesiredValueInput =
     shouldBeDesiredSize || (resourceTypeName !== 'unique_id' && resourceTypeName !== 'random_signed_int32');
-  const shouldBeNumber = resourceTypeName === 'vlan';
 
   type FormErrors = typeof errors & FormikErrors<{ duplicateAlternativeIds?: string }>;
   const formErrors: FormErrors = errors;
@@ -174,7 +168,7 @@ const ClaimResourceModal: FC<Props> = ({
         resetForm();
       }}
       isCentered
-      size="xl"
+      size="3xl"
     >
       <ModalOverlay />
       <ModalContent>
@@ -185,18 +179,14 @@ const ClaimResourceModal: FC<Props> = ({
             <fieldset disabled={isSubmitting}>
               {shouldBeDesiredSize ? (
                 <FormControl isRequired isInvalid={errors.userInput != null} mb={5}>
-                  <FormLabel>Desired size (number of allocated addresses)</FormLabel>
-                  <NumberInput
-                    value={values.userInput}
-                    onChange={(_: string, value: number) => setFieldValue('userInput', value)}
+                  <FormLabel htmlFor="desiredSize">Desired size (number of allocated addresses)</FormLabel>
+                  <Input
+                    id="desiredSize"
                     name="userInput"
-                  >
-                    <NumberInputField placeholder="254" />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
+                    placeholder="Enter a number"
+                    value={values.userInput}
+                    onChange={handleChange}
+                  />
                   <Text textColor="gray.400" fontSize="sm">
                     {getHint(resourceTypeName, poolProperties, totalCapacity)}
                   </Text>
@@ -206,29 +196,13 @@ const ClaimResourceModal: FC<Props> = ({
                 canShowDesiredValueInput && (
                   <FormControl isInvalid={errors.userInput != null} mb={5}>
                     <FormLabel htmlFor="desiredValue">Desired value (optional input)</FormLabel>
-                    {shouldBeNumber ? (
-                      <NumberInput
-                        value={values.userInput}
-                        id="desiredValue"
-                        name="userInput"
-                        onChange={(_: string, value: number) => setFieldValue('userInput', value)}
-                      >
-                        <NumberInputField
-                          placeholder={`Set specific value that you want to allocate from ${poolName}`}
-                        />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper />
-                          <NumberDecrementStepper />
-                        </NumberInputStepper>
-                      </NumberInput>
-                    ) : (
-                      <Input
-                        value={values.userInput}
-                        onChange={handleChange}
-                        name="userInput"
-                        placeholder={`Set specific value that you want to allocate from ${poolName}`}
-                      />
-                    )}
+                    <Input
+                      placeholder={`Set specific value that you want to allocate from ${poolName}`}
+                      name="userInput"
+                      id="desiredValue"
+                      value={values.userInput}
+                      onChange={handleChange}
+                    />
                     <Text textColor="gray.400" fontSize="sm">
                       {getHint(resourceTypeName, poolProperties, totalCapacity)}
                     </Text>
@@ -247,6 +221,10 @@ const ClaimResourceModal: FC<Props> = ({
                 />
                 <FormErrorMessage>{errors.description}</FormErrorMessage>
               </FormControl>
+
+              <Heading fontSize="md" mt={5}>
+                Alternative Id
+              </Heading>
 
               <AlternativeIdForm
                 alternativeIds={values.alternativeIds}

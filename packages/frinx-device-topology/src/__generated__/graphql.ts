@@ -231,6 +231,7 @@ export type Device = Node & {
   model: Maybe<Scalars['String']>;
   mountParameters: Maybe<Scalars['String']>;
   name: Scalars['String'];
+  position: Maybe<Position>;
   serviceState: DeviceServiceState;
   source: DeviceSource;
   updatedAt: Scalars['String'];
@@ -280,6 +281,12 @@ export type DiffData = {
   path: Scalars['String'];
 };
 
+export type EdgeSourceTarget = {
+  __typename?: 'EdgeSourceTarget';
+  interface: Scalars['String'];
+  nodeId: Scalars['String'];
+};
+
 export type FilterDevicesInput = {
   deviceName?: InputMaybe<Scalars['String']>;
   labels?: InputMaybe<Array<Scalars['String']>>;
@@ -288,14 +295,15 @@ export type FilterDevicesInput = {
 export type GraphEdge = {
   __typename?: 'GraphEdge';
   id: Scalars['ID'];
-  source: Scalars['String'];
-  target: Scalars['String'];
+  source: EdgeSourceTarget;
+  target: EdgeSourceTarget;
 };
 
 export type GraphNode = {
   __typename?: 'GraphNode';
   device: Device;
   id: Scalars['ID'];
+  interfaces: Array<Scalars['String']>;
 };
 
 export type InstallDevicePayload = {
@@ -371,6 +379,7 @@ export type Mutation = {
   updateBlueprint: UpdateBlueprintPayload;
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
+  updateDeviceMetadata: UpdateDeviceMetadataPayload;
 };
 
 
@@ -498,6 +507,11 @@ export type MutationUpdateDeviceArgs = {
   input: UpdateDeviceInput;
 };
 
+
+export type MutationUpdateDeviceMetadataArgs = {
+  input: Array<PositionInput>;
+};
+
 export type Node = {
   id: Scalars['ID'];
 };
@@ -508,6 +522,22 @@ export type PageInfo = {
   hasNextPage: Scalars['Boolean'];
   hasPreviousPage: Scalars['Boolean'];
   startCursor: Maybe<Scalars['String']>;
+};
+
+export type Position = {
+  __typename?: 'Position';
+  x: Scalars['Int'];
+  y: Scalars['Int'];
+};
+
+export type PositionInput = {
+  deviceId: Scalars['ID'];
+  position: PositionInputField;
+};
+
+export type PositionInputField = {
+  x: Scalars['Int'];
+  y: Scalars['Int'];
 };
 
 export type Query = {
@@ -681,6 +711,11 @@ export type UpdateDeviceInput = {
   vendor?: InputMaybe<Scalars['String']>;
 };
 
+export type UpdateDeviceMetadataPayload = {
+  __typename?: 'UpdateDeviceMetadataPayload';
+  devices: Maybe<Array<Maybe<Device>>>;
+};
+
 export type UpdateDevicePayload = {
   __typename?: 'UpdateDevicePayload';
   device: Maybe<Device>;
@@ -707,7 +742,21 @@ export type ZonesConnection = {
   totalCount: Scalars['Int'];
 };
 
+export type DeviceQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeviceQuery = { __typename?: 'Query', node: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string, isInstalled: boolean, createdAt: string, serviceState: DeviceServiceState } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Zone' } | null };
+
 export type TopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, device: { __typename?: 'Device', id: string, name: string } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: string, target: string }> } };
+export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, interfaces: Array<string>, device: { __typename?: 'Device', id: string, name: string, position: { __typename?: 'Position', x: number, y: number } | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } };
+
+export type UpdatePositionMutationVariables = Exact<{
+  input: Array<PositionInput> | PositionInput;
+}>;
+
+
+export type UpdatePositionMutation = { __typename?: 'Mutation', updateDeviceMetadata: { __typename?: 'UpdateDeviceMetadataPayload', devices: Array<{ __typename?: 'Device', id: string, position: { __typename?: 'Position', x: number, y: number } | null } | null> | null } };

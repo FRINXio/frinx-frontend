@@ -3883,6 +3883,8 @@ __metadata:
     "@urql/exchange-retry": 0.3.3
     "@webpack-cli/serve": 1.6.1
     d3: ^7.6.1
+    date-fns: ^2.29.2
+    date-fns-tz: ^1.3.6
     eslint: 8.17.0
     eslint-config-prettier: 7.2.0
     eslint-import-resolver-typescript: 2.7.1
@@ -9063,7 +9065,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns-tz@npm:1.3.6":
+"date-fns-tz@npm:1.3.6, date-fns-tz@npm:^1.3.6":
   version: 1.3.6
   resolution: "date-fns-tz@npm:1.3.6"
   peerDependencies:
@@ -9083,6 +9085,13 @@ __metadata:
   version: 1.30.1
   resolution: "date-fns@npm:1.30.1"
   checksum: 86b1f3269cbb1f3ee5ac9959775ea6600436f4ee2b78430cd427b41a0c9fabf740b1a5d401c085f3003539a6f4755c7c56c19fbd70ce11f6f673f6bc8075b710
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^2.29.2":
+  version: 2.29.2
+  resolution: "date-fns@npm:2.29.2"
+  checksum: 08bebcceb0a5dbadae4c55e6592b9d5c07dbd7833433c7e9a1d4a424300db32589b8b48e5979b32863c9b00a48d9bab6663e580c2a4f9f203d46cbf9113b5664
   languageName: node
   linkType: hard
 

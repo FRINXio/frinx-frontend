@@ -1,4 +1,4 @@
-import { Button, Flex, Heading, Icon, Spinner } from '@chakra-ui/react';
+import { Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
 import React, { useCallback, useMemo, useState, VoidFunctionComponent } from 'react';
@@ -64,7 +64,7 @@ const StrategiesPage: VoidFunctionComponent = () => {
   };
 
   if (fetching) {
-    return <Spinner size="xl" />;
+    return <Progress size="sm" isIndeterminate />;
   }
 
   if (data == null) {
