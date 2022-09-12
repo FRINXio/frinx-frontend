@@ -55,13 +55,11 @@ const ExecutedWorkflowList = () => {
   const query = useQueryParams();
   const [pagination, setPagination] = usePagination();
   const searchKeyword = query.get('search') || '';
-
   const [state, setState] = useState<StateProps>({
     ...initialState,
     workflowId: searchKeyword,
   });
-
-  const [workflows, setWorkflows] = useState<ExecutedWorkflows | null>(null);
+  const [workflows, setWorkflows] = useState<ExecutedWorkflows>();
 
   useEffect(() => {
     loadExecutedWorkflows(state, pagination).then((executedWorkflows) => {

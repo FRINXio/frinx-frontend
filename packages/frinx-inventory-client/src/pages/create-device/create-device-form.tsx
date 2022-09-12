@@ -23,12 +23,18 @@ type FormValues = {
   mountParameters: string;
   labels: string[];
   serviceState: ServiceState;
+  vendor: string;
+  model: string;
+  address: string;
 };
 
 const deviceSchema = yup.object({
   name: yup.string().required('Please enter name of device'),
   zoneId: yup.string().required('Please enter zone of device'),
   mountParameters: yup.string(),
+  vendor: yup.string(),
+  model: yup.string(),
+  address: yup.string(),
 });
 
 const INITIAL_VALUES: FormValues = {
@@ -37,6 +43,9 @@ const INITIAL_VALUES: FormValues = {
   mountParameters: '{}',
   labels: [],
   serviceState: ServiceState.PLANNING,
+  model: '',
+  vendor: '',
+  address: '',
 };
 
 const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, labels, onLabelCreate, blueprints }) => {
@@ -69,13 +78,13 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, l
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl id="name" my={6} isInvalid={errors.name !== undefined}>
+      <FormControl id="name" my={6} isRequired isInvalid={errors.name !== undefined}>
         <FormLabel>Name</FormLabel>
         <Input placeholder="Enter name of device" onChange={handleChange} name="name" value={values.name} />
         <FormErrorMessage>{errors.name}</FormErrorMessage>
       </FormControl>
 
-      <FormControl id="zone" marginY={6} isInvalid={errors.zoneId !== undefined}>
+      <FormControl id="zone" isRequired marginY={6} isInvalid={errors.zoneId !== undefined}>
         <FormLabel>Zone</FormLabel>
         <Select
           onChange={(event) => {
@@ -111,6 +120,26 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, l
             </option>
           ))}
         </Select>
+      </FormControl>
+
+      <FormControl my={6}>
+        <FormLabel>Vendor</FormLabel>
+        <Input name="vendor" onChange={handleChange} placeholder="Enter vendor of the device" value={values.vendor} />
+      </FormControl>
+
+      <FormControl my={6}>
+        <FormLabel>Model</FormLabel>
+        <Input name="model" onChange={handleChange} placeholder="Enter model of the device" value={values.model} />
+      </FormControl>
+
+      <FormControl my={6}>
+        <FormLabel>Address</FormLabel>
+        <Input
+          name="address"
+          onChange={handleChange}
+          placeholder="Enter address of the device"
+          value={values.address}
+        />
       </FormControl>
 
       <FormControl my={6}>

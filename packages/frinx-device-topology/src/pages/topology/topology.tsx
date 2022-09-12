@@ -1,7 +1,13 @@
 import { Box, Container, Flex, Heading } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { gql, useQuery } from 'urql';
-import { TopologyQuery, TopologyQueryVariables } from '../../__generated__/graphql';
+import { gql, useMutation, useQuery } from 'urql';
+import {
+  TopologyQuery,
+  TopologyQueryVariables,
+  UpdatePositionMutation,
+  UpdatePositionMutationVariables,
+} from '../../__generated__/graphql';
+import { Position } from './graph.helpers';
 import TopologyGraph from './topology-graph';
 
 const TOPOLOGY_QUERY = gql`
@@ -12,12 +18,36 @@ const TOPOLOGY_QUERY = gql`
         device {
           id
           name
+          position {
+            x
+            y
+          }
         }
+        interfaces
       }
       edges {
         id
-        source
-        target
+        source {
+          nodeId
+          interface
+        }
+        target {
+          nodeId
+          interface
+        }
+      }
+    }
+  }
+`;
+const UPDATE_POSITION_MUTATION = gql`
+  mutation UpdatePosition($input: [PositionInput!]!) {
+    updateDeviceMetadata(input: $input) {
+      devices {
+        id
+        position {
+          x
+          y
+        }
       }
     }
   }
@@ -25,12 +55,19 @@ const TOPOLOGY_QUERY = gql`
 
 const Topology: VoidFunctionComponent = () => {
   const [{ data, fetching, error }] = useQuery<TopologyQuery, TopologyQueryVariables>({ query: TOPOLOGY_QUERY });
+  const [, updatePosition] = useMutation<UpdatePositionMutation, UpdatePositionMutationVariables>(
+    UPDATE_POSITION_MUTATION,
+  );
 
   if (fetching || error) {
     return null;
   }
 
-  const nodes = data?.topology.nodes.map((n) => ({ id: n.id, name: n.device.name })) ?? [];
+  const handleNodePositionUpdate = async (positions: { deviceId: string; position: Position }[]) => {
+    updatePosition({
+      input: positions,
+    });
+  };
 
   return (
     <Container maxWidth={1280}>
@@ -40,7 +77,10 @@ const Topology: VoidFunctionComponent = () => {
         </Heading>
       </Flex>
       <Box>
-        <TopologyGraph data={{ nodes, edges: data?.topology.edges ?? [] }} />
+        <TopologyGraph
+          data={{ nodes: data?.topology.nodes ?? [], edges: data?.topology.edges ?? [] }}
+          onNodePositionUpdate={handleNodePositionUpdate}
+        />
       </Box>
     </Container>
   );

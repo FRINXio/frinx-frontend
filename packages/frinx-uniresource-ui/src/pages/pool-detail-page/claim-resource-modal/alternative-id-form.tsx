@@ -1,5 +1,6 @@
 import {
   Box,
+  BoxProps,
   Button,
   FormControl,
   FormErrorMessage,
@@ -47,7 +48,7 @@ export const ValidationSchema = yup
   .unique('Keys cannot repeat', (a: FormikValues) => a.key)
   .min(1, 'Please enter at least one alternative ID value');
 
-type AlternativeId = {
+export type AlternativeId = {
   key: string;
   value: string[];
 };
@@ -57,10 +58,10 @@ type Props = {
   errors?: FormikErrors<AlternativeId>[];
   duplicateError?: string;
   onChange: (aid: AlternativeId[]) => void;
-};
+} & Omit<BoxProps, 'onChange'>;
 
 const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
-  const { alternativeIds, errors, duplicateError, onChange } = props;
+  const { alternativeIds, errors, duplicateError, onChange, ...rest } = props;
 
   const handleAdd = () => {
     const newValues = [...alternativeIds, { key: 'status', value: ['active'] }];
@@ -91,7 +92,7 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
   const canShowErrors = typeof errors === 'string';
 
   return (
-    <Box paddingTop="2">
+    <Box {...rest}>
       {alternativeIds.map(({ key, value }, i) => {
         const keyError = errors?.[i]?.key;
         const valueError = errors?.[i]?.value;
@@ -100,12 +101,12 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
           // eslint-disable-next-line react/no-array-index-key
           <Box key={`alternative-id-${i}`}>
             <HStack spacing="2" paddingTop="2" align="flex-start">
-              <FormControl maxW={150} isInvalid={keyError != null} isRequired>
+              <FormControl maxW={150} isInvalid={keyError != null}>
                 {i === 0 && <FormLabel margin="0">Key:</FormLabel>}
                 <Input value={key} placeholder="Key" onChange={(v) => handleKeyChange(v, i)} />
                 <FormErrorMessage>{keyError}</FormErrorMessage>
               </FormControl>
-              <FormControl isInvalid={valueError != null} isRequired>
+              <FormControl isInvalid={valueError != null}>
                 {i === 0 && <FormLabel margin="0">Value:</FormLabel>}
                 <HStack>
                   <LabelsInput
