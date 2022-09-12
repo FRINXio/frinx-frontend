@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { beforeAll, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { faker } from '@faker-js/faker';
 import DeviceTable from './device-table';
