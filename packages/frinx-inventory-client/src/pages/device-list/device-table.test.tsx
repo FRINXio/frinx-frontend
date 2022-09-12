@@ -50,6 +50,9 @@ const devices: DeviceEdge[] = [
   },
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const fakeHandler = () => {};
+
 describe('Inventory app', () => {
   test('should render device table', () => {
     render(
@@ -60,12 +63,12 @@ describe('Inventory app', () => {
           sorting={null}
           selectedDevices={new Set()}
           installLoadingMap={{}}
-          onDeleteBtnClick={() => {}}
-          onDeviceSelection={() => {}}
-          onInstallButtonClick={() => {}}
-          onSelectAll={() => {}}
-          onSortingClick={() => {}}
-          onUninstallButtonClick={() => {}}
+          onDeleteBtnClick={fakeHandler}
+          onDeviceSelection={fakeHandler}
+          onInstallButtonClick={fakeHandler}
+          onSelectAll={fakeHandler}
+          onSortingClick={fakeHandler}
+          onUninstallButtonClick={fakeHandler}
         />
       </BrowserRouter>,
     );
