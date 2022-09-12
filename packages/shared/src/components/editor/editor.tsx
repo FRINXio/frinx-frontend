@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import AceEditor, { IAceEditorProps } from 'react-ace';
 
 const DEFAULT_SETTINGS: IAceEditorProps = {
@@ -17,6 +17,10 @@ const Editor: FC<IAceEditorProps> = ({ value, onChange, name, readOnly, mode = '
       return value;
     }
   });
+
+  useEffect(() => {
+    setState(value);
+  }, [value]);
 
   const handleChange = (val: string) => {
     setState(val);
