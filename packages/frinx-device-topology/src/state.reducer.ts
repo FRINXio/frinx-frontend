@@ -32,6 +32,7 @@ export function stateReducer(state: State, action: StateAction): State {
   return produce(state, (acc) => {
     switch (action.type) {
       case 'SET_NODES_AND_EDGES': {
+        console.log('set nodes', action.payload.nodes.filter((n) => n.device.name === 'R1').pop()?.device.position);
         const positionsMap = getDefaultPositionsMap(action.payload.nodes, action.payload.edges);
         acc.nodes = action.payload.nodes;
         acc.edges = action.payload.edges;
@@ -40,6 +41,7 @@ export function stateReducer(state: State, action: StateAction): State {
         return acc;
       }
       case 'UPDATE_NODE_POSITION': {
+        console.log('set positions', action.position);
         acc.nodePositions[action.nodeId] = action.position;
         acc.interfacePositions = getInterfacesPositions({
           nodes: acc.nodes,

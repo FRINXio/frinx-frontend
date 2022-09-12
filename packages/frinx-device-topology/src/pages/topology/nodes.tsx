@@ -68,6 +68,8 @@ const Nodes: VoidFunctionComponent<Props> = ({ onNodePositionUpdate, onNodePosit
     onNodePositionUpdateFinish();
   };
 
+  console.log('nodes render', nodes.filter((n) => n.device.name === 'R1').pop()?.device.position);
+
   return (
     <g>
       {nodes.map((node) => (

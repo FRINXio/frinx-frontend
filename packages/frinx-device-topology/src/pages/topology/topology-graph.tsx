@@ -52,8 +52,10 @@ const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
       lastPositionRef.current = null;
       timeoutRef.current = Number(
         setTimeout(() => {
-          const nodePositionsList = getPositionsList(state.nodes, state.nodePositions);
-          onNodePositionUpdate(nodePositionsList).then(() => {
+          // const nodePositionsList = getPositionsList(state.nodes, state.nodePositions);
+          console.log('update called');
+          onNodePositionUpdate(positionListRef.current).then(() => {
+            console.log('update finished');
             positionListRef.current = [];
             clearTimeout(timeoutRef.current);
           });

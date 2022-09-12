@@ -65,10 +65,16 @@ const Topology: VoidFunctionComponent = () => {
   }
 
   const handleNodePositionUpdate = async (positions: { deviceId: string; position: Position }[]) => {
-    updatePosition({
+    const updatedPosition = await updatePosition({
       input: positions,
     });
+    console.log('updated position:', updatedPosition);
   };
+
+  console.log(
+    'topology rendered with data',
+    data?.topology.nodes.filter((n) => n.device.name === 'R1').pop()?.device.position,
+  );
 
   return (
     <StateProvider data={{ nodes: data?.topology.nodes ?? [], edges: data?.topology.edges ?? [] }}>

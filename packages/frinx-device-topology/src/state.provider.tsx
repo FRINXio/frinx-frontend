@@ -31,6 +31,8 @@ const StateProvider: FC<StateProviderProps> = ({ children, data }) => {
 
   useEffect(() => {
     const { nodes, edges } = data;
+    console.log('useEffect');
+    console.log(nodes.filter((n) => n.device.name === 'R1').pop()?.device.position);
     dispatch(setNodesAndEdges({ nodes, edges }));
   }, [data]);
 
