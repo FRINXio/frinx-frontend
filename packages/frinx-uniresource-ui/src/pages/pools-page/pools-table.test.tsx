@@ -32,11 +32,14 @@ const pools: ResourcePool[] = [
   },
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const handleDelete = () => {};
+
 describe('Inventory app', () => {
   test('should render device table', () => {
     render(
       <BrowserRouter>
-        <PoolsTable isLoading={false} onDeleteBtnClick={() => {}} pools={pools} />
+        <PoolsTable isLoading={false} onDeleteBtnClick={handleDelete} pools={pools} />
       </BrowserRouter>,
     );
     expect(screen.getByRole('table')).toBeDefined();
