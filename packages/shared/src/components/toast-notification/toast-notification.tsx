@@ -106,7 +106,7 @@ const ToastNotification: FC<Props> = ({
       top="70px"
       right="20px"
       transform={`translateY(${index * 95}px)`}
-      zIndex="modal"
+      zIndex="toast"
     >
       <Box>
         <Flex
