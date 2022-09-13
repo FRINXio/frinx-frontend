@@ -26,7 +26,7 @@ type Props = {
   zones: ZonesQuery['zones']['edges'];
   labels: LabelsQuery['labels']['edges'];
   blueprints: DeviceBlueprintsQuery['blueprints']['edges'];
-  onFormSubmit: (device: FormValues) => Promise<void>;
+  onFormSubmit: (device: FormValues) => void;
   onLabelCreate: (labelName: string) => Promise<Label | null>;
 };
 
@@ -34,7 +34,7 @@ type FormValues = {
   name: string;
   zoneId: string;
   mountParameters: string;
-  labels: string[];
+  labelIds: string[];
   serviceState: ServiceState;
   blueprintId: string;
   model: string;
@@ -48,12 +48,23 @@ type FormValues = {
   blueprintParams?: string[];
 };
 
-const getWhenOptions = (keyName: string, errorMessage: string) => ({
-  is: (blueprintParams: string[]) => {
-    return blueprintParams.includes(keyName);
-  },
-  then: yup.string().required(errorMessage),
-});
+const getWhenOptions = (keyName: string, errorMessage: string) => {
+  if (keyName === 'port_number') {
+    return {
+      is: (blueprintParams: string[]) => {
+        return blueprintParams.includes(keyName);
+      },
+      then: yup.number().required(errorMessage),
+    };
+  }
+
+  return {
+    is: (blueprintParams: string[]) => {
+      return blueprintParams.includes(keyName);
+    },
+    then: yup.string().required(errorMessage),
+  };
+};
 
 const deviceSchema = yup.object({
   name: yup.string().required('Please enter name of device'),
@@ -85,7 +96,7 @@ const INITIAL_VALUES: FormValues = {
   name: '',
   zoneId: '',
   mountParameters: '{}',
-  labels: [],
+  labelIds: [],
   serviceState: ServiceState.PLANNING,
   model: '',
   vendor: '',
@@ -107,7 +118,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, l
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: (data) => {
-      const updatedData = { ...data, labels: selectedLabels.map((label) => label.value) };
+      const updatedData = { ...data, labelIds: selectedLabels.map((label) => label.value), port: Number(data.port) };
       const { blueprintParams, ...rest } = updatedData;
       onFormSubmit(rest);
     },
