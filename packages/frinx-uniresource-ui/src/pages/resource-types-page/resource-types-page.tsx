@@ -62,13 +62,25 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
         resourceProperties: {},
       },
     })
-      .then(() => notification.addToastNotification({ content: 'Resource type created successfully', type: 'success' }))
+      .then(({ error: createResourceTypeError }) => {
+        if (createResourceTypeError != null) {
+          throw Error();
+        }
+
+        notification.addToastNotification({ content: 'Resource type created successfully', type: 'success' });
+      })
       .catch(() => notification.addToastNotification({ content: 'Resource type creation failed', type: 'error' }));
   };
 
   const handleOnDelete = (resourceTypeId: string) => {
     deleteResourceType({ input: { resourceTypeId } })
-      .then(() => notification.addToastNotification({ content: 'Resource type deleted successfully', type: 'success' }))
+      .then(({ error: deleteResourceTypeError }) => {
+        if (deleteResourceTypeError != null) {
+          throw Error();
+        }
+
+        notification.addToastNotification({ content: 'Resource type deleted successfully', type: 'success' });
+      })
       .catch(() => notification.addToastNotification({ content: 'Resource type deletion failed', type: 'error' }));
   };
 
