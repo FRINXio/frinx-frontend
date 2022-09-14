@@ -1,15 +1,14 @@
-// @flow
 import React from 'react';
 import { Tag } from '@chakra-ui/react';
 import { wfLabelsColor } from '../constants';
 
 type Props = {
-  index: number,
-  onClick: () => void,
-  label: string,
+  index: number;
+  onClick: () => void;
+  label: string;
 };
 
-const WfLabels = (props: Props) => {
+const WorkflowLabels = (props: Props) => {
   const color = props.index >= wfLabelsColor.length ? wfLabelsColor[0] : wfLabelsColor[props.index];
   return (
     <Tag
@@ -31,4 +30,4 @@ const WfLabels = (props: Props) => {
   );
 };
 
-export default WfLabels;
+export default WorkflowLabels;

@@ -36,7 +36,7 @@ import {
   InputModal,
   ScheduledWorkflowModal,
 } from '@frinx/workflow-ui/src/common/modals';
-import WfLabels from '@frinx/workflow-ui/src/common/wf-labels';
+import WorkflowLabels from '@frinx/workflow-ui/src/common/workflow-labels';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import WorkflowActions from './workflow-actions';
@@ -67,7 +67,7 @@ const Labels = (props: { wf: Workflow; labels: string[]; onClick: (label: string
   return labelsDef.map((label: string) => {
     const index = labels.findIndex((lab) => lab === label);
     return (
-      <WfLabels
+      <WorkflowLabels
         key={label}
         label={label}
         index={index}
