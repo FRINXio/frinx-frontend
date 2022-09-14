@@ -29,11 +29,13 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import _ from 'lodash';
-import DefinitionModal from '@frinx/workflow-ui/src/common/modals/definition-modal';
-import DependencyModal from '@frinx/workflow-ui/src/common/modals/dependency-modal';
-import DiagramModal from '@frinx/workflow-ui/src/common/modals/diagram-modal';
-import InputModal from '@frinx/workflow-ui/src/common/modals/input-modal';
-import ScheduledWorkflowModal from '../../../common/modals/scheduled-workflow-modal';
+import {
+  DefinitionModal,
+  DependencyModal,
+  DiagramModal,
+  InputModal,
+  ScheduledWorkflowModal,
+} from '@frinx/workflow-ui/src/common/modals';
 import WfLabels from '@frinx/workflow-ui/src/common/wf-labels';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';

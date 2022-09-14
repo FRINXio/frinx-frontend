@@ -22,9 +22,9 @@ import {
 } from '@chakra-ui/react';
 import sortBy from 'lodash/sortBy';
 import FeatherIcon from 'feather-icons-react';
+import { ScheduledWorkflowModal } from '@frinx/workflow-ui/src/common/modals';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
-import SchedulingModal from '../../../common/modals/scheduled-workflow-modal';
 import { ScheduledWorkflow, StatusType } from '@frinx/workflow-ui/src/helpers/types';
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import { useNotifications } from '@frinx/shared/src';
@@ -131,7 +131,7 @@ function ScheduledWorkflowList() {
   return (
     <Container maxWidth={1200} mx="auto">
       {selectedWorkflow != null && (
-        <SchedulingModal
+        <ScheduledWorkflowModal
           workflow={selectedWorkflow}
           isOpen={isOpen}
           onClose={onClose}

@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FC, useState } from 'react';
-import TaskModal from '../../common/modals/task-modal';
+import { TaskModal } from '@frinx/workflow-ui/src/common/modals';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../utils/callback-utils';
 import moment from 'moment';
@@ -15,7 +15,6 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
   useDisclosure,
 } from '@chakra-ui/react';
 import { useNotifications } from '@frinx/shared/src';
