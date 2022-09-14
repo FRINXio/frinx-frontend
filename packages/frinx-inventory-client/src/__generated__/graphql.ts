@@ -533,8 +533,8 @@ export type PageInfo = {
 
 export type Position = {
   __typename?: 'Position';
-  x: Scalars['Int'];
-  y: Scalars['Int'];
+  x: Scalars['Float'];
+  y: Scalars['Float'];
 };
 
 export type PositionInput = {
@@ -543,8 +543,8 @@ export type PositionInput = {
 };
 
 export type PositionInputField = {
-  x: Scalars['Int'];
-  y: Scalars['Int'];
+  x: Scalars['Float'];
+  y: Scalars['Float'];
 };
 
 export type Query = {

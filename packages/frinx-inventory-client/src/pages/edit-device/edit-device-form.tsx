@@ -23,7 +23,7 @@ import SearchByLabelInput from '../../components/search-by-label-input';
 type FormValues = {
   zoneId: string;
   mountParameters: string;
-  labels: string[];
+  labelIds: string[];
   serviceState: DeviceServiceState;
   vendor: string;
   model: string;
@@ -64,7 +64,7 @@ const EditDeviceForm: FC<Props> = ({
     return {
       zoneId,
       mountParameters: mountParameters ?? '',
-      labels: initialSelectedLabels.map(({ node: { id } }) => id),
+      labelIds: initialSelectedLabels.map(({ node: { id } }) => id),
       serviceState,
       vendor: '',
       model: '',
@@ -80,7 +80,7 @@ const EditDeviceForm: FC<Props> = ({
     initialValues: INITIAL_VALUES,
     validationSchema: EditDeviceFormSchema,
     onSubmit: (data) => {
-      const updatedData = { ...data, labels: selectedLabels.map((label) => label.value) };
+      const updatedData = { ...data, labelIds: selectedLabels.map((label) => label.value) };
       onUpdate(updatedData);
     },
   });
