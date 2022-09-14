@@ -1,6 +1,5 @@
-import PageContainer from '../../../common/PageContainer';
 import React, { useEffect, useState } from 'react';
-import { Progress } from '@chakra-ui/react';
+import { Container, Progress } from '@chakra-ui/react';
 import { ExecutedWorkflows, NestedExecutedWorkflow } from '@frinx/workflow-ui/src/helpers/types';
 import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
 import { useNavigate } from 'react-router-dom';
@@ -149,7 +148,7 @@ const ExecutedWorkflowList = () => {
   };
 
   return (
-    <PageContainer>
+    <Container maxWidth={1200} mx="auto">
       <ExecutedWorkflowBulkOperationsBlock
         workflowsAmount={workflows.result.totalHits}
         selectedWorkflows={state.selectedWorkflows}
@@ -184,7 +183,7 @@ const ExecutedWorkflowList = () => {
           showPageNumbers={true}
         />
       </>
-    </PageContainer>
+    </Container>
   );
 };
 

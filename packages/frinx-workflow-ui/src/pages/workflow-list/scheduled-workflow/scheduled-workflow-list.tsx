@@ -18,10 +18,10 @@ import {
   Code,
   useDisclosure,
   Progress,
+  Container,
 } from '@chakra-ui/react';
 import sortBy from 'lodash/sortBy';
 import FeatherIcon from 'feather-icons-react';
-import PageContainer from '@frinx/workflow-ui/src/common/PageContainer';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import SchedulingModal from '../../../common/modals/scheduled-workflow-modal';
@@ -120,16 +120,16 @@ function ScheduledWorkflowList() {
 
   if (!pageItems.length) {
     return (
-      <PageContainer>
+      <Container maxWidth={1200} mx="auto">
         <Box textAlign="center" marginY={15}>
           There are no scheduled workflows yet
         </Box>
-      </PageContainer>
+      </Container>
     );
   }
 
   return (
-    <PageContainer>
+    <Container maxWidth={1200} mx="auto">
       {selectedWorkflow != null && (
         <SchedulingModal
           workflow={selectedWorkflow}
@@ -229,7 +229,7 @@ function ScheduledWorkflowList() {
           </>
         )}
       </Table>
-    </PageContainer>
+    </Container>
   );
 }
 

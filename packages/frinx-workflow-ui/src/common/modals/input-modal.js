@@ -23,7 +23,7 @@ import {
   Text,
   Textarea,
 } from '@chakra-ui/react';
-import { jsonParse } from '@frinx/workflow-ui/src/common/utils';
+import { jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import WfAutoComplete from '@frinx/workflow-ui/src/common/wf-autocomplete';

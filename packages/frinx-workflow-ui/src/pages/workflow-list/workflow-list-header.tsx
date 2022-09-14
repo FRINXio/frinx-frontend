@@ -1,5 +1,3 @@
-// @flow
-import PageContainer from '../../common/PageContainer';
 import React, { useRef } from 'react';
 import callbackUtils from '../../utils/callback-utils';
 import {
@@ -16,6 +14,7 @@ import {
   MenuList,
   VisuallyHidden,
   Icon,
+  Container,
 } from '@chakra-ui/react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -99,7 +98,7 @@ const WorkflowListHeader = ({ onImportSuccess }: Props) => {
   };
 
   return (
-    <PageContainer>
+    <Container maxWidth={1200} mx="auto">
       <Flex as="header" alignItems="center" marginBottom={5}>
         <Heading as="h1" size="lg">
           Workflows
@@ -157,7 +156,7 @@ const WorkflowListHeader = ({ onImportSuccess }: Props) => {
       <VisuallyHidden>
         <Input id="upload-files" multiple type="file" ref={inputRef} onChange={importFiles} />
       </VisuallyHidden>
-    </PageContainer>
+    </Container>
   );
 };
 

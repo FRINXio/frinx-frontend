@@ -1,8 +1,8 @@
-// @flow
 import React, { useEffect, useState } from 'react';
 import {
   Button,
   Checkbox,
+  Container,
   Icon,
   IconButton,
   Input,
@@ -26,7 +26,6 @@ import {
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { Editor } from '@frinx/shared/src';
-import PageContainer from '../../../common/PageContainer';
 import Paginator from '../../../common/pagination';
 import callbackUtils from '../../../utils/callback-utils';
 import { usePagination } from '../../../common/pagination-hook';
@@ -137,7 +136,7 @@ const EventListeners = () => {
   );
 
   return (
-    <PageContainer>
+    <Container maxWidth={1200} mx="auto">
       {editModal()}
       <InputGroup marginBottom={8}>
         <InputLeftElement>
@@ -202,7 +201,7 @@ const EventListeners = () => {
           </Tr>
         </Tfoot>
       </Table>
-    </PageContainer>
+    </Container>
   );
 };
 

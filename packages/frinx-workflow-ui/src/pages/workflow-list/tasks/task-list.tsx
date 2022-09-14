@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import MiniSearch, { SearchResult } from 'minisearch';
 import { throttle } from 'lodash';
-import { Button, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
+import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
 import AddTaskModal from './add-task-modal';
-import PageContainer from '@frinx/workflow-ui/src/common/PageContainer';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
-import { sortAscBy, sortDescBy } from '../workflowUtils';
+import { sortAscBy, sortDescBy } from '@frinx/workflow-ui/src/utils/helpers.utils';
 import { taskDefinition } from '@frinx/workflow-ui/src/constants';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import TaskTable from './task-table';
@@ -93,7 +92,7 @@ const TaskList = () => {
   const result = searchTerm.length > 0 ? searchFn() : tasks;
 
   return (
-    <PageContainer>
+    <Container maxWidth={1200} mx="auto">
       <AddTaskModal
         isOpen={addTaskModal.isOpen}
         onSubmit={addTask}
@@ -125,7 +124,7 @@ const TaskList = () => {
         pagination={{ currentPage, setCurrentPage, totalPages }}
         sortArray={sortArray}
       />
-    </PageContainer>
+    </Container>
   );
 };
 

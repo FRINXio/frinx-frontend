@@ -1,11 +1,22 @@
-// @flow
-import PageContainer from '../../../common/PageContainer';
 import Paginator from '../../../common/pagination';
 import React, { useEffect, useState } from 'react';
 import callbackUtils from '../../../utils/callback-utils';
 import moment from 'moment';
-import { Icon, Input, InputGroup, InputLeftElement, Table, Tbody, Td, Tfoot, Th, Thead, Tr } from '@chakra-ui/react';
-import { sortAscBy, sortDescBy } from '../workflowUtils';
+import {
+  Container,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Table,
+  Tbody,
+  Td,
+  Tfoot,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
+import { sortDescBy, sortAscBy } from '@frinx/workflow-ui/src/utils/helpers.utils';
 import { usePagination } from '../../../common/pagination-hook';
 import { Queue } from '../../../helpers/uniflow-types';
 import FeatherIcon from 'feather-icons-react';
@@ -98,7 +109,7 @@ const PollData = () => {
   };
 
   return (
-    <PageContainer>
+    <Container maxWidth={1200} mx="auto">
       <InputGroup marginBottom={8}>
         <InputLeftElement>
           <Icon size={20} as={FeatherIcon} icon="search" color="grey" />
@@ -111,7 +122,7 @@ const PollData = () => {
         />
       </InputGroup>
       {pollTable()}
-    </PageContainer>
+    </Container>
   );
 };
 

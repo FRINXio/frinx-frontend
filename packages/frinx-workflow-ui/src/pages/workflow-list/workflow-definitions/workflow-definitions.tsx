@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Button,
+  Container,
   Heading,
   Icon,
   Modal,
@@ -32,11 +33,9 @@ import DefinitionModal from '@frinx/workflow-ui/src/common/modals/definition-mod
 import DependencyModal from '@frinx/workflow-ui/src/common/modals/dependency-modal';
 import DiagramModal from '@frinx/workflow-ui/src/common/modals/diagram-modal';
 import InputModal from '@frinx/workflow-ui/src/common/modals/input-modal';
-import PageContainer from '@frinx/workflow-ui/src/common/PageContainer';
 import ScheduledWorkflowModal from '../../../common/modals/scheduled-workflow-modal';
 import WfLabels from '@frinx/workflow-ui/src/common/wf-labels';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
-import { jsonParse } from '@frinx/workflow-ui/src/common/utils';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import WorkflowActions from './workflow-actions';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
@@ -44,6 +43,7 @@ import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/helpers/types';
 import FeatherIcon from 'feather-icons-react';
 import { useNotifications } from '@frinx/shared/src';
+import { jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr = dataset.map(({ description }) => {
@@ -260,7 +260,7 @@ const WorkflowDefinitions = () => {
   };
 
   return (
-    <PageContainer>
+    <Container maxWidth={1200} mx="auto">
       <DefinitionModal workflow={activeWf} isOpen={definitionModal.isOpen} onClose={definitionModal.onClose} />
       <DiagramModal workflow={activeWf} onClose={diagramModal.onClose} isOpen={diagramModal.isOpen} />
       <DependencyModal
@@ -386,7 +386,7 @@ const WorkflowDefinitions = () => {
           </Tr>
         </Tfoot>
       </Table>
-    </PageContainer>
+    </Container>
   );
 };
 

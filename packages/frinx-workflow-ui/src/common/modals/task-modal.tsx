@@ -23,11 +23,11 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import type { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
-import { jsonParse } from '../utils';
 import unescapeJs from 'unescape-js';
 import ExternalStorageModal from '@frinx/workflow-ui/src/pages/executed-workflow-detail/executed-workflow-detail-tabs/external-storage-modal';
 import FeatherIcon from 'feather-icons-react';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
+import { jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
 
 type Props = {
   task: ExecutedWorkflowTask;
