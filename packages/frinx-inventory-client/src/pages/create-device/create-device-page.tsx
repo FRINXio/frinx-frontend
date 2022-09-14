@@ -1,6 +1,6 @@
 import { Box, Container, Heading, Progress } from '@chakra-ui/react';
 import { useNotifications } from '@frinx/shared/src';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import {
   AddDeviceMutation,
@@ -106,6 +106,7 @@ type Props = {
 };
 
 const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { addToastNotification } = useNotifications();
   const [, addDevice] = useMutation<AddDeviceMutation, AddDeviceMutationVariables>(ADD_DEVICE_MUTATION);
   const [, createLabel] = useMutation<CreateLabelMutation, CreateLabelMutationVariables>(CREATE_LABEL);
@@ -128,6 +129,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
   };
 
   const handleSubmit = (values: FormValues) => {
+    setIsSubmitting(true);
     addDevice({
       input: values,
     })
@@ -141,7 +143,8 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
           type: 'success',
         });
       })
-      .catch(() => addToastNotification({ content: "We couldn't add device", type: 'error' }));
+      .catch(() => addToastNotification({ content: "We couldn't add device", type: 'error' }))
+      .finally(() => setIsSubmitting(false));
   };
 
   if (isFetchingZones || isFetchingLabels) {
@@ -174,6 +177,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
           blueprints={blueprints}
           labels={labels}
           onLabelCreate={handleOnCreateLabel}
+          isSubmitting={isSubmitting}
         />
       </Box>
     </Container>

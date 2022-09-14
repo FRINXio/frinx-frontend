@@ -23,6 +23,7 @@ import { ServiceState, serviceStateOptions } from '../../helpers/types';
 const IPV4_REGEX = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
 
 type Props = {
+  isSubmitting: boolean;
   zones: ZonesQuery['zones']['edges'];
   labels: LabelsQuery['labels']['edges'];
   blueprints: DeviceBlueprintsQuery['blueprints']['edges'];
@@ -109,10 +110,17 @@ const INITIAL_VALUES: FormValues = {
   port: 0,
 };
 
-const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, labels, onLabelCreate, blueprints }) => {
+const CreateDeviceForm: VoidFunctionComponent<Props> = ({
+  onFormSubmit,
+  zones,
+  labels,
+  onLabelCreate,
+  blueprints,
+  isSubmitting,
+}) => {
   const [selectedLabels, setSelectedLabels] = React.useState<Item[]>([]);
   const [isUsingBlueprints, setIsUsingBlueprints] = useState(false);
-  const { errors, values, handleSubmit, handleChange, isSubmitting, setFieldValue } = useFormik<FormValues>({
+  const { errors, values, handleSubmit, handleChange, setFieldValue } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: deviceSchema,
     validateOnChange: false,
