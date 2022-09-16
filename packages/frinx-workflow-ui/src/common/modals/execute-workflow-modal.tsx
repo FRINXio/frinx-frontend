@@ -91,14 +91,21 @@ const ExecuteWorkflowModal: FC<Props> = ({
   workflowDescription,
 }) => {
   const parsedInputParameters = parseInputParameters(inputParameters);
+  const [isExecuting, setIsExecuting] = useState(false);
   const [executedWorkflowId, setExecutedWorkflowId] = useState<string | null>(null);
-  const { values, handleSubmit, handleChange, submitForm } = useFormik<Record<string, any>>({
+  const { values, handleSubmit, handleChange, submitForm, isSubmitting, setSubmitting } = useFormik<
+    Record<string, any>
+  >({
     initialValues: getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: async (formData) => {
+      setIsExecuting(true);
+
       const executedWorkflowId = await onSubmit(formData);
       setExecutedWorkflowId(executedWorkflowId);
+      setIsExecuting(false);
+      setSubmitting(false);
     },
   });
 
@@ -143,9 +150,16 @@ const ExecuteWorkflowModal: FC<Props> = ({
             </Button>
           )}
           <ButtonGroup>
-            <Button onClick={onClose}>Close</Button>
-            <Button colorScheme="blue" onClick={submitForm}>
-              Execute workflow
+            <Button onClick={onClose} disabled={isExecuting}>
+              Close
+            </Button>
+            <Button
+              colorScheme="blue"
+              onClick={submitForm}
+              isLoading={isExecuting || isSubmitting}
+              disabled={isExecuting}
+            >
+              {isExecuting ? 'Executing workflow' : 'Execute workflow'}
             </Button>
           </ButtonGroup>
         </ModalFooter>
