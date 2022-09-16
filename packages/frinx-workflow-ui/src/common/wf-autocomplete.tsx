@@ -17,11 +17,11 @@ import FeatherIcon from 'feather-icons-react';
 type Props = {
   options: string[];
   onChange: (labels: string[]) => void;
-  selected: string[];
+  selected?: string[];
   placeholder: string;
 };
 
-const WfAutoComplete = forwardRef((props: Props, ref) => {
+const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = [] }: Props, ref) => {
   const [query, setQuery] = React.useState('');
   const [active, setActive] = React.useState(0);
   const [isOptionsVisible, setOptionsVisible] = React.useState(false);
@@ -32,8 +32,6 @@ const WfAutoComplete = forwardRef((props: Props, ref) => {
       setQuery('');
     },
   }));
-
-  const { options, selected, onChange, placeholder } = props;
 
   const results = React.useMemo(
     function getResults() {

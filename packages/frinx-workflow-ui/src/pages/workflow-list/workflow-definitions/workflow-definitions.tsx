@@ -33,7 +33,7 @@ import {
   DefinitionModal,
   DependencyModal,
   DiagramModal,
-  InputModal,
+  ExecuteWorkflowModal,
   ScheduledWorkflowModal,
 } from '@frinx/workflow-ui/src/common/modals';
 import WorkflowLabels from '@frinx/workflow-ui/src/common/workflow-labels';
@@ -45,7 +45,7 @@ import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/helpers/types';
 import FeatherIcon from 'feather-icons-react';
 import { useNotifications } from '@frinx/shared/src';
-import { jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
+import { getDynamicInputParametersFromWorkflow, jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr = dataset.map(({ description }) => {
@@ -88,7 +88,7 @@ const WorkflowDefinitions = () => {
   const diagramModal = useDisclosure();
   const dependencyModal = useDisclosure();
   const schedulingModal = useDisclosure();
-  const inputModal = useDisclosure();
+  const inputParametersModal = useDisclosure();
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const [allLabels, setAllLabels] = useState([]);
   const {
@@ -282,7 +282,17 @@ const WorkflowDefinitions = () => {
           onSubmit={handleWorkflowSchedule}
         />
       )}
-      {activeWf != null && <InputModal onClose={inputModal.onClose} isOpen={inputModal.isOpen} wf={activeWf} />}
+      {activeWf != null && (
+        <ExecuteWorkflowModal
+          inputParameters={activeWf.inputParameters}
+          dynamicInputParameters={getDynamicInputParametersFromWorkflow(activeWf)}
+          onClose={inputParametersModal.onClose}
+          isOpen={inputParametersModal.isOpen}
+          workflowName={activeWf.name}
+          workflowDescription={activeWf.description}
+          onSubmit={(values) => console.log(values)}
+        />
+      )}
       {renderConfirmDeleteModal()}
       <WorkflowDefinitionsHeader
         allLabels={allLabels}
@@ -372,7 +382,7 @@ const WorkflowDefinitions = () => {
                     }}
                     onExecuteBtnClick={() => {
                       setActiveWf(workflow);
-                      inputModal.onOpen();
+                      inputParametersModal.onOpen();
                     }}
                   />
                 </Td>
