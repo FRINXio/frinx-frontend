@@ -223,6 +223,33 @@ const WorkflowDefinitions = () => {
     setConfirmDeleteModal(!confirmDeleteModal);
   };
 
+  const handleOnExecuteWorkflow = (values: Record<string, string>) => {
+    if (activeWf == null) {
+      addToastNotification({
+        content: 'We cannot execute undefined workflow',
+        type: 'error',
+      });
+
+      return null;
+    }
+
+    const { executeWorkflow } = callbackUtils.getCallbacks;
+
+    return executeWorkflow({
+      input: values,
+      name: activeWf.name,
+      version: activeWf.version,
+    })
+      .then((res) => {
+        addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
+        return res.text;
+      })
+      .catch(() => {
+        addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
+        return null;
+      });
+  };
+
   const getDependencies = (workflow: Workflow) => {
     const usedInWfs = data.filter((wf) => {
       const wfJSON = JSON.stringify(wf, null, 2);
@@ -290,7 +317,7 @@ const WorkflowDefinitions = () => {
           isOpen={inputParametersModal.isOpen}
           workflowName={activeWf.name}
           workflowDescription={activeWf.description}
-          onSubmit={(values) => console.log(values)}
+          onSubmit={handleOnExecuteWorkflow}
         />
       )}
       {renderConfirmDeleteModal()}

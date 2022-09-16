@@ -18,8 +18,9 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
+import { Link } from 'react-router-dom';
 
 type Props = {
   workflowName: string;
@@ -28,7 +29,7 @@ type Props = {
   dynamicInputParameters?: string[];
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (inputParameters: Record<string, any>) => void;
+  onSubmit: (inputParameters: Record<string, any>) => Promise<string | null> | null;
 };
 
 type InputParameter = Record<string, { value: string; description: string; type: string }>;
@@ -90,11 +91,15 @@ const ExecuteWorkflowModal: FC<Props> = ({
   workflowDescription,
 }) => {
   const parsedInputParameters = parseInputParameters(inputParameters);
+  const [executedWorkflowId, setExecutedWorkflowId] = useState<string | null>(null);
   const { values, handleSubmit, handleChange, submitForm } = useFormik<Record<string, any>>({
     initialValues: getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
     validateOnChange: false,
     validateOnBlur: false,
-    onSubmit,
+    onSubmit: async (formData) => {
+      const executedWorkflowId = await onSubmit(formData);
+      setExecutedWorkflowId(executedWorkflowId);
+    },
   });
 
   const inputParametersKeys = Object.keys(values);
@@ -132,6 +137,11 @@ const ExecuteWorkflowModal: FC<Props> = ({
           )}
         </ModalBody>
         <ModalFooter>
+          {executedWorkflowId != null && (
+            <Button variant="link" as={Link} to={`/uniflow/executed/${executedWorkflowId}`}>
+              Executed workflow in detail
+            </Button>
+          )}
           <ButtonGroup>
             <Button onClick={onClose}>Close</Button>
             <Button colorScheme="blue" onClick={submitForm}>
