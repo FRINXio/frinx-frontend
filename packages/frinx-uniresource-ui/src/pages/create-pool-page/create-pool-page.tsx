@@ -1,4 +1,4 @@
-import React, { VoidFunctionComponent } from 'react';
+import React, { useState, VoidFunctionComponent } from 'react';
 import { Client, useClient, useQuery } from 'urql';
 import { Box, Flex, Heading, Progress } from '@chakra-ui/react';
 import { useNotifications } from '@frinx/shared/src';
@@ -16,6 +16,8 @@ import {
   CreateSetPoolMutationVariables,
   CreateSingletonPoolMutation,
   CreateSingletonPoolMutationVariables,
+  RequiredPoolPropertiesQuery,
+  RequiredPoolPropertiesQueryVariables,
   SelectAllocationStrategiesQuery,
   SelectPoolsQuery,
   SelectResourceTypesQuery,
@@ -115,6 +117,18 @@ const SELECT_ALLOCATION_STRATEGIES_QUERY = gql`
     QueryAllocationStrategies {
       id
       Name
+    }
+  }
+`;
+
+const GET_POOL_PROPERTIES_BY_ALLOC_STRATEGY = gql`
+  query RequiredPoolProperties($allocationStrategyName: String!) {
+    QueryRequiredPoolProperties(allocationStrategyName: $allocationStrategyName) {
+      Name
+      Type
+      FloatVal
+      IntVal
+      StringVal
     }
   }
 `;
@@ -256,6 +270,7 @@ function createPool(mutationFn: Client['mutation'], values: FormValues): ReturnT
 }
 
 const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
+  const [customResourceTypeName, setCustomResourceTypeName] = useState('');
   const client = useClient();
   const { addToastNotification } = useNotifications();
   const [{ data: poolsData, fetching: poolsFetching }] = useQuery<SelectPoolsQuery>({ query: SELECT_POOLS_QUERY });
@@ -263,6 +278,10 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
     query: SELECT_ALLOCATION_STRATEGIES_QUERY,
   });
   const [{ data, fetching }] = useQuery<SelectResourceTypesQuery>({ query: SELECT_RESOURCE_TYPES_QUERY });
+  const [{ fetching: isLoadingPoolProperties, data: requiredPoolProperties }] = useQuery<
+    RequiredPoolPropertiesQuery,
+    RequiredPoolPropertiesQueryVariables
+  >({ query: GET_POOL_PROPERTIES_BY_ALLOC_STRATEGY, variables: { allocationStrategyName: customResourceTypeName } });
 
   const handleFormSubmit = (values: FormValues) => {
     createPool(client.mutation.bind(client), values)
@@ -310,6 +329,9 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
           resourceTypes={data.QueryResourceTypes}
           resourcePools={poolsData}
           allocStrategies={allocStrategies}
+          isLoadingRequiredPoolProperties={isLoadingPoolProperties}
+          onResourceTypeChange={setCustomResourceTypeName}
+          requiredPoolProperties={requiredPoolProperties?.QueryRequiredPoolProperties}
         />
       </Box>
     </>

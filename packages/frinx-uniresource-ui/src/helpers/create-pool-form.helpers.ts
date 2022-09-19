@@ -55,6 +55,42 @@ export function canSelectAllocatingStrategy(
   );
 }
 
+export const canSelectCustomResourceTypes = (resourceTypeName: string, selectors: string[]) => {
+  return selectors.some((selector) => selector === resourceTypeName);
+};
+
+export const canSelectDefaultResourceTypes = (resourceTypeName: string) => {
+  return canSelectCustomResourceTypes(resourceTypeName, [
+    'ipv4',
+    'ipv4_prefix',
+    'ipv6',
+    'ipv6_prefix',
+    'vlan_range',
+    'vlan',
+    'route_distinguisher',
+    'unique_id',
+    'random_signed_int32',
+  ]);
+};
+
+export const canSelectIpResourceTypes = (resourceTypeName: string) => {
+  return canSelectCustomResourceTypes(resourceTypeName, ['ipv4', 'ipv4_prefix', 'ipv6', 'ipv6_prefix']);
+};
+
+export const isCustomResourceType = (resourceTypename: string) => {
+  return !canSelectCustomResourceTypes(resourceTypename, [
+    'ipv4',
+    'ipv4_prefix',
+    'ipv6',
+    'ipv6_prefix',
+    'vlan_range',
+    'vlan',
+    'route_distinguisher',
+    'unique_id',
+    'random_signed_int32',
+  ]);
+};
+
 export function getAvailablePoolProperties(
   resourcePools: SelectPoolsQuery,
   parentPoolId?: string,
@@ -268,6 +304,17 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                   };
                 }, {}),
               }),
+            })
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => isCustomResourceType(resourceTypeName),
+              then: yup.object().shape({
+                ...Object.keys(poolProperties).reduce((acc, key) => {
+                  return {
+                    ...acc,
+                    [key]: yup.string().required('This field is required'),
+                  };
+                }, {}),
+              }),
             }),
         ),
         poolPropertyTypes: yup.object().required(),
@@ -328,25 +375,3 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
       });
   }
 }
-
-export const canSelectCustomResourceTypes = (resourceTypeName: string, selectors: string[]) => {
-  return selectors.some((selector) => selector === resourceTypeName);
-};
-
-export const canSelectDefaultResourceTypes = (resourceTypeName: string) => {
-  return canSelectCustomResourceTypes(resourceTypeName, [
-    'ipv4',
-    'ipv4_prefix',
-    'ipv6',
-    'ipv6_prefix',
-    'vlan_range',
-    'vlan',
-    'route_distinguisher',
-    'unique_id',
-    'random_signed_int32',
-  ]);
-};
-
-export const canSelectIpResourceTypes = (resourceTypeName: string) => {
-  return canSelectCustomResourceTypes(resourceTypeName, ['ipv4', 'ipv4_prefix', 'ipv6', 'ipv6_prefix']);
-};
