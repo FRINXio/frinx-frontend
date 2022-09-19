@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, HStack, Input, Select, Spacer } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import { Editor } from '@frinx/shared/src';
 import { AllocationStrategyLang } from '../../__generated__/graphql';
@@ -8,6 +8,7 @@ import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/ext-language_tools';
+import ExpectedPoolProperties from './expected-pool-properties-form';
 
 function getDefaultScriptValue(): string {
   return `function invoke() {
@@ -41,24 +42,27 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl marginY={5} id="name">
+      <FormControl marginY={5} id="name" isRequired>
         <FormLabel>Name</FormLabel>
         <Input name="name" id="name" value={values.name} onChange={handleChange} placeholder="Enter name" />
       </FormControl>
       <FormControl id="lang" marginY={5}>
+        <FormLabel>Strategy script language</FormLabel>
         <Select
           id="lang"
           name="lang"
           value={values.lang}
           onChange={handleChange}
-          placeholder="Select option"
+          placeholder="Select script language"
           width={60}
         >
           <option value="js">Javascript</option>
           <option value="py">Python</option>
         </Select>
       </FormControl>
+      <ExpectedPoolProperties />
       <FormControl marginY={5}>
+        <FormLabel>Strategy script</FormLabel>
         <Editor
           height="450px"
           width="100%"
@@ -79,11 +83,12 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
           }}
         />
       </FormControl>
-      <FormControl marginY={5}>
+      <HStack>
+        <Spacer />
         <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
           Create strategy
         </Button>
-      </FormControl>
+      </HStack>
     </form>
   );
 };

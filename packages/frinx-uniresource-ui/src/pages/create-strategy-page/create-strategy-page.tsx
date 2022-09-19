@@ -53,7 +53,7 @@ const CreateStrategyPage: VoidFunctionComponent<Props> = ({ onSaveButtonClick })
           Create new Strategy
         </Heading>
       </Flex>
-      <Box background="white" paddingY={8} paddingX={4}>
+      <Box background="white" paddingY={8} paddingX={4} marginBottom={5}>
         <CreateStrategyForm onFormSubmit={handleFormSubmit} />
       </Box>
     </>
