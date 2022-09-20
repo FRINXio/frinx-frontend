@@ -45,7 +45,12 @@ import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/helpers/types';
 import FeatherIcon from 'feather-icons-react';
 import { useNotifications } from '@frinx/shared/src';
-import { getDynamicInputParametersFromWorkflow, jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
+import {
+  getDynamicInputParametersFromWorkflow,
+  getInitialValuesFromParsedInputParameters,
+  jsonParse,
+  parseInputParameters,
+} from '@frinx/workflow-ui/src/utils/helpers.utils';
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr = dataset.map(({ description }) => {
@@ -310,15 +315,18 @@ const WorkflowDefinitions = () => {
         />
       )}
       {activeWf != null && (
-        <ExecuteWorkflowModal
-          inputParameters={activeWf.inputParameters}
-          dynamicInputParameters={getDynamicInputParametersFromWorkflow(activeWf)}
-          onClose={inputParametersModal.onClose}
-          isOpen={inputParametersModal.isOpen}
-          workflowName={activeWf.name}
-          workflowDescription={activeWf.description}
-          onSubmit={handleOnExecuteWorkflow}
-        />
+        <>
+          <Heading>{activeWf.name}</Heading>
+          <ExecuteWorkflowModal
+            parsedInputParameters={parseInputParameters(activeWf?.inputParameters)}
+            dynamicInputParameters={getDynamicInputParametersFromWorkflow(activeWf)}
+            onClose={inputParametersModal.onClose}
+            isOpen={inputParametersModal.isOpen}
+            workflowName={activeWf.name}
+            workflowDescription={activeWf.description}
+            onSubmit={handleOnExecuteWorkflow}
+          />
+        </>
       )}
       {renderConfirmDeleteModal()}
       <WorkflowDefinitionsHeader

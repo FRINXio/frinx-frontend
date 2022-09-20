@@ -15,87 +15,39 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Spacer,
   Text,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import React, { FC, useState } from 'react';
-import { jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
+import { getInitialValuesFromParsedInputParameters, InputParameter } from '@frinx/workflow-ui/src/utils/helpers.utils';
 import { Link } from 'react-router-dom';
 
 type Props = {
   workflowName: string;
   workflowDescription?: string;
-  inputParameters?: string[];
-  dynamicInputParameters?: string[];
+  parsedInputParameters?: InputParameter | null;
+  dynamicInputParameters?: string[] | null;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (inputParameters: Record<string, any>) => Promise<string | null> | null;
 };
 
-type InputParameter = Record<string, { value: string; description: string; type: string }>;
-
-function parseInputParameters(inputParameters?: string[]) {
-  if (inputParameters == null || inputParameters.length === 0) {
-    return null;
-  }
-
-  const parsedInputParameters: InputParameter[] = inputParameters.map(jsonParse);
-
-  return parsedInputParameters.map(Object.keys).reduce((acc, currObjectKeys, index) => {
-    const result: InputParameter = currObjectKeys.reduce(
-      (acc, curr) => ({ ...acc, [curr]: parsedInputParameters[index][curr] }),
-      {},
-    );
-
-    return {
-      ...acc,
-      ...result,
-    };
-  }, {} as InputParameter);
-}
-
-function getInitialValuesFromParsedInputParameters(
-  parsedInputParameters?: InputParameter | null,
-  dynamicInputParameters?: string[] | null,
-) {
-  if (parsedInputParameters == null) {
-    return {};
-  }
-
-  let initialValues = Object.keys(parsedInputParameters).reduce(
-    (acc, curr) => ({ ...acc, [curr]: parsedInputParameters[curr].value }),
-    {},
-  );
-
-  initialValues = {
-    ...initialValues,
-    ...dynamicInputParameters?.reduce(
-      (acc, curr) => ({
-        ...acc,
-        [curr]: '',
-      }),
-      {},
-    ),
-  };
-
-  return initialValues;
-}
-
 const ExecuteWorkflowModal: FC<Props> = ({
-  inputParameters,
-  dynamicInputParameters,
   isOpen,
   onClose,
   workflowName,
   onSubmit,
   workflowDescription,
+  parsedInputParameters,
+  dynamicInputParameters,
 }) => {
-  const parsedInputParameters = parseInputParameters(inputParameters);
   const [isExecuting, setIsExecuting] = useState(false);
   const [executedWorkflowId, setExecutedWorkflowId] = useState<string | null>(null);
   const { values, handleSubmit, handleChange, submitForm, isSubmitting, setSubmitting } = useFormik<
     Record<string, any>
   >({
+    enableReinitialize: true,
     initialValues: getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
     validateOnChange: false,
     validateOnBlur: false,
@@ -125,7 +77,7 @@ const ExecuteWorkflowModal: FC<Props> = ({
           )}
         </ModalHeader>
         <ModalBody maxHeight="3xl" overflow="scroll">
-          {parsedInputParameters == null || inputParameters == null || inputParameters.length === 0 ? (
+          {inputParametersKeys == null || inputParametersKeys.length === 0 ? (
             <Text>To successfully execute this workflow there are not provided any input parameters</Text>
           ) : (
             <form onSubmit={handleSubmit}>
@@ -135,7 +87,10 @@ const ExecuteWorkflowModal: FC<Props> = ({
                     <FormControl>
                       <FormLabel htmlFor={inputParameterKey}>{inputParameterKey}</FormLabel>
                       <Input name={inputParameterKey} value={values[inputParameterKey]} onChange={handleChange} />
-                      <FormHelperText>{parsedInputParameters[inputParameterKey].description}</FormHelperText>
+                      {parsedInputParameters != null &&
+                        Object.keys(parsedInputParameters).includes(inputParameterKey) && (
+                          <FormHelperText>{parsedInputParameters[inputParameterKey].description}</FormHelperText>
+                        )}
                     </FormControl>
                   </GridItem>
                 ))}
@@ -145,10 +100,11 @@ const ExecuteWorkflowModal: FC<Props> = ({
         </ModalBody>
         <ModalFooter>
           {executedWorkflowId != null && (
-            <Button variant="link" as={Link} to={`/uniflow/executed/${executedWorkflowId}`}>
+            <Button variant="link" colorScheme="blue" as={Link} to={`/uniflow/executed/${executedWorkflowId}`}>
               Executed workflow in detail
             </Button>
           )}
+          <Spacer />
           <ButtonGroup>
             <Button onClick={onClose} disabled={isExecuting}>
               Close
