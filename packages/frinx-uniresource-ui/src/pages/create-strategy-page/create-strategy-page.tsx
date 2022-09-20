@@ -2,15 +2,12 @@ import React, { VoidFunctionComponent } from 'react';
 import { useMutation } from 'urql';
 import { Heading, Flex, Box } from '@chakra-ui/react';
 import gql from 'graphql-tag';
-import {
-  AllocationStrategyLang,
-  CreateAllocationStrategyPayload,
-  MutationCreateAllocationStrategyArgs,
-} from '../../__generated__/graphql';
-import CreateStrategyForm from './create-strategy-form';
+import { useNotifications } from '@frinx/shared/src';
+import { CreateAllocationStrategyPayload, MutationCreateAllocationStrategyArgs } from '../../__generated__/graphql';
+import CreateStrategyForm, { FormValues } from './create-strategy-form';
 
 const CREATE_STRATEGY_MUTATION = gql`
-  mutation AddStrategyMutation($input: CreateAllocationStrategyInput!) {
+  mutation CreateAllocationStrategy($input: CreateAllocationStrategyInput!) {
     CreateAllocationStrategy(input: $input) {
       strategy {
         id
@@ -21,12 +18,6 @@ const CREATE_STRATEGY_MUTATION = gql`
     }
   }
 `;
-
-type FormValues = {
-  name: string;
-  lang: AllocationStrategyLang;
-  script: string;
-};
 type Props = {
   onSaveButtonClick: () => void;
 };
@@ -35,15 +26,27 @@ const CreateStrategyPage: VoidFunctionComponent<Props> = ({ onSaveButtonClick })
   const [, addStrategy] = useMutation<CreateAllocationStrategyPayload, MutationCreateAllocationStrategyArgs>(
     CREATE_STRATEGY_MUTATION,
   );
+  const { addToastNotification } = useNotifications();
 
   const handleFormSubmit = (values: FormValues) => {
-    const variables = {
-      input: values,
-    };
-    // TODO validation
-    addStrategy(variables).then(() => {
-      onSaveButtonClick();
-    });
+    addStrategy({
+      input: {
+        ...values,
+        expectedPoolPropertyTypes: values.expectedPoolPropertyTypes?.reduce(
+          (acc, curr) => ({ ...acc, [curr.key]: curr.type }),
+          {},
+        ),
+      },
+    })
+      .then(({ error }) => {
+        if (error != null) {
+          throw Error;
+        }
+
+        addToastNotification({ content: 'Successfully create allocation strategy', type: 'success' });
+        onSaveButtonClick();
+      })
+      .catch(() => addToastNotification({ content: "We couldn't create allocation strategy", type: 'error' }));
   };
 
   return (

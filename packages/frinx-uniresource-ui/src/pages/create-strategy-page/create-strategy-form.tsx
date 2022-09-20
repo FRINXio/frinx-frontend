@@ -21,12 +21,14 @@ const INITIAL_VALUES: FormValues = {
   name: '',
   lang: 'js',
   script: getDefaultScriptValue(),
+  expectedPoolPropertyTypes: [{ key: 'address', type: 'int' }],
 };
 
-type FormValues = {
+export type FormValues = {
   name: string;
   lang: AllocationStrategyLang;
   script: string;
+  expectedPoolPropertyTypes?: { key: string; type: string }[];
 };
 type Props = {
   onFormSubmit: (values: FormValues) => void;
@@ -60,7 +62,12 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
           <option value="py">Python</option>
         </Select>
       </FormControl>
-      <ExpectedPoolProperties />
+      <ExpectedPoolProperties
+        expectedPoolPropertyTypes={values.expectedPoolPropertyTypes}
+        onPoolPropertyAdd={(newPoolProperties) => setFieldValue('expectedPoolPropertyTypes', newPoolProperties)}
+        onPoolPropertyChange={(newPoolProperties) => setFieldValue('expectedPoolPropertyTypes', newPoolProperties)}
+        onPoolPropertyDelete={(newPoolProperties) => setFieldValue('expectedPoolPropertyTypes', newPoolProperties)}
+      />
       <FormControl marginY={5}>
         <FormLabel>Strategy script</FormLabel>
         <Editor
