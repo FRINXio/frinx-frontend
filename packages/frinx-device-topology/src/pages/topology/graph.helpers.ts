@@ -51,9 +51,22 @@ export type UpdateInterfacePositionParams = {
 export function getInterfacesPositions({ nodes, edges, positionMap }: UpdateInterfacePositionParams) {
   const allInterfaces = nodes.map((n) => n.interfaces).flat();
   return allInterfaces.reduce((acc, curr) => {
-    const target = unwrap(
-      edges.find((e) => e.source.interface === curr)?.target ?? edges.find((e) => e.target.interface === curr)?.source,
-    );
+    const target =
+      edges.find((e) => e.source.interface === curr)?.target ?? edges.find((e) => e.target.interface === curr)?.source;
+
+    // if interface does not have defined connections, we will not display it
+    // because we cannot count angle to properly display it
+    // we should be able to display info about not connected interface somewhere in UI
+    // for example when you click on particular node
+    if (!target) {
+      const node = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
+      const x = 0;
+      const y = NODE_CIRCLE_RADIUS;
+      return {
+        ...acc,
+        [curr]: { x: positionMap[node.device.name].x + x, y: positionMap[node.device.name].y + y },
+      };
+    }
     const sourceNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
     const targetNode = unwrap(nodes.find((n) => n.interfaces.includes(target.interface)));
     const pos1 = positionMap[sourceNode.device.name];
@@ -68,13 +81,26 @@ export function getInterfacesPositions({ nodes, edges, positionMap }: UpdateInte
   }, {});
 }
 
+const POSITIONS_CACHE = new Map<string, Position>();
+
+function setCachedNodePosition(nodeId: string, position?: Position): void {
+  if (POSITIONS_CACHE.get(nodeId) == null) {
+    POSITIONS_CACHE.set(nodeId, position ?? { x: getRandomInt(1000), y: getRandomInt(600) });
+  }
+}
+
+function getCachedNodePosition(nodeId: string): Position {
+  return unwrap(POSITIONS_CACHE.get(nodeId));
+}
+
 export function getDefaultPositionsMap(nodes: GraphNode[], edges: GraphEdge[]): PositionsMap {
   const nodesMap = nodes.reduce((acc, curr) => {
     const { device } = curr;
     const { position } = device;
+    setCachedNodePosition(device.name);
     return {
       ...acc,
-      [device.name]: { x: position?.x ?? getRandomInt(1000), y: position?.y ?? getRandomInt(600) },
+      [device.name]: position ?? getCachedNodePosition(device.name),
     };
   }, {} as Record<string, Position>);
   return {

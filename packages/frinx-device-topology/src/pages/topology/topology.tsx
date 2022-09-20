@@ -55,10 +55,13 @@ const UPDATE_POSITION_MUTATION = gql`
 `;
 
 const Topology: VoidFunctionComponent = () => {
-  const [{ data, fetching, error }] = useQuery<TopologyQuery, TopologyQueryVariables>({ query: TOPOLOGY_QUERY });
+  const [{ data, fetching, error, stale }] = useQuery<TopologyQuery, TopologyQueryVariables>({
+    query: TOPOLOGY_QUERY,
+  });
   const [, updatePosition] = useMutation<UpdatePositionMutation, UpdatePositionMutationVariables>(
     UPDATE_POSITION_MUTATION,
   );
+  console.log({ stale, fetching }, data?.topology.nodes[0].device);
 
   if (fetching || error) {
     return null;
