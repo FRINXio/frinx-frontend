@@ -4,9 +4,7 @@ import { ExecutedWorkflow } from '../../../helpers/types';
 type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 type SortOrder = 'ASC' | 'DESC';
 
-const getApiLabels = (labels: string[]): string => {
-  return labels.join('&');
-};
+const getApiLabels = (labels: string[]): string => labels.join('&');
 
 // TODO: should be removed here and in bulk.js
 export const fetchNewData = (workflowName: string, viewedPage: number, defaultPages: number, labels: string[]) => {
@@ -52,7 +50,7 @@ export const getSubWorkflowIds = (workflow: ExecutedWorkflow): string[] => {
   const regex = /subWorkflowId=([^,]*),/g;
   const result = workflow.output.matchAll(regex);
 
-  let output: string[] = [];
+  const output: string[] = [];
 
   for (const r of result) {
     output.push(r[1]);

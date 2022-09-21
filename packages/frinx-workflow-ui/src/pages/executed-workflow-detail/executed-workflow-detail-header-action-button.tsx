@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { WorkflowStatus } from './executed-workflow-detail-status.helpers';
 import { Button, ButtonGroup } from '@chakra-ui/react';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
+import { WorkflowStatus } from './executed-workflow-detail-status.helpers';
 
 type Props = {
   workflowId: string;

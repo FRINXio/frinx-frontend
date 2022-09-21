@@ -2,15 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import MiniSearch, { SearchResult } from 'minisearch';
 import { throttle } from 'lodash';
 import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
-import AddTaskModal from './add-task-modal';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import { sortAscBy, sortDescBy } from '@frinx/workflow-ui/src/utils/helpers.utils';
 import { taskDefinition } from '@frinx/workflow-ui/src/constants';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
-import TaskTable from './task-table';
 import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
-import TaskConfigModal from './task-modal';
 import FeatherIcon from 'feather-icons-react';
+import TaskTable from './task-table';
+import TaskConfigModal from './task-modal';
+import AddTaskModal from './add-task-modal';
 
 function getFilteredResults<T extends { name: string }>(searchResult: SearchResult[], defs: T[]): T[] {
   const resultIds = searchResult.map((r) => r.id);
@@ -77,7 +77,7 @@ const TaskList = () => {
         task[key] = [...new Set(task[key])];
       }
     });
-    if (task['name'] !== '') {
+    if (task.name !== '') {
       const ownerEmail = task.ownerEmail || 'example@example.com';
       const newTask = { ...task, ownerEmail };
 

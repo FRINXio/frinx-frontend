@@ -17,8 +17,7 @@ const EditRerunTab: FC<Props> = ({ onInputChange, onRerunClick, isExecuting, inp
 
   return (
     <>
-      {labels.map((label: string, i) => {
-        return (
+      {labels.map((label: string, i) => (
           <Box key={`col1-${i}`}>
             <FormControl>
               <FormLabel>{label}</FormLabel>
@@ -30,8 +29,7 @@ const EditRerunTab: FC<Props> = ({ onInputChange, onRerunClick, isExecuting, inp
               <FormHelperText className="text-muted">{descriptions[i]}</FormHelperText>
             </FormControl>
           </Box>
-        );
-      })}
+        ))}
       <Button
         float="right"
         marginRight={4}

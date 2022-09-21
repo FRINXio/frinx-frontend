@@ -10,8 +10,7 @@ type Props = {
   formatDate: (date: number | string) => string;
 };
 
-const TaskTable: FC<Props> = ({ tasks, onTaskClick, formatDate }) => {
-  return (
+const TaskTable: FC<Props> = ({ tasks, onTaskClick, formatDate }) => (
     <Table size="sm">
       <Thead>
         <Tr>
@@ -75,6 +74,5 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick, formatDate }) => {
       </Tbody>
     </Table>
   );
-};
 
 export default TaskTable;

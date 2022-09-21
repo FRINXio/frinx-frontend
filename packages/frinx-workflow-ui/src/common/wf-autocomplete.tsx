@@ -34,21 +34,15 @@ const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = 
   }));
 
   const results = React.useMemo(
-    function getResults() {
-      return matchSorter(
-        options.map((e) => {
-          return { value: e };
-        }),
+    () => matchSorter(
+        options.map((e) => ({ value: e })),
         query,
         {
           keys: ['value'],
         },
       )
-        .filter((e) => {
-          return !selected?.includes(e.value);
-        })
-        .slice(0, 20);
-    },
+        .filter((e) => !selected?.includes(e.value))
+        .slice(0, 20),
     [options, query, selected],
   );
 
@@ -89,8 +83,7 @@ const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = 
       <InputGroup>
         {selected && selected.length > 0 && (
           <InputLeftAddon bg="white">
-            {selected.map((item, index) => {
-              return (
+            {selected.map((item, index) => (
                 <Tag
                   key={item}
                   size="sm"
@@ -102,8 +95,7 @@ const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = 
                   <p>{item}</p>
                   <TagCloseButton />
                 </Tag>
-              );
-            })}
+              ))}
           </InputLeftAddon>
         )}
         <Input
@@ -141,8 +133,7 @@ const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = 
       {isOptionsVisible && (
         <Box bg="white" position="absolute" w="100%" zIndex="dropdown" border="1px solid gray.50">
           <Box>
-            {results.map((item, index) => {
-              return (
+            {results.map((item, index) => (
                 <Box
                   key={index}
                   padding={2}
@@ -165,8 +156,7 @@ const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = 
                 >
                   {item.value}
                 </Box>
-              );
-            })}
+              ))}
           </Box>
         </Box>
       )}

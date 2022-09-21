@@ -1,8 +1,8 @@
 import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { ButtonGroup, Button, Box, Flex, FormControl, Grid, Input, Text, IconButton, Icon } from '@chakra-ui/react';
-import WfAutoComplete from '../../../../common/wf-autocomplete';
 import FeatherIcon from 'feather-icons-react';
 import { debounce } from 'lodash';
+import WfAutoComplete from '../../../../common/wf-autocomplete';
 
 type Props = {
   showFlat: boolean;

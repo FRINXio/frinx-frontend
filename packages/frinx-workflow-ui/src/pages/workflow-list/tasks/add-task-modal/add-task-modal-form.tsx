@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, FormControl, FormLabel, Grid, Icon, Input, Select, Tag, Tooltip } from '@chakra-ui/react';
-import { taskDefinition } from '../../../../constants';
 import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
 import FeatherIcon from 'feather-icons-react';
+import { taskDefinition } from '../../../../constants';
 
 type Key = keyof typeof taskDefinition;
 

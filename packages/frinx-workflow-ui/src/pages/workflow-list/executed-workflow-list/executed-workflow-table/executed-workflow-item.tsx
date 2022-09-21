@@ -9,7 +9,7 @@ type Props = {
   workflow: ExecutedSubworkflowTask;
 };
 
-export const ExecutedWorkflowItem = ({ workflow }: Props) => {
+export function ExecutedWorkflowItem({ workflow }: Props) {
   return (
     <Tr key={workflow.subWorkflowId}>
       <Td />
@@ -30,4 +30,4 @@ export const ExecutedWorkflowItem = ({ workflow }: Props) => {
       <Td>{workflow.endTime ? moment(workflow.endTime).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}</Td>
     </Tr>
   );
-};
+}

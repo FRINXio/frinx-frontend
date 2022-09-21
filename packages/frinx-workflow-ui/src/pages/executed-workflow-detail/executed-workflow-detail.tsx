@@ -1,7 +1,5 @@
 import React, { ChangeEvent, FC, useState } from 'react';
 import { TaskModal } from '@frinx/workflow-ui/src/common/modals';
-import WorkflowDia from './WorkflowDia/WorkflowDia';
-import callbackUtils from '../../utils/callback-utils';
 import moment from 'moment';
 import unescapeJs from 'unescape-js';
 import {
@@ -17,16 +15,17 @@ import {
   Tabs,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useNotifications } from '@frinx/shared/src';
+import { useNotifications , unwrap } from '@frinx/shared/src';
+import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
+import { Link, useParams } from 'react-router-dom';
+import WorkflowDia from './WorkflowDia/WorkflowDia';
+import callbackUtils from '../../utils/callback-utils';
 import TaskTable from './task-table';
 import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
 import WorkflowJsonTab from './executed-workflow-detail-tabs/workflow-json-tab';
 import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
 import DetailsModalHeader from './executed-workflow-detail-header';
 import { useWorkflowGenerator } from './executed-workflow-detail-status.helpers';
-import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
-import { Link, useParams } from 'react-router-dom';
-import { unwrap } from '@frinx/shared/src';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
 
 const convertWorkflowVariablesToFormFormat = (
@@ -129,7 +128,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>, key: string) => {
-    let workflowForm = result.input;
+    const workflowForm = result.input;
     workflowForm[key] = e.target.value;
     setWorkflowVariables((prev) => ({ ...prev, ...workflowForm }));
   };

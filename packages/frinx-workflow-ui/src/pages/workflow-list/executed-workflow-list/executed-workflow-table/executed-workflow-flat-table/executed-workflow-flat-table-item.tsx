@@ -11,7 +11,7 @@ type Props = {
 };
 
 const ExecutedWorkflowFlatTableItem: FC<Props> = ({ flatWorkflows, selectWf, selectedWfs }) => {
-  let {
+  const {
     result: { hits: data },
   } = flatWorkflows;
   return (

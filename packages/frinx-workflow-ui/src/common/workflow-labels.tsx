@@ -8,7 +8,7 @@ type Props = {
   label: string;
 };
 
-const WorkflowLabels = (props: Props) => {
+function WorkflowLabels(props: Props) {
   const color = props.index >= wfLabelsColor.length ? wfLabelsColor[0] : wfLabelsColor[props.index];
   return (
     <Tag
@@ -28,6 +28,6 @@ const WorkflowLabels = (props: Props) => {
       <p>{props.label}</p>
     </Tag>
   );
-};
+}
 
 export default WorkflowLabels;

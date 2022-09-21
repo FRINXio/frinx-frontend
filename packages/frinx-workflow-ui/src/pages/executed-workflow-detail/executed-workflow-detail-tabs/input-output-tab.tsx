@@ -1,7 +1,7 @@
 import React, { VoidFunctionComponent, useState } from 'react';
 import { IconButton, Button, SimpleGrid, Box, Stack, Textarea, Text, Icon } from '@chakra-ui/react';
-import ExternalStorageModal from './external-storage-modal';
 import FeatherIcon from 'feather-icons-react';
+import ExternalStorageModal from './external-storage-modal';
 
 type Props = {
   isEscaped: boolean;
@@ -64,7 +64,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               </Button>
             )}
           </Stack>
-          <Textarea value={getUnescapedJSON(input)} isReadOnly={true} id="workflowInput" variant="filled" minH={500} />
+          <Textarea value={getUnescapedJSON(input)} isReadOnly id="workflowInput" variant="filled" minH={500} />
         </Box>
         <Box>
           <Stack direction="row" spacing={2} align="center" mb={2}>
@@ -94,7 +94,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
           </Stack>
           <Textarea
             value={getUnescapedJSON(output)}
-            isReadOnly={true}
+            isReadOnly
             id="workflowOutput"
             variant="filled"
             minH={500}

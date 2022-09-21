@@ -1,6 +1,4 @@
-import Paginator from '../../../common/pagination';
 import React, { useEffect, useState } from 'react';
-import callbackUtils from '../../../utils/callback-utils';
 import moment from 'moment';
 import {
   Container,
@@ -17,9 +15,11 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { sortDescBy, sortAscBy } from '@frinx/workflow-ui/src/utils/helpers.utils';
+import FeatherIcon from 'feather-icons-react';
 import { usePagination } from '../../../common/pagination-hook';
 import { Queue } from '../../../helpers/uniflow-types';
-import FeatherIcon from 'feather-icons-react';
+import callbackUtils from '../../../utils/callback-utils';
+import Paginator from '../../../common/pagination';
 
 function filterBySearchKeyword(queue: Queue, keyword: string): boolean {
   const query = keyword.toUpperCase();

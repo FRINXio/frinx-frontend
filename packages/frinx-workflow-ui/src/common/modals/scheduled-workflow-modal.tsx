@@ -61,7 +61,7 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
 
   const getCrontabGuruUrl = () => {
     const cronString = values.cronString || DEFAULT_CRON_STRING;
-    const url = 'https://crontab.guru/#' + cronString.replace(/\s/g, '_');
+    const url = `https://crontab.guru/#${  cronString.replace(/\s/g, '_')}`;
     return (
       <Link href={url} color="brand.500">
         crontab.guru

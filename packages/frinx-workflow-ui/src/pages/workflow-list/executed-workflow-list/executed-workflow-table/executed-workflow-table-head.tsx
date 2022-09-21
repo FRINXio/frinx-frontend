@@ -19,8 +19,7 @@ const ExecutedWorkflowTableHead: FC<Props> = ({
   isFlatTable = false,
   selectAllWorkflows,
   areSelectedAll,
-}) => {
-  return (
+}) => (
     <Thead>
       <Tr>
         <Th>
@@ -49,6 +48,5 @@ const ExecutedWorkflowTableHead: FC<Props> = ({
       </Tr>
     </Thead>
   );
-};
 
 export default ExecutedWorkflowTableHead;

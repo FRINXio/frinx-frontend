@@ -4,8 +4,8 @@ import { Tr, Td, Checkbox, Icon } from '@chakra-ui/react';
 import { ExecutedWorkflow, ExecutedWorkflows, ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link } from 'react-router-dom';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
-import ExecutedSubWorkflowTable from './executed-subworkflow-table';
 import FeatherIcon from 'feather-icons-react';
+import ExecutedSubWorkflowTable from './executed-subworkflow-table';
 
 type Props = {
   workflows: ExecutedWorkflows;

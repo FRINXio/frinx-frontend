@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Progress } from '@chakra-ui/react';
 import { ExecutedWorkflows, NestedExecutedWorkflow } from '@frinx/workflow-ui/src/helpers/types';
-import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
 import { useNavigate } from 'react-router-dom';
+import Paginator from '@frinx/workflow-ui/src/common/pagination';
+import useQueryParams from '@frinx/workflow-ui/src/hooks/use-query-params';
+import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
 import { getSortOrder, getWorkflows } from './search-execs';
 import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workflow-table';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
-import Paginator from '@frinx/workflow-ui/src/common/pagination';
-import useQueryParams from '@frinx/workflow-ui/src/hooks/use-query-params';
 import usePagination, { PaginationState } from '../../../hooks/use-pagination';
 
 type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
@@ -98,7 +98,7 @@ const ExecutedWorkflowList = () => {
   };
 
   const selectWorkflow = (workflowId: string, isChecked: boolean) => {
-    let selectedWorkflows = new Set(state.selectedWorkflows);
+    const selectedWorkflows = new Set(state.selectedWorkflows);
 
     if (isChecked) {
       selectedWorkflows.add(workflowId);
@@ -180,7 +180,7 @@ const ExecutedWorkflowList = () => {
           currentPage={pagination.page}
           onPaginationClick={handlePaginationClick}
           pagesCount={pagination.pageCount}
-          showPageNumbers={true}
+          showPageNumbers
         />
       </>
     </Container>

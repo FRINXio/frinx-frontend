@@ -18,15 +18,14 @@ type ModalProps = {
   workflow?: Workflow;
 };
 
-const DiagramModal: VoidFunctionComponent<ModalProps> = ({ isOpen, onClose, workflow }) => {
-  return (
+const DiagramModal: VoidFunctionComponent<ModalProps> = ({ isOpen, onClose, workflow }) => (
     <Modal size="3xl" isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalCloseButton />
       <ModalContent>
         <ModalHeader>Workflow Diagram</ModalHeader>
         <ModalBody>
-          <WorkflowDia meta={workflow} tasks={[]} def={true} />
+          <WorkflowDia meta={workflow} tasks={[]} def />
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="gray" onClick={onClose}>
@@ -36,6 +35,5 @@ const DiagramModal: VoidFunctionComponent<ModalProps> = ({ isOpen, onClose, work
       </ModalContent>
     </Modal>
   );
-};
 
 export default DiagramModal;

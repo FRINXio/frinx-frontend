@@ -21,7 +21,7 @@ type AddTaskModalProps = {
   onSubmit: (task: TaskDefinition) => void;
 };
 
-const AddTaskModal = ({ isOpen, onClose, onSubmit, task }: AddTaskModalProps) => {
+function AddTaskModal({ isOpen, onClose, onSubmit, task }: AddTaskModalProps) {
   const { handleSubmit, setFieldValue, values, submitForm } = useFormik({
     initialValues: task,
     onSubmit: (values) => {
@@ -52,6 +52,6 @@ const AddTaskModal = ({ isOpen, onClose, onSubmit, task }: AddTaskModalProps) =>
       </ModalContent>
     </Modal>
   );
-};
+}
 
 export default AddTaskModal;

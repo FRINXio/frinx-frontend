@@ -39,8 +39,6 @@ import {
 import WorkflowLabels from '@frinx/workflow-ui/src/common/workflow-labels';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
-import WorkflowActions from './workflow-actions';
-import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/helpers/types';
 import FeatherIcon from 'feather-icons-react';
@@ -51,6 +49,8 @@ import {
   jsonParse,
   parseInputParameters,
 } from '@frinx/workflow-ui/src/utils/helpers.utils';
+import WorkflowDefinitionsHeader from './workflow-definitions-header';
+import WorkflowActions from './workflow-actions';
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr = dataset.map(({ description }) => {
@@ -379,7 +379,7 @@ const WorkflowDefinitions = () => {
                           setActiveWf(workflow);
                         }}
                       >
-                        {getDependencies(workflow).length + ' '} Tree{' '}
+                        {`${getDependencies(workflow).length  } `} Tree{' '}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent>

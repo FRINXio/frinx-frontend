@@ -12,7 +12,7 @@ type Props = {
   workflowId: string;
   subWorkflows: Map<string, ExecutedSubWorkflows>;
 };
-const ExecutedSubWorkflowTable = ({ workflowId, subWorkflows }: Props) => {
+function ExecutedSubWorkflowTable({ workflowId, subWorkflows }: Props) {
   const workflows = subWorkflows.get(workflowId);
 
   if (workflows == null) {
@@ -32,7 +32,7 @@ const ExecutedSubWorkflowTable = ({ workflowId, subWorkflows }: Props) => {
   if (workflows.subWorkflows.length === 0) {
     return (
       <Tr>
-        <Td></Td>
+        <Td />
         <Td colSpan={4}>
           <Text paddingLeft={8} textStyle="italic" color="gray.400">
             No subworkflows
@@ -49,6 +49,6 @@ const ExecutedSubWorkflowTable = ({ workflowId, subWorkflows }: Props) => {
       ))}
     </>
   );
-};
+}
 
 export default ExecutedSubWorkflowTable;

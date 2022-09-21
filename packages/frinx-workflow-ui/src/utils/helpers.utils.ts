@@ -3,14 +3,28 @@ import { Workflow } from '../helpers/types';
 export type InputParameter = Record<string, { value: string; description: string; type: string }>;
 
 export const sortAscBy = (key: string) => {
-  return function (x: Record<string, any>, y: Record<string, any>) {
-    return x[key] === y[key] ? 0 : x[key] > y[key] ? 1 : -1;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (x: Record<string, any>, y: Record<string, any>) => {
+    if (x[key] < y[key]) {
+      return -1;
+    }
+    if (x[key] > y[key]) {
+      return 1;
+    }
+    return 0;
   };
 };
 
 export const sortDescBy = (key: string) => {
-  return function (x: Record<string, any>, y: Record<string, any>) {
-    return x[key] === y[key] ? 0 : x[key] < y[key] ? 1 : -1;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (x: Record<string, any>, y: Record<string, any>) => {
+    if (x[key] > y[key]) {
+      return -1;
+    }
+    if (x[key] < y[key]) {
+      return 1;
+    }
+    return 0;
   };
 };
 
@@ -34,7 +48,7 @@ export const getDynamicInputParametersFromWorkflow = (workflow?: Workflow | null
   return match || [];
 };
 
-export function parseInputParameters(inputParameters?: string[]) {
+export function parseInputParameters(inputParameters?: string[]): InputParameter | null {
   if (inputParameters == null || inputParameters.length === 0) {
     return null;
   }
@@ -43,7 +57,7 @@ export function parseInputParameters(inputParameters?: string[]) {
 
   return parsedInputParameters.map(Object.keys).reduce((acc, currObjectKeys, index) => {
     const result: InputParameter = currObjectKeys.reduce(
-      (acc, curr) => ({ ...acc, [curr]: parsedInputParameters[index][curr] }),
+      (parsedInputParams, curr) => ({ ...parsedInputParams, [curr]: parsedInputParameters[index][curr] }),
       {},
     );
 
@@ -51,7 +65,7 @@ export function parseInputParameters(inputParameters?: string[]) {
       ...acc,
       ...result,
     };
-  }, {} as InputParameter);
+  }, {});
 }
 
 export function getInitialValuesFromParsedInputParameters(

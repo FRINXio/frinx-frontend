@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import callbackUtils from '../../utils/callback-utils';
 import {
   Box,
   Button,
@@ -22,6 +21,7 @@ import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
 import { useNotifications } from '@frinx/shared/src';
 import { compact } from 'lodash';
+import callbackUtils from '../../utils/callback-utils';
 
 type Props = {
   onImportSuccess: () => void;
@@ -46,7 +46,7 @@ function readFile(file: File): Promise<any> {
   });
 }
 
-const WorkflowListHeader = ({ onImportSuccess }: Props) => {
+function WorkflowListHeader({ onImportSuccess }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const { addToastNotification } = useNotifications();
 
@@ -88,10 +88,10 @@ const WorkflowListHeader = ({ onImportSuccess }: Props) => {
       const zip = new JSZip();
 
       workflows.forEach((wf) => {
-        zip.file(wf.name + '.json', JSON.stringify(wf, null, 2));
+        zip.file(`${wf.name  }.json`, JSON.stringify(wf, null, 2));
       });
 
-      zip.generateAsync({ type: 'blob' }).then(function (content) {
+      zip.generateAsync({ type: 'blob' }).then((content) => {
         saveAs(content, 'workflows.zip');
       });
     });
@@ -158,6 +158,6 @@ const WorkflowListHeader = ({ onImportSuccess }: Props) => {
       </VisuallyHidden>
     </Container>
   );
-};
+}
 
 export default WorkflowListHeader;

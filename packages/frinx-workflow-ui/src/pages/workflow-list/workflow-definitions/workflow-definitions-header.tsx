@@ -1,8 +1,9 @@
 // @flow
 import React, { FC } from 'react';
 import { Box, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
-import WfAutoComplete from '../../../common/wf-autocomplete';
 import FeatherIcon from 'feather-icons-react';
+import WfAutoComplete from '../../../common/wf-autocomplete';
+
 type Props = {
   allLabels: string[];
   keywords: string[];
