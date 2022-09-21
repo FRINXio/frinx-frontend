@@ -146,7 +146,6 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                   <IconButton
                     aria-label="config"
                     size="sm"
-                    variant="unstyled"
                     isDisabled={!isInstalled}
                     icon={<Icon size={12} as={FeatherIcon} icon="settings" />}
                     as={isInstalled ? Link : 'button'}
@@ -155,7 +154,6 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                   <IconButton
                     aria-label="edit"
                     size="sm"
-                    variant="unstyled"
                     isDisabled={isInstalled}
                     icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                     as={Link}

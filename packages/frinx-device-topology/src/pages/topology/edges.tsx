@@ -58,19 +58,15 @@ const Edges: VoidFunctionComponent = () => {
               <>
                 <defs>
                   <path
-                    id={`sourcePath`}
+                    id="sourcePath"
                     d={`M${sourcePosition.x},${sourcePosition.y} L${targetPosition.x},${targetPosition.y}`}
                   />
-                  {/* <path
-                    id={`targetPath`}
-                    d={`M${targetPosition.x},${targetPosition.y} L${sourcePosition.x},${sourcePosition.y}`}
-                  /> */}
                 </defs>
                 <text dx={10} dy={20}>
-                  <textPath href={`#sourcePath`}>{edge.source.interface}</textPath>
+                  <textPath href="#sourcePath">{edge.source.interface}</textPath>
                 </text>
                 <text dx={-10} dy={-10}>
-                  <textPath href={`#sourcePath`} startOffset="100%" textAnchor="end">
+                  <textPath href="#sourcePath" startOffset="100%" textAnchor="end">
                     {edge.target.interface}
                   </textPath>
                 </text>
