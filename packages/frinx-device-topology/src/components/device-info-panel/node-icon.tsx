@@ -1,9 +1,14 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
-import { GraphNode, NODE_CIRCLE_RADIUS, PositionsMap } from '../../pages/topology/graph.helpers';
+import {
+  GraphNode,
+  NODE_CIRCLE_RADIUS,
+  PositionGroupsMap,
+  PositionsWithGroupsMap,
+} from '../../pages/topology/graph.helpers';
 
 type Props = {
-  positions: PositionsMap;
+  positions: PositionsWithGroupsMap;
   isSelected: boolean;
   isFocused: boolean;
   node: GraphNode;
@@ -16,6 +21,12 @@ const G = chakra('g');
 const Circle = chakra('circle');
 const Text = chakra('text');
 
+const getNodeInterfaceGroups = (nodeId: string, interfaceGroupPositions: PositionGroupsMap) => {
+  return Object.entries(interfaceGroupPositions).filter(([groupId]) => {
+    return groupId.startsWith(nodeId);
+  });
+};
+
 const NodeIcon: VoidFunctionComponent<Props> = ({
   positions,
   isFocused,
@@ -25,8 +36,16 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   onPointerMove,
   onPointerUp,
 }) => {
-  const { interfaces, device } = node;
+  const { device } = node;
   const { x, y } = positions.nodes[node.device.name];
+  const interfaceGroups = getNodeInterfaceGroups(device.name, positions.interfaceGroups);
+
+  const handleInterfaceGroupClick = (groupId: string) => {
+    const [selectedGroup] = interfaceGroups.filter(([gid]) => gid === groupId);
+    const [key, data] = selectedGroup;
+    console.log(key, data.interfaces);
+  };
+
   return (
     <G
       cursor="pointer"
@@ -45,17 +64,17 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
       />
       <G>
         <G>
-          {interfaces.map((intf) => {
-            const iPosition = positions.interfaces[intf];
-            // console.log(positions.interfaces, iPosition);
+          {interfaceGroups.map(([groupId, data]) => {
+            const iPosition = data.position;
             return iPosition ? (
               <Circle
-                r="2px"
+                r="4px"
                 fill="purple"
-                key={intf}
+                key={groupId}
                 style={{
                   transform: isFocused ? `translate3d(${iPosition.x - x}px, ${iPosition.y - y}px, 0)` : undefined,
                 }}
+                onClick={() => handleInterfaceGroupClick(groupId)}
               />
             ) : null;
           })}

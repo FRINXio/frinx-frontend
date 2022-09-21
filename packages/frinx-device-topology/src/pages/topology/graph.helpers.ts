@@ -37,6 +37,16 @@ export type PositionsMap = {
   nodes: Record<string, Position>;
   interfaces: Record<string, Position>;
 };
+export type PositionsWithGroupsMap = {
+  nodes: Record<string, Position>;
+  interfaceGroups: PositionGroupsMap;
+};
+type GroupName = string;
+type GroupData = {
+  position: Position;
+  interfaces: string[];
+};
+export type PositionGroupsMap = Record<GroupName, GroupData>;
 
 export function getAngleBetweenPoints(p1: Position, p2: Position): number {
   return Math.atan2(p2.y - p1.y, p2.x - p1.x);
@@ -48,9 +58,17 @@ export type UpdateInterfacePositionParams = {
   positionMap: Record<string, Position>;
 };
 
-export function getInterfacesPositions({ nodes, edges, positionMap }: UpdateInterfacePositionParams) {
+function getGroupName(sourceNode: GraphNode, targetNode: GraphNode): string {
+  return [sourceNode.device.name, targetNode.device.name].join(',');
+}
+
+export function getInterfacesPositions({
+  nodes,
+  edges,
+  positionMap,
+}: UpdateInterfacePositionParams): PositionGroupsMap {
   const allInterfaces = nodes.map((n) => n.interfaces).flat();
-  return allInterfaces.reduce((acc, curr) => {
+  return allInterfaces.reduce((acc: PositionGroupsMap, curr) => {
     const target =
       edges.find((e) => e.source.interface === curr)?.target ?? edges.find((e) => e.target.interface === curr)?.source;
 
@@ -59,16 +77,26 @@ export function getInterfacesPositions({ nodes, edges, positionMap }: UpdateInte
     // we should be able to display info about not connected interface somewhere in UI
     // for example when you click on particular node
     if (!target) {
-      const node = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
+      const node: GraphNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
       const x = 0;
       const y = NODE_CIRCLE_RADIUS;
+      const sourceNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
+      const groupName = getGroupName(sourceNode, sourceNode);
+      const newInterfaces = acc[groupName] ? [...acc[groupName].interfaces, curr] : [curr];
+
       return {
         ...acc,
-        [curr]: { x: positionMap[node.device.name].x + x, y: positionMap[node.device.name].y + y },
+        [groupName]: {
+          position: { x: positionMap[node.device.name].x + x, y: positionMap[node.device.name].y + y },
+          interfaces: newInterfaces,
+        },
       };
     }
     const sourceNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
     const targetNode = unwrap(nodes.find((n) => n.interfaces.includes(target.interface)));
+    const groupName = getGroupName(sourceNode, targetNode);
+    const newInterfaces = acc[groupName] ? [...acc[groupName].interfaces, curr] : [curr];
+
     const pos1 = positionMap[sourceNode.device.name];
     const pos2 = positionMap[targetNode.device.name];
     const angle = getAngleBetweenPoints(pos1, pos2);
@@ -76,7 +104,10 @@ export function getInterfacesPositions({ nodes, edges, positionMap }: UpdateInte
     const x = NODE_CIRCLE_RADIUS * Math.cos(angle);
     return {
       ...acc,
-      [curr]: { x: pos1.x + x, y: pos1.y + y },
+      [groupName]: {
+        position: { x: pos1.x + x, y: pos1.y + y },
+        interfaces: newInterfaces,
+      },
     };
   }, {});
 }
@@ -93,7 +124,7 @@ function getCachedNodePosition(nodeId: string): Position {
   return unwrap(POSITIONS_CACHE.get(nodeId));
 }
 
-export function getDefaultPositionsMap(nodes: GraphNode[], edges: GraphEdge[]): PositionsMap {
+export function getDefaultPositionsMap(nodes: GraphNode[], edges: GraphEdge[]): PositionsWithGroupsMap {
   const nodesMap = nodes.reduce((acc, curr) => {
     const { device } = curr;
     const { position } = device;
@@ -105,6 +136,6 @@ export function getDefaultPositionsMap(nodes: GraphNode[], edges: GraphEdge[]): 
   }, {} as Record<string, Position>);
   return {
     nodes: nodesMap,
-    interfaces: getInterfacesPositions({ nodes, edges, positionMap: nodesMap }),
+    interfaceGroups: getInterfacesPositions({ nodes, edges, positionMap: nodesMap }),
   };
 }

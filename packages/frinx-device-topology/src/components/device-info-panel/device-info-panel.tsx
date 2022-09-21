@@ -72,7 +72,7 @@ const DeviceInfoPanel: VoidFunctionComponent<Props> = ({ deviceId, onClose }) =>
       <HStack spacing={2} marginTop={4}>
         <Button
           as={Link}
-          to={`/inventory/config/${node.id}`}
+          to={`/inventory/${node.id}/edit`}
           size="sm"
           colorScheme="blue"
           leftIcon={<Icon as={FeatherIcon} icon="settings" size={20} />}
