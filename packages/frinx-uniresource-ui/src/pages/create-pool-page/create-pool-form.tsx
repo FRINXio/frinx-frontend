@@ -22,7 +22,7 @@ import { useTagsInput } from '@frinx/shared/src';
 import { useNavigate } from 'react-router-dom';
 import PoolValuesForm from './pool-values-form';
 import PoolPropertiesForm from './pool-properties-form';
-import { SelectPoolsQuery, SelectResourceTypesQuery } from '../../__generated__/graphql';
+import { RequiredPoolPropertiesQuery, SelectPoolsQuery, SelectResourceTypesQuery } from '../../__generated__/graphql';
 import {
   getAvailableAllocatedResources,
   getAvailablePoolProperties,
@@ -31,11 +31,12 @@ import {
   formatSuggestedProperties,
   getPoolPropertiesSkeleton,
   getSchemaForCreatePoolForm,
-  canSelectDefaultResourceTypes,
   canSelectIpResourceTypes,
+  isCustomResourceType,
 } from '../../helpers/create-pool-form.helpers';
 import AdvancedOptions from './create-pool-form-advanced-options';
 import NestedFormPart from './create-pool-form-nested-part';
+import CustomPoolPropertiesForm from './custom-pool-properties-form';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
 export type FormValues = {
@@ -62,6 +63,9 @@ type AllocStrategy = {
 
 type Props = {
   onFormSubmit: (values: Omit<FormValues, 'resourceTypeName'>) => void;
+  onResourceTypeChange: (resourceTypeId: string) => void;
+  requiredPoolProperties?: RequiredPoolPropertiesQuery['QueryRequiredPoolProperties'];
+  isLoadingRequiredPoolProperties: boolean;
   resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'];
   resourcePools: SelectPoolsQuery;
   allocStrategies: AllocStrategy[];
@@ -94,6 +98,9 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   resourceTypes,
   resourcePools,
   allocStrategies,
+  isLoadingRequiredPoolProperties,
+  onResourceTypeChange,
+  requiredPoolProperties,
 }) => {
   const navigate = useNavigate();
   const tagsInput = useTagsInput();
@@ -174,11 +181,15 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   const initialResourceNameType = new URLSearchParams(window.location.search).get('type') || 'default';
 
   const handleOnResourceTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedResourceTypeName = [...availableResourceTypes, ...derivedFromAvailableResourceTypes].find(
+      (rt) => rt.id === e.target.value,
+    )?.Name;
     handleChange(e);
-    setFieldValue(
-      'resourceTypeName',
-      [...availableResourceTypes, ...derivedFromAvailableResourceTypes].find((rt) => rt.id === e.target.value)?.Name,
-    );
+    setFieldValue('resourceTypeName', selectedResourceTypeName);
+
+    if (selectedResourceTypeName != null && isCustomResourceType(selectedResourceTypeName)) {
+      onResourceTypeChange(selectedResourceTypeName);
+    }
   };
 
   const [poolProperties, poolPropertyTypes] = getPoolPropertiesSkeleton(
@@ -215,9 +226,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
           >
             {[...availableResourceTypes, ...derivedFromAvailableResourceTypes]
               .filter((resourceType) =>
-                initialResourceNameType === 'ip'
-                  ? canSelectIpResourceTypes(resourceType.Name)
-                  : canSelectDefaultResourceTypes(resourceType.Name),
+                initialResourceNameType === 'ip' ? canSelectIpResourceTypes(resourceType.Name) : true,
               )
               .map((rt) => (
                 <option value={rt.id} key={rt.id}>
@@ -297,13 +306,23 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
             </>
           )}
 
-          <PoolPropertiesForm
-            poolProperties={poolProperties}
-            poolPropertyTypes={poolPropertyTypes}
-            onChange={handlePoolPropertiesChange}
-            poolPropertyErrors={errors.poolProperties}
-            resourceTypeName={resourceTypeName}
-          />
+          {isCustomResourceType(values.resourceTypeName) ? (
+            <CustomPoolPropertiesForm
+              isLoadingPoolProperties={isLoadingRequiredPoolProperties}
+              customPoolProperties={requiredPoolProperties}
+              formValues={values}
+              onChange={handlePoolPropertiesChange}
+              poolPropertyErrors={errors.poolProperties}
+            />
+          ) : (
+            <PoolPropertiesForm
+              poolProperties={poolProperties}
+              poolPropertyTypes={poolPropertyTypes}
+              onChange={handlePoolPropertiesChange}
+              poolPropertyErrors={errors.poolProperties}
+              resourceTypeName={resourceTypeName}
+            />
+          )}
         </>
       )}
 
