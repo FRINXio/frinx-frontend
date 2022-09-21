@@ -38,7 +38,7 @@ export type PositionsMap = {
   interfaces: Record<string, Position>;
 };
 
-function getAngleBetweenPoints(p1: Position, p2: Position): number {
+export function getAngleBetweenPoints(p1: Position, p2: Position): number {
   return Math.atan2(p2.y - p1.y, p2.x - p1.x);
 }
 
@@ -59,8 +59,12 @@ export function getInterfacesPositions({ nodes, edges, positionMap }: UpdateInte
     // we should be able to display info about not connected interface somewhere in UI
     // for example when you click on particular node
     if (!target) {
+      const node = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
+      const x = 0;
+      const y = NODE_CIRCLE_RADIUS;
       return {
         ...acc,
+        [curr]: { x: positionMap[node.device.name].x + x, y: positionMap[node.device.name].y + y },
       };
     }
     const sourceNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
@@ -77,13 +81,26 @@ export function getInterfacesPositions({ nodes, edges, positionMap }: UpdateInte
   }, {});
 }
 
-export function getDefaultNodesPositions(nodes: GraphNode[], edges: GraphEdge[]): PositionsMap {
+const POSITIONS_CACHE = new Map<string, Position>();
+
+function setCachedNodePosition(nodeId: string, position?: Position): void {
+  if (POSITIONS_CACHE.get(nodeId) == null) {
+    POSITIONS_CACHE.set(nodeId, position ?? { x: getRandomInt(1000), y: getRandomInt(600) });
+  }
+}
+
+function getCachedNodePosition(nodeId: string): Position {
+  return unwrap(POSITIONS_CACHE.get(nodeId));
+}
+
+export function getDefaultPositionsMap(nodes: GraphNode[], edges: GraphEdge[]): PositionsMap {
   const nodesMap = nodes.reduce((acc, curr) => {
     const { device } = curr;
     const { position } = device;
+    setCachedNodePosition(device.name);
     return {
       ...acc,
-      [device.name]: { x: position?.x ?? getRandomInt(1000), y: position?.y ?? getRandomInt(600) },
+      [device.name]: position ?? getCachedNodePosition(device.name),
     };
   }, {} as Record<string, Position>);
   return {

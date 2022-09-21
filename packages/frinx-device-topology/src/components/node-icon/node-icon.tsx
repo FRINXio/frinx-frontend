@@ -47,17 +47,16 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
         <G>
           {interfaces.map((intf) => {
             const iPosition = positions.interfaces[intf];
-            // console.log(positions.interfaces, iPosition);
-            return iPosition ? (
+            return (
               <Circle
-                r="2px"
+                r="3px"
                 fill="purple"
                 key={intf}
                 style={{
                   transform: isFocused ? `translate3d(${iPosition.x - x}px, ${iPosition.y - y}px, 0)` : undefined,
                 }}
               />
-            ) : null;
+            );
           })}
         </G>
         <Circle
