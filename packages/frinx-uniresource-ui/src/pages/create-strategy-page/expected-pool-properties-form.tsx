@@ -59,9 +59,9 @@ const ExpectedPoolProperties: FC<Props> = ({
     !isErrorString;
 
   return (
-    <FormControl>
+    <>
       <HStack mb={3} align="flex-start">
-        <FormLabel>Expected pool properties</FormLabel>
+        <Text fontWeight="semibold">Expected pool properties</Text>
         <Spacer />
         <Button size="sm" onClick={handleOnPoolPropertyAdd}>
           Add new pool property
@@ -129,7 +129,7 @@ const ExpectedPoolProperties: FC<Props> = ({
       {formErrors.duplicateExpectedPoolPropertyKey != null && (
         <Text textColor="red">{formErrors.duplicateExpectedPoolPropertyKey}</Text>
       )}
-    </FormControl>
+    </>
   );
 };
 
