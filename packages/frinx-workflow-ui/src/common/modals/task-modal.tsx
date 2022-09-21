@@ -1,4 +1,3 @@
-// @flow
 import React, { useState, VoidFunctionComponent } from 'react';
 import {
   Box,
@@ -47,11 +46,11 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
   const { inputData, outputData, logs, externalInputPayloadStoragePath, externalOutputPayloadStoragePath } = task;
   const [payload, setPayload] = useState<{ type: 'Input' | 'Output'; data: string } | null>(null);
 
-  function getUnescapedJSON(data: ExecutedWorkflowTask | Record<string, string>) {
+  const getUnescapedJSON = (data: ExecutedWorkflowTask | Record<string, string>) => {
     const jsonString = JSON.stringify(data, null, 2);
 
-    if (!jsonString) {
-      return;
+    if (jsonString == null) {
+      return null;
     }
 
     return isEscaped
@@ -65,7 +64,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
           .replace(/\\b/g, '\\b')
           .replace(/\\f/g, '\\f')
       : unescapeJs(jsonString);
-  }
+  };
 
   return (
     <>

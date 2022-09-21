@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import { ButtonGroup, Button, Box, Flex, FormControl, Grid, Input, Text, IconButton, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { debounce } from 'lodash';
@@ -15,19 +15,15 @@ type Props = {
 const ExecutedWorkflowSearchBox: FC<Props> = ({ changeLabels, changeQuery, changeView, showFlat, labels }) => {
   const [searchText, setSearchText] = useState('');
 
-  const debouncedSearch = useCallback(
-    debounce((query) => {
-      changeQuery(query);
-    }, 300),
-    [],
-  );
+  const debouncedSearch = debounce((query) => {
+    changeQuery(query);
+  }, 300);
 
   useEffect(() => {
     debouncedSearch(searchText);
-  }, [searchText]);
+  }, [searchText, debouncedSearch]);
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.value);
     setSearchText(event.target.value);
   };
 

@@ -61,7 +61,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, selectWf,
 
   return (
     <>
-      {nestedWorkflows.map((item, i) => (
+      {nestedWorkflows.map((item) => (
         <Fragment key={item.workflowId}>
           <Tr onClick={() => handleToggle(item)}>
             <Td>

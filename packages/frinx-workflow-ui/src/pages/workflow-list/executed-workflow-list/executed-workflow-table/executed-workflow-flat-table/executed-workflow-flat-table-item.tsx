@@ -16,7 +16,7 @@ const ExecutedWorkflowFlatTableItem: FC<Props> = ({ flatWorkflows, selectWf, sel
   } = flatWorkflows;
   return (
     <>
-      {data.map((item, i) => (
+      {data.map((item) => (
         <Tr key={item.workflowId}>
           <Td>
             <Checkbox

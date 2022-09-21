@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Button,
   Heading,
@@ -35,7 +35,7 @@ function ScheduledWorkflowList() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { addToastNotification } = useNotifications();
 
-  function getData() {
+  const getData = useCallback(() => {
     const { getSchedules } = callbackUtils.getCallbacks;
 
     getSchedules()
@@ -49,37 +49,44 @@ function ScheduledWorkflowList() {
           title: 'Error',
         });
       });
-  }
+  }, [setItemList, addToastNotification]);
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [getData]);
 
-  function onEdit(workflow: ScheduledWorkflow) {
+  const onEdit = (workflow: ScheduledWorkflow) => {
     setSelectedWorkflow(workflow);
     onOpen();
-  }
+  };
 
-  function handleWorkflowUpdate(scheduledWf: Partial<ScheduledWorkflow>) {
-    const { registerSchedule } = callbackUtils.getCallbacks;
-
-    registerSchedule(scheduledWf.workflowName!, scheduledWf.workflowVersion!, scheduledWf)
-      .then((res) => {
-        addToastNotification({
-          content: 'Schedule successfully registered',
-          type: 'success',
-          title: 'Success',
-        });
-        getData();
-      })
-      .catch((err) => {
-        addToastNotification({
-          title: 'Failed to schedule workflow',
-          type: 'error',
-          content: err.message,
-        });
+  const handleWorkflowUpdate = ({ workflowName, workflowVersion, ...scheduledWf }: Partial<ScheduledWorkflow>) => {
+    if (workflowName == null || workflowVersion == null) {
+      addToastNotification({
+        content: 'Workflow name and version must be specified',
+        type: 'error',
       });
-  }
+    } else {
+      const { registerSchedule } = callbackUtils.getCallbacks;
+
+      registerSchedule(workflowName, workflowVersion, { ...scheduledWf, workflowName, workflowVersion })
+        .then(() => {
+          addToastNotification({
+            content: 'Schedule successfully registered',
+            type: 'success',
+            title: 'Success',
+          });
+          getData();
+        })
+        .catch((err) => {
+          addToastNotification({
+            title: 'Failed to schedule workflow',
+            type: 'error',
+            content: err.message,
+          });
+        });
+    }
+  };
 
   const handleDeleteBtnClick = (workflow: ScheduledWorkflow) => {
     const { deleteSchedule } = callbackUtils.getCallbacks;

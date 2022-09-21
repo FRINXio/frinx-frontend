@@ -16,4 +16,7 @@ module.exports = {
       typescript: {},
     },
   },
+  rules: {
+    'import/no-extraneous-dependencies': 'off',
+  },
 };

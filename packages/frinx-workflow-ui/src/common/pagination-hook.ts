@@ -31,9 +31,9 @@ export function usePagination<T>(itemList: Array<T>, maxItemsPerPage: number) {
     return true;
   });
 
-  const setItemList = (items: Array<T>) => {
+  const setItemList = (newItems: Array<T>) => {
     setCurrentPage(1);
-    setItems(items);
+    setItems(newItems);
   };
 
   return {

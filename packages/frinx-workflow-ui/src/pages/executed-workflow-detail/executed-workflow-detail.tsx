@@ -1,5 +1,4 @@
 import React, { ChangeEvent, FC, useState } from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { TaskModal } from '@frinx/workflow-ui/src/common/modals';
 import moment from 'moment';
 import unescapeJs from 'unescape-js';
@@ -17,7 +16,6 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { useNotifications, unwrap } from '@frinx/shared/src';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link, useParams } from 'react-router-dom';
 import WorkflowDia from './WorkflowDia/WorkflowDia';

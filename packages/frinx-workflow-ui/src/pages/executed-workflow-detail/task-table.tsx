@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';

@@ -30,6 +30,7 @@ type Props = {
   dynamicInputParameters?: string[] | null;
   isOpen: boolean;
   onClose: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmit: (inputParameters: Record<string, any>) => Promise<string | null> | null;
 };
 
@@ -45,6 +46,7 @@ const ExecuteWorkflowModal: FC<Props> = ({
   const [isExecuting, setIsExecuting] = useState(false);
   const [executedWorkflowId, setExecutedWorkflowId] = useState<string | null>(null);
   const { values, handleSubmit, handleChange, submitForm, isSubmitting, setSubmitting } = useFormik<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Record<string, any>
   >({
     enableReinitialize: true,
@@ -54,8 +56,8 @@ const ExecuteWorkflowModal: FC<Props> = ({
     onSubmit: async (formData) => {
       setIsExecuting(true);
 
-      const executedWorkflowId = await onSubmit(formData);
-      setExecutedWorkflowId(executedWorkflowId);
+      const id = await onSubmit(formData);
+      setExecutedWorkflowId(id);
       setIsExecuting(false);
       setSubmitting(false);
     },

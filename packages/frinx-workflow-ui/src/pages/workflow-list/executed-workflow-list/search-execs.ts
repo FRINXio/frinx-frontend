@@ -7,15 +7,13 @@ type SortOrder = 'ASC' | 'DESC';
 const getApiLabels = (labels: string[]): string => labels.join('&');
 
 // TODO: should be removed here and in bulk.js
-export const fetchNewData = (workflowName: string, viewedPage: number, defaultPages: number, labels: string[]) => {
+export const fetchNewData = (workflowName: string, viewedPage: number, defaultPages: number) => {
   const viewedPageStartFromZero = viewedPage - 1;
   const page = viewedPageStartFromZero * defaultPages;
-  const mappedLabels = getApiLabels(labels);
 
   const { getWorkflowExecutions } = callbackUtils.getCallbacks;
   return getWorkflowExecutions({
     workflowId: workflowName,
-    label: mappedLabels,
     start: page,
     size: defaultPages.toString(),
   });
@@ -50,13 +48,7 @@ export const getSubWorkflowIds = (workflow: ExecutedWorkflow): string[] => {
   const regex = /subWorkflowId=([^,]*),/g;
   const result = workflow.output.matchAll(regex);
 
-  const output: string[] = [];
-
-  for (const r of result) {
-    output.push(r[1]);
-  }
-
-  return output;
+  return Array.from(result).map((r) => r[1]);
 };
 
 export const getSortOrder = (sortBy: SortBy, previousSortBy: SortBy, previousSortOrder: SortOrder): SortOrder => {
@@ -79,7 +71,7 @@ export const getWorkflows = (
   const { getWorkflowExecutions, getWorkflowExecutionsHierarchical } = callbackUtils.getCallbacks;
   const apiLabels = getApiLabels(labels);
   return isFlat
-    ? getWorkflowExecutions({ workflowId, label: apiLabels, start, size: size.toString(), sortBy, sortOrder })
+    ? getWorkflowExecutions({ workflowId, start, size: size.toString(), sortBy, sortOrder })
     : getWorkflowExecutionsHierarchical({
         workflowId,
         label: apiLabels,

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Progress } from '@chakra-ui/react';
 import { ExecutedWorkflows, NestedExecutedWorkflow } from '@frinx/workflow-ui/src/helpers/types';
-import { useNavigate } from 'react-router-dom';
-import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import useQueryParams from '@frinx/workflow-ui/src/hooks/use-query-params';
+import Paginator from '@frinx/workflow-ui/src/common/pagination';
+import { useNavigate } from 'react-router-dom';
 import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
 import { getSortOrder, getWorkflows } from './search-execs';
 import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workflow-table';
@@ -65,19 +65,11 @@ const ExecutedWorkflowList = () => {
       setWorkflows(executedWorkflows);
       setPagination((prev) => ({ ...prev, pageCount: Math.ceil(executedWorkflows.result.totalHits / prev.pageSize) }));
     });
-  }, [
-    state.workflowId,
-    state.isFlat,
-    state.sortOrder,
-    state.sortBy,
-    pagination.page,
-    pagination.pageSize,
-    state.labels,
-  ]);
+  }, [pagination, setPagination, state]);
 
   useEffect(() => {
     navigate({ search: state.workflowId ? `search=${state.workflowId}` : '' }, { replace: true });
-  }, [state.workflowId]);
+  }, [state.workflowId, navigate]);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, selectedWorkflows: [...new Set<string>()] }));
@@ -92,8 +84,8 @@ const ExecutedWorkflowList = () => {
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
-  const changeQuery = (query: string) => {
-    setState((prev) => ({ ...prev, workflowId: query }));
+  const changeQuery = (changedQuery: string) => {
+    setState((prev) => ({ ...prev, workflowId: changedQuery }));
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 

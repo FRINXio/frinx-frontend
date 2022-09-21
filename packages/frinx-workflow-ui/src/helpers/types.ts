@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/naming-convention */
 type AnyJson = JsonArray | JsonMap;
 type JsonMap = {
@@ -313,7 +314,8 @@ export type Workflow<T extends WorkflowTask = WorkflowTask> = {
   updateTime: number;
   timeoutPolicy: string;
   timeoutSeconds: number;
-  variables: Record<string, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  variables: Record<string, any>;
   correlationId: string;
 };
 export type NodeData =
@@ -351,9 +353,9 @@ export type ExecutedWorkflowTask = {
   referenceTaskName: string;
   callbackAfterSeconds: number;
   pollCount: number;
-  logs: {};
-  inputData: {};
-  outputData: {};
+  logs: Record<string, any>;
+  inputData: Record<string, any>;
+  outputData: Record<string, any>;
   workflowTask: {
     description: string;
     taskDefinition: {
@@ -465,7 +467,7 @@ export type WorkflowInstanceDetail = {
   failedReferenceTaskNames: string[];
   workflowDefinition: WorkflowDefinition;
   priority: number;
-  variables: {};
+  variables: Record<string, any>;
   lastRetriedTime: number;
   startTime: number;
   workflowName: string;
@@ -479,6 +481,7 @@ export type WorkflowInstanceDetail = {
 // this comes from the uniflow swagger api docs
 //
 
+// eslint-disable-next-line no-shadow
 export enum WorkflowTaskType {
   SIMPLE,
   DYNAMIC,
@@ -500,6 +503,7 @@ export enum WorkflowTaskType {
   SET_VARIABLE,
 }
 
+// eslint-disable-next-line no-shadow
 enum TimeoutPolicy {
   TIME_OUT_WF,
   ALERT_ONLY,
@@ -532,7 +536,7 @@ export type WorkflowTask = {
   loopCondition: string;
   loopOver: Record<string, string>[];
   retryCount: number;
-  workflowTaskType: WorkflowTaskType;
+  workflowTaskType: WorkflowTask;
 };
 
 export type SubWorkflowParam = {

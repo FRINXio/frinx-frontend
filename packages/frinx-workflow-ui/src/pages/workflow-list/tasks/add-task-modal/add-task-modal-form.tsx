@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Box, FormControl, FormLabel, Grid, Icon, Input, Select, Tag, Tooltip } from '@chakra-ui/react';
 import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
 import FeatherIcon from 'feather-icons-react';
@@ -15,11 +15,8 @@ type FormInputProps = {
   onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
-const FormInput = React.forwardRef(
-  (
-    { label, onChange, value, id, type = 'text', onKeyPress }: FormInputProps,
-    ref: React.ForwardedRef<HTMLInputElement>,
-  ) => {
+const FormInput: FC<FormInputProps> = React.forwardRef(
+  ({ label, onChange, value, id, type = 'text', onKeyPress }, ref: React.ForwardedRef<HTMLInputElement>) => {
     return (
       <FormControl>
         <FormLabel htmlFor={id}>{label}</FormLabel>
@@ -39,7 +36,7 @@ const FormInput = React.forwardRef(
 
 type FormSelectProps = {
   valuesList: string[];
-} & FormInputProps;
+} & Omit<FormInputProps, 'onKeyPress' | 'type'>;
 
 const FormSelect = ({ label, onChange, value, id, valuesList }: FormSelectProps) => {
   return (
@@ -67,25 +64,6 @@ type AddTaskModalFormProps = {
 };
 
 export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormProps) {
-  const inputKeysRef = React.useRef<HTMLInputElement>(null);
-  const outputKeysRef = React.useRef<HTMLInputElement>(null);
-
-  const handleKeyPress = (
-    fieldName: 'inputKeys' | 'outputKeys',
-    e: React.KeyboardEvent<HTMLInputElement>,
-    ref: React.RefObject<HTMLInputElement>,
-  ) => {
-    if (ref == null || ref.current == null) return;
-
-    if (task[fieldName] != null && e.key === 'Enter') {
-      e.preventDefault();
-
-      const inputKeys = Array.from(task[fieldName] || []);
-      onChange(fieldName, [...inputKeys, ref.current.value.trim().replaceAll(' ', '_')]);
-      ref.current.value = '';
-    }
-  };
-
   const handleKeyRemoval = (fieldName: 'inputKeys' | 'outputKeys', tag: string) => {
     if (task[fieldName] != null) {
       const tags = Array.from(task[fieldName] || []);
@@ -139,7 +117,12 @@ export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormP
               <Icon as={FeatherIcon} icon="info" size={12} ml={2} />
             </Tooltip>
           </FormLabel>
-          <Input id="inputKeys" ref={inputKeysRef} onKeyPress={(e) => handleKeyPress('inputKeys', e, inputKeysRef)} />
+          <Input
+            id="inputKeys"
+            placeholder="Enter input key"
+            onChange={(e) => onChange('inputKeys', e.target.value)}
+            value={task.inputKeys?.join(',')}
+          />
           <Box mt={1}>
             {task.inputKeys != null &&
               task.inputKeys.length > 0 &&
@@ -159,8 +142,8 @@ export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormP
           </FormLabel>
           <Input
             id="outputKeys"
-            ref={outputKeysRef}
-            onKeyPress={(e) => handleKeyPress('outputKeys', e, outputKeysRef)}
+            value={task.outputKeys}
+            onChange={(e) => onChange('outputKeys', e.target.value)}
             placeholder="Enter output keys"
           />
           <Box mt={1}>

@@ -8,8 +8,8 @@ type Props = {
   label: string;
 };
 
-function WorkflowLabels(props: Props) {
-  const color = props.index >= wfLabelsColor.length ? wfLabelsColor[0] : wfLabelsColor[props.index];
+function WorkflowLabels({ index, label, onClick }: Props) {
+  const color = index >= wfLabelsColor.length ? wfLabelsColor[0] : wfLabelsColor[index];
   return (
     <Tag
       size="sm"
@@ -20,12 +20,12 @@ function WorkflowLabels(props: Props) {
       cursor="pointer"
       onClick={(e) => {
         e.stopPropagation();
-        if (props.onClick) {
-          props.onClick();
+        if (onClick) {
+          onClick();
         }
       }}
     >
-      <p>{props.label}</p>
+      <p>{label}</p>
     </Tag>
   );
 }

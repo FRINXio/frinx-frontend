@@ -24,8 +24,8 @@ type AddTaskModalProps = {
 function AddTaskModal({ isOpen, onClose, onSubmit, task }: AddTaskModalProps) {
   const { handleSubmit, setFieldValue, values, submitForm } = useFormik({
     initialValues: task,
-    onSubmit: (values) => {
-      onSubmit(values);
+    onSubmit: (formData) => {
+      onSubmit(formData);
       onClose();
     },
   });

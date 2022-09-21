@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 
 import {
   Accordion,
@@ -48,7 +48,7 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
 
     if (operationFunctionName === 'deleteWorkflowInstance') {
       const operations = callbackUtils.getCallbacks;
-      Promise.all(selectedWorkflows.map(async (workflow) => await operations[operationFunctionName](workflow)))
+      Promise.all(selectedWorkflows.map((workflow) => operations[operationFunctionName](workflow)))
         .then(() => {
           addToastNotification({
             content: 'Successfully deleted executed workflows',
@@ -66,8 +66,8 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
       const operations = callbackUtils.getCallbacks;
       operations[operationFunctionName](selectedWorkflows)
         .then(() => {
-          addToastNotification({ content: 'Successfully executed bulk operation', type: 'success', title: 'Success' }),
-            onSuccessfullOperation();
+          addToastNotification({ content: 'Successfully executed bulk operation', type: 'success' });
+          onSuccessfullOperation();
         })
         .catch((err) => addToastNotification({ content: err.message, type: 'error', title: 'Error' }))
         .finally(() => {

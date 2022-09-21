@@ -56,7 +56,7 @@ const PollData = () => {
     const results = !keywords ? data : data.filter((q) => filterBySearchKeyword(q, keywords));
 
     setItemList(results);
-  }, [keywords, data]);
+  }, [keywords, data, setItemList]);
 
   const sortArray = (key: string) => {
     const sortedArray = data;
@@ -84,7 +84,7 @@ const PollData = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {pageItems.map((e: any) => {
+          {pageItems.map((e) => {
             return (
               <Tr key={e.queueName}>
                 <Td>{e.queueName}</Td>
