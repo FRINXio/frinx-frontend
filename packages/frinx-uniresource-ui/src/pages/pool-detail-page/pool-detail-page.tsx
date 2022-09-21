@@ -3,8 +3,10 @@ import React, { VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import DeletePoolPopover from '../../components/delete-pool-modal';
 import PageContainer from '../../components/page-container';
+import { isCustomResourceType } from '../../helpers/create-pool-form.helpers';
 import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
 import useResourcePoolActions from '../../hooks/use-resource-pool-actions';
+import ClaimCustomResourceModal from './claim-resource-modal/claim-custom-resource-modal';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
 import ClaimRouteDistinguisherResourceModal from './claim-resource-modal/claim-route_distinguisher-resource-modal';
 import PoolDetailAllocatedResourceBox from './pool-detail-allocated-resources-box';
@@ -20,6 +22,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
 
   const claimResourceModal = useDisclosure();
   const claimRouteDistinguisherResourceModal = useDisclosure();
+  const claimCustomResourceModal = useDisclosure();
 
   const [
     {
@@ -51,7 +54,9 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   }
 
   const handleOnOpenClaimResourceModal = () => {
-    if (poolData.QueryResourcePool.ResourceType.Name === 'route_distinguisher') {
+    if (isCustomResourceType(poolData.QueryResourcePool.ResourceType.Name)) {
+      claimCustomResourceModal.onOpen();
+    } else if (poolData.QueryResourcePool.ResourceType.Name === 'route_distinguisher') {
       claimRouteDistinguisherResourceModal.onOpen();
     } else {
       claimResourceModal.onOpen();
@@ -69,6 +74,12 @@ const PoolDetailPage: VoidFunctionComponent = () => {
 
   return (
     <PageContainer>
+      <ClaimCustomResourceModal
+        poolName={resourcePool.Name}
+        isOpen={claimCustomResourceModal.isOpen}
+        onClose={claimCustomResourceModal.onClose}
+        onClaimWithAltId={claimPoolResourceWithAltId}
+      />
       <ClaimRouteDistinguisherResourceModal
         isOpen={claimRouteDistinguisherResourceModal.isOpen}
         onClose={claimRouteDistinguisherResourceModal.onClose}
