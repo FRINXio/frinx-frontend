@@ -27,7 +27,7 @@ type Props = {
   onImportSuccess: () => void;
 };
 
-function readFile(file: File): Promise<any> {
+function readFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.addEventListener('load', (event) => {
@@ -88,7 +88,7 @@ function WorkflowListHeader({ onImportSuccess }: Props) {
       const zip = new JSZip();
 
       workflows.forEach((wf) => {
-        zip.file(`${wf.name  }.json`, JSON.stringify(wf, null, 2));
+        zip.file(`${wf.name}.json`, JSON.stringify(wf, null, 2));
       });
 
       zip.generateAsync({ type: 'blob' }).then((content) => {

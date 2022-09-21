@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import React, { VoidFunctionComponent } from 'react';
 import WorkflowDia from '@frinx/workflow-ui/src/pages/executed-workflow-detail/WorkflowDia/WorkflowDia';
 import {
@@ -19,21 +20,21 @@ type ModalProps = {
 };
 
 const DiagramModal: VoidFunctionComponent<ModalProps> = ({ isOpen, onClose, workflow }) => (
-    <Modal size="3xl" isOpen={isOpen} onClose={onClose} isCentered>
-      <ModalOverlay />
-      <ModalCloseButton />
-      <ModalContent>
-        <ModalHeader>Workflow Diagram</ModalHeader>
-        <ModalBody>
-          <WorkflowDia meta={workflow} tasks={[]} def />
-        </ModalBody>
-        <ModalFooter>
-          <Button colorScheme="gray" onClick={onClose}>
-            Close
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  );
+  <Modal size="3xl" isOpen={isOpen} onClose={onClose} isCentered>
+    <ModalOverlay />
+    <ModalCloseButton />
+    <ModalContent>
+      <ModalHeader>Workflow Diagram</ModalHeader>
+      <ModalBody>
+        <WorkflowDia meta={workflow} tasks={[]} def />
+      </ModalBody>
+      <ModalFooter>
+        <Button colorScheme="gray" onClick={onClose}>
+          Close
+        </Button>
+      </ModalFooter>
+    </ModalContent>
+  </Modal>
+);
 
 export default DiagramModal;

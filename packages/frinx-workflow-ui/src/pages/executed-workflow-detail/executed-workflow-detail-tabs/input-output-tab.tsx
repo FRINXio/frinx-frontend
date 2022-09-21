@@ -92,13 +92,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               </Button>
             )}
           </Stack>
-          <Textarea
-            value={getUnescapedJSON(output)}
-            isReadOnly
-            id="workflowOutput"
-            variant="filled"
-            minH={500}
-          />
+          <Textarea value={getUnescapedJSON(output)} isReadOnly id="workflowOutput" variant="filled" minH={500} />
         </Box>
       </SimpleGrid>
     </>

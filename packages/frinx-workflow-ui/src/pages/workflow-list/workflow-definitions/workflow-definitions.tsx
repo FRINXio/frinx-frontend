@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import React, { useEffect, useState } from 'react';
 import {
   Button,
@@ -45,7 +46,6 @@ import FeatherIcon from 'feather-icons-react';
 import { useNotifications } from '@frinx/shared/src';
 import {
   getDynamicInputParametersFromWorkflow,
-  getInitialValuesFromParsedInputParameters,
   jsonParse,
   parseInputParameters,
 } from '@frinx/workflow-ui/src/utils/helpers.utils';
@@ -53,20 +53,22 @@ import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowActions from './workflow-actions';
 
 const getLabels = (dataset: Workflow[]) => {
-  const labelsArr = dataset.map(({ description }) => {
+  const labelsArr: string[] = dataset.map(({ description }) => {
     return jsonParse(description)?.labels;
   });
-  const allLabels = [...new Set([].concat(...labelsArr))];
+  const allLabels = [...new Set(...labelsArr)];
   return allLabels
     .filter((e) => {
       return e !== undefined;
     })
-    .sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
+    .sort((a, b) => {
+      return a.localeCompare(b);
+    });
 };
 
 const Labels = (props: { wf: Workflow; labels: string[]; onClick: (label: string) => void }) => {
   const { wf, labels, onClick } = props;
-  const { name, description } = wf;
+  const { description } = wf;
   const labelsDef = jsonParse(description)?.labels || [];
 
   return labelsDef.map((label: string) => {
@@ -95,7 +97,7 @@ const WorkflowDefinitions = () => {
   const schedulingModal = useDisclosure();
   const inputParametersModal = useDisclosure();
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
-  const [allLabels, setAllLabels] = useState([]);
+  const [allLabels, setAllLabels] = useState<string[]>([]);
   const {
     currentPage,
     setCurrentPage,
@@ -105,6 +107,21 @@ const WorkflowDefinitions = () => {
   } = usePagination<Workflow>([], 10);
 
   const { addToastNotification } = useNotifications();
+
+  const getData = () => {
+    const { getWorkflows } = callbackUtils.getCallbacks;
+
+    getWorkflows().then((wfs) => {
+      if (wfs != null) {
+        const dataset =
+          wfs.sort((a, b) => {
+            return a.name.localeCompare(b.name);
+          }) || [];
+        setData(dataset);
+        setAllLabels(getLabels(dataset));
+      }
+    });
+  };
 
   useEffect(() => {
     getData();
@@ -135,21 +152,9 @@ const WorkflowDefinitions = () => {
           });
 
     setItemList(results);
-  }, [keywords, labels, data]);
+  }, [keywords, labels, data, setItemList]);
 
-  const getData = () => {
-    const { getWorkflows } = callbackUtils.getCallbacks;
-
-    getWorkflows().then((workflows) => {
-      if (workflows != null) {
-        const dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
-        setData(dataset);
-        setAllLabels(getLabels(dataset));
-      }
-    });
-  };
-
-  function handleWorkflowSchedule(scheduledWf: Partial<ScheduledWorkflow>) {
+  const handleWorkflowSchedule = (scheduledWf: Partial<ScheduledWorkflow>) => {
     const { registerSchedule } = callbackUtils.getCallbacks;
     if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
       registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, {
@@ -172,7 +177,7 @@ const WorkflowDefinitions = () => {
           });
         });
     }
-  }
+  };
 
   const updateFavourite = (workflow: Workflow) => {
     let wfDescription = jsonParse(workflow.description);
@@ -200,21 +205,26 @@ const WorkflowDefinitions = () => {
       wfDescription.labels.push('FAVOURITE');
     }
 
-    workflow.description = JSON.stringify(wfDescription);
-
     const { putWorkflow, getWorkflows } = callbackUtils.getCallbacks;
 
-    putWorkflow([workflow]).then(() => {
-      getWorkflows().then((workflows) => {
-        const dataset = workflows.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
-        const allLabels = getLabels(dataset);
+    putWorkflow([
+      {
+        ...workflow,
+        description: JSON.stringify(wfDescription),
+      },
+    ]).then(() => {
+      getWorkflows().then((wfs) => {
+        const dataset =
+          wfs.sort((a, b) => {
+            return a.name.localeCompare(b.name);
+          }) || [];
         setData(dataset);
-        setAllLabels(allLabels);
+        setAllLabels(getLabels(dataset));
       });
     });
   };
 
-  const deleteWorkflow = (workflow: Workflow) => {
+  const handleOnDeleteWorkflowClick = (workflow: Workflow) => {
     const { deleteWorkflow } = callbackUtils.getCallbacks;
 
     deleteWorkflow(workflow.name, workflow.version.toString()).then(() => {
@@ -264,8 +274,8 @@ const WorkflowDefinitions = () => {
   };
 
   const renderConfirmDeleteModal = () => {
-    return confirmDeleteModal ? (
-      <Modal size="sm" isOpen={confirmDeleteModal} onClose={() => showConfirmDeleteModal(activeWf!)}>
+    return confirmDeleteModal && activeWf != null ? (
+      <Modal size="sm" isOpen={confirmDeleteModal} onClose={() => showConfirmDeleteModal(activeWf)}>
         <ModalOverlay />
         <ModalCloseButton />
         <ModalContent>
@@ -276,11 +286,11 @@ const WorkflowDefinitions = () => {
             </p>
           </ModalBody>
           <ModalFooter>
-            <Button marginRight={4} colorScheme="red" onClick={() => deleteWorkflow(activeWf!)}>
+            <Button marginRight={4} colorScheme="red" onClick={() => handleOnDeleteWorkflowClick(activeWf)}>
               <Icon size={20} as={FeatherIcon} icon="trash-2" />
               &nbsp;&nbsp;Delete
             </Button>
-            <Button colorScheme="gray" onClick={() => showConfirmDeleteModal(activeWf!)}>
+            <Button colorScheme="gray" onClick={() => showConfirmDeleteModal(activeWf)}>
               Cancel
             </Button>
           </ModalFooter>
@@ -289,8 +299,8 @@ const WorkflowDefinitions = () => {
     ) : null;
   };
 
-  const onLabelsChange = (labels: string[]) => {
-    setLabels([...new Set(labels)]);
+  const onLabelsChange = (newLabels: string[]) => {
+    setLabels([...new Set(newLabels)]);
   };
 
   return (
@@ -379,7 +389,7 @@ const WorkflowDefinitions = () => {
                           setActiveWf(workflow);
                         }}
                       >
-                        {`${getDependencies(workflow).length  } `} Tree{' '}
+                        {`${getDependencies(workflow).length} `} Tree{' '}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent>

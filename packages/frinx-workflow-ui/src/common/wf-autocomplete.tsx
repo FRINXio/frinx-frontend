@@ -34,7 +34,8 @@ const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = 
   }));
 
   const results = React.useMemo(
-    () => matchSorter(
+    () =>
+      matchSorter(
         options.map((e) => ({ value: e })),
         query,
         {
@@ -73,6 +74,8 @@ const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = 
           setOptionsVisible(false);
           break;
         }
+        default:
+          break;
       }
     },
     [active, onChange, results, selected],
@@ -84,18 +87,18 @@ const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = 
         {selected && selected.length > 0 && (
           <InputLeftAddon bg="white">
             {selected.map((item, index) => (
-                <Tag
-                  key={item}
-                  size="sm"
-                  cursor="pointer"
-                  onClick={() => {
-                    onChange([...selected.slice(0, index), ...selected.slice(index + 1, selected.length)]);
-                  }}
-                >
-                  <p>{item}</p>
-                  <TagCloseButton />
-                </Tag>
-              ))}
+              <Tag
+                key={item}
+                size="sm"
+                cursor="pointer"
+                onClick={() => {
+                  onChange([...selected.slice(0, index), ...selected.slice(index + 1, selected.length)]);
+                }}
+              >
+                <p>{item}</p>
+                <TagCloseButton />
+              </Tag>
+            ))}
           </InputLeftAddon>
         )}
         <Input
@@ -134,29 +137,30 @@ const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = 
         <Box bg="white" position="absolute" w="100%" zIndex="dropdown" border="1px solid gray.50">
           <Box>
             {results.map((item, index) => (
-                <Box
-                  key={index}
-                  padding={2}
-                  backgroundColor={active == index ? 'gray.50' : 'white'}
-                  onMouseOver={() => {
-                    setActive(index);
-                  }}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (!selected || !selected.includes(item.value)) {
-                      onChange([item.value]);
-                      setQuery('');
-                    }
-                    setOptionsVisible(false);
-                  }}
-                  cursor="pointer"
-                >
-                  {item.value}
-                </Box>
-              ))}
+              <Box
+                // eslint-disable-next-line react/no-array-index-key
+                key={`${item.value}-${index}`}
+                padding={2}
+                backgroundColor={active === index ? 'gray.50' : 'white'}
+                onMouseOver={() => {
+                  setActive(index);
+                }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!selected || !selected.includes(item.value)) {
+                    onChange([item.value]);
+                    setQuery('');
+                  }
+                  setOptionsVisible(false);
+                }}
+                cursor="pointer"
+              >
+                {item.value}
+              </Box>
+            ))}
           </Box>
         </Box>
       )}

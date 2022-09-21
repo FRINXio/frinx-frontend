@@ -1,4 +1,5 @@
 import React, { ChangeEvent, FC, useState } from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { TaskModal } from '@frinx/workflow-ui/src/common/modals';
 import moment from 'moment';
 import unescapeJs from 'unescape-js';
@@ -15,7 +16,8 @@ import {
   Tabs,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useNotifications , unwrap } from '@frinx/shared/src';
+import { useNotifications, unwrap } from '@frinx/shared/src';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link, useParams } from 'react-router-dom';
 import WorkflowDia from './WorkflowDia/WorkflowDia';
@@ -55,8 +57,13 @@ const convertWorkflowVariablesToFormFormat = (
   };
 
   const descriptions = inputParameters.map((param: string) => {
-    if (matchParam(param) && matchParam(param)?.length) {
-      return matchParam(param)![1];
+    const matchedParam = matchParam(param);
+    if (matchedParam == null) {
+      return '';
+    }
+
+    if (matchedParam.length > 0) {
+      return matchedParam[1];
     }
 
     return '';
@@ -93,7 +100,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
 
   const { result, meta, subworkflows } = execPayload;
 
-  const getUnescapedJSON = (data: any) => {
+  const getUnescapedJSON = (data: Record<string, unknown> | unknown) => {
     return isEscaped
       ? JSON.stringify(data, null, 2)
           .replace(/\\n/g, '\\n')
@@ -145,7 +152,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
     }
   };
 
-  const restartWorkflows = () => {
+  const handleOnRestartWorkflows = () => {
     const { restartWorkflows } = callbackUtils.getCallbacks;
     restartWorkflows([workflowId]).then(() => {
       onExecutedOperation(workflowId);
@@ -184,7 +191,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
         onWorkflowActionExecution={onExecutedOperation}
         endTime={formatDate(result.endTime)}
         startTime={formatDate(result.startTime)}
-        restartWorkflows={restartWorkflows}
+        restartWorkflows={handleOnRestartWorkflows}
         status={result.status}
         visibleRestartButton={result.workflowDefinition.restartable}
       />
