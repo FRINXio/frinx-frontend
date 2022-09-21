@@ -3,7 +3,17 @@ import React, { FC, useMemo } from 'react';
 import * as yup from 'yup';
 
 import { Item } from 'chakra-ui-autocomplete';
-import { Button, Divider, FormControl, FormErrorMessage, FormLabel, HStack, Input, Select } from '@chakra-ui/react';
+import {
+  Button,
+  Divider,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  HStack,
+  Input,
+  Select,
+  Spacer,
+} from '@chakra-ui/react';
 import { Editor } from '@frinx/shared/src';
 
 import { serviceStateOptions } from '../../helpers/types';
@@ -13,7 +23,7 @@ import SearchByLabelInput from '../../components/search-by-label-input';
 type FormValues = {
   zoneId: string;
   mountParameters: string;
-  labels: string[];
+  labelIds: string[];
   serviceState: DeviceServiceState;
   vendor: string;
   model: string;
@@ -54,7 +64,7 @@ const EditDeviceForm: FC<Props> = ({
     return {
       zoneId,
       mountParameters: mountParameters ?? '',
-      labels: initialSelectedLabels.map(({ node: { id } }) => id),
+      labelIds: initialSelectedLabels.map(({ node: { id } }) => id),
       serviceState,
       vendor: '',
       model: '',
@@ -70,7 +80,7 @@ const EditDeviceForm: FC<Props> = ({
     initialValues: INITIAL_VALUES,
     validationSchema: EditDeviceFormSchema,
     onSubmit: (data) => {
-      const updatedData = { ...data, labels: selectedLabels.map((label) => label.value) };
+      const updatedData = { ...data, labelIds: selectedLabels.map((label) => label.value) };
       onUpdate(updatedData);
     },
   });
@@ -164,8 +174,9 @@ const EditDeviceForm: FC<Props> = ({
       </FormControl>
 
       <Divider my={6} />
-      <FormControl>
+      <FormControl mb={6}>
         <HStack>
+          <Spacer />
           <Button onClick={onCancel} colorScheme="gray" ml={3}>
             Cancel
           </Button>

@@ -1,19 +1,33 @@
-import { Button, Divider, FormControl, FormErrorMessage, FormLabel, Input, Select, Switch } from '@chakra-ui/react';
+import {
+  Button,
+  Divider,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  HStack,
+  Input,
+  Select,
+  Spacer,
+  Switch,
+} from '@chakra-ui/react';
 import { useFormik } from 'formik';
-import React, { useState, VoidFunctionComponent } from 'react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
 import { Editor } from '@frinx/shared/src';
+import parse from 'json-templates';
 import { DeviceBlueprintsQuery, Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
-import BlueprintForm from './blueprint-form';
 import { ServiceState, serviceStateOptions } from '../../helpers/types';
 
+const IPV4_REGEX = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
+
 type Props = {
+  isSubmitting: boolean;
   zones: ZonesQuery['zones']['edges'];
   labels: LabelsQuery['labels']['edges'];
   blueprints: DeviceBlueprintsQuery['blueprints']['edges'];
-  onFormSubmit: (device: FormValues) => Promise<void>;
+  onFormSubmit: (device: FormValues) => void;
   onLabelCreate: (labelName: string) => Promise<Label | null>;
 };
 
@@ -21,11 +35,36 @@ type FormValues = {
   name: string;
   zoneId: string;
   mountParameters: string;
-  labels: string[];
+  labelIds: string[];
   serviceState: ServiceState;
-  vendor: string;
+  blueprintId: string;
   model: string;
   address: string;
+  username: string;
+  password: string;
+  deviceType: string;
+  version: string;
+  vendor: string;
+  port: number;
+  blueprintParams?: string[];
+};
+
+const getWhenOptions = (keyName: string, errorMessage: string) => {
+  if (keyName === 'port_number') {
+    return {
+      is: (blueprintParams: string[]) => {
+        return blueprintParams.includes(keyName);
+      },
+      then: yup.number().required(errorMessage),
+    };
+  }
+
+  return {
+    is: (blueprintParams: string[]) => {
+      return blueprintParams.includes(keyName);
+    },
+    then: yup.string().required(errorMessage),
+  };
 };
 
 const deviceSchema = yup.object({
@@ -34,33 +73,72 @@ const deviceSchema = yup.object({
   mountParameters: yup.string(),
   vendor: yup.string(),
   model: yup.string(),
-  address: yup.string(),
+  blueprintParams: yup.array().of(yup.string()),
+  address: yup
+    .string()
+    .matches(IPV4_REGEX, { message: 'Please enter a valid Ipv4 address' })
+    .when('blueprintParams', getWhenOptions('ip_address', 'Address is required by the blueprint')),
+  blueprintId: yup.string(),
+  port: yup
+    .number()
+    .typeError('Number is required')
+    .max(22, 'Maximal value is 22')
+    .min(0, 'Minimal value is 0')
+    .when('blueprintParams', getWhenOptions('port_number', 'Port number is required by the blueprint')),
+  deviceType: yup
+    .string()
+    .when('blueprintParams', getWhenOptions('device_type', 'Device type is required by the blueprint')),
+  version: yup.string().when('blueprintParams', getWhenOptions('version', 'Version is required by the blueprint')),
+  username: yup.string().when('blueprintParams', getWhenOptions('user', 'Username is required by the blueprint')),
+  password: yup.string().when('blueprintParams', getWhenOptions('password', 'Password is required by the blueprint')),
 });
 
 const INITIAL_VALUES: FormValues = {
   name: '',
   zoneId: '',
   mountParameters: '{}',
-  labels: [],
+  labelIds: [],
   serviceState: ServiceState.PLANNING,
   model: '',
   vendor: '',
   address: '',
+  blueprintId: '',
+  deviceType: '',
+  password: '',
+  username: '',
+  version: '',
+  port: 0,
 };
 
-const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, labels, onLabelCreate, blueprints }) => {
+const CreateDeviceForm: VoidFunctionComponent<Props> = ({
+  onFormSubmit,
+  zones,
+  labels,
+  onLabelCreate,
+  blueprints,
+  isSubmitting,
+}) => {
   const [selectedLabels, setSelectedLabels] = React.useState<Item[]>([]);
   const [isUsingBlueprints, setIsUsingBlueprints] = useState(false);
-  const { errors, values, handleSubmit, handleChange, isSubmitting, setFieldValue } = useFormik<FormValues>({
+  const { errors, values, handleSubmit, handleChange, setFieldValue } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: deviceSchema,
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: (data) => {
-      const updatedData = { ...data, labels: selectedLabels.map((label) => label.value) };
-      onFormSubmit(updatedData);
+      const updatedData = { ...data, labelIds: selectedLabels.map((label) => label.value), port: Number(data.port) };
+      const { blueprintParams, ...rest } = updatedData;
+      onFormSubmit(rest);
     },
   });
+
+  const blueprintParameters = parse(
+    blueprints.find((blueprint) => blueprint.node.id === values.blueprintId)?.node.template ?? {},
+  ).parameters.map(({ key }) => key);
+
+  useEffect(() => {
+    setFieldValue('blueprintParams', blueprintParameters);
+  }, [setFieldValue, blueprintParameters]);
 
   const handleLabelCreation = (labelName: Item) => {
     onLabelCreate(labelName.label).then((label) => {
@@ -80,20 +158,13 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, l
     <form onSubmit={handleSubmit}>
       <FormControl id="name" my={6} isRequired isInvalid={errors.name !== undefined}>
         <FormLabel>Name</FormLabel>
-        <Input placeholder="Enter name of device" onChange={handleChange} name="name" value={values.name} />
+        <Input placeholder="R1" onChange={handleChange} name="name" value={values.name} />
         <FormErrorMessage>{errors.name}</FormErrorMessage>
       </FormControl>
 
       <FormControl id="zone" isRequired marginY={6} isInvalid={errors.zoneId !== undefined}>
         <FormLabel>Zone</FormLabel>
-        <Select
-          onChange={(event) => {
-            event.persist();
-            setFieldValue('zoneId', event.target.value);
-          }}
-          name="zone"
-          placeholder="Select zone of device"
-        >
+        <Select onChange={handleChange} name="zoneId" placeholder="Select zone of device">
           {zones.map(({ node: zone }) => (
             <option key={zone.id} value={zone.id}>
               {zone.name}
@@ -106,10 +177,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, l
       <FormControl>
         <FormLabel>Service state</FormLabel>
         <Select
-          onChange={(event) => {
-            event.persist();
-            setFieldValue('serviceState', event.target.value);
-          }}
+          onChange={handleChange}
           name="serviceState"
           placeholder="Select service state"
           defaultValue={ServiceState.PLANNING}
@@ -122,25 +190,56 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, l
         </Select>
       </FormControl>
 
-      <FormControl my={6}>
-        <FormLabel>Vendor</FormLabel>
-        <Input name="vendor" onChange={handleChange} placeholder="Enter vendor of the device" value={values.vendor} />
-      </FormControl>
+      <HStack my={6}>
+        <FormControl>
+          <FormLabel>Vendor</FormLabel>
+          <Input name="vendor" onChange={handleChange} placeholder="Enter vendor of the device" value={values.vendor} />
+        </FormControl>
 
-      <FormControl my={6}>
-        <FormLabel>Model</FormLabel>
-        <Input name="model" onChange={handleChange} placeholder="Enter model of the device" value={values.model} />
-      </FormControl>
+        <FormControl>
+          <FormLabel>Model</FormLabel>
+          <Input name="model" onChange={handleChange} placeholder="Enter model of the device" value={values.model} />
+        </FormControl>
 
-      <FormControl my={6}>
-        <FormLabel>Address</FormLabel>
-        <Input
-          name="address"
-          onChange={handleChange}
-          placeholder="Enter address of the device"
-          value={values.address}
-        />
-      </FormControl>
+        <FormControl isRequired={blueprintParameters.includes('device_type')}>
+          <FormLabel>Device type</FormLabel>
+          <Input name="deviceType" onChange={handleChange} placeholder="ios xr" value={values.deviceType} />
+          <FormErrorMessage>{errors.deviceType}</FormErrorMessage>
+        </FormControl>
+
+        <FormControl isRequired={blueprintParameters.includes('version')}>
+          <FormLabel>Version</FormLabel>
+          <Input name="version" onChange={handleChange} placeholder="5.3.*" value={values.version} />
+          <FormErrorMessage>{errors.version}</FormErrorMessage>
+        </FormControl>
+      </HStack>
+
+      <HStack my={6}>
+        <FormControl isRequired={blueprintParameters.includes('user')}>
+          <FormLabel>Username</FormLabel>
+          <Input name="username" onChange={handleChange} placeholder="cisco" value={values.username} />
+          <FormErrorMessage>{errors.username}</FormErrorMessage>
+        </FormControl>
+
+        <FormControl isRequired={blueprintParameters.includes('password')}>
+          <FormLabel>Password</FormLabel>
+          <Input name="password" onChange={handleChange} placeholder="cisco" value={values.password} />
+          <FormErrorMessage>{errors.password}</FormErrorMessage>
+        </FormControl>
+      </HStack>
+
+      <HStack my={6} alignItems="start">
+        <FormControl isRequired={blueprintParameters.includes('user')} isInvalid={errors.address != null}>
+          <FormLabel>Address</FormLabel>
+          <Input name="address" onChange={handleChange} placeholder="192.168.0.1" value={values.address} />
+          <FormErrorMessage>{errors.address}</FormErrorMessage>
+        </FormControl>
+        <FormControl isRequired={blueprintParameters.includes('user')} isInvalid={errors.port != null}>
+          <FormLabel>Port</FormLabel>
+          <Input name="port" onChange={handleChange} placeholder="22" value={values.port} />
+          <FormErrorMessage>{errors.port}</FormErrorMessage>
+        </FormControl>
+      </HStack>
 
       <FormControl my={6}>
         <SearchByLabelInput
@@ -164,13 +263,25 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, l
       </FormControl>
 
       {isUsingBlueprints ? (
-        <BlueprintForm
-          blueprints={blueprints}
-          onFormSubmit={(mParameters) => {
-            setFieldValue('mountParameters', mParameters);
-            setIsUsingBlueprints(false);
-          }}
-        />
+        <FormControl marginY={6}>
+          <Select
+            name="blueprintId"
+            id="blueprintId"
+            placeholder="Select blueprint"
+            onChange={(e) => {
+              handleChange(e);
+            }}
+            value={values.blueprintId}
+          >
+            {blueprints.map(({ node: blueprint }) => {
+              return (
+                <option key={blueprint.id} value={blueprint.id}>
+                  {blueprint.name}
+                </option>
+              );
+            })}
+          </Select>
+        </FormControl>
       ) : (
         <FormControl my={6}>
           <FormLabel>Mount parameters</FormLabel>
@@ -197,11 +308,14 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({ onFormSubmit, zones, l
       )}
 
       <Divider my={6} />
-      <FormControl>
-        <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
-          Add device
-        </Button>
-      </FormControl>
+      <HStack mb={6}>
+        <Spacer />
+        <FormControl>
+          <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
+            Add device
+          </Button>
+        </FormControl>
+      </HStack>
     </form>
   );
 };
