@@ -9,11 +9,10 @@ type Props = {
 };
 
 function WorkflowLabels({ index, label, onClick }: Props) {
-  const color = index >= wfLabelsColor.length ? wfLabelsColor[0] : wfLabelsColor[index];
   return (
     <Tag
       size="sm"
-      background={color}
+      background={wfLabelsColor[index]}
       color="white"
       marginRight={1}
       marginBottom={1}

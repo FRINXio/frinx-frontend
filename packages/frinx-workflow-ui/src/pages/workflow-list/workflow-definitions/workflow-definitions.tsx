@@ -52,10 +52,10 @@ import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowActions from './workflow-actions';
 
 const getLabels = (dataset: Workflow[]) => {
-  const labelsArr: string[] = dataset.map(({ description }) => {
+  const labelsArr: string[] = dataset.flatMap(({ description }) => {
     return jsonParse(description)?.labels;
   });
-  const allLabels = [...new Set(...labelsArr)];
+  const allLabels = [...new Set(labelsArr)];
   return allLabels
     .filter((e) => {
       return e !== undefined;
@@ -65,13 +65,13 @@ const getLabels = (dataset: Workflow[]) => {
     });
 };
 
-const Labels = (props: { wf: Workflow; labels: string[]; onClick: (label: string) => void }) => {
-  const { wf, labels, onClick } = props;
+const Labels = ({ wf, labels, onClick }: { wf: Workflow; labels: string[]; onClick: (label: string) => void }) => {
   const { description } = wf;
   const labelsDef = jsonParse(description)?.labels || [];
 
   return labelsDef.map((label: string) => {
     const index = labels.findIndex((lab) => lab === label);
+
     return (
       <WorkflowLabels
         key={label}
