@@ -3892,6 +3892,7 @@ __metadata:
     feather-icons-react: 0.5.0
     framer-motion: 6.2.8
     graphql: 15.8.0
+    immer: ^9.0.15
     npm-run-all: 4.1.5
     react: 18.1.0
     react-dom: 18.1.0
@@ -11973,7 +11974,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immer@npm:9.0.15":
+"immer@npm:9.0.15, immer@npm:^9.0.15":
   version: 9.0.15
   resolution: "immer@npm:9.0.15"
   checksum: 92e3d63e810e3c3c2bb61b70c45443e37ef983ad12924e3edaf03725ae5979618f5b473439bb3bb4a8c4769f25132f18dec10ea15c40f0b20da5691ff96ff611

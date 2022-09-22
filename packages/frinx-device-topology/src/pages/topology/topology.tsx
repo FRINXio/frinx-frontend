@@ -1,6 +1,7 @@
 import { Box, Container, Flex, Heading } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
+import StateProvider from '../../state.provider';
 import {
   TopologyQuery,
   TopologyQueryVariables,
@@ -54,7 +55,9 @@ const UPDATE_POSITION_MUTATION = gql`
 `;
 
 const Topology: VoidFunctionComponent = () => {
-  const [{ data, fetching, error }] = useQuery<TopologyQuery, TopologyQueryVariables>({ query: TOPOLOGY_QUERY });
+  const [{ data, fetching, error }] = useQuery<TopologyQuery, TopologyQueryVariables>({
+    query: TOPOLOGY_QUERY,
+  });
   const [, updatePosition] = useMutation<UpdatePositionMutation, UpdatePositionMutationVariables>(
     UPDATE_POSITION_MUTATION,
   );
@@ -70,19 +73,18 @@ const Topology: VoidFunctionComponent = () => {
   };
 
   return (
-    <Container maxWidth={1280}>
-      <Flex justify="space-between" align="center" marginBottom={6}>
-        <Heading as="h2" size="3xl">
-          Device topology
-        </Heading>
-      </Flex>
-      <Box>
-        <TopologyGraph
-          data={{ nodes: data?.topology.nodes ?? [], edges: data?.topology.edges ?? [] }}
-          onNodePositionUpdate={handleNodePositionUpdate}
-        />
-      </Box>
-    </Container>
+    <StateProvider data={{ nodes: data?.topology.nodes ?? [], edges: data?.topology.edges ?? [] }}>
+      <Container maxWidth={1280}>
+        <Flex justify="space-between" align="center" marginBottom={6}>
+          <Heading as="h2" size="3xl">
+            Device topology
+          </Heading>
+        </Flex>
+        <Box>
+          <TopologyGraph onNodePositionUpdate={handleNodePositionUpdate} />
+        </Box>
+      </Container>
+    </StateProvider>
   );
 };
 

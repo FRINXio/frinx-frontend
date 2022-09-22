@@ -1,7 +1,9 @@
 import { unwrap } from '@frinx/shared/src';
 import React, { useRef, useState, VoidFunctionComponent } from 'react';
 import NodeIcon from '../../components/device-info-panel/node-icon';
-import { GraphNode, Position, PositionsMap } from './graph.helpers';
+import { setSelectedNode } from '../../state.actions';
+import { useStateContext } from '../../state.provider';
+import { GraphNode, Position } from './graph.helpers';
 
 type StatePosition = {
   nodeId: string | null;
@@ -9,24 +11,13 @@ type StatePosition = {
   offset: Position;
 };
 type Props = {
-  nodes: GraphNode[];
-  positions: PositionsMap;
-  selectedNodeIds: string[];
-  selectedDeviceId: string | null;
   onNodePositionUpdate: (nodeId: string, position: Position) => void;
-  onNodeSelect: (node: GraphNode) => void;
   onNodePositionUpdateFinish: () => void;
 };
 
-const Nodes: VoidFunctionComponent<Props> = ({
-  nodes,
-  positions,
-  selectedNodeIds,
-  selectedDeviceId,
-  onNodePositionUpdate,
-  onNodeSelect,
-  onNodePositionUpdateFinish,
-}) => {
+const Nodes: VoidFunctionComponent<Props> = ({ onNodePositionUpdate, onNodePositionUpdateFinish }) => {
+  const { state, dispatch } = useStateContext();
+  const { nodes, nodePositions, connectedNodeIds, selectedNode, interfacePositions } = state;
   const [position, setPosition] = useState<StatePosition>({
     nodeId: null,
     isActive: false,
@@ -37,7 +28,7 @@ const Nodes: VoidFunctionComponent<Props> = ({
   const handlePointerDown = (event: React.PointerEvent<SVGRectElement>, node: GraphNode) => {
     timeoutRef.current = Number(
       setTimeout(() => {
-        onNodeSelect(node);
+        dispatch(setSelectedNode(node));
       }, 250),
     );
     const element = event.currentTarget;
@@ -63,8 +54,8 @@ const Nodes: VoidFunctionComponent<Props> = ({
       const x = event.clientX - bbox.left;
       const y = event.clientY - bbox.top;
       const nodeId = unwrap(position.nodeId);
-      const newX = positions.nodes[nodeId].x - (position.offset.x - x);
-      const newY = positions.nodes[nodeId].y - (position.offset.y - y);
+      const newX = nodePositions[nodeId].x - (position.offset.x - x);
+      const newY = nodePositions[nodeId].y - (position.offset.y - y);
       onNodePositionUpdate(nodeId, { x: newX, y: newY });
     }
   };
@@ -87,9 +78,9 @@ const Nodes: VoidFunctionComponent<Props> = ({
           }}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
-          positions={positions}
-          isFocused={selectedNodeIds.includes(node.device.name)}
-          isSelected={selectedDeviceId === node.device.id}
+          positions={{ nodes: nodePositions, interfaces: interfacePositions }}
+          isFocused={connectedNodeIds.includes(node.device.name)}
+          isSelected={selectedNode?.device.id === node.device.id}
           node={node}
         />
       ))}
