@@ -9,7 +9,6 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { Workflow } from '@frinx/workflow-ui/src/helpers/types';
 import { Editor } from '@frinx/shared/src';
 

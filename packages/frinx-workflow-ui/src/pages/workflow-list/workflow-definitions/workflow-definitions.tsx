@@ -3,14 +3,6 @@ import {
   Button,
   Container,
   Heading,
-  Icon,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -29,25 +21,13 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import _ from 'lodash';
-import {
-  DefinitionModal,
-  DependencyModal,
-  DiagramModal,
-  ExecuteWorkflowModal,
-  ScheduledWorkflowModal,
-} from '@frinx/workflow-ui/src/common/modals';
 import WorkflowLabels from '@frinx/workflow-ui/src/common/workflow-labels';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
-import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/helpers/types';
-import FeatherIcon from 'feather-icons-react';
-import { useNotifications } from '@frinx/shared/src';
-import {
-  getDynamicInputParametersFromWorkflow,
-  jsonParse,
-  parseInputParameters,
-} from '@frinx/workflow-ui/src/utils/helpers.utils';
+import { Workflow } from '@frinx/workflow-ui/src/helpers/types';
+import { jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
+import WorkflowDefinitionsModals from '@frinx/workflow-ui/src/common/modals';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowActions from './workflow-actions';
 
@@ -90,13 +70,8 @@ const WorkflowDefinitions = () => {
   const [labels, setLabels] = useState<string[]>([]);
   const [data, setData] = useState<Workflow[]>([]);
   const [activeWf, setActiveWf] = useState<Workflow>();
-  const definitionModal = useDisclosure();
-  const diagramModal = useDisclosure();
-  const dependencyModal = useDisclosure();
-  const schedulingModal = useDisclosure();
-  const inputParametersModal = useDisclosure();
-  const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const [allLabels, setAllLabels] = useState<string[]>([]);
+
   const {
     currentPage,
     setCurrentPage,
@@ -105,7 +80,12 @@ const WorkflowDefinitions = () => {
     totalPages,
   } = usePagination<Workflow>([], 10);
 
-  const { addToastNotification } = useNotifications();
+  const definitionModal = useDisclosure();
+  const diagramModal = useDisclosure();
+  const dependencyModal = useDisclosure();
+  const schedulingModal = useDisclosure();
+  const inputParametersModal = useDisclosure();
+  const confirmDeleteModal = useDisclosure();
 
   const getData = () => {
     const { getWorkflows } = callbackUtils.getCallbacks;
@@ -153,31 +133,6 @@ const WorkflowDefinitions = () => {
     setItemList(results);
   }, [keywords, labels, data, setItemList]);
 
-  const handleWorkflowSchedule = (scheduledWf: Partial<ScheduledWorkflow>) => {
-    const { registerSchedule } = callbackUtils.getCallbacks;
-    if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
-      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, {
-        ...scheduledWf,
-        workflowVersion: String(scheduledWf.workflowVersion),
-      })
-        .then(() => {
-          addToastNotification({
-            type: 'success',
-            title: 'Success',
-            content: 'Successfully scheduled',
-          });
-          getData();
-        })
-        .catch(() => {
-          addToastNotification({
-            type: 'error',
-            title: 'Error',
-            content: 'Failed to schedule workflow',
-          });
-        });
-    }
-  };
-
   const updateFavourite = (workflow: Workflow) => {
     let wfDescription = jsonParse(workflow.description);
 
@@ -223,47 +178,6 @@ const WorkflowDefinitions = () => {
     });
   };
 
-  const handleOnDeleteWorkflowClick = (workflow: Workflow) => {
-    const { deleteWorkflow } = callbackUtils.getCallbacks;
-
-    deleteWorkflow(workflow.name, workflow.version.toString()).then(() => {
-      getData();
-      setConfirmDeleteModal(false);
-    });
-  };
-
-  const showConfirmDeleteModal = (workflow: Workflow) => {
-    setActiveWf(workflow);
-    setConfirmDeleteModal(!confirmDeleteModal);
-  };
-
-  const handleOnExecuteWorkflow = (values: Record<string, string>) => {
-    if (activeWf == null) {
-      addToastNotification({
-        content: 'We cannot execute undefined workflow',
-        type: 'error',
-      });
-
-      return null;
-    }
-
-    const { executeWorkflow } = callbackUtils.getCallbacks;
-
-    return executeWorkflow({
-      input: values,
-      name: activeWf.name,
-      version: activeWf.version,
-    })
-      .then((res) => {
-        addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
-        return res.text;
-      })
-      .catch(() => {
-        addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
-        return null;
-      });
-  };
-
   const getDependencies = (workflow: Workflow) => {
     const usedInWfs = data.filter((wf) => {
       const wfJSON = JSON.stringify(wf, null, 2);
@@ -272,72 +186,23 @@ const WorkflowDefinitions = () => {
     return { length: usedInWfs.length, usedInWfs };
   };
 
-  const renderConfirmDeleteModal = () => {
-    return confirmDeleteModal && activeWf != null ? (
-      <Modal size="sm" isOpen={confirmDeleteModal} onClose={() => showConfirmDeleteModal(activeWf)}>
-        <ModalOverlay />
-        <ModalCloseButton />
-        <ModalContent>
-          <ModalHeader>Delete Workflow</ModalHeader>
-          <ModalBody>
-            <p>
-              Do you want to delete workflow <b>{activeWf?.name}</b> ?
-            </p>
-          </ModalBody>
-          <ModalFooter>
-            <Button marginRight={4} colorScheme="red" onClick={() => handleOnDeleteWorkflowClick(activeWf)}>
-              <Icon size={20} as={FeatherIcon} icon="trash-2" />
-              &nbsp;&nbsp;Delete
-            </Button>
-            <Button colorScheme="gray" onClick={() => showConfirmDeleteModal(activeWf)}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    ) : null;
-  };
-
   const onLabelsChange = (newLabels: string[]) => {
     setLabels([...new Set(newLabels)]);
   };
 
   return (
     <Container maxWidth={1200} mx="auto">
-      <DefinitionModal workflow={activeWf} isOpen={definitionModal.isOpen} onClose={definitionModal.onClose} />
-      <DiagramModal workflow={activeWf} onClose={diagramModal.onClose} isOpen={diagramModal.isOpen} />
-      <DependencyModal
-        workflow={activeWf}
-        onClose={dependencyModal.onClose}
-        isOpen={dependencyModal.isOpen}
+      <WorkflowDefinitionsModals
+        confirmDeleteModal={confirmDeleteModal}
+        definitionModal={definitionModal}
+        diagramModal={diagramModal}
+        dependencyModal={dependencyModal}
+        executeWorkflowModal={inputParametersModal}
+        scheduledWorkflowModal={schedulingModal}
+        activeWorkflow={activeWf}
+        getData={getData}
         workflows={data}
       />
-      {activeWf != null && (
-        <ScheduledWorkflowModal
-          workflow={{
-            workflowName: activeWf.name,
-            workflowVersion: activeWf.version,
-          }}
-          onClose={schedulingModal.onClose}
-          isOpen={schedulingModal.isOpen}
-          onSubmit={handleWorkflowSchedule}
-        />
-      )}
-      {activeWf != null && (
-        <>
-          <Heading>{activeWf.name}</Heading>
-          <ExecuteWorkflowModal
-            parsedInputParameters={parseInputParameters(activeWf?.inputParameters)}
-            dynamicInputParameters={getDynamicInputParametersFromWorkflow(activeWf)}
-            onClose={inputParametersModal.onClose}
-            isOpen={inputParametersModal.isOpen}
-            workflowName={activeWf.name}
-            workflowDescription={activeWf.description}
-            onSubmit={handleOnExecuteWorkflow}
-          />
-        </>
-      )}
-      {renderConfirmDeleteModal()}
       <WorkflowDefinitionsHeader
         allLabels={allLabels}
         keywords={[keywords]}
@@ -407,7 +272,8 @@ const WorkflowDefinitions = () => {
                   <WorkflowActions
                     workflow={workflow}
                     onDeleteBtnClick={() => {
-                      showConfirmDeleteModal(workflow);
+                      setActiveWf(workflow);
+                      confirmDeleteModal.onOpen();
                     }}
                     onFavouriteBtnClick={() => {
                       updateFavourite(workflow);

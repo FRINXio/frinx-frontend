@@ -4,5 +4,17 @@ import DiagramModal from './diagram-modal';
 import ScheduledWorkflowModal from './scheduled-workflow-modal';
 import TaskModal from './task-modal';
 import ExecuteWorkflowModal from './execute-workflow-modal';
+import ConfirmDeleteModal from './confirm-delete-workflow-modal';
+import WorkflowDefinitionsModals from './workflow-definitions-modals';
 
-export { DefinitionModal, DependencyModal, DiagramModal, ExecuteWorkflowModal, ScheduledWorkflowModal, TaskModal };
+export {
+  DefinitionModal,
+  DependencyModal,
+  DiagramModal,
+  ExecuteWorkflowModal,
+  ScheduledWorkflowModal,
+  TaskModal,
+  ConfirmDeleteModal,
+};
+
+export default WorkflowDefinitionsModals;
