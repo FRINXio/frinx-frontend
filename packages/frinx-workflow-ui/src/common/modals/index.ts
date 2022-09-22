@@ -5,7 +5,6 @@ import ScheduledWorkflowModal from './scheduled-workflow-modal';
 import TaskModal from './task-modal';
 import ExecuteWorkflowModal from './execute-workflow-modal';
 import ConfirmDeleteModal from './confirm-delete-workflow-modal';
-import WorkflowDefinitionsModals from './workflow-definitions-modals';
 
 export {
   DefinitionModal,
@@ -16,5 +15,3 @@ export {
   TaskModal,
   ConfirmDeleteModal,
 };
-
-export default WorkflowDefinitionsModals;

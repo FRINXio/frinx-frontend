@@ -1,4 +1,3 @@
-// @flow
 import React, { FC } from 'react';
 import { Box, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
@@ -7,8 +6,8 @@ import WfAutoComplete from '../../../common/wf-autocomplete';
 type Props = {
   allLabels: string[];
   keywords: string[];
-  onKeywordsChange: (keywords: string) => void;
   labels: string[];
+  onKeywordsChange: (keywords: string) => void;
   onLabelsChange: (labels: string[]) => void;
 };
 
@@ -30,6 +29,8 @@ const WorkflowDefinitionsHeader: FC<Props> = ({ allLabels, keywords, onKeywordsC
     onLabelsChange(dropNulls(newLabels));
   };
 
+  const starColor = labels.includes('FAVOURITE') ? 'yellow.400' : 'white';
+
   return (
     <HStack spacing={4} marginBottom={8} alignItems="center">
       <Box width={10}>
@@ -40,9 +41,7 @@ const WorkflowDefinitionsHeader: FC<Props> = ({ allLabels, keywords, onKeywordsC
           width={9}
           onClick={searchFavourites}
           title="Favourites"
-          icon={
-            <Icon size={20} as={FeatherIcon} color={labels.includes('FAVOURITE') ? 'yellow' : 'white'} icon="star" />
-          }
+          icon={<Icon size={20} as={FeatherIcon} fill={starColor} color={starColor} icon="star" />}
         />
       </Box>
       <Box flex={1}>
