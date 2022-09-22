@@ -97,79 +97,85 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
         </Tr>
       </Thead>
       <Tbody>
-        {workflows.map((workflow: Workflow) => {
-          return (
-            <Tr key={`${workflow.name}-${workflow.version}`} role="group">
-              <Td>
-                <Heading as="h6" size="xs" marginBottom={1}>
-                  {workflow.name} / {workflow.version}
-                </Heading>
-                <Text fontStyle="italic" color="gray.600">
-                  {jsonParse(workflow.description)?.description ||
-                    (jsonParse(workflow.description)?.description !== '' && workflow.description) ||
-                    'no description'}
-                </Text>
-              </Td>
-              <Td width={64}>
-                <Labels labels={allLabels} wf={workflow} onClick={onLabelClick} />
-              </Td>
-              <Td width={36}>
-                <Popover trigger="hover">
-                  <PopoverTrigger>
-                    <Button
-                      size="sm"
-                      disabled={getDependencies(workflow).length === 0}
-                      onClick={() => {
-                        dependencyModal.onOpen();
-                        setActiveWorkflow(workflow);
-                      }}
-                    >
-                      {`${getDependencies(workflow).length} `} Tree{' '}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <PopoverArrow />
-                    <PopoverCloseButton />
-                    <PopoverHeader>Used directly in following workflows:</PopoverHeader>
-                    <PopoverBody>
-                      {getDependencies(workflow).usedInWfs.map((wf) => (
-                        <p key={wf.name}>{wf.name}</p>
-                      ))}
-                    </PopoverBody>
-                  </PopoverContent>
-                </Popover>
-              </Td>
-              <Td>
-                <WorkflowActions
-                  workflow={workflow}
-                  onDeleteBtnClick={() => {
-                    setActiveWorkflow(workflow);
-                    confirmDeleteModal.onOpen();
-                  }}
-                  onFavouriteBtnClick={() => {
-                    onFavoriteClick(workflow);
-                  }}
-                  onDiagramBtnClick={() => {
-                    diagramModal.onOpen();
-                    setActiveWorkflow(workflow);
-                  }}
-                  onDefinitionBtnClick={() => {
-                    definitionModal.onOpen();
-                    setActiveWorkflow(workflow);
-                  }}
-                  onScheduleBtnClick={() => {
-                    setActiveWorkflow(workflow);
-                    scheduleWorkflowModal.onOpen();
-                  }}
-                  onExecuteBtnClick={() => {
-                    setActiveWorkflow(workflow);
-                    executeWorkflowModal.onOpen();
-                  }}
-                />
-              </Td>
-            </Tr>
-          );
-        })}
+        {workflows.length === 0 ? (
+          <Tr>
+            <Td>No workflows match your search params</Td>
+          </Tr>
+        ) : (
+          workflows.map((workflow: Workflow) => {
+            return (
+              <Tr key={`${workflow.name}-${workflow.version}`} role="group">
+                <Td>
+                  <Heading as="h6" size="xs" marginBottom={1}>
+                    {workflow.name} / {workflow.version}
+                  </Heading>
+                  <Text fontStyle="italic" color="gray.600">
+                    {jsonParse(workflow.description)?.description ||
+                      (jsonParse(workflow.description)?.description !== '' && workflow.description) ||
+                      'no description'}
+                  </Text>
+                </Td>
+                <Td width={64}>
+                  <Labels labels={allLabels} wf={workflow} onClick={onLabelClick} />
+                </Td>
+                <Td width={36}>
+                  <Popover trigger="hover">
+                    <PopoverTrigger>
+                      <Button
+                        size="sm"
+                        disabled={getDependencies(workflow).length === 0}
+                        onClick={() => {
+                          dependencyModal.onOpen();
+                          setActiveWorkflow(workflow);
+                        }}
+                      >
+                        {`${getDependencies(workflow).length} `} Tree{' '}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverHeader>Used directly in following workflows:</PopoverHeader>
+                      <PopoverBody>
+                        {getDependencies(workflow).usedInWfs.map((wf) => (
+                          <p key={wf.name}>{wf.name}</p>
+                        ))}
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
+                </Td>
+                <Td>
+                  <WorkflowActions
+                    workflow={workflow}
+                    onDeleteBtnClick={() => {
+                      setActiveWorkflow(workflow);
+                      confirmDeleteModal.onOpen();
+                    }}
+                    onFavouriteBtnClick={() => {
+                      onFavoriteClick(workflow);
+                    }}
+                    onDiagramBtnClick={() => {
+                      diagramModal.onOpen();
+                      setActiveWorkflow(workflow);
+                    }}
+                    onDefinitionBtnClick={() => {
+                      definitionModal.onOpen();
+                      setActiveWorkflow(workflow);
+                    }}
+                    onScheduleBtnClick={() => {
+                      setActiveWorkflow(workflow);
+                      scheduleWorkflowModal.onOpen();
+                    }}
+                    onExecuteBtnClick={() => {
+                      setActiveWorkflow(workflow);
+                      executeWorkflowModal.onOpen();
+                    }}
+                  />
+                </Td>
+              </Tr>
+            );
+          })
+        )}
       </Tbody>
       <Tfoot>
         <Tr>

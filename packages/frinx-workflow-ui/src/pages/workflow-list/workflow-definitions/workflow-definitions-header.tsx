@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Box, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
+import { Box, Button, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import WfAutoComplete from '../../../common/wf-autocomplete';
 
@@ -9,6 +9,7 @@ type Props = {
   labels: string[];
   onKeywordsChange: (keywords: string) => void;
   onLabelsChange: (labels: string[]) => void;
+  onClearSearch: () => void;
 };
 
 function dropNulls<T>(values: (T | null)[]): T[] {
@@ -21,7 +22,14 @@ function dropNulls<T>(values: (T | null)[]): T[] {
   return result;
 }
 
-const WorkflowDefinitionsHeader: FC<Props> = ({ allLabels, keywords, onKeywordsChange, labels, onLabelsChange }) => {
+const WorkflowDefinitionsHeader: FC<Props> = ({
+  allLabels,
+  keywords,
+  onKeywordsChange,
+  labels,
+  onLabelsChange,
+  onClearSearch,
+}) => {
   const searchFavourites = () => {
     const newLabels: (string | null)[] = [...labels];
     const index = newLabels.findIndex((label) => label === 'FAVOURITE');
@@ -65,6 +73,9 @@ const WorkflowDefinitionsHeader: FC<Props> = ({ allLabels, keywords, onKeywordsC
           />
         </InputGroup>
       </Box>
+      <Button bgColor="white" onClick={onClearSearch}>
+        Reset search
+      </Button>
     </HStack>
   );
 };
