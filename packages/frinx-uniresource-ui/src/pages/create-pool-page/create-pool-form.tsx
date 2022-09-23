@@ -47,7 +47,7 @@ export type FormValues = {
   tags: string[];
   allocationStrategyId?: string;
   poolProperties?: Record<string, string>;
-  poolPropertyTypes?: Record<string, 'int' | 'string'>;
+  poolPropertyTypes?: Record<string, 'int' | 'string' | 'bool'>;
   dealocationSafetyPeriod?: number;
   poolType: PoolType;
   poolValues: Record<string, string>[];
@@ -115,6 +115,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       initialValues: getInitialValues(window.location.search, resourceTypes),
       validationSchema: poolSchema,
       validateOnChange: false,
+      validateOnBlur: false,
       onSubmit: (data) => {
         const resourceTypeName = resourceTypes.find((resourceType) => resourceType.id === data.resourceTypeId)?.Name;
         const allocationStratedyId = allocStrategies.find(
