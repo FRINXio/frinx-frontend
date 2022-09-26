@@ -1,7 +1,7 @@
 import PageContainer from '../../../common/PageContainer';
 import React, { useEffect, useState } from 'react';
 import { Progress } from '@chakra-ui/react';
-import { ExecutedWorkflow, ExecutedWorkflows, NestedExecutedWorkflow } from '@frinx/workflow-ui/src/helpers/types';
+import { ExecutedWorkflows, NestedExecutedWorkflow } from '@frinx/workflow-ui/src/helpers/types';
 import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
 import { useNavigate } from 'react-router-dom';
 import { getSortOrder, getWorkflows } from './search-execs';
@@ -10,15 +10,9 @@ import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operat
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import useQueryParams from '@frinx/workflow-ui/src/hooks/use-query-params';
 import usePagination, { PaginationState } from '../../../hooks/use-pagination';
-import { useAsyncGenerator } from '@frinx/shared/src';
-import { WorkflowExecutionResult } from '../../../helpers/uniflow-types';
 
 type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 type SortOrder = 'ASC' | 'DESC';
-
-type Props = {
-  reloadPage: () => void;
-};
 
 type StateProps = {
   selectedWorkflows: string[];
@@ -56,7 +50,7 @@ const loadExecutedWorkflows = async (state: StateProps, pagination: PaginationSt
   return executedWorkflows;
 };
 
-const ExecutedWorkflowList = ({ reloadPage }: Props) => {
+const ExecutedWorkflowList = () => {
   const navigate = useNavigate();
   const query = useQueryParams();
   const [pagination, setPagination] = usePagination();
@@ -65,31 +59,22 @@ const ExecutedWorkflowList = ({ reloadPage }: Props) => {
     ...initialState,
     workflowId: searchKeyword,
   });
+  const [workflows, setWorkflows] = useState<ExecutedWorkflows>();
 
-  const workflows = useAsyncGenerator<WorkflowExecutionResult>({
-    fn: () => async () => {
-      const executedWorkflows = await loadExecutedWorkflows(state, pagination);
+  useEffect(() => {
+    loadExecutedWorkflows(state, pagination).then((executedWorkflows) => {
+      setWorkflows(executedWorkflows);
       setPagination((prev) => ({ ...prev, pageCount: Math.ceil(executedWorkflows.result.totalHits / prev.pageSize) }));
-      return executedWorkflows;
-    },
-    repeatTill: (executedWorkflows) => {
-      if (executedWorkflows == null) {
-        return true;
-      }
-
-      return executedWorkflows.result.hits.some((executedWorkflow) => executedWorkflow.status === 'RUNNING');
-    },
-    timeout: 500,
-    updateDeps: [
-      state.workflowId,
-      state.isFlat,
-      state.sortOrder,
-      state.sortBy,
-      pagination.page,
-      pagination.pageSize,
-      state.labels,
-    ],
-  });
+    });
+  }, [
+    state.workflowId,
+    state.isFlat,
+    state.sortOrder,
+    state.sortBy,
+    pagination.page,
+    pagination.pageSize,
+    state.labels,
+  ]);
 
   useEffect(() => {
     navigate({ search: state.workflowId ? `search=${state.workflowId}` : '' }, { replace: true });
@@ -170,7 +155,6 @@ const ExecutedWorkflowList = ({ reloadPage }: Props) => {
         selectedWorkflows={state.selectedWorkflows}
         selectAllWorkflows={selectAllWorkflows}
         onSuccessfullOperation={handleSuccessfullOperation}
-        onBulkOperationExecute={reloadPage}
       />
 
       <ExecutedWorkflowSearchBox

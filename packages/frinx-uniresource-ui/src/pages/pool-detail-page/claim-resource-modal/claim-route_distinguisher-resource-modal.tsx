@@ -12,11 +12,7 @@ import {
   ModalFooter,
   Button,
   Textarea,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
+  Heading,
 } from '@chakra-ui/react';
 import { FormikErrors, useFormik } from 'formik';
 import React, { FC } from 'react';
@@ -55,14 +51,33 @@ const IPV4_REGEX = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$
 
 const validationSchema = yup.object().shape({
   description: yup.string().notRequired(),
-  userInput: yup.object().shape({
-    assignedNumber: yup.number().typeError('Please provide number').required('This field is required'),
-    as: yup.number().typeError('Please provide number').required('This field is required'),
-    ipv4: yup
-      .string()
-      .matches(IPV4_REGEX, { message: 'Please enter a valid IPv4 address' })
-      .required('Please enter a IPv4 address'),
-  }),
+  userInput: yup.object().shape(
+    {
+      assignedNumber: yup
+        .number()
+        .typeError('This field must be a number')
+        .positive('As number must be bigger than 0')
+        .required('This field is required'),
+      as: yup
+        .number()
+        .when('ipv4', {
+          is: (val: string) => val == null || val.length === 0,
+          then: yup.number().required('This field is required'),
+          otherwise: yup.number(),
+        })
+        .typeError('Please provide number')
+        .positive('As number must be bigger than 0'),
+      ipv4: yup
+        .string()
+        .when('as', {
+          is: (val: number) => val == null || val <= 0,
+          then: yup.string().required('This field is required'),
+          otherwise: yup.string(),
+        })
+        .matches(IPV4_REGEX, { message: 'Please enter a valid IPv4 address' }),
+    },
+    [['as', 'ipv4']],
+  ),
   alternativeIds: AlternativeIdSchema,
 });
 
@@ -96,6 +111,8 @@ const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaimWith
         resetForm();
       },
       validationSchema,
+      validateOnBlur: false,
+      validateOnChange: false,
     });
 
   const handleAlternativeIdsChange = (changedAlternativeIds: AlternativeId[]) => {
@@ -123,50 +140,36 @@ const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaimWith
             <fieldset disabled={isSubmitting}>
               <FormControl isRequired isInvalid={errors.userInput?.assignedNumber != null} mb={3}>
                 <FormLabel htmlFor="assignedNumber">Assigned number</FormLabel>
-                <NumberInput
+                <Input
                   id="assignedNumber"
-                  value={values.userInput.assignedNumber}
-                  onChange={(_: string, value: number) =>
-                    setFieldValue('userInput', { ...values.userInput, assignedNumber: value })
-                  }
+                  placeholder="Enter a number"
                   name="userInput.assignedNumber"
-                >
-                  <NumberInputField placeholder="Enter a number" />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
+                  value={values.userInput.assignedNumber}
+                  onChange={handleChange}
+                />
                 <FormErrorMessage>{errors.userInput?.assignedNumber}</FormErrorMessage>
               </FormControl>
 
-              <FormControl isRequired isInvalid={errors.userInput?.as != null} mb={3}>
+              <FormControl isInvalid={errors.userInput?.as != null} mb={3}>
                 <FormLabel htmlFor="as">AS number</FormLabel>
-                <NumberInput
+                <Input
                   id="as"
-                  value={values.userInput.as}
-                  onChange={(_: string, value: number) =>
-                    setFieldValue('userInput', { ...values.userInput, as: value })
-                  }
                   name="userInput.as"
-                >
-                  <NumberInputField placeholder="Enter a number" />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
+                  placeholder="Enter a number"
+                  value={values.userInput.as}
+                  onChange={handleChange}
+                />
                 <FormErrorMessage>{errors.userInput?.as}</FormErrorMessage>
               </FormControl>
 
-              <FormControl isRequired isInvalid={errors.userInput?.ipv4 != null} mb={3}>
+              <FormControl isInvalid={errors.userInput?.ipv4 != null} mb={3}>
                 <FormLabel htmlFor="ipv4">IPv4 address</FormLabel>
                 <Input
                   id="ipv4"
+                  name="userInput.ipv4"
+                  placeholder="Please enter an IPv4 address"
                   value={values.userInput.ipv4}
                   onChange={handleChange}
-                  name="userInput.ipv4"
-                  placeholder="Please enter IPv4"
                 />
                 <FormErrorMessage>{errors.userInput?.ipv4}</FormErrorMessage>
               </FormControl>
@@ -182,6 +185,10 @@ const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaimWith
                 />
                 <FormErrorMessage>{errors.description}</FormErrorMessage>
               </FormControl>
+
+              <Heading fontSize="md" mt={5}>
+                Alternative Id
+              </Heading>
 
               <AlternativeIdForm
                 alternativeIds={values.alternativeIds}

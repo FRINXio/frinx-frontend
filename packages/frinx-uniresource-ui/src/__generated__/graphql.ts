@@ -50,6 +50,7 @@ export type CreateAllocatingPoolPayload = {
 /** Input parameters for creating a new allocation strategy */
 export type CreateAllocationStrategyInput = {
   description?: InputMaybe<Scalars['String']>;
+  expectedPoolPropertyTypes?: InputMaybe<Scalars['Map']>;
   lang: AllocationStrategyLang;
   name: Scalars['String'];
   script: Scalars['String'];
@@ -398,11 +399,11 @@ export type PoolType =
 /** Defines the type of the property */
 export type PropertyType = Node & {
   __typename?: 'PropertyType';
-  FloatVal: Scalars['Float'];
-  IntVal: Scalars['Int'];
-  Mandatory: Scalars['Boolean'];
+  FloatVal: Maybe<Scalars['Float']>;
+  IntVal: Maybe<Scalars['Int']>;
+  Mandatory: Maybe<Scalars['Boolean']>;
   Name: Scalars['String'];
-  StringVal: Scalars['String'];
+  StringVal: Maybe<Scalars['String']>;
   Type: Scalars['String'];
   id: Scalars['ID'];
 };
@@ -416,6 +417,7 @@ export type Query = {
   QueryPoolCapacity: PoolCapacityPayload;
   QueryPoolTypes: Array<PoolType>;
   QueryRecentlyActiveResources: ResourceConnection;
+  QueryRequiredPoolProperties: Array<PropertyType>;
   QueryResource: Resource;
   QueryResourcePool: ResourcePool;
   QueryResourcePoolHierarchyPath: Array<ResourcePool>;
@@ -463,6 +465,11 @@ export type QueryQueryRecentlyActiveResourcesArgs = {
   fromDatetime: Scalars['String'];
   last?: InputMaybe<Scalars['Int']>;
   toDatetime?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryQueryRequiredPoolPropertiesArgs = {
+  allocationStrategyName: Scalars['String'];
 };
 
 
@@ -843,6 +850,20 @@ export type SelectAllocationStrategiesQueryVariables = Exact<{ [key: string]: ne
 
 
 export type SelectAllocationStrategiesQuery = { __typename?: 'Query', QueryAllocationStrategies: Array<{ __typename?: 'AllocationStrategy', id: string, Name: string }> };
+
+export type RequiredPoolPropertiesQueryVariables = Exact<{
+  allocationStrategyName: Scalars['String'];
+}>;
+
+
+export type RequiredPoolPropertiesQuery = { __typename?: 'Query', QueryRequiredPoolProperties: Array<{ __typename?: 'PropertyType', Name: string, Type: string, FloatVal: number | null, IntVal: number | null, StringVal: string | null }> };
+
+export type CreateAllocationStrategyMutationVariables = Exact<{
+  input: CreateAllocationStrategyInput;
+}>;
+
+
+export type CreateAllocationStrategyMutation = { __typename?: 'Mutation', CreateAllocationStrategy: { __typename?: 'CreateAllocationStrategyPayload', strategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang, Script: string } | null } };
 
 export type GetIpPoolsQueryVariables = Exact<{ [key: string]: never; }>;
 

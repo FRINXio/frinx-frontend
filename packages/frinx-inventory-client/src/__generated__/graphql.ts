@@ -26,12 +26,18 @@ export type AddBlueprintPayload = {
 
 export type AddDeviceInput = {
   address?: InputMaybe<Scalars['String']>;
+  blueprintId?: InputMaybe<Scalars['String']>;
+  deviceType?: InputMaybe<Scalars['String']>;
   labelIds?: InputMaybe<Array<Scalars['String']>>;
   model?: InputMaybe<Scalars['String']>;
   mountParameters?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
+  password?: InputMaybe<Scalars['String']>;
+  port?: InputMaybe<Scalars['Int']>;
   serviceState?: InputMaybe<DeviceServiceState>;
+  username?: InputMaybe<Scalars['String']>;
   vendor?: InputMaybe<Scalars['String']>;
+  version?: InputMaybe<Scalars['String']>;
   zoneId: Scalars['String'];
 };
 
@@ -223,6 +229,7 @@ export type DeleteSnapshotPayload = {
 export type Device = Node & {
   __typename?: 'Device';
   address: Maybe<Scalars['String']>;
+  blueprint: Maybe<Blueprint>;
   createdAt: Scalars['String'];
   id: Scalars['ID'];
   isInstalled: Scalars['Boolean'];
@@ -231,6 +238,7 @@ export type Device = Node & {
   model: Maybe<Scalars['String']>;
   mountParameters: Maybe<Scalars['String']>;
   name: Scalars['String'];
+  position: Maybe<Position>;
   serviceState: DeviceServiceState;
   source: DeviceSource;
   updatedAt: Scalars['String'];
@@ -280,9 +288,29 @@ export type DiffData = {
   path: Scalars['String'];
 };
 
+export type EdgeSourceTarget = {
+  __typename?: 'EdgeSourceTarget';
+  interface: Scalars['String'];
+  nodeId: Scalars['String'];
+};
+
 export type FilterDevicesInput = {
   deviceName?: InputMaybe<Scalars['String']>;
   labels?: InputMaybe<Array<Scalars['String']>>;
+};
+
+export type GraphEdge = {
+  __typename?: 'GraphEdge';
+  id: Scalars['ID'];
+  source: EdgeSourceTarget;
+  target: EdgeSourceTarget;
+};
+
+export type GraphNode = {
+  __typename?: 'GraphNode';
+  device: Device;
+  id: Scalars['ID'];
+  interfaces: Array<Scalars['String']>;
 };
 
 export type InstallDevicePayload = {
@@ -358,6 +386,7 @@ export type Mutation = {
   updateBlueprint: UpdateBlueprintPayload;
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
+  updateDeviceMetadata: UpdateDeviceMetadataPayload;
 };
 
 
@@ -485,6 +514,11 @@ export type MutationUpdateDeviceArgs = {
   input: UpdateDeviceInput;
 };
 
+
+export type MutationUpdateDeviceMetadataArgs = {
+  input: Array<PositionInput>;
+};
+
 export type Node = {
   id: Scalars['ID'];
 };
@@ -497,6 +531,22 @@ export type PageInfo = {
   startCursor: Maybe<Scalars['String']>;
 };
 
+export type Position = {
+  __typename?: 'Position';
+  x: Scalars['Float'];
+  y: Scalars['Float'];
+};
+
+export type PositionInput = {
+  deviceId: Scalars['ID'];
+  position: PositionInputField;
+};
+
+export type PositionInputField = {
+  x: Scalars['Float'];
+  y: Scalars['Float'];
+};
+
 export type Query = {
   __typename?: 'Query';
   blueprints: BlueprintConnection;
@@ -507,6 +557,7 @@ export type Query = {
   labels: LabelConnection;
   locations: LocationConnection;
   node: Maybe<Node>;
+  topology: Topology;
   transactions: Array<Transaction>;
   zones: ZonesConnection;
 };
@@ -607,6 +658,12 @@ export type SyncFromNetworkPayload = {
   dataStore: Maybe<DataStore>;
 };
 
+export type Topology = {
+  __typename?: 'Topology';
+  edges: Array<GraphEdge>;
+  nodes: Array<GraphNode>;
+};
+
 export type Transaction = {
   __typename?: 'Transaction';
   changes: Array<TransactionChange>;
@@ -653,12 +710,23 @@ export type UpdateDataStorePayload = {
 
 export type UpdateDeviceInput = {
   address?: InputMaybe<Scalars['String']>;
+  blueprintId?: InputMaybe<Scalars['String']>;
+  deviceType?: InputMaybe<Scalars['String']>;
   labelIds?: InputMaybe<Array<Scalars['String']>>;
   locationId?: InputMaybe<Scalars['String']>;
   model?: InputMaybe<Scalars['String']>;
   mountParameters?: InputMaybe<Scalars['String']>;
+  password?: InputMaybe<Scalars['String']>;
+  port?: InputMaybe<Scalars['Int']>;
   serviceState?: InputMaybe<DeviceServiceState>;
+  username?: InputMaybe<Scalars['String']>;
   vendor?: InputMaybe<Scalars['String']>;
+  version?: InputMaybe<Scalars['String']>;
+};
+
+export type UpdateDeviceMetadataPayload = {
+  __typename?: 'UpdateDeviceMetadataPayload';
+  devices: Maybe<Array<Maybe<Device>>>;
 };
 
 export type UpdateDevicePayload = {

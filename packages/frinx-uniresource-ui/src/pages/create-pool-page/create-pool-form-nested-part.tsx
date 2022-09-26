@@ -1,7 +1,7 @@
 import { HStack, FormControl, FormLabel, Select, FormErrorMessage } from '@chakra-ui/react';
 import { FormikErrors, FormikHandlers } from 'formik';
 import React, { VoidFunctionComponent } from 'react';
-import { AvailableAllocatedResource, canSelectCustomResourceTypes } from '../../helpers/create-pool-form.helpers';
+import { AvailableAllocatedResource, isSpecificResourceTypeName } from '../../helpers/create-pool-form.helpers';
 import { SelectPoolsQuery } from '../../__generated__/graphql';
 import { FormValues } from './create-pool-form';
 
@@ -37,7 +37,7 @@ const CreatePoolFormNestedPart: VoidFunctionComponent<Props> = ({
             .filter(
               (pool) =>
                 pool.Resources.length > 0 &&
-                canSelectCustomResourceTypes(pool.ResourceType.Name, [
+                isSpecificResourceTypeName(pool.ResourceType.Name, [
                   'ipv4_prefix',
                   'ipv6_prefix',
                   'vlan_range',

@@ -55,6 +55,42 @@ export function canSelectAllocatingStrategy(
   );
 }
 
+export const isSpecificResourceTypeName = (resourceTypeName: string, selectors: string[]) => {
+  return selectors.some((selector) => selector === resourceTypeName);
+};
+
+export const canSelectDefaultResourceTypes = (resourceTypeName: string) => {
+  return isSpecificResourceTypeName(resourceTypeName, [
+    'ipv4',
+    'ipv4_prefix',
+    'ipv6',
+    'ipv6_prefix',
+    'vlan_range',
+    'vlan',
+    'route_distinguisher',
+    'unique_id',
+    'random_signed_int32',
+  ]);
+};
+
+export const canSelectIpResourceTypes = (resourceTypeName: string) => {
+  return isSpecificResourceTypeName(resourceTypeName, ['ipv4', 'ipv4_prefix', 'ipv6', 'ipv6_prefix']);
+};
+
+export const isCustomResourceType = (resourceTypename: string) => {
+  return !isSpecificResourceTypeName(resourceTypename, [
+    'ipv4',
+    'ipv4_prefix',
+    'ipv6',
+    'ipv6_prefix',
+    'vlan_range',
+    'vlan',
+    'route_distinguisher',
+    'unique_id',
+    'random_signed_int32',
+  ]);
+};
+
 export function getAvailablePoolProperties(
   resourcePools: SelectPoolsQuery,
   parentPoolId?: string,
@@ -109,9 +145,12 @@ export function getPoolPropertiesSkeleton(
   resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'],
   resourceTypeId: string,
   values?: Record<string, string>,
-): [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string'>] {
+): [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string' | 'bool'>] {
   const resourceTypeName = resourceTypes.find((type) => type.id === resourceTypeId)?.Name;
-  let result: [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string'>] = [{}, {}];
+  let result: [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string' | 'bool'>] = [
+    {},
+    {},
+  ];
 
   switch (resourceTypeName) {
     case 'ipv4':
@@ -119,8 +158,8 @@ export function getPoolPropertiesSkeleton(
     case 'ipv6_prefix':
     case 'ipv4_prefix':
       result = [
-        { address: values?.address || '', prefix: values?.prefix || '' },
-        { address: 'string', prefix: 'int' },
+        { address: values?.address || '', prefix: values?.prefix || '', subnet: values?.subnet || 'false' },
+        { address: 'string', prefix: 'int', subnet: 'bool' },
       ];
       break;
     case 'route_distinguisher':
@@ -197,7 +236,7 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
               is: (resourceTypeName: string) => resourceTypeName === 'ipv4' || resourceTypeName === 'ipv4_prefix',
               then: yup.object().shape({
                 ...Object.keys(poolProperties).reduce((acc, key) => {
-                  if (key === 'from' || key === 'to' || key === 'prefix' || key === 'id') {
+                  if (key === 'from' || key === 'to' || key === 'id') {
                     return {
                       ...acc,
                       [key]: yup
@@ -229,7 +268,7 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
               is: (resourceTypeName: string) => resourceTypeName === 'ipv6' || resourceTypeName === 'ipv6_prefix',
               then: yup.object().shape({
                 ...Object.keys(poolProperties).reduce((acc, key) => {
-                  if (key === 'from' || key === 'to' || key === 'prefix' || key === 'id') {
+                  if (key === 'from' || key === 'to' || key === 'id') {
                     return {
                       ...acc,
                       [key]: yup.number().typeError('Please enter a number').required(`Please enter a value`),
@@ -265,6 +304,17 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                       .min(-2147483648, 'Please enter a number between -2147483648 and 2147483647')
                       .max(2147483647, 'Please enter a number between -2147483648 and 2147483647')
                       .required('Please enter a value'),
+                  };
+                }, {}),
+              }),
+            })
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => isCustomResourceType(resourceTypeName),
+              then: yup.object().shape({
+                ...Object.keys(poolProperties).reduce((acc, key) => {
+                  return {
+                    ...acc,
+                    [key]: yup.string().required('This field is required'),
                   };
                 }, {}),
               }),
@@ -328,25 +378,3 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
       });
   }
 }
-
-export const canSelectCustomResourceTypes = (resourceTypeName: string, selectors: string[]) => {
-  return selectors.some((selector) => selector === resourceTypeName);
-};
-
-export const canSelectDefaultResourceTypes = (resourceTypeName: string) => {
-  return canSelectCustomResourceTypes(resourceTypeName, [
-    'ipv4',
-    'ipv4_prefix',
-    'ipv6',
-    'ipv6_prefix',
-    'vlan_range',
-    'vlan',
-    'route_distinguisher',
-    'unique_id',
-    'random_signed_int32',
-  ]);
-};
-
-export const canSelectIpResourceTypes = (resourceTypeName: string) => {
-  return canSelectCustomResourceTypes(resourceTypeName, ['ipv4', 'ipv4_prefix', 'ipv6', 'ipv6_prefix']);
-};

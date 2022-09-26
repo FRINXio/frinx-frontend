@@ -37,7 +37,6 @@ const getToastBackground = (type: NotificationType): string => {
   switch (type) {
     case 'error':
       return 'red.400';
-    case 'info':
     case 'success':
       return 'green.400';
     case 'warning':
@@ -102,11 +101,11 @@ const ToastNotification: FC<Props> = ({
       paddingY={2}
       width="475px"
       minHeight="80px"
-      position="absolute"
+      position="fixed"
       top="70px"
       right="20px"
       transform={`translateY(${index * 95}px)`}
-      zIndex="modal"
+      zIndex="toast"
     >
       <Box>
         <Flex

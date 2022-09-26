@@ -1,5 +1,6 @@
-import { Box, Container, Heading, Progress, useToast } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import { Box, Container, Heading, Progress } from '@chakra-ui/react';
+import { useNotifications } from '@frinx/shared/src';
+import React, { FC, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import {
   AddDeviceMutation,
@@ -88,15 +89,25 @@ type FormValues = {
   name: string;
   zoneId: string;
   mountParameters: string;
-  labels: string[];
+  labelIds: string[];
   serviceState: DeviceServiceState;
+  blueprintId: string;
+  model: string;
+  address: string;
+  username: string;
+  password: string;
+  deviceType: string;
+  version: string;
+  vendor: string;
+  port: number;
 };
 type Props = {
   onAddDeviceSuccess: () => void;
 };
 
 const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
-  const toast = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addToastNotification } = useNotifications();
   const [, addDevice] = useMutation<AddDeviceMutation, AddDeviceMutationVariables>(ADD_DEVICE_MUTATION);
   const [, createLabel] = useMutation<CreateLabelMutation, CreateLabelMutationVariables>(CREATE_LABEL);
   const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<LabelsQuery, LabelsQueryVariables>({
@@ -117,24 +128,23 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
     return result.data?.newLabel.label ?? null;
   };
 
-  const handleSubmit = async (values: FormValues) => {
+  const handleSubmit = (values: FormValues) => {
+    setIsSubmitting(true);
     addDevice({
-      input: {
-        name: values.name,
-        mountParameters: values.mountParameters,
-        zoneId: values.zoneId,
-        labelIds: values.labels,
-        serviceState: values.serviceState,
-      },
-    }).then(() => {
-      toast({
-        position: 'top-right',
-        status: 'success',
-        variant: 'subtle',
-        title: 'Device succesfully added',
-      });
-      onAddDeviceSuccess();
-    });
+      input: values,
+    })
+      .then(({ error }) => {
+        if (error != null) {
+          throw new Error('Problem with device addition');
+        }
+        onAddDeviceSuccess();
+        addToastNotification({
+          content: 'Device succesfully added',
+          type: 'success',
+        });
+      })
+      .catch(() => addToastNotification({ content: "We couldn't add device", type: 'error' }))
+      .finally(() => setIsSubmitting(false));
   };
 
   if (isFetchingZones || isFetchingLabels) {
@@ -167,6 +177,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
           blueprints={blueprints}
           labels={labels}
           onLabelCreate={handleOnCreateLabel}
+          isSubmitting={isSubmitting}
         />
       </Box>
     </Container>

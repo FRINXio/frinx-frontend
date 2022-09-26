@@ -302,7 +302,7 @@ const WorkflowDefinitions = () => {
           {workflows.map((workflow: Workflow) => {
             return (
               <Tr key={`${workflow.name}-${workflow.version}`} role="group">
-                <Td width={540}>
+                <Td>
                   <Heading as="h6" size="xs" marginBottom={1}>
                     {workflow.name} / {workflow.version}
                   </Heading>
