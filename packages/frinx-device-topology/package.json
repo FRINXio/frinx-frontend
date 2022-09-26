@@ -17,6 +17,7 @@
     "type-check": "tsc --noEmit",
     "codegen": "graphql-codegen --config codegen.yml",
     "codegen:clean": "rm -r src/__generated__",
+    "test": "vitest",
     "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist feather-icons-react.d.ts custom.d.ts src/index.ts"
   },
   "devDependencies": {
@@ -45,7 +46,8 @@
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-router-dom": "6.3.0",
-    "typescript": "4.7.3"
+    "typescript": "4.7.3",
+    "vitest": "0.14.1"
   },
   "dependencies": {
     "@frinx/shared": "workspace:^",

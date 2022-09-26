@@ -38,7 +38,6 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.edges = action.payload.edges;
         acc.nodePositions = positionsMap.nodes;
         acc.interfaceGroupPositions = positionsMap.interfaceGroups;
-        console.log(acc.interfaceGroupPositions);
         return acc;
       }
       case 'UPDATE_NODE_POSITION': {
@@ -48,6 +47,8 @@ export function stateReducer(state: State, action: StateAction): State {
           edges: acc.edges,
           positionMap: acc.nodePositions,
         });
+        // const positions = acc.interfacePositions;
+        // console.log(positions);
         return acc;
       }
       case 'SET_SELECTED_NODE': {

@@ -1,4 +1,4 @@
-import { unwrap } from '@frinx/shared';
+import unwrap from '@frinx/shared/src/helpers/unwrap';
 
 function getRandomInt(max: number): number {
   return Math.floor(Math.random() * max);
@@ -32,6 +32,7 @@ export type GraphEdge = {
 };
 
 export const NODE_CIRCLE_RADIUS = 30;
+export const EDGE_SLOPE_RADIUS = 40;
 
 export type PositionsMap = {
   nodes: Record<string, Position>;
@@ -50,6 +51,10 @@ export type PositionGroupsMap = Record<GroupName, GroupData>;
 
 export function getAngleBetweenPoints(p1: Position, p2: Position): number {
   return Math.atan2(p2.y - p1.y, p2.x - p1.x);
+}
+
+export function getDistanceBetweenPoints(p1: Position, p2: Position): number {
+  return Math.sqrt((p2.y - p1.y) ** 2 + (p2.x - p1.x) ** 2);
 }
 
 export type UpdateInterfacePositionParams = {
@@ -138,4 +143,38 @@ export function getDefaultPositionsMap(nodes: GraphNode[], edges: GraphEdge[]): 
     nodes: nodesMap,
     interfaceGroups: getInterfacesPositions({ nodes, edges, positionMap: nodesMap }),
   };
+}
+
+export function getNormalizedVectorAngle(p1: Position, p2: Position): number {
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
+
+  return -(dx / dy);
+}
+
+export function getPointOnCircle(source: Position, target: Position, radius = 1): Position {
+  const angle = getAngleBetweenPoints(source, target);
+  const y = radius * Math.sin(angle);
+  const x = radius * Math.cos(angle);
+  return {
+    x: source.x + x,
+    y: source.y + y,
+  };
+}
+
+export function getPointOnSlope(source: Position, target: Position, radius: number, length = 1): Position {
+  const angle = getAngleBetweenPoints(source, target);
+  const perpendicularAngle = angle + Math.PI / 2;
+  const circlePoint = getPointOnCircle(source, target, radius);
+  const y = circlePoint.y + length * Math.sin(perpendicularAngle);
+  const x = circlePoint.x + length * Math.cos(perpendicularAngle);
+  return {
+    x,
+    y,
+  };
+}
+
+export function getDistanceFromLineList(interfaces: string[]): number[] {
+  const numberOfPoints = interfaces.length;
+  return [...Array(numberOfPoints).keys()].map((p) => p - (numberOfPoints - 1) / 2);
 }

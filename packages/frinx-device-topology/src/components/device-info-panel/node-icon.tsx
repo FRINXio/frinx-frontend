@@ -40,12 +40,6 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   const { x, y } = positions.nodes[node.device.name];
   const interfaceGroups = getNodeInterfaceGroups(device.name, positions.interfaceGroups);
 
-  const handleInterfaceGroupClick = (groupId: string) => {
-    const [selectedGroup] = interfaceGroups.filter(([gid]) => gid === groupId);
-    const [key, data] = selectedGroup;
-    console.log(key, data.interfaces);
-  };
-
   return (
     <G
       cursor="pointer"
@@ -74,7 +68,6 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
                 style={{
                   transform: isFocused ? `translate3d(${iPosition.x - x}px, ${iPosition.y - y}px, 0)` : undefined,
                 }}
-                onClick={() => handleInterfaceGroupClick(groupId)}
               />
             ) : null;
           })}

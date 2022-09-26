@@ -2,7 +2,15 @@ import { Box } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { useStateContext } from '../../state.provider';
 import { setSelectedEdge } from '../../state.actions';
-import { GraphEdge } from './graph.helpers';
+import {
+  EDGE_SLOPE_RADIUS,
+  getDistanceBetweenPoints,
+  getDistanceFromLineList,
+  getPointOnSlope,
+  GraphEdge,
+} from './graph.helpers';
+
+const EDGE_GAP = 30;
 
 function getInterfaceGroupName(sourceId: string, targetId: string) {
   return `${sourceId},${targetId}`;
@@ -25,36 +33,58 @@ const Edges: VoidFunctionComponent = () => {
         const targetPosition = connectedNodeIds.includes(edge.target.nodeId)
           ? interfaceGroupPositions[getInterfaceGroupName(edge.target.nodeId, edge.source.nodeId)].position
           : nodePositions[edge.target.nodeId];
-        const isClickable = selectedNode?.interfaces.includes(edge.source.interface);
+        const isActive = selectedNode?.interfaces.includes(edge.source.interface);
         const isSelected = edge.id === selectedEdge?.id;
+
+        const innerPositionList = [];
+
+        if (isActive) {
+          const groupName = getInterfaceGroupName(edge.target.nodeId, edge.source.nodeId);
+          const groupData = interfaceGroupPositions[groupName];
+          const distanceFromLineList = getDistanceFromLineList(groupData.interfaces, EDGE_GAP);
+          const index = groupData.interfaces.indexOf(edge.target.interface);
+          const length = EDGE_GAP * distanceFromLineList[index];
+          const sourceInterfacePosition = getPointOnSlope(sourcePosition, targetPosition, EDGE_SLOPE_RADIUS, length);
+          innerPositionList.push(sourceInterfacePosition);
+          const positionDistance = getDistanceBetweenPoints(sourcePosition, targetPosition) - EDGE_SLOPE_RADIUS;
+          const targetInterfacePosition = getPointOnSlope(sourcePosition, targetPosition, positionDistance, length);
+          innerPositionList.push(targetInterfacePosition);
+        } else {
+          // dont show edges that are connected to active node
+          const targetNodeId = edge.target.nodeId;
+          const targetGroupName = getInterfaceGroupName(edge.source.nodeId, edge.target.nodeId);
+          const targetGroup = interfaceGroupPositions[targetGroupName];
+          if (targetNodeId === selectedNode?.device.name && targetGroup.interfaces.includes(edge.source.interface)) {
+            return null;
+          }
+        }
+
         return (
           <React.Fragment key={edge.id}>
-            <Box
-              as="line"
-              x1={sourcePosition.x}
-              y1={sourcePosition.y}
-              x2={targetPosition.x}
-              y2={targetPosition.y}
-              stroke="gray.800"
-              strokeWidth={isClickable ? 3 : 1}
-              strokeLinecap="round"
-              borderWidth={3}
-              transition="all .2s ease-in-out"
-            />
-            {isClickable && (
+            {isActive ? (
+              <polyline
+                strokeWidth={1}
+                stroke="black"
+                strokeLinejoin="round"
+                fill="transparent"
+                points={`${sourcePosition.x},${sourcePosition.y} ${innerPositionList.map((p) => `${p.x},${p.y}`)} ${
+                  targetPosition.x
+                },${targetPosition.y}`}
+                cursor="pointer"
+                onClick={() => handleEdgeClick(edge)}
+              />
+            ) : (
               <Box
                 as="line"
                 x1={sourcePosition.x}
                 y1={sourcePosition.y}
                 x2={targetPosition.x}
                 y2={targetPosition.y}
-                stroke="transparent"
-                strokeWidth={30}
-                borderWidth={2}
+                stroke="gray.800"
+                strokeWidth={isActive ? 3 : 1}
                 strokeLinecap="round"
+                borderWidth={3}
                 transition="all .2s ease-in-out"
-                cursor="pointer"
-                onClick={() => handleEdgeClick(edge)}
               />
             )}
 
@@ -63,12 +93,8 @@ const Edges: VoidFunctionComponent = () => {
                 <defs>
                   <path
                     id="sourcePath"
-                    d={`M${sourcePosition.x},${sourcePosition.y} L${targetPosition.x},${targetPosition.y}`}
+                    d={`M${innerPositionList[0].x},${innerPositionList[0].y}  L${innerPositionList[1].x},${innerPositionList[1].y}`}
                   />
-                  {/* <path
-                    id={`targetPath`}
-                    d={`M${targetPosition.x},${targetPosition.y} L${sourcePosition.x},${sourcePosition.y}`}
-                  /> */}
                 </defs>
                 <text dx={10} dy={20}>
                   <textPath href="#sourcePath">{edge.source.interface}</textPath>
