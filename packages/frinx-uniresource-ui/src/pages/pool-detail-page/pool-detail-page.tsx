@@ -1,59 +1,51 @@
-import { Box, Button, ButtonGroup, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Center, Divider, Heading, HStack, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import DeletePoolPopover from '../../components/delete-pool-modal';
 import PageContainer from '../../components/page-container';
-import { omitNullValue } from '../../helpers/omit-null-value';
+import { isCustomResourceType } from '../../helpers/create-pool-form.helpers';
+import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
 import useResourcePoolActions from '../../hooks/use-resource-pool-actions';
-import { GetPoolsQuery, PoolCapacityPayload } from '../../__generated__/graphql';
-import PoolsTable from '../pools-page/pools-table';
-import { ClaimAddressModal } from './claim-address-modal';
+import ClaimCustomResourceModal from './claim-resource-modal/claim-custom-resource-modal';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
-import PoolDetailAllocatingTable from './pool-detail-allocating-table';
-import PoolDetailSetSingletonTable from './pool-detail-set_singleton-table';
+import ClaimRouteDistinguisherResourceModal from './claim-resource-modal/claim-route_distinguisher-resource-modal';
+import PoolDetailAllocatedResourceBox from './pool-detail-allocated-resources-box';
+import PoolDetailNestedPoolsTable from './pool-detail-nested-pools-table';
 
 export type PoolResource = {
   poolProperties: Record<string, string>;
   poolPropertyTypes: Record<string, 'int' | 'string'>;
 };
 
-function getTotalCapacity(capacity: PoolCapacityPayload | null): number {
-  if (capacity == null) {
-    return 0;
-  }
-  return Number(capacity.freeCapacity) + Number(capacity.utilizedCapacity);
-}
-function getCapacityValue(capacity: PoolCapacityPayload | null): number {
-  if (capacity == null) {
-    return 0;
-  }
-  const totalCapacity = getTotalCapacity(capacity);
-  if (totalCapacity === 0) {
-    return 0;
-  }
-  return (Number(capacity.utilizedCapacity) / totalCapacity) * 100;
-}
-
 const PoolDetailPage: VoidFunctionComponent = () => {
   const { poolId } = useParams<{ poolId: string }>();
 
   const claimResourceModal = useDisclosure();
-  const claimAddressModal = useDisclosure();
+  const claimRouteDistinguisherResourceModal = useDisclosure();
+  const claimCustomResourceModal = useDisclosure();
 
   const [
     {
       poolDetail: { data: poolData, fetching: isLoadingPool },
       allocatedResources: { data: allocatedResources, fetching: isLoadingResources },
-      resourceTypes: { fetching: isLoadingResourceTypes },
       paginationArgs,
     },
-    { claimPoolResource, freePoolResource, deleteResourcePool, handleOnClaimAddress, nextPage, previousPage },
+    {
+      claimPoolResource,
+      freePoolResource,
+      deleteResourcePool,
+      nextPage,
+      previousPage,
+      claimPoolResourceWithAltId,
+      handleAlternativeIdsChange,
+    },
   ] = useResourcePoolActions({ poolId });
 
   if (poolId == null) {
-    return null;
+    return <Center>The pool identifier is missing in the URL</Center>;
   }
 
-  if (isLoadingPool || isLoadingResources || isLoadingResourceTypes) {
+  if (isLoadingPool) {
     return <Progress isIndeterminate mt={-10} size="xs" />;
   }
 
@@ -61,116 +53,113 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     return <Box textAlign="center">Resource pool does not exists</Box>;
   }
 
+  const handleOnOpenClaimResourceModal = () => {
+    if (isCustomResourceType(poolData.QueryResourcePool.ResourceType.Name)) {
+      claimCustomResourceModal.onOpen();
+    } else if (poolData.QueryResourcePool.ResourceType.Name === 'route_distinguisher') {
+      claimRouteDistinguisherResourceModal.onOpen();
+    } else {
+      claimResourceModal.onOpen();
+    }
+  };
+
   const { QueryResourcePool: resourcePool } = poolData;
-  const capacityValue = getCapacityValue(resourcePool.Capacity);
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
-  const nestedPools: GetPoolsQuery['QueryRootResourcePools'] = resourcePool.Resources.map((resource) =>
-    resource.NestedPool !== null ? resource.NestedPool : null,
-  ).filter(omitNullValue);
   const canClaimResources =
     resourcePool.Capacity != null &&
-    Number(resourcePool.Capacity.freeCapacity) > 0 &&
-    Number(resourcePool.Capacity.freeCapacity) <= totalCapacity;
-  const canFreeResource = resourcePool.Capacity != null && Number(resourcePool.Capacity.freeCapacity) !== totalCapacity;
-  const canCreateNestedPool =
-    resourcePool.Resources.length > resourcePool.Resources.filter((resource) => resource.NestedPool != null).length;
-  const isAllocating = /(ipv4_prefix|ipv6_prefix|vlan_range)/.test(resourcePool.ResourceType.Name);
+    BigInt(resourcePool.Capacity.freeCapacity) > 0n &&
+    BigInt(resourcePool.Capacity.freeCapacity) <= totalCapacity;
+  const isAllocating = resourcePool.PoolType === 'allocating';
+  const canDeletePool = resourcePool.Resources.length === 0;
 
   return (
     <PageContainer>
+      <ClaimCustomResourceModal
+        poolName={resourcePool.Name}
+        isOpen={claimCustomResourceModal.isOpen}
+        onClose={claimCustomResourceModal.onClose}
+        onClaimWithAltId={claimPoolResourceWithAltId}
+      />
+      <ClaimRouteDistinguisherResourceModal
+        isOpen={claimRouteDistinguisherResourceModal.isOpen}
+        onClose={claimRouteDistinguisherResourceModal.onClose}
+        poolName={resourcePool.Name}
+        onClaimWithAltId={claimPoolResourceWithAltId}
+      />
       <ClaimResourceModal
         isOpen={claimResourceModal.isOpen}
         onClose={claimResourceModal.onClose}
-        onClaim={claimPoolResource}
+        onClaimWithAltId={claimPoolResourceWithAltId}
         poolName={resourcePool.Name}
-        variant={resourcePool.ResourceType.Name}
+        resourceTypeName={resourcePool.ResourceType.Name}
+        totalCapacity={totalCapacity}
+        poolProperties={resourcePool.PoolProperties}
       />
-      {isAllocating && (
-        <ClaimAddressModal
-          isCentered
-          isOpen={claimAddressModal.isOpen}
-          onClose={claimAddressModal.onClose}
-          resourceProperties={resourcePool.PoolProperties}
-          onClaimAddress={(formValues) => handleOnClaimAddress(poolId, formValues)}
-        />
-      )}
-      <Flex alignItems="center">
-        <Heading as="h1" size="lg" mb={6}>
+      <HStack mb={5}>
+        <Heading as="h1" size="lg">
           {resourcePool.Name}
         </Heading>
         <Spacer />
         {isAllocating && (
-          <Box>
-            <ButtonGroup>
-              <Button
-                onClick={claimResourceModal.onOpen}
-                colorScheme="blue"
-                variant="outline"
-                isDisabled={!canClaimResources}
-              >
-                Claim resource
-              </Button>
-              <Button
-                onClick={claimAddressModal.onOpen}
-                colorScheme="blue"
-                variant="solid"
-                isDisabled={!canClaimResources}
-              >
-                Claim address
-              </Button>
-            </ButtonGroup>
-          </Box>
+          <Button
+            onClick={handleOnOpenClaimResourceModal}
+            colorScheme="blue"
+            variant="solid"
+            isDisabled={!canClaimResources}
+          >
+            Claim resource
+          </Button>
         )}
-      </Flex>
+      </HStack>
 
       <Box background="white" padding={5}>
         <Text fontSize="lg">Utilized capacity</Text>
-        <Progress size="xs" value={capacityValue} />
+        <Progress
+          size="xs"
+          value={Number((BigInt(resourcePool.Capacity?.utilizedCapacity ?? 0n) * 100n) / totalCapacity)}
+        />
         <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
-          {resourcePool.Capacity?.freeCapacity ?? 0} / {totalCapacity}
+          {resourcePool.Capacity?.freeCapacity ?? 0} / {totalCapacity.toString()}
         </Text>
       </Box>
 
-      <Box my={10}>
-        <Heading size="md" mb={5}>
-          Allocated Resources
-        </Heading>
-        {resourcePool.PoolType === 'allocating' && (
-          <PoolDetailAllocatingTable
-            allocatedResources={allocatedResources?.QueryResources}
-            onFreeResource={freePoolResource}
-            canFreeResource={canFreeResource}
-            onNext={nextPage}
-            onPrevious={previousPage}
-            paginationArgs={paginationArgs}
-          />
-        )}
-        {(resourcePool.PoolType === 'set' || resourcePool.PoolType === 'singleton') && (
-          <PoolDetailSetSingletonTable
-            resources={resourcePool.Resources}
-            allocatedResources={allocatedResources?.QueryResources}
-            onFreeResource={freePoolResource}
-            onClaimResource={claimPoolResource}
-            onNext={nextPage}
-            onPrevious={previousPage}
-            paginationArgs={paginationArgs}
-          />
-        )}
-      </Box>
+      <PoolDetailAllocatedResourceBox
+        allocatedResources={allocatedResources}
+        claimPoolResource={claimPoolResource}
+        freePoolResource={freePoolResource}
+        handleAlternativeIdsChange={handleAlternativeIdsChange}
+        isLoadingResources={isLoadingResources}
+        pagination={{ nextPage, previousPage, paginationArgs }}
+        resourcePool={resourcePool}
+      />
 
-      <Box my={10}>
-        <Flex>
-          <Heading size="md" mb={5}>
-            Nested Pools
-          </Heading>
-          <Spacer />
-          {canCreateNestedPool && (
-            <Button colorScheme="blue" as={Link} to={`../pools/new?parentPoolId=${poolId}&isNested=true`}>
-              Create nested pool
-            </Button>
-          )}
-        </Flex>
-        <PoolsTable pools={nestedPools} isLoading={isLoadingPool} onDeleteBtnClick={deleteResourcePool} />
+      <PoolDetailNestedPoolsTable
+        deleteResourcePool={deleteResourcePool}
+        isLoadingPool={isLoadingPool}
+        resourcePool={resourcePool}
+        poolId={poolId}
+      />
+
+      <Box my={5} border="1px" borderColor="gray.300" borderRadius="md" bgColor="white" padding={5}>
+        <Heading textColor="red.500" size="md">
+          Danger zone
+        </Heading>
+        <Text size="xs" textColor="gray.400">
+          Delete resource pool
+        </Text>
+        <Divider my={3} />
+        <Text size="sm" textColor="gray.400">
+          <strong>Warning:</strong> By deleting this pool, all data will be lost.
+        </Text>
+        <DeletePoolPopover
+          onDelete={() => deleteResourcePool(poolId, { redirectOnSuccess: '/uniresource/pools' })}
+          canDeletePool={canDeletePool}
+          poolName={resourcePool.Name}
+        >
+          <Button mt={5} variant="outline" colorScheme="red" isDisabled={!canDeletePool}>
+            Delete resource pool
+          </Button>
+        </DeletePoolPopover>
       </Box>
     </PageContainer>
   );

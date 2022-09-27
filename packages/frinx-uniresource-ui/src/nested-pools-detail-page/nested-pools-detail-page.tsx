@@ -2,9 +2,8 @@ import { Box, Heading, Progress } from '@chakra-ui/react';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
+import { unwrap, omitNullValue, useNotifications } from '@frinx/shared/src';
 import PageContainer from '../components/page-container';
-import { omitNullValue } from '../helpers/omit-null-value';
-import unwrap from '../helpers/unwrap';
 import PoolsTable from '../pages/pools-page/pools-table';
 import {
   DeletePoolMutation,
@@ -85,6 +84,8 @@ const DELETE_POOL_MUTATION = gql`
 const NestedPoolsDetailPage: VoidFunctionComponent = () => {
   const { poolId } = useParams<{ poolId: string }>();
   const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
+  const { addToastNotification } = useNotifications();
+
   const [{ data: poolData, fetching: isLoadingPool }] = useQuery<
     GetNestedPoolsDetailQuery,
     GetNestedPoolsDetailQueryVariables
@@ -99,7 +100,24 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
   }
 
   const handleDeleteBtnClick = (id: string) => {
-    deletePool({ input: { resourcePoolId: id } }, context);
+    deletePool({ input: { resourcePoolId: id } }, context)
+      .then(({ error }) => {
+        if (error) {
+          throw error;
+        }
+
+        addToastNotification({
+          content: 'The pool has been deleted',
+          type: 'success',
+        });
+      })
+      .catch((err) => {
+        addToastNotification({
+          title: 'We could not delete the pool',
+          content: err.message,
+          type: 'error',
+        });
+      });
   };
 
   if (isLoadingPool) {

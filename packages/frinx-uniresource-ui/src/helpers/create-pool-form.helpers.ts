@@ -1,12 +1,19 @@
+import * as yup from 'yup';
 import { SelectPoolsQuery, SelectResourceTypesQuery } from '../__generated__/graphql';
+
+const IPV4_REGEX = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
+const IPV6_REGEX =
+  /(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$)/;
+
+export type AvailableAllocatedResource = { Name: string; id: string; parentId: string; hasNestedPools: boolean };
 
 export function getAvailableAllocatedResources(
   pools: SelectPoolsQuery['QueryResourcePools'],
   parentPoolId?: string,
-): { Name: string; id: string; parentId: string; hasNestedPools: boolean }[] {
+): AvailableAllocatedResource[] {
   return pools.flatMap((resourcePool) =>
     resourcePool.Resources.map((resource) => ({
-      Name: `${resource.Description}`,
+      Name: `${resource.Properties[Object.keys(resource.Properties)[0]]}`,
       id: resource.id,
       parentId: resource.ParentPool.id,
       hasNestedPools: resource.NestedPool !== null,
@@ -47,6 +54,42 @@ export function canSelectAllocatingStrategy(
       /^ipv4_prefix$|^ipv6_prefix$|^vlan_range$/.test(resourceType.Name) && resourceType.id === resourceTypeId,
   );
 }
+
+export const isSpecificResourceTypeName = (resourceTypeName: string, selectors: string[]) => {
+  return selectors.some((selector) => selector === resourceTypeName);
+};
+
+export const canSelectDefaultResourceTypes = (resourceTypeName: string) => {
+  return isSpecificResourceTypeName(resourceTypeName, [
+    'ipv4',
+    'ipv4_prefix',
+    'ipv6',
+    'ipv6_prefix',
+    'vlan_range',
+    'vlan',
+    'route_distinguisher',
+    'unique_id',
+    'random_signed_int32',
+  ]);
+};
+
+export const canSelectIpResourceTypes = (resourceTypeName: string) => {
+  return isSpecificResourceTypeName(resourceTypeName, ['ipv4', 'ipv4_prefix', 'ipv6', 'ipv6_prefix']);
+};
+
+export const isCustomResourceType = (resourceTypename: string) => {
+  return !isSpecificResourceTypeName(resourceTypename, [
+    'ipv4',
+    'ipv4_prefix',
+    'ipv6',
+    'ipv6_prefix',
+    'vlan_range',
+    'vlan',
+    'route_distinguisher',
+    'unique_id',
+    'random_signed_int32',
+  ]);
+};
 
 export function getAvailablePoolProperties(
   resourcePools: SelectPoolsQuery,
@@ -102,31 +145,28 @@ export function getPoolPropertiesSkeleton(
   resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'],
   resourceTypeId: string,
   values?: Record<string, string>,
-): [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string'>] {
+): [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string' | 'bool'>] {
   const resourceTypeName = resourceTypes.find((type) => type.id === resourceTypeId)?.Name;
-  let result: [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string'>] = [{}, {}];
+  let result: [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string' | 'bool'>] = [
+    {},
+    {},
+  ];
 
   switch (resourceTypeName) {
+    case 'ipv4':
+    case 'ipv6':
     case 'ipv6_prefix':
     case 'ipv4_prefix':
       result = [
-        { prefix: values?.prefix || '', address: values?.address || '' },
-        { prefix: 'int', address: 'string' },
+        { address: values?.address || '', prefix: values?.prefix || '', subnet: values?.subnet || 'false' },
+        { address: 'string', prefix: 'int', subnet: 'bool' },
       ];
-      break;
-    case 'random_signed_int32':
-      result = [{ int: values?.int || '' }, { int: 'int' }];
       break;
     case 'route_distinguisher':
       result = [{ rd: values?.rd || '' }, { rd: 'string' }];
       break;
-    case 'ipv4':
-    case 'ipv6':
-      result = [{ address: values?.address || '' }, { address: 'string' }];
-      break;
+    case 'random_signed_int32':
     case 'vlan':
-      result = [{ vlan: values?.vlan || '' }, { vlan: 'int' }];
-      break;
     case 'vlan_range':
       result = [
         { from: values?.from || '', to: values?.to || '' },
@@ -134,11 +174,207 @@ export function getPoolPropertiesSkeleton(
       ];
       break;
     case 'unique_id':
-      result = [{ id: values?.id || '' }, { id: 'string' }];
+      result = [
+        { from: values?.from || '', to: values?.to || '', idFormat: '{counter}' },
+        { from: 'int', to: 'int', idFormat: 'string' },
+      ];
       break;
     default:
       break;
   }
 
   return result;
+}
+
+function getSchemaForPoolValues(
+  poolValues: Record<string, string>[],
+  options: { isIpv6?: boolean; isIpv4?: boolean } = { isIpv4: false, isIpv6: false },
+) {
+  return yup.array().of(
+    yup.object().shape({
+      ...Object.keys(poolValues[0] ?? {}).reduce((acc, key) => {
+        if (key === 'address') {
+          return {
+            ...acc,
+            [key]: yup
+              .string()
+              .matches(
+                options.isIpv4 ? IPV4_REGEX : IPV6_REGEX,
+                `Please enter a valid ${options.isIpv4 ? 'IPv4' : 'IPv6'} address`,
+              )
+              .required(`Please enter an ${options.isIpv4 ? 'IPv4' : 'IPv6'} address`),
+          };
+        } else {
+          return {
+            ...acc,
+            [key]: yup.string().required('Please enter a value'),
+          };
+        }
+      }, {}),
+    }),
+  );
+}
+
+export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) {
+  switch (poolType) {
+    case 'allocating':
+      return yup.object({
+        name: yup.string().required('Please enter a name'),
+        description: yup.string().notRequired(),
+        resourceTypeId: yup.string().required('Please enter resource type'),
+        tags: yup.array().notRequired(),
+        dealocationSafetyPeriod: yup
+          .number()
+          .min(0, 'Please enter positive number')
+          .required('Please enter a dealocation safety period')
+          .typeError('Please enter a number'),
+        allocationStrategyId: yup.string().notRequired(),
+        poolProperties: yup.lazy((poolProperties) =>
+          yup
+            .object()
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => resourceTypeName === 'ipv4' || resourceTypeName === 'ipv4_prefix',
+              then: yup.object().shape({
+                ...Object.keys(poolProperties).reduce((acc, key) => {
+                  if (key === 'from' || key === 'to' || key === 'id') {
+                    return {
+                      ...acc,
+                      [key]: yup
+                        .number()
+                        .min(1, 'Minimal required value is 1')
+                        .typeError('Please enter a number')
+                        .required(`Please enter a value`),
+                    };
+                  }
+
+                  if (key === 'address') {
+                    return {
+                      ...acc,
+                      [key]: yup
+                        .string()
+                        .matches(IPV4_REGEX, `Please enter a valid IPv4 address`)
+                        .required(`Please enter an IPv4 address`),
+                    };
+                  }
+
+                  return {
+                    ...acc,
+                    [key]: yup.string().required('Please enter a value'),
+                  };
+                }, {}),
+              }),
+            })
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => resourceTypeName === 'ipv6' || resourceTypeName === 'ipv6_prefix',
+              then: yup.object().shape({
+                ...Object.keys(poolProperties).reduce((acc, key) => {
+                  if (key === 'from' || key === 'to' || key === 'id') {
+                    return {
+                      ...acc,
+                      [key]: yup.number().typeError('Please enter a number').required(`Please enter a value`),
+                    };
+                  }
+
+                  if (key === 'address') {
+                    return {
+                      ...acc,
+                      [key]: yup
+                        .string()
+                        .matches(IPV6_REGEX, `Please enter a valid IPv6 address`)
+                        .required(`Please enter an IPv6 address`),
+                    };
+                  }
+
+                  return {
+                    ...acc,
+                    [key]: yup.string().required('Please enter a value'),
+                  };
+                }, {}),
+              }),
+            })
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => resourceTypeName === 'random_signed_int32',
+              then: yup.object().shape({
+                ...Object.keys(poolProperties).reduce((acc, key) => {
+                  return {
+                    ...acc,
+                    [key]: yup
+                      .number()
+                      .typeError('Please enter a number')
+                      .min(-2147483648, 'Please enter a number between -2147483648 and 2147483647')
+                      .max(2147483647, 'Please enter a number between -2147483648 and 2147483647')
+                      .required('Please enter a value'),
+                  };
+                }, {}),
+              }),
+            })
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => isCustomResourceType(resourceTypeName),
+              then: yup.object().shape({
+                ...Object.keys(poolProperties).reduce((acc, key) => {
+                  return {
+                    ...acc,
+                    [key]: yup.string().required('This field is required'),
+                  };
+                }, {}),
+              }),
+            }),
+        ),
+        poolPropertyTypes: yup.object().required(),
+        ...(isNested && {
+          parentPoolId: yup.string().required('Please choose parent pool'),
+          parentResourceId: yup.string().required('Please choose allocated resource from parent'),
+        }),
+      });
+
+    case 'set':
+      return yup.object({
+        name: yup.string().required('Please enter a name'),
+        description: yup.string().notRequired(),
+        resourceTypeId: yup.string().required('Please enter resource type'),
+        tags: yup.array().of(yup.string()).notRequired(),
+        dealocationSafetyPeriod: yup
+          .number()
+          .min(0, 'Please enter positive number')
+          .required('Please enter a dealocation safety period')
+          .typeError('Please enter a number'),
+        poolValues: yup.lazy((poolValues: Array<Record<string, string>>) => {
+          return yup
+            .array()
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => resourceTypeName === 'ipv4' || resourceTypeName === 'ipv4_prefix',
+              then: getSchemaForPoolValues(poolValues, { isIpv4: true }),
+            })
+            .when('resourceTypeName', {
+              is: (resourceTypeName: string) => resourceTypeName === 'ipv6' || resourceTypeName === 'ipv6_prefix',
+              then: getSchemaForPoolValues(poolValues, { isIpv6: true }),
+              otherwise: yup.array().of(
+                yup.object().shape({
+                  ...Object.keys(poolValues[0] ?? {}).reduce(
+                    (acc, key) => ({ ...acc, [key]: yup.string().required('Please enter a value') }),
+                    {},
+                  ),
+                }),
+              ),
+            })
+            .min(1, 'Please enter at least one value');
+        }),
+        ...(isNested && {
+          parentPoolId: yup.string().required('Please choose parent pool'),
+          parentResourceId: yup.string().required('Please choose allocated resource from parent'),
+        }),
+      });
+
+    default:
+      return yup.object({
+        name: yup.string().required('Please enter a name'),
+        description: yup.string().notRequired(),
+        tags: yup.array(),
+        resourceTypeId: yup.string().required('Please enter resource type'),
+        ...(isNested && {
+          parentPoolId: yup.string().required('Please choose parent pool'),
+          parentResourceId: yup.string().required('Please choose allocated resource from parent'),
+        }),
+      });
+  }
 }

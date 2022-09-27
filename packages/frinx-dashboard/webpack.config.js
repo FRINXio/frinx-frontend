@@ -43,6 +43,11 @@ const plugins = [
         force: true,
         noErrorOnMissing: true,
       },
+      {
+        from: fullPath('../../public', 'favicon.ico'),
+        to: fullPath('../../build-client', 'favicon.ico'),
+        priority: 1,
+      },
     ],
   }),
 ];

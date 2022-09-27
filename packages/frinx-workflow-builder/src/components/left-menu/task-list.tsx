@@ -12,8 +12,9 @@ import {
   Wrap,
   Badge,
   WrapItem,
+  Icon,
 } from '@chakra-ui/react';
-import { AddIcon, SearchIcon } from '@chakra-ui/icons';
+import FeatherIcon from 'feather-icons-react';
 import MiniSearch from 'minisearch';
 import throttle from 'lodash/throttle';
 import { ExtendedTask, TaskDefinition } from '../../helpers/types';
@@ -44,7 +45,7 @@ const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions }) 
     <Box>
       <InputGroup>
         <InputLeftElement pointerEvents="none">
-          <SearchIcon />
+          <Icon as={FeatherIcon} icon="search" size={20} />
         </InputLeftElement>
         <Input
           type="text"
@@ -88,7 +89,7 @@ const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions }) 
             <IconButton
               size="sm"
               aria-label="Add task"
-              icon={<AddIcon />}
+              icon={<Icon as={FeatherIcon} icon="plus" size={20} />}
               onClick={() => {
                 onTaskAdd(convertTaskDefinition(tskDefinition));
               }}

@@ -1,13 +1,11 @@
 import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
+import { useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
-import useMinisearch from '../../hooks/use-minisearch';
-import useNotifications from '../../hooks/use-notifications';
-import useTags from '../../hooks/use-tags';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
@@ -122,7 +120,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
             leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
             colorScheme="blue"
             as={Link}
-            to="/uniresource/pools/new"
+            to="/uniresource/pools/new?resource-type-name=ipv4_prefix&type=ip"
           >
             Create Pool
           </Button>

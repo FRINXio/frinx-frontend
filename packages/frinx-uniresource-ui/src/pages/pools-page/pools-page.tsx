@@ -1,10 +1,10 @@
-import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
+import { Box, Button, Heading, HStack, Icon, Progress, Spacer } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
-import useNotifications from '../../hooks/use-notifications';
+import { useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
@@ -14,8 +14,6 @@ import {
   GetResourceTypesQueryVariables,
 } from '../../__generated__/graphql';
 import PoolsTable from './pools-table';
-import useMinisearch from '../../hooks/use-minisearch';
-import useTags from '../../hooks/use-tags';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 
 const ALL_POOLS_QUERY = gql`
@@ -112,12 +110,12 @@ const PoolsPage: VoidFunctionComponent = () => {
     setSelectedResourceType('');
   };
 
-  if (error != null || data == null) {
-    return <div>{error?.message}</div>;
-  }
-
   if (isQueryLoading) {
     return <Progress isIndeterminate size="sm" mt={-10} />;
+  }
+
+  if (error != null || data == null) {
+    return <div>{error?.message}</div>;
   }
 
   const isSelectedResourceTypeEmpty = selectedResourceType == null || selectedResourceType.trim().length === 0;
@@ -142,22 +140,23 @@ const PoolsPage: VoidFunctionComponent = () => {
 
   return (
     <>
-      <Flex as="header" alignItems="center" marginBottom={5}>
+      <HStack mb={5}>
         <Heading as="h1" size="lg">
           Pools
         </Heading>
+        <Spacer />
         <Box marginLeft="auto">
           <Button
             mr={2}
             leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
             colorScheme="blue"
             as={Link}
-            to="new"
+            to="new?type=default"
           >
             Create Pool
           </Button>
         </Box>
-      </Flex>
+      </HStack>
       <SearchFilterPoolsBar
         setSearchText={setSearchText}
         searchText={searchText}

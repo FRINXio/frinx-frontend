@@ -1,7 +1,8 @@
-import React, { createContext, FC, useRef } from 'react';
+import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';
 import { retryExchange } from '@urql/exchange-retry';
-import { Provider, createClient, ClientOptions, dedupExchange, cacheExchange, fetchExchange } from 'urql';
-import { CustomToastProvider } from './notifications-context';
+import { CustomToastProvider } from '@frinx/shared/src';
+import React, { createContext, FC, useRef } from 'react';
+import { cacheExchange, ClientOptions, createClient, dedupExchange, Provider } from 'urql';
 
 export const InventoryAPIContext = createContext(false);
 
@@ -29,7 +30,7 @@ export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
             return false;
           },
         }),
-        fetchExchange,
+        multipartFetchExchange,
       ],
     }),
   );

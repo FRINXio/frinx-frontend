@@ -1,9 +1,8 @@
 import { Box, Container, Heading, Progress } from '@chakra-ui/react';
+import { unwrap, useNotifications } from '@frinx/shared/src';
 import React, { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
-import unwrap from '../../helpers/unwrap';
-import useResponseToasts from '../../hooks/user-response-toasts';
 import {
   CreateLabelMutation,
   CreateLabelMutationVariables,
@@ -108,16 +107,14 @@ type Props = {
 type FormValues = {
   zoneId: string;
   mountParameters: string;
-  labels: string[];
+  labelIds: string[];
   serviceState: DeviceServiceState;
 };
 
 const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
+  const { addToastNotification } = useNotifications();
   const { deviceId } = useParams<{ deviceId: string }>();
-  const [{ data: updateDeviceData, error: updateDeviceError }, updateDevice] = useMutation<
-    UpdateDeviceMutation,
-    UpdateDeviceMutationVariables
-  >(UPDATE_DEVICE_MUTATION);
+  const [, updateDevice] = useMutation<UpdateDeviceMutation, UpdateDeviceMutationVariables>(UPDATE_DEVICE_MUTATION);
   const [{ data: deviceData, fetching: isLoadingDevice }] = useQuery<DeviceQuery, DeviceQueryVariables>({
     query: DEVICE_QUERY,
     variables: { id: unwrap(deviceId) },
@@ -127,16 +124,6 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
     query: LABELS_QUERY,
   });
   const [, createLabel] = useMutation<CreateLabelMutation, CreateLabelMutationVariables>(CREATE_LABEL);
-
-  const isUpdateSuccessfull = updateDeviceData != null;
-  const isUpdateFailed = updateDeviceError != null;
-
-  useResponseToasts({
-    isSuccess: isUpdateSuccessfull,
-    isFailure: isUpdateFailed,
-    successMessage: 'Device succesfully edited',
-    failureMessage: 'Device could not be edited',
-  });
 
   const handleOnLabelCreate = async (labelName: string): Promise<Label | null> => {
     const result = await createLabel({
@@ -152,13 +139,28 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
     updateDevice({
       id: unwrap(deviceId),
       input: {
-        labelIds: values.labels,
+        labelIds: values.labelIds,
         mountParameters: values.mountParameters,
         serviceState: values.serviceState,
       },
-    }).then(() => {
-      onSuccess();
-    });
+    })
+      .then(({ error }) => {
+        if (error != null) {
+          throw new Error('Problem with saving process');
+        }
+
+        onSuccess();
+        addToastNotification({
+          content: 'Successfull device edit',
+          type: 'success',
+        });
+      })
+      .catch(() =>
+        addToastNotification({
+          content: 'There was a problem with device edit',
+          type: 'error',
+        }),
+      );
   };
 
   if (isLoadingDevice) {

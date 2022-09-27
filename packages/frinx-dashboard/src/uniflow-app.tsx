@@ -13,7 +13,7 @@ const UniflowApp: FC = () => {
   const [components, setComponents] = useState<(UniflowComponents & BuilderComponents) | null>(null);
 
   useEffect(() => {
-    Promise.all([import('@frinx/workflow-ui'), import('@frinx/workflow-builder')]).then(
+    Promise.all([import('@frinx/workflow-ui'), import('@frinx/workflow-builder/src')]).then(
       ([uniflowImport, builderImport]) => {
         const { UniflowApp: App, getUniflowApiProvider, ReduxProvider } = uniflowImport;
         const { getBuilderApiProvider } = builderImport;

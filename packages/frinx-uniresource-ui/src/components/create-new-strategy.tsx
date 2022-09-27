@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import { useMutation } from 'urql';
 import { Box, Button, Container, FormControl, FormLabel, Heading, Input, Select } from '@chakra-ui/react';
 import gql from 'graphql-tag';
-import AceEditor from 'react-ace';
+import { Editor } from '@frinx/shared/src';
 import {
   AllocationStrategyLang,
   CreateAllocationStrategyPayload,
@@ -94,7 +94,7 @@ const CreateNewStrategy: FC<Props> = ({ onSaveButtonClick }) => {
               </Select>
             </FormControl>
             <FormControl my={6}>
-              <AceEditor
+              <Editor
                 height="450px"
                 width="100%"
                 mode={lang === 'js' ? 'javascript' : 'python'}

@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 
 import {
   Accordion,
@@ -14,10 +14,9 @@ import {
   Spinner,
   Stack,
 } from '@chakra-ui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
+import FeatherIcon from 'feather-icons-react';
+import { useNotifications } from '@frinx/shared/src';
 import callbackUtils from '../../../../utils/callback-utils';
-import useNotifications from '../../../../hooks/use-notifications';
 
 type CallBackUtilsFunctionNames =
   | 'restartWorkflows'
@@ -85,7 +84,7 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
           <AccordionButton>
             <Box flex="1" textAlign="left">
               Bulk Processing (click to expand)&nbsp;&nbsp;
-              <Icon as={FontAwesomeIcon} icon={faEllipsisH} />
+              <Icon size={20} as={FeatherIcon} icon="more-horizontal" />
               &nbsp;&nbsp; Displaying <b>{workflowsAmount}</b> workflows
             </Box>
             <AccordionIcon />

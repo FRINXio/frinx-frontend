@@ -204,10 +204,12 @@ const RoutingProtocolItemValidator = t.type({
     t.type({
       'bgp-profiles': optional(
         t.type({
-          'bgp-profile': t.array(
-            t.type({
-              profile: t.string,
-            }),
+          'bgp-profile': optional(
+            t.array(
+              t.type({
+                profile: t.string,
+              }),
+            ),
           ),
         }),
       ),
@@ -295,8 +297,8 @@ const SiteNetworkAccessValidator = t.type({
         ),
         service: optional(
           t.type({
-            'svc-input-bandwidth': t.number,
-            'svc-output-bandwidth': t.number,
+            'svc-input-bandwidth': t.string,
+            'svc-output-bandwidth': t.string,
             qos: optional(
               t.type({
                 'qos-profile': optional(
@@ -432,8 +434,8 @@ export type CreateNetworkAccessInput = {
       };
     };
     service: {
-      'svc-input-bandwidth': number;
-      'svc-output-bandwidth': number;
+      'svc-input-bandwidth': string;
+      'svc-output-bandwidth': string;
       qos: {
         'qos-profile': {
           'qos-profile': [
@@ -631,7 +633,7 @@ const EvcAttachmentOutputValidator = t.type({
   'carrier-reference': optional(t.string),
   'svlan-id': optional(t.number),
   status: optional(BearerStatusValidator),
-  'input-bandwidth': t.number,
+  'input-bandwidth': t.string,
   'qos-input-profile': optional(t.string),
   'upstream-bearer': optional(t.string),
 });
@@ -817,8 +819,8 @@ export type Bearer = {
 };
 
 export type Service = {
-  svcInputBandwidth: number;
-  svcOutputBandwidth: number;
+  svcInputBandwidth: string;
+  svcOutputBandwidth: string;
   qosProfiles: [string];
 };
 

@@ -1,8 +1,8 @@
 import { Button, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import { useNotifications } from '@frinx/shared/src';
 import gql from 'graphql-tag';
 import React, { VoidFunctionComponent } from 'react';
 import { useMutation, useQuery } from 'urql';
-import useNotifications from '../../hooks/use-notifications';
 import {
   CreateResourceTypeMutation,
   CreateResourceTypeMutationVariables,
@@ -62,13 +62,25 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
         resourceProperties: {},
       },
     })
-      .then(() => notification.addToastNotification({ content: 'Resource type created successfully', type: 'success' }))
+      .then(({ error: createResourceTypeError }) => {
+        if (createResourceTypeError != null) {
+          throw Error();
+        }
+
+        notification.addToastNotification({ content: 'Resource type created successfully', type: 'success' });
+      })
       .catch(() => notification.addToastNotification({ content: 'Resource type creation failed', type: 'error' }));
   };
 
   const handleOnDelete = (resourceTypeId: string) => {
     deleteResourceType({ input: { resourceTypeId } })
-      .then(() => notification.addToastNotification({ content: 'Resource type deleted successfully', type: 'success' }))
+      .then(({ error: deleteResourceTypeError }) => {
+        if (deleteResourceTypeError != null) {
+          throw Error();
+        }
+
+        notification.addToastNotification({ content: 'Resource type deleted successfully', type: 'success' });
+      })
       .catch(() => notification.addToastNotification({ content: 'Resource type deletion failed', type: 'error' }));
   };
 

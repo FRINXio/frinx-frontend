@@ -1,4 +1,3 @@
-import { EditIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -127,7 +126,7 @@ const DeviceBlueprints: VoidFunctionComponent = () => {
                       aria-label="edit"
                       size="sm"
                       variant="unstyled"
-                      icon={<Icon size={12} as={EditIcon} />}
+                      icon={<Icon size={30} as={FeatherIcon} icon="edit" />}
                       as={Link}
                       to={`${blueprint.id}/edit`}
                     />

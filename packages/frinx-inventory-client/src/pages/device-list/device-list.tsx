@@ -1,12 +1,12 @@
 import { Box, Button, Container, Flex, Heading, HStack, Progress, Spacer, useDisclosure } from '@chakra-ui/react';
+import { unwrap, useNotifications } from '@frinx/shared/src';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FC, useMemo, useState, VoidFunctionComponent } from 'react';
-import { gql, useMutation, useQuery } from 'urql';
 import { Link } from 'react-router-dom';
+import { gql, useMutation, useQuery } from 'urql';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal';
+import ImportCSVModal from '../../components/import-csv-modal';
 import Pagination from '../../components/pagination';
-import unwrap from '../../helpers/unwrap';
-import useNotifications from '../../hooks/use-notifications';
 import { usePagination } from '../../hooks/use-pagination';
 import {
   DeleteDeviceMutation,
@@ -20,12 +20,12 @@ import {
   UninstallDeviceMutationVariables,
 } from '../../__generated__/graphql';
 import DeviceFilter from './device-filters';
-import DeviceTable from './device-table';
 import DeviceSearch from './device-search';
+import DeviceTable from './device-table';
 
 const DEVICES_QUERY = gql`
   query Devices(
-    $labelIds: [String!]
+    $labels: [String!]
     $deviceName: String
     $orderBy: DeviceOrderByInput
     $first: Int
@@ -34,7 +34,7 @@ const DEVICES_QUERY = gql`
     $before: String
   ) {
     devices(
-      filter: { labelIds: $labelIds, deviceName: $deviceName }
+      filter: { labels: $labels, deviceName: $deviceName }
       orderBy: $orderBy
       first: $first
       after: $after
@@ -167,11 +167,12 @@ const DeviceList: VoidFunctionComponent = () => {
   const [sorting, setSorting] = useState<Sorting | null>(null);
   const [searchText, setSearchText] = useState<string | null>(null);
   const [deviceNameFilter, setDeviceNameFilter] = useState<string | null>(null);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [paginationArgs, { nextPage, previousPage, firstPage }] = usePagination();
   const [{ data: deviceData, fetching: isFetchingDevices, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
     variables: {
-      labelIds: selectedLabels.map((label) => label.value),
+      labels: selectedLabels.map((label) => label.label),
       deviceName: deviceNameFilter,
       orderBy: sorting
         ? {
@@ -411,6 +412,13 @@ const DeviceList: VoidFunctionComponent = () => {
 
   return (
     <>
+      {isImportModalOpen && (
+        <ImportCSVModal
+          onClose={() => {
+            setIsImportModalOpen(false);
+          }}
+        />
+      )}
       <DeleteSelectedDevicesModal
         onSubmit={handleSelectedDeviceDelete}
         isOpen={deleteSelectedDevicesModal.isOpen}
@@ -429,9 +437,18 @@ const DeviceList: VoidFunctionComponent = () => {
           <Heading as="h2" size="3xl">
             Devices
           </Heading>
-          <Button as={Link} colorScheme="blue" to="../new">
-            Add device
-          </Button>
+          <HStack spacing={2} marginLeft="auto">
+            <Button as={Link} colorScheme="blue" to="../new">
+              Add device
+            </Button>
+            <Button
+              onClick={() => {
+                setIsImportModalOpen(true);
+              }}
+            >
+              Import from CSV
+            </Button>
+          </HStack>
         </Flex>
         <Box position="relative">
           {isFetchingDevices && deviceData != null && (

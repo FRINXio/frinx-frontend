@@ -11,6 +11,7 @@ type Props = {
   restartWorkflows: () => void;
   onWorkflowActionExecution: (workflowId: string) => void;
   workflowId: string;
+  visibleRestartButton: boolean;
 };
 
 const getExecutionTime = (end: string, start: string) => {
@@ -36,6 +37,7 @@ const DetailsModalHeader: FC<Props> = ({
   onWorkflowActionExecution,
   workflowId,
   restartWorkflows,
+  visibleRestartButton,
 }) => (
   <Box background="brand.600" borderRadius={4} padding={15} marginBottom={10}>
     <Grid templateColumns={status === 'COMPLETED' ? 'repeat(4, 1fr)' : 'repeat(5,1fr)'}>
@@ -74,6 +76,7 @@ const DetailsModalHeader: FC<Props> = ({
             workflowId={workflowId}
             status={status}
             onWorkflowActionExecution={onWorkflowActionExecution}
+            isVisibleRestartButton={visibleRestartButton}
           />
         </Box>
       )}

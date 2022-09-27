@@ -1,13 +1,11 @@
-import { Heading, Progress, useDisclosure } from '@chakra-ui/react';
+import { Heading, Progress } from '@chakra-ui/react';
 import { IPv4, IPv6 } from 'ipaddr.js';
 import { compact } from 'lodash';
-import React, { useState, VoidFunctionComponent } from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
+import { useMinisearch, useTags } from '@frinx/shared/src';
 import SearchFilterPoolsBar from '../../../components/search-filter-pools-bar';
-import useMinisearch from '../../../hooks/use-minisearch';
-import useTags from '../../../hooks/use-tags';
 import useResourcePoolActions from '../../../hooks/use-resource-pool-actions';
-import { ClaimAddressModal } from '../../pool-detail-page/claim-address-modal';
 import IpRangesTable from '../ip-ranges-table';
 
 const isIpv4 = (name: string) => name === 'ipv4_prefix';
@@ -23,10 +21,8 @@ const getAddressesFromCIDR = (cidr: string, resourceTypeName: string) => ({
 
 const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
   const { id } = useParams();
-  const { isOpen, onClose, onOpen } = useDisclosure();
-  const [poolId, setPoolId] = useState('');
 
-  const [{ poolDetail }, { handleOnClaimAddress, deleteResourcePool }] = useResourcePoolActions({ poolId: id });
+  const [{ poolDetail }, { deleteResourcePool }] = useResourcePoolActions({ poolId: id });
 
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
   const { results, searchText, setSearchText } = useMinisearch({
@@ -54,7 +50,7 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
     return <Progress isIndeterminate size="sm" mt={-10} />;
   }
 
-  if (poolDetail.error != null) {
+  if (poolDetail.error != null || poolDetail.data?.QueryResourcePool == null) {
     return <Heading>There was problem to load nested ip ranges</Heading>;
   }
 
@@ -68,7 +64,7 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
       return {
         id: ipRangeId,
         name: Name,
-        size: Capacity != null ? BigInt(Capacity.utilizedCapacity) + BigInt(Capacity.freeCapacity) : 0,
+        totalCapacity: Capacity != null ? BigInt(Capacity.utilizedCapacity) + BigInt(Capacity.freeCapacity) : 0,
         freeCapacity: Capacity != null ? BigInt(Capacity.freeCapacity) : 0,
         tags: Tags,
         network: `${network}/${PoolProperties.prefix}`,
@@ -88,14 +84,6 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
 
   return (
     <>
-      {poolId && (
-        <ClaimAddressModal
-          isOpen={isOpen}
-          onClose={onClose}
-          onClaimAddress={(formValues) => handleOnClaimAddress(poolId, formValues)}
-          resourceProperties={poolDetail.data?.QueryResourcePool.PoolProperties}
-        />
-      )}
       <Heading as="h1" size="lg" mb={5}>
         IP Ranges of {poolDetail.data?.QueryResourcePool.Name}
       </Heading>
@@ -107,15 +95,7 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
         onTagClick={handleOnTagClick}
         onClearSearch={handleOnClearSearch}
       />
-      <IpRangesTable
-        ipRanges={nestedIpRanges}
-        onTagClick={handleOnTagClick}
-        onGetAddressClick={(selectedPoolId) => {
-          setPoolId(selectedPoolId);
-          onOpen();
-        }}
-        onDeleteBtnClick={deleteResourcePool}
-      />
+      <IpRangesTable ipRanges={nestedIpRanges} onTagClick={handleOnTagClick} onDeleteBtnClick={deleteResourcePool} />
     </>
   );
 };

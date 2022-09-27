@@ -1,4 +1,3 @@
-import { AddIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -16,11 +15,11 @@ import {
   Portal,
   Text,
 } from '@chakra-ui/react';
+import { Editor } from '@frinx/shared/src';
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
-import AceEditor from 'react-ace';
 import { Snapshot } from '../../__generated__/graphql';
 
 type Props = {
@@ -79,7 +78,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
                 Refresh
               </Button>
               <Menu>
-                <MenuButton as={IconButton} icon={<ChevronDownIcon />} />
+                <MenuButton as={IconButton} icon={<Icon size={30} as={FeatherIcon} icon="chevron-down" />} />
                 <Portal>
                   <MenuList zIndex="tooltip">
                     <MenuItem isDisabled={isResetLoading} onClick={onReplaceBtnClick}>
@@ -98,7 +97,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
               </Button>
             </ButtonGroup>
           </Flex>
-          <AceEditor
+          <Editor
             width="100%"
             mode="json"
             value={config}
@@ -116,7 +115,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
           </Box>
           <Flex justifyContent="flex-end" marginBottom={4} paddingY={2}>
             <ButtonGroup isAttached size="sm" marginRight="auto">
-              <Button onClick={onCreateSnapshotBtnClick} leftIcon={<AddIcon />}>
+              <Button onClick={onCreateSnapshotBtnClick} leftIcon={<Icon size={30} as={FeatherIcon} icon="plus" />}>
                 Create snapshot
               </Button>
               <Menu>
@@ -178,7 +177,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
               Sync from network
             </Button>
           </Flex>
-          <AceEditor width="100%" mode="json" value={operational} theme="tomorrow" readOnly />
+          <Editor width="100%" mode="json" value={operational} theme="tomorrow" readOnly />
         </GridItem>
       </Grid>
     </Box>

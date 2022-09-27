@@ -1,13 +1,15 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, HStack, Input, Select, Spacer } from '@chakra-ui/react';
 import { useFormik } from 'formik';
-import AceEditor from 'react-ace';
+import { Editor, unwrap } from '@frinx/shared/src';
+import * as yup from 'yup';
 import { AllocationStrategyLang } from '../../__generated__/graphql';
 import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/ext-language_tools';
+import ExpectedPoolProperties from './expected-pool-properties-form';
 
 function getDefaultScriptValue(): string {
   return `function invoke() {
@@ -20,46 +22,93 @@ const INITIAL_VALUES: FormValues = {
   name: '',
   lang: 'js',
   script: getDefaultScriptValue(),
+  expectedPoolPropertyTypes: [{ key: 'address', type: 'int' }],
 };
 
-type FormValues = {
+// eslint-disable-next-line func-names
+yup.addMethod(yup.array, 'unique', function (message, mapper = (a: unknown) => a) {
+  return this.test('unique', message, (list, context) => {
+    const l = unwrap(list);
+    if (l.length !== new Set(l.map(mapper)).size) {
+      // we want to have duplicate error in another path to be able
+      // to distinguish it frow ordinary alternateId errors (key, value)
+      throw context.createError({
+        path: 'duplicateExpectedPoolPropertyKey',
+        message,
+      });
+    }
+
+    return true;
+  });
+});
+
+const validationSchema = yup.object().shape({
+  name: yup.string().required('Name of allocation strategy is required'),
+  lang: yup.string().required('Language of script for allocation strategy is required'),
+  script: yup.string().required('Allocation strategy script is required'),
+  expectedPoolPropertyTypes: yup
+    .array()
+    .of(
+      yup.object({
+        key: yup.string().required('You need to define name of expected pool property'),
+        type: yup.string().required('You need to define type of expected pool property'),
+      }),
+    )
+    // TODO: check suggested solution https://github.com/jquense/yup/issues/345#issuecomment-634718990
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    .unique('Expected pool property keys cannot repeat', (a: FormikValues) => a.key),
+});
+
+export type FormValues = {
   name: string;
   lang: AllocationStrategyLang;
   script: string;
+  expectedPoolPropertyTypes?: { key: string; type: string }[];
 };
 type Props = {
   onFormSubmit: (values: FormValues) => void;
 };
 
 const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
-  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue } = useFormik({
+  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik({
     initialValues: INITIAL_VALUES,
-    onSubmit: (data) => {
-      onFormSubmit(data);
-    },
+    validateOnBlur: false,
+    validateOnChange: false,
+    validationSchema,
+    onSubmit: onFormSubmit,
   });
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl marginY={5} id="name">
+      <FormControl marginY={5} id="name" isRequired>
         <FormLabel>Name</FormLabel>
         <Input name="name" id="name" value={values.name} onChange={handleChange} placeholder="Enter name" />
       </FormControl>
       <FormControl id="lang" marginY={5}>
+        <FormLabel>Strategy script language</FormLabel>
         <Select
           id="lang"
           name="lang"
           value={values.lang}
           onChange={handleChange}
-          placeholder="Select option"
+          placeholder="Select script language"
           width={60}
         >
           <option value="js">Javascript</option>
           <option value="py">Python</option>
         </Select>
       </FormControl>
+      <ExpectedPoolProperties
+        formErrors={errors}
+        expectedPoolPropertyTypes={values.expectedPoolPropertyTypes}
+        onPoolPropertyAdd={(newPoolProperties) => setFieldValue('expectedPoolPropertyTypes', newPoolProperties)}
+        onPoolPropertyChange={(newPoolProperties) => setFieldValue('expectedPoolPropertyTypes', newPoolProperties)}
+        onPoolPropertyDelete={(newPoolProperties) => setFieldValue('expectedPoolPropertyTypes', newPoolProperties)}
+      />
       <FormControl marginY={5}>
-        <AceEditor
+        <FormLabel>Strategy script</FormLabel>
+        <Editor
           height="450px"
           width="100%"
           mode={values.lang === 'js' ? 'javascript' : 'python'}
@@ -79,11 +128,12 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
           }}
         />
       </FormControl>
-      <FormControl marginY={5}>
+      <HStack>
+        <Spacer />
         <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
           Create strategy
         </Button>
-      </FormControl>
+      </HStack>
     </form>
   );
 };
