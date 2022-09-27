@@ -41,7 +41,7 @@ const Edges: VoidFunctionComponent = () => {
         if (isActive) {
           const groupName = getInterfaceGroupName(edge.target.nodeId, edge.source.nodeId);
           const groupData = interfaceGroupPositions[groupName];
-          const distanceFromLineList = getDistanceFromLineList(groupData.interfaces, EDGE_GAP);
+          const distanceFromLineList = getDistanceFromLineList(groupData.interfaces);
           const index = groupData.interfaces.indexOf(edge.target.interface);
           const length = EDGE_GAP * distanceFromLineList[index];
           const sourceInterfacePosition = getPointOnSlope(sourcePosition, targetPosition, EDGE_SLOPE_RADIUS, length);
