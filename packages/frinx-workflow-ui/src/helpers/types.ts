@@ -318,14 +318,13 @@ export type Workflow<T extends WorkflowTask = WorkflowTask> = {
   variables: Record<string, any>;
   correlationId: string;
 };
-export type NodeData =
-  | {
-      task: Exclude<ExtendedTask, ExtendedDecisionTask>;
-    }
-  | {
-      task: ExtendedDecisionTask;
-      decisionCases: Record<string, string>;
-    };
+export type NodeData = {
+  label: string;
+  isReadOnly: boolean;
+} & {
+  task?: ExtendedTask;
+  handles?: string[];
+};
 
 export type TaskDefinition = {
   name: string;
@@ -519,10 +518,10 @@ export type WorkflowTask = {
   caseValueParam: string;
   caseExpression: string;
   scriptExpression: string;
-  decisionCases: Record<string, string>;
+  decisionCases: Record<string, Task[]>;
   dynamicForkTasksParam: string;
   dynamicForkTasksInputParamName: string;
-  defaultCase: Record<string, string>[];
+  defaultCase: Task[];
   forkTasks: Task[][];
   startDelay: number;
   subWorkflowParam: SubWorkflowParam;
@@ -546,7 +545,7 @@ export type SubWorkflowParam = {
   workflowDefinition: WorkflowDefinition;
 };
 
-export type WorkflowDefinition = {
+export type WorkflowDefinition<T extends Task = Task> = {
   ownerApp: string;
   createTime: number;
   updateTime: number;
@@ -555,7 +554,7 @@ export type WorkflowDefinition = {
   name: string;
   description: string;
   version: number;
-  tasks: WorkflowTask[];
+  tasks: T[];
   inputParameters: Record<string, string>[];
   outputParameters: Record<string, string>;
   failureWorkflow: string;

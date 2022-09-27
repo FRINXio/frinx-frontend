@@ -18,7 +18,6 @@ import {
 import { useNotifications, unwrap } from '@frinx/shared/src';
 import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link, useParams } from 'react-router-dom';
-import WorkflowDia from './WorkflowDia/WorkflowDia';
 import callbackUtils from '../../utils/callback-utils';
 import TaskTable from './task-table';
 import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
@@ -27,6 +26,7 @@ import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
 import DetailsModalHeader from './executed-workflow-detail-header';
 import { useWorkflowGenerator } from './executed-workflow-detail-status.helpers';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
+import WorkflowDiagram from '../../common/workflow-diagram';
 
 const convertWorkflowVariablesToFormFormat = (
   workflowDetails: string,
@@ -193,7 +193,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
         status={result.status}
         visibleRestartButton={result.workflowDefinition.restartable}
       />
-      <Box background="white" borderRadius={4}>
+      <Box background="white" borderRadius={4} mb={5}>
         <Tabs index={tabIndex} onChange={setTabIndex}>
           <TabList>
             <Tab>Task Details</Tab>
@@ -246,7 +246,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
               />
             </TabPanel>
             <TabPanel>
-              <WorkflowDia meta={meta} wfe={result} subworkflows={subworkflows} />
+              <WorkflowDiagram meta={meta} result={result} subworkflows={subworkflows} />
             </TabPanel>
           </TabPanels>
         </Tabs>
