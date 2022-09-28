@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, VoidFunctionComponent } from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import {
   Box,
   Flex,
@@ -15,7 +15,6 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import MiniSearch from 'minisearch';
 import { ExtendedTask, TaskDefinition } from '../../helpers/types';
 import { convertTaskDefinition } from '../../helpers/task.helpers';
 import { parseDescription, parseLabels } from './left-menu.helpers';
@@ -27,15 +26,10 @@ type Props = {
 };
 
 const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions }) => {
-  const { current: minisearch } = useRef(new MiniSearch({ fields: ['name', 'description'], idField: 'name' }));
   const { results, searchText, setSearchText } = useMinisearch({
     items: taskDefinitions.map((td) => ({ ...td, Name: td.name })),
     searchFields: ['name', 'description'],
   });
-
-  useEffect(() => {
-    minisearch.addAll(taskDefinitions);
-  }, [taskDefinitions, minisearch]);
 
   return (
     <Box>
