@@ -3356,6 +3356,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@formspree/react@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@formspree/react@npm:2.4.0"
+  dependencies:
+    "@stripe/react-stripe-js": ^1.7.1
+    "@stripe/stripe-js": ^1.35.0
+  checksum: 275ba7ed9177f14665b7670feafa48f14bf6441762a694112553c7c6982b28b3c2c83194b920159bc573d47047d400188515c6d609a63915aaa4a6995ae4fe69
+  languageName: node
+  linkType: hard
+
 "@frinx/api@0.0.12, @frinx/api@workspace:packages/frinx-api":
   version: 0.0.0-use.local
   resolution: "@frinx/api@workspace:packages/frinx-api"
@@ -3407,6 +3417,7 @@ __metadata:
     "@chakra-ui/system": 1.12.1
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
+    "@formspree/react": ^2.4.0
     "@frinx/api": 0.0.12
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@frinx/inventory-client": ^0.0.1
@@ -4764,6 +4775,26 @@ __metadata:
   version: 0.14.0
   resolution: "@sindresorhus/is@npm:0.14.0"
   checksum: 971e0441dd44ba3909b467219a5e242da0fc584048db5324cfb8048148fa8dcc9d44d71e3948972c4f6121d24e5da402ef191420d1266a95f713bb6d6e59c98a
+  languageName: node
+  linkType: hard
+
+"@stripe/react-stripe-js@npm:^1.7.1":
+  version: 1.12.0
+  resolution: "@stripe/react-stripe-js@npm:1.12.0"
+  dependencies:
+    prop-types: ^15.7.2
+  peerDependencies:
+    "@stripe/stripe-js": ^1.38.1
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 76eafaf1e7dd4300c7b7283d0849ce20e6f1efef017e7bf9437c687be91f960097f2c5b83414a3f36d1b1e7d59260c46eb17b819db86c4df6b34abf5ac49da8a
+  languageName: node
+  linkType: hard
+
+"@stripe/stripe-js@npm:^1.35.0":
+  version: 1.38.1
+  resolution: "@stripe/stripe-js@npm:1.38.1"
+  checksum: ddc7744c83b5c6a18af1c673fca7b760e0660023e6ec01e9a9440f1f3c85977d583eeb5e0680c3b8b253501cc9328f1392b376c2dc22ff83f8a7f83c6f28031c
   languageName: node
   linkType: hard
 
