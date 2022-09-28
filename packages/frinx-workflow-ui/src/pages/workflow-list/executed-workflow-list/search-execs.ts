@@ -59,15 +59,23 @@ export const getSortOrder = (sortBy: SortBy, previousSortBy: SortBy, previousSor
   return previousSortOrder === 'ASC' ? 'DESC' : 'ASC';
 };
 
-export const getWorkflows = (
-  workflowId: string,
-  labels: string[],
-  start: number,
-  size: number,
-  sortBy: SortBy,
-  sortOrder: SortOrder,
-  isFlat: boolean,
-) => {
+export const getWorkflows = ({
+  isFlat,
+  labels,
+  size,
+  sortBy,
+  sortOrder,
+  start,
+  workflowId,
+}: {
+  workflowId: string;
+  labels: string[];
+  start: number;
+  size: number;
+  sortBy: SortBy;
+  sortOrder: SortOrder;
+  isFlat: boolean;
+}) => {
   const { getWorkflowExecutions, getWorkflowExecutionsHierarchical } = callbackUtils.getCallbacks;
   const apiLabels = getApiLabels(labels);
   return isFlat

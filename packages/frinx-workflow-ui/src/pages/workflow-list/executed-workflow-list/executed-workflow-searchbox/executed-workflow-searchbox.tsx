@@ -15,13 +15,11 @@ type Props = {
 const ExecutedWorkflowSearchBox: FC<Props> = ({ changeLabels, changeQuery, changeView, showFlat, labels }) => {
   const [searchText, setSearchText] = useState('');
 
-  const debouncedSearch = debounce((query) => {
-    changeQuery(query);
-  }, 300);
-
   useEffect(() => {
-    debouncedSearch(searchText);
-  }, [searchText, debouncedSearch]);
+    debounce((query) => {
+      changeQuery(query);
+    }, 300);
+  }, [searchText, changeQuery]);
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);

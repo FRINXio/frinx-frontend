@@ -11,7 +11,7 @@ type Props = {
   isFlat: boolean;
   sortBy: SortBy;
   sortOrder: SortOrder;
-  workflows: ExecutedWorkflows;
+  workflows: ExecutedWorkflows['result']['hits'];
   selectedWfs: string[];
   selectAllWorkflows: (isChecked: boolean) => void;
   sortWf: (sortBy: SortBy) => void;
@@ -28,12 +28,11 @@ const ExecutedWorkflowTable: FC<Props> = ({
   workflows,
   selectAllWorkflows,
 }) => {
-  const areSelectedAll = workflows.result.hits.length === selectedWfs.length;
+  const areSelectedAll = workflows.length === selectedWfs.length;
   return (
     <Box marginBottom={10}>
-      <Table background="white" variant="striped">
+      <Table background="white" variant="striped" size="sm">
         <ExecutedWorkflowTableHead
-          isFlatTable
           sortBy={sortBy}
           sortOrder={sortOrder}
           sortWf={sortWf}
