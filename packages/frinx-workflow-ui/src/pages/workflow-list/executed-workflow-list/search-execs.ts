@@ -16,6 +16,7 @@ export const fetchNewData = (workflowName: string, viewedPage: number, defaultPa
     workflowId: workflowName,
     start: page,
     size: defaultPages.toString(),
+    label: '',
   });
 };
 
@@ -79,7 +80,7 @@ export const getWorkflows = ({
   const { getWorkflowExecutions, getWorkflowExecutionsHierarchical } = callbackUtils.getCallbacks;
   const apiLabels = getApiLabels(labels);
   return isFlat
-    ? getWorkflowExecutions({ workflowId, start, size: size.toString(), sortBy, sortOrder })
+    ? getWorkflowExecutions({ workflowId, start, size: size.toString(), sortBy, sortOrder, label: apiLabels })
     : getWorkflowExecutionsHierarchical({
         workflowId,
         label: apiLabels,

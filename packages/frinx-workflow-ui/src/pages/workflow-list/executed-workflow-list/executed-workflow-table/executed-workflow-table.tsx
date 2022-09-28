@@ -29,6 +29,7 @@ const ExecutedWorkflowTable: FC<Props> = ({
   selectAllWorkflows,
 }) => {
   const areSelectedAll = workflows.length === selectedWfs.length;
+
   return (
     <Box marginBottom={10}>
       <Table background="white" variant="striped" size="sm">
