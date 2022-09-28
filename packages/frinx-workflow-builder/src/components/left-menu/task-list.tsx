@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, VoidFunctionComponent } from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import {
   Box,
   Flex,
@@ -15,11 +15,10 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import MiniSearch from 'minisearch';
-import throttle from 'lodash/throttle';
+import { useMinisearch } from '@frinx/shared/src';
 import { ExtendedTask, TaskDefinition } from '../../helpers/types';
 import { convertTaskDefinition } from '../../helpers/task.helpers';
-import { getFilteredResults, parseDescription, parseLabels } from './left-menu.helpers';
+import { parseDescription, parseLabels } from './left-menu.helpers';
 
 type Props = {
   onTaskAdd: (task: ExtendedTask) => void;
@@ -27,19 +26,10 @@ type Props = {
 };
 
 const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions }) => {
-  const { current: minisearch } = useRef(new MiniSearch({ fields: ['name', 'description'], idField: 'name' }));
-  const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    minisearch.addAll(taskDefinitions);
-  }, [taskDefinitions, minisearch]);
-
-  const searchFn = throttle(
-    () => getFilteredResults(minisearch.search(searchTerm, { prefix: true }), taskDefinitions),
-    60,
-  );
-
-  const result = searchTerm.length > 2 ? searchFn() : taskDefinitions;
+  const { results, searchText, setSearchText } = useMinisearch({
+    items: taskDefinitions.map((td) => ({ ...td, Name: td.name })),
+    searchFields: ['name', 'description'],
+  });
 
   return (
     <Box>
@@ -49,14 +39,14 @@ const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions }) 
         </InputLeftElement>
         <Input
           type="text"
-          value={searchTerm}
+          value={searchText}
           onChange={(e) => {
-            setSearchTerm(e.target.value);
+            setSearchText(e.target.value);
           }}
           placeholder="Search tasks"
         />
       </InputGroup>
-      {result?.map((tskDefinition) => (
+      {results?.map((tskDefinition) => (
         <Flex
           key={tskDefinition.name}
           alignItems="stretch"
