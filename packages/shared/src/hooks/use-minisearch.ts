@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import MiniSearch, { SearchResult } from 'minisearch';
-import { throttle } from 'lodash';
+import { compact, throttle } from 'lodash';
 
 type Item<T> = T & { Name: string };
 
 function getFilteredResults<T extends { Name: string }>(searchResult: SearchResult[], items: T[]): T[] {
-  const resultIds = searchResult.map((r) => r.id);
-  return items.filter((item) => resultIds.includes(item.Name));
+  const itemsMap = new Map(items.map((item) => [item.Name, item]));
+  return compact(
+    searchResult.map((r) => {
+      return itemsMap.get(r.id);
+    }),
+  );
 }
 
 const useMinisearch = <T>({
@@ -32,7 +36,7 @@ const useMinisearch = <T>({
       return [];
     }, 80)();
 
-  useEffect(() => minisearch.addAll(items || []));
+  useEffect(() => minisearch.addAll(items || []), []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const results = searchText && searchText.length > 2 ? searchFn() : items;
 
