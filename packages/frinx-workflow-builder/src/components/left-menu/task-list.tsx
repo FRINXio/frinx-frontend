@@ -15,10 +15,10 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
+import { useMinisearch } from '@frinx/shared/src';
 import { ExtendedTask, TaskDefinition } from '../../helpers/types';
 import { convertTaskDefinition } from '../../helpers/task.helpers';
 import { parseDescription, parseLabels } from './left-menu.helpers';
-import { useMinisearch } from '@frinx/shared/src';
 
 type Props = {
   onTaskAdd: (task: ExtendedTask) => void;
