@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ReactFlow, { Edge, Node } from 'react-flow-renderer';
-import { Center } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import { getElementsFromWorkflow } from '../helpers/api-to-graph.helpers';
 import { getLayoutedElements } from '../helpers/layout.helpers';
 import {
@@ -24,7 +25,6 @@ const nodeTypes = {
 type Props = {
   meta: Workflow<WorkflowTask>;
   result: WorkflowInstanceDetail;
-  subworkflows?: WorkflowInstanceDetail[];
 };
 
 type ExtedendedTaskWithExecutionData = ExtendedTask & {
@@ -39,8 +39,9 @@ type NodeData = {
   handles?: string[];
 };
 
-const WorkflowDiagram = ({ meta, result, subworkflows }: Props) => {
+const WorkflowDiagram = ({ meta, result }: Props) => {
   useState<WorkflowDefinition<ExtedendedTaskWithExecutionData> | null>(null);
+  const navigate = useNavigate();
 
   const taskMap = new Map(result.tasks.map((t) => [t.referenceTaskName, t]));
   const elements: { nodes: Node<NodeData>[]; edges: Edge[] } = getLayoutedElements(
@@ -49,32 +50,41 @@ const WorkflowDiagram = ({ meta, result, subworkflows }: Props) => {
   );
   const nodesWithExecutionState = elements.nodes.map((n) => {
     const taskReferenceName = n.data?.task?.taskReferenceName || '';
-    const status = taskMap.get(taskReferenceName)?.status || 'NONE';
+    const task = taskMap.get(taskReferenceName);
+    const isSubWorkflow = task?.taskType === 'SUB_WORKFLOW';
     return {
       ...n,
       draggable: false,
+      style: {
+        ...n.style,
+        cursor: isSubWorkflow ? 'pointer' : 'not-allowed',
+        border: isSubWorkflow ? '2px dashed #000' : '',
+      },
       data: {
         ...n.data,
-        status,
+        status: task?.status || 'NONE',
+        subWorkflowId: task?.subWorkflowId || null,
+        isSubWorkflow,
       },
     };
   });
 
   return (
-    <Center height="600">
+    <Box height="600">
       <ReactFlow
         nodes={nodesWithExecutionState}
         edges={elements.edges}
-        panOnDrag={false}
+        panOnDrag
         zoomOnScroll={false}
-        draggable={false}
         nodeTypes={nodeTypes}
         fitView
-        onNodeClick={(e, node) => {
-          console.log('click', e, node);
+        onNodeClick={(_e, node) => {
+          if (node.data?.isSubWorkflow) {
+            navigate(`../executed/${node.data?.subWorkflowId}`);
+          }
         }}
       />
-    </Center>
+    </Box>
   );
 };
 

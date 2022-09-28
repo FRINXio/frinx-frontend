@@ -96,7 +96,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
     return null;
   }
 
-  const { result, meta, subworkflows } = execPayload;
+  const { result, meta } = execPayload;
 
   const getUnescapedJSON = (data: Record<string, unknown> | unknown) => {
     return isEscaped
@@ -246,7 +246,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
               />
             </TabPanel>
             <TabPanel>
-              <WorkflowDiagram meta={meta} result={result} subworkflows={subworkflows} />
+              <WorkflowDiagram meta={meta} result={result} />
             </TabPanel>
           </TabPanels>
         </Tabs>
