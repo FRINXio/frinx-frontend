@@ -9,6 +9,7 @@ import { ServiceKey } from './types';
 import UniflowApp from './uniflow-app';
 import UniresourceApp from './uniresource-app';
 import DeviceTopologyApp from './device-topology-app';
+import FeedbackWidget from './components/feedback-widget/feedback-widget';
 
 type Props = {
   enabledServices: Map<ServiceKey, boolean>;
@@ -31,6 +32,9 @@ const App: FC<Props> = ({ enabledServices, basename, isAuthEnabled }) => {
           )}
           <Route path="/" element={<Dashboard enabledServices={enabledServices} />} />
         </Routes>
+      </Box>
+      <Box position="fixed" bottom={16} right={16}>
+        <FeedbackWidget />
       </Box>
     </BrowserRouter>
   );

@@ -1,9 +1,9 @@
-import React, { FC } from 'react';
 import { Box, Code, Container, Heading, HStack } from '@chakra-ui/react';
-import Panel from '../panel/panel';
+import React, { FC } from 'react';
 import { ServiceKey } from '../../types';
-import UniflowActions from './uniflow-actions';
+import Panel from '../panel/panel';
 import InventoryActions from './inventory-actions';
+import UniflowActions from './uniflow-actions';
 
 type Props = {
   enabledServices: Map<ServiceKey, boolean>;
