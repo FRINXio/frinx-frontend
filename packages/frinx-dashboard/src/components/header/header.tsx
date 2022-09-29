@@ -47,7 +47,7 @@ const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled, enabledServices }
               {enabledServices.get('isUniflowEnabled') && (
                 <MenuItem as={Link} to="/uniflow">
                   <Icon size={20} as={FeatherIcon} icon="layers" color="brand.700" marginRight={2} />
-                  <Text fontWeight="bold">UniFlow</Text>
+                  <Text fontWeight="bold">Workflow manager</Text>
                 </MenuItem>
               )}
               {enabledServices.get('isInventoryEnabled') && (
@@ -57,9 +57,9 @@ const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled, enabledServices }
                 </MenuItem>
               )}
               {enabledServices.get('isUniresourceEnabled') && (
-                <MenuItem as={Link} to="/uniresource">
+                <MenuItem as={Link} to="/resource-manager">
                   <Icon size={20} as={FeatherIcon} icon="hard-drive" color="brand.700" marginRight={2} />
-                  <Text fontWeight="bold">UniResource</Text>
+                  <Text fontWeight="bold">Resource manager</Text>
                 </MenuItem>
               )}
               {enabledServices.get('isGammaEnabled') && (

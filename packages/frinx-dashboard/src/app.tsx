@@ -26,7 +26,9 @@ const App: FC<Props> = ({ enabledServices, basename, isAuthEnabled }) => {
           {enabledServices.get('isUniflowEnabled') && <Route path="/uniflow/*" element={<UniflowApp />} />}
           {enabledServices.get('isGammaEnabled') && <Route path="/gamma/*" element={<GammaApp />} />}
           {enabledServices.get('isInventoryEnabled') && <Route path="/inventory/*" element={<InventoryApp />} />}
-          {enabledServices.get('isUniresourceEnabled') && <Route path="/uniresource/*" element={<UniresourceApp />} />}
+          {enabledServices.get('isUniresourceEnabled') && (
+            <Route path="/resource-manager/*" element={<UniresourceApp />} />
+          )}
           {enabledServices.get('isDeviceTopologyEnabled') && (
             <Route path="/device-topology/*" element={<DeviceTopologyApp />} />
           )}

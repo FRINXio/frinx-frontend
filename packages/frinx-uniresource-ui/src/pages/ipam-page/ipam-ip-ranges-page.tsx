@@ -175,7 +175,7 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
           leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
           colorScheme="blue"
           as={Link}
-          to="/uniresource/pools/new?resource-type-name=ipv4_prefix"
+          to="/resource-manager/pools/new?resource-type-name=ipv4_prefix"
         >
           Create Pool
         </Button>

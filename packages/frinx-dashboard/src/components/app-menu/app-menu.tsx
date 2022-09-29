@@ -136,7 +136,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
         )}
         {enabledServices.get('isUniresourceEnabled') && (
           <Route
-            path="/uniresource/*"
+            path="/resource-manager/*"
             element={
               <>
                 <Menu>
@@ -159,13 +159,13 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                     IPAM
                   </MenuButton>
                   <MenuList>
-                    <MenuItem to="/uniresource/ipam" as={NavLink}>
+                    <MenuItem to="/resource-manager/ipam" as={NavLink}>
                       IPAM
                     </MenuItem>
-                    <MenuItem as={NavLink} to="/uniresource/ipam/aggregates">
+                    <MenuItem as={NavLink} to="/resource-manager/ipam/aggregates">
                       Aggregates
                     </MenuItem>
-                    <MenuItem as={NavLink} to="/uniresource/ipam/ip-ranges">
+                    <MenuItem as={NavLink} to="/resource-manager/ipam/ip-ranges">
                       IP Ranges
                     </MenuItem>
                     {/* <MenuItem>Prefixes</MenuItem> */}
@@ -173,7 +173,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                 </Menu>
 
                 <Link
-                  to="/uniresource/pools"
+                  to="/resource-manager/pools"
                   as={NavLink}
                   color="brand.50"
                   display="flex"
@@ -192,7 +192,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                   Pools
                 </Link>
                 <Link
-                  to="/uniresource/strategies"
+                  to="/resource-manager/strategies"
                   as={NavLink}
                   color="brand.50"
                   display="flex"
@@ -211,7 +211,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                   Strategies
                 </Link>
                 <Link
-                  to="/uniresource/resource_types"
+                  to="/resource-manager/resource_types"
                   as={NavLink}
                   color="brand.50"
                   display="flex"
