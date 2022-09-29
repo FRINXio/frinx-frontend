@@ -52,20 +52,20 @@ const FeedbackWidget: VoidFunctionComponent = () => {
           borderRadius="md"
         >
           <Heading as="h4" fontSize="lg">
-            Send feedback
+            Submit an idea
           </Heading>
-          <FormControl id="name" marginY={4} isRequired>
+          <FormControl id="name" marginY={4}>
             <FormLabel fontSize="sm" fontWeight={600}>
               E-mail
             </FormLabel>
-            <Input type="email" name="email" size="sm" />
+            <Input type="email" name="email" size="sm" placeholder="john.doe@example.com" />
           </FormControl>
           <ValidationError prefix="Email" field="email" errors={state.errors} />
           <FormControl id="message" marginY={4} isRequired>
             <FormLabel fontSize="sm" fontWeight={600}>
               Message
             </FormLabel>
-            <Textarea name="message" size="sm" />
+            <Textarea name="message" size="sm" placeholder="What would you like us to implement?" />
           </FormControl>
           <ValidationError prefix="Message" field="message" errors={state.errors} />
           <FormControl>
