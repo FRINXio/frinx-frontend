@@ -19,7 +19,7 @@ import ReactFlow, {
 import callbackUtils from './callback-utils';
 import ActionsMenu from './components/actions-menu/actions-menu';
 import ButtonEdge from './components/edges/button-edge';
-import ExecutionModal from './components/execution-modal/execution-modal';
+import ExecuteWorkflowModal from './components/execution-modal/execution-modal';
 import ExpandedWorkflowModal from './components/expanded-workflow-modal/expanded-workflow-modal';
 import LeftMenu from './components/left-menu/left-menu';
 import NewWorkflowModal from './components/new-workflow-modal/new-workflow-modal';
@@ -36,6 +36,7 @@ import { getElementsFromWorkflow, getNodeType } from './helpers/api-to-graph.hel
 import { convertToTasks } from './helpers/graph-to-api.helpers';
 import { getLayoutedElements } from './helpers/layout.helpers';
 import { ExtendedTask, NodeData, Task, TaskDefinition, Workflow } from './helpers/types';
+import { getDynamicInputParametersFromWorkflow, parseInputParameters } from './helpers/workflow.helpers';
 import { useTaskActions } from './task-actions-context';
 
 type WorkflowParam = Pick<
@@ -86,8 +87,8 @@ const App: VoidFunctionComponent<Props> = ({
   const workflowDefinitionDisclosure = useDisclosure();
   const workflowModalDisclosure = useDisclosure();
   const workflowEditorDisclosure = useDisclosure();
+  const executeWorkflowModal = useDisclosure();
   const [isEditing, setIsEditing] = useState(false);
-  const [isInputModalShown, setIsInputModalShown] = useState(false);
   const [workflowTasks, setWorkflowTasks] = useState(workflow.tasks);
   const [elements, setElements] = useState<{ nodes: Node<NodeData>[]; edges: Edge[] }>(
     getLayoutedElements(getElementsFromWorkflow(workflowTasks, false)),
@@ -222,7 +223,7 @@ const App: VoidFunctionComponent<Props> = ({
       ])
         .then(() => {
           setHasUnsavedChanges(false);
-          setIsInputModalShown(true);
+          executeWorkflowModal.onOpen();
           addToastNotification({
             title: 'Workflow Saved',
             content: 'Workflow was successfully saved',
@@ -243,6 +244,33 @@ const App: VoidFunctionComponent<Props> = ({
         type: 'error',
       });
     }
+  };
+
+  const handleOnExecuteWorkflow = (values: Record<string, string>) => {
+    if (workflow == null) {
+      addToastNotification({
+        content: 'We cannot execute undefined workflow',
+        type: 'error',
+      });
+
+      return null;
+    }
+
+    const { executeWorkflow } = callbackUtils.getCallbacks;
+
+    return executeWorkflow({
+      input: values,
+      name: workflow.name,
+      version: workflow.version,
+    })
+      .then((res) => {
+        addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
+        return res.text;
+      })
+      .catch(() => {
+        addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
+        return null;
+      });
   };
 
   return (
@@ -392,14 +420,15 @@ const App: VoidFunctionComponent<Props> = ({
         <WorkflowDefinitionModal isOpen onClose={workflowDefinitionDisclosure.onClose} workflow={workflow} />
       )}
       <NewWorkflowModal isOpen={workflowModalDisclosure.isOpen} onClose={workflowModalDisclosure.onClose} />
-      {isInputModalShown && (
-        <ExecutionModal
-          workflow={workflow}
-          onClose={() => setIsInputModalShown(false)}
-          shouldCloseAfterSubmit={false}
-          isOpen={isInputModalShown}
-        />
-      )}
+      <ExecuteWorkflowModal
+        parsedInputParameters={parseInputParameters(workflow.inputParameters)}
+        dynamicInputParameters={getDynamicInputParametersFromWorkflow(workflow)}
+        onClose={executeWorkflowModal.onClose}
+        isOpen={executeWorkflowModal.isOpen}
+        workflowName={workflow.name}
+        workflowDescription={workflow.description}
+        onSubmit={handleOnExecuteWorkflow}
+      />
       {workflowEditorDisclosure.isOpen && (
         <WorkflowEditorModal
           workflow={workflow}
