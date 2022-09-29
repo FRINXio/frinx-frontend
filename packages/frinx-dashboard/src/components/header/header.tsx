@@ -45,7 +45,7 @@ const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled, enabledServices }
                 <Text fontWeight="bold">Dashboard</Text>
               </MenuItem>
               {enabledServices.get('isUniflowEnabled') && (
-                <MenuItem as={Link} to="/uniflow">
+                <MenuItem as={Link} to="/workflow-manager">
                   <Icon size={20} as={FeatherIcon} icon="layers" color="brand.700" marginRight={2} />
                   <Text fontWeight="bold">Workflow manager</Text>
                 </MenuItem>

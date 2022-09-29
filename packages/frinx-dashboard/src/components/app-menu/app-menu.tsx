@@ -13,11 +13,11 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
       <Routes>
         {enabledServices.get('isUniflowEnabled') && (
           <Route
-            path="/uniflow/*"
+            path="/workflow-manager/*"
             element={
               <>
                 <Link
-                  to="/uniflow/definitions"
+                  to="/workflow-manager/definitions"
                   as={NavLink}
                   color="brand.50"
                   display="flex"
@@ -36,7 +36,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                   Definitions
                 </Link>
                 <Link
-                  to="/uniflow/executed"
+                  to="/workflow-manager/executed"
                   as={NavLink}
                   color="brand.50"
                   display="flex"
@@ -55,7 +55,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                   Executed
                 </Link>
                 <Link
-                  to="/uniflow/scheduled"
+                  to="/workflow-manager/scheduled"
                   as={NavLink}
                   color="brand.50"
                   display="flex"
@@ -74,7 +74,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                   Scheduled
                 </Link>
                 <Link
-                  to="/uniflow/event-listeners"
+                  to="/workflow-manager/event-listeners"
                   as={NavLink}
                   color="brand.50"
                   display="flex"
@@ -93,7 +93,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                   Event listeners
                 </Link>
                 <Link
-                  to="/uniflow/tasks"
+                  to="/workflow-manager/tasks"
                   as={NavLink}
                   color="brand.50"
                   display="flex"
@@ -112,7 +112,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                   Tasks
                 </Link>
                 <Link
-                  to="/uniflow/poll-data"
+                  to="/workflow-manager/poll-data"
                   as={NavLink}
                   color="brand.50"
                   display="flex"

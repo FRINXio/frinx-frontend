@@ -41,7 +41,7 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
                 label="Workflow manager"
                 description="Create, organize and execute workflows."
                 icon="layers"
-                path="/uniflow"
+                path="/workflow-manager"
               />
             )}
             {enabledServices.get('isInventoryEnabled') && (
