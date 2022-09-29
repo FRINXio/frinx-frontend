@@ -93,6 +93,7 @@ const App: VoidFunctionComponent<Props> = ({
   const [elements, setElements] = useState<{ nodes: Node<NodeData>[]; edges: Edge[] }>(
     getLayoutedElements(getElementsFromWorkflow(workflowTasks, false)),
   );
+  const [isWorkflowEdited, setIsWorkflowEdited] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const handleConnect = (edge: Edge<unknown> | Connection) => {
@@ -204,9 +205,9 @@ const App: VoidFunctionComponent<Props> = ({
     [],
   );
 
-  const handleOnWorkflowChange = (editedWorkflow: Workflow<Task>) => {
+  const handleOnWorkflowChange = (editedWorkflow: Workflow<Task>, isWorkflowChanged: boolean) => {
     onWorkflowChange(editedWorkflow);
-    setHasUnsavedChanges(true);
+    setHasUnsavedChanges(isWorkflowChanged);
   };
 
   const handleOnSaveWorkflow = (editedWorkflow: Workflow<Task>) => {
@@ -331,7 +332,7 @@ const App: VoidFunctionComponent<Props> = ({
                 >
                   Save and execute
                 </Button>
-                {hasUnsavedChanges && (
+                {hasUnsavedChanges && isWorkflowEdited && (
                   <Text textColor="red" fontSize="sm">
                     You have unsaved changes
                   </Text>
@@ -391,16 +392,17 @@ const App: VoidFunctionComponent<Props> = ({
                 <WorkflowForm
                   workflow={workflow}
                   onSubmit={(partialWorkflow) => {
-                    handleOnWorkflowChange({ ...workflow, ...partialWorkflow });
+                    handleOnWorkflowChange({ ...workflow, ...partialWorkflow }, true);
                     setIsEditing(false);
                   }}
                   onClose={() => {
-                    handleOnWorkflowChange(workflow);
+                    handleOnWorkflowChange(workflow, false);
                     setIsEditing(false);
                   }}
                   canEditName={false}
                   workflows={workflows}
                   isCreatingWorkflow={false}
+                  onChangeNotify={() => setIsWorkflowEdited(true)}
                 />
               </Box>
             </RightDrawer>
@@ -433,8 +435,9 @@ const App: VoidFunctionComponent<Props> = ({
         <WorkflowEditorModal
           workflow={workflow}
           isOpen={workflowEditorDisclosure.isOpen}
-          onSave={handleOnWorkflowChange}
+          onSave={(editedWorkflow) => handleOnWorkflowChange(editedWorkflow, true)}
           onClose={workflowEditorDisclosure.onClose}
+          onChangeNotify={() => setIsWorkflowEdited(true)}
         />
       )}
     </>
