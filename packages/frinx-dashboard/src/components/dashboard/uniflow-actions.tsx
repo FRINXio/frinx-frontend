@@ -17,7 +17,7 @@ const UniflowActions: FC = () => {
             Create workflow
           </Heading>
           <Text marginBottom={2}>Create a workflow by using a workflow builder.</Text>
-          <Button colorScheme="brand" size="sm" to="/uniflow/builder" as={Link}>
+          <Button colorScheme="brand" size="sm" to="/workflow-manager/builder" as={Link}>
             Create
           </Button>
         </Box>
@@ -31,7 +31,7 @@ const UniflowActions: FC = () => {
             Explore workflows
           </Heading>
           <Text marginBottom={2}>Explore and execute workflows.</Text>
-          <Button colorScheme="brand" size="sm" to="/uniflow/definitions" as={Link}>
+          <Button colorScheme="brand" size="sm" to="/workflow-manager/definitions" as={Link}>
             Explore
           </Button>
         </Box>
@@ -45,7 +45,7 @@ const UniflowActions: FC = () => {
             Executed workflows
           </Heading>
           <Text marginBottom={2}>Browse executed workflows.</Text>
-          <Button colorScheme="brand" size="sm" to="/uniflow/executed" as={Link}>
+          <Button colorScheme="brand" size="sm" to="/workflow-manager/executed" as={Link}>
             Browse
           </Button>
         </Box>

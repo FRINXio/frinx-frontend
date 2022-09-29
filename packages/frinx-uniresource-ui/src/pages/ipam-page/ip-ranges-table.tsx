@@ -116,7 +116,7 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onD
                   variant="solid"
                   colorScheme="blue"
                   as={Link}
-                  to="/uniresource/pools/new?resource-type-name=ipv4_prefix"
+                  to="/resource-manager/pools/new?resource-type-name=ipv4_prefix"
                   size="xs"
                   ml={5}
                 >
