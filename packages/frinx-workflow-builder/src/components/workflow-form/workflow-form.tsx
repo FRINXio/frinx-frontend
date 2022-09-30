@@ -41,7 +41,7 @@ type Props = {
   isCreatingWorkflow: boolean;
   onClose?: () => void;
   onSubmit: (workflow: PartialWorkflow) => void;
-  onChangeNotify: () => void;
+  onChangeNotify?: () => void;
 };
 
 type FormValues = PartialWorkflow & { labels?: string[] };
@@ -112,9 +112,15 @@ const WorkflowForm: FC<Props> = ({
   });
   const [newParam, setNewParam] = useState<string>('');
 
+  const handleOnChangeNotify = () => {
+    if (onChangeNotify) {
+      onChangeNotify();
+    }
+  };
+
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
     handleChange(e);
-    onChangeNotify();
+    handleOnChangeNotify();
   };
 
   const isNameInvalid = canEditName ? !isWorkflowNameAvailable(workflows, values.name) : false;
@@ -190,7 +196,7 @@ const WorkflowForm: FC<Props> = ({
               onChange={(event) => {
                 event.persist();
                 setNewParam(event.target.value);
-                onChangeNotify();
+                handleOnChangeNotify();
               }}
             />
             <IconButton
@@ -205,7 +211,7 @@ const WorkflowForm: FC<Props> = ({
                   [newParam]: '',
                 });
                 setNewParam('');
-                onChangeNotify();
+                handleOnChangeNotify();
               }}
             />
           </HStack>
@@ -226,7 +232,7 @@ const WorkflowForm: FC<Props> = ({
                     ...values.outputParameters,
                     [key]: event.target.value,
                   });
-                  onChangeNotify();
+                  handleOnChangeNotify();
                 }}
               />
               <IconButton
@@ -238,7 +244,7 @@ const WorkflowForm: FC<Props> = ({
                     'outputParameters',
                     omitBy(values.outputParameters, (_, k) => k === key),
                   );
-                  onChangeNotify();
+                  handleOnChangeNotify();
                 }}
               />
             </HStack>

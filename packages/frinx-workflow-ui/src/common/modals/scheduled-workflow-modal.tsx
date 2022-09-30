@@ -25,7 +25,7 @@ import callbackUtils from '../../utils/callback-utils';
 const DEFAULT_CRON_STRING = '* * * * *';
 
 export type ScheduledWorkflowModal = {
-  cronString: string;
+  cronString?: string;
   workflowName: string;
   workflowVersion: string;
 };
