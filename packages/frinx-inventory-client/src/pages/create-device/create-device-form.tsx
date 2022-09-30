@@ -37,7 +37,7 @@ type FormValues = {
   mountParameters: string;
   labelIds: string[];
   serviceState: ServiceState;
-  blueprintId: string;
+  blueprintId: string | null;
   model: string;
   address: string;
   username: string;
@@ -78,7 +78,7 @@ const deviceSchema = yup.object({
     .string()
     .matches(IPV4_REGEX, { message: 'Please enter a valid Ipv4 address' })
     .when('blueprintParams', getWhenOptions('ip_address', 'Address is required by the blueprint')),
-  blueprintId: yup.string(),
+  blueprintId: yup.string().nullable(),
   port: yup
     .number()
     .typeError('Number is required')
@@ -102,7 +102,7 @@ const INITIAL_VALUES: FormValues = {
   model: '',
   vendor: '',
   address: '',
-  blueprintId: '',
+  blueprintId: null,
   deviceType: '',
   password: '',
   username: '',
@@ -132,13 +132,12 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
     },
   });
 
-  const blueprintParameters = parse(
-    blueprints.find((blueprint) => blueprint.node.id === values.blueprintId)?.node.template ?? {},
-  ).parameters.map(({ key }) => key);
-
   useEffect(() => {
+    const blueprintParameters = parse(
+      blueprints.find((blueprint) => blueprint.node.id === values.blueprintId)?.node.template ?? {},
+    ).parameters.map(({ key }) => key);
     setFieldValue('blueprintParams', blueprintParameters);
-  }, [setFieldValue, blueprintParameters]);
+  }, [blueprints, setFieldValue, values.blueprintId]);
 
   const handleLabelCreation = (labelName: Item) => {
     onLabelCreate(labelName.label).then((label) => {
@@ -201,13 +200,13 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           <Input name="model" onChange={handleChange} placeholder="Enter model of the device" value={values.model} />
         </FormControl>
 
-        <FormControl isRequired={blueprintParameters.includes('device_type')}>
+        <FormControl isRequired={values.blueprintParams?.includes('device_type')}>
           <FormLabel>Device type</FormLabel>
           <Input name="deviceType" onChange={handleChange} placeholder="ios xr" value={values.deviceType} />
           <FormErrorMessage>{errors.deviceType}</FormErrorMessage>
         </FormControl>
 
-        <FormControl isRequired={blueprintParameters.includes('version')}>
+        <FormControl isRequired={values.blueprintParams?.includes('version')}>
           <FormLabel>Version</FormLabel>
           <Input name="version" onChange={handleChange} placeholder="5.3.*" value={values.version} />
           <FormErrorMessage>{errors.version}</FormErrorMessage>
@@ -215,13 +214,13 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       </HStack>
 
       <HStack my={6}>
-        <FormControl isRequired={blueprintParameters.includes('user')}>
+        <FormControl isRequired={values.blueprintParams?.includes('user')}>
           <FormLabel>Username</FormLabel>
           <Input name="username" onChange={handleChange} placeholder="cisco" value={values.username} />
           <FormErrorMessage>{errors.username}</FormErrorMessage>
         </FormControl>
 
-        <FormControl isRequired={blueprintParameters.includes('password')}>
+        <FormControl isRequired={values.blueprintParams?.includes('password')}>
           <FormLabel>Password</FormLabel>
           <Input name="password" onChange={handleChange} placeholder="cisco" value={values.password} />
           <FormErrorMessage>{errors.password}</FormErrorMessage>
@@ -229,12 +228,12 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       </HStack>
 
       <HStack my={6} alignItems="start">
-        <FormControl isRequired={blueprintParameters.includes('user')} isInvalid={errors.address != null}>
+        <FormControl isRequired={values.blueprintParams?.includes('user')} isInvalid={errors.address != null}>
           <FormLabel>Address</FormLabel>
           <Input name="address" onChange={handleChange} placeholder="192.168.0.1" value={values.address} />
           <FormErrorMessage>{errors.address}</FormErrorMessage>
         </FormControl>
-        <FormControl isRequired={blueprintParameters.includes('user')} isInvalid={errors.port != null}>
+        <FormControl isRequired={values.blueprintParams?.includes('user')} isInvalid={errors.port != null}>
           <FormLabel>Port</FormLabel>
           <Input name="port" onChange={handleChange} placeholder="22" value={values.port} />
           <FormErrorMessage>{errors.port}</FormErrorMessage>
@@ -258,6 +257,9 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           onChange={(event) => {
             event.persist();
             setIsUsingBlueprints(event.target.checked);
+            if (!event.target.checked) {
+              setFieldValue('blueprintId', null);
+            }
           }}
         />
       </FormControl>
@@ -271,7 +273,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
             onChange={(e) => {
               handleChange(e);
             }}
-            value={values.blueprintId}
+            value={values.blueprintId || ''}
           >
             {blueprints.map(({ node: blueprint }) => {
               return (
