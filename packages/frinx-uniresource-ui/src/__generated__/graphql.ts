@@ -858,6 +858,13 @@ export type RequiredPoolPropertiesQueryVariables = Exact<{
 
 export type RequiredPoolPropertiesQuery = { __typename?: 'Query', QueryRequiredPoolProperties: Array<{ __typename?: 'PropertyType', Name: string, Type: string, FloatVal: number | null, IntVal: number | null, StringVal: string | null }> };
 
+export type CreateAllocationStrategyMutationVariables = Exact<{
+  input: CreateAllocationStrategyInput;
+}>;
+
+
+export type CreateAllocationStrategyMutation = { __typename?: 'Mutation', CreateAllocationStrategy: { __typename?: 'CreateAllocationStrategyPayload', strategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang, Script: string } | null } };
+
 export type GetIpPoolsQueryVariables = Exact<{ [key: string]: never; }>;
 
 

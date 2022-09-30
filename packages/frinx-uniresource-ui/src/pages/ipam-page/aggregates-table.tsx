@@ -60,7 +60,7 @@ const AggregatesTable: VoidFunctionComponent<Props> = ({ aggregates, onTagClick,
                   variant="solid"
                   colorScheme="blue"
                   as={Link}
-                  to="/uniresource/pools/new?resource-type-name=ipv4_prefix"
+                  to="/resource-manager/pools/new?resource-type-name=ipv4_prefix"
                   size="xs"
                   ml={5}
                 >
@@ -81,7 +81,7 @@ const AggregatesTable: VoidFunctionComponent<Props> = ({ aggregates, onTagClick,
                   <Td>{aggregate}</Td>
                   {prefixes > 0 ? (
                     <Td>
-                      <ChakraLink as={Link} to={`/uniresource/pools/nested/${id}`} color="blue">
+                      <ChakraLink as={Link} to={`/resource-manager/pools/nested/${id}`} color="blue">
                         {prefixes}
                       </ChakraLink>
                     </Td>

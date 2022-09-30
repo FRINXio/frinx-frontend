@@ -1,9 +1,9 @@
-import React, { FC } from 'react';
 import { Box, Code, Container, Heading, HStack } from '@chakra-ui/react';
-import Panel from '../panel/panel';
+import React, { FC } from 'react';
 import { ServiceKey } from '../../types';
-import UniflowActions from './uniflow-actions';
+import Panel from '../panel/panel';
 import InventoryActions from './inventory-actions';
+import UniflowActions from './uniflow-actions';
 
 type Props = {
   enabledServices: Map<ServiceKey, boolean>;
@@ -16,7 +16,7 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
         {enabledServices.get('isUniflowEnabled') && (
           <Box marginBottom={12}>
             <Heading as="h2" size="md" marginBottom={4}>
-              UniFlow
+              Workflow manager
             </Heading>
             <UniflowActions />
           </Box>
@@ -38,10 +38,10 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
           <HStack spacing={4}>
             {enabledServices.get('isUniflowEnabled') && (
               <Panel
-                label="UniFlow"
+                label="Workflow manager"
                 description="Create, organize and execute workflows."
                 icon="layers"
-                path="/uniflow"
+                path="/workflow-manager"
               />
             )}
             {enabledServices.get('isInventoryEnabled') && (
@@ -54,10 +54,10 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
             )}
             {enabledServices.get('isUniresourceEnabled') && (
               <Panel
-                label="UniResource"
+                label="Resource manager"
                 description="Manage logical resources."
                 icon="hard-drive"
-                path="/uniresource"
+                path="/resource-manager"
               />
             )}
           </HStack>
@@ -77,8 +77,8 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
               isLinkExternal
             />
             <Panel
-              label="UniFlow"
-              description="Learn more about UniFlow API using Swagger."
+              label="Workflow manager"
+              description="Learn more about Workflow manager API using Swagger."
               icon="book"
               path={window.__CONFIG__.uniflowApiDocsURL}
               isLinkExternal

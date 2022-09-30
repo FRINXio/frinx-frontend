@@ -25,6 +25,7 @@ import callbackUtils from '../../utils/callback-utils';
 const DEFAULT_CRON_STRING = '* * * * *';
 
 export type ScheduledWorkflowModal = {
+  cronString: string;
   workflowName: string;
   workflowVersion: string;
 };
@@ -45,7 +46,7 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
       workflowVersion: workflow.workflowVersion,
       workflowContext: {},
       name: `${workflow.workflowName}:${workflow.workflowVersion}`,
-      cronString: DEFAULT_CRON_STRING,
+      cronString: workflow.cronString || DEFAULT_CRON_STRING,
       enabled: false,
     },
     onSubmit: (formValues) => {
