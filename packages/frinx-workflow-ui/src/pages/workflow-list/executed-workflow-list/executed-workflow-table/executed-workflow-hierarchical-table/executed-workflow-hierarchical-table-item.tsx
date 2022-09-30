@@ -8,7 +8,7 @@ import FeatherIcon from 'feather-icons-react';
 import ExecutedSubWorkflowTable from './executed-subworkflow-table';
 
 type Props = {
-  workflows: ExecutedWorkflows;
+  workflows: ExecutedWorkflows['result']['hits'];
   selectedWfs: string[];
   selectWf: (workflowId: string, isChecked: boolean) => void;
 };
@@ -28,7 +28,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, selectWf,
   const [nestedWorkflows, setNestedWorkflows] = useState<NestedWorkflow[]>([]);
 
   useEffect(() => {
-    setNestedWorkflows(workflows.result.hits.map((w) => ({ ...w, isExpanded: false })));
+    setNestedWorkflows(workflows.map((w) => ({ ...w, isExpanded: false })));
   }, [workflows]);
 
   const [subWorkflows, setSubWorkflows] = useState<Map<string, ExecutedSubWorkflows>>(new Map());

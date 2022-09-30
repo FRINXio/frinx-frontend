@@ -126,7 +126,9 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   return (
     <>
       <DefinitionModal workflow={activeWorkflow} isOpen={definitionModal.isOpen} onClose={definitionModal.onClose} />
-      <DiagramModal workflow={activeWorkflow} onClose={diagramModal.onClose} isOpen={diagramModal.isOpen} />
+      {activeWorkflow != null && (
+        <DiagramModal workflow={activeWorkflow} isOpen={diagramModal.isOpen} onClose={diagramModal.onClose} />
+      )}
       <DependencyModal
         workflow={activeWorkflow}
         onClose={dependencyModal.onClose}
