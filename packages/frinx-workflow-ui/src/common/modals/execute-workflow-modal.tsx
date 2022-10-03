@@ -102,7 +102,7 @@ const ExecuteWorkflowModal: FC<Props> = ({
         </ModalBody>
         <ModalFooter>
           {executedWorkflowId != null && (
-            <Button variant="link" colorScheme="blue" as={Link} to={`/uniflow/executed/${executedWorkflowId}`}>
+            <Button variant="link" colorScheme="blue" as={Link} to={`/workflow-manager/executed/${executedWorkflowId}`}>
               Executed workflow in detail
             </Button>
           )}
