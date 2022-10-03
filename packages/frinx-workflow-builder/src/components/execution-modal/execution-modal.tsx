@@ -1,13 +1,9 @@
 import {
   Button,
   ButtonGroup,
-  FormControl,
-  FormHelperText,
-  FormLabel,
   Grid,
   GridItem,
   Heading,
-  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -22,6 +18,7 @@ import { useFormik } from 'formik';
 import React, { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getInitialValuesFromParsedInputParameters, InputParameter } from '../../helpers/workflow.helpers';
+import { ExecutionModalFormInput } from './execution-modal-form-input';
 
 type Props = {
   workflowName: string;
@@ -45,7 +42,7 @@ const ExecuteWorkflowModal: FC<Props> = ({
 }) => {
   const [isExecuting, setIsExecuting] = useState(false);
   const [executedWorkflowId, setExecutedWorkflowId] = useState<string | null>(null);
-  const { values, handleSubmit, handleChange, submitForm, isSubmitting, setSubmitting } = useFormik<
+  const { values, handleSubmit, setFieldValue, submitForm, isSubmitting, setSubmitting } = useFormik<
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Record<string, any>
   >({
@@ -86,14 +83,12 @@ const ExecuteWorkflowModal: FC<Props> = ({
               <Grid templateColumns="repeat(2, 1fr)" gap={5}>
                 {inputParametersKeys.map((inputParameterKey) => (
                   <GridItem key={inputParameterKey}>
-                    <FormControl>
-                      <FormLabel htmlFor={inputParameterKey}>{inputParameterKey}</FormLabel>
-                      <Input name={inputParameterKey} value={values[inputParameterKey]} onChange={handleChange} />
-                      {parsedInputParameters != null &&
-                        Object.keys(parsedInputParameters).includes(inputParameterKey) && (
-                          <FormHelperText>{parsedInputParameters[inputParameterKey].description}</FormHelperText>
-                        )}
-                    </FormControl>
+                    <ExecutionModalFormInput
+                      inputParameterKey={inputParameterKey}
+                      values={values}
+                      onChange={setFieldValue}
+                      parsedInputParameters={parsedInputParameters}
+                    />
                   </GridItem>
                 ))}
               </Grid>
