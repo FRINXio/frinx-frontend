@@ -1,4 +1,4 @@
-// its necesary in order to change path to the static files on the fly (e.g. {URLBasename}/static/[id].bundle.js ...)
+// its necessary in order to change path to the static files on the fly (e.g. {URLBasename}/static/[id].bundle.js ...)
 // https://webpack.js.org/guides/public-path/
 
 export function setWebpackPublicPath(): void {
