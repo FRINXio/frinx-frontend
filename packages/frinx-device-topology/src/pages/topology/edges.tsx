@@ -2,15 +2,9 @@ import { Box } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { useStateContext } from '../../state.provider';
 import { setSelectedEdge } from '../../state.actions';
-import {
-  EDGE_SLOPE_RADIUS,
-  getDistanceBetweenPoints,
-  getDistanceFromLineList,
-  getPointOnSlope,
-  GraphEdge,
-} from './graph.helpers';
+import { getDistanceBetweenPoints, getDistanceFromLineList, getPointOnSlope, GraphEdge } from './graph.helpers';
 
-const EDGE_GAP = 30;
+const EDGE_GAP = 75;
 
 function getInterfaceGroupName(sourceId: string, targetId: string) {
   return `${sourceId},${targetId}`;
@@ -36,7 +30,7 @@ const Edges: VoidFunctionComponent = () => {
         const isActive = selectedNode?.interfaces.includes(edge.source.interface);
         const isSelected = edge.id === selectedEdge?.id;
 
-        const innerPositionList = [];
+        const bezierCurveHandlePositionList = [];
 
         if (isActive) {
           const groupName = getInterfaceGroupName(edge.target.nodeId, edge.source.nodeId);
@@ -44,11 +38,9 @@ const Edges: VoidFunctionComponent = () => {
           const distanceFromLineList = getDistanceFromLineList(groupData.interfaces);
           const index = groupData.interfaces.indexOf(edge.target.interface);
           const length = EDGE_GAP * distanceFromLineList[index];
-          const sourceInterfacePosition = getPointOnSlope(sourcePosition, targetPosition, EDGE_SLOPE_RADIUS, length);
-          innerPositionList.push(sourceInterfacePosition);
-          const positionDistance = getDistanceBetweenPoints(sourcePosition, targetPosition) - EDGE_SLOPE_RADIUS;
-          const targetInterfacePosition = getPointOnSlope(sourcePosition, targetPosition, positionDistance, length);
-          innerPositionList.push(targetInterfacePosition);
+          const nodesDistance = getDistanceBetweenPoints(sourcePosition, targetPosition);
+          const bezierCurveHandlePosition = getPointOnSlope(sourcePosition, targetPosition, nodesDistance / 2, length);
+          bezierCurveHandlePositionList.push(bezierCurveHandlePosition);
         } else {
           // dont show edges that are connected to active node
           const targetNodeId = edge.target.nodeId;
@@ -62,14 +54,14 @@ const Edges: VoidFunctionComponent = () => {
         return (
           <React.Fragment key={edge.id}>
             {isActive ? (
-              <polyline
+              <path
                 strokeWidth={1}
                 stroke="black"
                 strokeLinejoin="round"
                 fill="transparent"
-                points={`${sourcePosition.x},${sourcePosition.y} ${innerPositionList.map((p) => `${p.x},${p.y}`)} ${
-                  targetPosition.x
-                },${targetPosition.y}`}
+                d={`M ${sourcePosition.x},${sourcePosition.y} Q ${bezierCurveHandlePositionList.map(
+                  (p) => `${p.x},${p.y}`,
+                )} ${targetPosition.x},${targetPosition.y}`}
                 cursor="pointer"
                 onClick={() => handleEdgeClick(edge)}
               />
@@ -93,13 +85,15 @@ const Edges: VoidFunctionComponent = () => {
                 <defs>
                   <path
                     id="sourcePath"
-                    d={`M${innerPositionList[0].x},${innerPositionList[0].y}  L${innerPositionList[1].x},${innerPositionList[1].y}`}
+                    d={`M ${sourcePosition.x},${sourcePosition.y} Q ${bezierCurveHandlePositionList.map(
+                      (p) => `${p.x},${p.y}`,
+                    )} ${targetPosition.x},${targetPosition.y}`}
                   />
                 </defs>
-                <text dx={10} dy={20}>
+                <text dx={30} dy={20} fontSize={14}>
                   <textPath href="#sourcePath">{edge.source.interface}</textPath>
                 </text>
-                <text dx={-10} dy={-10}>
+                <text dx={-30} dy={-10} fontSize={14}>
                   <textPath href="#sourcePath" startOffset="100%" textAnchor="end">
                     {edge.target.interface}
                   </textPath>
