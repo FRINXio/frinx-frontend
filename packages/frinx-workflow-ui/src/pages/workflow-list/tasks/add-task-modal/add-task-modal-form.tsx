@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Box, FormControl, FormLabel, Grid, Icon, Input, Select, Tag, Tooltip } from '@chakra-ui/react';
-import { taskDefinition } from '../../../../constants';
 import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
 import FeatherIcon from 'feather-icons-react';
+import { taskDefinition } from '../../../../constants';
 
 type Key = keyof typeof taskDefinition;
 
@@ -15,11 +15,8 @@ type FormInputProps = {
   onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
-const FormInput = React.forwardRef(
-  (
-    { label, onChange, value, id, type = 'text', onKeyPress }: FormInputProps,
-    ref: React.ForwardedRef<HTMLInputElement>,
-  ) => {
+const FormInput: FC<FormInputProps> = React.forwardRef(
+  ({ label, onChange, value, id, type = 'text', onKeyPress }, ref: React.ForwardedRef<HTMLInputElement>) => {
     return (
       <FormControl>
         <FormLabel htmlFor={id}>{label}</FormLabel>
@@ -39,7 +36,7 @@ const FormInput = React.forwardRef(
 
 type FormSelectProps = {
   valuesList: string[];
-} & FormInputProps;
+} & Omit<FormInputProps, 'onKeyPress' | 'type'>;
 
 const FormSelect = ({ label, onChange, value, id, valuesList }: FormSelectProps) => {
   return (
@@ -82,6 +79,8 @@ export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormP
 
       const inputKeys = Array.from(task[fieldName] || []);
       onChange(fieldName, [...inputKeys, ref.current.value.trim().replaceAll(' ', '_')]);
+
+      // eslint-disable-next-line no-param-reassign
       ref.current.value = '';
     }
   };

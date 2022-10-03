@@ -3,6 +3,7 @@ import { unwrap, useNotifications } from '@frinx/shared/src';
 import React, { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
+import { ServiceState } from '../../helpers/types';
 import {
   CreateLabelMutation,
   CreateLabelMutationVariables,
@@ -26,6 +27,9 @@ const DEVICE_QUERY = gql`
       ... on Device {
         name
         serviceState
+        model
+        vendor
+        address
         mountParameters
         zone {
           id
@@ -50,6 +54,9 @@ const UPDATE_DEVICE_MUTATION = gql`
       device {
         id
         name
+        model
+        vendor
+        address
         isInstalled
         zone {
           id
@@ -109,6 +116,9 @@ type FormValues = {
   mountParameters: string;
   labelIds: string[];
   serviceState: DeviceServiceState;
+  vendor: string | null;
+  model: string | null;
+  address: string | null;
 };
 
 const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
@@ -142,6 +152,9 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
         labelIds: values.labelIds,
         mountParameters: values.mountParameters,
         serviceState: values.serviceState,
+        model: values.model,
+        vendor: values.vendor,
+        address: values.address,
       },
     })
       .then(({ error }) => {
@@ -178,20 +191,32 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
   }
 
   const isLoadingForm = (isLoadingZones && zones == null) || (isLoadingLabels && labels == null);
-  const {
-    name,
-    mountParameters,
-    zone,
-    serviceState,
-    labels: { edges: labelEdges },
-  } = device;
+
+  const formDevice = {
+    id: device.id,
+    name: device.name,
+    vendor: device.vendor,
+    host: device.address,
+    model: device.model,
+    mountParameters: unwrap(device.mountParameters),
+    serviceState: device.serviceState as ServiceState,
+    zone: {
+      id: device.zone.id,
+      name: device.zone.name,
+    },
+    labels: device.labels.edges.map((e) => ({
+      id: e.node.id,
+      name: e.node.name,
+    })),
+  };
+
   const mappedLabels = labels?.labels.edges ?? [];
   const mappedZones = zones?.zones.edges ?? [];
 
   return (
     <Container maxWidth={1280}>
       <Heading size="3xl" as="h2" mb={6}>
-        Edit {name}
+        Edit {device.name}
       </Heading>
 
       {!isLoadingForm && (
@@ -201,11 +226,9 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
             onLabelCreate={handleOnLabelCreate}
             onUpdate={handleOnUpdateDevice}
             onCancel={onCancelButtonClick}
+            device={formDevice}
             zones={mappedZones}
-            mountParameters={mountParameters}
-            zoneId={zone?.id}
-            serviceState={serviceState}
-            initialSelectedLabels={labelEdges}
+            // initialSelectedLabels={labelEdges}
           />
         </Box>
       )}

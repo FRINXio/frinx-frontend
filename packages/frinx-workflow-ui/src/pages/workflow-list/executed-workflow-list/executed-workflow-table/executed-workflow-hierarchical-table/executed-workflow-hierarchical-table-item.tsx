@@ -4,11 +4,11 @@ import { Tr, Td, Checkbox, Icon } from '@chakra-ui/react';
 import { ExecutedWorkflow, ExecutedWorkflows, ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link } from 'react-router-dom';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
-import ExecutedSubWorkflowTable from './executed-subworkflow-table';
 import FeatherIcon from 'feather-icons-react';
+import ExecutedSubWorkflowTable from './executed-subworkflow-table';
 
 type Props = {
-  workflows: ExecutedWorkflows;
+  workflows: ExecutedWorkflows['result']['hits'];
   selectedWfs: string[];
   selectWf: (workflowId: string, isChecked: boolean) => void;
 };
@@ -28,7 +28,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, selectWf,
   const [nestedWorkflows, setNestedWorkflows] = useState<NestedWorkflow[]>([]);
 
   useEffect(() => {
-    setNestedWorkflows(workflows.result.hits.map((w) => ({ ...w, isExpanded: false })));
+    setNestedWorkflows(workflows.map((w) => ({ ...w, isExpanded: false })));
   }, [workflows]);
 
   const [subWorkflows, setSubWorkflows] = useState<Map<string, ExecutedSubWorkflows>>(new Map());
@@ -61,7 +61,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, selectWf,
 
   return (
     <>
-      {nestedWorkflows.map((item, i) => (
+      {nestedWorkflows.map((item) => (
         <Fragment key={item.workflowId}>
           <Tr onClick={() => handleToggle(item)}>
             <Td>

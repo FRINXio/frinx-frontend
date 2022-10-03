@@ -14,9 +14,10 @@ import { ExtendedTask, Workflow } from '../../helpers/types';
 
 type Props = {
   isOpen: boolean;
+  workflow: Workflow<ExtendedTask>;
   onClose: () => void;
   onSave: (workflow: Workflow<ExtendedTask>) => void;
-  workflow: Workflow<ExtendedTask>;
+  onChangeNotify: () => void;
 };
 
 const parseWorkflow = (workflow: Workflow<ExtendedTask>) => {
@@ -31,7 +32,7 @@ const parseWorkflow = (workflow: Workflow<ExtendedTask>) => {
   );
 };
 
-const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave }) => {
+const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave, onChangeNotify }) => {
   const [editedWorkflow, setEditedWorkflow] = useState(parseWorkflow(workflow));
   const [isJsonValid, setIsJsonValid] = useState(true);
 
@@ -50,6 +51,7 @@ const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave }) =
     try {
       setEditedWorkflow(value);
       setIsJsonValid(true);
+      onChangeNotify();
     } catch (error) {
       setIsJsonValid(false);
     }

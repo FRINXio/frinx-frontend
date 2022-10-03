@@ -172,6 +172,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/eslint-parser@npm:^7.19.1":
+  version: 7.19.1
+  resolution: "@babel/eslint-parser@npm:7.19.1"
+  dependencies:
+    "@nicolo-ribaudo/eslint-scope-5-internals": 5.1.1-v1
+    eslint-visitor-keys: ^2.1.0
+    semver: ^6.3.0
+  peerDependencies:
+    "@babel/core": ">=7.11.0"
+    eslint: ^7.5.0 || ^8.0.0
+  checksum: 6d5360f62f25ed097250657deb1bc4c4f51a5f5f2fe456e98cda13727753fdf7a11a109b4cfa03ef0dd6ced3beaeb703b76193c1141e29434d1f91f1bac0517d
+  languageName: node
+  linkType: hard
+
 "@babel/generator@npm:^7.14.0, @babel/generator@npm:^7.17.3, @babel/generator@npm:^7.17.7":
   version: 7.17.7
   resolution: "@babel/generator@npm:7.17.7"
@@ -3356,6 +3370,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@formspree/react@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@formspree/react@npm:2.4.0"
+  dependencies:
+    "@stripe/react-stripe-js": ^1.7.1
+    "@stripe/stripe-js": ^1.35.0
+  checksum: 275ba7ed9177f14665b7670feafa48f14bf6441762a694112553c7c6982b28b3c2c83194b920159bc573d47047d400188515c6d609a63915aaa4a6995ae4fe69
+  languageName: node
+  linkType: hard
+
 "@frinx/api@0.0.12, @frinx/api@workspace:packages/frinx-api":
   version: 0.0.0-use.local
   resolution: "@frinx/api@workspace:packages/frinx-api"
@@ -3407,6 +3431,7 @@ __metadata:
     "@chakra-ui/system": 1.12.1
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
+    "@formspree/react": ^2.4.0
     "@frinx/api": 0.0.12
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@frinx/inventory-client": ^0.0.1
@@ -3770,6 +3795,7 @@ __metadata:
   dependencies:
     "@ajna/pagination": 1.4.19
     "@babel/core": 7.18.10
+    "@babel/eslint-parser": ^7.19.1
     "@babel/plugin-proposal-class-properties": 7.18.6
     "@babel/plugin-transform-runtime": 7.18.10
     "@babel/preset-env": 7.18.10
@@ -3788,6 +3814,7 @@ __metadata:
     clipboard: ^2.0.4
     css-loader: ^5.0.1
     d3: ^3.5.16
+    dagre: 0.8.5
     dagre-d3: ^0.6.4
     eslint: 8.21.0
     eslint-config-airbnb: 19.0.4
@@ -3816,6 +3843,7 @@ __metadata:
     react: 18.1.0
     react-dom: 18.1.0
     react-dropdown: ^1.6.4
+    react-flow-renderer: 10.3.14
     react-organizational-chart: ^2.0.0
     react-redux: ^7.1.0
     react-router-dom: 6.3.0
@@ -3826,6 +3854,7 @@ __metadata:
     stream: 0.0.2
     style-loader: ^2.0.0
     superagent: ^5.2.2
+    typescript: 4.7.4
     unescape-js: ^1.1.4
     url-loader: 4.1.1
     webpack: 5.73.0
@@ -4577,6 +4606,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nicolo-ribaudo/eslint-scope-5-internals@npm:5.1.1-v1":
+  version: 5.1.1-v1
+  resolution: "@nicolo-ribaudo/eslint-scope-5-internals@npm:5.1.1-v1"
+  dependencies:
+    eslint-scope: 5.1.1
+  checksum: f2e3b2d6a6e2d9f163ca22105910c9f850dc4897af0aea3ef0a5886b63d8e1ba6505b71c99cb78a3bba24a09557d601eb21c8dede3f3213753fcfef364eb0e57
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -4765,6 +4803,26 @@ __metadata:
   version: 0.14.0
   resolution: "@sindresorhus/is@npm:0.14.0"
   checksum: 971e0441dd44ba3909b467219a5e242da0fc584048db5324cfb8048148fa8dcc9d44d71e3948972c4f6121d24e5da402ef191420d1266a95f713bb6d6e59c98a
+  languageName: node
+  linkType: hard
+
+"@stripe/react-stripe-js@npm:^1.7.1":
+  version: 1.12.0
+  resolution: "@stripe/react-stripe-js@npm:1.12.0"
+  dependencies:
+    prop-types: ^15.7.2
+  peerDependencies:
+    "@stripe/stripe-js": ^1.38.1
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 76eafaf1e7dd4300c7b7283d0849ce20e6f1efef017e7bf9437c687be91f960097f2c5b83414a3f36d1b1e7d59260c46eb17b819db86c4df6b34abf5ac49da8a
+  languageName: node
+  linkType: hard
+
+"@stripe/stripe-js@npm:^1.35.0":
+  version: 1.38.1
+  resolution: "@stripe/stripe-js@npm:1.38.1"
+  checksum: ddc7744c83b5c6a18af1c673fca7b760e0660023e6ec01e9a9440f1f3c85977d583eeb5e0680c3b8b253501cc9328f1392b376c2dc22ff83f8a7f83c6f28031c
   languageName: node
   linkType: hard
 
@@ -10354,7 +10412,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-visitor-keys@npm:^2.0.0":
+"eslint-visitor-keys@npm:^2.0.0, eslint-visitor-keys@npm:^2.1.0":
   version: 2.1.0
   resolution: "eslint-visitor-keys@npm:2.1.0"
   checksum: e3081d7dd2611a35f0388bbdc2f5da60b3a3c5b8b6e928daffff7391146b434d691577aa95064c8b7faad0b8a680266bcda0a42439c18c717b80e6718d7e267d

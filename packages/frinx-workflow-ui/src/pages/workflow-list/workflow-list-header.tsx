@@ -1,7 +1,4 @@
-// @flow
-import PageContainer from '../../common/PageContainer';
 import React, { useRef } from 'react';
-import callbackUtils from '../../utils/callback-utils';
 import {
   Box,
   Button,
@@ -16,6 +13,7 @@ import {
   MenuList,
   VisuallyHidden,
   Icon,
+  Container,
 } from '@chakra-ui/react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -23,12 +21,13 @@ import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
 import { useNotifications } from '@frinx/shared/src';
 import { compact } from 'lodash';
+import callbackUtils from '../../utils/callback-utils';
 
 type Props = {
   onImportSuccess: () => void;
 };
 
-function readFile(file: File): Promise<any> {
+function readFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.addEventListener('load', (event) => {
@@ -47,7 +46,7 @@ function readFile(file: File): Promise<any> {
   });
 }
 
-const WorkflowListHeader = ({ onImportSuccess }: Props) => {
+function WorkflowListHeader({ onImportSuccess }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const { addToastNotification } = useNotifications();
 
@@ -89,17 +88,17 @@ const WorkflowListHeader = ({ onImportSuccess }: Props) => {
       const zip = new JSZip();
 
       workflows.forEach((wf) => {
-        zip.file(wf.name + '.json', JSON.stringify(wf, null, 2));
+        zip.file(`${wf.name}.json`, JSON.stringify(wf, null, 2));
       });
 
-      zip.generateAsync({ type: 'blob' }).then(function (content) {
+      zip.generateAsync({ type: 'blob' }).then((content) => {
         saveAs(content, 'workflows.zip');
       });
     });
   };
 
   return (
-    <PageContainer>
+    <Container maxWidth={1200} mx="auto">
       <Flex as="header" alignItems="center" marginBottom={5}>
         <Heading as="h1" size="lg">
           Workflows
@@ -157,8 +156,8 @@ const WorkflowListHeader = ({ onImportSuccess }: Props) => {
       <VisuallyHidden>
         <Input id="upload-files" multiple type="file" ref={inputRef} onChange={importFiles} />
       </VisuallyHidden>
-    </PageContainer>
+    </Container>
   );
-};
+}
 
 export default WorkflowListHeader;

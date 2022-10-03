@@ -1,17 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import MiniSearch, { SearchResult } from 'minisearch';
-import { throttle } from 'lodash';
-import { Button, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
-import AddTaskModal from './add-task-modal';
-import PageContainer from '@frinx/workflow-ui/src/common/PageContainer';
+import throttle from 'lodash/throttle';
+import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
-import { sortAscBy, sortDescBy } from '../workflowUtils';
+import { sortAscBy, sortDescBy } from '@frinx/workflow-ui/src/utils/helpers.utils';
 import { taskDefinition } from '@frinx/workflow-ui/src/constants';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
-import TaskTable from './task-table';
 import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
-import TaskConfigModal from './task-modal';
 import FeatherIcon from 'feather-icons-react';
+import TaskTable from './task-table';
+import TaskConfigModal from './task-modal';
+import AddTaskModal from './add-task-modal';
 
 function getFilteredResults<T extends { name: string }>(searchResult: SearchResult[], defs: T[]): T[] {
   const resultIds = searchResult.map((r) => r.id);
@@ -37,10 +36,10 @@ const TaskList = () => {
     const { getTaskDefinitions } = callbackUtils.getCallbacks;
 
     getTaskDefinitions().then((taskDefinitions) => {
-      const data = taskDefinitions.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0)) || [];
+      const data = taskDefinitions.sort((a, b) => a.name.localeCompare(b.name)) || [];
       setItemList(data);
     });
-  }, []);
+  }, [setItemList]);
 
   useEffect(() => {
     minisearch.addAll(tasks);
@@ -48,8 +47,8 @@ const TaskList = () => {
 
   const searchFn = throttle(() => getFilteredResults(minisearch.search(searchTerm, { prefix: true }), tasks), 60);
 
-  const handleTaskModal = (task: TaskDefinition) => {
-    setTask(task);
+  const handleTaskModal = (tsk: TaskDefinition) => {
+    setTask(tsk);
     taskConfigModal.onOpen();
   };
 
@@ -57,7 +56,7 @@ const TaskList = () => {
     const { deleteTaskDefinition } = callbackUtils.getCallbacks;
 
     deleteTaskDefinition(name).then((deletedTask) => {
-      setItemList(tasks.filter((task: TaskDefinition) => task.name !== deletedTask.name));
+      setItemList(tasks.filter((tsk: TaskDefinition) => tsk.name !== deletedTask.name));
     });
   };
 
@@ -69,22 +68,19 @@ const TaskList = () => {
     setItemList(sortedArray);
   };
 
-  const addTask = (task: TaskDefinition) => {
-    Object.keys(task).forEach((key) => {
-      if (key === 'inputKeys' || key === 'outputKeys') {
-        task[key] = task[key]?.filter((e) => {
-          return e !== '';
-        });
-        task[key] = [...new Set(task[key])];
-      }
-    });
-    if (task['name'] !== '') {
-      const ownerEmail = task.ownerEmail || 'example@example.com';
-      const newTask = { ...task, ownerEmail };
-
+  const addTask = (tsk: TaskDefinition) => {
+    if (tsk.name !== '') {
+      const ownerEmail = tsk.ownerEmail || 'example@example.com';
       const { registerTaskDefinition } = callbackUtils.getCallbacks;
 
-      registerTaskDefinition([newTask]).then(() => {
+      registerTaskDefinition([
+        {
+          ...tsk,
+          ownerEmail,
+          outputKeys: [...new Set(tsk.outputKeys?.filter((outputKey) => outputKey !== ''))],
+          inputKeys: [...new Set(tsk.inputKeys?.filter((inputKey) => inputKey !== ''))],
+        },
+      ]).then(() => {
         window.location.reload();
       });
     }
@@ -93,7 +89,7 @@ const TaskList = () => {
   const result = searchTerm.length > 0 ? searchFn() : tasks;
 
   return (
-    <PageContainer>
+    <Container maxWidth={1200} mx="auto">
       <AddTaskModal
         isOpen={addTaskModal.isOpen}
         onSubmit={addTask}
@@ -125,7 +121,7 @@ const TaskList = () => {
         pagination={{ currentPage, setCurrentPage, totalPages }}
         sortArray={sortArray}
       />
-    </PageContainer>
+    </Container>
   );
 };
 

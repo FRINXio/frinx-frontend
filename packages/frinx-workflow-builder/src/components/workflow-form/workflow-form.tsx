@@ -41,6 +41,7 @@ type Props = {
   isCreatingWorkflow: boolean;
   onClose?: () => void;
   onSubmit: (workflow: PartialWorkflow) => void;
+  onChangeNotify?: () => void;
 };
 
 type FormValues = PartialWorkflow & { labels?: string[] };
@@ -82,7 +83,15 @@ const validationSchema = (isCreatingWorkflow: boolean) =>
     }),
   });
 
-const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEditName, isCreatingWorkflow }) => {
+const WorkflowForm: FC<Props> = ({
+  workflow,
+  onSubmit,
+  onClose,
+  workflows,
+  canEditName,
+  isCreatingWorkflow,
+  onChangeNotify,
+}) => {
   const { errors, values, handleSubmit, setFieldValue, handleChange } = useFormik<FormValues>({
     initialValues: getInitialValues(workflow),
     onSubmit: (formValues) => {
@@ -102,6 +111,18 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
     validateOnBlur: true,
   });
   const [newParam, setNewParam] = useState<string>('');
+
+  const handleOnChangeNotify = () => {
+    if (onChangeNotify) {
+      onChangeNotify();
+    }
+  };
+
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
+    handleChange(e);
+    handleOnChangeNotify();
+  };
+
   const isNameInvalid = canEditName ? !isWorkflowNameAvailable(workflows, values.name) : false;
 
   return (
@@ -113,12 +134,12 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
     >
       <FormControl my={6} isInvalid={isNameInvalid || errors.name != null} isRequired>
         <FormLabel>Name</FormLabel>
-        <Input isDisabled={!canEditName} value={values.name} name="name" onChange={handleChange} />
+        <Input isDisabled={!canEditName} value={values.name} name="name" onChange={handleOnChange} />
         <FormErrorMessage>{errors.name}</FormErrorMessage>
       </FormControl>
       <FormControl id="description" my={6}>
         <FormLabel>Description</FormLabel>
-        <Input name="description" value={values.description} onChange={handleChange} />
+        <Input name="description" value={values.description} onChange={handleOnChange} />
       </FormControl>
       <FormControl id="label" my={6}>
         <FormLabel>Label</FormLabel>
@@ -130,14 +151,14 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
       </FormControl>
       <FormControl id="version" my={6} isRequired isInvalid={errors.version != null}>
         <FormLabel>Version</FormLabel>
-        <Input name="version" value={values.version} onChange={handleChange} />
+        <Input name="version" value={values.version} onChange={handleOnChange} />
         <FormErrorMessage>{errors.version}</FormErrorMessage>
       </FormControl>
       {!isCreatingWorkflow && (
         <HStack spacing={2} my={6} alignItems="start">
           <FormControl id="timeoutPolicy" isRequired isInvalid={errors.timeoutPolicy != null}>
             <FormLabel>Timeout policy</FormLabel>
-            <Select name="timeoutPolicy" value={values.timeoutPolicy} onChange={handleChange}>
+            <Select name="timeoutPolicy" value={values.timeoutPolicy} onChange={handleOnChange}>
               <option value="RETRY">RETRY</option>
               <option value="TIME_OUT_WF">TIME_OUT_WF</option>
               <option value="ALERT_ONLY">ALERT_ONLY</option>
@@ -146,14 +167,14 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
           </FormControl>
           <FormControl id="timeoutSeconds" isRequired isInvalid={errors.timeoutSeconds != null}>
             <FormLabel>Timeout seconds</FormLabel>
-            <Input name="timeoutSeconds" value={values.timeoutSeconds} onChange={handleChange} />
+            <Input name="timeoutSeconds" value={values.timeoutSeconds} onChange={handleOnChange} />
             <FormErrorMessage>{errors.timeoutSeconds}</FormErrorMessage>
           </FormControl>
         </HStack>
       )}
       <FormControl my={6} isInvalid={errors.restartable != null}>
         <Flex alignItems="center">
-          <Checkbox name="restartable" isChecked={values.restartable} onChange={handleChange} id="restartable" />
+          <Checkbox name="restartable" isChecked={values.restartable} onChange={handleOnChange} id="restartable" />
           <FormLabel htmlFor="restartable" mb={0} ml={2}>
             Restartable
           </FormLabel>
@@ -175,6 +196,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
               onChange={(event) => {
                 event.persist();
                 setNewParam(event.target.value);
+                handleOnChangeNotify();
               }}
             />
             <IconButton
@@ -189,6 +211,7 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
                   [newParam]: '',
                 });
                 setNewParam('');
+                handleOnChangeNotify();
               }}
             />
           </HStack>
@@ -204,23 +227,25 @@ const WorkflowForm: FC<Props> = ({ workflow, onSubmit, onClose, workflows, canEd
                 name="param"
                 variant="filled"
                 value={values.outputParameters[key]}
-                onChange={(event) =>
+                onChange={(event) => {
                   setFieldValue('outputParameters', {
                     ...values.outputParameters,
                     [key]: event.target.value,
-                  })
-                }
+                  });
+                  handleOnChangeNotify();
+                }}
               />
               <IconButton
                 aria-label="remove param"
                 colorScheme="red"
                 icon={<Icon as={FeatherIcon} icon="trash-2" size={20} />}
-                onClick={() =>
+                onClick={() => {
                   setFieldValue(
                     'outputParameters',
                     omitBy(values.outputParameters, (_, k) => k === key),
-                  )
-                }
+                  );
+                  handleOnChangeNotify();
+                }}
               />
             </HStack>
           </FormControl>

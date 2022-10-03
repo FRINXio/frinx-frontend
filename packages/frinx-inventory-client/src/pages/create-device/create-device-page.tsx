@@ -91,7 +91,7 @@ type FormValues = {
   mountParameters: string;
   labelIds: string[];
   serviceState: DeviceServiceState;
-  blueprintId: string;
+  blueprintId: string | null;
   model: string;
   address: string;
   username: string;

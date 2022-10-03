@@ -69,7 +69,7 @@ const ExternalStorageModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, s
               {isEscaped ? 'Unescape' : 'Escape'}
             </Button>
           </Stack>
-          {payload != null && <Textarea value={value} isReadOnly={true} id="storage" variant="filled" minH={450} />}
+          {payload != null && <Textarea value={value} isReadOnly id="storage" variant="filled" minH={450} />}
         </ModalBody>
       </ModalContent>
     </Modal>

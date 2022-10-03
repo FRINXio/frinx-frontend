@@ -63,7 +63,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                       <Button
                         isDisabled={!hasNestedPools}
                         as={Link}
-                        to={`/uniresource/pools/nested/${pool.id}`}
+                        to={`/resource-manager/pools/nested/${pool.id}`}
                         rightIcon={<FeatherIcon icon="chevron-down" size={20} />}
                         size="xs"
                       >
@@ -138,7 +138,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
               <Td>
                 <HStack>
                   <Text>There are no resource pools</Text>
-                  <Button colorScheme="blue" size="xs" as={Link} to="/uniresource/pools/new">
+                  <Button colorScheme="blue" size="xs" as={Link} to="/resource-manager/pools/new">
                     Create pool
                   </Button>
                 </HStack>

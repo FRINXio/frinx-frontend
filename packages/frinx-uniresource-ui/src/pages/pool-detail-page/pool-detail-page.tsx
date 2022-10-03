@@ -152,7 +152,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
           <strong>Warning:</strong> By deleting this pool, all data will be lost.
         </Text>
         <DeletePoolPopover
-          onDelete={() => deleteResourcePool(poolId, { redirectOnSuccess: '/uniresource/pools' })}
+          onDelete={() => deleteResourcePool(poolId, { redirectOnSuccess: '/resource-manager/pools' })}
           canDeletePool={canDeletePool}
           poolName={resourcePool.Name}
         >

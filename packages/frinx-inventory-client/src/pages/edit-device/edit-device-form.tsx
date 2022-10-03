@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { Editor } from '@frinx/shared/src';
 
-import { serviceStateOptions } from '../../helpers/types';
+import { Device, serviceStateOptions } from '../../helpers/types';
 import { DeviceServiceState, Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 
@@ -25,55 +25,46 @@ type FormValues = {
   mountParameters: string;
   labelIds: string[];
   serviceState: DeviceServiceState;
-  vendor: string;
-  model: string;
-  address: string;
+  vendor: string | null;
+  model: string | null;
+  address: string | null;
 };
 
+type FormLabel = { id: string; name: string };
+
+type FormDevice = Device & { labels: FormLabel[] };
+
 type Props = {
-  zoneId: string;
-  mountParameters: string | null;
   labels: LabelsQuery['labels']['edges'];
-  initialSelectedLabels: LabelsQuery['labels']['edges'];
-  serviceState: DeviceServiceState;
   zones: ZonesQuery['zones']['edges']; // eslint-disable-line react/no-unused-prop-types
+  device: FormDevice;
   onUpdate: (values: FormValues) => void;
   onLabelCreate: (label: string) => Promise<Label | null>;
   onCancel: () => void;
 };
 
 const EditDeviceFormSchema = yup.object().shape({
-  // zoneId: yup.string().required('Zone is required'),
   serviceState: yup.string().required('Service state is required'),
   vendor: yup.string(),
   model: yup.string(),
   address: yup.string(),
 });
 
-const EditDeviceForm: FC<Props> = ({
-  zoneId,
-  mountParameters,
-  labels,
-  initialSelectedLabels,
-  serviceState,
-  onUpdate,
-  onLabelCreate,
-  onCancel,
-}): JSX.Element => {
+const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, onCancel }): JSX.Element => {
   const INITIAL_VALUES = useMemo(() => {
     return {
-      zoneId,
-      mountParameters: mountParameters ?? '',
-      labelIds: initialSelectedLabels.map(({ node: { id } }) => id),
-      serviceState,
-      vendor: '',
-      model: '',
-      address: '',
+      zoneId: device.zone.id,
+      mountParameters: device.mountParameters ?? '',
+      labelIds: device.labels.map((label) => label.id),
+      serviceState: device.serviceState,
+      vendor: device.vendor,
+      model: device.model,
+      address: device.host,
     };
-  }, [zoneId, mountParameters, initialSelectedLabels, serviceState]);
+  }, [device]);
 
   const [selectedLabels, setSelectedLabels] = React.useState<Item[]>(
-    initialSelectedLabels.map(({ node: { id, name } }) => ({ value: id, label: name })),
+    device.labels.map(({ id, name }) => ({ value: id, label: name })),
   );
 
   const { values, isSubmitting, handleSubmit, setFieldValue, handleChange, errors } = useFormik<FormValues>({
@@ -123,12 +114,22 @@ const EditDeviceForm: FC<Props> = ({
 
       <FormControl my={6}>
         <FormLabel>Vendor</FormLabel>
-        <Input name="vendor" onChange={handleChange} placeholder="Enter vendor of the device" value={values.vendor} />
+        <Input
+          name="vendor"
+          onChange={handleChange}
+          placeholder="Enter vendor of the device"
+          value={values.vendor || ''}
+        />
       </FormControl>
 
       <FormControl my={6}>
         <FormLabel>Model</FormLabel>
-        <Input name="model" onChange={handleChange} placeholder="Enter model of the device" value={values.model} />
+        <Input
+          name="model"
+          onChange={handleChange}
+          placeholder="Enter model of the device"
+          value={values.model || ''}
+        />
       </FormControl>
 
       <FormControl my={6}>
@@ -137,7 +138,7 @@ const EditDeviceForm: FC<Props> = ({
           name="address"
           onChange={handleChange}
           placeholder="Enter address of the device"
-          value={values.address}
+          value={values.address || ''}
         />
       </FormControl>
 
