@@ -255,7 +255,7 @@ const DeviceConfig: VoidFunctionComponent = () => {
       addToastNotification({
         type: 'success',
         title: 'Success',
-        content: isDryRun ? 'Dry run successfull' : 'Successfully commited to network',
+        content: isDryRun ? 'Dry run successfull' : 'Successfully committed to network',
       });
     }
   };

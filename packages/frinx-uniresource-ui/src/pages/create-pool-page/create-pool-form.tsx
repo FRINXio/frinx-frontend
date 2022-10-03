@@ -252,7 +252,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       </HStack>
 
       <FormControl id="description">
-        <FormLabel htmlFor="descriptionField">Descripton</FormLabel>
+        <FormLabel htmlFor="descriptionField">Description</FormLabel>
         <Textarea
           id="descriptionField"
           onChange={handleChange}

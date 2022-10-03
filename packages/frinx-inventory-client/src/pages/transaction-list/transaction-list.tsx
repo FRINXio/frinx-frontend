@@ -113,7 +113,7 @@ const TransactionList: VoidFunctionComponent = () => {
         }
         addToastNotification({
           type: 'success',
-          content: 'Transaction successfuly reverted',
+          content: 'Transaction successfully reverted',
           title: 'Success',
         });
       }

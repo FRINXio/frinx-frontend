@@ -143,7 +143,7 @@ export const handleForkNode = (forkNode) => {
     let parent = link.targetPort.getNode();
     let current = link.targetPort.getNode();
 
-    //iterate trough tasks in each branch till join node
+    //iterate through tasks in each branch till join node
     while (current) {
       let outputLinks = getLinksArray('out', current);
       switch (current.type) {
