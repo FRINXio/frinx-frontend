@@ -1,6 +1,9 @@
 import { Workflow } from '../helpers/types';
 
-export type InputParameter = Record<string, { value: string; description: string; type: string }>;
+export type InputParameter = Record<
+  string,
+  { value: string; description: string; type: string; options?: string[] | null }
+>;
 
 export const sortAscBy = (key: string) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

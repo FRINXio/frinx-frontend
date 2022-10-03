@@ -2,7 +2,10 @@ import { v4 as uuid } from 'uuid';
 import { getTaskLabel } from './task.helpers';
 import { ExtendedTask, Workflow } from './types';
 
-export type InputParameter = Record<string, { value: string; description: string; type: string }>;
+export type InputParameter = Record<
+  string,
+  { value: string; description: string; type: string; options?: string[] | null }
+>;
 
 export function deserializeId(id: string): { type: string; id: string } {
   return JSON.parse(id);
