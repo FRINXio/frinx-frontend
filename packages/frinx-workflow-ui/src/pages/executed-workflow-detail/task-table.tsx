@@ -33,9 +33,7 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick, formatDate }) => (
             cursor="pointer"
           >
             <Tooltip label={task.taskType}>
-              <Text isTruncated maxWidth={32}>
-                {task.taskType}
-              </Text>
+              <Text>{task.taskType}</Text>
             </Tooltip>
           </Td>
           <Td textAlign="center">
@@ -58,9 +56,7 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick, formatDate }) => (
             cursor="pointer"
           >
             <Tooltip label={task.referenceTaskName}>
-              <Text isTruncated maxWidth={32}>
-                {task.referenceTaskName}
-              </Text>
+              <Text>{task.referenceTaskName}</Text>
             </Tooltip>
           </Td>
           <Td>
