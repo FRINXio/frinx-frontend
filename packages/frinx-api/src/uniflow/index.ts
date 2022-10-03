@@ -205,7 +205,7 @@ export default function createUniflowApiClient(apiHelpers: ApiHelpers): UniflowA
   }
 
   // TODO: Just copy-pasted for now, needs rework in uniflow-api
-  // Returns list of running workflows in hierarchical strucutre
+  // Returns list of running workflows in hierarchical structure
   async function getWorkflowExecutionsHierarchical(
     payload: WorkflowExecutionPayload,
   ): Promise<WorkflowExecutionResult> {

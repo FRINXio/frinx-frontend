@@ -106,7 +106,7 @@ const WorkflowDefinitions = () => {
           const wfName = e.name.toUpperCase();
           const labelsArr = jsonParse(e.description)?.labels;
 
-          // if labels are used and wf doesnt contain selected labels => filter out
+          // if labels are used and wf does not contain selected labels => filter out
           if (labels.length > 0) {
             if (_.difference(labels, labelsArr).length !== 0) {
               return false;

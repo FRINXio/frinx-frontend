@@ -13,7 +13,7 @@ const NodeButtons: FC<Props> = memo(({ onEditButtonClick, onDeleteButtonClick, o
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // we are using native event handlers here, because thats how react-flow is working
+  // we are using native event handlers here, because that's how react-flow is working
   // https://github.com/wbkd/react-flow/issues/1676
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {

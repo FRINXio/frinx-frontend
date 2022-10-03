@@ -139,7 +139,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
         }
         onAddDeviceSuccess();
         addToastNotification({
-          content: 'Device succesfully added',
+          content: 'Device successfully added',
           type: 'success',
         });
       })
