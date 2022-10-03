@@ -1,14 +1,15 @@
-// @flow
 import React, { FC } from 'react';
-import { Box, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
-import WfAutoComplete from '../../../common/wf-autocomplete';
+import { Box, Button, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
+import WfAutoComplete from '../../../common/wf-autocomplete';
+
 type Props = {
   allLabels: string[];
   keywords: string[];
-  onKeywordsChange: (keywords: string) => void;
   labels: string[];
+  onKeywordsChange: (keywords: string) => void;
   onLabelsChange: (labels: string[]) => void;
+  onClearSearch: () => void;
 };
 
 function dropNulls<T>(values: (T | null)[]): T[] {
@@ -21,13 +22,22 @@ function dropNulls<T>(values: (T | null)[]): T[] {
   return result;
 }
 
-const WorkflowDefinitionsHeader: FC<Props> = ({ allLabels, keywords, onKeywordsChange, labels, onLabelsChange }) => {
+const WorkflowDefinitionsHeader: FC<Props> = ({
+  allLabels,
+  keywords,
+  onKeywordsChange,
+  labels,
+  onLabelsChange,
+  onClearSearch,
+}) => {
   const searchFavourites = () => {
     const newLabels: (string | null)[] = [...labels];
     const index = newLabels.findIndex((label) => label === 'FAVOURITE');
     newLabels.splice(index, 1, index === -1 ? 'FAVOURITE' : null);
     onLabelsChange(dropNulls(newLabels));
   };
+
+  const starColor = labels.includes('FAVOURITE') ? 'yellow.400' : 'white';
 
   return (
     <HStack spacing={4} marginBottom={8} alignItems="center">
@@ -39,9 +49,7 @@ const WorkflowDefinitionsHeader: FC<Props> = ({ allLabels, keywords, onKeywordsC
           width={9}
           onClick={searchFavourites}
           title="Favourites"
-          icon={
-            <Icon size={20} as={FeatherIcon} color={labels.includes('FAVOURITE') ? 'yellow' : 'white'} icon="star" />
-          }
+          icon={<Icon size={20} as={FeatherIcon} fill={starColor} color={starColor} icon="star" />}
         />
       </Box>
       <Box flex={1}>
@@ -65,6 +73,9 @@ const WorkflowDefinitionsHeader: FC<Props> = ({ allLabels, keywords, onKeywordsC
           />
         </InputGroup>
       </Box>
+      <Button bgColor="white" onClick={onClearSearch}>
+        Reset search
+      </Button>
     </HStack>
   );
 };

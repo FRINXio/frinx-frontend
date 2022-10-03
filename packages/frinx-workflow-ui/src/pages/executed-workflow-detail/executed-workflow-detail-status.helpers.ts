@@ -55,7 +55,6 @@ async function getWorkflowExecOutput(
     const response = await getWorkflowInstanceDetail(workflowId, { signal: abortController.signal });
     return response;
   } catch (error) {
-    console.log(error);
     return null;
   }
 }

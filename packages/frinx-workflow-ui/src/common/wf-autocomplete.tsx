@@ -17,11 +17,11 @@ import FeatherIcon from 'feather-icons-react';
 type Props = {
   options: string[];
   onChange: (labels: string[]) => void;
-  selected: string[];
+  selected?: string[];
   placeholder: string;
 };
 
-const WfAutoComplete = forwardRef((props: Props, ref) => {
+const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = [] }: Props, ref) => {
   const [query, setQuery] = React.useState('');
   const [active, setActive] = React.useState(0);
   const [isOptionsVisible, setOptionsVisible] = React.useState(false);
@@ -33,24 +33,17 @@ const WfAutoComplete = forwardRef((props: Props, ref) => {
     },
   }));
 
-  const { options, selected, onChange, placeholder } = props;
-
   const results = React.useMemo(
-    function getResults() {
-      return matchSorter(
-        options.map((e) => {
-          return { value: e };
-        }),
+    () =>
+      matchSorter(
+        options.map((e) => ({ value: e })),
         query,
         {
           keys: ['value'],
         },
       )
-        .filter((e) => {
-          return !selected?.includes(e.value);
-        })
-        .slice(0, 20);
-    },
+        .filter((e) => !selected?.includes(e.value))
+        .slice(0, 20),
     [options, query, selected],
   );
 
@@ -81,6 +74,8 @@ const WfAutoComplete = forwardRef((props: Props, ref) => {
           setOptionsVisible(false);
           break;
         }
+        default:
+          break;
       }
     },
     [active, onChange, results, selected],
@@ -91,21 +86,19 @@ const WfAutoComplete = forwardRef((props: Props, ref) => {
       <InputGroup>
         {selected && selected.length > 0 && (
           <InputLeftAddon bg="white">
-            {selected.map((item, index) => {
-              return (
-                <Tag
-                  key={item}
-                  size="sm"
-                  cursor="pointer"
-                  onClick={() => {
-                    onChange([...selected.slice(0, index), ...selected.slice(index + 1, selected.length)]);
-                  }}
-                >
-                  <p>{item}</p>
-                  <TagCloseButton />
-                </Tag>
-              );
-            })}
+            {selected.map((item, index) => (
+              <Tag
+                key={item}
+                size="sm"
+                cursor="pointer"
+                onClick={() => {
+                  onChange([...selected.slice(0, index), ...selected.slice(index + 1, selected.length)]);
+                }}
+              >
+                <p>{item}</p>
+                <TagCloseButton />
+              </Tag>
+            ))}
           </InputLeftAddon>
         )}
         <Input
@@ -143,32 +136,31 @@ const WfAutoComplete = forwardRef((props: Props, ref) => {
       {isOptionsVisible && (
         <Box bg="white" position="absolute" w="100%" zIndex="dropdown" border="1px solid gray.50">
           <Box>
-            {results.map((item, index) => {
-              return (
-                <Box
-                  key={index}
-                  padding={2}
-                  backgroundColor={active == index ? 'gray.50' : 'white'}
-                  onMouseOver={() => {
-                    setActive(index);
-                  }}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (!selected || !selected.includes(item.value)) {
-                      onChange([item.value]);
-                      setQuery('');
-                    }
-                    setOptionsVisible(false);
-                  }}
-                  cursor="pointer"
-                >
-                  {item.value}
-                </Box>
-              );
-            })}
+            {results.map((item, index) => (
+              <Box
+                // eslint-disable-next-line react/no-array-index-key
+                key={`${item.value}-${index}`}
+                padding={2}
+                backgroundColor={active === index ? 'gray.50' : 'white'}
+                onMouseOver={() => {
+                  setActive(index);
+                }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!selected || !selected.includes(item.value)) {
+                    onChange([item.value]);
+                    setQuery('');
+                  }
+                  setOptionsVisible(false);
+                }}
+                cursor="pointer"
+              >
+                {item.value}
+              </Box>
+            ))}
           </Box>
         </Box>
       )}

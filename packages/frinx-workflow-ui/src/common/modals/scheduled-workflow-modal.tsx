@@ -17,6 +17,7 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import { Editor } from '@frinx/shared/src';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { ScheduledWorkflow } from '@frinx/workflow-ui/src/helpers/types';
 import { useFormik } from 'formik';
 import callbackUtils from '../../utils/callback-utils';
@@ -24,7 +25,7 @@ import callbackUtils from '../../utils/callback-utils';
 const DEFAULT_CRON_STRING = '* * * * *';
 
 export type ScheduledWorkflowModal = {
-  cronString: string;
+  cronString?: string;
   workflowName: string;
   workflowVersion: string;
 };
@@ -58,11 +59,11 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
     getSchedule(workflow.workflowName, workflow.workflowVersion).then((scheduledWorkflow) => {
       setFieldValue('workflowContext', scheduledWorkflow.workflowContext ?? {});
     });
-  }, [workflow]);
+  }, [workflow, getSchedule, setFieldValue]);
 
   const getCrontabGuruUrl = () => {
     const cronString = values.cronString || DEFAULT_CRON_STRING;
-    const url = 'https://crontab.guru/#' + cronString.replace(/\s/g, '_');
+    const url = `https://crontab.guru/#${cronString.replace(/\s/g, '_')}`;
     return (
       <Link href={url} color="brand.500">
         crontab.guru
@@ -109,7 +110,10 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
                   try {
                     const parsedJSON = JSON.parse(e);
                     setFieldValue('workflowContext', parsedJSON);
-                  } catch (error) {}
+                  } catch (error) {
+                    // eslint-disable-next-line no-console
+                    console.error(error);
+                  }
                 }}
                 value={JSON.stringify(values.workflowContext, null, 2)}
                 height="400px"

@@ -20,8 +20,8 @@ import {
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import React, { FC, useState } from 'react';
+import { getInitialValuesFromParsedInputParameters, InputParameter } from '@frinx/workflow-ui/src/utils/helpers.utils';
 import { Link } from 'react-router-dom';
-import { getInitialValuesFromParsedInputParameters, InputParameter } from '../../helpers/workflow.helpers';
 
 type Props = {
   workflowName: string;
@@ -102,7 +102,7 @@ const ExecuteWorkflowModal: FC<Props> = ({
         </ModalBody>
         <ModalFooter>
           {executedWorkflowId != null && (
-            <Button variant="link" colorScheme="blue" as={Link} to={`/uniflow/executed/${executedWorkflowId}`}>
+            <Button variant="link" colorScheme="blue" as={Link} to={`/workflow-manager/executed/${executedWorkflowId}`}>
               Executed workflow in detail
             </Button>
           )}

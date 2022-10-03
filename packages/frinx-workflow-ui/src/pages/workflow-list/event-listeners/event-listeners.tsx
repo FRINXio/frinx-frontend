@@ -1,8 +1,8 @@
-// @flow
 import React, { useEffect, useState } from 'react';
 import {
   Button,
   Checkbox,
+  Container,
   Icon,
   IconButton,
   Input,
@@ -23,10 +23,10 @@ import {
   Th,
   Thead,
   Tr,
+  useToast,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { Editor } from '@frinx/shared/src';
-import PageContainer from '../../../common/PageContainer';
+import { Editor, useNotifications } from '@frinx/shared/src';
 import Paginator from '../../../common/pagination';
 import callbackUtils from '../../../utils/callback-utils';
 import { usePagination } from '../../../common/pagination-hook';
@@ -37,6 +37,18 @@ const EventListeners = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<EventListener | null>(null);
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<EventListener>([], 10);
+  const { addToastNotification } = useNotifications();
+  const toast = useToast();
+
+  const getData = () => {
+    const { getEventListeners } = callbackUtils.getCallbacks;
+
+    getEventListeners().then((listeners) => {
+      if (Array.isArray(listeners)) {
+        setEventListeners(listeners);
+      }
+    });
+  };
 
   useEffect(() => {
     getData();
@@ -55,35 +67,31 @@ const EventListeners = () => {
           return false;
         });
     setItemList(results);
-  }, [searchTerm, eventListeners]);
-
-  const getData = () => {
-    const { getEventListeners } = callbackUtils.getCallbacks;
-
-    getEventListeners().then((eventListeners) => {
-      if (Array.isArray(eventListeners)) {
-        setEventListeners(eventListeners);
-      }
-    });
-  };
+  }, [searchTerm, eventListeners, setItemList]);
 
   const editEvent = (state: boolean | null, event: EventListener | null) => {
     if (!event) {
       return;
     }
 
-    if (state !== null) {
-      event.active = state;
-    }
-
     const { registerEventListener } = callbackUtils.getCallbacks;
 
-    registerEventListener(event)
+    registerEventListener({
+      ...event,
+      active: state !== null ? state : event.active,
+    })
       .then(() => {
         getData();
+        addToastNotification({
+          content: 'Event listener registered',
+          type: 'success',
+        });
       })
       .catch((err) => {
-        alert(err);
+        addToastNotification({
+          content: `Failed to register event listener: ${err}`,
+          type: 'error',
+        });
       });
     setSelectedEvent(null);
   };
@@ -94,9 +102,16 @@ const EventListeners = () => {
     deleteEventListener(name)
       .then(() => {
         getData();
+        addToastNotification({
+          content: 'Event listener deleted',
+          type: 'success',
+        });
       })
       .catch((err) => {
-        alert(err);
+        addToastNotification({
+          content: `Failed to delete event listener: ${err}`,
+          type: 'error',
+        });
       });
   };
 
@@ -109,7 +124,13 @@ const EventListeners = () => {
       const parsedJSON = JSON.parse(data);
       setSelectedEvent(parsedJSON);
     } catch (e) {
-      console.log(e);
+      toast({
+        title: 'Invalid JSON',
+        description: 'Please check the JSON syntax',
+        status: 'error',
+        duration: 500,
+        isClosable: true,
+      });
     }
   };
 
@@ -137,7 +158,7 @@ const EventListeners = () => {
   );
 
   return (
-    <PageContainer>
+    <Container maxWidth={1200} mx="auto">
       {editModal()}
       <InputGroup marginBottom={8}>
         <InputLeftElement>
@@ -202,7 +223,7 @@ const EventListeners = () => {
           </Tr>
         </Tfoot>
       </Table>
-    </PageContainer>
+    </Container>
   );
 };
 

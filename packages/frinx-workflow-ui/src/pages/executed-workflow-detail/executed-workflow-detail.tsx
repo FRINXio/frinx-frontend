@@ -1,7 +1,5 @@
 import React, { ChangeEvent, FC, useState } from 'react';
-import TaskModal from '../../common/modals/task-modal';
-import WorkflowDia from './WorkflowDia/WorkflowDia';
-import callbackUtils from '../../utils/callback-utils';
+import { TaskModal } from '@frinx/workflow-ui/src/common/modals';
 import moment from 'moment';
 import unescapeJs from 'unescape-js';
 import {
@@ -15,20 +13,20 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useNotifications } from '@frinx/shared/src';
+import { useNotifications, unwrap } from '@frinx/shared/src';
+import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
+import { Link, useParams } from 'react-router-dom';
+import callbackUtils from '../../utils/callback-utils';
 import TaskTable from './task-table';
 import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
 import WorkflowJsonTab from './executed-workflow-detail-tabs/workflow-json-tab';
 import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
 import DetailsModalHeader from './executed-workflow-detail-header';
 import { useWorkflowGenerator } from './executed-workflow-detail-status.helpers';
-import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
-import { Link, useParams } from 'react-router-dom';
-import { unwrap } from '@frinx/shared/src';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
+import WorkflowDiagram from '../../common/workflow-diagram';
 
 const convertWorkflowVariablesToFormFormat = (
   workflowDetails: string,
@@ -57,8 +55,13 @@ const convertWorkflowVariablesToFormFormat = (
   };
 
   const descriptions = inputParameters.map((param: string) => {
-    if (matchParam(param) && matchParam(param)?.length) {
-      return matchParam(param)![1];
+    const matchedParam = matchParam(param);
+    if (matchedParam == null) {
+      return '';
+    }
+
+    if (matchedParam.length > 0) {
+      return matchedParam[1];
     }
 
     return '';
@@ -93,9 +96,9 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
     return null;
   }
 
-  const { result, meta, subworkflows } = execPayload;
+  const { result, meta } = execPayload;
 
-  const getUnescapedJSON = (data: any) => {
+  const getUnescapedJSON = (data: Record<string, unknown> | unknown) => {
     return isEscaped
       ? JSON.stringify(data, null, 2)
           .replace(/\\n/g, '\\n')
@@ -130,7 +133,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>, key: string) => {
-    let workflowForm = result.input;
+    const workflowForm = result.input;
     workflowForm[key] = e.target.value;
     setWorkflowVariables((prev) => ({ ...prev, ...workflowForm }));
   };
@@ -147,7 +150,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
     }
   };
 
-  const restartWorkflows = () => {
+  const handleOnRestartWorkflows = () => {
     const { restartWorkflows } = callbackUtils.getCallbacks;
     restartWorkflows([workflowId]).then(() => {
       onExecutedOperation(workflowId);
@@ -186,11 +189,11 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
         onWorkflowActionExecution={onExecutedOperation}
         endTime={formatDate(result.endTime)}
         startTime={formatDate(result.startTime)}
-        restartWorkflows={restartWorkflows}
+        restartWorkflows={handleOnRestartWorkflows}
         status={result.status}
         visibleRestartButton={result.workflowDefinition.restartable}
       />
-      <Box background="white" borderRadius={4}>
+      <Box background="white" borderRadius={4} mb={5}>
         <Tabs index={tabIndex} onChange={setTabIndex}>
           <TabList>
             <Tab>Task Details</Tab>
@@ -243,7 +246,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
               />
             </TabPanel>
             <TabPanel>
-              <WorkflowDia meta={meta} wfe={result} subworkflows={subworkflows} />
+              <WorkflowDiagram meta={meta} result={result} />
             </TabPanel>
           </TabPanels>
         </Tabs>

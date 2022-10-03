@@ -1,5 +1,18 @@
 import * as React from 'react';
 
+export type UsePaginationReturn<T> = {
+  setItemList: (newItems: Array<T>) => void;
+  isPaginating: boolean;
+  currentPage: number;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  pageItems: T[];
+  totalPages: number;
+  totalItemsAmount: number;
+  itemCount: number;
+  maxItemsPerPage: number;
+  setTotalItemsAmount: React.Dispatch<React.SetStateAction<number>>;
+};
+
 const displayItem = (currentPage: number, maxPerPage: number, index: number) => {
   const currentPageStart = (currentPage - 1) * maxPerPage + 1;
   const currentPageEnd = currentPage * maxPerPage;
@@ -11,12 +24,13 @@ const displayItem = (currentPage: number, maxPerPage: number, index: number) => 
   return false;
 };
 
-export function usePagination<T>(itemList: Array<T>, maxItemsPerPage: number) {
+export function usePagination<T>(itemList: Array<T>, maxItemsPerPage: number): UsePaginationReturn<T> {
   const [items, setItems] = React.useState(itemList);
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [totalItemsAmount, setTotalItemsAmount] = React.useState(itemList.length);
 
   const isPaginating = items.length > maxItemsPerPage;
-  const totalPages = Math.ceil(items.length / maxItemsPerPage);
+  const totalPages = Math.ceil(totalItemsAmount / maxItemsPerPage);
   const itemCount = items.length;
 
   const pageItems = items.filter((_, index) => {
@@ -31,10 +45,9 @@ export function usePagination<T>(itemList: Array<T>, maxItemsPerPage: number) {
     return true;
   });
 
-  const setItemList = (items: Array<T>) => {
-    setCurrentPage(1);
-    setItems(items);
-  };
+  const setItemList = React.useCallback((newItems: Array<T>) => {
+    setItems(newItems);
+  }, []);
 
   return {
     setItemList,
@@ -45,5 +58,7 @@ export function usePagination<T>(itemList: Array<T>, maxItemsPerPage: number) {
     totalPages,
     itemCount,
     maxItemsPerPage,
+    setTotalItemsAmount,
+    totalItemsAmount,
   };
 }

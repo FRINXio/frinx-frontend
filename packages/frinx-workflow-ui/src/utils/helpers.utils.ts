@@ -1,60 +1,31 @@
-import { v4 as uuid } from 'uuid';
-import { getTaskLabel } from './task.helpers';
-import { ExtendedTask, Workflow } from './types';
+import { Workflow } from '../helpers/types';
 
 export type InputParameter = Record<string, { value: string; description: string; type: string }>;
 
-export function deserializeId(id: string): { type: string; id: string } {
-  return JSON.parse(id);
-}
-
-export function convertWorkflow(wf: Workflow): Workflow<ExtendedTask> {
-  const { tasks, ...rest } = wf;
-  return {
-    ...rest,
-    tasks: tasks.map((t) => ({
-      ...t,
-      id: uuid(),
-      label: getTaskLabel(t),
-    })),
+export const sortAscBy = (key: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (x: Record<string, any>, y: Record<string, any>) => {
+    if (x[key] < y[key]) {
+      return -1;
+    }
+    if (x[key] > y[key]) {
+      return 1;
+    }
+    return 0;
   };
-}
+};
 
-export function createEmptyWorkflow(): Pick<
-  Workflow,
-  | 'name'
-  | 'description'
-  | 'version'
-  | 'ownerEmail'
-  | 'restartable'
-  | 'timeoutPolicy'
-  | 'timeoutSeconds'
-  | 'outputParameters'
-  | 'variables'
-> {
-  return {
-    name: '',
-    description: '{}',
-    version: 1,
-    ownerEmail: '',
-    restartable: true,
-    timeoutPolicy: 'ALERT_ONLY',
-    timeoutSeconds: 0,
-    outputParameters: {},
-    variables: {},
+export const sortDescBy = (key: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (x: Record<string, any>, y: Record<string, any>) => {
+    if (x[key] > y[key]) {
+      return -1;
+    }
+    if (x[key] < y[key]) {
+      return 1;
+    }
+    return 0;
   };
-}
-
-export function isWorkflowNameAvailable(workflows: Workflow[], name: string): boolean {
-  return workflows.every((wf) => wf.name !== name);
-}
-
-export const getDynamicInputParametersFromWorkflow = (workflow?: Workflow | null): string[] => {
-  const REGEX = /workflow\.input\.([a-zA-Z0-9-_]+)/gim;
-  const stringifiedWorkflow = JSON.stringify(workflow || {});
-  const match = stringifiedWorkflow.match(REGEX)?.map((path) => path.replace('workflow.input.', ''));
-
-  return match || [];
 };
 
 export const jsonParse = (json?: string | null) => {
@@ -67,6 +38,14 @@ export const jsonParse = (json?: string | null) => {
   } catch (e) {
     return null;
   }
+};
+
+export const getDynamicInputParametersFromWorkflow = (workflow?: Workflow | null): string[] => {
+  const REGEX = /workflow\.input\.([a-zA-Z0-9-_]+)/gim;
+  const stringifiedWorkflow = JSON.stringify(workflow || {});
+  const match = stringifiedWorkflow.match(REGEX)?.map((path) => path.replace('workflow.input.', ''));
+
+  return match || [];
 };
 
 export function parseInputParameters(inputParameters?: string[]): InputParameter | null {

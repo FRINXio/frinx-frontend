@@ -5,18 +5,15 @@ import { ExecutedWorkflows } from '@frinx/workflow-ui/src/helpers/types';
 import { Link } from 'react-router-dom';
 
 type Props = {
-  flatWorkflows: ExecutedWorkflows;
+  flatWorkflows: ExecutedWorkflows['result']['hits'];
   selectedWfs: string[];
   selectWf: (workflowId: string, isChecked: boolean) => void;
 };
 
 const ExecutedWorkflowFlatTableItem: FC<Props> = ({ flatWorkflows, selectWf, selectedWfs }) => {
-  let {
-    result: { hits: data },
-  } = flatWorkflows;
   return (
     <>
-      {data.map((item, i) => (
+      {flatWorkflows.map((item) => (
         <Tr key={item.workflowId}>
           <Td>
             <Checkbox

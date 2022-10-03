@@ -1,4 +1,3 @@
-// @flow
 import React, { useState, VoidFunctionComponent } from 'react';
 import {
   Box,
@@ -23,10 +22,10 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import type { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
-import { jsonParse } from '../utils';
 import unescapeJs from 'unescape-js';
 import ExternalStorageModal from '@frinx/workflow-ui/src/pages/executed-workflow-detail/executed-workflow-detail-tabs/external-storage-modal';
 import FeatherIcon from 'feather-icons-react';
+import { jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
 
 type Props = {
@@ -47,11 +46,11 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
   const { inputData, outputData, logs, externalInputPayloadStoragePath, externalOutputPayloadStoragePath } = task;
   const [payload, setPayload] = useState<{ type: 'Input' | 'Output'; data: string } | null>(null);
 
-  function getUnescapedJSON(data: ExecutedWorkflowTask | Record<string, string>) {
+  const getUnescapedJSON = (data: ExecutedWorkflowTask | Record<string, string>) => {
     const jsonString = JSON.stringify(data, null, 2);
 
-    if (!jsonString) {
-      return;
+    if (jsonString == null) {
+      return null;
     }
 
     return isEscaped
@@ -65,7 +64,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
           .replace(/\\b/g, '\\b')
           .replace(/\\f/g, '\\f')
       : unescapeJs(jsonString);
-  }
+  };
 
   return (
     <>
@@ -206,7 +205,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
                     <Textarea
                       fontFamily="monospace"
                       value={getUnescapedJSON(task)}
-                      isReadOnly={true}
+                      isReadOnly
                       id="t_json"
                       variant="filled"
                       minH={300}
@@ -233,7 +232,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
                     <Textarea
                       fontFamily="monospace"
                       value={getUnescapedJSON(logs)}
-                      isReadOnly={true}
+                      isReadOnly
                       id="t_logs"
                       variant="filled"
                     />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Button,
   Heading,
@@ -18,13 +18,13 @@ import {
   Code,
   useDisclosure,
   Progress,
+  Container,
 } from '@chakra-ui/react';
 import sortBy from 'lodash/sortBy';
 import FeatherIcon from 'feather-icons-react';
-import PageContainer from '@frinx/workflow-ui/src/common/PageContainer';
+import { ScheduledWorkflowModal } from '@frinx/workflow-ui/src/common/modals';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
-import SchedulingModal from '../../../common/modals/scheduled-workflow-modal';
 import { ScheduledWorkflow, StatusType } from '@frinx/workflow-ui/src/helpers/types';
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import { useNotifications } from '@frinx/shared/src';
@@ -35,7 +35,7 @@ function ScheduledWorkflowList() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { addToastNotification } = useNotifications();
 
-  function getData() {
+  const getData = useCallback(() => {
     const { getSchedules } = callbackUtils.getCallbacks;
 
     getSchedules()
@@ -49,37 +49,44 @@ function ScheduledWorkflowList() {
           title: 'Error',
         });
       });
-  }
+  }, [setItemList, addToastNotification]);
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [getData]);
 
-  function onEdit(workflow: ScheduledWorkflow) {
+  const onEdit = (workflow: ScheduledWorkflow) => {
     setSelectedWorkflow(workflow);
     onOpen();
-  }
+  };
 
-  function handleWorkflowUpdate(scheduledWf: Partial<ScheduledWorkflow>) {
-    const { registerSchedule } = callbackUtils.getCallbacks;
-
-    registerSchedule(scheduledWf.workflowName!, scheduledWf.workflowVersion!, scheduledWf)
-      .then((res) => {
-        addToastNotification({
-          content: 'Schedule successfully registered',
-          type: 'success',
-          title: 'Success',
-        });
-        getData();
-      })
-      .catch((err) => {
-        addToastNotification({
-          title: 'Failed to schedule workflow',
-          type: 'error',
-          content: err.message,
-        });
+  const handleWorkflowUpdate = ({ workflowName, workflowVersion, ...scheduledWf }: Partial<ScheduledWorkflow>) => {
+    if (workflowName == null || workflowVersion == null) {
+      addToastNotification({
+        content: 'Workflow name and version must be specified',
+        type: 'error',
       });
-  }
+    } else {
+      const { registerSchedule } = callbackUtils.getCallbacks;
+
+      registerSchedule(workflowName, workflowVersion, { ...scheduledWf, workflowName, workflowVersion })
+        .then(() => {
+          addToastNotification({
+            content: 'Schedule successfully registered',
+            type: 'success',
+            title: 'Success',
+          });
+          getData();
+        })
+        .catch((err) => {
+          addToastNotification({
+            title: 'Failed to schedule workflow',
+            type: 'error',
+            content: err.message,
+          });
+        });
+    }
+  };
 
   const handleDeleteBtnClick = (workflow: ScheduledWorkflow) => {
     const { deleteSchedule } = callbackUtils.getCallbacks;
@@ -120,18 +127,18 @@ function ScheduledWorkflowList() {
 
   if (!pageItems.length) {
     return (
-      <PageContainer>
+      <Container maxWidth={1200} mx="auto">
         <Box textAlign="center" marginY={15}>
           There are no scheduled workflows yet
         </Box>
-      </PageContainer>
+      </Container>
     );
   }
 
   return (
-    <PageContainer>
+    <Container maxWidth={1200} mx="auto">
       {selectedWorkflow != null && (
-        <SchedulingModal
+        <ScheduledWorkflowModal
           workflow={selectedWorkflow}
           isOpen={isOpen}
           onClose={onClose}
@@ -229,7 +236,7 @@ function ScheduledWorkflowList() {
           </>
         )}
       </Table>
-    </PageContainer>
+    </Container>
   );
 }
 

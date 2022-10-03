@@ -1,15 +1,14 @@
-import PageContainer from '../../../common/PageContainer';
 import React, { useEffect, useState } from 'react';
-import { Progress } from '@chakra-ui/react';
-import { ExecutedWorkflows, NestedExecutedWorkflow } from '@frinx/workflow-ui/src/helpers/types';
-import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
+import { Container, Progress } from '@chakra-ui/react';
+import { ExecutedWorkflow, ExecutedWorkflows, NestedExecutedWorkflow } from '@frinx/workflow-ui/src/helpers/types';
+import useQueryParams from '@frinx/workflow-ui/src/hooks/use-query-params';
+import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import { useNavigate } from 'react-router-dom';
+import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
 import { getSortOrder, getWorkflows } from './search-execs';
 import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workflow-table';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
-import Paginator from '@frinx/workflow-ui/src/common/pagination';
-import useQueryParams from '@frinx/workflow-ui/src/hooks/use-query-params';
-import usePagination, { PaginationState } from '../../../hooks/use-pagination';
+import { usePagination } from '../../../common/pagination-hook';
 
 type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 type SortOrder = 'ASC' | 'DESC';
@@ -26,6 +25,16 @@ type StateProps = {
   labels: string[];
 };
 
+type SearchFilters = {
+  page: number;
+  size: number;
+  sortBy: SortBy;
+  sortOrder: SortOrder;
+  labels: string[];
+  search: string;
+  isFlat: boolean;
+};
+
 const initialState: StateProps = {
   selectedWorkflows: [],
   detailsModal: false,
@@ -37,48 +46,68 @@ const initialState: StateProps = {
   sortOrder: 'DESC',
   labels: [],
 };
-const loadExecutedWorkflows = async (state: StateProps, pagination: PaginationState) => {
-  const executedWorkflows = await getWorkflows(
-    state.workflowId,
-    state.labels,
-    (pagination.page - 1) * pagination.pageSize,
-    pagination.pageSize,
-    state.sortBy,
-    state.sortOrder,
-    state.isFlat,
-  );
+
+const loadExecutedWorkflows = async (filters: SearchFilters): Promise<ExecutedWorkflows> => {
+  const { page, size, sortBy, sortOrder, labels, search, isFlat } = filters;
+  const executedWorkflows = await getWorkflows({
+    isFlat,
+    labels,
+    size,
+    sortBy,
+    sortOrder,
+    start: page,
+    workflowId: search,
+  });
+
   return executedWorkflows;
 };
 
 const ExecutedWorkflowList = () => {
   const navigate = useNavigate();
   const query = useQueryParams();
-  const [pagination, setPagination] = usePagination();
-  const searchKeyword = query.get('search') || '';
+  const {
+    currentPage,
+    setCurrentPage,
+    maxItemsPerPage,
+    setItemList,
+    totalPages,
+    pageItems: workflows,
+    setTotalItemsAmount,
+    totalItemsAmount,
+  } = usePagination<ExecutedWorkflow>([], 20);
   const [state, setState] = useState<StateProps>({
     ...initialState,
-    workflowId: searchKeyword,
+    workflowId: query.get('search') || '',
   });
-  const [workflows, setWorkflows] = useState<ExecutedWorkflows>();
 
   useEffect(() => {
-    loadExecutedWorkflows(state, pagination).then((executedWorkflows) => {
-      setWorkflows(executedWorkflows);
-      setPagination((prev) => ({ ...prev, pageCount: Math.ceil(executedWorkflows.result.totalHits / prev.pageSize) }));
+    loadExecutedWorkflows({
+      page: currentPage,
+      size: maxItemsPerPage,
+      sortBy: state.sortBy,
+      sortOrder: state.sortOrder,
+      labels: state.labels,
+      search: state.workflowId,
+      isFlat: state.isFlat,
+    }).then((executedWorkflows) => {
+      setItemList(executedWorkflows.result.hits);
+      setTotalItemsAmount(executedWorkflows.result.totalHits);
     });
   }, [
+    state.sortBy,
+    state.sortOrder,
+    state.labels,
     state.workflowId,
     state.isFlat,
-    state.sortOrder,
-    state.sortBy,
-    pagination.page,
-    pagination.pageSize,
-    state.labels,
+    currentPage,
+    maxItemsPerPage,
+    setItemList,
+    setTotalItemsAmount,
   ]);
 
   useEffect(() => {
     navigate({ search: state.workflowId ? `search=${state.workflowId}` : '' }, { replace: true });
-  }, [state.workflowId]);
+  }, [state.workflowId, navigate]);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, selectedWorkflows: [...new Set<string>()] }));
@@ -90,16 +119,16 @@ const ExecutedWorkflowList = () => {
 
   const changeLabels = (labels: string[]) => {
     setState((prev) => ({ ...prev, labels }));
-    setPagination((prev) => ({ ...prev, page: 1 }));
+    setCurrentPage(1);
   };
 
-  const changeQuery = (query: string) => {
-    setState((prev) => ({ ...prev, workflowId: query }));
-    setPagination((prev) => ({ ...prev, page: 1 }));
+  const changeQuery = (changedQuery: string) => {
+    setState((prev) => ({ ...prev, workflowId: changedQuery }));
+    setCurrentPage(1);
   };
 
   const selectWorkflow = (workflowId: string, isChecked: boolean) => {
-    let selectedWorkflows = new Set(state.selectedWorkflows);
+    const selectedWorkflows = new Set(state.selectedWorkflows);
 
     if (isChecked) {
       selectedWorkflows.add(workflowId);
@@ -118,7 +147,7 @@ const ExecutedWorkflowList = () => {
   const selectAllWorkflows = (isChecked: boolean) => {
     if (isChecked) {
       setState((prev) => {
-        const selectedWorkflows = new Set(workflows.result.hits.map((workflow) => workflow.workflowId));
+        const selectedWorkflows = new Set(workflows.map((workflow) => workflow.workflowId));
 
         return { ...prev, selectedWorkflows: [...selectedWorkflows] };
       });
@@ -137,21 +166,28 @@ const ExecutedWorkflowList = () => {
 
   const changeView = () => {
     setState((prev) => ({ ...prev, isFlat: !prev.isFlat }));
-    setPagination((prev) => ({ ...prev, page: 1 }));
-  };
-
-  const handlePaginationClick = (pageNumber: number) => {
-    setPagination((prev) => ({ ...prev, page: pageNumber }));
+    setCurrentPage(1);
   };
 
   const handleSuccessfullOperation = () => {
-    loadExecutedWorkflows(state, pagination);
+    loadExecutedWorkflows({
+      page: currentPage,
+      size: maxItemsPerPage,
+      sortBy: state.sortBy,
+      sortOrder: state.sortOrder,
+      labels: state.labels,
+      search: state.workflowId,
+      isFlat: state.isFlat,
+    }).then((executedWorkflows) => {
+      setItemList(executedWorkflows.result.hits);
+      setTotalItemsAmount(executedWorkflows.result.totalHits);
+    });
   };
 
   return (
-    <PageContainer>
+    <Container maxWidth={1200} mx="auto">
       <ExecutedWorkflowBulkOperationsBlock
-        workflowsAmount={workflows.result.totalHits}
+        workflowsAmount={totalItemsAmount}
         selectedWorkflows={state.selectedWorkflows}
         selectAllWorkflows={selectAllWorkflows}
         onSuccessfullOperation={handleSuccessfullOperation}
@@ -165,26 +201,19 @@ const ExecutedWorkflowList = () => {
         labels={state.labels}
       />
 
-      <>
-        <ExecutedWorkflowFlatTable
-          selectAllWorkflows={selectAllWorkflows}
-          sortWf={sortWorkflow}
-          selectWf={selectWorkflow}
-          selectedWfs={state.selectedWorkflows}
-          sortBy={state.sortBy}
-          sortOrder={state.sortOrder}
-          workflows={workflows}
-          isFlat={state.isFlat}
-        />
+      <ExecutedWorkflowFlatTable
+        selectAllWorkflows={selectAllWorkflows}
+        sortWf={sortWorkflow}
+        selectWf={selectWorkflow}
+        selectedWfs={state.selectedWorkflows}
+        sortBy={state.sortBy}
+        sortOrder={state.sortOrder}
+        workflows={workflows}
+        isFlat={state.isFlat}
+      />
 
-        <Paginator
-          currentPage={pagination.page}
-          onPaginationClick={handlePaginationClick}
-          pagesCount={pagination.pageCount}
-          showPageNumbers={true}
-        />
-      </>
-    </PageContainer>
+      <Paginator currentPage={currentPage} onPaginationClick={setCurrentPage} pagesCount={totalPages} showPageNumbers />
+    </Container>
   );
 };
 

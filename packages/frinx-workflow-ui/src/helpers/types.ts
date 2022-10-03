@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/naming-convention */
 type AnyJson = JsonArray | JsonMap;
 type JsonMap = {
@@ -313,17 +314,17 @@ export type Workflow<T extends WorkflowTask = WorkflowTask> = {
   updateTime: number;
   timeoutPolicy: string;
   timeoutSeconds: number;
-  variables: Record<string, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  variables: Record<string, any>;
   correlationId: string;
 };
-export type NodeData =
-  | {
-      task: Exclude<ExtendedTask, ExtendedDecisionTask>;
-    }
-  | {
-      task: ExtendedDecisionTask;
-      decisionCases: Record<string, string>;
-    };
+export type NodeData = {
+  label: string;
+  isReadOnly: boolean;
+} & {
+  task?: ExtendedTask;
+  handles?: string[];
+};
 
 export type TaskDefinition = {
   name: string;
@@ -351,9 +352,9 @@ export type ExecutedWorkflowTask = {
   referenceTaskName: string;
   callbackAfterSeconds: number;
   pollCount: number;
-  logs: {};
-  inputData: {};
-  outputData: {};
+  logs: Record<string, any>;
+  inputData: Record<string, any>;
+  outputData: Record<string, any>;
   workflowTask: {
     description: string;
     taskDefinition: {
@@ -465,7 +466,7 @@ export type WorkflowInstanceDetail = {
   failedReferenceTaskNames: string[];
   workflowDefinition: WorkflowDefinition;
   priority: number;
-  variables: {};
+  variables: Record<string, any>;
   lastRetriedTime: number;
   startTime: number;
   workflowName: string;
@@ -479,6 +480,7 @@ export type WorkflowInstanceDetail = {
 // this comes from the uniflow swagger api docs
 //
 
+// eslint-disable-next-line no-shadow
 export enum WorkflowTaskType {
   SIMPLE,
   DYNAMIC,
@@ -500,6 +502,7 @@ export enum WorkflowTaskType {
   SET_VARIABLE,
 }
 
+// eslint-disable-next-line no-shadow
 enum TimeoutPolicy {
   TIME_OUT_WF,
   ALERT_ONLY,
@@ -515,10 +518,10 @@ export type WorkflowTask = {
   caseValueParam: string;
   caseExpression: string;
   scriptExpression: string;
-  decisionCases: Record<string, string>;
+  decisionCases: Record<string, Task[]>;
   dynamicForkTasksParam: string;
   dynamicForkTasksInputParamName: string;
-  defaultCase: Record<string, string>[];
+  defaultCase: Task[];
   forkTasks: Task[][];
   startDelay: number;
   subWorkflowParam: SubWorkflowParam;
@@ -532,7 +535,7 @@ export type WorkflowTask = {
   loopCondition: string;
   loopOver: Record<string, string>[];
   retryCount: number;
-  workflowTaskType: WorkflowTaskType;
+  workflowTaskType: WorkflowTask;
 };
 
 export type SubWorkflowParam = {
@@ -542,7 +545,7 @@ export type SubWorkflowParam = {
   workflowDefinition: WorkflowDefinition;
 };
 
-export type WorkflowDefinition = {
+export type WorkflowDefinition<T extends Task = Task> = {
   ownerApp: string;
   createTime: number;
   updateTime: number;
@@ -551,7 +554,7 @@ export type WorkflowDefinition = {
   name: string;
   description: string;
   version: number;
-  tasks: WorkflowTask[];
+  tasks: T[];
   inputParameters: Record<string, string>[];
   outputParameters: Record<string, string>;
   failureWorkflow: string;
