@@ -1,4 +1,4 @@
-import React, { useCallback, VoidFunctionComponent, useEffect, useState } from 'react';
+import React, { VoidFunctionComponent, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import { omit } from 'lodash';
 import {
@@ -134,13 +134,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
 
   const { isNested, poolType, resourceTypeId, parentPoolId, parentResourceId } = values;
 
-  const handleFormValuesChange = useCallback(
-    (pValues) => {
-      setFieldValue('poolValues', pValues);
-    },
-    [setFieldValue],
-  );
-
   useEffect(() => {
     setValidationSchema(getSchemaForCreatePoolForm(values.poolType, isNested));
     if (!isNested) {
@@ -273,7 +266,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
             </>
           )}
           <PoolValuesForm
-            onChange={handleFormValuesChange}
+            onChange={(poolValues) => setFieldValue('poolValues', poolValues)}
             resourceTypeName={resourceTypeName}
             existingPoolValues={values.poolValues}
             poolValuesErrors={errors.poolValues}

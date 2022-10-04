@@ -52,7 +52,7 @@ const PoolPropertyInput = ({
         onChange={(e) => {
           onChange(String(e.target.checked));
         }}
-        value={value.toString()}
+        value={value}
       />
     );
   }
