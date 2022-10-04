@@ -144,13 +144,11 @@ export function formatSuggestedProperties(
 export function getPoolPropertiesSkeleton(
   resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'],
   resourceTypeId: string,
-  values?: Record<string, string>,
-): [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string' | 'bool'>] {
+  values?: Record<string, string | number>,
+): [poolProperties: Record<string, string | number>, poolValues: Record<string, 'int' | 'string' | 'bool'>] {
   const resourceTypeName = resourceTypes.find((type) => type.id === resourceTypeId)?.Name;
-  let result: [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string' | 'bool'>] = [
-    {},
-    {},
-  ];
+  let result: [poolProperties: Record<string, string | number>, poolValues: Record<string, 'int' | 'string' | 'bool'>] =
+    [{}, {}];
 
   switch (resourceTypeName) {
     case 'ipv4':
@@ -229,8 +227,10 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
           .required('Please enter a dealocation safety period')
           .typeError('Please enter a number'),
         allocationStrategyId: yup.string().notRequired(),
-        poolProperties: yup.lazy((poolProperties) =>
-          yup
+        poolProperties: yup.lazy((poolProperties) => {
+          console.log(poolProperties);
+
+          return yup
             .object()
             .when('resourceTypeName', {
               is: (resourceTypeName: string) => resourceTypeName === 'ipv4' || resourceTypeName === 'ipv4_prefix',
@@ -300,9 +300,9 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                     ...acc,
                     [key]: yup
                       .number()
-                      .typeError('Please enter a number')
                       .min(-2147483648, 'Please enter a number between -2147483648 and 2147483647')
                       .max(2147483647, 'Please enter a number between -2147483648 and 2147483647')
+                      .typeError('Please enter a number')
                       .required('Please enter a value'),
                   };
                 }, {}),
@@ -318,8 +318,8 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                   };
                 }, {}),
               }),
-            }),
-        ),
+            });
+        }),
         poolPropertyTypes: yup.object().required(),
         ...(isNested && {
           parentPoolId: yup.string().required('Please choose parent pool'),

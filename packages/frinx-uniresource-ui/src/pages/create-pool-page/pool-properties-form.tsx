@@ -1,23 +1,9 @@
 import React, { VoidFunctionComponent } from 'react';
-import {
-  FormControl,
-  Input,
-  HStack,
-  FormErrorMessage,
-  FormLabel,
-  Switch,
-  Tooltip,
-  Box,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-} from '@chakra-ui/react';
+import { FormControl, Input, HStack, FormErrorMessage, FormLabel, Switch, Tooltip, Box } from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
 import FeatherIcon from 'feather-icons-react';
 
-type PoolProperties = Record<string, string>;
+type PoolProperties = Record<string, string | number>;
 type PoolPropertyTypes = Record<string, 'int' | 'string' | 'bool'>;
 type Props = {
   onChange: (values: { key: string; type: 'int' | 'string' | 'bool'; value: string | number | boolean }) => void;
@@ -55,9 +41,9 @@ const PoolPropertyInput = ({
 }: {
   pKey: string;
   placeholder: string;
-  value: string;
+  value: string | number;
   shouldBeNumber: boolean;
-  onChange: (e: string) => void;
+  onChange: (e: string | number) => void;
 }) => {
   if (pKey === 'subnet') {
     return (
@@ -71,22 +57,18 @@ const PoolPropertyInput = ({
     );
   }
 
-  return shouldBeNumber ? (
-    <NumberInput onChange={onChange} value={value} name={pKey} placeholder={placeholder}>
-      <NumberInputField />
-      <NumberInputStepper>
-        <NumberIncrementStepper />
-        <NumberDecrementStepper />
-      </NumberInputStepper>
-    </NumberInput>
-  ) : (
+  return (
     <Input
       placeholder={placeholder}
       name={pKey}
       onChange={(e) => {
-        onChange(e.target.value);
+        if (shouldBeNumber) {
+          onChange(parseInt(e.target.value, 10));
+        } else {
+          onChange(e.target.value);
+        }
       }}
-      value={value.toString()}
+      value={value}
     />
   );
 };
@@ -132,9 +114,7 @@ const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
               <PoolPropertyInput
                 shouldBeNumber={shouldBeNumber}
                 pKey={pKey}
-                onChange={(e) => {
-                  onChange({ key: pKey, type: pType, value: e });
-                }}
+                onChange={(e) => onChange({ key: pKey, type: pType, value: e })}
                 placeholder={placeholder}
                 value={pValue}
               />
