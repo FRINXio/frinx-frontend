@@ -16,7 +16,7 @@ import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
 import { Editor } from '@frinx/shared/src';
 import parse from 'json-templates';
-import { DeviceBlueprintsQuery, Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
+import { DeviceBlueprintsQuery, DeviceServiceState, Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 import { ServiceState, serviceStateOptions } from '../../helpers/types';
 
@@ -36,7 +36,7 @@ type FormValues = {
   zoneId: string;
   mountParameters: string;
   labelIds: string[];
-  serviceState: ServiceState;
+  serviceState: DeviceServiceState;
   blueprintId: string | null;
   model: string;
   address: string;
