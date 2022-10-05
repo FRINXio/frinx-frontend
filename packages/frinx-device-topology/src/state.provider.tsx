@@ -1,8 +1,39 @@
 import { unwrap } from '@frinx/shared';
 import React, { createContext, Dispatch, FC, Reducer, useContext, useEffect, useMemo, useReducer } from 'react';
-import { GraphEdge, GraphNode } from './pages/topology/graph.helpers';
+import { gql, useClient } from 'urql';
 import { setNodesAndEdges, StateAction } from './state.actions';
 import { initialState, State, stateReducer } from './state.reducer';
+import { TopologyQuery, TopologyQueryVariables } from './__generated__/graphql';
+
+const TOPOLOGY_QUERY = gql`
+  query Topology {
+    topology {
+      nodes {
+        id
+        device {
+          id
+          name
+          position {
+            x
+            y
+          }
+        }
+        interfaces
+      }
+      edges {
+        id
+        source {
+          nodeId
+          interface
+        }
+        target {
+          nodeId
+          interface
+        }
+      }
+    }
+  }
+`;
 
 export type StateContextType = {
   dispatch: Dispatch<StateAction>;
@@ -15,14 +46,8 @@ export function useStateContext(): StateContextType {
   return unwrap(useContext(StateContext));
 }
 
-export type StateProviderProps = {
-  data: {
-    nodes: GraphNode[];
-    edges: GraphEdge[];
-  };
-};
-
-const StateProvider: FC<StateProviderProps> = ({ children, data }) => {
+const StateProvider: FC = ({ children }) => {
+  const client = useClient();
   const [state, dispatch] = useReducer<Reducer<State, StateAction>, State>(
     stateReducer,
     initialState,
@@ -30,9 +55,14 @@ const StateProvider: FC<StateProviderProps> = ({ children, data }) => {
   );
 
   useEffect(() => {
-    const { nodes, edges } = data;
-    dispatch(setNodesAndEdges({ nodes, edges }));
-  }, [data]);
+    client
+      .query<TopologyQuery, TopologyQueryVariables>(TOPOLOGY_QUERY)
+      .toPromise()
+      .then((data) => {
+        const { nodes, edges } = data.data?.topology ?? { nodes: [], edges: [] };
+        dispatch(setNodesAndEdges({ nodes, edges }));
+      });
+  }, [client]);
 
   return (
     <StateContext.Provider
