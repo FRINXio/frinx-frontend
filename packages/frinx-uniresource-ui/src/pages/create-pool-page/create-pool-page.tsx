@@ -145,7 +145,7 @@ type FormValues = {
       poolType: 'allocating';
       dealocationSafetyPeriod: number;
       allocationStrategyId: string;
-      poolProperties: Record<string, string>;
+      poolProperties: Record<string, string | number>;
       poolPropertyTypes: Record<string, 'int' | 'string'>;
     }
   | { poolType: 'set'; dealocationSafetyPeriod: number; poolValues: Record<string, string>[] }
