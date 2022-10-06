@@ -32,9 +32,10 @@ const WorkflowDefinitions = () => {
   const {
     currentPage,
     setCurrentPage,
-    pageItems: workflows,
     setItemList,
     totalPages,
+    pageItems: workflows,
+    setTotalItemsAmount,
   } = usePagination<Workflow>([], 10);
 
   const definitionModal = useDisclosure();
@@ -49,9 +50,10 @@ const WorkflowDefinitions = () => {
 
     getWorkflows().then((wfs) => {
       setItemList(wfs);
+      setTotalItemsAmount(wfs.length);
       setAllLabels(getLabels(wfs));
     });
-  }, [setItemList]);
+  }, [setItemList, setTotalItemsAmount]);
 
   const updateFavourite = (workflow: Workflow) => {
     let wfDescription = jsonParse(workflow.description);
