@@ -20,6 +20,8 @@ import { DeviceBlueprintsQuery, DeviceServiceState, Label, LabelsQuery, ZonesQue
 import SearchByLabelInput from '../../components/search-by-label-input';
 import { ServiceState, serviceStateOptions } from '../../helpers/types';
 
+const IPV4_REGEX = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
+
 type Props = {
   isSubmitting: boolean;
   zones: ZonesQuery['zones']['edges'];
@@ -72,11 +74,15 @@ const deviceSchema = yup.object({
   vendor: yup.string(),
   model: yup.string(),
   blueprintParams: yup.array().of(yup.string()),
-  address: yup.string(),
+  address: yup
+    .string()
+    .matches(IPV4_REGEX, { message: 'Please enter a valid Ipv4 address' })
+    .when('blueprintParams', getWhenOptions('ip_address', 'Address is required by the blueprint')),
   blueprintId: yup.string().nullable(),
   port: yup
     .number()
     .typeError('Number is required')
+    .max(22, 'Maximal value is 22')
     .min(0, 'Minimal value is 0')
     .when('blueprintParams', getWhenOptions('port_number', 'Port number is required by the blueprint')),
   deviceType: yup
@@ -223,7 +229,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
 
       <HStack my={6} alignItems="start">
         <FormControl isRequired={values.blueprintParams?.includes('user')} isInvalid={errors.address != null}>
-          <FormLabel>Address / DNS</FormLabel>
+          <FormLabel>Address</FormLabel>
           <Input name="address" onChange={handleChange} placeholder="192.168.0.1" value={values.address} />
           <FormErrorMessage>{errors.address}</FormErrorMessage>
         </FormControl>
