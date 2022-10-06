@@ -76,6 +76,7 @@ const ExecutedWorkflowList = () => {
     totalItemsAmount,
   } = usePagination<ExecutedWorkflow>({
     haveCustomAmount: true,
+    maxItemsPerPage: 20,
   });
   const [state, setState] = useState<StateProps>({
     ...initialState,
