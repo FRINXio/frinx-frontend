@@ -42,7 +42,7 @@ const PollData = () => {
   const [sorted, setSorted] = useState(false);
   const [data, setData] = useState<Queue[]>([]);
   const [keywords, setKeywords] = useState('');
-  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<Queue>([], 10);
+  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<Queue>();
 
   useEffect(() => {
     const { getQueues } = callbackUtils.getCallbacks;

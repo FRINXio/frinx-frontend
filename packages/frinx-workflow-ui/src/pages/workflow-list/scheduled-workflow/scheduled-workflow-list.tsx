@@ -30,7 +30,7 @@ import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import { useNotifications } from '@frinx/shared/src';
 
 function ScheduledWorkflowList() {
-  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<ScheduledWorkflow>([], 10);
+  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<ScheduledWorkflow>();
   const [selectedWorkflow, setSelectedWorkflow] = useState<ScheduledWorkflow>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { addToastNotification } = useNotifications();

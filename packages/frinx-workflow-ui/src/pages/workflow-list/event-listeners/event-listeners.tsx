@@ -36,7 +36,7 @@ const EventListeners = () => {
   const [eventListeners, setEventListeners] = useState<EventListener[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<EventListener | null>(null);
-  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<EventListener>([], 10);
+  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<EventListener>();
   const { addToastNotification } = useNotifications();
   const toast = useToast();
 
