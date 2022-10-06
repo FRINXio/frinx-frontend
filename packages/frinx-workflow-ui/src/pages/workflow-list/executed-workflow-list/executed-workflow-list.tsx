@@ -74,7 +74,9 @@ const ExecutedWorkflowList = () => {
     pageItems: workflows,
     setTotalItemsAmount,
     totalItemsAmount,
-  } = usePagination<ExecutedWorkflow>([], 20);
+  } = usePagination<ExecutedWorkflow>({
+    haveCustomAmount: true,
+  });
   const [state, setState] = useState<StateProps>({
     ...initialState,
     workflowId: query.get('search') || '',

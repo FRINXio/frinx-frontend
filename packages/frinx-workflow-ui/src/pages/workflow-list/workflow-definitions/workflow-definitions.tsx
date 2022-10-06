@@ -36,7 +36,7 @@ const WorkflowDefinitions = () => {
     totalPages,
     pageItems: workflows,
     setTotalItemsAmount,
-  } = usePagination<Workflow>([], 10);
+  } = usePagination<Workflow>();
 
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
@@ -50,7 +50,6 @@ const WorkflowDefinitions = () => {
 
     getWorkflows().then((wfs) => {
       setItemList(wfs);
-      setTotalItemsAmount(wfs.length);
       setAllLabels(getLabels(wfs));
     });
   }, [setItemList, setTotalItemsAmount]);
