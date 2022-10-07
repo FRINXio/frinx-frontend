@@ -3,7 +3,7 @@ import * as React from 'react';
 type PaginationParams<T> = {
   itemList: Array<T>;
   maxItemsPerPage: number;
-  haveCustomAmount: boolean;
+  hasCustomAmount: boolean;
 };
 
 export type UsePaginationReturn<T> = {
@@ -33,17 +33,17 @@ const displayItem = (currentPage: number, maxPerPage: number, index: number) => 
 export function usePagination<T>({
   itemList = [],
   maxItemsPerPage = 10,
-  haveCustomAmount = false,
+  hasCustomAmount = false,
 }: Partial<PaginationParams<T>> = {}): UsePaginationReturn<T> {
   const [items, setItems] = React.useState(itemList);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalItemsAmount, setTotalItemsAmount] = React.useState(itemList.length);
 
   React.useEffect(() => {
-    if (!haveCustomAmount) {
+    if (!hasCustomAmount) {
       setTotalItemsAmount(items.length);
     }
-  }, [items, haveCustomAmount]);
+  }, [items, hasCustomAmount]);
 
   const isPaginating = items.length > maxItemsPerPage;
   const totalPages = Math.ceil(totalItemsAmount / maxItemsPerPage);
