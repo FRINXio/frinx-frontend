@@ -16,11 +16,9 @@ import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
 import { Editor } from '@frinx/shared/src';
 import parse from 'json-templates';
-import { DeviceBlueprintsQuery, Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
+import { DeviceBlueprintsQuery, DeviceServiceState, Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 import { ServiceState, serviceStateOptions } from '../../helpers/types';
-
-const IPV4_REGEX = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$)|$)){4}$)/;
 
 type Props = {
   isSubmitting: boolean;
@@ -36,7 +34,7 @@ type FormValues = {
   zoneId: string;
   mountParameters: string;
   labelIds: string[];
-  serviceState: ServiceState;
+  serviceState: DeviceServiceState;
   blueprintId: string | null;
   model: string;
   address: string;
@@ -74,15 +72,11 @@ const deviceSchema = yup.object({
   vendor: yup.string(),
   model: yup.string(),
   blueprintParams: yup.array().of(yup.string()),
-  address: yup
-    .string()
-    .matches(IPV4_REGEX, { message: 'Please enter a valid Ipv4 address' })
-    .when('blueprintParams', getWhenOptions('ip_address', 'Address is required by the blueprint')),
+  address: yup.string(),
   blueprintId: yup.string().nullable(),
   port: yup
     .number()
     .typeError('Number is required')
-    .max(22, 'Maximal value is 22')
     .min(0, 'Minimal value is 0')
     .when('blueprintParams', getWhenOptions('port_number', 'Port number is required by the blueprint')),
   deviceType: yup
@@ -229,7 +223,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
 
       <HStack my={6} alignItems="start">
         <FormControl isRequired={values.blueprintParams?.includes('user')} isInvalid={errors.address != null}>
-          <FormLabel>Address</FormLabel>
+          <FormLabel>Address / DNS</FormLabel>
           <Input name="address" onChange={handleChange} placeholder="192.168.0.1" value={values.address} />
           <FormErrorMessage>{errors.address}</FormErrorMessage>
         </FormControl>

@@ -52,7 +52,7 @@ const EditBlueprintPage: FC<Props> = ({ onSuccess, onCancel }) => {
   useResponseToasts({
     isSuccess: isUpdateSuccessfull,
     isFailure: isUpdateFailed,
-    successMessage: 'Blueprint succesfully edited',
+    successMessage: 'Blueprint successfully edited',
     failureMessage: 'Blueprint could not be edited',
   });
 

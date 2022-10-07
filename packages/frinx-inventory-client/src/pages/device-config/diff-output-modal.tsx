@@ -172,7 +172,7 @@ const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId, tran
                     </Heading>
                     <pre>
                       <Code width="100%" display="block" backgroundColor="green.50">
-                        {JSON.stringify(JSON.parse(v.actualData), null, 2)}
+                        {JSON.stringify(JSON.parse(v.intendedData), null, 2)}
                       </Code>
                     </pre>
                   </Box>
@@ -193,7 +193,7 @@ const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId, tran
                     </Heading>
                     <pre>
                       <Code width="100%" display="block" backgroundColor="red.50">
-                        {JSON.stringify(JSON.parse(v.intendedData), null, 2)}
+                        {JSON.stringify(JSON.parse(v.actualData), null, 2)}
                       </Code>
                     </pre>
                   </Box>

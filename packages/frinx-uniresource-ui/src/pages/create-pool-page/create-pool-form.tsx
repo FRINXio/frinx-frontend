@@ -1,4 +1,4 @@
-import React, { useCallback, VoidFunctionComponent, useEffect, useState } from 'react';
+import React, { VoidFunctionComponent, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import { omit } from 'lodash';
 import {
@@ -46,7 +46,7 @@ export type FormValues = {
   resourceTypeName: string;
   tags: string[];
   allocationStrategyId?: string;
-  poolProperties?: Record<string, string>;
+  poolProperties?: Record<string, string | number>;
   poolPropertyTypes?: Record<string, 'int' | 'string' | 'bool'>;
   dealocationSafetyPeriod?: number;
   poolType: PoolType;
@@ -104,7 +104,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
 }) => {
   const navigate = useNavigate();
   const tagsInput = useTagsInput();
-  const [poolSchema, setPoolSchema] = useState(
+  const [validationSchema, setValidationSchema] = useState(
     getSchemaForCreatePoolForm(
       getInitialValues(window.location.search, resourceTypes).poolType,
       getInitialValues(window.location.search, resourceTypes).isNested,
@@ -113,7 +113,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors, setSubmitting } =
     useFormik<FormValues>({
       initialValues: getInitialValues(window.location.search, resourceTypes),
-      validationSchema: poolSchema,
+      validationSchema,
       validateOnChange: false,
       validateOnBlur: false,
       onSubmit: (data) => {
@@ -134,23 +134,8 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
 
   const { isNested, poolType, resourceTypeId, parentPoolId, parentResourceId } = values;
 
-  const handleFormValuesChange = useCallback(
-    (pValues) => {
-      setFieldValue('poolValues', pValues);
-    },
-    [setFieldValue],
-  );
-  const handlePoolPropertiesChange = useCallback(
-    (pProperties) => {
-      if (values.poolType === 'allocating') {
-        setFieldValue('poolProperties', { ...values.poolProperties, [pProperties.key]: pProperties.value });
-      }
-    },
-    [setFieldValue, values.poolType, values.poolProperties],
-  );
-
   useEffect(() => {
-    setPoolSchema(getSchemaForCreatePoolForm(values.poolType, isNested));
+    setValidationSchema(getSchemaForCreatePoolForm(values.poolType, isNested));
     if (!isNested) {
       setFieldValue('parentPoolId', '');
       setFieldValue('parentResourceId', '');
@@ -252,7 +237,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       </HStack>
 
       <FormControl id="description">
-        <FormLabel htmlFor="descriptionField">Descripton</FormLabel>
+        <FormLabel htmlFor="descriptionField">Description</FormLabel>
         <Textarea
           id="descriptionField"
           onChange={handleChange}
@@ -281,7 +266,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
             </>
           )}
           <PoolValuesForm
-            onChange={handleFormValuesChange}
+            onChange={(poolValues) => setFieldValue('poolValues', poolValues)}
             resourceTypeName={resourceTypeName}
             existingPoolValues={values.poolValues}
             poolValuesErrors={errors.poolValues}
@@ -312,14 +297,14 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
               isLoadingPoolProperties={isLoadingRequiredPoolProperties}
               customPoolProperties={requiredPoolProperties}
               formValues={values}
-              onChange={handlePoolPropertiesChange}
+              onChange={({ key, value }) => setFieldValue(`poolProperties.${key}`, value)}
               poolPropertyErrors={errors.poolProperties}
             />
           ) : (
             <PoolPropertiesForm
               poolProperties={poolProperties}
               poolPropertyTypes={poolPropertyTypes}
-              onChange={handlePoolPropertiesChange}
+              onChange={({ key, value }) => setFieldValue(`poolProperties.${key}`, value)}
               poolPropertyErrors={errors.poolProperties}
               resourceTypeName={resourceTypeName}
             />

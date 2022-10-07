@@ -144,13 +144,11 @@ export function formatSuggestedProperties(
 export function getPoolPropertiesSkeleton(
   resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'],
   resourceTypeId: string,
-  values?: Record<string, string>,
-): [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string' | 'bool'>] {
+  values?: Record<string, string | number>,
+): [poolProperties: Record<string, string | number>, poolValues: Record<string, 'int' | 'string' | 'bool'>] {
   const resourceTypeName = resourceTypes.find((type) => type.id === resourceTypeId)?.Name;
-  let result: [poolProperties: Record<string, string>, poolValues: Record<string, 'int' | 'string' | 'bool'>] = [
-    {},
-    {},
-  ];
+  let result: [poolProperties: Record<string, string | number>, poolValues: Record<string, 'int' | 'string' | 'bool'>] =
+    [{}, {}];
 
   switch (resourceTypeName) {
     case 'ipv4':
@@ -233,10 +231,19 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
           yup
             .object()
             .when('resourceTypeName', {
-              is: (resourceTypeName: string) => resourceTypeName === 'ipv4' || resourceTypeName === 'ipv4_prefix',
+              is: (resourceTypeName: string) =>
+                isSpecificResourceTypeName(resourceTypeName, [
+                  'ipv4',
+                  'ipv6',
+                  'ipv4_prefix',
+                  'ipv6_prefix',
+                  'vlan',
+                  'vlan_range',
+                  'unique_id',
+                ]),
               then: yup.object().shape({
                 ...Object.keys(poolProperties).reduce((acc, key) => {
-                  if (key === 'from' || key === 'to' || key === 'id') {
+                  if (key === 'from' || key === 'to' || key === 'id' || key === 'prefix') {
                     return {
                       ...acc,
                       [key]: yup
@@ -293,6 +300,17 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
               }),
             })
             .when('resourceTypeName', {
+              is: (resourceTypeName: string) => isCustomResourceType(resourceTypeName) && resourceTypeName != null,
+              then: yup.object().shape({
+                ...Object.keys(poolProperties).reduce((acc, key) => {
+                  return {
+                    ...acc,
+                    [key]: yup.string().required('This field is required'),
+                  };
+                }, {}),
+              }),
+            })
+            .when('resourceTypeName', {
               is: (resourceTypeName: string) => resourceTypeName === 'random_signed_int32',
               then: yup.object().shape({
                 ...Object.keys(poolProperties).reduce((acc, key) => {
@@ -304,17 +322,6 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                       .min(-2147483648, 'Please enter a number between -2147483648 and 2147483647')
                       .max(2147483647, 'Please enter a number between -2147483648 and 2147483647')
                       .required('Please enter a value'),
-                  };
-                }, {}),
-              }),
-            })
-            .when('resourceTypeName', {
-              is: (resourceTypeName: string) => isCustomResourceType(resourceTypeName),
-              then: yup.object().shape({
-                ...Object.keys(poolProperties).reduce((acc, key) => {
-                  return {
-                    ...acc,
-                    [key]: yup.string().required('This field is required'),
                   };
                 }, {}),
               }),
