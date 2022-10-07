@@ -12,14 +12,18 @@ const DEFAULT_SETTINGS: IAceEditorProps = {
 const Editor: FC<IAceEditorProps> = ({ value, onChange, name, readOnly, mode = 'json', ...props }) => {
   const [state, setState] = useState(() => {
     try {
-      return JSON.stringify(JSON.parse(value ?? ''), null, 2);
+      return value != null ? JSON.stringify(JSON.parse(value), null, 2) : '';
     } catch {
       return value;
     }
   });
 
   useEffect(() => {
-    setState(value);
+    try {
+      setState(value != null ? JSON.stringify(JSON.parse(value), null, 2) : '');
+    } catch (e) {
+      setState(value);
+    }
   }, [value]);
 
   const handleChange = (val: string) => {
