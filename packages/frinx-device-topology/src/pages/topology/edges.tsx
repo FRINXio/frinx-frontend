@@ -2,13 +2,9 @@ import { Box } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { useStateContext } from '../../state.provider';
 import { setSelectedEdge } from '../../state.actions';
-import { getDistanceBetweenPoints, getDistanceFromLineList, getPointOnSlope, GraphEdge } from './graph.helpers';
+import { GraphEdge, isTargetingActiveNode, getrCurvePath, getLinePoints, getControlPoints } from './graph.helpers';
 
 const EDGE_GAP = 75;
-
-function getInterfaceGroupName(sourceId: string, targetId: string) {
-  return `${sourceId},${targetId}`;
-}
 
 const Edges: VoidFunctionComponent = () => {
   const { state, dispatch } = useStateContext();
@@ -21,35 +17,16 @@ const Edges: VoidFunctionComponent = () => {
   return (
     <g>
       {edges.map((edge) => {
-        const sourcePosition = connectedNodeIds.includes(edge.source.nodeId)
-          ? interfaceGroupPositions[getInterfaceGroupName(edge.source.nodeId, edge.target.nodeId)].position
-          : nodePositions[edge.source.nodeId];
-        const targetPosition = connectedNodeIds.includes(edge.target.nodeId)
-          ? interfaceGroupPositions[getInterfaceGroupName(edge.target.nodeId, edge.source.nodeId)].position
-          : nodePositions[edge.target.nodeId];
+        // dont show edges that are connected to active node
+        if (isTargetingActiveNode(edge, selectedNode, interfaceGroupPositions)) {
+          return null;
+        }
+
         const isActive = selectedNode?.interfaces.includes(edge.source.interface);
         const isSelected = edge.id === selectedEdge?.id;
 
-        const bezierCurveHandlePositionList = [];
-
-        if (isActive) {
-          const groupName = getInterfaceGroupName(edge.target.nodeId, edge.source.nodeId);
-          const groupData = interfaceGroupPositions[groupName];
-          const distanceFromLineList = getDistanceFromLineList(groupData.interfaces);
-          const index = groupData.interfaces.indexOf(edge.target.interface);
-          const length = EDGE_GAP * distanceFromLineList[index];
-          const nodesDistance = getDistanceBetweenPoints(sourcePosition, targetPosition);
-          const bezierCurveHandlePosition = getPointOnSlope(sourcePosition, targetPosition, nodesDistance / 2, length);
-          bezierCurveHandlePositionList.push(bezierCurveHandlePosition);
-        } else {
-          // dont show edges that are connected to active node
-          const targetNodeId = edge.target.nodeId;
-          const targetGroupName = getInterfaceGroupName(edge.source.nodeId, edge.target.nodeId);
-          const targetGroup = interfaceGroupPositions[targetGroupName];
-          if (targetNodeId === selectedNode?.device.name && targetGroup.interfaces.includes(edge.source.interface)) {
-            return null;
-          }
-        }
+        const { start, end } = getLinePoints(edge, connectedNodeIds, nodePositions, interfaceGroupPositions);
+        const controlPoints = isActive ? getControlPoints(edge, interfaceGroupPositions, start, end, EDGE_GAP) : [];
 
         return (
           <React.Fragment key={edge.id}>
@@ -59,19 +36,17 @@ const Edges: VoidFunctionComponent = () => {
                 stroke="black"
                 strokeLinejoin="round"
                 fill="transparent"
-                d={`M ${sourcePosition.x},${sourcePosition.y} Q ${bezierCurveHandlePositionList.map(
-                  (p) => `${p.x},${p.y}`,
-                )} ${targetPosition.x},${targetPosition.y}`}
+                d={getrCurvePath(start, end, controlPoints)}
                 cursor="pointer"
                 onClick={() => handleEdgeClick(edge)}
               />
             ) : (
               <Box
                 as="line"
-                x1={sourcePosition.x}
-                y1={sourcePosition.y}
-                x2={targetPosition.x}
-                y2={targetPosition.y}
+                x1={start.x}
+                y1={start.y}
+                x2={end.x}
+                y2={end.y}
                 stroke="gray.800"
                 strokeWidth={isActive ? 3 : 1}
                 strokeLinecap="round"
@@ -83,12 +58,7 @@ const Edges: VoidFunctionComponent = () => {
             {isSelected && (
               <>
                 <defs>
-                  <path
-                    id="sourcePath"
-                    d={`M ${sourcePosition.x},${sourcePosition.y} Q ${bezierCurveHandlePositionList.map(
-                      (p) => `${p.x},${p.y}`,
-                    )} ${targetPosition.x},${targetPosition.y}`}
-                  />
+                  <path id="sourcePath" d={getrCurvePath(start, end, controlPoints)} />
                 </defs>
                 <text dx={30} dy={20} fontSize={14}>
                   <textPath href="#sourcePath">{edge.source.interface}</textPath>

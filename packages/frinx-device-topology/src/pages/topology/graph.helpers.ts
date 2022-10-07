@@ -171,3 +171,64 @@ export function getDistanceFromLineList(interfaces: string[]): number[] {
   const numberOfPoints = interfaces.length;
   return [...Array(numberOfPoints).keys()].map((p) => p - (numberOfPoints - 1) / 2);
 }
+
+export function getInterfaceGroupName(sourceId: string, targetId: string) {
+  return `${sourceId},${targetId}`;
+}
+
+export type Line = {
+  start: Position;
+  end: Position;
+};
+
+export function getLinePoints(
+  edge: GraphEdge,
+  connectedNodeIds: string[],
+  nodePositions: Record<string, Position>,
+  interfaceGroupPositions: PositionGroupsMap,
+): Line {
+  const sourcePosition = connectedNodeIds.includes(edge.source.nodeId)
+    ? interfaceGroupPositions[getInterfaceGroupName(edge.source.nodeId, edge.target.nodeId)].position
+    : nodePositions[edge.source.nodeId];
+  const targetPosition = connectedNodeIds.includes(edge.target.nodeId)
+    ? interfaceGroupPositions[getInterfaceGroupName(edge.target.nodeId, edge.source.nodeId)].position
+    : nodePositions[edge.target.nodeId];
+  return {
+    start: sourcePosition,
+    end: targetPosition,
+  };
+}
+
+// control points for curved line
+export function getControlPoints(
+  edge: GraphEdge,
+  interfaceGroupPositions: PositionGroupsMap,
+  sourcePosition: Position,
+  targetPosition: Position,
+  edgeGap: number,
+): Position[] {
+  const groupName = getInterfaceGroupName(edge.target.nodeId, edge.source.nodeId);
+  const groupData = interfaceGroupPositions[groupName];
+  const distanceFromLineList = getDistanceFromLineList(groupData.interfaces);
+  const index = groupData.interfaces.indexOf(edge.target.interface);
+  const length = edgeGap * distanceFromLineList[index];
+
+  const nodesDistance = getDistanceBetweenPoints(sourcePosition, targetPosition);
+  const bezierCurveHandlePosition = getPointOnSlope(sourcePosition, targetPosition, nodesDistance / 2, length);
+  return [bezierCurveHandlePosition];
+}
+
+export function getrCurvePath(source: Position, target: Position, controlPoints: Position[]): string {
+  return `M ${source.x},${source.y} Q${controlPoints.map((p) => `${p.x},${p.y}`)} ${target.x},${target.y}`;
+}
+
+export function isTargetingActiveNode(
+  edge: GraphEdge,
+  selectedNode: GraphNode | null,
+  interfaceGroupPositions: PositionGroupsMap,
+): boolean {
+  const targetNodeId = edge.target.nodeId;
+  const targetGroupName = getInterfaceGroupName(edge.source.nodeId, edge.target.nodeId);
+  const targetGroup = interfaceGroupPositions[targetGroupName];
+  return targetNodeId === selectedNode?.device.name && targetGroup.interfaces.includes(edge.source.interface);
+}
