@@ -18,13 +18,7 @@ function getFilteredResults<T extends { name: string }>(searchResult: SearchResu
 }
 
 const TaskList = () => {
-  const {
-    currentPage,
-    setCurrentPage,
-    pageItems: tasks,
-    setItemList,
-    totalPages,
-  } = usePagination<TaskDefinition>([], 10);
+  const { currentPage, setCurrentPage, pageItems: tasks, setItemList, totalPages } = usePagination<TaskDefinition>();
   const [sorted, setSorted] = useState(false);
   const [task, setTask] = useState<TaskDefinition>();
   const [searchTerm, setSearchTerm] = useState('');
