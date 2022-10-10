@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 
 type PaginationParams<T> = {
   itemList: Array<T>;
@@ -10,13 +10,13 @@ export type UsePaginationReturn<T> = {
   setItemList: (newItems: Array<T>) => void;
   isPaginating: boolean;
   currentPage: number;
-  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
   pageItems: T[];
   totalPages: number;
   totalItemsAmount: number;
   itemCount: number;
   maxItemsPerPage: number;
-  setTotalItemsAmount: React.Dispatch<React.SetStateAction<number>>;
+  setTotalItemsAmount: Dispatch<SetStateAction<number>>;
 };
 
 const displayItem = (currentPage: number, maxPerPage: number, index: number) => {
@@ -35,11 +35,11 @@ export function usePagination<T>({
   maxItemsPerPage = 10,
   hasCustomAmount = false,
 }: Partial<PaginationParams<T>> = {}): UsePaginationReturn<T> {
-  const [items, setItems] = React.useState(itemList);
-  const [currentPage, setCurrentPage] = React.useState(1);
-  const [totalItemsAmount, setTotalItemsAmount] = React.useState(itemList.length);
+  const [items, setItems] = useState(itemList);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItemsAmount, setTotalItemsAmount] = useState(itemList.length);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!hasCustomAmount) {
       setTotalItemsAmount(items.length);
     }
@@ -61,7 +61,7 @@ export function usePagination<T>({
     return true;
   });
 
-  const setItemList = React.useCallback((newItems: Array<T>) => {
+  const setItemList = useCallback((newItems: Array<T>) => {
     setItems(newItems);
   }, []);
 
