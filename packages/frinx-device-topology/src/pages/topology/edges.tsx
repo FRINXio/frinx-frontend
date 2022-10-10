@@ -2,11 +2,13 @@ import { Box } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { useStateContext } from '../../state.provider';
 import { setSelectedEdge } from '../../state.actions';
-import { GraphEdge } from './graph.helpers';
+import { GraphEdge, isTargetingActiveNode, getrCurvePath, getLinePoints, getControlPoints } from './graph.helpers';
+
+const EDGE_GAP = 75;
 
 const Edges: VoidFunctionComponent = () => {
   const { state, dispatch } = useStateContext();
-  const { edges, nodePositions, interfacePositions, connectedNodeIds, selectedNode, selectedEdge } = state;
+  const { edges, nodePositions, interfaceGroupPositions, connectedNodeIds, selectedNode, selectedEdge } = state;
 
   const handleEdgeClick = (edge: GraphEdge | null) => {
     dispatch(setSelectedEdge(edge));
@@ -15,57 +17,53 @@ const Edges: VoidFunctionComponent = () => {
   return (
     <g>
       {edges.map((edge) => {
-        const sourcePosition = connectedNodeIds.includes(edge.source.nodeId)
-          ? interfacePositions[edge.source.interface]
-          : nodePositions[edge.source.nodeId];
-        const targetPosition = connectedNodeIds.includes(edge.target.nodeId)
-          ? interfacePositions[edge.target.interface]
-          : nodePositions[edge.target.nodeId];
-        const isClickable = selectedNode?.interfaces.includes(edge.source.interface);
+        // dont show edges that are connected to active node
+        if (isTargetingActiveNode(edge, selectedNode, interfaceGroupPositions)) {
+          return null;
+        }
+
+        const isActive = selectedNode?.interfaces.includes(edge.source.interface);
         const isSelected = edge.id === selectedEdge?.id;
+
+        const { start, end } = getLinePoints(edge, connectedNodeIds, nodePositions, interfaceGroupPositions);
+        const controlPoints = isActive ? getControlPoints(edge, interfaceGroupPositions, start, end, EDGE_GAP) : [];
+
         return (
           <React.Fragment key={edge.id}>
-            <Box
-              as="line"
-              x1={sourcePosition.x}
-              y1={sourcePosition.y}
-              x2={targetPosition.x}
-              y2={targetPosition.y}
-              stroke="gray.800"
-              strokeWidth={isClickable ? 3 : 1}
-              strokeLinecap="round"
-              borderWidth={3}
-              transition="all .2s ease-in-out"
-            />
-            {isClickable && (
-              <Box
-                as="line"
-                x1={sourcePosition.x}
-                y1={sourcePosition.y}
-                x2={targetPosition.x}
-                y2={targetPosition.y}
-                stroke="transparent"
-                strokeWidth={30}
-                borderWidth={2}
-                strokeLinecap="round"
-                transition="all .2s ease-in-out"
+            {isActive ? (
+              <path
+                strokeWidth={1}
+                stroke="black"
+                strokeLinejoin="round"
+                fill="transparent"
+                d={getrCurvePath(start, end, controlPoints)}
                 cursor="pointer"
                 onClick={() => handleEdgeClick(edge)}
+              />
+            ) : (
+              <Box
+                as="line"
+                x1={start.x}
+                y1={start.y}
+                x2={end.x}
+                y2={end.y}
+                stroke="gray.800"
+                strokeWidth={isActive ? 3 : 1}
+                strokeLinecap="round"
+                borderWidth={3}
+                transition="all .2s ease-in-out"
               />
             )}
 
             {isSelected && (
               <>
                 <defs>
-                  <path
-                    id="sourcePath"
-                    d={`M${sourcePosition.x},${sourcePosition.y} L${targetPosition.x},${targetPosition.y}`}
-                  />
+                  <path id="sourcePath" d={getrCurvePath(start, end, controlPoints)} />
                 </defs>
-                <text dx={10} dy={20}>
+                <text dx={30} dy={20} fontSize={14}>
                   <textPath href="#sourcePath">{edge.source.interface}</textPath>
                 </text>
-                <text dx={-10} dy={-10}>
+                <text dx={-30} dy={-10} fontSize={14}>
                   <textPath href="#sourcePath" startOffset="100%" textAnchor="end">
                     {edge.target.interface}
                   </textPath>

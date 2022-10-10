@@ -17,7 +17,7 @@ type Props = {
 
 const Nodes: VoidFunctionComponent<Props> = ({ onNodePositionUpdate, onNodePositionUpdateFinish }) => {
   const { state, dispatch } = useStateContext();
-  const { nodes, nodePositions, connectedNodeIds, selectedNode, interfacePositions } = state;
+  const { nodes, nodePositions, connectedNodeIds, selectedNode, interfaceGroupPositions } = state;
   const [position, setPosition] = useState<StatePosition>({
     nodeId: null,
     isActive: false,
@@ -78,7 +78,7 @@ const Nodes: VoidFunctionComponent<Props> = ({ onNodePositionUpdate, onNodePosit
           }}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
-          positions={{ nodes: nodePositions, interfaces: interfacePositions }}
+          positions={{ nodes: nodePositions, interfaceGroups: interfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.device.name)}
           isSelected={selectedNode?.device.id === node.device.id}
           node={node}

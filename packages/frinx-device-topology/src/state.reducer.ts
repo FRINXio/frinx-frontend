@@ -5,6 +5,7 @@ import {
   GraphEdge,
   GraphNode,
   Position,
+  PositionGroupsMap,
 } from './pages/topology/graph.helpers';
 import { StateAction } from './state.actions';
 
@@ -12,7 +13,7 @@ export type State = {
   nodes: GraphNode[];
   edges: GraphEdge[];
   nodePositions: Record<string, Position>;
-  interfacePositions: Record<string, Position>;
+  interfaceGroupPositions: PositionGroupsMap;
   selectedNode: GraphNode | null;
   selectedEdge: GraphEdge | null;
   connectedNodeIds: string[];
@@ -22,7 +23,7 @@ export const initialState: State = {
   nodes: [],
   edges: [],
   nodePositions: {},
-  interfacePositions: {},
+  interfaceGroupPositions: {},
   selectedNode: null,
   selectedEdge: null,
   connectedNodeIds: [],
@@ -36,12 +37,12 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.nodes = action.payload.nodes;
         acc.edges = action.payload.edges;
         acc.nodePositions = positionsMap.nodes;
-        acc.interfacePositions = positionsMap.interfaces;
+        acc.interfaceGroupPositions = positionsMap.interfaceGroups;
         return acc;
       }
       case 'UPDATE_NODE_POSITION': {
         acc.nodePositions[action.nodeId] = action.position;
-        acc.interfacePositions = getInterfacesPositions({
+        acc.interfaceGroupPositions = getInterfacesPositions({
           nodes: acc.nodes,
           edges: acc.edges,
           positionMap: acc.nodePositions,
