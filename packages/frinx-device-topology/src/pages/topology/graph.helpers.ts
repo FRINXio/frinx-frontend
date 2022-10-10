@@ -67,8 +67,18 @@ export function getInterfacesPositions({ nodes, edges, positionMap }: UpdateInte
         [curr]: { x: positionMap[node.device.name].x + x, y: positionMap[node.device.name].y + y },
       };
     }
-    const sourceNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
-    const targetNode = unwrap(nodes.find((n) => n.interfaces.includes(target.interface)));
+
+    const sourceNode = nodes.find((n) => n.interfaces.includes(curr));
+    const targetNode = nodes.find((n) => n.interfaces.includes(target.interface));
+
+    // we cant rely on consistent data
+    // for example when filtering nodes, we cant be sure if all edges have exisitng nodes
+    // even if we do so on server
+    if (!sourceNode || !targetNode) {
+      return {
+        ...acc,
+      };
+    }
     const pos1 = positionMap[sourceNode.device.name];
     const pos2 = positionMap[targetNode.device.name];
     const angle = getAngleBetweenPoints(pos1, pos2);

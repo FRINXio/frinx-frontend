@@ -21,6 +21,10 @@ const Edges: VoidFunctionComponent = () => {
         const targetPosition = connectedNodeIds.includes(edge.target.nodeId)
           ? interfacePositions[edge.target.interface]
           : nodePositions[edge.target.nodeId];
+
+        if (!sourcePosition || !targetPosition) {
+          return null;
+        }
         const isClickable = selectedNode?.interfaces.includes(edge.source.interface);
         const isSelected = edge.id === selectedEdge?.id;
         return (

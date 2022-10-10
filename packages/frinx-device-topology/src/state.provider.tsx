@@ -6,8 +6,8 @@ import { initialState, State, stateReducer } from './state.reducer';
 import { TopologyQuery, TopologyQueryVariables } from './__generated__/graphql';
 
 const TOPOLOGY_QUERY = gql`
-  query Topology {
-    topology {
+  query Topology($labels: [String!]) {
+    topology(filter: { labels: $labels }) {
       nodes {
         id
         device {
@@ -56,13 +56,15 @@ const StateProvider: FC = ({ children }) => {
 
   useEffect(() => {
     client
-      .query<TopologyQuery, TopologyQueryVariables>(TOPOLOGY_QUERY)
+      .query<TopologyQuery, TopologyQueryVariables>(TOPOLOGY_QUERY, {
+        labels: state.selectedLabels.map((l) => l.label),
+      })
       .toPromise()
       .then((data) => {
         const { nodes, edges } = data.data?.topology ?? { nodes: [], edges: [] };
         dispatch(setNodesAndEdges({ nodes, edges }));
       });
-  }, [client]);
+  }, [client, state.selectedLabels]);
 
   return (
     <StateContext.Provider

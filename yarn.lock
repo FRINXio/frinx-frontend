@@ -3892,6 +3892,7 @@ __metadata:
     "@typescript-eslint/parser": 5.27.1
     "@urql/exchange-retry": 0.3.3
     "@webpack-cli/serve": 1.6.1
+    chakra-ui-autocomplete: ^1.4.5
     d3: ^7.6.1
     date-fns: ^2.29.2
     date-fns-tz: ^1.3.6

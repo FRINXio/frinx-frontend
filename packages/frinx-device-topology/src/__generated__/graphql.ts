@@ -26,12 +26,18 @@ export type AddBlueprintPayload = {
 
 export type AddDeviceInput = {
   address?: InputMaybe<Scalars['String']>;
+  blueprintId?: InputMaybe<Scalars['String']>;
+  deviceType?: InputMaybe<Scalars['String']>;
   labelIds?: InputMaybe<Array<Scalars['String']>>;
   model?: InputMaybe<Scalars['String']>;
   mountParameters?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
+  password?: InputMaybe<Scalars['String']>;
+  port?: InputMaybe<Scalars['Int']>;
   serviceState?: InputMaybe<DeviceServiceState>;
+  username?: InputMaybe<Scalars['String']>;
   vendor?: InputMaybe<Scalars['String']>;
+  version?: InputMaybe<Scalars['String']>;
   zoneId: Scalars['String'];
 };
 
@@ -223,6 +229,7 @@ export type DeleteSnapshotPayload = {
 export type Device = Node & {
   __typename?: 'Device';
   address: Maybe<Scalars['String']>;
+  blueprint: Maybe<Blueprint>;
   createdAt: Scalars['String'];
   id: Scalars['ID'];
   isInstalled: Scalars['Boolean'];
@@ -289,6 +296,10 @@ export type EdgeSourceTarget = {
 
 export type FilterDevicesInput = {
   deviceName?: InputMaybe<Scalars['String']>;
+  labels?: InputMaybe<Array<Scalars['String']>>;
+};
+
+export type FilterTopologyInput = {
   labels?: InputMaybe<Array<Scalars['String']>>;
 };
 
@@ -526,8 +537,8 @@ export type PageInfo = {
 
 export type Position = {
   __typename?: 'Position';
-  x: Scalars['Int'];
-  y: Scalars['Int'];
+  x: Scalars['Float'];
+  y: Scalars['Float'];
 };
 
 export type PositionInput = {
@@ -536,8 +547,8 @@ export type PositionInput = {
 };
 
 export type PositionInputField = {
-  x: Scalars['Int'];
-  y: Scalars['Int'];
+  x: Scalars['Float'];
+  y: Scalars['Float'];
 };
 
 export type Query = {
@@ -612,6 +623,11 @@ export type QueryLocationsArgs = {
 
 export type QueryNodeArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryTopologyArgs = {
+  filter?: InputMaybe<FilterTopologyInput>;
 };
 
 
@@ -703,12 +719,18 @@ export type UpdateDataStorePayload = {
 
 export type UpdateDeviceInput = {
   address?: InputMaybe<Scalars['String']>;
+  blueprintId?: InputMaybe<Scalars['String']>;
+  deviceType?: InputMaybe<Scalars['String']>;
   labelIds?: InputMaybe<Array<Scalars['String']>>;
   locationId?: InputMaybe<Scalars['String']>;
   model?: InputMaybe<Scalars['String']>;
   mountParameters?: InputMaybe<Scalars['String']>;
+  password?: InputMaybe<Scalars['String']>;
+  port?: InputMaybe<Scalars['Int']>;
   serviceState?: InputMaybe<DeviceServiceState>;
+  username?: InputMaybe<Scalars['String']>;
   vendor?: InputMaybe<Scalars['String']>;
+  version?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateDeviceMetadataPayload = {
@@ -749,14 +771,21 @@ export type DeviceQueryVariables = Exact<{
 
 export type DeviceQuery = { __typename?: 'Query', node: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string, isInstalled: boolean, createdAt: string, serviceState: DeviceServiceState } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Zone' } | null };
 
-export type TopologyQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, interfaces: Array<string>, device: { __typename?: 'Device', id: string, name: string, position: { __typename?: 'Position', x: number, y: number } | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } };
-
 export type UpdatePositionMutationVariables = Exact<{
   input: Array<PositionInput> | PositionInput;
 }>;
 
 
 export type UpdatePositionMutation = { __typename?: 'Mutation', updateDeviceMetadata: { __typename?: 'UpdateDeviceMetadataPayload', devices: Array<{ __typename?: 'Device', id: string, position: { __typename?: 'Position', x: number, y: number } | null } | null> | null } };
+
+export type DeviceLabelsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DeviceLabelsQuery = { __typename?: 'Query', labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } };
+
+export type TopologyQueryVariables = Exact<{
+  labels?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
+}>;
+
+
+export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, interfaces: Array<string>, device: { __typename?: 'Device', id: string, name: string, position: { __typename?: 'Position', x: number, y: number } | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } };
