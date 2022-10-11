@@ -5,6 +5,11 @@ export type NodesEdgesPayload = {
   edges: GraphEdge[];
 };
 
+export type LabelItem = {
+  label: string;
+  value: string;
+};
+
 export type StateAction =
   | {
       type: 'SET_NODES_AND_EDGES';
@@ -22,6 +27,10 @@ export type StateAction =
   | {
       type: 'SET_SELECTED_EDGE';
       edge: GraphEdge | null;
+    }
+  | {
+      type: 'SET_SELECTED_LABELS';
+      labels: LabelItem[];
     };
 
 export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {
@@ -50,6 +59,13 @@ export function setSelectedEdge(edge: GraphEdge | null): StateAction {
   return {
     type: 'SET_SELECTED_EDGE',
     edge,
+  };
+}
+
+export function setSelectedLabels(labels: LabelItem[]): StateAction {
+  return {
+    type: 'SET_SELECTED_LABELS',
+    labels,
   };
 }
 

@@ -25,7 +25,11 @@ const Edges: VoidFunctionComponent = () => {
         const isActive = selectedNode?.interfaces.includes(edge.source.interface);
         const isSelected = edge.id === selectedEdge?.id;
 
-        const { start, end } = getLinePoints(edge, connectedNodeIds, nodePositions, interfaceGroupPositions);
+        const linePoints = getLinePoints(edge, connectedNodeIds, nodePositions, interfaceGroupPositions);
+        if (!linePoints) {
+          return null;
+        }
+        const { start, end } = linePoints;
         const controlPoints = isActive ? getControlPoints(edge, interfaceGroupPositions, start, end, EDGE_GAP) : [];
 
         return (

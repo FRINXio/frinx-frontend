@@ -7,7 +7,7 @@ import {
   Position,
   PositionGroupsMap,
 } from './pages/topology/graph.helpers';
-import { StateAction } from './state.actions';
+import { LabelItem, StateAction } from './state.actions';
 
 export type State = {
   nodes: GraphNode[];
@@ -17,6 +17,7 @@ export type State = {
   selectedNode: GraphNode | null;
   selectedEdge: GraphEdge | null;
   connectedNodeIds: string[];
+  selectedLabels: LabelItem[];
 };
 
 export const initialState: State = {
@@ -27,6 +28,7 @@ export const initialState: State = {
   selectedNode: null,
   selectedEdge: null,
   connectedNodeIds: [],
+  selectedLabels: [],
 };
 
 export function stateReducer(state: State, action: StateAction): State {
@@ -65,6 +67,10 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_SELECTED_EDGE': {
         acc.selectedEdge = action.edge;
+        return acc;
+      }
+      case 'SET_SELECTED_LABELS': {
+        acc.selectedLabels = action.labels;
         return acc;
       }
       default:

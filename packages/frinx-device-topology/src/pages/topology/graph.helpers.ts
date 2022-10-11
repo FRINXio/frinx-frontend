@@ -97,8 +97,18 @@ export function getInterfacesPositions({
         },
       };
     }
-    const sourceNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
-    const targetNode = unwrap(nodes.find((n) => n.interfaces.includes(target.interface)));
+
+    const sourceNode = nodes.find((n) => n.interfaces.includes(curr));
+    const targetNode = nodes.find((n) => n.interfaces.includes(target.interface));
+
+    // we cant rely on consistent data
+    // for example when filtering nodes, we cant be sure if all edges have exisitng nodes
+    // even if we do so on server
+    if (!sourceNode || !targetNode) {
+      return {
+        ...acc,
+      };
+    }
     const groupName = getGroupName(sourceNode, targetNode);
     const newInterfaces = acc[groupName] ? [...acc[groupName].interfaces, curr] : [curr];
 
@@ -186,13 +196,18 @@ export function getLinePoints(
   connectedNodeIds: string[],
   nodePositions: Record<string, Position>,
   interfaceGroupPositions: PositionGroupsMap,
-): Line {
+): Line | null {
   const sourcePosition = connectedNodeIds.includes(edge.source.nodeId)
-    ? interfaceGroupPositions[getInterfaceGroupName(edge.source.nodeId, edge.target.nodeId)].position
+    ? interfaceGroupPositions[getInterfaceGroupName(edge.source.nodeId, edge.target.nodeId)]?.position
     : nodePositions[edge.source.nodeId];
   const targetPosition = connectedNodeIds.includes(edge.target.nodeId)
-    ? interfaceGroupPositions[getInterfaceGroupName(edge.target.nodeId, edge.source.nodeId)].position
+    ? interfaceGroupPositions[getInterfaceGroupName(edge.target.nodeId, edge.source.nodeId)]?.position
     : nodePositions[edge.target.nodeId];
+
+  if (!sourcePosition || !targetPosition) {
+    return null;
+  }
+
   return {
     start: sourcePosition,
     end: targetPosition,
@@ -230,5 +245,5 @@ export function isTargetingActiveNode(
   const targetNodeId = edge.target.nodeId;
   const targetGroupName = getInterfaceGroupName(edge.source.nodeId, edge.target.nodeId);
   const targetGroup = interfaceGroupPositions[targetGroupName];
-  return targetNodeId === selectedNode?.device.name && targetGroup.interfaces.includes(edge.source.interface);
+  return targetNodeId === selectedNode?.device.name && targetGroup?.interfaces.includes(edge.source.interface);
 }
