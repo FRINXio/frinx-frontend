@@ -28,15 +28,34 @@ const WorkflowDefinitions = () => {
   const [labels, setLabels] = useState<string[]>([]);
   const [activeWf, setActiveWf] = useState<Workflow>();
   const [allLabels, setAllLabels] = useState<string[]>([]);
+  const [workflows, setWorkflows] = useState<Workflow[]>([]);
 
-  const {
-    currentPage,
-    setCurrentPage,
-    setItemList,
-    totalPages,
-    pageItems: workflows,
-    setTotalItemsAmount,
-  } = usePagination<Workflow>();
+  const results =
+    !keywords && labels.length === 0
+      ? workflows
+      : workflows.filter((e) => {
+          const queryWords = keywords.toUpperCase();
+          const wfName = e.name.toUpperCase();
+          const labelsArr = jsonParse(e.description)?.labels;
+
+          // if labels are used and wf does not contain selected labels => filter out
+          if (labels.length > 0) {
+            if (_.difference(labels, labelsArr).length !== 0) {
+              return false;
+            }
+          }
+
+          // search for keywords in "searchedKeys"
+          if (wfName.includes(queryWords)) {
+            return true;
+          }
+
+          return false;
+        });
+
+  const { currentPage, setCurrentPage, setItemList, totalPages, pageItems } = usePagination<Workflow>({
+    itemList: results,
+  });
 
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
@@ -49,10 +68,10 @@ const WorkflowDefinitions = () => {
     const { getWorkflows } = callbackUtils.getCallbacks;
 
     getWorkflows().then((wfs) => {
-      setItemList(wfs);
+      setWorkflows(wfs);
       setAllLabels(getLabels(wfs));
     });
-  }, [setItemList, setTotalItemsAmount]);
+  }, []);
 
   const updateFavourite = (workflow: Workflow) => {
     let wfDescription = jsonParse(workflow.description);
@@ -99,29 +118,6 @@ const WorkflowDefinitions = () => {
     });
   };
 
-  const results =
-    !keywords && labels.length === 0
-      ? workflows
-      : workflows.filter((e) => {
-          const queryWords = keywords.toUpperCase();
-          const wfName = e.name.toUpperCase();
-          const labelsArr = jsonParse(e.description)?.labels;
-
-          // if labels are used and wf does not contain selected labels => filter out
-          if (labels.length > 0) {
-            if (_.difference(labels, labelsArr).length !== 0) {
-              return false;
-            }
-          }
-
-          // search for keywords in "searchedKeys"
-          if (wfName.includes(queryWords)) {
-            return true;
-          }
-
-          return false;
-        });
-
   return (
     <Container maxWidth={1200} mx="auto">
       <WorkflowDefinitionsModals
@@ -154,7 +150,7 @@ const WorkflowDefinitions = () => {
         }}
       />
       <WorkflowDefinitionsTable
-        workflows={results}
+        workflows={pageItems}
         definitionModal={definitionModal}
         diagramModal={diagramModal}
         dependencyModal={dependencyModal}
@@ -163,7 +159,9 @@ const WorkflowDefinitions = () => {
         confirmDeleteModal={confirmDeleteModal}
         setActiveWorkflow={setActiveWf}
         onFavoriteClick={updateFavourite}
-        onLabelClick={(label) => setLabels((prevLabels) => [...new Set([...prevLabels, label])])}
+        onLabelClick={(label) => {
+          setLabels((prevLabels) => [...new Set([...prevLabels, label])]);
+        }}
         allLabels={allLabels}
         paginationProps={{
           currentPage,
