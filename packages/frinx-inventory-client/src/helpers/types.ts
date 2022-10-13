@@ -1,3 +1,5 @@
+import { DeviceSize as DeviceSizeType } from '../__generated__/graphql';
+
 export type Zone = {
   id: string;
   name: string;
@@ -11,6 +13,7 @@ export type Device = {
   zone: Zone;
   serviceState: ServiceState;
   mountParameters: string;
+  deviceSize: DeviceSizeType;
 };
 
 // eslint-disable-next-line no-shadow

@@ -229,7 +229,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
 
       <FormControl id="deviceSize" my={6} isInvalid={errors.deviceSize !== undefined}>
         <FormLabel>Device size</FormLabel>
-        <Select onChange={handleChange} placeholder="Select device size">
+        <Select name="deviceSize" onChange={handleChange} placeholder="Select size of the device">
           {deviceSizeOptions.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}

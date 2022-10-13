@@ -16,8 +16,14 @@ import {
 } from '@chakra-ui/react';
 import { Editor } from '@frinx/shared/src';
 
-import { Device, serviceStateOptions } from '../../helpers/types';
-import { DeviceServiceState, Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
+import { Device, DeviceSize, deviceSizeOptions, serviceStateOptions } from '../../helpers/types';
+import {
+  DeviceServiceState,
+  DeviceSize as DeviceSizeType,
+  Label,
+  LabelsQuery,
+  ZonesQuery,
+} from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 
 type FormValues = {
@@ -25,6 +31,7 @@ type FormValues = {
   mountParameters: string;
   labelIds: string[];
   serviceState: DeviceServiceState;
+  deviceSize: DeviceSizeType;
   vendor: string | null;
   model: string | null;
   address: string | null;
@@ -48,6 +55,17 @@ const EditDeviceFormSchema = yup.object().shape({
   vendor: yup.string(),
   model: yup.string(),
   address: yup.string(),
+  deviceSize: yup.lazy((deviceSize) => {
+    if (deviceSize === '') {
+      return yup.string();
+    }
+
+    if (deviceSize !== DeviceSize.SMALL && deviceSize !== DeviceSize.MEDIUM && deviceSize !== DeviceSize.LARGE) {
+      return yup.string().required('Please select device size');
+    }
+
+    return yup.string();
+  }),
 });
 
 const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, onCancel }): JSX.Element => {
@@ -60,6 +78,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
       vendor: device.vendor,
       model: device.model,
       address: device.host,
+      deviceSize: device.deviceSize,
     };
   }, [device]);
 
@@ -67,14 +86,16 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
     device.labels.map(({ id, name }) => ({ value: id, label: name })),
   );
 
-  const { values, isSubmitting, handleSubmit, setFieldValue, handleChange, errors } = useFormik<FormValues>({
-    initialValues: INITIAL_VALUES,
-    validationSchema: EditDeviceFormSchema,
-    onSubmit: (data) => {
-      const updatedData = { ...data, labelIds: selectedLabels.map((label) => label.value) };
-      onUpdate(updatedData);
-    },
-  });
+  const { values, isSubmitting, handleSubmit, setFieldValue, handleChange, errors, setSubmitting } =
+    useFormik<FormValues>({
+      initialValues: INITIAL_VALUES,
+      validationSchema: EditDeviceFormSchema,
+      onSubmit: (data) => {
+        const updatedData = { ...data, labelIds: selectedLabels.map((label) => label.value) };
+        onUpdate(updatedData);
+        setSubmitting(false);
+      },
+    });
 
   const handleLabelCreation = (labelName: Item) => {
     onLabelCreate(labelName.label).then((label) => {
@@ -112,27 +133,45 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
         <FormErrorMessage>{errors.serviceState}</FormErrorMessage>
       </FormControl>
 
-      <FormControl my={6}>
-        <FormLabel>Vendor</FormLabel>
-        <Input
-          name="vendor"
-          onChange={handleChange}
-          placeholder="Enter vendor of the device"
-          value={values.vendor || ''}
-        />
-      </FormControl>
+      <HStack my={6}>
+        <FormControl>
+          <FormLabel>Vendor</FormLabel>
+          <Input
+            name="vendor"
+            onChange={handleChange}
+            placeholder="Enter vendor of the device"
+            value={values.vendor || ''}
+          />
+        </FormControl>
 
-      <FormControl my={6}>
-        <FormLabel>Model</FormLabel>
-        <Input
-          name="model"
-          onChange={handleChange}
-          placeholder="Enter model of the device"
-          value={values.model || ''}
-        />
-      </FormControl>
+        <FormControl>
+          <FormLabel>Model</FormLabel>
+          <Input
+            name="model"
+            onChange={handleChange}
+            placeholder="Enter model of the device"
+            value={values.model || ''}
+          />
+        </FormControl>
 
-      <FormControl my={6}>
+        <FormControl>
+          <FormLabel>Device size</FormLabel>
+          <Select
+            name="deviceSize"
+            onChange={handleChange}
+            placeholder="Select size of the device"
+            value={values.deviceSize}
+          >
+            {deviceSizeOptions.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+      </HStack>
+
+      <FormControl>
         <FormLabel>Address</FormLabel>
         <Input
           name="address"
