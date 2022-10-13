@@ -6,6 +6,7 @@ import {
   PositionGroupsMap,
   PositionsWithGroupsMap,
 } from '../../pages/topology/graph.helpers';
+import { DeviceSize } from '../../pages/topology/topology-graph';
 
 type Props = {
   positions: PositionsWithGroupsMap;
@@ -39,6 +40,23 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   const { device } = node;
   const { x, y } = positions.nodes[node.device.name];
   const interfaceGroups = getNodeInterfaceGroups(device.name, positions.interfaceGroups);
+  let circleDiameter = NODE_CIRCLE_RADIUS;
+
+  switch (node.device.deviceSize) {
+    case DeviceSize.SMALL:
+      circleDiameter = NODE_CIRCLE_RADIUS * 0.75;
+      break;
+    case DeviceSize.MEDIUM:
+      circleDiameter = NODE_CIRCLE_RADIUS;
+      break;
+    case DeviceSize.LARGE:
+      circleDiameter = NODE_CIRCLE_RADIUS * 1.5;
+      break;
+
+    default:
+      circleDiameter = NODE_CIRCLE_RADIUS;
+      break;
+  }
 
   return (
     <G
@@ -50,7 +68,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
       onPointerUp={onPointerUp}
     >
       <Circle
-        r={isFocused ? `${NODE_CIRCLE_RADIUS}px` : 0}
+        r={isFocused ? `${circleDiameter}px` : 0}
         fill="blackAlpha.100"
         strokeOpacity={0.4}
         stroke="gray.500"
@@ -73,18 +91,13 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
           })}
         </G>
         <Circle
-          r={`${NODE_CIRCLE_RADIUS / 2}px`}
+          r={`${circleDiameter / 2}px`}
           fill={isSelected ? 'blue.500' : 'gray.400'}
           strokeWidth={1}
           stroke={isSelected ? 'blue.600' : 'gray.400'}
         />
       </G>
-      <Text
-        height={`${NODE_CIRCLE_RADIUS / 2}px`}
-        transform="translate3d(35px, 5px, 0)"
-        fontWeight="600"
-        userSelect="none"
-      >
+      <Text height={`${circleDiameter / 2}px`} transform="translate3d(35px, 5px, 0)" fontWeight="600" userSelect="none">
         {device.name}
       </Text>
       <G

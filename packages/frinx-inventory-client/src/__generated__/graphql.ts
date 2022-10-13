@@ -727,7 +727,7 @@ export type UpdateDataStorePayload = {
 export type UpdateDeviceInput = {
   address?: InputMaybe<Scalars['String']>;
   blueprintId?: InputMaybe<Scalars['String']>;
-  deviceSize?: InputMaybe<Scalars['String']>;
+  deviceSize?: InputMaybe<DeviceSize>;
   deviceType?: InputMaybe<Scalars['String']>;
   labelIds?: InputMaybe<Array<Scalars['String']>>;
   locationId?: InputMaybe<Scalars['String']>;
