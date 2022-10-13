@@ -27,6 +27,7 @@ export type AddBlueprintPayload = {
 export type AddDeviceInput = {
   address?: InputMaybe<Scalars['String']>;
   blueprintId?: InputMaybe<Scalars['String']>;
+  deviceSize?: InputMaybe<DeviceSize>;
   deviceType?: InputMaybe<Scalars['String']>;
   labelIds?: InputMaybe<Array<Scalars['String']>>;
   model?: InputMaybe<Scalars['String']>;
@@ -231,6 +232,7 @@ export type Device = Node & {
   address: Maybe<Scalars['String']>;
   blueprint: Maybe<Blueprint>;
   createdAt: Scalars['String'];
+  deviceSize: DeviceSize;
   id: Scalars['ID'];
   isInstalled: Scalars['Boolean'];
   labels: LabelConnection;
@@ -277,6 +279,11 @@ export type DeviceServiceState =
   | 'OUT_OF_SERVICE'
   | 'PLANNING';
 
+export type DeviceSize =
+  | 'LARGE'
+  | 'MEDIUM'
+  | 'SMALL';
+
 export type DeviceSource =
   | 'DISCOVERED'
   | 'IMPORTED'
@@ -296,6 +303,10 @@ export type EdgeSourceTarget = {
 
 export type FilterDevicesInput = {
   deviceName?: InputMaybe<Scalars['String']>;
+  labels?: InputMaybe<Array<Scalars['String']>>;
+};
+
+export type FilterTopologyInput = {
   labels?: InputMaybe<Array<Scalars['String']>>;
 };
 
@@ -622,6 +633,11 @@ export type QueryNodeArgs = {
 };
 
 
+export type QueryTopologyArgs = {
+  filter?: InputMaybe<FilterTopologyInput>;
+};
+
+
 export type QueryZonesArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
@@ -711,6 +727,7 @@ export type UpdateDataStorePayload = {
 export type UpdateDeviceInput = {
   address?: InputMaybe<Scalars['String']>;
   blueprintId?: InputMaybe<Scalars['String']>;
+  deviceSize?: InputMaybe<Scalars['String']>;
   deviceType?: InputMaybe<Scalars['String']>;
   labelIds?: InputMaybe<Array<Scalars['String']>>;
   locationId?: InputMaybe<Scalars['String']>;

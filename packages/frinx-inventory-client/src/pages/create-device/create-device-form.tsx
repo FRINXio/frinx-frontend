@@ -16,9 +16,16 @@ import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
 import { Editor } from '@frinx/shared/src';
 import parse from 'json-templates';
-import { DeviceBlueprintsQuery, DeviceServiceState, Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
+import {
+  DeviceBlueprintsQuery,
+  DeviceServiceState,
+  DeviceSize as DeviceSizeType,
+  Label,
+  LabelsQuery,
+  ZonesQuery,
+} from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
-import { ServiceState, serviceStateOptions } from '../../helpers/types';
+import { ServiceState, serviceStateOptions, DeviceSize, deviceSizeOptions } from '../../helpers/types';
 
 type Props = {
   isSubmitting: boolean;
@@ -41,6 +48,7 @@ type FormValues = {
   username: string;
   password: string;
   deviceType: string;
+  deviceSize: DeviceSizeType;
   version: string;
   vendor: string;
   port: number;
@@ -85,6 +93,17 @@ const deviceSchema = yup.object({
   version: yup.string().when('blueprintParams', getWhenOptions('version', 'Version is required by the blueprint')),
   username: yup.string().when('blueprintParams', getWhenOptions('user', 'Username is required by the blueprint')),
   password: yup.string().when('blueprintParams', getWhenOptions('password', 'Password is required by the blueprint')),
+  deviceSize: yup.lazy((deviceSize) => {
+    if (deviceSize === '') {
+      return yup.string();
+    }
+
+    if (deviceSize !== DeviceSize.SMALL && deviceSize !== DeviceSize.MEDIUM && deviceSize !== DeviceSize.LARGE) {
+      return yup.string().required('Please select device size');
+    }
+
+    return yup.string();
+  }),
 });
 
 const INITIAL_VALUES: FormValues = {
@@ -98,6 +117,7 @@ const INITIAL_VALUES: FormValues = {
   address: '',
   blueprintId: null,
   deviceType: '',
+  deviceSize: DeviceSize.MEDIUM,
   password: '',
   username: '',
   version: '',
@@ -206,6 +226,18 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           <FormErrorMessage>{errors.version}</FormErrorMessage>
         </FormControl>
       </HStack>
+
+      <FormControl id="deviceSize" my={6} isInvalid={errors.deviceSize !== undefined}>
+        <FormLabel>Device size</FormLabel>
+        <Select onChange={handleChange} placeholder="Select device size">
+          {deviceSizeOptions.map(({ label, value }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </Select>
+        <FormErrorMessage>{errors.deviceSize}</FormErrorMessage>
+      </FormControl>
 
       <HStack my={6}>
         <FormControl isRequired={values.blueprintParams?.includes('user')}>

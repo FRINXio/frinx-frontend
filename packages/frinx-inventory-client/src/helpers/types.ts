@@ -20,8 +20,21 @@ export enum ServiceState {
   OUT_OF_SERVICE = 'OUT_OF_SERVICE',
 }
 
+// eslint-disable-next-line no-shadow
+export enum DeviceSize {
+  SMALL = 'SMALL',
+  MEDIUM = 'MEDIUM',
+  LARGE = 'LARGE',
+}
+
 export const serviceStateOptions = [
   { value: ServiceState.PLANNING, label: 'Planning' },
   { value: ServiceState.IN_SERVICE, label: 'In Service' },
   { value: ServiceState.OUT_OF_SERVICE, label: 'Out of Service' },
+];
+
+export const deviceSizeOptions = [
+  { value: DeviceSize.SMALL, label: 'Small' },
+  { value: DeviceSize.MEDIUM, label: 'Medium' },
+  { value: DeviceSize.LARGE, label: 'Large' },
 ];
