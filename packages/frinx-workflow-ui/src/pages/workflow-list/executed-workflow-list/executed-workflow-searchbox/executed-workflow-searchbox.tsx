@@ -1,7 +1,7 @@
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, { ChangeEvent, FC, useState } from 'react';
 import { ButtonGroup, Button, Box, Flex, FormControl, Grid, Input, Text, IconButton, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import WfAutoComplete from '../../../../common/wf-autocomplete';
 
 type Props = {
@@ -15,14 +15,10 @@ type Props = {
 const ExecutedWorkflowSearchBox: FC<Props> = ({ changeLabels, changeQuery, changeView, showFlat, labels }) => {
   const [searchText, setSearchText] = useState('');
 
-  useEffect(() => {
-    debounce((query) => {
-      changeQuery(query);
-    }, 300);
-  }, [searchText, changeQuery]);
-
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
+    const debounced = debounce(changeQuery, 300);
+    debounced(event.target.value);
   };
 
   return (

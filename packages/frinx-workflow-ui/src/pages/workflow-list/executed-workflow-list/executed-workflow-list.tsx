@@ -65,16 +65,17 @@ const loadExecutedWorkflows = async (filters: SearchFilters): Promise<ExecutedWo
 const ExecutedWorkflowList = () => {
   const navigate = useNavigate();
   const query = useQueryParams();
+  const [executedWorkflows, setExecutedWorkflows] = useState<ExecutedWorkflow[]>([]);
   const {
     currentPage,
     setCurrentPage,
     maxItemsPerPage,
-    setItemList,
     totalPages,
     pageItems: workflows,
     setTotalItemsAmount,
     totalItemsAmount,
   } = usePagination<ExecutedWorkflow>({
+    itemList: executedWorkflows,
     hasCustomAmount: true,
     maxItemsPerPage: 20,
   });
@@ -92,9 +93,9 @@ const ExecutedWorkflowList = () => {
       labels: state.labels,
       search: state.workflowId,
       isFlat: state.isFlat,
-    }).then((executedWorkflows) => {
-      setItemList(executedWorkflows.result.hits);
-      setTotalItemsAmount(executedWorkflows.result.totalHits);
+    }).then((exWfs) => {
+      setExecutedWorkflows(exWfs.result.hits);
+      setTotalItemsAmount(exWfs.result.totalHits);
     });
   }, [
     state.sortBy,
@@ -104,7 +105,6 @@ const ExecutedWorkflowList = () => {
     state.isFlat,
     currentPage,
     maxItemsPerPage,
-    setItemList,
     setTotalItemsAmount,
   ]);
 
@@ -181,9 +181,9 @@ const ExecutedWorkflowList = () => {
       labels: state.labels,
       search: state.workflowId,
       isFlat: state.isFlat,
-    }).then((executedWorkflows) => {
-      setItemList(executedWorkflows.result.hits);
-      setTotalItemsAmount(executedWorkflows.result.totalHits);
+    }).then((exWfs) => {
+      setExecutedWorkflows(exWfs.result.hits);
+      setTotalItemsAmount(exWfs.result.totalHits);
     });
   };
 
