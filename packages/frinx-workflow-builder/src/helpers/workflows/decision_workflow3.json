@@ -1,0 +1,123 @@
+{
+  "updateTime": 1646919224371,
+  "name": "decision_test4",
+  "description": "",
+  "version": 1,
+  "tasks": [
+    {
+      "name": "decisionTask1",
+      "taskReferenceName": "decision_ntkF",
+      "inputParameters": {
+        "param": "true",
+        "foo": "bar"
+      },
+      "type": "DECISION",
+      "caseValueParam": "param",
+      "decisionCases": {
+        "False": [
+          {
+            "name": "terminate_task",
+            "taskReferenceName": "http_kr0H",
+            "inputParameters": {
+              "terminationStatus": "FAILED",
+              "workflowOutput": {
+                "status": "some_status"
+              }
+            },
+            "type": "TERMINATE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          }
+        ]
+      },
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": []
+    },
+    {
+      "name": "decisionTask2",
+      "taskReferenceName": "decision_abcd",
+      "inputParameters": {
+        "desiredValue": "${workflow.input.desired_value}"
+      },
+      "type": "DECISION",
+      "caseExpression": "$.desiredValue.length > 0 ? 'True' : 'False'",
+      "decisionCases": {
+        "True": [
+          {
+            "name": "UNIRESOURCE_claim_resource",
+            "taskReferenceName": "claim_resource_with_desired_value",
+            "inputParameters": {
+              "poolId": "${query_pool_by_tag.output.response_body.data.SearchPoolsByTags[0].id}",
+              "userInput": {
+                "desiredValue": "${workflow.input.desired_value}"
+              },
+              "description": "${workflow.input.description}",
+              "alternativeId": "${workflow.input.alternativ_id}"
+            },
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          }
+        ],
+        "False": [
+          {
+            "name": "UNIRESOURCE_claim_resource",
+            "taskReferenceName": "claim_resource_without_desired_value",
+            "inputParameters": {
+              "poolId": "${query_pool_by_tag.output.response_body.data.SearchPoolsByTags[0].id}",
+              "description": "${workflow.input.description}",
+              "alternativeId": "${workflow.input.alternativ_id}"
+            },
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          }
+        ]
+      },
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": []
+    }
+  ],
+  "inputParameters": [],
+  "outputParameters": {},
+  "schemaVersion": 2,
+  "restartable": true,
+  "workflowStatusListenerEnabled": false,
+  "ownerEmail": "admin-user",
+  "timeoutPolicy": "ALERT_ONLY",
+  "timeoutSeconds": 0,
+  "variables": {}
+}
