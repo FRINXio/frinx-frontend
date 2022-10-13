@@ -96,7 +96,7 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
               <Heading as="h5" size="sm">
                 Workflows selected: {selectedWorkflows.length}
                 {isFetching ? (
-                  <Spinner color="brand.500" size="md" marginLeft={8} float="right" marginRight={40} />
+                  <Spinner color="blue.500" size="md" marginLeft={8} float="right" marginRight={40} />
                 ) : null}
               </Heading>
             </Box>

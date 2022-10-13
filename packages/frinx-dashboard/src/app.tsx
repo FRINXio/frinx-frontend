@@ -35,7 +35,7 @@ const App: FC<Props> = ({ enabledServices, basename, isAuthEnabled }) => {
           <Route path="/" element={<Dashboard enabledServices={enabledServices} />} />
         </Routes>
       </Box>
-      <Box position="fixed" bottom={16} right={16}>
+      <Box position="fixed" bottom={20} right={16}>
         <FeedbackWidget />
       </Box>
     </BrowserRouter>

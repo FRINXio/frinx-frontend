@@ -120,6 +120,7 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
                                 [event.target.value]: values.decisionCases[key],
                               };
                               setFieldValue('decisionCases', newDecisionCases);
+                              // setFieldValue('caseValueParam', event.target.value);
                             }}
                           />
                         </InputGroup>

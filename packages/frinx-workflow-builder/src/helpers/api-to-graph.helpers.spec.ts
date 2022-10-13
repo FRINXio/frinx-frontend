@@ -32,6 +32,21 @@ describe('data helpers', () => {
     assert.deepEqual(decisionNode?.data.handles, ['true', 'default']);
   });
 
+  test('test decision 3 workflow', () => {
+    const decisionWorkflow = loadWorkflow('decision_workflow3.json');
+    const elements = getElementsFromWorkflow(decisionWorkflow.tasks, false);
+    const { nodes, edges } = elements;
+
+    assert.equal(nodes.length, 7);
+    assert.equal(edges.length, 9);
+    const decisionNode1 = nodes.find((n) => n.id === 'decision_ntkF');
+    assert.isNotNull(decisionNode1);
+    assert.deepEqual(decisionNode1?.data.handles, ['False', 'default']);
+    const decisionNode = nodes.find((n) => n.id === 'decision_abcd');
+    assert.isNotNull(decisionNode);
+    assert.deepEqual(decisionNode?.data.handles, ['True', 'False', 'default']);
+  });
+
   test('test nested decision workflow', () => {
     const decisionWorkflow = loadWorkflow('nested_decision_workflow.json');
     const elements = getElementsFromWorkflow(decisionWorkflow.tasks, false);
