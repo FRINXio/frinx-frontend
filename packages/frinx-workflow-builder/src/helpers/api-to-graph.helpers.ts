@@ -232,6 +232,54 @@ function createJoinEdges(forkTask: ExtendedForkTask | ForkTask, joinTask: Extend
   return filteredJoinEdges;
 }
 
+function createDecisionEdges(
+  previousTask: ExtendedTask,
+  curr: ExtendedDecisionTask,
+  hasEdgeToPreviousTask: boolean = true,
+) {
+  const newEdge = {
+    id: `e${previousTask.taskReferenceName}-${curr.taskReferenceName}`,
+    source: previousTask.taskReferenceName,
+    target: curr.taskReferenceName,
+    style: { background: '#fff' },
+    type: 'buttonedge',
+  };
+
+  const decisionEdges = Object.keys(curr.decisionCases)
+    .map((d) => {
+      const decisionTasks = curr.decisionCases[d].map(convertTaskToExtendedTask);
+      const currentDecisionEdges = createEdges(decisionTasks);
+
+      // edge connecting decision task with cases
+      const startDecisionEdge = decisionTasks.length
+        ? {
+            id: `e${curr.taskReferenceName}-${decisionTasks[0].taskReferenceName}`,
+            source: curr.taskReferenceName,
+            target: decisionTasks[0].taskReferenceName,
+            sourceHandle: `${d}`,
+            type: 'buttonedge',
+          }
+        : null;
+      return startDecisionEdge ? [...currentDecisionEdges, startDecisionEdge] : currentDecisionEdges;
+    })
+    .flat();
+
+  const defaultCaseEdges = createEdges(curr.defaultCase.map(convertTaskToExtendedTask));
+  const startDefaultCaseEdge = curr.defaultCase.length
+    ? {
+        id: `e${curr.taskReferenceName}-${curr.defaultCase[0].taskReferenceName}`,
+        source: curr.taskReferenceName,
+        target: curr.defaultCase[0].taskReferenceName,
+        sourceHandle: 'default',
+        type: 'buttonedge',
+      }
+    : null;
+  const allDefaultCaseEdges = startDefaultCaseEdge ? [...defaultCaseEdges, startDefaultCaseEdge] : defaultCaseEdges;
+  return hasEdgeToPreviousTask
+    ? [newEdge, ...decisionEdges, ...allDefaultCaseEdges]
+    : [...decisionEdges, ...allDefaultCaseEdges];
+}
+
 function createEdges(tasks: ExtendedTask[]): Edge[] {
   const edges = tasks.reduce((prev: Edge[], curr: ExtendedTask, index: number, array: ExtendedTask[]) => {
     if (index === 0) {
@@ -242,49 +290,15 @@ function createEdges(tasks: ExtendedTask[]): Edge[] {
 
     // edges for task after decision
     if (previousTask.type === 'DECISION') {
-      return createAfterDecisionEdges(previousTask, curr, [...prev]);
+      const afterDecisionEdges = createAfterDecisionEdges(previousTask, curr, [...prev]);
+      const decisionEdges = curr.type === 'DECISION' ? createDecisionEdges(previousTask, curr, false) : [];
+      return [...afterDecisionEdges, ...decisionEdges];
     }
 
     // edges for decision tasks
     if (curr.type === 'DECISION') {
-      const newEdge = {
-        id: `e${previousTask.taskReferenceName}-${curr.taskReferenceName}`,
-        source: previousTask.taskReferenceName,
-        target: curr.taskReferenceName,
-        style: { background: '#fff' },
-        type: 'buttonedge',
-      };
-      const decisionEdges = Object.keys(curr.decisionCases)
-        .map((d) => {
-          const decisionTasks = curr.decisionCases[d].map(convertTaskToExtendedTask);
-          const currentDecisionEdges = createEdges(decisionTasks);
-
-          // edge connecting decision task with cases
-          const startDecisionEdge = decisionTasks.length
-            ? {
-                id: `e${curr.taskReferenceName}-${decisionTasks[0].taskReferenceName}`,
-                source: curr.taskReferenceName,
-                target: decisionTasks[0].taskReferenceName,
-                sourceHandle: `${d}`,
-                type: 'buttonedge',
-              }
-            : null;
-          return startDecisionEdge ? [...currentDecisionEdges, startDecisionEdge] : currentDecisionEdges;
-        })
-        .flat();
-
-      const defaultCaseEdges = createEdges(curr.defaultCase.map(convertTaskToExtendedTask));
-      const startDefaultCaseEdge = curr.defaultCase.length
-        ? {
-            id: `e${curr.taskReferenceName}-${curr.defaultCase[0].taskReferenceName}`,
-            source: curr.taskReferenceName,
-            target: curr.defaultCase[0].taskReferenceName,
-            sourceHandle: 'default',
-            type: 'buttonedge',
-          }
-        : null;
-      const allDefaultCaseEdges = startDefaultCaseEdge ? [...defaultCaseEdges, startDefaultCaseEdge] : defaultCaseEdges;
-      return [...prev, newEdge, ...decisionEdges, ...allDefaultCaseEdges];
+      const decisionEdges = createDecisionEdges(previousTask, curr);
+      return [...prev, ...decisionEdges];
     }
 
     // edges for fork task

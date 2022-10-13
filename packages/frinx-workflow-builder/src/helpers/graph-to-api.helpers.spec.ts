@@ -23,6 +23,13 @@ describe('api helpers', () => {
     assert.deepEqual(decisionWorkflow.tasks, transformedDecisionWorkflow);
   });
 
+  test('decision workflow 3 to api transformation', () => {
+    const decisionWorkflow = loadWorkflow('decision_workflow3.json');
+    const elements = getElementsFromWorkflow(decisionWorkflow.tasks, false);
+    const transformedDecisionWorkflow = convertToTasks(elements);
+    assert.deepEqual(decisionWorkflow.tasks, transformedDecisionWorkflow);
+  });
+
   test('nested decision workflow to api transformation', () => {
     const decisionWorkflow = loadWorkflow('nested_decision_workflow.json');
     const elements = getElementsFromWorkflow(decisionWorkflow.tasks, false);

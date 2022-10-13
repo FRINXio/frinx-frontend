@@ -1,4 +1,4 @@
-import { unwrap } from '@frinx/shared/src';
+import unwrap from '@frinx/shared/src/helpers/unwrap';
 import { partition } from 'lodash';
 import { Edge, getConnectedEdges, getIncomers, getOutgoers, Node } from 'react-flow-renderer';
 import { ExtendedDecisionTask, ExtendedForkTask, ExtendedTask, Task } from './types';
