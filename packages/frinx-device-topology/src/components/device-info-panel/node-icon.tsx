@@ -41,20 +41,25 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   const { x, y } = positions.nodes[node.device.name];
   const interfaceGroups = getNodeInterfaceGroups(device.name, positions.interfaceGroups);
   let circleDiameter = NODE_CIRCLE_RADIUS;
+  let sizeTransform = 'translate3d(-10px, -10px, 0) scale(.8)';
 
   switch (node.device.deviceSize) {
     case DeviceSize.SMALL:
-      circleDiameter = NODE_CIRCLE_RADIUS * 0.75;
+      circleDiameter = NODE_CIRCLE_RADIUS;
+      sizeTransform = 'translate3d(-10px, -10px, 0) scale(.8)';
       break;
     case DeviceSize.MEDIUM:
-      circleDiameter = NODE_CIRCLE_RADIUS;
+      circleDiameter = NODE_CIRCLE_RADIUS * 1.5;
+      sizeTransform = 'translate3d(-15px, -15px, 0) scale(1.2)';
       break;
     case DeviceSize.LARGE:
-      circleDiameter = NODE_CIRCLE_RADIUS * 1.5;
+      circleDiameter = NODE_CIRCLE_RADIUS * 2;
+      sizeTransform = 'translate3d(-20px, -20px, 0) scale(1.6)';
       break;
 
     default:
       circleDiameter = NODE_CIRCLE_RADIUS;
+      sizeTransform = 'translate3d(-10px, -10px, 0) scale(.8)';
       break;
   }
 
@@ -106,7 +111,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
         strokeWidth="2px"
         strokeLinecap="round"
         strokeLinejoin="round"
-        transform="translate3d(-10px, -10px, 0) scale(.8)"
+        transform={sizeTransform}
       >
         <path strokeWidth="1.2" d="M9 21H3v-6M15 3h6v6M21 3l-7 7M3 21l7-7" />
         <g strokeWidth="1.2">
