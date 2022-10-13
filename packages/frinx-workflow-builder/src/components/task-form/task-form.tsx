@@ -115,7 +115,6 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
                               if (values.type !== 'DECISION') {
                                 return;
                               }
-                              console.log(values.decisionCases[key], event.target.value);
                               const newDecisionCases = {
                                 ...omitBy(values.decisionCases, (_, k) => k === key),
                                 [event.target.value]: values.decisionCases[key],

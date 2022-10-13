@@ -232,11 +232,7 @@ function createJoinEdges(forkTask: ExtendedForkTask | ForkTask, joinTask: Extend
   return filteredJoinEdges;
 }
 
-function createDecisionEdges(
-  previousTask: ExtendedTask,
-  curr: ExtendedDecisionTask,
-  hasEdgeToPreviousTask: boolean = true,
-) {
+function createDecisionEdges(previousTask: ExtendedTask, curr: ExtendedDecisionTask, hasEdgeToPreviousTask = true) {
   const newEdge = {
     id: `e${previousTask.taskReferenceName}-${curr.taskReferenceName}`,
     source: previousTask.taskReferenceName,
@@ -248,6 +244,7 @@ function createDecisionEdges(
   const decisionEdges = Object.keys(curr.decisionCases)
     .map((d) => {
       const decisionTasks = curr.decisionCases[d].map(convertTaskToExtendedTask);
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       const currentDecisionEdges = createEdges(decisionTasks);
 
       // edge connecting decision task with cases
@@ -264,6 +261,7 @@ function createDecisionEdges(
     })
     .flat();
 
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   const defaultCaseEdges = createEdges(curr.defaultCase.map(convertTaskToExtendedTask));
   const startDefaultCaseEdge = curr.defaultCase.length
     ? {
