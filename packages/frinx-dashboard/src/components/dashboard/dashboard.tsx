@@ -1,7 +1,8 @@
-import { Box, Code, Container, Heading, HStack } from '@chakra-ui/react';
+import { Box, Container, Flex, Heading, HStack, Image, Text } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { ServiceKey } from '../../types';
 import Panel from '../panel/panel';
+import ElisaLogo from './img/elisa-logo.png';
 import InventoryActions from './inventory-actions';
 import UniflowActions from './uniflow-actions';
 
@@ -11,8 +12,8 @@ type Props = {
 
 const Dashboard: FC<Props> = ({ enabledServices }) => {
   return (
-    <>
-      <Container maxWidth={1280}>
+    <Flex flexDirection="column" minHeight="calc(100vh - 10px - 64px - 32px)">
+      <Container maxWidth={1280} marginBottom={8}>
         {enabledServices.get('isUniflowEnabled') && (
           <Box marginBottom={12}>
             <Heading as="h2" size="md" marginBottom={4}>
@@ -95,10 +96,33 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
           </HStack>
         </Box>
       </Container>
-      <Box bg="gray.200" bottom={0} position="fixed" paddingX={4} fontSize="sm">
-        <Code>{window.__CONFIG__.commitHash}</Code>
+      <Box
+        as="footer"
+        bg="white"
+        color="blackAlpha.800"
+        fontSize="xs"
+        marginTop="auto"
+        paddingX={8}
+        paddingY={8}
+        boxShadow="inner"
+        borderTopColor="gray.100"
+        borderStyle="solid"
+        borderWidth={1}
+      >
+        <Container maxWidth={1280}>
+          <Flex alignItems="center">
+            <Text>
+              <Text as="span" fontFamily="monospace">
+                {window.__CONFIG__.commitHash}
+              </Text>
+            </Text>
+            <Box marginLeft="auto">
+              <Image src={ElisaLogo} alt="Elisa" width={20} />
+            </Box>
+          </Flex>
+        </Container>
       </Box>
-    </>
+    </Flex>
   );
 };
 

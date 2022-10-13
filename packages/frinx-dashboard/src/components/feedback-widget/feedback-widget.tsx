@@ -28,7 +28,7 @@ const FeedbackWidget: VoidFunctionComponent = () => {
         aria-label="Send feedback"
         type="button"
         variant="solid"
-        colorScheme={isOpen ? 'blackAlpha' : 'purple'}
+        colorScheme={isOpen ? 'blackAlpha' : 'blue'}
         borderRadius="50%"
         width="full"
         height="full"
