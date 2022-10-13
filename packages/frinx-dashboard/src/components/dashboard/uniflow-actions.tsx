@@ -9,7 +9,7 @@ const UniflowActions: FC = () => {
   return (
     <HStack spacing={4}>
       <Flex flex={1}>
-        <Box background="gray.200" marginRight={4} width={44}>
+        <Box background="blue.50" boxShadow="inner" marginRight={4} width={44}>
           <Image src={UniflowActionSvg} pointerEvents="none" userSelect="none" />
         </Box>
         <Box flex={1} paddingY={2}>
@@ -17,13 +17,13 @@ const UniflowActions: FC = () => {
             Create workflow
           </Heading>
           <Text marginBottom={2}>Create a workflow by using a workflow builder.</Text>
-          <Button colorScheme="brand" size="sm" to="/workflow-manager/builder" as={Link}>
+          <Button colorScheme="blue" size="sm" to="/workflow-manager/builder" as={Link}>
             Create
           </Button>
         </Box>
       </Flex>
       <Flex flex={1}>
-        <Box background="gray.200" marginRight={4} width={44}>
+        <Box background="blue.50" boxShadow="inner" marginRight={4} width={44}>
           <Image src={UniflowListSvg} pointerEvents="none" userSelect="none" />
         </Box>
         <Box flex={1} paddingY={2}>
@@ -31,13 +31,13 @@ const UniflowActions: FC = () => {
             Explore workflows
           </Heading>
           <Text marginBottom={2}>Explore and execute workflows.</Text>
-          <Button colorScheme="brand" size="sm" to="/workflow-manager/definitions" as={Link}>
+          <Button colorScheme="blue" size="sm" to="/workflow-manager/definitions" as={Link}>
             Explore
           </Button>
         </Box>
       </Flex>
       <Flex flex={1}>
-        <Box background="gray.200" marginRight={4} width={44}>
+        <Box background="blue.50" boxShadow="inner" marginRight={4} width={44}>
           <Image src={UniflowExecutedSvg} pointerEvents="none" userSelect="none" />
         </Box>
         <Box flex={1} paddingY={2}>
@@ -45,7 +45,7 @@ const UniflowActions: FC = () => {
             Executed workflows
           </Heading>
           <Text marginBottom={2}>Browse executed workflows.</Text>
-          <Button colorScheme="brand" size="sm" to="/workflow-manager/executed" as={Link}>
+          <Button colorScheme="blue" size="sm" to="/workflow-manager/executed" as={Link}>
             Browse
           </Button>
         </Box>

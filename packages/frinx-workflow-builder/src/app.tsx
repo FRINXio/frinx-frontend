@@ -280,17 +280,19 @@ const App: VoidFunctionComponent<Props> = ({
         <Flex
           alignItems="center"
           px={4}
-          boxShadow="base"
+          // boxShadow="base"
           position="relative"
           zIndex="modal"
           background="white"
+          // borderTop="1px solid gray.100"
           gridColumnStart={1}
           gridColumnEnd={3}
+          borderBottomColor="gray.100"
+          borderBottomStyle="solid"
+          borderBottomWidth={1}
         >
           <Box>
-            <Heading size="lg" mb={2}>
-              {name}
-            </Heading>
+            <Heading size="lg">{name}</Heading>
           </Box>
           <Box ml="auto">
             <HStack spacing={2}>

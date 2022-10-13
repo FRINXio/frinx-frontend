@@ -1,7 +1,8 @@
-import { Flex, Link, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
+import { Flex, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { NavLink, Route, Routes } from 'react-router-dom';
 import { ServiceKey } from '../../types';
+import AppMenuItem from './app-menu-item';
 
 type Props = {
   enabledServices: Map<ServiceKey, boolean>;
@@ -16,120 +17,12 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
             path="/workflow-manager/*"
             element={
               <>
-                <Link
-                  to="/workflow-manager/definitions"
-                  as={NavLink}
-                  color="brand.50"
-                  display="flex"
-                  alignItems="center"
-                  paddingX={4}
-                  borderBottomWidth={4}
-                  borderColor="transparent"
-                  borderStyle="solid"
-                  _hover={{
-                    borderColor: 'brand.50',
-                  }}
-                  _active={{
-                    background: 'brand.800',
-                  }}
-                >
-                  Definitions
-                </Link>
-                <Link
-                  to="/workflow-manager/executed"
-                  as={NavLink}
-                  color="brand.50"
-                  display="flex"
-                  alignItems="center"
-                  paddingX={4}
-                  borderBottomWidth={4}
-                  borderColor="transparent"
-                  borderStyle="solid"
-                  _hover={{
-                    borderColor: 'brand.50',
-                  }}
-                  _active={{
-                    background: 'brand.800',
-                  }}
-                >
-                  Executed
-                </Link>
-                <Link
-                  to="/workflow-manager/scheduled"
-                  as={NavLink}
-                  color="brand.50"
-                  display="flex"
-                  alignItems="center"
-                  paddingX={4}
-                  borderBottomWidth={4}
-                  borderColor="transparent"
-                  borderStyle="solid"
-                  _hover={{
-                    borderColor: 'brand.50',
-                  }}
-                  _active={{
-                    background: 'brand.800',
-                  }}
-                >
-                  Scheduled
-                </Link>
-                <Link
-                  to="/workflow-manager/event-listeners"
-                  as={NavLink}
-                  color="brand.50"
-                  display="flex"
-                  alignItems="center"
-                  paddingX={4}
-                  borderBottomWidth={4}
-                  borderColor="transparent"
-                  borderStyle="solid"
-                  _hover={{
-                    borderColor: 'brand.50',
-                  }}
-                  _active={{
-                    background: 'brand.800',
-                  }}
-                >
-                  Event listeners
-                </Link>
-                <Link
-                  to="/workflow-manager/tasks"
-                  as={NavLink}
-                  color="brand.50"
-                  display="flex"
-                  alignItems="center"
-                  paddingX={4}
-                  borderBottomWidth={4}
-                  borderColor="transparent"
-                  borderStyle="solid"
-                  _hover={{
-                    borderColor: 'brand.50',
-                  }}
-                  _active={{
-                    background: 'brand.800',
-                  }}
-                >
-                  Tasks
-                </Link>
-                <Link
-                  to="/workflow-manager/poll-data"
-                  as={NavLink}
-                  color="brand.50"
-                  display="flex"
-                  alignItems="center"
-                  paddingX={4}
-                  borderBottomWidth={4}
-                  borderColor="transparent"
-                  borderStyle="solid"
-                  _hover={{
-                    borderColor: 'brand.50',
-                  }}
-                  _active={{
-                    background: 'brand.800',
-                  }}
-                >
-                  Poll data
-                </Link>
+                <AppMenuItem to="/workflow-manager/definitions">Definitions</AppMenuItem>
+                <AppMenuItem to="/workflow-manager/executed">Executed</AppMenuItem>
+                <AppMenuItem to="/workflow-manager/scheduled">Scheduled</AppMenuItem>
+                <AppMenuItem to="/workflow-manager/event-listeners">Event listeners</AppMenuItem>
+                <AppMenuItem to="/workflow-manager/tasks">Tasks</AppMenuItem>
+                <AppMenuItem to="/workflow-manager/poll-data">Poll data</AppMenuItem>
               </>
             }
           />
@@ -140,24 +33,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
             element={
               <>
                 <Menu>
-                  <MenuButton
-                    as={Link}
-                    color="brand.50"
-                    display="flex"
-                    alignItems="center"
-                    paddingX={4}
-                    borderBottomWidth={4}
-                    borderColor="transparent"
-                    borderStyle="solid"
-                    _hover={{
-                      borderColor: 'brand.50',
-                    }}
-                    _active={{
-                      background: 'brand.800',
-                    }}
-                  >
-                    IPAM
-                  </MenuButton>
+                  <AppMenuItem as={MenuButton}>IPAM</AppMenuItem>
                   <MenuList>
                     <MenuItem to="/resource-manager/ipam" as={NavLink}>
                       IPAM
@@ -172,63 +48,9 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                   </MenuList>
                 </Menu>
 
-                <Link
-                  to="/resource-manager/pools"
-                  as={NavLink}
-                  color="brand.50"
-                  display="flex"
-                  alignItems="center"
-                  paddingX={4}
-                  borderBottomWidth={4}
-                  borderColor="transparent"
-                  borderStyle="solid"
-                  _hover={{
-                    borderColor: 'brand.50',
-                  }}
-                  _active={{
-                    background: 'brand.800',
-                  }}
-                >
-                  Pools
-                </Link>
-                <Link
-                  to="/resource-manager/strategies"
-                  as={NavLink}
-                  color="brand.50"
-                  display="flex"
-                  alignItems="center"
-                  paddingX={4}
-                  borderBottomWidth={4}
-                  borderColor="transparent"
-                  borderStyle="solid"
-                  _hover={{
-                    borderColor: 'brand.50',
-                  }}
-                  _active={{
-                    background: 'brand.800',
-                  }}
-                >
-                  Strategies
-                </Link>
-                <Link
-                  to="/resource-manager/resource_types"
-                  as={NavLink}
-                  color="brand.50"
-                  display="flex"
-                  alignItems="center"
-                  paddingX={4}
-                  borderBottomWidth={4}
-                  borderColor="transparent"
-                  borderStyle="solid"
-                  _hover={{
-                    borderColor: 'brand.50',
-                  }}
-                  _active={{
-                    background: 'brand.800',
-                  }}
-                >
-                  Resource Types
-                </Link>
+                <AppMenuItem to="/resource-manager/pools">Pools</AppMenuItem>
+                <AppMenuItem to="/resource-manager/strategies">Strategies</AppMenuItem>
+                <AppMenuItem to="/resource-manager/resource_types">Resource Types</AppMenuItem>
               </>
             }
           />
@@ -238,63 +60,9 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
             path="/inventory/*"
             element={
               <>
-                <Link
-                  to="/inventory/devices"
-                  as={NavLink}
-                  color="brand.50"
-                  display="flex"
-                  alignItems="center"
-                  paddingX={4}
-                  borderBottomWidth={4}
-                  borderColor="transparent"
-                  borderStyle="solid"
-                  _hover={{
-                    borderColor: 'brand.50',
-                  }}
-                  _active={{
-                    background: 'brand.800',
-                  }}
-                >
-                  Devices
-                </Link>
-                <Link
-                  to="/inventory/blueprints"
-                  as={NavLink}
-                  color="brand.50"
-                  display="flex"
-                  alignItems="center"
-                  paddingX={4}
-                  borderBottomWidth={4}
-                  borderColor="transparent"
-                  borderStyle="solid"
-                  _hover={{
-                    borderColor: 'brand.50',
-                  }}
-                  _active={{
-                    background: 'brand.800',
-                  }}
-                >
-                  Blueprints
-                </Link>
-                <Link
-                  to="/inventory/transactions"
-                  as={NavLink}
-                  color="brand.50"
-                  display="flex"
-                  alignItems="center"
-                  paddingX={4}
-                  borderBottomWidth={4}
-                  borderColor="transparent"
-                  borderStyle="solid"
-                  _hover={{
-                    borderColor: 'brand.50',
-                  }}
-                  _active={{
-                    background: 'brand.800',
-                  }}
-                >
-                  Transactions
-                </Link>
+                <AppMenuItem to="/inventory/devices">Devices</AppMenuItem>
+                <AppMenuItem to="/inventory/blueprints">Blueprints</AppMenuItem>
+                <AppMenuItem to="/inventory/transactions">Transactions</AppMenuItem>
               </>
             }
           />
