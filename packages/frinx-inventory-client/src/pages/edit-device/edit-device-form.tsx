@@ -16,14 +16,8 @@ import {
 } from '@chakra-ui/react';
 import { Editor } from '@frinx/shared/src';
 
-import { Device, DeviceSize, deviceSizeOptions, serviceStateOptions } from '../../helpers/types';
-import {
-  DeviceServiceState,
-  DeviceSize as DeviceSizeType,
-  Label,
-  LabelsQuery,
-  ZonesQuery,
-} from '../../__generated__/graphql';
+import { Device, DeviceSizeEnum, deviceSizeOptions, serviceStateOptions } from '../../helpers/types';
+import { DeviceServiceState, Label, LabelsQuery, ZonesQuery, DeviceSize } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 
 type FormValues = {
@@ -31,7 +25,7 @@ type FormValues = {
   mountParameters: string;
   labelIds: string[];
   serviceState: DeviceServiceState;
-  deviceSize: DeviceSizeType;
+  deviceSize: DeviceSize;
   vendor: string | null;
   model: string | null;
   address: string | null;
@@ -39,7 +33,7 @@ type FormValues = {
 
 type FormLabel = { id: string; name: string };
 
-type FormDevice = Device & { labels: FormLabel[] };
+export type FormDevice = Device & { labels: FormLabel[] };
 
 type Props = {
   labels: LabelsQuery['labels']['edges'];
@@ -60,7 +54,11 @@ const EditDeviceFormSchema = yup.object().shape({
       return yup.string();
     }
 
-    if (deviceSize !== DeviceSize.SMALL && deviceSize !== DeviceSize.MEDIUM && deviceSize !== DeviceSize.LARGE) {
+    if (
+      deviceSize !== DeviceSizeEnum.SMALL &&
+      deviceSize !== DeviceSizeEnum.MEDIUM &&
+      deviceSize !== DeviceSizeEnum.LARGE
+    ) {
       return yup.string().required('Please select device size');
     }
 
@@ -75,9 +73,9 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
       mountParameters: device.mountParameters ?? '',
       labelIds: device.labels.map((label) => label.id),
       serviceState: device.serviceState,
-      vendor: device.vendor,
-      model: device.model,
-      address: device.host,
+      vendor: device.vendor ?? '',
+      model: device.model ?? '',
+      address: device.host ?? '',
       deviceSize: device.deviceSize,
     };
   }, [device]);
@@ -133,7 +131,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
         <FormErrorMessage>{errors.serviceState}</FormErrorMessage>
       </FormControl>
 
-      <HStack my={6}>
+      <HStack my={6} alignItems="flex-start">
         <FormControl>
           <FormLabel>Vendor</FormLabel>
           <Input
@@ -154,7 +152,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
           />
         </FormControl>
 
-        <FormControl>
+        <FormControl isInvalid={errors.deviceSize != null}>
           <FormLabel>Device size</FormLabel>
           <Select
             name="deviceSize"
@@ -168,6 +166,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
               </option>
             ))}
           </Select>
+          <FormErrorMessage>{errors.deviceSize}</FormErrorMessage>
         </FormControl>
       </HStack>
 

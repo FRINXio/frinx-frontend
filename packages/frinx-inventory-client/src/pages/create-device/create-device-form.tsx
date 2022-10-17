@@ -25,7 +25,7 @@ import {
   ZonesQuery,
 } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
-import { ServiceState, serviceStateOptions, DeviceSize, deviceSizeOptions } from '../../helpers/types';
+import { ServiceState, serviceStateOptions, DeviceSizeEnum, deviceSizeOptions } from '../../helpers/types';
 
 type Props = {
   isSubmitting: boolean;
@@ -98,7 +98,11 @@ const deviceSchema = yup.object({
       return yup.string();
     }
 
-    if (deviceSize !== DeviceSize.SMALL && deviceSize !== DeviceSize.MEDIUM && deviceSize !== DeviceSize.LARGE) {
+    if (
+      deviceSize !== DeviceSizeEnum.SMALL &&
+      deviceSize !== DeviceSizeEnum.MEDIUM &&
+      deviceSize !== DeviceSizeEnum.LARGE
+    ) {
       return yup.string().required('Please select device size');
     }
 
@@ -117,7 +121,7 @@ const INITIAL_VALUES: FormValues = {
   address: '',
   blueprintId: null,
   deviceType: '',
-  deviceSize: DeviceSize.MEDIUM,
+  deviceSize: DeviceSizeEnum.MEDIUM,
   password: '',
   username: '',
   version: '',
@@ -203,7 +207,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         </Select>
       </FormControl>
 
-      <HStack my={6}>
+      <HStack my={6} alignItems="flex-start">
         <FormControl>
           <FormLabel>Vendor</FormLabel>
           <Input name="vendor" onChange={handleChange} placeholder="Enter vendor of the device" value={values.vendor} />
@@ -239,7 +243,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         <FormErrorMessage>{errors.deviceSize}</FormErrorMessage>
       </FormControl>
 
-      <HStack my={6}>
+      <HStack my={6} alignItems="flex-start">
         <FormControl isRequired={values.blueprintParams?.includes('user')}>
           <FormLabel>Username</FormLabel>
           <Input name="username" onChange={handleChange} placeholder="cisco" value={values.username} />
@@ -253,7 +257,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         </FormControl>
       </HStack>
 
-      <HStack my={6} alignItems="start">
+      <HStack my={6} alignItems="flex-start">
         <FormControl isRequired={values.blueprintParams?.includes('user')} isInvalid={errors.address != null}>
           <FormLabel>Address / DNS</FormLabel>
           <Input name="address" onChange={handleChange} placeholder="192.168.0.1" value={values.address} />

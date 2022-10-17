@@ -1,4 +1,4 @@
-import { DeviceSize as DeviceSizeType } from '../__generated__/graphql';
+import { DeviceSize } from '../__generated__/graphql';
 
 export type Zone = {
   id: string;
@@ -13,7 +13,7 @@ export type Device = {
   zone: Zone;
   serviceState: ServiceState;
   mountParameters: string;
-  deviceSize: DeviceSizeType;
+  deviceSize: DeviceSize;
 };
 
 // eslint-disable-next-line no-shadow
@@ -24,7 +24,7 @@ export enum ServiceState {
 }
 
 // eslint-disable-next-line no-shadow
-export enum DeviceSize {
+export enum DeviceSizeEnum {
   SMALL = 'SMALL',
   MEDIUM = 'MEDIUM',
   LARGE = 'LARGE',
@@ -37,7 +37,7 @@ export const serviceStateOptions = [
 ];
 
 export const deviceSizeOptions = [
-  { value: DeviceSize.SMALL, label: 'Small' },
-  { value: DeviceSize.MEDIUM, label: 'Medium' },
-  { value: DeviceSize.LARGE, label: 'Large' },
+  { value: DeviceSizeEnum.SMALL, label: 'Small' },
+  { value: DeviceSizeEnum.MEDIUM, label: 'Medium' },
+  { value: DeviceSizeEnum.LARGE, label: 'Large' },
 ];
