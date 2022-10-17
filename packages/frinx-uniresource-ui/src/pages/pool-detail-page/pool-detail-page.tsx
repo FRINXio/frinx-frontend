@@ -5,7 +5,7 @@ import DeletePoolPopover from '../../components/delete-pool-modal';
 import PageContainer from '../../components/page-container';
 import { isCustomResourceType } from '../../helpers/create-pool-form.helpers';
 import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
-import useResourcePoolActions from '../../hooks/use-resource-pool-actions';
+import useResourcePoolActions, { AlternativeIdValue } from '../../hooks/use-resource-pool-actions';
 import ClaimCustomResourceModal from './claim-resource-modal/claim-custom-resource-modal';
 import ClaimResourceModal from './claim-resource-modal/claim-resource-modal';
 import ClaimRouteDistinguisherResourceModal from './claim-resource-modal/claim-route_distinguisher-resource-modal';
@@ -63,6 +63,18 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     }
   };
 
+  const handleClaimResource = (
+    alternativeId: Record<string, AlternativeIdValue>,
+    description?: string | null,
+    userInput?: Record<string, string | number>,
+  ) => {
+    if (Object.keys(alternativeId).length > 0) {
+      claimPoolResourceWithAltId(alternativeId, description, userInput);
+    } else {
+      claimPoolResource(description, userInput);
+    }
+  };
+
   const { QueryResourcePool: resourcePool } = poolData;
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
   const canClaimResources =
@@ -78,18 +90,18 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         poolName={resourcePool.Name}
         isOpen={claimCustomResourceModal.isOpen}
         onClose={claimCustomResourceModal.onClose}
-        onClaimWithAltId={claimPoolResourceWithAltId}
+        onClaimWithAltId={handleClaimResource}
       />
       <ClaimRouteDistinguisherResourceModal
         isOpen={claimRouteDistinguisherResourceModal.isOpen}
         onClose={claimRouteDistinguisherResourceModal.onClose}
         poolName={resourcePool.Name}
-        onClaimWithAltId={claimPoolResourceWithAltId}
+        onClaimWithAltId={handleClaimResource}
       />
       <ClaimResourceModal
         isOpen={claimResourceModal.isOpen}
         onClose={claimResourceModal.onClose}
-        onClaimWithAltId={claimPoolResourceWithAltId}
+        onClaimWithAltId={handleClaimResource}
         poolName={resourcePool.Name}
         resourceTypeName={resourcePool.ResourceType.Name}
         totalCapacity={totalCapacity}
