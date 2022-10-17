@@ -1,12 +1,7 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
-import {
-  GraphNode,
-  NODE_CIRCLE_RADIUS,
-  PositionGroupsMap,
-  PositionsWithGroupsMap,
-} from '../../pages/topology/graph.helpers';
-import { DeviceSize } from '../../pages/topology/topology-graph';
+import { getDeviceNodeTransformProperties } from '../../helpers/device-node.helpers';
+import { GraphNode, PositionGroupsMap, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
 
 type Props = {
   positions: PositionsWithGroupsMap;
@@ -40,28 +35,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   const { device } = node;
   const { x, y } = positions.nodes[node.device.name];
   const interfaceGroups = getNodeInterfaceGroups(device.name, positions.interfaceGroups);
-  let circleDiameter = NODE_CIRCLE_RADIUS;
-  let sizeTransform = 'translate3d(-10px, -10px, 0) scale(.8)';
-
-  switch (node.device.deviceSize) {
-    case DeviceSize.SMALL:
-      circleDiameter = NODE_CIRCLE_RADIUS;
-      sizeTransform = 'translate3d(-10px, -10px, 0) scale(.8)';
-      break;
-    case DeviceSize.MEDIUM:
-      circleDiameter = NODE_CIRCLE_RADIUS * 1.5;
-      sizeTransform = 'translate3d(-15px, -15px, 0) scale(1.2)';
-      break;
-    case DeviceSize.LARGE:
-      circleDiameter = NODE_CIRCLE_RADIUS * 2;
-      sizeTransform = 'translate3d(-20px, -20px, 0) scale(1.6)';
-      break;
-
-    default:
-      circleDiameter = NODE_CIRCLE_RADIUS;
-      sizeTransform = 'translate3d(-10px, -10px, 0) scale(.8)';
-      break;
-  }
+  const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties(node.device.deviceSize);
 
   return (
     <G
