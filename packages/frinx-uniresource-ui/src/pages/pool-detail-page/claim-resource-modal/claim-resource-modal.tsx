@@ -122,13 +122,13 @@ const ClaimResourceModal: FC<Props> = ({
 
         if (shouldBeDesiredSize) {
           userInput = {
-            desiredSize: formValues.userInput,
+            desiredSize: Number(formValues.userInput),
           };
         }
 
         if (!shouldBeDesiredSize && formValues.userInput) {
           userInput = {
-            desiredValue: formValues.userInput,
+            desiredValue: Number(formValues.userInput),
           };
         }
 
