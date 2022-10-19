@@ -234,9 +234,7 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
               is: (resourceTypeName: string) =>
                 isSpecificResourceTypeName(resourceTypeName, [
                   'ipv4',
-                  'ipv6',
                   'ipv4_prefix',
-                  'ipv6_prefix',
                   'vlan',
                   'vlan_range',
                   'unique_id',
@@ -275,13 +273,6 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
               is: (resourceTypeName: string) => resourceTypeName === 'ipv6' || resourceTypeName === 'ipv6_prefix',
               then: yup.object().shape({
                 ...Object.keys(poolProperties).reduce((acc, key) => {
-                  if (key === 'from' || key === 'to' || key === 'id') {
-                    return {
-                      ...acc,
-                      [key]: yup.number().typeError('Please enter a number').required(`Please enter a value`),
-                    };
-                  }
-
                   if (key === 'address') {
                     return {
                       ...acc,
@@ -292,9 +283,21 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                     };
                   }
 
+                  if (key === 'prefix') {
+                    return {
+                      ...acc,
+                      [key]: yup
+                        .number()
+                        .min(1, 'Minimal required value is 1')
+                        .max(128, 'Maximal allowed value is 128')
+                        .typeError('Please enter a number')
+                        .required(`Please enter a value`),
+                    };
+                  }
+
                   return {
                     ...acc,
-                    [key]: yup.string().required('Please enter a value'),
+                    [key]: yup.string(),
                   };
                 }, {}),
               }),
