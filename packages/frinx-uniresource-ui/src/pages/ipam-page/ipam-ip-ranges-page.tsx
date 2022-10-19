@@ -166,7 +166,7 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
   return (
     <>
       <HStack mb={5}>
-        <Heading as="h1" size="lg">
+        <Heading as="h1" size="xl">
           IP Ranges
         </Heading>
         <Spacer />

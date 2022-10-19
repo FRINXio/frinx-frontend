@@ -80,7 +80,7 @@ const DeviceBlueprints: VoidFunctionComponent = () => {
   return (
     <Container maxWidth={1280}>
       <Flex justify="space-between" align="center" marginBottom={6}>
-        <Heading as="h2" size="3xl">
+        <Heading as="h1" size="xl">
           Device blueprints
         </Heading>
         <Button colorScheme="blue" as={Link} to="new">

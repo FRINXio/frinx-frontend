@@ -220,7 +220,7 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
 
   return (
     <Container maxWidth={1280}>
-      <Heading size="3xl" as="h2" mb={6}>
+      <Heading as="h1" size="xl" marginBottom={6}>
         Edit {device.name}
       </Heading>
 

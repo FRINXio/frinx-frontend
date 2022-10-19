@@ -108,7 +108,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         poolProperties={resourcePool.PoolProperties}
       />
       <HStack mb={5}>
-        <Heading as="h1" size="lg">
+        <Heading as="h1" size="xl">
           {resourcePool.Name}
         </Heading>
         <Spacer />
