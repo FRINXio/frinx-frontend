@@ -34,7 +34,7 @@ const FeedbackWidget: VoidFunctionComponent = () => {
         height="full"
         onClick={handleToggleButtonClick}
         icon={<FeatherIcon icon={isOpen ? 'x' : 'message-circle'} size={28} />}
-        boxShadow="md"
+        boxShadow="lg"
         transition="all .2s ease-in-out"
       />
       {isOpen && (

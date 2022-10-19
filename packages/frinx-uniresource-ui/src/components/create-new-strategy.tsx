@@ -62,7 +62,7 @@ const CreateNewStrategy: FC<Props> = ({ onSaveButtonClick }) => {
     <div>
       <Container maxWidth={1200} padding={0}>
         <Box background="white" paddingY={8} paddingX={4}>
-          <Heading as="h1" size="lg">
+          <Heading as="h1" size="xl">
             Create new Strategy
           </Heading>
           <form>

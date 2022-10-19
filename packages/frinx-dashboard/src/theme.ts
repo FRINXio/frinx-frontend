@@ -2,12 +2,14 @@
 import { extendTheme } from '@chakra-ui/react';
 
 const theme = extendTheme({
+  fonts: {
+    heading:
+      '"Noto Sans", -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji',
+    body: '"Noto Sans", -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji',
+  },
   styles: {
     global: {
       'html, body': {
-        fontFamily:
-          '-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji',
-        color: 'gray.800',
         background: 'gray.50',
         overflowX: 'hidden',
       },
@@ -32,19 +34,24 @@ const theme = extendTheme({
         boxShadow: 'md',
       },
     },
+    FormLabel: {
+      baseStyle: {
+        fontWeight: 600,
+      },
+    },
   },
   colors: {
     blue: {
-      '50': '#EDECF8',
-      '100': '#CCCAED',
-      '200': '#ABA8E1',
-      '300': '#8A86D5',
-      '400': '#6964C9',
-      '500': '#4842BD',
-      '600': '#393597',
-      '700': '#2B2871',
-      '800': '#1D1A4C',
-      '900': '#0E0D26',
+      '50': '#E8F3FD',
+      '100': '#BEDFF9',
+      '200': '#94CAF5',
+      '300': '#6AB5F0',
+      '400': '#41A0EC',
+      '500': '#178CE8',
+      '600': '#1270BA',
+      '700': '#0E548B',
+      '800': '#09385D',
+      '900': '#051C2E',
     },
     gray: {
       '50': '#F2F2F3',

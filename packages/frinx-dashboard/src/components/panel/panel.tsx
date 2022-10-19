@@ -32,11 +32,17 @@ const Panel: VoidFunctionComponent<Props> = ({ path, label, description, icon, i
       as={Box}
       // maxW="sm"
       width="sm"
-      padding={4}
-      rounded="md"
+      padding={6}
+      rounded="lg"
+      transition="all .2s ease-in-out"
+      borderStyle="solid"
+      borderWidth={2}
+      borderColor="transparent"
       _hover={{
-        boxShadow: 'sm',
-        background: 'white',
+        boxShadow: 'lg',
+        background: 'whiteAlpha.900',
+        color: 'blackAlpha.900',
+        borderColor: 'blue.500',
       }}
       position="relative"
       justifyContent="flex-start"

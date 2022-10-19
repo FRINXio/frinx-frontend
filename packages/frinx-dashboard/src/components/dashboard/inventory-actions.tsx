@@ -1,40 +1,22 @@
+import { HStack } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import { Box, Button, Flex, Heading, HStack, Image, Text } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
-import UniconfigMount from './img/uniconfig-mount.svg';
-import UniconfigList from './img/uniconfig-list.svg';
+import ActionItem from './action-item';
 
 const InventoryActions: FC = () => {
   return (
-    <HStack spacing={4} mb={8}>
-      <Flex flex={1}>
-        <Box background="blue.50" boxShadow="inner" marginRight={4} width={44}>
-          <Image src={UniconfigMount} pointerEvents="none" userSelect="none" />
-        </Box>
-        <Box flex={1} paddingY={2}>
-          <Heading as="h4" size="sm" marginBottom={2}>
-            Add new device
-          </Heading>
-          <Text marginBottom={2}>Connect network device to Device Inventory.</Text>
-          <Button colorScheme="blue" size="sm" to="/inventory/new" as={Link}>
-            Add device
-          </Button>
-        </Box>
-      </Flex>
-      <Flex flex={1}>
-        <Box background="blue.50" boxShadow="inner" marginRight={4} width={44}>
-          <Image src={UniconfigList} pointerEvents="none" userSelect="none" />
-        </Box>
-        <Box flex={1} paddingY={2}>
-          <Heading as="h4" size="sm" marginBottom={2}>
-            Explore & configure devices
-          </Heading>
-          <Text marginBottom={2}>Browse and manage network devices.</Text>
-          <Button colorScheme="blue" size="sm" to="/inventory" as={Link}>
-            Explore
-          </Button>
-        </Box>
-      </Flex>
+    <HStack spacing={4} mb={8} alignItems="stretch">
+      <ActionItem
+        to="/inventory"
+        title="Explore & configure devices"
+        text="Explore and configure devices."
+        buttonText="Exlore"
+      />
+      <ActionItem
+        to="/inventory/new"
+        title="Add new device"
+        text="Connect network device to Device Inventory."
+        buttonText="Add device"
+      />
     </HStack>
   );
 };

@@ -141,7 +141,7 @@ const PoolsPage: VoidFunctionComponent = () => {
   return (
     <>
       <HStack mb={5}>
-        <Heading as="h1" size="lg">
+        <Heading as="h1" size="xl">
           Pools
         </Heading>
         <Spacer />
