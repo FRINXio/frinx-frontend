@@ -1,6 +1,6 @@
-import { NODE_CIRCLE_RADIUS } from '../pages/topology/graph.helpers';
-import { DeviceSize as DeviceSizeEnum } from '../pages/topology/topology-graph';
-import { DeviceSize } from '../__generated__/graphql';
+import { NODE_CIRCLE_RADIUS } from '../../pages/topology/graph.helpers';
+import { DeviceSize as DeviceSizeEnum } from '../../pages/topology/topology-graph';
+import { DeviceSize } from '../../__generated__/graphql';
 
 type DeviceNodeSize = {
   circleDiameter: number;
