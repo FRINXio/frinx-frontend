@@ -537,7 +537,7 @@ export type QueryNodeArgs = {
 /** Represents an allocated resource */
 export type Resource = Node & {
   __typename?: 'Resource';
-  AlternativeId: Scalars['Map'];
+  AlternativeId: Maybe<Scalars['Map']>;
   Description: Maybe<Scalars['String']>;
   NestedPool: Maybe<ResourcePool>;
   ParentPool: ResourcePool;
@@ -746,7 +746,7 @@ export type AllocatedResourcesQueryVariables = Exact<{
 }>;
 
 
-export type AllocatedResourcesQuery = { __typename?: 'Query', QueryResourcesByAltId: { __typename?: 'ResourceConnection', totalCount: number, edges: Array<{ __typename?: 'ResourceEdge', node: { __typename?: 'Resource', id: string, Properties: any, Description: string | null, AlternativeId: any, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string } | null } } | null>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, startCursor: { __typename?: 'OutputCursor', ID: string }, endCursor: { __typename?: 'OutputCursor', ID: string } } } };
+export type AllocatedResourcesQuery = { __typename?: 'Query', QueryResourcesByAltId: { __typename?: 'ResourceConnection', totalCount: number, edges: Array<{ __typename?: 'ResourceEdge', node: { __typename?: 'Resource', id: string, Properties: any, Description: string | null, AlternativeId: any | null, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string } | null } } | null>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, startCursor: { __typename?: 'OutputCursor', ID: string }, endCursor: { __typename?: 'OutputCursor', ID: string } } } };
 
 export type GetResourceTypeByNameQueryVariables = Exact<{ [key: string]: never; }>;
 

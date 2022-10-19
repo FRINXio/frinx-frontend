@@ -1,9 +1,10 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
-import { GraphNode, NODE_CIRCLE_RADIUS, PositionsMap } from '../../pages/topology/graph.helpers';
+import { getDeviceNodeTransformProperties } from './node-icon.helpers';
+import { GraphNode, PositionGroupsMap, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
 
 type Props = {
-  positions: PositionsMap;
+  positions: PositionsWithGroupsMap;
   isSelected: boolean;
   isFocused: boolean;
   node: GraphNode;
@@ -16,6 +17,12 @@ const G = chakra('g');
 const Circle = chakra('circle');
 const Text = chakra('text');
 
+const getNodeInterfaceGroups = (nodeId: string, interfaceGroupPositions: PositionGroupsMap) => {
+  return Object.entries(interfaceGroupPositions).filter(([groupId]) => {
+    return groupId.startsWith(nodeId);
+  });
+};
+
 const NodeIcon: VoidFunctionComponent<Props> = ({
   positions,
   isFocused,
@@ -25,8 +32,11 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   onPointerMove,
   onPointerUp,
 }) => {
-  const { interfaces, device } = node;
+  const { device } = node;
   const { x, y } = positions.nodes[node.device.name];
+  const interfaceGroups = getNodeInterfaceGroups(device.name, positions.interfaceGroups);
+  const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties(node.device.deviceSize);
+
   return (
     <G
       cursor="pointer"
@@ -37,7 +47,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
       onPointerUp={onPointerUp}
     >
       <Circle
-        r={isFocused ? `${NODE_CIRCLE_RADIUS}px` : 0}
+        r={isFocused ? `${circleDiameter}px` : 0}
         fill="blackAlpha.100"
         strokeOpacity={0.4}
         stroke="gray.500"
@@ -45,33 +55,28 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
       />
       <G>
         <G>
-          {interfaces.map((intf) => {
-            const iPosition = positions.interfaces[intf];
-            return (
+          {interfaceGroups.map(([groupId, data]) => {
+            const iPosition = data.position;
+            return iPosition ? (
               <Circle
-                r="3px"
+                r="4px"
                 fill="purple"
-                key={intf}
+                key={groupId}
                 style={{
                   transform: isFocused ? `translate3d(${iPosition.x - x}px, ${iPosition.y - y}px, 0)` : undefined,
                 }}
               />
-            );
+            ) : null;
           })}
         </G>
         <Circle
-          r={`${NODE_CIRCLE_RADIUS / 2}px`}
+          r={`${circleDiameter / 2}px`}
           fill={isSelected ? 'blue.500' : 'gray.400'}
           strokeWidth={1}
           stroke={isSelected ? 'blue.600' : 'gray.400'}
         />
       </G>
-      <Text
-        height={`${NODE_CIRCLE_RADIUS / 2}px`}
-        transform="translate3d(35px, 5px, 0)"
-        fontWeight="600"
-        userSelect="none"
-      >
+      <Text height={`${circleDiameter / 2}px`} transform="translate3d(35px, 5px, 0)" fontWeight="600" userSelect="none">
         {device.name}
       </Text>
       <G
@@ -80,7 +85,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
         strokeWidth="2px"
         strokeLinecap="round"
         strokeLinejoin="round"
-        transform="translate3d(-10px, -10px, 0) scale(.8)"
+        transform={sizeTransform}
       >
         <path strokeWidth="1.2" d="M9 21H3v-6M15 3h6v6M21 3l-7 7M3 21l7-7" />
         <g strokeWidth="1.2">

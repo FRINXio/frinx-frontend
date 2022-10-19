@@ -16,9 +16,16 @@ import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
 import { Editor } from '@frinx/shared/src';
 import parse from 'json-templates';
-import { DeviceBlueprintsQuery, DeviceServiceState, Label, LabelsQuery, ZonesQuery } from '../../__generated__/graphql';
+import {
+  DeviceBlueprintsQuery,
+  DeviceServiceState,
+  DeviceSize as DeviceSizeType,
+  Label,
+  LabelsQuery,
+  ZonesQuery,
+} from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
-import { ServiceState, serviceStateOptions } from '../../helpers/types';
+import { ServiceState, serviceStateOptions, DeviceSizeEnum, deviceSizeOptions } from '../../helpers/types';
 
 type Props = {
   isSubmitting: boolean;
@@ -41,6 +48,7 @@ type FormValues = {
   username: string;
   password: string;
   deviceType: string;
+  deviceSize: DeviceSizeType;
   version: string;
   vendor: string;
   port: number;
@@ -85,6 +93,21 @@ const deviceSchema = yup.object({
   version: yup.string().when('blueprintParams', getWhenOptions('version', 'Version is required by the blueprint')),
   username: yup.string().when('blueprintParams', getWhenOptions('user', 'Username is required by the blueprint')),
   password: yup.string().when('blueprintParams', getWhenOptions('password', 'Password is required by the blueprint')),
+  deviceSize: yup.lazy((deviceSize) => {
+    if (deviceSize === '') {
+      return yup.string();
+    }
+
+    if (
+      deviceSize !== DeviceSizeEnum.SMALL &&
+      deviceSize !== DeviceSizeEnum.MEDIUM &&
+      deviceSize !== DeviceSizeEnum.LARGE
+    ) {
+      return yup.string().required('Please select device size');
+    }
+
+    return yup.string();
+  }),
 });
 
 const INITIAL_VALUES: FormValues = {
@@ -98,6 +121,7 @@ const INITIAL_VALUES: FormValues = {
   address: '',
   blueprintId: null,
   deviceType: '',
+  deviceSize: DeviceSizeEnum.MEDIUM,
   password: '',
   username: '',
   version: '',
@@ -183,7 +207,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         </Select>
       </FormControl>
 
-      <HStack my={6}>
+      <HStack my={6} alignItems="flex-start">
         <FormControl>
           <FormLabel>Vendor</FormLabel>
           <Input name="vendor" onChange={handleChange} placeholder="Enter vendor of the device" value={values.vendor} />
@@ -194,6 +218,20 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           <Input name="model" onChange={handleChange} placeholder="Enter model of the device" value={values.model} />
         </FormControl>
 
+        <FormControl id="deviceSize" my={6} isInvalid={errors.deviceSize !== undefined}>
+          <FormLabel>Device size</FormLabel>
+          <Select name="deviceSize" onChange={handleChange} placeholder="Select size of the device">
+            {deviceSizeOptions.map(({ label, value }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </Select>
+          <FormErrorMessage>{errors.deviceSize}</FormErrorMessage>
+        </FormControl>
+      </HStack>
+
+      <HStack my={6} alignItems="start">
         <FormControl isRequired={values.blueprintParams?.includes('device_type')}>
           <FormLabel>Device type</FormLabel>
           <Input name="deviceType" onChange={handleChange} placeholder="ios xr" value={values.deviceType} />
@@ -207,7 +245,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         </FormControl>
       </HStack>
 
-      <HStack my={6}>
+      <HStack my={6} alignItems="flex-start">
         <FormControl isRequired={values.blueprintParams?.includes('user')}>
           <FormLabel>Username</FormLabel>
           <Input name="username" onChange={handleChange} placeholder="cisco" value={values.username} />
@@ -221,7 +259,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         </FormControl>
       </HStack>
 
-      <HStack my={6} alignItems="start">
+      <HStack my={6} alignItems="flex-start">
         <FormControl isRequired={values.blueprintParams?.includes('user')} isInvalid={errors.address != null}>
           <FormLabel>Address / DNS</FormLabel>
           <Input name="address" onChange={handleChange} placeholder="192.168.0.1" value={values.address} />

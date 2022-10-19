@@ -118,13 +118,13 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       validateOnBlur: false,
       onSubmit: (data) => {
         const resourceTypeName = resourceTypes.find((resourceType) => resourceType.id === data.resourceTypeId)?.Name;
-        const allocationStratedyId = allocStrategies.find(
+        const allocationStrategyId = allocStrategies.find(
           (allocationStrategy) => allocationStrategy.name === resourceTypeName,
         )?.id;
         const updatedData = {
           ...omit(data, ['resourceTypeName']),
           tags: [...new Set([...tagsInput.selectedTags, data.name])],
-          allocationStrategyId: allocationStratedyId,
+          allocationStrategyId,
         };
 
         onFormSubmit(updatedData);

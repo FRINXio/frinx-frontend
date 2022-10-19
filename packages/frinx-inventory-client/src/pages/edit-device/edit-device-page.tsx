@@ -10,6 +10,7 @@ import {
   DeviceQuery,
   DeviceQueryVariables,
   DeviceServiceState,
+  DeviceSize,
   Label,
   LabelsQuery,
   LabelsQueryVariables,
@@ -30,6 +31,7 @@ const DEVICE_QUERY = gql`
         model
         vendor
         address
+        deviceSize
         mountParameters
         zone {
           id
@@ -119,6 +121,7 @@ type FormValues = {
   vendor: string | null;
   model: string | null;
   address: string | null;
+  deviceSize: DeviceSize;
 };
 
 const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
@@ -155,6 +158,7 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
         model: values.model,
         vendor: values.vendor,
         address: values.address,
+        deviceSize: values.deviceSize,
       },
     })
       .then(({ error }) => {
@@ -208,6 +212,7 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
       id: e.node.id,
       name: e.node.name,
     })),
+    deviceSize: device.deviceSize,
   };
 
   const mappedLabels = labels?.labels.edges ?? [];
@@ -228,7 +233,6 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
             onCancel={onCancelButtonClick}
             device={formDevice}
             zones={mappedZones}
-            // initialSelectedLabels={labelEdges}
           />
         </Box>
       )}

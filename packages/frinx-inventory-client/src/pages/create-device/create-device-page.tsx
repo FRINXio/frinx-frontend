@@ -15,6 +15,7 @@ import {
   LabelsQueryVariables,
   Label,
   DeviceServiceState,
+  DeviceSize,
 } from '../../__generated__/graphql';
 import CreateDeviceForm from './create-device-form';
 
@@ -97,6 +98,7 @@ type FormValues = {
   username: string;
   password: string;
   deviceType: string;
+  deviceSize: DeviceSize;
   version: string;
   vendor: string;
   port: number;
