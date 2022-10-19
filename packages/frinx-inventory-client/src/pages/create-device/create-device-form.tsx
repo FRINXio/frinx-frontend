@@ -218,6 +218,20 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           <Input name="model" onChange={handleChange} placeholder="Enter model of the device" value={values.model} />
         </FormControl>
 
+        <FormControl id="deviceSize" my={6} isInvalid={errors.deviceSize !== undefined}>
+          <FormLabel>Device size</FormLabel>
+          <Select name="deviceSize" onChange={handleChange} placeholder="Select size of the device">
+            {deviceSizeOptions.map(({ label, value }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </Select>
+          <FormErrorMessage>{errors.deviceSize}</FormErrorMessage>
+        </FormControl>
+      </HStack>
+
+      <HStack my={6} alignItems="start">
         <FormControl isRequired={values.blueprintParams?.includes('device_type')}>
           <FormLabel>Device type</FormLabel>
           <Input name="deviceType" onChange={handleChange} placeholder="ios xr" value={values.deviceType} />
@@ -230,18 +244,6 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           <FormErrorMessage>{errors.version}</FormErrorMessage>
         </FormControl>
       </HStack>
-
-      <FormControl id="deviceSize" my={6} isInvalid={errors.deviceSize !== undefined}>
-        <FormLabel>Device size</FormLabel>
-        <Select name="deviceSize" onChange={handleChange} placeholder="Select size of the device">
-          {deviceSizeOptions.map(({ label, value }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </Select>
-        <FormErrorMessage>{errors.deviceSize}</FormErrorMessage>
-      </FormControl>
 
       <HStack my={6} alignItems="flex-start">
         <FormControl isRequired={values.blueprintParams?.includes('user')}>
