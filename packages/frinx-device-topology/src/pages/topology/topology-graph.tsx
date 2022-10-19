@@ -12,6 +12,13 @@ import Nodes from './nodes';
 const width = 1248;
 const height = 600;
 
+// eslint-disable-next-line no-shadow
+export enum DeviceSize {
+  SMALL = 'SMALL',
+  MEDIUM = 'MEDIUM',
+  LARGE = 'LARGE',
+}
+
 type Props = {
   onNodePositionUpdate: (positions: { deviceId: string; position: Position }[]) => Promise<void>;
 };

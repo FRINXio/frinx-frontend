@@ -1,6 +1,6 @@
 import { unwrap } from '@frinx/shared/src';
 import React, { useRef, useState, VoidFunctionComponent } from 'react';
-import NodeIcon from '../../components/device-info-panel/node-icon';
+import NodeIcon from '../../components/node-icon/node-icon';
 import { setSelectedNode } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import { GraphNode, Position } from './graph.helpers';

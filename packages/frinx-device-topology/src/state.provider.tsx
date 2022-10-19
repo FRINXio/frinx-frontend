@@ -13,6 +13,7 @@ const TOPOLOGY_QUERY = gql`
         device {
           id
           name
+          deviceSize
           position {
             x
             y
