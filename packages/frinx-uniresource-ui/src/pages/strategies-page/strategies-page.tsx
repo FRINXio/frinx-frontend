@@ -78,7 +78,7 @@ const StrategiesPage: VoidFunctionComponent = () => {
   return (
     <>
       <Flex marginBottom={5} alignItems="center">
-        <Heading as="h1" size="lg">
+        <Heading as="h1" size="xl">
           Strategies
         </Heading>
         <Button

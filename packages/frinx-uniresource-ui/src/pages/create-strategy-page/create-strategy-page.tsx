@@ -52,7 +52,7 @@ const CreateStrategyPage: VoidFunctionComponent<Props> = ({ onSaveButtonClick })
   return (
     <>
       <Flex as="header" alignItems="center" marginBottom={5}>
-        <Heading as="h1" size="lg">
+        <Heading as="h1" size="xl">
           Create new Strategy
         </Heading>
       </Flex>

@@ -16,7 +16,7 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
       <Container maxWidth={1280} marginBottom={8}>
         {enabledServices.get('isUniflowEnabled') && (
           <Box marginBottom={12}>
-            <Heading as="h2" size="md" marginBottom={4}>
+            <Heading as="h2" size="lg" marginBottom={6}>
               Workflow manager
             </Heading>
             <UniflowActions />
@@ -24,15 +24,15 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
         )}
         {enabledServices.get('isInventoryEnabled') && (
           <Box>
-            <Heading as="h2" size="md" marginBottom={4}>
+            <Heading as="h2" size="lg" marginBottom={6}>
               Device Inventory
             </Heading>
             <InventoryActions />
           </Box>
         )}
         <Box marginTop={20}>
-          <Box as="header" marginBottom={4}>
-            <Heading as="h2" size="md">
+          <Box as="header" marginBottom={6}>
+            <Heading as="h2" size="lg">
               FRINX services
             </Heading>
           </Box>
@@ -112,6 +112,7 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
         <Container maxWidth={1280}>
           <Flex alignItems="center">
             <Text>
+              Version:{' '}
               <Text as="span" fontFamily="monospace">
                 {window.__CONFIG__.commitHash}
               </Text>

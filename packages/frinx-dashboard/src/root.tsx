@@ -7,6 +7,7 @@ import { createPublicClientApp } from './auth-helpers';
 import AuthProvider from './auth-provider';
 import theme from './theme';
 import { ServiceKey } from './types';
+import '@fontsource/noto-sans';
 
 function getURLBaseName(): string {
   return window.__CONFIG__.URLBasename ?? '/';

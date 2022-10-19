@@ -32,11 +32,17 @@ const Panel: VoidFunctionComponent<Props> = ({ path, label, description, icon, i
       as={Box}
       // maxW="sm"
       width="sm"
-      padding={4}
-      rounded="md"
+      padding={6}
+      rounded="lg"
+      transition="all .2s ease-in-out"
+      borderStyle="solid"
+      borderWidth={2}
+      borderColor="transparent"
       _hover={{
-        boxShadow: 'sm',
-        background: 'white',
+        boxShadow: 'lg',
+        background: 'whiteAlpha.900',
+        color: 'blackAlpha.900',
+        borderColor: 'blue.500',
       }}
       position="relative"
       justifyContent="flex-start"
@@ -49,10 +55,10 @@ const Panel: VoidFunctionComponent<Props> = ({ path, label, description, icon, i
         alignItems="center"
         borderRadius="md"
         boxShadow="inner"
-        background="blue.100"
+        background="blue.500"
         fontSize="24px"
       >
-        <Icon as={FeatherIcon} icon={icon} color="blue.700" size={24} />
+        <Icon as={FeatherIcon} icon={icon} color="whiteAlpha.900" size={24} />
       </Flex>
       <Box marginLeft={4}>
         <Heading size="md" as="h2" marginBottom={1}>

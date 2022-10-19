@@ -99,7 +99,7 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
       <Tbody>
         {workflows.length === 0 ? (
           <Tr>
-            <Td>No workflows match your search params</Td>
+            <Td colSpan={4}>No workflows match your search params</Td>
           </Tr>
         ) : (
           workflows.map((workflow: Workflow) => {

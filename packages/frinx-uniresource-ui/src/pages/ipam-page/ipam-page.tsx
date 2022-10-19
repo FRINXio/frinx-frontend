@@ -111,7 +111,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
   return (
     <>
       <Flex as="header" alignItems="center" marginBottom={5}>
-        <Heading as="h1" size="lg">
+        <Heading as="h1" size="xl">
           Pools
         </Heading>
         <Box marginLeft="auto">

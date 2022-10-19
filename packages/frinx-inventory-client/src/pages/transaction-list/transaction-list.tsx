@@ -144,7 +144,7 @@ const TransactionList: VoidFunctionComponent = () => {
       )}
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
-          <Heading as="h2" size="3xl">
+          <Heading as="h1" size="xl">
             Transactions
           </Heading>
         </Flex>

@@ -96,7 +96,7 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
     <>
       <CreateResourceTypeModal isOpen={isOpen} onClose={onClose} onCreate={handleOnCreate} />
       <Flex marginBottom={5} alignItems="center">
-        <Heading as="h1" size="lg">
+        <Heading as="h1" size="xl">
           Resource Types
         </Heading>
         <Spacer />
