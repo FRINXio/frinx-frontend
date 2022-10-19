@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Grid, Heading, HStack, useDisclosure, Text } from '@chakra-ui/react';
-import { unwrap, useNotifications } from '@frinx/shared/src';
+import { useNotifications } from '@frinx/shared/src';
 import produce from 'immer';
+import { zip } from 'lodash';
 import React, { useCallback, useMemo, useState, VoidFunctionComponent } from 'react';
 import ReactFlow, {
   addEdge,
@@ -13,7 +14,6 @@ import ReactFlow, {
   Edge,
   MiniMap,
   Node,
-  ReactFlowProvider,
   updateEdge,
 } from 'react-flow-renderer';
 import callbackUtils from './callback-utils';
@@ -170,13 +170,58 @@ const App: VoidFunctionComponent<Props> = ({
   };
 
   const handleFormSubmit = (t: ExtendedTask) => {
-    setElements((els) => {
-      return produce(els, (acc) => {
-        const index = acc.nodes.findIndex((n) => n.data?.task?.id === t.id);
-        unwrap(acc.nodes[index].data).task = t;
-        return acc;
-      });
+    const newElements = produce(elements, (acc) => {
+      const index = acc.nodes.findIndex((n) => n.data?.task?.id === t.id);
+      acc.nodes[index].data.task = t;
+
+      if (t.type === 'DECISION') {
+        const { handles } = acc.nodes[index].data;
+        acc.nodes[index].data.handles = [...Object.keys(t.decisionCases), 'default'];
+        const oldDecisionCases = handles ? handles.filter((h) => h !== 'default') : [];
+        const newDecisionCases = [...Object.keys(t.decisionCases)];
+        const decisionMapping = zip(oldDecisionCases, newDecisionCases);
+        decisionMapping.forEach((dm) => {
+          const edgeIndex = acc.edges.findIndex((e) => e.source === t.taskReferenceName && e.sourceHandle === dm[0]);
+          if (edgeIndex === -1) {
+            return;
+          }
+          // edit existing decision case - keep edge connected
+          if (dm[0] !== undefined && dm[1] !== undefined) {
+            const newEdge: Edge = {
+              ...acc.edges[edgeIndex],
+              sourceHandle: dm[1],
+            };
+            acc.edges.splice(edgeIndex, 1, newEdge);
+          }
+          // delete decision case - delete edge
+          if (dm[0] !== undefined && dm[1] === undefined) {
+            acc.edges.splice(edgeIndex, 1);
+          }
+        });
+        // for (const dm of decisionMapping) {
+        //   const edgeIndex = acc.edges.findIndex((e) => e.source === t.taskReferenceName && e.sourceHandle === dm[0]);
+        //   if (edgeIndex === -1) {
+        //     break;
+        //   }
+        //   // edit existing decision case - keep edge connected
+        //   if (dm[0] !== undefined && dm[1] !== undefined) {
+        //     const newEdge: Edge = {
+        //       ...acc.edges[edgeIndex],
+        //       sourceHandle: dm[1],
+        //     };
+        //     acc.edges.splice(edgeIndex, 1, newEdge);
+        //   }
+        //   // delete decision case - delete edge
+        //   if (dm[0] !== undefined && dm[1] === undefined) {
+        //     acc.edges.splice(edgeIndex, 1);
+        //   }
+        // }
+      }
+
+      return acc;
     });
+
+    setElements(newElements);
   };
 
   const handleWorkflowClone = (wfName: string) => {
@@ -346,24 +391,22 @@ const App: VoidFunctionComponent<Props> = ({
         </Box>
         <Box minHeight="60vh" maxHeight="100vh" position="relative">
           <EdgeRemoveContext.Provider value={removeEdgeContextValue}>
-            <ReactFlowProvider>
-              <ReactFlow
-                nodes={elements.nodes}
-                edges={elements.edges}
-                nodeTypes={nodeTypes}
-                edgeTypes={edgeTypes}
-                snapToGrid
-                onConnect={handleConnect}
-                onEdgeUpdate={handleEdgeUpdate}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onInit={(instance) => instance.fitView()}
-              >
-                <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
-                <MiniMap />
-                <Controls />
-              </ReactFlow>
-            </ReactFlowProvider>
+            <ReactFlow
+              nodes={elements.nodes}
+              edges={elements.edges}
+              nodeTypes={nodeTypes}
+              edgeTypes={edgeTypes}
+              snapToGrid
+              onConnect={handleConnect}
+              onEdgeUpdate={handleEdgeUpdate}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onInit={(instance) => instance.fitView()}
+            >
+              <Background variant={BackgroundVariant.Dots} gap={15} size={0.8} />
+              <MiniMap />
+              <Controls />
+            </ReactFlow>
           </EdgeRemoveContext.Provider>
           {selectedTask?.task && selectedTask?.actionType === 'edit' && (
             <RightDrawer>
