@@ -198,24 +198,6 @@ const App: VoidFunctionComponent<Props> = ({
             acc.edges.splice(edgeIndex, 1);
           }
         });
-        // for (const dm of decisionMapping) {
-        //   const edgeIndex = acc.edges.findIndex((e) => e.source === t.taskReferenceName && e.sourceHandle === dm[0]);
-        //   if (edgeIndex === -1) {
-        //     break;
-        //   }
-        //   // edit existing decision case - keep edge connected
-        //   if (dm[0] !== undefined && dm[1] !== undefined) {
-        //     const newEdge: Edge = {
-        //       ...acc.edges[edgeIndex],
-        //       sourceHandle: dm[1],
-        //     };
-        //     acc.edges.splice(edgeIndex, 1, newEdge);
-        //   }
-        //   // delete decision case - delete edge
-        //   if (dm[0] !== undefined && dm[1] === undefined) {
-        //     acc.edges.splice(edgeIndex, 1);
-        //   }
-        // }
       }
 
       return acc;
