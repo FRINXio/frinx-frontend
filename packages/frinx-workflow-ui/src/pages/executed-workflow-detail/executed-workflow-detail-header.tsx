@@ -39,7 +39,7 @@ const DetailsModalHeader: FC<Props> = ({
   restartWorkflows,
   visibleRestartButton,
 }) => (
-  <Box background="brand.600" borderRadius={4} padding={15} marginBottom={10}>
+  <Box background="blue.600" borderRadius={4} padding={15} marginBottom={10}>
     <Grid templateColumns={status === 'COMPLETED' ? 'repeat(4, 1fr)' : 'repeat(5,1fr)'}>
       <Box mx="auto">
         <Box color="white">

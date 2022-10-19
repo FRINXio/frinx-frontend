@@ -49,10 +49,10 @@ const Panel: VoidFunctionComponent<Props> = ({ path, label, description, icon, i
         alignItems="center"
         borderRadius="md"
         boxShadow="inner"
-        background="brand.100"
+        background="blue.100"
         fontSize="24px"
       >
-        <Icon as={FeatherIcon} icon={icon} color="brand.700" size={24} />
+        <Icon as={FeatherIcon} icon={icon} color="blue.700" size={24} />
       </Flex>
       <Box marginLeft={4}>
         <Heading size="md" as="h2" marginBottom={1}>

@@ -37,7 +37,7 @@ yup.addMethod(yup.array, 'unique', function (message, mapper = (a: unknown) => a
 
 const AlternativeIdSchema = yup.object({
   key: yup.string().required('Key is required'),
-  value: yup.array().of(yup.string()).min(1, 'Please enter at least one value'),
+  value: yup.array().of(yup.string()),
 });
 
 export const ValidationSchema = yup
@@ -45,8 +45,7 @@ export const ValidationSchema = yup
   // TODO: check suggested solution https://github.com/jquense/yup/issues/345#issuecomment-634718990
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  .unique('Keys cannot repeat', (a: FormikValues) => a.key)
-  .min(1, 'Please enter at least one alternative ID value');
+  .unique('Keys cannot repeat', (a: FormikValues) => a.key);
 
 export type AlternativeId = {
   key: string;
@@ -93,39 +92,45 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
 
   return (
     <Box {...rest}>
-      {alternativeIds.map(({ key, value }, i) => {
-        const keyError = errors?.[i]?.key;
-        const valueError = errors?.[i]?.value;
+      {alternativeIds.length === 0 && (
+        <Text color="gray.500" fontStyle="italic">
+          You didn&apos;t add any alternative ids yet.
+        </Text>
+      )}
+      {alternativeIds.length > 0 &&
+        alternativeIds.map(({ key, value }, i) => {
+          const keyError = errors?.[i]?.key;
+          const valueError = errors?.[i]?.value;
 
-        return (
-          // eslint-disable-next-line react/no-array-index-key
-          <Box key={`alternative-id-${i}`}>
-            <HStack spacing="2" paddingTop="2" align="flex-start">
-              <FormControl maxW={150} isInvalid={keyError != null}>
-                {i === 0 && <FormLabel margin="0">Key:</FormLabel>}
-                <Input value={key} placeholder="Key" onChange={(v) => handleKeyChange(v, i)} />
-                <FormErrorMessage>{keyError}</FormErrorMessage>
-              </FormControl>
-              <FormControl isInvalid={valueError != null}>
-                {i === 0 && <FormLabel margin="0">Value:</FormLabel>}
-                <HStack>
-                  <LabelsInput
-                    labels={value}
-                    placeholder="Value (press Enter to add value)"
-                    onChange={(values) => handleValueChange(values, i)}
-                  />
-                  <IconButton
-                    icon={<Icon size="sm" as={FeatherIcon} icon="trash-2" />}
-                    aria-label="Delete Alternative Id"
-                    onClick={() => handleDelete(i)}
-                  />
-                </HStack>
-                <FormErrorMessage>{valueError}</FormErrorMessage>
-              </FormControl>
-            </HStack>
-          </Box>
-        );
-      })}
+          return (
+            // eslint-disable-next-line react/no-array-index-key
+            <Box key={`alternative-id-${i}`}>
+              <HStack spacing="2" paddingTop="2" align="flex-start">
+                <FormControl maxW={150} isInvalid={keyError != null}>
+                  {i === 0 && <FormLabel margin="0">Key:</FormLabel>}
+                  <Input value={key} placeholder="Key" onChange={(v) => handleKeyChange(v, i)} />
+                  <FormErrorMessage>{keyError}</FormErrorMessage>
+                </FormControl>
+                <FormControl isInvalid={valueError != null}>
+                  {i === 0 && <FormLabel margin="0">Value:</FormLabel>}
+                  <HStack>
+                    <LabelsInput
+                      labels={value}
+                      placeholder="Value (press Enter to add value)"
+                      onChange={(values) => handleValueChange(values, i)}
+                    />
+                    <IconButton
+                      icon={<Icon size="sm" as={FeatherIcon} icon="trash-2" />}
+                      aria-label="Delete Alternative Id"
+                      onClick={() => handleDelete(i)}
+                    />
+                  </HStack>
+                  <FormErrorMessage>{valueError}</FormErrorMessage>
+                </FormControl>
+              </HStack>
+            </Box>
+          );
+        })}
       <HStack mt={3}>
         <Spacer />
         <Button size="xs" onClick={handleAdd}>

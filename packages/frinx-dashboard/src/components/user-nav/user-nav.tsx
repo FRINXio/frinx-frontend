@@ -23,7 +23,7 @@ const UserNav: FC = () => {
   return (
     <Box marginLeft="auto">
       <UnauthenticatedTemplate>
-        <Button colorScheme="brand" isLoading={inProgress === 'login'} onClick={login}>
+        <Button colorScheme="blue" isLoading={inProgress === 'login'} onClick={login}>
           Login
         </Button>
       </UnauthenticatedTemplate>
@@ -36,7 +36,7 @@ const UserNav: FC = () => {
           return (
             <Menu>
               <MenuButton
-                colorScheme="brand"
+                colorScheme="blue"
                 as={Button}
                 size="md"
                 rightIcon={<Icon size={30} as={FeatherIcon} icon="chevron-down" />}

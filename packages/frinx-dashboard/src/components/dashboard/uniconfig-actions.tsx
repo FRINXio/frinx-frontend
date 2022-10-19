@@ -16,7 +16,7 @@ const UniconfigActions: FC = () => {
             Mount device
           </Heading>
           <Text marginBottom={2}>Connect network device to UniConfig.</Text>
-          <Button colorScheme="brand" size="sm" to="/uniconfig/mount" as={Link}>
+          <Button colorScheme="blue" size="sm" to="/uniconfig/mount" as={Link}>
             Mount
           </Button>
         </Box>
@@ -30,7 +30,7 @@ const UniconfigActions: FC = () => {
             Browse devices
           </Heading>
           <Text marginBottom={2}>Browse and manage network devices.</Text>
-          <Button colorScheme="brand" size="sm" to="/uniconfig/devices" as={Link}>
+          <Button colorScheme="blue" size="sm" to="/uniconfig/devices" as={Link}>
             Explore
           </Button>
         </Box>
