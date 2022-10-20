@@ -9,7 +9,7 @@ import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/ext-language_tools';
-import ExpectedPoolProperties from './expected-pool-properties-form';
+import ExpectedProperties from './expected-properties-form';
 
 function getDefaultScriptValue(): string {
   return `function invoke() {
@@ -22,7 +22,8 @@ const INITIAL_VALUES: FormValues = {
   name: '',
   lang: 'js',
   script: getDefaultScriptValue(),
-  expectedPoolPropertyTypes: [{ key: 'address', type: 'int' }],
+  expectedPoolPropertyTypes: [{ key: 'address', type: 'string' }],
+  resourceTypeProperties: [{ key: 'address', type: 'string' }],
 };
 
 // eslint-disable-next-line func-names
@@ -33,7 +34,7 @@ yup.addMethod(yup.array, 'unique', function (message, mapper = (a: unknown) => a
       // we want to have duplicate error in another path to be able
       // to distinguish it frow ordinary alternateId errors (key, value)
       throw context.createError({
-        path: 'duplicateExpectedPoolPropertyKey',
+        path: 'duplicatePropertyKey',
         message,
       });
     }
@@ -58,6 +59,18 @@ const validationSchema = yup.object().shape({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     .unique('Expected pool property keys cannot repeat', (a: FormikValues) => a.key),
+  resourceTypeProperties: yup
+    .array()
+    .of(
+      yup.object({
+        key: yup.string().required('You need to define name of resource type property'),
+        type: yup.string().required('You need to define type of resource type property'),
+      }),
+    )
+    // TODO: check suggested solution https://github.com/jquense/yup/issues/345#issuecomment-634718990
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    .unique('Resource type property keys cannot repeat', (a: FormikValues) => a.key),
 });
 
 export type FormValues = {
@@ -65,18 +78,22 @@ export type FormValues = {
   lang: AllocationStrategyLang;
   script: string;
   expectedPoolPropertyTypes?: { key: string; type: string }[];
+  resourceTypeProperties?: { key: string; type: string }[];
 };
 type Props = {
   onFormSubmit: (values: FormValues) => void;
 };
 
 const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
-  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik({
+  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors, setSubmitting } = useFormik({
     initialValues: INITIAL_VALUES,
     validateOnBlur: false,
     validateOnChange: false,
     validationSchema,
-    onSubmit: onFormSubmit,
+    onSubmit: (data) => {
+      onFormSubmit(data);
+      setSubmitting(false);
+    },
   });
 
   return (
@@ -99,12 +116,32 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
           <option value="py">Python</option>
         </Select>
       </FormControl>
-      <ExpectedPoolProperties
-        formErrors={errors}
+      <ExpectedProperties
+        label="Expected pool properties"
+        formErrors={{
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          duplicatePropertyKey: errors.duplicatePropertyKey,
+          propertyErrors: errors.expectedPoolPropertyTypes as any,
+        }}
         expectedPoolPropertyTypes={values.expectedPoolPropertyTypes}
-        onPoolPropertyAdd={(newPoolProperties) => setFieldValue('expectedPoolPropertyTypes', newPoolProperties)}
-        onPoolPropertyChange={(newPoolProperties) => setFieldValue('expectedPoolPropertyTypes', newPoolProperties)}
-        onPoolPropertyDelete={(newPoolProperties) => setFieldValue('expectedPoolPropertyTypes', newPoolProperties)}
+        onPropertyAdd={(newProperties) => setFieldValue('expectedPoolPropertyTypes', newProperties)}
+        onPropertyChange={(newProperties) => setFieldValue('expectedPoolPropertyTypes', newProperties)}
+        onPropertyDelete={(newProperties) => setFieldValue('expectedPoolPropertyTypes', newProperties)}
+      />
+
+      <ExpectedProperties
+        label="Expected resource type properties"
+        formErrors={{
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          duplicatePropertyKey: errors.duplicatePropertyKey,
+          propertyErrors: errors.resourceTypeProperties as any,
+        }}
+        expectedPoolPropertyTypes={values.resourceTypeProperties}
+        onPropertyAdd={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
+        onPropertyChange={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
+        onPropertyDelete={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
       />
       <FormControl marginY={5}>
         <FormLabel>Strategy script</FormLabel>

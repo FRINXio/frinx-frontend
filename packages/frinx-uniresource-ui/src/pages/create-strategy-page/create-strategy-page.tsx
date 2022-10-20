@@ -1,19 +1,32 @@
 import React, { VoidFunctionComponent } from 'react';
 import { useMutation } from 'urql';
+import { omit } from 'lodash';
 import { Heading, Flex, Box } from '@chakra-ui/react';
 import gql from 'graphql-tag';
 import { useNotifications } from '@frinx/shared/src';
-import { CreateAllocationStrategyPayload, MutationCreateAllocationStrategyArgs } from '../../__generated__/graphql';
+import {
+  CreateAllocationStrategyMutation,
+  CreateAllocationStrategyMutationVariables,
+} from '../../__generated__/graphql';
 import CreateStrategyForm, { FormValues } from './create-strategy-form';
 
 const CREATE_STRATEGY_MUTATION = gql`
-  mutation CreateAllocationStrategy($input: CreateAllocationStrategyInput!) {
-    CreateAllocationStrategy(input: $input) {
+  mutation CreateAllocationStrategy(
+    $stratInput: CreateAllocationStrategyInput!
+    $resourceTypeInput: CreateResourceTypeInput!
+  ) {
+    createStrat: CreateAllocationStrategy(input: $stratInput) {
       strategy {
         id
         Name
         Lang
         Script
+      }
+    }
+    createResourceType: CreateResourceType(input: $resourceTypeInput) {
+      resourceType {
+        id
+        Name
       }
     }
   }
@@ -23,16 +36,23 @@ type Props = {
 };
 
 const CreateStrategyPage: VoidFunctionComponent<Props> = ({ onSaveButtonClick }) => {
-  const [, addStrategy] = useMutation<CreateAllocationStrategyPayload, MutationCreateAllocationStrategyArgs>(
+  const [, addStrategy] = useMutation<CreateAllocationStrategyMutation, CreateAllocationStrategyMutationVariables>(
     CREATE_STRATEGY_MUTATION,
   );
   const { addToastNotification } = useNotifications();
 
   const handleFormSubmit = (values: FormValues) => {
     addStrategy({
-      input: {
-        ...values,
+      stratInput: {
+        ...omit(values, 'resourceTypeProperties'),
         expectedPoolPropertyTypes: values.expectedPoolPropertyTypes?.reduce(
+          (acc, curr) => ({ ...acc, [curr.key]: curr.type }),
+          {},
+        ),
+      },
+      resourceTypeInput: {
+        resourceName: values.name,
+        resourceProperties: values.resourceTypeProperties?.reduce(
           (acc, curr) => ({ ...acc, [curr.key]: curr.type }),
           {},
         ),

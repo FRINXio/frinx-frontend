@@ -12,27 +12,27 @@ import {
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import FeatherIcon from 'feather-icons-react';
-import { FormikErrors } from 'formik';
-import { FormValues } from './create-strategy-form';
 
 export type ExpectedPoolProperty = { key: string; type: string };
 
 type Props = {
+  label?: string;
   expectedPoolPropertyTypes?: ExpectedPoolProperty[];
-  formErrors: FormikErrors<FormValues> & { duplicateExpectedPoolPropertyKey?: string };
-  onPoolPropertyChange: (values: ExpectedPoolProperty[]) => void;
-  onPoolPropertyAdd: (values: ExpectedPoolProperty[]) => void;
-  onPoolPropertyDelete: (values: ExpectedPoolProperty[]) => void;
+  formErrors: { propertyErrors: ExpectedPoolProperty[]; duplicatePropertyKey?: string };
+  onPropertyChange: (values: ExpectedPoolProperty[]) => void;
+  onPropertyAdd: (values: ExpectedPoolProperty[]) => void;
+  onPropertyDelete: (values: ExpectedPoolProperty[]) => void;
 };
 
-const ExpectedPoolProperties: FC<Props> = ({
+const ExpectedProperties: FC<Props> = ({
   expectedPoolPropertyTypes = [],
   formErrors,
-  onPoolPropertyAdd,
-  onPoolPropertyDelete,
-  onPoolPropertyChange,
+  onPropertyAdd,
+  onPropertyDelete,
+  onPropertyChange,
+  label = 'Expected properties',
 }) => {
-  const handleOnPoolPropertyAdd = () => onPoolPropertyAdd([...expectedPoolPropertyTypes, { key: '', type: '' }]);
+  const handleOnPoolPropertyAdd = () => onPropertyAdd([...expectedPoolPropertyTypes, { key: '', type: '' }]);
 
   const handleOnPoolPropertyChange = (key: string, type: string, changedIndex: number) => {
     const changedPoolProperties = [
@@ -41,7 +41,7 @@ const ExpectedPoolProperties: FC<Props> = ({
       ...expectedPoolPropertyTypes.slice(changedIndex + 1, expectedPoolPropertyTypes.length),
     ];
 
-    onPoolPropertyChange(changedPoolProperties);
+    onPropertyChange(changedPoolProperties);
   };
 
   const handleOnPoolPropertyDelete = (index: number) => {
@@ -49,38 +49,36 @@ const ExpectedPoolProperties: FC<Props> = ({
       ...expectedPoolPropertyTypes.slice(0, index),
       ...expectedPoolPropertyTypes.slice(index + 1, expectedPoolPropertyTypes.length),
     ];
-    onPoolPropertyDelete(result);
+    onPropertyDelete(result);
   };
 
-  const isErrorString = typeof formErrors.expectedPoolPropertyTypes === 'string';
+  const isErrorString = typeof formErrors.propertyErrors === 'string';
   const isExpectedPoolPropertyTypesError = (index: number) =>
-    formErrors.expectedPoolPropertyTypes != null &&
-    formErrors.expectedPoolPropertyTypes[index] != null &&
-    !isErrorString;
+    formErrors.propertyErrors != null && formErrors.propertyErrors[index] != null && !isErrorString;
 
   return (
     <>
-      <HStack mb={3} align="flex-start">
-        <Text fontWeight="semibold">Expected pool properties</Text>
+      <HStack my={3} align="flex-start">
+        <Text fontWeight="bold">{label}</Text>
         <Spacer />
         <Button size="sm" onClick={handleOnPoolPropertyAdd}>
-          Add new pool property
+          Add new expected property
         </Button>
       </HStack>
       {expectedPoolPropertyTypes.length === 0 ? (
         <Text>
-          Click on button <Kbd>Add new pool property</Kbd> to add expected pool property
+          Click on button <Kbd>Add new expected property</Kbd> to add expected property
         </Text>
       ) : (
         expectedPoolPropertyTypes.map((poolProperty, index) => (
           // eslint-disable-next-line react/no-array-index-key
-          <HStack key={`expected-pool-property-${index}`} my={3} align="flex-start">
+          <HStack key={`expected-property-${index}`} my={3} align="flex-start">
             <FormControl
               isInvalid={
                 isExpectedPoolPropertyTypesError(index) &&
                 //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //  @ts-ignore
-                formErrors.expectedPoolPropertyTypes[index].key != null
+                formErrors.propertyErrors[index].key != null
               }
             >
               {index === 0 && <FormLabel>Key</FormLabel>}
@@ -92,7 +90,7 @@ const ExpectedPoolProperties: FC<Props> = ({
               {isExpectedPoolPropertyTypesError(index) && (
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                <FormErrorMessage>{formErrors.expectedPoolPropertyTypes[index].key}</FormErrorMessage>
+                <FormErrorMessage>{formErrors.propertyErrors[index].key}</FormErrorMessage>
               )}
             </FormControl>
             <FormControl
@@ -100,7 +98,7 @@ const ExpectedPoolProperties: FC<Props> = ({
                 isExpectedPoolPropertyTypesError(index) &&
                 //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //  @ts-ignore
-                formErrors.expectedPoolPropertyTypes[index].type != null
+                formErrors.propertyErrors[index].type != null
               }
             >
               {index === 0 && <FormLabel>Type</FormLabel>}
@@ -113,24 +111,22 @@ const ExpectedPoolProperties: FC<Props> = ({
                 <IconButton
                   icon={<FeatherIcon icon="trash-2" size={20} />}
                   colorScheme="red"
-                  aria-label="Delete pool property"
+                  aria-label="Delete property"
                   onClick={() => handleOnPoolPropertyDelete(index)}
                 />
               </HStack>
               {isExpectedPoolPropertyTypesError(index) && (
                 //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //  @ts-ignore
-                <FormErrorMessage>{formErrors.expectedPoolPropertyTypes[index].type}</FormErrorMessage>
+                <FormErrorMessage>{formErrors.propertyErrors[index].type}</FormErrorMessage>
               )}
             </FormControl>
           </HStack>
         ))
       )}
-      {formErrors.duplicateExpectedPoolPropertyKey != null && (
-        <Text textColor="red">{formErrors.duplicateExpectedPoolPropertyKey}</Text>
-      )}
+      {formErrors.duplicatePropertyKey != null && <Text textColor="red">{formErrors.duplicatePropertyKey}</Text>}
     </>
   );
 };
 
-export default ExpectedPoolProperties;
+export default ExpectedProperties;
