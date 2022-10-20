@@ -11,6 +11,8 @@ import {
   FormHelperText,
   FormLabel,
   HStack,
+  Icon,
+  IconButton,
   Input,
   InputGroup,
   InputLeftAddon,
@@ -21,9 +23,11 @@ import {
   TabPanels,
   Tabs,
 } from '@chakra-ui/react';
-import { omitBy } from 'lodash';
-import { InputParameters, ExtendedTask } from '../../helpers/types';
+import FeatherIcon from 'feather-icons-react';
+import produce from 'immer';
+import { InputParameters, ExtendedTask, GraphExtendedTask } from '../../helpers/types';
 import { getValidationSchema, renderInputParamForm } from './input-params-forms';
+import { convertTaskToExtendedTask } from '../../helpers/api-to-graph.helpers';
 
 type Props = {
   task: ExtendedTask;
@@ -32,18 +36,65 @@ type Props = {
   onFormSubmit: (task: ExtendedTask) => void;
 };
 
+function convertExtendedTaskToGraphExtendedTask(task: ExtendedTask): GraphExtendedTask {
+  if (task.type === 'DECISION') {
+    const decisionCases = Object.entries(task.decisionCases).map(([key, tasks]) => {
+      return { key, tasks: tasks.map(convertTaskToExtendedTask) };
+    });
+    return {
+      ...task,
+      decisionCases,
+    };
+  }
+  return task;
+}
+
+function convertGraphExtendedTaskToExtendedTask(task: GraphExtendedTask): ExtendedTask {
+  if (task.type === 'DECISION') {
+    const decisionCases = task.decisionCases.reduce((prev, curr) => {
+      return {
+        ...prev,
+        [curr.key]: curr.tasks,
+      };
+    }, {});
+    return {
+      ...task,
+      decisionCases,
+    };
+  }
+  return task;
+}
+
 const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
-  const { errors, values, handleSubmit, handleChange, isSubmitting, isValid, setFieldValue } = useFormik<ExtendedTask>({
-    initialValues: task,
-    validationSchema: getValidationSchema(task),
-    onSubmit: (formValues) => {
-      onFormSubmit(formValues);
-      onClose();
-    },
-  });
+  const { errors, values, handleSubmit, handleChange, isSubmitting, isValid, setFieldValue } =
+    useFormik<GraphExtendedTask>({
+      initialValues: convertExtendedTaskToGraphExtendedTask(task),
+      validationSchema: getValidationSchema(task),
+      onSubmit: (formValues) => {
+        const convertedFormValues = convertGraphExtendedTaskToExtendedTask(formValues);
+        onFormSubmit(convertedFormValues);
+        onClose();
+      },
+    });
 
   const handleUpdateInputParameters = (inputParameters: InputParameters) => {
     setFieldValue('inputParameters', inputParameters);
+  };
+
+  const handleAddDecisionCase = () => {
+    if (values.type !== 'DECISION') {
+      return;
+    }
+    const newDecisionCases = [...values.decisionCases, { key: 'case', tasks: [] }];
+    setFieldValue('decisionCases', newDecisionCases);
+  };
+
+  const handleDeleteDecisionCase = (decisionKey: string) => {
+    if (values.type !== 'DECISION') {
+      return;
+    }
+    const newDecisionCases = values.decisionCases.filter((c) => c.key !== decisionKey);
+    setFieldValue('decisionCases', newDecisionCases);
   };
 
   return (
@@ -94,38 +145,66 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
             </FormControl>
             {values.type === 'DECISION' && (
               <>
-                {Object.keys(values.decisionCases).map((key, index) => {
+                <Button
+                  aria-label="Add decision case"
+                  leftIcon={<Icon as={FeatherIcon} icon="plus" size="small" />}
+                  size="md"
+                  fontWeight="normal"
+                  onClick={handleAddDecisionCase}
+                >
+                  Add decision case
+                </Button>
+                {values.decisionCases.map(({ key }, index) => {
                   return (
                     // eslint-disable-next-line react/no-array-index-key
-                    <HStack spacing={2} key={index} marginY={2}>
-                      <FormControl>
-                        <InputGroup>
-                          <InputLeftAddon>if</InputLeftAddon>
-                          <Input type="text" value={values.caseValueParam} onChange={handleChange} />
-                        </InputGroup>
-                      </FormControl>
-                      <FormControl>
-                        <InputGroup>
-                          <InputLeftAddon>is equal to</InputLeftAddon>
-                          <Input
-                            type="text"
-                            value={key}
-                            onChange={(event) => {
-                              event.persist();
-                              if (values.type !== 'DECISION') {
-                                return;
-                              }
-                              const newDecisionCases = {
-                                ...omitBy(values.decisionCases, (_, k) => k === key),
-                                [event.target.value]: values.decisionCases[key],
-                              };
-                              setFieldValue('decisionCases', newDecisionCases);
-                              // setFieldValue('caseValueParam', event.target.value);
-                            }}
-                          />
-                        </InputGroup>
-                      </FormControl>
-                    </HStack>
+                    <React.Fragment key={`decision-case-${index}`}>
+                      <HStack spacing={2} marginY={2}>
+                        <FormControl>
+                          <InputGroup>
+                            <InputLeftAddon>if</InputLeftAddon>
+                            <Input
+                              type="text"
+                              name="caseValueParam"
+                              value={values.caseValueParam || ''}
+                              onChange={handleChange}
+                            />
+                          </InputGroup>
+                        </FormControl>
+                        <FormControl>
+                          <InputGroup>
+                            <InputLeftAddon>is equal to</InputLeftAddon>
+                            <Input
+                              type="text"
+                              value={key}
+                              onChange={(event) => {
+                                event.persist();
+                                if (values.type !== 'DECISION') {
+                                  return;
+                                }
+
+                                const newDecisionCases = produce(values.decisionCases, (draft) => {
+                                  const newCase = {
+                                    ...draft[index],
+                                    key: event.target.value,
+                                  };
+                                  draft.splice(index, 1, newCase);
+                                });
+                                setFieldValue('decisionCases', newDecisionCases);
+                              }}
+                            />
+                          </InputGroup>
+                        </FormControl>
+                        <IconButton
+                          colorScheme="red"
+                          size="sm"
+                          aria-label="Delete blueprint"
+                          icon={<Icon size={20} as={FeatherIcon} icon="trash-2" />}
+                          onClick={() => {
+                            handleDeleteDecisionCase(key);
+                          }}
+                        />
+                      </HStack>
+                    </React.Fragment>
                   );
                 })}
               </>

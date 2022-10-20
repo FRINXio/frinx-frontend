@@ -2,6 +2,7 @@ import { Box, Container, Heading } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared/src';
 import { saveAs } from 'file-saver';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import { ReactFlowProvider } from 'react-flow-renderer';
 import { useParams } from 'react-router-dom';
 import App from './app';
 import callbackUtils from './callback-utils';
@@ -135,17 +136,19 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
 
   return workflow != null && workflows != null && taskDefinitions != null ? (
     <TaskActionsProvider>
-      <App
-        key={`${name}/${version}/${workflow.name}`}
-        workflow={workflow}
-        onWorkflowChange={handleWorkflowChange}
-        workflows={workflows}
-        taskDefinitions={taskDefinitions}
-        onFileImport={handleFileImport}
-        onFileExport={handleFileExport}
-        onWorkflowDelete={handleWorkflowDelete}
-        onWorkflowClone={handleWorkflowClone}
-      />
+      <ReactFlowProvider>
+        <App
+          key={`${name}/${version}/${workflow.name}`}
+          workflow={workflow}
+          onWorkflowChange={handleWorkflowChange}
+          workflows={workflows}
+          taskDefinitions={taskDefinitions}
+          onFileImport={handleFileImport}
+          onFileExport={handleFileExport}
+          onWorkflowDelete={handleWorkflowDelete}
+          onWorkflowClone={handleWorkflowClone}
+        />
+      </ReactFlowProvider>
     </TaskActionsProvider>
   ) : null;
 };

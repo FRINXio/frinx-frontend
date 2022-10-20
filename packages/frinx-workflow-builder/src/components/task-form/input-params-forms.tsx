@@ -15,6 +15,7 @@ import {
   DecisionInputParams,
   EventInputParams,
   ExtendedTask,
+  GraphExtendedTask,
   GraphQLInputParams,
   HTTPInputParams,
   InputParameters,
@@ -63,8 +64,8 @@ export function getValidationSchema(task: ExtendedTask) {
 }
 
 export function renderInputParamForm(
-  task: ExtendedTask,
-  errors: FormikErrors<ExtendedTask>,
+  task: GraphExtendedTask,
+  errors: FormikErrors<GraphExtendedTask>,
   onChange: (p: InputParameters) => void,
   tasks: ExtendedTask[],
 ): ReactNode | null {

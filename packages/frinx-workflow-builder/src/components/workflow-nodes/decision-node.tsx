@@ -1,6 +1,6 @@
 import { Box, Flex, Heading, Text, Theme, Tooltip, useTheme } from '@chakra-ui/react';
-import React, { memo, VoidFunctionComponent } from 'react';
-import { Handle, NodeProps, Position } from 'react-flow-renderer';
+import React, { memo, useEffect, VoidFunctionComponent } from 'react';
+import { Handle, NodeProps, Position, useUpdateNodeInternals } from 'react-flow-renderer';
 import { ExtendedDecisionTask } from '../../helpers/types';
 import { useTaskActions } from '../../task-actions-context';
 import NodeButtons from '../nodes/node-buttons';
@@ -15,9 +15,14 @@ type Props = NodeProps<{
 }>;
 
 const DecisionNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
+  const updateNodeInternals = useUpdateNodeInternals();
   const theme = useTheme<Theme>();
   const { selectTask, selectedTask, setRemovedTaskId } = useTaskActions();
   const { task, isReadOnly } = data;
+
+  useEffect(() => {
+    updateNodeInternals(id);
+  }, [data.handles, id, updateNodeInternals]);
 
   return (
     <Box

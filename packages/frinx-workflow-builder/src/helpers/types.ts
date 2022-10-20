@@ -464,6 +464,11 @@ export type WorkflowExecutionResult = {
 export type ExecutedWorkflowSortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';
 
+export type GraphExtendedDecisionTask = Omit<ExtendedDecisionTask, 'decisionCases'> & {
+  decisionCases: { key: string; tasks: ExtendedTask[] }[];
+};
+export type GraphExtendedTask = Exclude<ExtendedTask, ExtendedDecisionTask> | GraphExtendedDecisionTask;
+
 export type NodeData = {
   label: string;
   isReadOnly: boolean;
