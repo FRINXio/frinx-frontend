@@ -9,7 +9,7 @@ import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/ext-language_tools';
-import ExpectedProperties from './expected-properties-form';
+import ExpectedProperties from '../../components/expected-properties-form';
 
 function getDefaultScriptValue(): string {
   return `function invoke() {

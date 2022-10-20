@@ -17,7 +17,7 @@ import {
 import * as yup from 'yup';
 import { FormikValues, useFormik } from 'formik';
 import { unwrap } from '@frinx/shared';
-import ExpectedProperties from '../create-strategy-page/expected-properties-form';
+import ExpectedProperties from '../../components/expected-properties-form';
 
 type Props = {
   isOpen: boolean;
