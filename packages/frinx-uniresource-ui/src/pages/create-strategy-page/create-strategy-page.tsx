@@ -5,13 +5,13 @@ import { Heading, Flex, Box } from '@chakra-ui/react';
 import gql from 'graphql-tag';
 import { useNotifications } from '@frinx/shared/src';
 import {
-  CreateAllocationStrategyMutation,
-  CreateAllocationStrategyMutationVariables,
+  CreateAllocationStrategyAndResourceTypeMutation,
+  CreateAllocationStrategyAndResourceTypeMutationVariables,
 } from '../../__generated__/graphql';
 import CreateStrategyForm, { FormValues } from './create-strategy-form';
 
 const CREATE_STRATEGY_MUTATION = gql`
-  mutation CreateAllocationStrategy(
+  mutation CreateAllocationStrategyAndResourceType(
     $stratInput: CreateAllocationStrategyInput!
     $resourceTypeInput: CreateResourceTypeInput!
   ) {
@@ -36,9 +36,10 @@ type Props = {
 };
 
 const CreateStrategyPage: VoidFunctionComponent<Props> = ({ onSaveButtonClick }) => {
-  const [, addStrategy] = useMutation<CreateAllocationStrategyMutation, CreateAllocationStrategyMutationVariables>(
-    CREATE_STRATEGY_MUTATION,
-  );
+  const [, addStrategy] = useMutation<
+    CreateAllocationStrategyAndResourceTypeMutation,
+    CreateAllocationStrategyAndResourceTypeMutationVariables
+  >(CREATE_STRATEGY_MUTATION);
   const { addToastNotification } = useNotifications();
 
   const handleFormSubmit = (values: FormValues) => {

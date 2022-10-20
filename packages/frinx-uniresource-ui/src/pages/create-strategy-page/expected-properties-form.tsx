@@ -18,7 +18,7 @@ export type ExpectedPoolProperty = { key: string; type: string };
 type Props = {
   label?: string;
   expectedPoolPropertyTypes?: ExpectedPoolProperty[];
-  formErrors: { propertyErrors: ExpectedPoolProperty[]; duplicatePropertyKey?: string };
+  formErrors: { propertyErrors?: ExpectedPoolProperty[] | string; duplicatePropertyKey?: string };
   onPropertyChange: (values: ExpectedPoolProperty[]) => void;
   onPropertyAdd: (values: ExpectedPoolProperty[]) => void;
   onPropertyDelete: (values: ExpectedPoolProperty[]) => void;
@@ -53,7 +53,7 @@ const ExpectedProperties: FC<Props> = ({
   };
 
   const isErrorString = typeof formErrors.propertyErrors === 'string';
-  const isExpectedPoolPropertyTypesError = (index: number) =>
+  const isExpectedPropertyTypesError = (index: number) =>
     formErrors.propertyErrors != null && formErrors.propertyErrors[index] != null && !isErrorString;
 
   return (
@@ -75,7 +75,7 @@ const ExpectedProperties: FC<Props> = ({
           <HStack key={`expected-property-${index}`} my={3} align="flex-start">
             <FormControl
               isInvalid={
-                isExpectedPoolPropertyTypesError(index) &&
+                isExpectedPropertyTypesError(index) &&
                 //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //  @ts-ignore
                 formErrors.propertyErrors[index].key != null
@@ -87,7 +87,7 @@ const ExpectedProperties: FC<Props> = ({
                 onChange={(e) => handleOnPoolPropertyChange(e.target.value, poolProperty.type, index)}
                 placeholder="Enter name of expected property"
               />
-              {isExpectedPoolPropertyTypesError(index) && (
+              {isExpectedPropertyTypesError(index) && (
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 <FormErrorMessage>{formErrors.propertyErrors[index].key}</FormErrorMessage>
@@ -95,7 +95,7 @@ const ExpectedProperties: FC<Props> = ({
             </FormControl>
             <FormControl
               isInvalid={
-                isExpectedPoolPropertyTypesError(index) &&
+                isExpectedPropertyTypesError(index) &&
                 //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //  @ts-ignore
                 formErrors.propertyErrors[index].type != null
@@ -115,7 +115,7 @@ const ExpectedProperties: FC<Props> = ({
                   onClick={() => handleOnPoolPropertyDelete(index)}
                 />
               </HStack>
-              {isExpectedPoolPropertyTypesError(index) && (
+              {isExpectedPropertyTypesError(index) && (
                 //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //  @ts-ignore
                 <FormErrorMessage>{formErrors.propertyErrors[index].type}</FormErrorMessage>

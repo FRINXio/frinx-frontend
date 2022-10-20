@@ -34,7 +34,7 @@ yup.addMethod(yup.array, 'unique', function (message, mapper = (a: unknown) => a
       // we want to have duplicate error in another path to be able
       // to distinguish it frow ordinary alternateId errors (key, value)
       throw context.createError({
-        path: 'duplicatePropertyKey',
+        path: `${context.path}Duplicate`,
         message,
       });
     }
@@ -121,8 +121,8 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
         formErrors={{
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          duplicatePropertyKey: errors.duplicatePropertyKey,
-          propertyErrors: errors.expectedPoolPropertyTypes as any,
+          duplicatePropertyKey: errors.expectedPoolPropertyTypesDuplicate,
+          propertyErrors: errors.expectedPoolPropertyTypes,
         }}
         expectedPoolPropertyTypes={values.expectedPoolPropertyTypes}
         onPropertyAdd={(newProperties) => setFieldValue('expectedPoolPropertyTypes', newProperties)}
@@ -135,8 +135,8 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
         formErrors={{
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          duplicatePropertyKey: errors.duplicatePropertyKey,
-          propertyErrors: errors.resourceTypeProperties as any,
+          duplicatePropertyKey: errors.resourceTypePropertiesDuplicate,
+          propertyErrors: errors.resourceTypeProperties,
         }}
         expectedPoolPropertyTypes={values.resourceTypeProperties}
         onPropertyAdd={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
