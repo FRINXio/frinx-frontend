@@ -59,7 +59,7 @@ const ExpectedProperties: FC<Props> = ({
   return (
     <>
       <HStack my={3} align="flex-start">
-        <Text fontWeight="bold">{label}</Text>
+        <Text fontWeight="semibold">{label}</Text>
         <Spacer />
         <Button size="sm" onClick={handleOnPoolPropertyAdd}>
           Add new expected property

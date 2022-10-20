@@ -102,20 +102,7 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
         <FormLabel>Name</FormLabel>
         <Input name="name" id="name" value={values.name} onChange={handleChange} placeholder="Enter name" />
       </FormControl>
-      <FormControl id="lang" marginY={5}>
-        <FormLabel>Strategy script language</FormLabel>
-        <Select
-          id="lang"
-          name="lang"
-          value={values.lang}
-          onChange={handleChange}
-          placeholder="Select script language"
-          width={60}
-        >
-          <option value="js">Javascript</option>
-          <option value="py">Python</option>
-        </Select>
-      </FormControl>
+
       <ExpectedProperties
         label="Expected pool properties"
         formErrors={{
@@ -130,19 +117,21 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
         onPropertyDelete={(newProperties) => setFieldValue('expectedPoolPropertyTypes', newProperties)}
       />
 
-      <ExpectedProperties
-        label="Expected resource type properties"
-        formErrors={{
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          duplicatePropertyKey: errors.resourceTypePropertiesDuplicate,
-          propertyErrors: errors.resourceTypeProperties,
-        }}
-        expectedPoolPropertyTypes={values.resourceTypeProperties}
-        onPropertyAdd={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
-        onPropertyChange={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
-        onPropertyDelete={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
-      />
+      <FormControl id="lang" marginY={5}>
+        <FormLabel>Strategy script language</FormLabel>
+        <Select
+          id="lang"
+          name="lang"
+          value={values.lang}
+          onChange={handleChange}
+          placeholder="Select script language"
+          width={60}
+        >
+          <option value="js">Javascript</option>
+          <option value="py">Python</option>
+        </Select>
+      </FormControl>
+
       <FormControl marginY={5}>
         <FormLabel>Strategy script</FormLabel>
         <Editor
@@ -165,6 +154,21 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
           }}
         />
       </FormControl>
+
+      <ExpectedProperties
+        label="Claimed resource type structure"
+        formErrors={{
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          duplicatePropertyKey: errors.resourceTypePropertiesDuplicate,
+          propertyErrors: errors.resourceTypeProperties,
+        }}
+        expectedPoolPropertyTypes={values.resourceTypeProperties}
+        onPropertyAdd={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
+        onPropertyChange={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
+        onPropertyDelete={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
+      />
+
       <HStack>
         <Spacer />
         <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
