@@ -34,7 +34,6 @@ export type GraphEdge = {
 };
 
 export const NODE_CIRCLE_RADIUS = 30;
-export const EDGE_SLOPE_RADIUS = 40;
 
 export type PositionsMap = {
   nodes: Record<string, Position>;
@@ -69,6 +68,17 @@ function getGroupName(sourceNode: GraphNode, targetNode: GraphNode): string {
   return [sourceNode.device.name, targetNode.device.name].join(',');
 }
 
+export function getDeviceSizeDiameter(deviceSize: DeviceSize): number {
+  switch (deviceSize) {
+    case 'LARGE':
+      return NODE_CIRCLE_RADIUS * 2;
+    case 'MEDIUM':
+      return NODE_CIRCLE_RADIUS * 1.5;
+    default:
+      return NODE_CIRCLE_RADIUS;
+  }
+}
+
 export function getInterfacesPositions({
   nodes,
   edges,
@@ -86,7 +96,7 @@ export function getInterfacesPositions({
     if (!target) {
       const node: GraphNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
       const x = 0;
-      const y = NODE_CIRCLE_RADIUS;
+      const y = getDeviceSizeDiameter(node.device.deviceSize);
       const sourceNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
       const groupName = getGroupName(sourceNode, sourceNode);
       const newInterfaces = acc[groupName] ? [...acc[groupName].interfaces, curr] : [curr];
@@ -117,8 +127,9 @@ export function getInterfacesPositions({
     const pos1 = positionMap[sourceNode.device.name];
     const pos2 = positionMap[targetNode.device.name];
     const angle = getAngleBetweenPoints(pos1, pos2);
-    const y = NODE_CIRCLE_RADIUS * Math.sin(angle);
-    const x = NODE_CIRCLE_RADIUS * Math.cos(angle);
+    const nodeDiameter = getDeviceSizeDiameter(sourceNode.device.deviceSize);
+    const y = nodeDiameter * Math.sin(angle);
+    const x = nodeDiameter * Math.cos(angle);
     return {
       ...acc,
       [groupName]: {

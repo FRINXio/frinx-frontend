@@ -1,4 +1,4 @@
-import { NODE_CIRCLE_RADIUS } from '../../pages/topology/graph.helpers';
+import { getDeviceSizeDiameter } from '../../pages/topology/graph.helpers';
 import { DeviceSize as DeviceSizeEnum } from '../../pages/topology/topology-graph';
 import { DeviceSize } from '../../__generated__/graphql';
 
@@ -8,31 +8,23 @@ type DeviceNodeSize = {
 };
 
 export function getDeviceNodeTransformProperties(deviceSize: DeviceSize): DeviceNodeSize {
-  let circleDiameter = NODE_CIRCLE_RADIUS;
-  let sizeTransform = 'translate3d(-10px, -10px, 0) scale(.8)';
+  const circleDiameter = getDeviceSizeDiameter(deviceSize);
 
   switch (deviceSize) {
-    case DeviceSizeEnum.SMALL:
-      circleDiameter = NODE_CIRCLE_RADIUS;
-      sizeTransform = 'translate3d(-10px, -10px, 0) scale(.8)';
-      break;
     case DeviceSizeEnum.MEDIUM:
-      circleDiameter = NODE_CIRCLE_RADIUS * 1.5;
-      sizeTransform = 'translate3d(-15px, -15px, 0) scale(1.2)';
-      break;
+      return {
+        circleDiameter,
+        sizeTransform: 'translate3d(-15px, -15px, 0) scale(1.2)',
+      };
     case DeviceSizeEnum.LARGE:
-      circleDiameter = NODE_CIRCLE_RADIUS * 2;
-      sizeTransform = 'translate3d(-20px, -20px, 0) scale(1.6)';
-      break;
-
+      return {
+        circleDiameter,
+        sizeTransform: 'translate3d(-20px, -20px, 0) scale(1.6)',
+      };
     default:
-      circleDiameter = NODE_CIRCLE_RADIUS;
-      sizeTransform = 'translate3d(-10px, -10px, 0) scale(.8)';
-      break;
+      return {
+        circleDiameter,
+        sizeTransform: 'translate3d(-10px, -10px, 0) scale(.8)',
+      };
   }
-
-  return {
-    circleDiameter,
-    sizeTransform,
-  };
 }
