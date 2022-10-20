@@ -111,7 +111,7 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
           duplicatePropertyKey: errors.expectedPoolPropertyTypesDuplicate,
           propertyErrors: errors.expectedPoolPropertyTypes,
         }}
-        expectedPoolPropertyTypes={values.expectedPoolPropertyTypes}
+        expectedPropertyTypes={values.expectedPoolPropertyTypes}
         onPropertyAdd={(newProperties) => setFieldValue('expectedPoolPropertyTypes', newProperties)}
         onPropertyChange={(newProperties) => setFieldValue('expectedPoolPropertyTypes', newProperties)}
         onPropertyDelete={(newProperties) => setFieldValue('expectedPoolPropertyTypes', newProperties)}
@@ -156,14 +156,14 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
       </FormControl>
 
       <ExpectedProperties
-        label="Claimed resource type structure"
+        label="Expected resource type structure"
         formErrors={{
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           duplicatePropertyKey: errors.resourceTypePropertiesDuplicate,
           propertyErrors: errors.resourceTypeProperties,
         }}
-        expectedPoolPropertyTypes={values.resourceTypeProperties}
+        expectedPropertyTypes={values.resourceTypeProperties}
         onPropertyAdd={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
         onPropertyChange={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
         onPropertyDelete={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}

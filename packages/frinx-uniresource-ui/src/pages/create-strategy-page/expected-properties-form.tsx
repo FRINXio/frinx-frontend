@@ -13,32 +13,32 @@ import {
 import React, { FC } from 'react';
 import FeatherIcon from 'feather-icons-react';
 
-export type ExpectedPoolProperty = { key: string; type: string };
+export type ExpectedProperty = { key: string; type: string };
 
 type Props = {
   label?: string;
-  expectedPoolPropertyTypes?: ExpectedPoolProperty[];
-  formErrors: { propertyErrors?: ExpectedPoolProperty[] | string; duplicatePropertyKey?: string };
-  onPropertyChange: (values: ExpectedPoolProperty[]) => void;
-  onPropertyAdd: (values: ExpectedPoolProperty[]) => void;
-  onPropertyDelete: (values: ExpectedPoolProperty[]) => void;
+  expectedPropertyTypes?: ExpectedProperty[];
+  formErrors: { propertyErrors?: ExpectedProperty[] | string; duplicatePropertyKey?: string };
+  onPropertyChange: (values: ExpectedProperty[]) => void;
+  onPropertyAdd: (values: ExpectedProperty[]) => void;
+  onPropertyDelete: (values: ExpectedProperty[]) => void;
 };
 
 const ExpectedProperties: FC<Props> = ({
-  expectedPoolPropertyTypes = [],
+  expectedPropertyTypes = [],
   formErrors,
   onPropertyAdd,
   onPropertyDelete,
   onPropertyChange,
   label = 'Expected properties',
 }) => {
-  const handleOnPoolPropertyAdd = () => onPropertyAdd([...expectedPoolPropertyTypes, { key: '', type: '' }]);
+  const handleOnPoolPropertyAdd = () => onPropertyAdd([...expectedPropertyTypes, { key: '', type: '' }]);
 
   const handleOnPoolPropertyChange = (key: string, type: string, changedIndex: number) => {
     const changedPoolProperties = [
-      ...expectedPoolPropertyTypes.slice(0, changedIndex),
+      ...expectedPropertyTypes.slice(0, changedIndex),
       { key, type },
-      ...expectedPoolPropertyTypes.slice(changedIndex + 1, expectedPoolPropertyTypes.length),
+      ...expectedPropertyTypes.slice(changedIndex + 1, expectedPropertyTypes.length),
     ];
 
     onPropertyChange(changedPoolProperties);
@@ -46,8 +46,8 @@ const ExpectedProperties: FC<Props> = ({
 
   const handleOnPoolPropertyDelete = (index: number) => {
     const result = [
-      ...expectedPoolPropertyTypes.slice(0, index),
-      ...expectedPoolPropertyTypes.slice(index + 1, expectedPoolPropertyTypes.length),
+      ...expectedPropertyTypes.slice(0, index),
+      ...expectedPropertyTypes.slice(index + 1, expectedPropertyTypes.length),
     ];
     onPropertyDelete(result);
   };
@@ -65,12 +65,12 @@ const ExpectedProperties: FC<Props> = ({
           Add new expected property
         </Button>
       </HStack>
-      {expectedPoolPropertyTypes.length === 0 ? (
+      {expectedPropertyTypes.length === 0 ? (
         <Text>
           Click on button <Kbd>Add new expected property</Kbd> to add expected property
         </Text>
       ) : (
-        expectedPoolPropertyTypes.map((poolProperty, index) => (
+        expectedPropertyTypes.map((poolProperty, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <HStack key={`expected-property-${index}`} my={3} align="flex-start">
             <FormControl
