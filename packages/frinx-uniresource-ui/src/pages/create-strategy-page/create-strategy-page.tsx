@@ -1,4 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useMutation } from 'urql';
 import { omit } from 'lodash';
 import { Heading, Flex, Box } from '@chakra-ui/react';
@@ -36,11 +37,13 @@ type Props = {
 };
 
 const CreateStrategyPage: VoidFunctionComponent<Props> = ({ onSaveButtonClick }) => {
+  const { addToastNotification } = useNotifications();
+  const navigate = useNavigate();
+
   const [, addStrategy] = useMutation<
     CreateAllocationStrategyAndResourceTypeMutation,
     CreateAllocationStrategyAndResourceTypeMutationVariables
   >(CREATE_STRATEGY_MUTATION);
-  const { addToastNotification } = useNotifications();
 
   const handleFormSubmit = (values: FormValues) => {
     addStrategy({
@@ -78,7 +81,7 @@ const CreateStrategyPage: VoidFunctionComponent<Props> = ({ onSaveButtonClick })
         </Heading>
       </Flex>
       <Box background="white" paddingY={8} paddingX={4} marginBottom={5}>
-        <CreateStrategyForm onFormSubmit={handleFormSubmit} />
+        <CreateStrategyForm onFormSubmit={handleFormSubmit} onFormCancel={() => navigate(-1)} />
       </Box>
     </>
   );

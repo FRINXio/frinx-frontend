@@ -1,6 +1,7 @@
 import React, { VoidFunctionComponent } from 'react';
 import {
   Button,
+  ButtonGroup,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -12,7 +13,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Spacer,
 } from '@chakra-ui/react';
 import * as yup from 'yup';
 import { FormikValues, useFormik } from 'formik';
@@ -93,7 +93,7 @@ const CreateResourceTypeModal: VoidFunctionComponent<Props> = ({ isOpen, onClose
           </FormControl>
 
           <ExpectedProperties
-            label="Claimed resource type structure"
+            label="Expected resource type structure"
             formErrors={{
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
@@ -107,10 +107,12 @@ const CreateResourceTypeModal: VoidFunctionComponent<Props> = ({ isOpen, onClose
           />
         </ModalBody>
         <ModalFooter>
-          <Spacer />
-          <Button isLoading={isSubmitting || isValidating} colorScheme="blue" onClick={submitForm} type="submit">
-            Create
-          </Button>
+          <ButtonGroup spacing={2}>
+            <Button onClick={onClose}>Cancel</Button>
+            <Button isLoading={isSubmitting || isValidating} colorScheme="blue" onClick={submitForm} type="submit">
+              Create
+            </Button>
+          </ButtonGroup>
         </ModalFooter>
       </ModalContent>
     </Modal>

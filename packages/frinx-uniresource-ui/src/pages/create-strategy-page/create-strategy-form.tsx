@@ -82,9 +82,10 @@ export type FormValues = {
 };
 type Props = {
   onFormSubmit: (values: FormValues) => void;
+  onFormCancel: () => void;
 };
 
-const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
+const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onFormCancel }) => {
   const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors, setSubmitting } = useFormik({
     initialValues: INITIAL_VALUES,
     validateOnBlur: false,
@@ -169,8 +170,9 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
         onPropertyDelete={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
       />
 
-      <HStack>
+      <HStack spacing={2}>
         <Spacer />
+        <Button onClick={onFormCancel}>Cancel</Button>
         <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
           Create strategy
         </Button>
