@@ -15,22 +15,42 @@ import FeatherIcon from 'feather-icons-react';
 import { FormikErrors } from 'formik';
 
 export type ExpectedProperty = { key: string; type: string };
+type ExpectedPropertyErrors = {
+  propertyErrors?: string | string[] | FormikErrors<ExpectedProperty>[];
+  duplicatePropertyKey?: string;
+};
 
 type Props = {
   label?: string;
   expectedPropertyTypes?: ExpectedProperty[];
-  formErrors: { propertyErrors?: string | string[] | FormikErrors<ExpectedProperty>[]; duplicatePropertyKey?: string };
+  formErrors: ExpectedPropertyErrors;
   onPropertyChange: (values: ExpectedProperty[]) => void;
   onPropertyAdd: (values: ExpectedProperty[]) => void;
   onPropertyDelete: (values: ExpectedProperty[]) => void;
 };
 
-export function getExpectedType<T>(value: unknown): T | null {
+function getExpectedType<T>(value: unknown): T | null {
   if (value instanceof Object) {
     return value as T;
   } else {
     return null;
   }
+}
+
+function getExpectedFieldError(index: number, formErrors?: ExpectedPropertyErrors | null) {
+  if (formErrors == null || formErrors.propertyErrors == null || formErrors.propertyErrors.length === 0) {
+    return null;
+  }
+
+  if (formErrors.propertyErrors[index] == null) {
+    return null;
+  }
+
+  if (typeof formErrors?.propertyErrors?.at(index) === 'string') {
+    return null;
+  }
+
+  return getExpectedType<FormikErrors<ExpectedProperty>>(formErrors.propertyErrors.at(index));
 }
 
 const ExpectedProperties: VoidFunctionComponent<Props> = ({
@@ -76,18 +96,12 @@ const ExpectedProperties: VoidFunctionComponent<Props> = ({
         </Text>
       ) : (
         expectedPropertyTypes.map((poolProperty, index) => {
-          const expectedFieldError =
-            formErrors.propertyErrors != null &&
-            formErrors.propertyErrors.length > 0 &&
-            formErrors.propertyErrors[index] != null &&
-            typeof formErrors?.propertyErrors?.at(index) !== 'string'
-              ? getExpectedType<FormikErrors<ExpectedProperty>>(formErrors?.propertyErrors?.at(index))
-              : null;
+          const expectedFieldError = getExpectedFieldError(index, formErrors);
 
           return (
             // eslint-disable-next-line react/no-array-index-key
             <HStack key={`expected-property-${index}`} my={3} align="flex-start">
-              <FormControl isInvalid={expectedFieldError?.key != null}>
+              <FormControl isInvalid={getExpectedFieldError(index, formErrors)?.key != null}>
                 {index === 0 && <FormLabel>Key</FormLabel>}
                 <Input
                   value={poolProperty.key}
