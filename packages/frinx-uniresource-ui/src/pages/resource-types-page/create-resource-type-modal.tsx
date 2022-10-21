@@ -17,7 +17,7 @@ import {
 import * as yup from 'yup';
 import { FormikValues, useFormik } from 'formik';
 import { unwrap } from '@frinx/shared';
-import ExpectedProperties from '../../components/expected-properties-form';
+import ExpectedProperties, { ExpectedProperty } from '../../components/expected-properties-form';
 
 type Props = {
   isOpen: boolean;
@@ -27,7 +27,7 @@ type Props = {
 
 type FormValues = {
   resourceTypeName: string;
-  resourceTypeProperties?: { key: string; type: string }[];
+  resourceTypeProperties?: ExpectedProperty[];
 };
 
 // eslint-disable-next-line func-names

@@ -12,13 +12,14 @@ import {
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import FeatherIcon from 'feather-icons-react';
+import { FormikErrors } from 'formik';
 
 export type ExpectedProperty = { key: string; type: string };
 
 type Props = {
   label?: string;
   expectedPropertyTypes?: ExpectedProperty[];
-  formErrors: { propertyErrors?: ExpectedProperty[] | string; duplicatePropertyKey?: string };
+  formErrors: { propertyErrors?: FormikErrors<ExpectedProperty>[] | string | string[]; duplicatePropertyKey?: string };
   onPropertyChange: (values: ExpectedProperty[]) => void;
   onPropertyAdd: (values: ExpectedProperty[]) => void;
   onPropertyDelete: (values: ExpectedProperty[]) => void;

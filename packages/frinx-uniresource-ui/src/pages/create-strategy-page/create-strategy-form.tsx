@@ -9,7 +9,7 @@ import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/ext-language_tools';
-import ExpectedProperties from '../../components/expected-properties-form';
+import ExpectedProperties, { ExpectedProperty } from '../../components/expected-properties-form';
 
 function getDefaultScriptValue(): string {
   return `function invoke() {
@@ -77,8 +77,8 @@ export type FormValues = {
   name: string;
   lang: AllocationStrategyLang;
   script: string;
-  expectedPoolPropertyTypes?: { key: string; type: string }[];
-  resourceTypeProperties?: { key: string; type: string }[];
+  expectedPoolPropertyTypes?: ExpectedProperty[];
+  resourceTypeProperties?: ExpectedProperty[];
 };
 type Props = {
   onFormSubmit: (values: FormValues) => void;
