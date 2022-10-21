@@ -12,17 +12,26 @@ import {
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import FeatherIcon from 'feather-icons-react';
+import { FormikErrors } from 'formik';
 
 export type ExpectedProperty = { key: string; type: string };
 
 type Props = {
   label?: string;
   expectedPropertyTypes?: ExpectedProperty[];
-  formErrors: { propertyErrors?: ExpectedProperty[] | string; duplicatePropertyKey?: string };
+  formErrors: { propertyErrors?: string | string[] | FormikErrors<ExpectedProperty>[]; duplicatePropertyKey?: string };
   onPropertyChange: (values: ExpectedProperty[]) => void;
   onPropertyAdd: (values: ExpectedProperty[]) => void;
   onPropertyDelete: (values: ExpectedProperty[]) => void;
 };
+
+export function getExpectedType<T>(value: unknown): T | null {
+  if (value instanceof Object) {
+    return value as T;
+  } else {
+    return null;
+  }
+}
 
 const ExpectedProperties: VoidFunctionComponent<Props> = ({
   expectedPropertyTypes = [],
@@ -67,44 +76,27 @@ const ExpectedProperties: VoidFunctionComponent<Props> = ({
         </Text>
       ) : (
         expectedPropertyTypes.map((poolProperty, index) => {
-          const hasFieldError =
+          const expectedFieldError =
             formErrors.propertyErrors != null &&
             formErrors.propertyErrors.length > 0 &&
-            formErrors.propertyErrors[index] != null;
-          const fieldErrorNotString = hasFieldError && typeof formErrors?.propertyErrors?.at(index) !== 'string';
+            formErrors.propertyErrors[index] != null &&
+            typeof formErrors?.propertyErrors?.at(index) !== 'string'
+              ? getExpectedType<FormikErrors<ExpectedProperty>>(formErrors?.propertyErrors?.at(index))
+              : null;
 
           return (
             // eslint-disable-next-line react/no-array-index-key
             <HStack key={`expected-property-${index}`} my={3} align="flex-start">
-              <FormControl
-                isInvalid={
-                  hasFieldError &&
-                  Array.isArray(formErrors.propertyErrors) &&
-                  fieldErrorNotString &&
-                  formErrors.propertyErrors[index].key != null
-                }
-              >
+              <FormControl isInvalid={expectedFieldError?.key != null}>
                 {index === 0 && <FormLabel>Key</FormLabel>}
                 <Input
                   value={poolProperty.key}
                   onChange={(e) => handleOnPoolPropertyChange(e.target.value, poolProperty.type, index)}
                   placeholder="Enter name of expected property"
                 />
-                {hasFieldError &&
-                  Array.isArray(formErrors.propertyErrors) &&
-                  fieldErrorNotString &&
-                  formErrors.propertyErrors[index].key != null && (
-                    <FormErrorMessage>{formErrors?.propertyErrors[index].key}</FormErrorMessage>
-                  )}
+                {expectedFieldError?.key != null && <FormErrorMessage>{expectedFieldError.key}</FormErrorMessage>}
               </FormControl>
-              <FormControl
-                isInvalid={
-                  hasFieldError &&
-                  Array.isArray(formErrors.propertyErrors) &&
-                  fieldErrorNotString &&
-                  formErrors.propertyErrors[index].type != null
-                }
-              >
+              <FormControl isInvalid={expectedFieldError?.type != null}>
                 {index === 0 && <FormLabel>Type</FormLabel>}
                 <HStack>
                   <Input
@@ -119,10 +111,7 @@ const ExpectedProperties: VoidFunctionComponent<Props> = ({
                     onClick={() => handleOnPoolPropertyDelete(index)}
                   />
                 </HStack>
-                {hasFieldError &&
-                  Array.isArray(formErrors.propertyErrors) &&
-                  formErrors.propertyErrors[index].type != null &&
-                  fieldErrorNotString && <FormErrorMessage>{formErrors.propertyErrors[index].type}</FormErrorMessage>}
+                {expectedFieldError?.type != null && <FormErrorMessage>{expectedFieldError.type}</FormErrorMessage>}
               </FormControl>
             </HStack>
           );
