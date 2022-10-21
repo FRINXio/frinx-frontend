@@ -10,22 +10,21 @@ import {
   Spacer,
   Text,
 } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import FeatherIcon from 'feather-icons-react';
-import { FormikErrors } from 'formik';
 
 export type ExpectedProperty = { key: string; type: string };
 
 type Props = {
   label?: string;
   expectedPropertyTypes?: ExpectedProperty[];
-  formErrors: { propertyErrors?: FormikErrors<ExpectedProperty>[] | string | string[]; duplicatePropertyKey?: string };
+  formErrors: { propertyErrors?: ExpectedProperty[] | string; duplicatePropertyKey?: string };
   onPropertyChange: (values: ExpectedProperty[]) => void;
   onPropertyAdd: (values: ExpectedProperty[]) => void;
   onPropertyDelete: (values: ExpectedProperty[]) => void;
 };
 
-const ExpectedProperties: FC<Props> = ({
+const ExpectedProperties: VoidFunctionComponent<Props> = ({
   expectedPropertyTypes = [],
   formErrors,
   onPropertyAdd,
@@ -53,10 +52,6 @@ const ExpectedProperties: FC<Props> = ({
     onPropertyDelete(result);
   };
 
-  const isErrorString = typeof formErrors.propertyErrors === 'string';
-  const isExpectedPropertyTypesError = (index: number) =>
-    formErrors.propertyErrors != null && formErrors.propertyErrors[index] != null && !isErrorString;
-
   return (
     <>
       <HStack my={3} align="flex-start">
@@ -71,59 +66,67 @@ const ExpectedProperties: FC<Props> = ({
           Click on button <Kbd>Add new expected property</Kbd> to add expected property
         </Text>
       ) : (
-        expectedPropertyTypes.map((poolProperty, index) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <HStack key={`expected-property-${index}`} my={3} align="flex-start">
-            <FormControl
-              isInvalid={
-                isExpectedPropertyTypesError(index) &&
-                //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //  @ts-ignore
-                formErrors.propertyErrors[index].key != null
-              }
-            >
-              {index === 0 && <FormLabel>Key</FormLabel>}
-              <Input
-                value={poolProperty.key}
-                onChange={(e) => handleOnPoolPropertyChange(e.target.value, poolProperty.type, index)}
-                placeholder="Enter name of expected property"
-              />
-              {isExpectedPropertyTypesError(index) && (
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                <FormErrorMessage>{formErrors.propertyErrors[index].key}</FormErrorMessage>
-              )}
-            </FormControl>
-            <FormControl
-              isInvalid={
-                isExpectedPropertyTypesError(index) &&
-                //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //  @ts-ignore
-                formErrors.propertyErrors[index].type != null
-              }
-            >
-              {index === 0 && <FormLabel>Type</FormLabel>}
-              <HStack>
+        expectedPropertyTypes.map((poolProperty, index) => {
+          const hasFieldError =
+            formErrors.propertyErrors != null &&
+            formErrors.propertyErrors.length > 0 &&
+            formErrors.propertyErrors[index] != null;
+          const fieldErrorNotString = hasFieldError && typeof formErrors?.propertyErrors?.at(index) !== 'string';
+
+          return (
+            // eslint-disable-next-line react/no-array-index-key
+            <HStack key={`expected-property-${index}`} my={3} align="flex-start">
+              <FormControl
+                isInvalid={
+                  hasFieldError &&
+                  Array.isArray(formErrors.propertyErrors) &&
+                  fieldErrorNotString &&
+                  formErrors.propertyErrors[index].key != null
+                }
+              >
+                {index === 0 && <FormLabel>Key</FormLabel>}
                 <Input
-                  value={poolProperty.type}
-                  onChange={(e) => handleOnPoolPropertyChange(poolProperty.key, e.target.value, index)}
-                  placeholder="Enter type of expected property"
+                  value={poolProperty.key}
+                  onChange={(e) => handleOnPoolPropertyChange(e.target.value, poolProperty.type, index)}
+                  placeholder="Enter name of expected property"
                 />
-                <IconButton
-                  icon={<FeatherIcon icon="trash-2" size={20} />}
-                  colorScheme="red"
-                  aria-label="Delete property"
-                  onClick={() => handleOnPoolPropertyDelete(index)}
-                />
-              </HStack>
-              {isExpectedPropertyTypesError(index) && (
-                //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //  @ts-ignore
-                <FormErrorMessage>{formErrors.propertyErrors[index].type}</FormErrorMessage>
-              )}
-            </FormControl>
-          </HStack>
-        ))
+                {hasFieldError &&
+                  Array.isArray(formErrors.propertyErrors) &&
+                  fieldErrorNotString &&
+                  formErrors.propertyErrors[index].key != null && (
+                    <FormErrorMessage>{formErrors?.propertyErrors[index].key}</FormErrorMessage>
+                  )}
+              </FormControl>
+              <FormControl
+                isInvalid={
+                  hasFieldError &&
+                  Array.isArray(formErrors.propertyErrors) &&
+                  fieldErrorNotString &&
+                  formErrors.propertyErrors[index].type != null
+                }
+              >
+                {index === 0 && <FormLabel>Type</FormLabel>}
+                <HStack>
+                  <Input
+                    value={poolProperty.type}
+                    onChange={(e) => handleOnPoolPropertyChange(poolProperty.key, e.target.value, index)}
+                    placeholder="Enter type of expected property"
+                  />
+                  <IconButton
+                    icon={<FeatherIcon icon="trash-2" size={20} />}
+                    colorScheme="red"
+                    aria-label="Delete property"
+                    onClick={() => handleOnPoolPropertyDelete(index)}
+                  />
+                </HStack>
+                {hasFieldError &&
+                  Array.isArray(formErrors.propertyErrors) &&
+                  formErrors.propertyErrors[index].type != null &&
+                  fieldErrorNotString && <FormErrorMessage>{formErrors.propertyErrors[index].type}</FormErrorMessage>}
+              </FormControl>
+            </HStack>
+          );
+        })
       )}
       {formErrors.duplicatePropertyKey != null && <Text textColor="red">{formErrors.duplicatePropertyKey}</Text>}
     </>

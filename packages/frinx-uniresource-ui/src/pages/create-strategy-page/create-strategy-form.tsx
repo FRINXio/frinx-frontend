@@ -26,8 +26,7 @@ const INITIAL_VALUES: FormValues = {
   resourceTypeProperties: [{ key: 'address', type: 'string' }],
 };
 
-// eslint-disable-next-line func-names
-yup.addMethod(yup.array, 'unique', function (message, mapper = (a: unknown) => a) {
+yup.addMethod(yup.array, 'unique', function unique(message, mapper = (a: unknown) => a) {
   return this.test('unique', message, (list, context) => {
     const l = unwrap(list);
     if (l.length !== new Set(l.map(mapper)).size) {
@@ -107,6 +106,8 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
       <ExpectedProperties
         label="Expected pool properties"
         formErrors={{
+          // TS is not registering during runtime that form errors can dynamically have custom properties
+          // such as in this case expectedPoolPropertyTypesDuplicate defined in the yup schema
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           duplicatePropertyKey: errors.expectedPoolPropertyTypesDuplicate,
@@ -159,6 +160,8 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
       <ExpectedProperties
         label="Expected resource type structure"
         formErrors={{
+          // TS is not registering during runtime that errors can have custom properties
+          // such as in this case resourceTypePropertiesDuplicate defined in the yup schema
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           duplicatePropertyKey: errors.resourceTypePropertiesDuplicate,
