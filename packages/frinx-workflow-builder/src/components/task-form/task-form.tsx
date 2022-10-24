@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { useFormik } from 'formik';
+import { FormikErrors, useFormik } from 'formik';
 import {
   Box,
   Button,
@@ -25,7 +25,7 @@ import {
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import produce from 'immer';
-import { InputParameters, ExtendedTask, GraphExtendedTask } from '../../helpers/types';
+import { InputParameters, ExtendedTask, GraphExtendedTask, GraphExtendedDecisionTask } from '../../helpers/types';
 import { getValidationSchema, renderInputParamForm } from './input-params-forms';
 import { convertTaskToExtendedTask } from '../../helpers/api-to-graph.helpers';
 
@@ -155,11 +155,15 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
                   Add decision case
                 </Button>
                 {values.decisionCases.map(({ key }, index) => {
+                  const { decisionCases: decisionCasesErrors, caseValueParam } =
+                    errors as FormikErrors<GraphExtendedDecisionTask>;
+                  const decisionCaseError =
+                    ((decisionCasesErrors && decisionCasesErrors[index]) as { key: string }) || null;
                   return (
                     // eslint-disable-next-line react/no-array-index-key
                     <React.Fragment key={`decision-case-${index}`}>
-                      <HStack spacing={2} marginY={2}>
-                        <FormControl>
+                      <HStack spacing={2} marginY={2} alignItems="flex-start">
+                        <FormControl isInvalid={caseValueParam != null}>
                           <InputGroup>
                             <InputLeftAddon>if</InputLeftAddon>
                             <Input
@@ -169,8 +173,9 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
                               onChange={handleChange}
                             />
                           </InputGroup>
+                          <FormErrorMessage>{caseValueParam}</FormErrorMessage>
                         </FormControl>
-                        <FormControl>
+                        <FormControl isInvalid={decisionCaseError != null}>
                           <InputGroup>
                             <InputLeftAddon>is equal to</InputLeftAddon>
                             <Input
@@ -193,10 +198,11 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
                               }}
                             />
                           </InputGroup>
+                          {decisionCaseError && <FormErrorMessage>{decisionCaseError.key}</FormErrorMessage>}
                         </FormControl>
                         <IconButton
                           colorScheme="red"
-                          size="sm"
+                          size="md"
                           aria-label="Delete blueprint"
                           icon={<Icon size={20} as={FeatherIcon} icon="trash-2" />}
                           onClick={() => {

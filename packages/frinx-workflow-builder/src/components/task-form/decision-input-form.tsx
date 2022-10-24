@@ -7,7 +7,15 @@ import { omitBy } from 'lodash';
 import { DecisionInputParams } from '../../helpers/types';
 
 // TODO: dynamic object should be specified more precisely in yup
-export const DecisionInputParamsSchema = yup.object().shape({});
+export const DecisionInputParamsSchema = yup.object({
+  caseValueParam: yup.string().required(),
+  decisionCases: yup.array().of(
+    yup.object({
+      key: yup.string().required('decision key is required'),
+      tasks: yup.array(yup.object().shape({})).required(),
+    }),
+  ),
+});
 
 type Props = {
   params: DecisionInputParams;
