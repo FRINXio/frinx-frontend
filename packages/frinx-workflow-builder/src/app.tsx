@@ -309,8 +309,6 @@ const App: VoidFunctionComponent<Props> = ({
       });
   };
 
-  // const workflowToExecute = getWorkflowToExecute(workflow, elements);
-
   return (
     <>
       <Grid templateColumns="384px 1fr" templateRows="64px 1fr" minHeight="100%" height="calc(100vh - 64px)">
