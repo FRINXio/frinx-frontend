@@ -237,7 +237,7 @@ const App: VoidFunctionComponent<Props> = ({
     setHasUnsavedChanges(isWorkflowChanged);
   };
 
-  const handleOnSaveWorkflow = (editedWorkflow: Workflow<Task>) => {
+  const handleOnSaveWorkflow = (editedWorkflow: Workflow<Task>, shouldOpenExecuteModal = false) => {
     try {
       const { tasks, ...rest } = editedWorkflow;
       const newTasks = convertToTasks(elements);
@@ -251,7 +251,7 @@ const App: VoidFunctionComponent<Props> = ({
       ])
         .then(() => {
           setHasUnsavedChanges(false);
-          executeWorkflowModal.onOpen();
+          shouldOpenExecuteModal && executeWorkflowModal.onOpen();
           addToastNotification({
             title: 'Workflow Saved',
             content: 'Workflow was successfully saved',
@@ -353,10 +353,13 @@ const App: VoidFunctionComponent<Props> = ({
                     const newTasks = convertToTasks(elements);
                     const { tasks, ...rest } = workflow;
 
-                    handleOnSaveWorkflow({
-                      ...rest,
-                      tasks: newTasks,
-                    });
+                    handleOnSaveWorkflow(
+                      {
+                        ...rest,
+                        tasks: newTasks,
+                      },
+                      true,
+                    );
                   }}
                 >
                   Save and execute
