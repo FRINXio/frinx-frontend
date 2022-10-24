@@ -251,7 +251,9 @@ const App: VoidFunctionComponent<Props> = ({
       ])
         .then(() => {
           setHasUnsavedChanges(false);
-          shouldOpenExecuteModal && executeWorkflowModal.onOpen();
+          if (shouldOpenExecuteModal) {
+            executeWorkflowModal.onOpen();
+          }
           addToastNotification({
             title: 'Workflow Saved',
             content: 'Workflow was successfully saved',
