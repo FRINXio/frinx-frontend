@@ -1,6 +1,6 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Button, FormControl, FormLabel, HStack, Input, Select, Spacer } from '@chakra-ui/react';
-import { useFormik } from 'formik';
+import { FormikErrors, useFormik } from 'formik';
 import { Editor, unwrap } from '@frinx/shared/src';
 import * as yup from 'yup';
 import { AllocationStrategyLang } from '../../__generated__/graphql';
@@ -33,7 +33,7 @@ yup.addMethod(yup.array, 'unique', function unique(message, mapper = (a: unknown
       // we want to have duplicate error in another path to be able
       // to distinguish it frow ordinary alternateId errors (key, value)
       throw context.createError({
-        path: `${context.path}Duplicate`,
+        path: `${context.path}DuplicatedKeys`,
         message,
       });
     }
@@ -96,6 +96,10 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
     },
   });
 
+  type FormErrors = typeof errors &
+    FormikErrors<{ expectedPoolPropertyTypesDuplicatedKeys?: string; resourceTypePropertiesDuplicatedKeys?: string }>;
+  const formErrors: FormErrors = errors;
+
   return (
     <form onSubmit={handleSubmit}>
       <FormControl marginY={5} id="name" isRequired>
@@ -106,12 +110,8 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
       <ExpectedProperties
         label="Expected pool properties"
         formErrors={{
-          // TS is not registering during runtime that form errors can dynamically have custom properties
-          // such as in this case expectedPoolPropertyTypesDuplicate defined in the yup schema
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          duplicatePropertyKey: errors.expectedPoolPropertyTypesDuplicate,
-          propertyErrors: errors.expectedPoolPropertyTypes,
+          duplicatePropertyKey: formErrors.expectedPoolPropertyTypesDuplicatedKeys,
+          propertyErrors: formErrors.expectedPoolPropertyTypes,
         }}
         expectedPropertyTypes={values.expectedPoolPropertyTypes}
         onPropertyAdd={(newProperties) => setFieldValue('expectedPoolPropertyTypes', newProperties)}
@@ -160,12 +160,8 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
       <ExpectedProperties
         label="Expected resource type structure"
         formErrors={{
-          // TS is not registering during runtime that errors can have custom properties
-          // such as in this case resourceTypePropertiesDuplicate defined in the yup schema
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          duplicatePropertyKey: errors.resourceTypePropertiesDuplicate,
-          propertyErrors: errors.resourceTypeProperties,
+          duplicatePropertyKey: formErrors.resourceTypePropertiesDuplicatedKeys,
+          propertyErrors: formErrors.resourceTypeProperties,
         }}
         expectedPropertyTypes={values.resourceTypeProperties}
         onPropertyAdd={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}

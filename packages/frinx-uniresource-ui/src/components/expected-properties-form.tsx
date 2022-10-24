@@ -29,15 +29,20 @@ type Props = {
   onPropertyDelete: (values: ExpectedProperty[]) => void;
 };
 
-function getExpectedType<T>(value: unknown): T | null {
-  if (value instanceof Object) {
-    return value as T;
-  } else {
-    return null;
+function isValueNotString(
+  value?: FormikErrors<ExpectedProperty> | string | null,
+): value is Record<string, string> | null {
+  if (value == null) {
+    return false;
   }
+
+  return typeof value !== 'string';
 }
 
-function getExpectedFieldError(index: number, formErrors?: ExpectedPropertyErrors | null) {
+function getExpectedFieldError(
+  index: number,
+  formErrors?: ExpectedPropertyErrors | null,
+): FormikErrors<ExpectedProperty> | null {
   if (formErrors == null || formErrors.propertyErrors == null || formErrors.propertyErrors.length === 0) {
     return null;
   }
@@ -46,11 +51,14 @@ function getExpectedFieldError(index: number, formErrors?: ExpectedPropertyError
     return null;
   }
 
-  if (typeof formErrors?.propertyErrors?.at(index) === 'string') {
-    return null;
+  const propertyFieldError = formErrors.propertyErrors[index];
+  const ensuredPropertyFieldError = isValueNotString(propertyFieldError) ? propertyFieldError : null;
+
+  if (ensuredPropertyFieldError != null) {
+    return ensuredPropertyFieldError;
   }
 
-  return getExpectedType<FormikErrors<ExpectedProperty>>(formErrors.propertyErrors.at(index));
+  return null;
 }
 
 const ExpectedProperties: VoidFunctionComponent<Props> = ({
@@ -61,7 +69,9 @@ const ExpectedProperties: VoidFunctionComponent<Props> = ({
   onPropertyChange,
   label = 'Expected properties',
 }) => {
-  const handleOnPoolPropertyAdd = () => onPropertyAdd([...expectedPropertyTypes, { key: '', type: '' }]);
+  const handleOnPoolPropertyAdd = () => {
+    onPropertyAdd([...expectedPropertyTypes, { key: '', type: '' }]);
+  };
 
   const handleOnPoolPropertyChange = (key: string, type: string, changedIndex: number) => {
     const changedPoolProperties = [
