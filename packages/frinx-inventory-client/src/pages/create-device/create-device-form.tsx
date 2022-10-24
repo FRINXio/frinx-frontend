@@ -344,11 +344,9 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       <Divider my={6} />
       <HStack mb={6}>
         <Spacer />
-        <FormControl>
-          <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
-            Add device
-          </Button>
-        </FormControl>
+        <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
+          Add device
+        </Button>
       </HStack>
     </form>
   );
