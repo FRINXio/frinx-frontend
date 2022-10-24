@@ -25,7 +25,7 @@ import {
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import produce from 'immer';
-import { InputParameters, ExtendedTask, GraphExtendedTask, GraphExtendedDecisionTask } from '../../helpers/types';
+import { InputParameters, ExtendedTask, GraphExtendedTask } from '../../helpers/types';
 import { getValidationSchema, renderInputParamForm } from './input-params-forms';
 import { convertTaskToExtendedTask } from '../../helpers/api-to-graph.helpers';
 
@@ -63,6 +63,21 @@ function convertGraphExtendedTaskToExtendedTask(task: GraphExtendedTask): Extend
     };
   }
   return task;
+}
+
+function getDecisionCaseError(
+  errors: FormikErrors<GraphExtendedTask>,
+  index: number,
+): FormikErrors<{ caseValueParam: string; decisionCase: string }> | null {
+  if ('decisionCases' in errors) {
+    const { decisionCases, caseValueParam } = errors;
+    const decisionCaseErrors = decisionCases && decisionCases[index];
+    return {
+      caseValueParam,
+      decisionCase: typeof decisionCaseErrors === 'object' ? decisionCaseErrors.key : undefined,
+    };
+  }
+  return null;
 }
 
 const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
@@ -155,15 +170,12 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
                   Add decision case
                 </Button>
                 {values.decisionCases.map(({ key }, index) => {
-                  const { decisionCases: decisionCasesErrors, caseValueParam } =
-                    errors as FormikErrors<GraphExtendedDecisionTask>;
-                  const decisionCaseError =
-                    ((decisionCasesErrors && decisionCasesErrors[index]) as { key: string }) || null;
+                  const decisionErrors = getDecisionCaseError(errors, index);
                   return (
                     // eslint-disable-next-line react/no-array-index-key
                     <React.Fragment key={`decision-case-${index}`}>
                       <HStack spacing={2} marginY={2} alignItems="flex-start">
-                        <FormControl isInvalid={caseValueParam != null}>
+                        <FormControl isInvalid={decisionErrors?.caseValueParam != null}>
                           <InputGroup>
                             <InputLeftAddon>if</InputLeftAddon>
                             <Input
@@ -173,9 +185,9 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
                               onChange={handleChange}
                             />
                           </InputGroup>
-                          <FormErrorMessage>{caseValueParam}</FormErrorMessage>
+                          <FormErrorMessage>{decisionErrors?.caseValueParam}</FormErrorMessage>
                         </FormControl>
-                        <FormControl isInvalid={decisionCaseError != null}>
+                        <FormControl isInvalid={decisionErrors?.decisionCase != null}>
                           <InputGroup>
                             <InputLeftAddon>is equal to</InputLeftAddon>
                             <Input
@@ -198,7 +210,7 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
                               }}
                             />
                           </InputGroup>
-                          {decisionCaseError && <FormErrorMessage>{decisionCaseError.key}</FormErrorMessage>}
+                          <FormErrorMessage>{decisionErrors?.decisionCase}</FormErrorMessage>
                         </FormControl>
                         <IconButton
                           colorScheme="red"
