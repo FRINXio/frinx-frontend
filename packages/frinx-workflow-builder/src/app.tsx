@@ -95,6 +95,7 @@ const App: VoidFunctionComponent<Props> = ({
   );
   const [isWorkflowEdited, setIsWorkflowEdited] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [workflowToExecute, setWorkflowToExecute] = useState<Workflow>(workflow);
 
   const handleConnect = (edge: Edge<unknown> | Connection) => {
     setElements((els) => ({
@@ -242,6 +243,11 @@ const App: VoidFunctionComponent<Props> = ({
       const { tasks, ...rest } = editedWorkflow;
       const newTasks = convertToTasks(elements);
 
+      setWorkflowToExecute({
+        ...editedWorkflow,
+        tasks: newTasks,
+      });
+
       const { putWorkflow } = callbackUtils.getCallbacks;
       putWorkflow([
         {
@@ -303,6 +309,8 @@ const App: VoidFunctionComponent<Props> = ({
       });
   };
 
+  // const workflowToExecute = getWorkflowToExecute(workflow, elements);
+
   return (
     <>
       <Grid templateColumns="384px 1fr" templateRows="64px 1fr" minHeight="100%" height="calc(100vh - 64px)">
@@ -352,16 +360,7 @@ const App: VoidFunctionComponent<Props> = ({
                 <Button
                   colorScheme="blue"
                   onClick={() => {
-                    const newTasks = convertToTasks(elements);
-                    const { tasks, ...rest } = workflow;
-
-                    handleOnSaveWorkflow(
-                      {
-                        ...rest,
-                        tasks: newTasks,
-                      },
-                      true,
-                    );
+                    handleOnSaveWorkflow(workflow, true);
                   }}
                 >
                   Save and execute
@@ -455,8 +454,8 @@ const App: VoidFunctionComponent<Props> = ({
       )}
       <NewWorkflowModal isOpen={workflowModalDisclosure.isOpen} onClose={workflowModalDisclosure.onClose} />
       <ExecuteWorkflowModal
-        parsedInputParameters={parseInputParameters(workflow.inputParameters)}
-        dynamicInputParameters={getDynamicInputParametersFromWorkflow(workflow)}
+        parsedInputParameters={parseInputParameters(workflowToExecute.inputParameters)}
+        dynamicInputParameters={getDynamicInputParametersFromWorkflow(workflowToExecute)}
         onClose={executeWorkflowModal.onClose}
         isOpen={executeWorkflowModal.isOpen}
         workflowName={workflow.name}
