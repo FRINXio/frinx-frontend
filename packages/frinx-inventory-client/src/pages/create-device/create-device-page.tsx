@@ -133,7 +133,10 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
   const handleSubmit = (values: FormValues) => {
     setIsSubmitting(true);
     addDevice({
-      input: values,
+      input: {
+        ...values,
+        ...(values.mountParameters && { mountParameters: JSON.stringify(values.mountParameters) }),
+      },
     })
       .then(({ error }) => {
         if (error != null) {
