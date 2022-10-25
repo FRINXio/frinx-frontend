@@ -95,6 +95,7 @@ const App: VoidFunctionComponent<Props> = ({
   );
   const [isWorkflowEdited, setIsWorkflowEdited] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [workflowToExecute, setWorkflowToExecute] = useState<Workflow>(workflow);
 
   const handleConnect = (edge: Edge<unknown> | Connection) => {
     setElements((els) => ({
@@ -237,10 +238,15 @@ const App: VoidFunctionComponent<Props> = ({
     setHasUnsavedChanges(isWorkflowChanged);
   };
 
-  const handleOnSaveWorkflow = (editedWorkflow: Workflow<Task>) => {
+  const handleOnSaveWorkflow = (editedWorkflow: Workflow<Task>, shouldOpenExecuteModal = false) => {
     try {
       const { tasks, ...rest } = editedWorkflow;
       const newTasks = convertToTasks(elements);
+
+      setWorkflowToExecute({
+        ...editedWorkflow,
+        tasks: newTasks,
+      });
 
       const { putWorkflow } = callbackUtils.getCallbacks;
       putWorkflow([
@@ -251,7 +257,9 @@ const App: VoidFunctionComponent<Props> = ({
       ])
         .then(() => {
           setHasUnsavedChanges(false);
-          executeWorkflowModal.onOpen();
+          if (shouldOpenExecuteModal) {
+            executeWorkflowModal.onOpen();
+          }
           addToastNotification({
             title: 'Workflow Saved',
             content: 'Workflow was successfully saved',
@@ -350,13 +358,7 @@ const App: VoidFunctionComponent<Props> = ({
                 <Button
                   colorScheme="blue"
                   onClick={() => {
-                    const newTasks = convertToTasks(elements);
-                    const { tasks, ...rest } = workflow;
-
-                    handleOnSaveWorkflow({
-                      ...rest,
-                      tasks: newTasks,
-                    });
+                    handleOnSaveWorkflow(workflow, true);
                   }}
                 >
                   Save and execute
@@ -450,8 +452,8 @@ const App: VoidFunctionComponent<Props> = ({
       )}
       <NewWorkflowModal isOpen={workflowModalDisclosure.isOpen} onClose={workflowModalDisclosure.onClose} />
       <ExecuteWorkflowModal
-        parsedInputParameters={parseInputParameters(workflow.inputParameters)}
-        dynamicInputParameters={getDynamicInputParametersFromWorkflow(workflow)}
+        parsedInputParameters={parseInputParameters(workflowToExecute.inputParameters)}
+        dynamicInputParameters={getDynamicInputParametersFromWorkflow(workflowToExecute)}
         onClose={executeWorkflowModal.onClose}
         isOpen={executeWorkflowModal.isOpen}
         workflowName={workflow.name}
