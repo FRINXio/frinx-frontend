@@ -38,7 +38,7 @@ const DEFAULT_TASK_OPTIONS: Pick<Task, 'optional' | 'startDelay'> = {
   optional: false,
 };
 
-function getRandomString(length: number): string {
+export function getRandomString(length: number): string {
   return window
     .btoa(
       Array.from(window.crypto.getRandomValues(new Uint8Array(length * 2)))

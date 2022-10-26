@@ -28,6 +28,7 @@ import produce from 'immer';
 import { InputParameters, ExtendedTask, GraphExtendedTask } from '../../helpers/types';
 import { getValidationSchema, renderInputParamForm } from './input-params-forms';
 import { convertTaskToExtendedTask } from '../../helpers/api-to-graph.helpers';
+import { getRandomString } from '../../helpers/task.helpers';
 
 type Props = {
   task: ExtendedTask;
@@ -100,7 +101,7 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
     if (values.type !== 'DECISION') {
       return;
     }
-    const newDecisionCases = [...values.decisionCases, { key: 'case', tasks: [] }];
+    const newDecisionCases = [...values.decisionCases, { key: `case_${getRandomString(3)}`, tasks: [] }];
     setFieldValue('decisionCases', newDecisionCases);
   };
 
@@ -160,33 +161,29 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
             </FormControl>
             {values.type === 'DECISION' && (
               <>
-                <Button
-                  aria-label="Add decision case"
-                  leftIcon={<Icon as={FeatherIcon} icon="plus" size="small" />}
-                  size="md"
-                  fontWeight="normal"
-                  onClick={handleAddDecisionCase}
-                >
-                  Add decision case
-                </Button>
+                <HStack spacing={2} marginY={2} alignItems="center">
+                  <FormControl isInvalid={getDecisionCaseError(errors, 0)?.caseValueParam != null}>
+                    <InputGroup>
+                      <InputLeftAddon>if</InputLeftAddon>
+                      <Input
+                        type="text"
+                        name="caseValueParam"
+                        value={values.caseValueParam || ''}
+                        onChange={handleChange}
+                      />
+                    </InputGroup>
+                    <FormErrorMessage>{getDecisionCaseError(errors, 0)?.caseValueParam}</FormErrorMessage>
+                  </FormControl>
+                  <Button aria-label="Add decision case" size="sm" colorScheme="blue" onClick={handleAddDecisionCase}>
+                    Add case
+                  </Button>
+                </HStack>
                 {values.decisionCases.map(({ key }, index) => {
                   const decisionErrors = getDecisionCaseError(errors, index);
                   return (
                     // eslint-disable-next-line react/no-array-index-key
-                    <React.Fragment key={`decision-case-${index}`}>
-                      <HStack spacing={2} marginY={2} alignItems="flex-start">
-                        <FormControl isInvalid={decisionErrors?.caseValueParam != null}>
-                          <InputGroup>
-                            <InputLeftAddon>if</InputLeftAddon>
-                            <Input
-                              type="text"
-                              name="caseValueParam"
-                              value={values.caseValueParam || ''}
-                              onChange={handleChange}
-                            />
-                          </InputGroup>
-                          <FormErrorMessage>{decisionErrors?.caseValueParam}</FormErrorMessage>
-                        </FormControl>
+                    <React.Fragment key={key}>
+                      <HStack spacing={2} marginY={2} alignItems="flex-start" paddingLeft={2}>
                         <FormControl isInvalid={decisionErrors?.decisionCase != null}>
                           <InputGroup>
                             <InputLeftAddon>is equal to</InputLeftAddon>
