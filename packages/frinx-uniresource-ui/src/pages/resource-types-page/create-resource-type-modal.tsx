@@ -15,7 +15,7 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import * as yup from 'yup';
-import { FormikValues, useFormik } from 'formik';
+import { FormikErrors, FormikValues, useFormik } from 'formik';
 import { unwrap } from '@frinx/shared';
 import ExpectedProperties, { ExpectedProperty } from '../../components/expected-properties-form';
 
@@ -56,8 +56,6 @@ const validationSchema = yup.object({
         type: yup.string().required('Type is required'),
       }),
     )
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     .unique('Resource type property keys cannot repeat', (a: FormikValues) => a.key),
 });
 
@@ -78,6 +76,8 @@ const CreateResourceTypeModal: VoidFunctionComponent<Props> = ({ isOpen, onClose
     },
   );
 
+  const formErrors: FormikErrors<FormValues & { resourceTypePropertiesDuplicate?: string }> = errors;
+
   return (
     <Modal onClose={onClose} isOpen={isOpen} isCentered size="3xl">
       <ModalOverlay />
@@ -94,12 +94,8 @@ const CreateResourceTypeModal: VoidFunctionComponent<Props> = ({ isOpen, onClose
           <ExpectedProperties
             label="Expected resource type structure"
             formErrors={{
-              // TS is not registering during runtime that errors can have custom properties
-              // such as in this case resourceTypePropertiesDuplicate defined in the yup schema
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              duplicatePropertyKey: errors.resourceTypePropertiesDuplicate,
-              propertyErrors: errors.resourceTypeProperties,
+              duplicatePropertyKey: formErrors.resourceTypePropertiesDuplicate,
+              propertyErrors: formErrors.resourceTypeProperties,
             }}
             expectedPropertyTypes={values.resourceTypeProperties}
             onPropertyAdd={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}

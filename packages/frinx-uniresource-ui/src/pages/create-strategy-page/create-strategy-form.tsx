@@ -1,6 +1,6 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Button, FormControl, FormLabel, HStack, Input, Select, Spacer } from '@chakra-ui/react';
-import { FormikErrors, useFormik } from 'formik';
+import { FormikErrors, FormikValues, useFormik } from 'formik';
 import { Editor, unwrap } from '@frinx/shared/src';
 import * as yup from 'yup';
 import { AllocationStrategyLang } from '../../__generated__/graphql';
@@ -54,9 +54,6 @@ const validationSchema = yup.object().shape({
         type: yup.string().required('You need to define type of expected pool property'),
       }),
     )
-    // TODO: check suggested solution https://github.com/jquense/yup/issues/345#issuecomment-634718990
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     .unique('Expected pool property keys cannot repeat', (a: FormikValues) => a.key),
   resourceTypeProperties: yup
     .array()
@@ -66,9 +63,6 @@ const validationSchema = yup.object().shape({
         type: yup.string().required('You need to define type of resource type property'),
       }),
     )
-    // TODO: check suggested solution https://github.com/jquense/yup/issues/345#issuecomment-634718990
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     .unique('Resource type property keys cannot repeat', (a: FormikValues) => a.key),
 });
 
