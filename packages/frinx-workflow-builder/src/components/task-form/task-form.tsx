@@ -17,6 +17,7 @@ import {
   InputGroup,
   InputLeftAddon,
   Stack,
+  Switch,
   Tab,
   TabList,
   TabPanel,
@@ -45,6 +46,7 @@ function convertExtendedTaskToGraphExtendedTask(task: ExtendedTask): GraphExtend
     return {
       ...task,
       decisionCases,
+      isCaseExpressionEnabled: !!task.caseExpression,
     };
   }
   return task;
@@ -61,6 +63,8 @@ function convertGraphExtendedTaskToExtendedTask(task: GraphExtendedTask): Extend
     return {
       ...task,
       decisionCases,
+      caseExpression: task.isCaseExpressionEnabled ? task.caseExpression : undefined,
+      caseValueParam: task.isCaseExpressionEnabled ? undefined : task.caseValueParam,
     };
   }
   return task;
@@ -165,12 +169,21 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
                   <FormControl isInvalid={getDecisionCaseError(errors, 0)?.caseValueParam != null}>
                     <InputGroup>
                       <InputLeftAddon>if</InputLeftAddon>
-                      <Input
-                        type="text"
-                        name="caseValueParam"
-                        value={values.caseValueParam || ''}
-                        onChange={handleChange}
-                      />
+                      {values.isCaseExpressionEnabled ? (
+                        <Input
+                          type="text"
+                          name="caseExpression"
+                          value={values.caseExpression || ''}
+                          onChange={handleChange}
+                        />
+                      ) : (
+                        <Input
+                          type="text"
+                          name="caseValueParam"
+                          value={values.caseValueParam || ''}
+                          onChange={handleChange}
+                        />
+                      )}
                     </InputGroup>
                     <FormErrorMessage>{getDecisionCaseError(errors, 0)?.caseValueParam}</FormErrorMessage>
                   </FormControl>
@@ -178,6 +191,18 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
                     Add case
                   </Button>
                 </HStack>
+                <FormControl display="flex" alignItems="center">
+                  <FormLabel htmlFor="useCaseExpression" mb="0">
+                    use case expression
+                  </FormLabel>
+                  <Switch
+                    id="isCaseExpressionEnabled"
+                    name="isCaseExpressionEnabled"
+                    size="md"
+                    isChecked={values.isCaseExpressionEnabled}
+                    onChange={() => setFieldValue('isCaseExpressionEnabled', !values.isCaseExpressionEnabled)}
+                  />
+                </FormControl>
                 {values.decisionCases.map(({ key }, index) => {
                   const decisionErrors = getDecisionCaseError(errors, index);
                   return (
