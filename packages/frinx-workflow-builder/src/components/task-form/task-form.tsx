@@ -182,7 +182,7 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
                   const decisionErrors = getDecisionCaseError(errors, index);
                   return (
                     // eslint-disable-next-line react/no-array-index-key
-                    <React.Fragment key={key}>
+                    <React.Fragment key={index}>
                       <HStack spacing={2} marginY={2} alignItems="flex-start" paddingLeft={2}>
                         <FormControl isInvalid={decisionErrors?.decisionCase != null}>
                           <InputGroup>
