@@ -12,7 +12,11 @@
     "@emotion/styled": "11.9.3",
     "@fontsource/noto-sans": "^4.5.11",
     "@formspree/react": "^2.4.0",
+<<<<<<< HEAD
     "@frinx/api": "0.0.14",
+=======
+    "@frinx/api": "0.0.13",
+>>>>>>> a519f73a (renaming files and variables uniresource -> resource-manager)
     "@frinx/inventory-client": "^0.0.1",
     "@frinx/resource-manager": "^0.0.1",
     "@frinx/shared": "workspace:^",

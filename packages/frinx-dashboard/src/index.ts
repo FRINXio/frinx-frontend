@@ -16,10 +16,14 @@ const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
   ['isUniflowEnabled', () => import('@frinx/workflow-ui')],
   ['isInventoryEnabled', () => import('@frinx/inventory-client/src')],
 <<<<<<< HEAD
+<<<<<<< HEAD
   ['isResourceManagerEnabled', () => import('@frinx/resource-manager/src')],
 =======
   ['isUniresourceEnabled', () => import('@frinx/resource-manager/src')],
 >>>>>>> edc1561c (rebase main branch)
+=======
+  ['isResourceManagerEnabled', () => import('@frinx/resource-manager/src')],
+>>>>>>> c4676269 (renaming files and variables uniresource -> resource-manager)
   ['isGammaEnabled', () => import('@frinxio/gamma')],
   ['isDeviceTopologyEnabled', () => import('@frinxio/device-topology/src')],
 ]);
