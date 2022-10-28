@@ -11,7 +11,7 @@ This is a monorepo using yarn workspaces. This is how it looks like:
   |- @frinx/workflow-ui
   |- @frinx/workflow-builder
   |- @frinx/inventory-client
-  |- @frinx/uniresource-ui
+  |- @frinx/resource-manager
 ```
 
 `@frinx/dashboard` packages ties all the frontend packages together and renders the final UI + it's responsible for the high level routing (first level routes) - each package maintains its own internal/nested routes.

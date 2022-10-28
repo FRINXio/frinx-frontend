@@ -3,10 +3,10 @@ import React, { FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
 
 const UniresourceApp: FC = () => {
-  const [components, setComponents] = useState<typeof import('@frinx/uniresource-ui/src') | null>(null);
+  const [components, setComponents] = useState<typeof import('@frinx/resource-manager/src') | null>(null);
 
   useEffect(() => {
-    import('@frinx/uniresource-ui/src').then((mod) => {
+    import('@frinx/resource-manager/src').then((mod) => {
       setComponents(mod);
     });
   }, []);
