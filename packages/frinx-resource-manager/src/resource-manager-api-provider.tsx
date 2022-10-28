@@ -12,7 +12,7 @@ export type Props = {
   client: InventoryApiClient;
 };
 
-const UniresourceApiProvider: FC<Props> = ({ children, client }) => {
+const ResourceManagerApiProvider: FC<Props> = ({ children, client }) => {
   const { current: urqlClient } = useRef(
     createClient({
       ...client.clientOptions,
@@ -41,4 +41,4 @@ const UniresourceApiProvider: FC<Props> = ({ children, client }) => {
   );
 };
 
-export default UniresourceApiProvider;
+export default ResourceManagerApiProvider;

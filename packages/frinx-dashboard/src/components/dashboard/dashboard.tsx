@@ -53,7 +53,7 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
                 path="/inventory"
               />
             )}
-            {enabledServices.get('isUniresourceEnabled') && (
+            {enabledServices.get('isResourceManagerEnabled') && (
               <Panel
                 label="Resource manager"
                 description="Manage logical resources."

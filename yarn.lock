@@ -3387,18 +3387,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@frinx/api@npm:0.0.12":
-  version: 0.0.12
-  resolution: "@frinx/api@npm:0.0.12"
-  dependencies:
-    fp-ts: 2.12.1
-    io-ts: 2.2.17
-    url-join: 5.0.0
-  checksum: d0364f6fc66ed6b50b0c80c907400ec9dd9873bf5e1f4118a8b60be956dbcae26de68cb99ae3f7a71aca7ed5e22214003b9481d08a9279fa951b6f01f9107b54
-  languageName: node
-  linkType: hard
-
-"@frinx/api@workspace:packages/frinx-api":
+"@frinx/api@0.0.13, @frinx/api@workspace:packages/frinx-api":
   version: 0.0.0-use.local
   resolution: "@frinx/api@workspace:packages/frinx-api"
   dependencies:
@@ -3451,7 +3440,7 @@ __metadata:
     "@emotion/styled": 11.9.3
     "@fontsource/noto-sans": ^4.5.11
     "@formspree/react": ^2.4.0
-    "@frinx/api": 0.0.12
+    "@frinx/api": 0.0.13
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@frinx/inventory-client": ^0.0.1
     "@frinx/resource-manager": ^0.0.1

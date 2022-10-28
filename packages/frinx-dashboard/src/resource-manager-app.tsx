@@ -1,8 +1,8 @@
-import { UniresourceApi } from '@frinx/api';
+import { ResourceManagerApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
 
-const UniresourceApp: FC = () => {
+const ResourceManagerApp: FC = () => {
   const [components, setComponents] = useState<typeof import('@frinx/resource-manager/src') | null>(null);
 
   useEffect(() => {
@@ -15,15 +15,15 @@ const UniresourceApp: FC = () => {
     return null;
   }
 
-  const { UniresourceAppProvider, UniresourceApp: App } = components;
+  const { ResourceManagerAppProvider, ResourceManagerApp: App } = components;
 
   return (
-    <UniresourceAppProvider
-      client={UniresourceApi.create({ url: window.__CONFIG__.uniresourceApiURL, authContext }).client}
+    <ResourceManagerAppProvider
+      client={ResourceManagerApi.create({ url: window.__CONFIG__.uniresourceApiURL, authContext }).client}
     >
       <App />
-    </UniresourceAppProvider>
+    </ResourceManagerAppProvider>
   );
 };
 
-export default UniresourceApp;
+export default ResourceManagerApp;
