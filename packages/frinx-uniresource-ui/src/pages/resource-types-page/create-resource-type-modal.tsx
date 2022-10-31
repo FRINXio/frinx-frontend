@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import * as yup from 'yup';
 import { FormikErrors, FormikValues, useFormik } from 'formik';
-import { unwrap } from '@frinx/shared';
+import { unwrap } from '@frinx/shared/src';
 import ExpectedProperties, { ExpectedProperty } from '../../components/expected-properties-form';
 
 type Props = {
