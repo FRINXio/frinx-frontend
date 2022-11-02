@@ -1,4 +1,4 @@
-import { unwrap } from '@frinx/shared';
+import { unwrap } from '@frinx/shared/src';
 import React, { createContext, Dispatch, FC, Reducer, useContext, useEffect, useMemo, useReducer } from 'react';
 import { gql, useClient } from 'urql';
 import { setNodesAndEdges, StateAction } from './state.actions';

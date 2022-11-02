@@ -1,6 +1,6 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Button, FormControl, FormLabel, HStack, Input, Select, Spacer } from '@chakra-ui/react';
-import { useFormik } from 'formik';
+import { FormikErrors, FormikValues, useFormik } from 'formik';
 import { Editor, unwrap } from '@frinx/shared/src';
 import * as yup from 'yup';
 import { AllocationStrategyLang } from '../../__generated__/graphql';
@@ -9,7 +9,7 @@ import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/ext-language_tools';
-import ExpectedPoolProperties from './expected-pool-properties-form';
+import ExpectedProperties, { ExpectedProperty } from '../../components/expected-properties-form';
 
 function getDefaultScriptValue(): string {
   return `function invoke() {
@@ -22,18 +22,18 @@ const INITIAL_VALUES: FormValues = {
   name: '',
   lang: 'js',
   script: getDefaultScriptValue(),
-  expectedPoolPropertyTypes: [{ key: 'address', type: 'int' }],
+  expectedPoolPropertyTypes: [{ key: 'address', type: 'string' }],
+  resourceTypeProperties: [{ key: 'address', type: 'string' }],
 };
 
-// eslint-disable-next-line func-names
-yup.addMethod(yup.array, 'unique', function (message, mapper = (a: unknown) => a) {
+yup.addMethod(yup.array, 'unique', function unique(message, mapper = (a: unknown) => a) {
   return this.test('unique', message, (list, context) => {
     const l = unwrap(list);
     if (l.length !== new Set(l.map(mapper)).size) {
       // we want to have duplicate error in another path to be able
       // to distinguish it frow ordinary alternateId errors (key, value)
       throw context.createError({
-        path: 'duplicateExpectedPoolPropertyKey',
+        path: `${context.path}DuplicatedKeys`,
         message,
       });
     }
@@ -54,30 +54,45 @@ const validationSchema = yup.object().shape({
         type: yup.string().required('You need to define type of expected pool property'),
       }),
     )
-    // TODO: check suggested solution https://github.com/jquense/yup/issues/345#issuecomment-634718990
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     .unique('Expected pool property keys cannot repeat', (a: FormikValues) => a.key),
+  resourceTypeProperties: yup
+    .array()
+    .of(
+      yup.object({
+        key: yup.string().required('You need to define name of resource type property'),
+        type: yup.string().required('You need to define type of resource type property'),
+      }),
+    )
+    .unique('Resource type property keys cannot repeat', (a: FormikValues) => a.key),
 });
 
 export type FormValues = {
   name: string;
   lang: AllocationStrategyLang;
   script: string;
-  expectedPoolPropertyTypes?: { key: string; type: string }[];
+  expectedPoolPropertyTypes?: ExpectedProperty[];
+  resourceTypeProperties?: ExpectedProperty[];
 };
 type Props = {
   onFormSubmit: (values: FormValues) => void;
+  onFormCancel: () => void;
 };
 
-const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
-  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors } = useFormik({
+const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onFormCancel }) => {
+  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors, setSubmitting } = useFormik({
     initialValues: INITIAL_VALUES,
     validateOnBlur: false,
     validateOnChange: false,
     validationSchema,
-    onSubmit: onFormSubmit,
+    onSubmit: (data) => {
+      onFormSubmit(data);
+      setSubmitting(false);
+    },
   });
+
+  type FormErrors = typeof errors &
+    FormikErrors<{ expectedPoolPropertyTypesDuplicatedKeys?: string; resourceTypePropertiesDuplicatedKeys?: string }>;
+  const formErrors: FormErrors = errors;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -85,6 +100,19 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
         <FormLabel>Name</FormLabel>
         <Input name="name" id="name" value={values.name} onChange={handleChange} placeholder="Enter name" />
       </FormControl>
+
+      <ExpectedProperties
+        label="Expected pool properties"
+        formErrors={{
+          duplicatePropertyKey: formErrors.expectedPoolPropertyTypesDuplicatedKeys,
+          propertyErrors: formErrors.expectedPoolPropertyTypes,
+        }}
+        expectedPropertyTypes={values.expectedPoolPropertyTypes}
+        onPropertyAdd={(newProperties) => setFieldValue('expectedPoolPropertyTypes', newProperties)}
+        onPropertyChange={(newProperties) => setFieldValue('expectedPoolPropertyTypes', newProperties)}
+        onPropertyDelete={(newProperties) => setFieldValue('expectedPoolPropertyTypes', newProperties)}
+      />
+
       <FormControl id="lang" marginY={5}>
         <FormLabel>Strategy script language</FormLabel>
         <Select
@@ -99,13 +127,7 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
           <option value="py">Python</option>
         </Select>
       </FormControl>
-      <ExpectedPoolProperties
-        formErrors={errors}
-        expectedPoolPropertyTypes={values.expectedPoolPropertyTypes}
-        onPoolPropertyAdd={(newPoolProperties) => setFieldValue('expectedPoolPropertyTypes', newPoolProperties)}
-        onPoolPropertyChange={(newPoolProperties) => setFieldValue('expectedPoolPropertyTypes', newPoolProperties)}
-        onPoolPropertyDelete={(newPoolProperties) => setFieldValue('expectedPoolPropertyTypes', newPoolProperties)}
-      />
+
       <FormControl marginY={5}>
         <FormLabel>Strategy script</FormLabel>
         <Editor
@@ -128,8 +150,22 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => {
           }}
         />
       </FormControl>
-      <HStack>
+
+      <ExpectedProperties
+        label="Expected resource type structure"
+        formErrors={{
+          duplicatePropertyKey: formErrors.resourceTypePropertiesDuplicatedKeys,
+          propertyErrors: formErrors.resourceTypeProperties,
+        }}
+        expectedPropertyTypes={values.resourceTypeProperties}
+        onPropertyAdd={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
+        onPropertyChange={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
+        onPropertyDelete={(newProperties) => setFieldValue('resourceTypeProperties', newProperties)}
+      />
+
+      <HStack spacing={2}>
         <Spacer />
+        <Button onClick={onFormCancel}>Cancel</Button>
         <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
           Create strategy
         </Button>
