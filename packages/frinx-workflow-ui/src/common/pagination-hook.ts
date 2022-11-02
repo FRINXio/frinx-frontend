@@ -45,13 +45,6 @@ export function usePagination<T>({
     }
   }, [items, hasCustomAmount]);
 
-  useEffect(() => {
-    setItems(itemList);
-    if (!hasCustomAmount) {
-      setTotalItemsAmount(itemList.length);
-    }
-  }, [itemList, hasCustomAmount]);
-
   const isPaginating = items.length > maxItemsPerPage;
   const totalPages = Math.ceil(totalItemsAmount / maxItemsPerPage);
   const itemCount = items.length;
