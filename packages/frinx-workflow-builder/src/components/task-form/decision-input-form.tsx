@@ -6,9 +6,18 @@ import * as yup from 'yup';
 import { omitBy } from 'lodash';
 import { DecisionInputParams } from '../../helpers/types';
 
-// TODO: dynamic object should be specified more precisely in yup
 export const DecisionInputParamsSchema = yup.object({
-  caseValueParam: yup.string().required(),
+  caseValueParam: yup.string().when('isCaseExpressionEnabled', {
+    is: false,
+    then: yup
+      .string()
+      .matches(/^(\w+)$/)
+      .required(),
+  }),
+  caseExpression: yup.string().when('isCaseExpressionEnabled', {
+    is: true,
+    then: yup.string().required(),
+  }),
   decisionCases: yup.array().of(
     yup.object({
       key: yup.string().required('decision key is required'),
