@@ -122,7 +122,8 @@ type BaseTask<T = undefined> = T extends undefined
 
 export type DecisionTask = BaseTask<DecisionInputParams> & {
   type: 'DECISION';
-  caseValueParam: string;
+  caseValueParam?: string;
+  caseExpression?: string;
   decisionCases: Record<string, Task[]>;
   defaultCase: Task[];
 };
@@ -465,6 +466,7 @@ export type ExecutedWorkflowSortBy = 'workflowType' | 'startTime' | 'endTime' | 
 export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';
 
 export type GraphExtendedDecisionTask = Omit<ExtendedDecisionTask, 'decisionCases'> & {
+  isCaseExpressionEnabled: boolean;
   decisionCases: { key: string; tasks: ExtendedTask[] }[];
 };
 export type GraphExtendedTask = Exclude<ExtendedTask, ExtendedDecisionTask> | GraphExtendedDecisionTask;
