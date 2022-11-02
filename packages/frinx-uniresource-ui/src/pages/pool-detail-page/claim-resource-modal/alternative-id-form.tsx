@@ -18,8 +18,7 @@ import { LabelsInput, unwrap } from '@frinx/shared/src';
 import { FormikErrors, FormikValues } from 'formik';
 import FeatherIcon from 'feather-icons-react';
 
-// eslint-disable-next-line func-names
-yup.addMethod(yup.array, 'unique', function (message, mapper = (a: unknown) => a) {
+yup.addMethod(yup.array, 'unique', function unique(message, mapper = (a: unknown) => a) {
   return this.test('unique', message, (list, context) => {
     const l = unwrap(list);
     if (l.length !== new Set(l.map(mapper)).size) {
@@ -40,12 +39,7 @@ const AlternativeIdSchema = yup.object({
   value: yup.array().of(yup.string()),
 });
 
-export const ValidationSchema = yup
-  .array(AlternativeIdSchema)
-  // TODO: check suggested solution https://github.com/jquense/yup/issues/345#issuecomment-634718990
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  .unique('Keys cannot repeat', (a: FormikValues) => a.key);
+export const ValidationSchema = yup.array(AlternativeIdSchema).unique('Keys cannot repeat', (a: FormikValues) => a.key);
 
 export type AlternativeId = {
   key: string;

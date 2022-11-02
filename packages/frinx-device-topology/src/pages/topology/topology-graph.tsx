@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/react';
-import { unwrap } from '@frinx/shared';
+import { unwrap } from '@frinx/shared/src';
 import React, { FunctionComponent, useRef } from 'react';
 import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
 import { setSelectedNode, updateNodePosition } from '../../state.actions';

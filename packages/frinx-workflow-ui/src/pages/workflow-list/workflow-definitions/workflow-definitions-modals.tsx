@@ -1,5 +1,5 @@
 import { UseDisclosureReturn } from '@chakra-ui/react';
-import { useNotifications } from '@frinx/shared';
+import { useNotifications } from '@frinx/shared/src';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/helpers/types';
 import React, { VoidFunctionComponent } from 'react';

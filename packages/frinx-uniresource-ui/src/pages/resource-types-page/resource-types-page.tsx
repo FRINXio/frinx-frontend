@@ -1,7 +1,7 @@
 import { Button, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
 import { useNotifications } from '@frinx/shared/src';
 import gql from 'graphql-tag';
-import React, { VoidFunctionComponent } from 'react';
+import React, { useMemo, VoidFunctionComponent } from 'react';
 import { useMutation, useQuery } from 'urql';
 import {
   CreateResourceTypeMutation,
@@ -41,11 +41,18 @@ const DELETE_RESOURCE_TYPE_MUTATION = gql`
 `;
 
 const ResourceTypesPage: VoidFunctionComponent = () => {
+  const ctx = useMemo(
+    () => ({
+      additionalTypenames: ['ResourceType'],
+    }),
+    [],
+  );
   const { isOpen, onClose, onOpen } = useDisclosure();
   const notification = useNotifications();
 
   const [{ data, fetching, error }] = useQuery<ResourceTypesQuery>({
     query: RESOURCE_TYPES_QUERY,
+    context: ctx,
   });
 
   const [, deleteResourceType] = useMutation<DeleteResourceTypeMutation, DeleteResourceTypeMutationVariables>(
@@ -56,12 +63,15 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
   );
 
   const handleOnCreate = (resourceTypeName: string) => {
-    createResourceType({
-      input: {
-        resourceName: resourceTypeName,
-        resourceProperties: {},
+    createResourceType(
+      {
+        input: {
+          resourceName: resourceTypeName,
+          resourceProperties: {},
+        },
       },
-    })
+      ctx,
+    )
       .then(({ error: createResourceTypeError }) => {
         if (createResourceTypeError != null) {
           throw Error();
@@ -73,7 +83,7 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
   };
 
   const handleOnDelete = (resourceTypeId: string) => {
-    deleteResourceType({ input: { resourceTypeId } })
+    deleteResourceType({ input: { resourceTypeId } }, ctx)
       .then(({ error: deleteResourceTypeError }) => {
         if (deleteResourceTypeError != null) {
           throw Error();
