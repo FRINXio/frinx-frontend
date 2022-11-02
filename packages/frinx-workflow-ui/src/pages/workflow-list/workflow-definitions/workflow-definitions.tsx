@@ -30,32 +30,7 @@ const WorkflowDefinitions = () => {
   const [allLabels, setAllLabels] = useState<string[]>([]);
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
 
-  const results =
-    !keywords && labels.length === 0
-      ? workflows
-      : workflows.filter((e) => {
-          const queryWords = keywords.toUpperCase();
-          const wfName = e.name.toUpperCase();
-          const labelsArr = jsonParse(e.description)?.labels;
-
-          // if labels are used and wf does not contain selected labels => filter out
-          if (labels.length > 0) {
-            if (_.difference(labels, labelsArr).length !== 0) {
-              return false;
-            }
-          }
-
-          // search for keywords in "searchedKeys"
-          if (wfName.includes(queryWords)) {
-            return true;
-          }
-
-          return false;
-        });
-
-  const { currentPage, setCurrentPage, setItemList, totalPages, pageItems } = usePagination<Workflow>({
-    itemList: results,
-  });
+  const { currentPage, setCurrentPage, setItemList, totalPages, pageItems } = usePagination<Workflow>();
 
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
@@ -72,6 +47,32 @@ const WorkflowDefinitions = () => {
       setAllLabels(getLabels(wfs));
     });
   }, []);
+
+  useEffect(() => {
+    const results =
+      !keywords && labels.length === 0
+        ? workflows
+        : workflows.filter((e) => {
+            const queryWords = keywords.toUpperCase();
+            const wfName = e.name.toUpperCase();
+            const labelsArr = jsonParse(e.description)?.labels;
+
+            // if labels are used and wf does not contain selected labels => filter out
+            if (labels.length > 0) {
+              if (_.difference(labels, labelsArr).length !== 0) {
+                return false;
+              }
+            }
+
+            // search for keywords in "searchedKeys"
+            if (wfName.includes(queryWords)) {
+              return true;
+            }
+
+            return false;
+          });
+    setItemList(results);
+  }, [workflows, labels, keywords, setItemList]);
 
   const updateFavourite = (workflow: Workflow) => {
     let wfDescription = jsonParse(workflow.description);
@@ -132,11 +133,11 @@ const WorkflowDefinitions = () => {
           const { getWorkflows } = callbackUtils.getCallbacks;
 
           getWorkflows().then((wfs) => {
-            setItemList(wfs);
+            setWorkflows(wfs);
             setAllLabels(getLabels(wfs));
           });
         }}
-        workflows={results}
+        workflows={pageItems}
       />
       <WorkflowDefinitionsHeader
         allLabels={allLabels}
