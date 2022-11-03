@@ -2690,10 +2690,25 @@ __metadata:
   linkType: hard
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@frinx/api@0.0.14, @frinx/api@workspace:packages/frinx-api":
 =======
 "@frinx/api@0.0.13, @frinx/api@workspace:packages/frinx-api":
 >>>>>>> a519f73a (renaming files and variables uniresource -> resource-manager)
+=======
+"@frinx/api@npm:0.0.14":
+  version: 0.0.14
+  resolution: "@frinx/api@npm:0.0.14"
+  dependencies:
+    fp-ts: 2.12.1
+    io-ts: 2.2.17
+    url-join: 5.0.0
+  checksum: ca2db422a44b2893fbe0b31ac5aba6ecd025b44f8e9ca53d13f3e51fd88348e60df6829baaf2c607c5912dab0aed49f87eb4f2762bb2079485056d4940e72747
+  languageName: node
+  linkType: hard
+
+"@frinx/api@workspace:packages/frinx-api":
+>>>>>>> e8df8822 (frinx api upgraded)
   version: 0.0.0-use.local
   resolution: "@frinx/api@workspace:packages/frinx-api"
   dependencies:
@@ -2747,10 +2762,14 @@ __metadata:
     "@fontsource/noto-sans": ^4.5.11
     "@formspree/react": ^2.4.0
 <<<<<<< HEAD
+<<<<<<< HEAD
     "@frinx/api": 0.0.14
 =======
     "@frinx/api": 0.0.13
 >>>>>>> a519f73a (renaming files and variables uniresource -> resource-manager)
+=======
+    "@frinx/api": 0.0.14
+>>>>>>> e8df8822 (frinx api upgraded)
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@frinx/inventory-client": ^0.0.1
     "@frinx/resource-manager": ^0.0.1
