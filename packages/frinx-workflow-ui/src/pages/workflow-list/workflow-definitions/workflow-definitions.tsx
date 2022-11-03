@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Container, useDisclosure } from '@chakra-ui/react';
-import _ from 'lodash';
 import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import { Workflow } from '@frinx/workflow-ui/src/helpers/types';
@@ -59,9 +58,7 @@ const WorkflowDefinitions = () => {
 
             // if labels are used and wf does not contain selected labels => filter out
             if (labels.length > 0) {
-              if (_.difference(labels, labelsArr).length !== 0) {
-                return false;
-              }
+              return labelsArr?.some((label: string) => labels.includes(label));
             }
 
             // search for keywords in "searchedKeys"
@@ -113,6 +110,7 @@ const WorkflowDefinitions = () => {
           wfs.sort((a, b) => {
             return a.name.localeCompare(b.name);
           }) || [];
+        setWorkflows(dataset);
         setItemList(dataset);
         setAllLabels(getLabels(dataset));
       });
