@@ -72,7 +72,12 @@ export const ExecuteWorkflowModalFormInput: VoidFunctionComponent<Props> = ({
         <NumberInput
           name={inputParameterKey}
           value={values[inputParameterKey]}
-          onChange={(_, number) => onChange(inputParameterKey, number)}
+          onChange={(_, number) => {
+            if (Number.isNaN(number)) {
+              return onChange(inputParameterKey, 0);
+            }
+            return onChange(inputParameterKey, number);
+          }}
         >
           <NumberInputField />
           <NumberInputStepper>

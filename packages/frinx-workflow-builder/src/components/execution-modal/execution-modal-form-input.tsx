@@ -77,9 +77,9 @@ export const ExecutionModalFormInput: VoidFunctionComponent<Props> = ({
           value={values[inputParameterKey]}
           onChange={(_, number) => {
             if (Number.isNaN(number)) {
-              onChange(inputParameterKey, 0);
+              return onChange(inputParameterKey, 0);
             }
-            onChange(inputParameterKey, number);
+            return onChange(inputParameterKey, number);
           }}
         >
           <NumberInputField />
