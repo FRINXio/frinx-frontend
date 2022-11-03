@@ -3551,7 +3551,7 @@ __metadata:
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
     express: 4.18.1
-    helmet: 5.0.2
+    helmet: 5.1.1
     http-proxy-middleware: 2.0.6
     pino: 7.11.0
     pino-pretty: 7.6.1
@@ -11700,10 +11700,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"helmet@npm:5.0.2":
-  version: 5.0.2
-  resolution: "helmet@npm:5.0.2"
-  checksum: 3fe107f3f73fb6a79173e5599f87a016c69f1c7cc46bcde1c60043ea36e64f893434592890d3c0be68f1d35731f2f2f22094a1cfd70438f9d35740861071dcf3
+"helmet@npm:5.1.1":
+  version: 5.1.1
+  resolution: "helmet@npm:5.1.1"
+  checksum: b72ba26cc431804ad3b8ecdc18db95409a492cbb7a7e825efc27fc502b9433fec39fc083f2aad4fe7ed1a89a4287560b59f4435f9689eebbae6a2b61a1ec1b7d
   languageName: node
   linkType: hard
 
