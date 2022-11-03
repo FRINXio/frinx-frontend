@@ -3698,7 +3698,7 @@ __metadata:
     "@typescript-eslint/parser": 5.27.1
     "@urql/exchange-retry": 0.3.3
     "@webpack-cli/serve": 1.7.0
-    ace-builds: 1.4.14
+    ace-builds: 1.12.5
     babel-loader: 8.2.5
     chakra-ui-autocomplete: ^1.4.5
     css-loader: 5.2.7
@@ -3767,7 +3767,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.27.1
     "@typescript-eslint/parser": 5.27.1
     "@webpack-cli/serve": 1.7.0
-    ace-builds: 1.4.14
+    ace-builds: 1.12.5
     babel-loader: 8.2.5
     css-loader: 5.2.7
     dagre: 0.8.5
@@ -6008,7 +6008,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ace-builds@npm:1.4.14, ace-builds@npm:^1.4.12, ace-builds@npm:^1.4.13":
+"ace-builds@npm:1.12.5":
+  version: 1.12.5
+  resolution: "ace-builds@npm:1.12.5"
+  checksum: 75562e03f25da0bcb8c661553fe375dcaeb90eb9898c0da4eda3f7ddafac08f940e872c8cb490298edda5fe2c9ae6c4f4bb0283c179f9e35c2e950463099f114
+  languageName: node
+  linkType: hard
+
+"ace-builds@npm:^1.4.12, ace-builds@npm:^1.4.13":
   version: 1.4.14
   resolution: "ace-builds@npm:1.4.14"
   checksum: 7e7fbfc6add7e250015bc3f6452a173b2b4722bb9d2ceaa7c5cc506d166906d6df72a595cee3d4c931f9814a480ce583026652a2285abdcd2c0881e92f34c5b0
