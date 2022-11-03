@@ -22,7 +22,7 @@
   "dependencies": {
     "@frinx/shared": "workspace:^",
     "@types/json-templates": "3.0.0",
-    "@types/react": "17.0.42",
+    "@types/react": "17.0.52",
     "@types/react-dom": "17.0.14",
     "@urql/exchange-multipart-fetch": "^0.1.14",
     "@urql/exchange-retry": "0.3.3",

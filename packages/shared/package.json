@@ -24,7 +24,7 @@
     "@emotion/react": "11.9.3",
     "@emotion/styled": "11.9.3",
     "@frinx/eslint-config-typescript": "19.0.4-build.1",
-    "@types/react": "17.0.42",
+    "@types/react": "17.0.52",
     "@types/react-dom": "17.0.14",
     "@typescript-eslint/eslint-plugin": "5.27.1",
     "@typescript-eslint/parser": "5.27.1",

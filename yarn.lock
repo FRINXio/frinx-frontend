@@ -3461,7 +3461,7 @@ __metadata:
     "@frinxio/device-topology": ^0.0.1
     "@frinxio/gamma": 0.0.16
     "@types/node": 16.11.38
-    "@types/react": 17.0.42
+    "@types/react": 17.0.52
     "@types/react-dom": 17.0.14
     "@types/url-join": 4.0.1
     "@typescript-eslint/eslint-plugin": 5.27.1
@@ -3582,7 +3582,7 @@ __metadata:
     "@graphql-codegen/typescript": 2.5.0
     "@graphql-codegen/typescript-operations": 2.4.1
     "@types/json-templates": 3.0.0
-    "@types/react": 17.0.42
+    "@types/react": 17.0.52
     "@types/react-dom": 17.0.14
     "@typescript-eslint/eslint-plugin": 5.27.1
     "@typescript-eslint/parser": 5.27.1
@@ -3635,7 +3635,7 @@ __metadata:
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
     "@frinx/eslint-config-typescript": 19.0.4-build.1
-    "@types/react": 17.0.42
+    "@types/react": 17.0.52
     "@types/react-dom": 17.0.14
     "@typescript-eslint/eslint-plugin": 5.27.1
     "@typescript-eslint/parser": 5.27.1
@@ -3692,7 +3692,7 @@ __metadata:
     "@graphql-codegen/introspection": 2.1.1
     "@graphql-codegen/typescript": 2.5.0
     "@graphql-codegen/typescript-operations": 2.4.1
-    "@types/react": 17.0.42
+    "@types/react": 17.0.52
     "@types/react-dom": 17.0.14
     "@typescript-eslint/eslint-plugin": 5.27.1
     "@typescript-eslint/parser": 5.27.1
@@ -3761,7 +3761,7 @@ __metadata:
     "@frinx/shared": "workspace:^"
     "@types/dagre": 0.7.47
     "@types/file-saver": 2.0.5
-    "@types/react": 17.0.42
+    "@types/react": 17.0.52
     "@types/react-dom": 17.0.14
     "@types/uuid": 8.3.4
     "@typescript-eslint/eslint-plugin": 5.27.1
@@ -3906,7 +3906,7 @@ __metadata:
     "@graphql-codegen/typescript": 2.5.0
     "@graphql-codegen/typescript-operations": 2.4.1
     "@types/d3": ^7.4.0
-    "@types/react": 17.0.42
+    "@types/react": 17.0.52
     "@types/react-dom": 17.0.14
     "@typescript-eslint/eslint-plugin": 5.27.1
     "@typescript-eslint/parser": 5.27.1
@@ -5484,7 +5484,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:17.0.42, @types/react@npm:^17.0.15":
+"@types/react@npm:*, @types/react@npm:^17.0.15":
   version: 17.0.42
   resolution: "@types/react@npm:17.0.42"
   dependencies:
@@ -5492,6 +5492,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: 9a84374da1173901b5eba6b2dda9e70220842c8e70274628e5c93684fca59786b7f6215c93f492e34f8834983de096b2544f280c60da9b8fd4c3f20ffe7cc51e
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:17.0.52":
+  version: 17.0.52
+  resolution: "@types/react@npm:17.0.52"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: a51b98dd87838d161278fdf9dd78e6a4ff8c018f406d6647f77963e144fb52a8beee40c89fd0e7e840eaeaa8bd9fe2f34519410540b1a52d43a6f8b4d2fbce33
   languageName: node
   linkType: hard
 
