@@ -108,6 +108,7 @@ const ExecutedWorkflowList = () => {
     currentPage,
     maxItemsPerPage,
     setTotalItemsAmount,
+    setItemList,
   ]);
 
   useEffect(() => {
