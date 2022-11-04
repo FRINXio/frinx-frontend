@@ -1,4 +1,4 @@
-import { UniresourceApi } from '@frinx/api';
+import { ResourceManagerApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
 
@@ -19,7 +19,7 @@ const UniresourceApp: FC = () => {
 
   return (
     <UniresourceAppProvider
-      client={UniresourceApi.create({ url: window.__CONFIG__.uniresourceApiURL, authContext }).client}
+      client={ResourceManagerApi.create({ url: window.__CONFIG__.uniresourceApiURL, authContext }).client}
     >
       <App />
     </UniresourceAppProvider>
