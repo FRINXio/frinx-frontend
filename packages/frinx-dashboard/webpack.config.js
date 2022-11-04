@@ -31,14 +31,14 @@ const plugins = [
       // we copy first file from frinx-frontend repository in the case
       // the older gamma build is used
       {
-        from: fullPath('../../public/', 'gamma-options.js'),
-        to: fullPath('../../build-client/', 'gamma-options.js'),
+        from: fullPath('../../public/', 'l3vpn-options.js'),
+        to: fullPath('../../build-client/', 'l3vpn-options.js'),
         priority: 1,
       },
       // then we try to overwrite it with files from newer gamma builds
       {
-        from: fullPath('../../node_modules/@frinxio/gamma/dist/gamma-options.js'),
-        to: fullPath('../../build-client', 'gamma-options.js'),
+        from: fullPath('../../node_modules/@frinxio/gamma/dist/l3vpn-options.js'),
+        to: fullPath('../../build-client', 'l3vpn-options.js'),
         priority: 2,
         force: true,
         noErrorOnMissing: true,
