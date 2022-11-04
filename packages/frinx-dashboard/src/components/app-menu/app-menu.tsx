@@ -27,7 +27,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
             }
           />
         )}
-        {enabledServices.get('isUniresourceEnabled') && (
+        {enabledServices.get('isResourceManagerEnabled') && (
           <Route
             path="/resource-manager/*"
             element={
