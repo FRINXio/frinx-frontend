@@ -15,7 +15,11 @@ const ALL_SERVICES: ServiceKey[] = [
 const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
   ['isUniflowEnabled', () => import('@frinx/workflow-ui')],
   ['isInventoryEnabled', () => import('@frinx/inventory-client/src')],
+<<<<<<< HEAD
   ['isResourceManagerEnabled', () => import('@frinx/resource-manager/src')],
+=======
+  ['isUniresourceEnabled', () => import('@frinx/resource-manager/src')],
+>>>>>>> edc1561c (rebase main branch)
   ['isGammaEnabled', () => import('@frinxio/gamma')],
   ['isDeviceTopologyEnabled', () => import('@frinxio/device-topology/src')],
 ]);
