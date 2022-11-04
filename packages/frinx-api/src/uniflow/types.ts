@@ -140,7 +140,8 @@ type BaseTask<T = undefined> = T extends undefined
 
 export type DecisionTask = BaseTask<DecisionInputParams> & {
   type: 'DECISION';
-  caseValueParam: string;
+  caseValueParam?: string;
+  caseExpression?: string;
   decisionCases: Record<string, Task[]>;
   defaultCase: Task[];
 };
