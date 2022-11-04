@@ -2691,6 +2691,7 @@ __metadata:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@frinx/api@0.0.14, @frinx/api@workspace:packages/frinx-api":
 =======
 "@frinx/api@0.0.13, @frinx/api@workspace:packages/frinx-api":
@@ -2709,6 +2710,9 @@ __metadata:
 
 "@frinx/api@workspace:packages/frinx-api":
 >>>>>>> e8df8822 (frinx api upgraded)
+=======
+"@frinx/api@0.0.14, @frinx/api@workspace:packages/frinx-api":
+>>>>>>> 71922b1d (update yarn.lock)
   version: 0.0.0-use.local
   resolution: "@frinx/api@workspace:packages/frinx-api"
   dependencies:
