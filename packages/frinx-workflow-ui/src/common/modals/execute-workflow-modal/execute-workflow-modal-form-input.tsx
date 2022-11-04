@@ -1,4 +1,17 @@
-import { FormControl, FormLabel, Input, FormHelperText, Switch, Textarea, Select } from '@chakra-ui/react';
+import {
+  FormControl,
+  FormLabel,
+  Input,
+  FormHelperText,
+  Switch,
+  Textarea,
+  Select,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+} from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { InputParameter } from '../../../utils/helpers.utils';
 
@@ -7,7 +20,7 @@ type Props = {
   values: Record<string, any>;
   inputParameterKey: string;
   parsedInputParameters?: InputParameter | null;
-  onChange: (key: string, value: string | boolean) => void;
+  onChange: (key: string, value: string | boolean | number) => void;
 };
 
 export const ExecuteWorkflowModalFormInput: VoidFunctionComponent<Props> = ({
@@ -19,6 +32,8 @@ export const ExecuteWorkflowModalFormInput: VoidFunctionComponent<Props> = ({
   const isToggle = parsedInputParameters?.[inputParameterKey]?.type === 'toggle';
   const isTextarea = parsedInputParameters?.[inputParameterKey]?.type === 'textarea';
   const isSelect = parsedInputParameters?.[inputParameterKey]?.type === 'select';
+  const isNumber = parsedInputParameters?.[inputParameterKey]?.type === 'int';
+  const isInput = !isToggle && !isTextarea && !isSelect && !isNumber;
 
   return (
     <FormControl>
@@ -53,7 +68,26 @@ export const ExecuteWorkflowModalFormInput: VoidFunctionComponent<Props> = ({
         </Select>
       )}
 
-      {!isToggle && !isTextarea && !isSelect && (
+      {isNumber && (
+        <NumberInput
+          name={inputParameterKey}
+          value={values[inputParameterKey]}
+          onChange={(_, number) => {
+            if (Number.isNaN(number)) {
+              return onChange(inputParameterKey, 0);
+            }
+            return onChange(inputParameterKey, number);
+          }}
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+      )}
+
+      {isInput && (
         <Input
           name={inputParameterKey}
           value={values[inputParameterKey]}
