@@ -67,7 +67,7 @@ const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled, enabledServices }
                   <Text fontWeight="bold">Device Inventory</Text>
                 </MenuItem>
               )}
-              {enabledServices.get('isUniresourceEnabled') && (
+              {enabledServices.get('isResourceManagerEnabled') && (
                 <MenuItem as={Link} to="/resource-manager">
                   <Icon size={20} as={FeatherIcon} icon="hard-drive" color="blue.700" marginRight={2} />
                   <Text fontWeight="bold">Resource manager</Text>

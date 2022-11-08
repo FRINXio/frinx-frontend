@@ -14,7 +14,7 @@ declare interface Window {
     authRedirectURL: string;
     uniflowApiURL: string;
     uniconfigApiDocsURL: string;
-    isUniresourceEnabled: boolean;
+    isResourceManagerEnabled: boolean;
     unistoreApiURL: string;
     isUniflowEnabled: boolean;
     isInventoryEnabled: boolean;

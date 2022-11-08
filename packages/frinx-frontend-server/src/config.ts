@@ -49,7 +49,7 @@ const config = {
     ? buildAuthRedirectURL(ensureSchema(envString('AUTH_REDIRECT_SCHEME')), envString('AUTH_REDIRECT_DOMAIN'))
     : null,
   uniflowApiURL: envString('WORKFLOW_MANAGER_API_URL'),
-  isUniresourceEnabled: stringToBoolean(envString('RESOURCE_MANAGER_ENABLED')),
+  isResourceManagerEnabled: stringToBoolean(envString('RESOURCE_MANAGER_ENABLED')),
   isUniflowEnabled: stringToBoolean(envString('WORKFLOW_MANAGER_ENABLED')),
   URLBasename: envString('URL_BASENAME'),
   inventoryApiURL: envString('INVENTORY_API_URL'),

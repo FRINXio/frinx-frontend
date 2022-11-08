@@ -21,7 +21,8 @@
     "dev:server": "cd packages/frinx-frontend-server && yarn run dev",
     "dev": "run-p dev:client dev:server",
     "turbo": "turbo run typegen type-check lint",
-    "pr": "run-s formatter:check turbo "
+    "pr": "run-s formatter:check version:check turbo",
+    "version:check": "node ./version-check.mjs"
   },
   "devDependencies": {
     "dedubcheck": "0.0.8",

@@ -55,7 +55,7 @@ const loadExecutedWorkflows = async (filters: SearchFilters): Promise<ExecutedWo
     size,
     sortBy,
     sortOrder,
-    start: page,
+    start: (page - 1) * size,
     workflowId: search,
   });
 
@@ -65,7 +65,7 @@ const loadExecutedWorkflows = async (filters: SearchFilters): Promise<ExecutedWo
 const ExecutedWorkflowList = () => {
   const navigate = useNavigate();
   const query = useQueryParams();
-  const [executedWorkflows, setExecutedWorkflows] = useState<ExecutedWorkflow[]>([]);
+  const [executedWorkflows, setExecutedWorkflows] = useState<ExecutedWorkflow[]>();
   const {
     currentPage,
     setCurrentPage,
@@ -74,6 +74,7 @@ const ExecutedWorkflowList = () => {
     pageItems: workflows,
     setTotalItemsAmount,
     totalItemsAmount,
+    setItemList,
   } = usePagination<ExecutedWorkflow>({
     itemList: executedWorkflows,
     hasCustomAmount: true,
@@ -95,6 +96,7 @@ const ExecutedWorkflowList = () => {
       isFlat: state.isFlat,
     }).then((exWfs) => {
       setExecutedWorkflows(exWfs.result.hits);
+      setItemList(exWfs.result.hits);
       setTotalItemsAmount(exWfs.result.totalHits);
     });
   }, [
@@ -106,6 +108,7 @@ const ExecutedWorkflowList = () => {
     currentPage,
     maxItemsPerPage,
     setTotalItemsAmount,
+    setItemList,
   ]);
 
   useEffect(() => {
