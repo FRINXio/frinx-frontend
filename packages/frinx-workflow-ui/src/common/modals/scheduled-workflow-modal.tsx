@@ -58,9 +58,6 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
       onClose();
     },
   });
-
-  console.log(values);
-  console.log(workflow);
   
   useEffect(() => {
     getSchedule(workflow.workflowName, workflow.workflowVersion).then((scheduledWorkflow) => {
