@@ -19,7 +19,7 @@ import {
 import { Editor } from '@frinx/shared/src';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { ScheduledWorkflow } from '@frinx/workflow-ui/src/helpers/types';
-import { useFormik } from 'formik';
+import  { useFormik } from 'formik';
 import callbackUtils from '../../utils/callback-utils';
 
 const DEFAULT_CRON_STRING = '* * * * *';
@@ -28,6 +28,7 @@ export type ScheduledWorkflowModal = {
   cronString?: string;
   workflowName: string;
   workflowVersion: string;
+  enabled: boolean;
 };
 
 type Props = {
@@ -37,17 +38,20 @@ type Props = {
   onSubmit: (workflow: Partial<ScheduledWorkflow>) => void;
 };
 
-const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
-  const { getSchedule } = callbackUtils.getCallbacks;
 
+const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
+  const { getSchedule } = callbackUtils.getCallbacks;    
+  
   const { values, handleChange, handleSubmit, submitForm, setFieldValue } = useFormik({
     initialValues: {
+      enableReinitialize: true,
       workflowName: workflow.workflowName,
       workflowVersion: workflow.workflowVersion,
       workflowContext: {},
       name: `${workflow.workflowName}:${workflow.workflowVersion}`,
       cronString: workflow.cronString || DEFAULT_CRON_STRING,
-      enabled: false,
+      enabled: workflow.enabled ?? false,
+     
     },
     onSubmit: (formValues) => {
       onSubmit(formValues);
@@ -55,6 +59,9 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
     },
   });
 
+  console.log(values);
+  console.log(workflow);
+  
   useEffect(() => {
     getSchedule(workflow.workflowName, workflow.workflowVersion).then((scheduledWorkflow) => {
       setFieldValue('workflowContext', scheduledWorkflow.workflowContext ?? {});
@@ -70,6 +77,7 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
       </Link>
     );
   };
+
 
   return (
     <Modal size="3xl" isOpen={isOpen} onClose={onClose}>
