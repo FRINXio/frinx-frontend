@@ -37,7 +37,7 @@
     "eslint-plugin-react": "7.30.1",
     "eslint-plugin-react-hooks": "4.5.0",
     "rollup": "2.77.2",
-    "rollup-plugin-dts": "4.2.2",
+    "rollup-plugin-dts": "4.2.3",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "typescript": "4.7.4",
     "urql": "2.2.3"
