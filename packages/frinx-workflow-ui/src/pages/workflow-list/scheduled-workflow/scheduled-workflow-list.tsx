@@ -35,12 +35,10 @@ function ScheduledWorkflowList() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { addToastNotification } = useNotifications();
 
-  
-
   const getData = useCallback(() => {
     const { getSchedules } = callbackUtils.getCallbacks;
 
-    setSelectedWorkflow(null)
+    setSelectedWorkflow(null);
     getSchedules()
       .then((schedules) => {
         setItemList(sortBy(schedules, ['name']));
@@ -60,7 +58,6 @@ function ScheduledWorkflowList() {
 
   const onEdit = (workflow: ScheduledWorkflow) => {
     setSelectedWorkflow(workflow);
-    
     onOpen();
   };
 
@@ -91,7 +88,6 @@ function ScheduledWorkflowList() {
         });
     }
   };
-
 
   const handleDeleteBtnClick = (workflow: ScheduledWorkflow) => {
     const { deleteSchedule } = callbackUtils.getCallbacks;
@@ -145,6 +141,7 @@ function ScheduledWorkflowList() {
       {selectedWorkflow != null && (
         <ScheduledWorkflowModal
           workflow={selectedWorkflow}
+          setWorkflow={setSelectedWorkflow}
           isOpen={isOpen}
           onClose={onClose}
           onSubmit={handleWorkflowUpdate}
@@ -176,6 +173,7 @@ function ScheduledWorkflowList() {
                           };
 
                           handleWorkflowUpdate(editedWorkflow);
+                          setSelectedWorkflow(null);
                         }}
                       />
                     </FormControl>

@@ -19,7 +19,7 @@ import {
 import { Editor } from '@frinx/shared/src';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { ScheduledWorkflow } from '@frinx/workflow-ui/src/helpers/types';
-import  { useFormik } from 'formik';
+import { useFormik } from 'formik';
 import callbackUtils from '../../utils/callback-utils';
 
 const DEFAULT_CRON_STRING = '* * * * *';
@@ -33,15 +33,15 @@ export type ScheduledWorkflowModal = {
 
 type Props = {
   workflow: ScheduledWorkflowModal;
+  setWorkflow: (wf: null) => void;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (workflow: Partial<ScheduledWorkflow>) => void;
 };
 
+const SchedulingModal: FC<Props> = ({ workflow, setWorkflow, isOpen, onClose, onSubmit }) => {
+  const { getSchedule } = callbackUtils.getCallbacks;
 
-const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
-  const { getSchedule } = callbackUtils.getCallbacks;    
-  
   const { values, handleChange, handleSubmit, submitForm, setFieldValue } = useFormik({
     initialValues: {
       enableReinitialize: true,
@@ -51,14 +51,13 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
       name: `${workflow.workflowName}:${workflow.workflowVersion}`,
       cronString: workflow.cronString || DEFAULT_CRON_STRING,
       enabled: workflow.enabled ?? false,
-     
     },
     onSubmit: (formValues) => {
       onSubmit(formValues);
       onClose();
     },
   });
-  
+
   useEffect(() => {
     getSchedule(workflow.workflowName, workflow.workflowVersion).then((scheduledWorkflow) => {
       setFieldValue('workflowContext', scheduledWorkflow.workflowContext ?? {});
@@ -75,9 +74,15 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
     );
   };
 
-
   return (
-    <Modal size="3xl" isOpen={isOpen} onClose={onClose}>
+    <Modal
+      size="3xl"
+      isOpen={isOpen}
+      onClose={() => {
+        setWorkflow(null);
+        onClose();
+      }}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -132,7 +137,14 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
             <Button colorScheme="blue" onClick={submitForm}>
               Update
             </Button>
-            <Button onClick={onClose}>Close</Button>
+            <Button
+              onClick={() => {
+                setWorkflow(null);
+                onClose();
+              }}
+            >
+              Close
+            </Button>
           </HStack>
         </ModalFooter>
       </ModalContent>
