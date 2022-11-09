@@ -32,7 +32,7 @@
     "@frinx/eslint-config-typescript-base": "15.0.0-build.1",
     "@typescript-eslint/eslint-plugin": "5.27.1",
     "@typescript-eslint/parser": "5.27.1",
-    "dotenv": "16.0.1",
+    "dotenv": "16.0.3",
     "eslint": "8.21.0",
     "eslint-config-prettier": "7.2.0",
     "eslint-import-resolver-typescript": "2.7.1",
