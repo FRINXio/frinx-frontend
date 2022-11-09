@@ -74,11 +74,7 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
   };
 
   return (
-    <Modal
-      size="3xl"
-      isOpen={isOpen}
-      onClose={onClose}
-    >
+    <Modal size="3xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -133,11 +129,7 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
             <Button colorScheme="blue" onClick={submitForm}>
               Update
             </Button>
-            <Button
-              onClick={onClose}
-            >
-              Close
-            </Button>
+            <Button onClick={onClose}>Close</Button>
           </HStack>
         </ModalFooter>
       </ModalContent>

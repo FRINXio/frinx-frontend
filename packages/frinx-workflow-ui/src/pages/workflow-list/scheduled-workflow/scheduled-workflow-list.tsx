@@ -142,8 +142,9 @@ function ScheduledWorkflowList() {
         <ScheduledWorkflowModal
           workflow={selectedWorkflow}
           isOpen={isOpen}
-          onClose={()=>{onClose()
-          setSelectedWorkflow(null)
+          onClose={() => {
+            onClose();
+            setSelectedWorkflow(null);
           }}
           onSubmit={handleWorkflowUpdate}
         />
