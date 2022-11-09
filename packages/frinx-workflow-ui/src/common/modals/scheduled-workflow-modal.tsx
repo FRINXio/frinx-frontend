@@ -28,18 +28,17 @@ export type ScheduledWorkflowModal = {
   cronString?: string;
   workflowName: string;
   workflowVersion: string;
-  enabled: boolean;
+  enabled?: boolean;
 };
 
 type Props = {
   workflow: ScheduledWorkflowModal;
-  setWorkflow: (wf: null) => void;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (workflow: Partial<ScheduledWorkflow>) => void;
 };
 
-const SchedulingModal: FC<Props> = ({ workflow, setWorkflow, isOpen, onClose, onSubmit }) => {
+const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
   const { getSchedule } = callbackUtils.getCallbacks;
 
   const { values, handleChange, handleSubmit, submitForm, setFieldValue } = useFormik({
@@ -78,10 +77,7 @@ const SchedulingModal: FC<Props> = ({ workflow, setWorkflow, isOpen, onClose, on
     <Modal
       size="3xl"
       isOpen={isOpen}
-      onClose={() => {
-        setWorkflow(null);
-        onClose();
-      }}
+      onClose={onClose}
     >
       <ModalOverlay />
       <ModalContent>
@@ -138,10 +134,7 @@ const SchedulingModal: FC<Props> = ({ workflow, setWorkflow, isOpen, onClose, on
               Update
             </Button>
             <Button
-              onClick={() => {
-                setWorkflow(null);
-                onClose();
-              }}
+              onClick={onClose}
             >
               Close
             </Button>
