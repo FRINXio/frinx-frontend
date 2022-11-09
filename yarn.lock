@@ -3748,7 +3748,7 @@ __metadata:
     "@emotion/styled": 11.9.3
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@frinx/shared": "workspace:^"
-    "@types/dagre": 0.7.47
+    "@types/dagre": 0.7.48
     "@types/file-saver": 2.0.5
     "@types/react": 17.0.42
     "@types/react-dom": 17.0.14
@@ -5185,10 +5185,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/dagre@npm:0.7.47":
-  version: 0.7.47
-  resolution: "@types/dagre@npm:0.7.47"
-  checksum: 976302d413ad773463670cec2ffeca26d297839ce4d999913c48d155ab97748dc4792a7fc25d0f1e2b44496fda1d296eb8a3db564edc1c87580bca66bb00a17a
+"@types/dagre@npm:0.7.48":
+  version: 0.7.48
+  resolution: "@types/dagre@npm:0.7.48"
+  checksum: 9d06fc08219056db7c55041bf2099cea24fe824d8c8741ae11c365c7464502d8c65273153446a5546b4a92bc0833802ac1c6bddb708bfcaa75af3963e7fc84aa
   languageName: node
   linkType: hard
 
