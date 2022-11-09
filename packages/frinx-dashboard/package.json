@@ -1,6 +1,6 @@
 {
   "name": "@frinx/dashboard",
-  "version": "1.0.22",
+  "version": "1.0.25",
   "private": true,
   "dependencies": {
     "@azure/msal-browser": "2.28.1",
@@ -12,14 +12,14 @@
     "@emotion/styled": "11.9.3",
     "@fontsource/noto-sans": "^4.5.11",
     "@formspree/react": "^2.4.0",
-    "@frinx/api": "0.0.12",
+    "@frinx/api": "0.0.14",
     "@frinx/inventory-client": "^0.0.1",
+    "@frinx/resource-manager": "^0.0.1",
     "@frinx/shared": "workspace:^",
-    "@frinx/uniresource-ui": "^0.0.1",
     "@frinx/workflow-builder": "^1.0.0",
     "@frinx/workflow-ui": "^2.0.0",
     "@frinxio/device-topology": "^0.0.1",
-    "@frinxio/gamma": "0.0.16",
+    "@frinxio/gamma": "0.0.17",
     "@types/node": "16.11.38",
     "@types/react": "17.0.42",
     "@types/react-dom": "17.0.14",
@@ -37,7 +37,7 @@
     "yup": "0.32.11"
   },
   "scripts": {
-    "copy:gamma": "cp ../../public/gamma-options.js ../../build-client/",
+    "copy:gamma": "cp ../../public/l3vpn-options.js ../../build-client/",
     "dev": "run-s copy:gamma build:api dev:webpack",
     "dev:webpack": "webpack serve --mode development",
     "build:api": "cd ../frinx-api && yarn run build",

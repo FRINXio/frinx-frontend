@@ -7,7 +7,7 @@ import GammaApp from './gamma-app';
 import InventoryApp from './inventory-app';
 import { ServiceKey } from './types';
 import UniflowApp from './uniflow-app';
-import UniresourceApp from './uniresource-app';
+import ResourceManagerApp from './resource-manager-app';
 import DeviceTopologyApp from './device-topology-app';
 import FeedbackWidget from './components/feedback-widget/feedback-widget';
 
@@ -26,8 +26,8 @@ const App: FC<Props> = ({ enabledServices, basename, isAuthEnabled }) => {
           {enabledServices.get('isUniflowEnabled') && <Route path="/workflow-manager/*" element={<UniflowApp />} />}
           {enabledServices.get('isGammaEnabled') && <Route path="/gamma/*" element={<GammaApp />} />}
           {enabledServices.get('isInventoryEnabled') && <Route path="/inventory/*" element={<InventoryApp />} />}
-          {enabledServices.get('isUniresourceEnabled') && (
-            <Route path="/resource-manager/*" element={<UniresourceApp />} />
+          {enabledServices.get('isResourceManagerEnabled') && (
+            <Route path="/resource-manager/*" element={<ResourceManagerApp />} />
           )}
           {enabledServices.get('isDeviceTopologyEnabled') && (
             <Route path="/device-topology/*" element={<DeviceTopologyApp />} />

@@ -1,5 +1,5 @@
 {
-  "name": "@frinx/uniresource-ui",
+  "name": "@frinx/resource-manager",
   "version": "0.0.1",
   "private": true,
   "module": "src/index.ts",
