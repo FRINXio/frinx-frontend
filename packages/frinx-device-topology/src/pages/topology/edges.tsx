@@ -35,15 +35,25 @@ const Edges: VoidFunctionComponent = () => {
         return (
           <React.Fragment key={edge.id}>
             {isActive ? (
-              <path
-                strokeWidth={1}
-                stroke="black"
-                strokeLinejoin="round"
-                fill="transparent"
-                d={getrCurvePath(start, end, controlPoints)}
-                cursor="pointer"
-                onClick={() => handleEdgeClick(edge)}
-              />
+              <g>
+                <path
+                  strokeWidth={1}
+                  stroke="black"
+                  strokeLinejoin="round"
+                  fill="none"
+                  d={getrCurvePath(start, end, controlPoints)}
+                  cursor="pointer"
+                />
+                <path
+                  strokeWidth={5}
+                  stroke="transparent"
+                  strokeLinejoin="round"
+                  fill="none"
+                  d={getrCurvePath(start, end, controlPoints)}
+                  cursor="pointer"
+                  onClick={() => handleEdgeClick(edge)}
+                />
+              </g>
             ) : (
               <Box
                 as="line"
