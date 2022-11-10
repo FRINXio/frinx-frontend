@@ -48,6 +48,10 @@ const WorkflowDefinitions = () => {
   }, []);
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [keywords, labels]);
+
+  useEffect(() => {
     const results =
       !keywords && labels.length === 0
         ? workflows
@@ -142,7 +146,9 @@ const WorkflowDefinitions = () => {
         keywords={[keywords]}
         onKeywordsChange={setKeywords}
         labels={labels}
-        onLabelsChange={(newLabels) => setLabels([...new Set(newLabels)])}
+        onLabelsChange={(newLabels) => {
+          setLabels([...new Set(newLabels)]);
+        }}
         onClearSearch={() => {
           setKeywords('');
           setLabels([]);
