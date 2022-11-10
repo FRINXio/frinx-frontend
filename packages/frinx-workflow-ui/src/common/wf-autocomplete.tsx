@@ -151,9 +151,9 @@ const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = 
                 onClick={(e) => {
                   e.preventDefault();
                   if (!selected || !selected.includes(item.value)) {
-                    onChange([...selected,item.value]);
+                    onChange([...selected, item.value]);
                     setQuery('');
-                  } 
+                  }
                   setOptionsVisible(false);
                 }}
                 cursor="pointer"
