@@ -4,5 +4,5 @@ export function getTotalCapacity(capacity: PoolCapacityPayload | null): bigint {
   if (capacity == null) {
     return 0n;
   }
-  return BigInt(JSON.parse(capacity.freeCapacity)) + BigInt(capacity.utilizedCapacity);
+  return BigInt(Number(capacity.freeCapacity)) + BigInt(Number(capacity.utilizedCapacity));
 }
