@@ -40,10 +40,6 @@ export function usePagination<T>({
   const [totalItemsAmount, setTotalItemsAmount] = useState(itemList.length);
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [items]);
-
-  useEffect(() => {
     if (!hasCustomAmount) {
       setTotalItemsAmount(items.length);
     }
@@ -67,6 +63,7 @@ export function usePagination<T>({
 
   const setItemList = useCallback((newItems: Array<T>) => {
     setItems(newItems);
+    setCurrentPage(1);
   }, []);
 
   return {
