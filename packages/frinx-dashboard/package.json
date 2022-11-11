@@ -25,7 +25,7 @@
     "@types/react-dom": "17.0.14",
     "@types/url-join": "4.0.1",
     "eventemitter3": "4.0.7",
-    "feather-icons-react": "0.5.0",
+    "feather-icons-react": "0.6.2",
     "fp-ts": "2.12.1",
     "framer-motion": "6.2.8",
     "io-ts": "2.2.19",
