@@ -3467,7 +3467,7 @@ __metadata:
     eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
     eventemitter3: 4.0.7
-    feather-icons-react: 0.5.0
+    feather-icons-react: 0.6.2
     fp-ts: 2.12.1
     framer-motion: 6.2.8
     graphql: 15.8.0
@@ -3589,7 +3589,7 @@ __metadata:
     eslint-plugin-jsx-a11y: 6.6.1
     eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
-    feather-icons-react: 0.5.0
+    feather-icons-react: 0.6.2
     formik: 2.2.9
     framer-motion: 6.2.8
     graphql: 15.8.0
@@ -3655,7 +3655,7 @@ __metadata:
     eslint-plugin-jsx-a11y: 6.6.1
     eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
-    feather-icons-react: 0.5.0
+    feather-icons-react: 0.6.2
     formik: 2.2.9
     framer-motion: 6.2.8
     graphql: 15.8.0
@@ -3709,7 +3709,7 @@ __metadata:
     eslint-plugin-jsx-a11y: 6.5.1
     eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
-    feather-icons-react: 0.5.0
+    feather-icons-react: 0.6.2
     framer-motion: 6.2.8
     html-webpack-plugin: ^5.5.0
     lodash: ^4.17.21
@@ -3767,7 +3767,7 @@ __metadata:
     eslint-plugin-jsx-a11y: 6.6.1
     eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
-    feather-icons-react: 0.5.0
+    feather-icons-react: 0.6.2
     file-saver: 2.0.5
     formik: ^2.2.9
     framer-motion: 6.2.8
@@ -3833,7 +3833,7 @@ __metadata:
     eslint-plugin-jsx-a11y: 6.6.1
     eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
-    feather-icons-react: ^0.5.0
+    feather-icons-react: ^0.6.0
     file-loader: ^6.2.0
     file-saver: ^2.0.5
     flow-bin: 0.173.0
@@ -3912,7 +3912,7 @@ __metadata:
     eslint-plugin-jsx-a11y: 6.5.1
     eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
-    feather-icons-react: 0.5.0
+    feather-icons-react: 0.6.2
     framer-motion: 6.2.8
     graphql: 15.8.0
     immer: ^9.0.15
@@ -10836,10 +10836,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"feather-icons-react@npm:0.5.0, feather-icons-react@npm:^0.5.0":
+"feather-icons-react@npm:0.5.0":
   version: 0.5.0
   resolution: "feather-icons-react@npm:0.5.0"
   checksum: 9cb04c778d0888237daf1a0638e76be61099fc7bfeefe41b0fcd38f41d3c80c606fada9eed791a170ec7e1764e677150265c55f538bdcf4f104492d1fb104015
+  languageName: node
+  linkType: hard
+
+"feather-icons-react@npm:0.6.2, feather-icons-react@npm:^0.6.0":
+  version: 0.6.2
+  resolution: "feather-icons-react@npm:0.6.2"
+  peerDependencies:
+    react: ">= 16.8.4"
+  checksum: 4be029a35af389f75fa75acbc08eaaa1e63d00b19d9c55aac7c8a88b9a9c894d810bdc5365a2cb5859cd026d8376daf55a18559ec71ad389600c320c890d74b3
   languageName: node
   linkType: hard
 
