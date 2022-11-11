@@ -21,7 +21,7 @@
     "d3": "^3.5.16",
     "dagre": "0.8.5",
     "dagre-d3": "^0.6.4",
-    "feather-icons-react": "^0.5.0",
+    "feather-icons-react": "^0.6.0",
     "file-loader": "^6.2.0",
     "file-saver": "^2.0.5",
     "formik": "^2.2.9",
