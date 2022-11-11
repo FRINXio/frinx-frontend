@@ -3405,7 +3405,7 @@ __metadata:
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
     eslint-plugin-jsx-a11y: 6.6.1
-    eslint-plugin-react: 7.30.1
+    eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
     fp-ts: 2.12.1
     io-ts: 2.2.19
@@ -3464,7 +3464,7 @@ __metadata:
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
     eslint-plugin-jsx-a11y: 6.6.1
-    eslint-plugin-react: 7.30.1
+    eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
     eventemitter3: 4.0.7
     feather-icons-react: 0.5.0
@@ -3587,7 +3587,7 @@ __metadata:
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
     eslint-plugin-jsx-a11y: 6.6.1
-    eslint-plugin-react: 7.30.1
+    eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
     feather-icons-react: 0.5.0
     formik: 2.2.9
@@ -3653,7 +3653,7 @@ __metadata:
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
     eslint-plugin-jsx-a11y: 6.6.1
-    eslint-plugin-react: 7.30.1
+    eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
     feather-icons-react: 0.5.0
     formik: 2.2.9
@@ -3707,7 +3707,7 @@ __metadata:
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
     eslint-plugin-jsx-a11y: 6.5.1
-    eslint-plugin-react: 7.30.0
+    eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
     feather-icons-react: 0.5.0
     framer-motion: 6.2.8
@@ -3765,7 +3765,7 @@ __metadata:
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
     eslint-plugin-jsx-a11y: 6.6.1
-    eslint-plugin-react: 7.30.1
+    eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
     feather-icons-react: 0.5.0
     file-saver: 2.0.5
@@ -3831,7 +3831,7 @@ __metadata:
     eslint-plugin-flowtype: 8.0.3
     eslint-plugin-import: 2.26.0
     eslint-plugin-jsx-a11y: 6.6.1
-    eslint-plugin-react: 7.30.1
+    eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
     feather-icons-react: ^0.5.0
     file-loader: ^6.2.0
@@ -3910,7 +3910,7 @@ __metadata:
     eslint-import-resolver-typescript: 2.7.1
     eslint-plugin-import: 2.26.0
     eslint-plugin-jsx-a11y: 6.5.1
-    eslint-plugin-react: 7.30.0
+    eslint-plugin-react: 7.31.10
     eslint-plugin-react-hooks: 4.5.0
     feather-icons-react: 0.5.0
     framer-motion: 6.2.8
@@ -10391,9 +10391,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react@npm:7.30.0":
-  version: 7.30.0
-  resolution: "eslint-plugin-react@npm:7.30.0"
+"eslint-plugin-react@npm:7.31.10":
+  version: 7.31.10
+  resolution: "eslint-plugin-react@npm:7.31.10"
   dependencies:
     array-includes: ^3.1.5
     array.prototype.flatmap: ^1.3.0
@@ -10411,31 +10411,7 @@ __metadata:
     string.prototype.matchall: ^4.0.7
   peerDependencies:
     eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
-  checksum: 729b7682a0fe6eab068171c159503ac57120ecc7b20067e76300b08879745c16a687e2033378ab45d9a3182da8844d06197a89081be83e1eb21fcceb76e79214
-  languageName: node
-  linkType: hard
-
-"eslint-plugin-react@npm:7.30.1":
-  version: 7.30.1
-  resolution: "eslint-plugin-react@npm:7.30.1"
-  dependencies:
-    array-includes: ^3.1.5
-    array.prototype.flatmap: ^1.3.0
-    doctrine: ^2.1.0
-    estraverse: ^5.3.0
-    jsx-ast-utils: ^2.4.1 || ^3.0.0
-    minimatch: ^3.1.2
-    object.entries: ^1.1.5
-    object.fromentries: ^2.0.5
-    object.hasown: ^1.1.1
-    object.values: ^1.1.5
-    prop-types: ^15.8.1
-    resolve: ^2.0.0-next.3
-    semver: ^6.3.0
-    string.prototype.matchall: ^4.0.7
-  peerDependencies:
-    eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
-  checksum: 553fb9ece6beb7c14cf6f84670c786c8ac978c2918421994dcc4edd2385302022e5d5ac4a39fafdb35954e29cecddefed61758040c3c530cafcf651f674a9d51
+  checksum: f013669c296483559a760648fa06425f161b1aff93c668f14c4561c933d22a7836b745b88a795c53cab929c71513d5fd1f2ffdddff915709f01b77ac25f5b71b
   languageName: node
   linkType: hard
 
