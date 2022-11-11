@@ -2263,11 +2263,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chakra-ui/accordion@npm:1.4.11":
-  version: 1.4.11
-  resolution: "@chakra-ui/accordion@npm:1.4.11"
+"@chakra-ui/accordion@npm:1.4.12":
+  version: 1.4.12
+  resolution: "@chakra-ui/accordion@npm:1.4.12"
   dependencies:
-    "@chakra-ui/descendant": 2.1.3
+    "@chakra-ui/descendant": 2.1.4
     "@chakra-ui/hooks": 1.9.1
     "@chakra-ui/icon": 2.0.5
     "@chakra-ui/react-utils": 1.2.3
@@ -2277,7 +2277,7 @@ __metadata:
     "@chakra-ui/system": ">=1.0.0"
     framer-motion: 3.x || 4.x || 5.x || 6.x
     react: ">=16.8.6"
-  checksum: 8381a280dce5ea68ce671d70be998d57908b4a43f111a4c7da71737b96c18e2f7ccaa83373567bc2e01d4a4534ba4a2936763857b23e362ed0590ede81e5b239
+  checksum: 275fcaf5214b0fe104f655330a7512947fcd284eeb5b00980fa8d40930fe7f99317bbbd06fa0edee91d2e031f5aed9a43b2b3ea5197e86eb3f82925dc0cf9c29
   languageName: node
   linkType: hard
 
@@ -2437,14 +2437,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chakra-ui/descendant@npm:2.1.3":
-  version: 2.1.3
-  resolution: "@chakra-ui/descendant@npm:2.1.3"
+"@chakra-ui/descendant@npm:2.1.4":
+  version: 2.1.4
+  resolution: "@chakra-ui/descendant@npm:2.1.4"
   dependencies:
     "@chakra-ui/react-utils": ^1.2.3
   peerDependencies:
     react: ">=16.8.6"
-  checksum: 6fdee3cf9d4ae0f91ba535a2bee08643ab741cc278816e26fb3ec503cb0c39ba0a3aed394fa6a0e8319f04284fe6cbf2dbb835532a11c6e3f081e0a912f1c2bf
+  checksum: 0958f52554761413046e5ef2785f357120fccbf37d28df77e2d7a0692afe0339427b9eede6ecae5c8c9fc68f52d125e9ee530dad5aad1139bf064a9c5ee69558
   languageName: node
   linkType: hard
 
@@ -2594,12 +2594,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chakra-ui/menu@npm:1.8.11":
-  version: 1.8.11
-  resolution: "@chakra-ui/menu@npm:1.8.11"
+"@chakra-ui/menu@npm:1.8.12":
+  version: 1.8.12
+  resolution: "@chakra-ui/menu@npm:1.8.12"
   dependencies:
     "@chakra-ui/clickable": 1.2.6
-    "@chakra-ui/descendant": 2.1.3
+    "@chakra-ui/descendant": 2.1.4
     "@chakra-ui/hooks": 1.9.1
     "@chakra-ui/popper": 2.4.3
     "@chakra-ui/react-utils": 1.2.3
@@ -2609,7 +2609,7 @@ __metadata:
     "@chakra-ui/system": ">=1.0.0"
     framer-motion: 3.x || 4.x || 5.x || 6.x
     react: ">=16.8.6"
-  checksum: ca44f4213e4f2e89d04bd4c1c44d667fa1f25042887cc2963d4187e2e2788546db71c1458ee6a0969dcdab8e21c981b5bbad4c52bbaeb934384aa4d28ec04386
+  checksum: 0f7df58193663ffe80694fca050c67eff64a8d6faff614365befa53df48d572930efac8b3e5250071d5bbebcc9b7ec94f51abda8e98b477d1f8d95fdc9fef14c
   languageName: node
   linkType: hard
 
@@ -2652,18 +2652,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chakra-ui/pin-input@npm:1.7.10":
-  version: 1.7.10
-  resolution: "@chakra-ui/pin-input@npm:1.7.10"
+"@chakra-ui/pin-input@npm:1.7.11":
+  version: 1.7.11
+  resolution: "@chakra-ui/pin-input@npm:1.7.11"
   dependencies:
-    "@chakra-ui/descendant": 2.1.3
+    "@chakra-ui/descendant": 2.1.4
     "@chakra-ui/hooks": 1.9.1
     "@chakra-ui/react-utils": 1.2.3
     "@chakra-ui/utils": 1.10.4
   peerDependencies:
     "@chakra-ui/system": ">=1.0.0"
     react: ">=16.8.6"
-  checksum: b60be97324955202b88148ffd383ccaae772fc04406acba49e486ca517bed2995fe9af15c7301d1752cfeab1db5fc5e8f5992be09ac18c8cf476cdd82ee226fd
+  checksum: 01dfc41d05b527bf56f6433d144f30a3a787ee375ce57abdd874cbadb8de649860d8f930f7dd51f2d39be8755d4702072619c6b2994a0bb1b0170ecffa9cda03
   languageName: node
   linkType: hard
 
@@ -2780,11 +2780,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chakra-ui/react@npm:1.8.8":
-  version: 1.8.8
-  resolution: "@chakra-ui/react@npm:1.8.8"
+"@chakra-ui/react@npm:1.8.9":
+  version: 1.8.9
+  resolution: "@chakra-ui/react@npm:1.8.9"
   dependencies:
-    "@chakra-ui/accordion": 1.4.11
+    "@chakra-ui/accordion": 1.4.12
     "@chakra-ui/alert": 1.3.7
     "@chakra-ui/avatar": 1.3.11
     "@chakra-ui/breadcrumb": 1.3.6
@@ -2803,10 +2803,10 @@ __metadata:
     "@chakra-ui/layout": 1.8.0
     "@chakra-ui/live-region": 1.1.6
     "@chakra-ui/media-query": 2.0.4
-    "@chakra-ui/menu": 1.8.11
+    "@chakra-ui/menu": 1.8.12
     "@chakra-ui/modal": 1.11.1
     "@chakra-ui/number-input": 1.4.7
-    "@chakra-ui/pin-input": 1.7.10
+    "@chakra-ui/pin-input": 1.7.11
     "@chakra-ui/popover": 1.11.9
     "@chakra-ui/popper": 2.4.3
     "@chakra-ui/portal": 1.3.10
@@ -2822,7 +2822,7 @@ __metadata:
     "@chakra-ui/switch": 1.3.10
     "@chakra-ui/system": 1.12.1
     "@chakra-ui/table": 1.3.6
-    "@chakra-ui/tabs": 1.6.10
+    "@chakra-ui/tabs": 1.6.11
     "@chakra-ui/tag": 1.2.7
     "@chakra-ui/textarea": 1.2.11
     "@chakra-ui/theme": 1.14.1
@@ -2837,7 +2837,7 @@ __metadata:
     framer-motion: 3.x || 4.x || 5.x || 6.x
     react: ">=16.8.6"
     react-dom: ">=16.8.6"
-  checksum: 7862b88a23d329e538ff9bcdcce126dad27a2fc6b592d61ec4e6798dffc5859f457ac186874f25c6693419c6c91b91d39bb2dd53e6b744ff6516b0bb6309258e
+  checksum: 363c41645df8e6c8f464fa43697a2a4cc4f6a81ed909f05eff0b3d5a3cb14ae2cc922c3abf83e6ec392f50b087d0b8d9ce0cba0d929e64758148fa9749229306
   languageName: node
   linkType: hard
 
@@ -2965,19 +2965,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chakra-ui/tabs@npm:1.6.10":
-  version: 1.6.10
-  resolution: "@chakra-ui/tabs@npm:1.6.10"
+"@chakra-ui/tabs@npm:1.6.11":
+  version: 1.6.11
+  resolution: "@chakra-ui/tabs@npm:1.6.11"
   dependencies:
     "@chakra-ui/clickable": 1.2.6
-    "@chakra-ui/descendant": 2.1.3
+    "@chakra-ui/descendant": 2.1.4
     "@chakra-ui/hooks": 1.9.1
     "@chakra-ui/react-utils": 1.2.3
     "@chakra-ui/utils": 1.10.4
   peerDependencies:
     "@chakra-ui/system": ">=1.0.0"
     react: ">=16.8.6"
-  checksum: f8ad7d6680e67357b9bc444f54216036ed56136913eb8621947f35ab74a659159fffd2a2eb9f3cb91aadd1852a98acdc772e6acba70233cceb4200ff21cf1cd0
+  checksum: ea30e0ffb70e74f3335a616f5817aaf319c146664c81487047aad6e84c79ca59ebaf0ff7c35496d7aadbdb719c671244408dc7d6a363cacf648b59085afb0ba9
   languageName: node
   linkType: hard
 
@@ -3434,7 +3434,7 @@ __metadata:
     "@babel/preset-flow": 7.18.6
     "@babel/preset-react": 7.18.6
     "@babel/preset-typescript": 7.18.6
-    "@chakra-ui/react": 1.8.8
+    "@chakra-ui/react": 1.8.9
     "@chakra-ui/system": 1.12.1
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
@@ -3561,7 +3561,7 @@ __metadata:
     "@babel/preset-env": 7.18.10
     "@babel/preset-react": 7.18.6
     "@babel/preset-typescript": 7.18.6
-    "@chakra-ui/react": 1.8.8
+    "@chakra-ui/react": 1.8.9
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
     "@frinx/eslint-config-typescript": 19.0.4-build.1
@@ -3629,7 +3629,7 @@ __metadata:
     "@babel/preset-env": 7.18.10
     "@babel/preset-react": 7.18.6
     "@babel/preset-typescript": 7.18.6
-    "@chakra-ui/react": 1.8.8
+    "@chakra-ui/react": 1.8.9
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
     "@frinx/eslint-config-typescript": 19.0.4-build.1
@@ -3692,7 +3692,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@frinx/shared@workspace:packages/shared"
   dependencies:
-    "@chakra-ui/react": 1.8.8
+    "@chakra-ui/react": 1.8.9
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
     "@frinx/eslint-config-typescript": 19.0.4-build.1
@@ -3743,7 +3743,7 @@ __metadata:
     "@babel/preset-env": 7.18.10
     "@babel/preset-react": 7.18.6
     "@babel/preset-typescript": 7.18.6
-    "@chakra-ui/react": 1.8.8
+    "@chakra-ui/react": 1.8.9
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
     "@frinx/eslint-config-typescript": 19.0.4-build.1
@@ -3810,7 +3810,7 @@ __metadata:
     "@babel/preset-env": 7.18.10
     "@babel/preset-flow": 7.18.6
     "@babel/preset-react": 7.18.6
-    "@chakra-ui/react": 1.8.8
+    "@chakra-ui/react": 1.8.9
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
     "@frinx/shared": ^0.0.1
@@ -3885,7 +3885,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@frinxio/device-topology@workspace:packages/frinx-device-topology"
   dependencies:
-    "@chakra-ui/react": 1.8.8
+    "@chakra-ui/react": 1.8.9
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
     "@frinx/eslint-config-typescript": 19.0.4-build.1

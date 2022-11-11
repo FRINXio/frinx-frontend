@@ -21,7 +21,7 @@
     "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist feather-icons-react.d.ts custom.d.ts src/index.ts"
   },
   "devDependencies": {
-    "@chakra-ui/react": "1.8.8",
+    "@chakra-ui/react": "1.8.9",
     "@emotion/react": "11.9.3",
     "@emotion/styled": "11.9.3",
     "@frinx/eslint-config-typescript": "19.0.4-build.1",

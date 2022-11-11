@@ -20,7 +20,7 @@
     "test": "vitest"
   },
   "devDependencies": {
-    "@chakra-ui/react": "1.8.8",
+    "@chakra-ui/react": "1.8.9",
     "@emotion/react": "11.9.3",
     "@emotion/styled": "11.9.3",
     "@frinx/eslint-config-typescript": "19.0.4-build.1",
