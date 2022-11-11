@@ -142,7 +142,9 @@ const WorkflowDefinitions = () => {
         keywords={[keywords]}
         onKeywordsChange={setKeywords}
         labels={labels}
-        onLabelsChange={(newLabels) => setLabels([...new Set(newLabels)])}
+        onLabelsChange={(newLabels) => {
+          setLabels([...new Set(newLabels)]);
+        }}
         onClearSearch={() => {
           setKeywords('');
           setLabels([]);
