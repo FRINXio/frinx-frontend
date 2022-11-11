@@ -33,7 +33,7 @@
     "immer": "9.0.16",
     "lodash": "4.17.21",
     "minisearch": "^5.0.0",
-    "react-flow-renderer": "10.3.14",
+    "react-flow-renderer": "10.3.17",
     "uuid": "8.3.2",
     "yup": "^0.32.11"
   },
