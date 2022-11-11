@@ -20,7 +20,7 @@
     "test": "vitest"
   },
   "devDependencies": {
-    "@chakra-ui/react": "1.8.8",
+    "@chakra-ui/react": "1.8.9",
     "@emotion/react": "11.9.3",
     "@emotion/styled": "11.9.3",
     "@frinx/eslint-config-typescript": "19.0.4-build.1",
@@ -29,12 +29,12 @@
     "@typescript-eslint/eslint-plugin": "5.27.1",
     "@typescript-eslint/parser": "5.27.1",
     "@webpack-cli/serve": "1.6.1",
-    "eslint": "8.17.0",
+    "eslint": "8.27.0",
     "eslint-config-prettier": "7.2.0",
     "eslint-import-resolver-typescript": "2.7.1",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-jsx-a11y": "6.5.1",
-    "eslint-plugin-react": "7.30.0",
+    "eslint-plugin-react": "7.31.10",
     "eslint-plugin-react-hooks": "4.5.0",
     "framer-motion": "6.2.8",
     "npm-run-all": "4.1.5",
@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "chakra-ui-autocomplete": "^1.4.5",
-    "feather-icons-react": "0.5.0",
+    "feather-icons-react": "0.6.2",
     "html-webpack-plugin": "^5.5.0",
     "lodash": "^4.17.21",
     "minisearch": "^5.0.0",

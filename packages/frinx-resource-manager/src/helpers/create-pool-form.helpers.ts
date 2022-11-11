@@ -241,12 +241,50 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                 ]),
               then: yup.object().shape({
                 ...Object.keys(poolProperties).reduce((acc, key) => {
-                  if (key === 'from' || key === 'to' || key === 'id' || key === 'prefix') {
+                  if (key === 'id') {
                     return {
                       ...acc,
                       [key]: yup
                         .number()
                         .min(1, 'Minimal required value is 1')
+                        .typeError('Please enter a number')
+                        .required(`Please enter a value`),
+                    };
+                  }
+
+                  if (key === 'from') {
+                    return {
+                      ...acc,
+                      [key]: yup
+                        .number()
+                        .min(1, 'Minimal required value is 1')
+                        .max(4094, 'Maximal allowed value is 4094')
+                        .lessThan(poolProperties.to, 'FROM value must be less than TO value')
+                        .typeError('Please enter a number')
+                        .required(`Please enter a value`),
+                    };
+                  }
+
+                  if (key === 'to') {
+                    return {
+                      ...acc,
+                      [key]: yup
+                        .number()
+                        .min(1, 'Minimal required value is 1')
+                        .max(4094, 'Maximal allowed value is 4094')
+                        .moreThan(poolProperties.from, 'TO value must be greater than FROM value')
+                        .typeError('Please enter a number')
+                        .required(`Please enter a value`),
+                    };
+                  }
+
+                  if (key === 'prefix') {
+                    return {
+                      ...acc,
+                      [key]: yup
+                        .number()
+                        .min(1, 'Minimal required value is 1')
+                        .max(32, 'Maximal allowed value is 32')
                         .typeError('Please enter a number')
                         .required(`Please enter a value`),
                     };
