@@ -33,7 +33,7 @@
     "pathfinding": "^0.4.18",
     "paths-js": "^0.4.10",
     "react-dropdown": "^1.6.4",
-    "react-flow-renderer": "10.3.14",
+    "react-flow-renderer": "10.3.17",
     "react-organizational-chart": "^2.0.0",
     "react-redux": "^7.1.0",
     "redux": "^4.0.1",

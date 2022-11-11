@@ -3778,7 +3778,7 @@ __metadata:
     npm-run-all: 4.1.5
     react: 18.1.0
     react-dom: 18.1.0
-    react-flow-renderer: 10.3.14
+    react-flow-renderer: 10.3.17
     react-router-dom: 6.3.0
     style-loader: 2.0.0
     typescript: 4.7.4
@@ -3852,7 +3852,7 @@ __metadata:
     react: 18.1.0
     react-dom: 18.1.0
     react-dropdown: ^1.6.4
-    react-flow-renderer: 10.3.14
+    react-flow-renderer: 10.3.17
     react-organizational-chart: ^2.0.0
     react-redux: ^7.1.0
     react-router-dom: 6.3.0
@@ -5482,6 +5482,13 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: 9a84374da1173901b5eba6b2dda9e70220842c8e70274628e5c93684fca59786b7f6215c93f492e34f8834983de096b2544f280c60da9b8fd4c3f20ffe7cc51e
+  languageName: node
+  linkType: hard
+
+"@types/resize-observer-browser@npm:^0.1.7":
+  version: 0.1.7
+  resolution: "@types/resize-observer-browser@npm:0.1.7"
+  checksum: 0377eaac8bb7a17b983b49a156006032380b459bfebefc54a5aa2f7f8a9786d2b60723e8837c61ef733330b478f4f26293e9edbdc8006238e4f80c878c56c988
   languageName: node
   linkType: hard
 
@@ -15076,11 +15083,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-flow-renderer@npm:10.3.14":
-  version: 10.3.14
-  resolution: "react-flow-renderer@npm:10.3.14"
+"react-flow-renderer@npm:10.3.17":
+  version: 10.3.17
+  resolution: "react-flow-renderer@npm:10.3.17"
   dependencies:
     "@babel/runtime": ^7.18.9
+    "@types/d3": ^7.4.0
+    "@types/resize-observer-browser": ^0.1.7
     classcat: ^5.0.3
     d3-drag: ^3.0.0
     d3-selection: ^3.0.0
@@ -15089,7 +15098,7 @@ __metadata:
   peerDependencies:
     react: 16 || 17 || 18
     react-dom: 16 || 17 || 18
-  checksum: 470b383bdb6a1e21f23deb837240ef0d53d6761de58f470e9a56d837f7d59e721355caf9e8709e73d9c24eb54380e76034aaf469e573af3999d5d6c2c240f231
+  checksum: caf7c67952ec846a10d55f2f6b3881ca2096a35e86e958693f8cc0cb22449ed17abc3aff9b6c43ccc23cdbdeed27d4e99e9671e0a873fb42eddf36caf450eaee
   languageName: node
   linkType: hard
 
