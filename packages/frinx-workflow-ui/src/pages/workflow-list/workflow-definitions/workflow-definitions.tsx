@@ -29,7 +29,7 @@ const WorkflowDefinitions = () => {
   const [allLabels, setAllLabels] = useState<string[]>([]);
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
 
-  const { currentPage, setCurrentPage, setItemList, totalPages, pageItems } = usePagination<Workflow>();
+  const { currentPage, setItemList, totalPages, pageItems } = usePagination<Workflow>();
 
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
@@ -46,10 +46,6 @@ const WorkflowDefinitions = () => {
       setAllLabels(getLabels(wfs));
     });
   }, []);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [keywords, labels]);
 
   useEffect(() => {
     const results =
