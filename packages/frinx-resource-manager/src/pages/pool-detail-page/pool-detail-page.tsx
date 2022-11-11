@@ -77,10 +77,8 @@ const PoolDetailPage: VoidFunctionComponent = () => {
 
   const { QueryResourcePool: resourcePool } = poolData;
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
-  const canClaimResources =
-    resourcePool.Capacity != null &&
-    BigInt(resourcePool.Capacity.freeCapacity) > 0n &&
-    BigInt(resourcePool.Capacity.freeCapacity) <= totalCapacity;
+  const freeCapacity = BigInt(Number(resourcePool.Capacity?.freeCapacity));
+  const canClaimResources = resourcePool.Capacity != null && freeCapacity > 0n && freeCapacity <= totalCapacity;
   const isAllocating = resourcePool.PoolType === 'allocating';
   const canDeletePool = resourcePool.Resources.length === 0;
 

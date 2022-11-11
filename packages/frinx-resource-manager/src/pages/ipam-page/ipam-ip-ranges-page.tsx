@@ -142,11 +142,13 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
         `${PoolProperties.address}/${PoolProperties.prefix}`,
         ResourceType.Name,
       );
+      const utilizedCapacity = BigInt(Number(Capacity?.utilizedCapacity));
+      const freeCapacity = BigInt(Number(Capacity?.freeCapacity));
       return {
         id,
         name: Name,
-        totalCapacity: Capacity != null ? BigInt(Capacity.utilizedCapacity) + BigInt(Capacity.freeCapacity) : 0,
-        freeCapacity: Capacity != null ? BigInt(Capacity.freeCapacity) : 0,
+        totalCapacity: utilizedCapacity + freeCapacity,
+        freeCapacity,
         tags: Tags,
         network: `${network}/${PoolProperties.prefix}`,
         broadcast: `${broadcast}/${PoolProperties.prefix}`,

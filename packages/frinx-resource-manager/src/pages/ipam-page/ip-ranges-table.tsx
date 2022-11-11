@@ -53,7 +53,9 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onD
         </Thead>
         <Tbody>
           {ipRanges.length > 0 ? (
-            ipRanges.map(({ broadcast, network, totalCapacity, tags, id, name, nestedRanges, freeCapacity }) => {
+            ipRanges.map(({ broadcast, network, tags, id, name, nestedRanges, ...rest }) => {
+              const freeCapacity = BigInt(Number(rest.freeCapacity));
+              const totalCapacity = BigInt(Number(rest.totalCapacity));
               return (
                 <Tr key={id}>
                   {nestedRanges.length > 0 ? (
