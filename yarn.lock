@@ -41,16 +41,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-common@npm:6.1.0":
-  version: 6.1.0
-  resolution: "@azure/msal-common@npm:6.1.0"
-  dependencies:
-    debug: ^4.1.1
-  checksum: 5fd6617fb9ceaf8f93719c5596a7f0bfc3b4dd427bf11d9f18759b101f7a0bef46bce371ad38a5726185e8520f5ac793e4fd283e84948467ac8695a15205d429
-  languageName: node
-  linkType: hard
-
-"@azure/msal-common@npm:^8.0.0":
+"@azure/msal-common@npm:8.0.0, @azure/msal-common@npm:^8.0.0":
   version: 8.0.0
   resolution: "@azure/msal-common@npm:8.0.0"
   checksum: 86d4d68a7d31ae6f0b8fcad9e48f5539ecf4a006beaef660408ef295e5ebe7ae22d95dfafa349fc2c3f348189aa1bb1ca4367b20de40105d1bf17065e6c2fe97
@@ -3557,7 +3548,7 @@ __metadata:
   resolution: "@frinx/dashboard@workspace:packages/frinx-dashboard"
   dependencies:
     "@azure/msal-browser": 2.31.0
-    "@azure/msal-common": 6.1.0
+    "@azure/msal-common": 8.0.0
     "@azure/msal-react": 1.4.10
     "@babel/core": 7.20.2
     "@babel/plugin-proposal-class-properties": 7.18.6

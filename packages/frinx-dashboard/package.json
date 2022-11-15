@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@azure/msal-browser": "2.31.0",
-    "@azure/msal-common": "6.1.0",
+    "@azure/msal-common": "8.0.0",
     "@azure/msal-react": "1.4.10",
     "@chakra-ui/react": "1.8.9",
     "@chakra-ui/system": "1.12.1",
