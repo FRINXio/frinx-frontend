@@ -71,7 +71,6 @@ const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = 
             onChange([...selected, results[active].value]);
             setQuery('');
           }
-          setOptionsVisible(false);
           break;
         }
         default:
@@ -154,7 +153,6 @@ const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = 
                     onChange([...selected, item.value]);
                     setQuery('');
                   }
-                  setOptionsVisible(false);
                 }}
                 cursor="pointer"
               >
