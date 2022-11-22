@@ -18,7 +18,7 @@ import {
   Text,
   Textarea,
 } from '@chakra-ui/react';
-import { useTagsInput } from '@frinx/shared/src';
+import { useTagsInput, SearchByTagInput } from '@frinx/shared/src';
 import { useNavigate } from 'react-router-dom';
 import PoolValuesForm from './pool-values-form';
 import PoolPropertiesForm from './pool-properties-form';
@@ -247,9 +247,17 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
         />
       </FormControl>
 
+      <FormControl mt={4}>
+        <SearchByTagInput
+          selectedTags={tagsInput.selectedTags}
+          onTagCreate={tagsInput.handleTagCreation}
+          onSelectionChange={tagsInput.handleOnSelectionChange}
+        />
+      </FormControl>
+
       {values.poolType !== 'allocating' && resourceTypeName != null && (
         <>
-          <Divider marginY={5} orientation="horizontal" color="gray.200" />
+          <Divider marginY={4} orientation="horizontal" color="gray.200" />
           <Heading as="h4" size="md">
             Set pool values
           </Heading>
@@ -275,7 +283,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       )}
       {resourceTypeName !== 'route_distinguisher' && values.poolType === 'allocating' && resourceTypeName != null && (
         <>
-          <Divider marginY={5} orientation="horizontal" color="gray.200" />
+          <Divider mb={6} orientation="horizontal" color="gray.200" />
           <Heading as="h4" size="md">
             Set pool properties
           </Heading>
@@ -312,15 +320,9 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
         </>
       )}
 
-      <AdvancedOptions
-        poolPropertiesErrors={errors}
-        poolType={poolType}
-        tagsParams={tagsInput}
-        values={values}
-        handleChange={handleChange}
-      />
+      <AdvancedOptions poolPropertiesErrors={errors} poolType={poolType} values={values} handleChange={handleChange} />
 
-      <HStack mt={4}>
+      <HStack mt={5}>
         <Spacer />
         <Button onClick={() => navigate(-1)} variant="solid">
           Cancel
