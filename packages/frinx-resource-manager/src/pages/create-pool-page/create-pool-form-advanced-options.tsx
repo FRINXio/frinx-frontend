@@ -10,7 +10,6 @@ import {
   useDisclosure,
   Text,
 } from '@chakra-ui/react';
-import { SearchByTagInput, TagsInputReturnType } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import FeatherIcon from 'feather-icons-react';
 import { FormikErrors, FormikHandlers } from 'formik';
@@ -20,7 +19,6 @@ import { PoolType } from '../../__generated__/graphql';
 type Props = {
   poolPropertiesErrors: FormikErrors<FormValues>;
   poolType: PoolType;
-  tagsParams: TagsInputReturnType;
   values: FormValues;
   handleChange: FormikHandlers['handleChange'];
 };
@@ -28,7 +26,6 @@ type Props = {
 const CreatePoolFormAdvancedOptions: VoidFunctionComponent<Props> = ({
   poolPropertiesErrors,
   poolType,
-  tagsParams,
   values,
   handleChange,
 }) => {
@@ -75,14 +72,6 @@ const CreatePoolFormAdvancedOptions: VoidFunctionComponent<Props> = ({
               </FormControl>
             )}
           </HStack>
-
-          <FormControl mt={2}>
-            <SearchByTagInput
-              selectedTags={tagsParams.selectedTags}
-              onTagCreate={tagsParams.handleTagCreation}
-              onSelectionChange={tagsParams.handleOnSelectionChange}
-            />
-          </FormControl>
         </Box>
       )}
     </>
